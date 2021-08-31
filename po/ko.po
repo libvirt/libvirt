@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-26 14:44+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-08-26 16:26+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -1785,7 +1785,7 @@ msgstr "AES256CBC 암호화 유효화 하지 않은 kenlen=%zu"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%zu"
-msgstr ""
+msgstr "AES256CBC 초기화 벡터는 len=%zu 에서 사용불가합니다"
 
 msgid "API error"
 msgstr "API 오류"
@@ -1803,7 +1803,7 @@ msgstr "접근 거부됨"
 
 #, c-format
 msgid "Activation of snoop request failed on interface '%s'"
-msgstr ""
+msgstr "비정상적인 스누핑 요청이 접속기 '%s' 에서 실패하였습니다"
 
 #, c-format
 msgid "Active %s devices on bus with %s, not doing bus reset"
@@ -1813,20 +1813,20 @@ msgid "Active Block Commit"
 msgstr "활성화된 블록 커밋"
 
 msgid "Active Block Commit started"
-msgstr ""
+msgstr "Block Commit이 활성화 되었습니다"
 
 msgid "Active channel stream exists for this domain"
 msgstr "동적 채널 스트림은 이 도메인을 위해 존재하지 않습니다"
 
 msgid "Active console session exists for this domain"
-msgstr ""
+msgstr "이 도메인에서 이미 활성화 중인 콘솔 세션이 존재합니다"
 
 msgid "Active:"
 msgstr "활성화:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Actual interface '%s' hostdev was not a PCI device"
-msgstr "장치 %s는 PCI 장치가 아닙니다"
+msgstr "실제 '%s' 호스트 장비 접속기는 PCI 장비가 아니었습니다"
 
 msgid "Add an IOThread to the guest domain."
 msgstr "대상 도메인에서 재시작 명령 실행."
@@ -1841,25 +1841,25 @@ msgid "Address"
 msgstr "주소"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
-msgstr ""
+msgstr "자동으로 numa가 배치될 경우 numad 로부터 조언이 필요합니다"
 
 #, c-format
 msgid "After dumping core, failed to resume domain '%d' with libxenlight"
-msgstr ""
+msgstr "코어를 버린후부터 도메인 '%d'를 libxenlight와 재개하는것을 실패했습니다"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr ""
+msgstr "그 누구도 그렇게 높은 레벨의 캐시를 들은적이 없습니다"
 
 msgid "All identities provided by the SSH Agent were rejected"
-msgstr ""
+msgstr "SSH에이전트로부터 받은 모든 신원은 거절되었습니다"
 
 msgid ""
 "All provided authentication methods with credentials were rejected by the "
 "server"
-msgstr ""
+msgstr "신원검증 정보와 함께 제공받은 모든 인증 방법은 서버로부터 거절되었습니다"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr ""
+msgstr "NUMA cell 공간을 위해 새로 저장공간을 할당하거나 기존 공간을 삭제하십시오"
 
 msgid "Allocation"
 msgstr "할당"
