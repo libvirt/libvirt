@@ -638,30 +638,6 @@ mymain(void)
     };
     TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2, (&wrap, &qcow2, &raw), EXP_PASS);
 
-    /* Rewrite qcow2 and wrap file to omit backing file type */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-b", absraw, "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-b", absqcow2, "wrap", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    /* Qcow2 file with raw as absolute backing, backing format omitted */
-    testFileData wrap_as_raw = {
-        .expBackingStoreRaw = absqcow2,
-        .expCapacity = 1024,
-        .path = abswrap,
-        .type = VIR_STORAGE_TYPE_FILE,
-        .format = VIR_STORAGE_FILE_QCOW2,
-    };
-    TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2,
-               (&wrap_as_raw, &qcow2_as_raw), EXP_FAIL);
-
     /* Rewrite qcow2 to a missing backing file, with backing type */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
@@ -674,15 +650,6 @@ mymain(void)
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_FAIL);
 
-    /* Rewrite qcow2 to a missing backing file, without backing type */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-b", datadir "/bogus", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    /* Qcow2 file with missing backing file and no specified type */
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2), EXP_FAIL);
 
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
