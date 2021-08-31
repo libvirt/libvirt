@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-29 10:15+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-08-30 02:13+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -2198,7 +2198,7 @@ msgstr "실린더-헤드-섹터 (CHS) 변형 방법은 오직 'ide' 통신방법
 
 #, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
-msgstr "CPU 리스트 '%s'에 있는 CPU %d는 최대 CPU %d를 초과합니다"
+msgstr "CPU %d는(CPU 목록 '%s'에 있는) 최대 CPU %d를 초과합니다"
 
 msgid "CPU Affinity"
 msgstr "CPU 동질관계"
@@ -10505,9 +10505,9 @@ msgstr "잘못된 포트 번호: %s"
 msgid "Invalid vport operation (%d)"
 msgstr "잘못된 vport 작업 (%d)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invocation of %s returned an error: %s (%d)"
-msgstr "curl_easy_perform()이 오류를 반환함: %s (%d) : %s"
+msgstr "%s의 호출이 오류를 반환하였습니다: %s (%d)"
 
 msgid "Invoke fstrim on domain's mounted filesystems."
 msgstr ""
@@ -10516,9 +10516,9 @@ msgstr ""
 msgid "Iteration:"
 msgstr "위치:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
-msgstr "보안 레이블이 최대값을 넘어감: %zd"
+msgstr "Iterator ID는 %u의 최대 ID를 초과합니다"
 
 #, c-format
 msgid "JSON backing volume definition '%s' lacks 'file' object"
@@ -10956,9 +10956,9 @@ msgid ""
 "allocation %u"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Memory Bandwidth already defined for node %u"
-msgstr "보안 레이블이 VM에 대해 이미 정의되었습니다"
+msgstr "메모리 대역폭은 이미 노드 %u에 정의되었습니다"
 
 msgid "Memory Bandwidth value exceeding 100 is invalid."
 msgstr ""
@@ -11074,9 +11074,9 @@ msgstr ""
 msgid "Migration not possible without a vCenter"
 msgstr "vCenter 없이 마이그레이션할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Migration option '%s' is not supported by QEMU binary"
-msgstr "vport 작동 '%s'은 host%d에 대해 지원되지 않습니다"
+msgstr "이전 선택(Migration option) '%s'는 QEMU 바이너리에 의해 지원되지 않습니다"
 
 msgid "Migration persistent data already present"
 msgstr ""
@@ -11098,13 +11098,13 @@ msgstr ""
 msgid "Minimum supported %s version is %s but found version '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s attribute 'vcpus'"
-msgstr "NUMA 셀에서 'cpus' 속성이 빠짐"
+msgstr "%s 속성 'vcpus' 가 누락됨"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s lock state for migration cookie"
-msgstr "장치의 소스 정보 부재"
+msgstr "이전 쿠키(migration cookie)를 위해 %s 잠금 상태가 누락됨"
 
 #, c-format
 msgid "Missing '%s' field in lock manager driver"
@@ -11251,9 +11251,9 @@ msgstr "네트워크 '%s'의 정적 호스트 정의에서 IP 주소가 누락�
 msgid "Missing PVR information for CPU model %s"
 msgstr "CPU 모델 %s에 대한 특징 이름 빠짐"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing SCSI controller for index %d"
-msgstr "여러 '%s' 컨트롤러에는 인덱스 '%d'가 있음"
+msgstr "색인 '%d'에 SCSI 제어기가 누락됨"
 
 msgid "Missing TPM device path"
 msgstr "TPM 장치 경로 누락"
@@ -11319,9 +11319,9 @@ msgstr "인증이 필요합니다"
 msgid "Missing auxiliary data in output definition"
 msgstr "출력 정의에서 보조 자료 누락"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing backend %d"
-msgstr "EGD 백엔드 유형이 누락되어 있음"
+msgstr "백엔드 %d가 누락됨"
 
 #, fuzzy
 msgid "Missing bridge name"
@@ -11336,9 +11336,9 @@ msgstr "JSON 문서에 클라이언트 자료가 누락되어 있습니다"
 msgid "Missing clients data in JSON document"
 msgstr "JSON 문서에서 클라이언트 자료가 누락되어 있습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing cpuid or msr element in feature %s"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "기능 %s에서 cpuid 또는 msr 요소가 누락됨"
 
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON 파일에서 defaultLockspace 자료가 누락"
@@ -23404,21 +23404,17 @@ msgstr ""
 msgid ""
 "couldn't find a portgroup entry in network '%s' matching <portgroup "
 "name='%s'>"
-msgstr ""
-"네트워크 '%s'에서 <portgroup name='%s'>과 일치하는 포트그룹 항목을 찾을 수 없"
-"습니다 "
+msgstr "<portgroup name='%s'>과 일치하는 네트워크 '%s'에서 portgroup 항목을 찾을 수 없습니다"
 
 #, c-format
 msgid ""
 "couldn't find an interface entry in network '%s' matching <interface "
 "dev='%s'>"
-msgstr ""
-"네트워크 '%s'에서 <interface dev='%s'>와 일치하는 인터페이스 항목을 찾을 수 "
-"없습니다 "
+msgstr "네트워크 '%s'와 일치하는 <interface dev='%s'>에서 연결장치 항목을 찾을 수 없습니다"
 
 #, c-format
 msgid "couldn't find interface named '%s'"
-msgstr "'%s'라는 인터페이스를 찾을 수 없습니다 "
+msgstr "연결장치 named '%s'를 찾을 수 없습니다"
 
 #, c-format
 msgid "couldn't find interface named '%s': %s%s%s"
@@ -23434,29 +23430,31 @@ msgstr "MAC 주소 '%s'의 인터페이스를 찾을 수 없습니다: %s%s%s"
 
 #, c-format
 msgid "couldn't locate a matching DNS HOST record in network %s"
-msgstr "네트워크 %s에서 일치하는 DNS 호스트 기록을 배치할 수 없습니다 "
+msgstr "네트워크 %s에서 일치하는 DNS 호스트 기록을 배치 할 수 없습니다"
 
 #, c-format
 msgid "couldn't locate a matching DNS SRV record in network %s"
-msgstr "네트워크 %s에서 일치하는 DNS SRV 기록을 배치할 수 없습니다 "
+msgstr "네트워크 %s에서 일치하는 DNS SRV 기록을 배치 할 수 없습니다"
 
 #, c-format
 msgid "couldn't locate a matching DNS TXT record in network %s"
-msgstr "네트워크 %s에서 일치하는 DNS TXT 기록을 배치할 수 없습니다 "
+msgstr "네트워크 %s에서 일치하는 DNS TXT 기록을 배치 할 수 없습니다"
 
 #, c-format
 msgid "couldn't locate a matching dhcp host entry in network '%s'"
-msgstr "네트워크 '%s'에서 일치하는 dhcp 호스트 항목을 배치할 수 없습니다 "
+msgstr "네트워크 '%s'에서 일치하는 dhcp 호스트 항목을 배치 할 수 없습니다"
 
 #, c-format
 msgid "couldn't locate a matching dhcp range entry in network '%s'"
-msgstr "네트워크 '%s'에서 일치하는 dhcp 범위 항목을 배치할 수 없습니다 "
+msgstr "네트워크 '%s'에서 일치하는 dhcp 범위 항목을 배치할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "couldn't locate an existing dhcp host entry with \"mac='%s'\" \"name='%s'\" "
 "\"ip='%s'\" in network '%s'"
-msgstr "네트워크 '%s'에서 일치하는 dhcp 호스트 항목을 배치할 수 없습니다 "
+msgstr ""
+"\"mac='%s'\" \"name='%s'\" \"ip='%s'\" (네트워크 '%s'에서)와 함께 존재하는 dhcp 호스트 항목을 "
+"배치 할 수 없습니다"
 
 #, c-format
 msgid "couldn't retrieve authentication methods list: %s"
@@ -23472,9 +23470,7 @@ msgstr ""
 
 #, c-format
 msgid "couldn't update dhcp host entry - no <ip> element found in network '%s'"
-msgstr ""
-"dhcp 호스트 항목을 업데이트할 수 없음 - 네트워크 '%s'에서 <ip> 요소를 찾을 "
-"수 없음 "
+msgstr "dhcp 호스트 항목을 최신화 할 수 없음 - 네트워크 '%s'에서 <ip> 요소를 찾을 수 없음"
 
 #, fuzzy, c-format
 msgid "couldn't write dnsmasq config file '%s'"
@@ -23503,7 +23499,7 @@ msgstr ""
 
 #, c-format
 msgid "cpuNum in %s only accepts %d as a negative value"
-msgstr "%s에서의 cpuNum은 음수 값으로 %d 만을 허용합니다 "
+msgstr "%s에서의 cpuNum는 음수 값으로 %d 만을 허용합니다"
 
 #, fuzzy
 msgid "cpuacct parse error"
