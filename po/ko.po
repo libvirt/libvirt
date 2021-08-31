@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-07-27 13:35+0000\n"
-"PO-Revision-Date: 2021-07-20 13:24+0000\n"
+"PO-Revision-Date: 2021-08-23 15:38+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.8\n"
 
 msgid ""
 "\n"
@@ -4801,14 +4801,14 @@ msgstr ""
 
 #, c-format
 msgid "Could not set max-memory to %lu kilobytes: %s"
-msgstr "최대 메모리를 %lu 킬로바이트로 설정할 수 없음: %s"
+msgstr "최대 메모리를 %lu KBytes로 설정 할 수 없음: %s"
 
 msgid "Could not set memory size"
 msgstr "메모리 크기를 설정할 수 없음"
 
 #, c-format
 msgid "Could not set memory to %lu kilobytes: %s"
-msgstr "메모리를 %lu 킬로바이트로 설정할 수 없음: %s"
+msgstr "메모리를 %lu KBytes로 설정 할 수 없음: %s"
 
 #, fuzzy
 msgid "Could not set namespace address for xmlNodeParam"
@@ -6987,9 +6987,9 @@ msgstr "경로가 '%s'인 저장소 볼륨을 여는 데 실패했습니다"
 msgid "Failed to determine state of guest: $guest. Not tracking it anymore."
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect client '%llu' from server %s"
-msgstr "하이퍼바이저에서 연결 끊기 실패"
+msgstr "서버 %s에서 클라이언트 '%llu' 연결 끊기 실패"
 
 #, fuzzy
 msgid "Failed to disconnect from the admin server"
@@ -7006,9 +7006,9 @@ msgstr "연결해제 실패: %s"
 msgid "Failed to discover session: %s"
 msgstr "데몬으로 fork하는 데 실패했습니다: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dump core of domain '%d' with libxenlight"
-msgstr "도메인 %s를 %s에 코어 덤프하기 실패"
+msgstr "libxenlight와 함께 도메인 '%d'의 코어 덤프하기 실패"
 
 #, c-format
 msgid "Failed to enable controller '%s' for '%s'"
@@ -7129,9 +7129,9 @@ msgstr "genid 생성에 실패하였습니다"
 msgid "Failed to generate uuid"
 msgstr "uuid 생성에 실패하였습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get %s minor number"
-msgstr "디스크 정보 보기 실패"
+msgstr "% 부 번호를 가져 오는데 실패"
 
 #, fuzzy
 msgid "Failed to get PCI SYSFS file"
@@ -7347,9 +7347,9 @@ msgstr "뮤텍스를 초기화 할 수 없음"
 msgid "Failed to initialize security drivers"
 msgstr "보안 드라이버를 초기화하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize storage pool '%s': %s"
-msgstr "저장소 드라이버를 찾는 데 실패: %s"
+msgstr "저장소 풀을 초기화 하는데 실패 '%s': %s"
 
 msgid "Failed to inquire lock"
 msgstr "잠금을 해제하는데 실패했습니다"
@@ -7362,9 +7362,9 @@ msgstr "블럭 이름 %s 구문 분석 실패"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to kill process %lld: %s"
-msgstr "풀 %s를 만드는 데 실패"
+msgstr "프로세서를 제거하는데 실패 %lld: %s"
 
 msgid "Failed to list active domains"
 msgstr "활성화 도메인 보기 실패"
@@ -7490,9 +7490,9 @@ msgstr ""
 msgid "Failed to lock system token '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to login: %s"
-msgstr "플로그인 %s을 불러오는데 실패했습니다: %s"
+msgstr "로그인 하는데 실패: %s"
 
 #, fuzzy, c-format
 msgid "Failed to logout: %s"
@@ -7549,7 +7549,7 @@ msgstr "%s를 %s유형 %s에 적재하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "%s 유형 %s 플래그=0x%x에서 %s를 적재하는데 실패했습니다"
+msgstr "%s 유형 %s flags=0x%x에서 %s를 적재하는데 실패"
 
 #, c-format
 msgid "Failed to mount %s on /dev"
@@ -7890,7 +7890,7 @@ msgstr "디스크 대상: %s에 NVMe를 재연결하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
-msgstr "도메인 %s를 재시작하기 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 재시작하기 실패"
 
 #, c-format
 msgid "Failed to reboot domain '%s'"
@@ -15640,7 +15640,7 @@ msgstr "대상 RNG 모델 '%s'이 소스 '%s'와 일치하지 않음"
 
 #, c-format
 msgid "Target network card MTU %d does not match source %d"
-msgstr "대상 네트워크 카드MTU는 소스 %d와 일치하지 않습니다"
+msgstr "대상 네트워크 카드 MTU %d는 원천 %d와 일치하지 않습니다"
 
 #, c-format
 msgid "Target network card mac %s does not match source %s"
@@ -17638,7 +17638,7 @@ msgstr "현재 스냅샷 설정"
 
 #, c-format
 msgid "Unable to label files under %s"
-msgstr "%s에서 파일 시스템 %s을 여는데 실패했습니다"
+msgstr "%s에서 파일을 분류 할 수 없습니다"
 
 #, fuzzy
 msgid "Unable to list RBD images"
@@ -18308,7 +18308,7 @@ msgstr "이 플랫폼에서 인터페이스 '%s'를 '%s'로 이름 변경할 수
 
 #, c-format
 msgid "Unable to set XATTR %s on %s"
-msgstr "%s에서 XATTR을 설정 할 수 없습니다"
+msgstr "%s에서XATTR %s를 설정 할 수 없습니다"
 
 msgid "Unable to set agent close-on-exec flag"
 msgstr "에이전트 close-on-exec 플래그를 설정 할 수 없음"
@@ -19145,7 +19145,7 @@ msgstr ""
 
 #, c-format
 msgid "Unknown suspend target: %u"
-msgstr "알려지지 일시 중지 대상: %d"
+msgstr "알 수 없는 일시 중지 대상: %u"
 
 #, fuzzy, c-format
 msgid "Unknown taint flag %s"
@@ -20394,7 +20394,7 @@ msgstr ""
 
 #, c-format
 msgid "attaching device type '%s' is unsupported"
-msgstr "장치 유형 '% s' 연결은 지원되지 않습니다"
+msgstr "연결된 장치 유형 '%s'는 지원되지 않습니다"
 
 #, fuzzy
 msgid "attaching network device to VM is unsupported"
@@ -22523,11 +22523,10 @@ msgstr ""
 
 #, c-format
 msgid "cellNum in %s only accepts %d as a negative value"
-msgstr "%s에서의 cellNum은 음수 값으로 %d 만을 허용합니다 "
+msgstr "%s에서의 cellNum은 음수 값으로 %d 만을 허용합니다"
 
-#, fuzzy
 msgid "cfpc configuration is not supported by this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "cfpc 구성이 이 QEMU 바이너리에서는 지원되지 않습니다"
 
 #, c-format
 msgid "cfs_period '%llu' must be in range (%llu, %llu)"
@@ -22915,9 +22914,8 @@ msgstr "vport 작동 '%s'은 host%d에 대해 지원되지 않습니다"
 msgid "configuring memory location is not supported"
 msgstr "단일 메모리 부울 장치만이 지원됨"
 
-#, fuzzy
 msgid "configuring persistent polling values is not supported"
-msgstr "비파일 볼륨 생성이 지원되지 않음 "
+msgstr "영구적인 폴링 값 구성이 지원되지 않습니다"
 
 msgid "conn must match stream connection"
 msgstr ""
@@ -23032,9 +23030,8 @@ msgstr ""
 msgid "copy of read-only disks is not supported"
 msgstr "fs 드라이버 %s는 지원되지 않음"
 
-#, fuzzy
 msgid "copy-on-write ploop volumes are not yet supported"
-msgstr "비파일 볼륨 생성이 지원되지 않음 "
+msgstr "기록중 복사(cow) ploop 볼륨은 아직 지원되지 않습니다"
 
 #, c-format
 msgid "copy_on_read is not compatible with 'lun' disk '%s'"
@@ -23280,9 +23277,9 @@ msgstr "XML을 구문분석 할 수 없습니다"
 msgid "could not parse arguments"
 msgstr "인수를 구문 분석할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse read bytes sec %s"
-msgstr "중량 %s을 구문 분석할 수 없음 "
+msgstr "읽기 바이트 초 %s를 구문 분석 할 수 없습니다"
 
 #, fuzzy, c-format
 msgid "could not parse read iops sec %s"
@@ -23290,7 +23287,7 @@ msgstr "중량 %s을 구문 분석할 수 없음 "
 
 #, c-format
 msgid "could not parse weight %s"
-msgstr "중량 %s을 구문 분석할 수 없음 "
+msgstr "가중치%s를 구문 분석 할 수 없음"
 
 #, fuzzy, c-format
 msgid "could not parse write bytes sec %s"
