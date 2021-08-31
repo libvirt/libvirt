@@ -17,6 +17,13 @@ v7.7.0 (unreleased)
 
 * **New features**
 
+  * Add support for Fibre Channel VMID
+
+    New VM element ``<fibrechannel appid=''/>`` was added to allow users to set
+    their ``appid`` for each VM which will be used by kernel to create Fibre
+    Channel VMID. This allows various QoS levels, access control or collecting
+    telemetry data per VM.
+
 * **Improvements**
 
   * virsh: Allow XML validation for define of: storage pool, network, secret,
