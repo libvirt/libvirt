@@ -1,6 +1,7 @@
 [Unit]
 Description=Virtualization xen daemon
 Conflicts=libvirtd.service
+Requires=virtlockd.socket
 Requires=virtxend.socket
 Requires=virtxend-ro.socket
 Requires=virtxend-admin.socket
@@ -25,6 +26,7 @@ KillMode=process
 
 [Install]
 WantedBy=multi-user.target
+Also=virtlockd.socket
 Also=virtxend.socket
 Also=virtxend-ro.socket
 Also=virtxend-admin.socket

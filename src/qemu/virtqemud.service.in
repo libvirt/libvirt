@@ -1,6 +1,8 @@
 [Unit]
 Description=Virtualization qemu daemon
 Conflicts=libvirtd.service
+Requires=virtlogd.socket
+Requires=virtlockd.socket
 Requires=virtqemud.socket
 Requires=virtqemud-ro.socket
 Requires=virtqemud-admin.socket
@@ -42,6 +44,8 @@ LimitMEMLOCK=64M
 
 [Install]
 WantedBy=multi-user.target
+Also=virtlogd.socket
+Also=virtlockd.socket
 Also=virtqemud.socket
 Also=virtqemud-ro.socket
 Also=virtqemud-admin.socket
