@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-07-27 18:43+0000\n"
+"PO-Revision-Date: 2021-08-26 14:44+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.8\n"
 
 msgid ""
 "\n"
@@ -4631,7 +4631,7 @@ msgstr "Не вдалося отримати кількість доменів, 
 
 #, c-format
 msgid "Could not get parent of '%s'"
-msgstr ""
+msgstr "Не вдалося отримати батьківський запис «%s"
 
 msgid "Could not get process id of swtpm"
 msgstr "Не вдалося отримати ідентифікатор процесу swtpm"
@@ -14736,7 +14736,7 @@ msgstr "пристрій SCSI основної системи має викор�
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..%u] range"
-msgstr ""
+msgstr "Індекс модуля SCSI %d лежить поза діапазоном [0..6,8..%u]"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -18045,7 +18045,7 @@ msgstr "Не вдалося знайти задовільного virtiofsd"
 
 #, c-format
 msgid "Unable to find address for parent device '%s'"
-msgstr ""
+msgstr "Не вдалося знайти адресу батьківського пристрою «%s»"
 
 #, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
@@ -18777,7 +18777,7 @@ msgid "Unable to process file with flags %d"
 msgstr "Не вдалося обробити файл з прапорцями %d"
 
 msgid "Unable to query TSC scaling support"
-msgstr ""
+msgstr "Не вдалося опитати підтримку масштабування TSC"
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22769,7 +22769,7 @@ msgstr "неможливо перенести домен з <hostdev mode='subsy
 
 #, c-format
 msgid "cannot migrate a domain with <interface type='%s'>"
-msgstr ""
+msgstr "не вдалося перенести домен з <interface type='%s'>"
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -29516,7 +29516,7 @@ msgstr ""
 
 #, c-format
 msgid "invalid parent device '%s'"
-msgstr ""
+msgstr "некоректний батьківський пристрій «%s»"
 
 #, c-format
 msgid "invalid partition name '%s', expected '%s'"
@@ -31710,7 +31710,7 @@ msgid "missing pagesize argument"
 msgstr "пропущено аргумент розміру сторінки"
 
 msgid "missing parent device"
-msgstr ""
+msgstr "не вказано батьківський пристрій"
 
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
@@ -33690,7 +33690,7 @@ msgstr "os.type не визначено"
 
 #, c-format
 msgid "out of bounds index - count %zu at %zu"
-msgstr ""
+msgstr "індекс поза припустимим діапазоном — відлік %zu на %zu"
 
 msgid "out of memory"
 msgstr "недостатньо пам'яті"
@@ -33955,6 +33955,7 @@ msgstr "Кореневі контролери PCI та PCIE не повинні 
 
 msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
+"для цього типу машини не передбачено підтримки контролерів pcie-expander-bus"
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr "для диска vhostuser не передбачено підтримки вибору"
