@@ -1441,7 +1441,7 @@ fi
 %preun daemon-driver-secret
 %libvirt_daemon_systemd_preun virtsecretd
 
-%posttranstrans daemon-driver-secret
+%posttrans daemon-driver-secret
 %libvirt_daemon_perform_restart virtsecretd
 
 
