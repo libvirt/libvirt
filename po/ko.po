@@ -13,9 +13,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
-"PO-Revision-Date: 2021-08-25 10:23+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
+"PO-Revision-Date: 2021-08-26 14:44+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -1303,22 +1303,22 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-fsinfo의 응답에서 '이름'이 누락"
 
 msgid "'netns' namespace source can only be used with sharenet"
-msgstr "'netns' 명칭공간 자원은 오직 sharenet 에서만 사용가능합니다."
+msgstr "'netns' 명칭공간 원천은 오직 sharenet 에서만 사용 할 수 있습니다"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "'network' 속성은 응답 형태 'network'을 위하여만 유효합니다"
 
 msgid "'nfs' host must use TCP protocol"
-msgstr "'nfs' 호스트는 무조건 TCP 통신규약을 사용해야 합니다."
+msgstr "'nfs' 호스트는 TCP 통신규약을 사용해야 합니다"
 
 msgid "'nfs' protocol is not supported with this QEMU binary"
-msgstr "'nfs'통신규약은 이 QEMU 바이너리에서 지원되지 않습니다."
+msgstr "'nfs' 통신규약은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "'nfs' protocol requires the usage of exactly one host"
-msgstr "'nfs'통신규약은 오직 한명의 호스트의 사용이 필요합니다."
+msgstr "'nfs' 통신규약은 오직 하나의 호스트만 사용해야 합니다"
 
 msgid "'offset' missing in reply of guest-get-timezone"
-msgstr "guest-get-timezone 의 대답에서 'offset'이 누락되었습니다."
+msgstr "guest-get-timezone 의 응답에서 'offset'이 누락되었습니다"
 
 msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus의 대답에서 'online'이 누락되었습니다"
@@ -1746,14 +1746,14 @@ msgid "ACPI index is not supported with this QEMU"
 msgstr "이 QEMU 소프트웨어에서는 '컴퓨터용 전력관리 규정 지수'가 지원되지 않습니다"
 
 msgid "ACPI index is only supported for PCI devices"
-msgstr "'컴퓨터용 전력관리 지수'는 오직 PCI 장비에서만 지원됩니다"
+msgstr "ACPI 지수는 오직 PCI 장치에서만 지원됩니다"
 
 msgid "ACPI requires UEFI on this architecture"
-msgstr ""
+msgstr "ACPI는 이 구조(아키텍쳐)에서 UEFI가 필요합니다"
 
 #, c-format
 msgid "AES256CBC encryption invalid keylen=%zu"
-msgstr ""
+msgstr "AES256CBC 암호화 유효화 하지 않은 kenlen=%zu"
 
 #, c-format
 msgid "AES256CBC initialization vector invalid len=%zu"
@@ -7790,9 +7790,9 @@ msgstr "root를 변경하는 데 실패"
 msgid "Failed to pre-allocate space for file '%s'"
 msgstr "설정 공간 파일 '%s' 열기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to probe capabilities for %s: %s"
-msgstr "기능 적용에 실패: %d"
+msgstr "%s:%s 를 위해 기능을 조사하는데 실패"
 
 #, fuzzy, c-format
 msgid "Failed to probe for format type '%s'"
@@ -7840,9 +7840,9 @@ msgstr "AppArmor 프로파일 목록 '%s' 읽기에 실패"
 msgid "Failed to read PCI config space for %s"
 msgstr "%s에 대한 PIC 설정 공간을 읽는 데 실패했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read RDP port value, rc=%08x"
-msgstr "%s에 대한 PIC 설정 공간을 읽는 데 실패했습니다"
+msgstr "rc=%08x인 RDP 포트 값을 읽는데 실패"
 
 #, c-format
 msgid "Failed to read checkpoint file %s"
@@ -7876,18 +7876,18 @@ msgstr "스냅샷 파일 %s 읽기에 실패"
 
 #, c-format
 msgid "Failed to read system token '%s'"
-msgstr ""
+msgstr "시스템 토큰 '%s'를 읽는데 실패"
 
 msgid "Failed to read the container continue message"
-msgstr "컨테이너 계속 메시지를 읽을 수 없음"
+msgstr "컨테이너가 계속해서 메시지를 읽을 수 없음"
 
 #, c-format
 msgid "Failed to readdir for %s (%d)"
-msgstr "%s (%d)를 위해 읽기 디렉토리로 실패"
+msgstr "%s (%d)를 위한 reddir로 실패"
 
 #, c-format
 msgid "Failed to reattach NVMe for disk target: %s"
-msgstr "디스크 대상: %s에 NVMe를 재연결하는데 실패했습니다"
+msgstr "디스크 대상: %s를 위한 NVMe를 재연결하는데 실패"
 
 #, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
@@ -7944,9 +7944,9 @@ msgstr "기능 제거에 실패 %s: %d"
 msgid "Failed to remove domain managed save image"
 msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove managed save file '%s'"
-msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
+msgstr "관리되는 저장 파일 '%s'를 제거하는데 실패"
 
 #, c-format
 msgid "Failed to remove managed save image for domain '%s'"
@@ -7964,13 +7964,13 @@ msgstr "풀 %s를 생성하는 데 실패"
 msgid "Failed to request maximum NUMA node id"
 msgstr "도메인 %s를 다시 설정하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %d"
-msgstr "풀 %s를 새로고침 하는 데 실패"
+msgstr "포트 %d를 예약하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %zu"
-msgstr "풀 %s를 새로고침 하는 데 실패"
+msgstr "포트 %z를 예약하는데 실패"
 
 #, c-format
 msgid "Failed to reset PCI device: %s"
@@ -8023,9 +8023,9 @@ msgstr "프로세스를 제한하는데 실패했습니다: %s"
 msgid "Failed to resume domain '%d'"
 msgstr "도메인 '%d'를 재시작 하는데 실패하였습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resume domain '%d' with libxenlight"
-msgstr "도메인 %s를 다시 시작하기 실패"
+msgstr "libxenlight와 함께 도메인 `%d`를 재시작 하는데 실패"
 
 #, c-format
 msgid "Failed to resume domain '%s'"
@@ -8052,7 +8052,7 @@ msgid "Failed to retrieve current vcpu count"
 msgstr "현재 가상 CPU(vcpu) 수를 검색하는데 실패"
 
 msgid "Failed to retrieve image data"
-msgstr ""
+msgstr "이미지 자료를 검색하는데 실패"
 
 msgid "Failed to retrieve maximum vcpu count"
 msgstr "최대 가상CPU(vcpu) 수를 검색하는데 실패"
@@ -8089,13 +8089,13 @@ msgstr ""
 msgid "Failed to save '%s' for '%s'"
 msgstr "도메인 %s를 %s에 저장하기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save VM settings, rc=%08x"
-msgstr "도메인 %s를 %s에 저장하기 실패"
+msgstr "rc=%08x VM 설정을 저장하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save domain '%d' with libxenlight"
-msgstr "도메인 %s를 %s에 저장하기 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 저장하는데 실패"
 
 #, c-format
 msgid "Failed to save domain '%s' state"
@@ -8136,9 +8136,9 @@ msgstr "풀 %s를 파괴하는 데 실패"
 msgid "Failed to serialize snapshot"
 msgstr "스냅샷 직렬화에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set %s for %s: value too large"
-msgstr "비밀정보 값 설정 실패"
+msgstr "%s: 값이 너무 커서 %s 설정하는데 실패"
 
 #, c-format
 msgid "Failed to set TLS session priority to %s: %s"
@@ -8148,9 +8148,9 @@ msgstr "TLS 세션 순위를 %s: %s에 대해 설정하는데 실패"
 msgid "Failed to set attributes from %s"
 msgstr "%s에 특성 설정하기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set bridge %s %s via ioctl"
-msgstr "XML 문서에서 브리지 지연 %d을 설정하는데 실패"
+msgstr "ioctl을 통해 브릿지 %s %s를 설정하는데 실패"
 
 #, c-format
 msgid "Failed to set bridge delay %d in xml document"
@@ -8165,11 +8165,11 @@ msgstr "close-on-exec 플래그 '%s'를 설정하는데 실패하였습니다"
 
 #, c-format
 msgid "Failed to set com port %s: does not start with '/dev/nmdm'."
-msgstr ""
+msgstr "com 포트 %s를 설정하는데 실패: `/dev/nmdm`와 함께 시작하지 않습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set credential: %s"
-msgstr "인증 크레덴셜 생성 실패"
+msgstr "인증 설정에 실패: %s"
 
 msgid "Failed to set hostname"
 msgstr "호스트명 설정에 실패하였습니다"
@@ -8190,16 +8190,16 @@ msgstr ""
 msgid "Failed to set master bridge interface name to '%s' in xml document"
 msgstr "xml 문서에서 마스터 브리지 인터페이스 이름을 '%s'로 설정하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
-msgstr "도메인에 대한 메모리 설정 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 위한 최대 메모리를 설정하는데 실패"
 
 msgid "Failed to set memory for domain"
 msgstr "도메인에 대한 메모리 설정 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set memory for domain '%d' with libxenlight"
-msgstr "도메인에 대한 메모리 설정 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 위해 메모리 설정 실패"
 
 #, c-format
 msgid "Failed to set new attached interface name to '%s' in xml document"
@@ -8255,24 +8255,24 @@ msgstr "xml 문서에서 stp 속성을 설정하는데 실패"
 msgid "Failed to set target name: %s"
 msgstr "인터페이스 %s의 시작이 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
-msgstr "새로운 도메인 설명을 설정하는데 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 위해 vcpus를 설정하는데 실패"
 
 msgid "Failed to setup keepalive on connection\n"
 msgstr "연결에 연결유지(keepalive) 구성에 실패하였습니다\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
-msgstr "도메인 %s를 종료하기 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 종료하기 실패"
 
 #, c-format
 msgid "Failed to shutdown domain '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to soft reset VM '%s'. Destroying VM"
-msgstr "VM '%s'의 autostart 실패: %s"
+msgstr "VM '%s'를 소프트 재설정 하는데 실패. VM을 파괴하기"
 
 #, fuzzy, c-format
 msgid "Failed to start QEMU binary %s for probing: %s"
@@ -8338,9 +8338,9 @@ msgstr "SASL 협상을 시작하는 데 실패: %d (%s)"
 msgid "Failed to suspend domain '%d'"
 msgstr "도메인 '%d'를 중지하는데 실패하였습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
-msgstr "도메인 %s를 중지하기 실패"
+msgstr "libxenlight와 함께 도메인 '%d'를 중지하는데 실패"
 
 #, c-format
 msgid "Failed to suspend domain '%s'"
@@ -8354,13 +8354,13 @@ msgstr "%s에 장치 %s를 심볼릭 링크하는데 실패"
 msgid "Failed to take snapshot: %s"
 msgstr "스냅샷 %s 가져오는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to terminate process %lld with SIG%s"
-msgstr "호스트 CPU를 %s와 비교하는 데 실패"
+msgstr "SIG%s와 함께 프로세서 %lld를 종료하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
-msgstr "xml 문서에서 브리지 노드를 생성하는데 실패"
+msgstr "브릿지 '%s' 접두사 %d를 넷매스크로 번역하는데 실패"
 
 #, c-format
 msgid "Failed to translate net prefix %d to netmask"
@@ -8378,17 +8378,17 @@ msgstr "파일 '%s' 자르기에 실패"
 msgid "Failed to truncate pid file '%s'"
 msgstr "pid 파일 '%s' 자르기에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
-msgstr "경로 '%s'인 볼륨을 0 바이트로 줄이는 데 실패했습니다"
+msgstr "경로 '%s'를 %ju 바이트로 볼륨을 자르는데 실패"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to 0 bytes"
 msgstr "경로 '%s'인 볼륨을 0 바이트로 줄이는 데 실패했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unbind PCI device '%s' from %s"
-msgstr "%s에서 장치를 업데이트하는데 실패"
+msgstr "%s에서 PCI 장치 '%s'를 바인딩 해제하는데 실패"
 
 #, c-format
 msgid "Failed to undefine bridge interface %s"
@@ -8458,9 +8458,9 @@ msgstr "%s 최신화에 실패하였습니다"
 msgid "Failed to update %s XML configuration"
 msgstr "%s 설정을 구문 분석하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update '%s' of node mode for target '%s'"
-msgstr "노드 장치 '%s'를 파괴하는 데 실패"
+msgstr "대상 `%s'를 위한 노드 방식의 '%s'를 최신화 하는데 실패"
 
 #, c-format
 msgid "Failed to update device from %s"
@@ -8781,9 +8781,9 @@ msgid ""
 "bus='%u' target='%u' unit='%u'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Found invalid device link '%s' in '%s'"
-msgstr "%s내에 잘못된 노드 장치 포인터"
+msgstr "'%s' 내에 잘못된 장치 연결 '%s'를 찾았습니다"
 
 #, c-format
 msgid "Found unexpected controller model '%s' for disk '%s'"
@@ -9127,9 +9127,9 @@ msgstr ""
 msgid "Hybrid-Suspend"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "HyperV spinlock retry count differs: source: '%u', destination: '%u'"
-msgstr "HyperV spinlock 재시도 수는 4095 보다 작아야 합니다"
+msgstr "HyperV spinlock 재시도 횟수가 다릅니다: 원천: '%u', 대상: '%u'"
 
 msgid "HyperV spinlock retry count must be at least 4095"
 msgstr "HyperV spinlock 재시도 수는 4095 보다 작아야 합니다"
@@ -9145,10 +9145,10 @@ msgstr "제조사 ID가 잘못되었습니다"
 msgid "HyperV vendor_id value must not be more than %d characters."
 msgstr "하이퍼V vendor_id 값은 %d 문자 보다 길 수 없습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Hyperv features are not supported for architecture '%s' or machine type '%s'"
-msgstr "스트립트는 유형 %s의 인터페이스에서 지원되지 않음"
+msgstr "Hyperv 기능은 구조(아키텍쳐)'%s' 또는 장비 유형 '%s'를 지원하지 않습니다"
 
 #, fuzzy
 msgid "I/O APIC tuning is not supported by this QEMU binary"
@@ -9170,9 +9170,9 @@ msgstr "스크린샷을 찍을 화면의 ID"
 msgid "IDE bus index %d out of [0..1] range"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "IDE controller index %d out of [0] range"
-msgstr "대상 컨트롤러 인덱스 %d가 소스 %d와 일치하지 않음"
+msgstr "[0] 범위 밖의 IDE 제어기 지수 %d"
 
 msgid "IDE controllers are unsupported for this QEMU binary or machine type"
 msgstr ""
@@ -16420,7 +16420,7 @@ msgid "Type='%s' unsupported for <interface type='vhostuser'>"
 msgstr "<virtualport> 요소는 <interface type='%s'>에 대해 지원되지 않음"
 
 msgid "UEFI requires ACPI on this architecture"
-msgstr ""
+msgstr "UEFI는 이 구조(아키텍쳐)에서 ACPI가 필요합니다"
 
 msgid "UNIX disks URI does not include path"
 msgstr ""
