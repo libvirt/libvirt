@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-07-27 13:35+0000\n"
-"PO-Revision-Date: 2021-07-02 14:04+0000\n"
+"PO-Revision-Date: 2021-08-01 18:04+0000\n"
 "Last-Translator: Ricky Tigg <ricky.tigg@gmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.1\n"
+"X-Generator: Weblate 4.7.2\n"
 
 msgid ""
 "\n"
@@ -2688,7 +2688,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create socket directory '%s'"
-msgstr ""
+msgstr "Pistorasiahakemistoa '%s' ei voi luoda"
 
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3595,7 +3595,7 @@ msgstr "Toimenpiteen teko epäonnistui"
 
 #, c-format
 msgid "Compiled against library: libvirt %d.%d.%d\n"
-msgstr ""
+msgstr "Koottu vastaan kirjastoa: libvirt %d.%d.%d\n"
 
 msgid "Compiled with support for:"
 msgstr ""
@@ -8330,7 +8330,7 @@ msgstr ""
 
 #, c-format
 msgid "File '%s' does not exist"
-msgstr ""
+msgstr "Tiedostoa '%s' ei ole olemassa"
 
 #, c-format
 msgid "File '%s' has unknown type"
@@ -13608,7 +13608,7 @@ msgstr "Aja sammutus kohdetoimialueella."
 
 #, c-format
 msgid "Running against daemon: %d.%d.%d\n"
-msgstr "Käynnissä daemonia vastaan: %d.%d.%d\n"
+msgstr "Ajetaan vastaan daemonia: %d.%d.%d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
@@ -13998,7 +13998,7 @@ msgid "Set the number of seconds to wait for a response from the guest agent."
 msgstr ""
 
 msgid "Setting TSEG size is not supported with this QEMU binary"
-msgstr ""
+msgstr "TSEG:n koon määrittämistä ei tueta tällä QEMU-binaarilla"
 
 msgid ""
 "Setting device info for character devices is not supported by vz driver."
@@ -14660,7 +14660,7 @@ msgid "Target CPU arch %s does not match source %s"
 msgstr "Kohdeprosessoriarkkitehtuuri %s ei vastaa lähdettä %s"
 
 msgid "Target CPU cache does not match source"
-msgstr ""
+msgstr "Kohdeprosessorin välimuisti ei vastaa lähdettä"
 
 #, c-format
 msgid "Target CPU check %s does not match source %s"
@@ -14668,7 +14668,7 @@ msgstr "Kohdeprosessoritarkistus %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU cores %d does not match source %d"
-msgstr "Kohdeprosessoriytimet %s eivät vastaa lähdettä %s"
+msgstr "Kohdeprosessoriytimet %d eivät vastaa lähdettä %d"
 
 #, c-format
 msgid "Target CPU dies %d does not match source %d"
@@ -14683,11 +14683,11 @@ msgstr "Kohdeprosessoriominaisuus %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU feature count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdesuorittimen ominaisuuksien määrä %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target CPU feature policy %s does not match source %s"
-msgstr ""
+msgstr "Kohdesuorittimen ominaisuuskäytäntö %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target CPU mode %s does not match source %s"
@@ -14780,7 +14780,7 @@ msgid "Target USB redirection filter rule count %zu does not match source %zu"
 msgstr ""
 
 msgid "Target USB vendor ID does not match source"
-msgstr ""
+msgstr "Kohde-USB:n toimittajan tunnus ei vastaa lähdettä"
 
 msgid "Target USB version does not match source"
 msgstr ""
@@ -14816,14 +14816,14 @@ msgstr ""
 
 #, c-format
 msgid "Target channel type %s does not match source %s"
-msgstr ""
+msgstr "Kohdekanavatyyppi %s ei vastaa lähdettä %s"
 
 msgid "Target chassis does not match source"
 msgstr ""
 
 #, c-format
 msgid "Target console type %s does not match source %s"
-msgstr ""
+msgstr "Kohdekonsolin tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target controller index %d does not match source %d"
@@ -14839,7 +14839,7 @@ msgstr ""
 
 #, c-format
 msgid "Target controller type %s does not match source %s"
-msgstr ""
+msgstr "Kohdeohjaimen tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
@@ -14933,7 +14933,7 @@ msgid "Target domain IOMMU device caching mode '%s' does not match source '%s'"
 msgstr ""
 
 msgid "Target domain IOMMU device count does not match source"
-msgstr ""
+msgstr "Kohdetoimialueen IOMMU-laitteiden määrä ei vastaa lähdettä"
 
 #, c-format
 msgid "Target domain IOMMU device eim value '%s' does not match source '%s'"
@@ -14954,7 +14954,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain OS type %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen käyttöjärjestelmän tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain RNG device count %zu does not match source %zu"
@@ -15029,7 +15029,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain memory balloon count %d does not match source %d"
-msgstr ""
+msgstr "Kohdetoimialueen muistin ilmapallojen määrä %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target domain memory device count %zu does not match source %zu"
@@ -15054,10 +15054,13 @@ msgstr "Kohdetoimialueen paniikkilaitteen lasku %zu ei vastaa lähdettä %zu"
 #, c-format
 msgid "Target domain parallel port count %zu does not match source %zu"
 msgstr ""
+"Kohdetoimialueen rinnakkaisporttien lukumäärä %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain redirected devices count %zu does not match source %zu"
 msgstr ""
+"Kohdetoimialueen uudelleenohjattujen laitteiden lukumäärä %zu ei vastaa "
+"lähdettä %zu"
 
 msgid "Target domain requested genid does not match source"
 msgstr ""
@@ -15068,7 +15071,7 @@ msgstr "Kohdetoimialueen sarjaportin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain shared memory device count %zu does not match source %zu"
-msgstr ""
+msgstr "Kohdetoimialueen jaetun muistilaitteen määrä %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain smartcard count %zu does not match source %zu"
@@ -15098,7 +15101,7 @@ msgid "Target domain virt type %s does not match source %s"
 msgstr ""
 
 msgid "Target domain vsock device count does not match source"
-msgstr ""
+msgstr "Kohdetoimialueen vsock-laitteiden määrä ei vastaa lähdettä"
 
 #, c-format
 msgid "Target domain vsock device model '%s' does not match source '%s'"
@@ -15120,7 +15123,7 @@ msgstr ""
 
 #, c-format
 msgid "Target host device mode %s does not match source %s"
-msgstr ""
+msgstr "Kohdeisäntälaitteen tila %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
@@ -15128,7 +15131,7 @@ msgstr ""
 
 #, c-format
 msgid "Target hub device type %s does not match source %s"
-msgstr ""
+msgstr "Kohdeisäntälaitteen tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target input device bus %s does not match source %s"
@@ -15185,7 +15188,7 @@ msgstr ""
 
 #, c-format
 msgid "Target network card model %s does not match source %s"
-msgstr ""
+msgstr "Kohdeverkkokorttimalli %s ei vastaa lähdettä %s"
 
 #, fuzzy
 msgid "Target not found"
@@ -15215,7 +15218,7 @@ msgstr ""
 
 #, c-format
 msgid "Target serial type %s does not match source %s"
-msgstr ""
+msgstr "Kohdesarjatyyppi %s ei vastaa lähdettä %s"
 
 msgid "Target shared memory MSI configuration doesn't match source"
 msgstr "Kohdennettu jaettu muisti MSI-kokoonpano ei vastaa lähdettä"
@@ -15241,11 +15244,11 @@ msgstr "Kohde-äänikorttimallin lasku %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target sysinfo %s %s does not match source %s"
-msgstr ""
+msgstr "Kohde-sysinfo %s %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target sysinfo %s does not match source %s"
-msgstr ""
+msgstr "Kohde-sysinfo %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target sysinfo base board count '%zu' does not match source '%zu'"
@@ -15272,18 +15275,18 @@ msgstr ""
 
 #, c-format
 msgid "Target video card 2d accel %u does not match source %u"
-msgstr ""
+msgstr "Kohdevideokortti 2d accel %u ei vastaa lähdettä %u"
 
 #, c-format
 msgid "Target video card 3d accel %u does not match source %u"
-msgstr ""
+msgstr "Kohdevideokortti 3d accel %u ei vastaa lähdettä %u"
 
 msgid "Target video card acceleration does not match source"
 msgstr ""
 
 #, c-format
 msgid "Target video card heads %u does not match source %u"
-msgstr ""
+msgstr "Kohdenäytönohjaimen päät %u eivät vastaa lähdettä %u"
 
 #, c-format
 msgid "Target video card model %s does not match source %s"
@@ -15291,19 +15294,19 @@ msgstr "Kohdevideokorttimallin %s'ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target video card ram %u does not match source %u"
-msgstr ""
+msgstr "Kohdenäytönohjaimen RAM %u ei vastaa lähdettä %u"
 
 #, c-format
 msgid "Target video card vgamem %u does not match source %u"
-msgstr ""
+msgstr "Kohdenäytönohjaimen vgamem %u ei vastaa lähdettä %u"
 
 #, c-format
 msgid "Target video card vram %u does not match source %u"
-msgstr ""
+msgstr "Kohdevideokortti vRAM %u ei vastaa lähdettä %u"
 
 #, c-format
 msgid "Target video card vram64 %u does not match source %u"
-msgstr ""
+msgstr "Kohdevideokortti vRAM64 %u ei vastaa lähdettä %u"
 
 #, c-format
 msgid "Target watchdog model %s does not match source %s"
@@ -17840,11 +17843,11 @@ msgstr ""
 
 #, c-format
 msgid "Unable to set qos configuration on port %s"
-msgstr ""
+msgstr "qos-kokoonpanon asettaminen portilla %s ei onnistu"
 
 #, c-format
 msgid "Unable to set queue configuration on port %s"
-msgstr ""
+msgstr "Jonon määritystä ei voi määrittää portilla %s"
 
 msgid "Unable to set socket reuse addr flag"
 msgstr ""
@@ -18309,7 +18312,7 @@ msgstr "Tuntematon suorittimen toimittaja %s"
 
 #, c-format
 msgid "Unknown Command '%i'"
-msgstr ""
+msgstr "Tuntematon komento: '%i'"
 
 #, c-format
 msgid "Unknown IP address data source %d"
@@ -19091,7 +19094,7 @@ msgstr "Käytetään API:a: %s %d.%d.%d\n"
 
 #, c-format
 msgid "Using library: libvirt %d.%d.%d\n"
-msgstr "Käyttetään kirjastoa:: libvirt %d.%d.%d\n"
+msgstr "Käytetään kirjastoa:: libvirt %d.%d.%d\n"
 
 msgid "Uuid is null"
 msgstr ""
@@ -26968,6 +26971,7 @@ msgstr ""
 msgid ""
 "interface %s - multiqueue is not supported for network interfaces of type %s"
 msgstr ""
+"liitäntä %s - moniriviä ei tueta verkkoliitännöissä, joiden tyyppi on %s"
 
 #, c-format
 msgid ""
@@ -29952,7 +29956,7 @@ msgid "missing storage capability type for '%s'"
 msgstr ""
 
 msgid "missing storage pool host name"
-msgstr ""
+msgstr "tallennusvaraston isäntänimi puuttuu"
 
 msgid "missing storage pool source adapter"
 msgstr ""
@@ -37379,7 +37383,7 @@ msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
 msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "vhostuser-levyä ei tueta tällä QEMU-binaarilla"
 
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
