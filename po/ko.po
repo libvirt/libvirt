@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-30 02:13+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-08-30 14:30+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -2275,7 +2275,7 @@ msgstr "%s 아키텍처의 하이퍼바이저에서 지원하지 않는 CPU 기�
 
 #, c-format
 msgid "CPU flags requested but can't determine default CPU for arch %s"
-msgstr ""
+msgstr "CPU 플래그를 요청하였으나 저장소 %s 에 대한 디폴트 CPU를 알아내지 못하였습니다"
 
 msgid "CPU frequency:"
 msgstr "CPU 주파수:"
@@ -2543,16 +2543,16 @@ msgstr "영역정의에서 디스크 '%s'를 찾을 수 없습니다"
 
 #, c-format
 msgid "Can't find network boot device for index: %d"
-msgstr ""
+msgstr "색인 %d에서 네트워크 부팅 장비를 찾을 수 없습니다"
 
 msgid "Can't find prlctl command in the PATH env"
-msgstr ""
+msgstr "env 경로에서 prlctl 명령어를 찾을 수 없습니다"
 
 #, c-format
 msgid ""
 "Can't get the UUID of the file to be attached as harddisk/dvd/floppy: %s, rc="
 "%08x"
-msgstr ""
+msgstr "파일 harddisk/dvd/floppy: %s, rc=%08x에 첨부할 UUID를 찾을 수 없습니다"
 
 #, fuzzy
 msgid "Can't initialize Parallels SDK"
@@ -2581,12 +2581,12 @@ msgid "Can't parse prlctl output"
 msgstr "plctlt 출력 구문 분석 실패하였습니다"
 
 msgid "Can't perform authentication: Authentication callback not provided"
-msgstr ""
+msgstr "인증을 수행할 수 없습니다: 인증 회신이 제공되지 않습니다"
 
 msgid ""
 "Can't perform keyboard-interactive authentication: Authentication callback "
 "not provided "
-msgstr ""
+msgstr "키보드-상호작용 인증을 수행할 수 없습니다: 인증 회신이 제공되지 않았습니다 "
 
 #, c-format
 msgid "Can't read %s"
@@ -2596,7 +2596,7 @@ msgid "Can't rename domain to itself"
 msgstr "스스로 도메인 이름을 재지정 할 수 없습니다"
 
 msgid "Can't set 0 processors for a VM"
-msgstr ""
+msgstr "가상머신 (VM)을 위한 0 프로세서들을 설정할 수 없습니다"
 
 msgid "Can't set soft limit without hard limit"
 msgstr "하드제한 없이 소프트 제한 설정을 할 수 없습니다"
@@ -2613,7 +2613,7 @@ msgstr "호스트 uuid를 설정 할 수 없음"
 msgid ""
 "Can't shrink capacity below current capacity unless shrink flag explicitly "
 "specified"
-msgstr ""
+msgstr "특별한 지시가 없는 한 현재 수용량보다 더 낮게 수용량을 줄일수 없습니다"
 
 msgid ""
 "Cancelable task is blocked by an unanswered question but cancellation failed"
@@ -2635,7 +2635,7 @@ msgstr "저장소 파일 '%s'의 백업 파일 '%s'을 접근 할 수 없습니�
 #, c-format
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
-msgstr ""
+msgstr "저장소 파일 '%s' (as uid:%u, gid:%u)의 백업 파일 '%s'에 접근할수 없습니다"
 
 #, c-format
 msgid "Cannot access storage file '%s'"
@@ -2643,17 +2643,17 @@ msgstr "저장소 파일 '%s'를 접근 할 수 없습니다"
 
 #, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr ""
+msgstr "(UID: %u, GID: %u로써) 저장소 파일에 접근할 수 없습니다"
 
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr "CURL 핸들을 멀티 핸들로 두 번 추가 할 수 없습니다"
 
 #, c-format
 msgid "Cannot add multicast MAC %s on '%s' interface"
-msgstr ""
+msgstr "멀티캐스트 MAC %s를 '%s' 접속기에 추가할 수 없습니다"
 
 msgid "Cannot add pid to non-existing resctrl group"
-msgstr ""
+msgstr "존재하지 않는 resctrl 그룹에 pid를 추가할 수 없습니다"
 
 msgid "Cannot add uninitialized CURL handle to a multi handle"
 msgstr "초기화되지 않은 CURL 핸들을 멀티 핸들로 추가 할 수 없습니다"
@@ -2664,18 +2664,18 @@ msgstr "기존 비밀정보의 개인용 플래그를 변경할 수 없음"
 
 #, c-format
 msgid "Cannot alter an existing nmem_nodes distances set for node: %zu"
-msgstr ""
+msgstr "노드 %zu에 대한 이미 존재하는 nmem_nodes 설정을 변경할 수 없습니다"
 
 msgid "Cannot attach disk until init PID is known"
-msgstr ""
+msgstr "초기 PID를 알때까지 디스크를 첨부할 수 없습니다"
 
 msgid "Cannot attach hostdev until init PID is known"
-msgstr ""
+msgstr "초기 PID를 찾을때까지 hostdev를 첨부할 수 없습니다"
 
 #, c-format
 msgid ""
 "Cannot automatically add a new PCI bus for a device with connect flags %.2x"
-msgstr ""
+msgstr "%.2x 연결된 장비에 자동으로 새로운 PCI 버스를 추가할 수 없습니다"
 
 #, c-format
 msgid "Cannot boot from device %s"
@@ -2691,7 +2691,7 @@ msgstr "QEMU 바이너리 %s를 확인할 수 없음"
 
 #, c-format
 msgid "Cannot check QEMU module directory %s"
-msgstr ""
+msgstr "QEMU %s 모듈 디렉토리를 확인할 수 없습니다"
 
 #, fuzzy
 msgid "Cannot check address family on this platform"
@@ -2721,7 +2721,7 @@ msgid "Cannot convert socket address to string: %s"
 msgstr "문자열에 소켓 주소를 전환 할 수 없습니다: %s"
 
 msgid "Cannot convert wide character string back to multi-byte domain name"
-msgstr ""
+msgstr "넓은 문자열들을 다중-바이트 도메인 이름으로 다시 변환시킬 수 없습니다"
 
 #, c-format
 msgid "Cannot create %s"
@@ -2738,7 +2738,7 @@ msgid "Cannot create a vboxSnapshotXmlHardDisk"
 msgstr "autostart 디렉터리 %s를 생성할 수 없음"
 
 msgid "Cannot create a vboxSnapshotXmlSnapshotPtr"
-msgstr ""
+msgstr "vboxSnapshotXmlSnapshotPtr를 생성할 수 없습니다"
 
 #, c-format
 msgid "Cannot create autostart directory %s"
@@ -2746,7 +2746,7 @@ msgstr "autostart 디렉터리 %s를 생성할 수 없음"
 
 #, c-format
 msgid "Cannot create daemon common directory '%s'"
-msgstr ""
+msgstr "데몬의 공용 디렉토리 '%s'를 생성할 수 없습니다"
 
 #, c-format
 msgid "Cannot create directory '%s'"
@@ -2765,11 +2765,11 @@ msgstr "resctrl 디렉터리 '%s'를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Cannot create socket '%s'"
-msgstr ""
+msgstr "소켓 '%s'를 생성할 수 없습니다"
 
 #, c-format
 msgid "Cannot create socket directory '%s'"
-msgstr ""
+msgstr "소켓 디렉토리 '%s'를 생성할 수 없습니다"
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -2817,7 +2817,7 @@ msgstr "FD %d를 중복 할 수 없습니다"
 
 #, c-format
 msgid "Cannot duplicate fd %d onto fd %d"
-msgstr ""
+msgstr "파일디스크 (fd) %d를 파일디스크 (fd) %d에 복사할 수 없습니다"
 
 #, fuzzy
 msgid "Cannot enable close-on-exec flag"
@@ -2828,7 +2828,7 @@ msgstr ""
 "다른 도메인에 영향을 주지 않고 일반 자동 시작 옵션을 사용할 수 없습니다"
 
 msgid "Cannot extract CPU definition from domain capabilities XML"
-msgstr ""
+msgstr "CPU 해상도를 도메인 XML에서 추출할 수 없습니다"
 
 #, fuzzy
 msgid "Cannot extract cache nodes under cachetune"
@@ -2852,7 +2852,7 @@ msgstr "실행중인 %s 하이퍼바이저 버전을 추출 할 수 없음\n"
 
 #, c-format
 msgid "Cannot find %s - Possibly the package isn't installed"
-msgstr ""
+msgstr "%s를 찾을 수 없습니다 - 아마 그 꾸러미는 설치되어있지 않습니다"
 
 #, fuzzy, c-format
 msgid "Cannot find '%s' in node device database"
