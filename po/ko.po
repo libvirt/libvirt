@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-26 16:26+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-08-28 19:04+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -740,8 +740,7 @@ msgid ""
 "%s with index %d is configured for a NUMA node (%d) not present in the "
 "domain's <cpu><numa> array (%zu)"
 msgstr ""
-"색인 %d인 %s는 없는 NUMA 노드(%d)를 위해 구성되었습니다 (도메인 <cpu><numa> "
-"배열(%zu)에서)"
+"%s은 (색인 %d인) 없는 NUMA 노드(%d)를 위해 구성되었습니다 (도메인 <cpu><numa> 배열(%zu)에 존재하지 않는)"
 
 #, c-format
 msgid ""
@@ -795,9 +794,7 @@ msgstr ""
 msgid ""
 "%s: Error converting address '%s' with prefix %u to network-address in route "
 "definition"
-msgstr ""
-"%s: 경로 정의에서 접두사 %u인 주소 '%s'를 네트워크-주소로 전환 중에 오류가 발"
-"생하였습니다"
+msgstr "%s: 주소 '%s' 변환 중에 오류가 발생하였습니다 (경로 정의에서 접두사 %u를 네트워크-주소로)"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
@@ -1795,8 +1792,7 @@ msgstr "현재 실행중인 도메인 작업을 강제 중단합니다"
 
 #, c-format
 msgid "Accept SSH host key with hash '%s' for host '%s:%d' (%s/%s)?"
-msgstr ""
-"호스트'%s:%d' (%s/%s)에 hash '%s'와 함께 ssh 호스트 키를 허용하시겠습니까?"
+msgstr "hash '%s'와 ssh 호스트 키를 허용하시겠습니까 (호스트'%s:%d' (%s/%s)를 위해)?"
 
 msgid "Access denied"
 msgstr "접근 거부됨"
@@ -1848,7 +1844,7 @@ msgid "After dumping core, failed to resume domain '%d' with libxenlight"
 msgstr "코어를 버린후부터 도메인 '%d'를 libxenlight와 재개하는것을 실패했습니다"
 
 msgid "Ain't nobody heard of that much cache level"
-msgstr "그 누구도 그렇게 높은 레벨의 캐시를 들은적이 없습니다"
+msgstr "그 누구도 그렇게 높은 캐쉬 수준에 대해 들은 적이 없습니다"
 
 msgid "All identities provided by the SSH Agent were rejected"
 msgstr "SSH에이전트로부터 받은 모든 신원은 거절되었습니다"
@@ -1859,7 +1855,7 @@ msgid ""
 msgstr "신원검증 정보와 함께 제공받은 모든 인증 방법은 서버로부터 거절되었습니다"
 
 msgid "Allocate or free some pages in the pool for NUMA cell."
-msgstr "NUMA cell 공간을 위해 새로 저장공간을 할당하거나 기존 공간을 삭제하십시오"
+msgstr "NUMA cell 공간을 위해 새로 저장공간을 할당하거나 기존 공간을 삭제하십시오."
 
 msgid "Allocation"
 msgstr "할당"
@@ -1874,11 +1870,10 @@ msgid "An error occurred, but the cause is unknown"
 msgstr "오류가 발생하였으나 원인은 알지 못합니다"
 
 msgid "An event loop implementation must be registered"
-msgstr ""
+msgstr "이벤트 루프 구현은 등록되어야 합니다"
 
-#, fuzzy
 msgid "An explicit disk format must be specified"
-msgstr "init 바이너리를 지정해야 합니다"
+msgstr "명시적인 디스크 형식은 지정해야 합니다"
 
 #, c-format
 msgid "Ancestor model %s not found for CPU model %s"
@@ -1897,38 +1892,37 @@ msgstr "어떤 유형에 'type' 속성이 누락되어 있습니다"
 msgid ""
 "Append, reset or remove specified key from the authorized keys file for "
 "given user"
-msgstr ""
+msgstr "제공된 사용자를 위해 허용된 키에서 지정된 키를 추가, 재설정 하거나 제거합니다"
 
 msgid ""
 "Argument 'cellid' in memnode element must correspond to existing guest's "
 "NUMA cell"
-msgstr ""
+msgstr "memnode 요소에서 인수 'cellid'는 기존 게스트 NUMA cell과 일치해야 합니다"
 
 #, c-format
 msgid "Argument 'node' %zu outranges defined number of NUMA nodes"
-msgstr ""
+msgstr "인수 '노드' %zu가 정의된 NUMA 노드 수를 초과합니다"
 
 msgid "Arguments must be non null"
-msgstr ""
+msgstr "인수는 null이 아니어야 합니다"
 
 msgid ""
 "Arguments under memnode element do not correspond with existing guest's NUMA "
 "cell"
-msgstr ""
+msgstr "memnode 요소 하에서 인수는 기존 게스트 NUMA cell과 일치하지 않습니다"
 
 msgid "At least one NUMA node has to have CPUs"
-msgstr ""
+msgstr "적어도 하나 이상의 NUMA 노드는 CPU를 가져야 합니다"
 
 msgid "At least one PTY console is required"
-msgstr ""
+msgstr "적어도 하나 이상의 PTY 콘솔이 필요합니다"
 
-#, fuzzy
 msgid "At least one cgroup controller is required"
-msgstr "알 수 없는 cgroup 컨트롤러 '%s'"
+msgstr "적어도 하나 이상의 cgroup 제어기가 필요합니다"
 
 msgid ""
 "At least one numa node has to be configured when enabling memory hotplug"
-msgstr ""
+msgstr "적어도 하나 이상의 numa 노드는 메모리 핫플러그를 활성화 할 때에 구성되어야 합니다"
 
 #, c-format
 msgid ""
@@ -3079,7 +3073,7 @@ msgstr "%s을 열 수 없음"
 
 #, c-format
 msgid "Cannot parse %srequest stat '%s'"
-msgstr "요청 상태 '%s'을 구문 분석 할 수 없음"
+msgstr "구문 분석 할 수 없음 (%s 요청 상태 '%s'를)"
 
 #, c-format
 msgid "Cannot parse %sstat '%s'"
@@ -3956,9 +3950,9 @@ msgstr "메모리 매개 변수를 변경할 수 없음: %s"
 msgid "Could not change scheduler parameters: %s"
 msgstr "스케줄러 매개 변수를 변경할 수 없음: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Could not chown on swtpm logfile %s"
-msgstr "로그 파일을 종료할 수 없음 "
+msgstr "swtpm 로그파일 %s에서 chown 할 수 없음"
 
 #, c-format
 msgid "Could not complete transfer: %s (%d)"
@@ -9324,9 +9318,9 @@ msgstr ""
 msgid "Ignoring guests on $uri URI"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Image file for %s %s '%s' has unsupported suffix, expecting '%s'"
-msgstr "볼륨 이름 '%s'에 지원되지 않는 접미사가 있습니다, '.vmdk'가 필요"
+msgstr "%s %s '%s' 를 위한 이미지 파일은 접미사는 지원되지 않습니다 (예상되는 '%s'이고)"
 
 msgid "In use"
 msgstr "사용 중"
@@ -9347,9 +9341,9 @@ msgstr ""
 msgid "Incoming migration"
 msgstr "오프라인 마이그레이션"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Incomplete vnuma configuration for vnode %zu"
-msgstr "네트워크를 위한 XML 설정을 편집"
+msgstr "vnode %zu를 위한 불완전한 vnuma 구성"
 
 #, c-format
 msgid ""
@@ -9392,9 +9386,9 @@ msgstr "maxerrors가 너무 큽니다"
 msgid "Initialization of %s state driver failed: %s"
 msgstr "%s 상태 드라이버의 초기화에 실패했습니다: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Initialization of mandatory %s state driver skipped"
-msgstr "%s 상태 드라이버의 초기화에 실패했습니다: %s"
+msgstr "필수 %s 상태 드라이버의 초기화를 건너뛰었습니다"
 
 #, fuzzy
 msgid "Inject NMI to the guest"
@@ -9428,9 +9422,9 @@ msgstr "QEMU 바이너리는 %s을 지원하지 않음"
 msgid "Installed bhyve binary does not support defining CPU topology"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Instantiation of rules failed on interface '%s'"
-msgstr "%s 상태 드라이버의 초기화에 실패했습니다: %s"
+msgstr "연결장치 '%s'에서 실패한 규칙의 인스턴스화"
 
 msgid "Interface"
 msgstr "인터페이스"
@@ -9503,13 +9497,13 @@ msgstr ""
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
 msgstr "vlan <tag> 요소에서 잘못된 \"nativeMode='%s'\""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
-msgstr "잘못된 모드 속성 '%s'"
+msgstr "유효하지 않은 %s 속성 'vcpus' 값 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid %s image format specified in configuration file"
-msgstr "설정 파일 구문 분석 실패"
+msgstr "구성 파일에서 지정된 유효하지 않은 %s 이미지 형식"
 
 msgid "Invalid 'cpu.max' data."
 msgstr "잘못된 'cpu.max' 자료."
@@ -9744,9 +9738,9 @@ msgstr "잘못된 fromConfig 값: %s"
 msgid "Invalid bandwidth %u"
 msgstr "%u에 잘못된 대역폭"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid boolean value for field '%s'"
-msgstr "시간 초과에 대한 값이 잘못됨"
+msgstr "입력란 '%s'에 잘못된 불린(boolean) 값"
 
 #, c-format
 msgid "Invalid bridge mac address '%s' in network '%s'"
@@ -9852,22 +9846,22 @@ msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
 
 #, c-format
 msgid "Invalid device %s driver file %s is not a symlink"
-msgstr ""
+msgstr "잘못된 장치 %s 드라이버 파일 %s는 심볼릭 링크가 아닙니다"
 
 #, c-format
 msgid "Invalid device %s iommu_group file %s is not a symlink"
-msgstr ""
+msgstr "잘못된 장치 %s iommu_group 파일 %s는 심볼릭 링크가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid device type supplied: %s"
-msgstr "'%s'에 대해 잘못된 USB 장치 번호가 지정되었습니다"
+msgstr "잘못된 장치 유형이 제공되었습니다: %s"
 
 msgid "Invalid disk bus in definition"
-msgstr ""
+msgstr "정의에서 잘못된 디스크 버스"
 
 #, c-format
 msgid "Invalid disk read error policy: '%s'"
-msgstr ""
+msgstr "잘못된 디스크 읽기 오류 정책: '%s'"
 
 #, fuzzy, c-format
 msgid "Invalid dns enable setting '%s' in network '%s'"
@@ -9958,7 +9952,7 @@ msgid "Invalid file descriptor while waiting for monitor"
 msgstr ""
 
 msgid "Invalid firmware name"
-msgstr ""
+msgstr "잘못된 펌웨어 이름"
 
 #, c-format
 msgid "Invalid floppy device name: %s"
@@ -10064,13 +10058,13 @@ msgstr "도메인 연결장치의 <actual> 요소에서 잘못된 macTableManage
 msgid "Invalid macTableManager setting '%s' in network '%s'"
 msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid macTableManager setting '%s' in network port"
-msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
+msgstr "네트워크 포트에서 잘못된 macTableManager 설정 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid managed setting '%s' in network port"
-msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
+msgstr "네트워크 포트에서 잘못 관리된 설정 '%s'"
 
 msgid "Invalid match attribute for CPU specification"
 msgstr "CPU 설정에서 매치 특성이 잘못되었습니다"
@@ -10103,9 +10097,9 @@ msgstr "잘못된 파티션 유형"
 msgid "Invalid mode attribute '%s'"
 msgstr "잘못된 모드 속성 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid mode setting '%s' in network port"
-msgstr "네트워크 '%s'에서 잘못된 ipv6 설정 '%s'"
+msgstr "네트워크 포트에서 잘못된 방법 설정 '%s'"
 
 #, c-format
 msgid "Invalid mode: %s"
@@ -10404,9 +10398,9 @@ msgstr "'%s'에 잘못된 값 '%s'"
 msgid "Invalid value '%s' for VMX entry '%s'"
 msgstr "네트워크 '%s'에서 잘못된 주소 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
-msgstr "잘못된 모드 속성 '%s'"
+msgstr "잘못된 값 '%s' (요소 또는 속성 '%s'를 위한)"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'."
@@ -10422,13 +10416,13 @@ msgstr ""
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for field '%s': expected double"
-msgstr "시간 초과에 대한 값이 잘못됨"
+msgstr "입력부분 '%s'에 잘못된 값: 예상치의 두 배"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for field '%s': expected int"
-msgstr "시간 초과에 대한 값이 잘못됨"
+msgstr "입력부분 '%s'에 잘못된 값: 예상치 int"
 
 #, c-format
 msgid "Invalid value for field '%s': expected long long"
@@ -10446,9 +10440,9 @@ msgstr ""
 msgid "Invalid value for number of CPUs to show"
 msgstr "시간 초과에 대한 값이 잘못됨"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for option %s"
-msgstr "시간 초과에 대한 값이 잘못됨"
+msgstr "선택(옵션) %s에 잘못된 값"
 
 #, fuzzy
 msgid "Invalid value for start CPU"
@@ -10461,21 +10455,21 @@ msgstr "시간 초과에 대한 값이 잘못됨"
 msgid "Invalid value in migratable attribute: '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of %d for I/O weight"
-msgstr "시간 초과에 대한 값이 잘못됨"
+msgstr "입출력 가중치에 대한 %d의 잘못된 값"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'cpuset': %s"
-msgstr "'private'에 대해 잘못된 값"
+msgstr "'cpuset'의 잘못된 값: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'nodemask': %s"
-msgstr "'ephemeral'에 대해 잘못된 값"
+msgstr "'nodemask'의 잘못된 값: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'nodeset': %s"
-msgstr "'ephemeral'에 대해 잘못된 값"
+msgstr "'nodeset'의 잘못된 값: %s"
 
 #, c-format
 msgid "Invalid vectors: %i"
@@ -23318,21 +23312,21 @@ msgstr "인수를 구문 분석할 수 없음"
 msgid "could not parse read bytes sec %s"
 msgstr "읽기 바이트 초 %s를 구문 분석 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse read iops sec %s"
-msgstr "중량 %s을 구문 분석할 수 없음 "
+msgstr "읽기 iops sec %s를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "could not parse weight %s"
 msgstr "가중치%s를 구문 분석 할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse write bytes sec %s"
-msgstr "중량 %s을 구문 분석할 수 없음 "
+msgstr "쓰기 bytes sec %s 를 구문 분석 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "could not parse write iops sec %s"
-msgstr "중량 %s을 구문 분석할 수 없음 "
+msgstr "쓰기 iops sec %s를 구문 분석 할 수 없습니다"
 
 msgid "could not read xml file"
 msgstr "xml 파일을 읽을 수 없습니다"
