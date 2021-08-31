@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -3764,9 +3764,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Không thể gán địa chỉ cho đĩa '%s'"
@@ -4264,6 +4261,10 @@ msgstr "Không thể lấy số của các Miền đã Định nghĩa, rc=%08x"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "Không thể lấy số của các Miền, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7089,10 +7090,6 @@ msgstr "không thể tạo uuid"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "Không thể lấy số nhỏ %s"
-
-#, fuzzy
-msgid "Failed to get PCI SYSFS file"
-msgstr "Thất bại khi thiết lập lại thiết bị PCI: %s"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14213,6 +14210,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr ""
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "Chỉ mục đơn vị SCSI %d vượt miền [0..6,8..15]"
 
@@ -16220,10 +16221,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Kiểu đĩa này không thể tháo nóng được"
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr ""
-
 msgid "Thread(s) per core:"
 msgstr "Luồng mỗi nhân:"
 
@@ -17270,6 +17267,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr ""
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18080,6 +18081,9 @@ msgstr "tần số bộ đếm giờ không hợp lệ"
 #, fuzzy, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Thất bại khi xử lý thiết bị SCSI với đường dẫn sysfs '%s'"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22020,6 +22024,10 @@ msgstr "không thể lấy các khả năng CPU chủ"
 
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
+msgstr ""
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
 msgstr ""
 
 #, fuzzy, c-format
@@ -28730,6 +28738,10 @@ msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
 
 #, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr ""
 
@@ -30940,6 +30952,9 @@ msgstr "thành phần uuid sai dạng thức cung cấp cho '%s'"
 msgid "missing pagesize argument"
 msgstr "thiếu thành phần dung lượng"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32924,7 +32939,7 @@ msgid "os.type is not defined"
 msgstr "Bộ chứa chưa được tạo"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
+msgid "out of bounds index - count %zu at %zu"
 msgstr ""
 
 msgid "out of memory"
@@ -33184,8 +33199,7 @@ msgstr ""
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39431,6 +39445,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "Thất bại khi thiết lập lại thiết bị PCI: %s"
 
 #, fuzzy
 #~ msgid "missing launch security type"

@@ -1324,7 +1324,9 @@ msgid "'online' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus의 대답에서 'online'이 누락되었습니다"
 
 msgid "'parent' for vHBA not specified, and cannot find one on this host"
-msgstr "vHBA에서 'parent'가 명시되지 않았으며, 'parent'를 이 호스트에서 찾을 수 없습니다"
+msgstr ""
+"vHBA에서 'parent'가 명시되지 않았으며, 'parent'를 이 호스트에서 찾을 수 없습"
+"니다"
 
 msgid "'partition' missing in reply of guest-get-disks"
 msgstr "guest-get-disks의 대답에서 'partition'이 누락되었습니다"
@@ -1349,12 +1351,15 @@ msgid ""
 "'reconnect' attribute  unsupported 'server' mode for <interface "
 "type='vhostuser'>"
 msgstr ""
-"'server'모드의 <interface type='vhostuser'>에서 'reconnect'(재접속) 속성은 지원되지 않습니다"
+"'server'모드의 <interface type='vhostuser'>에서 'reconnect'(재접속) 속성은 지"
+"원되지 않습니다"
 
 msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
-msgstr "'restrictive' 방식은 memnode 요소가 메모리 요소에서 'restrictive'일때 필요합니다"
+msgstr ""
+"'restrictive' 방식은 memnode 요소가 메모리 요소에서 'restrictive'일때 필요합"
+"니다"
 
 #, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
@@ -1365,7 +1370,8 @@ msgstr "'sgio'는 아직 전반적인 SCSI장비들에서 지원이 되지 않�
 
 #, c-format
 msgid "'sibling_id %d' does not refer to a valid cell within NUMA 'cell id %d'"
-msgstr "'sibling_id %d'는 NUMA 'cell id %d'의 유효한 기억장치를 의미하지 않습니다"
+msgstr ""
+"'sibling_id %d'는 NUMA 'cell id %d'의 유효한 기억장치를 의미하지 않습니다"
 
 msgid "'socket' attribute is valid only for listen type 'socket'"
 msgstr "'socket' 요소는 오직 듣기(listen)상태에 있는 소켓에만 유효합니다"
@@ -1374,7 +1380,8 @@ msgid "'ssh' protocol is not yet supported"
 msgstr "'ssh' 통신규약은 아직 지원되지 않습니다"
 
 msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy'(시작정책설정)은 오직 파일 (file) 종류의 용량에서만 지원됩니다"
+msgstr ""
+"'startupPolicy'(시작정책설정)은 오직 파일 (file) 종류의 용량에서만 지원됩니다"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "'target'은 존재하지 않는 NUMA 노드를 의미합니다"
@@ -1397,7 +1404,8 @@ msgstr "guest-get-users의 대답에서 'user'(사용자)가 누락되었습니�
 
 #, c-format
 msgid "'value %d' is invalid for 'sibling id %d' under NUMA 'cell id %d'"
-msgstr "'value %d'은 NUMA 'cell id %d' 아래에 있는 'sibling id %d에서 사용불가합니다"
+msgstr ""
+"'value %d'은 NUMA 'cell id %d' 아래에 있는 'sibling id %d에서 사용불가합니다"
 
 msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "'vhostuser'는 'virtio' 장치에서만 지원됩니다"
@@ -1564,8 +1572,8 @@ msgid ""
 "--async requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
-"--async는 --timeout (시간초과), --wait (대기), --pivot (중심), or --keep-overlay ("
-"덧입혀서 보관하기)에서 최소 한가지 요소가 필요합니다"
+"--async는 --timeout (시간초과), --wait (대기), --pivot (중심), or --keep-"
+"overlay (덧입혀서 보관하기)에서 최소 한가지 요소가 필요합니다"
 
 msgid "--descendants requires --from"
 msgstr "--descendants는 --from이 필요합니다"
@@ -1580,29 +1588,34 @@ msgid ""
 "--listen parameter not permitted with systemd activation sockets, see 'man "
 "libvirtd' for further guidance"
 msgstr ""
-"--listen 매개변수는 systemd 활성화 소켓에서 허가되지 않습니다. 더 많은 정보를 위해서는 'man libvirtd' "
-"가이드라인을 참고하십시오"
+"--listen 매개변수는 systemd 활성화 소켓에서 허가되지 않습니다. 더 많은 정보"
+"를 위해서는 'man libvirtd' 가이드라인을 참고하십시오"
 
 msgid "--max-unauth-clients must be less than or equal to --max-clients"
 msgstr ""
-"--max-unauth-clients (최대 불허가 클라이언트) 수는 --max-clients(최대 허가 클라이언트) 수와 같거나 "
-"작아야합니다"
+"--max-unauth-clients (최대 불허가 클라이언트) 수는 --max-clients(최대 허가 클"
+"라이언트) 수와 같거나 작아야합니다"
 
 msgid "--min-workers must be less than or equal to --max-workers"
-msgstr "--min-workers (최소 근로자)의 수는 --max-workers (최대 근로자)의 수와 같거나 작아야 합니다"
+msgstr ""
+"--min-workers (최소 근로자)의 수는 --max-workers (최대 근로자)의 수와 같거나 "
+"작아야 합니다"
 
 msgid "--source-protocol option requires --sourcetype network"
 msgstr "--source-protocol 옵션은 --sourcetype 네트워크를 필요로합니다"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --finish"
-msgstr "--verbose는 최소 --timeout, --wait, --pivot, or --finish 중 하나를 필요로합니다"
+msgstr ""
+"--verbose는 최소 --timeout, --wait, --pivot, or --finish 중 하나를 필요로합니"
+"다"
 
 msgid ""
 "--verbose requires at least one of --timeout, --wait, --pivot, or --keep-"
 "overlay"
 msgstr ""
-"--verbose는 최소 --timeout, --wait, --pivot, or --keep-overlay 중 하나를 필요로합니다"
+"--verbose는 최소 --timeout, --wait, --pivot, or --keep-overlay 중 하나를 필요"
+"로합니다"
 
 msgid "/proc/net/dev: Interface not found"
 msgstr "/proce/net/dev: 인터페이스를 찾을 수 없음"
@@ -1626,13 +1639,15 @@ msgid ""
 "<address>, <interface>, and <pf> elements of <forward> in network %s are "
 "mutually exclusive"
 msgstr ""
-"network %s안에있는 <forward> 요소의 <address>, <interface>, and <pf>는 서로 호환되지 않습니다"
+"network %s안에있는 <forward> 요소의 <address>, <interface>, and <pf>는 서로 "
+"호환되지 않습니다"
 
 msgid "<config> element is currently supported only with 'rbd' disks"
 msgstr "<config>요소는 현재 오직 'rdb' 디스크에서만 지원됩니다"
 
 msgid "<domainbackup> must specify TCP port for now"
-msgstr "현재로써 <domainbackup> (도메인 백업)은 TCP포트를 반드시 지정해야합니다"
+msgstr ""
+"현재로써 <domainbackup> (도메인 백업)은 TCP포트를 반드시 지정해야합니다"
 
 #, c-format
 msgid "<forward dev='%s'> must match first <interface dev='%s'/> in network %s"
@@ -1641,10 +1656,13 @@ msgstr ""
 "합니다"
 
 msgid "<hostdev> attribute 'display' is only supported with model='vfio-pci'"
-msgstr "<hostdev>의 'display'(표시) 요소는 오직 'vfio-pci' 모델에서만 지원됩니다"
+msgstr ""
+"<hostdev>의 'display'(표시) 요소는 오직 'vfio-pci' 모델에서만 지원됩니다"
 
 msgid "<reservations/> allowed only for lun devices"
-msgstr "<reservations/>은 오직 '논리장치번호를 가지고 있는 장비' 에서만 허가되었습니다"
+msgstr ""
+"<reservations/>은 오직 '논리장치번호를 가지고 있는 장비' 에서만 허가되었습니"
+"다"
 
 msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "<snapshot> (복구) 요소는 현재 'rdb' 디스크에서만 지원됩니다"
@@ -1657,13 +1675,17 @@ msgstr "<uuid>가 비밀 정보 파일 이름 '%s'와 일치하지 않습니다"
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses IP "
 "forwarding"
-msgstr "<virtualport type='%s'>는 IP 포워딩을 사용하는 네트워크 '%s'에서 지원되지 않습니다"
+msgstr ""
+"<virtualport type='%s'>는 IP 포워딩을 사용하는 네트워크 '%s'에서 지원되지 않"
+"습니다"
 
 #, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses a bridge "
 "device"
-msgstr "<virtualport type='%s'> 는 브리지 장비를 사용하는 네트워크 '%s'장비에서 지원되지 않습니다"
+msgstr ""
+"<virtualport type='%s'> 는 브리지 장비를 사용하는 네트워크 '%s'장비에서 지원"
+"되지 않습니다"
 
 #, c-format
 msgid ""
@@ -1678,7 +1700,8 @@ msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses an SR-IOV "
 "Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%s'>는 PCI를 통해 SR-IOV 가상 기능을 사용하는 network '%s' 에서 지원되지 않습니다"
+"<virtualport type='%s'>는 PCI를 통해 SR-IOV 가상 기능을 사용하는 network "
+"'%s' 에서 지원되지 않습니다"
 
 #, c-format
 msgid "<virtualport> element unsupported for <interface type='%s'>"
@@ -1696,7 +1719,9 @@ msgstr ""
 msgid ""
 "<vlan> element specified for network %s, whose type doesn't support vlan "
 "configuration"
-msgstr "<vlan> 요소는 vlan 환경설정을 지원하지 않는 네트워크 %s를 위해 명시되어있습니다"
+msgstr ""
+"<vlan> 요소는 vlan 환경설정을 지원하지 않는 네트워크 %s를 위해 명시되어있습니"
+"다"
 
 msgid "? - print this help"
 msgstr "? -print 이 도움말을 출력합니다"
@@ -1737,13 +1762,16 @@ msgstr "이미 비밀장비가 등록되어 있습니다"
 msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
-msgstr "암호화 구성을 하려면 한개의 <secret type='passphrase'...> 형식의 암호화종류를 지정해야합니다"
+msgstr ""
+"암호화 구성을 하려면 한개의 <secret type='passphrase'...> 형식의 암호화종류"
+"를 지정해야합니다"
 
 msgid "A storage driver is already registered"
 msgstr "저장소 드라이버는 이미 등록되었습니다"
 
 msgid "ACPI index is not supported with this QEMU"
-msgstr "이 QEMU 소프트웨어에서는 '컴퓨터용 전력관리 규정 지수'가 지원되지 않습니다"
+msgstr ""
+"이 QEMU 소프트웨어에서는 '컴퓨터용 전력관리 규정 지수'가 지원되지 않습니다"
 
 msgid "ACPI index is only supported for PCI devices"
 msgstr "ACPI 지수는 오직 PCI 장치에서만 지원됩니다"
@@ -3901,9 +3929,6 @@ msgstr "디스크 정의를 할당 할 수 없음"
 msgid "Could not allocate disk definition"
 msgstr "디스크 정의를 할당 할 수 없음"
 
-msgid "Could not append definition to domain"
-msgstr "정의를 도메인체 확장 할 수 없음"
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "디스크 '%s'에 주소를 할당할 수 없음"
@@ -4382,6 +4407,10 @@ msgstr "rc=%08x 정의된 도메인의 번호를 구할 수 없음"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "rc=%08x인 도메인 번호를 가져 올 수 없습니다"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7133,10 +7162,6 @@ msgstr "uuid 생성에 실패하였습니다"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "% 부 번호를 가져 오는데 실패"
-
-#, fuzzy
-msgid "Failed to get PCI SYSFS file"
-msgstr "PCI 장치를 리셋하는 데 실패: %s"
 
 #, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14142,6 +14167,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "알 수 없는 호스트 장치 소스 주소 유형 '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr ""
 
@@ -16122,10 +16151,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "디스크 장치 타입 '%s'가 핫플러그 될 수 없습니다"
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr ""
-
 msgid "Thread(s) per core:"
 msgstr "코어당 스레드:"
 
@@ -17136,6 +17161,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr ""
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -17916,6 +17945,9 @@ msgstr "쿼타를 구문 분석할 수 없습니다"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "플래그 %d 에 파일을 처리 할 수없습니다"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -21785,6 +21817,10 @@ msgstr "호스트 CPU 기능을 가져올 수 없습니다"
 
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
+msgstr ""
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
 msgstr ""
 
 #, c-format
@@ -28421,6 +28457,10 @@ msgstr "CPU 토플로지에 'cores' 특성이 빠져있습니다"
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "CPU 토플로지에 'cores' 특성이 빠져있습니다"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "예기치 않은 유형 '%s'의 %s로 호출합니다, '%s'가 예상됩니다 "
@@ -30614,6 +30654,9 @@ msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
 msgid "missing pagesize argument"
 msgstr "인수가 누락되어 있음"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32573,7 +32616,7 @@ msgid "os.type is not defined"
 msgstr "컨테이너가 정의되지 않았습니다"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
+msgid "out of bounds index - count %zu at %zu"
 msgstr ""
 
 msgid "out of memory"
@@ -32832,8 +32875,7 @@ msgstr ""
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39072,6 +39114,13 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Could not append definition to domain"
+#~ msgstr "정의를 도메인체 확장 할 수 없음"
+
+#, fuzzy
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "PCI 장치를 리셋하는 데 실패: %s"
 
 #, fuzzy
 #~ msgid "missing launch security type"

@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-02-26 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Assamese (http://www.transifex.com/projects/p/libvirt/"
@@ -3864,9 +3864,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "ঠিকনাক ডিস্ক '%s' লে ধাৰ্য্য কৰিব নোৱাৰি"
@@ -4356,6 +4353,10 @@ msgstr "বিৱৰিত ডমেইনসমূহৰ সংখ্যা প
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "ডমেইনসমূহৰ সংখ্যা প্ৰাপ্ত কৰিব পৰা নগল, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7157,9 +7158,6 @@ msgstr "uuid নিৰ্মাণ কৰোঁতে ব্যৰ্থ"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "%s গৌণ সংখ্যা প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "PCI SYSFS ফাইল প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14272,6 +14270,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "অজ্ঞাত হস্ট ডিভাইচ উৎস ঠিকনা ধৰণ '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "SCSI একক সূচী %d [0..6,8..15] বিস্তাৰৰ বাহিৰ"
 
@@ -16334,11 +16336,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "এই ধৰণৰ ডিস্ক হট আনপ্লাগ কৰিব নোৱাৰি"
 
-#, fuzzy
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "libxenlight এ ডিস্ক ড্ৰাইভাৰ %s সমৰ্থন নকৰে"
-
 msgid "Thread(s) per core:"
 msgstr "প্ৰতি কোৰে থ্ৰেড সংখ্যা:"
 
@@ -17351,6 +17348,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "পোৰ্টলে বান্ধীবলে অক্ষম"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18113,6 +18114,9 @@ msgstr "কুটা বিশ্লেষণ কৰিবলে অক্ষম
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "ফ্লেগসমূহ %dৰ সৈতে ফাইল প্ৰক্ৰিয়া কৰিবলে অক্ষম"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22014,6 +22018,10 @@ msgstr "%d স্নেপশ্বটসমূহৰ সৈতে ডমেই�
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "%d স্নেপশ্বটসমূহৰ সৈতে ডমেইন প্ৰব্ৰজন কৰিব নোৱাৰি"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28656,6 +28664,10 @@ msgstr "CPU টোপোলজিত 'core' নামক গুণ অনুপ�
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "CPU টোপোলজিত 'core' নামক গুণ অনুপস্থিত"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "প্ৰাচল '%s' ৰ বাবে অবৈধ ধৰণ '%s', প্ৰত্যাশিত '%s'"
@@ -30824,6 +30836,9 @@ msgstr "প্ৰব্ৰজন তথ্যত সন্ধানহীন uui
 msgid "missing pagesize argument"
 msgstr "সন্ধানহীন তৰ্ক"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32791,8 +32806,8 @@ msgid "os.type is not defined"
 msgstr "ডোমেইন বৰ্তমানে সক্ৰিয় নহয়"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "সীমাৰ বাহিৰ সূচী - %zu add %zu ত গণনা %zu"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "মেমৰিৰ অপৰ্যাপ্ত"
@@ -33051,8 +33066,7 @@ msgstr "pci-root আৰু pcie-root নিয়ন্ত্ৰকসমূহৰ 
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "pci-root আৰু pcie-root নিয়ন্ত্ৰকসমূহৰ এটা ঠিকনা থাকিব নোৱাৰিব"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39316,6 +39330,17 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "PCI SYSFS ফাইল প্ৰাপ্ত কৰিবলে ব্যৰ্থ"
+
+#, fuzzy
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "libxenlight এ ডিস্ক ড্ৰাইভাৰ %s সমৰ্থন নকৰে"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "সীমাৰ বাহিৰ সূচী - %zu add %zu ত গণনা %zu"
 
 #, fuzzy
 #~ msgid "missing launch security type"

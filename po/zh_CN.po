@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -3913,9 +3913,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "无法为磁盘 '%s' 分配地址"
@@ -4405,6 +4402,10 @@ msgstr "无法获取定义的域数量：rc=%08x"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "无法获取域数量，rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7154,9 +7155,6 @@ msgstr "生成 uuid 失败"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "获取 %s 监控程序数失败"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "获取 PCI SYSFS 文件失败"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14195,6 +14193,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "未知主机设备源地址类型 '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "SCSI 单位索引 %d 超出 [0..6,8..15] 范围"
 
@@ -16228,10 +16230,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "无法热插拔此类磁盘"
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "libxenlight 的这个版本不支持磁盘 'discard' 选项"
-
 msgid "Thread(s) per core:"
 msgstr "每个内核的线程数："
 
@@ -17238,6 +17236,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "无法捆绑到端口"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -17998,6 +18000,9 @@ msgstr "无法解析配额"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "无法使用标签 %d 处理文件"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -21884,6 +21889,10 @@ msgstr "无法使用 %d 快照迁移域"
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "无法使用 %d 快照迁移域"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28477,6 +28486,10 @@ msgstr "CPU 拓扑中缺少 ‘cores’ 属性"
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "CPU 拓扑中缺少 ‘cores’ 属性"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "参数 '%s' 的无效类型 '%s'，应为 '%s'。"
@@ -30641,6 +30654,9 @@ msgstr "迁移数据中缺少 uuid 元素"
 msgid "missing pagesize argument"
 msgstr "缺少参数"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32593,8 +32609,8 @@ msgid "os.type is not defined"
 msgstr "没有定义容器"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "超出捆绑索引范围 - %zu 指定计数 %zu，添加 %zu"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "内存溢出"
@@ -32853,8 +32869,7 @@ msgstr "pci-root 和 pcie-root 控制器应含有索引 0"
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "pci-root 和 pcie-root 控制器不应有任何地址"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39083,6 +39098,16 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "获取 PCI SYSFS 文件失败"
+
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "libxenlight 的这个版本不支持磁盘 'discard' 选项"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "超出捆绑索引范围 - %zu 指定计数 %zu，添加 %zu"
 
 #, fuzzy
 #~ msgid "missing launch security type"

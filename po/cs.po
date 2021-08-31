@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -3976,9 +3976,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Nelze přiřadit adresu k disku „%s“"
@@ -4464,6 +4461,10 @@ msgstr "Nedaří se získat počet Defined Domains, rc=%08x"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "Nepodařilo se získat počet domén, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7242,9 +7243,6 @@ msgstr "Nepodařilo se vytvořit nikde se neopakující identifikátor"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "Nepodařilo se získat minor číslo %s"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "Nepodařilo se získat soubor PCI SYSFS"
 
 #, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14326,6 +14324,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "Je třeba, aby SCSI host zařízení používalo typ adresy 'drive'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "Pořadové číslo SCSI jednotky %d mimo rozsah [0..6,8..15]"
 
@@ -16393,10 +16395,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Tento typ disku nelze odpojovat za chodu"
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "Tato verze libxenlight nepodporuje předávání volby disku 'discard'"
-
 msgid "Thread(s) per core:"
 msgstr "Vláken na jádro:"
 
@@ -17399,6 +17397,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "Nedaří se najít volný virtio-serial prot"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr "Nedaří se najít volný port v rozsahu „%s“ (%d-%d)"
 
@@ -18125,6 +18127,9 @@ msgstr "Nedaří se zkoumat frekvenci čítače časového razítka (TSC)"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Nedaří se zpracovat soubor s příznaky %d"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22021,6 +22026,10 @@ msgstr "není možné migrovat doménu s %d zachycenými stavy"
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "není možné migrovat doménu s %d zachycenými stavy"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28620,6 +28629,10 @@ msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "V topologii procesoru chybí atribut „cores“ (jádra)"
 
 #, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "neplatný název oddílu „%s“, očekáváno „%s“"
 
@@ -30753,6 +30766,9 @@ msgstr ""
 msgid "missing pagesize argument"
 msgstr "chybí argument velikost stránky (pagesize)"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32702,8 +32718,8 @@ msgid "os.type is not defined"
 msgstr "není definován typ operačního systému"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "pořadové číslo mimo hranice – počet %zu na %zu přidat %zu"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "nedostatek paměti"
@@ -32965,11 +32981,8 @@ msgstr "řadiče pci-root a pcie-root by měly mít pořadové číslo 0"
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "řadiče pci-root a pcie-root by neměly mít adresu"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
-"řadič pcie-expander-bus je podporován pouze na typech strojů, založených na "
-"q35"
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
@@ -39240,6 +39253,22 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "Nepodařilo se získat soubor PCI SYSFS"
+
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "Tato verze libxenlight nepodporuje předávání volby disku 'discard'"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "pořadové číslo mimo hranice – počet %zu na %zu přidat %zu"
+
+#~ msgid ""
+#~ "pcie-expander-bus controllers are only supported on q35-based machinetypes"
+#~ msgstr ""
+#~ "řadič pcie-expander-bus je podporován pouze na typech strojů, založených "
+#~ "na q35"
 
 #~ msgid "missing launch security type"
 #~ msgstr "chybí typ zabezpečení spouštění"

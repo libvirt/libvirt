@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -3863,9 +3863,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Could not assign address to disk '%s'"
@@ -4361,6 +4358,10 @@ msgstr "Could not get number of Defined Domains, rc=%08x"
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "Could not get number of Domains, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7150,9 +7151,6 @@ msgstr "failed to generate uuid"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "Failed to get %s minor number"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "Failed to get PCI SYSFS file"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14293,6 +14291,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "unknown host device source address type '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "SCSI unit index %d out of [0..6,8..15] range"
 
@@ -16368,11 +16370,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "This type of disk cannot be hot unplugged"
 
-#, fuzzy
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "libxenlight does not support disk driver %s"
-
 msgid "Thread(s) per core:"
 msgstr "Thread(s) per core:"
 
@@ -17385,6 +17382,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "Unable to bind to port"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18148,6 +18149,9 @@ msgstr "Unable to parse quota"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Unable to process file with flags %d"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22047,6 +22051,10 @@ msgstr "cannot migrate domain with %d snapshots"
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "cannot migrate domain with %d snapshots"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28687,6 +28695,10 @@ msgstr "Missing 'cores' attribute in CPU topology"
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "Missing 'cores' attribute in CPU topology"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "invalid type '%s' for parameter '%s', expected '%s'"
@@ -30861,6 +30873,9 @@ msgstr "missing uuid element in migration data"
 msgid "missing pagesize argument"
 msgstr "missing argument"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32836,8 +32851,8 @@ msgid "os.type is not defined"
 msgstr "Container is not defined"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "out of bounds index - count %zu at %zu add %zu"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "out of memory"
@@ -33096,8 +33111,7 @@ msgstr "pci-root and pcie-root controllers should have index 0"
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "pci-root and pcie-root controllers should not have an address"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39371,6 +39385,17 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "Failed to get PCI SYSFS file"
+
+#, fuzzy
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "libxenlight does not support disk driver %s"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "out of bounds index - count %zu at %zu add %zu"
 
 #, fuzzy
 #~ msgid "missing launch security type"

@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -3870,9 +3870,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "വിലാസം '%s' ഡിസ്കിലേക്കു് ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -4365,6 +4362,10 @@ msgstr "നിഷ്കര്‍ഷിച്ച ഡൊമെയിനുകള�
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "ഡൊമെയിനുകളുടെ എണ്ണം ലഭ്യമായില്ല, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7179,9 +7180,6 @@ msgstr "uuid തയ്യാറാക്കുന്നതില്‍ പരാ
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "%s ചെറിയ നംബര്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "പിസിഐ സിസ്എഫ്എസ് ഫയല്‍ കാണുന്നതില്‍ പരാജയം"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14336,6 +14334,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "അപരിചിതമായ ഹോസ്റ്റ് ഡിവൈസ് സോഴ്സ് വിലാസ തരം '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "എസ്‌സിഎസ്ഐ യൂണിറ്റ് സൂചിക %d [0..6,8..15] പരിധിയ്ക്കു് പുറത്തു്"
 
@@ -16406,11 +16408,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ഈ തരത്തിലുള്ള ഡിസ്ക് ഹോട്ട് അണ്‍പ്ലഗ്ഗ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "libxenlight ഉപകരണ പ്രവര്‍ത്തകം %sനെ പിന്തുണക്കുന്നില്ല"
-
 msgid "Thread(s) per core:"
 msgstr "ഓരോ കോറിലും ഉളള ത്രെഡ്:"
 
@@ -17427,6 +17424,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "പോര്‍ട്ടിലേക്കു് ബൈന്‍ഡ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18192,6 +18193,9 @@ msgstr "കോട്ടാ പാഴ്സ് ചെയ്യുവാന്‍ 
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "%d കൊടികളുള്ള ഫയല്‍ കൈകാര്യം ചെയ്യാന്‍ സാധിയ്ക്കുന്നില്ല"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22104,6 +22108,10 @@ msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുമായി ഡ�
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "%d സ്നാപ്പ്ഷോട്ടുകളുമായി ഡൊമെയിന്‍ നീക്കുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28759,6 +28767,10 @@ msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യ
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "കോര്‍സ്‌ (cores) സവിശേഷം സി.പി.യു. ടോപ്പോളജിയില്‍ ഇല്ല"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "'%2$s' പരാമീറ്ററിനു് '%1$s' എന്ന അസാധുവായ തരം, പ്രതീക്ഷിച്ചതു് '%3$s'"
@@ -30934,6 +30946,9 @@ msgstr "നീക്കുന്ന ഡേറ്റയില്‍ uuid എല�
 msgid "missing pagesize argument"
 msgstr "ആര്‍ഗ്യുമെന്റ് ലഭ്യമല്ല"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32905,8 +32920,8 @@ msgid "os.type is not defined"
 msgstr "കണ്ടെയിനര്‍ നിഷ്കര്‍ഷിച്ചിട്ടില്ല"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "പരിധിയ്ക്കുപുറത്തുള്ള സൂചികകള്‍ - എണ്ണം %zu, %zu-ല്‍, %zu ചേര്‍ക്കുക"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "മെമ്മറി ലഭ്യമല്ല"
@@ -33165,8 +33180,7 @@ msgstr "pci-root, pcie-root കണ്ട്രോളറുകള്‍ക്ക�
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "pci-root, pcie-root കണ്ട്രോളറുകള്‍ക്കു് വിലാസം പാടില്ല"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39437,6 +39451,17 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "പിസിഐ സിസ്എഫ്എസ് ഫയല്‍ കാണുന്നതില്‍ പരാജയം"
+
+#, fuzzy
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "libxenlight ഉപകരണ പ്രവര്‍ത്തകം %sനെ പിന്തുണക്കുന്നില്ല"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "പരിധിയ്ക്കുപുറത്തുള്ള സൂചികകള്‍ - എണ്ണം %zu, %zu-ല്‍, %zu ചേര്‍ക്കുക"
 
 #, fuzzy
 #~ msgid "missing launch security type"

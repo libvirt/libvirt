@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2020-09-29 12:11+0000\n"
 "Last-Translator: Olesya Gerasimenko <gammaray@basealt.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -4071,9 +4071,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "Не удалось присвоить адрес диску «%s»"
@@ -4553,6 +4550,10 @@ msgstr "Не удалось получить число определяемых
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "Не удалось получить число доменов (rc=%08x)"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 msgid "Could not get process id of swtpm"
 msgstr "Не удалось получить идентификатор процесса swtpm"
@@ -7325,9 +7326,6 @@ msgstr "Не удалось сгенерировать UUID"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "Не удалось получить дополнительный номер устройства %s"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "Не удалось получить файл SYSFS PCI"
 
 #, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14485,6 +14483,10 @@ msgstr ""
 "устройство SCSI основной системы должно использовать тип адреса «drive»"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "Индекс модуля SCSI %d выходит за пределы диапазона [0..6,8..15]"
 
@@ -16610,11 +16612,6 @@ msgstr "У этого снимка имеются дочерние. Удалит
 msgid "This type of disk cannot be hot unplugged"
 msgstr "Этот тип устройства не может быть автоматически подключен."
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr ""
-"Эта версия libxenlight не поддерживает передачу параметра диска «discard»"
-
 msgid "Thread(s) per core:"
 msgstr "Потоков на ядро:"
 
@@ -17614,6 +17611,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "Не удалось найти подходящий virtiofsd"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr "Не удалось найти неиспользуемый порт в диапазоне «%s» (%d-%d)"
 
@@ -18339,6 +18340,9 @@ msgstr "Не удалось проверить частоту TSC"
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "Не удалось обработать файл с флагами %d"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22293,6 +22297,10 @@ msgstr "невозможно перенести домен с <hostdev mode='cap
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "невозможно перенести домен с <hostdev mode='subsystem' type='%s'>"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28897,6 +28905,10 @@ msgstr ""
 "недопустимый или отсутствующий атрибут decode/host в модели процессора %s"
 
 #, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "недопустимое имя раздела «%s», ожидалось «%s»"
 
@@ -31037,6 +31049,9 @@ msgstr "элемент uuid в данных миграции отсутству�
 msgid "missing pagesize argument"
 msgstr "отсутствует аргумент pagesize"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32985,8 +33000,8 @@ msgid "os.type is not defined"
 msgstr "тип операционной системы не определён"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "индекс выходит за пределы диапазона:  %zu в %zu плюс %zu"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "недостаточно памяти"
@@ -33245,9 +33260,8 @@ msgstr "контроллеры pci-root и pcie-root должны быть с р
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "контроллеры pci-root и pcie-root должны быть без адреса"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
-msgstr "контроллеры pcie-expander-bus поддерживаются только для типа машин q35"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
+msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
 msgstr ""
@@ -39589,6 +39603,22 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "Не удалось получить файл SYSFS PCI"
+
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr ""
+#~ "Эта версия libxenlight не поддерживает передачу параметра диска «discard»"
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "индекс выходит за пределы диапазона:  %zu в %zu плюс %zu"
+
+#~ msgid ""
+#~ "pcie-expander-bus controllers are only supported on q35-based machinetypes"
+#~ msgstr ""
+#~ "контроллеры pcie-expander-bus поддерживаются только для типа машин q35"
 
 #~ msgid "missing launch security type"
 #~ msgstr "отсутствует тип защиты запуска"

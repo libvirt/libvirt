@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2020-06-24 14:36+0000\n"
 "Last-Translator: Akarshan Biswas <akarshan.biswas@gmail.com>\n"
 "Language-Team: Bengali (India) <https://translate.fedoraproject.org/projects/"
@@ -3787,9 +3787,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "'%s' এর জন্য পেরেন্ট ডিভাইস খুঁজে পাওয়া যায়নি"
@@ -4289,6 +4286,10 @@ msgstr "ডোমেন পুনরারম্ভ করা যায়নি
 #, fuzzy, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "ডোমেন পুনরারম্ভ করা যায়নি: %s"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7084,10 +7085,6 @@ msgstr "uuid নির্মাণ করতে ব্যর্থ"
 #, fuzzy, c-format
 msgid "Failed to get %s minor number"
 msgstr "ডিস্ক সংক্রান্ত তথ্য প্রাপ্ত করতে ব্যর্থ"
-
-#, fuzzy
-msgid "Failed to get PCI SYSFS file"
-msgstr "PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14212,6 +14209,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "অজানা হোস্ট ডিভাইস সোর্স ঠিকানা ধরন '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr ""
 
@@ -16241,10 +16242,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "'%s' ডিস্ক ডিভাইসের ধরন হট-প্লাগ করা সম্ভব নয়"
 
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr ""
-
 msgid "Thread(s) per core:"
 msgstr "প্রতি কোরে থ্রেড সংখ্যা:"
 
@@ -17284,6 +17281,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr ""
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18089,6 +18090,9 @@ msgstr "অবৈধ টাইমার ফ্রিকোয়েন্সি"
 #, fuzzy, c-format
 msgid "Unable to process file with flags %d"
 msgstr "ক্লাস অাইডি পার্জ করতে ব্যর্থ '%s'"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22023,6 +22027,10 @@ msgstr "হোস্ট CPU-র ক্ষমতা প্রাপ্ত কর�
 
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
+msgstr ""
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
 msgstr ""
 
 #, fuzzy, c-format
@@ -28745,6 +28753,10 @@ msgstr "CPU টোপোলজির মধ্যে 'core' নামক বৈ�
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "CPU টোপোলজির মধ্যে 'core' নামক বৈশিষ্ট্য অনুপস্থিত"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "অবৈধ ipv6 সেটিং '%s', '%s' নেটওয়ার্কে"
@@ -30947,6 +30959,9 @@ msgstr "'%s'-র জন্য uuid স্বত্ত্বা বৈধ নয়"
 msgid "missing pagesize argument"
 msgstr "ক্ষমতার স্বত্ত্বা অনুপস্থিত"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32934,7 +32949,7 @@ msgid "os.type is not defined"
 msgstr "ধারণকারী নির্ধারিত হয়নি"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
+msgid "out of bounds index - count %zu at %zu"
 msgstr ""
 
 msgid "out of memory"
@@ -33193,8 +33208,7 @@ msgstr ""
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39474,6 +39488,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#, fuzzy
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "PCI ডিভাইস পুনরায় নির্ধারণ করতে ব্যর্থ: %s"
 
 #, fuzzy
 #~ msgid "missing launch security type"

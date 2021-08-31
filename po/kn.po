@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -3932,9 +3932,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "'%s' ಡಿಸ್ಕಿಗೆ ವಿಳಾಸವನ್ನು ನಿಯೋಜಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -4428,6 +4425,10 @@ msgstr "ವಿವರಿಸಲಾದ ಡೊಮೇನ್‌ಗಳ ಸಂಖ್ಯ�
 #, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "ಡೊಮೇನ್‌ಗಳ ಸಂಖ್ಯೆಯನ್ನು ಪಡೆಯಲಾಗಿಲ್ಲ, rc=%08x"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7261,9 +7262,6 @@ msgstr "uuid ಅನ್ನು ಉತ್ಪಾದಿಸುವಲ್ಲಿ ವಿ�
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "'%s' ಅಪ್ರಮುಖ ಸಂಖ್ಯೆಯನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
-
-msgid "Failed to get PCI SYSFS file"
-msgstr "PCI SYSFS ಕಡತವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲತೆ"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14477,6 +14475,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "ಅಜ್ಞಾತವಾದ ಆತಿಥೇಯ ಸಾಧನ ವಿಳಾಸದ ಬಗೆ '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr "SCSI ಘಟಕ ಸೂಚಿ %d ವ್ಯಾಪ್ತಿಯ [0..6,8..15] ಹೊರಗಿದೆ"
 
@@ -16566,11 +16568,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "ಈ ಬಗೆಯ ಡಿಸ್ಕ್ ಅನ್ನು ಕಳಚಿಹಾಕಲು(ಅನ್‌ಪ್ಲಗ್) ಸಾಧ್ಯವಿಲ್ಲ"
 
-#, fuzzy
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "ಡಿಸ್ಕ್ ಚಾಲಕ %s ಅನ್ನು libxenlight ಬೆಂಬಲಿಸುವುದಿಲ್ಲ "
-
 msgid "Thread(s) per core:"
 msgstr "ಪ್ರತಿ ಮುಖ್ಯ ಭಾಗದ ಎಳೆ(ಗಳು):"
 
@@ -17586,6 +17583,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr "ಸಂಪರ್ಕಸ್ಥಾನದೊಂದಿಗೆ ಬೈಂಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18351,6 +18352,9 @@ msgstr "ಕೋಟಾವನ್ನು ಪಾರ್ಸ್ ಮಾಡಲಾಗಿಲ�
 #, c-format
 msgid "Unable to process file with flags %d"
 msgstr "%d ಫ್ಲ್ಯಾಗ್‌ಗಳೊಂದಿಗೆ ಕಡತವನ್ನು ಸಂಸ್ಕರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22281,6 +22285,10 @@ msgstr "%d ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳೊಂದಿಗೆ �
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "%d ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳೊಂದಿಗೆ ಡೊಮೇನ್‌ ಅನ್ನು ವರ್ಗಾಯಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28961,6 +28969,10 @@ msgstr "CPU ಟೊಪೊಲಜಿಯಲ್ಲಿ 'cores' ವೈಶಿಷ್ಟ�
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "CPU ಟೊಪೊಲಜಿಯಲ್ಲಿ 'cores' ವೈಶಿಷ್ಟ್ಯವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr "ಅಮಾನ್ಯವಾದ ಬಗೆ '%s',  '%s' ನಿಯತಾಂಕಕ್ಕಾಗಿ, '%s' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿತ್ತು"
@@ -31153,6 +31165,9 @@ msgstr "ವರ್ಗಾವಣೆ ದತ್ತಾಂಶದಲ್ಲಿ uuid ಘ�
 msgid "missing pagesize argument"
 msgstr "ಆರ್ಗುಮೆಂಟ್‌ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -33144,8 +33159,8 @@ msgid "os.type is not defined"
 msgstr "ಕಂಟೈನರನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
-msgstr "ವ್ಯಾಪ್ತಿಗಳ ಹೊರಗಿನ ಸೂಚಿ - %zu ಎಣಿಕೆಯನ್ನು %zu ನಲ್ಲಿ %zu ಸೇರಿಸು"
+msgid "out of bounds index - count %zu at %zu"
+msgstr ""
 
 msgid "out of memory"
 msgstr "ಸಾಕಾಗುವಷ್ಟು ಮೆಮೊರಿ ಇಲ್ಲ"
@@ -33404,8 +33419,7 @@ msgstr "pci-root ಮತ್ತು pcie-root ನಿಯಂತ್ರಕಗಳು ಒ
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr "pci-root ಮತ್ತು pcie-root ನಿಯಂತ್ರಕಗಳು ಒಂದು ವಿಳಾಸವನ್ನು ಹೊಂದಿರಬಾರದು"
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39713,6 +39727,17 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "PCI SYSFS ಕಡತವನ್ನು ಪಡೆಯುವಲ್ಲಿ ವಿಫಲತೆ"
+
+#, fuzzy
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "ಡಿಸ್ಕ್ ಚಾಲಕ %s ಅನ್ನು libxenlight ಬೆಂಬಲಿಸುವುದಿಲ್ಲ "
+
+#~ msgid "out of bounds index - count %zu at %zu add %zu"
+#~ msgstr "ವ್ಯಾಪ್ತಿಗಳ ಹೊರಗಿನ ಸೂಚಿ - %zu ಎಣಿಕೆಯನ್ನು %zu ನಲ್ಲಿ %zu ಸೇರಿಸು"
 
 #, fuzzy
 #~ msgid "missing launch security type"

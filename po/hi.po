@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-07-27 13:35+0000\n"
+"POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -3836,9 +3836,6 @@ msgstr ""
 msgid "Could not allocate disk definition"
 msgstr ""
 
-msgid "Could not append definition to domain"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Could not assign address to disk '%s'"
 msgstr "बॉन्ड '%s' का गुलाम नहीं मिल सका"
@@ -4331,6 +4328,10 @@ msgstr "वर्चुअल मशीन का नाम नहीं मि�
 #, fuzzy, c-format
 msgid "Could not get number of Domains, rc=%08x"
 msgstr "पुल '%s' के सदस्यों को नहीं मिल सका"
+
+#, c-format
+msgid "Could not get parent of '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "Could not get process id of swtpm"
@@ -7106,10 +7107,6 @@ msgstr "uuid उत्पन्न करने में विफल"
 #, c-format
 msgid "Failed to get %s minor number"
 msgstr "मामूली संख्या %s पाने में विफल"
-
-#, fuzzy
-msgid "Failed to get PCI SYSFS file"
-msgstr "PCI युक्ति को फिर सेट करने में विफल: %s"
 
 #, fuzzy, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
@@ -14271,6 +14268,10 @@ msgid "SCSI host device must use 'drive' address type"
 msgstr "अज्ञात मेजबान युक्ति स्रोत पता प्रकार '%s'"
 
 #, c-format
+msgid "SCSI unit index %d out of [0..6,8..%u] range"
+msgstr ""
+
+#, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
 msgstr ""
 
@@ -16307,11 +16308,6 @@ msgstr ""
 msgid "This type of disk cannot be hot unplugged"
 msgstr "इस प्रकार की डिस्क को हॉट प्लग नहीं किया जा सकता है"
 
-#, fuzzy
-msgid ""
-"This version of libxenlight does not support disk 'discard' option passing"
-msgstr "libxenlight डिस्क ड्राईवर %s का समर्थन नहीं करता है"
-
 msgid "Thread(s) per core:"
 msgstr "प्रति कोर थ्रेड:"
 
@@ -17338,6 +17334,10 @@ msgid "Unable to find a satisfying virtiofsd"
 msgstr ""
 
 #, c-format
+msgid "Unable to find address for parent device '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unable to find an unused port in range '%s' (%d-%d)"
 msgstr ""
 
@@ -18145,6 +18145,9 @@ msgstr "अवैध टाइमर आवृत्ति"
 #, fuzzy, c-format
 msgid "Unable to process file with flags %d"
 msgstr "फाइल विवरक %d पर पहुँच में अक्षम"
+
+msgid "Unable to query TSC scaling support"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to query certificate %s basic constraints %s"
@@ -22081,6 +22084,10 @@ msgstr "%d स्नैपशॉट के साथ डोमेन की ओ�
 #, fuzzy, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
 msgstr "%d स्नैपशॉट के साथ डोमेन की ओर पलायन नहीं कर सकते है "
+
+#, c-format
+msgid "cannot migrate a domain with <interface type='%s'>"
+msgstr ""
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
@@ -28770,6 +28777,10 @@ msgstr "गुम 'cores' गुण CPU टोपोलॉजी में"
 msgid "invalid or missing decode/host attribute in CPU model %s"
 msgstr "गुम 'cores' गुण CPU टोपोलॉजी में"
 
+#, c-format
+msgid "invalid parent device '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "invalid partition name '%s', expected '%s'"
 msgstr ", अप्रत्याशित प्रकार '%s' के लिए %s को कॉल की उम्मीद में '%s'"
@@ -30979,6 +30990,9 @@ msgstr "\tप्रवास डाटा में लापता uuid तत�
 msgid "missing pagesize argument"
 msgstr "छूटा आर्गुमेंट"
 
+msgid "missing parent device"
+msgstr ""
+
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
 msgstr ""
@@ -32961,7 +32975,7 @@ msgid "os.type is not defined"
 msgstr "कंटेनर परिभाषित नहीं है"
 
 #, c-format
-msgid "out of bounds index - count %zu at %zu add %zu"
+msgid "out of bounds index - count %zu at %zu"
 msgstr ""
 
 msgid "out of memory"
@@ -33222,8 +33236,7 @@ msgstr ""
 msgid "pci-root and pcie-root controllers should not have an address"
 msgstr ""
 
-msgid ""
-"pcie-expander-bus controllers are only supported on q35-based machinetypes"
+msgid "pcie-expander-bus controllers are not supported with this machine type"
 msgstr ""
 
 msgid "peeking is not supported for vhostuser disk"
@@ -39514,6 +39527,15 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "Failed to get PCI SYSFS file"
+#~ msgstr "PCI युक्ति को फिर सेट करने में विफल: %s"
+
+#, fuzzy
+#~ msgid ""
+#~ "This version of libxenlight does not support disk 'discard' option passing"
+#~ msgstr "libxenlight डिस्क ड्राईवर %s का समर्थन नहीं करता है"
 
 #, fuzzy
 #~ msgid "missing launch security type"
