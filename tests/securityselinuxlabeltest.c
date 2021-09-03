@@ -246,10 +246,9 @@ static int
 testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
 {
     size_t i;
-    char *ctx;
 
     for (i = 0; i < nfiles; i++) {
-        ctx = NULL;
+        g_autofree char *ctx = NULL;
         if (getfilecon(files[i].file, &ctx) < 0) {
             if (errno == ENODATA) {
                 /* nothing to do */
@@ -266,10 +265,8 @@ testSELinuxCheckLabels(testSELinuxFile *files, size_t nfiles)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "File %s context '%s' did not match expected '%s'",
                            files[i].file, ctx, files[i].context);
-            VIR_FREE(ctx);
             return -1;
         }
-        VIR_FREE(ctx);
     }
     return 0;
 }
