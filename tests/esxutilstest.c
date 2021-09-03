@@ -197,10 +197,9 @@ static int
 testConvertWindows1252ToUTF8(const void *data G_GNUC_UNUSED)
 {
     size_t i;
-    char *utf8 = NULL;
 
     for (i = 0; i < G_N_ELEMENTS(windows1252ToUTF8); ++i) {
-        VIR_FREE(utf8);
+        g_autofree char *utf8 = NULL;
 
         utf8 = virVMXConvertToUTF8("Windows-1252",
                                    windows1252ToUTF8[i].windows1252);
@@ -208,13 +207,10 @@ testConvertWindows1252ToUTF8(const void *data G_GNUC_UNUSED)
         if (utf8 == NULL)
             return -1;
 
-        if (STRNEQ(windows1252ToUTF8[i].utf8, utf8)) {
-            VIR_FREE(utf8);
+        if (STRNEQ(windows1252ToUTF8[i].utf8, utf8))
             return -1;
-        }
     }
 
-    VIR_FREE(utf8);
     return 0;
 }
 
