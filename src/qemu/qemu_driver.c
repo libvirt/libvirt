@@ -1816,7 +1816,6 @@ static int qemuDomainSuspend(virDomainPtr dom)
     qemuDomainObjPrivate *priv;
     virDomainPausedReason reason;
     int state;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
@@ -1824,7 +1823,6 @@ static int qemuDomainSuspend(virDomainPtr dom)
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    cfg = virQEMUDriverGetConfig(driver);
     priv = vm->privateData;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_SUSPEND) < 0)
@@ -1869,12 +1867,9 @@ static int qemuDomainResume(virDomainPtr dom)
     int ret = -1;
     int state;
     int reason;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -20226,8 +20221,6 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
                                   int timeout,
                                   unsigned int flags)
 {
-    virQEMUDriver *driver = dom->conn->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virDomainObj *vm = NULL;
     int ret = -1;
 
@@ -20243,8 +20236,6 @@ qemuDomainAgentSetResponseTimeout(virDomainPtr dom,
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
-
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainAgentSetResponseTimeoutEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
