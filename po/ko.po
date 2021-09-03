@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-31 12:41+0000\n"
+"PO-Revision-Date: 2021-09-03 17:08+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -2635,7 +2635,7 @@ msgstr "저장소 파일 '%s'의 백업 파일 '%s'을 접근 할 수 없습니�
 #, c-format
 msgid ""
 "Cannot access backing file '%s' of storage file '%s' (as uid:%u, gid:%u)"
-msgstr "저장소 파일 '%s' (as uid:%u, gid:%u)의 백업 파일 '%s'에 접근할수 없습니다"
+msgstr "저장소 파일 '%s'의 백업 파일 '%s'에(uid:%u, gid:%u 일 때에) 접근 할 수 없습니다"
 
 #, c-format
 msgid "Cannot access storage file '%s'"
@@ -2643,7 +2643,7 @@ msgstr "저장소 파일 '%s'를 접근 할 수 없습니다"
 
 #, c-format
 msgid "Cannot access storage file '%s' (as uid:%u, gid:%u)"
-msgstr "(UID: %u, GID: %u로써) 저장소 파일에 접근할 수 없습니다"
+msgstr "저장소 파일 '%s'(UID: %u, GID: %u 일 때)에 접근 할 수 없습니다"
 
 msgid "Cannot add CURL handle to a multi handle twice"
 msgstr "CURL 핸들을 멀티 핸들로 두 번 추가 할 수 없습니다"
@@ -11900,9 +11900,9 @@ msgstr "NUMA 모드 %d는 사용 할 수 없습니다"
 msgid "NUMA node %d is out of range"
 msgstr "NUMA 노드 %d가 범위 밖입니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "NUMA node %zd is unavailable"
-msgstr "존재하는 콘솔 장치가 없습니다"
+msgstr "NUMA 노드 %zd는 사용 할 수 없습니다"
 
 #, c-format
 msgid "NUMA node %zu is not available"
@@ -11933,9 +11933,9 @@ msgstr "NVME 장치 %s는 이미 드라이버 %s 도메인 %s에서 사용중입
 msgid "NVMe device %s namespace %u is already on the list"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "NVMe device %s namespace %u not found"
-msgstr "노드 디바이스 찾을 수 없음"
+msgstr "NVME 장치 %s 이름공간 %u를 찾을 수 없음"
 
 #, fuzzy
 msgid "NVMe disk source is missing address"
@@ -12279,9 +12279,9 @@ msgstr "사용 가능한 연결 드라이버가 없음"
 msgid "No channel command provided"
 msgstr "오류 메세지 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No client with matching ID '%llu'"
-msgstr "'%d' ID와 일치하는 도메인이 없음"
+msgstr "일치하는 ID '%llu'에 클라이언트가 없음"
 
 #, c-format
 msgid "No complete agent response found in %d bytes"
@@ -12494,9 +12494,9 @@ msgstr "'%s'라는 디스크가 없음"
 msgid "No socket address provided"
 msgstr "오류 메세지 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No socket addresses found for '%s'"
-msgstr "소켓 주소 '%s'를 구문 분석할 수 없음: %s"
+msgstr "'%s'를 위해 소켓 주소를 찾을 수 없음"
 
 #, fuzzy, c-format
 msgid "No source device specified when formatting pool '%s'"
@@ -12506,9 +12506,9 @@ msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
 msgid "No storage volume with key or path '%s'"
 msgstr "키 또는 경로 '%s'로된 저장소 볼륨이 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No stub driver configured for PCI device %s"
-msgstr "장치 주소 유형이 지정되지 않았습니다"
+msgstr "PCI 장치 %s를 위해 구성된 stub 드라이버가 없습니다"
 
 #, c-format
 msgid "No such disk in media registry %s"
@@ -12761,9 +12761,9 @@ msgstr "하이퍼바이저에서 연결 끊기 실패"
 msgid "Only %d CPUs available to show\n"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Only '%s' filesystem type is supported"
-msgstr "오직 하나의 파일시스템만 지원됨"
+msgstr "오직 '%s' 파일 시스템만 지원됨"
 
 msgid "Only 'credit' and 'credit2' schedulers are supported"
 msgstr ""
@@ -12946,9 +12946,9 @@ msgstr "OpenVZ 컨트롤 파일 /proc/vz를 억세스할 수 없습니다"
 msgid "Operation cancelled by client"
 msgstr "마이그레이션 취소됨"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Operation is not supported for device: %s"
-msgstr "동작을 지원하지 않습니다"
+msgstr "작업이 장치를 지원하지 않습니다: %s"
 
 msgid "Operation not supported"
 msgstr "동작을 지원하지 않습니다"
@@ -13216,9 +13216,9 @@ msgstr "패닉됨"
 msgid "Parallel devices are not supported by libxl"
 msgstr "병렬 장치가 libxl에 의해 지원되지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Parallel port index %d out of [0..2] range"
-msgstr "typeid 값이 범위를 벗어남"
+msgstr "병렬 포트 색인 %d가 [0..2] 범위를 벗어남"
 
 #, fuzzy, c-format
 msgid "Parameter '%s' is not a string"
@@ -13852,9 +13852,9 @@ msgstr "요청한 동작이 바르지 않습니다"
 msgid "Requested operation is not valid: %s"
 msgstr "요청한 동작이 바르지 않습니다: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Requested volume '%s' is not in pool '%s'"
-msgstr "요청한 동작이 바르지 않습니다: %s"
+msgstr "요청한 볼륨 '%s'가 풀 '%s'에 있지 않습니다"
 
 #, c-format
 msgid ""
@@ -14068,9 +14068,9 @@ msgstr ""
 msgid "Run shutdown in the target domain."
 msgstr "대상 도메인에서 종료하기 실행."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Running against daemon: %d.%d.%d\n"
-msgstr "실행중인 하이퍼바이저: %s %d.%d.%d\n"
+msgstr "데몬에 대해 실행 중임: %d.%d.%d\n"
 
 #, sh-format
 msgid "Running guests on $uri URI: "
@@ -14130,9 +14130,9 @@ msgstr ""
 msgid "SCSI controller only supports 1 bus"
 msgstr "SCSI 컨트롤러는 1 버스만을 지원합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "SCSI device %s is already in use by other domain(s) as '%s'"
-msgstr "장치 %s가 이미 사용중입니다"
+msgstr "SCSI 장치 %s가 이미 '%s'와 같은 다른 데몬(들)에 의해 사용중입니다"
 
 #, c-format
 msgid "SCSI device '%s': could not access %s"
@@ -14270,9 +14270,9 @@ msgstr ""
 msgid "Scheduler"
 msgstr "스케줄러"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Scheduler '%s' is not supported on this platform"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "스케쥴러 '%s'는 이와 같은 기술 환경에서 지원되지 않습니다"
 
 #, c-format
 msgid "Scheduler priority %d out of range [%d, %d]"
@@ -14332,9 +14332,9 @@ msgstr ""
 msgid "Security driver %s not enabled"
 msgstr "보안 드라이버 %s를 활성화 할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Security driver %s not found"
-msgstr "보안 모델 찾을 수 없음"
+msgstr "보안 드라이버 %s는 찾을 수 없음"
 
 #, c-format
 msgid "Security driver model '%s' is not available"
@@ -14393,9 +14393,9 @@ msgid ""
 "with guest architecture or machine type"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Serial port index %d out of [0..3] range"
-msgstr "typeid 값이 범위를 벗어남"
+msgstr "시리얼 포트 색인 %d는 [0..3] 값의 범위를 벗어남"
 
 #, c-format
 msgid "Serial property not supported for drive bus '%s'"
@@ -14923,9 +14923,9 @@ msgstr "볼륨 '%s'를 위한 저장소 풀 '%s'을 찾을 수 없슴."
 msgid "Storage pool already built"
 msgstr "저장소 볼륨이 이미 존재합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Storage pool already built: %s"
-msgstr "저장소 볼륨이 이미 존재합니다"
+msgstr "저장소 풀은 이미 제작되었습니다: %s"
 
 #, c-format
 msgid "Storage pool config filename '%s' does not match pool name '%s'"
@@ -15207,9 +15207,9 @@ msgstr "%s 대상 CPU 제조사는 %s 소스와 일치하지 않음"
 msgid "Target CPU vendor id %s does not match source %s"
 msgstr "%s 대상 CPU 제조사 ID는 %s 소스와 일치하지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target NUMA distance from %zu to %zu doesn't match source"
-msgstr "대상 디스크 액세스 모드가 소스와 일치하지 않음"
+msgstr "대상 NUMA 거리 %zu에서 %zu까지 원천이 일치하지 않습니다"
 
 #, c-format
 msgid "Target NUMA node count '%zu' doesn't match source '%zu'"
@@ -15218,15 +15218,15 @@ msgstr "대상 노드 카운트 '%zu'는 소스 '%zu'와 일치하지 않습니�
 msgid "Target NVDIMM UUID doesn't match source NVDIMM"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target NVDIMM alignment '%llu' doesn't match source NVDIMM alignment '%llu'"
-msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
+msgstr "대상 NVDIMM 조정 '%llu'는 원천 NVDIMM 조정 '%llu'와 일치하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target NVDIMM label size '%llu' doesn't match source NVDIMM label size '%llu'"
-msgstr "대상 RNG 모델 '%s'이 소스 '%s'와 일치하지 않음"
+msgstr "대상 NVDIMM 이름표 크기는 '%llu'와 원천 NVDIMM 이름표 크기 '%llu'와 일치하지 않습니다"
 
 msgid "Target NVDIMM pmem flag doesn't match source NVDIMM pmem flag"
 msgstr "대상 NVDIMM pmem 플래그는 소스 NVDIMM pnmem 플래그와 일치하지 않습니다"
@@ -15357,9 +15357,9 @@ msgstr "대상 장치 ccid 주소 %d:%d가 소스 %d:%d와 일치하지 않음"
 msgid "Target device dimm base address '%llx' does not match source '%llx'"
 msgstr "대상 장치 dimm 기반 주소 '%llx'는 소스 '%llx'와 일치하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target device dimm slot %u does not match source %u"
-msgstr "대상 호스트 장치 모드 %s가 소스 %s와 일치하지 않음"
+msgstr "대상 장치 모드 dimm 슬롯 %u가 원천 %u와 일치하지 않습니다"
 
 #, c-format
 msgid "Target device drive address %d:%d:%d does not match source %d:%d:%d"
@@ -15529,9 +15529,9 @@ msgstr "대상 도메인 메모리 부울 카운트 %d가 소스 %d와 일치하
 msgid "Target domain memory device count %zu does not match source %zu"
 msgstr "대상 도메인 메모리 장치 카운트 %zu는 소스 %zu와 일치하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Target domain memory slots count '%u' doesn't match source '%u'"
-msgstr "대상 도메인 메모리 부울 카운트 %d가 소스 %d와 일치하지 않음"
+msgstr "대상 도메인 메모리 슬롯 카운트 '%u'는 원천 '%u'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target domain name '%s' does not match source '%s'"
@@ -15649,16 +15649,16 @@ msgstr "대상 RNG 모델 '%s'이 소스 '%s'와 일치하지 않음"
 msgid "Target memory device model '%s' doesn't match source model '%s'"
 msgstr "대상 호스트 장치 모드 %s가 소스 %s와 일치하지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target memory device size '%llu' doesn't match source memory device size "
 "'%llu'"
-msgstr "대상 호스트 장치 모드 %s가 소스 %s와 일치하지 않음"
+msgstr "대상 메모리 장치 크기 '%llu'는 원천 메모리 장치 크기 '%llu'와 일치하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Target memory device targetNode '%d' doesn't match source targetNode '%d'"
-msgstr "대상 호스트 장치 모드 %s가 소스 %s와 일치하지 않음"
+msgstr "대상 메모리 장치 대상노드 '%d'는 원천 대상노드 '%d'와 일치하지 않습니다"
 
 #, fuzzy, c-format
 msgid ""
@@ -23975,7 +23975,7 @@ msgid "dhcp is supported only for a single %s address on each network"
 msgstr ""
 
 msgid "dhcp ranges cannot be modified, only added or deleted"
-msgstr "dhcp 범위는 수정할 수 없습니다, 추가 또는 삭제만 가능합니다 "
+msgstr "dhcp 범위는 수정 할 수 없으며, 추가 또는 삭제만 가능합니다"
 
 #, c-format
 msgid "different iotunes for disks %s and %s"
@@ -24179,14 +24179,14 @@ msgstr "비밀정보 '%s'는 값을 가지고 있지 않습니다"
 
 #, c-format
 msgid "disk driver %s is not supported"
-msgstr "디스크 드라이버 %s가 지원되지 않습니다 "
+msgstr "디스크 드라이버 %s는 지원되지 않습니다"
 
 msgid "disk event_idx mode supported only for virtio bus"
 msgstr "디스크 event_idx 모드는 virtio 버스에 대해서만 지원됩니다"
 
 #, c-format
 msgid "disk format %s is not supported"
-msgstr "디스크 형식 %s이 지원되지 않습니다 "
+msgstr "디스크 형식 %s는 지원되지 않습니다"
 
 #, fuzzy, c-format
 msgid "disk image format not supported: %s"
@@ -24606,7 +24606,7 @@ msgid "domainMigratePrepare2 did not set uri"
 msgstr "domainMigratePrepare2가 uri를 설정하지 않았음"
 
 msgid "domainMigratePrepare3 did not set uri"
-msgstr "domainMigratePrepare3은 URI를 설정하지 않았습니다 "
+msgstr "domainMigratePrepare3가 uri를 설정하지 않습니다"
 
 #, fuzzy
 msgid "domainbackup"
@@ -24806,7 +24806,7 @@ msgid "element 'genid' can only appear once"
 msgstr ""
 
 msgid "element 'name' is mandatory for RBD pool"
-msgstr "'name' 요소가 RBD 풀에 필요합니다 "
+msgstr "'name' 요소가 RBD 풀에 필요합니다"
 
 msgid "empty json array"
 msgstr ""
@@ -24854,7 +24854,7 @@ msgstr "사용"
 
 #, c-format
 msgid "encountered an error on interface %s index %d"
-msgstr "인터페이스 %s 인덱스 %d에서 오류 발생 "
+msgstr "연결장치 %s 색인 %d에서 오류가 발생됨"
 
 #, fuzzy
 msgid "encrypted VNC TLS keys are not supported with this QEMU binary"
@@ -25247,8 +25247,7 @@ msgstr "유니캐스트 MAC 주소가 필요, 멀티캐스트 '%s' 발견됨"
 
 #, c-format
 msgid "expected unicast mac address, found multicast '%s' in network '%s'"
-msgstr ""
-"유니캐스트 mac 주소가 필요함, 네트워크 '%s'에서 멀티캐스트 '%s'가 발견됨 "
+msgstr "유니캐스트 mac 주소가 예상되며, 네트워크 '%s'에서 멀티캐스트 '%s'가 발견됨"
 
 #, c-format
 msgid "expecting %zu consoles, but got %zu tty file handlers"
@@ -25334,7 +25333,7 @@ msgid ""
 msgstr ""
 
 msgid "external memory snapshots require a filename"
-msgstr "외부 메모리 스냅샷에 파일 이름이 필요합니다 "
+msgstr "외부 메모리 스냅샷에 파일 이름이 필요합니다"
 
 #, c-format
 msgid ""
@@ -25712,7 +25711,7 @@ msgstr "%s의 부모 장치를 찾는 데 실패했습니다"
 
 #, c-format
 msgid "failed to find the VID for the VLAN device '%s'"
-msgstr "VLAN 장치 '%s'의 VID를 찾는데 실패했습니다 "
+msgstr "VLAN 장치 '%s'를 위해 VID를 찾는데 실패했습니다"
 
 #, c-format
 msgid "failed to find the real device for the VLAN device '%s'"
@@ -25845,7 +25844,7 @@ msgstr "노드 정보 보기 실패"
 
 #, c-format
 msgid "failed to get number of %s interfaces on host"
-msgstr "호스트에서 %s 인터페이스를 가져오는데 실패했습니다 "
+msgstr "호스트에서 %s 연결장치의 갯수를 가져오는데 실패했습니다"
 
 #, c-format
 msgid "failed to get number of host interfaces: %s%s%s"
@@ -25998,7 +25997,7 @@ msgstr "장치 %s를 %s에 마운트하는데 실패했습니다 "
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
-msgstr "MAC 주소 '%s'의 인터페이스를 검색하는데 실패했습니다 "
+msgstr "MAC 주소 '%s'의 연결장치를 검색하는데 실패"
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -26638,7 +26637,7 @@ msgstr "파일 %s이 존재하지 않음"
 
 #, c-format
 msgid "file '%s' for disk '%s' requires use of external snapshot mode"
-msgstr "디스크 '%s'의 파일 '%s'에 외부 스냅샷 모드가 필요합니다 "
+msgstr "디스크 '%s'의 파일 '%s'는 외부 스냅샷 방식의 사용이 필요합니다"
 
 msgid "file containing XML CPU descriptions"
 msgstr "XML CPU 설명을 포함하는 파일"
