@@ -470,27 +470,6 @@ if get_option('warning_level') == '2'
     supported_cc_flags += [ '-Wno-unused-function' ]
   endif
 
-  if supported_cc_flags.contains('-Wunused-but-set-variable')
-    # Clang complains about unused variables in many scenarios related
-    # to attribute((cleanup)) aka g_auto*
-    w_unused_but_set_var_args = [ '-Wunused-but-set-variable', '-Werror' ]
-    w_unused_but_set_var_code = '''
-      static inline void free_pointer (void *p) {
-        void **pp = (void**)p;
-        free (*pp);
-      }
-
-      int main(void) {
-        __attribute__((cleanup(free_pointer))) char *buffer = 0x0;
-        buffer = 0x1;
-      }
-    '''
-    # We previously turned on unused-but-set-variable, so we must turn
-    # it off again explicitly now.
-    if not cc.compiles(w_unused_but_set_var_code, args: w_unused_but_set_var_args)
-      supported_cc_flags += [ '-Wno-unused-but-set-variable' ]
-    endif
-  endif
 endif
 add_project_arguments(supported_cc_flags, language: 'c')
 
