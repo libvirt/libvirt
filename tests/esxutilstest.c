@@ -35,21 +35,17 @@ static struct testPath paths[] = {
 static int
 testParseDatastorePath(const void *data G_GNUC_UNUSED)
 {
-    int result = 0;
     size_t i;
-    char *datastoreName = NULL;
-    char *directoryName = NULL;
-    char *directoryAndFileName = NULL;
 
     for (i = 0; i < G_N_ELEMENTS(paths); ++i) {
-        VIR_FREE(datastoreName);
-        VIR_FREE(directoryName);
-        VIR_FREE(directoryAndFileName);
+        g_autofree char *datastoreName = NULL;
+        g_autofree char *directoryName = NULL;
+        g_autofree char *directoryAndFileName = NULL;
 
         if (esxUtil_ParseDatastorePath
              (paths[i].datastorePath, &datastoreName, &directoryName,
               &directoryAndFileName) != paths[i].result) {
-            goto failure;
+            return -1;
         }
 
         if (paths[i].result < 0)
@@ -57,32 +53,22 @@ testParseDatastorePath(const void *data G_GNUC_UNUSED)
 
         if (STRNEQ(paths[i].datastoreName, datastoreName)) {
             virTestDifference(stderr, paths[i].datastoreName, datastoreName);
-            goto failure;
+            return -1;
         }
 
         if (STRNEQ(paths[i].directoryName, directoryName)) {
             virTestDifference(stderr, paths[i].directoryName, directoryName);
-            goto failure;
+            return -1;
         }
 
         if (STRNEQ(paths[i].directoryAndFileName, directoryAndFileName)) {
             virTestDifference(stderr, paths[i].directoryAndFileName,
                               directoryAndFileName);
-            goto failure;
+            return -1;
         }
     }
 
- cleanup:
-    VIR_FREE(datastoreName);
-    VIR_FREE(directoryName);
-    VIR_FREE(directoryAndFileName);
-
-    return result;
-
- failure:
-    result = -1;
-
-    goto cleanup;
+    return 0;
 }
 
 
