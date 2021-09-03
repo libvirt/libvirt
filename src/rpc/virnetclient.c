@@ -882,7 +882,7 @@ virNetClientIOEventTLS(int fd,
 static gboolean
 virNetClientTLSHandshake(virNetClient *client)
 {
-    g_autoptr(GSource) source = NULL;
+    g_autoptr(GSource) G_GNUC_UNUSED source = NULL;
     GIOCondition ev;
     int ret;
 
@@ -939,7 +939,7 @@ int virNetClientSetTLSSession(virNetClient *client,
     int ret;
     char buf[1];
     int len;
-    g_autoptr(GSource) source = NULL;
+    g_autoptr(GSource) G_GNUC_UNUSED source = NULL;
 
 #ifndef WIN32
     sigset_t oldmask, blockedsigs;
@@ -1664,7 +1664,7 @@ static int virNetClientIOEventLoop(virNetClient *client,
 #endif /* !WIN32 */
         int timeout = -1;
         virNetMessage *msg = NULL;
-        g_autoptr(GSource) source = NULL;
+        g_autoptr(GSource) G_GNUC_UNUSED source = NULL;
         GIOCondition ev = 0;
         struct virNetClientIOEventData data = {
             .client = client,
