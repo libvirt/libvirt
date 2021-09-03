@@ -188,7 +188,7 @@ static char *testGenerateJSON(const char *server_name)
 {
     virNetDaemon *dmn = NULL;
     virNetServer *srv = NULL;
-    virJSONValue *json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     char *jsonstr = NULL;
     bool has_ipv4, has_ipv6;
 
@@ -226,7 +226,6 @@ static char *testGenerateJSON(const char *server_name)
     virNetServerClose(srv);
     virObjectUnref(srv);
     virObjectUnref(dmn);
-    virJSONValueFree(json);
     if (!jsonstr)
         virDispatchError(NULL);
     return jsonstr;

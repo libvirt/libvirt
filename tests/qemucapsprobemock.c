@@ -87,7 +87,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
                              const char *line,
                              qemuMonitorMessage *msg)
 {
-    virJSONValue *value = NULL;
+    g_autoptr(virJSONValue) value = NULL;
     g_autofree char *json = NULL;
     int ret;
 
@@ -115,6 +115,5 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
     }
 
  cleanup:
-    virJSONValueFree(value);
     return ret;
 }

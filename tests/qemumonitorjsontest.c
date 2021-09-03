@@ -2507,8 +2507,8 @@ testBlockNodeNameDetect(const void *opaque)
     const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
     g_autofree char *resultFile = NULL;
     g_autofree char *actual = NULL;
-    virJSONValue *namedNodesJson = NULL;
-    virJSONValue *blockstatsJson = NULL;
+    g_autoptr(virJSONValue) namedNodesJson = NULL;
+    g_autoptr(virJSONValue) blockstatsJson = NULL;
     GHashTable *nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     int ret = -1;
@@ -2541,8 +2541,6 @@ testBlockNodeNameDetect(const void *opaque)
 
  cleanup:
     virHashFree(nodedata);
-    virJSONValueFree(namedNodesJson);
-    virJSONValueFree(blockstatsJson);
 
     return ret;
 }
@@ -2584,7 +2582,7 @@ testQAPISchemaValidate(const void *opaque)
     const struct testQAPISchemaData *data = opaque;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
     virJSONValue *schemaroot;
-    virJSONValue *json = NULL;
+    g_autoptr(virJSONValue) json = NULL;
     int ret = -1;
 
     if (virQEMUQAPISchemaPathGet(data->query, data->schema, &schemaroot) < 0)
@@ -2610,7 +2608,6 @@ testQAPISchemaValidate(const void *opaque)
 
 
  cleanup:
-    virJSONValueFree(json);
     return ret;
 }
 
@@ -2927,7 +2924,7 @@ mymain(void)
     virQEMUDriver driver;
     testQemuMonitorJSONSimpleFuncData simpleFunc;
     struct testQAPISchemaData qapiData;
-    virJSONValue *metaschema = NULL;
+    g_autoptr(virJSONValue) metaschema = NULL;
     g_autofree char *metaschemastr = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
@@ -3220,7 +3217,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetCPUModelBaseline);
 
  cleanup:
-    virJSONValueFree(metaschema);
     virHashFree(qapiData.schema);
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
