@@ -270,8 +270,10 @@ static int testExecRestart(const void *opaque)
     int ret = -1;
     virNetDaemon *dmn = NULL;
     const struct testExecRestartData *data = opaque;
-    char *infile = NULL, *outfile = NULL;
-    char *injsonstr = NULL, *outjsonstr = NULL;
+    char *infile = NULL;
+    char *outfile = NULL;
+    char *injsonstr = NULL;
+    char *outjsonstr = NULL;
     virJSONValue *injson = NULL;
     virJSONValue *outjson = NULL;
     int fdclient[2] = { -1, -1 }, fdserver[2] = { -1, -1 };
