@@ -161,23 +161,19 @@ static int
 testEscapeDatastoreItem(const void *data G_GNUC_UNUSED)
 {
     size_t i;
-    char *escaped = NULL;
 
     for (i = 0; i < G_N_ELEMENTS(datastoreItems); ++i) {
-        VIR_FREE(escaped);
+        g_autofree char *escaped = NULL;
 
         escaped = esxUtil_EscapeDatastoreItem(datastoreItems[i].string);
 
         if (escaped == NULL)
             return -1;
 
-        if (STRNEQ(datastoreItems[i].escaped, escaped)) {
-            VIR_FREE(escaped);
+        if (STRNEQ(datastoreItems[i].escaped, escaped))
             return -1;
-        }
     }
 
-    VIR_FREE(escaped);
     return 0;
 }
 
