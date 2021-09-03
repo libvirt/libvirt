@@ -2158,7 +2158,7 @@ static int
 testQemuMonitorJSONGetCPUData(const void *opaque)
 {
     const struct testCPUData *data = opaque;
-    virCPUData *cpuData = NULL;
+    g_autoptr(virCPUData) cpuData = NULL;
     g_autofree char *jsonFile = NULL;
     g_autofree char *dataFile = NULL;
     g_autofree char *jsonStr = NULL;
@@ -2208,7 +2208,6 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
 
     ret = 0;
  cleanup:
-    virCPUDataFree(cpuData);
     return ret;
 }
 
@@ -2217,7 +2216,7 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    virCPUData *cpuData = NULL;
+    g_autoptr(virCPUData) cpuData = NULL;
     int rv, ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2251,7 +2250,6 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
 
     ret = 0;
  cleanup:
-    virCPUDataFree(cpuData);
     return ret;
 }
 
