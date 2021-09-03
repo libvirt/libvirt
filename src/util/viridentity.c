@@ -134,7 +134,7 @@ virIdentity *virIdentityGetCurrent(void)
  */
 int virIdentitySetCurrent(virIdentity *ident)
 {
-    g_autoptr(virIdentity) old = NULL;
+    virIdentity *old = NULL;
 
     if (virIdentityInitialize() < 0)
         return -1;
@@ -150,6 +150,8 @@ int virIdentitySetCurrent(virIdentity *ident)
         return -1;
     }
 
+    if (old)
+        g_object_unref(old);
     return 0;
 }
 
