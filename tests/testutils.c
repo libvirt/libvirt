@@ -223,7 +223,7 @@ virTestRunLog(int *ret,
 int
 virTestLoadFile(const char *file, char **buf)
 {
-    FILE *fp = fopen(file, "r");
+    g_autoptr(FILE) fp = fopen(file, "r");
     struct stat st;
     char *tmp;
     int len, tmplen, buflen;
@@ -235,7 +235,6 @@ virTestLoadFile(const char *file, char **buf)
 
     if (fstat(fileno(fp), &st) < 0) {
         fprintf(stderr, "%s: failed to fstat: %s\n", file, g_strerror(errno));
-        VIR_FORCE_FCLOSE(fp);
         return -1;
     }
 
@@ -263,13 +262,11 @@ virTestLoadFile(const char *file, char **buf)
         }
         if (ferror(fp)) {
             fprintf(stderr, "%s: read failed: %s\n", file, g_strerror(errno));
-            VIR_FORCE_FCLOSE(fp);
             VIR_FREE(*buf);
             return -1;
         }
     }
 
-    VIR_FORCE_FCLOSE(fp);
     return 0;
 }
 

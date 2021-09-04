@@ -101,7 +101,7 @@ testSELinuxLoadFileList(const char *testname,
 {
     int ret = -1;
     g_autofree char *path = NULL;
-    FILE *fp = NULL;
+    g_autoptr(FILE) fp = NULL;
     g_autofree char *line = NULL;
 
     *files = NULL;
@@ -151,7 +151,6 @@ testSELinuxLoadFileList(const char *testname,
     ret = 0;
 
  cleanup:
-    VIR_FORCE_FCLOSE(fp);
     return ret;
 }
 

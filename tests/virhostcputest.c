@@ -33,7 +33,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
     int ret = -1;
     g_autofree char *actualData = NULL;
     virNodeInfo nodeinfo;
-    FILE *cpuinfo;
+    g_autoptr(FILE) cpuinfo = NULL;
 
     cpuinfo = fopen(cpuinfofile, "r");
     if (!cpuinfo) {
@@ -51,10 +51,8 @@ linuxTestCompareFiles(const char *cpuinfofile,
             if (virGetLastErrorCode())
                 VIR_TEST_DEBUG("\n%s", virGetLastErrorMessage());
         }
-        VIR_FORCE_FCLOSE(cpuinfo);
         goto fail;
     }
-    VIR_FORCE_FCLOSE(cpuinfo);
 
     actualData = g_strdup_printf("CPUs: %u/%u, MHz: %u, Nodes: %u, Sockets: %u, "
                                  "Cores: %u, Threads: %u\n",
@@ -109,7 +107,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 {
     int ret = -1;
     g_autofree char *actualData = NULL;
-    FILE *cpustat = NULL;
+    g_autoptr(FILE) cpustat = NULL;
     virNodeCPUStatsPtr params = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
@@ -148,7 +146,6 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
     ret = 0;
 
  fail:
-    VIR_FORCE_FCLOSE(cpustat);
     VIR_FREE(params);
     return ret;
 }
