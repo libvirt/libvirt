@@ -45,7 +45,7 @@ static libxlDriverPrivate *driver;
 static char *
 testReplaceVarsXML(const char *xml)
 {
-    char *xmlcfgData;
+    g_autofree char *xmlcfgData = NULL;
     char *replacedXML;
 
     if (virTestLoadFile(xml, &xmlcfgData) < 0)
@@ -54,7 +54,6 @@ testReplaceVarsXML(const char *xml)
     replacedXML = virStringReplace(xmlcfgData, "/LIBXL_FIRMWARE_DIR",
                                    LIBXL_FIRMWARE_DIR);
 
-    VIR_FREE(xmlcfgData);
     return replacedXML;
 }
 
@@ -65,13 +64,13 @@ testReplaceVarsXML(const char *xml)
 static int
 testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
-    char *gotxlcfgData = NULL;
+    g_autofree char *gotxlcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
     g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     int ret = -1;
     virDomainDef *def = NULL;
-    char *replacedXML = NULL;
+    g_autofree char *replacedXML = NULL;
 
     gotxlcfgData = g_new0(char, wrote);
 
@@ -108,8 +107,6 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     ret = 0;
 
  fail:
-    VIR_FREE(replacedXML);
-    VIR_FREE(gotxlcfgData);
     virDomainDefFree(def);
 
     return ret;
@@ -122,13 +119,13 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
 static int
 testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
 {
-    char *xlcfgData = NULL;
-    char *gotxml = NULL;
+    g_autofree char *xlcfgData = NULL;
+    g_autofree char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
     g_autoptr(virConnect) conn = NULL;
     virDomainDef *def = NULL;
-    char *replacedXML = NULL;
+    g_autofree char *replacedXML = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     conn = virGetConnect();
@@ -161,9 +158,6 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     ret = 0;
 
  fail:
-    VIR_FREE(replacedXML);
-    VIR_FREE(xlcfgData);
-    VIR_FREE(gotxml);
     virDomainDefFree(def);
 
     return ret;
@@ -181,8 +175,8 @@ testCompareHelper(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *cfg = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *cfg = NULL;
 
     xml = g_strdup_printf("%s/xlconfigdata/test-%s.xml", abs_srcdir, info->name);
     cfg = g_strdup_printf("%s/xlconfigdata/test-%s.cfg", abs_srcdir, info->name);
@@ -191,9 +185,6 @@ testCompareHelper(const void *data)
         result = testCompareParseXML(cfg, xml, info->replaceVars);
     else
         result = testCompareFormatXML(cfg, xml, info->replaceVars);
-
-    VIR_FREE(xml);
-    VIR_FREE(cfg);
 
     return result;
 }

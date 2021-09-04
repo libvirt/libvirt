@@ -53,9 +53,9 @@ testCompareXMLToDomConfig(const char *xmlfile,
     xentoollog_logger *log = NULL;
     virPortAllocatorRange *gports = NULL;
     virDomainDef *vmdef = NULL;
-    char *actualjson = NULL;
-    char *tempjson = NULL;
-    char *expectjson = NULL;
+    g_autofree char *actualjson = NULL;
+    g_autofree char *tempjson = NULL;
+    g_autofree char *expectjson = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     libxl_domain_config_init(&actualconfig);
@@ -128,9 +128,6 @@ testCompareXMLToDomConfig(const char *xmlfile,
         vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
         virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
 
-    VIR_FREE(expectjson);
-    VIR_FREE(actualjson);
-    VIR_FREE(tempjson);
     virDomainDefFree(vmdef);
     virPortAllocatorRangeFree(gports);
     libxl_domain_config_dispose(&actualconfig);
@@ -150,16 +147,14 @@ testCompareXMLToDomConfigHelper(const void *data)
 {
     int ret = -1;
     const struct testInfo *info = data;
-    char *xmlfile = NULL;
-    char *jsonfile = NULL;
+    g_autofree char *xmlfile = NULL;
+    g_autofree char *jsonfile = NULL;
 
     xmlfile = g_strdup_printf("%s/libxlxml2domconfigdata/%s.xml", abs_srcdir, info->name);
     jsonfile = g_strdup_printf("%s/libxlxml2domconfigdata/%s.json", abs_srcdir, info->name);
 
     ret = testCompareXMLToDomConfig(xmlfile, jsonfile);
 
-    VIR_FREE(xmlfile);
-    VIR_FREE(jsonfile);
     return ret;
 }
 
