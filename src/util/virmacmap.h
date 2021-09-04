@@ -21,8 +21,10 @@
 #pragma once
 
 #include "internal.h"
+#include "virobject.h"
 
 typedef struct virMacMap virMacMap;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virMacMap, virObjectUnref)
 
 char *
 virMacMapFileName(const char *dnsmasqStateDir,
