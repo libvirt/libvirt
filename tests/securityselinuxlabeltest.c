@@ -99,7 +99,6 @@ testSELinuxLoadFileList(const char *testname,
                         testSELinuxFile **files,
                         size_t *nfiles)
 {
-    int ret = -1;
     g_autofree char *path = NULL;
     g_autoptr(FILE) fp = NULL;
     g_autofree char *line = NULL;
@@ -111,7 +110,7 @@ testSELinuxLoadFileList(const char *testname,
                            testname);
 
     if (!(fp = fopen(path, "r")))
-        goto cleanup;
+        return -1;
 
     line = g_new0(char, 1024);
 
@@ -119,7 +118,7 @@ testSELinuxLoadFileList(const char *testname,
         char *file = NULL, *context = NULL, *tmp;
         if (!fgets(line, 1024, fp)) {
             if (!feof(fp))
-                goto cleanup;
+                return -1;
             break;
         }
 
@@ -128,7 +127,7 @@ testSELinuxLoadFileList(const char *testname,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "unexpected format for line '%s'",
                            line);
-            goto cleanup;
+            return -1;
         }
         *tmp = '\0';
         tmp++;
@@ -148,10 +147,7 @@ testSELinuxLoadFileList(const char *testname,
         (*files)[(*nfiles)-1].context = context;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

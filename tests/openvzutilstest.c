@@ -36,7 +36,6 @@ static struct testConfigParam configParams[] = {
 static int
 testReadConfigParam(const void *data G_GNUC_UNUSED)
 {
-    int result = -1;
     size_t i;
     g_autofree char *conf = NULL;
     g_autofree char *value = NULL;
@@ -46,7 +45,7 @@ testReadConfigParam(const void *data G_GNUC_UNUSED)
     for (i = 0; i < G_N_ELEMENTS(configParams); ++i) {
         if (openvzReadConfigParam(conf, configParams[i].param,
                                   &value) != configParams[i].ret) {
-            goto cleanup;
+            return -1;
         }
 
         if (configParams[i].ret != 1)
@@ -54,15 +53,11 @@ testReadConfigParam(const void *data G_GNUC_UNUSED)
 
         if (STRNEQ(configParams[i].value, value)) {
             virTestDifference(stderr, configParams[i].value, value);
-            goto cleanup;
+            return -1;
         }
     }
 
-    result = 0;
-
- cleanup:
-
-    return result;
+    return 0;
 }
 
 static int

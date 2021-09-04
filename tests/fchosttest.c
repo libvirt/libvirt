@@ -123,7 +123,6 @@ test3(const void *data G_GNUC_UNUSED)
     g_autofree char *fabric_wwn = NULL;
     g_autofree char *max_vports = NULL;
     g_autofree char *vports = NULL;
-    int ret = -1;
 
     if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
                                   "node_name")))
@@ -131,31 +130,29 @@ test3(const void *data G_GNUC_UNUSED)
 
     if (!(wwpn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
                                   "port_name")))
-        goto cleanup;
+        return -1;
 
     if (!(fabric_wwn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
                                         "fabric_name")))
-        goto cleanup;
+        return -1;
 
     if (!(max_vports = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
                                         "max_npiv_vports")))
-        goto cleanup;
+        return -1;
 
 
     if (!(vports = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
                                     "npiv_vports_inuse")))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(expect_wwnn, wwnn) ||
         STRNEQ(expect_wwpn, wwpn) ||
         STRNEQ(expect_fabric_wwn, fabric_wwn) ||
         STRNEQ(expect_max_vports, max_vports) ||
         STRNEQ(expect_vports, vports))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Test virVHBAGetHostByWWN */
@@ -164,7 +161,6 @@ test4(const void *data G_GNUC_UNUSED)
 {
     const char *expect_hostname = "host5";
     g_autofree char *hostname = NULL;
-    int ret = -1;
 
     if (!(hostname = virVHBAGetHostByWWN(TEST_FC_HOST_PREFIX,
                                          "2001001b32a9da4e",
@@ -172,11 +168,9 @@ test4(const void *data G_GNUC_UNUSED)
         return -1;
 
     if (STRNEQ(hostname, expect_hostname))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Test virVHBAFindVportHost
@@ -188,17 +182,14 @@ test5(const void *data G_GNUC_UNUSED)
 {
     const char *expect_hostname = "host5";
     g_autofree char *hostname = NULL;
-    int ret = -1;
 
     if (!(hostname = virVHBAFindVportHost(TEST_FC_HOST_PREFIX)))
         return -1;
 
     if (STRNEQ(hostname, expect_hostname))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Test virVHBAGetConfig fabric name optional */
@@ -210,7 +201,6 @@ test6(const void *data G_GNUC_UNUSED)
     g_autofree char *wwnn = NULL;
     g_autofree char *wwpn = NULL;
     g_autofree char *fabric_wwn = NULL;
-    int ret = -1;
 
     if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
                                   "node_name")))
@@ -218,20 +208,18 @@ test6(const void *data G_GNUC_UNUSED)
 
     if (!(wwpn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
                                   "port_name")))
-        goto cleanup;
+        return -1;
 
     if ((fabric_wwn = virVHBAGetConfig(TEST_FC_HOST_PREFIX,
                                        TEST_FC_HOST_NUM_NO_FAB,
                                        "fabric_name")))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(expect_wwnn, wwnn) ||
         STRNEQ(expect_wwpn, wwpn))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

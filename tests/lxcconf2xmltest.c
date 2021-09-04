@@ -25,33 +25,29 @@ testCompareXMLToConfigFiles(const char *xmlfile,
                             const char *configfile,
                             bool expectError)
 {
-    int ret = -1;
     g_autofree char *config = NULL;
     g_autofree char *actualxml = NULL;
     g_autoptr(virDomainDef) vmdef = NULL;
 
     if (virTestLoadFile(configfile, &config) < 0)
-        goto fail;
+        return -1;
 
     vmdef = lxcParseConfigString(config, driver->caps, driver->xmlopt);
     if ((vmdef && expectError) || (!vmdef && !expectError))
-        goto fail;
+        return -1;
 
     if (vmdef) {
         if (testSanitizeDef(vmdef) < 0)
-            goto fail;
+            return -1;
 
         if (!(actualxml = virDomainDefFormat(vmdef, driver->xmlopt, 0)))
-            goto fail;
+            return -1;
 
         if (virTestCompareToFile(actualxml, xmlfile) < 0)
-            goto fail;
+            return -1;
     }
 
-    ret = 0;
-
- fail:
-    return ret;
+    return 0;
 }
 
 struct testInfo {

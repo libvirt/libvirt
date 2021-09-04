@@ -520,7 +520,6 @@ static int
 cpuTestCPUID(bool guest, const void *arg)
 {
     const struct data *data = arg;
-    int ret = -1;
     g_autoptr(virCPUData) hostData = NULL;
     g_autofree char *hostFile = NULL;
     g_autofree char *host = NULL;
@@ -533,7 +532,7 @@ cpuTestCPUID(bool guest, const void *arg)
 
     if (virTestLoadFile(hostFile, &host) < 0 ||
         !(hostData = virCPUDataParse(host)))
-        goto cleanup;
+        return -1;
 
     cpu = virCPUDefNew();
     cpu->arch = hostData->arch;
@@ -549,21 +548,16 @@ cpuTestCPUID(bool guest, const void *arg)
         int rc;
 
         rc = cpuTestGetCPUModels(data, &models);
-        if (rc != 0) {
-            ret = rc;
-            goto cleanup;
-        }
+        if (rc != 0)
+            return rc;
     }
 
     if (cpuDecode(cpu, hostData, models) < 0)
-        goto cleanup;
+        return -1;
 
     result = g_strdup_printf("cpuid-%s-%s", data->host, guest ? "guest" : "host");
 
-    ret = cpuTestCompareXML(data->arch, cpu, result);
-
- cleanup:
-    return ret;
+    return cpuTestCompareXML(data->arch, cpu, result);
 }
 
 
@@ -729,27 +723,26 @@ cpuTestUpdateLive(const void *arg)
     g_autoptr(virCPUDef) expected = NULL;
     g_autoptr(virDomainCapsCPUModels) hvModels = NULL;
     g_autoptr(virDomainCapsCPUModels) models = NULL;
-    int ret = -1;
 
     cpuFile = g_strdup_printf("cpuid-%s-guest", data->host);
     if (!(cpu = cpuTestLoadXML(data->arch, cpuFile)))
-        goto cleanup;
+        return -1;
 
     enabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-enabled.xml",
                                   abs_srcdir, virArchToString(data->arch), data->host);
     if (virTestLoadFile(enabledFile, &enabled) < 0 ||
         !(enabledData = virCPUDataParse(enabled)))
-        goto cleanup;
+        return -1;
 
     disabledFile = g_strdup_printf("%s/cputestdata/%s-cpuid-%s-disabled.xml",
                                    abs_srcdir, virArchToString(data->arch), data->host);
     if (virTestLoadFile(disabledFile, &disabled) < 0 ||
         !(disabledData = virCPUDataParse(disabled)))
-        goto cleanup;
+        return -1;
 
     expectedFile = g_strdup_printf("cpuid-%s-json", data->host);
     if (!(expected = cpuTestLoadXML(data->arch, expectedFile)))
-        goto cleanup;
+        return -1;
 
     /* In case the host CPU signature does not exactly match any CPU model in
      * src/cpu_map, the CPU model we detect from CPUID may differ from the one
@@ -764,13 +757,11 @@ cpuTestUpdateLive(const void *arg)
         int rc;
 
         if (!(models = virDomainCapsCPUModelsNew(0)))
-            goto cleanup;
+            return -1;
 
         rc = cpuTestGetCPUModels(data, &hvModels);
-        if (rc != 0) {
-            ret = rc;
-            goto cleanup;
-        }
+        if (rc != 0)
+            return rc;
 
         hvModel = virDomainCapsCPUModelsGet(hvModels, expected->model);
 
@@ -781,7 +772,7 @@ cpuTestUpdateLive(const void *arg)
 
         if (virDomainCapsCPUModelsAdd(models, expected->model,
                                       usable, blockers, false) < 0)
-            goto cleanup;
+            return -1;
 
         cpu->fallback = VIR_CPU_FALLBACK_ALLOW;
         ignore_value(virCPUTranslate(data->arch, cpu, models));
@@ -789,12 +780,9 @@ cpuTestUpdateLive(const void *arg)
     }
 
     if (virCPUUpdateLive(data->arch, cpu, enabledData, disabledData) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = cpuTestUpdateLiveCompare(data->arch, cpu, expected);
-
- cleanup:
-    return ret;
+    return cpuTestUpdateLiveCompare(data->arch, cpu, expected);
 }
 
 

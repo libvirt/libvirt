@@ -40,7 +40,6 @@ struct testGetFilesystemData {
 
 static int testGetFilesystem(const void *opaque)
 {
-    int ret = -1;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *filename = NULL;
     const struct testGetFilesystemData *data = opaque;
@@ -50,7 +49,7 @@ static int testGetFilesystem(const void *opaque)
                                data->filename);
 
     if (!(def = virDomainDefParseFile(filename, xmlopt, NULL, 0)))
-        goto cleanup;
+        return -1;
 
     fsdef = virDomainGetFilesystemForTarget(def,
                                             data->path);
@@ -58,20 +57,17 @@ static int testGetFilesystem(const void *opaque)
         if (data->expectEntry) {
             fprintf(stderr, "Expected FS for path '%s' in '%s'\n",
                     data->path, filename);
-            goto cleanup;
+            return -1;
         }
     } else {
         if (!data->expectEntry) {
             fprintf(stderr, "Unexpected FS for path '%s' in '%s'\n",
                     data->path, filename);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

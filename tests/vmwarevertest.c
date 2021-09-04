@@ -37,7 +37,6 @@ static int
 testVerStrParse(const void *data)
 {
     const struct testInfo *info = data;
-    int ret = -1;
     g_autofree char *path = NULL;
     g_autofree char *databuf = NULL;
     unsigned long version;
@@ -46,24 +45,21 @@ testVerStrParse(const void *data)
     path = g_strdup_printf("%s/vmwareverdata/%s.txt", abs_srcdir, info->name);
 
     if (virTestLoadFile(path, &databuf) < 0)
-        goto cleanup;
+        return -1;
 
     if ((vmware_type = vmwareDriverTypeFromString(info->vmware_type)) < 0)
-        goto cleanup;
+        return -1;
 
     if (vmwareParseVersionStr(vmware_type, databuf, &version) < 0)
-        goto cleanup;
+        return -1;
 
     if (version != info->version) {
         fprintf(stderr, "%s: parsed versions do not match: got %lu, "
                 "expected %lu\n", info->name, version, info->version);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

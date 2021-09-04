@@ -91,7 +91,6 @@ verifyMetadata(virDomainPtr dom,
                const char *expectAPI,
                const char *uri)
 {
-    bool ret = false;
     g_autofree char *metadataXML = NULL;
     g_autofree char *metadataAPI = NULL;
 
@@ -102,13 +101,13 @@ verifyMetadata(virDomainPtr dom,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "expected no metadata in API, but got:\n[%s]",
                            metadataAPI);
-            goto cleanup;
+            return false;
         }
     } else {
         if (!(metadataAPI = virDomainGetMetadata(dom,
                                                  VIR_DOMAIN_METADATA_ELEMENT,
                                                  uri, 0)))
-            goto cleanup;
+            return false;
 
         metadataXMLConvertApostrophe(metadataAPI);
 
@@ -117,7 +116,7 @@ verifyMetadata(virDomainPtr dom,
                            "XML metadata in API doesn't match expected metadata: "
                            "expected:\n[%s]\ngot:\n[%s]",
                            expectAPI, metadataAPI);
-            goto cleanup;
+            return false;
         }
 
     }
@@ -127,11 +126,11 @@ verifyMetadata(virDomainPtr dom,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "expected no metadata in XML, but got:\n[%s]",
                            metadataXML);
-            goto cleanup;
+            return false;
         }
     } else {
         if (!(metadataXML = getMetadataFromXML(dom)))
-            goto cleanup;
+            return false;
 
         metadataXMLConvertApostrophe(metadataXML);
 
@@ -140,15 +139,11 @@ verifyMetadata(virDomainPtr dom,
                            "XML in dump doesn't match expected metadata: "
                            "expected:\n[%s]\ngot:\n[%s]",
                            expectXML, metadataXML);
-            goto cleanup;
+            return false;
         }
     }
 
-    ret = true;
-
- cleanup:
-
-    return ret;
+    return true;
 }
 
 
@@ -213,7 +208,6 @@ testTextMetadata(const void *data)
 {
     const struct metadataTest *test = data;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     if (virDomainSetMetadata(test->dom, test->type, test->data, NULL, NULL, 0) < 0) {
         if (test->fail)
@@ -228,14 +222,10 @@ testTextMetadata(const void *data)
                        "expected metadata doesn't match actual: "
                        "expected:'%s'\ngot: '%s'",
                        NULLSTR(test->data), NULLSTR(actual));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 #define TEST_TEXT_METADATA(INDEX, TYPE, DATA, EXPECT, FAIL) \
