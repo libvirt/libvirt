@@ -81,42 +81,38 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
 static int
 testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
-
     g_autoptr(vshTable) table = vshTableNew("Id", "Name", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
 
     if (vshTableRowAppend(table, NULL) >= 0) {
         fprintf(stderr, "Appending NULL shouldn't work\n");
-        ret = -1;
+        return -1;
     }
 
     if (vshTableRowAppend(table, "2", NULL) >= 0) {
         fprintf(stderr, "Appending less items than in header\n");
-        ret = -1;
+        return -1;
     }
 
     if (vshTableRowAppend(table, "2", "rhel7.5", "running",
                       NULL) >= 0) {
         fprintf(stderr, "Appending more items than in header\n");
-        ret = -1;
+        return -1;
     }
 
     if (vshTableRowAppend(table, "2", "rhel7.5", NULL) < 0) {
         fprintf(stderr, "Appending same number of items as in header"
                         " should not return NULL\n");
-        ret = -1;
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
 testUnicode(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autofree char *act = NULL;
 
     const char *exp =
@@ -128,7 +124,7 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
 
     table = vshTableNew("Id", "名稱", "государство", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
 
     vshTableRowAppend(table, "1", "fedora28", "running", NULL);
     vshTableRowAppend(table, "2", "つへソrhel7.5つへソ", "running",
@@ -136,17 +132,15 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
 
     act = vshTablePrintToString(table, true);
     if (virTestCompareToString(exp, act) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Point of this test is to see how table behaves with right to left writing */
 static int
 testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autofree char *act = NULL;
 
     const char *exp =
@@ -167,7 +161,7 @@ testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
 
     table = vshTableNew("ﻡﺍ ﻢﻣﺍ ﻕﺎﺌﻣﺓ", "ﺓ ﺎﻠﺼﻋ", "ﺍﻸﺜﻧﺎﻧ", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table,
                       "1",
                       "ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ",
@@ -177,17 +171,15 @@ testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
                       NULL);
     act = vshTablePrintToString(table, true);
     if (virTestCompareToString(exp, act) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Testing zero-width characters by inserting few zero-width spaces */
 static int
 testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autoptr(vshTable) table = NULL;
     const char *exp =
         " I\u200Bd   Name       \u200BStatus\n"
@@ -207,22 +199,20 @@ testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
 
     table = vshTableNew("I\u200Bd", "Name", "\u200BStatus", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table, "1\u200B", "fedora28", "run\u200Bning", NULL);
     vshTableRowAppend(table, "2", "rhel7.5", "running", NULL);
     act = vshTablePrintToString(table, true);
 
     if (virTestCompareToString(exp, act) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
 testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autoptr(vshTable) table = NULL;
     const char *exp =
         " Id   Náme       Ⓢtatus\n"
@@ -233,23 +223,21 @@ testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
 
     table = vshTableNew("Id", "Náme", "Ⓢtatus", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table, "1", "fědora28", "running", NULL);
     vshTableRowAppend(table, "2", "rhel", "running", NULL);
     act = vshTablePrintToString(table, true);
 
     if (virTestCompareToString(exp, act) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 /* Testing zero-width characters by inserting few zero-width spaces */
 static int
 testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autoptr(vshTable) table = NULL;
     const char *exp =
         " I\\x09d   Name           Status\n"
@@ -260,22 +248,20 @@ testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
 
     table = vshTableNew("I\td", "Name", "Status", NULL);
     if (!table)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table, "1", "f\aedora28", "running", NULL);
     vshTableRowAppend(table, "2", "rhel7.5", "running", NULL);
     act = vshTablePrintToString(table, true);
 
     if (virTestCompareToString(exp, act) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
 testNTables(const void *opaque G_GNUC_UNUSED)
 {
-    int ret = 0;
     g_autoptr(vshTable) table1 = NULL;
     g_autoptr(vshTable) table2 = NULL;
     g_autoptr(vshTable) table3 = NULL;
@@ -301,7 +287,7 @@ testNTables(const void *opaque G_GNUC_UNUSED)
 
     table1 = vshTableNew("Id", "Name", "Status", NULL);
     if (!table1)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table1, "1", "fedora28", "running", NULL);
     vshTableRowAppend(table1, "2", "rhel7.5", "running", NULL);
     vshTableRowAppend(table1, "3", "gazpacho", "", NULL);
@@ -309,12 +295,12 @@ testNTables(const void *opaque G_GNUC_UNUSED)
 
     table2 = vshTableNew("Id", "Name", "Status", NULL);
     if (!table2)
-        goto cleanup;
+        return -1;
     act2 = vshTablePrintToString(table2, true);
 
     table3 = vshTableNew("Id", NULL);
     if (!table3)
-        goto cleanup;
+        return -1;
     vshTableRowAppend(table3, "1", NULL);
     vshTableRowAppend(table3, "2", NULL);
     vshTableRowAppend(table3, "3", NULL);
@@ -322,14 +308,13 @@ testNTables(const void *opaque G_GNUC_UNUSED)
     act3 = vshTablePrintToString(table3, true);
 
     if (virTestCompareToString(exp1, act1) < 0)
-        ret = -1;
+        return -1;
     if (virTestCompareToString(exp2, act2) < 0)
-        ret = -1;
+        return -1;
     if (virTestCompareToString(exp3, act3) < 0)
-        ret = -1;
+        return -1;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
