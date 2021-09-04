@@ -69,8 +69,8 @@ static int
 testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
 {
     int ret = -1;
-    char *vmxData = NULL;
-    char *formatted = NULL;
+    g_autofree char *vmxData = NULL;
+    g_autofree char *formatted = NULL;
     virDomainDef *def = NULL;
 
     if (virTestLoadFile(vmx, &vmxData) < 0)
@@ -102,8 +102,6 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
     ret = 0;
 
  cleanup:
-    VIR_FREE(vmxData);
-    VIR_FREE(formatted);
     virDomainDefFree(def);
 
     return ret;
@@ -119,8 +117,8 @@ testCompareHelper(const void *data)
 {
     int ret = -1;
     const struct testInfo *info = data;
-    char *vmx = NULL;
-    char *xml = NULL;
+    g_autofree char *vmx = NULL;
+    g_autofree char *xml = NULL;
 
     vmx = g_strdup_printf("%s/vmx2xmldata/%s.vmx", abs_srcdir,
                           info->file);
@@ -128,9 +126,6 @@ testCompareHelper(const void *data)
                           info->file);
 
     ret = testCompareFiles(vmx, xml, info->should_fail);
-
-    VIR_FREE(vmx);
-    VIR_FREE(xml);
 
     return ret;
 }
