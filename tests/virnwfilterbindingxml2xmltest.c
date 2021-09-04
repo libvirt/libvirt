@@ -38,7 +38,7 @@
 static int
 testCompareXMLToXMLFiles(const char *xml)
 {
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virNWFilterBindingDef *dev = NULL;
 
@@ -56,7 +56,6 @@ testCompareXMLToXMLFiles(const char *xml)
     ret = 0;
 
  fail:
-    VIR_FREE(actual);
     virNWFilterBindingDefFree(dev);
     return ret;
 }
@@ -70,14 +69,12 @@ testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
     const test_parms *tp = data;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
 
     xml = g_strdup_printf("%s/virnwfilterbindingxml2xmldata/%s.xml", abs_srcdir,
                           tp->name);
 
     result = testCompareXMLToXMLFiles(xml);
-
-    VIR_FREE(xml);
 
     return result;
 }

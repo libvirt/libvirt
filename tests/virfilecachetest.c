@@ -112,14 +112,13 @@ testFileCacheLoadFile(const char *filename,
                       bool *outdated G_GNUC_UNUSED)
 {
     testFileCacheObj *obj;
-    char *data;
+    g_autofree char *data = NULL;
 
     if (virFileReadAll(filename, 20, &data) < 0)
         return NULL;
 
     obj = testFileCacheObjNew(data);
 
-    VIR_FREE(data);
     return obj;
 }
 

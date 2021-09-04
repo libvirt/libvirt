@@ -35,7 +35,7 @@ static int
 checkOutput(virBuffer *buf, const char *exp_cmd)
 {
     int ret = -1;
-    char *actual_cmd = NULL;
+    g_autofree char *actual_cmd = NULL;
 
     if (!(actual_cmd = virBufferContentAndReset(buf))) {
         fprintf(stderr, "cannot compare buffer to exp: %s", exp_cmd);
@@ -50,7 +50,6 @@ checkOutput(virBuffer *buf, const char *exp_cmd)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual_cmd);
     return ret;
 }
 
@@ -59,7 +58,7 @@ static int
 testKModLoad(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
-    char *errbuf = NULL;
+    g_autofree char *errbuf = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -77,7 +76,6 @@ testKModLoad(const void *args G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FREE(errbuf);
     return ret;
 }
 
@@ -86,7 +84,7 @@ static int
 testKModUnload(const void *args G_GNUC_UNUSED)
 {
     int ret = -1;
-    char *errbuf = NULL;
+    g_autofree char *errbuf = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -104,7 +102,6 @@ testKModUnload(const void *args G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FREE(errbuf);
     return ret;
 }
 

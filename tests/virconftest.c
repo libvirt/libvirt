@@ -70,7 +70,7 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     virConfValue *val;
     unsigned long long llvalue;
-    char *str = NULL;
+    g_autofree char *str = NULL;
     int uintvalue;
 
     if (!conf)
@@ -119,7 +119,6 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(str);
     return ret;
 }
 
@@ -341,7 +340,7 @@ static int testConfParseString(const void *opaque G_GNUC_UNUSED)
 
     int ret = -1;
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
-    char *str = NULL;
+    g_autofree char *str = NULL;
 
     if (!conf)
         return -1;
@@ -367,7 +366,6 @@ static int testConfParseString(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(str);
     return ret;
 }
 

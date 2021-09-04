@@ -104,7 +104,7 @@ testFileSanitizePath(const void *opaque)
 {
     const struct testFileSanitizePathData *data = opaque;
     int ret = -1;
-    char *actual;
+    g_autofree char *actual = NULL;
 
     if (!(actual = virFileSanitizePath(data->path)))
         return -1;
@@ -117,7 +117,6 @@ testFileSanitizePath(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -322,7 +321,7 @@ testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
     return EXIT_AM_SKIP;
 #else
     const struct testFileIsSharedFSType *data = opaque;
-    char *mtabFile = NULL;
+    g_autofree char *mtabFile = NULL;
     bool actual;
     int ret = -1;
 
@@ -343,7 +342,6 @@ testFileIsSharedFSType(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(mtabFile);
     g_unsetenv("LIBVIRT_MTAB");
     return ret;
 #endif

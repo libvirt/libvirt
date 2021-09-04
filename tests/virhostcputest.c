@@ -31,7 +31,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
                       const char *outputfile)
 {
     int ret = -1;
-    char *actualData = NULL;
+    g_autofree char *actualData = NULL;
     virNodeInfo nodeinfo;
     FILE *cpuinfo;
 
@@ -68,7 +68,6 @@ linuxTestCompareFiles(const char *cpuinfofile,
     ret = 0;
 
  fail:
-    VIR_FREE(actualData);
     return ret;
 }
 
@@ -109,7 +108,7 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
                           const char *outfile)
 {
     int ret = -1;
-    char *actualData = NULL;
+    g_autofree char *actualData = NULL;
     FILE *cpustat = NULL;
     virNodeCPUStatsPtr params = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -150,7 +149,6 @@ linuxCPUStatsCompareFiles(const char *cpustatfile,
 
  fail:
     VIR_FORCE_FCLOSE(cpustat);
-    VIR_FREE(actualData);
     VIR_FREE(params);
     return ret;
 }
@@ -165,9 +163,9 @@ static int
 linuxTestHostCPU(const void *opaque)
 {
     int result = -1;
-    char *cpuinfo = NULL;
-    char *sysfs_prefix = NULL;
-    char *output = NULL;
+    g_autofree char *cpuinfo = NULL;
+    g_autofree char *sysfs_prefix = NULL;
+    g_autofree char *output = NULL;
     struct linuxTestHostCPUData *data = (struct linuxTestHostCPUData *) opaque;
     const char *archStr = virArchToString(data->arch);
 
@@ -181,10 +179,6 @@ linuxTestHostCPU(const void *opaque)
     virFileWrapperAddPrefix(SYSFS_SYSTEM_PATH, sysfs_prefix);
     result = linuxTestCompareFiles(cpuinfo, data->arch, output);
     virFileWrapperRemovePrefix(SYSFS_SYSTEM_PATH);
-
-    VIR_FREE(cpuinfo);
-    VIR_FREE(output);
-    VIR_FREE(sysfs_prefix);
 
     return result;
 }
@@ -232,8 +226,8 @@ linuxTestNodeCPUStats(const void *data)
 {
     const struct nodeCPUStatsData *testData = data;
     int result = -1;
-    char *cpustatfile = NULL;
-    char *outfile = NULL;
+    g_autofree char *cpustatfile = NULL;
+    g_autofree g_autofree char *outfile = NULL;
 
     cpustatfile = g_strdup_printf("%s/virhostcpudata/linux-cpustat-%s.stat",
                                   abs_srcdir, testData->name);
@@ -255,9 +249,6 @@ linuxTestNodeCPUStats(const void *data)
         }
     }
 
-
-    VIR_FREE(cpustatfile);
-    VIR_FREE(outfile);
     return result;
 }
 

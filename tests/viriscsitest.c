@@ -210,7 +210,7 @@ testISCSIGetSession(const void *data)
 {
     const struct testSessionInfo *info = data;
     struct testIscsiadmCbData cbData = { 0 };
-    char *actual_session = NULL;
+    g_autofree char *actual_session = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -231,7 +231,6 @@ testISCSIGetSession(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual_session);
     return ret;
 }
 

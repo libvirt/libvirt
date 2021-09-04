@@ -174,7 +174,7 @@ testCgroupDetectMounts(const void *args)
 {
     int result = -1;
     const struct _detectMountsData *data = args;
-    char *parsed = NULL;
+    g_autofree char *parsed = NULL;
     const char *actual;
     g_autoptr(virCgroup) group = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -209,7 +209,6 @@ testCgroupDetectMounts(const void *args)
 
  cleanup:
     g_unsetenv("VIR_CGROUP_MOCK_FILENAME");
-    VIR_FREE(parsed);
     return result;
 }
 

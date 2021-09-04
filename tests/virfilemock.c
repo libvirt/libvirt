@@ -105,7 +105,7 @@ statfs_mock(const char *mtab,
     FILE *f;
     struct mntent mb;
     char mntbuf[1024];
-    char *canonPath = NULL;
+    g_autofree char *canonPath = NULL;
     int ret = -1;
 
     if (!(f = real_setmntent(mtab, "r"))) {
@@ -158,7 +158,6 @@ statfs_mock(const char *mtab,
     }
 
     endmntent(f);
-    VIR_FREE(canonPath);
     return ret;
 }
 

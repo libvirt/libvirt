@@ -100,9 +100,9 @@ static void
 checkPath(const char *path,
           const char *func)
 {
-    char *fullPath = NULL;
-    char *relPath = NULL;
-    char *crippledPath = NULL;
+    g_autofree char *fullPath = NULL;
+    g_autofree char *relPath = NULL;
+    g_autofree char *crippledPath = NULL;
 
     if (!g_path_is_absolute(path))
         relPath = g_strdup_printf("./%s", path);
@@ -129,10 +129,6 @@ checkPath(const char *path,
         !STRPREFIX(path, abs_top_builddir)) {
         printFile(path, func);
     }
-
-    VIR_FREE(crippledPath);
-    VIR_FREE(relPath);
-    VIR_FREE(fullPath);
 
     return;
 }

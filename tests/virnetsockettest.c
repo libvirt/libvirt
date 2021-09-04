@@ -178,7 +178,7 @@ testSocketAccept(const void *opaque)
     int ret = -1;
     char portstr[100];
     char *tmpdir = NULL;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     char template[] = "/tmp/libvirt_XXXXXX";
     virThread th;
     struct testClientData cdata = { 0 };
@@ -288,7 +288,6 @@ testSocketAccept(const void *opaque)
         virObjectUnref(lsock[i]);
     }
     VIR_FREE(lsock);
-    VIR_FREE(path);
     if (tmpdir)
         rmdir(tmpdir);
     return ret;
@@ -304,7 +303,7 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
     virNetSocket *csock = NULL; /* Client socket */
     int ret = -1;
 
-    char *path = NULL;
+    g_autofree char *path = NULL;
     char *tmpdir;
     char template[] = "/tmp/libvirt_XXXXXX";
 
@@ -375,7 +374,6 @@ static int testSocketUNIXAddrs(const void *data G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FREE(path);
     virObjectUnref(lsock);
     virObjectUnref(ssock);
     virObjectUnref(csock);

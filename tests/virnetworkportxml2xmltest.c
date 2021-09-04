@@ -36,7 +36,7 @@
 static int
 testCompareXMLToXMLFiles(const char *expected)
 {
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virNetworkPortDef) dev = NULL;
 
@@ -51,7 +51,6 @@ testCompareXMLToXMLFiles(const char *expected)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -64,15 +63,12 @@ testCompareXMLToXMLHelper(const void *data)
 {
     const struct testInfo *info = data;
     int ret = -1;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
 
     xml = g_strdup_printf("%s/virnetworkportxml2xmldata/%s.xml", abs_srcdir,
                           info->name);
 
     ret = testCompareXMLToXMLFiles(xml);
-
-    VIR_FREE(xml);
-
     return ret;
 }
 

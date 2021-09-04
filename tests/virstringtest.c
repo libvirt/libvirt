@@ -222,7 +222,7 @@ static int
 testStringReplace(const void *opaque G_GNUC_UNUSED)
 {
     const struct stringReplaceData *data = opaque;
-    char *result;
+    g_autofree char *result = NULL;
     int ret = -1;
 
     result = virStringReplace(data->haystack,
@@ -238,7 +238,6 @@ testStringReplace(const void *opaque G_GNUC_UNUSED)
     ret = 0;
 
  cleanup:
-    VIR_FREE(result);
     return ret;
 }
 
@@ -402,7 +401,7 @@ static int testStripIPv6Brackets(const void *args)
 {
     const struct testStripData *data = args;
     int ret = -1;
-    char *res = NULL;
+    g_autofree char *res = NULL;
 
     res = g_strdup(data->string);
 
@@ -417,7 +416,6 @@ static int testStripIPv6Brackets(const void *args)
     ret = 0;
 
  cleanup:
-    VIR_FREE(res);
     return ret;
 }
 
@@ -425,7 +423,7 @@ static int testStripControlChars(const void *args)
 {
     const struct testStripData *data = args;
     int ret = -1;
-    char *res = NULL;
+    g_autofree char *res = NULL;
 
     res = g_strdup(data->string);
 
@@ -440,7 +438,6 @@ static int testStripControlChars(const void *args)
     ret = 0;
 
  cleanup:
-    VIR_FREE(res);
     return ret;
 }
 
@@ -454,7 +451,7 @@ static int testFilterChars(const void *args)
 {
     const struct testFilterData *data = args;
     int ret = -1;
-    char *res = NULL;
+    g_autofree char *res = NULL;
 
     res = g_strdup(data->string);
 
@@ -469,7 +466,6 @@ static int testFilterChars(const void *args)
     ret = 0;
 
  cleanup:
-    VIR_FREE(res);
     return ret;
 }
 

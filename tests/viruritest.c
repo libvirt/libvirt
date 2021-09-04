@@ -49,7 +49,7 @@ static int testURIParse(const void *args)
     int ret = -1;
     virURI *uri = NULL;
     const struct URIParseData *data = args;
-    char *uristr = NULL;
+    g_autofree char *uristr = NULL;
     size_t i;
     bool fail = false;
 
@@ -134,7 +134,6 @@ static int testURIParse(const void *args)
 
     ret = 0;
  cleanup:
-    VIR_FREE(uristr);
     virURIFree(uri);
     return ret;
 }

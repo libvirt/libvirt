@@ -63,7 +63,7 @@ static char *get_fake_path(const char *real_path)
 
 DIR *opendir(const char *name)
 {
-    char *path;
+    g_autofree char *path = NULL;
     DIR* ret;
 
     init_syms();
@@ -71,13 +71,12 @@ DIR *opendir(const char *name)
     path = get_fake_path(name);
 
     ret = realopendir(path);
-    VIR_FREE(path);
     return ret;
 }
 
 int open(const char *pathname, int flags, ...)
 {
-    char *path;
+    g_autofree char *path = NULL;
     int ret;
     va_list ap;
     mode_t mode = 0;
@@ -98,7 +97,5 @@ int open(const char *pathname, int flags, ...)
     }
 
     ret = realopen(path, flags, mode);
-
-    VIR_FREE(path);
     return ret;
 }

@@ -37,7 +37,7 @@ static int
 testCryptoHash(const void *opaque)
 {
     const struct testCryptoHashData *data = opaque;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
 
     if (virCryptoHashString(data->hash, data->input, &actual) < 0) {
@@ -53,7 +53,6 @@ testCryptoHash(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -70,11 +69,11 @@ static int
 testCryptoEncrypt(const void *opaque)
 {
     const struct testCryptoEncryptData *data = opaque;
-    uint8_t *enckey = NULL;
+    g_autofree uint8_t *enckey = NULL;
     size_t enckeylen = 32;
-    uint8_t *iv = NULL;
+    g_autofree uint8_t *iv = NULL;
     size_t ivlen = 16;
-    uint8_t *ciphertext = NULL;
+    g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
     int ret = -1;
 
@@ -110,9 +109,6 @@ testCryptoEncrypt(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(enckey);
-    VIR_FREE(iv);
-    VIR_FREE(ciphertext);
 
     return ret;
 }

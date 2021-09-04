@@ -41,13 +41,11 @@ bool
 virNumaIsAvailable(void)
 {
     if (numa_avail < 0) {
-        char *sysfs_node_path = NULL;
+        g_autofree char *sysfs_node_path = NULL;
 
         sysfs_node_path = g_strdup_printf("%s/node", SYSFS_SYSTEM_PATH);
 
         numa_avail = virFileExists(sysfs_node_path);
-
-        VIR_FREE(sysfs_node_path);
     }
 
     /*
@@ -165,7 +163,7 @@ int
 virNumaGetNodeCPUs(int node, virBitmap **cpus)
 {
     int ret = -1;
-    char *cpulist = NULL;
+    g_autofree char *cpulist = NULL;
 
     if (virFileReadValueString(&cpulist,
                                "%s/node/node%u/cpulist",
@@ -183,6 +181,5 @@ virNumaGetNodeCPUs(int node, virBitmap **cpus)
 
     ret = virBitmapCountBits(*cpus);
  cleanup:
-    VIR_FREE(cpulist);
     return ret;
 }

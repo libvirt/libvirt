@@ -49,7 +49,7 @@ static int testDeviceFileActor(virUSBDevice *dev,
                                const char *path,
                                void *opaque G_GNUC_UNUSED)
 {
-    char *str = NULL;
+    g_autofree char *str = NULL;
     int ret = 0;
 
     str = g_strdup_printf(USB_DEVFS "%03d/%03d", virUSBDeviceGetBus(dev),
@@ -61,7 +61,6 @@ static int testDeviceFileActor(virUSBDevice *dev,
                        path, str);
         ret = -1;
     }
-    VIR_FREE(str);
     return ret;
 }
 

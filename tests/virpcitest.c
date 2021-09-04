@@ -32,8 +32,8 @@
 static int
 testVirPCIDeviceCheckDriver(virPCIDevice *dev, const char *expected)
 {
-    char *path = NULL;
-    char *driver = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *driver = NULL;
     int ret = -1;
 
     if (virPCIDeviceGetDriverPathAndName(dev, &path, &driver) < 0)
@@ -49,8 +49,6 @@ testVirPCIDeviceCheckDriver(virPCIDevice *dev, const char *expected)
 
     ret = 0;
  cleanup:
-    VIR_FREE(path);
-    VIR_FREE(driver);
     return ret;
 }
 
@@ -339,7 +337,7 @@ static int
 mymain(void)
 {
     int ret = 0;
-    char *fakerootdir;
+    g_autofree char *fakerootdir = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -361,12 +359,11 @@ mymain(void)
         struct testPCIDevData data = { \
             domain, bus, slot, function, NULL \
         }; \
-        char *label = NULL; \
+        g_autofree char *label = NULL; \
         label = g_strdup_printf("%s(%04x:%02x:%02x.%x)", \
                                 #fnc, domain, bus, slot, function); \
         if (virTestRun(label, fnc, &data) < 0) \
             ret = -1; \
-        VIR_FREE(label); \
     } while (0)
 
 # define DO_TEST_PCI_DRIVER(domain, bus, slot, function, driver) \
@@ -374,14 +371,13 @@ mymain(void)
         struct testPCIDevData data = { \
             domain, bus, slot, function, driver \
         }; \
-        char *label = NULL; \
+        g_autofree char *label = NULL; \
         label = g_strdup_printf("PCI driver %04x:%02x:%02x.%x is %s", \
                                 domain, bus, slot, function, \
                                 NULLSTR(driver)); \
         if (virTestRun(label, testVirPCIDeviceCheckDriverTest, \
                        &data) < 0) \
             ret = -1; \
-        VIR_FREE(label); \
     } while (0)
 
     /* Changes made to individual devices are persistent and the
@@ -418,8 +414,6 @@ mymain(void)
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
-
-    VIR_FREE(fakerootdir);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

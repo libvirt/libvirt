@@ -325,7 +325,7 @@ static int testCreateNetwork(const void *opaque G_GNUC_UNUSED)
 static int
 testGetMachineName(const void *opaque G_GNUC_UNUSED)
 {
-    char *tmp = virSystemdGetMachineNameByPID(1234);
+    g_autofree char *tmp = virSystemdGetMachineNameByPID(1234);
     int ret = -1;
 
     if (!tmp) {
@@ -336,7 +336,6 @@ testGetMachineName(const void *opaque G_GNUC_UNUSED)
     if (STREQ(tmp, "qemu-demo"))
         ret = 0;
 
-    VIR_FREE(tmp);
     return ret;
 }
 
@@ -371,7 +370,7 @@ testScopeName(const void *opaque)
 {
     const struct testNameData *data = opaque;
     int ret = -1;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
 
     if (!(actual = virSystemdMakeScopeName(data->name, "lxc", data->legacy)))
         goto cleanup;
@@ -385,7 +384,6 @@ testScopeName(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -394,7 +392,7 @@ testMachineName(const void *opaque)
 {
     const struct testNameData *data = opaque;
     int ret = -1;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
 
     if (!(actual = virDomainDriverGenerateMachineName("qemu", data->root,
                                                       data->id, data->name, true)))
@@ -409,7 +407,6 @@ testMachineName(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 

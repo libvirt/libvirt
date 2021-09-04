@@ -270,10 +270,10 @@ static int testExecRestart(const void *opaque)
     int ret = -1;
     virNetDaemon *dmn = NULL;
     const struct testExecRestartData *data = opaque;
-    char *infile = NULL;
-    char *outfile = NULL;
-    char *injsonstr = NULL;
-    char *outjsonstr = NULL;
+    g_autofree char *infile = NULL;
+    g_autofree char *outfile = NULL;
+    g_autofree char *injsonstr = NULL;
+    g_autofree char *outjsonstr = NULL;
     virJSONValue *injson = NULL;
     virJSONValue *outjson = NULL;
     int fdclient[2] = { -1, -1 }, fdserver[2] = { -1, -1 };
@@ -352,10 +352,6 @@ static int testExecRestart(const void *opaque)
             VIR_TEST_DEBUG("Test should have failed");
             ret = -1;
     }
-    VIR_FREE(infile);
-    VIR_FREE(outfile);
-    VIR_FREE(injsonstr);
-    VIR_FREE(outjsonstr);
     virJSONValueFree(injson);
     virJSONValueFree(outjson);
     virObjectUnref(dmn);

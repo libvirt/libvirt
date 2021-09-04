@@ -36,7 +36,7 @@ static char *virscsi_prefix;
 static int
 test1(const void *data G_GNUC_UNUSED)
 {
-    char *name = NULL;
+    g_autofree char *name = NULL;
     int ret = -1;
 
     if (!(name = virSCSIDeviceGetDevName(virscsi_prefix,
@@ -48,7 +48,6 @@ test1(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(name);
     return ret;
 }
 
@@ -66,7 +65,7 @@ test2(const void *data G_GNUC_UNUSED)
     bool free_dev = true;
     bool free_dev1 = true;
     virSCSIDevice *tmp = NULL;
-    char *sgname = NULL;
+    g_autofree char *sgname = NULL;
     int ret = -1;
 
     sgname = virSCSIDeviceGetSgName(virscsi_prefix,
@@ -152,7 +151,6 @@ test2(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(sgname);
     if (free_dev)
         virSCSIDeviceFree(dev);
     if (free_dev1)
@@ -164,8 +162,8 @@ static int
 create_symlink(const char *tmpdir, const char *src_name, const char *dst_name)
 {
     int ret = -1;
-    char *src_path = NULL;
-    char *dst_path = NULL;
+    g_autofree char *src_path = NULL;
+    g_autofree char *dst_path = NULL;
 
     src_path = g_strdup_printf("%s/%s", virscsi_prefix, src_name);
 
@@ -179,9 +177,6 @@ create_symlink(const char *tmpdir, const char *src_name, const char *dst_name)
     ret = 0;
 
  cleanup:
-    VIR_FREE(src_path);
-    VIR_FREE(dst_path);
-
     return ret;
 }
 

@@ -39,7 +39,7 @@ testMACLookup(const void *opaque)
     GSList *macs;
     GSList *next;
     size_t i, j;
-    char *file = NULL;
+    g_autofree char *file = NULL;
     int ret = -1;
 
     file = g_strdup_printf("%s/virmacmaptestdata/%s.json", abs_srcdir, data->file);
@@ -78,7 +78,6 @@ testMACLookup(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(file);
     return ret;
 }
 
@@ -90,7 +89,7 @@ testMACRemove(const void *opaque)
     g_autoptr(virMacMap) mgr = NULL;
     GSList *macs;
     size_t i;
-    char *file = NULL;
+    g_autofree char *file = NULL;
     int ret = -1;
 
     file = g_strdup_printf("%s/virmacmaptestdata/%s.json", abs_srcdir, data->file);
@@ -115,7 +114,6 @@ testMACRemove(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(file);
     return ret;
 }
 
@@ -124,8 +122,8 @@ static int
 testMACFlush(const void *opaque)
 {
     const struct testData *data = opaque;
-    char *file = NULL;
-    char *str = NULL;
+    g_autofree char *file = NULL;
+    g_autofree char *str = NULL;
     int ret = -1;
 
     file = g_strdup_printf("%s/virmacmaptestdata/%s.json", abs_srcdir, data->file);
@@ -138,8 +136,6 @@ testMACFlush(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(file);
-    VIR_FREE(str);
     return ret;
 }
 
