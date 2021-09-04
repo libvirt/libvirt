@@ -41,7 +41,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
 {
     g_autofree char *gotxmcfgData = NULL;
     g_autoptr(virConf) conf = NULL;
-    int ret = -1;
     g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
     g_autoptr(virDomainDef) def = NULL;
@@ -49,32 +48,29 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     gotxmcfgData = g_new0(char, wrote);
 
     conn = virGetConnect();
-    if (!conn) goto fail;
+    if (!conn)
+        return -1;
 
     if (!(def = virDomainDefParseFile(xml, driver->xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto fail;
+        return -1;
 
     if (!virDomainDefCheckABIStability(def, def, driver->xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
-        goto fail;
+        return -1;
     }
 
     if (!(conf = xenFormatXM(conn, def)))
-        goto fail;
+        return -1;
 
     if (virConfWriteMem(gotxmcfgData, &wrote, conf) < 0)
-        goto fail;
+        return -1;
     gotxmcfgData[wrote] = '\0';
 
     if (virTestCompareToFile(gotxmcfgData, xmcfg) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-
-    return ret;
+    return 0;
 }
 
 static int
@@ -83,30 +79,25 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     g_autofree char *xmcfgData = NULL;
     g_autofree char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
-    int ret = -1;
     g_autoptr(virDomainDef) def = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (virTestLoadFile(xmcfg, &xmcfgData) < 0)
-        goto fail;
+        return -1;
 
     if (!(conf = virConfReadString(xmcfgData, 0)))
-        goto fail;
+        return -1;
 
     if (!(def = xenParseXM(conf, cfg->caps, driver->xmlopt)))
-        goto fail;
+        return -1;
 
     if (!(gotxml = virDomainDefFormat(def, driver->xmlopt, VIR_DOMAIN_DEF_FORMAT_SECURE)))
-        goto fail;
+        return -1;
 
     if (virTestCompareToFile(gotxml, xml) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-
-    return ret;
+    return 0;
 }
 
 

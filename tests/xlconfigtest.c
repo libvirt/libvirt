@@ -68,47 +68,43 @@ testCompareParseXML(const char *xlcfg, const char *xml, bool replaceVars)
     g_autoptr(virConf) conf = NULL;
     g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
-    int ret = -1;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *replacedXML = NULL;
 
     gotxlcfgData = g_new0(char, wrote);
 
     conn = virGetConnect();
-    if (!conn) goto fail;
+    if (!conn)
+        return -1;
 
     if (replaceVars) {
         if (!(replacedXML = testReplaceVarsXML(xml)))
-            goto fail;
+            return -1;
         if (!(def = virDomainDefParseString(replacedXML, driver->xmlopt,
                                             NULL, VIR_DOMAIN_XML_INACTIVE)))
-            goto fail;
+            return -1;
     } else {
         if (!(def = virDomainDefParseFile(xml, driver->xmlopt,
                                           NULL, VIR_DOMAIN_XML_INACTIVE)))
-            goto fail;
+            return -1;
     }
 
     if (!virDomainDefCheckABIStability(def, def, driver->xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", xml);
-        goto fail;
+        return -1;
     }
 
     if (!(conf = xenFormatXL(def, conn)))
-        goto fail;
+        return -1;
 
     if (virConfWriteMem(gotxlcfgData, &wrote, conf) < 0)
-        goto fail;
+        return -1;
     gotxlcfgData[wrote] = '\0';
 
     if (virTestCompareToFile(gotxlcfgData, xlcfg) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-
-    return ret;
+    return 0;
 }
 
 /*
@@ -121,44 +117,40 @@ testCompareFormatXML(const char *xlcfg, const char *xml, bool replaceVars)
     g_autofree char *xlcfgData = NULL;
     g_autofree char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
-    int ret = -1;
     g_autoptr(virConnect) conn = NULL;
     g_autoptr(virDomainDef) def = NULL;
     g_autofree char *replacedXML = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     conn = virGetConnect();
-    if (!conn) goto fail;
+    if (!conn)
+        return -1;
 
     if (virTestLoadFile(xlcfg, &xlcfgData) < 0)
-        goto fail;
+        return -1;
 
     if (!(conf = virConfReadString(xlcfgData, 0)))
-        goto fail;
+        return -1;
 
     if (!(def = xenParseXL(conf, cfg->caps, driver->xmlopt)))
-        goto fail;
+        return -1;
 
     if (!(gotxml = virDomainDefFormat(def, driver->xmlopt,
                                       VIR_DOMAIN_XML_INACTIVE |
                                       VIR_DOMAIN_XML_SECURE)))
-        goto fail;
+        return -1;
 
     if (replaceVars) {
         if (!(replacedXML = testReplaceVarsXML(xml)))
-            goto fail;
+            return -1;
         if (virTestCompareToString(gotxml, replacedXML) < 0)
-            goto fail;
+            return -1;
     } else {
         if (virTestCompareToFile(gotxml, xml) < 0)
-            goto fail;
+            return -1;
     }
 
-    ret = 0;
-
- fail:
-
-    return ret;
+    return 0;
 }
 
 
