@@ -26,7 +26,7 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
                          unsigned int flags,
                          testCompareNetXML2XMLResult expectResult)
 {
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret;
     testCompareNetXML2XMLResult result = TEST_COMPARE_NET_XML2XML_RESULT_SUCCESS;
     virNetworkDef *dev = NULL;
@@ -70,7 +70,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     }
     virResetLastError();
 
-    VIR_FREE(actual);
     virNetworkDefFree(dev);
     return ret;
 }
@@ -86,17 +85,14 @@ testCompareXMLToXMLHelper(const void *data)
 {
     const struct testInfo *info = data;
     int result = -1;
-    char *inxml = NULL;
-    char *outxml = NULL;
+    g_autofree char *inxml = NULL;
+    g_autofree char *outxml = NULL;
 
     inxml = g_strdup_printf("%s/networkxml2xmlin/%s.xml", abs_srcdir, info->name);
     outxml = g_strdup_printf("%s/networkxml2xmlout/%s.xml", abs_srcdir, info->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml, info->flags,
                                       info->expectResult);
-
-    VIR_FREE(inxml);
-    VIR_FREE(outxml);
 
     return result;
 }

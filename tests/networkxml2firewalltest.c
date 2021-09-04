@@ -91,7 +91,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline,
                                      const char *baseargs)
 {
-    char *actualargv = NULL;
+    g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virNetworkDef *def = NULL;
     int ret = -1;
@@ -121,7 +121,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  cleanup:
-    VIR_FREE(actualargv);
     virNetworkDefFree(def);
     return ret;
 }
@@ -137,8 +136,8 @@ testCompareXMLToIPTablesHelper(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *args = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *args = NULL;
 
     xml = g_strdup_printf("%s/networkxml2firewalldata/%s.xml",
                           abs_srcdir, info->name);
@@ -147,8 +146,6 @@ testCompareXMLToIPTablesHelper(const void *data)
 
     result = testCompareXMLToArgvFiles(xml, args, info->baseargs);
 
-    VIR_FREE(xml);
-    VIR_FREE(args);
     return result;
 }
 

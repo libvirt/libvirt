@@ -20,12 +20,12 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
                           char *outhostsfile, dnsmasqCaps *caps)
 {
     char *confactual = NULL;
-    char *hostsfileactual = NULL;
+    g_autofree char *hostsfileactual = NULL;
     int ret = -1;
     virNetworkDef *def = NULL;
     virNetworkObj *obj = NULL;
     virCommand *cmd = NULL;
-    char *pidfile = NULL;
+    g_autofree char *pidfile = NULL;
     dnsmasqContext *dctx = NULL;
     g_autoptr(virNetworkXMLOption) xmlopt = NULL;
 
@@ -82,8 +82,6 @@ testCompareXMLToConfFiles(const char *inxml, const char *outconf,
 
  fail:
     VIR_FREE(confactual);
-    VIR_FREE(hostsfileactual);
-    VIR_FREE(pidfile);
     virCommandFree(cmd);
     virNetworkObjEndAPI(&obj);
     dnsmasqContextFree(dctx);
@@ -100,19 +98,15 @@ testCompareXMLToConfHelper(const void *data)
 {
     int result = -1;
     const testInfo *info = data;
-    char *inxml = NULL;
-    char *outconf = NULL;
-    char *outhostsfile = NULL;
+    g_autofree char *inxml = NULL;
+    g_autofree char *outconf = NULL;
+    g_autofree char *outhostsfile = NULL;
 
     inxml = g_strdup_printf("%s/networkxml2confdata/%s.xml", abs_srcdir, info->name);
     outconf = g_strdup_printf("%s/networkxml2confdata/%s.conf", abs_srcdir, info->name);
     outhostsfile = g_strdup_printf("%s/networkxml2confdata/%s.hostsfile", abs_srcdir, info->name);
 
     result = testCompareXMLToConfFiles(inxml, outconf, outhostsfile, info->caps);
-
-    VIR_FREE(inxml);
-    VIR_FREE(outconf);
-    VIR_FREE(outhostsfile);
 
     return result;
 }
