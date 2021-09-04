@@ -39,15 +39,13 @@ testLXCCapsInit(void)
 
 
     if (virTestGetDebug()) {
-        char *caps_str;
+        g_autofree char *caps_str = NULL;
 
         caps_str = virCapabilitiesFormatXML(caps);
         if (!caps_str)
             goto error;
 
         VIR_TEST_DEBUG("LXC driver capabilities:\n%s", caps_str);
-
-        VIR_FREE(caps_str);
     }
 
     return caps;

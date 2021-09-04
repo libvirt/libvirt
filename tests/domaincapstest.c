@@ -74,7 +74,7 @@ fillQemuCaps(virDomainCaps *domCaps,
              virQEMUDriverConfig *cfg)
 {
     int ret = -1;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
     virDomainCapsLoader *loader = &domCaps->os.loader;
     virDomainVirtType virtType;
@@ -127,7 +127,6 @@ fillQemuCaps(virDomainCaps *domCaps,
 
     ret = 0;
  cleanup:
-    VIR_FREE(path);
     return ret;
 }
 #endif /* WITH_QEMU */
@@ -167,7 +166,7 @@ fillXenCaps(virDomainCaps *domCaps)
 static int
 fillBhyveCaps(virDomainCaps *domCaps, unsigned int *bhyve_caps)
 {
-    virDomainCapsStringValues *firmwares = NULL;
+    g_autofree virDomainCapsStringValues *firmwares = NULL;
     int ret = -1;
 
     firmwares = g_new0(virDomainCapsStringValues, 1);
@@ -180,7 +179,6 @@ fillBhyveCaps(virDomainCaps *domCaps, unsigned int *bhyve_caps)
 
     ret = 0;
  cleanup:
-    VIR_FREE(firmwares);
     return ret;
 }
 #endif /* WITH_BHYVE */
@@ -208,8 +206,8 @@ test_virDomainCapsFormat(const void *opaque)
 {
     const struct testData *data = opaque;
     g_autoptr(virDomainCaps) domCaps = NULL;
-    char *path = NULL;
-    char *domCapsXML = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *domCapsXML = NULL;
     int ret = -1;
 
     path = g_strdup_printf("%s/domaincapsdata/%s.xml", abs_srcdir, data->name);
@@ -253,8 +251,6 @@ test_virDomainCapsFormat(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(domCapsXML);
-    VIR_FREE(path);
     return ret;
 }
 
@@ -400,7 +396,7 @@ mymain(void)
 
 #define DO_TEST_BHYVE(Name, Emulator, BhyveCaps, Type) \
     do { \
-        char *name = NULL; \
+        g_autofree char *name = NULL; \
         name = g_strdup_printf("bhyve_%s.x86_64", Name); \
         struct testData data = { \
             .name = name, \
@@ -412,7 +408,6 @@ mymain(void)
         }; \
         if (virTestRun(name, test_virDomainCapsFormat, &data) < 0) \
             ret = -1; \
-        VIR_FREE(name); \
     } while (0)
 
     DO_TEST("empty", "/bin/emulatorbin", "my-machine-type",

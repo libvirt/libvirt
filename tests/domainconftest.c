@@ -42,7 +42,7 @@ static int testGetFilesystem(const void *opaque)
 {
     int ret = -1;
     virDomainDef *def = NULL;
-    char *filename = NULL;
+    g_autofree char *filename = NULL;
     const struct testGetFilesystemData *data = opaque;
     virDomainFSDef *fsdef;
 
@@ -72,7 +72,6 @@ static int testGetFilesystem(const void *opaque)
 
  cleanup:
     virDomainDefFree(def);
-    VIR_FREE(filename);
     return ret;
 }
 

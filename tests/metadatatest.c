@@ -92,8 +92,8 @@ verifyMetadata(virDomainPtr dom,
                const char *uri)
 {
     bool ret = false;
-    char *metadataXML = NULL;
-    char *metadataAPI = NULL;
+    g_autofree char *metadataXML = NULL;
+    g_autofree char *metadataAPI = NULL;
 
     if (!expectAPI) {
         if ((metadataAPI = virDomainGetMetadata(dom,
@@ -147,8 +147,6 @@ verifyMetadata(virDomainPtr dom,
     ret = true;
 
  cleanup:
-    VIR_FREE(metadataXML);
-    VIR_FREE(metadataAPI);
 
     return ret;
 }
@@ -214,7 +212,7 @@ static int
 testTextMetadata(const void *data)
 {
     const struct metadataTest *test = data;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
 
     if (virDomainSetMetadata(test->dom, test->type, test->data, NULL, NULL, 0) < 0) {
@@ -236,7 +234,6 @@ testTextMetadata(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(actual);
 
     return ret;
 }

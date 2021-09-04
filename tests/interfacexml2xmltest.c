@@ -16,8 +16,8 @@
 static int
 testCompareXMLToXMLFiles(const char *xml)
 {
-    char *xmlData = NULL;
-    char *actual = NULL;
+    g_autofree char *xmlData = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virInterfaceDef *dev = NULL;
 
@@ -38,8 +38,6 @@ testCompareXMLToXMLFiles(const char *xml)
     ret = 0;
 
  fail:
-    VIR_FREE(xmlData);
-    VIR_FREE(actual);
     virInterfaceDefFree(dev);
     return ret;
 }
@@ -48,14 +46,13 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
 
     xml = g_strdup_printf("%s/interfaceschemadata/%s.xml", abs_srcdir,
                           (const char *)data);
 
     result = testCompareXMLToXMLFiles(xml);
 
-    VIR_FREE(xml);
     return result;
 }
 

@@ -29,8 +29,8 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     const struct testInfo *info = data;
-    char *xml_in = NULL;
-    char *xml_out = NULL;
+    g_autofree char *xml_in = NULL;
+    g_autofree char *xml_out = NULL;
     int ret = -1;
 
     xml_in = g_strdup_printf("%s/lxcxml2xmldata/lxc-%s.xml",
@@ -43,8 +43,6 @@ testCompareXMLToXMLHelper(const void *data)
                                      info->active_only,
                                      info->parse_flags,
                                      TEST_COMPARE_DOM_XML2XML_RESULT_SUCCESS);
-    VIR_FREE(xml_in);
-    VIR_FREE(xml_out);
     return ret;
 }
 

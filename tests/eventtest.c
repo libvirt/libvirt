@@ -89,7 +89,7 @@ G_GNUC_PRINTF(3, 4)
 testEventReport(const char *name, bool failed, const char *msg, ...)
 {
     va_list vargs;
-    char *str = NULL;
+    g_autofree char *str = NULL;
     struct testEventResultData data;
 
     va_start(vargs, msg);
@@ -102,7 +102,6 @@ testEventReport(const char *name, bool failed, const char *msg, ...)
     ignore_value(virTestRun(name, testEventResultCallback, &data));
 
     va_end(vargs);
-    VIR_FREE(str);
 }
 
 static void

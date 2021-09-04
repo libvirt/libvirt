@@ -16,8 +16,8 @@
 static int
 testCompareXMLToXMLFiles(const char *xml, const char *outfile)
 {
-    char *xmlData = NULL;
-    char *actual = NULL;
+    g_autofree char *xmlData = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virNodeDeviceDef *dev = NULL;
     virNodeDevCapsDef *caps;
@@ -59,8 +59,6 @@ testCompareXMLToXMLFiles(const char *xml, const char *outfile)
     ret = 0;
 
  fail:
-    VIR_FREE(xmlData);
-    VIR_FREE(actual);
     virNodeDeviceDefFree(dev);
     return ret;
 }
@@ -69,7 +67,7 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     g_autofree char *outfile = NULL;
 
     xml = g_strdup_printf("%s/nodedevschemadata/%s.xml", abs_srcdir,
@@ -80,7 +78,6 @@ testCompareXMLToXMLHelper(const void *data)
 
     result = testCompareXMLToXMLFiles(xml, outfile);
 
-    VIR_FREE(xml);
     return result;
 }
 

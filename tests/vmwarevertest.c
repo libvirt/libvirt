@@ -38,8 +38,8 @@ testVerStrParse(const void *data)
 {
     const struct testInfo *info = data;
     int ret = -1;
-    char *path = NULL;
-    char *databuf = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *databuf = NULL;
     unsigned long version;
     int vmware_type;
 
@@ -63,8 +63,6 @@ testVerStrParse(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(path);
-    VIR_FREE(databuf);
     return ret;
 }
 

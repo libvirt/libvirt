@@ -26,8 +26,8 @@ testCompareXMLToConfigFiles(const char *xmlfile,
                             bool expectError)
 {
     int ret = -1;
-    char *config = NULL;
-    char *actualxml = NULL;
+    g_autofree char *config = NULL;
+    g_autofree char *actualxml = NULL;
     virDomainDef *vmdef = NULL;
 
     if (virTestLoadFile(configfile, &config) < 0)
@@ -51,8 +51,6 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     ret = 0;
 
  fail:
-    VIR_FREE(actualxml);
-    VIR_FREE(config);
     virDomainDefFree(vmdef);
     return ret;
 }
@@ -67,8 +65,8 @@ testCompareXMLToConfigHelperLegacy(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *config = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *config = NULL;
 
     xml = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
                           abs_srcdir, info->name);
@@ -77,8 +75,6 @@ testCompareXMLToConfigHelperLegacy(const void *data)
 
     result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
-    VIR_FREE(xml);
-    VIR_FREE(config);
     return result;
 }
 
@@ -87,8 +83,8 @@ testCompareXMLToConfigHelperV3(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *config = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *config = NULL;
 
     xml = g_strdup_printf("%s/lxcconf2xmldata/lxcconf2xml-%s.xml",
                           abs_srcdir, info->name);
@@ -97,8 +93,6 @@ testCompareXMLToConfigHelperV3(const void *data)
 
     result = testCompareXMLToConfigFiles(xml, config, info->expectError);
 
-    VIR_FREE(xml);
-    VIR_FREE(config);
     return result;
 }
 

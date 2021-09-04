@@ -34,8 +34,8 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
-    char *inxml = NULL;
-    char *outxml = NULL;
+    g_autofree char *inxml = NULL;
+    g_autofree char *outxml = NULL;
     const struct testInfo *info = data;
 
     inxml = g_strdup_printf("%s/secretxml2xmlin/%s.xml", abs_srcdir, info->name);
@@ -45,9 +45,6 @@ testCompareXMLToXMLHelper(const void *data)
                              info->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml);
-
-    VIR_FREE(inxml);
-    VIR_FREE(outxml);
 
     return result;
 }

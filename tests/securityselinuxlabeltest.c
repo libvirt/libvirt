@@ -59,7 +59,7 @@ testUserXattrEnabled(void)
     int ret = -1;
     ssize_t len;
     const char *con_value = "system_u:object_r:svirt_image_t:s0:c41,c264";
-    char *path = NULL;
+    g_autofree char *path = NULL;
     path = g_strdup_printf("%s/securityselinuxlabeldata/testxattr", abs_builddir);
 
     if (g_mkdir_with_parents(abs_builddir "/securityselinuxlabeldata", 0777) < 0 ||
@@ -79,7 +79,6 @@ testUserXattrEnabled(void)
  cleanup:
     unlink(path);
     rmdir(abs_builddir "/securityselinuxlabeldata");
-    VIR_FREE(path);
     return ret;
 }
 
@@ -101,9 +100,9 @@ testSELinuxLoadFileList(const char *testname,
                         size_t *nfiles)
 {
     int ret = -1;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     FILE *fp = NULL;
-    char *line = NULL;
+    g_autofree char *line = NULL;
 
     *files = NULL;
     *nfiles = 0;
@@ -153,8 +152,6 @@ testSELinuxLoadFileList(const char *testname,
 
  cleanup:
     VIR_FORCE_FCLOSE(fp);
-    VIR_FREE(path);
-    VIR_FREE(line);
     return ret;
 }
 

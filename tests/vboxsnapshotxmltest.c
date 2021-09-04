@@ -46,9 +46,9 @@ testFilterXML(char *xml)
 static int
 testCompareXMLtoXMLFiles(const char *xml)
 {
-    char *xmlData = NULL;
-    char *actual = NULL;
-    char *pathResult = NULL;
+    g_autofree char *xmlData = NULL;
+    g_autofree char *actual = NULL;
+    g_autofree char *pathResult = NULL;
     int ret = -1;
     virVBoxSnapshotConfMachine *machine = NULL;
 
@@ -84,10 +84,7 @@ testCompareXMLtoXMLFiles(const char *xml)
  cleanup:
     unlink(pathResult);
     rmdir(abs_builddir "/vboxsnapshotxmldata");
-    VIR_FREE(xmlData);
-    VIR_FREE(actual);
     virVBoxSnapshotConfMachineFree(machine);
-    VIR_FREE(pathResult);
 
     return ret;
 }
@@ -96,14 +93,13 @@ static int
 testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
 
     xml = g_strdup_printf("%s/vboxsnapshotxmldata/%s.vbox", abs_srcdir,
                           (const char *)data);
 
     result = testCompareXMLtoXMLFiles(xml);
 
-    VIR_FREE(xml);
     return result;
 }
 

@@ -118,11 +118,11 @@ test3(const void *data G_GNUC_UNUSED)
     const char *expect_fabric_wwn = "2001000dec9877c1";
     const char *expect_max_vports = "127";
     const char *expect_vports = "0";
-    char *wwnn = NULL;
-    char *wwpn = NULL;
-    char *fabric_wwn = NULL;
-    char *max_vports = NULL;
-    char *vports = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
+    g_autofree char *fabric_wwn = NULL;
+    g_autofree char *max_vports = NULL;
+    g_autofree char *vports = NULL;
     int ret = -1;
 
     if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM,
@@ -155,11 +155,6 @@ test3(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(wwnn);
-    VIR_FREE(wwpn);
-    VIR_FREE(fabric_wwn);
-    VIR_FREE(max_vports);
-    VIR_FREE(vports);
     return ret;
 }
 
@@ -168,7 +163,7 @@ static int
 test4(const void *data G_GNUC_UNUSED)
 {
     const char *expect_hostname = "host5";
-    char *hostname = NULL;
+    g_autofree char *hostname = NULL;
     int ret = -1;
 
     if (!(hostname = virVHBAGetHostByWWN(TEST_FC_HOST_PREFIX,
@@ -181,7 +176,6 @@ test4(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(hostname);
     return ret;
 }
 
@@ -193,7 +187,7 @@ static int
 test5(const void *data G_GNUC_UNUSED)
 {
     const char *expect_hostname = "host5";
-    char *hostname = NULL;
+    g_autofree char *hostname = NULL;
     int ret = -1;
 
     if (!(hostname = virVHBAFindVportHost(TEST_FC_HOST_PREFIX)))
@@ -204,7 +198,6 @@ test5(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(hostname);
     return ret;
 }
 
@@ -214,9 +207,9 @@ test6(const void *data G_GNUC_UNUSED)
 {
     const char *expect_wwnn = "2002001b32a9da4e";
     const char *expect_wwpn = "2102001b32a9da4e";
-    char *wwnn = NULL;
-    char *wwpn = NULL;
-    char *fabric_wwn = NULL;
+    g_autofree char *wwnn = NULL;
+    g_autofree char *wwpn = NULL;
+    g_autofree char *fabric_wwn = NULL;
     int ret = -1;
 
     if (!(wwnn = virVHBAGetConfig(TEST_FC_HOST_PREFIX, TEST_FC_HOST_NUM_NO_FAB,
@@ -238,9 +231,6 @@ test6(const void *data G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(wwnn);
-    VIR_FREE(wwpn);
-    VIR_FREE(fabric_wwn);
     return ret;
 }
 

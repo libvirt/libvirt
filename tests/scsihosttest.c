@@ -67,8 +67,8 @@ static int
 create_scsihost(const char *fakesysfsdir, const char *devicepath,
                 const char *unique_id, const char *hostname)
 {
-    char *unique_id_path = NULL;
-    char *link_path = NULL;
+    g_autofree char *unique_id_path = NULL;
+    g_autofree char *link_path = NULL;
     char *spot;
     int ret = -1;
     int fd = -1;
@@ -137,8 +137,6 @@ create_scsihost(const char *fakesysfsdir, const char *devicepath,
 
  cleanup:
     VIR_FORCE_CLOSE(fd);
-    VIR_FREE(unique_id_path);
-    VIR_FREE(link_path);
     return ret;
 }
 
@@ -242,8 +240,8 @@ static int
 mymain(void)
 {
     int ret = -1;
-    char *fakerootdir = NULL;
-    char *fakesysfsdir = NULL;
+    g_autofree char *fakerootdir = NULL;
+    g_autofree char *fakesysfsdir = NULL;
 
     fakerootdir = g_strdup(FAKEROOTDIRTEMPLATE);
 
@@ -279,8 +277,6 @@ mymain(void)
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
-    VIR_FREE(fakerootdir);
-    VIR_FREE(fakesysfsdir);
     VIR_FREE(scsihost_class_path);
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

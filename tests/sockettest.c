@@ -43,7 +43,7 @@ static int testParse(virSocketAddr *addr, const char *addrstr, int family, bool 
 
 static int testFormat(virSocketAddr *addr, const char *addrstr, bool pass)
 {
-    char *newaddrstr;
+    g_autofree char *newaddrstr = NULL;
 
     newaddrstr = virSocketAddrFormat(addr);
     if (!newaddrstr)
@@ -51,10 +51,8 @@ static int testFormat(virSocketAddr *addr, const char *addrstr, bool pass)
 
     if (STRNEQ(newaddrstr, addrstr)) {
         virTestDifference(stderr, addrstr, newaddrstr);
-        VIR_FREE(newaddrstr);
         return pass ? -1 : 0;
     } else {
-        VIR_FREE(newaddrstr);
         return pass ? 0 : -1;
     }
 }

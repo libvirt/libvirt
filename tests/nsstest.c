@@ -118,7 +118,7 @@ testGetHostByName(const void *opaque)
     i = 0;
     while (*addrList) {
         virSocketAddr sa;
-        char *ipAddr;
+        g_autofree char *ipAddr = NULL;
         void *address = *addrList;
 
         memset(&sa, 0, sizeof(sa));
@@ -138,10 +138,8 @@ testGetHostByName(const void *opaque)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "Unexpected address %s, expecting %s",
                            ipAddr, NULLSTR(data->ipAddr[i]));
-            VIR_FREE(ipAddr);
             return -1;
         }
-        VIR_FREE(ipAddr);
 
         addrList++;
         i++;
