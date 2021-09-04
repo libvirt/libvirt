@@ -650,8 +650,8 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
 
 {
     struct qemuMonitorJSONTestAttachChardevData data = {0};
-    char *jsonreply = NULL;
-    char *fulllabel = NULL;
+    g_autofree char *jsonreply = NULL;
+    g_autofree char *fulllabel = NULL;
     int ret = -1;
 
     if (!reply)
@@ -680,8 +680,6 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
 
  cleanup:
     qemuMonitorTestFree(data.test);
-    VIR_FREE(jsonreply);
-    VIR_FREE(fulllabel);
     return ret;
 }
 
@@ -1723,7 +1721,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
     virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
     qemuMonitorMigrationStats stats, expectedStats;
-    char *error = NULL;
+    g_autofree char *error = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -1784,7 +1782,6 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(error);
     return ret;
 }
 
@@ -2162,10 +2159,10 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
 {
     const struct testCPUData *data = opaque;
     virCPUData *cpuData = NULL;
-    char *jsonFile = NULL;
-    char *dataFile = NULL;
-    char *jsonStr = NULL;
-    char *actual = NULL;
+    g_autofree char *jsonFile = NULL;
+    g_autofree char *dataFile = NULL;
+    g_autofree char *jsonStr = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
@@ -2211,10 +2208,6 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(jsonFile);
-    VIR_FREE(dataFile);
-    VIR_FREE(jsonStr);
-    VIR_FREE(actual);
     virCPUDataFree(cpuData);
     return ret;
 }
@@ -2409,12 +2402,12 @@ testQemuMonitorCPUInfo(const void *opaque)
 {
     const struct testCPUInfoData *data = opaque;
     virDomainObj *vm = NULL;
-    char *queryCpusFile = NULL;
-    char *queryHotpluggableFile = NULL;
-    char *dataFile = NULL;
-    char *queryCpusStr = NULL;
-    char *queryHotpluggableStr = NULL;
-    char *actual = NULL;
+    g_autofree char *queryCpusFile = NULL;
+    g_autofree char *queryHotpluggableFile = NULL;
+    g_autofree char *dataFile = NULL;
+    g_autofree char *queryCpusStr = NULL;
+    g_autofree char *queryHotpluggableStr = NULL;
+    g_autofree char *actual = NULL;
     const char *queryCpusFunction;
     qemuMonitorCPUInfo *vcpus = NULL;
     int rc;
@@ -2468,12 +2461,6 @@ testQemuMonitorCPUInfo(const void *opaque)
 
     ret = 0;
  cleanup:
-    VIR_FREE(queryCpusFile);
-    VIR_FREE(queryHotpluggableFile);
-    VIR_FREE(dataFile);
-    VIR_FREE(queryCpusStr);
-    VIR_FREE(queryHotpluggableStr);
-    VIR_FREE(actual);
     qemuMonitorCPUInfoFree(vcpus, data->maxvcpus);
     return ret;
 }
@@ -2518,8 +2505,8 @@ testBlockNodeNameDetect(const void *opaque)
 {
     const char *testname = opaque;
     const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
-    char *resultFile = NULL;
-    char *actual = NULL;
+    g_autofree char *resultFile = NULL;
+    g_autofree char *actual = NULL;
     virJSONValue *namedNodesJson = NULL;
     virJSONValue *blockstatsJson = NULL;
     GHashTable *nodedata = NULL;
@@ -2553,8 +2540,6 @@ testBlockNodeNameDetect(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(resultFile);
-    VIR_FREE(actual);
     virHashFree(nodedata);
     virJSONValueFree(namedNodesJson);
     virJSONValueFree(blockstatsJson);
@@ -2943,7 +2928,7 @@ mymain(void)
     testQemuMonitorJSONSimpleFuncData simpleFunc;
     struct testQAPISchemaData qapiData;
     virJSONValue *metaschema = NULL;
-    char *metaschemastr = NULL;
+    g_autofree char *metaschemastr = NULL;
 
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
@@ -3235,7 +3220,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetCPUModelBaseline);
 
  cleanup:
-    VIR_FREE(metaschemastr);
     virJSONValueFree(metaschema);
     virHashFree(qapiData.schema);
     qemuTestDriverFree(&driver);

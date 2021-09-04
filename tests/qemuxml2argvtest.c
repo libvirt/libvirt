@@ -643,7 +643,7 @@ testCompareXMLToArgv(const void *data)
     virDomainChrSourceDef monitor_chr;
     g_autoptr(virConnect) conn = NULL;
     virError *err = NULL;
-    char *log = NULL;
+    g_autofree char *log = NULL;
     g_autoptr(virCommand) cmd = NULL;
     qemuDomainObjPrivate *priv = NULL;
     g_autoptr(xmlDoc) xml = NULL;
@@ -815,7 +815,6 @@ testCompareXMLToArgv(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(log);
     virDomainChrSourceDefClear(&monitor_chr);
     virObjectUnref(vm);
     virIdentitySetCurrent(NULL);

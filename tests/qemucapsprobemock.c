@@ -58,7 +58,7 @@ int
 qemuMonitorSend(qemuMonitor *mon,
                 qemuMonitorMessage *msg)
 {
-    char *reformatted;
+    g_autofree char *reformatted = NULL;
 
     REAL_SYM(realQemuMonitorSend);
 
@@ -73,7 +73,6 @@ qemuMonitorSend(qemuMonitor *mon,
         printLineSkipEmpty("\n", stdout);
 
     printLineSkipEmpty(reformatted, stdout);
-    VIR_FREE(reformatted);
 
     return realQemuMonitorSend(mon, msg);
 }
@@ -89,7 +88,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
                              qemuMonitorMessage *msg)
 {
     virJSONValue *value = NULL;
-    char *json = NULL;
+    g_autofree char *json = NULL;
     int ret;
 
     REAL_SYM(realQemuMonitorJSONIOProcessLine);
@@ -116,7 +115,6 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
     }
 
  cleanup:
-    VIR_FREE(json);
     virJSONValueFree(value);
     return ret;
 }
