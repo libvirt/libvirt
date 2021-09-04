@@ -229,7 +229,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDef *inc,
 {
     GHashTable *tmpvars = NULL;
     int ret = -1;
-    char *xml;
+    g_autofree char *xml = NULL;
 
     xml = g_strdup_printf("%s/nwfilterxml2firewalldata/%s.xml", abs_srcdir,
                           inc->filterref);
@@ -249,7 +249,6 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDef *inc,
     if (ret < 0)
         virNWFilterInstReset(inst);
     virHashFree(tmpvars);
-    VIR_FREE(xml);
     return ret;
 }
 
@@ -350,7 +349,7 @@ static int testSetDefaultParameters(GHashTable *vars)
 static int testCompareXMLToArgvFiles(const char *xml,
                                      const char *cmdline)
 {
-    char *actualargv = NULL;
+    g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     GHashTable *vars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterInst inst;
@@ -382,7 +381,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
     ret = 0;
 
  cleanup:
-    VIR_FREE(actualargv);
     virNWFilterInstReset(&inst);
     virHashFree(vars);
     return ret;
@@ -398,8 +396,8 @@ testCompareXMLToIPTablesHelper(const void *data)
 {
     int result = -1;
     const struct testInfo *info = data;
-    char *xml = NULL;
-    char *args = NULL;
+    g_autofree char *xml = NULL;
+    g_autofree char *args = NULL;
 
     xml = g_strdup_printf("%s/nwfilterxml2firewalldata/%s.xml",
                           abs_srcdir, info->name);
@@ -408,8 +406,6 @@ testCompareXMLToIPTablesHelper(const void *data)
 
     result = testCompareXMLToArgvFiles(xml, args);
 
-    VIR_FREE(xml);
-    VIR_FREE(args);
     return result;
 }
 

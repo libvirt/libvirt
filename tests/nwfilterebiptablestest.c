@@ -101,7 +101,7 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -X libvirt-I-vnet0\n"
         "ebtables --concurrent -t nat -F libvirt-O-vnet0\n"
         "ebtables --concurrent -t nat -X libvirt-O-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -119,7 +119,6 @@ testNWFilterEBIPTablesAllTeardown(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -167,7 +166,7 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -L libvirt-P-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-J-vnet0 libvirt-I-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -185,7 +184,6 @@ testNWFilterEBIPTablesTearOldRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -211,7 +209,7 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -X libvirt-J-vnet0\n"
         "ebtables --concurrent -t nat -F libvirt-P-vnet0\n"
         "ebtables --concurrent -t nat -X libvirt-P-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -229,7 +227,6 @@ testNWFilterEBIPTablesRemoveBasicRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -240,7 +237,7 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *expected =
         VIR_NWFILTER_NEW_RULES_TEARDOWN;
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -258,7 +255,6 @@ testNWFilterEBIPTablesTearNewRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -306,7 +302,7 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -A libvirt-J-vnet0 -j DROP\n"
         "ebtables --concurrent -t nat -A PREROUTING -i vnet0 -j libvirt-J-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-J-vnet0 libvirt-I-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virMacAddr mac = { .addr = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60 } };
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -325,7 +321,6 @@ testNWFilterEBIPTablesApplyBasicRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -381,7 +376,7 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -A POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-J-vnet0 libvirt-I-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virMacAddr mac = { .addr = { 0x10, 0x20, 0x30, 0x40, 0x50, 0x60 } };
     const char *servers[] = { "192.168.122.1", "10.0.0.1", "10.0.0.2" };
@@ -410,7 +405,6 @@ testNWFilterEBIPTablesApplyDHCPOnlyRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 
@@ -460,7 +454,7 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
         "ebtables --concurrent -t nat -A POSTROUTING -o vnet0 -j libvirt-P-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-J-vnet0 libvirt-I-vnet0\n"
         "ebtables --concurrent -t nat -E libvirt-P-vnet0 libvirt-O-vnet0\n";
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -478,7 +472,6 @@ testNWFilterEBIPTablesApplyDropAllRules(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    VIR_FREE(actual);
     return ret;
 }
 

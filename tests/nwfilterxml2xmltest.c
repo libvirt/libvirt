@@ -20,7 +20,7 @@ static int
 testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
                          bool expect_error)
 {
-    char *actual = NULL;
+    g_autofree char *actual = NULL;
     int ret = -1;
     virNWFilterDef *dev = NULL;
 
@@ -44,7 +44,6 @@ testCompareXMLToXMLFiles(const char *inxml, const char *outxml,
     ret = 0;
 
  fail:
-    VIR_FREE(actual);
     virNWFilterDefFree(dev);
     return ret;
 }
@@ -59,16 +58,13 @@ testCompareXMLToXMLHelper(const void *data)
 {
     int result = -1;
     const test_parms *tp = data;
-    char *inxml = NULL;
-    char *outxml = NULL;
+    g_autofree char *inxml = NULL;
+    g_autofree char *outxml = NULL;
 
     inxml = g_strdup_printf("%s/nwfilterxml2xmlin/%s.xml", abs_srcdir, tp->name);
     outxml = g_strdup_printf("%s/nwfilterxml2xmlout/%s.xml", abs_srcdir, tp->name);
 
     result = testCompareXMLToXMLFiles(inxml, outxml, tp->expect_warning);
-
-    VIR_FREE(inxml);
-    VIR_FREE(outxml);
 
     return result;
 }
