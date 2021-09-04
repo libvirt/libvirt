@@ -68,7 +68,6 @@ testCapsInit(void)
 static int
 testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
 {
-    int ret = -1;
     g_autofree char *vmxData = NULL;
     g_autofree char *formatted = NULL;
     g_autoptr(virDomainDef) def = NULL;
@@ -79,31 +78,27 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
     def = virVMXParseConfig(&ctx, xmlopt, caps, vmxData);
     if (should_fail_parse) {
         if (!def)
-            ret = 0;
-        else
-            VIR_TEST_DEBUG("passed instead of expected failure");
-        goto cleanup;
+            return 0;
+
+        VIR_TEST_DEBUG("passed instead of expected failure");
+        return -1;
     }
     if (!def)
-        goto cleanup;
+        return -1;
 
     if (!virDomainDefCheckABIStability(def, def, xmlopt)) {
         fprintf(stderr, "ABI stability check failed on %s", vmx);
-        goto cleanup;
+        return -1;
     }
 
     if (!(formatted = virDomainDefFormat(def, xmlopt,
                                          VIR_DOMAIN_DEF_FORMAT_SECURE)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(formatted, xml) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 struct testInfo {
