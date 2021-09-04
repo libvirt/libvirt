@@ -396,7 +396,7 @@ void testTLSWriteCertChain(const char *filename,
                            size_t ncerts)
 {
     size_t i;
-    int fd;
+    VIR_AUTOCLOSE fd = -1;
     int err;
     static char buffer[1024*1024];
     size_t size;
@@ -420,8 +420,6 @@ void testTLSWriteCertChain(const char *filename,
             abort();
         }
     }
-
-    VIR_FORCE_CLOSE(fd);
 }
 
 

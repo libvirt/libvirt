@@ -38,7 +38,7 @@ VIR_LOG_INIT("tests.fdstreamtest");
 
 static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
 {
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     g_autofree char *file = NULL;
     int ret = -1;
     g_autofree char *pattern = NULL;
@@ -144,7 +144,6 @@ static int testFDStreamReadCommon(const char *scratchdir, bool blocking)
  cleanup:
     if (st)
         virStreamFree(st);
-    VIR_FORCE_CLOSE(fd);
     if (file != NULL)
         unlink(file);
     if (conn)
@@ -165,7 +164,7 @@ static int testFDStreamReadNonblock(const void *data)
 
 static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
 {
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     g_autofree char *file = NULL;
     int ret = -1;
     g_autofree char *pattern = NULL;
@@ -284,7 +283,6 @@ static int testFDStreamWriteCommon(const char *scratchdir, bool blocking)
  cleanup:
     if (st)
         virStreamFree(st);
-    VIR_FORCE_CLOSE(fd);
     if (file != NULL)
         unlink(file);
     if (conn)

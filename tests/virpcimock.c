@@ -177,7 +177,7 @@ make_file(const char *path,
           const char *value,
           ssize_t len)
 {
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     g_autofree char *filepath = NULL;
     if (value && len == -1)
         len = strlen(value);
@@ -189,8 +189,6 @@ make_file(const char *path,
 
     if (value && safewrite(fd, value, len) != len)
         ABORT("Unable to write: %s", filepath);
-
-    VIR_FORCE_CLOSE(fd);
 }
 
 static void

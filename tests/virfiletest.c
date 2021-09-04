@@ -194,7 +194,7 @@ holesSupported(void)
 {
     off_t offsets[] = {EXTENT, EXTENT, EXTENT, -1};
     off_t tmp;
-    int fd;
+    VIR_AUTOCLOSE fd = -1;
     bool ret = false;
 
     if ((fd = makeSparseFile(offsets, true)) < 0)
@@ -229,7 +229,6 @@ holesSupported(void)
 
     ret = true;
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
@@ -261,7 +260,7 @@ static int
 testFileInData(const void *opaque)
 {
     const struct testFileInData *data = opaque;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     int ret = -1;
     size_t i;
 
@@ -303,7 +302,6 @@ testFileInData(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 

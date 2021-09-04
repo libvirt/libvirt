@@ -125,7 +125,7 @@ static int testRotatingFileInitOne(const char *filename,
         unlink(filename);
     } else {
         char buf[1024];
-        int fd;
+        VIR_AUTOCLOSE fd = -1;
 
         VIR_DEBUG("Creating %s size %zu", filename, (size_t)size);
 
@@ -142,12 +142,10 @@ static int testRotatingFileInitOne(const char *filename,
 
             if (safewrite(fd, buf, towrite) != towrite) {
                 fprintf(stderr, "Cannot write to %s\n", filename);
-                VIR_FORCE_CLOSE(fd);
                 return -1;
             }
             size -= towrite;
         }
-        VIR_FORCE_CLOSE(fd);
     }
     return 0;
 }

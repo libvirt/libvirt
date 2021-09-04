@@ -71,7 +71,7 @@ create_scsihost(const char *fakesysfsdir, const char *devicepath,
     g_autofree char *link_path = NULL;
     char *spot;
     int ret = -1;
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
 
     unique_id_path = g_strdup_printf("%s/devices/pci0000:00/%s/unique_id",
                                      fakesysfsdir, devicepath);
@@ -136,7 +136,6 @@ create_scsihost(const char *fakesysfsdir, const char *devicepath,
     ret = 0;
 
  cleanup:
-    VIR_FORCE_CLOSE(fd);
     return ret;
 }
 
