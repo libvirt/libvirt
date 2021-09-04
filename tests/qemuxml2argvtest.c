@@ -107,7 +107,6 @@ fakeStoragePoolLookupByName(virConnectPtr conn,
                             const char *name)
 {
     g_autofree char *xmlpath = NULL;
-    virStoragePoolPtr ret = NULL;
 
     if (STRNEQ(name, "inactive")) {
         xmlpath = g_strdup_printf("%s/%s%s.xml", abs_srcdir,
@@ -116,14 +115,11 @@ fakeStoragePoolLookupByName(virConnectPtr conn,
         if (!virFileExists(xmlpath)) {
             virReportError(VIR_ERR_NO_STORAGE_POOL,
                            "File '%s' not found", xmlpath);
-            goto cleanup;
+            return NULL;
         }
     }
 
-    ret = virGetStoragePool(conn, name, fakeUUID, NULL, NULL);
-
- cleanup:
-    return ret;
+    return virGetStoragePool(conn, name, fakeUUID, NULL, NULL);
 }
 
 
@@ -132,7 +128,6 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
                            const char *name)
 {
     g_auto(GStrv) volinfo = NULL;
-    virStorageVolPtr ret = NULL;
 
     if (STREQ(pool->name, "inactive")) {
         virReportError(VIR_ERR_OPERATION_INVALID,
@@ -155,15 +150,11 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
     if (!volinfo[1])
         goto fallback;
 
-    ret = virGetStorageVol(pool->conn, pool->name, volinfo[1], volinfo[0],
+    return virGetStorageVol(pool->conn, pool->name, volinfo[1], volinfo[0],
                            NULL, NULL);
 
- cleanup:
-    return ret;
-
  fallback:
-    ret = virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
-    goto cleanup;
+    return virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
 }
 
 static int
@@ -210,10 +201,8 @@ fakeStoragePoolGetXMLDesc(virStoragePoolPtr pool,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "failed to load XML file '%s'",
                        xmlpath);
-        goto cleanup;
+        return NULL;
     }
-
- cleanup:
 
     return xmlbuf;
 }

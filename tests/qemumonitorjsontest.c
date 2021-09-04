@@ -1719,7 +1719,6 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    int ret = -1;
     qemuMonitorMigrationStats stats, expectedStats;
     g_autofree char *error = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
@@ -1756,33 +1755,31 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
                                "    },"
                                "    \"id\": \"libvirt-14\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test),
                                          &stats, &error) < 0)
-        goto cleanup;
+        return -1;
 
     if (memcmp(&stats, &expectedStats, sizeof(stats)) != 0 || error) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Invalid migration statistics");
-        goto cleanup;
+        return -1;
     }
 
     memset(&stats, 0, sizeof(stats));
     if (qemuMonitorJSONGetMigrationStats(qemuMonitorTestGetMonitor(test),
                                          &stats, &error) < 0)
-        goto cleanup;
+        return -1;
 
     if (stats.status != QEMU_MONITOR_MIGRATION_STATUS_ERROR ||
         STRNEQ_NULLABLE(error, "It's broken")) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "Invalid failed migration status");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2163,7 +2160,6 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
     g_autofree char *dataFile = NULL;
     g_autofree char *jsonStr = NULL;
     g_autofree char *actual = NULL;
-    int ret = -1;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
@@ -2175,7 +2171,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
                                abs_srcdir, data->name);
 
     if (virTestLoadFile(jsonFile, &jsonStr) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "qom-list",
                                "{"
@@ -2191,24 +2187,22 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
                                "    ],"
                                "    \"id\": \"libvirt-19\""
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "qom-get", jsonStr) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
                                       &cpuData, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(actual = virCPUDataFormat(cpuData)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actual, dataFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2217,7 +2211,7 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
     g_autoptr(virCPUData) cpuData = NULL;
-    int rv, ret = -1;
+    int rv;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -2231,26 +2225,24 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
                                "        \"desc\": \"The command qom-list has not been found\""
                                "    }"
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     rv = qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
                                        &cpuData, NULL);
     if (rv != -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected return value %d, expecting -2", rv);
-        goto cleanup;
+        return -1;
     }
 
     if (cpuData) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Unexpected allocation of data = %p, expecting NULL",
                        cpuData);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -2584,10 +2576,10 @@ testQAPISchemaValidate(const void *opaque)
     int ret = -1;
 
     if (virQEMUQAPISchemaPathGet(data->query, data->schema, &schemaroot) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(json = virJSONValueFromString(data->json)))
-        goto cleanup;
+        return -1;
 
     if ((testQEMUSchemaValidate(json, schemaroot, data->schema, false,
                                 &debug) == 0) != data->success) {
@@ -2604,8 +2596,6 @@ testQAPISchemaValidate(const void *opaque)
         VIR_FREE(debugstr);
     }
 
-
- cleanup:
     return ret;
 }
 

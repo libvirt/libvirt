@@ -708,38 +708,25 @@ qemuMonitorTestProcessGuestAgentSync(qemuMonitorTest *test,
     unsigned long long id;
     const char *cmdname;
     g_autofree char *retmsg = NULL;
-    int ret = -1;
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
 
-    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        ret = qemuMonitorTestAddErrorResponse(test, "Missing guest-sync command name");
-        goto cleanup;
-    }
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute")))
+        return qemuMonitorTestAddErrorResponse(test, "Missing guest-sync command name");
 
-    if (STRNEQ(cmdname, "guest-sync")) {
-        ret = qemuMonitorTestAddInvalidCommandResponse(test, "guest-sync", cmdname);
-        goto cleanup;
-    }
+    if (STRNEQ(cmdname, "guest-sync"))
+        return qemuMonitorTestAddInvalidCommandResponse(test, "guest-sync", cmdname);
 
-    if (!(args = virJSONValueObjectGet(val, "arguments"))) {
-        ret = qemuMonitorTestAddErrorResponse(test, "Missing arguments for guest-sync");
-        goto cleanup;
-    }
+    if (!(args = virJSONValueObjectGet(val, "arguments")))
+        return qemuMonitorTestAddErrorResponse(test, "Missing arguments for guest-sync");
 
-    if (virJSONValueObjectGetNumberUlong(args, "id", &id)) {
-        ret = qemuMonitorTestAddErrorResponse(test, "Missing id for guest sync");
-        goto cleanup;
-    }
+    if (virJSONValueObjectGetNumberUlong(args, "id", &id))
+        return qemuMonitorTestAddErrorResponse(test, "Missing id for guest sync");
 
     retmsg = g_strdup_printf("{\"return\":%llu}", id);
 
-
-    ret = qemuMonitorTestAddResponse(test, retmsg);
-
- cleanup:
-    return ret;
+    return qemuMonitorTestAddResponse(test, retmsg);
 }
 
 
@@ -1194,10 +1181,10 @@ qemuMonitorTestNewFromFile(const char *fileName,
     char *singleReply;
 
     if (virTestLoadFile(fileName, &json) < 0)
-        goto cleanup;
+        return NULL;
 
     if (simple && !(test = qemuMonitorTestNewSimple(xmlopt)))
-        goto cleanup;
+        return NULL;
 
     /* Our JSON parser expects replies to be separated by a newline character.
      * Hence we must preprocess the file a bit. */
@@ -1237,13 +1224,11 @@ qemuMonitorTestNewFromFile(const char *fileName,
     if (test && qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
         goto error;
 
- cleanup:
     return test;
 
  error:
     qemuMonitorTestFree(test);
-    test = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 
@@ -1341,7 +1326,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
 
     if (!(ret = qemuMonitorTestNew(driver->xmlopt, vm, driver, NULL,
                                    qmpschema)))
-        goto cleanup;
+        return NULL;
 
     tmp = jsonstr;
     command = tmp;
@@ -1393,13 +1378,11 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
             goto error;
     }
 
- cleanup:
     return ret;
 
  error:
     qemuMonitorTestFree(ret);
-    ret = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 

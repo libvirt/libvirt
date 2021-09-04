@@ -104,7 +104,7 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
 
         /* Ignore QMP greeting */
         if (virJSONValueObjectHasKey(value, "QMP"))
-            goto cleanup;
+            return 0;
 
         if (first)
             first = false;
@@ -114,6 +114,5 @@ qemuMonitorJSONIOProcessLine(qemuMonitor *mon,
         printLineSkipEmpty(json, stdout);
     }
 
- cleanup:
     return ret;
 }

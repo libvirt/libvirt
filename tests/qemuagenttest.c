@@ -471,51 +471,39 @@ qemuAgentShutdownTestMonitorHandler(qemuMonitorTest *test,
     virJSONValue *args;
     const char *cmdname;
     const char *mode;
-    int ret = -1;
 
     data = qemuMonitorTestItemGetPrivateData(item);
 
     if (!(val = virJSONValueFromString(cmdstr)))
         return -1;
 
-    if (!(cmdname = virJSONValueObjectGetString(val, "execute"))) {
-        ret = qemuMonitorTestAddErrorResponse(test, "Missing command name in %s", cmdstr);
-        goto cleanup;
-    }
+    if (!(cmdname = virJSONValueObjectGetString(val, "execute")))
+        return qemuMonitorTestAddErrorResponse(test, "Missing command name in %s", cmdstr);
 
     if (STRNEQ(cmdname, "guest-shutdown")) {
-        ret = qemuMonitorTestAddInvalidCommandResponse(test, "guest-shutdown",
+        return qemuMonitorTestAddInvalidCommandResponse(test, "guest-shutdown",
                                                        cmdname);
-        goto cleanup;
     }
 
     if (!(args = virJSONValueObjectGet(val, "arguments"))) {
-        ret = qemuMonitorTestAddErrorResponse(test,
+        return qemuMonitorTestAddErrorResponse(test,
                                               "Missing arguments section");
-        goto cleanup;
     }
 
-    if (!(mode = virJSONValueObjectGetString(args, "mode"))) {
-        ret = qemuMonitorTestAddErrorResponse(test, "Missing shutdown mode");
-        goto cleanup;
-    }
+    if (!(mode = virJSONValueObjectGetString(args, "mode")))
+        return qemuMonitorTestAddErrorResponse(test, "Missing shutdown mode");
 
     if (STRNEQ(mode, data->mode)) {
-        ret = qemuMonitorTestAddErrorResponse(test,
+        return qemuMonitorTestAddErrorResponse(test,
                                               "expected shutdown mode '%s' got '%s'",
                                               data->mode, mode);
-        goto cleanup;
     }
 
     /* now don't reply but return a qemu agent event */
     qemuAgentNotifyEvent(qemuMonitorTestGetAgent(test),
                          data->event);
 
-    ret = 0;
-
- cleanup:
-    return ret;
-
+    return 0;
 }
 
 
