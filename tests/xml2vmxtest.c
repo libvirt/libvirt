@@ -72,7 +72,7 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
 {
     int result = -1;
     g_autofree char *formatted = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     def = virDomainDefParseFile(xml, xmlopt, NULL,
                                 VIR_DOMAIN_DEF_PARSE_INACTIVE);
@@ -95,7 +95,6 @@ testCompareFiles(const char *xml, const char *vmx, int virtualHW_version)
     result = 0;
 
  failure:
-    virDomainDefFree(def);
 
     return result;
 }

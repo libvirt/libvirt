@@ -28,7 +28,7 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     int ret = -1;
     g_autofree char *config = NULL;
     g_autofree char *actualxml = NULL;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
 
     if (virTestLoadFile(configfile, &config) < 0)
         goto fail;
@@ -51,7 +51,6 @@ testCompareXMLToConfigFiles(const char *xmlfile,
     ret = 0;
 
  fail:
-    virDomainDefFree(vmdef);
     return ret;
 }
 

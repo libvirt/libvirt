@@ -1009,7 +1009,7 @@ testCompareDomXML2XMLFiles(virCaps *caps G_GNUC_UNUSED,
     g_autofree char *actual = NULL;
     int ret = -1;
     testCompareDomXML2XMLResult result;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     unsigned int parse_flags = live ? 0 : VIR_DOMAIN_DEF_PARSE_INACTIVE;
     unsigned int format_flags = VIR_DOMAIN_DEF_FORMAT_SECURE;
 
@@ -1059,7 +1059,6 @@ testCompareDomXML2XMLFiles(virCaps *caps G_GNUC_UNUSED,
                        expectResult, result);
     }
 
-    virDomainDefFree(def);
     return ret;
 }
 

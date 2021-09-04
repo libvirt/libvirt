@@ -69,7 +69,7 @@ static int
 testReadNetworkConf(const void *data G_GNUC_UNUSED)
 {
     int result = -1;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autofree char *actual = NULL;
     const char *expected =
         "<domain type='openvz'>\n"
@@ -131,7 +131,6 @@ testReadNetworkConf(const void *data G_GNUC_UNUSED)
  cleanup:
     virObjectUnref(driver.xmlopt);
     virObjectUnref(driver.caps);
-    virDomainDefFree(def);
 
     return result;
 }

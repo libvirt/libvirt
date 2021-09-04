@@ -52,7 +52,7 @@ testCompareXMLToDomConfig(const char *xmlfile,
     libxl_domain_config expectconfig;
     xentoollog_logger *log = NULL;
     virPortAllocatorRange *gports = NULL;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     g_autofree char *actualjson = NULL;
     g_autofree char *tempjson = NULL;
     g_autofree char *expectjson = NULL;
@@ -128,7 +128,6 @@ testCompareXMLToDomConfig(const char *xmlfile,
         vmdef->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
         virPortAllocatorRelease(vmdef->graphics[0]->data.vnc.port);
 
-    virDomainDefFree(vmdef);
     virPortAllocatorRangeFree(gports);
     libxl_domain_config_dispose(&actualconfig);
     libxl_domain_config_dispose(&expectconfig);

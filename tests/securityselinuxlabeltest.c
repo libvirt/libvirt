@@ -275,7 +275,7 @@ testSELinuxLabeling(const void *opaque)
     testSELinuxFile *files = NULL;
     size_t nfiles = 0;
     size_t i;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     if (testSELinuxLoadFileList(testname, &files, &nfiles) < 0)
         goto cleanup;
@@ -298,7 +298,6 @@ testSELinuxLabeling(const void *opaque)
     if (testSELinuxDeleteDisks(files, nfiles) < 0)
         VIR_WARN("unable to fully clean up");
 
-    virDomainDefFree(def);
     for (i = 0; i < nfiles; i++) {
         VIR_FREE(files[i].file);
         VIR_FREE(files[i].context);

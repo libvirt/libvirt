@@ -44,7 +44,7 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     int ret = -1;
     g_autoptr(virConnect) conn = NULL;
     int wrote = 4096;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     gotxmcfgData = g_new0(char, wrote);
 
@@ -73,7 +73,6 @@ testCompareParseXML(const char *xmcfg, const char *xml)
     ret = 0;
 
  fail:
-    virDomainDefFree(def);
 
     return ret;
 }
@@ -85,7 +84,7 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     g_autofree char *gotxml = NULL;
     g_autoptr(virConf) conf = NULL;
     int ret = -1;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
 
     if (virTestLoadFile(xmcfg, &xmcfgData) < 0)
@@ -106,7 +105,6 @@ testCompareFormatXML(const char *xmcfg, const char *xml)
     ret = 0;
 
  fail:
-    virDomainDefFree(def);
 
     return ret;
 }

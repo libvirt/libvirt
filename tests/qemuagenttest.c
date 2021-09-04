@@ -313,7 +313,7 @@ testQemuAgentGetFSInfo(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     qemuMonitorTest *test = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     qemuAgentFSInfo **info = NULL;
     int ret = -1, ninfo = 0, i;
 
@@ -405,7 +405,6 @@ testQemuAgentGetFSInfo(const void *data)
     for (i = 0; i < ninfo; i++)
         qemuAgentFSInfoFree(info[i]);
     VIR_FREE(info);
-    virDomainDefFree(def);
     qemuMonitorTestFree(test);
     return ret;
 }

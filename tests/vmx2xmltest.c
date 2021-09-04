@@ -71,7 +71,7 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
     int ret = -1;
     g_autofree char *vmxData = NULL;
     g_autofree char *formatted = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     if (virTestLoadFile(vmx, &vmxData) < 0)
         return -1;
@@ -102,7 +102,6 @@ testCompareFiles(const char *vmx, const char *xml, bool should_fail_parse)
     ret = 0;
 
  cleanup:
-    virDomainDefFree(def);
 
     return ret;
 }
