@@ -369,45 +369,37 @@ static int
 testScopeName(const void *opaque)
 {
     const struct testNameData *data = opaque;
-    int ret = -1;
     g_autofree char *actual = NULL;
 
     if (!(actual = virSystemdMakeScopeName(data->name, "lxc", data->legacy)))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(actual, data->expected)) {
         fprintf(stderr, "Expected '%s' but got '%s'\n",
                 data->expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
 testMachineName(const void *opaque)
 {
     const struct testNameData *data = opaque;
-    int ret = -1;
     g_autofree char *actual = NULL;
 
     if (!(actual = virDomainDriverGenerateMachineName("qemu", data->root,
                                                       data->id, data->name, true)))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(actual, data->expected)) {
         fprintf(stderr, "Expected '%s' but got '%s'\n",
                 data->expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 typedef int (*virSystemdCanHelper)(bool * result);

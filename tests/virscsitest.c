@@ -37,18 +37,15 @@ static int
 test1(const void *data G_GNUC_UNUSED)
 {
     g_autofree char *name = NULL;
-    int ret = -1;
 
     if (!(name = virSCSIDeviceGetDevName(virscsi_prefix,
                                          "scsi_host1", 0, 0, 0)))
         return -1;
 
     if (STRNEQ(name, "sdh"))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 /*
@@ -161,7 +158,6 @@ test2(const void *data G_GNUC_UNUSED)
 static int
 create_symlink(const char *tmpdir, const char *src_name, const char *dst_name)
 {
-    int ret = -1;
     g_autofree char *src_path = NULL;
     g_autofree char *dst_path = NULL;
 
@@ -171,13 +167,10 @@ create_symlink(const char *tmpdir, const char *src_name, const char *dst_name)
 
     if (symlink(src_path, dst_path) < 0) {
         VIR_WARN("Failed to create symlink '%s' to '%s'", src_path, dst_path);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

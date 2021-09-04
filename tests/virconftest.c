@@ -67,7 +67,6 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
         "uint = 12345";
 
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
-    int ret = -1;
     virConfValue *val;
     unsigned long long llvalue;
     g_autofree char *str = NULL;
@@ -77,49 +76,47 @@ static int testConfMemoryNoNewline(const void *opaque G_GNUC_UNUSED)
         return -1;
 
     if (!(val = virConfGetValue(conf, "ullong")))
-        goto cleanup;
+        return -1;
 
     if (val->type != VIR_CONF_STRING)
-        goto cleanup;
+        return -1;
 
     if (virStrToLong_ull(val->str, NULL, 10, &llvalue) < 0)
-        goto cleanup;
+        return -1;
 
     if (llvalue != 123456789) {
         fprintf(stderr, "Expected '123' got '%llu'\n", llvalue);
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueType(conf, "string") !=
         VIR_CONF_STRING) {
         fprintf(stderr, "expected a string for 'string'\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueString(conf, "string", &str) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ_NULLABLE(str, "foo")) {
         fprintf(stderr, "Expected 'foo' got '%s'\n", str);
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueType(conf, "uint") != VIR_CONF_ULLONG) {
         fprintf(stderr, "expected an unsigned long for 'uint'\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueInt(conf, "uint", &uintvalue) < 0)
-        goto cleanup;
+        return -1;
 
     if (uintvalue != 12345) {
         fprintf(stderr, "Expected 12345 got %ud\n", uintvalue);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -338,7 +335,6 @@ static int testConfParseString(const void *opaque G_GNUC_UNUSED)
         "int = 6963472309248\n" \
         "string = \"foo\"\n";
 
-    int ret = -1;
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     g_autofree char *str = NULL;
 
@@ -348,25 +344,23 @@ static int testConfParseString(const void *opaque G_GNUC_UNUSED)
     if (virConfGetValueType(conf, "string") !=
         VIR_CONF_STRING) {
         fprintf(stderr, "expected a string for 'string'\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueString(conf, "string", &str) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ_NULLABLE(str, "foo")) {
         fprintf(stderr, "Expected 'foo' got '%s'\n", str);
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueString(conf, "int", &str) != -1) {
         fprintf(stderr, "Expected error for 'int'\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

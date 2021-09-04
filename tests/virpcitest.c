@@ -34,22 +34,19 @@ testVirPCIDeviceCheckDriver(virPCIDevice *dev, const char *expected)
 {
     g_autofree char *path = NULL;
     g_autofree char *driver = NULL;
-    int ret = -1;
 
     if (virPCIDeviceGetDriverPathAndName(dev, &path, &driver) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ_NULLABLE(driver, expected)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "PCI device %s driver mismatch: %s, expecting %s",
                        virPCIDeviceGetName(dev), NULLSTR(driver),
                        NULLSTR(expected));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

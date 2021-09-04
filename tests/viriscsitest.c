@@ -211,7 +211,6 @@ testISCSIGetSession(const void *data)
     const struct testSessionInfo *info = data;
     struct testIscsiadmCbData cbData = { 0 };
     g_autofree char *actual_session = NULL;
-    int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     cbData.output_version = info->output_version;
@@ -225,13 +224,10 @@ testISCSIGetSession(const void *data)
                        "Expected session: '%s' got: '%s'",
                        NULLSTR(info->expected_session),
                        NULLSTR(actual_session));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 struct testScanTargetsInfo {
@@ -295,17 +291,14 @@ testISCSIConnectionLogin(const void *data)
 {
     const struct testConnectionInfoLogin *info = data;
     struct testIscsiadmCbData cbData = { 0 };
-    int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
     virCommandSetDryRun(dryRunToken, NULL, false, false, testIscsiadmCb, &cbData);
 
     if (virISCSIConnectionLogin(info->portal, info->initiatoriqn, info->target) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

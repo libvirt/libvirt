@@ -38,22 +38,19 @@ testCryptoHash(const void *opaque)
 {
     const struct testCryptoHashData *data = opaque;
     g_autofree char *actual = NULL;
-    int ret = -1;
 
     if (virCryptoHashString(data->hash, data->input, &actual) < 0) {
         fprintf(stderr, "Failed to generate crypto hash\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(data->output, actual)) {
         fprintf(stderr, "Expected hash '%s' but got '%s'\n",
                 data->output, NULLSTR(actual));
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -75,7 +72,6 @@ testCryptoEncrypt(const void *opaque)
     size_t ivlen = 16;
     g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
-    int ret = -1;
 
     if (!virCryptoHaveCipher(data->algorithm)) {
         fprintf(stderr, "cipher algorithm=%d unavailable\n", data->algorithm);
@@ -88,29 +84,26 @@ testCryptoEncrypt(const void *opaque)
     if (virRandomBytes(enckey, enckeylen) < 0 ||
         virRandomBytes(iv, ivlen) < 0) {
         fprintf(stderr, "Failed to generate random bytes\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virCryptoEncryptData(data->algorithm, enckey, enckeylen, iv, ivlen,
                              data->input, data->inputlen,
                              &ciphertext, &ciphertextlen) < 0)
-        goto cleanup;
+        return -1;
 
     if (data->ciphertextlen != ciphertextlen) {
         fprintf(stderr, "Expected ciphertextlen(%zu) doesn't match (%zu)\n",
                 data->ciphertextlen, ciphertextlen);
-        goto cleanup;
+        return -1;
     }
 
     if (memcmp(data->ciphertext, ciphertext, ciphertextlen)) {
         fprintf(stderr, "Expected ciphertext doesn't match\n");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-
-    return ret;
+    return 0;
 }
 
 

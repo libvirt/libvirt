@@ -162,7 +162,6 @@ virNumaGetPages(int node,
 int
 virNumaGetNodeCPUs(int node, virBitmap **cpus)
 {
-    int ret = -1;
     g_autofree char *cpulist = NULL;
 
     if (virFileReadValueString(&cpulist,
@@ -177,9 +176,7 @@ virNumaGetNodeCPUs(int node, virBitmap **cpus)
         *cpus = virBitmapParseUnlimited(cpulist);
     }
     if (!*cpus)
-        goto cleanup;
+        return -1;
 
-    ret = virBitmapCountBits(*cpus);
- cleanup:
-    return ret;
+    return virBitmapCountBits(*cpus);
 }

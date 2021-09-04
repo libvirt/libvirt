@@ -103,7 +103,6 @@ static int
 testFileSanitizePath(const void *opaque)
 {
     const struct testFileSanitizePathData *data = opaque;
-    int ret = -1;
     g_autofree char *actual = NULL;
 
     if (!(actual = virFileSanitizePath(data->path)))
@@ -111,13 +110,10 @@ testFileSanitizePath(const void *opaque)
 
     if (STRNEQ(actual, data->expect)) {
         fprintf(stderr, "\nexpect: '%s'\nactual: '%s'\n", data->expect, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -195,41 +191,38 @@ holesSupported(void)
     off_t offsets[] = {EXTENT, EXTENT, EXTENT, -1};
     off_t tmp;
     VIR_AUTOCLOSE fd = -1;
-    bool ret = false;
 
     if ((fd = makeSparseFile(offsets, true)) < 0)
-        goto cleanup;
+        return false;
 
     /* The way this works is: there are 4K of data followed by 4K hole followed
      * by 4K hole again. Check if the filesystem we are running the test suite
      * on supports holes. */
     if ((tmp = lseek(fd, 0, SEEK_DATA)) == (off_t) -1)
-        goto cleanup;
+        return false;
 
     if (tmp != 0)
-        goto cleanup;
+        return false;
 
     if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
-        goto cleanup;
+        return false;
 
     if (tmp != EXTENT * 1024)
-        goto cleanup;
+        return false;
 
     if ((tmp = lseek(fd, tmp, SEEK_DATA)) == (off_t) -1)
-        goto cleanup;
+        return false;
 
     if (tmp != 2 * EXTENT * 1024)
-        goto cleanup;
+        return false;
 
     if ((tmp = lseek(fd, tmp, SEEK_HOLE)) == (off_t) -1)
-        goto cleanup;
+        return false;
 
     if (tmp != 3 * EXTENT * 1024)
-        goto cleanup;
+        return false;
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 #else /* !WITH_DECL_SEEK_HOLE || !defined(__linux__)*/
@@ -261,11 +254,10 @@ testFileInData(const void *opaque)
 {
     const struct testFileInData *data = opaque;
     VIR_AUTOCLOSE fd = -1;
-    int ret = -1;
     size_t i;
 
     if ((fd = makeSparseFile(data->offsets, data->startData)) < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; data->offsets[i] != (off_t) -1; i++) {
         bool shouldInData = data->startData;
@@ -277,32 +269,29 @@ testFileInData(const void *opaque)
             shouldInData = !shouldInData;
 
         if (virFileInData(fd, &realInData, &realLen) < 0)
-            goto cleanup;
+            return -1;
 
         if (realInData != shouldInData) {
             fprintf(stderr, "Unexpected data/hole. Expected %s got %s\n",
                     shouldInData ? "data" : "hole",
                     realInData ? "data" : "hole");
-            goto cleanup;
+            return -1;
         }
 
         shouldLen = data->offsets[i] * 1024;
         if (realLen != shouldLen) {
             fprintf(stderr, "Unexpected section length. Expected %lld got %lld\n",
                     shouldLen, realLen);
-            goto cleanup;
+            return -1;
         }
 
         if (lseek(fd, shouldLen, SEEK_CUR) < 0) {
             fprintf(stderr, "Unable to seek\n");
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

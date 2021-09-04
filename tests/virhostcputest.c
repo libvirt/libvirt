@@ -30,7 +30,6 @@ linuxTestCompareFiles(const char *cpuinfofile,
                       virArch arch,
                       const char *outputfile)
 {
-    int ret = -1;
     g_autofree char *actualData = NULL;
     virNodeInfo nodeinfo;
     g_autoptr(FILE) cpuinfo = NULL;
@@ -39,7 +38,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
     if (!cpuinfo) {
         fprintf(stderr, "unable to open: %s : %s\n",
                 cpuinfofile, g_strerror(errno));
-        goto fail;
+        return -1;
     }
 
     memset(&nodeinfo, 0, sizeof(nodeinfo));
@@ -51,7 +50,7 @@ linuxTestCompareFiles(const char *cpuinfofile,
             if (virGetLastErrorCode())
                 VIR_TEST_DEBUG("\n%s", virGetLastErrorMessage());
         }
-        goto fail;
+        return -1;
     }
 
     actualData = g_strdup_printf("CPUs: %u/%u, MHz: %u, Nodes: %u, Sockets: %u, "
@@ -61,12 +60,9 @@ linuxTestCompareFiles(const char *cpuinfofile,
                                  nodeinfo.cores, nodeinfo.threads);
 
     if (virTestCompareToFile(actualData, outputfile) < 0)
-        goto fail;
+        return -1;
 
-    ret = 0;
-
- fail:
-    return ret;
+    return 0;
 }
 
 
