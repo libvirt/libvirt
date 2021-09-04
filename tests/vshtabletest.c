@@ -55,7 +55,7 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
         " 1    fedora28   running\n"
         " 2    rhel7.5    running\n";
 
-    vshTable *table = vshTableNew("Id", "Name", "State",
+    g_autoptr(vshTable) table = vshTableNew("Id", "Name", "State",
                                     NULL); //to ask about return
     if (!table)
         goto cleanup;
@@ -75,7 +75,6 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
 
  cleanup:
     VIR_FREE(act);
-    vshTableFree(table);
     return ret;
 }
 
@@ -84,7 +83,7 @@ testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
 
-    vshTable *table = vshTableNew("Id", "Name", NULL);
+    g_autoptr(vshTable) table = vshTableNew("Id", "Name", NULL);
     if (!table)
         goto cleanup;
 
@@ -111,7 +110,6 @@ testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
     }
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -126,7 +124,7 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
         "-----------------------------------------\n"
         " 1    fedora28              running\n"
         " 2    つへソrhel7.5つへソ   running\n";
-    vshTable *table;
+    g_autoptr(vshTable) table = NULL;
 
     table = vshTableNew("Id", "名稱", "государство", NULL);
     if (!table)
@@ -141,7 +139,6 @@ testUnicode(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -157,7 +154,7 @@ testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
         "-------------------------------------------------------------------------------------------\n"
         " 1              ﻉﺪﻴﻟ ﺎﻠﺜﻘﻴﻟ ﻕﺎﻣ ﻊﻧ, ٣٠ ﻎﻴﻨﻳﺍ ﻮﺘﻧﺎﻤﺗ ﺎﻠﺛﺎﻠﺛ، ﺄﺳﺭ, ﺩﻮﻟ   ﺩﻮﻟ. ﺄﻣﺎﻣ ﺍ ﺎﻧ ﻲﻜﻧ\n"
         " ﺺﻔﺣﺓ           ﺖﻜﺘﻴﻛﺍً ﻊﻟ, ﺎﻠﺠﻧﻭﺩ ﻭﺎﻠﻌﺗﺍﺩ                              ﺵﺭ\n";
-    vshTable *table;
+    g_autoptr(vshTable) table = NULL;
     wchar_t wc;
 
     /* If this char is not classed as printable, the actual
@@ -183,7 +180,6 @@ testUnicodeArabic(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -192,7 +188,7 @@ static int
 testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
     const char *exp =
         " I\u200Bd   Name       \u200BStatus\n"
         "--------------------------\n"
@@ -220,7 +216,6 @@ testUnicodeZeroWidthChar(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -228,7 +223,7 @@ static int
 testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
     const char *exp =
         " Id   Náme       Ⓢtatus\n"
         "--------------------------\n"
@@ -247,7 +242,6 @@ testUnicodeCombiningChar(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -256,7 +250,7 @@ static int
 testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTable *table = NULL;
+    g_autoptr(vshTable) table = NULL;
     const char *exp =
         " I\\x09d   Name           Status\n"
         "----------------------------------\n"
@@ -275,7 +269,6 @@ testUnicodeNonPrintableChar(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table);
     return ret;
 }
 
@@ -283,9 +276,9 @@ static int
 testNTables(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    vshTable *table1 = NULL;
-    vshTable *table2 = NULL;
-    vshTable *table3 = NULL;
+    g_autoptr(vshTable) table1 = NULL;
+    g_autoptr(vshTable) table2 = NULL;
+    g_autoptr(vshTable) table3 = NULL;
     const char *exp1 =
         " Id   Name       Status\n"
         "--------------------------\n"
@@ -336,9 +329,6 @@ testNTables(const void *opaque G_GNUC_UNUSED)
         ret = -1;
 
  cleanup:
-    vshTableFree(table1);
-    vshTableFree(table2);
-    vshTableFree(table3);
     return ret;
 }
 
