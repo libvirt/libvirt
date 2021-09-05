@@ -715,13 +715,13 @@ int
 libxlDomainGetEmulatorType(const virDomainDef *def)
 {
     int ret = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *output = NULL;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
         if (def->emulator) {
             if (!virFileExists(def->emulator))
-                goto cleanup;
+                return ret;
 
             cmd = virCommandNew(def->emulator);
 
@@ -729,14 +729,12 @@ libxlDomainGetEmulatorType(const virDomainDef *def)
             virCommandSetOutputBuffer(cmd, &output);
 
             if (virCommandRun(cmd, NULL) < 0)
-                goto cleanup;
+                return ret;
 
             if (strstr(output, LIBXL_QEMU_DM_STR))
                 ret = LIBXL_DEVICE_MODEL_VERSION_QEMU_XEN_TRADITIONAL;
         }
     }
 
- cleanup:
-    virCommandFree(cmd);
     return ret;
 }
