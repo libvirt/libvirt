@@ -104,7 +104,7 @@ static virCPUData *
 libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap)
 {
     ssize_t ncaps;
-    virCPUData *cpudata = NULL;
+    g_autoptr(virCPUData) cpudata = NULL;
     virCPUx86CPUID cpuid[] = {
         { .eax_in = 0x00000001, .edx = hwcap[0] },
         { .eax_in = 0x00000001, .ecx = hwcap[1] },
@@ -117,17 +117,13 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap)
     };
 
     if (!(cpudata = virCPUDataNew(cpu->arch)))
-        goto error;
+        return NULL;
 
     ncaps = G_N_ELEMENTS(cpuid);
     if (libxlCapsAddCPUID(cpudata, cpuid, ncaps) < 0)
-        goto error;
+        return NULL;
 
-    return cpudata;
-
- error:
-    virCPUDataFree(cpudata);
-    return NULL;
+    return g_steal_pointer(&cpudata);
 }
 
 /* hw_caps is an array of 32-bit words whose meaning is listed in
