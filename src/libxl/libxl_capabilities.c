@@ -45,11 +45,6 @@ VIR_LOG_INIT("libxl.libxl_capabilities");
 #define LIBXL_X86_FEATURE_PAE_MASK (1 << 6)
 #define LIBXL_X86_FEATURE_LM_MASK  (1 << 29)
 
-enum libxlHwcapVersion {
-    LIBXL_HWCAP_V0 = 0,    /* for Xen 4.4 .. 4.6 */
-    LIBXL_HWCAP_V1,        /* for Xen 4.7 and up */
-};
-
 struct guest_arch {
     virArch arch;
     int hvm;
@@ -106,8 +101,7 @@ libxlCapsAddCPUID(virCPUData *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
  *
  */
 static virCPUData *
-libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
-                  enum libxlHwcapVersion version G_GNUC_UNUSED)
+libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap)
 {
     ssize_t ncaps;
     virCPUData *cpudata = NULL;
@@ -142,8 +136,7 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
  * the X'th 32-bit word of hw_cap.
  */
 static int
-libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
-                 enum libxlHwcapVersion version G_GNUC_UNUSED)
+libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info)
 {
     virCPUData *data = NULL;
     virCPUDef *cpu = NULL;
@@ -177,7 +170,7 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
 
     ret = 0;
 
-    if (!(data = libxlCapsNodeData(cpu, phy_info->hw_cap, version)) ||
+    if (!(data = libxlCapsNodeData(cpu, phy_info->hw_cap)) ||
         cpuDecode(cpu, data, NULL) < 0) {
         VIR_WARN("Failed to initialize host cpu features");
         goto error;
@@ -196,8 +189,6 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
 static int
 libxlCapsInitHost(libxl_ctx *ctx, virCaps *caps)
 {
-    const libxl_version_info *ver_info;
-    enum libxlHwcapVersion version;
     libxl_physinfo phy_info;
     int ret = -1;
 
@@ -208,14 +199,7 @@ libxlCapsInitHost(libxl_ctx *ctx, virCaps *caps)
         goto cleanup;
     }
 
-    if ((ver_info = libxl_get_version_info(ctx)) == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to get version info from libxenlight"));
-        goto cleanup;
-    }
-
-    version = (ver_info->xen_version_minor >= 7);
-    if (libxlCapsInitCPU(caps, &phy_info, version) < 0)
+    if (libxlCapsInitCPU(caps, &phy_info) < 0)
         goto cleanup;
 
     if (virCapabilitiesSetNetPrefix(caps, LIBXL_GENERATED_PREFIX_XEN) < 0)
