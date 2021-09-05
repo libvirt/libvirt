@@ -166,15 +166,16 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info)
     cpu->threads = phy_info->threads_per_core;
     cpu->dies = 1;
     cpu->sockets = phy_info->nr_cpus / (cpu->cores * cpu->threads);
-    caps->host.cpu = cpu;
-
-    ret = 0;
 
     if (!(data = libxlCapsNodeData(cpu, phy_info->hw_cap)) ||
         cpuDecode(cpu, data, NULL) < 0) {
-        VIR_WARN("Failed to initialize host cpu features");
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failed to initialize host cpu features"));
         goto error;
     }
+
+    caps->host.cpu = cpu;
+    ret = 0;
 
  cleanup:
     virCPUDataFree(data);
