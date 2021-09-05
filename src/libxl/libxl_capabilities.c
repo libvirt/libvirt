@@ -138,9 +138,8 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap)
 static int
 libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info)
 {
-    virCPUData *data = NULL;
-    virCPUDef *cpu = NULL;
-    int ret = -1;
+    g_autoptr(virCPUData) data = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     int host_pae;
     int host_lm;
 
@@ -153,7 +152,7 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info)
     host_pae = phy_info->hw_cap[0] & LIBXL_X86_FEATURE_PAE_MASK;
     if (host_pae &&
         virCapabilitiesAddHostFeature(caps, "pae") < 0)
-        goto error;
+        return -1;
 
     host_lm = (phy_info->hw_cap[2] & LIBXL_X86_FEATURE_LM_MASK);
     if (host_lm)
@@ -171,20 +170,11 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info)
         cpuDecode(cpu, data, NULL) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to initialize host cpu features"));
-        goto error;
+        return -1;
     }
 
-    caps->host.cpu = cpu;
-    ret = 0;
-
- cleanup:
-    virCPUDataFree(data);
-
-    return ret;
-
- error:
-    virCPUDefFree(cpu);
-    goto cleanup;
+    caps->host.cpu = g_steal_pointer(&cpu);
+    return 0;
 }
 
 static int
