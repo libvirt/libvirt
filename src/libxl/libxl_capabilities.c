@@ -90,41 +90,33 @@ libxlCapsAddCPUID(virCPUData *data, virCPUx86CPUID *cpuid, ssize_t ncaps)
  * across all supported versions of the libxl driver until libxl exposes a
  * stable representation of these capabilities. Fortunately not a lot of
  * variation happened so it's still trivial to keep track of these leafs
- * to describe host CPU in libvirt capabilities. v0 stands for Xen 4.4
- * up to 4.6, while v1 is meant for Xen 4.7, as depicted in the table below:
+ * to describe host CPU in libvirt capabilities.
  *
- *              | v0 (Xen 4.4 - 4.6) |   v1 (Xen >= 4.7)    |
- *              ---------------------------------------------
- *       word 0 | CPUID.00000001.EDX | CPUID.00000001.EDX   |
- *       word 1 | CPUID.80000001.EDX | CPUID.00000001.ECX   |
- *       word 2 | CPUID.80860001     | CPUID.80000001.EDX   |
- *       word 3 | -     Linux    -   | CPUID.80000001.ECX   |
- *       word 4 | CPUID.00000001.ECX | CPUID.0000000D:1.EAX |
- *       word 5 | CPUID.C0000001     | CPUID.00000007:0.EBX |
- *       word 6 | CPUID.80000001.ECX | CPUID.00000007:0.ECX |
- *       word 7 | CPUID.00000007.EBX | CPUID.80000007.EDX   |
- *       word 8 | - Non existent -   | CPUID.80000008.EBX   |
+ *              |       Xen >= 4.7     |
+ *              ------------------------
+ *       word 0 | CPUID.00000001.EDX   |
+ *       word 1 | CPUID.00000001.ECX   |
+ *       word 2 | CPUID.80000001.EDX   |
+ *       word 3 | CPUID.80000001.ECX   |
+ *       word 4 | CPUID.0000000D:1.EAX |
+ *       word 5 | CPUID.00000007:0.EBX |
+ *       word 6 | CPUID.00000007:0.ECX |
+ *       word 7 | CPUID.80000007.EDX   |
+ *       word 8 | CPUID.80000008.EBX   |
  *
  */
 static virCPUData *
 libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
-                  enum libxlHwcapVersion version)
+                  enum libxlHwcapVersion version G_GNUC_UNUSED)
 {
     ssize_t ncaps;
     virCPUData *cpudata = NULL;
     virCPUx86CPUID cpuid[] = {
-        { .eax_in = 0x00000001,
-          .edx = hwcap[0] },
-        { .eax_in = 0x00000001,
-          .ecx = (version > LIBXL_HWCAP_V0 ? hwcap[1] : hwcap[4]) },
-        { .eax_in = 0x80000001,
-          .edx = (version > LIBXL_HWCAP_V0 ? hwcap[2] : hwcap[1]) },
-        { .eax_in = 0x80000001,
-          .ecx = (version > LIBXL_HWCAP_V0 ? hwcap[3] : hwcap[6]) },
-        { .eax_in = 0x00000007,
-          .ebx = (version > LIBXL_HWCAP_V0 ? hwcap[5] : hwcap[7]) },
-    };
-    virCPUx86CPUID cpuid_ver1[] = {
+        { .eax_in = 0x00000001, .edx = hwcap[0] },
+        { .eax_in = 0x00000001, .ecx = hwcap[1] },
+        { .eax_in = 0x80000001, .edx = hwcap[2] },
+        { .eax_in = 0x80000001, .ecx = hwcap[3] },
+        { .eax_in = 0x00000007, .ebx = hwcap[5] },
         { .eax_in = 0x0000000D, .ecx_in = 1U, .eax = hwcap[4] },
         { .eax_in = 0x00000007, .ecx_in = 0U, .ecx = hwcap[6] },
         { .eax_in = 0x80000007, .ecx_in = 0U, .edx = hwcap[7] },
@@ -135,11 +127,6 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
 
     ncaps = G_N_ELEMENTS(cpuid);
     if (libxlCapsAddCPUID(cpudata, cpuid, ncaps) < 0)
-        goto error;
-
-    ncaps = G_N_ELEMENTS(cpuid_ver1);
-    if (version > LIBXL_HWCAP_V0 &&
-        libxlCapsAddCPUID(cpudata, cpuid_ver1, ncaps) < 0)
         goto error;
 
     return cpudata;
@@ -156,7 +143,7 @@ libxlCapsNodeData(virCPUDef *cpu, libxl_hwcap hwcap,
  */
 static int
 libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
-                 enum libxlHwcapVersion version)
+                 enum libxlHwcapVersion version G_GNUC_UNUSED)
 {
     virCPUData *data = NULL;
     virCPUDef *cpu = NULL;
@@ -175,8 +162,7 @@ libxlCapsInitCPU(virCaps *caps, libxl_physinfo *phy_info,
         virCapabilitiesAddHostFeature(caps, "pae") < 0)
         goto error;
 
-    host_lm = (phy_info->hw_cap[version > LIBXL_HWCAP_V0 ? 2 : 1]
-                & LIBXL_X86_FEATURE_LM_MASK);
+    host_lm = (phy_info->hw_cap[2] & LIBXL_X86_FEATURE_LM_MASK);
     if (host_lm)
         cpu->arch = VIR_ARCH_X86_64;
     else
