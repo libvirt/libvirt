@@ -1,0 +1,9 @@
+path:ABS_BUILDDIR/virstoragedata/raw
+backingStoreRaw: <null>
+capacity: 0
+encryption: 0
+relPath:<null>
+type:1
+format:1
+protocol:none
+hostname:<null>
