@@ -654,25 +654,6 @@ mymain(void)
     /* Rewrite qcow2 to use an nbd: protocol as backend */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "nbd:example.org:6000:exportname=blah",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-    qcow2.expBackingStoreRaw = "nbd:example.org:6000:exportname=blah";
-
-    /* Qcow2 file with backing protocol instead of file */
-    testFileData nbd = {
-        .path = "blah",
-        .type = VIR_STORAGE_TYPE_NETWORK,
-        .format = VIR_STORAGE_FILE_RAW,
-        .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
-        .hostname = "example.org",
-    };
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &nbd), EXP_PASS);
-
-    /* Rewrite qcow2 to use an nbd: protocol as backend */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
                                "-F", "raw", "-b", "nbd+tcp://example.org:6000/blah",
                                "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
@@ -687,18 +668,6 @@ mymain(void)
         .protocol = VIR_STORAGE_NET_PROTOCOL_NBD,
         .hostname = "example.org",
     };
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &nbd2), EXP_PASS);
-
-    /* Rewrite qcow2 to use an nbd: protocol without path as backend */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "nbd://example.org",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-    qcow2.expBackingStoreRaw = "nbd://example.org";
-
-    nbd2.path = NULL;
     TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &nbd2), EXP_PASS);
 
     /* qed file */
