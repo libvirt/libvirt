@@ -357,13 +357,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
 
     priv = vm->privateData;
 
-    if (!(snapDir = g_strdup_printf("%s/%s", baseDir, vm->def->name))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to allocate memory for "
-                       "snapshot directory for domain %s"),
-                       vm->def->name);
-        goto cleanup;
-    }
+    snapDir = g_strdup_printf("%s/%s", baseDir, vm->def->name);
 
     VIR_INFO("Scanning for snapshots for domain %s in %s", vm->def->name,
              snapDir);
@@ -379,11 +373,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
            kill the whole process */
         VIR_INFO("Loading snapshot file '%s'", entry->d_name);
 
-        if (!(fullpath = g_strdup_printf("%s/%s", snapDir, entry->d_name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Failed to allocate memory for path"));
-            continue;
-        }
+        fullpath = g_strdup_printf("%s/%s", snapDir, entry->d_name);
 
         if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
@@ -464,13 +454,7 @@ qemuDomainCheckpointLoad(virDomainObj *vm,
     virObjectLock(vm);
     priv = vm->privateData;
 
-    if (!(chkDir = g_strdup_printf("%s/%s", baseDir, vm->def->name))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to allocate memory for "
-                       "checkpoint directory for domain %s"),
-                       vm->def->name);
-        goto cleanup;
-    }
+    chkDir = g_strdup_printf("%s/%s", baseDir, vm->def->name);
 
     VIR_INFO("Scanning for checkpoints for domain %s in %s", vm->def->name,
              chkDir);
@@ -486,11 +470,7 @@ qemuDomainCheckpointLoad(virDomainObj *vm,
            kill the whole process */
         VIR_INFO("Loading checkpoint file '%s'", entry->d_name);
 
-        if (!(fullpath = g_strdup_printf("%s/%s", chkDir, entry->d_name))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Failed to allocate memory for path"));
-            continue;
-        }
+        fullpath = g_strdup_printf("%s/%s", chkDir, entry->d_name);
 
         if (virFileReadAll(fullpath, 1024*1024*1, &xmlStr) < 0) {
             /* Nothing we can do here, skip this one */
@@ -626,8 +606,7 @@ qemuStateInitialize(bool privileged,
     if (!(qemu_driver->config = cfg = virQEMUDriverConfigNew(privileged, root)))
         goto error;
 
-    if (!(driverConf = g_strdup_printf("%s/qemu.conf", cfg->configBaseDir)))
-        goto error;
+    driverConf = g_strdup_printf("%s/qemu.conf", cfg->configBaseDir);
 
     if (virQEMUDriverConfigLoadFile(cfg, driverConf, privileged) < 0)
         goto error;
@@ -2953,13 +2932,9 @@ qemuDomainSave(virDomainPtr dom, const char *path)
 static char *
 qemuDomainManagedSavePath(virQEMUDriver *driver, virDomainObj *vm)
 {
-    char *ret;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
-    if (!(ret = g_strdup_printf("%s/%s.save", cfg->saveDir, vm->def->name)))
-        return NULL;
-
-    return ret;
+    return g_strdup_printf("%s/%s.save", cfg->saveDir, vm->def->name);
 }
 
 static int
@@ -3461,8 +3436,7 @@ qemuDomainScreenshot(virDomainPtr dom,
         }
     }
 
-    if (!(tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", cfg->cacheDir)))
-        goto endjob;
+    tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", cfg->cacheDir);
 
     if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
@@ -5296,8 +5270,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     bool threadAdded = false;
     bool objectAdded = false;
 
-    if (!(alias = g_strdup_printf("iothread%u", iothread_id)))
-        return -1;
+    alias = g_strdup_printf("iothread%u", iothread_id);
 
     if (qemuMonitorCreateObjectProps(&props, "iothread", alias, NULL) < 0)
         goto cleanup;
@@ -5429,8 +5402,7 @@ qemuDomainHotplugDelIOThread(virQEMUDriver *driver,
     int new_niothreads = 0;
     qemuMonitorIOThreadInfo **new_iothreads = NULL;
 
-    if (!(alias = g_strdup_printf("iothread%u", iothread_id)))
-        return -1;
+    alias = g_strdup_printf("iothread%u", iothread_id);
 
     qemuDomainObjEnterMonitor(driver, vm);
 
@@ -10716,8 +10688,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!(tmp = g_strdup_printf("%s/qemu.mem.XXXXXX", cfg->cacheDir)))
-        goto endjob;
+    tmp = g_strdup_printf("%s/qemu.mem.XXXXXX", cfg->cacheDir);
 
     /* Create a temporary filename. */
     if ((fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
