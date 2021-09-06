@@ -597,31 +597,13 @@ mymain(void)
     TEST_CHAIN("qcow2-symlinks", abslink2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 #endif
 
-    /* Rewrite qcow2 to be a self-referential loop */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", "qcow2", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
     /* Behavior of an infinite loop chain */
-    TEST_CHAIN("qcow2-qcow2_infinite-self", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
-
-    /* Rewrite wrap and qcow2 to be mutually-referential loop */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", "wrap", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", absqcow2, "wrap", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    /* Behavior of an infinite loop chain */
-    TEST_CHAIN("qcow2-qcow2_infinite-mutual", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+    TEST_CHAIN("qcow2-qcow2_infinite-self",
+               abs_srcdir "/virstoragetestdata/images/loop-self.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+    TEST_CHAIN("qcow2-qcow2_infinite-mutual",
+               abs_srcdir "/virstoragetestdata/images/loop-2.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
 
     /* setup data for backing chain lookup testing */
     if (chdir(abs_srcdir "/virstoragetestdata/lookup") < 0) {
