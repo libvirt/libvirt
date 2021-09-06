@@ -799,44 +799,6 @@ mymain(void)
     /* Behavior of an infinite loop chain */
     TEST_CHAIN(abswrap, VIR_STORAGE_FILE_QCOW2, (&wrap, &qcow2), EXP_FAIL);
 
-    /* Rewrite qcow2 to use an rbd: protocol as backend */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "rbd:testshare",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-    qcow2.expBackingStoreRaw = "rbd:testshare";
-
-    /* Qcow2 file with backing protocol instead of file */
-    testFileData rbd1 = {
-        .path = "testshare",
-        .type = VIR_STORAGE_TYPE_NETWORK,
-        .format = VIR_STORAGE_FILE_RAW,
-        .protocol = VIR_STORAGE_NET_PROTOCOL_RBD,
-    };
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &rbd1), EXP_PASS);
-
-    /* Rewrite qcow2 to use an rbd: protocol as backend */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "rbd:testshare:id=asdf:mon_host=example.com",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-    qcow2.expBackingStoreRaw = "rbd:testshare:id=asdf:mon_host=example.com";
-
-    /* Qcow2 file with backing protocol instead of file */
-    testFileData rbd2 = {
-        .path = "testshare",
-        .type = VIR_STORAGE_TYPE_NETWORK,
-        .format = VIR_STORAGE_FILE_RAW,
-        .protocol = VIR_STORAGE_NET_PROTOCOL_RBD,
-        .secret = "asdf",
-        .hostname = "example.com",
-    };
-    TEST_CHAIN(absqcow2, VIR_STORAGE_FILE_QCOW2, (&qcow2, &rbd2), EXP_PASS);
-
     VIR_WARNINGS_RESET
 
     /* Rewrite wrap and qcow2 back to 3-deep chain, absolute backing */
