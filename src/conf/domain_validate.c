@@ -597,6 +597,20 @@ virDomainDiskDefValidate(const virDomainDef *def,
 {
     virStorageSource *next;
 
+    /* disk target is used widely in other code so it must be validated first */
+    if (!disk->dst) {
+        if (disk->src->srcpool) {
+            virReportError(VIR_ERR_NO_TARGET, _("pool = '%s', volume = '%s'"),
+                           disk->src->srcpool->pool,
+                           disk->src->srcpool->volume);
+        } else {
+            virReportError(VIR_ERR_NO_TARGET,
+                           disk->src->path ? "%s" : NULL, disk->src->path);
+        }
+
+        return -1;
+    }
+
     if (virDomainDiskDefValidateSource(disk->src) < 0)
         return -1;
 
@@ -775,19 +789,6 @@ virDomainDiskDefValidate(const virDomainDef *def,
 
     if (disk->wwn && !virValidateWWN(disk->wwn))
         return -1;
-
-    if (!disk->dst) {
-        if (disk->src->srcpool) {
-            virReportError(VIR_ERR_NO_TARGET, _("pool = '%s', volume = '%s'"),
-                           disk->src->srcpool->pool,
-                           disk->src->srcpool->volume);
-        } else {
-            virReportError(VIR_ERR_NO_TARGET,
-                           disk->src->path ? "%s" : NULL, disk->src->path);
-        }
-
-        return -1;
-    }
 
     if ((disk->device == VIR_DOMAIN_DISK_DEVICE_DISK ||
          disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) &&
