@@ -1455,6 +1455,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR("disk-same-targets",
                         QEMU_CAPS_SCSI_LSI,
                         QEMU_CAPS_DEVICE_USB_STORAGE);
+    DO_TEST_PARSE_ERROR("disk-missing-target-invalid", QEMU_CAPS_SCSI_LSI);
     DO_TEST_PARSE_ERROR("disk-address-conflict",
                         QEMU_CAPS_ICH9_AHCI);
     DO_TEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict",
