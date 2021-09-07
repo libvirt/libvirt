@@ -1117,3 +1117,33 @@ const char
 
     return virtTestCounterStr;
 }
+
+
+/**
+ * virTestStablePath:
+ * @path: path to make stable
+ *
+ * If @path starts with the absolute source directory path, the prefix
+ * is replaced with the string "ABS_SRCDIR" and similarly the build directory
+ * is replaced by "ABS_BUILDDIR". This is useful when paths e.g. in output
+ * test files need to be made stable.
+ *
+ * If @path is NULL the equivalent to NULLSTR(path) is returned.
+ *
+ * The caller is responsible for freeing the returned buffer.
+ */
+char *
+virTestStablePath(const char *path)
+{
+    const char *tmp;
+
+    path = NULLSTR(path);
+
+    if ((tmp = STRSKIP(path, abs_srcdir)))
+        return g_strdup_printf("ABS_SRCDIR%s", tmp);
+
+    if ((tmp = STRSKIP(path, abs_builddir)))
+        return g_strdup_printf("ABS_BUILDDIR%s", tmp);
+
+    return g_strdup(path);
+}

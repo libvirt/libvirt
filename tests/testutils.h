@@ -170,3 +170,6 @@ int testCompareDomXML2XMLFiles(virCaps *caps,
                                bool live,
                                unsigned int parseFlags,
                                testCompareDomXML2XMLResult expectResult);
+
+char *
+virTestStablePath(const char *path);
