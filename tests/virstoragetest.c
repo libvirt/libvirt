@@ -499,10 +499,11 @@ mymain(void)
     struct testLookupData data2;
     struct testPathRelativeBacking data4;
     struct testBackingParseData data5;
-    virStorageSource *chain2; /* short for chain->backingStore */
-    virStorageSource *chain3; /* short for chain2->backingStore */
+    virStorageSource fakeChain[4];
+    virStorageSource *chain = &fakeChain[0];
+    virStorageSource *chain2 = &fakeChain[1];
+    virStorageSource *chain3 = &fakeChain[2];
     g_autoptr(virCommand) cmd = NULL;
-    g_autoptr(virStorageSource) chain = NULL;
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
@@ -622,22 +623,29 @@ mymain(void)
     /* Behavior of an infinite loop chain */
     TEST_CHAIN("qcow2-qcow2_infinite-mutual", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
 
-    /* Rewrite wrap and qcow2 back to 3-deep chain, absolute backing */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", absraw, "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    /* Test behavior of chain lookups, absolute backing from relative start */
-    chain = testStorageFileGetMetadata("wrap", VIR_STORAGE_FILE_QCOW2,
-                                       -1, -1);
-    if (!chain) {
-        ret = -1;
+    /* setup data for backing chain lookup testing */
+    if (chdir(abs_srcdir "/virstoragetestdata/lookup") < 0) {
+        fprintf(stderr, "unable to test relative backing chains\n");
         goto cleanup;
     }
-    chain2 = chain->backingStore;
-    chain3 = chain2->backingStore;
+
+    memset(fakeChain, 0, sizeof(fakeChain));
+    fakeChain[0].backingStore = &fakeChain[1];
+    fakeChain[1].backingStore = &fakeChain[2];
+    fakeChain[2].backingStore = &fakeChain[3];
+
+    fakeChain[0].type = VIR_STORAGE_TYPE_FILE;
+    fakeChain[1].type = VIR_STORAGE_TYPE_FILE;
+    fakeChain[2].type = VIR_STORAGE_TYPE_FILE;
+
+    fakeChain[0].format = VIR_STORAGE_FILE_QCOW2;
+    fakeChain[1].format = VIR_STORAGE_FILE_QCOW2;
+    fakeChain[2].format = VIR_STORAGE_FILE_RAW;
+
+    /* backing chain with relative start and absolute backing paths */
+    fakeChain[0].path = (char *) "wrap";
+    fakeChain[1].path = (char *) abs_srcdir "/virstoragetestdata/lookup/qcow2";
+    fakeChain[2].path = (char *) abs_srcdir "/virstoragetestdata/lookup/raw";
 
 #define TEST_LOOKUP_TARGET(id, target, from, name, index, meta, parent) \
     do { \
@@ -654,110 +662,86 @@ mymain(void)
     TEST_LOOKUP(2, NULL, "wrap", chain, NULL);
     TEST_LOOKUP(3, chain, "wrap", NULL, NULL);
     TEST_LOOKUP(4, chain2, "wrap", NULL, NULL);
-    TEST_LOOKUP(5, NULL, abswrap, chain, NULL);
-    TEST_LOOKUP(6, chain, abswrap, NULL, NULL);
-    TEST_LOOKUP(7, chain2, abswrap, NULL, NULL);
+    TEST_LOOKUP(5, NULL, abs_srcdir "/virstoragetestdata/lookup/wrap", chain, NULL);
+    TEST_LOOKUP(6, chain, abs_srcdir "/virstoragetestdata/lookup/wrap", NULL, NULL);
+    TEST_LOOKUP(7, chain2, abs_srcdir "/virstoragetestdata/lookup/wrap", NULL, NULL);
     TEST_LOOKUP(8, NULL, "qcow2", chain2, chain);
     TEST_LOOKUP(9, chain, "qcow2",  chain2, chain);
     TEST_LOOKUP(10, chain2, "qcow2", NULL, NULL);
     TEST_LOOKUP(11, chain3, "qcow2", NULL, NULL);
-    TEST_LOOKUP(12, NULL, absqcow2, chain2, chain);
-    TEST_LOOKUP(13, chain, absqcow2, chain2, chain);
-    TEST_LOOKUP(14, chain2, absqcow2, NULL, NULL);
-    TEST_LOOKUP(15, chain3, absqcow2, NULL, NULL);
+    TEST_LOOKUP(12, NULL, abs_srcdir "/virstoragetestdata/lookup/qcow2", chain2, chain);
+    TEST_LOOKUP(13, chain, abs_srcdir "/virstoragetestdata/lookup/qcow2", chain2, chain);
+    TEST_LOOKUP(14, chain2, abs_srcdir "/virstoragetestdata/lookup/qcow2", NULL, NULL);
+    TEST_LOOKUP(15, chain3, abs_srcdir "/virstoragetestdata/lookup/qcow2", NULL, NULL);
     TEST_LOOKUP(16, NULL, "raw", chain3, chain2);
     TEST_LOOKUP(17, chain, "raw", chain3, chain2);
     TEST_LOOKUP(18, chain2, "raw", chain3, chain2);
     TEST_LOOKUP(19, chain3, "raw", NULL, NULL);
-    TEST_LOOKUP(20, NULL, absraw, chain3, chain2);
-    TEST_LOOKUP(21, chain, absraw, chain3, chain2);
-    TEST_LOOKUP(22, chain2, absraw, chain3, chain2);
-    TEST_LOOKUP(23, chain3, absraw, NULL, NULL);
+    TEST_LOOKUP(20, NULL, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(21, chain, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(22, chain2, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(23, chain3, abs_srcdir "/virstoragetestdata/lookup/raw", NULL, NULL);
     TEST_LOOKUP(24, NULL, NULL, chain3, chain2);
     TEST_LOOKUP(25, chain, NULL, chain3, chain2);
     TEST_LOOKUP(26, chain2, NULL, chain3, chain2);
     TEST_LOOKUP(27, chain3, NULL, NULL, NULL);
 
-    /* Rewrite wrap and qcow2 back to 3-deep chain, relative backing */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "raw", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
+    /* relative backing, absolute start */
+    fakeChain[0].path = (char *) abs_srcdir "/virstoragetestdata/lookup/wrap";
 
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", "qcow2", "wrap", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    /* Test behavior of chain lookups, relative backing from absolute start */
-    virObjectUnref(chain);
-    chain = testStorageFileGetMetadata(abswrap, VIR_STORAGE_FILE_QCOW2, -1, -1);
-    if (!chain) {
-        ret = -1;
-        goto cleanup;
-    }
-    chain2 = chain->backingStore;
-    chain3 = chain2->backingStore;
+    fakeChain[1].relPath = (char *) "qcow2";
+    fakeChain[2].relPath = (char *) "raw";
 
     TEST_LOOKUP(28, NULL, "bogus", NULL, NULL);
     TEST_LOOKUP(29, chain, "bogus", NULL, NULL);
     TEST_LOOKUP(30, NULL, "wrap", chain, NULL);
     TEST_LOOKUP(31, chain, "wrap", NULL, NULL);
     TEST_LOOKUP(32, chain2, "wrap", NULL, NULL);
-    TEST_LOOKUP(33, NULL, abswrap, chain, NULL);
-    TEST_LOOKUP(34, chain, abswrap, NULL, NULL);
-    TEST_LOOKUP(35, chain2, abswrap, NULL, NULL);
+    TEST_LOOKUP(33, NULL, abs_srcdir "/virstoragetestdata/lookup/wrap", chain, NULL);
+    TEST_LOOKUP(34, chain, abs_srcdir "/virstoragetestdata/lookup/wrap", NULL, NULL);
+    TEST_LOOKUP(35, chain2, abs_srcdir "/virstoragetestdata/lookup/wrap", NULL, NULL);
     TEST_LOOKUP(36, NULL, "qcow2", chain2, chain);
     TEST_LOOKUP(37, chain, "qcow2", chain2, chain);
     TEST_LOOKUP(38, chain2, "qcow2", NULL, NULL);
     TEST_LOOKUP(39, chain3, "qcow2", NULL, NULL);
-    TEST_LOOKUP(40, NULL, absqcow2, chain2, chain);
-    TEST_LOOKUP(41, chain, absqcow2, chain2, chain);
-    TEST_LOOKUP(42, chain2, absqcow2, NULL, NULL);
-    TEST_LOOKUP(43, chain3, absqcow2, NULL, NULL);
+    TEST_LOOKUP(40, NULL, abs_srcdir "/virstoragetestdata/lookup/qcow2", chain2, chain);
+    TEST_LOOKUP(41, chain, abs_srcdir "/virstoragetestdata/lookup/qcow2", chain2, chain);
+    TEST_LOOKUP(42, chain2, abs_srcdir "/virstoragetestdata/lookup/qcow2", NULL, NULL);
+    TEST_LOOKUP(43, chain3, abs_srcdir "/virstoragetestdata/lookup/qcow2", NULL, NULL);
     TEST_LOOKUP(44, NULL, "raw", chain3, chain2);
     TEST_LOOKUP(45, chain, "raw", chain3, chain2);
     TEST_LOOKUP(46, chain2, "raw", chain3, chain2);
     TEST_LOOKUP(47, chain3, "raw", NULL, NULL);
-    TEST_LOOKUP(48, NULL, absraw, chain3, chain2);
-    TEST_LOOKUP(49, chain, absraw, chain3, chain2);
-    TEST_LOOKUP(50, chain2, absraw, chain3, chain2);
-    TEST_LOOKUP(51, chain3, absraw, NULL, NULL);
+    TEST_LOOKUP(48, NULL, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(49, chain, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(50, chain2, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
+    TEST_LOOKUP(51, chain3, abs_srcdir "/virstoragetestdata/lookup/raw", NULL, NULL);
     TEST_LOOKUP(52, NULL, NULL, chain3, chain2);
     TEST_LOOKUP(53, chain, NULL, chain3, chain2);
     TEST_LOOKUP(54, chain2, NULL, chain3, chain2);
     TEST_LOOKUP(55, chain3, NULL, NULL, NULL);
 
     /* Use link to wrap with cross-directory relative backing */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", "../qcow2", "wrap", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
+    fakeChain[0].path = (char *) abs_srcdir "/virstoragetestdata/lookup/sub/link2";
 
-    /* Test behavior of chain lookups, relative backing */
-    virObjectUnref(chain);
-    chain = testStorageFileGetMetadata("sub/link2", VIR_STORAGE_FILE_QCOW2,
-                                       -1, -1);
-    if (!chain) {
-        ret = -1;
-        goto cleanup;
-    }
-    chain2 = chain->backingStore;
-    chain3 = chain2->backingStore;
+    fakeChain[1].relPath = (char *) "../qcow2";
+    fakeChain[2].relPath = (char *) "raw";
 
     TEST_LOOKUP(56, NULL, "bogus", NULL, NULL);
     TEST_LOOKUP(57, NULL, "sub/link2", chain, NULL);
     TEST_LOOKUP(58, NULL, "wrap", chain, NULL);
-    TEST_LOOKUP(59, NULL, abswrap, chain, NULL);
+    TEST_LOOKUP(59, NULL, abs_srcdir "/virstoragetestdata/lookup/wrap", chain, NULL);
     TEST_LOOKUP(60, NULL, "../qcow2", chain2, chain);
     TEST_LOOKUP(61, NULL, "qcow2", NULL, NULL);
-    TEST_LOOKUP(62, NULL, absqcow2, chain2, chain);
+    TEST_LOOKUP(62, NULL, abs_srcdir "/virstoragetestdata/lookup/qcow2", chain2, chain);
     TEST_LOOKUP(63, NULL, "raw", chain3, chain2);
-    TEST_LOOKUP(64, NULL, absraw, chain3, chain2);
+    TEST_LOOKUP(64, NULL, abs_srcdir "/virstoragetestdata/lookup/raw", chain3, chain2);
     TEST_LOOKUP(65, NULL, NULL, chain3, chain2);
+
+    /* index lookup */
+    fakeChain[0].id = 0;
+    fakeChain[1].id = 1;
+    fakeChain[2].id = 2;
 
     TEST_LOOKUP_TARGET(66, "vda", NULL, "bogus[1]", 0, NULL, NULL);
     TEST_LOOKUP_TARGET(67, "vda", NULL, "vda[-1]", 0, NULL, NULL);
