@@ -2663,9 +2663,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
 
-        if (qemuDomainDefValidateDiskLunSource(disk->src) < 0)
-            return -1;
-
         if (disk->wwn) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Setting wwn is not supported for lun device"));

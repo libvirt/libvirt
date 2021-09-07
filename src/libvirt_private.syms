@@ -767,6 +767,7 @@ virDomainConfVMNWFilterTeardown;
 virDomainActualNetDefValidate;
 virDomainDefValidate;
 virDomainDeviceValidateAliasForHotplug;
+virDomainDiskDefSourceLUNValidate;
 
 
 # conf/interface_conf.h

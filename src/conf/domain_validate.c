@@ -540,6 +540,57 @@ virDomainDiskDefValidateSource(const virStorageSource *src)
 #define VENDOR_LEN  8
 #define PRODUCT_LEN 16
 
+
+/**
+ * virDomainDiskDefSourceLUNValidate:
+ * @src: disk source struct
+ *
+ * Validate whether the disk source is valid for disk device='lun'.
+ *
+ * Returns 0 if the configuration is valid -1 and a libvirt error if the source
+ * is invalid.
+ */
+int
+virDomainDiskDefSourceLUNValidate(const virStorageSource *src)
+{
+    if (virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK) {
+        if (src->protocol != VIR_STORAGE_NET_PROTOCOL_ISCSI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("disk device='lun' is not supported for protocol='%s'"),
+                           virStorageNetProtocolTypeToString(src->protocol));
+            return -1;
+        }
+    } else if (!virStorageSourceIsBlockLocal(src) &&
+               src->type != VIR_STORAGE_TYPE_VOLUME) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device='lun' is only valid for block type disk source"));
+        return -1;
+    }
+
+    if (src->format != VIR_STORAGE_FILE_RAW &&
+        src->format != VIR_STORAGE_FILE_NONE) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' must use 'raw' format"));
+        return -1;
+    }
+
+    if (src->sliceStorage) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' doesn't support storage slice"));
+        return -1;
+    }
+
+    if (src->encryption &&
+        src->encryption->format != VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("disk device 'lun' doesn't support encryption"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
@@ -551,16 +602,8 @@ virDomainDiskDefValidate(const virDomainDef *def,
 
     /* Validate LUN configuration */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-        /* volumes haven't been translated at this point, so accept them */
-        if (!(disk->src->type == VIR_STORAGE_TYPE_BLOCK ||
-              disk->src->type == VIR_STORAGE_TYPE_VOLUME ||
-              (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
-               disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI))) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("disk '%s' improperly configured for a "
-                             "device='lun'"), disk->dst);
+        if (virDomainDiskDefSourceLUNValidate(disk->src) < 0)
             return -1;
-        }
     } else {
         if (disk->src->pr) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

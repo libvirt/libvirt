@@ -40,3 +40,5 @@ int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
                                void *parseOpaque);
 
 int virDomainDiskDefValidateSource(const virStorageSource *src);
+
+int virDomainDiskDefSourceLUNValidate(const virStorageSource *src);

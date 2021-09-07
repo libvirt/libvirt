@@ -14856,7 +14856,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         goto endjob;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
-        qemuDomainDefValidateDiskLunSource(mirror) < 0)
+        virDomainDiskDefSourceLUNValidate(mirror) < 0)
         goto endjob;
 
     if (!(flags & VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB) &&

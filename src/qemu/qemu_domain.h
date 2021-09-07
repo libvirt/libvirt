@@ -893,9 +893,6 @@ int qemuDomainSecretPrepare(virQEMUDriver *driver,
                             virDomainObj *vm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int qemuDomainDefValidateDiskLunSource(const virStorageSource *src)
-    ATTRIBUTE_NONNULL(1);
-
 int qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
                                     virQEMUCaps *qemuCaps);
 
