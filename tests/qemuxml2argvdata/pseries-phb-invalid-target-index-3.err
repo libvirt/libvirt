@@ -1,1 +1,1 @@
-unsupported configuration: The 'spapr-pci-host-bridge' device is not supported by this QEMU binary
+unsupported configuration: PCI controller target index '31' out of range - must be 0-30

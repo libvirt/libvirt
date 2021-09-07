@@ -1,1 +1,1 @@
-unsupported configuration: Option 'numaNode' is not valid for PCI controller with index '0', model 'pci-root' and modelName 'spapr-pci-host-bridge'
+unsupported configuration: The PCI controller with index=0 can't be associated with a NUMA node

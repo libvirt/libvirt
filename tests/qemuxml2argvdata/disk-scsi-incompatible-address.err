@@ -1,1 +1,1 @@
-internal error: unexpected address type for scsi disk
+unsupported configuration: Invalid address type 'pci' for the disk 'sda' with the bus type 'scsi'

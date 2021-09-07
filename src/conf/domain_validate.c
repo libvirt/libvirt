@@ -2289,11 +2289,11 @@ virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
     if (parseFlags & VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)
         return 0;
 
-    if (xmlopt->config.deviceValidateCallback &&
-        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv, parseOpaque))
+    if (virDomainDeviceDefValidateInternal(dev, def) < 0)
         return -1;
 
-    if (virDomainDeviceDefValidateInternal(dev, def) < 0)
+    if (xmlopt->config.deviceValidateCallback &&
+        xmlopt->config.deviceValidateCallback(dev, def, xmlopt->config.priv, parseOpaque))
         return -1;
 
     return 0;

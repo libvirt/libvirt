@@ -1,1 +1,1 @@
-internal error: unexpected address type for ide disk
+unsupported configuration: Invalid address type 'pci' for the disk 'hda' with the bus type 'ide'

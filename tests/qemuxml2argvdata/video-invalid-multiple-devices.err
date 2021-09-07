@@ -1,1 +1,1 @@
-unsupported configuration: domain configuration does not support video model 'qxl'
+unsupported configuration: a 'none' video type must be the only video device defined for the domain
