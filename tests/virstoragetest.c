@@ -303,7 +303,6 @@ struct testLookupData
     virStorageSource *from;
     const char *name;
     unsigned int expIndex;
-    const char *expResult;
     virStorageSource *expMeta;
     virStorageSource *expParent;
 };
@@ -318,25 +317,16 @@ testStorageLookup(const void *args)
 
     result = virStorageSourceChainLookup(data->chain, data->from,
                                          data->name, data->target, &actualParent);
-    if (!data->expResult)
+    if (!data->expMeta)
         virResetLastError();
 
-    if (!result) {
-        if (data->expResult) {
-            fprintf(stderr, "result: expected %s, got NULL\n",
-                    data->expResult);
-            ret = -1;
-        }
-    } else if (STRNEQ_NULLABLE(data->expResult, result->path)) {
-        fprintf(stderr, "result: expected %s, got %s\n",
-                NULLSTR(data->expResult), NULLSTR(result->path));
-        ret = -1;
-    }
     if (data->expMeta != result) {
-        fprintf(stderr, "meta: expected %p, got %p\n",
-                data->expMeta, result);
+        fprintf(stderr, "meta: expected %s, got %s\n",
+                NULLSTR(data->expMeta ? data->expMeta->path : NULL),
+                NULLSTR(result ? result->path : NULL));
         ret = -1;
     }
+
     if (data->expIndex > 0) {
         if (!result) {
             fprintf(stderr, "index: resulting lookup is empty, can't match index\n");
@@ -649,47 +639,44 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-#define TEST_LOOKUP_TARGET(id, target, from, name, index, result, \
-                           meta, parent) \
+#define TEST_LOOKUP_TARGET(id, target, from, name, index, meta, parent) \
     do { \
         data2 = (struct testLookupData){ \
-            chain, target, from, name, index, \
-            result, meta, parent, }; \
-        if (virTestRun("Chain lookup " #id, \
-                       testStorageLookup, &data2) < 0) \
+            chain, target, from, name, index, meta, parent, }; \
+        if (virTestRun("Chain lookup " #id, testStorageLookup, &data2) < 0) \
             ret = -1; \
     } while (0)
-#define TEST_LOOKUP(id, from, name, result, meta, parent) \
-    TEST_LOOKUP_TARGET(id, NULL, from, name, 0, result, meta, parent)
+#define TEST_LOOKUP(id, from, name, meta, parent) \
+    TEST_LOOKUP_TARGET(id, NULL, from, name, 0, meta, parent)
 
-    TEST_LOOKUP(0, NULL, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(1, chain, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(2, NULL, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(3, chain, "wrap", NULL, NULL, NULL);
-    TEST_LOOKUP(4, chain2, "wrap", NULL, NULL, NULL);
-    TEST_LOOKUP(5, NULL, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(6, chain, abswrap, NULL, NULL, NULL);
-    TEST_LOOKUP(7, chain2, abswrap, NULL, NULL, NULL);
-    TEST_LOOKUP(8, NULL, "qcow2", chain2->path, chain2, chain);
-    TEST_LOOKUP(9, chain, "qcow2", chain2->path, chain2, chain);
-    TEST_LOOKUP(10, chain2, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(11, chain3, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(12, NULL, absqcow2, chain2->path, chain2, chain);
-    TEST_LOOKUP(13, chain, absqcow2, chain2->path, chain2, chain);
-    TEST_LOOKUP(14, chain2, absqcow2, NULL, NULL, NULL);
-    TEST_LOOKUP(15, chain3, absqcow2, NULL, NULL, NULL);
-    TEST_LOOKUP(16, NULL, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(17, chain, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(18, chain2, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(19, chain3, "raw", NULL, NULL, NULL);
-    TEST_LOOKUP(20, NULL, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(21, chain, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(22, chain2, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(23, chain3, absraw, NULL, NULL, NULL);
-    TEST_LOOKUP(24, NULL, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(25, chain, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(26, chain2, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(27, chain3, NULL, NULL, NULL, NULL);
+    TEST_LOOKUP(0, NULL, "bogus", NULL, NULL);
+    TEST_LOOKUP(1, chain, "bogus", NULL, NULL);
+    TEST_LOOKUP(2, NULL, "wrap", chain, NULL);
+    TEST_LOOKUP(3, chain, "wrap", NULL, NULL);
+    TEST_LOOKUP(4, chain2, "wrap", NULL, NULL);
+    TEST_LOOKUP(5, NULL, abswrap, chain, NULL);
+    TEST_LOOKUP(6, chain, abswrap, NULL, NULL);
+    TEST_LOOKUP(7, chain2, abswrap, NULL, NULL);
+    TEST_LOOKUP(8, NULL, "qcow2", chain2, chain);
+    TEST_LOOKUP(9, chain, "qcow2",  chain2, chain);
+    TEST_LOOKUP(10, chain2, "qcow2", NULL, NULL);
+    TEST_LOOKUP(11, chain3, "qcow2", NULL, NULL);
+    TEST_LOOKUP(12, NULL, absqcow2, chain2, chain);
+    TEST_LOOKUP(13, chain, absqcow2, chain2, chain);
+    TEST_LOOKUP(14, chain2, absqcow2, NULL, NULL);
+    TEST_LOOKUP(15, chain3, absqcow2, NULL, NULL);
+    TEST_LOOKUP(16, NULL, "raw", chain3, chain2);
+    TEST_LOOKUP(17, chain, "raw", chain3, chain2);
+    TEST_LOOKUP(18, chain2, "raw", chain3, chain2);
+    TEST_LOOKUP(19, chain3, "raw", NULL, NULL);
+    TEST_LOOKUP(20, NULL, absraw, chain3, chain2);
+    TEST_LOOKUP(21, chain, absraw, chain3, chain2);
+    TEST_LOOKUP(22, chain2, absraw, chain3, chain2);
+    TEST_LOOKUP(23, chain3, absraw, NULL, NULL);
+    TEST_LOOKUP(24, NULL, NULL, chain3, chain2);
+    TEST_LOOKUP(25, chain, NULL, chain3, chain2);
+    TEST_LOOKUP(26, chain2, NULL, chain3, chain2);
+    TEST_LOOKUP(27, chain3, NULL, NULL, NULL);
 
     /* Rewrite wrap and qcow2 back to 3-deep chain, relative backing */
     virCommandFree(cmd);
@@ -714,34 +701,34 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-    TEST_LOOKUP(28, NULL, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(29, chain, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(30, NULL, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(31, chain, "wrap", NULL, NULL, NULL);
-    TEST_LOOKUP(32, chain2, "wrap", NULL, NULL, NULL);
-    TEST_LOOKUP(33, NULL, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(34, chain, abswrap, NULL, NULL, NULL);
-    TEST_LOOKUP(35, chain2, abswrap, NULL, NULL, NULL);
-    TEST_LOOKUP(36, NULL, "qcow2", chain2->path, chain2, chain);
-    TEST_LOOKUP(37, chain, "qcow2", chain2->path, chain2, chain);
-    TEST_LOOKUP(38, chain2, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(39, chain3, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(40, NULL, absqcow2, chain2->path, chain2, chain);
-    TEST_LOOKUP(41, chain, absqcow2, chain2->path, chain2, chain);
-    TEST_LOOKUP(42, chain2, absqcow2, NULL, NULL, NULL);
-    TEST_LOOKUP(43, chain3, absqcow2, NULL, NULL, NULL);
-    TEST_LOOKUP(44, NULL, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(45, chain, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(46, chain2, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(47, chain3, "raw", NULL, NULL, NULL);
-    TEST_LOOKUP(48, NULL, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(49, chain, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(50, chain2, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(51, chain3, absraw, NULL, NULL, NULL);
-    TEST_LOOKUP(52, NULL, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(53, chain, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(54, chain2, NULL, chain3->path, chain3, chain2);
-    TEST_LOOKUP(55, chain3, NULL, NULL, NULL, NULL);
+    TEST_LOOKUP(28, NULL, "bogus", NULL, NULL);
+    TEST_LOOKUP(29, chain, "bogus", NULL, NULL);
+    TEST_LOOKUP(30, NULL, "wrap", chain, NULL);
+    TEST_LOOKUP(31, chain, "wrap", NULL, NULL);
+    TEST_LOOKUP(32, chain2, "wrap", NULL, NULL);
+    TEST_LOOKUP(33, NULL, abswrap, chain, NULL);
+    TEST_LOOKUP(34, chain, abswrap, NULL, NULL);
+    TEST_LOOKUP(35, chain2, abswrap, NULL, NULL);
+    TEST_LOOKUP(36, NULL, "qcow2", chain2, chain);
+    TEST_LOOKUP(37, chain, "qcow2", chain2, chain);
+    TEST_LOOKUP(38, chain2, "qcow2", NULL, NULL);
+    TEST_LOOKUP(39, chain3, "qcow2", NULL, NULL);
+    TEST_LOOKUP(40, NULL, absqcow2, chain2, chain);
+    TEST_LOOKUP(41, chain, absqcow2, chain2, chain);
+    TEST_LOOKUP(42, chain2, absqcow2, NULL, NULL);
+    TEST_LOOKUP(43, chain3, absqcow2, NULL, NULL);
+    TEST_LOOKUP(44, NULL, "raw", chain3, chain2);
+    TEST_LOOKUP(45, chain, "raw", chain3, chain2);
+    TEST_LOOKUP(46, chain2, "raw", chain3, chain2);
+    TEST_LOOKUP(47, chain3, "raw", NULL, NULL);
+    TEST_LOOKUP(48, NULL, absraw, chain3, chain2);
+    TEST_LOOKUP(49, chain, absraw, chain3, chain2);
+    TEST_LOOKUP(50, chain2, absraw, chain3, chain2);
+    TEST_LOOKUP(51, chain3, absraw, NULL, NULL);
+    TEST_LOOKUP(52, NULL, NULL, chain3, chain2);
+    TEST_LOOKUP(53, chain, NULL, chain3, chain2);
+    TEST_LOOKUP(54, chain2, NULL, chain3, chain2);
+    TEST_LOOKUP(55, chain3, NULL, NULL, NULL);
 
     /* Use link to wrap with cross-directory relative backing */
     virCommandFree(cmd);
@@ -761,33 +748,33 @@ mymain(void)
     chain2 = chain->backingStore;
     chain3 = chain2->backingStore;
 
-    TEST_LOOKUP(56, NULL, "bogus", NULL, NULL, NULL);
-    TEST_LOOKUP(57, NULL, "sub/link2", chain->path, chain, NULL);
-    TEST_LOOKUP(58, NULL, "wrap", chain->path, chain, NULL);
-    TEST_LOOKUP(59, NULL, abswrap, chain->path, chain, NULL);
-    TEST_LOOKUP(60, NULL, "../qcow2", chain2->path, chain2, chain);
-    TEST_LOOKUP(61, NULL, "qcow2", NULL, NULL, NULL);
-    TEST_LOOKUP(62, NULL, absqcow2, chain2->path, chain2, chain);
-    TEST_LOOKUP(63, NULL, "raw", chain3->path, chain3, chain2);
-    TEST_LOOKUP(64, NULL, absraw, chain3->path, chain3, chain2);
-    TEST_LOOKUP(65, NULL, NULL, chain3->path, chain3, chain2);
+    TEST_LOOKUP(56, NULL, "bogus", NULL, NULL);
+    TEST_LOOKUP(57, NULL, "sub/link2", chain, NULL);
+    TEST_LOOKUP(58, NULL, "wrap", chain, NULL);
+    TEST_LOOKUP(59, NULL, abswrap, chain, NULL);
+    TEST_LOOKUP(60, NULL, "../qcow2", chain2, chain);
+    TEST_LOOKUP(61, NULL, "qcow2", NULL, NULL);
+    TEST_LOOKUP(62, NULL, absqcow2, chain2, chain);
+    TEST_LOOKUP(63, NULL, "raw", chain3, chain2);
+    TEST_LOOKUP(64, NULL, absraw, chain3, chain2);
+    TEST_LOOKUP(65, NULL, NULL, chain3, chain2);
 
-    TEST_LOOKUP_TARGET(66, "vda", NULL, "bogus[1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(67, "vda", NULL, "vda[-1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(68, "vda", NULL, "vda[1][1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(69, "vda", NULL, "wrap", 0, chain->path, chain, NULL);
-    TEST_LOOKUP_TARGET(70, "vda", chain, "wrap", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(71, "vda", chain2, "wrap", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(72, "vda", NULL, "vda[0]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(73, "vda", NULL, "vda[1]", 1, chain2->path, chain2, chain);
-    TEST_LOOKUP_TARGET(74, "vda", chain, "vda[1]", 1, chain2->path, chain2, chain);
-    TEST_LOOKUP_TARGET(75, "vda", chain2, "vda[1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(76, "vda", chain3, "vda[1]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(77, "vda", NULL, "vda[2]", 2, chain3->path, chain3, chain2);
-    TEST_LOOKUP_TARGET(78, "vda", chain, "vda[2]", 2, chain3->path, chain3, chain2);
-    TEST_LOOKUP_TARGET(79, "vda", chain2, "vda[2]", 2, chain3->path, chain3, chain2);
-    TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 0, NULL, NULL, NULL);
-    TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 0, NULL, NULL, NULL);
+    TEST_LOOKUP_TARGET(66, "vda", NULL, "bogus[1]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(67, "vda", NULL, "vda[-1]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(68, "vda", NULL, "vda[1][1]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(69, "vda", NULL, "wrap", 0, chain, NULL);
+    TEST_LOOKUP_TARGET(70, "vda", chain, "wrap", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(71, "vda", chain2, "wrap", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(72, "vda", NULL, "vda[0]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(73, "vda", NULL, "vda[1]", 1, chain2, chain);
+    TEST_LOOKUP_TARGET(74, "vda", chain, "vda[1]", 1, chain2, chain);
+    TEST_LOOKUP_TARGET(75, "vda", chain2, "vda[1]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(76, "vda", chain3, "vda[1]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(77, "vda", NULL, "vda[2]", 2, chain3, chain2);
+    TEST_LOOKUP_TARGET(78, "vda", chain, "vda[2]", 2, chain3, chain2);
+    TEST_LOOKUP_TARGET(79, "vda", chain2, "vda[2]", 2, chain3, chain2);
+    TEST_LOOKUP_TARGET(80, "vda", chain3, "vda[2]", 0, NULL, NULL);
+    TEST_LOOKUP_TARGET(81, "vda", NULL, "vda[3]", 0, NULL, NULL);
 
 #define TEST_RELATIVE_BACKING(id, TOP, BASE, EXPECT) \
     do { \
