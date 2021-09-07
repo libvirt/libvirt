@@ -5413,6 +5413,7 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
     }
 
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+        disk->dst &&
         virDomainDiskDefAssignAddress(xmlopt, disk, def) < 0) {
         return -1;
     }
