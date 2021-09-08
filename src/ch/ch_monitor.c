@@ -54,7 +54,7 @@ VIR_ONCE_GLOBAL_INIT(virCHMonitor);
 
 int virCHMonitorShutdownVMM(virCHMonitor *mon);
 int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint);
-int virCHMonitorGet(virCHMonitor *mon, const char *endpoint);
+int virCHMonitorGet(virCHMonitor *mon, const char *endpoint, virJSONValue **response);
 
 static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
@@ -612,12 +612,36 @@ virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint)
     return ret;
 }
 
+struct curl_data {
+    char *content;
+    size_t size;
+};
+
+static size_t
+curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
+{
+    size_t content_size = size * nmemb;
+    struct curl_data *data = userp;
+
+    if (content_size == 0)
+        return content_size;
+
+    data->content = g_realloc(data->content, data->size + content_size);
+
+    memcpy(&(data->content[data->size]), contents, content_size);
+    data->size += content_size;
+
+    return content_size;
+}
+
 int
-virCHMonitorGet(virCHMonitor *mon, const char *endpoint)
+virCHMonitorGet(virCHMonitor *mon, const char *endpoint, virJSONValue **response)
 {
     g_autofree char *url = NULL;
     int responseCode = 0;
     int ret = -1;
+    struct curl_slist *headers = NULL;
+    struct curl_data data = {0};
 
     url = g_strdup_printf("%s/%s", URL_ROOT, endpoint);
 
@@ -629,12 +653,33 @@ virCHMonitorGet(virCHMonitor *mon, const char *endpoint)
     curl_easy_setopt(mon->handle, CURLOPT_UNIX_SOCKET_PATH, mon->socketpath);
     curl_easy_setopt(mon->handle, CURLOPT_URL, url);
 
+    if (response) {
+        headers = curl_slist_append(headers, "Accept: application/json");
+        headers = curl_slist_append(headers, "Content-Type: application/json");
+        curl_easy_setopt(mon->handle, CURLOPT_HTTPHEADER, headers);
+        curl_easy_setopt(mon->handle, CURLOPT_WRITEFUNCTION, curl_callback);
+        curl_easy_setopt(mon->handle, CURLOPT_WRITEDATA, (void *)&data);
+    }
+
     responseCode = virCHMonitorCurlPerform(mon->handle);
 
     virObjectUnlock(mon);
 
-    if (responseCode == 200 || responseCode == 204)
+    if (responseCode == 200 || responseCode == 204) {
+        if (response) {
+            data.content = g_realloc(data.content, data.size + 1);
+            data.content[data.size] = 0;
+            *response = virJSONValueFromString(data.content);
+            if (!*response)
+                goto cleanup;
+        }
         ret = 0;
+    }
+
+ cleanup:
+    g_free(data.content);
+    /* reset the libcurl handle to avoid leaking a stack pointer to data */
+    curl_easy_reset(mon->handle);
 
     return ret;
 }
