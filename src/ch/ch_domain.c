@@ -22,6 +22,7 @@
 
 #include "ch_domain.h"
 #include "viralloc.h"
+#include "virchrdev.h"
 #include "virlog.h"
 #include "virtime.h"
 
@@ -146,6 +147,12 @@ virCHDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         return NULL;
     }
 
+    if (!(priv->chrdevs = virChrdevAlloc())) {
+        virCHDomainObjFreeJob(priv);
+        g_free(priv);
+        return NULL;
+    }
+
     return priv;
 }
 
@@ -154,6 +161,7 @@ virCHDomainObjPrivateFree(void *data)
 {
     virCHDomainObjPrivate *priv = data;
 
+    virChrdevFree(priv->chrdevs);
     virCHDomainObjFreeJob(priv);
     g_free(priv);
 }
