@@ -1194,6 +1194,14 @@ qemuValidateDomainDef(const virDomainDef *def,
 
     /* Serial graphics adapter */
     if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
+        /* -device sga is only sane on x86, since the option ROM it
+         * loads contains x86 machine code.
+         */
+        if (!ARCH_IS_X86(def->os.arch)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("BIOS serial console only supported on x86 architectures"));
+            return -1;
+        }
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("qemu does not support SGA"));
