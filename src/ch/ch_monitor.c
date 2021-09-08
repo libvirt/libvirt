@@ -90,6 +90,30 @@ virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
 }
 
 static int
+virCHMonitorBuildPTYJson(virJSONValue *content, virDomainDef *vmdef)
+{
+    virJSONValue *ptys = virJSONValueNewObject();
+
+    if (vmdef->nconsoles) {
+        g_autoptr(virJSONValue) pty = virJSONValueNewObject();
+        if (virJSONValueObjectAppendString(pty, "mode", "Pty") < 0)
+            return -1;
+        if (virJSONValueObjectAppend(content, "console", &pty) < 0)
+            return -1;
+    }
+
+    if (vmdef->nserials) {
+        g_autoptr(virJSONValue) pty = virJSONValueNewObject();
+        if (virJSONValueObjectAppendString(ptys, "mode", "Pty") < 0)
+            return -1;
+        if (virJSONValueObjectAppend(content, "serial", &pty) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+static int
 virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
 {
     virJSONValue *kernel = virJSONValueNewObject();
@@ -369,6 +393,9 @@ virCHMonitorBuildVMJson(virDomainDef *vmdef, char **jsonstr)
                        _("VM is not defined"));
         goto cleanup;
     }
+
+    if (virCHMonitorBuildPTYJson(content, vmdef) < 0)
+        goto cleanup;
 
     if (virCHMonitorBuildCPUJson(content, vmdef) < 0)
         goto cleanup;
