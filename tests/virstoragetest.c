@@ -37,28 +37,11 @@ VIR_LOG_INIT("tests.storagetest");
 
 #define datadir abs_builddir "/virstoragedata"
 
-/* This test creates the following files, all in datadir:
-
- * raw: 1024-byte raw file
- * qcow2: qcow2 file with 'raw' as backing
- * wrap: qcow2 file with 'qcow2' as backing
- *
- * Relative names to these files are known at compile time, but absolute
- * names depend on where the test is run; for convenience,
- * we pre-populate the computation of these names for use during the test.
-*/
-
-static char *qemuimg;
-static char *absraw;
-static char *absqcow2;
 static char *abswrap;
 
 static void
 testCleanupImages(void)
 {
-    VIR_FREE(qemuimg);
-    VIR_FREE(absraw);
-    VIR_FREE(absqcow2);
     VIR_FREE(abswrap);
 
     if (chdir(abs_builddir) < 0) {
@@ -106,8 +89,10 @@ testPrepImages(void)
     bool compat = false;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *buf = NULL;
+    g_autofree char *absraw = g_strdup_printf("%s/raw", datadir);
+    g_autofree char *absqcow2 = g_strdup_printf("%s/qcow2", datadir);
+    g_autofree char *qemuimg = virFindFileInPath("qemu-img");
 
-    qemuimg = virFindFileInPath("qemu-img");
     if (!qemuimg)
         goto skip;
 
@@ -126,8 +111,6 @@ testPrepImages(void)
         compat = true;
     VIR_FREE(buf);
 
-    absraw = g_strdup_printf("%s/raw", datadir);
-    absqcow2 = g_strdup_printf("%s/qcow2", datadir);
     abswrap = g_strdup_printf("%s/wrap", datadir);
 
     if (g_mkdir_with_parents(datadir, 0777) < 0) {
@@ -158,7 +141,7 @@ testPrepImages(void)
     /* Make sure our later uses of 'qemu-img rebase' will work */
     virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "raw", "qcow2", NULL);
+                               "-F", "raw", "-b", absraw, "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
@@ -469,7 +452,6 @@ mymain(void)
     virStorageSource *chain = &fakeChain[0];
     virStorageSource *chain2 = &fakeChain[1];
     virStorageSource *chain3 = &fakeChain[2];
-    g_autoptr(virCommand) cmd = NULL;
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
@@ -504,13 +486,6 @@ mymain(void)
     TEST_CHAIN("qcow2-auto_raw-raw-relative",
                abs_srcdir "/virstoragetestdata/images/qcow2_raw-raw-relative.qcow2",
                VIR_STORAGE_FILE_AUTO, EXP_PASS);
-
-    /* Rewrite qcow2 file to use absolute backing name */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", absraw, "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
 
     /* qcow2 chain with absolute backing formatted with a real qemu-img */
     TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
