@@ -86,7 +86,6 @@ static int
 testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
-    bool compat = false;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *buf = NULL;
     g_autofree char *absraw = g_strdup_printf("%s/raw", datadir);
@@ -98,18 +97,6 @@ testPrepImages(void)
 
     /* Clean up from any earlier failed tests */
     virFileDeleteTree(datadir);
-
-    /* See if qemu-img supports '-o compat=xxx'.  If so, we force the
-     * use of both v2 and v3 files; if not, it is v2 only but the test
-     * still works. */
-    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2",
-                               "-o?", "/dev/null", NULL);
-    virCommandSetOutputBuffer(cmd, &buf);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto skip;
-    if (strstr(buf, "compat "))
-        compat = true;
-    VIR_FREE(buf);
 
     abswrap = g_strdup_printf("%s/wrap", datadir);
 
@@ -131,24 +118,24 @@ testPrepImages(void)
 
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
-    virCommandFree(cmd);
     cmd = virCommandNewArgList(qemuimg, "create",
                                "-f", "qcow2",
                                "-F", "raw",
-                               "-b", absraw, NULL);
-    if (compat)
-        virCommandAddArgList(cmd, "-o", "compat=0.10", NULL);
-    virCommandAddArg(cmd, "qcow2");
+                               "-b", absraw,
+                               "-o", "compat=0.10",
+                               absqcow2, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
     /* Create a second qcow2 wrapping the first, to be sure that we
      * can correctly avoid insecure probing.  */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2", NULL);
-    virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=qcow2%s",
-                           absqcow2, compat ? ",compat=1.1" : "");
-    virCommandAddArg(cmd, "wrap");
+    cmd = virCommandNewArgList(qemuimg, "create",
+                               "-f", "qcow2",
+                               "-F", "qcow2",
+                               "-b", absqcow2,
+                               "-o", "compat=1.1",
+                               abswrap, NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
