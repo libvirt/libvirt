@@ -28,6 +28,7 @@
 #include "ch_process.h"
 #include "viralloc.h"
 #include "virerror.h"
+#include "virjson.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
@@ -50,6 +51,86 @@ virCHProcessConnectMonitor(virCHDriver *driver,
 
     virObjectUnref(cfg);
     return monitor;
+}
+
+static void
+virCHProcessUpdateConsoleDevice(virDomainObj *vm,
+                                virJSONValue *config,
+                                const char *device)
+{
+    const char *path;
+    virDomainChrDef *chr = NULL;
+    virJSONValue *dev, *file;
+
+    if (!config)
+        return;
+
+    dev = virJSONValueObjectGet(config, device);
+    if (!dev) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing '%s' in 'config' from cloud-hypervisor"),
+                       device);
+        return;
+    }
+
+    file = virJSONValueObjectGet(dev, "file");
+    if (!file) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("missing 'file' in '%s' from cloud-hypervisor"),
+                       device);
+        return;
+    }
+
+    path = virJSONValueGetString(file);
+    if (!path) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to parse contents of 'file' field in '%s' from cloud-hypervisor"),
+                       device);
+        return;
+    }
+
+    if (STREQ(device, "console")) {
+        chr = vm->def->consoles[0];
+    } else if (STREQ(device, "serial")) {
+        chr = vm->def->serials[0];
+    }
+
+    if (chr && chr->source)
+        chr->source->data.file.path = g_strdup(path);
+}
+
+static void
+virCHProcessUpdateConsole(virDomainObj *vm,
+                          virJSONValue *info)
+{
+    virJSONValue *config;
+
+    config = virJSONValueObjectGet(info, "config");
+    if (!config) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing 'config' in info query result from cloud-hypervisor"));
+        return;
+    }
+
+    if (vm->def->nconsoles > 0)
+        virCHProcessUpdateConsoleDevice(vm, config, "console");
+    if (vm->def->nserials > 0)
+        virCHProcessUpdateConsoleDevice(vm, config, "serial");
+}
+
+static int
+virCHProcessUpdateInfo(virDomainObj *vm)
+{
+    virJSONValue *info;
+    virCHDomainObjPrivate *priv = vm->privateData;
+    if (virCHMonitorGetInfo(priv->monitor, &info) < 0)
+        return -1;
+
+    virCHProcessUpdateConsole(vm, info);
+
+    virJSONValueFree(info);
+
+    return 0;
 }
 
 /**
@@ -92,6 +173,9 @@ int virCHProcessStart(virCHDriver *driver,
 
     vm->pid = priv->monitor->pid;
     vm->def->id = vm->pid;
+
+    virCHProcessUpdateInfo(vm);
+
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
     return 0;
