@@ -464,6 +464,20 @@ mymain(void)
 
     testCleanupImages();
 
+    /* Test various combinations of qcow2 images with missing 'backing_format' */
+    TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_qcow2-auto",
+               abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-qcow2_qcow2-auto.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-auto",
+               abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-qcow2_raw-auto.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-qcow2_qcow2-auto_qcow2-auto",
+               abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-auto_qcow2-auto.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+    TEST_CHAIN("qcow2-qcow2_qcow2-auto",
+               abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-auto.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN("qcow2-qcow2_missing",
                abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-missing.qcow2",

@@ -1,0 +1,19 @@
+path:ABS_SRCDIR/virstoragetestdata/images/qcow2_qcow2-auto.qcow2
+backingStoreRaw: qcow2
+capacity: 1024
+encryption: 0
+relPath:<null>
+type:1
+format:14
+protocol:none
+hostname:<null>
+
+path:ABS_SRCDIR/virstoragetestdata/images/qcow2
+backingStoreRaw: <null>
+capacity: 1024
+encryption: 0
+relPath:qcow2
+type:1
+format:14
+protocol:none
+hostname:<null>
