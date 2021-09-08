@@ -132,16 +132,13 @@ testPrepImages(void)
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
     virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qcow2", NULL);
-    virCommandAddArgFormat(cmd, "-obacking_file=raw,backing_fmt=raw%s",
-                           compat ? ",compat=0.10" : "");
+    cmd = virCommandNewArgList(qemuimg, "create",
+                               "-f", "qcow2",
+                               "-F", "raw",
+                               "-b", absraw, NULL);
+    if (compat)
+        virCommandAddArgList(cmd, "-o", "compat=0.10", NULL);
     virCommandAddArg(cmd, "qcow2");
-    if (virCommandRun(cmd, NULL) < 0)
-        goto skip;
-    /* Make sure our later uses of 'qemu-img rebase' will work */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", absraw, "qcow2", NULL);
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
