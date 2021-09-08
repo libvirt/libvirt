@@ -1,4 +1,4 @@
-path:ABS_BUILDDIR/virstoragedata/raw
+path:ABS_SRCDIR/virstoragetestdata/images/raw
 backingStoreRaw: <null>
 capacity: 0
 encryption: 0

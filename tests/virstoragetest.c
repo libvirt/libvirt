@@ -504,8 +504,12 @@ mymain(void)
     TEST_CHAIN("missing", "bogus", VIR_STORAGE_FILE_RAW, EXP_FAIL);
 
     /* Raw image, whether with right format or no specified format */
-    TEST_CHAIN("raw-raw", absraw, VIR_STORAGE_FILE_RAW, EXP_PASS);
-    TEST_CHAIN("raw-auto", absraw, VIR_STORAGE_FILE_AUTO, EXP_PASS);
+    TEST_CHAIN("raw-raw",
+               abs_srcdir "/virstoragetestdata/images/raw",
+               VIR_STORAGE_FILE_RAW, EXP_PASS);
+    TEST_CHAIN("raw-auto",
+               abs_srcdir "/virstoragetestdata/images/raw",
+               VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
     TEST_CHAIN("qcow2-qcow2_raw-raw-relative", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
