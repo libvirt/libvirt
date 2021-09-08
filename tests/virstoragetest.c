@@ -37,13 +37,9 @@ VIR_LOG_INIT("tests.storagetest");
 
 #define datadir abs_builddir "/virstoragedata"
 
-static char *abswrap;
-
 static void
 testCleanupImages(void)
 {
-    VIR_FREE(abswrap);
-
     if (chdir(abs_builddir) < 0) {
         fprintf(stderr, "unable to return to correct directory, refusing to "
                 "clean up %s\n", datadir);
@@ -82,74 +78,59 @@ testStorageFileGetMetadata(const char *path,
     return g_steal_pointer(&def);
 }
 
-static int
+static char *
 testPrepImages(void)
 {
-    int ret = EXIT_FAILURE;
     g_autoptr(virCommand) cmdraw = NULL;
     g_autoptr(virCommand) cmdqcow2 = NULL;
     g_autoptr(virCommand) cmdwrap = NULL;
     g_autofree char *absraw = g_strdup_printf("%s/raw", datadir);
     g_autofree char *absqcow2 = g_strdup_printf("%s/qcow2", datadir);
+    g_autofree char *abswrap = g_strdup_printf("%s/wrap", datadir);
     g_autofree char *qemuimg = virFindFileInPath("qemu-img");
 
     if (!qemuimg)
-        goto skip;
+        return NULL;
 
     /* Clean up from any earlier failed tests */
     virFileDeleteTree(datadir);
 
-    abswrap = g_strdup_printf("%s/wrap", datadir);
-
     if (g_mkdir_with_parents(datadir, 0777) < 0) {
-        fprintf(stderr, "unable to create directory %s\n", datadir);
-        goto cleanup;
+        VIR_TEST_VERBOSE("unable to create directory '%s'\n", datadir);
+        return NULL;
     }
 
-    if (chdir(datadir) < 0) {
-        fprintf(stderr, "unable to test relative backing chains\n");
-        goto cleanup;
-    }
-
+    /* create the folowing real backing chain with qcow2 images with absolute
+     * backing and different qcow2 versions:
+     * datadir/raw <- datadir/qcow2 (qcow2v2) <- datadir/wrap (qcow2v3) */
     cmdraw = virCommandNewArgList(qemuimg, "create",
                                   "-f", "raw",
                                   absraw, "1k",  NULL);
-    if (virCommandRun(cmdraw, NULL) < 0)
-        goto skip;
 
-    /* Create a qcow2 wrapping relative raw; later on, we modify its
-     * metadata to test other configurations */
     cmdqcow2 = virCommandNewArgList(qemuimg, "create",
                                     "-f", "qcow2",
                                     "-F", "raw",
                                     "-b", absraw,
                                     "-o", "compat=0.10",
                                     absqcow2, NULL);
-    if (virCommandRun(cmdqcow2, NULL) < 0)
-        goto skip;
 
-    /* Create a second qcow2 wrapping the first, to be sure that we
-     * can correctly avoid insecure probing.  */
     cmdwrap = virCommandNewArgList(qemuimg, "create",
                                    "-f", "qcow2",
                                    "-F", "qcow2",
                                    "-b", absqcow2,
                                    "-o", "compat=1.1",
                                    abswrap, NULL);
-    if (virCommandRun(cmdwrap, NULL) < 0)
-        goto skip;
 
-    ret = 0;
- cleanup:
-    if (ret)
-        testCleanupImages();
-    return ret;
+    if (virCommandRun(cmdraw, NULL) < 0 ||
+        virCommandRun(cmdqcow2, NULL) < 0 ||
+        virCommandRun(cmdwrap, NULL) < 0) {
+        VIR_TEST_VERBOSE("failed to create backing chain in '%s'\n", datadir);
+        return NULL;
+    }
 
- skip:
-    fputs("qemu-img is too old; skipping this test\n", stderr);
-    ret = EXIT_AM_SKIP;
-    goto cleanup;
+    return g_steal_pointer(&abswrap);
 }
+
 
 enum {
     EXP_PASS = 0,
@@ -432,11 +413,12 @@ testBackingParse(const void *args)
 static int
 mymain(void)
 {
-    int ret;
+    int ret = 0;
     struct testChainData data;
     struct testLookupData data2;
     struct testPathRelativeBacking data4;
     struct testBackingParseData data5;
+    g_autofree char *realchain = NULL;
     virStorageSource fakeChain[4];
     virStorageSource *chain = &fakeChain[0];
     virStorageSource *chain2 = &fakeChain[1];
@@ -444,11 +426,6 @@ mymain(void)
 
     if (storageRegisterAll() < 0)
        return EXIT_FAILURE;
-
-    /* Prep some files with qemu-img; if that is not found on PATH, or
-     * if it lacks support for qcow2 and qed, skip this test.  */
-    if ((ret = testPrepImages()) != 0)
-        return ret;
 
 #define TEST_CHAIN(testname, start, format, flags) \
     do { \
@@ -477,8 +454,15 @@ mymain(void)
                VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* qcow2 chain with absolute backing formatted with a real qemu-img */
-    TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
-    TEST_CHAIN("qcow2-auto_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_AUTO, EXP_PASS);
+
+    /* Prep some files with qemu-img; if that is not found on PATH, the test
+     * using the data skips itself if the data can't be prepared */
+    realchain = testPrepImages();
+
+    TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-raw", realchain, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-auto_qcow2-qcow2_raw-raw", realchain, VIR_STORAGE_FILE_AUTO, EXP_PASS);
+
+    testCleanupImages();
 
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN("qcow2-qcow2_missing",
@@ -1188,9 +1172,6 @@ mymain(void)
 #endif /* WITH_YAJL */
 
  cleanup:
-    /* Final cleanup */
-    testCleanupImages();
-
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
