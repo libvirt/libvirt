@@ -1192,8 +1192,7 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("reboot-timeout-enabled");
 
     DO_TEST("bios",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_SGA);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_NOCAPS("bios-nvram");
     DO_TEST("bios-nvram-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,

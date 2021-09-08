@@ -1194,17 +1194,16 @@ qemuValidateDomainDef(const virDomainDef *def,
 
     /* Serial graphics adapter */
     if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
-        /* -device sga is only sane on x86, since the option ROM it
-         * loads contains x86 machine code.
+        /* On x86 -machine graphics=off toggles the use of the
+         * serial console in SeaBIOS (and theoretically other
+         * firmwares).
+         * On non-x86, it has also sorts of other effects
+         * on QEMU device models created and so we don't
+         * want to allow its use.
          */
         if (!ARCH_IS_X86(def->os.arch)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("BIOS serial console only supported on x86 architectures"));
-            return -1;
-        }
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SGA)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("qemu does not support SGA"));
             return -1;
         }
         if (!def->nserials) {

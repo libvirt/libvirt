@@ -5956,18 +5956,6 @@ qemuBuildVMGenIDCommandLine(virCommand *cmd,
 }
 
 
-static int
-qemuBuildSgaCommandLine(virCommand *cmd,
-                        const virDomainDef *def)
-{
-    /* Serial graphics adapter */
-    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES)
-        virCommandAddArgList(cmd, "-device", "sga", NULL);
-
-    return 0;
-}
-
-
 static char *
 qemuBuildClockArgStr(virDomainClockDef *def)
 {
@@ -7052,6 +7040,16 @@ qemuBuildMachineCommandLine(virCommand *cmd,
                                                          def->os.machine);
         if (defaultRAMid)
             virBufferAsprintf(&buf, ",memory-backend=%s", defaultRAMid);
+    }
+
+    /* On x86 targets, graphics=off activates the serial console
+     * output mode in the firmware. On non-x86 targets it has
+     * various other undesirable effects that we certainly do
+     * not want to have. We rely on the validation code to have
+     * blocked useserial=yes on non-x86
+     */
+    if (def->os.bios.useserial == VIR_TRISTATE_BOOL_YES) {
+        virBufferAddLit(&buf, ",graphics=off");
     }
 
     virCommandAddArgBuffer(cmd, &buf);
@@ -10552,9 +10550,6 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     /* Disable global config files and default devices */
     virCommandAddArg(cmd, "-no-user-config");
     virCommandAddArg(cmd, "-nodefaults");
-
-    if (qemuBuildSgaCommandLine(cmd, def) < 0)
-        return NULL;
 
     if (qemuBuildMonitorCommandLine(logManager, secManager, cmd, cfg, def, priv) < 0)
         return NULL;

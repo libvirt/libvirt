@@ -10,7 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=test-bios,debug-threads=on \
 -S \
--machine pc,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc,accel=tcg,usb=off,dump-guest-core=off,graphics=off \
 -bios /usr/share/seabios/bios.bin \
 -m 1024 \
 -realtime mlock=off \
@@ -19,7 +19,6 @@ QEMU_AUDIO_DRV=none \
 -display none \
 -no-user-config \
 -nodefaults \
--device sga \
 -chardev socket,id=charmonitor,path=/tmp/lib/domain--1-test-bios/monitor.sock,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
