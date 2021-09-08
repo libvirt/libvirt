@@ -86,9 +86,9 @@ static int
 testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
+    g_autoptr(virCommand) cmdraw = NULL;
     g_autoptr(virCommand) cmdqcow2 = NULL;
     g_autoptr(virCommand) cmdwrap = NULL;
-    g_autofree char *buf = NULL;
     g_autofree char *absraw = g_strdup_printf("%s/raw", datadir);
     g_autofree char *absqcow2 = g_strdup_printf("%s/qcow2", datadir);
     g_autofree char *qemuimg = virFindFileInPath("qemu-img");
@@ -111,11 +111,11 @@ testPrepImages(void)
         goto cleanup;
     }
 
-    buf = g_strdup_printf("%1024d", 0);
-    if (virFileWriteStr("raw", buf, 0600) < 0) {
-        fprintf(stderr, "unable to create raw file\n");
-        goto cleanup;
-    }
+    cmdraw = virCommandNewArgList(qemuimg, "create",
+                                  "-f", "raw",
+                                  absraw, "1k",  NULL);
+    if (virCommandRun(cmdraw, NULL) < 0)
+        goto skip;
 
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
