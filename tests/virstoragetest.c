@@ -525,16 +525,10 @@ mymain(void)
     /* qcow2 with a longer backing chain */
     TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
-    /* Rewrite qcow2 to a missing backing file, with backing type */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", datadir "/bogus",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
     /* Qcow2 file with missing backing file but specified type */
-    TEST_CHAIN("qcow2-qcow2_missing", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
+    TEST_CHAIN("qcow2-qcow2_missing",
+               abs_srcdir "/virstoragetestdata/images/qcow2_qcow2-missing.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
 
     /* Qcow2 file with backing protocol instead of file */
     TEST_CHAIN("qcow2-qcow2_nbd-raw",
