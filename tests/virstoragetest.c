@@ -176,6 +176,11 @@ testStorageChain(const void *args)
     g_autofree char *expectpath = g_strdup_printf("%s/virstoragetestdata/out/%s",
                                                   abs_srcdir, data->testname);
 
+    /* If the filename is NULL it means that the images couldn't be created,
+     * thus skip this particular test. */
+    if (!data->start)
+        return EXIT_AM_SKIP;
+
     meta = testStorageFileGetMetadata(data->start, data->format, -1, -1);
     if (!meta) {
         if (data->flags & EXP_FAIL) {
