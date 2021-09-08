@@ -23,6 +23,7 @@
 #include <curl/curl.h>
 
 #include "virobject.h"
+#include "virjson.h"
 #include "domain_conf.h"
 
 #define URL_ROOT "http://localhost/api/v1"
@@ -34,6 +35,7 @@
 #define URL_VM_REBOOT "vm.reboot"
 #define URL_VM_Suspend "vm.pause"
 #define URL_VM_RESUME "vm.resume"
+#define URL_VM_INFO "vm.info"
 
 typedef struct _virCHMonitor virCHMonitor;
 
@@ -58,3 +60,4 @@ int virCHMonitorShutdownVM(virCHMonitor *mon);
 int virCHMonitorRebootVM(virCHMonitor *mon);
 int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
+int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);

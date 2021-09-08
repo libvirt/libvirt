@@ -757,3 +757,18 @@ virCHMonitorResumeVM(virCHMonitor *mon)
 {
     return virCHMonitorPutNoContent(mon, URL_VM_RESUME);
 }
+
+/**
+ * virCHMonitorGetInfo:
+ * @mon: Pointer to the monitor
+ * @info: Get VM info
+ *
+ * Retrive the VM info and store in @info
+ *
+ * Returns 0 on success.
+ */
+int
+virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info)
+{
+    return virCHMonitorGet(mon, URL_VM_INFO, info);
+}
