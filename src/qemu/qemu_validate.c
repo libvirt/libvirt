@@ -1209,7 +1209,7 @@ qemuValidateDomainDef(const virDomainDef *def,
         }
         if (!def->nserials) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("need at least one serial port to use SGA"));
+                           _("need at least one serial port to use BIOS serial output"));
             return -1;
         }
     }
