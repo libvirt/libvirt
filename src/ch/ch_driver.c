@@ -262,7 +262,7 @@ chDomainCreateXML(virConnectPtr conn,
     virCHDomainObjEndJob(vm);
 
  cleanup:
-    if (!dom) {
+    if (vm && !dom) {
         virDomainObjListRemove(driver->domains, vm);
     }
     virDomainDefFree(vmdef);
