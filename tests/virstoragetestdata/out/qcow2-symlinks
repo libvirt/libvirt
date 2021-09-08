@@ -1,4 +1,4 @@
-path:ABS_BUILDDIR/virstoragedata/sub/link2
+path:ABS_SRCDIR/virstoragetestdata/images/sub/link2
 backingStoreRaw: ../sub/link1
 capacity: 1024
 encryption: 0
@@ -8,7 +8,7 @@ format:14
 protocol:none
 hostname:<null>
 
-path:ABS_BUILDDIR/virstoragedata/sub/../sub/link1
+path:ABS_SRCDIR/virstoragetestdata/images/sub/../sub/link1
 backingStoreRaw: ../raw
 capacity: 1024
 encryption: 0
@@ -18,7 +18,7 @@ format:14
 protocol:none
 hostname:<null>
 
-path:ABS_BUILDDIR/virstoragedata/sub/../sub/../raw
+path:ABS_SRCDIR/virstoragetestdata/images/sub/../sub/../raw
 backingStoreRaw: <null>
 capacity: 0
 encryption: 0

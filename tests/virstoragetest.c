@@ -42,8 +42,6 @@ VIR_LOG_INIT("tests.storagetest");
  * raw: 1024-byte raw file
  * qcow2: qcow2 file with 'raw' as backing
  * wrap: qcow2 file with 'qcow2' as backing
- * sub/link1: symlink to qcow2
- * sub/link2: symlink to wrap
  *
  * Relative names to these files are known at compile time, but absolute
  * names depend on where the test is run; for convenience,
@@ -54,7 +52,6 @@ static char *qemuimg;
 static char *absraw;
 static char *absqcow2;
 static char *abswrap;
-static char *abslink2;
 
 static void
 testCleanupImages(void)
@@ -63,7 +60,6 @@ testCleanupImages(void)
     VIR_FREE(absraw);
     VIR_FREE(absqcow2);
     VIR_FREE(abswrap);
-    VIR_FREE(abslink2);
 
     if (chdir(abs_builddir) < 0) {
         fprintf(stderr, "unable to return to correct directory, refusing to "
@@ -133,10 +129,9 @@ testPrepImages(void)
     absraw = g_strdup_printf("%s/raw", datadir);
     absqcow2 = g_strdup_printf("%s/qcow2", datadir);
     abswrap = g_strdup_printf("%s/wrap", datadir);
-    abslink2 = g_strdup_printf("%s/sub/link2", datadir);
 
-    if (g_mkdir_with_parents(datadir "/sub", 0777) < 0) {
-        fprintf(stderr, "unable to create directory %s\n", datadir "/sub");
+    if (g_mkdir_with_parents(datadir, 0777) < 0) {
+        fprintf(stderr, "unable to create directory %s\n", datadir);
         goto cleanup;
     }
 
@@ -176,15 +171,6 @@ testPrepImages(void)
     virCommandAddArg(cmd, "wrap");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
-
-#ifdef WITH_SYMLINK
-    /* Create some symlinks in a sub-directory. */
-    if (symlink("../qcow2", datadir "/sub/link1") < 0 ||
-        symlink("../wrap", datadir "/sub/link2") < 0) {
-        fprintf(stderr, "unable to create symlink");
-        goto cleanup;
-    }
-#endif
 
     ret = 0;
  cleanup:
@@ -552,25 +538,10 @@ mymain(void)
     TEST_CHAIN("directory-none", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_NONE, EXP_PASS);
     TEST_CHAIN("directory-dir", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_DIR, EXP_PASS);
 
-#ifdef WITH_SYMLINK
-    /* Rewrite qcow2 and wrap file to use backing names relative to a
-     * symlink from a different directory */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "../raw", "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "qcow2", "-b", "../sub/link1", "wrap",
-                               NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
     /* Behavior of symlinks to qcow2 with relative backing files */
-    TEST_CHAIN("qcow2-symlinks", abslink2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
-#endif
+    TEST_CHAIN("qcow2-symlinks",
+               abs_srcdir "/virstoragetestdata/images/sub/link2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* Behavior of an infinite loop chain */
     TEST_CHAIN("qcow2-qcow2_infinite-self",
