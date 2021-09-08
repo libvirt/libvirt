@@ -54,7 +54,6 @@ VIR_ONCE_GLOBAL_INIT(virCHMonitor);
 
 int virCHMonitorShutdownVMM(virCHMonitor *mon);
 int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint);
-int virCHMonitorGet(virCHMonitor *mon, const char *endpoint, virJSONValue **response);
 
 static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
@@ -634,7 +633,7 @@ curl_callback(void *contents, size_t size, size_t nmemb, void *userp)
     return content_size;
 }
 
-int
+static int
 virCHMonitorGet(virCHMonitor *mon, const char *endpoint, virJSONValue **response)
 {
     g_autofree char *url = NULL;
