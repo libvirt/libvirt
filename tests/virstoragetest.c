@@ -56,7 +56,6 @@ static char *absraw;
 static char *absqcow2;
 static char *abswrap;
 static char *absqed;
-static char *absdir;
 static char *abslink2;
 
 static void
@@ -67,7 +66,6 @@ testCleanupImages(void)
     VIR_FREE(absqcow2);
     VIR_FREE(abswrap);
     VIR_FREE(absqed);
-    VIR_FREE(absdir);
     VIR_FREE(abslink2);
 
     if (chdir(abs_builddir) < 0) {
@@ -139,15 +137,10 @@ testPrepImages(void)
     absqcow2 = g_strdup_printf("%s/qcow2", datadir);
     abswrap = g_strdup_printf("%s/wrap", datadir);
     absqed = g_strdup_printf("%s/qed", datadir);
-    absdir = g_strdup_printf("%s/dir", datadir);
     abslink2 = g_strdup_printf("%s/sub/link2", datadir);
 
     if (g_mkdir_with_parents(datadir "/sub", 0777) < 0) {
         fprintf(stderr, "unable to create directory %s\n", datadir "/sub");
-        goto cleanup;
-    }
-    if (g_mkdir_with_parents(datadir "/dir", 0777) < 0) {
-        fprintf(stderr, "unable to create directory %s\n", datadir "/dir");
         goto cleanup;
     }
 
@@ -573,9 +566,9 @@ mymain(void)
     TEST_CHAIN("qed-auto_raw", absqed, VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* directory */
-    TEST_CHAIN("directory-raw", absdir, VIR_STORAGE_FILE_RAW, EXP_PASS);
-    TEST_CHAIN("directory-none", absdir, VIR_STORAGE_FILE_NONE, EXP_PASS);
-    TEST_CHAIN("directory-dir", absdir, VIR_STORAGE_FILE_DIR, EXP_PASS);
+    TEST_CHAIN("directory-raw", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_RAW, EXP_PASS);
+    TEST_CHAIN("directory-none", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_NONE, EXP_PASS);
+    TEST_CHAIN("directory-dir", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_DIR, EXP_PASS);
 
 #ifdef WITH_SYMLINK
     /* Rewrite qcow2 and wrap file to use backing names relative to a
