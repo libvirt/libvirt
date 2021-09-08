@@ -498,8 +498,12 @@ mymain(void)
                VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* Qcow2 file with relative raw backing, format provided */
-    TEST_CHAIN("qcow2-qcow2_raw-raw-relative", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
-    TEST_CHAIN("qcow2-auto_raw-raw-relative", absqcow2, VIR_STORAGE_FILE_AUTO, EXP_PASS);
+    TEST_CHAIN("qcow2-qcow2_raw-raw-relative",
+               abs_srcdir "/virstoragetestdata/images/qcow2_raw-raw-relative.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-auto_raw-raw-relative",
+               abs_srcdir "/virstoragetestdata/images/qcow2_raw-raw-relative.qcow2",
+               VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* Rewrite qcow2 file to use absolute backing name */
     virCommandFree(cmd);
