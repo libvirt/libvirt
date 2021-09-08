@@ -12,7 +12,6 @@
   <flag name='ccid-passthru'/>
   <flag name='virtio-tx-alg'/>
   <flag name='virtio-blk-pci.ioeventfd'/>
-  <flag name='sga'/>
   <flag name='virtio-blk-pci.event_idx'/>
   <flag name='virtio-net-pci.event_idx'/>
   <flag name='piix3-usb-uhci'/>

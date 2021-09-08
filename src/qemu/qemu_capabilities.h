@@ -130,7 +130,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_IOEVENTFD, /* virtio-{net|blk}-pci.ioeventfd=on */
 
     /* 60 */
-    QEMU_CAPS_SGA, /* Serial Graphics Adapter */
+    X_QEMU_CAPS_SGA, /* Serial Graphics Adapter */
     QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, /* virtio-blk-pci.event_idx */
     QEMU_CAPS_VIRTIO_NET_EVENT_IDX, /* virtio-net-pci.event_idx */
     X_QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC, /* Is cache=directsync supported? */
