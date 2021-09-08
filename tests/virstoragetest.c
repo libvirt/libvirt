@@ -536,17 +536,10 @@ mymain(void)
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN("qcow2-qcow2_missing", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_FAIL);
 
-
-    /* Rewrite qcow2 to use an nbd: protocol as backend */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "rebase", "-u", "-f", "qcow2",
-                               "-F", "raw", "-b", "nbd+tcp://example.org:6000/blah",
-                               "qcow2", NULL);
-    if (virCommandRun(cmd, NULL) < 0)
-        ret = -1;
-
     /* Qcow2 file with backing protocol instead of file */
-    TEST_CHAIN("qcow2-qcow2_nbd-raw", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-qcow2_nbd-raw",
+               abs_srcdir "/virstoragetestdata/images/qcow2_nbd-raw.qcow2",
+               VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* qed file */
     TEST_CHAIN("qed-qed_raw",

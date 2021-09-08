@@ -1,4 +1,4 @@
-path:ABS_BUILDDIR/virstoragedata/qcow2
+path:ABS_SRCDIR/virstoragetestdata/images/qcow2_nbd-raw.qcow2
 backingStoreRaw: nbd+tcp://example.org:6000/blah
 capacity: 1024
 encryption: 0
