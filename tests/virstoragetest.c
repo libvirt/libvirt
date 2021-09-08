@@ -42,7 +42,6 @@ VIR_LOG_INIT("tests.storagetest");
  * raw: 1024-byte raw file
  * qcow2: qcow2 file with 'raw' as backing
  * wrap: qcow2 file with 'qcow2' as backing
- * qed: qed file with 'raw' as backing
  * sub/link1: symlink to qcow2
  * sub/link2: symlink to wrap
  *
@@ -55,7 +54,6 @@ static char *qemuimg;
 static char *absraw;
 static char *absqcow2;
 static char *abswrap;
-static char *absqed;
 static char *abslink2;
 
 static void
@@ -65,7 +63,6 @@ testCleanupImages(void)
     VIR_FREE(absraw);
     VIR_FREE(absqcow2);
     VIR_FREE(abswrap);
-    VIR_FREE(absqed);
     VIR_FREE(abslink2);
 
     if (chdir(abs_builddir) < 0) {
@@ -136,7 +133,6 @@ testPrepImages(void)
     absraw = g_strdup_printf("%s/raw", datadir);
     absqcow2 = g_strdup_printf("%s/qcow2", datadir);
     abswrap = g_strdup_printf("%s/wrap", datadir);
-    absqed = g_strdup_printf("%s/qed", datadir);
     abslink2 = g_strdup_printf("%s/sub/link2", datadir);
 
     if (g_mkdir_with_parents(datadir "/sub", 0777) < 0) {
@@ -178,15 +174,6 @@ testPrepImages(void)
     virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=qcow2%s",
                            absqcow2, compat ? ",compat=1.1" : "");
     virCommandAddArg(cmd, "wrap");
-    if (virCommandRun(cmd, NULL) < 0)
-        goto skip;
-
-    /* Create a qed file. */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "create", "-f", "qed", NULL);
-    virCommandAddArgFormat(cmd, "-obacking_file=%s,backing_fmt=raw",
-                           absraw);
-    virCommandAddArg(cmd, "qed");
     if (virCommandRun(cmd, NULL) < 0)
         goto skip;
 
@@ -562,8 +549,12 @@ mymain(void)
     TEST_CHAIN("qcow2-qcow2_nbd-raw", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
 
     /* qed file */
-    TEST_CHAIN("qed-qed_raw", absqed, VIR_STORAGE_FILE_QED, EXP_PASS);
-    TEST_CHAIN("qed-auto_raw", absqed, VIR_STORAGE_FILE_AUTO, EXP_PASS);
+    TEST_CHAIN("qed-qed_raw",
+               abs_srcdir "/virstoragetestdata/images/qed_raw-raw-relative",
+               VIR_STORAGE_FILE_QED, EXP_PASS);
+    TEST_CHAIN("qed-auto_raw",
+               abs_srcdir "/virstoragetestdata/images/qed_raw-raw-relative",
+               VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* directory */
     TEST_CHAIN("directory-raw", abs_srcdir "/virstoragetestdata/images/", VIR_STORAGE_FILE_RAW, EXP_PASS);
