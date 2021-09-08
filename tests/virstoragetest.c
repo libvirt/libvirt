@@ -512,12 +512,9 @@ mymain(void)
     if (virCommandRun(cmd, NULL) < 0)
         ret = -1;
 
-    /* Qcow2 file with raw as absolute backing, backing format provided */
-    TEST_CHAIN("qcow2-qcow2_raw-raw", absqcow2, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
-    TEST_CHAIN("qcow2-auto_raw-raw", absqcow2, VIR_STORAGE_FILE_AUTO, EXP_PASS);
-
-    /* qcow2 with a longer backing chain */
+    /* qcow2 chain with absolute backing formatted with a real qemu-img */
     TEST_CHAIN("qcow2-qcow2_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_QCOW2, EXP_PASS);
+    TEST_CHAIN("qcow2-auto_qcow2-qcow2_raw-raw", abswrap, VIR_STORAGE_FILE_AUTO, EXP_PASS);
 
     /* Qcow2 file with missing backing file but specified type */
     TEST_CHAIN("qcow2-qcow2_missing",
