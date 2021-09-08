@@ -216,6 +216,8 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_NET:
     case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_CHR:
         break;
 
     case VIR_DOMAIN_DEVICE_LEASE:
@@ -225,12 +227,10 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_HOSTDEV:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-    case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-    case VIR_DOMAIN_DEVICE_CHR:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_RNG:
@@ -252,6 +252,35 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_LAST:
     default:
         virReportEnumRangeError(virDomainDeviceType, dev->type);
+        return -1;
+    }
+
+    if ((def->nconsoles &&
+         def->consoles[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)
+        && (def->nserials &&
+            def->serials[0]->source->type == VIR_DOMAIN_CHR_TYPE_PTY)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Only a single console or serial can be configured for this domain"));
+        return -1;
+    } else if (def->nconsoles > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Only a single console can be configured for this domain"));
+        return -1;
+    } else if (def->nserials > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Only a single serial can be configured for this domain"));
+        return -1;
+    }
+
+    if (def->nconsoles && def->consoles[0]->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Console can only be enabled for a PTY"));
+        return -1;
+    }
+
+    if (def->nserials && def->serials[0]->source->type != VIR_DOMAIN_CHR_TYPE_PTY) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Serial can only be enabled for a PTY"));
         return -1;
     }
 
