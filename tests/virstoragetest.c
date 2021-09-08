@@ -86,7 +86,8 @@ static int
 testPrepImages(void)
 {
     int ret = EXIT_FAILURE;
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) cmdqcow2 = NULL;
+    g_autoptr(virCommand) cmdwrap = NULL;
     g_autofree char *buf = NULL;
     g_autofree char *absraw = g_strdup_printf("%s/raw", datadir);
     g_autofree char *absqcow2 = g_strdup_printf("%s/qcow2", datadir);
@@ -118,25 +119,24 @@ testPrepImages(void)
 
     /* Create a qcow2 wrapping relative raw; later on, we modify its
      * metadata to test other configurations */
-    cmd = virCommandNewArgList(qemuimg, "create",
-                               "-f", "qcow2",
-                               "-F", "raw",
-                               "-b", absraw,
-                               "-o", "compat=0.10",
-                               absqcow2, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
+    cmdqcow2 = virCommandNewArgList(qemuimg, "create",
+                                    "-f", "qcow2",
+                                    "-F", "raw",
+                                    "-b", absraw,
+                                    "-o", "compat=0.10",
+                                    absqcow2, NULL);
+    if (virCommandRun(cmdqcow2, NULL) < 0)
         goto skip;
 
     /* Create a second qcow2 wrapping the first, to be sure that we
      * can correctly avoid insecure probing.  */
-    virCommandFree(cmd);
-    cmd = virCommandNewArgList(qemuimg, "create",
-                               "-f", "qcow2",
-                               "-F", "qcow2",
-                               "-b", absqcow2,
-                               "-o", "compat=1.1",
-                               abswrap, NULL);
-    if (virCommandRun(cmd, NULL) < 0)
+    cmdwrap = virCommandNewArgList(qemuimg, "create",
+                                   "-f", "qcow2",
+                                   "-F", "qcow2",
+                                   "-b", absqcow2,
+                                   "-o", "compat=1.1",
+                                   abswrap, NULL);
+    if (virCommandRun(cmdwrap, NULL) < 0)
         goto skip;
 
     ret = 0;
