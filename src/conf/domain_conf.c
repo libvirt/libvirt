@@ -28485,6 +28485,12 @@ virDomainDefCompatibleDevice(virDomainDef *def,
                            _("changing device alias is not allowed"));
             return -1;
         }
+
+        if (data.newInfo->acpiIndex != data.oldInfo->acpiIndex) {
+            virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                           _("changing device 'acpi index' is not allowed"));
+            return -1;
+        }
     }
 
     if (!virDomainDefHasUSB(def) &&
