@@ -8931,6 +8931,9 @@ virDomainDiskDefDriverParseXML(virDomainDiskDef *def,
     if (virXMLPropUInt(cur, "queues", 10, VIR_XML_PROP_NONE, &def->queues) < 0)
         return -1;
 
+    if (virXMLPropUInt(cur, "queue_size", 10, VIR_XML_PROP_NONE, &def->queue_size) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -20774,6 +20777,13 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
     }
 
+    if (src->queue_size != dst->queue_size) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk queue size %u does not match source %u"),
+                       dst->queues, src->queues);
+        return false;
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 
@@ -23423,6 +23433,9 @@ virDomainDiskDefFormatDriver(virBuffer *buf,
 
     if (disk->queues)
         virBufferAsprintf(&attrBuf, " queues='%u'", disk->queues);
+
+    if (disk->queue_size)
+        virBufferAsprintf(&attrBuf, " queue_size='%u'", disk->queue_size);
 
     virDomainVirtioOptionsFormat(&attrBuf, disk->virtio);
 

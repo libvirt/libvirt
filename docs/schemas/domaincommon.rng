@@ -2363,6 +2363,11 @@
           <ref name="positiveInteger"/>
         </attribute>
       </optional>
+      <optional>
+        <attribute name="queue_size">
+          <ref name="positiveInteger"/>
+        </attribute>
+      </optional>
       <ref name="virtioOptions"/>
       <optional>
         <element name="metadata_cache">

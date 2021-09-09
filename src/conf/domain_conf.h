@@ -584,6 +584,7 @@ struct _virDomainDiskDef {
     virDomainDiskDetectZeroes detect_zeroes;
     char *domain_name; /* backend domain name */
     unsigned int queues;
+    unsigned int queue_size;
     virDomainDiskModel model;
     virDomainVirtioOptions *virtio;
 

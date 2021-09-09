@@ -2474,7 +2474,7 @@ paravirtualized driver is specified via the ``disk`` element.
        <target dev='vdc' bus='virtio'/>
      </disk>
      <disk type='file' device='disk'>
-       <driver name='qemu' type='qcow2' queues='4'/>
+       <driver name='qemu' type='qcow2' queues='4' queue_size='256' />
        <source file='/var/lib/libvirt/images/domain.qcow'/>
        <backingStore type='file'>
          <format type='qcow2'/>
@@ -3085,6 +3085,8 @@ paravirtualized driver is specified via the ``disk`` element.
       (QEMU 2.1)`
    -  The optional ``queues`` attribute specifies the number of virt queues for
       virtio-blk. ( :since:`Since 3.9.0` )
+   -  The optional ``queue_size`` attribute specifies the size of each virt
+      queue for virtio-blk. ( :since:`Since 7.8.0` )
    -  For virtio disks, `Virtio-specific options <#elementsVirtio>`__ can also
       be set. ( :since:`Since 3.5.0` )
    -  The optional ``metadata_cache`` subelement controls aspects related to the
