@@ -211,6 +211,7 @@
   <flag name='confidential-guest-support'/>
   <flag name='query-display-options'/>
   <flag name='set-action'/>
+  <flag name='virtio-blk.queue-size'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700242</microcodeVersion>

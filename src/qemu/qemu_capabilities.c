@@ -638,6 +638,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-display-options", /* QEMU_CAPS_QUERY_DISPLAY_OPTIONS */
               "s390-pv-guest", /* QEMU_CAPS_S390_PV_GUEST */
               "set-action", /* QEMU_CAPS_SET_ACTION */
+              "virtio-blk.queue-size", /* QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE */
     );
 
 
@@ -1397,6 +1398,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
     { "logical_block_size", QEMU_CAPS_BLOCKIO, NULL },
     { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, NULL },
+    { "queue-size", QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
     { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },

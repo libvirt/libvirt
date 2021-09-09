@@ -164,6 +164,7 @@
   <flag name='cpu-max'/>
   <flag name='vnc-opts'/>
   <flag name='input-linux'/>
+  <flag name='virtio-blk.queue-size'/>
   <version>3000091</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900240</microcodeVersion>

@@ -165,6 +165,7 @@
   <flag name='query-display-options'/>
   <flag name='s390-pv-guest'/>
   <flag name='set-action'/>
+  <flag name='virtio-blk.queue-size'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>39100242</microcodeVersion>
