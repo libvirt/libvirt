@@ -502,8 +502,9 @@ mymain(void)
 
     /* setup data for backing chain lookup testing */
     if (chdir(abs_srcdir "/virstoragetestdata/lookup") < 0) {
-        fprintf(stderr, "unable to test relative backing chains\n");
-        goto cleanup;
+        VIR_TEST_VERBOSE("failed to chdir into '%s'\n",
+                         abs_srcdir "/virstoragetestdata/lookup");
+        return EXIT_FAILURE;
     }
 
     memset(fakeChain, 0, sizeof(fakeChain));
@@ -1171,7 +1172,6 @@ mymain(void)
 
 #endif /* WITH_YAJL */
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
