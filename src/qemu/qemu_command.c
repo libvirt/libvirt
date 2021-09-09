@@ -1738,6 +1738,9 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         if (disk->queues) {
             virBufferAsprintf(&opt, ",num-queues=%u", disk->queues);
         }
+        if (disk->queue_size > 0) {
+            virBufferAsprintf(&opt, ",queue-size=%u", disk->queue_size);
+        }
 
         qemuBuildVirtioOptionsStr(&opt, disk->virtio);
 
