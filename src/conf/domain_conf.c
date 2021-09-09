@@ -20767,6 +20767,13 @@ virDomainDiskDefCheckABIStability(virDomainDiskDef *src,
         return false;
     }
 
+    if (src->queues != dst->queues) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target disk queue count %u does not match source %u"),
+                       dst->queues, src->queues);
+        return false;
+    }
+
     if (!virDomainVirtioOptionsCheckABIStability(src->virtio, dst->virtio))
         return false;
 
