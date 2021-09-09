@@ -3305,7 +3305,7 @@ A directory on the host that can be accessed directly from the guest.
       pages touched during a guest file write operation :since:`(since 0.9.10)`
       . :since:`Since 6.2.0` , ``type='virtiofs'`` is also supported. Using
       virtiofs requires setting up shared memory, see the guide:
-      `Virtio-FS <kbase/virtiofs.html>`__
+      `Virtiofs <kbase/virtiofs.html>`__
    ``template``
       OpenVZ filesystem template. Only used by OpenVZ driver.
    ``file``

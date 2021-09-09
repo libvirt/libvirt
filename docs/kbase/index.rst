@@ -12,7 +12,7 @@ Usage
    Explanation of how disk backing chain specification impacts libvirt's
    behaviour and basic troubleshooting steps of disk problems.
 
-`Virtio-FS <virtiofs.html>`__
+`Virtiofs <virtiofs.html>`__
    Share a filesystem between the guest and the host
 
 `Security with QEMU passthrough <qemu-passthrough-security.html>`__

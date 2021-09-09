@@ -1,13 +1,13 @@
-============================
-Sharing files with Virtio-FS
-============================
+===========================
+Sharing files with Virtiofs
+===========================
 
 .. contents::
 
-Virtio-FS
-=========
+Virtiofs
+========
 
-Virtio-FS is a shared file system that lets virtual machines access
+Virtiofs is a shared file system that lets virtual machines access
 a directory tree on the host. Unlike existing approaches, it
 is designed to offer local file system semantics and performance.
 
