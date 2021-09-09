@@ -301,7 +301,7 @@ mymain(void)
     DO_TEST("disk-usb-device", QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_NOCAPS("disk-virtio");
     DO_TEST_NOCAPS("floppy-drive-fat");
-    DO_TEST("disk-virtio-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
+    DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_NOCAPS("disk-boot-disk");
     DO_TEST_NOCAPS("disk-boot-cdrom");
     DO_TEST_NOCAPS("disk-error-policy");

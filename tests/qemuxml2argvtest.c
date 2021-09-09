@@ -1326,8 +1326,7 @@ mymain(void)
     DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
     DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-virtio-queues",
-            QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES);
+    DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_NOCAPS("disk-boot-disk");
     DO_TEST_NOCAPS("disk-boot-cdrom");
     DO_TEST_NOCAPS("floppy-drive-fat");
