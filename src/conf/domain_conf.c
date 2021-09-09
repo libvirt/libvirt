@@ -28477,13 +28477,14 @@ virDomainDefCompatibleDevice(virDomainDef *def,
         data.oldInfo = virDomainDeviceGetInfo(oldDev);
 
     if (action == VIR_DOMAIN_DEVICE_ACTION_UPDATE &&
-        live &&
-        (data.newInfo && data.oldInfo &&
-         data.newInfo->alias && data.oldInfo->alias &&
-         STRNEQ(data.newInfo->alias, data.oldInfo->alias))) {
-        virReportError(VIR_ERR_OPERATION_DENIED, "%s",
-                       _("changing device alias is not allowed"));
-        return -1;
+        live && data.newInfo && data.oldInfo) {
+
+        if (data.newInfo->alias && data.oldInfo->alias &&
+            STRNEQ(data.newInfo->alias, data.oldInfo->alias)) {
+            virReportError(VIR_ERR_OPERATION_DENIED, "%s",
+                           _("changing device alias is not allowed"));
+            return -1;
+        }
     }
 
     if (!virDomainDefHasUSB(def) &&
