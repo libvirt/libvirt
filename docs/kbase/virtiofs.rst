@@ -13,8 +13,82 @@ is designed to offer local file system semantics and performance.
 
 See https://virtio-fs.gitlab.io/
 
-Host setup
-==========
+Sharing a host directory with a guest
+=====================================
+
+#. Add the following domain XML elements to share the host directory `/path`
+   with the guest
+
+   ::
+
+     <domain>
+       ...
+       <memoryBacking>
+         <source type='memfd'/>
+         <access mode='shared'/>
+       </memoryBacking>
+       ...
+       <devices>
+         ...
+         <filesystem type='mount' accessmode='passthrough'>
+           <driver type='virtiofs'/>
+           <source dir='/path'/>
+           <target dir='mount_tag'/>
+         </filesystem>
+         ...
+       </devices>
+     </domain>
+
+   Don't forget the ``<memoryBacking>`` elements. They are necessary for the
+   vhost-user connection with the ``virtiofsd`` daemon.
+
+   Note that despite its name, the ``target dir`` is an arbitrary string called
+   a mount tag that is used inside the guest to identify the shared file system
+   to be mounted. It does not have to correspond to the desired mount point in the
+   guest.
+
+#. Boot the guest and mount the filesystem
+
+   ::
+
+      guest# mount -t virtiofs mount_tag /mnt/mount/path
+
+   Note: this requires virtiofs support in the guest kernel (Linux v5.4 or later)
+
+Optional parameters
+===================
+
+More optional elements can be specified
+
+::
+
+  <driver type='virtiofs' queue='1024'/>
+  <binary path='/usr/libexec/virtiofsd' xattr='on'>
+    <cache mode='always'/>
+    <lock posix='on' flock='on'/>
+  </binary>
+
+Externally-launched virtiofsd
+=============================
+
+Libvirtd can also connect the ``vhost-user-fs`` device to a ``virtiofsd``
+daemon launched outside of libvirtd. In that case socket permissions,
+the mount tag and all the virtiofsd options are out of libvirtd's
+control and need to be set by the application running virtiofsd.
+
+::
+
+  <filesystem type='mount'/>
+    <driver type='virtiofs' queue='1024'/>
+    <source socket='/var/virtiofsd.sock'/>
+    <target dir='tag'/>
+  </filesystem>
+
+Other options for vhost-user memory setup
+=========================================
+
+The following information is necessary if you are using older versions of QEMU
+and libvirt or have special memory backend requirements.
 
 Almost all virtio devices (all that use virtqueues) require access to
 at least certain portions of guest RAM (possibly policed by DMA). In
@@ -29,34 +103,31 @@ NUMA. As of QEMU 5.0.0 and libvirt 6.9.0, it is possible to
 specify the memory backend without NUMA (using the so called
 memobject interface).
 
-One of the following:
+#. Set up the memory backend
 
-* Use memfd memory
+   * Use memfd memory
 
-  No host setup is required when using the Linux memfd memory backend.
+     No host setup is required when using the Linux memfd memory backend.
 
-* Use file-backed memory
+   * Use file-backed memory
 
-  Configure the directory where the files backing the memory will be stored
-  with the ``memory_backing_dir`` option in ``/etc/libvirt/qemu.conf``
+     Configure the directory where the files backing the memory will be stored
+     with the ``memory_backing_dir`` option in ``/etc/libvirt/qemu.conf``
 
-  ::
+     ::
 
-    # This directory is used for memoryBacking source if configured as file.
-    # NOTE: big files will be stored here
-    memory_backing_dir = "/dev/shm/"
+       # This directory is used for memoryBacking source if configured as file.
+       # NOTE: big files will be stored here
+       memory_backing_dir = "/dev/shm/"
 
-* Use hugepage-backed memory
+   * Use hugepage-backed memory
 
-  Make sure there are enough huge pages allocated for the requested guest memory.
-  For example, for one guest with 2 GiB of RAM backed by 2 MiB hugepages:
+     Make sure there are enough huge pages allocated for the requested guest memory.
+     For example, for one guest with 2 GiB of RAM backed by 2 MiB hugepages:
 
-  ::
+     ::
 
-      # virsh allocpages 2M 1024
-
-Guest setup
-===========
+       # virsh allocpages 2M 1024
 
 #. Specify the NUMA topology (this step is only required for the NUMA case)
 
@@ -122,63 +193,3 @@ Guest setup
           </memoryBacking>
           ...
         </domain>
-
-#. Add the ``vhost-user-fs`` QEMU device via the ``filesystem`` element
-
-   ::
-
-      <domain>
-        ...
-        <devices>
-          ...
-          <filesystem type='mount' accessmode='passthrough'>
-            <driver type='virtiofs'/>
-            <source dir='/path'/>
-            <target dir='mount_tag'/>
-          </filesystem>
-          ...
-        </devices>
-      </domain>
-
-   Note that despite its name, the ``target dir`` is actually a mount tag and does
-   not have to correspond to the desired mount point in the guest.
-
-   So far, ``passthrough`` is the only supported access mode and it requires
-   running the ``virtiofsd`` daemon as root.
-
-#. Boot the guest and mount the filesystem
-
-   ::
-
-      guest# mount -t virtiofs mount_tag /mnt/mount/path
-
-   Note: this requires virtiofs support in the guest kernel (Linux v5.4 or later)
-
-Optional parameters
-===================
-
-More optional elements can be specified
-
-::
-
-  <driver type='virtiofs' queue='1024'/>
-  <binary path='/usr/libexec/virtiofsd' xattr='on'>
-    <cache mode='always'/>
-    <lock posix='on' flock='on'/>
-  </binary>
-
-Externally-launched virtiofsd
-=============================
-
-Libvirtd can also connect the ``vhost-user-fs`` device to a ``virtiofsd``
-daemon launched outside of libvirtd. In that case socket permissions,
-the mount tag and all the virtiofsd options are out of libvirtd's
-control and need to be set by the application running virtiofsd.
-
-::
-
-  <filesystem type='mount'/>
-    <driver type='virtiofs' queue='1024'/>
-    <source socket='/var/virtiofsd.sock'/>
-    <target dir='tag'/>
-  </filesystem>
