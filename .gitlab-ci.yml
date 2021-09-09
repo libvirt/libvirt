@@ -61,7 +61,7 @@ stages:
   before_script:
     - *script_variables
   script:
-    - meson setup build --werror || (cat build/meson-logs/meson-log.txt && exit 1)
+    - meson setup build --werror $MESON_ARGS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson dist -C build --no-tests
     - if test -x /usr/bin/rpmbuild && test "$RPM" != "skip";
       then
@@ -71,27 +71,6 @@ stages:
         meson test -C build --no-suite syntax-check --print-errorlogs;
       fi
 
-.sanitizer_build_job:
-  stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-ubuntu-2004:latest
-  needs:
-    - x64-ubuntu-2004-container
-  rules:
-    - if: "$TEMPORARILY_DISABLED"
-      allow_failure: true
-    - when: on_success
-  cache:
-    paths:
-      - ccache/
-    key: "$CI_JOB_NAME"
-  before_script:
-    - *script_variables
-  script:
-    - meson build --werror -Ddocs=disabled -Db_lundef=false -Db_sanitize="$SANITIZER"
-    - ninja -C build;
-    - ninja -C build test;
-  variables:
-    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 # Jobs that we delegate to Cirrus CI because they require an operating
 # system other than Linux. These jobs will only run if the required
@@ -418,6 +397,20 @@ x64-ubuntu-2004:
     - x64-ubuntu-2004-container
   variables:
     NAME: ubuntu-2004
+    ASAN_OPTIONS: verify_asan_link_order=0
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+x64-ubuntu-2004-clang:
+  extends: .native_build_job
+  needs:
+    - x64-ubuntu-2004-container
+  variables:
+    NAME: ubuntu-2004
+    CC: clang
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
 
 x64-freebsd-12-build:
   extends: .cirrus_build_job
@@ -544,22 +537,6 @@ mingw64-fedora-rawhide:
   variables:
     NAME: fedora-rawhide
     CROSS: mingw64
-
-# Sanitizers
-
-sanitize-gcc:
-  extends: .sanitizer_build_job
-  variables:
-    ASAN_OPTIONS: verify_asan_link_order=0
-    CC: gcc
-    SANITIZER: address,undefined
-
-sanitize-clang:
-  extends: .sanitizer_build_job
-  variables:
-    CC: clang
-    SANITIZER: address,undefined
-
 
 # This artifact published by this job is downloaded by libvirt.org to
 # be deployed to the web root:
