@@ -81,7 +81,7 @@ control and need to be set by the application running virtiofsd.
 
 ::
 
-  <filesystem type='mount'/>
+  <filesystem type='mount'>
     <driver type='virtiofs' queue='1024'/>
     <source socket='/var/virtiofsd.sock'/>
     <target dir='tag'/>
