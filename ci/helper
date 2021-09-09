@@ -7,7 +7,6 @@ import argparse
 import os
 import pathlib
 import pty
-import shutil
 import subprocess
 import sys
 import textwrap
@@ -58,15 +57,6 @@ class Parser:
             "--ninja-args",
             default="",
             help="additional arguments passed to ninja",
-        )
-
-        # Options that are common to all actions that use lcitool
-        lcitoolparser = argparse.ArgumentParser(add_help=False)
-        lcitoolparser.add_argument(
-            "--lcitool",
-            metavar="PATH",
-            default="lcitool",
-            help="path to lcitool binary",
         )
 
         # Options that are common to actions communicating with a GitLab
@@ -127,27 +117,14 @@ class Parser:
         )
         listimagesparser.set_defaults(func=Application._action_list_images)
 
-        # refresh action
-        refreshparser = subparsers.add_parser(
-            "refresh",
-            help="refresh data generated with lcitool",
-            parents=[lcitoolparser, gitlabparser],
+        # check_stale action
+        check_staleparser = subparsers.add_parser(
+            "check-stale",
+            help="check for existence of stale images on the GitLab instance",
+            parents=[gitlabparser],
             formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         )
-        refreshparser.add_argument(
-            "--quiet",
-            action="store_true",
-            default=False,
-            help="refresh data silently"
-        )
-        refreshparser.add_argument(
-            "--check-stale",
-            action="store",
-            choices=["yes", "no"],
-            default="yes",
-            help="check for existence of stale images on the GitLab instance"
-        )
-        refreshparser.set_defaults(func=Application._action_refresh)
+        check_staleparser.set_defaults(func=Application._action_check_stale)
 
     def parse(self):
         return self._parser.parse_args()
@@ -157,10 +134,6 @@ class Application:
     def __init__(self):
         self._basedir = pathlib.Path(__file__).resolve().parent
         self._args = Parser().parse()
-
-        if self._args.action == "refresh":
-            if not shutil.which(self._args.lcitool):
-                sys.exit("error: 'lcitool' not installed")
 
     def _make_run(self, target):
         args = [
@@ -194,84 +167,12 @@ class Application:
         output = self._lcitool_run(["targets"])
         return output.splitlines()
 
-    def _generate_dockerfile(self, target, cross=None):
-        args = ["dockerfile", target, "libvirt"]
-        outdir = self._basedir.joinpath("containers")
-        outfile = f"{target}.Dockerfile"
-
-        if cross:
-            args.extend(["--cross", cross])
-            outfile = f"{target}-cross-{cross}.Dockerfile"
-
-        outpath = outdir.joinpath(outfile)
-        if not self._args.quiet:
-            print(outpath)
-
-        output = self._lcitool_run(args)
-        with open(outpath, "w") as f:
-            f.write(output)
-
-    def _generate_vars(self, target):
-        args = ["variables", target, "libvirt"]
-        outdir = self._basedir.joinpath("cirrus")
-        outfile = f"{target}.vars"
-
-        outpath = outdir.joinpath(outfile)
-        if not self._args.quiet:
-            print(outpath)
-
-        output = self._lcitool_run(args)
-        with open(outpath, "w") as f:
-            f.write(output)
-
-    def _refresh_containers(self):
-        debian_cross = [
-            "aarch64",
-            "armv6l",
-            "armv7l",
-            "i686",
-            "mips",
-            "mips64el",
-            "mipsel",
-            "ppc64le",
-            "s390x",
-        ]
-        fedora_cross = [
-            "mingw32",
-            "mingw64",
-        ]
-
-        for target in self._lcitool_get_targets():
-            if target.startswith("freebsd-") or target.startswith("macos-"):
-                continue
-
-            self._generate_dockerfile(target)
-
-            if target == "fedora-rawhide":
-                for cross in fedora_cross:
-                    self._generate_dockerfile(target, cross)
-
-            if target.startswith("debian-"):
-                for cross in debian_cross:
-                    if target == "debian-sid" and cross == "mips":
-                        continue
-                    self._generate_dockerfile(target, cross)
-
-    def _refresh_cirrus(self):
-        for target in self._lcitool_get_targets():
-            if not (target.startswith("freebsd-") or target.startswith("macos-")):
-                continue
-
-            self._generate_vars(target)
-
     def _check_stale_images(self):
         namespace = self._args.namespace
         gitlab_uri = self._args.gitlab_uri
         registry_uri = util.get_registry_uri(namespace, gitlab_uri)
-        lcitool_targets = self._lcitool_get_targets()
 
-        stale_images = util.get_registry_stale_images(registry_uri,
-                                                      lcitool_targets)
+        stale_images = util.get_registry_stale_images(registry_uri, self._basedir)
         if stale_images:
             spacing = "\n" + 4 * " "
             stale_fmt = [f"{k} (ID: {v})" for k, v in stale_images.items()]
@@ -328,12 +229,8 @@ class Application:
             print("Available cross-compiler container images:\n")
             print(spacing + ("\n" + spacing).join(cross))
 
-    def _action_refresh(self):
-        self._refresh_containers()
-        self._refresh_cirrus()
-
-        if self._args.check_stale == "yes" and not self._args.quiet:
-            self._check_stale_images()
+    def _action_check_stale(self):
+        self._check_stale_images()
 
     def run(self):
         self._args.func(self)

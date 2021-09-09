@@ -1,4 +1,5 @@
 import json
+import pathlib
 import urllib.request
 import urllib.parse
 
@@ -40,42 +41,37 @@ def get_registry_images(uri: str) -> List[Dict]:
     return json.loads(r.read().decode())
 
 
-def get_image_distro(image_name: str) -> str:
+def get_dockerfiles(base_dir) -> List:
     """
-    Extract the name of the distro in the GitLab image registry name, e.g.
-        ci-debian-9-cross-mipsel --> debian-9
+    List all container dockerfiles in the local directory.
 
-    :param image_name: name of the GitLab registry image
-    :return: distro name as a string
+    :return: list of dockerfile names
     """
-    name_prefix = "ci-"
-    name_suffix = "-cross-"
 
-    distro = image_name[len(name_prefix):]
-
-    index = distro.find(name_suffix)
-    if index > 0:
-        distro = distro[:index]
-
-    return distro
+    dkrs = []
+    d = pathlib.Path(base_dir, "containers")
+    for f in d.iterdir():
+        if f.suffix == ".Dockerfile":
+            dkrs.append(f.stem)
+    return dkrs
 
 
-def get_registry_stale_images(registry_uri: str,
-                              supported_distros: List[str]) -> Dict[str, int]:
+def get_registry_stale_images(registry_uri: str, base_dir: str) -> Dict[str, int]:
     """
     Check the GitLab image registry for images that we no longer support and
     which should be deleted.
 
     :param uri: URI pointing to a GitLab instance's image registry
-    :param supported_distros: list of hosts supported by lcitool
+    :param base_dir: local repository base directory
     :return: dictionary formatted as: {<gitlab_image_name>: <gitlab_image_id>}
     """
 
+    dockerfiles = get_dockerfiles(base_dir)
     images = get_registry_images(registry_uri)
 
     stale_images = {}
     for img in images:
-        if get_image_distro(img["name"]) not in supported_distros:
+        if img["name"][3:] not in dockerfiles:
             stale_images[img["name"]] = img["id"]
 
     return stale_images
