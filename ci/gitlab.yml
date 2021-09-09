@@ -1,0 +1,602 @@
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool manifest ci/manifest.yml
+#
+# https://gitlab.com/libvirt/libvirt-ci
+
+
+.container_job:
+  image: docker:stable
+  stage: containers
+  needs: []
+  services:
+    - name: registry.gitlab.com/libvirt/libvirt-ci/docker-dind:master
+      alias: docker
+  before_script:
+    - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
+    - export COMMON_TAG="$CI_REGISTRY/libvirt/libvirt/ci-$NAME:latest"
+    - docker info
+    - docker login registry.gitlab.com -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+  script:
+    - docker pull "$TAG" || docker pull "$COMMON_TAG" || true
+    - docker build --cache-from "$TAG" --cache-from "$COMMON_TAG" --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers
+    - docker push "$TAG"
+  after_script:
+    - docker logout
+
+
+.gitlab_native_build_job:
+  image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
+  stage: builds
+
+
+.gitlab_cross_build_job:
+  image: $CI_REGISTRY_IMAGE/ci-$NAME-cross-$CROSS:latest
+  stage: builds
+
+
+.cirrus_build_job:
+  stage: builds
+  image: registry.gitlab.com/libvirt/libvirt-ci/cirrus-run:master
+  needs: []
+  script:
+    - source ci/cirrus/$NAME.vars
+    - sed -e "s|[@]CI_REPOSITORY_URL@|$CI_REPOSITORY_URL|g"
+          -e "s|[@]CI_COMMIT_REF_NAME@|$CI_COMMIT_REF_NAME|g"
+          -e "s|[@]CI_COMMIT_SHA@|$CI_COMMIT_SHA|g"
+          -e "s|[@]CIRRUS_VM_INSTANCE_TYPE@|$CIRRUS_VM_INSTANCE_TYPE|g"
+          -e "s|[@]CIRRUS_VM_IMAGE_SELECTOR@|$CIRRUS_VM_IMAGE_SELECTOR|g"
+          -e "s|[@]CIRRUS_VM_IMAGE_NAME@|$CIRRUS_VM_IMAGE_NAME|g"
+          -e "s|[@]UPDATE_COMMAND@|$UPDATE_COMMAND|g"
+          -e "s|[@]UPGRADE_COMMAND@|$UPGRADE_COMMAND|g"
+          -e "s|[@]INSTALL_COMMAND@|$INSTALL_COMMAND|g"
+          -e "s|[@]PATH@|$PATH_EXTRA${PATH_EXTRA:+:}\$PATH|g"
+          -e "s|[@]PKG_CONFIG_PATH@|$PKG_CONFIG_PATH|g"
+          -e "s|[@]PKGS@|$PKGS|g"
+          -e "s|[@]MAKE@|$MAKE|g"
+          -e "s|[@]PYTHON@|$PYTHON|g"
+          -e "s|[@]PIP3@|$PIP3|g"
+          -e "s|[@]PYPI_PKGS@|$PYPI_PKGS|g"
+      <ci/cirrus/build.yml >ci/cirrus/$NAME.yml
+    - cat ci/cirrus/$NAME.yml
+    - cirrus-run -v --show-build-log always ci/cirrus/$NAME.yml
+  rules:
+    - if: "$CIRRUS_GITHUB_REPO && $CIRRUS_API_TOKEN"
+
+
+check-dco:
+  stage: sanity_checks
+  needs: []
+  image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
+  script:
+    - /check-dco libvirt
+  except:
+    variables:
+      - $CI_PROJECT_NAMESPACE == 'libvirt'
+  variables:
+    GIT_DEPTH: 1000
+
+
+# Native container jobs
+
+x86_64-centos-8-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: centos-8
+
+
+x86_64-centos-stream-8-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: centos-stream-8
+
+
+x86_64-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10
+
+
+x86_64-debian-sid-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+
+
+x86_64-fedora-33-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-33
+
+
+x86_64-fedora-34-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-34
+
+
+x86_64-fedora-rawhide-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide
+
+
+x86_64-opensuse-leap-152-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: opensuse-leap-152
+
+
+x86_64-opensuse-tumbleweed-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: opensuse-tumbleweed
+
+
+x86_64-ubuntu-1804-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: ubuntu-1804
+
+
+x86_64-ubuntu-2004-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2004
+
+
+
+# Cross container jobs
+
+aarch64-debian-10-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-10-cross-aarch64
+
+
+armv6l-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10-cross-armv6l
+
+
+armv7l-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10-cross-armv7l
+
+
+i686-debian-10-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-10-cross-i686
+
+
+mips-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10-cross-mips
+
+
+mips64el-debian-10-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-10-cross-mips64el
+
+
+mipsel-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10-cross-mipsel
+
+
+ppc64le-debian-10-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-10-cross-ppc64le
+
+
+s390x-debian-10-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-10-cross-s390x
+
+
+aarch64-debian-sid-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-sid-cross-aarch64
+
+
+armv6l-debian-sid-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-sid-cross-armv6l
+
+
+armv7l-debian-sid-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-sid-cross-armv7l
+
+
+i686-debian-sid-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-sid-cross-i686
+
+
+mips64el-debian-sid-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-sid-cross-mips64el
+
+
+mipsel-debian-sid-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-sid-cross-mipsel
+
+
+ppc64le-debian-sid-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-sid-cross-ppc64le
+
+
+s390x-debian-sid-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-sid-cross-s390x
+
+
+mingw32-fedora-rawhide-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide-cross-mingw32
+
+
+mingw64-fedora-rawhide-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide-cross-mingw64
+
+
+# Native build jobs
+
+x86_64-centos-8:
+  extends: .native_build_job
+  needs:
+    - x86_64-centos-8-container
+  allow_failure: false
+  variables:
+    NAME: centos-8
+    RPM: skip
+
+
+x86_64-centos-8-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-centos-8-container
+  allow_failure: false
+  variables:
+    NAME: centos-8
+    RPM: skip
+    CC: clang
+
+
+x86_64-centos-stream-8:
+  extends: .native_build_job
+  needs:
+    - x86_64-centos-stream-8-container
+  allow_failure: false
+  variables:
+    NAME: centos-stream-8
+    RPM: skip
+
+
+x86_64-debian-10:
+  extends: .native_build_job
+  needs:
+    - x86_64-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+
+
+x86_64-debian-10-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+
+
+x86_64-debian-sid:
+  extends: .native_build_job
+  needs:
+    - x86_64-debian-sid-container
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+
+
+x86_64-fedora-33:
+  extends: .native_build_job
+  needs:
+    - x86_64-fedora-33-container
+  allow_failure: false
+  variables:
+    NAME: fedora-33
+
+
+x86_64-fedora-34:
+  extends: .native_build_job
+  needs:
+    - x86_64-fedora-34-container
+  allow_failure: false
+  variables:
+    NAME: fedora-34
+
+
+x86_64-fedora-rawhide:
+  extends: .native_build_job
+  needs:
+    - x86_64-fedora-rawhide-container
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide
+
+
+x86_64-fedora-rawhide-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-fedora-rawhide-container
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide
+    CC: clang
+    RPM: skip
+
+
+x86_64-opensuse-leap-152:
+  extends: .native_build_job
+  needs:
+    - x86_64-opensuse-leap-152-container
+  allow_failure: false
+  variables:
+    NAME: opensuse-leap-152
+    RPM: skip
+
+
+x86_64-opensuse-tumbleweed:
+  extends: .native_build_job
+  needs:
+    - x86_64-opensuse-tumbleweed-container
+  allow_failure: false
+  variables:
+    NAME: opensuse-tumbleweed
+    RPM: skip
+
+
+x86_64-ubuntu-1804:
+  extends: .native_build_job
+  needs:
+    - x86_64-ubuntu-1804-container
+  allow_failure: false
+  variables:
+    NAME: ubuntu-1804
+
+
+x86_64-ubuntu-2004:
+  extends: .native_build_job
+  needs:
+    - x86_64-ubuntu-2004-container
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2004
+    ASAN_OPTIONS: verify_asan_link_order=0
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+
+x86_64-ubuntu-2004-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-ubuntu-2004-container
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2004
+    CC: clang
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+
+
+# Cross build jobs
+
+armv6l-debian-10:
+  extends: .cross_build_job
+  needs:
+    - armv6l-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+    CROSS: armv6l
+
+
+armv7l-debian-10:
+  extends: .cross_build_job
+  needs:
+    - armv7l-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+    CROSS: armv7l
+
+
+mips-debian-10:
+  extends: .cross_build_job
+  needs:
+    - mips-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+    CROSS: mips
+
+
+mipsel-debian-10:
+  extends: .cross_build_job
+  needs:
+    - mipsel-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+    CROSS: mipsel
+
+
+ppc64le-debian-10:
+  extends: .cross_build_job
+  needs:
+    - ppc64le-debian-10-container
+  allow_failure: false
+  variables:
+    NAME: debian-10
+    CROSS: ppc64le
+
+
+aarch64-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - aarch64-debian-sid-container
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+    CROSS: aarch64
+
+
+i686-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - i686-debian-sid-container
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+    CROSS: i686
+
+
+mips64el-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - mips64el-debian-sid-container
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+    CROSS: mips64el
+
+
+s390x-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - s390x-debian-sid-container
+  allow_failure: false
+  variables:
+    NAME: debian-sid
+    CROSS: s390x
+
+
+mingw32-fedora-rawhide:
+  extends: .cross_build_job
+  needs:
+    - mingw32-fedora-rawhide-container
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide
+    CROSS: mingw32
+
+
+mingw64-fedora-rawhide:
+  extends: .cross_build_job
+  needs:
+    - mingw64-fedora-rawhide-container
+  allow_failure: true
+  variables:
+    NAME: fedora-rawhide
+    CROSS: mingw64
+
+
+# Native cirrus build jobs
+
+x86_64-freebsd-12:
+  extends: .cirrus_build_job
+  needs: []
+  allow_failure: false
+  variables:
+    NAME: freebsd-12
+    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    CIRRUS_VM_IMAGE_SELECTOR: image_family
+    CIRRUS_VM_IMAGE_NAME: freebsd-12-2
+    UPDATE_COMMAND: pkg update
+    UPGRADE_COMMAND: pkg upgrade -y
+    INSTALL_COMMAND: pkg install -y
+
+
+x86_64-freebsd-13:
+  extends: .cirrus_build_job
+  needs: []
+  allow_failure: false
+  variables:
+    NAME: freebsd-13
+    CIRRUS_VM_INSTANCE_TYPE: freebsd_instance
+    CIRRUS_VM_IMAGE_SELECTOR: image_family
+    CIRRUS_VM_IMAGE_NAME: freebsd-13-0
+    UPDATE_COMMAND: pkg update
+    UPGRADE_COMMAND: pkg upgrade -y
+    INSTALL_COMMAND: pkg install -y
+
+
+x86_64-macos-11:
+  extends: .cirrus_build_job
+  needs: []
+  allow_failure: false
+  variables:
+    NAME: macos-11
+    CIRRUS_VM_INSTANCE_TYPE: osx_instance
+    CIRRUS_VM_IMAGE_SELECTOR: image
+    CIRRUS_VM_IMAGE_NAME: big-sur-base
+    UPDATE_COMMAND: brew update
+    UPGRADE_COMMAND: brew upgrade
+    INSTALL_COMMAND: brew install
+    PATH_EXTRA: /usr/local/opt/ccache/libexec:/usr/local/opt/gettext/bin:/usr/local/opt/libpcap/bin:/usr/local/opt/libxslt/bin:/usr/local/opt/rpcgen/bin
+    PKG_CONFIG_PATH: /usr/local/opt/curl/lib/pkgconfig:/usr/local/opt/libpcap/lib/pkgconfig:/usr/local/opt/libxml2/lib/pkgconfig:/usr/local/opt/ncurses/lib/pkgconfig:/usr/local/opt/readline/lib/pkgconfig
