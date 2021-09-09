@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-06-07 08:46+0000\n"
+"PO-Revision-Date: 2021-09-04 21:05+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.6.2\n"
+"X-Generator: Weblate 4.8\n"
 
 msgid ""
 "\n"
@@ -1429,7 +1429,7 @@ msgid "'vhostuser' driver is only supported with 'virtio' device"
 msgstr "drivrutinen ”vhostuser” stödjs endast med enheten ”virtio”"
 
 msgid "'virtio-s390' addresses are no longer supported"
-msgstr ""
+msgstr "”virtio-s390”-adresser stödjs inte längre"
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
 msgstr "”wwnn” och ”wwpn” måste anges för adaptertypen ”fchost”"
@@ -2815,11 +2815,11 @@ msgstr "Kan inte skapa resctrl-katalogen ”%s”"
 
 #, c-format
 msgid "Cannot create socket '%s'"
-msgstr ""
+msgstr "Det går inte att skapa uttaget ”%s”"
 
 #, c-format
 msgid "Cannot create socket directory '%s'"
-msgstr ""
+msgstr "Kan inte skapauttagskatalogen ”%s”"
 
 #, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3733,14 +3733,16 @@ msgstr ""
 
 #, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
-msgstr ""
+msgstr "Cloud-Hypervisor stödjer inte enheten ”%s”"
 
 msgid "Cloud-Hypervisor state driver is not active"
-msgstr ""
+msgstr "Cloud-Hypervisorns tillståndsdrivrutin är inte aktiv"
 
 msgid ""
 "Cloud-Hypervisor version is too old (v15.0 is the minimum supported version)"
 msgstr ""
+"Cloud-Hypervisor-versionen är för gammal (v15.0 är den minsta stödda "
+"versionen)"
 
 #, c-format
 msgid "Colliding cache allocations for cache level '%u' id '%u', type '%s'"
@@ -4469,7 +4471,7 @@ msgstr "Kunde inte få tag i antalet domäner, rc=%08x"
 
 #, c-format
 msgid "Could not get parent of '%s'"
-msgstr ""
+msgstr "Kunde inte ta reda på föräldern till ”%s”"
 
 msgid "Could not get process id of swtpm"
 msgstr "Kunde inte få tag i process-id för swtpm"
@@ -5323,7 +5325,7 @@ msgstr "Enheten ”%s” är redan formaterade med ”%s”"
 
 #, c-format
 msgid "Device '%s' is not active"
-msgstr ""
+msgstr "Enheten ”%s” är inte aktiv"
 
 #, c-format
 msgid "Device '%s' is unrecognized, requires build"
@@ -6831,9 +6833,9 @@ msgstr "Misslyckades att skapa iscsi-kontexten för %s"
 msgid "Failed to create lib dir %s"
 msgstr "Misslyckades att skapa bibliotekskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create memory backing dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa minnesstödskatalogen %s"
 
 #, c-format
 msgid "Failed to create network filter from %s"
@@ -6843,13 +6845,13 @@ msgstr "Misslyckades att skapa nätverksfilter från %s"
 msgid "Failed to create network from %s"
 msgstr "Misslyckades att skapa nätverk från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create node device from %s"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att skapa en nodenhet från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create nvram dir %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att skapa nvram-katalogen %s"
 
 #, c-format
 msgid "Failed to create pool %s"
@@ -6859,44 +6861,42 @@ msgstr "Misslyckades att skapa poolen %s"
 msgid "Failed to create pool from %s"
 msgstr "Misslyckades att skapa poolen från %s"
 
-#, fuzzy
 msgid "Failed to create reboot thread, killing domain"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Misslyckades att en omstartstråd, dödar domänen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create save dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa katalog att spara i %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create slirp state dir %s"
-msgstr "det gick inte att skapa loggfilen %s"
+msgstr "Misslyckades att skapa slirp-tillståndskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create snapshot dir %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att skapa ögonblicksbildkatalogen %s"
 
 msgid "Failed to create socket"
 msgstr "Misslyckades att skapa uttag"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create state dir %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa tillståndskatalogen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create state dir '%s'"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa tillståndskatalogen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create symlink '%s to '%s'"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att skapa symlänken ”%s” till ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create symlink '%s' to '%s'"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att skapa symlänken ”%s” till ”%s”"
 
-#, fuzzy
 msgid "Failed to create thread"
-msgstr "Misslyckades att skapa XML"
+msgstr "Misslyckades att skapa en tråd"
 
 #, fuzzy
 msgid "Failed to create thread for receiving migration data"
