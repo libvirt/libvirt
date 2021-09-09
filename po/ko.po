@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-08 13:14+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-09-09 08:29+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -3219,6 +3219,7 @@ msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit peak=%llu on network '%s'"
 msgstr ""
+"네트워크 '%s'에 새로 결합된 층=%llu이 최고사용량=%llu을 초과하기 때문에 '%s' 접속기를 '%s'에 꽂을 수 없습니다"
 
 #, c-format
 msgid "Cannot print data type %x"
@@ -3235,9 +3236,9 @@ msgstr "도메인에 대한 cputime을 읽을 수 없음"
 msgid "Cannot recv data"
 msgstr "%s을 생성할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Cannot recv data: %s"
-msgstr "%s을 생성할 수 없음"
+msgstr "자료 %s를 수신할 수 없음"
 
 msgid ""
 "Cannot remove CURL handle from a multi handle when it wasn't added before"
@@ -3269,13 +3270,13 @@ msgstr "비활성 도메인의 vcpus를 설정할 수 없습니다"
 
 #, c-format
 msgid "Cannot resolve %s address: %s"
-msgstr ""
+msgstr "%s가 주소인 %s를 해결할 수 없습니다"
 
 msgid "Cannot run interactive console without a controlling TTY"
-msgstr ""
+msgstr "제어가능한 TTY 없이는 대화형의 실행창을 실행할 수 없습니다"
 
 msgid "Cannot set a base label with AppArmour"
-msgstr ""
+msgstr "AppArmour 와 함께는 기초 레이블을 설정할 수 없습니다"
 
 #, fuzzy
 msgid "Cannot set an empty mem_nodes set"
@@ -3350,10 +3351,10 @@ msgid "Cannot setup CPU affinity until process is started"
 msgstr "프로세스 %d의 CPU 친화도를 지정 할 수 없습니다"
 
 msgid "Cannot setup cgroups until process is started"
-msgstr ""
+msgstr "프로세스가 시작될 때 까지 cgroups를 설정 할 수 없습니다"
 
 msgid "Cannot setup keepalive on connection as requested, disconnecting"
-msgstr ""
+msgstr "요청하신 방법으로는 Keepalive 연결을 설정할 수 없으므로, 연결을 해제합니다"
 
 msgid "Cannot share CURL handle that is already shared"
 msgstr "이미 공유한 CURL 핸들을 공유할 수 없습니다"
@@ -3399,7 +3400,7 @@ msgid "Cannot use direct socket mode for %s transport"
 msgstr "%s 전송을 위한 다이렉트 소켓 모드를 사용 할 수 없습니다"
 
 msgid "Cannot use direct socket mode if no URI is set"
-msgstr ""
+msgstr "만약 URL이 설정되어 있지 않다면 직접적인 소켓 방식을 사용할 수 없습니다"
 
 #, c-format
 msgid "Cannot use host name '%s' in network '%s'"
