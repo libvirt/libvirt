@@ -7653,6 +7653,7 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
     virDomainDiskDef *newDisk;
     virDomainGraphicsDef *newGraphics;
     virDomainNetDef *net;
+    virDomainMemoryDef *mem;
     virDomainDeviceDef oldDev = { .type = dev->type };
     int pos;
 
@@ -7715,6 +7716,23 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
         dev->data.net = NULL;
         break;
 
+    case VIR_DOMAIN_DEVICE_MEMORY:
+        mem = virDomainMemoryFindByDeviceInfo(vmdef, &dev->data.memory->info, &pos);
+        if (!mem) {
+            virReportError(VIR_ERR_INVALID_ARG, "%s", _("memory not found"));
+            return -1;
+        }
+
+        oldDev.data.memory = mem;
+        if (virDomainDefCompatibleDevice(vmdef, dev, &oldDev,
+                                         VIR_DOMAIN_DEVICE_ACTION_UPDATE,
+                                         false) < 0)
+            return -1;
+
+        virDomainMemoryDefFree(vmdef->mems[pos]);
+        vmdef->mems[pos] = g_steal_pointer(&dev->data.memory);
+        break;
+
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
     case VIR_DOMAIN_DEVICE_SOUND:
@@ -7731,7 +7749,6 @@ qemuDomainUpdateDeviceConfig(virDomainDef *vmdef,
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_REDIRDEV:
     case VIR_DOMAIN_DEVICE_CHR:
-    case VIR_DOMAIN_DEVICE_MEMORY:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
