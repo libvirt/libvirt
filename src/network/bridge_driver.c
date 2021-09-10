@@ -3474,7 +3474,7 @@ networkCreateXML(virConnectPtr conn,
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
 
-    if (!(newDef = virNetworkDefParseString(xml, network_driver->xmlopt, 0)))
+    if (!(newDef = virNetworkDefParseString(xml, network_driver->xmlopt, false)))
         goto cleanup;
 
     if (virNetworkCreateXMLEnsureACL(conn, newDef) < 0)
@@ -3529,7 +3529,8 @@ networkDefineXMLFlags(virConnectPtr conn,
 
     virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
-    if (!(def = virNetworkDefParseString(xml, network_driver->xmlopt, flags)))
+    if (!(def = virNetworkDefParseString(xml, network_driver->xmlopt,
+                                         !!(flags & VIR_NETWORK_DEFINE_VALIDATE))))
         goto cleanup;
 
     if (virNetworkDefineXMLFlagsEnsureACL(conn, def) < 0)

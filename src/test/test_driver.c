@@ -5581,7 +5581,7 @@ testNetworkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
 
-    if ((newDef = virNetworkDefParseString(xml, NULL, 0)) == NULL)
+    if ((newDef = virNetworkDefParseString(xml, NULL, false)) == NULL)
         goto cleanup;
 
     if (!(obj = virNetworkObjAssignDef(privconn->networks, newDef,
@@ -5620,7 +5620,8 @@ testNetworkDefineXMLFlags(virConnectPtr conn,
 
     virCheckFlags(VIR_NETWORK_DEFINE_VALIDATE, NULL);
 
-    if ((newDef = virNetworkDefParseString(xml, NULL, flags)) == NULL)
+    if (!(newDef = virNetworkDefParseString(xml, NULL,
+                                            !!(flags & VIR_NETWORK_DEFINE_VALIDATE))))
         goto cleanup;
 
     if (!(obj = virNetworkObjAssignDef(privconn->networks, newDef, 0)))
