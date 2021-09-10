@@ -9045,7 +9045,7 @@ qemuProcessQMPInit(qemuProcessQMP *proc)
 
     proc->monpath = g_strdup_printf("%s/%s", proc->uniqDir, "qmp.monitor");
 
-    proc->monarg = g_strdup_printf("unix:%s,server,nowait", proc->monpath);
+    proc->monarg = g_strdup_printf("unix:%s,server=on,wait=off", proc->monpath);
 
     /*
      * Normally we'd use runDir for pid files, but because we're using
