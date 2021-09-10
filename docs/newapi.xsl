@@ -139,6 +139,12 @@
         </a>
         <xsl:value-of select="substring-after($token, '&gt;')"/>
       </xsl:when>
+      <xsl:when test="contains($token, '@')">
+        <xsl:variable name="prologue" select="substring-before($token, '@')"/>
+        <xsl:value-of select="$prologue"/>
+        <code><xsl:value-of select="$stem"/></code>
+        <xsl:value-of select="substring($token, string-length($prologue) + string-length($stem) + 2)"/>
+      </xsl:when>
       <xsl:otherwise>
         <xsl:value-of select="$token"/>
       </xsl:otherwise>
