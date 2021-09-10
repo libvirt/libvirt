@@ -100,6 +100,13 @@ x86_64-debian-10-container:
     NAME: debian-10
 
 
+x86_64-debian-11-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-11
+
+
 x86_64-debian-sid-container:
   extends: .container_job
   allow_failure: false
@@ -175,7 +182,7 @@ armv6l-debian-10-container:
 
 armv7l-debian-10-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-10-cross-armv7l
 
@@ -210,7 +217,7 @@ mipsel-debian-10-container:
 
 ppc64le-debian-10-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-10-cross-ppc64le
 
@@ -220,6 +227,62 @@ s390x-debian-10-container:
   allow_failure: true
   variables:
     NAME: debian-10-cross-s390x
+
+
+aarch64-debian-11-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-11-cross-aarch64
+
+
+armv6l-debian-11-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-11-cross-armv6l
+
+
+armv7l-debian-11-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-11-cross-armv7l
+
+
+i686-debian-11-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-11-cross-i686
+
+
+mips64el-debian-11-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-11-cross-mips64el
+
+
+mipsel-debian-11-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-11-cross-mipsel
+
+
+ppc64le-debian-11-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: debian-11-cross-ppc64le
+
+
+s390x-debian-11-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: debian-11-cross-s390x
 
 
 aarch64-debian-sid-container:
@@ -252,7 +315,7 @@ i686-debian-sid-container:
 
 mips64el-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid-cross-mips64el
 
@@ -334,13 +397,22 @@ x86_64-debian-10:
     NAME: debian-10
 
 
-x86_64-debian-10-clang:
+x86_64-debian-11:
   extends: .native_build_job
   needs:
-    - x86_64-debian-10-container
+    - x86_64-debian-11-container
   allow_failure: false
   variables:
-    NAME: debian-10
+    NAME: debian-11
+
+
+x86_64-debian-11-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-debian-11-container
+  allow_failure: false
+  variables:
+    NAME: debian-11
 
 
 x86_64-debian-sid:
@@ -456,16 +528,6 @@ armv6l-debian-10:
     CROSS: armv6l
 
 
-armv7l-debian-10:
-  extends: .cross_build_job
-  needs:
-    - armv7l-debian-10-container
-  allow_failure: false
-  variables:
-    NAME: debian-10
-    CROSS: armv7l
-
-
 mips-debian-10:
   extends: .cross_build_job
   needs:
@@ -486,13 +548,33 @@ mipsel-debian-10:
     CROSS: mipsel
 
 
-ppc64le-debian-10:
+armv7l-debian-11:
   extends: .cross_build_job
   needs:
-    - ppc64le-debian-10-container
+    - armv7l-debian-11-container
   allow_failure: false
   variables:
-    NAME: debian-10
+    NAME: debian-11
+    CROSS: armv7l
+
+
+mips64el-debian-11:
+  extends: .cross_build_job
+  needs:
+    - mips64el-debian-11-container
+  allow_failure: false
+  variables:
+    NAME: debian-11
+    CROSS: mips64el
+
+
+ppc64le-debian-11:
+  extends: .cross_build_job
+  needs:
+    - ppc64le-debian-11-container
+  allow_failure: false
+  variables:
+    NAME: debian-11
     CROSS: ppc64le
 
 
@@ -514,16 +596,6 @@ i686-debian-sid:
   variables:
     NAME: debian-sid
     CROSS: i686
-
-
-mips64el-debian-sid:
-  extends: .cross_build_job
-  needs:
-    - mips64el-debian-sid-container
-  allow_failure: false
-  variables:
-    NAME: debian-sid
-    CROSS: mips64el
 
 
 s390x-debian-sid:
