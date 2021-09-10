@@ -7038,6 +7038,7 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
 {
     virDomainDiskDef *disk = dev->data.disk;
     virDomainDiskDef *orig_disk = NULL;
+    virDomainStartupPolicy origStartupPolicy;
     virDomainDeviceDef oldDev = { .type = dev->type };
 
     if (!(orig_disk = virDomainDiskByTarget(vm->def, disk->dst))) {
@@ -7047,6 +7048,7 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
     }
 
     oldDev.data.disk = orig_disk;
+    origStartupPolicy = orig_disk->startupPolicy;
     if (virDomainDefCompatibleDevice(vm->def, dev, &oldDev,
                                      VIR_DOMAIN_DEVICE_ACTION_UPDATE,
                                      true) < 0)
@@ -7065,13 +7067,20 @@ qemuDomainChangeDiskLive(virDomainObj *vm,
             return -1;
         }
 
+        /* update startup policy first before updating disk image */
+        orig_disk->startupPolicy = dev->data.disk->startupPolicy;
+
         if (qemuDomainChangeEjectableMedia(driver, vm, orig_disk,
-                                           dev->data.disk->src, force) < 0)
+                                           dev->data.disk->src, force) < 0) {
+            /* revert startup policy before failing */
+            orig_disk->startupPolicy = origStartupPolicy;
             return -1;
+        }
 
         dev->data.disk->src = NULL;
     }
 
+    /* in case when we aren't updating disk source we update startup policy here */
     orig_disk->startupPolicy = dev->data.disk->startupPolicy;
     orig_disk->snapshot = dev->data.disk->snapshot;
 
