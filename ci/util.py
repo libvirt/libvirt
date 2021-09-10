@@ -68,10 +68,11 @@ def get_registry_stale_images(registry_uri: str, base_dir: str) -> Dict[str, int
 
     dockerfiles = get_dockerfiles(base_dir)
     images = get_registry_images(registry_uri)
+    name_prefix = "ci-"
 
     stale_images = {}
     for img in images:
-        if img["name"][3:] not in dockerfiles:
+        if img["name"][len(name_prefix):] not in dockerfiles:
             stale_images[img["name"]] = img["id"]
 
     return stale_images
