@@ -100,7 +100,7 @@ testPrepImages(void)
         return NULL;
     }
 
-    /* create the folowing real backing chain with qcow2 images with absolute
+    /* create the following real backing chain with qcow2 images with absolute
      * backing and different qcow2 versions:
      * datadir/raw <- datadir/qcow2 (qcow2v2) <- datadir/wrap (qcow2v3) */
     cmdraw = virCommandNewArgList(qemuimg, "create",

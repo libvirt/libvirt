@@ -789,7 +789,7 @@ virCHMonitorResumeVM(virCHMonitor *mon)
  * @mon: Pointer to the monitor
  * @info: Get VM info
  *
- * Retrive the VM info and store in @info
+ * Retrieve the VM info and store in @info
  *
  * Returns 0 on success.
  */
