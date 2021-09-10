@@ -249,6 +249,8 @@ libxlCapsInitNuma(libxl_ctx *ctx, virCaps *caps)
         cpus[node][nr_cpus_node[node]-1].id = i;
         cpus[node][nr_cpus_node[node]-1].socket_id = cpu_topo[i].socket;
         cpus[node][nr_cpus_node[node]-1].core_id = cpu_topo[i].core;
+        /* Until Xen reports die_id, 0 is better than random garbage */
+        cpus[node][nr_cpus_node[node]-1].die_id = 0;
         /* Allocate the siblings maps. We will be filling them later */
         cpus[node][nr_cpus_node[node]-1].siblings = virBitmapNew(nr_cpus);
     }
