@@ -7745,7 +7745,7 @@ Example: usage of the memory devices
      </memory>
      <memory model='dimm'>
        <source>
-         <pagesize unit='KiB'>4096</pagesize>
+         <pagesize unit='KiB'>2048</pagesize>
          <nodemask>1-3</nodemask>
        </source>
        <target>
