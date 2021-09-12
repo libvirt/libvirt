@@ -2646,7 +2646,7 @@ static int
 virNodeDeviceGetPCISRIOVCaps(const char *sysfsPath,
                              virNodeDevCapPCIDev *pci_dev)
 {
-    g_autoptr(virPCIVirtualFunctionList) vfs = g_new0(virPCIVirtualFunctionList, 1);
+    g_autoptr(virPCIVirtualFunctionList) vfs = NULL;
     size_t i;
     int ret;
 
