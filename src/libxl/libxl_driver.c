@@ -821,7 +821,7 @@ libxlStateReload(void)
     virDomainObjListLoadAllConfigs(libxl_driver->domains,
                                    cfg->configDir,
                                    cfg->autostartDir,
-                                   true,
+                                   false,
                                    libxl_driver->xmlopt,
                                    NULL, libxl_driver);
 
