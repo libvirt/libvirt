@@ -748,13 +748,6 @@ qemuStateInitialize(bool privileged,
                                  (int)cfg->group);
             goto error;
         }
-        if (chown(cfg->cacheDir, cfg->user, cfg->group) < 0) {
-            virReportSystemError(errno,
-                                 _("unable to set ownership of '%s' to %d:%d"),
-                                 cfg->cacheDir, (int)cfg->user,
-                                 (int)cfg->group);
-            goto error;
-        }
         if (chown(cfg->saveDir, cfg->user, cfg->group) < 0) {
             virReportSystemError(errno,
                                  _("unable to set ownership of '%s' to %d:%d"),
