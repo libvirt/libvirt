@@ -642,6 +642,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 410 */
               "virtio-mem-pci", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI */
+              "memory-backend-file.reserve", /* QEMU_CAPS_MEMORY_BACKEND_RESERVE */
     );
 
 
@@ -1720,6 +1721,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] =
      * supported. The 'x-' prefix was kept for compatibility with already
      * released qemu versions. */
     { "x-use-canonical-path-for-ramblock-id", QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID },
+    { "reserve", QEMU_CAPS_MEMORY_BACKEND_RESERVE },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] = {

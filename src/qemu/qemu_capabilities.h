@@ -622,6 +622,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 410 */
     QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI, /* -device virtio-mem-pci */
+    QEMU_CAPS_MEMORY_BACKEND_RESERVE, /* -object memory-backend-*.reserve= */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
