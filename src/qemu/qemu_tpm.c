@@ -576,6 +576,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandAddArg(cmd, "--log");
     virCommandAddArgFormat(cmd, "file=%s", tpm->data.emulator.logfile);
 
+    virCommandAddArg(cmd, "--terminate");
+
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
 
