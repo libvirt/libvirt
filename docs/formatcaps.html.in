@@ -43,7 +43,7 @@
       <dd>whether host is capable of memory suspend, disk hibernation, or
       hybrid suspend.</dd>
 
-      <dt><code>migration</code></dt>
+      <dt><code>migration_features</code></dt>
       <dd>This element exposes information on the hypervisor's migration
       capabilities, like live migration, supported URI transports, and so
       on.</dd>
