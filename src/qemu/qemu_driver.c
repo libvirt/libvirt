@@ -3431,7 +3431,7 @@ qemuDomainScreenshot(virDomainPtr dom,
         }
     }
 
-    tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", cfg->cacheDir);
+    tmp = g_strdup_printf("%s/qemu.screendump.XXXXXX", priv->libDir);
 
     if ((tmp_fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
         virReportSystemError(errno, _("g_mkstemp(\"%s\") failed"), tmp);
@@ -10676,6 +10676,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
+    priv = vm->privateData;
     cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainMemoryPeekEnsureACL(dom->conn, vm->def) < 0)
@@ -10693,7 +10694,7 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    tmp = g_strdup_printf("%s/qemu.mem.XXXXXX", cfg->cacheDir);
+    tmp = g_strdup_printf("%s/qemu.mem.XXXXXX", priv->libDir);
 
     /* Create a temporary filename. */
     if ((fd = g_mkstemp_full(tmp, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) == -1) {
@@ -10704,7 +10705,6 @@ qemuDomainMemoryPeek(virDomainPtr dom,
 
     qemuSecurityDomainSetPathLabel(driver, vm, tmp, false);
 
-    priv = vm->privateData;
     qemuDomainObjEnterMonitor(driver, vm);
     if (flags == VIR_MEMORY_VIRTUAL) {
         if (qemuMonitorSaveVirtualMemory(priv->mon, offset, size, tmp) < 0) {
