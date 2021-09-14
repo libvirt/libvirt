@@ -825,10 +825,6 @@ libxlStateReload(void)
                                    libxl_driver->xmlopt,
                                    NULL, libxl_driver);
 
-    virDomainObjListForEach(libxl_driver->domains, false,
-                            libxlAutostartDomain,
-                            libxl_driver);
-
     virObjectUnref(cfg);
     return 0;
 }
