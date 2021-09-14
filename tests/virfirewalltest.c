@@ -116,11 +116,11 @@ VIR_MOCK_WRAP_RET_ARGS(g_dbus_connection_call_sync,
 
         if (fwBuf) {
             if (STREQ(type, "ipv4"))
-                virBufferAddLit(fwBuf, IPTABLES_PATH);
+                virBufferAddLit(fwBuf, IPTABLES);
             else if (STREQ(type, "ipv6"))
-                virBufferAddLit(fwBuf, IP6TABLES_PATH);
+                virBufferAddLit(fwBuf, IP6TABLES);
             else
-                virBufferAddLit(fwBuf, EBTABLES_PATH);
+                virBufferAddLit(fwBuf, EBTABLES);
         }
 
         while (g_variant_iter_loop(iter, "s", &item)) {
@@ -186,8 +186,8 @@ testFirewallSingleGroup(const void *opaque)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -239,8 +239,8 @@ testFirewallRemoveRule(const void *opaque)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     virFirewallRule *fwrule;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -299,10 +299,10 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n"
+        IPTABLES " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -387,10 +387,10 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -456,10 +456,10 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A OUTPUT --jump DROP\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -A OUTPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A OUTPUT --jump DROP\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -524,8 +524,8 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -585,11 +585,11 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -666,10 +666,10 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -750,14 +750,14 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
-        IPTABLES_PATH " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.127 --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source 192.168.122.127 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source 192.168.122.255 --jump REJECT\n"
+        IPTABLES " -w -D INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 
@@ -892,11 +892,11 @@ testFirewallQueryHook(const char *const*args,
                       int *status G_GNUC_UNUSED,
                       void *opaque G_GNUC_UNUSED)
 {
-    if (STREQ(args[0], IPTABLES_PATH) &&
+    if (STREQ(args[0], IPTABLES) &&
         STREQ(args[1], "-w") &&
         STREQ(args[2], "-L")) {
         *output = g_strdup(TEST_FILTER_TABLE_LIST);
-    } else if (STREQ(args[0], IPTABLES_PATH) &&
+    } else if (STREQ(args[0], IPTABLES) &&
                STREQ(args[1], "-w") &&
                STREQ(args[2], "-t") &&
                STREQ(args[3], "nat") &&
@@ -943,15 +943,15 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
     int ret = -1;
     const char *actual = NULL;
     const char *expected =
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.127 --jump REJECT\n"
-        IPTABLES_PATH " -w -L\n"
-        IPTABLES_PATH " -w -t nat -L\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.130 --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.129' --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.129' --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source 192.168.122.128 --jump REJECT\n"
-        IPTABLES_PATH " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
+        IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.127 --jump REJECT\n"
+        IPTABLES " -w -L\n"
+        IPTABLES " -w -t nat -L\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.130 --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.129' --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.129' --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source 192.168.122.128 --jump REJECT\n"
+        IPTABLES " -w -A INPUT --source '!192.168.122.1' --jump REJECT\n";
     const struct testFirewallData *data = opaque;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
 

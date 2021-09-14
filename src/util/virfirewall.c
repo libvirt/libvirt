@@ -42,9 +42,9 @@ typedef struct _virFirewallGroup virFirewallGroup;
 VIR_ENUM_DECL(virFirewallLayerCommand);
 VIR_ENUM_IMPL(virFirewallLayerCommand,
               VIR_FIREWALL_LAYER_LAST,
-              EBTABLES_PATH,
-              IPTABLES_PATH,
-              IP6TABLES_PATH,
+              EBTABLES,
+              IPTABLES,
+              IP6TABLES,
 );
 
 struct _virFirewallRule {
@@ -99,7 +99,7 @@ static int
 virFirewallValidateBackend(virFirewallBackend backend)
 {
     const char *commands[] = {
-        IPTABLES_PATH, IP6TABLES_PATH, EBTABLES_PATH
+        IPTABLES, IP6TABLES, EBTABLES
     };
     size_t i;
 
