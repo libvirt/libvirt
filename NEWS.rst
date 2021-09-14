@@ -17,6 +17,18 @@ v7.8.0 (unreleased)
 
 * **New features**
 
+  * nodedev: Add ability to automatically start mediated devices
+
+    The autostart status of a persistent mediated devices can be managed with
+    the new APIs ``virNodeDeviceSetAutostart()`` and
+    ``virNodeDeviceGetAutostart()``. The corresponding virsh command is
+    ``nodedev-autostart``. In addition, two new APIs were added to get
+    additional information about node devices: ``virNodeDeviceIsPersistent()``
+    checks whether the device is persistently defined, and
+    ``virNodeDeviceIsActive()`` checks whether the node device is currently
+    active. This information can also be retrieved with the new virsh command
+    ``nodedev-info``.
+
 * **Improvements**
 
 * **Bug fixes**
