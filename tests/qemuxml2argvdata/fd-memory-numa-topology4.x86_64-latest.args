@@ -15,6 +15,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-pc/.config \
 -m 1024 \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
+-mem-prealloc \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \
 -uuid bb508b28-d57b-44bd-9e9c-a134cef24b60 \
 -display none \

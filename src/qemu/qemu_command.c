@@ -7371,6 +7371,7 @@ qemuBuildMemPathStr(const virDomainDef *def,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     const long system_page_size = virGetSystemPageSizeKB();
     g_autofree char *mem_path = NULL;
+    bool prealloc = false;
 
     /* There are two cases where we want to put -mem-path onto
      * the command line: First one is when there are no guest
@@ -7384,19 +7385,22 @@ qemuBuildMemPathStr(const virDomainDef *def,
             return -1;
         if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &mem_path) < 0)
             return -1;
+        prealloc = true;
     } else if (def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_FILE) {
         if (qemuGetMemoryBackingPath(priv->driver, def, "ram", &mem_path) < 0)
             return -1;
-    } else {
-        return 0;
     }
 
-    if (def->mem.allocation != VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE) {
+    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        prealloc = true;
+
+    if (prealloc && !priv->memPrealloc) {
         virCommandAddArgList(cmd, "-mem-prealloc", NULL);
         priv->memPrealloc = true;
     }
 
-    virCommandAddArgList(cmd, "-mem-path", mem_path, NULL);
+    if (mem_path)
+        virCommandAddArgList(cmd, "-mem-path", mem_path, NULL);
 
     return 0;
 }
@@ -7462,11 +7466,6 @@ qemuBuildMemCommandLine(virCommand *cmd,
         if (!virDomainNumaGetNodeCount(def->numa))
             qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid);
     } else {
-        if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE) {
-            virCommandAddArgList(cmd, "-mem-prealloc", NULL);
-            priv->memPrealloc = true;
-        }
-
         /*
          * Add '-mem-path' (and '-mem-prealloc') parameter here if
          * the hugepages and no numa node is specified.
