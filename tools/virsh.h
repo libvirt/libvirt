@@ -100,6 +100,7 @@
     {.name = "file", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
+     .completer = virshCompletePathLocalExisting, \
      .help = _helpstr \
     }
 

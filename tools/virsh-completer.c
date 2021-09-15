@@ -128,3 +128,20 @@ virshCommaStringListComplete(const char *input,
 
     return g_steal_pointer(&ret);
 }
+
+
+/**
+ * virshCompletePathLocalExisting:
+ *
+ * Complete a path to a existing file used as input. The file is used as input
+ * for virsh so only local files are considered.
+ *
+ * Note: For now this is a no-op. Readline does the correct thing.
+ */
+char **
+virshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
+                               const vshCmd *cmd G_GNUC_UNUSED,
+                               unsigned int completerflags G_GNUC_UNUSED)
+{
+    return NULL;
+}

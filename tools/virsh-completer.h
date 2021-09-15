@@ -35,3 +35,8 @@
 char **
 virshCommaStringListComplete(const char *input,
                              const char **options);
+
+char **
+virshCompletePathLocalExisting(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int completerflags);
