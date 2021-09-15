@@ -576,3 +576,71 @@ virDomainDriverDelIOThreadCheck(virDomainDef *def,
 
     return 0;
 }
+
+/**
+ * virDomainDriverGetIOThreadsConfig:
+ * @targetDef: domain definition
+ * @info: information about the IOThread in a domain
+ * @bitmap_size: generate bitmap with bitmap_size, 0 for getting the size
+ * from host
+ *
+ * Returns the number of IOThreads in the given domain or -1 in case of error
+ */
+int
+virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
+                                  virDomainIOThreadInfoPtr **info,
+                                  unsigned int bitmap_size)
+{
+    virDomainIOThreadInfoPtr *info_ret = NULL;
+    virBitmap *bitmap = NULL;
+    virBitmap *cpumask = NULL;
+    size_t i;
+    int ret = -1;
+
+    if (targetDef->niothreadids == 0)
+        return 0;
+
+    info_ret = g_new0(virDomainIOThreadInfoPtr, targetDef->niothreadids);
+
+    for (i = 0; i < targetDef->niothreadids; i++) {
+        info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
+
+        /* IOThread ID's are taken from the iothreadids list */
+        info_ret[i]->iothread_id = targetDef->iothreadids[i]->iothread_id;
+
+        cpumask = targetDef->iothreadids[i]->cpumask;
+        if (!cpumask) {
+            if (targetDef->cpumask) {
+                cpumask = targetDef->cpumask;
+            } else {
+                if (bitmap_size) {
+                    if (!(bitmap = virBitmapNew(bitmap_size)))
+                        goto cleanup;
+                    virBitmapSetAll(bitmap);
+                } else {
+                    if (!(bitmap = virHostCPUGetAvailableCPUsBitmap()))
+                        goto cleanup;
+                }
+                cpumask = bitmap;
+            }
+        }
+        if (virBitmapToData(cpumask, &info_ret[i]->cpumap,
+                            &info_ret[i]->cpumaplen) < 0)
+            goto cleanup;
+        virBitmapFree(bitmap);
+        bitmap = NULL;
+    }
+
+    *info = g_steal_pointer(&info_ret);
+    ret = targetDef->niothreadids;
+
+ cleanup:
+    if (info_ret) {
+        for (i = 0; i < targetDef->niothreadids; i++)
+            virDomainIOThreadInfoFree(info_ret[i]);
+        VIR_FREE(info_ret);
+    }
+    virBitmapFree(bitmap);
+
+    return ret;
+}

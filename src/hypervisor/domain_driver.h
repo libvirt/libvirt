@@ -66,3 +66,7 @@ int virDomainDriverAddIOThreadCheck(virDomainDef *def,
 
 int virDomainDriverDelIOThreadCheck(virDomainDef *def,
                                     unsigned int iothread_id);
+
+int virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
+                                      virDomainIOThreadInfoPtr **info,
+                                      unsigned int bitmap_size);

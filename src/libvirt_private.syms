@@ -1541,6 +1541,7 @@ virDomainDriverAddIOThreadCheck;
 virDomainDriverDelIOThreadCheck;
 virDomainDriverGenerateMachineName;
 virDomainDriverGenerateRootHash;
+virDomainDriverGetIOThreadsConfig;
 virDomainDriverMergeBlkioDevice;
 virDomainDriverNodeDeviceDetachFlags;
 virDomainDriverNodeDeviceGetPCIInfo;
