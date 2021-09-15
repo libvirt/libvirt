@@ -1083,10 +1083,9 @@ qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
     /* The qemu driver doesn't yet implement any meaningful handling for
      * VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE */
     if (onPoweroff == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE ||
-        onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE ||
-        onCrash == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE) {
+        onReboot == VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("qemu driver doesn't support the 'preserve' action for 'on_reboot'/'on_poweroff'/'on_crash'"));
+                       _("qemu driver doesn't support the 'preserve' action for 'on_reboot'/'on_poweroff'"));
         return -1;
     }
 

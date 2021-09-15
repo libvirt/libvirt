@@ -3647,6 +3647,7 @@ processGuestPanicEvent(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:
+        /* the VM is kept around for debugging */
         break;
 
     default:
