@@ -113,6 +113,10 @@ virNetworkPtr           virNetworkLookupByUUID          (virConnectPtr conn,
 virNetworkPtr           virNetworkLookupByUUIDString    (virConnectPtr conn,
                                                          const char *uuid);
 
+typedef enum {
+    VIR_NETWORK_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+} virNetworkCreateFlags;
+
 /*
  * Create active transient network
  */

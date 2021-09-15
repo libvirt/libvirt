@@ -431,7 +431,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
  * virNetworkCreateXMLFlags:
  * @conn: pointer to the hypervisor connection
  * @xmlDesc: an XML description of the network
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of virNetworkCreateFlags
  *
  * Create and start a new virtual network, based on an XML description
  * similar to the one returned by virNetworkGetXMLDesc()
