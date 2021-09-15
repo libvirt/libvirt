@@ -9628,6 +9628,7 @@ testDomainGetIOThreadInfo(virDomainPtr dom,
 typedef enum {
     VIR_DOMAIN_IOTHREAD_ACTION_ADD,
     VIR_DOMAIN_IOTHREAD_ACTION_DEL,
+    VIR_DOMAIN_IOTHREAD_ACTION_MOD,
 } virDomainIOThreadAction;
 
 static int
@@ -9658,6 +9659,16 @@ testDomainChgIOThread(virDomainObj *vm,
                 return ret;
 
             virDomainIOThreadIDDel(def, iothread_id);
+
+            break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
+            if (!(virDomainIOThreadIDFind(def, iothread_id))) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("cannot find IOThread '%u' in iothreadids"),
+                               iothread_id);
+                return ret;
+            }
 
             break;
         }
@@ -9803,6 +9814,84 @@ testDomainPinIOThread(virDomainPtr dom,
     return ret;
 }
 
+static int
+testDomainIOThreadParseParams(virTypedParameterPtr params,
+                              int nparams,
+                              testIOThreadInfo *iothread)
+{
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                               VIR_TYPED_PARAM_ULLONG,
+                               VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                               VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                               VIR_TYPED_PARAM_UINT,
+                               NULL) < 0)
+        return -1;
+
+    if (virTypedParamsGetULLong(params, nparams,
+                                VIR_DOMAIN_IOTHREAD_POLL_MAX_NS,
+                                &iothread->poll_max_ns) < 0)
+        return -1;
+
+    if (virTypedParamsGetUInt(params, nparams,
+                              VIR_DOMAIN_IOTHREAD_POLL_GROW,
+                              &iothread->poll_grow) < 0)
+        return -1;
+
+    if (virTypedParamsGetUInt(params, nparams,
+                              VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
+                              &iothread->poll_shrink) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+testDomainSetIOThreadParams(virDomainPtr dom,
+                            unsigned int iothread_id,
+                            virTypedParameterPtr params,
+                            int nparams,
+                            unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    testDomainObjPrivate *priv;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+
+    if (iothread_id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid value of 0 for iothread_id"));
+        goto cleanup;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (testDomainChgIOThread(vm, iothread_id,
+                              VIR_DOMAIN_IOTHREAD_ACTION_MOD, flags) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    for (i = 0; i < priv->iothreads->len; i++) {
+        testIOThreadInfo *iothread = &g_array_index(priv->iothreads,
+                                                    testIOThreadInfo, i);
+        if (iothread->iothread_id == iothread_id) {
+            if (testDomainIOThreadParseParams(params, nparams, iothread) < 0)
+                goto cleanup;
+            ret = 0;
+            break;
+        }
+    }
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 /*
  * Test driver
  */
@@ -9873,6 +9962,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainAddIOThread = testDomainAddIOThread, /* 7.8.0 */
     .domainDelIOThread = testDomainDelIOThread, /* 7.8.0 */
     .domainPinIOThread = testDomainPinIOThread, /* 7.8.0 */
+    .domainSetIOThreadParams = testDomainSetIOThreadParams, /* 7.8.0 */
     .domainGetSecurityLabel = testDomainGetSecurityLabel, /* 7.5.0 */
     .nodeGetSecurityModel = testNodeGetSecurityModel, /* 7.5.0 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
