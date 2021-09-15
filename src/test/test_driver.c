@@ -9892,6 +9892,142 @@ testDomainSetIOThreadParams(virDomainPtr dom,
     return ret;
 }
 
+static int
+testDomainGetStatsState(virDomainObj *dom,
+                        virTypedParamList *params)
+{
+    if (virTypedParamListAddInt(params, dom->state.state, "state.state") < 0)
+        return -1;
+
+    if (virTypedParamListAddInt(params, dom->state.reason, "state.reason") < 0)
+        return -1;
+
+    return 0;
+}
+
+typedef int
+(*testDomainGetStatsFunc)(virDomainObj *dom,
+                          virTypedParamList *list);
+
+struct testDomainGetStatsWorker {
+    testDomainGetStatsFunc func;
+    unsigned int stats;
+};
+
+static struct testDomainGetStatsWorker testDomainGetStatsWorkers[] = {
+    { testDomainGetStatsState, VIR_DOMAIN_STATS_STATE },
+    { NULL, 0 }
+};
+
+static int
+testDomainGetStats(virConnectPtr conn,
+                   virDomainObj *dom,
+                   unsigned int stats,
+                   virDomainStatsRecordPtr *record)
+{
+    g_autofree virDomainStatsRecordPtr tmp = NULL;
+    g_autoptr(virTypedParamList) params = NULL;
+    size_t i;
+
+    params = g_new0(virTypedParamList, 1);
+
+    for (i = 0; testDomainGetStatsWorkers[i].func; i++) {
+        if (stats & testDomainGetStatsWorkers[i].stats) {
+            if (testDomainGetStatsWorkers[i].func(dom, params) < 0)
+                return -1;
+        }
+    }
+
+    tmp = g_new0(virDomainStatsRecord, 1);
+
+    if (!(tmp->dom = virGetDomain(conn, dom->def->name,
+                                  dom->def->uuid, dom->def->id)))
+        return -1;
+
+    tmp->nparams = virTypedParamListStealParams(params, &tmp->params);
+    *record = g_steal_pointer(&tmp);
+    return 0;
+}
+
+static int
+testConnectGetAllDomainStats(virConnectPtr conn,
+                             virDomainPtr *doms,
+                             unsigned int ndoms,
+                             unsigned int stats,
+                             virDomainStatsRecordPtr **retStats,
+                             unsigned int flags)
+{
+    testDriver *driver = conn->privateData;
+    unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                                   VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
+
+    unsigned int supported = VIR_DOMAIN_STATS_STATE;
+    virDomainObj **vms = NULL;
+    size_t nvms;
+    virDomainStatsRecordPtr *tmpstats = NULL;
+    int nstats = 0;
+    int ret = -1;
+    size_t i;
+
+    virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
+                  VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING |
+                  VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
+
+    if (!stats) {
+        stats = supported;
+    } else if ((flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS) &&
+               (stats & ~supported)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+                       _("Stats types bits 0x%x are not supported by this daemon"),
+                       stats & ~supported);
+        return -1;
+    }
+
+    if (ndoms) {
+        if (virDomainObjListConvert(driver->domains, conn, doms, ndoms, &vms,
+                                    &nvms, NULL, lflags, true) < 0)
+            return -1;
+    } else {
+        if (virDomainObjListCollect(driver->domains, conn, &vms, &nvms,
+                                    NULL, lflags) < 0)
+            return -1;
+    }
+
+    tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);
+
+    for (i = 0; i < nvms; i++) {
+        virDomainStatsRecordPtr tmp = NULL;
+        virDomainObj *vm = vms[i];
+
+        virObjectLock(vm);
+
+        if ((testDomainGetStats(conn, vm, stats, &tmp)) < 0) {
+            virObjectUnlock(vm);
+            goto cleanup;
+        }
+
+        virObjectUnlock(vm);
+
+        if (!tmp)
+            goto cleanup;
+
+        tmpstats[nstats++] = tmp;
+    }
+
+    *retStats = g_steal_pointer(&tmpstats);
+    ret = nstats;
+
+ cleanup:
+    virDomainStatsRecordListFree(tmpstats);
+    virObjectListFreeCount(vms, nvms);
+
+    return ret;
+}
+
 /*
  * Test driver
  */
@@ -9906,6 +10042,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .nodeGetCPUStats = testNodeGetCPUStats, /* 2.3.0 */
     .nodeGetFreeMemory = testNodeGetFreeMemory, /* 2.3.0 */
     .nodeGetFreePages = testNodeGetFreePages, /* 2.3.0 */
+    .connectGetAllDomainStats = testConnectGetAllDomainStats, /* 7.8.0 */
     .connectGetCapabilities = testConnectGetCapabilities, /* 0.2.1 */
     .connectGetSysinfo = testConnectGetSysinfo, /* 2.3.0 */
     .connectGetType = testConnectGetType, /* 2.3.0 */
