@@ -908,6 +908,7 @@ LIBVIRT_7.8.0 {
         virNodeDeviceGetAutostart;
         virNodeDeviceIsPersistent;
         virNodeDeviceIsActive;
+        virNetworkCreateXMLFlags;
 } LIBVIRT_7.7.0;
 
 # .... define new API here using predicted next version number ....

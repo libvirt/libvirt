@@ -8552,6 +8552,7 @@ static virNetworkDriver network_driver = {
     .networkLookupByUUID = remoteNetworkLookupByUUID, /* 0.3.0 */
     .networkLookupByName = remoteNetworkLookupByName, /* 0.3.0 */
     .networkCreateXML = remoteNetworkCreateXML, /* 0.3.0 */
+    .networkCreateXMLFlags = remoteNetworkCreateXMLFlags, /* 7.8.0 */
     .networkDefineXML = remoteNetworkDefineXML, /* 0.3.0 */
     .networkDefineXMLFlags = remoteNetworkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = remoteNetworkUndefine, /* 0.3.0 */

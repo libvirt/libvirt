@@ -1530,6 +1530,15 @@ struct remote_network_create_xml_ret {
     remote_nonnull_network net;
 };
 
+struct remote_network_create_xml_flags_args {
+    remote_nonnull_string xml;
+    unsigned int flags;
+};
+
+struct remote_network_create_xml_flags_ret {
+    remote_nonnull_network net;
+};
+
 struct remote_network_define_xml_args {
     remote_nonnull_string xml;
 };
@@ -6875,6 +6884,13 @@ enum remote_procedure {
      * @priority: high
      * @acl: node_device:read
      */
-    REMOTE_PROC_NODE_DEVICE_IS_ACTIVE = 436
+    REMOTE_PROC_NODE_DEVICE_IS_ACTIVE = 436,
 
+    /**
+     * @generate: both
+     * @priority: high
+     * @acl: network:write
+     * @acl: network:start
+     */
+    REMOTE_PROC_NETWORK_CREATE_XML_FLAGS = 437
 };

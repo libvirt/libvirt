@@ -428,6 +428,47 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
 
 
 /**
+ * virNetworkCreateXMLFlags:
+ * @conn: pointer to the hypervisor connection
+ * @xmlDesc: an XML description of the network
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Create and start a new virtual network, based on an XML description
+ * similar to the one returned by virNetworkGetXMLDesc()
+ *
+ * virNetworkFree should be used to free the resources after the
+ * network object is no longer needed.
+ *
+ * Returns a new network object or NULL in case of failure
+ */
+virNetworkPtr
+virNetworkCreateXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, xmlDesc=%s, flags=0x%x", conn, NULLSTR(xmlDesc), flags);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, NULL);
+    virCheckNonNullArgGoto(xmlDesc, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->networkDriver && conn->networkDriver->networkCreateXMLFlags) {
+        virNetworkPtr ret;
+        ret = conn->networkDriver->networkCreateXMLFlags(conn, xmlDesc, flags);
+        if (!ret)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return NULL;
+}
+
+
+/**
  * virNetworkDefineXML:
  * @conn: pointer to the hypervisor connection
  * @xml: the XML description for the network, preferably in UTF-8
