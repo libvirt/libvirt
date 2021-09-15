@@ -269,7 +269,6 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     bool build;
     bool overwrite;
@@ -297,17 +296,15 @@ cmdPoolCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    pool = virStoragePoolCreateXML(priv->conn, buffer, flags);
-
-    if (pool != NULL) {
-        vshPrintExtra(ctl, _("Pool %s created from %s\n"),
-                      virStoragePoolGetName(pool), from);
-        virStoragePoolFree(pool);
-    } else {
+    if (!(pool = virStoragePoolCreateXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to create pool from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Pool %s created from %s\n"),
+                  virStoragePoolGetName(pool), from);
+    virStoragePoolFree(pool);
+    return true;
 }
 
 static const vshCmdOptDef opts_pool_define_as[] = {
@@ -490,17 +487,16 @@ cmdPoolCreateAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
-    } else {
-        pool = virStoragePoolCreateXML(priv->conn, xml, flags);
-
-        if (pool != NULL) {
-            vshPrintExtra(ctl, _("Pool %s created\n"), name);
-            virStoragePoolFree(pool);
-        } else {
-            vshError(ctl, _("Failed to create pool %s"), name);
-            return false;
-        }
+        return true;
     }
+
+    if (!(pool = virStoragePoolCreateXML(priv->conn, xml, flags))) {
+        vshError(ctl, _("Failed to create pool %s"), name);
+        return false;
+    }
+
+    vshPrintExtra(ctl, _("Pool %s created\n"), name);
+    virStoragePoolFree(pool);
     return true;
 }
 
@@ -532,7 +528,6 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
 {
     virStoragePoolPtr pool;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
@@ -546,17 +541,15 @@ cmdPoolDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    pool = virStoragePoolDefineXML(priv->conn, buffer, flags);
-
-    if (pool != NULL) {
-        vshPrintExtra(ctl, _("Pool %s defined from %s\n"),
-                      virStoragePoolGetName(pool), from);
-        virStoragePoolFree(pool);
-    } else {
+    if (!(pool = virStoragePoolDefineXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to define pool from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Pool %s defined from %s\n"),
+                  virStoragePoolGetName(pool), from);
+    virStoragePoolFree(pool);
+    return true;
 }
 
 /*
@@ -586,17 +579,16 @@ cmdPoolDefineAs(vshControl *ctl, const vshCmd *cmd)
 
     if (printXML) {
         vshPrint(ctl, "%s", xml);
-    } else {
-        pool = virStoragePoolDefineXML(priv->conn, xml, 0);
-
-        if (pool != NULL) {
-            vshPrintExtra(ctl, _("Pool %s defined\n"), name);
-            virStoragePoolFree(pool);
-        } else {
-            vshError(ctl, _("Failed to define pool %s"), name);
-            return false;
-        }
+        return true;
     }
+
+    if (!(pool = virStoragePoolDefineXML(priv->conn, xml, 0))) {
+        vshError(ctl, _("Failed to define pool %s"), name);
+        return false;
+    }
+
+    vshPrintExtra(ctl, _("Pool %s defined\n"), name);
+    virStoragePoolFree(pool);
     return true;
 }
 
