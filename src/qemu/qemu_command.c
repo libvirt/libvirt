@@ -7281,9 +7281,9 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
 
 
 static int
-qemuBuilNumaCellCache(virCommand *cmd,
-                      const virDomainDef *def,
-                      size_t cell)
+qemuBuildNumaCellCache(virCommand *cmd,
+                       const virDomainDef *def,
+                       size_t cell)
 {
     size_t ncaches = virDomainNumaGetNodeCacheCount(def->numa, cell);
     size_t i;
@@ -7540,7 +7540,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         /* This can't be moved into any of the loops above,
          * because hmat-cache can be specified only after hmat-lb. */
         for (i = 0; i < ncells; i++) {
-            if (qemuBuilNumaCellCache(cmd, def, i) < 0)
+            if (qemuBuildNumaCellCache(cmd, def, i) < 0)
                 goto cleanup;
         }
     }
