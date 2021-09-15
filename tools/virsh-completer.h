@@ -40,3 +40,8 @@ char **
 virshCompletePathLocalExisting(vshControl *ctl,
                                const vshCmd *cmd,
                                unsigned int completerflags);
+
+char **
+virshCompleteEmpty(vshControl *ctl,
+                   const vshCmd *cmd,
+                   unsigned int completerflags);

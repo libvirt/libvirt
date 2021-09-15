@@ -199,6 +199,7 @@ static const vshCmdOptDef opts_secret_set_value[] = {
     },
     {.name = "base64",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("base64-encoded secret value")
     },
     {.name = NULL}

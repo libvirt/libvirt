@@ -324,10 +324,12 @@ static const vshCmdOptDef opts_snapshot_create_as[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "name",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("name of snapshot")
     },
     {.name = "description",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("description of snapshot")
     },
     {.name = "print-xml",

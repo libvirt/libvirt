@@ -252,6 +252,7 @@ static const vshCmdOptDef opts_connect[] = {
     {.name = "name",
      .type = VSH_OT_STRING,
      .flags = VSH_OFLAG_EMPTY_OK,
+     .completer = virshCompleteEmpty,
      .help = N_("hypervisor connection URI")
     },
     {.name = "readonly",

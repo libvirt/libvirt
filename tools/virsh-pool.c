@@ -59,6 +59,7 @@
     {.name = "name", \
      .type = VSH_OT_DATA, \
      .flags = VSH_OFLAG_REQ, \
+     .completer = virshCompleteEmpty, \
      .help = N_("name of the pool") \
     }, \
     {.name = "type", \
@@ -73,6 +74,7 @@
     }, \
     {.name = "source-host", \
      .type = VSH_OT_STRING, \
+     .completer = virshCompleteEmpty, \
      .help = N_("source-host for underlying storage") \
     }, \
     {.name = "source-path", \
@@ -101,6 +103,7 @@
     }, \
     {.name = "auth-username", \
      .type = VSH_OT_STRING, \
+     .completer = virshCompleteEmpty, \
      .help = N_("auth username to be used for underlying storage") \
     }, \
     {.name = "secret-usage", \
@@ -145,6 +148,7 @@
     }, \
     {.name = "source-initiator", \
      .type = VSH_OT_STRING, \
+     .completer = virshCompleteEmpty, \
      .help = N_("initiator iqn for underlying storage") \
     }
 
@@ -1417,14 +1421,17 @@ static const vshCmdOptDef opts_find_storage_pool_sources_as[] = {
     },
     {.name = "host",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("optional host to query")
     },
     {.name = "port",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("optional port to query")
     },
     {.name = "initiator",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("optional initiator IQN to use for query")
     },
     {.name = NULL}

@@ -145,3 +145,21 @@ virshCompletePathLocalExisting(vshControl *ctl G_GNUC_UNUSED,
 {
     return NULL;
 }
+
+
+/**
+ * virshCompleteEmpty:
+ *
+ * Complete nothing. For cases where an user input is required and we can't
+ * suggest anything.
+ *
+ * TODO: This is currently just an annotation, readline still completes local
+ * file list.
+ */
+char **
+virshCompleteEmpty(vshControl *ctl G_GNUC_UNUSED,
+                   const vshCmd *cmd G_GNUC_UNUSED,
+                   unsigned int completerflags G_GNUC_UNUSED)
+{
+    return NULL;
+}

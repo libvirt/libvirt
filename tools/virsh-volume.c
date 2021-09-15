@@ -185,15 +185,18 @@ static const vshCmdOptDef opts_vol_create_as[] = {
     {.name = "name",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
      .help = N_("name of the volume")
     },
     {.name = "capacity",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
      .help = N_("size of the vol, as scaled integer (default bytes)")
     },
     {.name = "allocation",
      .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
      .help = N_("initial allocation size, as scaled integer (default bytes)")
     },
     {.name = "format",
@@ -561,6 +564,7 @@ static const vshCmdOptDef opts_vol_clone[] = {
     {.name = "newname",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
      .help = N_("clone name")
     },
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
@@ -1131,6 +1135,7 @@ static const vshCmdOptDef opts_vol_resize[] = {
     {.name = "capacity",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
      .help = N_("new capacity for the vol, as scaled integer (default bytes)")
     },
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
