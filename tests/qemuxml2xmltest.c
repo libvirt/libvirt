@@ -1235,6 +1235,7 @@ mymain(void)
             QEMU_CAPS_KVM);
     DO_TEST("fd-memory-numa-topology3", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("fd-memory-numa-topology4");
 
     DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
