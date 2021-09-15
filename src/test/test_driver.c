@@ -183,6 +183,14 @@ struct _testDomainNamespaceDef {
     xmlNodePtr *snap_nodes;
 };
 
+typedef struct _testIOThreadInfo testIOThreadInfo;
+struct _testIOThreadInfo {
+    unsigned int iothread_id;
+    unsigned long long poll_max_ns;
+    unsigned int poll_grow;
+    unsigned int poll_shrink;
+};
+
 static void
 testDomainDefNamespaceFree(void *data)
 {
@@ -381,6 +389,9 @@ struct _testDomainObjPrivate {
     /* used by get/set time APIs */
     long long seconds;
     unsigned int nseconds;
+
+    /* used by IOThread APIs */
+    GArray *iothreads;
 };
 
 
@@ -396,6 +407,8 @@ testDomainObjPrivateAlloc(void *opaque)
 
     priv->seconds = 627319920;
     priv->nseconds = 0;
+
+    priv->iothreads = g_array_new(FALSE, FALSE, sizeof(testIOThreadInfo));
 
     return priv;
 }
@@ -427,6 +440,8 @@ static void
 testDomainObjPrivateFree(void *data)
 {
     testDomainObjPrivate *priv = data;
+
+    g_array_free(priv->iothreads, TRUE);
     g_free(priv);
 }
 
@@ -696,6 +711,26 @@ testDomainGenerateIfnames(virDomainDef *domdef)
     return 0;
 }
 
+static void
+testDomainGenerateIOThreadInfos(virDomainObj *obj)
+{
+    size_t i;
+    testDomainObjPrivate *priv;
+
+    if (!obj->def->iothreadids || !obj->def->niothreadids)
+        return;
+
+    priv = obj->privateData;
+
+    for (i = 0; i < obj->def->niothreadids; i++) {
+        testIOThreadInfo iothread;
+        iothread.iothread_id = obj->def->iothreadids[i]->iothread_id;
+        iothread.poll_max_ns = 32768;
+        iothread.poll_grow = 0;
+        iothread.poll_shrink = 0;
+        g_array_append_val(priv->iothreads, iothread);
+    }
+}
 
 static void
 testDomainShutdownState(virDomainPtr domain,
@@ -1044,6 +1079,8 @@ testParseDomains(testDriver *privconn,
         virDomainObjSetState(obj, nsdata->runstate, 0);
 
         testDomainObjCheckTaint(obj);
+
+        testDomainGenerateIOThreadInfos(obj);
 
         virDomainObjEndAPI(&obj);
     }

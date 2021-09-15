@@ -11,6 +11,11 @@
   <memory>261072</memory>
   <currentMemory>131072</currentMemory>
   <vcpu>1</vcpu>
+  <iothreads>2</iothreads>
+  <iothreadids>
+    <iothread id="2"/>
+    <iothread id="4"/>
+  </iothreadids>
   <devices>
     <disk type='file'>
       <source file='/u/fc4.img'/>
