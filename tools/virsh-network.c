@@ -948,6 +948,7 @@ static const vshCmdOptDef opts_network_update[] = {
     {.name = "xml",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("name of file containing xml (or, if it starts with '<', the complete "
                 "xml element itself) to add/modify, or to be matched for search")
     },

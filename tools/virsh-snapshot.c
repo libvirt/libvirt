@@ -115,6 +115,7 @@ static const vshCmdOptDef opts_snapshot_create[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(0),
     {.name = "xmlfile",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("domain snapshot XML")
     },
     {.name = "redefine",

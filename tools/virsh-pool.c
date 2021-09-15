@@ -1501,6 +1501,7 @@ static const vshCmdOptDef opts_find_storage_pool_sources[] = {
     },
     {.name = "srcSpec",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("optional file of source xml to query for pools")
     },
     {.name = NULL}

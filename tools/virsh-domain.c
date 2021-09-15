@@ -2243,6 +2243,7 @@ static const vshCmdOptDef opts_blockcopy[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing XML description of the copy destination")
     },
     {.name = "format",
@@ -4140,6 +4141,7 @@ static const vshCmdOptDef opts_save[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -4534,6 +4536,7 @@ static const vshCmdOptDef opts_save_image_define[] = {
     {.name = "xml",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -4947,6 +4950,7 @@ static const vshCmdOptDef opts_managed_save_define[] = {
     {.name = "xml",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -5249,6 +5253,7 @@ static const vshCmdOptDef opts_restore[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "running",
@@ -10008,6 +10013,7 @@ static const vshCmdOptDef opts_domxmlfromnative[] = {
     {.name = "config",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("config data file to import from")
     },
     {.name = NULL}
@@ -10063,6 +10069,7 @@ static const vshCmdOptDef opts_domxmltonative[] = {
     VIRSH_COMMON_OPT_DOMAIN_OT_STRING_FULL(VSH_OFLAG_REQ_OPT, 0),
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("xml data file to export from")
     },
     {.name = NULL}
@@ -10393,6 +10400,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated XML for the target")
     },
     {.name = "migrate-disks",
@@ -10439,6 +10447,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "persistent-xml",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("filename containing updated persistent XML for the target")
     },
     {.name = "tls",
@@ -13974,6 +13983,7 @@ static const vshCmdOptDef opts_set_user_sshkeys[] = {
     },
     {.name = "file",
      .type = VSH_OT_STRING,
+     .completer = virshCompletePathLocalExisting,
      .help = N_("optional file to read keys from"),
     },
     {.name = "reset",
