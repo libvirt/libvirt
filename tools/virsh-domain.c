@@ -4788,18 +4788,19 @@ cmdManagedSaveRemove(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (hassave) {
-        if (virDomainManagedSaveRemove(dom, 0) < 0) {
-            vshError(ctl, _("Failed to remove managed save image for domain '%s'"),
-                     name);
-            return false;
-        }
-        else
-            vshPrintExtra(ctl, _("Removed managedsave image for domain '%s'"), name);
-    }
-    else
+    if (hassave == 0) {
         vshPrintExtra(ctl, _("Domain '%s' has no manage save image; removal skipped"),
                       name);
+        return true;
+    }
+
+    if (virDomainManagedSaveRemove(dom, 0) < 0) {
+        vshError(ctl, _("Failed to remove managed save image for domain '%s'"),
+                 name);
+        return false;
+    }
+
+    vshPrintExtra(ctl, _("Removed managedsave image for domain '%s'"), name);
 
     return true;
 }
