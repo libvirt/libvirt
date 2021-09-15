@@ -3464,8 +3464,9 @@ networkValidate(virNetworkDriverState *driver,
 
 
 static virNetworkPtr
-networkCreateXML(virConnectPtr conn,
-                 const char *xml)
+networkCreateXMLFlags(virConnectPtr conn,
+                      const char *xml,
+                      unsigned int flags)
 {
     virNetworkDriverState *driver = networkGetDriver();
     virNetworkDef *newDef;
@@ -3474,10 +3475,12 @@ networkCreateXML(virConnectPtr conn,
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
 
+    virCheckFlags(0, NULL);
+
     if (!(newDef = virNetworkDefParseString(xml, network_driver->xmlopt, false)))
         goto cleanup;
 
-    if (virNetworkCreateXMLEnsureACL(conn, newDef) < 0)
+    if (virNetworkCreateXMLFlagsEnsureACL(conn, newDef) < 0)
         goto cleanup;
 
     if (networkValidate(driver, newDef) < 0)
@@ -3512,6 +3515,14 @@ networkCreateXML(virConnectPtr conn,
     virObjectEventStateQueue(driver->networkEventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
+}
+
+
+static virNetworkPtr
+networkCreateXML(virConnectPtr conn,
+                 const char *xml)
+{
+    return networkCreateXMLFlags(conn, xml, 0);
 }
 
 
@@ -5630,6 +5641,7 @@ static virNetworkDriver networkDriver = {
     .networkLookupByUUID = networkLookupByUUID, /* 0.2.0 */
     .networkLookupByName = networkLookupByName, /* 0.2.0 */
     .networkCreateXML = networkCreateXML, /* 0.2.0 */
+    .networkCreateXMLFlags = networkCreateXMLFlags, /* 7.8.0 */
     .networkDefineXML = networkDefineXML, /* 0.2.0 */
     .networkDefineXMLFlags = networkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = networkUndefine, /* 0.2.0 */

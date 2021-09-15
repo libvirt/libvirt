@@ -561,6 +561,12 @@ static virNetworkPtr vboxNetworkCreateXML(virConnectPtr conn, const char *xml)
     return vboxNetworkDefineCreateXML(conn, xml, true, 0);
 }
 
+static virNetworkPtr vboxNetworkCreateXMLFlags(virConnectPtr conn, const char *xml,
+                                               unsigned int flags)
+{
+    return vboxNetworkDefineCreateXML(conn, xml, true, flags);
+}
+
 static virNetworkPtr vboxNetworkDefineXML(virConnectPtr conn, const char *xml)
 {
     return vboxNetworkDefineCreateXML(conn, xml, false, 0);
@@ -930,6 +936,7 @@ virNetworkDriver vboxNetworkDriver = {
     .networkLookupByUUID = vboxNetworkLookupByUUID, /* 0.6.4 */
     .networkLookupByName = vboxNetworkLookupByName, /* 0.6.4 */
     .networkCreateXML = vboxNetworkCreateXML, /* 0.6.4 */
+    .networkCreateXMLFlags = vboxNetworkCreateXMLFlags, /* 7.8.0 */
     .networkDefineXML = vboxNetworkDefineXML, /* 0.6.4 */
     .networkDefineXMLFlags = vboxNetworkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = vboxNetworkUndefine, /* 0.6.4 */

@@ -5572,7 +5572,8 @@ testNetworkIsPersistent(virNetworkPtr net)
 
 
 static virNetworkPtr
-testNetworkCreateXML(virConnectPtr conn, const char *xml)
+testNetworkCreateXMLFlags(virConnectPtr conn, const char *xml,
+                          unsigned int flags)
 {
     testDriver *privconn = conn->privateData;
     virNetworkDef *newDef;
@@ -5580,6 +5581,8 @@ testNetworkCreateXML(virConnectPtr conn, const char *xml)
     virNetworkDef *def;
     virNetworkPtr net = NULL;
     virObjectEvent *event = NULL;
+
+    virCheckFlags(0, NULL);
 
     if ((newDef = virNetworkDefParseString(xml, NULL, false)) == NULL)
         goto cleanup;
@@ -5603,6 +5606,13 @@ testNetworkCreateXML(virConnectPtr conn, const char *xml)
     virObjectEventStateQueue(privconn->eventState, event);
     virNetworkObjEndAPI(&obj);
     return net;
+}
+
+
+static virNetworkPtr
+testNetworkCreateXML(virConnectPtr conn, const char *xml)
+{
+    return testNetworkCreateXMLFlags(conn, xml, 0);
 }
 
 
@@ -9723,6 +9733,7 @@ static virNetworkDriver testNetworkDriver = {
     .networkLookupByUUID = testNetworkLookupByUUID, /* 0.3.2 */
     .networkLookupByName = testNetworkLookupByName, /* 0.3.2 */
     .networkCreateXML = testNetworkCreateXML, /* 0.3.2 */
+    .networkCreateXMLFlags = testNetworkCreateXMLFlags, /* 7.8.0 */
     .networkDefineXML = testNetworkDefineXML, /* 0.3.2 */
     .networkDefineXMLFlags = testNetworkDefineXMLFlags, /* 7.7.0 */
     .networkUndefine = testNetworkUndefine, /* 0.3.2 */
