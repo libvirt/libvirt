@@ -9754,6 +9754,55 @@ testDomainDelIOThread(virDomainPtr dom,
     return ret;
 }
 
+static int
+testDomainPinIOThread(virDomainPtr dom,
+                      unsigned int iothread_id,
+                      unsigned char *cpumap,
+                      int maplen,
+                      unsigned int flags)
+{
+    int ret = -1;
+    virDomainObj *vm;
+    virDomainDef *def;
+    virDomainIOThreadIDDef *iothrid;
+    virBitmap *cpumask = NULL;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (!(cpumask = virBitmapNewData(cpumap, maplen)))
+        goto cleanup;
+
+    if (virBitmapIsAllClear(cpumask)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Empty iothread cpumap list for pinning"));
+        goto cleanup;
+    }
+
+    if (!(iothrid = virDomainIOThreadIDFind(def, iothread_id))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("iothreadid %d not found"), iothread_id);
+        goto cleanup;
+    }
+
+    virBitmapFree(iothrid->cpumask);
+    iothrid->cpumask = g_steal_pointer(&cpumask);
+    iothrid->autofill = false;
+
+    ret = 0;
+
+ cleanup:
+    virBitmapFree(cpumask);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 /*
  * Test driver
  */
@@ -9823,6 +9872,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetIOThreadInfo = testDomainGetIOThreadInfo, /* 7.8.0 */
     .domainAddIOThread = testDomainAddIOThread, /* 7.8.0 */
     .domainDelIOThread = testDomainDelIOThread, /* 7.8.0 */
+    .domainPinIOThread = testDomainPinIOThread, /* 7.8.0 */
     .domainGetSecurityLabel = testDomainGetSecurityLabel, /* 7.5.0 */
     .nodeGetSecurityModel = testNodeGetSecurityModel, /* 7.5.0 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
