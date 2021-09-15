@@ -6710,7 +6710,7 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
         for (i = 0; i < curvcpus; i++)
             ignore_value(virBitmapSetBit(ret, i));
 
-        return NULL;
+        return ret;
     }
 
     for (i = 0; i < nnodes; i++) {
