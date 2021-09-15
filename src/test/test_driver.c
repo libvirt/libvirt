@@ -9905,6 +9905,46 @@ testDomainGetStatsState(virDomainObj *dom,
     return 0;
 }
 
+static int
+testDomainGetStatsIOThread(virDomainObj *dom,
+                           virTypedParamList *params)
+{
+    testDomainObjPrivate *priv = dom->privateData;
+    size_t i;
+    int niothreads = 0;
+
+    if (!virDomainObjIsActive(dom))
+        return 0;
+
+    niothreads = priv->iothreads->len;
+
+    if (niothreads == 0) {
+        return 0;
+    }
+
+    if (virTypedParamListAddUInt(params, niothreads, "iothread.count") < 0)
+        return -1;
+
+    for (i = 0; i < niothreads; i++) {
+        testIOThreadInfo iothread = g_array_index(priv->iothreads,
+                                                  testIOThreadInfo, i);
+        if (virTypedParamListAddULLong(params, iothread.poll_max_ns,
+                                       "iothread.%u.poll-max-ns",
+                                       iothread.iothread_id) < 0)
+            return -1;
+        if (virTypedParamListAddUInt(params, iothread.poll_grow,
+                                     "iothread.%u.poll-grow",
+                                     iothread.iothread_id) < 0)
+            return -1;
+        if (virTypedParamListAddUInt(params, iothread.poll_shrink,
+                                     "iothread.%u.poll-shrink",
+                                     iothread.iothread_id) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 typedef int
 (*testDomainGetStatsFunc)(virDomainObj *dom,
                           virTypedParamList *list);
@@ -9916,6 +9956,7 @@ struct testDomainGetStatsWorker {
 
 static struct testDomainGetStatsWorker testDomainGetStatsWorkers[] = {
     { testDomainGetStatsState, VIR_DOMAIN_STATS_STATE },
+    { testDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD },
     { NULL, 0 }
 };
 
@@ -9962,7 +10003,8 @@ testConnectGetAllDomainStats(virConnectPtr conn,
                                    VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
                                    VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
 
-    unsigned int supported = VIR_DOMAIN_STATS_STATE;
+    unsigned int supported = VIR_DOMAIN_STATS_STATE |
+                             VIR_DOMAIN_STATS_IOTHREAD;
     virDomainObj **vms = NULL;
     size_t nvms;
     virDomainStatsRecordPtr *tmpstats = NULL;
