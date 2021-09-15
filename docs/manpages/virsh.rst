@@ -5189,13 +5189,15 @@ net-create
 
 ::
 
-   net-create file
+   net-create file [--validate]
 
 Create a transient (temporary) virtual network from an
 XML *file* and instantiate (start) the network.
 See the documentation at `https://libvirt.org/formatnetwork.html <https://libvirt.org/formatnetwork.html>`__
 to get a description of the XML network format used by libvirt.
 
+Optionally, the format of the input XML file can be validated against an
+internal RNG schema with *--validate*.
 
 net-define
 ----------
