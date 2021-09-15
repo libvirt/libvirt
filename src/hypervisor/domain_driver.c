@@ -512,3 +512,67 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
 
     return virHostdevPCINodeDeviceDetach(hostdevMgr, pci);
 }
+
+/**
+ * virDomainDriverAddIOThreadCheck:
+ * @def: domain definition
+ * @iothread_id: iothread id
+ *
+ * Returns -1 if an IOThread is already using the given iothread id
+ */
+int
+virDomainDriverAddIOThreadCheck(virDomainDef *def,
+                                unsigned int iothread_id)
+{
+    if (virDomainIOThreadIDFind(def, iothread_id)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("an IOThread is already using iothread_id '%u'"),
+                       iothread_id);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * virDomainDriverDelIOThreadCheck:
+ * @def: domain definition
+ * @iothread_id: iothread id
+ *
+ * Returns -1 if there is no IOThread using the given iothread id
+ */
+int
+virDomainDriverDelIOThreadCheck(virDomainDef *def,
+                                unsigned int iothread_id)
+{
+    size_t i;
+
+    if (!virDomainIOThreadIDFind(def, iothread_id)) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("cannot find IOThread '%u' in iothreadids list"),
+                       iothread_id);
+        return -1;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        if (def->disks[i]->iothread == iothread_id) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot remove IOThread %u since it "
+                             "is being used by disk '%s'"),
+                           iothread_id, def->disks[i]->dst);
+            return -1;
+        }
+    }
+
+    for (i = 0; i < def->ncontrollers; i++) {
+        if (def->controllers[i]->iothread == iothread_id) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("cannot remove IOThread '%u' since it "
+                             "is being used by controller"),
+                           iothread_id);
+            return -1;
+        }
+    }
+
+    return 0;
+}

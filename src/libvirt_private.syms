@@ -1537,6 +1537,8 @@ virDomainCgroupSetupMemtune;
 
 
 # hypervisor/domain_driver.h
+virDomainDriverAddIOThreadCheck;
+virDomainDriverDelIOThreadCheck;
 virDomainDriverGenerateMachineName;
 virDomainDriverGenerateRootHash;
 virDomainDriverMergeBlkioDevice;
