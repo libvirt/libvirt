@@ -6677,7 +6677,7 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
                          bool inactive)
 {
     unsigned int flags = 0;
-    virBitmap *ret = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
@@ -6703,14 +6703,14 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
     if (curvcpus == 0)
         curvcpus = maxvcpus;
 
-    ret = virBitmapNew(maxvcpus);
+    cpumap = virBitmapNew(maxvcpus);
 
     if ((nnodes = virXPathNodeSet("/domain/vcpus/vcpu", ctxt, &nodes)) <= 0) {
         /* if the specific vcpu state is missing provide a fallback */
         for (i = 0; i < curvcpus; i++)
-            ignore_value(virBitmapSetBit(ret, i));
+            ignore_value(virBitmapSetBit(cpumap, i));
 
-        return ret;
+        return g_steal_pointer(&cpumap);
     }
 
     for (i = 0; i < nnodes; i++) {
@@ -6723,16 +6723,15 @@ virshDomainGetVcpuBitmap(vshControl *ctl,
             continue;
 
         if (STREQ(online, "yes"))
-            ignore_value(virBitmapSetBit(ret, vcpuid));
+            ignore_value(virBitmapSetBit(cpumap, vcpuid));
     }
 
-    if (virBitmapCountBits(ret) != curvcpus) {
+    if (virBitmapCountBits(cpumap) != curvcpus) {
         vshError(ctl, "%s", _("Failed to retrieve vcpu state bitmap"));
-        virBitmapFree(ret);
         return NULL;
     }
 
-    return ret;
+    return g_steal_pointer(&cpumap);
 }
 
 
