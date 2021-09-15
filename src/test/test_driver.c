@@ -9599,6 +9599,7 @@ testDomainGetMessages(virDomainPtr dom,
 
 typedef enum {
     VIR_DOMAIN_IOTHREAD_ACTION_ADD,
+    VIR_DOMAIN_IOTHREAD_ACTION_DEL,
 } virDomainIOThreadAction;
 
 static int
@@ -9621,6 +9622,14 @@ testDomainChgIOThread(virDomainObj *vm,
 
             if (!virDomainIOThreadIDAdd(def, iothread_id))
                 return ret;
+
+            break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_DEL:
+            if (virDomainDriverDelIOThreadCheck(def, iothread_id) < 0)
+                return ret;
+
+            virDomainIOThreadIDDel(def, iothread_id);
 
             break;
         }
@@ -9672,6 +9681,51 @@ testDomainAddIOThread(virDomainPtr dom,
     virDomainObjEndAPI(&vm);
     return ret;
 }
+
+static int
+testDomainDelIOThread(virDomainPtr dom,
+                      unsigned int iothread_id,
+                      unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    testDomainObjPrivate *priv;
+    size_t i;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (iothread_id == 0) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("invalid value of 0 for iothread_id"));
+        return -1;
+    }
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (testDomainChgIOThread(vm, iothread_id,
+                              VIR_DOMAIN_IOTHREAD_ACTION_DEL, flags) < 0)
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    for (i = 0; i < priv->iothreads->len; i++) {
+        testIOThreadInfo iothread = g_array_index(priv->iothreads,
+                                                  testIOThreadInfo, i);
+        if (iothread.iothread_id == iothread_id) {
+            g_array_remove_index(priv->iothreads, i);
+            break;
+        }
+    }
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 /*
  * Test driver
  */
@@ -9739,6 +9793,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
     .domainAddIOThread = testDomainAddIOThread, /* 7.8.0 */
+    .domainDelIOThread = testDomainDelIOThread, /* 7.8.0 */
     .domainGetSecurityLabel = testDomainGetSecurityLabel, /* 7.5.0 */
     .nodeGetSecurityModel = testNodeGetSecurityModel, /* 7.5.0 */
     .domainGetXMLDesc = testDomainGetXMLDesc, /* 0.1.4 */
