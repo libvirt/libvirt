@@ -9597,6 +9597,34 @@ testDomainGetMessages(virDomainPtr dom,
     return rv;
 }
 
+static int
+testDomainGetIOThreadInfo(virDomainPtr dom,
+                          virDomainIOThreadInfoPtr **info,
+                          unsigned int flags)
+{
+    virDomainObj *vm;
+    virDomainDef *targetDef = NULL;
+    unsigned int bitmap_size = 0;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
+
+    if (!(vm = testDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (!(targetDef = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    bitmap_size = virDomainDefGetVcpus(targetDef);
+
+    ret = virDomainDriverGetIOThreadsConfig(targetDef, info, bitmap_size);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 typedef enum {
     VIR_DOMAIN_IOTHREAD_ACTION_ADD,
     VIR_DOMAIN_IOTHREAD_ACTION_DEL,
@@ -9792,6 +9820,7 @@ static virHypervisorDriver testHypervisorDriver = {
     .domainGetVcpus = testDomainGetVcpus, /* 0.7.3 */
     .domainGetVcpuPinInfo = testDomainGetVcpuPinInfo, /* 1.2.18 */
     .domainGetMaxVcpus = testDomainGetMaxVcpus, /* 0.7.3 */
+    .domainGetIOThreadInfo = testDomainGetIOThreadInfo, /* 7.8.0 */
     .domainAddIOThread = testDomainAddIOThread, /* 7.8.0 */
     .domainDelIOThread = testDomainDelIOThread, /* 7.8.0 */
     .domainGetSecurityLabel = testDomainGetSecurityLabel, /* 7.5.0 */
