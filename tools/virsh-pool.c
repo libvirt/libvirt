@@ -1980,6 +1980,7 @@ static const vshCmdInfo info_pool_event[] = {
 static const vshCmdOptDef opts_pool_event[] = {
     {.name = "pool",
      .type = VSH_OT_STRING,
+     .completer = virshStoragePoolNameCompleter,
      .help = N_("filter by storage pool name or uuid")
     },
     {.name = "event",

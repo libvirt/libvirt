@@ -454,6 +454,7 @@ static const vshCmdOptDef opts_vol_create_from[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     {.name = "inputpool",
      .type = VSH_OT_STRING,
+     .completer = virshStoragePoolNameCompleter,
      .help = N_("pool name or uuid of the input volume's pool")
     },
     {.name = "prealloc-metadata",
