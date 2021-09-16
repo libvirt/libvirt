@@ -443,7 +443,7 @@
 
     <optional>
       <element name="unique_id">
-        <ref name="positiveInteger"/>
+        <ref name="unsignedInt"/>
       </element>
     </optional>
 
