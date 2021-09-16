@@ -3026,9 +3026,20 @@ vshDeinit(vshControl *ctl)
  * Generic commands available to use by any client
  * -----------------------------------------------
  */
+
+static char **
+vshCompleteHelpCommand(vshControl *ctl G_GNUC_UNUSED,
+                       const vshCmd *cmd G_GNUC_UNUSED,
+                       unsigned int completerflags G_GNUC_UNUSED)
+{
+    return vshReadlineCommandGenerator();
+}
+
+
 const vshCmdOptDef opts_help[] = {
     {.name = "command",
      .type = VSH_OT_STRING,
+     .completer = vshCompleteHelpCommand,
      .help = N_("Prints global help, command specific help, or help for a group of related commands")
     },
     {.name = NULL}
