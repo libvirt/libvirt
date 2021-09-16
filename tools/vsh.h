@@ -163,6 +163,7 @@ struct _vshCmdOpt {
 enum {
     VSH_CMD_FLAG_NOCONNECT = (1 << 0),  /* no prior connection needed */
     VSH_CMD_FLAG_ALIAS     = (1 << 1),  /* command is an alias */
+    VSH_CMD_FLAG_HIDDEN    = (1 << 2),  /* command is hidden/internal */
 };
 
 /*
@@ -446,8 +447,7 @@ bool cmdComplete(vshControl *ctl, const vshCmd *cmd);
         .handler = cmdSelfTest, \
         .opts = NULL, \
         .info = info_selftest, \
-        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS, \
-        .alias = "self-test" \
+        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_HIDDEN, \
     }
 
 #define VSH_CMD_COMPLETE \
@@ -456,8 +456,7 @@ bool cmdComplete(vshControl *ctl, const vshCmd *cmd);
         .handler = cmdComplete, \
         .opts = opts_complete, \
         .info = info_complete, \
-        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_ALIAS, \
-        .alias = "complete" \
+        .flags = VSH_CMD_FLAG_NOCONNECT | VSH_CMD_FLAG_HIDDEN, \
     }
 
 

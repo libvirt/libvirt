@@ -1235,7 +1235,8 @@ vshAdmUsage(void)
         fprintf(stdout, _(" %s (help keyword '%s')\n"),
                 grp->name, grp->keyword);
         for (cmd = grp->commands; cmd->name; cmd++) {
-            if (cmd->flags & VSH_CMD_FLAG_ALIAS)
+            if (cmd->flags & VSH_CMD_FLAG_ALIAS ||
+                cmd->flags & VSH_CMD_FLAG_HIDDEN)
                 continue;
             fprintf(stdout,
                     "    %-30s %s\n", cmd->name,

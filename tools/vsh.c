@@ -577,7 +577,8 @@ vshCmdGrpHelp(vshControl *ctl, const vshCmdGrp *grp)
              grp->keyword);
 
     for (cmd = grp->commands; cmd->name; cmd++) {
-        if (cmd->flags & VSH_CMD_FLAG_ALIAS)
+        if (cmd->flags & VSH_CMD_FLAG_ALIAS ||
+            cmd->flags & VSH_CMD_FLAG_HIDDEN)
             continue;
         vshPrint(ctl, "    %-30s %s\n", cmd->name,
                  _(vshCmddefGetInfo(cmd, "help")));
@@ -2544,7 +2545,8 @@ vshReadlineCommandGenerator(void)
         for (cmd_list_index = 0; cmds[cmd_list_index].name; cmd_list_index++) {
             const char *name = cmds[cmd_list_index].name;
 
-            if (cmds[cmd_list_index].flags & VSH_CMD_FLAG_ALIAS)
+            if (cmds[cmd_list_index].flags & VSH_CMD_FLAG_ALIAS ||
+                cmds[cmd_list_index].flags & VSH_CMD_FLAG_HIDDEN)
                 continue;
 
             VIR_REALLOC_N(ret, ret_size + 2);
@@ -3029,7 +3031,8 @@ cmdHelp(vshControl *ctl, const vshCmd *cmd)
                      grp->keyword);
 
             for (def = grp->commands; def->name; def++) {
-                if (def->flags & VSH_CMD_FLAG_ALIAS)
+                if (def->flags & VSH_CMD_FLAG_ALIAS ||
+                    def->flags & VSH_CMD_FLAG_HIDDEN)
                     continue;
                 vshPrint(ctl, "    %-30s %s\n", def->name,
                          _(vshCmddefGetInfo(def, "help")));
