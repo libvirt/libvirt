@@ -269,11 +269,27 @@ vshCmddefCheckInternals(vshControl *ctl,
 
     /* in order to perform the validation resolve the alias first */
     if (cmd->flags & VSH_CMD_FLAG_ALIAS) {
+        const vshCmdDef *alias;
+
         if (!cmd->alias) {
             vshError(ctl, _("command '%s' has inconsistent alias"), cmd->name);
             return -1;
         }
-        cmd = vshCmddefSearch(cmd->alias);
+
+        if (!(alias = vshCmddefSearch(cmd->alias))) {
+            vshError(ctl, _("command alias '%s' is pointing to a non-existant command '%s'"),
+                     cmd->name, cmd->alias);
+            return -1;
+        }
+
+        if (alias->flags & VSH_CMD_FLAG_ALIAS) {
+            vshError(ctl, _("command alias '%s' is pointing to another command alias '%s'"),
+                     cmd->name, cmd->alias);
+            return -1;
+        }
+
+        /* we don't need to continue as the real command will be checked separately */
+        return 0;
     }
 
     /* Each command has to provide a non-empty help string. */
