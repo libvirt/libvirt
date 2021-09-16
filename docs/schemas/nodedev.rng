@@ -496,9 +496,11 @@
       <ref name="unsignedLong"/>
     </element>
 
-    <element name="type">
-      <text/>
-    </element>
+    <optional>
+      <element name="type">
+        <text/>
+      </element>
+    </optional>
   </define>
 
   <define name="capstorage">
