@@ -1411,6 +1411,7 @@ static const vshCmdOptDef opts_snapshot_list[] = {
     },
     {.name = "from",
      .type = VSH_OT_STRING,
+     .completer = virshSnapshotNameCompleter,
      .help = N_("limit list to children of given snapshot")
     },
     VIRSH_COMMON_OPT_CURRENT(N_("limit list to children of current snapshot")),
