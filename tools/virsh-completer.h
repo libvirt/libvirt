@@ -32,5 +32,6 @@
 #include "virsh-completer-snapshot.h"
 #include "virsh-completer-volume.h"
 
-char ** virshCommaStringListComplete(const char *input,
-                                     const char **options);
+char **
+virshCommaStringListComplete(const char *input,
+                             const char **options);

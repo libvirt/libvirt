@@ -22,10 +22,12 @@
 
 #include "vsh.h"
 
-char ** virshNWFilterNameCompleter(vshControl *ctl,
-                                   const vshCmd *cmd,
-                                   unsigned int flags);
+char **
+virshNWFilterNameCompleter(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int flags);
 
-char ** virshNWFilterBindingNameCompleter(vshControl *ctl,
-                                          const vshCmd *cmd,
-                                          unsigned int flags);
+char **
+virshNWFilterBindingNameCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags);

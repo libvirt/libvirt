@@ -23,11 +23,13 @@
 #include "vsh.h"
 
 
-char ** virshStorageVolNameCompleter(vshControl *ctl,
-                                     const vshCmd *cmd,
-                                     unsigned int flags);
+char **
+virshStorageVolNameCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags);
 
 
-char ** virshStorageVolKeyCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
+char **
+virshStorageVolKeyCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);

@@ -22,6 +22,7 @@
 
 #include "vsh.h"
 
-char ** virshSnapshotNameCompleter(vshControl *ctl,
-                                   const vshCmd *cmd,
-                                   unsigned int flags);
+char **
+virshSnapshotNameCompleter(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int flags);

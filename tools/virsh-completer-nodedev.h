@@ -22,14 +22,17 @@
 
 #include "vsh.h"
 
-char ** virshNodeDeviceNameCompleter(vshControl *ctl,
-                                     const vshCmd *cmd,
-                                     unsigned int flags);
+char **
+virshNodeDeviceNameCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags);
 
-char ** virshNodeDeviceEventNameCompleter(vshControl *ctl,
-                                          const vshCmd *cmd,
-                                          unsigned int flags);
+char **
+virshNodeDeviceEventNameCompleter(vshControl *ctl,
+                                  const vshCmd *cmd,
+                                  unsigned int flags);
 
-char ** virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
-                                               const vshCmd *cmd,
-                                               unsigned int flags);
+char **
+virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
+                                       const vshCmd *cmd,
+                                       unsigned int flags);

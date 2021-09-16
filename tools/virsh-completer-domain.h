@@ -22,37 +22,44 @@
 
 #include "vsh.h"
 
-char ** virshDomainNameCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
+char **
+virshDomainNameCompleter(vshControl *ctl,
+                         const vshCmd *cmd,
+                         unsigned int flags);
 
 enum {
     VIRSH_DOMAIN_INTERFACE_COMPLETER_MAC = 1 << 0, /* Return just MACs */
 };
 
-char ** virshDomainInterfaceCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
+char **
+virshDomainInterfaceCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);
 
-char ** virshDomainDiskTargetCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
+char **
+virshDomainDiskTargetCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags);
 
-char ** virshDomainEventNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
+char **
+virshDomainEventNameCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);
 
-char ** virshDomainInterfaceStateCompleter(vshControl *ctl,
-                                           const vshCmd *cmd,
-                                           unsigned int flags);
+char **
+virshDomainInterfaceStateCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int flags);
 
-char ** virshDomainDeviceAliasCompleter(vshControl *ctl,
-                                        const vshCmd *cmd,
-                                        unsigned int flags);
+char **
+virshDomainDeviceAliasCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags);
 
-char ** virshDomainShutdownModeCompleter(vshControl *ctl,
-                                         const vshCmd *cmd,
-                                         unsigned int flags);
+char **
+virshDomainShutdownModeCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);
 
 char **
 virshDomainInterfaceAddrSourceCompleter(vshControl *ctl,
@@ -64,69 +71,85 @@ virshDomainInterfaceSourceModeCompleter(vshControl *ctl,
                                         const vshCmd *cmd,
                                         unsigned int flags);
 
-char ** virshDomainHostnameSourceCompleter(vshControl *ctl,
-                                           const vshCmd *cmd,
-                                           unsigned int flags);
-
-char ** virshDomainPerfEnableCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
-
-char ** virshDomainPerfDisableCompleter(vshControl *ctl,
-                                        const vshCmd *cmd,
-                                        unsigned int flags);
-
-char ** virshDomainUUIDCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
-
-char ** virshDomainIOThreadIdCompleter(vshControl *ctl,
-                                       const vshCmd *cmd,
-                                       unsigned int flags);
-
-char ** virshDomainVcpuCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
-
-char ** virshDomainVcpulistCompleter(vshControl *ctl,
-                                     const vshCmd *cmd,
-                                     unsigned int flags);
-
-char ** virshDomainCpulistCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
-
-char ** virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
-                                             const vshCmd *cmd,
-                                             unsigned int flags);
-
-char ** virshDomainConsoleCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
-
-char ** virshDomainSignalCompleter(vshControl *ctl,
+char **
+virshDomainHostnameSourceCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);
 
-char ** virshDomainLifecycleCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
+char **
+virshDomainPerfEnableCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags);
 
-char ** virshDomainLifecycleActionCompleter(vshControl *ctl,
-                                            const vshCmd *cmd,
-                                            unsigned int flags);
+char **
+virshDomainPerfDisableCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags);
 
-char ** virshCodesetNameCompleter(vshControl *ctl,
+char **
+virshDomainUUIDCompleter(vshControl *ctl,
+                         const vshCmd *cmd,
+                         unsigned int flags);
+
+char **
+virshDomainIOThreadIdCompleter(vshControl *ctl,
+                               const vshCmd *cmd,
+                               unsigned int flags);
+
+char **
+virshDomainVcpuCompleter(vshControl *ctl,
+                         const vshCmd *cmd,
+                         unsigned int flags);
+
+char **
+virshDomainVcpulistCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags);
+
+char **
+virshDomainCpulistCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);
+
+char **
+virshDomainVcpulistViaAgentCompleter(vshControl *ctl,
+                                     const vshCmd *cmd,
+                                     unsigned int flags);
+
+char **
+virshDomainConsoleCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);
+
+char **
+virshDomainSignalCompleter(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int flags);
+
+char **
+virshDomainLifecycleCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);
+
+char **
+virshDomainLifecycleActionCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);
+
+char **
+virshCodesetNameCompleter(vshControl *ctl,
+                          const vshCmd *cmd,
+                          unsigned int flags);
+
+char **
+virshKeycodeNameCompleter(vshControl *ctl,
+                          const vshCmd *cmd,
+                          unsigned int flags);
+
+char **
+virshDomainFSMountpointsCompleter(vshControl *ctl,
                                   const vshCmd *cmd,
                                   unsigned int flags);
-
-char ** virshKeycodeNameCompleter(vshControl *ctl,
-                                  const vshCmd *cmd,
-                                  unsigned int flags);
-
-char ** virshDomainFSMountpointsCompleter(vshControl *ctl,
-                                          const vshCmd *cmd,
-                                          unsigned int flags);
 
 char **
 virshDomainCoreDumpFormatCompleter(vshControl *ctl,

@@ -22,14 +22,17 @@
 
 #include "vsh.h"
 
-char ** virshStoragePoolNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
+char **
+virshStoragePoolNameCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);
 
-char ** virshPoolEventNameCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
+char **
+virshPoolEventNameCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);
 
-char ** virshPoolTypeCompleter(vshControl *ctl,
-                               const vshCmd *cmd,
-                               unsigned int flags);
+char **
+virshPoolTypeCompleter(vshControl *ctl,
+                       const vshCmd *cmd,
+                       unsigned int flags);

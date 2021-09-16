@@ -22,6 +22,7 @@
 
 #include "vsh.h"
 
-char ** virshCheckpointNameCompleter(vshControl *ctl,
-                                     const vshCmd *cmd,
-                                     unsigned int flags);
+char **
+virshCheckpointNameCompleter(vshControl *ctl,
+                             const vshCmd *cmd,
+                             unsigned int flags);

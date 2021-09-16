@@ -22,18 +22,22 @@
 
 #include "vsh.h"
 
-char ** virshAllocpagesPagesizeCompleter(vshControl *ctl,
-                                         const vshCmd *cmd,
-                                         unsigned int flags);
+char **
+virshAllocpagesPagesizeCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);
 
-char ** virshCellnoCompleter(vshControl *ctl,
-                             const vshCmd *cmd,
-                             unsigned int flags);
+char **
+virshCellnoCompleter(vshControl *ctl,
+                     const vshCmd *cmd,
+                     unsigned int flags);
 
-char ** virshNodeCpuCompleter(vshControl *ctl,
-                              const vshCmd *cmd,
-                              unsigned int flags);
+char **
+virshNodeCpuCompleter(vshControl *ctl,
+                      const vshCmd *cmd,
+                      unsigned int flags);
 
-char ** virshNodeSuspendTargetCompleter(vshControl *ctl,
-                                        const vshCmd *cmd,
-                                        unsigned int flags);
+char **
+virshNodeSuspendTargetCompleter(vshControl *ctl,
+                                const vshCmd *cmd,
+                                unsigned int flags);

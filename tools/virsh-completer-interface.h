@@ -22,10 +22,12 @@
 
 #include "vsh.h"
 
-char ** virshInterfaceNameCompleter(vshControl *ctl,
-                                    const vshCmd *cmd,
-                                    unsigned int flags);
+char **
+virshInterfaceNameCompleter(vshControl *ctl,
+                            const vshCmd *cmd,
+                            unsigned int flags);
 
-char ** virshInterfaceMacCompleter(vshControl *ctl,
-                                   const vshCmd *cmd,
-                                   unsigned int flags);
+char **
+virshInterfaceMacCompleter(vshControl *ctl,
+                           const vshCmd *cmd,
+                           unsigned int flags);

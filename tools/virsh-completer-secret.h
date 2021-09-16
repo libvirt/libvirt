@@ -22,10 +22,12 @@
 
 #include "vsh.h"
 
-char ** virshSecretUUIDCompleter(vshControl *ctl,
-                                 const vshCmd *cmd,
-                                 unsigned int flags);
+char **
+virshSecretUUIDCompleter(vshControl *ctl,
+                         const vshCmd *cmd,
+                         unsigned int flags);
 
-char ** virshSecretEventNameCompleter(vshControl *ctl,
-                                      const vshCmd *cmd,
-                                      unsigned int flags);
+char **
+virshSecretEventNameCompleter(vshControl *ctl,
+                              const vshCmd *cmd,
+                              unsigned int flags);
