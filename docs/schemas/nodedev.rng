@@ -78,6 +78,7 @@
         <ref name="capusbdev"/>
         <ref name="capusbinterface"/>
         <ref name="capnet"/>
+        <ref name="capscsigeneric"/>
         <ref name="capscsihost"/>
         <ref name="capscsitarget"/>
         <ref name="capscsi"/>
@@ -418,6 +419,16 @@
     </element>
     <element name="vports">
       <ref name="unsignedInt"/>
+    </element>
+  </define>
+
+  <define name="capscsigeneric">
+    <attribute name="type">
+      <value>scsi_generic</value>
+    </attribute>
+
+    <element name='char'>
+      <text/>
     </element>
   </define>
 
