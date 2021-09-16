@@ -220,6 +220,42 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
 }
 
 
+static char **
+virshDomainDiskTargetListCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   const char *argname)
+{
+    const char *curval = NULL;
+    g_auto(GStrv) targets = virshDomainDiskTargetCompleter(ctl, cmd, 0);
+
+    if (vshCommandOptStringQuiet(ctl, cmd, argname, &curval) < 0)
+        return NULL;
+
+    if (!targets)
+        return NULL;
+
+    return virshCommaStringListComplete(curval, (const char **) targets);
+}
+
+
+char **
+virshDomainMigrateDisksCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int completeflags G_GNUC_UNUSED)
+{
+    return virshDomainDiskTargetListCompleter(ctl, cmd, "migrate-disks");
+}
+
+
+char **
+virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int completeflags G_GNUC_UNUSED)
+{
+    return virshDomainDiskTargetListCompleter(ctl, cmd, "storage");
+}
+
+
 char **
 virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
                               const vshCmd *cmd G_GNUC_UNUSED,

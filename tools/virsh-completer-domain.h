@@ -166,3 +166,13 @@ char **
 virshDomainStorageFileFormatCompleter(vshControl *ctl,
                                       const vshCmd *cmd,
                                       unsigned int flags);
+
+char **
+virshDomainMigrateDisksCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int completeflags);
+
+char **
+virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int completeflags);

@@ -3552,6 +3552,7 @@ static const vshCmdOptDef opts_undefine[] = {
     },
     {.name = "storage",
      .type = VSH_OT_STRING,
+     .completer = virshDomainUndefineStorageDisksCompleter,
      .help = N_("remove associated storage volumes (comma separated list of "
                 "targets or source paths) (see domblklist)")
     },
@@ -10372,6 +10373,7 @@ static const vshCmdOptDef opts_migrate[] = {
     },
     {.name = "migrate-disks",
      .type = VSH_OT_STRING,
+     .completer = virshDomainMigrateDisksCompleter,
      .help = N_("comma separated list of disks to be migrated")
     },
     {.name = "disks-port",
