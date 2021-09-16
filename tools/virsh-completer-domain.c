@@ -32,6 +32,7 @@
 #include "virperf.h"
 #include "virbitmap.h"
 #include "virkeycode.h"
+#include "virglibutil.h"
 #include "virkeynametable_linux.h"
 #include "virkeynametable_osx.h"
 #include "virkeynametable_win32.h"
@@ -255,6 +256,105 @@ virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
     return virshDomainDiskTargetListCompleter(ctl, cmd, "storage");
 }
 
+
+static GSList *
+virshDomainBlockjobBaseTopCompleteDisk(const char *target,
+                                       xmlXPathContext *ctxt)
+{
+    g_autofree xmlNodePtr *indexlist = NULL;
+    int nindexlist = 0;
+    size_t i;
+    GSList *ret = NULL;
+
+    if ((nindexlist = virXPathNodeSet("./source|./backingStore",
+                                      ctxt, &indexlist)) < 0)
+        return NULL;
+
+    ret = g_slist_prepend(ret, g_strdup(target));
+
+    for (i = 0; i < nindexlist; i++) {
+        g_autofree char *idx = virXMLPropString(indexlist[i], "index");
+
+        if (!idx)
+            continue;
+
+        ret = g_slist_prepend(ret, g_strdup_printf("%s[%s]", target, idx));
+    }
+
+    return ret;
+}
+
+
+char **
+virshDomainBlockjobBaseTopCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags)
+{
+    virshControl *priv = ctl->privData;
+    g_autoptr(xmlDoc) xmldoc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree xmlNodePtr *disks = NULL;
+    int ndisks;
+    size_t i;
+    const char *path = NULL;
+    g_autoptr(virGSListString) list = NULL;
+    GSList *n;
+    GStrv ret = NULL;
+    size_t nelems;
+
+    virCheckFlags(0, NULL);
+
+    if (!priv->conn || virConnectIsAlive(priv->conn) <= 0)
+        return NULL;
+
+    if (virshDomainGetXML(ctl, cmd, 0, &xmldoc, &ctxt) < 0)
+        return NULL;
+
+    ignore_value(vshCommandOptStringQuiet(ctl, cmd, "path", &path));
+
+    if ((ndisks = virXPathNodeSet("./devices/disk", ctxt, &disks)) <= 0)
+        return NULL;
+
+    for (i = 0; i < ndisks; i++) {
+        g_autofree char *disktarget = NULL;
+
+        ctxt->node = disks[i];
+        disktarget = virXPathString("string(./target/@dev)", ctxt);
+
+        if (STREQ_NULLABLE(path, disktarget))
+            break;
+    }
+
+    if (i == ndisks)
+        path = NULL;
+
+    for (i = 0; i < ndisks; i++) {
+        g_autofree char *disktarget = NULL;
+        GSList *tmplist;
+
+        ctxt->node = disks[i];
+
+        if (!(disktarget = virXPathString("string(./target/@dev)", ctxt)))
+            return NULL;
+
+        if (path && STRNEQ(path, disktarget))
+            continue;
+
+        /* note that ctxt->node moved */
+        if ((tmplist = virshDomainBlockjobBaseTopCompleteDisk(disktarget, ctxt)))
+            list = g_slist_concat(tmplist, list);
+    }
+
+    list = g_slist_reverse(list);
+    nelems = g_slist_length(list);
+    ret = g_new0(char *, nelems + 1);
+    i = 0;
+
+    for (n = list; n; n = n->next)
+        ret[i++] = g_strdup(n->data);
+
+    return ret;
+}
 
 char **
 virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,

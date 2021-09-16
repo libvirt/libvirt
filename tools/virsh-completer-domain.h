@@ -176,3 +176,8 @@ char **
 virshDomainUndefineStorageDisksCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int completeflags);
+
+char **
+virshDomainBlockjobBaseTopCompleter(vshControl *ctl,
+                                    const vshCmd *cmd,
+                                    unsigned int flags);

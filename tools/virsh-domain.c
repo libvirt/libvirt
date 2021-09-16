@@ -1991,6 +1991,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
     },
     {.name = "base",
      .type = VSH_OT_STRING,
+     .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of base file to commit into (default bottom of chain)")
     },
     {.name = "shallow",
@@ -1999,6 +2000,7 @@ static const vshCmdOptDef opts_blockcommit[] = {
     },
     {.name = "top",
      .type = VSH_OT_STRING,
+     .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of top file to commit from (default top of chain)")
     },
     {.name = "active",
@@ -2772,6 +2774,7 @@ static const vshCmdOptDef opts_blockpull[] = {
     },
     {.name = "base",
      .type = VSH_OT_STRING,
+     .completer = virshDomainBlockjobBaseTopCompleter,
      .help = N_("path of backing file in chain for a partial pull")
     },
     {.name = "wait",
