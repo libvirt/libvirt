@@ -324,7 +324,6 @@ testQEMUSchemaValidateEnum(virJSONValue *obj,
 {
     const char *objstr;
     virJSONValue *values = NULL;
-    virJSONValue *value;
     size_t i;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_STRING) {
@@ -334,24 +333,24 @@ testQEMUSchemaValidateEnum(virJSONValue *obj,
 
     objstr = virJSONValueGetString(obj);
 
-    if (!(values = virJSONValueObjectGetArray(root, "values"))) {
-        virBufferAsprintf(ctxt->debug, "ERROR: missing enum values in schema '%s'",
-                          NULLSTR(virJSONValueObjectGetString(root, "name")));
-        return -2;
-    }
+    if ((values = virJSONValueObjectGetArray(root, "values"))) {
+        for (i = 0; i < virJSONValueArraySize(values); i++) {
+            virJSONValue *value = virJSONValueArrayGet(values, i);
 
-    for (i = 0; i < virJSONValueArraySize(values); i++) {
-        value = virJSONValueArrayGet(values, i);
-
-        if (STREQ_NULLABLE(objstr, virJSONValueGetString(value))) {
-            virBufferAsprintf(ctxt->debug, "'%s' OK", NULLSTR(objstr));
-            return 0;
+            if (STREQ_NULLABLE(objstr, virJSONValueGetString(value))) {
+                virBufferAsprintf(ctxt->debug, "'%s' OK", NULLSTR(objstr));
+                return 0;
+            }
         }
+
+        virBufferAsprintf(ctxt->debug, "ERROR: enum value '%s' is not in schema",
+                          NULLSTR(objstr));
+        return -1;
     }
 
-    virBufferAsprintf(ctxt->debug, "ERROR: enum value '%s' is not in schema",
-                      NULLSTR(objstr));
-    return -1;
+    virBufferAsprintf(ctxt->debug, "ERROR: missing enum values in schema '%s'",
+                      NULLSTR(virJSONValueObjectGetString(root, "name")));
+    return -2;
 }
 
 
