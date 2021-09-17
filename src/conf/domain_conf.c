@@ -19521,27 +19521,27 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr node = NULL;
     size_t i, j;
     int n;
-    virDomainDef *def;
     bool uuid_generated = false;
     bool usb_none = false;
     g_autofree xmlNodePtr *nodes = NULL;
     g_autofree char *tmp = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     if (!(def = virDomainDefNew(xmlopt)))
         return NULL;
 
     if (virDomainDefParseIDs(def, ctxt, flags, &uuid_generated) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefParseCaps(def, ctxt, xmlopt) < 0)
-        goto error;
+        return NULL;
 
     /* Extract short description of domain (title) */
     def->title = virXPathString("string(./title[1])", ctxt);
     if (def->title && strchr(def->title, '\n')) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Domain title can't contain newlines"));
-        goto error;
+        return NULL;
     }
 
     /* Extract documentation if present */
@@ -19551,40 +19551,40 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
      * late, so devices can refer to this for defaults */
     if (!(flags & VIR_DOMAIN_DEF_PARSE_SKIP_SECLABEL)) {
         if (virSecurityLabelDefsParseXML(def, ctxt, xmlopt, flags) == -1)
-            goto error;
+            return NULL;
     }
 
     if (virDomainDefParseMemory(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefTunablesParse(def, ctxt, xmlopt, flags) < 0)
-        goto error;
+        return NULL;
 
     if (virCPUDefParseXML(ctxt, "./cpu[1]", VIR_CPU_TYPE_GUEST, &def->cpu,
                           false) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainNumaDefParseXML(def->numa, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainNumaGetCPUCountTotal(def->numa) > virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Number of CPUs in <numa> exceeds the"
                          " <vcpu> count"));
-        goto error;
+        return NULL;
     }
 
     if (virDomainNumaGetMaxCPUID(def->numa) >= virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("CPU IDs in <numa> exceed the <vcpu> count"));
-        goto error;
+        return NULL;
     }
 
     if (virDomainNumatuneParseXML(def->numa,
                                   def->placement_mode ==
                                   VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                   ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainNumatuneHasPlacementAuto(def->numa) &&
         !def->cpumask && !virDomainDefHasVcpuPin(def) &&
@@ -19595,38 +19595,38 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./resource", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot extract resource nodes"));
-        goto error;
+        return NULL;
     }
 
     if (n > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("only one resource element is supported"));
-        goto error;
+        return NULL;
     }
 
     if (n &&
         !(def->resource = virDomainResourceDefParse(nodes[0], ctxt)))
-        goto error;
+        return NULL;
     VIR_FREE(nodes);
 
     if (virDomainFeaturesDefParse(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefLifecycleParse(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainPerfDefParseXML(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefClockParse(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefParseBootOptions(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     /* analysis of the disk devices */
     if ((n = virXPathNodeSet("./devices/disk", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < n; i++) {
         virDomainDiskDef *disk = virDomainDiskDefParseXML(xmlopt,
@@ -19634,27 +19634,27 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                           ctxt,
                                                           flags);
         if (!disk)
-            goto error;
+            return NULL;
 
         virDomainDiskInsert(def, disk);
     }
     VIR_FREE(nodes);
 
     if (virDomainDefControllersParse(def, ctxt, xmlopt, flags, &usb_none) < 0)
-        goto error;
+        return NULL;
 
     /* analysis of the resource leases */
     if ((n = virXPathNodeSet("./devices/lease", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot extract device leases"));
-        goto error;
+        return NULL;
     }
     if (n)
         def->leases = g_new0(virDomainLeaseDef *, n);
     for (i = 0; i < n; i++) {
         virDomainLeaseDef *lease = virDomainLeaseDefParseXML(nodes[i], ctxt);
         if (!lease)
-            goto error;
+            return NULL;
 
         def->leases[def->nleases++] = lease;
     }
@@ -19662,7 +19662,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the filesystems */
     if ((n = virXPathNodeSet("./devices/filesystem", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->fss = g_new0(virDomainFSDef *, n);
     for (i = 0; i < n; i++) {
@@ -19671,7 +19671,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                     ctxt,
                                                     flags);
         if (!fs)
-            goto error;
+            return NULL;
 
         def->fss[def->nfss++] = fs;
     }
@@ -19679,7 +19679,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the network devices */
     if ((n = virXPathNodeSet("./devices/interface", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->nets = g_new0(virDomainNetDef *, n);
     for (i = 0; i < n; i++) {
@@ -19688,7 +19688,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                        ctxt,
                                                        flags);
         if (!net)
-            goto error;
+            return NULL;
 
         def->nets[def->nnets++] = net;
 
@@ -19698,7 +19698,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
          */
         if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
             virDomainHostdevInsert(def, virDomainNetGetActualHostdev(net)) < 0) {
-            goto error;
+            return NULL;
         }
     }
     VIR_FREE(nodes);
@@ -19706,7 +19706,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the smartcard devices */
     if ((n = virXPathNodeSet("./devices/smartcard", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->smartcards = g_new0(virDomainSmartcardDef *, n);
 
@@ -19716,7 +19716,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                                     ctxt,
                                                                     flags);
         if (!card)
-            goto error;
+            return NULL;
 
         def->smartcards[def->nsmartcards++] = card;
     }
@@ -19725,7 +19725,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the character devices */
     if ((n = virXPathNodeSet("./devices/parallel", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->parallels = g_new0(virDomainChrDef *, n);
 
@@ -19735,7 +19735,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                        nodes[i],
                                                        flags);
         if (!chr)
-            goto error;
+            return NULL;
 
         if (chr->target.port == -1) {
             int maxport = -1;
@@ -19750,7 +19750,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/serial", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n)
         def->serials = g_new0(virDomainChrDef *, n);
@@ -19761,7 +19761,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                        nodes[i],
                                                        flags);
         if (!chr)
-            goto error;
+            return NULL;
 
         if (chr->target.port == -1) {
             int maxport = -1;
@@ -19778,7 +19778,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./devices/console", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot extract console devices"));
-        goto error;
+        return NULL;
     }
     if (n)
         def->consoles = g_new0(virDomainChrDef *, n);
@@ -19789,7 +19789,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                        nodes[i],
                                                        flags);
         if (!chr)
-            goto error;
+            return NULL;
 
         chr->target.port = i;
         def->consoles[def->nconsoles++] = chr;
@@ -19797,7 +19797,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/channel", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->channels = g_new0(virDomainChrDef *, n);
 
@@ -19807,7 +19807,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                        nodes[i],
                                                        flags);
         if (!chr)
-            goto error;
+            return NULL;
 
         def->channels[def->nchannels++] = chr;
     }
@@ -19816,7 +19816,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the input devices */
     if ((n = virXPathNodeSet("./devices/input", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->inputs = g_new0(virDomainInputDef *, n);
 
@@ -19827,7 +19827,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                              ctxt,
                                                              flags);
         if (!input)
-            goto error;
+            return NULL;
 
         /* Check if USB bus is required */
         if (input->bus == VIR_DOMAIN_INPUT_BUS_USB && usb_none) {
@@ -19835,7 +19835,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can't add USB input device. "
                              "USB bus is disabled"));
-            goto error;
+            return NULL;
         }
 
         def->inputs[def->ninputs++] = input;
@@ -19844,7 +19844,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the graphics devices */
     if ((n = virXPathNodeSet("./devices/graphics", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->graphics = g_new0(virDomainGraphicsDef *, n);
     for (i = 0; i < n; i++) {
@@ -19853,7 +19853,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                                       ctxt,
                                                                       flags);
         if (!graphics)
-            goto error;
+            return NULL;
 
         def->graphics[def->ngraphics++] = graphics;
     }
@@ -19861,7 +19861,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the sound devices */
     if ((n = virXPathNodeSet("./devices/sound", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->sounds = g_new0(virDomainSoundDef *, n);
     for (i = 0; i < n; i++) {
@@ -19870,7 +19870,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                              ctxt,
                                                              flags);
         if (!sound)
-            goto error;
+            return NULL;
 
         def->sounds[def->nsounds++] = sound;
     }
@@ -19878,7 +19878,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the audio devices */
     if ((n = virXPathNodeSet("./devices/audio", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->audios = g_new0(virDomainAudioDef *, n);
     for (i = 0; i < n; i++) {
@@ -19886,7 +19886,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                              nodes[i],
                                                              ctxt);
         if (!audio)
-            goto error;
+            return NULL;
 
         def->audios[def->naudios++] = audio;
     }
@@ -19894,7 +19894,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the video devices */
     if ((n = virXPathNodeSet("./devices/video", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->videos = g_new0(virDomainVideoDef *, n);
     for (i = 0; i < n; i++) {
@@ -19903,7 +19903,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
         if (!(video = virDomainVideoDefParseXML(xmlopt, nodes[i],
                                                 ctxt, flags)))
-            goto error;
+            return NULL;
 
         if (video->primary) {
             insertAt = 0;
@@ -19913,7 +19913,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                        insertAt,
                                        def->nvideos,
                                        video) < 0) {
-            goto error;
+            return NULL;
         }
     }
 
@@ -19921,7 +19921,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the host devices */
     if ((n = virXPathNodeSet("./devices/hostdev", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n > 0)
         VIR_REALLOC_N(def->hostdevs, def->nhostdevs + n);
 
@@ -19931,7 +19931,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         hostdev = virDomainHostdevDefParseXML(xmlopt, nodes[i], ctxt,
                                               flags);
         if (!hostdev)
-            goto error;
+            return NULL;
 
         if (hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB &&
             usb_none) {
@@ -19939,7 +19939,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                            _("Can't add host USB device: "
                              "USB is disabled in this host"));
             virDomainHostdevDefFree(hostdev);
-            goto error;
+            return NULL;
         }
 
         def->hostdevs[def->nhostdevs++] = hostdev;
@@ -19951,25 +19951,25 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
          * load the controller during hostdev hotplug.
          */
         if (virDomainDefMaybeAddHostdevSCSIcontroller(def) < 0)
-            goto error;
+            return NULL;
     }
     VIR_FREE(nodes);
 
     /* analysis of the watchdog devices */
     def->watchdog = NULL;
     if ((n = virXPathNodeSet("./devices/watchdog", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only a single watchdog device is supported"));
-        goto error;
+        return NULL;
     }
     if (n > 0) {
         virDomainWatchdogDef *watchdog;
 
         watchdog = virDomainWatchdogDefParseXML(xmlopt, nodes[0], ctxt, flags);
         if (!watchdog)
-            goto error;
+            return NULL;
 
         def->watchdog = watchdog;
         VIR_FREE(nodes);
@@ -19978,18 +19978,18 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     /* analysis of the memballoon devices */
     def->memballoon = NULL;
     if ((n = virXPathNodeSet("./devices/memballoon", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only a single memory balloon device is supported"));
-        goto error;
+        return NULL;
     }
     if (n > 0) {
         virDomainMemballoonDef *memballoon;
 
         memballoon = virDomainMemballoonDefParseXML(xmlopt, nodes[0], ctxt, flags);
         if (!memballoon)
-            goto error;
+            return NULL;
 
         def->memballoon = memballoon;
         VIR_FREE(nodes);
@@ -19997,14 +19997,14 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Parse the RNG devices */
     if ((n = virXPathNodeSet("./devices/rng", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->rngs = g_new0(virDomainRNGDef *, n);
     for (i = 0; i < n; i++) {
         virDomainRNGDef *rng = virDomainRNGDefParseXML(xmlopt, nodes[i],
                                                        ctxt, flags);
         if (!rng)
-            goto error;
+            return NULL;
 
         def->rngs[def->nrngs++] = rng;
     }
@@ -20012,13 +20012,13 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Parse the TPM devices */
     if ((n = virXPathNodeSet("./devices/tpm", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n > 2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("a maximum of two TPM devices is supported, one of "
                          "them being a TPM Proxy device"));
-        goto error;
+        return NULL;
     }
 
     if (n)
@@ -20028,31 +20028,31 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         virDomainTPMDef *tpm = virDomainTPMDefParseXML(xmlopt, nodes[i],
                                                        ctxt, flags);
         if (!tpm)
-            goto error;
+            return NULL;
 
         def->tpms[def->ntpms++] = tpm;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/nvram", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only a single nvram device is supported"));
-        goto error;
+        return NULL;
     } else if (n == 1) {
         virDomainNVRAMDef *nvram =
             virDomainNVRAMDefParseXML(xmlopt, nodes[0], ctxt, flags);
         if (!nvram)
-            goto error;
+            return NULL;
         def->nvram = nvram;
         VIR_FREE(nodes);
     }
 
     /* analysis of the hub devices */
     if ((n = virXPathNodeSet("./devices/hub", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->hubs = g_new0(virDomainHubDef *, n);
     for (i = 0; i < n; i++) {
@@ -20060,14 +20060,14 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
         hub = virDomainHubDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!hub)
-            goto error;
+            return NULL;
 
         if (hub->type == VIR_DOMAIN_HUB_TYPE_USB && usb_none) {
             virDomainHubDefFree(hub);
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Can't add USB hub: "
                              "USB is disabled for this domain"));
-            goto error;
+            return NULL;
         }
 
         def->hubs[def->nhubs++] = hub;
@@ -20076,14 +20076,14 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the redirected devices */
     if ((n = virXPathNodeSet("./devices/redirdev", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->redirdevs = g_new0(virDomainRedirdevDef *, n);
     for (i = 0; i < n; i++) {
         virDomainRedirdevDef *redirdev =
             virDomainRedirdevDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!redirdev)
-            goto error;
+            return NULL;
 
         def->redirdevs[def->nredirdevs++] = redirdev;
     }
@@ -20091,18 +20091,18 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the redirection filter rules */
     if ((n = virXPathNodeSet("./devices/redirfilter", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only one set of redirection filter rule is supported"));
-        goto error;
+        return NULL;
     }
 
     if (n) {
         virDomainRedirFilterDef *redirfilter =
             virDomainRedirFilterDefParseXML(nodes[0], ctxt);
         if (!redirfilter)
-            goto error;
+            return NULL;
 
         def->redirfilter = redirfilter;
     }
@@ -20110,7 +20110,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the panic devices */
     if ((n = virXPathNodeSet("./devices/panic", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->panics = g_new0(virDomainPanicDef *, n);
     for (i = 0; i < n; i++) {
@@ -20118,7 +20118,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
         panic = virDomainPanicDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!panic)
-            goto error;
+            return NULL;
 
         def->panics[def->npanics++] = panic;
     }
@@ -20126,7 +20126,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     /* analysis of the shmem devices */
     if ((n = virXPathNodeSet("./devices/shmem", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->shmems = g_new0(virDomainShmemDef *, n);
 
@@ -20136,7 +20136,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         ctxt->node = nodes[i];
         shmem = virDomainShmemDefParseXML(xmlopt, nodes[i], ctxt, flags);
         if (!shmem)
-            goto error;
+            return NULL;
 
         def->shmems[def->nshmems++] = shmem;
     }
@@ -20147,12 +20147,12 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if ((node = virXPathNode("./launchSecurity", ctxt)) != NULL) {
         def->sec = virDomainSecDefParseXML(node, ctxt);
         if (!def->sec)
-            goto error;
+            return NULL;
     }
 
     /* analysis of memory devices */
     if ((n = virXPathNodeSet("./devices/memory", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
     if (n)
         def->mems = g_new0(virDomainMemoryDef *, n);
 
@@ -20162,70 +20162,70 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                              ctxt,
                                                              flags);
         if (!mem)
-            goto error;
+            return NULL;
 
         def->mems[def->nmems++] = mem;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/iommu", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("only a single IOMMU device is supported"));
-        goto error;
+        return NULL;
     }
 
     if (n > 0) {
         if (!(def->iommu = virDomainIOMMUDefParseXML(nodes[0], ctxt)))
-            goto error;
+            return NULL;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./devices/vsock", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n > 1) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("only a single vsock device is supported"));
-        goto error;
+        return NULL;
     }
 
     if (n > 0) {
         if (!(def->vsock = virDomainVsockDefParseXML(xmlopt, nodes[0],
                                                      ctxt, flags)))
-            goto error;
+            return NULL;
     }
     VIR_FREE(nodes);
 
     /* analysis of the user namespace mapping */
     if ((n = virXPathNodeSet("./idmap/uid", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n) {
         def->idmap.uidmap = virDomainIdmapDefParseXML(ctxt, nodes, n);
         if (!def->idmap.uidmap)
-            goto error;
+            return NULL;
 
         def->idmap.nuidmap = n;
     }
     VIR_FREE(nodes);
 
     if  ((n = virXPathNodeSet("./idmap/gid", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     if (n) {
         def->idmap.gidmap =  virDomainIdmapDefParseXML(ctxt, nodes, n);
         if (!def->idmap.gidmap)
-            goto error;
+            return NULL;
 
         def->idmap.ngidmap = n;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./sysinfo", ctxt, &nodes)) < 0)
-        goto error;
+        return NULL;
 
     def->sysinfo = g_new0(virSysinfoDef *, n);
 
@@ -20234,7 +20234,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
                                                     def->uuid, uuid_generated);
 
         if (!sysinfo)
-            goto error;
+            return NULL;
 
         def->sysinfo[def->nsysinfo++] = sysinfo;
     }
@@ -20246,13 +20246,13 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         if ((mode = virDomainSmbiosModeTypeFromString(tmp)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown smbios mode '%s'"), tmp);
-            goto error;
+            return NULL;
         }
         def->os.smbios_mode = mode;
     }
 
     if (virDomainKeyWrapDefParseXML(def, ctxt) < 0)
-        goto error;
+        return NULL;
 
     /* Extract custom metadata */
     if ((node = virXPathNode("./metadata[1]", ctxt)) != NULL)
@@ -20265,16 +20265,12 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
 
     if (def->ns.parse) {
         if (virXMLNamespaceRegister(ctxt, &def->ns) < 0)
-            goto error;
+            return NULL;
         if ((def->ns.parse)(ctxt, &def->namespaceData) < 0)
-            goto error;
+            return NULL;
     }
 
-    return def;
-
- error:
-    virDomainDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 
