@@ -2543,17 +2543,12 @@ vshTreePrint(vshControl *ctl, vshTreeLookup lookup, void *opaque,
     return ret;
 }
 
-#if WITH_READLINE
-
-/* -----------------
- * Readline stuff
- * -----------------
- */
 
 /**
  * vshReadlineCommandGenerator:
  *
- * Generator function for command completion.
+ * Generator function for command completion. Used also for completing the
+ * '--command' option of the 'help' command.
  *
  * Returns a string list of all commands, or NULL on failure.
  */
@@ -2589,6 +2584,15 @@ vshReadlineCommandGenerator(void)
 
     return g_steal_pointer(&ret);
 }
+
+
+#if WITH_READLINE
+
+/* -----------------
+ * Readline stuff
+ * -----------------
+ */
+
 
 static char **
 vshReadlineOptionsGenerator(const vshCmdDef *cmd,
