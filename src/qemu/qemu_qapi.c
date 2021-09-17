@@ -243,8 +243,6 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     virJSONValue *values;
-    virJSONValue *enumval;
-    const char *value;
     size_t i;
 
     if (query[0] != '^')
@@ -259,6 +257,9 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
         return -2;
 
     for (i = 0; i < virJSONValueArraySize(values); i++) {
+        virJSONValue *enumval;
+        const char *value;
+
         if (!(enumval = virJSONValueArrayGet(values, i)) ||
             !(value = virJSONValueGetString(enumval)))
             continue;
