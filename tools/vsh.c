@@ -290,6 +290,26 @@ vshCmddefCheckInternals(vshControl *ctl,
             return -1;
         }
 
+        if (cmd->handler) {
+            vshError(ctl, _("command '%s' has handler set"), cmd->name);
+            return -1;
+        }
+
+        if (cmd->opts) {
+            vshError(ctl, _("command '%s' has options set"), cmd->name);
+            return -1;
+        }
+
+        if (cmd->info) {
+            vshError(ctl, _("command '%s' has info set"), cmd->name);
+            return -1;
+        }
+
+        if (cmd->flags & ~VSH_CMD_FLAG_ALIAS) {
+            vshError(ctl, _("command '%s' has multiple flags set"), cmd->name);
+            return -1;
+        }
+
         /* we don't need to continue as the real command will be checked separately */
         return 0;
     }
