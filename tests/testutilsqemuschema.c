@@ -30,6 +30,47 @@ struct testQEMUSchemaValidateCtxt {
 
 
 static int
+testQEMUSchemaValidateDeprecated(virJSONValue *root,
+                                 const char *name,
+                                 struct testQEMUSchemaValidateCtxt *ctxt)
+{
+    virJSONValue *features = virJSONValueObjectGetArray(root, "features");
+    size_t nfeatures;
+    size_t i;
+
+    if (!features)
+        return 0;
+
+    nfeatures = virJSONValueArraySize(features);
+
+    for (i = 0; i < nfeatures; i++) {
+        virJSONValue *cur = virJSONValueArrayGet(features, i);
+        const char *curstr;
+
+        if (!cur ||
+            !(curstr = virJSONValueGetString(cur))) {
+            virBufferAsprintf(ctxt->debug, "ERROR: features of '%s' are malformed", name);
+            return -2;
+        }
+
+        if (STREQ(curstr, "deprecated")) {
+            if (ctxt->allowDeprecated) {
+                virBufferAsprintf(ctxt->debug, "WARNING: '%s' is deprecated", name);
+                if (virTestGetVerbose())
+                    g_fprintf(stderr, "\nWARNING: '%s' is deprecated\n", name);
+                return 0;
+            } else {
+                virBufferAsprintf(ctxt->debug, "ERROR: '%s' is deprecated", name);
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 testQEMUSchemaValidateRecurse(virJSONValue *obj,
                               virJSONValue *root,
                               struct testQEMUSchemaValidateCtxt *ctxt);
@@ -463,47 +504,6 @@ testQEMUSchemaValidateAlternate(virJSONValue *obj,
 
     virBufferAddLit(ctxt->debug, "ERROR: no alternate type was matched");
     return -1;
-}
-
-
-static int
-testQEMUSchemaValidateDeprecated(virJSONValue *root,
-                                 const char *name,
-                                 struct testQEMUSchemaValidateCtxt *ctxt)
-{
-    virJSONValue *features = virJSONValueObjectGetArray(root, "features");
-    size_t nfeatures;
-    size_t i;
-
-    if (!features)
-        return 0;
-
-    nfeatures = virJSONValueArraySize(features);
-
-    for (i = 0; i < nfeatures; i++) {
-        virJSONValue *cur = virJSONValueArrayGet(features, i);
-        const char *curstr;
-
-        if (!cur ||
-            !(curstr = virJSONValueGetString(cur))) {
-            virBufferAsprintf(ctxt->debug, "ERROR: features of '%s' are malformed", name);
-            return -2;
-        }
-
-        if (STREQ(curstr, "deprecated")) {
-            if (ctxt->allowDeprecated) {
-                virBufferAsprintf(ctxt->debug, "WARNING: '%s' is deprecated", name);
-                if (virTestGetVerbose())
-                    g_fprintf(stderr, "\nWARNING: '%s' is deprecated\n", name);
-                return 0;
-            } else {
-                virBufferAsprintf(ctxt->debug, "ERROR: '%s' is deprecated", name);
-                return -1;
-            }
-        }
-    }
-
-    return 0;
 }
 
 
