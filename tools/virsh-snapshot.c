@@ -771,7 +771,6 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
     g_autofree char *xml = NULL;
     g_autoptr(xmlDoc) xmldoc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    int ret = -1;
     g_autofree char *state = NULL;
 
     if (!snapshot)
@@ -796,20 +795,15 @@ virshSnapshotFilter(vshControl *ctl, virDomainSnapshotPtr snapshot,
         return -1;
     }
     if (STREQ(state, "disk-snapshot")) {
-        ret = ((flags & (VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY |
-                         VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL)) ==
-               (VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY |
-                VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL));
-    } else {
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL))
-            ret = 0;
-        else if (STREQ(state, "shutoff"))
-            ret = !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE);
-        else
-            ret = !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE);
+        return !!((flags & VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY) &&
+                  (flags & VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL));
     }
 
-    return ret;
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL))
+        return 0;
+    if (STREQ(state, "shutoff"))
+        return !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE);
+    return !!(flags & VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE);
 }
 
 /*
@@ -869,14 +863,8 @@ cmdSnapshotInfo(vshControl *ctl, const vshCmd *cmd)
      * attempt a fallback.  */
     current = virDomainSnapshotIsCurrent(snapshot, 0);
     if (current < 0) {
-        g_autoptr(virshDomainSnapshot) other = NULL;
-
         vshResetLibvirtError();
         current = 0;
-        if (other) {
-            if (STREQ(name, virDomainSnapshotGetName(other)))
-                current = 1;
-        }
     }
     vshPrint(ctl, "%-15s %s\n", _("Current:"),
              current > 0 ? _("yes") : _("no"));
@@ -1776,10 +1764,8 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
         vshResetLibvirtError();
         result = virDomainRevertToSnapshot(snapshot, flags);
     }
-    if (result < 0)
-        return false;
 
-    return true;
+    return result >= 0;
 }
 
 /*
@@ -1844,16 +1830,15 @@ cmdSnapshotDelete(vshControl *ctl, const vshCmd *cmd)
     /* XXX If we wanted, we could emulate DELETE_CHILDREN_ONLY even on
      * older servers that reject the flag, by manually computing the
      * list of descendants.  But that's a lot of code to maintain.  */
-    if (virDomainSnapshotDelete(snapshot, flags) == 0) {
-        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
-            vshPrintExtra(ctl, _("Domain snapshot %s children deleted\n"), name);
-        else
-            vshPrintExtra(ctl, _("Domain snapshot %s deleted\n"), name);
-    } else {
+    if (virDomainSnapshotDelete(snapshot, flags) < 0) {
         vshError(ctl, _("Failed to delete snapshot %s"), name);
         return false;
     }
 
+    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY)
+        vshPrintExtra(ctl, _("Domain snapshot %s children deleted\n"), name);
+    else
+        vshPrintExtra(ctl, _("Domain snapshot %s deleted\n"), name);
     return true;
 }
 
