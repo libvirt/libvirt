@@ -324,6 +324,7 @@ testQEMUSchemaValidateEnum(virJSONValue *obj,
 {
     const char *objstr;
     virJSONValue *values = NULL;
+    virJSONValue *members = NULL;
     size_t i;
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_STRING) {
@@ -332,6 +333,22 @@ testQEMUSchemaValidateEnum(virJSONValue *obj,
     }
 
     objstr = virJSONValueGetString(obj);
+
+    /* qemu-6.2 added a "members" array superseding "values" */
+    if ((members = virJSONValueObjectGetArray(root, "members"))) {
+        for (i = 0; i < virJSONValueArraySize(members); i++) {
+            virJSONValue *member = virJSONValueArrayGet(members, i);
+
+            if (STREQ_NULLABLE(objstr, virJSONValueObjectGetString(member, "name"))) {
+                virBufferAsprintf(ctxt->debug, "'%s' OK", NULLSTR(objstr));
+                return 0;
+            }
+        }
+
+        virBufferAsprintf(ctxt->debug, "ERROR: enum value '%s' is not in schema",
+                          NULLSTR(objstr));
+        return -1;
+    }
 
     if ((values = virJSONValueObjectGetArray(root, "values"))) {
         for (i = 0; i < virJSONValueArraySize(values); i++) {
