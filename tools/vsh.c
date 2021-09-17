@@ -337,8 +337,16 @@ vshCmddefCheckInternals(vshControl *ctl,
             virBufferStrcat(&complbuf, opt->name, ", ", NULL);
 
         switch (opt->type) {
-        case VSH_OT_STRING:
         case VSH_OT_BOOL:
+            if (opt->completer || opt->completer_flags) {
+                vshError(ctl, _("bool parameter '%s' of command '%s' has completer set"),
+                         opt->name, cmd->name);
+                return -1;
+            }
+
+            G_GNUC_FALLTHROUGH;
+
+        case VSH_OT_STRING:
             if (opt->flags & VSH_OFLAG_REQ) {
                 vshError(ctl, _("parameter '%s' of command '%s' misused VSH_OFLAG_REQ"),
                          opt->name, cmd->name);
