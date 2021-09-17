@@ -779,11 +779,7 @@ static const vshCmdInfo info_vol_download[] = {
 
 static const vshCmdOptDef opts_vol_download[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
-    {.name = "file",
-     .type = VSH_OT_DATA,
-     .flags = VSH_OFLAG_REQ,
-     .help = N_("file")
-    },
+    VIRSH_COMMON_OPT_FILE(N_("file")),
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "offset",
      .type = VSH_OT_INT,
