@@ -381,6 +381,12 @@ testQEMUSchemaValidateEnum(virJSONValue *obj,
             virJSONValue *member = virJSONValueArrayGet(members, i);
 
             if (STREQ_NULLABLE(objstr, virJSONValueObjectGetString(member, "name"))) {
+                int rc;
+
+                /* the new 'members' array allows us to check deprecations */
+                if ((rc = testQEMUSchemaValidateDeprecated(member, objstr, ctxt)) < 0)
+                    return rc;
+
                 virBufferAsprintf(ctxt->debug, "'%s' OK", NULLSTR(objstr));
                 return 0;
             }
