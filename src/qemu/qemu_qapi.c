@@ -243,6 +243,7 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
     virJSONValue *values;
+    virJSONValue *members;
     size_t i;
 
     if (query[0] != '^')
@@ -252,6 +253,22 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
         return -3;
 
     query++;
+
+    /* qemu-6.2 added a "members" array superseding "values" */
+    if ((members = virJSONValueObjectGetArray(cur, "members"))) {
+        for (i = 0; i < virJSONValueArraySize(members); i++) {
+            virJSONValue *member = virJSONValueArrayGet(members, i);
+            const char *name;
+
+            if (!member || !(name = virJSONValueObjectGetString(member, "name")))
+                return -2;
+
+            if (STREQ(name, query))
+                return 1;
+        }
+
+        return 0;
+    }
 
     if (!(values = virJSONValueObjectGetArray(cur, "values")))
         return -2;
