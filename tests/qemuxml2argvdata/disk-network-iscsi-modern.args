@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
 -usb \
 -drive file.driver=iscsi,file.portal=example.org:6000,file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,format=raw,if=none,id=drive-virtio-disk0 \

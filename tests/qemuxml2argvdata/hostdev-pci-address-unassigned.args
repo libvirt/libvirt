@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device vfio-pci,host=0005:90:01.0,id=hostdev0,bus=pci.0,addr=0x2 \
 -device vfio-pci,host=0005:90:01.2,id=hostdev2,bus=pci.0,addr=0x3 \

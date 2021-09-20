@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -chardev socket,id=charsmartcard0,host=127.0.0.1,port=2001,server=on,wait=off \

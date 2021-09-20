@@ -6206,8 +6206,7 @@ qemuBuildPMCommandLine(virCommand *cmd,
 
 static int
 qemuBuildBootCommandLine(virCommand *cmd,
-                         const virDomainDef *def,
-                         virQEMUCaps *qemuCaps)
+                         const virDomainDef *def)
 {
     g_auto(virBuffer) boot_buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *boot_opts_str = NULL;
@@ -6228,10 +6227,7 @@ qemuBuildBootCommandLine(virCommand *cmd,
     if (def->os.bm_timeout_set)
         virBufferAsprintf(&boot_buf, "splash-time=%u,", def->os.bm_timeout);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BOOT_STRICT))
-        virBufferAddLit(&boot_buf, "strict=on,");
-
-    virBufferTrim(&boot_buf, ",");
+    virBufferAddLit(&boot_buf, "strict=on");
 
     boot_opts_str = virBufferContentAndReset(&boot_buf);
     if (boot_opts_str) {
@@ -10563,7 +10559,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildPMCommandLine(cmd, def, priv) < 0)
         return NULL;
 
-    if (qemuBuildBootCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildBootCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildIOMMUCommandLine(cmd, def) < 0)

@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x2.0x7 \
 -device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,addr=0x2 \
 -device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x2.0x2 \

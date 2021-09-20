@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
 -device lsi,id=scsi1,bus=pci.0,addr=0x3 \
 -device lsi,id=scsi2,bus=pci.0,addr=0x4 \

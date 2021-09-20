@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -drive file=/some/block/device/unit:0:0:1,format=raw,if=none,id=drive-ide0-0-1,readonly=on \
 -device ide-cd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1 \

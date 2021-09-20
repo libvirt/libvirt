@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -global q35-pcihost.pci-hole64-size=1048576K \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
 -device ide-hd,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \

@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -drive file=iscsi://myname:AQCVn5hO6HzFAhAAq0NCv8jtJcIcE+HOBlMQ1A@example.org:6000/iqn.1992-01.com.example%3Astorage/1,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.0,addr=0x2,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \

@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -object memory-backend-file,id=shmmem-shmem0,mem-path=/dev/shm/shmem0,size=4194304,share=on \
 -device ivshmem-plain,id=shmem0,memdev=shmmem-shmem0,bus=pci.0,addr=0x2 \

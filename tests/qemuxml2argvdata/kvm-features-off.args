@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -usb \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

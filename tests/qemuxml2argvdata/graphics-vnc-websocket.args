@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -vnc 127.0.0.1:0,websocket=5700 \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \

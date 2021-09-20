@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -usb \
 -drive file=/home/berrange/VirtualMachines/redhat-6.2-sparc.img,format=qcow2,if=none,id=drive-scsi0-0-0-0 \
 -device scsi-hd,bus=scsi.0,scsi-id=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \

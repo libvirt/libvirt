@@ -32,6 +32,7 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -global PIIX4_PM.disable_s3=0 \
 -global PIIX4_PM.disable_s4=0 \
+-boot strict=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x8 \
 -usb \
 -device usb-ccid,id=ua-myCCID,bus=ua-SomeWeirdController.0,port=1 \

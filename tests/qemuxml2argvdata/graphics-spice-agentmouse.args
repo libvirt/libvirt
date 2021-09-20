@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=spice \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -device virtio-serial-pci,id=virtio-serial1,bus=pci.0,addr=0xa \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \

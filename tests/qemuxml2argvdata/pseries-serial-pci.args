@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -chardev pty,id=charserial0 \
 -device pci-serial,chardev=charserial0,id=serial0,bus=pci.0,addr=0x1 \
 -msg timestamp=on

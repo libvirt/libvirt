@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -chardev spicevmc,id=charredir0,name=usbredir \
 -device 'usb-redir,chardev=charredir0,id=redir0,filter=0x08:0x15E1:0x2007:0x0109:1|0x08:0x15E1:0x2007:0x0940:1|-1:-1:-1:-1:0,bus=usb.0,port=1' \

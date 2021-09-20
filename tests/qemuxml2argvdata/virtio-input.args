@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device virtio-mouse-pci,id=input0,bus=pci.0,addr=0x3 \
 -device virtio-keyboard-pci,id=input1,bus=pci.0,addr=0xa \

@@ -24,6 +24,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -kernel /aarch64.kernel \
 -initrd /aarch64.initrd \
 -append 'earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait' \

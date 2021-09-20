@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device usb-hub,id=hub0,bus=usb.0,port=1 \
 -device usb-hub,id=hub1,bus=usb.0,port=1.2 \

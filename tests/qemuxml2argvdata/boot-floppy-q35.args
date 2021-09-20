@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
 -device isa-fdc,driveA=drive-fdc0-0-0,bootindexA=1 \
 -msg timestamp=on

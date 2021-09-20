@@ -23,7 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot menu=on,splash-time=3000 \
+-boot menu=on,splash-time=3000,strict=on \
 -usb \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \

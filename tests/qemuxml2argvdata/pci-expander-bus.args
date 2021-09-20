@@ -25,6 +25,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -device pxb,bus_nr=254,id=pci.1,numa_node=1,bus=pci.0,addr=0x2 \
 -device pxb,bus_nr=252,id=pci.2,bus=pci.0,addr=0x3 \
 -netdev user,id=hostnet0 \

@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -device ccid-card-emulated,backend=certificates,cert1=cert1,cert2=cert2,cert3=cert3,db=/etc/pki/nssdb,id=smartcard0,bus=ccid0.0 \

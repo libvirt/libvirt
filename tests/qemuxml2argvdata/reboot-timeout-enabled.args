@@ -23,6 +23,6 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot reboot-timeout=128 \
+-boot reboot-timeout=128,strict=on \
 -usb \
 -msg timestamp=on

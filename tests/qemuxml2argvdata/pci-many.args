@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -usb \
 -drive file=/var/iso/f18kde.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0 \

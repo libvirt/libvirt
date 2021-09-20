@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -kernel /media/ram/uImage \
 -initrd /media/ram/ramdisk \
 -append 'root=/dev/ram rw console=ttyS0,115200' \

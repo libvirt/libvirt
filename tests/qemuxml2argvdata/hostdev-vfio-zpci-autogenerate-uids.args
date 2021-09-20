@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -device zpci,uid=1,fid=0,target=hostdev0,id=zpci1 \
 -device vfio-pci,host=0000:00:00.0,id=hostdev0,bus=pci.0,addr=0x1 \
 -device zpci,uid=2,fid=31,target=hostdev1,id=zpci2 \

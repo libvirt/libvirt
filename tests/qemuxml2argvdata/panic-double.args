@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -usb \
 -device pvpanic,ioport=1285 \
 -msg timestamp=on

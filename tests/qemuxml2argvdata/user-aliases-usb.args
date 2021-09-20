@@ -24,6 +24,7 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -global PIIX4_PM.disable_s3=0 \
 -global PIIX4_PM.disable_s4=0 \
+-boot strict=on \
 -device ich9-usb-ehci1,id=ua-myUSB1,bus=pci.0,addr=0x4.0x7 \
 -device ich9-usb-uhci1,masterbus=ua-myUSB1.0,firstport=0,bus=pci.0,multifunction=on,addr=0x4 \
 -device ich9-usb-uhci2,masterbus=ua-myUSB1.0,firstport=2,bus=pci.0,addr=0x4.0x1 \

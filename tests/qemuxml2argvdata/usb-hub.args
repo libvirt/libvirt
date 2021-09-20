@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -device usb-hub,id=hub0,bus=usb.0,port=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \

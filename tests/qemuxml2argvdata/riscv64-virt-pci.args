@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -kernel /var/lib/libvirt/images/riscv64.bbl \
 -append root=/dev/vda \
 -drive file=/var/lib/libvirt/images/riscv64.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \

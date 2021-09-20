@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
 -msg timestamp=on

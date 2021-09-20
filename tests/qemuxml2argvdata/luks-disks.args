@@ -24,6 +24,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -object secret,id=virtio-disk0-encryption-secret0,data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
 -drive file=/storage/guest_disks/encryptdisk,key-secret=virtio-disk0-encryption-secret0,format=luks,if=none,id=drive-virtio-disk0 \

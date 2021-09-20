@@ -22,6 +22,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-boot strict=on \
 -device spapr-vscsi,id=scsi0,reg=0x00002000 \
 -device spapr-vscsi,id=scsi1,reg=0x30000000 \
 -usb \

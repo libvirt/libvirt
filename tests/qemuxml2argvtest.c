@@ -1082,7 +1082,6 @@ mymain(void)
     DO_TEST("boot-complex",
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST("boot-strict",
-            QEMU_CAPS_BOOT_STRICT,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     /* Simplest possible <audio>, all supported with ENV */

@@ -23,6 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
+-boot strict=on \
 -usb \
 -chardev socket,id=charserial0,path=/tmp/serial.sock \
 -device isa-serial,chardev=charserial0,id=serial0 \

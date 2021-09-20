@@ -23,7 +23,7 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -no-acpi \
--boot menu=on \
+-boot menu=on,strict=on \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
 -usb \
 -drive file=/dev/sdfake,format=raw,if=none,id=drive-virtio-disk0 \
