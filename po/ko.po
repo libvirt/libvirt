@@ -15,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2021-09-19 11:56+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -24924,7 +24924,7 @@ msgstr "socketpair 생성에 실패"
 
 #, c-format
 msgid "failed to create state dir '%s': %s"
-msgstr "상태 디렉토리 '%s'을(를) 작성하지 못했습니다: %s"
+msgstr "상태 디렉토리를 생성 하는데 실패함 '%s': %s"
 
 msgid "failed to create the RADOS cluster"
 msgstr "RADOS 클러스터 생성 실패"
@@ -29807,9 +29807,8 @@ msgstr "도메인 보안 레이블에서 보안 모델이 누락되어 있음"
 msgid "missing listen attribute in migration data"
 msgstr "이전 자료에서 listen 속성이 누락"
 
-#, fuzzy
 msgid "missing listen element"
-msgstr "root 요소가 누락되어 있음"
+msgstr "청취 요소가 누락됨"
 
 #, fuzzy
 msgid "missing listen element for graphics"
@@ -36200,9 +36199,8 @@ msgstr "예기치 못한 소스 모드 %d"
 msgid "unexpected storage volume type '%s' for storage pool type '%s'"
 msgstr "예기치 못한 보안 레이블 유형 '%s'"
 
-#, fuzzy
 msgid "unexpected stream hole"
-msgstr "예기치 못한 소스 모드 %d"
+msgstr "예상치 못한 스트림 구멍"
 
 #, c-format
 msgid "unexpected sysinfo type model %d"
