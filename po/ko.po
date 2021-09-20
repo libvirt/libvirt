@@ -15,7 +15,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
 "PO-Revision-Date: 2021-09-18 19:05+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -10857,7 +10857,7 @@ msgstr "이전이 실패하였습니다. 도메인은 대상 호스트에서 동
 
 #, c-format
 msgid "Migration failed. No domain on destination host with matching name '%s'"
-msgstr "마이그레이션에 실패했습니다. 대상 호스트에 '%s' 이름이 일치하는 도메인이 없습니다"
+msgstr "이전에 실패했습니다. 일치하는 이름 '%s'와 대상 호스트에서 도메인이 없습니다"
 
 msgid "Migration graphics data already present"
 msgstr "마이그레이션 그래픽 데이터가 이미 있습니다"
