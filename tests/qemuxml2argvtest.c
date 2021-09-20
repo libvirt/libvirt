@@ -1070,7 +1070,6 @@ mymain(void)
     DO_TEST_NOCAPS("boot-menu-enable");
     DO_TEST("boot-menu-enable-with-timeout",
             QEMU_CAPS_SPLASH_TIMEOUT);
-    DO_TEST_PARSE_ERROR_NOCAPS("boot-menu-enable-with-timeout");
     DO_TEST_PARSE_ERROR("boot-menu-enable-with-timeout-invalid",
                         QEMU_CAPS_SPLASH_TIMEOUT);
     DO_TEST_NOCAPS("boot-menu-disable");
