@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-19 11:56+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-09-19 12:07+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -25462,53 +25462,52 @@ msgstr ""
 msgid "failed to parse the AP Queue from sysfs path: '%s'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the CCW address from sysfs path: '%s'"
-msgstr "sysfs 경로 '%s'로 SCSI 장치를 처리하는데 실패했습니다 "
+msgstr "sysfs 경로에서 CCW 주소를 구문 분석하지 못했습니다: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the PCI address from sysfs path: '%s'"
-msgstr "sysfs 경로 '%s'로 SCSI 장치를 처리하는데 실패했습니다 "
+msgstr "sysfs 경로 '%s'로 SCSI 장치를 처리하는데 실패했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the SCSI address from filename: '%s'"
-msgstr "파일 '%s'에서 스냅샷 XML을 구문 분석하는데 실패 "
+msgstr "파일 이름에서 SCSI 주소를 구문 분석하지 못했습니다: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse the index of the VMX key '%s'"
-msgstr "VLAN 장치 '%s'의 VID를 찾는데 실패했습니다 "
+msgstr "VMX 키 '%s'의 인덱스를 구문 분석하지 못했습니다"
 
 #, c-format
 msgid "failed to parse value of %s"
 msgstr "%s 값을 구문 분석하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse write_bps_device: '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "write_bps_device를 구문 분석하지 못했습니다: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse write_iops_device: '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "write_iops_device를 구문 분석하지 못했습니다: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse xml document '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "xml 문서 '%s'을(를) 구문 분석하지 못했습니다"
 
 #, c-format
 msgid "failed to pivot job for disk %s"
 msgstr "디스크 %s에 대한 pivot 작업에 실패"
 
-#, fuzzy
 msgid "failed to populate iothreadids"
-msgstr "파일 열기 실패"
+msgstr "iothreadid를 채우지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to preserve fd %d"
-msgstr "%s 값을 구문 분석하는데 실패"
+msgstr "fd %d을(를) 보존하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to protect RBD snapshot %s@%s"
-msgstr "스냅샷 목록을 수집하는데 실패"
+msgstr "RBD 스냅샷 %s@%s을(를) 보호하지 못했습니다"
 
 #, c-format
 msgid "failed to query job for disk %s"
@@ -25516,11 +25515,10 @@ msgstr "디스크 %s의 질의(query) 작업 실패"
 
 #, c-format
 msgid "failed to query mdevs from mdevctl: %s"
-msgstr ""
+msgstr "mdevctl에서 mdev를 쿼리하지 못했습니다: %s"
 
-#, fuzzy
 msgid "failed to re-init netcf"
-msgstr "소켓 생성 실패"
+msgstr "netcf를 다시 초기화하지 못했습니다"
 
 #, c-format
 msgid "failed to read '%s'"
@@ -25539,21 +25537,18 @@ msgstr "설정 파일 읽기 실패"
 msgid "failed to read configuration file %s"
 msgstr "%s 설정 파일 읽기 실패"
 
-#, fuzzy
 msgid "failed to read cookie"
-msgstr "소켓 생성 실패"
+msgstr "쿠키를 읽지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to read directory '%s' in '%s'"
-msgstr "디렉터리 '%s' 생성 실패"
+msgstr "'%s'의 디렉터리 '%s'을(를) 읽지 못했습니다"
 
-#, fuzzy
 msgid "failed to read domain XML"
-msgstr "XML을 읽는 것을 실패"
+msgstr "도메인 XML을 읽지 못했습니다"
 
-#, fuzzy
 msgid "failed to read from wakeup fd"
-msgstr "qemu 헤더를 읽는 것을 실패"
+msgstr "wakeup fd에서 읽지 못했습니다"
 
 msgid "failed to read libxl header"
 msgstr "libxl 헤더를 읽는데 실패"
@@ -25570,11 +25565,10 @@ msgid "failed to read temporary file created with template %s"
 msgstr "템플릿 %s로 생성된 임시 파일을 읽는 데 실패"
 
 msgid "failed to reboot domain"
-msgstr ""
+msgstr "도메인 재부팅 실패"
 
-#, fuzzy
 msgid "failed to receive device from udev monitor"
-msgstr "%s로부터 노드 장치를 생성하는 데 실패"
+msgstr "udev 모니터에서 장치를 수신하지 못했습니다"
 
 msgid "failed to regenerate genid"
 msgstr "genid 생성에 실패"
@@ -25582,21 +25576,20 @@ msgstr "genid 생성에 실패"
 msgid "failed to register udev interface driver"
 msgstr "udev 인터페이스 드라이버를 등록하는데 실패"
 
-#, fuzzy
 msgid "failed to remove device from BPF cgroup map"
-msgstr "%s로부터 노드 장치를 생성하는 데 실패"
+msgstr "BPF cgroup 맵에서 장치를 제거하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove nvram: %s"
-msgstr "볼륨 '%s/%s'을 제거하는데 실패"
+msgstr "nvram을 제거하지 못했습니다: %s"
 
 #, c-format
 msgid "failed to remove pool '%s'"
 msgstr "풀 '%s'을 제거하는 데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to remove snapshot '%s/%s@%s'"
-msgstr "볼륨 '%s/%s'을 제거하는데 실패"
+msgstr "스냅샷 '%s/%s@%s'을(를) 제거하지 못했습니다"
 
 #, c-format
 msgid "failed to remove volume '%s/%s'"
@@ -25612,42 +25605,39 @@ msgstr "'%s' 해결하는데 실패"
 
 msgid ""
 "failed to resolve relative backing name: base image is not in backing chain"
-msgstr ""
+msgstr "상대 백업 이름을 확인하지 못했습니다. 기본 이미지가 백업 체인에 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to resolve symlink %s: %s"
-msgstr "심볼릭 링크 '%s'를 '%s'에 대해 생성하는 데 실패"
+msgstr "심볼릭 링크 %s을(를) 확인하지 못했습니다: %s"
 
 msgid "failed to resume domain"
 msgstr "도메인을 재개하는 것에 실패"
 
-#, fuzzy
 msgid "failed to retrieve XML"
-msgstr "XML 생성하기 실패"
+msgstr "XML을 검색하지 못했습니다"
 
 #, c-format
 msgid ""
 "failed to retrieve client identity information for client '%llu' connected "
 "to server '%s'"
-msgstr ""
+msgstr "서버 '%s'에 연결된 클라이언트 '%llu'에 대한 클라이언트 ID 정보를 검색하지 못했습니다"
 
-#, fuzzy
 msgid "failed to retrieve credentials"
-msgstr "인증 크레덴셜 생성 실패"
+msgstr "자격 증명을 검색하지 못했습니다"
 
-#, fuzzy
 msgid "failed to retrieve decision to accept host key"
-msgstr "udev 문맥 생성 실패 "
+msgstr "호스트 키 수락 결정을 검색하지 못했습니다"
 
 msgid "failed to retrieve keyboard interactive result: callback has failed"
-msgstr ""
+msgstr "키보드 대화형 결과 검색 실패: 콜백 실패"
 
 msgid "failed to retrieve private key passphrase: callback has failed"
-msgstr ""
+msgstr "개인 키 암호 검색 실패: 콜백 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to rollback transaction: %s%s%s"
-msgstr "트랜젝션 시작 실패: %s%s%s"
+msgstr "트랜잭션 롤백 실패: %s%s%s"
 
 msgid "failed to run apparmor_parser"
 msgstr "apparmor_parser 실행 실패"
@@ -25655,13 +25645,13 @@ msgstr "apparmor_parser 실행 실패"
 msgid "failed to save content"
 msgstr "내용 저장 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to seek in log file %s"
-msgstr "로그파일 %s를 생성하는 데 실패"
+msgstr "로그 파일 %s에서 찾지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to seek to end of %s"
-msgstr "%s 설정 실패 "
+msgstr "%s의 끝을 찾지 못했습니다"
 
 msgid "failed to serialize S-Expr"
 msgstr "S-Expr 나열하기 실패"
@@ -25678,32 +25668,31 @@ msgstr "%s 설정 실패"
 msgid "failed to set RADOS option: %s"
 msgstr "RADOS 옵션 설정 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set checkpoint '%s' as current"
-msgstr "'%s' 비밀 얻는 데 실패"
+msgstr "체크포인트 '%s'을(를) 현재로 설정하지 못했습니다"
 
 #, c-format
 msgid "failed to set close-on-exec flag on %s"
 msgstr "%s에서 close-on-exec 플래그 설정 실패"
 
-#, fuzzy
 msgid "failed to set cpuset.cpus in cgroup for emulator threads"
-msgstr "%s의 모니터에 대한 보안 문맥을 설정하는데 실패 "
+msgstr "에뮬레이터 스레드에 대해 cgroup에서 cpuset.cpus를 설정하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set cpuset.cpus in cgroup for iothread %d"
-msgstr "%s의 모니터에 대한 보안 문맥을 설정하는데 실패 "
+msgstr "iothread %d에 대해 cgroup에서 cpuset.cpus를 설정하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set gluster volfile server '%s'"
-msgstr "nwfilter '%s'를 가져오는 데 실패"
+msgstr "gluster volfile 서버 '%s'을(를) 설정하지 못했습니다"
 
 msgid "failed to set guest cid"
 msgstr "게스트 cid 설정 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to set snapshot '%s' as current"
-msgstr "스냅샷 %s 삭제 실패 "
+msgstr "스냅샷 '%s'을(를) 현재로 설정하지 못했습니다"
 
 msgid "failed to setup stderr file handle"
 msgstr "표준 오류 파일 핸들을 설정하는 데 실패했습니다"
@@ -25715,18 +25704,18 @@ msgid "failed to setup stdout file handle"
 msgstr "표준 출력 핸들을 설정하는 데 실패했습니다"
 
 msgid "failed to shutdown guest VM"
-msgstr ""
+msgstr "게스트 가상머신(VM)을 종료하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat remote file '%s'"
-msgstr "풀 '%s'을 제거하는 데 실패"
+msgstr "원격 파일 '%s'을(를) 통계화하지 못했습니다"
 
 msgid "failed to stat the RADOS cluster"
 msgstr "RADOS 클러스터 통계에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to stat the RADOS pool '%s'"
-msgstr "RADOS 옵션 설정 실패: %s"
+msgstr "RADOS 풀 '%s'을(를) 통계화하지 못했습니다"
 
 #, c-format
 msgid "failed to stat the RBD image %s"
@@ -25736,16 +25725,15 @@ msgstr "RBD 이미지 %s 통계에 실패"
 msgid "failed to stat the RBD image '%s'"
 msgstr "RBD 이미지 '%s' 통계에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to store %lld to %s"
-msgstr "파일을 %s로 이동하는데 실패 "
+msgstr "%lld을(를) %s에 저장하지 못했습니다"
 
 msgid "failed to suspend domain"
-msgstr ""
+msgstr "도메인을 일시 중단하지 못했습니다"
 
-#, fuzzy
 msgid "failed to take screenshot"
-msgstr "내용 저장 실패"
+msgstr "스크린샷을 찍지 못했습니다"
 
 #, c-format
 msgid "failed to truncate %s"
@@ -25763,51 +25751,48 @@ msgstr "자동 시작으로 %s 네트워크를 표시 해제하기 실패"
 msgid "failed to unmark pool %s as autostarted"
 msgstr "자동 시작으로 %s 풀을 표시 해제하기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to unprotect snapshot '%s/%s@%s'"
-msgstr "스냅샷 목록을 수집하는데 실패"
+msgstr "스냅샷 '%s/%s@%s'의 보호를 해제하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to update capacity data for block node '%s'"
-msgstr "'%s' dev '%s'의 디렉토리를 생성하는데 실패했습니다 "
+msgstr "블록 노드 '%s'의 용량 데이터를 업데이트하지 못했습니다"
 
-#, fuzzy
 msgid "failed to update device in BPF cgroup map"
-msgstr "%s에서 장치를 업데이트하는데 실패"
+msgstr "BPF cgroup 맵에서 장치를 업데이트하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to validate SSH host key: %s"
-msgstr "ssh 호스트키 해시를 계산하는데 실패"
+msgstr "SSH 호스트 키를 확인하지 못했습니다. %s"
 
 msgid "failed to validate prefix for a new XML namespace"
-msgstr ""
+msgstr "새 XML 네임스페이스에 대한 접두사의 유효성을 검사하지 못했습니다"
 
 #, c-format
 msgid "failed to verify if RBD snapshot %s@%s is protected"
-msgstr ""
+msgstr "RBD 스냅샷 %s@%s이(가) 보호되는지 확인하지 못했습니다"
 
 #, c-format
 msgid "failed to verify if snapshot '%s/%s@%s' is protected"
-msgstr ""
+msgstr "스냅샷 '%s/%s@%s'이(가) 보호되는지 확인하지 못했습니다"
 
-#, fuzzy
 msgid "failed to wait for domain condition"
-msgstr "조건을 기다리는 데 실패"
+msgstr "도메인 조건을 기다리지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wait for file '%s' to appear"
-msgstr "파일 '%s'에 쓰기 실패"
+msgstr "파일 '%s'이(가) 나타날 때까지 기다리지 못했습니다"
 
 msgid "failed to wait on condition"
 msgstr "조건을 기다리는 데 실패"
 
-#, fuzzy
 msgid "failed to wakeup migration tunnel"
-msgstr "설정 파일 쓰기 실패"
+msgstr "마이그레이션 터널을 깨우지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to wipe RBD image %s"
-msgstr "RBD 이미지 '%s' 열기 실패"
+msgstr "RBD 이미지 %s을(를) 지우지 못했습니다"
 
 msgid "failed to write configuration file"
 msgstr "설정 파일 쓰기 실패"
@@ -25816,37 +25801,36 @@ msgstr "설정 파일 쓰기 실패"
 msgid "failed to write configuration file: %s"
 msgstr "설정 파일 쓰기 실패: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write cookie to '%s'"
-msgstr "디렉터리 '%s' 생성 실패"
+msgstr "쿠키를 '%s'에 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write data to config '%s'"
-msgstr "'%s'에 데이터를 작성할 수 없음"
+msgstr "구성 '%s'에 데이터를 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write domain xml to '%s'"
-msgstr "'%s' 도메인 보기 실패"
+msgstr "구성 '%s'에 데이터를 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write header data to '%s'"
-msgstr "'%s'에 데이터를 작성할 수 없음"
+msgstr "헤더 데이터를 '%s'에 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write header to domain save file '%s'"
-msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
+msgstr "도메인 저장 파일 '%s'에 헤더를 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write known_host file '%s': %s"
-msgstr "%s: 로그 파일 쓰기 실패: %s"
+msgstr "알려진_호스트 파일 '%s' 쓰기 실패: %s"
 
-#, fuzzy
 msgid "failed to write master key file for domain"
-msgstr "도메인에 대한 메모리 설정 실패"
+msgstr "도메인에 대한 마스터 키 파일을 쓰지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write padding to '%s'"
-msgstr "파일 '%s'에 쓰기 실패"
+msgstr "패딩을 '%s'에 쓰지 못했습니다"
 
 msgid "failed to write secret file"
 msgstr "비밀 파일에 쓰기 실패"
@@ -25854,9 +25838,9 @@ msgstr "비밀 파일에 쓰기 실패"
 msgid "failed to write the log file"
 msgstr "로그 파일 쓰기 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to write to LUN %d: %s"
-msgstr "%s: 로그 파일 쓰기 실패: %s"
+msgstr "LUN %d에 쓰지 못했습니다. %s"
 
 msgid "failed to write to profile"
 msgstr "프로파일에 쓰기 실패"
@@ -25866,43 +25850,40 @@ msgid "failed writing to file '%s'"
 msgstr "파일 '%s'에 쓰기 실패"
 
 msgid "fatal"
-msgstr ""
+msgstr "치명적인"
 
 #, c-format
 msgid "fatal signal %d"
-msgstr ""
+msgstr "치명적인 신호 %d"
 
-#, fuzzy
 msgid "fcntl failed to set O_NONBLOCK"
-msgstr "%s 설정 실패 "
+msgstr "fcntl이 O_NONBLOCK을 설정하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "fd %d must be a socket"
-msgstr "소켓 생성 실패"
+msgstr "fd %d은(는) 소켓이어야 합니다"
 
-#, fuzzy
 msgid "fd must be valid"
-msgstr "%s에서 uuidstr는 올바른 UUID이어야 합니다 "
+msgstr "파일디스크(fd)는 유효해야 합니다"
 
-#, fuzzy
 msgid "fd passing is not supported by this connection"
-msgstr "이 기능은 연결 드라이버에 의해 지원되지 않음"
+msgstr "이 연결은 파일디스크(fd) 전달을 지원하지 않습니다"
 
 msgid "fdset must be valid"
-msgstr ""
+msgstr "파일디스크 설정 (fdset)은 유효해야 합니다"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
-msgstr ""
+msgstr "데몬에서 현재 정의된 로깅 필터 세트를 가져오거나 설정합니다"
 
 msgid "fetch or set the currently defined set of logging outputs on daemon"
-msgstr ""
+msgstr "데몬에서 현재 정의된 로깅 출력 세트를 가져오거나 설정합니다"
 
 #. parse inbound and outbound which are in the format of
 #. * 'average,peak,burst,floor', in which peak and burst are optional,
 #. * thus 'average,,burst' and 'average,peak' are also legal.
-#, fuzzy, c-format
+#, c-format
 msgid "field '%s' is malformed"
-msgstr "설정 값 %s가 형식이 잘못됨"
+msgstr "필드 '%s'의 형식이 잘못되었습니다"
 
 msgid "file"
 msgstr "파일"
@@ -25953,7 +25934,7 @@ msgstr "XML의 비밀 특성을 포함하는 파일"
 
 #, c-format
 msgid "file descriptor %d has not been transferred"
-msgstr ""
+msgstr "파일 설명자 %d이(가) 전송되지 않았습니다"
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "파일 형식 유형 raw,bochs,qcow,qcow2,qed,vmdk"
@@ -25961,23 +25942,21 @@ msgstr "파일 형식 유형 raw,bochs,qcow,qcow2,qed,vmdk"
 msgid "filePath is null"
 msgstr "파일 경로가 비어있습니다"
 
-#, fuzzy
 msgid "filename containing XML description of the copy destination"
-msgstr "장치에 대한 XML로 된 설명이 있는 파일"
+msgstr "복사 대상의 XML 설명을 포함하는 파일 이름"
 
-#, fuzzy
 msgid "filename containing updated XML for the target"
-msgstr "XML 볼륨 설명이 있는 파일"
+msgstr "대상에 대한 업데이트된 XML을 포함하는 파일 이름"
 
 msgid "filename containing updated persistent XML for the target"
-msgstr ""
+msgstr "대상에 대해 업데이트된 영구 XML을 포함하는 파일 이름"
 
 msgid "filesystem is not of type 'template' or 'mount'"
 msgstr "파일시스템 유형이 'template'나 'mount'가 아닙니다"
 
 #, c-format
 msgid "filesystem target '%s' specified twice"
-msgstr ""
+msgstr "파일 시스템 대상 '%s'이(가) 두 번 지정되었습니다"
 
 #, c-format
 msgid "filter '%s' already exists with uuid %s"
@@ -25985,30 +25964,25 @@ msgstr "필터 '%s'는 이미 uuid %s와 함께 존재합니다"
 
 #, c-format
 msgid "filter '%s' learning value '%s' invalid."
-msgstr ""
+msgstr "필터 '%s' 학습 값 '%s'이(가) 잘못되었습니다."
 
-#, fuzzy
 msgid "filter binding has no MAC address"
-msgstr "인터페이스 이름 또는 MAC 주소"
+msgstr "필터 바인딩에 MAC 주소가 없습니다"
 
 msgid "filter binding has no filter reference"
-msgstr ""
+msgstr "필터 바인딩에 필터 참조가 없습니다"
 
-#, fuzzy
 msgid "filter binding has no link dev name"
-msgstr "필터에 이름이 없습니다"
+msgstr "필터 바인딩에 링크 개발 이름이 없습니다"
 
-#, fuzzy
 msgid "filter binding has no owner UUID"
-msgstr "필터에 이름이 없습니다"
+msgstr "필터 바인딩에 소유자 UUID가 없습니다"
 
-#, fuzzy
 msgid "filter binding has no owner name"
-msgstr "필터에 이름이 없습니다"
+msgstr "필터 바인딩에 소유자 이름이 없습니다"
 
-#, fuzzy
 msgid "filter binding has no port dev name"
-msgstr "필터에 이름이 없습니다"
+msgstr "필터 바인딩에 포트 개발 이름이 없습니다"
 
 msgid "filter binding status missing content"
 msgstr ""
