@@ -587,7 +587,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 370 */
               "cpu.migratable", /* QEMU_CAPS_CPU_MIGRATABLE */
               "query-cpu-model-expansion.migratable", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE */
-              "fw_cfg", /* QEMU_CAPS_FW_CFG */
+              "fw_cfg", /* X_QEMU_CAPS_FW_CFG */
               "migration-param.bandwidth", /* QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH */
               "migration-param.downtime", /* QEMU_CAPS_MIGRATION_PARAM_DOWNTIME */
 
@@ -3208,7 +3208,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
-    { "fw_cfg", "file", QEMU_CAPS_FW_CFG },
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },

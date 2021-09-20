@@ -567,7 +567,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 370 */
     QEMU_CAPS_CPU_MIGRATABLE, /* -cpu ...,migratable=on|off */
     QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE, /* query-cpu-model-expansion supports migratable:false */
-    QEMU_CAPS_FW_CFG, /* -fw_cfg command line option */
+    X_QEMU_CAPS_FW_CFG, /* -fw_cfg command line option */
     QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH, /* max-bandwidth field in migrate-set-parameters */
     QEMU_CAPS_MIGRATION_PARAM_DOWNTIME, /* downtime-limit field in migrate-set-parameters */
 

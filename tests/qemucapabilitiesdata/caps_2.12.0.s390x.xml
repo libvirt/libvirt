@@ -110,7 +110,6 @@
   <flag name='drive-nvme'/>
   <flag name='storage.werror'/>
   <flag name='tcg'/>
-  <flag name='fw_cfg'/>
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
