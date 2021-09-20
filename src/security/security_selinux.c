@@ -1280,9 +1280,11 @@ virSecuritySELinuxSetFileconImpl(const char *path,
         } else {
             /* However, don't claim error if SELinux is in Enforcing mode and
              * we are running as unprivileged user and we really did see EPERM.
-             * Otherwise we want to return error if SELinux is Enforcing. */
-            if (security_getenforce() == 1 &&
-                (setfilecon_errno != EPERM || privileged)) {
+             * Otherwise we want to return error if SELinux is Enforcing, or we
+             * saw ENOENT regardless of SELinux mode. */
+            if (setfilecon_errno == ENOENT ||
+                (security_getenforce() == 1 &&
+                 (setfilecon_errno != EPERM || privileged))) {
                 virReportSystemError(setfilecon_errno,
                                      _("unable to set security context '%s' on '%s'"),
                                      tcon, path);
