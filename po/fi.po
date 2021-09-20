@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-08-09 08:49+0000\n"
+"PO-Revision-Date: 2021-09-20 07:36+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.8\n"
 
 msgid ""
 "\n"
@@ -8841,7 +8841,7 @@ msgstr ""
 
 #, c-format
 msgid "Hotplug unsupported for char device type '%d'"
-msgstr ""
+msgstr "Hotplugia ei tueta char-laitetyypille '%d'"
 
 #, c-format
 msgid "Hotplug unsupported for char device type '%s'"
@@ -13562,9 +13562,8 @@ msgstr "Palauttaa listan toimialueista."
 msgid "Returns memory stats of the node, in kilobytes."
 msgstr ""
 
-#, fuzzy
 msgid "Returns state about a domain."
-msgstr "Palauttaa listan toimialueista."
+msgstr "Palauttaa toimialueen tilan."
 
 #, fuzzy
 msgid "Returns state of a control interface to the domain."
@@ -13878,13 +13877,12 @@ msgstr ""
 msgid "Security model %s cannot be entered"
 msgstr ""
 
-#, fuzzy
 msgid "Security model not found"
-msgstr "Verkkoa ei löytynyt"
+msgstr "Tietoturvamallia ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Security model not found: %s"
-msgstr "Verkkoa ei löytynyt %s"
+msgstr "Tietoturvamallia ei löytynyt: %s"
 
 msgid "Security model:"
 msgstr ""
@@ -13940,13 +13938,12 @@ msgstr ""
 msgid "Server count %zd greater than default name count %zu"
 msgstr ""
 
-#, fuzzy
 msgid "Server not found"
-msgstr "Verkkoa ei löytynyt"
+msgstr "Palvelinta ei löytynyt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Server not found: %s"
-msgstr "Verkkoa ei löytynyt %s"
+msgstr "Palvelinta ei löytynyt: %s"
 
 msgid "Server private key:"
 msgstr ""
@@ -14108,9 +14105,8 @@ msgstr ""
 msgid "Setting wwn is not supported for lun device"
 msgstr ""
 
-#, fuzzy
 msgid "Setup time:"
-msgstr "Prosessoriaika:"
+msgstr "Asennuksen aika:"
 
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
@@ -14492,6 +14488,8 @@ msgstr "Verkkoa ei löytynyt %s"
 #, c-format
 msgid "Stream data too long to send (%zu bytes needed, %zu bytes available)"
 msgstr ""
+"Raakadata on liian pitkä lähetettäväksi (%zu tavua tarvitaan, %zu tavua "
+"käytettävissä)"
 
 msgid "Stream has untransferred data left"
 msgstr ""
@@ -14676,7 +14674,7 @@ msgid "Target CPU dies %d does not match source %d"
 msgstr "Kohdesuoritinmalli %d ei vastaa lähdettä %d"
 
 msgid "Target CPU does not match source"
-msgstr ""
+msgstr "Kohdeprosessori ei vastaa lähdettä"
 
 #, c-format
 msgid "Target CPU feature %s does not match source %s"
@@ -14774,7 +14772,7 @@ msgid "Target USB allow '%s' does not match source '%s'"
 msgstr ""
 
 msgid "Target USB product ID does not match source"
-msgstr ""
+msgstr "Kohde-USB:n toimittajan tunnus ei vastaa lähdettä"
 
 #, c-format
 msgid "Target USB redirection filter rule count %zu does not match source %zu"
@@ -14784,7 +14782,7 @@ msgid "Target USB vendor ID does not match source"
 msgstr "Kohde-USB:n toimittajan tunnus ei vastaa lähdettä"
 
 msgid "Target USB version does not match source"
-msgstr ""
+msgstr "Kohde-USB:n versio ei vastaa lähdettä"
 
 msgid "Target already exists"
 msgstr ""
@@ -14809,11 +14807,11 @@ msgstr ""
 
 #, c-format
 msgid "Target channel addr %s does not match source %s"
-msgstr ""
+msgstr "Kohdekanavaosoite %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target channel name %s does not match source %s"
-msgstr ""
+msgstr "Kohdekanavanimi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target channel type %s does not match source %s"
@@ -14828,15 +14826,15 @@ msgstr "Kohdekonsolin tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target controller index %d does not match source %d"
-msgstr ""
+msgstr "Kohdeohjaimen indeksi %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target controller model %d does not match source %d"
-msgstr ""
+msgstr "Kohdeohjaimen malli %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target controller ports %d does not match source %d"
-msgstr ""
+msgstr "Kohdeohjaimen portit %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target controller type %s does not match source %s"
@@ -14844,7 +14842,7 @@ msgstr "Kohdeohjaimen tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target controller vectors %d does not match source %d"
-msgstr ""
+msgstr "Kohdeohjaimen vektorit %d ei vastaa lähdettä %d"
 
 msgid "Target device PCI address "
 msgstr "Kohdelaitteen PCI-osoite "
@@ -14963,7 +14961,7 @@ msgstr "Kohdetoimialueen RNG-laitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain SMBIOS mode %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen SMBIOS tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain TPM device count %zu does not match source %zu"
@@ -15006,7 +15004,7 @@ msgstr "Kohdetoimialueen tiedostojärjestelmän lasku %zu ei vastaa lähdettä %
 
 #, c-format
 msgid "Target domain genid %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen genid %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain host device count %zu does not match source %zu"
@@ -15022,7 +15020,7 @@ msgstr "Kohdetoimialueen syöttölaitteen lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain machine type %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen koneen tyyppi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain max memory %lld does not match source %lld"
@@ -15042,7 +15040,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain name '%s' does not match source '%s'"
-msgstr ""
+msgstr "Kohdetoimialueen nimi %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain net card count %zu does not match source %zu"
@@ -15088,7 +15086,7 @@ msgstr ""
 
 #, c-format
 msgid "Target domain uuid %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen uuid %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target domain vCPU max %zu does not match source %zu"
@@ -15100,7 +15098,7 @@ msgstr "Kohdetoimialueen videokortin lasku %zu ei vastaa lähdettä %zu"
 
 #, c-format
 msgid "Target domain virt type %s does not match source %s"
-msgstr ""
+msgstr "Kohdetoimialueen virtuaalityyppi %s ei vastaa lähdettä %s"
 
 msgid "Target domain vsock device count does not match source"
 msgstr "Kohdetoimialueen vsock-laitteiden määrä ei vastaa lähdettä"
@@ -15129,7 +15127,7 @@ msgstr "Kohdeisäntälaitteen tila %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target host device subsystem %s does not match source %s"
-msgstr ""
+msgstr "Kohdeisäntälaitteen alijärjestelmä %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target hub device type %s does not match source %s"
@@ -15182,19 +15180,18 @@ msgstr ""
 
 #, c-format
 msgid "Target network card MTU %d does not match source %d"
-msgstr ""
+msgstr "Kohdeverkkokortin MTU %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target network card mac %s does not match source %s"
-msgstr ""
+msgstr "Kohdeverkkokortin mac %s ei vastaa lähdettä %s"
 
 #, c-format
 msgid "Target network card model %s does not match source %s"
 msgstr "Kohdeverkkokorttimalli %s ei vastaa lähdettä %s"
 
-#, fuzzy
 msgid "Target not found"
-msgstr "Verkkoa ei löytynyt"
+msgstr "Kohdetta ei löytynyt"
 
 #, c-format
 msgid "Target panic model '%s' does not match source '%s'"
@@ -15216,7 +15213,7 @@ msgstr ""
 
 #, c-format
 msgid "Target serial port %d does not match source %d"
-msgstr ""
+msgstr "Kohdesarjaportti %d ei vastaa lähdettä %d"
 
 #, c-format
 msgid "Target serial type %s does not match source %s"
@@ -15708,9 +15705,8 @@ msgstr ""
 msgid "Too long bridge device name"
 msgstr ""
 
-#, fuzzy
 msgid "Too long network device name"
-msgstr "verkon nimi"
+msgstr "Liian pitkä verkkolaitteen nimi"
 
 #, c-format
 msgid "Too many CPU models '%d' for limit '%d'"
@@ -15753,9 +15749,9 @@ msgstr ""
 msgid "Too many domains '%d' for limit '%d'"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Too many drivers, cannot register %s"
-msgstr "liian monta rekisteröityä ajuria kohteessa %s"
+msgstr "Liian monta ajuria, ei pysty rekisteröimään %s"
 
 #, fuzzy, c-format
 msgid "Too many drivers, cannot register storage backend '%s'"
@@ -15851,9 +15847,8 @@ msgstr "Yhteensä:\n"
 msgid "Transient disks are not supported by vz driver."
 msgstr ""
 
-#, fuzzy
 msgid "Transition started"
-msgstr "ei tilaa"
+msgstr "Siirtymä aloitettu"
 
 msgid "Transport"
 msgstr ""
@@ -16049,7 +16044,7 @@ msgstr "sisältöä ei voitu tallentaa"
 
 #, c-format
 msgid "Unable to access %s"
-msgstr ""
+msgstr "Ei pääse kohteeseen %s"
 
 #, c-format
 msgid "Unable to access cache '%s' for '%s'"
@@ -16468,13 +16463,13 @@ msgid "Unable to decode header until len is received"
 msgstr ""
 
 msgid "Unable to decode message header"
-msgstr ""
+msgstr "Viestin otsikon purkaminen ei onnistu"
 
 msgid "Unable to decode message length"
-msgstr ""
+msgstr "Viestin pituuden purkaminen ei onnistu"
 
 msgid "Unable to decode message payload"
-msgstr ""
+msgstr "Viestien hyötykuorman purkaminen ei onnistu"
 
 msgid "Unable to decode number of FDs"
 msgstr ""
@@ -16576,13 +16571,13 @@ msgid "Unable to enable/disable perf events"
 msgstr ""
 
 msgid "Unable to encode message header"
-msgstr ""
+msgstr "Viestin otsikkoa ei voi koodata"
 
 msgid "Unable to encode message length"
-msgstr ""
+msgstr "Viestin pituutta ei voi koodata"
 
 msgid "Unable to encode message payload"
-msgstr ""
+msgstr "Viestin hyötykuormaa ei voi koodata"
 
 msgid "Unable to encode number of FDs"
 msgstr ""
@@ -17448,7 +17443,7 @@ msgid "Unable to query tap interface name"
 msgstr "Liitännän tietojen haku epäonnistui"
 
 msgid "Unable to re-encode message length"
-msgstr ""
+msgstr "Viestin pituuden uudelleenkoodaus ei onnistu"
 
 #, c-format
 msgid "Unable to read %s"
@@ -17759,7 +17754,7 @@ msgstr ""
 
 #, c-format
 msgid "Unable to set SELinux context user '%s'"
-msgstr ""
+msgstr "Käyttäjän: %s SELinux-kontekstin asettaminen epäonnistui"
 
 #, c-format
 msgid "Unable to set SELinux label on %s"
@@ -18983,9 +18978,8 @@ msgstr "virt-tyyppi ei tuettu"
 msgid "Unsupported volume format '%s'"
 msgstr ""
 
-#, fuzzy
 msgid "Unused"
-msgstr "pysäytetty"
+msgstr "Ei käytössä"
 
 #, c-format
 msgid "Unusual value in %s/devices/%s/class: %s"
@@ -31759,11 +31753,11 @@ msgstr ""
 
 #, c-format
 msgid "packet %d bytes received from server too large, want %d"
-msgstr ""
+msgstr "palvelimelta vastaanotettu paketti %d tavua on liian suuri, halutaan %d"
 
 #, c-format
 msgid "packet %d bytes received from server too small, want %d"
-msgstr ""
+msgstr "palvelimelta vastaanotettu paketti %d tavua on liian pieni, halutaan %d"
 
 msgid "page cache size for xbzrle compression"
 msgstr ""
@@ -35141,7 +35135,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to get SELinux context of %s"
-msgstr ""
+msgstr "kohteen %s SELinux-kontekstin noutaminen epäonnistui"
 
 msgid "unable to get cpu account"
 msgstr ""
@@ -35251,7 +35245,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to parse diskspec: %s"
-msgstr ""
+msgstr "levymäärityksiä ei voi jäsentää: %s"
 
 #, c-format
 msgid "unable to parse json capabilities '%s'"
