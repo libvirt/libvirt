@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-14 13:39+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-16 06:54+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -4034,7 +4034,7 @@ msgstr "%s를 찾을 수 없음"
 
 #, c-format
 msgid "Could not find %s controller with index %d required for device"
-msgstr "장치에 필요한 인덱스 %d가 있는 %s 컨트롤러를 찾을 수 없습니다"
+msgstr "%s 제어기(장치를 위해 필요한 색인 %d와 함께)를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find %s with name '%s'"
@@ -4602,11 +4602,11 @@ msgstr "VPS ID %s를 구문분석 할 수 없음"
 
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
-msgstr "컨테이너 %d에 대한 구성에서 장벽 및 제한 '%s'를 구문 분석할 수 없습니다"
+msgstr "장벽과 제한 '%s'(컨테이너 %d에 대한 환경파일에서)를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Could not parse barrier of '%s' from config for container %d"
-msgstr "컨테이너 %d에 대한 구성에서 '%s'의 장벽을 구문 분석할 수 없습니다"
+msgstr "'%s'의 장벽을 구문 분석 할 수 없습니다 (컨테이너 %d에 대한 구성에서)"
 
 #, c-format
 msgid "Could not parse chain priority '%s'"
@@ -5139,7 +5139,7 @@ msgid "Detach network interface."
 msgstr "네트워크 인터페이스 분리."
 
 msgid "Detach node device from its device driver before assigning to a domain."
-msgstr "도메인에 할당하기 전에 장치 드라이버에서 노드 장치를 분리하십시오"
+msgstr "도메인에 할당하기 전에 이 장치 드라이버에서 노드 장치를 분리하세요."
 
 msgid "Device"
 msgstr "장치"
@@ -5718,7 +5718,7 @@ msgid "Dump XML for an ongoing domain block backup job"
 msgstr "진행 중인 도메인 블록 백업 작업에 대한 덤프 XML"
 
 msgid "Dump XML of domain information for a managed save state file to stdout."
-msgstr "관리되는 저장 상태 파일에 대한 도메인 정보의 XML을 stdout에 덤프합니다"
+msgstr "관리되는 저장 상태 파일을 위해 도메인 정보의 XML을 표준출력(stdout)으로 덤프합니다."
 
 msgid "Dump XML of domain information for a saved state file to stdout."
 msgstr "저장된 상태 파일에 대한 도메인 정보의 XML을 stdout에 덤프합니다."
@@ -6313,7 +6313,7 @@ msgstr "기능 추가에 실패 %s: %d"
 #, c-format
 msgid ""
 "Failed to add driver '%s' to driver_override  interface of PCI device '%s'"
-msgstr "driver_override에 드라이버 '%s'를 추가하지 못했습니다"
+msgstr "driver_override에 드라이버 '%s'  (PIC 장치 '%s'의 연결장치) 추가 하는데 실패하였습니다"
 
 msgid "Failed to add netlink event handle watch"
 msgstr "netlink 이벤트 핸들 감시를 추가하지 못했습니다"
@@ -7344,15 +7344,15 @@ msgstr "볼륨 목록화에 실패"
 
 #, c-format
 msgid "Failed to load PCI stub module %s"
-msgstr "PCI 스텁 모듈 %s를 로드하지 못했습니다"
+msgstr "PCI 스텁 모듈 %s를 적재하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to load PCI stub module %s: administratively prohibited"
-msgstr "PCI 스텁 모듈 %s를 로드하지 못했습니다: 관리상 금지됨"
+msgstr "PCI 스텁 모듈 %s를 적재하는데 실패했습니다: 관리상 금지됨"
 
 #, c-format
 msgid "Failed to load config for binding '%s'"
-msgstr "바인딩 '%s'에 대한 구성을 로드하지 못했습니다"
+msgstr "바인딩 '%s'를 위한 구성을 적재 하는데 실패하였습니다"
 
 #, fuzzy, c-format
 msgid "Failed to load config for domain '%s'"
@@ -21717,7 +21717,7 @@ msgstr "프로세스 %lld의 잠긴 메모리를 %llu로 제한할 수 없습니
 
 #, c-format
 msgid "cannot limit number of open files of process %lld to %u"
-msgstr "프로세스 %lld의 열린 파일 수를 %u로 제한할 수 없습니다."
+msgstr "프로세스 %lld의 열린 파일 수를 %u로 제한 할 수 없습니다"
 
 #, c-format
 msgid "cannot limit number of subprocesses of process %lld to %u"
@@ -22002,9 +22002,9 @@ msgstr "비디오 가상램 '%s'을 구문 분석 할 수 없음"
 msgid "cannot parse video vram64 '%s'"
 msgstr "비디오 가상램64 '%s'를 구문 분석 할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot parse vlan tag '%s' from file '%s'"
-msgstr "RAM 파일 시스템의 사용법 '%s'을 구문 분석할 수 없음"
+msgstr "vlan 태그 '%s'(파일 '%s'에서)를 구문 분석 할 수 없음"
 
 #, c-format
 msgid "cannot parse vnc port %s"
@@ -22116,7 +22116,7 @@ msgstr "스트렘에 대해 파일 감시를 등록할 수 없음"
 
 #, c-format
 msgid "cannot remove IOThread %u since it is being used by disk '%s'"
-msgstr "디스크 '%s'에서 사용 중이므로 IOThread %u를 제거할 수 없습니다"
+msgstr "IOThread %u를(디스크 '%s'에서 사용 중이므로) 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove IOThread '%u' since it is being used by controller"
@@ -22166,16 +22166,16 @@ msgstr "임시 도메인 정의를 해제할 수 없음"
 msgid "cannot rename active domain"
 msgstr "도메인에 대한 cputime을 읽을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot rename file '%s' as '%s'"
-msgstr "'%s' 파일을 읽을 수 없음"
+msgstr "파일 '%s' 을 이름을 재지정 할 수 없음 ('%s' 으로)"
 
 msgid "cannot replace NETIF config"
 msgstr "NETIF 설정을 대치할 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot reset '%s' when '%s' is set"
-msgstr "파일 소유자 '%s'를 설정할 수 없음"
+msgstr "'%s'를 재설정('%s'가 설정 할 때) 할 수 없습니다"
 
 #, fuzzy
 msgid "cannot reset current job"
@@ -22253,9 +22253,9 @@ msgstr "억세스할 수 없는 보조 기억 불륨 %s"
 msgid "cannot set common audio backend settings"
 msgstr "일반적인 오디오 백엔드 설정을 지정할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "cannot set current job to %s"
-msgstr "현재 시간을 얻을 수 없음"
+msgstr "현재 작업을 %s로 설정 할 수 없습니다"
 
 #, c-format
 msgid "cannot set external SSF %d (%s)"
