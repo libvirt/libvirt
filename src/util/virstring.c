@@ -35,41 +35,6 @@
 
 VIR_LOG_INIT("util.string");
 
-/**
- * virStringListMerge:
- * @dst: a NULL-terminated array of strings to expand
- * @src: a NULL-terminated array of strings
- *
- * Merges @src into @dst. Upon successful return from this
- * function, @dst is resized to $(dst + src) elements and @src is
- * freed.
- *
- * Returns 0 on success, -1 otherwise.
- */
-int
-virStringListMerge(char ***dst,
-                   char ***src)
-{
-    size_t dst_len, src_len, i;
-
-    if (!src || !*src)
-        return 0;
-
-    dst_len = g_strv_length(*dst);
-    src_len = g_strv_length(*src);
-
-    VIR_REALLOC_N(*dst, dst_len + src_len + 1);
-
-    for (i = 0; i <= src_len; i++)
-        (*dst)[i + dst_len] = (*src)[i];
-
-    /* Don't call g_strfreev() as it would free strings in
-     * @src. */
-    VIR_FREE(*src);
-    return 0;
-}
-
-
 /* Like strtol, but produce an "int" result, and check more carefully.
    Return 0 upon success;  return -1 to indicate failure.
    When END_PTR is NULL, the byte after the final valid digit must be NUL.
