@@ -603,13 +603,12 @@ class CLexer:
                         i = i + 3
                         continue
 
-                    j = i + 1
-                    if j < nline and line[j] in "+-*><=/%&!|":
-                        self.tokens.append(('op', line[i:j + 1]))
-                        i = j + 1
-                    else:
-                        self.tokens.append(('op', line[i]))
-                        i = i + 1
+                    j = i
+                    while (j + 1) < nline and line[j+1] in "+-*><=/%&!|":
+                        j = j + 1
+
+                    self.tokens.append(('op', line[i:j+1]))
+                    i = j + 1
                     continue
                 s = i
                 while i < nline:
