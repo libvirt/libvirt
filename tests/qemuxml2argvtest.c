@@ -1863,7 +1863,7 @@ mymain(void)
     DO_TEST_NOCAPS("smbios");
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-date");
     DO_TEST_PARSE_ERROR_NOCAPS("smbios-uuid-match");
-    DO_TEST("smbios-type-fwcfg", QEMU_CAPS_FW_CFG);
+    DO_TEST_NOCAPS("smbios-type-fwcfg");
 
     DO_TEST_NOCAPS("watchdog");
     DO_TEST_NOCAPS("watchdog-device");
