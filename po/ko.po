@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-18 19:05+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-09-18 19:06+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -17509,9 +17509,9 @@ msgstr "문자열 매개 변수를 구문 분석 할 수 없음"
 msgid "Unable to parse the xml"
 msgstr "xml을 구문 분석할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to parse uptime value '%s'"
-msgstr "mac 주소 '%s' 구문 분석할 수 없습니다"
+msgstr "가동 시간 값 '%s'을(를) 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "Unable to parse: %s"
