@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-19 11:50+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-19 11:51+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -13078,7 +13078,7 @@ msgid "Pin domain VCPUs to host physical CPUs."
 msgstr "도메인 VCPU를 물리적 호스트 CPU에 고정."
 
 msgid "Pin domain emulator threads to host physical CPUs."
-msgstr "물리적 CPU를 호스팅하기 위해 도메인 에뮬레이터 스레드를 고정합니다"
+msgstr "도메인 모의실험 쓰레드를 호스트 물리적 CPU에 고정합니다."
 
 #, c-format
 msgid "Plugin %s not accessible"
@@ -17511,7 +17511,7 @@ msgstr "xml을 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "Unable to parse uptime value '%s'"
-msgstr "가동 시간 값 '%s'을(를) 구문 분석할 수 없습니다"
+msgstr "가동 시간 값 '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Unable to parse: %s"
@@ -18915,9 +18915,9 @@ msgstr "지원되지 않는 문자 장치 유형 '%s'"
 msgid "Unsupported codeset '%d'"
 msgstr "지원하지 않는 codeset '%d'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unsupported compression method '%s'"
-msgstr "지원되지 않는 알고리즘 '%s'"
+msgstr "지원하지 않는 압축 방법 '%s'"
 
 #, c-format
 msgid "Unsupported config format '%s'"
@@ -19078,7 +19078,7 @@ msgstr "지원되지 않는 spicevmc 대상 이름 '%s'"
 
 #, c-format
 msgid "Unsupported storage type %s, the only supported type is %s"
-msgstr "지원되지 않는 스토리지 유형 %s, 지원되는 유일한 유형은 %s입니다."
+msgstr "지원하지 않는 저장소 유형 %s이고, 단지 지원하는 유형은 %s입니다"
 
 #, c-format
 msgid "Unsupported vbox device type: %d"
@@ -22282,7 +22282,7 @@ msgstr "명령이 아직 실행되지 않음"
 
 #, c-format
 msgid "command or command group '%s' doesn't exist"
-msgstr "명령 또는 명령 그룹 '%s'가 존재하지 않습니다."
+msgstr "명령 또는 명령 그룹 '%s'가 존재하지 않습니다"
 
 msgid "command to run"
 msgstr "실행 명령"
