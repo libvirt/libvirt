@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-19 18:29+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-20 07:36+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -22598,7 +22598,7 @@ msgstr "'%s'에 대한 체인의 '%s' 아래에서 이미지 '%s'을(를) 찾을
 
 #, c-format
 msgid "could not find image '%s' in chain for '%s'"
-msgstr "'%s'를 위한 체인에서 이미지 '%s'를 찾을 수 없습니다"
+msgstr "'%s'를 위한 연결고리에서 이미지 '%s'를 찾을 수 없습니다"
 
 msgid "could not find libvirtd"
 msgstr "libvirtd를 찾을 수 없음"
@@ -25983,27 +25983,22 @@ msgid "filter binding has no port dev name"
 msgstr "필터 바인딩에 포트 개발 이름이 없습니다"
 
 msgid "filter binding status missing content"
-msgstr ""
+msgstr "필터 바인딩 상태 누락 내용"
 
-#, fuzzy
 msgid "filter by disk-only snapshots"
-msgstr "도메인 스냅샷 삭제 "
+msgstr "디스크-전용 스냅샷에 의해 필터"
 
-#, fuzzy
 msgid "filter by domain name, id or uuid"
-msgstr "도메인명, id 또는 uuid"
+msgstr "도메인 이름, id 또는 uuid에 의해 필터"
 
-#, fuzzy
 msgid "filter by event name"
-msgstr "필터에 이름이 없습니다"
+msgstr "사건 이름에 의해 필터"
 
-#, fuzzy
 msgid "filter by external snapshots"
-msgstr "스냅샷 %s 삭제 실패 "
+msgstr "외부 스냅샷에 의해 실패"
 
-#, fuzzy
 msgid "filter by internal snapshots"
-msgstr "도메인 스냅샷 삭제 "
+msgstr "내부 스냅샷에 의해 필터"
 
 msgid "filter by network name or uuid"
 msgstr "네트워크 이름 또는 uuid로 필터링"
@@ -26671,7 +26666,7 @@ msgid "hugepages are not allowed with memory allocation ondemand"
 msgstr "요청 시 메모리 할당과 함께 거대한 페이지가 허용되지 않습니다"
 
 msgid "hugepages is not supported with memfd memory source"
-msgstr "거대 페이지는 memfd 메모리 소스에서 지원되지 않습니다"
+msgstr "hugepages는 memfd 메모리 원천에서 지원되지 않습니다"
 
 #, c-format
 msgid "hugepages: node %zd not found"
@@ -26839,7 +26834,7 @@ msgid "initial CPU throttling rate for auto-convergence"
 msgstr "자동 수렴을 위한 초기 CPU 조절 속도"
 
 msgid "initial allocation size, as scaled integer (default bytes)"
-msgstr "초기 할당 크기, 크기 조정된 정수(기본 바이트)"
+msgstr "크기가 조정되는 정수인 초기 할당 크기(기본 바이트)"
 
 msgid ""
 "initial memory size of a domain with NUMA nodes cannot be modified with this "
@@ -27095,9 +27090,7 @@ msgstr "<vlan>에서 잘못된 \"trunk='%s'\" - yes 또는 no이어야 합니다
 msgid ""
 "invalid \"trunk='%s'\" in <vlan> - trunk='yes' is required for more than one "
 "vlan tag"
-msgstr ""
-"<vlan>에서 잘못된 \"trunk='%s'\" - 하나 이상의 vlan 태그의 경우 "
-"trunk='yes'가 필요합니다 "
+msgstr "<vlan>에서 잘못된 \"trunk='%s'\" - trunk='yes'는 하나 이상의 vlan 태그가 필요합니다"
 
 #, c-format
 msgid "invalid %s value: '%s'"
@@ -27120,7 +27113,7 @@ msgstr "vhostuser 디스크 소스에 대한 잘못된 '유형' 속성"
 
 #, c-format
 msgid "invalid <address> element found in <forward> of network %s"
-msgstr "네트워크 %s의 <forward>에서 잘못된 <address> 요소가 발견되었습니다 "
+msgstr "네트워크 %s의 <forward>에서 잘못된 <address> 요소가 발견되었습니다"
 
 #, c-format
 msgid "invalid <forwarder> element found in <dns> of network %s"
@@ -27128,7 +27121,7 @@ msgstr "네트워크 %s의 <dns>에서 잘못된 <forwarder> 요소가 발견되
 
 #, c-format
 msgid "invalid <host> element found in <dns> of network %s"
-msgstr "네트워크 %s의 <dns>에서 잘못된 <host> 요소가 발견되었습니다 "
+msgstr "네트워크 %s의 <dns>에서 잘못된 <host> 요소가 발견되었습니다"
 
 #, c-format
 msgid "invalid <interface> element found in <forward> of network %s"
@@ -27144,11 +27137,11 @@ msgstr "네트워크 %s의 <forward>에서 잘못된 <pf> 요소가 발견되었
 
 #, c-format
 msgid "invalid <port> element found in <forward> of network %s"
-msgstr "네트워크 %s의 <forward>에서 잘못된 <port> 요소가 발견되었습니다 "
+msgstr "네트워크 %s의 <forward>에서 잘못된 <port> 요소가 발견되었습니다"
 
 #, c-format
 msgid "invalid <srv> element found in <dns> of network %s"
-msgstr "네트워크 %s의 <dns>에서 잘못된 <srv> 요소가 발견되었습니다 "
+msgstr "네트워크 %s의 <dns>에서 잘못된 <srv> 요소가 발견되었습니다"
 
 #, c-format
 msgid "invalid <txt> element found in <dns> of network %s"
