@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-04 21:05+0000\n"
+"PO-Revision-Date: 2021-09-20 07:36+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -6898,48 +6898,43 @@ msgstr "Misslyckades att skapa symlänken ”%s” till ”%s”"
 msgid "Failed to create thread"
 msgstr "Misslyckades att skapa en tråd"
 
-#, fuzzy
 msgid "Failed to create thread for receiving migration data"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en tråd för att ta emot migreringsdata"
 
 #.
 #. * Not much we can do on error here except log it.
 #.
-#, fuzzy
 msgid "Failed to create thread to handle daemon restart"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en tråd för att hantera omstart av demonen"
 
 #.
 #. * Not much we can do on error here except log it.
 #.
-#, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en tråd för att hantera avstängning av domänen"
 
 #. Not much else can be done
-#, fuzzy
 msgid "Failed to create thread to handle pool refresh"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en tråd för att hantera uppdatering av poolen"
 
-#, fuzzy
 msgid "Failed to create thread to suspend the host"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en tråd för att söva värden"
 
 #, c-format
 msgid "Failed to create unique directory with template '%s' for probing QEMU"
 msgstr ""
+"Misslyckades att skapa en unik katalog med mallen ”%s” för att proba QEMU"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create v1 controller %s for group"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att skapa v1-styrenhet %s för gruppen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to create v2 cgroup '%s'"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att skapa en v2-cgroup ”%s”"
 
-#, fuzzy
 msgid "Failed to create vbox driver object."
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att drivrutinsobjekt för vbox."
 
 #, c-format
 msgid "Failed to create vol %s"
@@ -6953,9 +6948,9 @@ msgstr "Misslyckades att skapa volymen från %s"
 msgid "Failed to define domain from %s"
 msgstr "Misslyckades att definiera domän från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to define interface from %s"
-msgstr "Misslyckades att definiera nätverk från %s"
+msgstr "Misslyckades att definiera gränssnitt från %s"
 
 #, c-format
 msgid "Failed to define network filter from %s"
@@ -6975,7 +6970,7 @@ msgstr "Misslyckades att definiera det nya gränssnittet %s"
 
 #, c-format
 msgid "Failed to define node device from '%s'"
-msgstr ""
+msgstr "Misslyckades att definiera nodenhet från ”%s”"
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -6985,21 +6980,21 @@ msgstr "Misslyckades att definiera poolen %s"
 msgid "Failed to define pool from %s"
 msgstr "Misslyckades att definiera poolen från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete DiskDescriptor.xml of volume '%s'"
-msgstr "Misslyckades att definiera nätverk från %s"
+msgstr "Misslyckades att radera DiskDescriptor.xml för volymen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete autostart link '%s': %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades att radera autostartlänken ”%s”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete checkpoint %s"
-msgstr "Misslyckades att förstöra domän %s"
+msgstr "Misslyckades att radera kontrollpunkten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete network filter binding on %s"
-msgstr "Misslyckades att definiera nätverk från %s"
+msgstr "Misslyckades att radera nätverksfilterbindningen på %s"
 
 #, c-format
 msgid "Failed to delete network port %s"
@@ -7009,9 +7004,9 @@ msgstr "Misslyckades att radera nätverksporten %s"
 msgid "Failed to delete pool %s"
 msgstr "Misslyckades att radera poolen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete secret %s"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att radera hemligheten %s"
 
 #, c-format
 msgid "Failed to delete snapshot %s"
@@ -7021,13 +7016,13 @@ msgstr "Misslyckades att radera ögonblicksbilden %s"
 msgid "Failed to delete snapshot: %s"
 msgstr "Misslyckades att radera ögonblicksbilden: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete symlink '%s'"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "Misslyckades att radera symlänken ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to delete veth device %s"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades att radera veth-enheten %s"
 
 #, c-format
 msgid "Failed to delete vol %s"
@@ -7053,9 +7048,9 @@ msgstr "Misslyckades med att förstöra gränssnittet %s"
 msgid "Failed to destroy network %s"
 msgstr "Misslyckades att förstöra nätverk %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to destroy node device '%s'"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att förstöra nodenheten ”%s”"
 
 #, c-format
 msgid "Failed to destroy pool %s"
@@ -7069,45 +7064,44 @@ msgstr "Misslyckades att koppla ifrån enheten %s"
 msgid "Failed to detach device from %s"
 msgstr "Misslyckades att avmontera enheten från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to detach device with alias %s"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades att koppla ifrån enheten med alias %s"
 
-#, fuzzy
 msgid "Failed to detach disk"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades att koppla ifrån en disk"
 
-#, fuzzy
 msgid "Failed to detach interface"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att koppla ifrån ett gränssnitt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine broadcast address for '%s/%d'"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Misslyckades att avgöra utsändningsadressen för ”%s/%d”"
 
 #, c-format
 msgid "Failed to determine if %u:%u:%u:%u is a Direct-Access LUN"
-msgstr ""
+msgstr "Misslyckades att avgöra om %u:%u:%u:%u är en Direct-Access-LUN"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to determine prefix for IP address '%s'"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med avgöra prefixet för IP-adressen ”%s”"
 
 #, c-format
 msgid "Failed to determine prefix for route with destination '%s'"
-msgstr ""
+msgstr "Misslyckades att avgöra prefixet för rutten med destinationen ”%s”"
 
 #, sh-format
 msgid "Failed to determine state of guest: $guest. Not tracking it anymore."
 msgstr ""
+"Misslyckades att avgöra tillståndet för gästen: $guest. Följer den inte "
+"längre."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to disconnect client '%llu' from server %s"
-msgstr "Misslyckades att ansluta uttaget till ”%s”"
+msgstr "Misslyckades att koppla ifrån klienten ”%llu” från servern %s"
 
-#, fuzzy
 msgid "Failed to disconnect from the admin server"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "Misslyckades att koppla ifrån från administrationsservern"
 
 msgid "Failed to disconnect from the hypervisor"
 msgstr "Misslyckades att koppla ifrån hypervisorn"
@@ -7116,100 +7110,97 @@ msgstr "Misslyckades att koppla ifrån hypervisorn"
 msgid "Failed to disconnect: %s"
 msgstr "Misslyckades att koppla ifrån: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to discover session: %s"
-msgstr "Det gick inte grena av som demon: %s"
+msgstr "Misslyckades att upptäcka sessionen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to dump core of domain '%d' with libxenlight"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att dumpa minnet för domän ”%d” med libxenlight"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to enable controller '%s' for '%s'"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att aktivera styrenheten ”%s” för ”%s”"
 
-#, fuzzy
 msgid "Failed to escape password for XML"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades med att skydda lösenordet för XML"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to execute symbol '%s' in module '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med exekvera symbolen ”%s” i modulen ”%s”"
 
 msgid "Failed to extract interface information"
 msgstr "Misslyckades att få gränssnittsinformation"
 
-#, fuzzy
 msgid "Failed to extract interface information or no interfaces found"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr ""
+"Misslyckades med att hämta gränssnittsinformation eller så hittades inga "
+"gränssnitt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find QOM Object path for device '%s'"
-msgstr "Kunde inte hitta sökvägen till binären %s"
+msgstr "Kunde inte hitta QOM-Object-sökvägen för enheten ”%s”"
 
 #, c-format
 msgid "Failed to find SCSI host with wwnn='%s', wwpn='%s'"
-msgstr ""
+msgstr "Misslyckades att hitta SCSI-värden med wwnn=”%s”, wwpn=”%s”"
 
-#, fuzzy
 msgid "Failed to find a node driver"
-msgstr "Misslyckades att hitta nätverk"
+msgstr "Misslyckades att hitta en noddrivrutin"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find a node driver: %s"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "Misslyckades att hitta en noddrivrutin: %s"
 
-#, fuzzy
 msgid "Failed to find a secret storage driver"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att hitta en lagringsenhet för hemligheter"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find a secret storage driver: %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att hitta en lagringsenhet för hemligheter: %s"
 
-#, fuzzy
 msgid "Failed to find a storage driver"
-msgstr "Misslyckades att hitta nätverk"
+msgstr "Misslyckades att lagringsdrivrutin"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find a storage driver: %s"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "Misslyckades att hitta en lagringsdrivrutin: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find any %s pool sources"
-msgstr "Kunde inte hitta sökvägen till binären %s"
+msgstr "Misslyckades att hitta några %s-poolkällor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find fc_host for wwnn='%s' and wwpn='%s'"
-msgstr "Kunde inte hitta sökvägen till binären %s"
+msgstr "Misslyckades att hitta fc_host för wwnn=”%s” och wwpn=”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find group record for gid '%u'"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att grupposten för gid ”%u”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find module '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att hitta modulen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find parent device for %s"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades med att hitta föräldraenheten till %s"
 
 #, c-format
 msgid "Failed to find scsi_host using PCI '%s' and unique_id='%u'"
 msgstr ""
+"Misslyckades med att hitta scsi_host som använder PCI ”%s” och unique_id=”%u”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find symbol '%s' in module '%s': %s"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades med att hitta symbolen ”%s” i modulen ”%s”: %s"
 
-#, fuzzy
 msgid "Failed to find the interface"
-msgstr "Misslyckades att hitta nätverk"
+msgstr "Misslyckades att hitta gränssnittet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find the interface: %s"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "Misslyckades att hitta gränssnittet: %s"
 
 msgid "Failed to find the network"
 msgstr "Misslyckades att hitta nätverk"
@@ -7218,25 +7209,27 @@ msgstr "Misslyckades att hitta nätverk"
 msgid "Failed to find the network: %s"
 msgstr "Misslyckades att hitta nätverket: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to find user record for uid '%u'"
-msgstr "Misslyckades att definiera nätverk från %s"
+msgstr "Misslyckades att hitta användarposten för uid ”%u”"
 
 #, c-format
 msgid "Failed to fork as daemon: %s"
 msgstr "Det gick inte grena av som demon: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to format new xml document for bridge %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att formatera ett nytt xml-dokument för bryggan %s"
 
 #, c-format
 msgid "Failed to format new xml document for detached interface %s"
 msgstr ""
+"Misslyckades att formatera ett nytt xml-dokument för det frånkopplade "
+"gränssnittet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to fully read directory %s"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "Misslyckades att fullständigt läsa katalogen %s"
 
 msgid "Failed to generate UUID"
 msgstr "Misslyckades med att generera UUID"
@@ -7247,20 +7240,19 @@ msgstr "Misslyckades med att generera genid"
 msgid "Failed to generate uuid"
 msgstr "Misslyckades med att generera uuid"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get %s minor number"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Misslyckades att få %s undre nummer"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get SRIOV function from device link '%s'"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "Misslyckades att hämta SRIOV-funktionen från enhetslänken ”%s”"
 
-#, fuzzy
 msgid "Failed to get UUID of created secret"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att hämta UUID för den skapade hemligheten"
 
 msgid "Failed to get VNC port. Is this domain using VNC?"
-msgstr ""
+msgstr "Misslyckades att hämta VNC-porten. Använder domänen VNC?"
 
 #, c-format
 msgid "Failed to get block stats %s %s"
