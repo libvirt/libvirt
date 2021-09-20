@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-12 06:04+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-13 10:45+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -3465,7 +3465,7 @@ msgstr ""
 
 #, c-format
 msgid "Certificate %s purpose does not allow use for with a TLS client"
-msgstr "인증서 %s 용도는 TLS 클라이언트와 함께 사용할 수 없습니다."
+msgstr "인증서 %s 용도는 TLS 클라이언트와 함께 사용 할 수 없습니다"
 
 #, c-format
 msgid "Certificate %s purpose does not allow use for with a TLS server"
@@ -3481,7 +3481,7 @@ msgstr "인증서 %s 사용은 디지털 서명을 허용하지 않습니다"
 
 #, c-format
 msgid "Certificate %s usage does not permit key encipherment"
-msgstr "인증서 %s 사용은 비밀번호 암호화를 허용하지 않습니다."
+msgstr "인증서 %s 사용은 비밀번호 암호화를 허용하지 않습니다"
 
 #, c-format
 msgid "Certificate failed validation: %s"
@@ -3664,7 +3664,7 @@ msgstr "상위 풀 내의 존재하는 볼륨을 복제하십시오."
 #, c-format
 msgid ""
 "Close callback for domain %s already registered with another connection %p"
-msgstr "다른 연결 %p에 이미 등록된 도메인 %s에 대한 콜백을 닫으십시오"
+msgstr "도메인 %s에 대한 콜백을 닫으십시오 (다른 연결 %p에 이미 등록된)"
 
 #, c-format
 msgid "Cloud-Hypervisor doesn't support '%s' device"
@@ -5250,7 +5250,7 @@ msgstr "장치 별명이 색인 '%d'인 '%s' 제어기에 대한 설정이 없�
 msgid ""
 "Device alias was not set for PCI controller with index %u required for "
 "device at address %s"
-msgstr "주소 %s의 장치에 필요한 인덱스 %u의 PCI 컨트롤러에 대한 장치 별칭이 설정되지 않았습니다"
+msgstr "색인 %u의 PCI 제어기에 대한 장치 별칭이 설정되지 않았습니다 (주소 %s의 장치에 필요한)"
 
 msgid "Device attached successfully\n"
 msgstr "장치가 성공적으로 부착되었습니다\n"
@@ -5407,7 +5407,7 @@ msgstr "노드의 총 CPU 수, 온라인 CPU 수 및 온라인 CPU 목록을 표
 #, c-format
 msgid ""
 "Distance value %d under node %zu is LOCAL_DISTANCE and should be set to 10"
-msgstr "노드 %zu 아래의 거리 값 %d는 LOCAL_DISTANCE이며 10으로 설정해야 합니다"
+msgstr "거리 값 %d(노드 %zu 하에서)는 LOCAL_DISTANCE이며 10으로 설정해야 합니다"
 
 #, c-format
 msgid "Distance value of %d is not in valid range"
@@ -5438,7 +5438,7 @@ msgstr "도메인 '%s' XML 구성은 변경되지 않았습니다.\n"
 
 #, c-format
 msgid "Domain '%s' attached to pid %u\n"
-msgstr "pid %u에 연결된도메인 '%s'\n"
+msgstr "도메인 '%s'는 pid %u로 연결되었습니다\n"
 
 #, c-format
 msgid "Domain '%s' could not be suspended"
@@ -9374,7 +9374,7 @@ msgstr "vnode %zu를 위한 불완전한 vnuma 구성"
 msgid ""
 "Inconsistent SCSI controller model ('%s' is not '%s') for SCSI controller "
 "index %d"
-msgstr "SCSI 컨트롤러 인덱스 %d에 대해 일치하지 않는 SCSI 컨트롤러 모델('%s'는 '%s'이 아님)입니다"
+msgstr "일치하지 않는 SCSI 컨트롤러 모델('%s'는 '%s'이 아님) (SCSI 제어기 색인 %d에)"
 
 msgid "Incorrect data type"
 msgstr "잘못된 데이터 유형"
@@ -9496,7 +9496,7 @@ msgid "Interface detached successfully\n"
 msgstr "인터페이스가 성공적으로 탈착되었습니다\n"
 
 msgid "Interface doesn't have any statistics"
-msgstr "접속기에 아무런 통계가 없습니다."
+msgstr "연결장치에 어떤 통계도 가지고 있지 않습니다"
 
 #, c-format
 msgid "Interface name from config %s doesn't match given supplied name %s"
@@ -12684,7 +12684,7 @@ msgstr "볼륨 '%s'에 대해 풀 안에 가용 공간이 충분하지 않습니
 msgid ""
 "Not enough room for allocation of %llu bytes for level %u cache %u scope "
 "type '%s'"
-msgstr "레벨 %u 캐시 %u 범위 유형 '%s'에 대해 %llu 바이트를 할당할 공간이 부족합니다"
+msgstr "%llu 바이트를 할당할 공간이 부족합니다 (레벨 %u 캐쉬 %u 범위 유형 '%s'에 대해)"
 
 #, fuzzy
 msgid "Not enough space left in storage pool"
@@ -12757,7 +12757,7 @@ msgstr "<%s> 옵션에 대한 숫자 값 '%s'의 형식이 잘못되었거나 �
 
 #, c-format
 msgid "Numeric value '%u' for <%s> option is malformed or out of range"
-msgstr "<%s> 옵션에 대한 숫자 값 '%u'의 형식이 잘못되었거나 범위를 벗어났습니다"
+msgstr "숫자 값 '%u'의(<%s> 옵션에 대한) 형식이 잘못되었거나 범위를 벗어났습니다"
 
 msgid "OS Type:"
 msgstr "OS 유형:"
@@ -12993,7 +12993,7 @@ msgstr "위치:"
 msgid ""
 "Option '%s' has invalid value for PCI controller with index '%d', model '%s' "
 "and modelName '%s'"
-msgstr "인덱스 '%d', 모델 '%s' 및 모델 이름 '%s'가 있는 PCI 컨트롤러에 대해 옵션 '%s'에 잘못된 값이 있습니다"
+msgstr "선택(옵션) '%s'은 색인 '%d', 모델 '%s' 와 모델이름 '%s'와 함께 PCI 컨트롤러에 대해 잘못된 값이 있습니다"
 
 #, c-format
 msgid "Option '%s' is not supported by '%s' device with this QEMU binary"
@@ -13174,7 +13174,7 @@ msgstr "PCI 컨트롤러 대상 인덱스 '%d'가 범위를 벗어났습니다; 
 msgid ""
 "PCI device %04x:%02x:%02x.%x allocated from network %s is already in use by "
 "domain %s"
-msgstr "네트워크 %s에서 할당된 PCI 장치 %04x:%02x:%02x.%x는 도메인 %s에서 이미 사용 중입니다"
+msgstr "PCI 장치 %04x:%02x:%02x.%x(네트워크 %s에서 할당된)는 이미 도메인 %s의해 사용 중입니다"
 
 #, fuzzy, c-format
 msgid "PCI device %s is in use"
@@ -13227,7 +13227,7 @@ msgstr "POST 작업 실패: %s"
 #, c-format
 msgid ""
 "PTR domain for %s network with prefix %u cannot be automatically created"
-msgstr "접두사가 %u인 %s 네트워크에 대한 PTR 도메인을 자동으로 생성할 수 없습니다"
+msgstr "%s 네트워크(접두사가 %u인)를 위한 PTR 도메인을 자동으로 생성 할 수 없습니다"
 
 msgid "PTY device is not yet assigned"
 msgstr "PTY 장치가 아직 할당되지 않았습니다"
@@ -13896,7 +13896,7 @@ msgstr "요청한 볼륨 '%s'가 풀 '%s'에 있지 않습니다"
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
-msgstr "인덱스 '%d', 모델 '%s' 및 모델 이름 '%s'가 있는 PCI 컨트롤러에 대해 필수 옵션 '%s'가 설정되지 않았습니다"
+msgstr "필수 선택(옵션) '%s'가 색인 '%d', 모델 '%s' 과 모델이름 '%s'가 있는 PCI 제어기를 위해 설정되지 않았습니다"
 
 #, c-format
 msgid ""
@@ -16296,7 +16296,7 @@ msgstr "제한 '%d'에 클라이언트 '%d'가 너무 많습니다"
 
 #, c-format
 msgid "Too many disks in fsinfo: %zd for limit %d"
-msgstr "fsinfo에 디스크가 너무 많습니다: %d 제한에 대한 %zd"
+msgstr "fsinfo에 디스크가 너무 많습니다: %zd (%d 제한에 대한)"
 
 msgid "Too many domain elements in migration cookie"
 msgstr "마이그레이션 쿠키에 너무 많은 도메인 요소가 있습니다"
@@ -16887,8 +16887,8 @@ msgid ""
 "Unable to configure VF %d of PF '%s' because the PF is not online. Please "
 "change host network config to put the PF online."
 msgstr ""
-"PF가 온라인 상태가 아니므로 PF '%s'의 VF %d를 구성할 수 없습니다. PF를 온라인 상태로 전환하려면 호스트 네트워크 구성을 "
-"변경하십시오."
+"왜냐하면 PF가 온라인 상태가 아니므로 VF%d (PF '%s'의)를 구성 할 수 없습니다 . PF를 온라인 상태로 전환하려면 호스트 "
+"네트워크 구성을 변경하세요."
 
 #, fuzzy
 msgid "Unable to configure libxl's memory management parameters"
@@ -17505,9 +17505,9 @@ msgstr "새로운 인터페이스 %s를 정의하는데 실패"
 msgid "Unable to get interface index for %s"
 msgstr "%s를 위한 연결장치 색인을 가져 올 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to get interface index for '%s'"
-msgstr "인터페이스 '%s'를 가져오는 데 실패"
+msgstr "%s를 위한 연결장치 색인을 가져 올 수 없습니다"
 
 #, fuzzy
 msgid "Unable to get interface index on this platform"
@@ -19757,7 +19757,7 @@ msgstr "VCPU:"
 msgid ""
 "VF %d of PF '%s' is not bound to a net driver, so its MAC address cannot be "
 "set to %s"
-msgstr "PF '%s'의 VF %d는 네트 드라이버에 바인딩되어 있지 않으므로 해당 MAC 주소를 %s로 설정할 수 없습니다"
+msgstr "VF %d(PF '%s'의)는 넷 드라이버에 결합되지 않아서, 해당 MAC 주소를 %s로 설정 할 수 없습니다"
 
 #, c-format
 msgid "VFB %s too big for destination"
@@ -19807,7 +19807,7 @@ msgstr "VMX 항목 '이름'에 잘못된 이스케이프 시퀀스가 포함되�
 
 #, c-format
 msgid "VMX entry 'sched.cpu.affinity' contains a %d, this value is too large"
-msgstr "VMX 항목 'sched.cpu.affinity'에 %d가 포함되어 있습니다. 이 값이 너무 큽니다."
+msgstr "VMX 항목 'sched.cpu.affinity'에 %d가 포함되어 있으며, 해당 값이 너무 큽니다"
 
 msgid "VNC"
 msgstr "VNC"
@@ -20697,7 +20697,7 @@ msgstr "잘못된 경로 이름"
 
 #, c-format
 msgid "bad prefix %d for network %s when  checking range %s - %s"
-msgstr "범위 %s - %s를 확인할 때 네트워크 %s에 대한 잘못된 접두사 %d"
+msgstr "잘못된 접두사 %d(네트워크 %s에 대한)  (범위 %s - %s를 점검 중일 때)"
 
 msgid "balloon device cannot be disabled"
 msgstr "풍선 장치는 비활성화할 수 없습니다"
@@ -21065,7 +21065,7 @@ msgid "can't deflatten colliding key '%s'"
 msgstr "설정 디렉터리 '%s'를 만들 수 없음"
 
 msgid "can't download volume, all existing snapshots will be lost"
-msgstr "볼륨을 다운로드할 수 없습니다. 기존 스냅샷이 모두 손실됩니다"
+msgstr "볼륨을 내려 받을 수 없으며, 모든 기존 스냅샷이 손실됩니다"
 
 #, fuzzy
 msgid "can't find created snapshot"
@@ -21073,7 +21073,7 @@ msgstr "현재 스냅샷 정보"
 
 #, c-format
 msgid "can't identify pool in uri %s "
-msgstr "uri %s에서 풀을 식별할 수 없습니다 "
+msgstr "uri %s에서 풀을 식별 할 수 없습니다 "
 
 #, fuzzy, c-format
 msgid "can't identify volume in uri %s"
@@ -21724,9 +21724,8 @@ msgstr "현재 시간을 얻을 수 없음"
 msgid "cannot get current time"
 msgstr "현재 시간을 얻을 수 없음"
 
-#, fuzzy
 msgid "cannot get disk location"
-msgstr "장치 시작 위치를 구문분석할 수 없음"
+msgstr "디스크 위치를 가져 올 수 없습니다"
 
 #, fuzzy
 msgid "cannot get feature flags on macvtap tap"
@@ -23804,7 +23803,7 @@ msgid "delete a vol"
 msgstr "볼륨 삭제"
 
 msgid "delete an IOThread from the guest domain"
-msgstr ""
+msgstr "게스트 도메인에서 IOThread를 삭제합니다"
 
 msgid "delete checkpoint and all children"
 msgstr ""
@@ -23842,7 +23841,7 @@ msgid ""
 msgstr ""
 
 msgid "delete the specified network port"
-msgstr ""
+msgstr "지정된 네트워크 포트를 삭제하세요"
 
 #, fuzzy, c-format
 msgid "deleting %s drive failed: %s"
@@ -25293,7 +25292,7 @@ msgid "expected exactly 1 device for the storage pool"
 msgstr ""
 
 msgid "expected exactly 1 host for the storage pool"
-msgstr ""
+msgstr "저장소 풀을 위해 정확히 1개의 호스트가 예상됩니다"
 
 #, c-format
 msgid "expected protocol '%s' but got '%s' in URI JSON volume definition"
@@ -25363,7 +25362,7 @@ msgid "extended partition already exists"
 msgstr "확장 파티션이 이미 존재합니다"
 
 msgid "external"
-msgstr ""
+msgstr "외부"
 
 #, c-format
 msgid "external active snapshots are not supported on '%s' disks"
@@ -26745,7 +26744,7 @@ msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr "파일 형식 유형 raw,bochs,qcow,qcow2,qed,vmdk"
 
 msgid "filePath is null"
-msgstr ""
+msgstr "파일 경로가 비어있습니다"
 
 #, fuzzy
 msgid "filename containing XML description of the copy destination"
@@ -29442,7 +29441,7 @@ msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
 msgstr ""
 
 msgid "machine is null"
-msgstr ""
+msgstr "기계가 null입니다"
 
 #, fuzzy
 msgid "machine not in running state to suspend it"
@@ -31047,7 +31046,7 @@ msgid "model type"
 msgstr "모델 유형"
 
 msgid "modifies an existing IOThread of the guest domain"
-msgstr ""
+msgstr "게스트 도메인의 기존 IOThread를 수정합니다"
 
 msgid "modify cpu state in the guest"
 msgstr "게스트에서 cpu 상태 수정"
@@ -33135,7 +33134,7 @@ msgid "possible loop in QMP schema"
 msgstr ""
 
 msgid "post-copy"
-msgstr ""
+msgstr "사후-복사"
 
 msgid "post-copy can only be started while outgoing migration is in progress"
 msgstr ""
@@ -36841,9 +36840,8 @@ msgstr "예기치 못한 않은 생명주기 동작 %d"
 msgid "unexpected memballoon model %d"
 msgstr "예기치 못한 memballoon 모델 %d"
 
-#, fuzzy
 msgid "unexpected message type"
-msgstr "예기치 못한 비밀 사용 유형 %d"
+msgstr "예상치 못한 메시지 유형"
 
 #, c-format
 msgid "unexpected migration status in %s"
@@ -38052,9 +38050,9 @@ msgstr "지원되지 않는 이벤트 ID %d"
 msgid "unsupported node device event ID %d"
 msgstr "지원되지 않는 이벤트 ID %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "unsupported numatune mode: '%d'"
-msgstr "지원되지 않는 포워딩 모드 '%s'"
+msgstr "지원되지 않는 numatune 방식: '%d'"
 
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
@@ -38130,9 +38128,8 @@ msgstr "지원하지 않는 데이터 타입 '%c'가 인자 '%s'에 대해 사�
 msgid "unsupported usb model"
 msgstr "지원하지 않는 디스크 장치"
 
-#, fuzzy
 msgid "unsupported value"
-msgstr "지원되지 않는 기능 %s"
+msgstr "지원되지 않는 값"
 
 #, c-format
 msgid "unsupported volume encryption format %d"
