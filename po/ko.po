@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-19 11:51+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-09-19 11:56+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -25251,39 +25251,36 @@ msgid ""
 "probably needs to be raised"
 msgstr "장치 BPF 맵을 초기화하지 못했습니다. libvirtd에 대한 잠금 메모리 제한을 높여야 할 수도 있습니다"
 
-#, fuzzy
 msgid "failed to initialize domain condition"
-msgstr "조건을 기다리는 데 실패"
+msgstr "도메인 조건을 초기화하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to initialize gluster connection (src=%p priv=%p)"
-msgstr "보안 드라이버를 초기화하는데 실패 "
+msgstr "Gluster 연결을 초기화하지 못했습니다(src=%p priv=%p)"
 
-#, fuzzy
 msgid "failed to initialize libssh"
-msgstr "RADOS를 초기화하는데 실패"
+msgstr "libssh를 초기화하지 못했습니다"
 
 msgid "failed to initialize netcf"
 msgstr "netcf를 초기화하는데 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD image '%s'"
-msgstr "RBD 이미지 '%s' 열기 실패"
+msgstr "RBD 이미지 '%s'을(를) 반복하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to iterate RBD snapshot %s@%s"
-msgstr "스냅샷 %s 삭제 실패 "
+msgstr "RBD 스냅샷 %s@%s을(를) 반복하지 못했습니다"
 
 #, c-format
 msgid "failed to list host interfaces: %s%s%s"
 msgstr "호스트 인터페이스를 나열하는데 실패했습니다: %s%s%s"
 
 msgid "failed to load cgroup BPF prog"
-msgstr ""
+msgstr "cgroup BPF 프로그램을 로드하지 못했습니다"
 
-#, fuzzy
 msgid "failed to lookup device in old map"
-msgstr "장치 %s를 %s에 마운트하는데 실패했습니다 "
+msgstr "이전 지도에서 장치를 조회하지 못했습니다"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
@@ -25301,13 +25298,13 @@ msgstr "자동 시작으로 %s 풀을 표시하기 실패"
 msgid "failed to move file to %s "
 msgstr "파일을 %s로 이동하는데 실패 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to obtain list of available servers from %s"
-msgstr "호스트에서 %s 인터페이스 목록을 가져오는데 실패"
+msgstr "%s에서 사용 가능한 서버 목록을 가져오지 못했습니다"
 
 #, c-format
 msgid "failed to obtain list of connected clients from server '%s'"
-msgstr ""
+msgstr "서버 '%s'에서 연결된 클라이언트 목록을 가져오지 못했습니다"
 
 #, c-format
 msgid "failed to open %s"
@@ -25320,13 +25317,11 @@ msgstr "구성 파일 열기에 실패"
 msgid "failed to open configuration file %s"
 msgstr "구성 파일 %s를 열기에 실패"
 
-#, fuzzy
 msgid "failed to open domain master key file for read"
-msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
+msgstr "읽기 위해 도메인 마스터 키 파일을 열지 못했습니다"
 
-#, fuzzy
 msgid "failed to open domain master key file for write"
-msgstr "도메인 저장 파일 '%s'를 만드는 데 실패"
+msgstr "쓰기 위해 도메인 마스터 키 파일을 열지 못했습니다"
 
 msgid "failed to open file"
 msgstr "파일 열기 실패"
@@ -25335,17 +25330,16 @@ msgstr "파일 열기 실패"
 msgid "failed to open logfile %s"
 msgstr "로그파일 %s 열기에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to open netns %s"
-msgstr "tty %s를 여는 데 실패"
+msgstr "netns %s을(를) 열지 못했습니다"
 
 #, c-format
 msgid "failed to open ns %s"
 msgstr "ns %s을 여는 데 실패"
 
-#, fuzzy
 msgid "failed to open secret file for write"
-msgstr "파일 열기 실패"
+msgstr "쓰기 위해 비밀 파일을 열지 못했습니다"
 
 #, c-format
 msgid "failed to open ssh channel: %s"
@@ -25366,29 +25360,27 @@ msgstr "로그 파일 열기 실패. 로그 파일 경로 확인"
 msgid "failed to parse %s"
 msgstr "%s 구문 분석 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse %sversion"
-msgstr "%s 구문 분석 실패"
+msgstr "%sversion을(를) 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse CPU blockers in QEMU capabilities"
-msgstr "블럭 이름 %s 구문 분석 실패"
+msgstr "QEMU 기능에서 CPU 차단기를 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse SCSI host '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "SCSI 호스트 '%s'을(를) 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse agent timeout"
-msgstr "%s 값을 구문 분석하는데 실패"
+msgstr "에이전트 시간 초과를 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse backing file location '%s'"
-msgstr "'%s'내의 mac 팔터를 활성화하는 데 실패"
+msgstr "백업 파일 위치 '%s'을(를) 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse block device '%s'"
-msgstr "블럭 이름 %s 구문 분석 실패"
+msgstr "블록 장치 '%s'을(를) 구문 분석하지 못했습니다"
 
 msgid "failed to parse configuration file"
 msgstr "설정 파일 구문 분석 실패"
@@ -25397,68 +25389,62 @@ msgstr "설정 파일 구문 분석 실패"
 msgid "failed to parse configuration file %s"
 msgstr "%s 설정 파일 구문 분석 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse cpuid[%zu]"
-msgstr "%s 구문 분석 실패"
+msgstr "cpuid[%zu]를 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse device weight: '%s'"
-msgstr "디렉터리 이름 '%s'를 구문분숙 하는 데 실패"
+msgstr "장치 무게를 구문 분석하지 못했습니다: '%s'"
 
 #, c-format
 msgid "failed to parse int: '%s'"
 msgstr "int: '%s' 구문 분석에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse integer: '%s'"
-msgstr "디렉터리 이름 '%s'를 구문분숙 하는 데 실패"
+msgstr "정수 구문 분석 실패: '%s'"
 
 msgid "failed to parse json"
 msgstr "json 구문 분석에 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse msr[%zu]"
-msgstr "%s 구문 분석 실패"
+msgstr "msr[%zu]을(를) 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse multicast address from '%s'"
-msgstr "mac 주소 '%s' 구문 분석할 수 없습니다"
+msgstr "'%s'의 멀티캐스트 주소를 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse node name index"
-msgstr "블럭 이름 %s 구문 분석 실패"
+msgstr "노드 이름 인덱스를 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse port number '%s'"
-msgstr "디렉터리 이름 '%s'를 구문분숙 하는 데 실패"
+msgstr "포트 번호 '%s'을(를) 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities cpus"
-msgstr "기능 전환 실패"
+msgstr "qemu 기능 CPU를 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities flags"
-msgstr "기능 전환 실패"
+msgstr "qemu 기능 플래그를 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities gic"
-msgstr "기능 전환 실패"
+msgstr "qemu 기능 gic을 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse qemu capabilities machines"
-msgstr "기능 전환 실패"
+msgstr "qemu 기능 시스템을 구문 분석하지 못했습니다"
 
-#, fuzzy
 msgid "failed to parse qemu device list"
-msgstr "장치 %s의 리셋이 실패"
+msgstr "qemu 장치 목록을 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse read_bps_device: '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "read_bps_device를 구문 분석하지 못했습니다: '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "failed to parse read_iops_device: '%s'"
-msgstr "모드 '%s'의 구문분석에 실패했습니다"
+msgstr "read_iops_device를 구문 분석하지 못했습니다: '%s'"
 
 #, fuzzy
 msgid "failed to parse slirp helper list"
