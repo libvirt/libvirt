@@ -242,6 +242,7 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
                               struct virQEMUQAPISchemaTraverseContext *ctxt)
 {
     const char *query = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
+    const char *featurequery = NULL;
     virJSONValue *values;
     virJSONValue *members;
     size_t i;
@@ -249,8 +250,16 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
     if (query[0] != '^')
         return 0;
 
-    if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
-        return -3;
+    if (virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt)) {
+        /* we might have a query for a feature flag of an enum value */
+        featurequery = virQEMUQAPISchemaTraverseContextNextQuery(ctxt);
+
+        if (*featurequery != '$' ||
+            virQEMUQAPISchemaTraverseContextHasNextQuery(ctxt))
+            return -3;
+
+        featurequery++;
+    }
 
     query++;
 
@@ -263,12 +272,20 @@ virQEMUQAPISchemaTraverseEnum(virJSONValue *cur,
             if (!member || !(name = virJSONValueObjectGetString(member, "name")))
                 return -2;
 
-            if (STREQ(name, query))
+            if (STREQ(name, query)) {
+                if (featurequery)
+                    return virQEMUQAPISchemaTraverseHasObjectFeature(featurequery, member);
+
                 return 1;
+            }
         }
 
         return 0;
     }
+
+    /* old-style "values" array doesn't have feature flags so any query is necessarily false */
+    if (featurequery)
+        return 0;
 
     if (!(values = virJSONValueObjectGetArray(cur, "values")))
         return -2;
@@ -439,7 +456,8 @@ virQEMUQAPISchemaTraverse(const char *baseName,
  *
  * The above types can be chained arbitrarily using slashes to construct any
  * path into the schema tree, booleans must be always the last component as they
- * don't refer to a type.
+ * don't refer to a type. An exception is querying feature of an enum value
+ * (.../^enumval/$featurename) which is allowed.
  *
  * Returns 1 if @query was found in @schema filling @entry if non-NULL, 0 if
  * @query was not found in @schema and -1 on other errors along with an appropriate
