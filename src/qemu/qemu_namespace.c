@@ -251,8 +251,7 @@ qemuDomainSetupDisk(virStorageSource *src,
             if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
                 return -1;
         } else {
-            g_auto(GStrv) targetPaths = NULL;
-            GStrv tmp;
+            GSList *targetPaths;
 
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
@@ -270,10 +269,8 @@ qemuDomainSetupDisk(virStorageSource *src,
                 return -1;
             }
 
-            if (targetPaths) {
-                for (tmp = targetPaths; *tmp; tmp++)
-                    *paths = g_slist_prepend(*paths, g_steal_pointer(tmp));
-            }
+            if (targetPaths)
+                *paths = g_slist_concat(g_slist_reverse(targetPaths), *paths);
         }
 
         *paths = g_slist_prepend(*paths, g_steal_pointer(&tmpPath));

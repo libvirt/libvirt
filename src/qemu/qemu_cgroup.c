@@ -38,6 +38,7 @@
 #include "virnuma.h"
 #include "virdevmapper.h"
 #include "virutil.h"
+#include "virglibutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -60,8 +61,8 @@ qemuSetupImagePathCgroup(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int perms = VIR_CGROUP_DEVICE_READ;
-    g_auto(GStrv) targetPaths = NULL;
-    size_t i;
+    g_autoptr(virGSListString) targetPaths = NULL;
+    GSList *n;
     int rv;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
@@ -94,10 +95,10 @@ qemuSetupImagePathCgroup(virDomainObj *vm,
         return -1;
     }
 
-    for (i = 0; targetPaths && targetPaths[i]; i++) {
-        rv = virCgroupAllowDevicePath(priv->cgroup, targetPaths[i], perms, false);
+    for (n = targetPaths; n; n = n->next) {
+        rv = virCgroupAllowDevicePath(priv->cgroup, n->data, perms, false);
 
-        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", targetPaths[i],
+        virDomainAuditCgroupPath(vm, priv->cgroup, "allow", n->data,
                                  virCgroupGetDevicePermsString(perms),
                                  rv);
         if (rv < 0)

@@ -36,6 +36,7 @@
 # include "virstring.h"
 # include "virfile.h"
 # include "virlog.h"
+# include "virglibutil.h"
 
 # define VIR_FROM_THIS VIR_FROM_STORAGE
 
@@ -217,18 +218,16 @@ virDMSanitizepath(const char *path)
 static int
 virDevMapperGetTargetsImpl(int controlFD,
                            const char *path,
-                           char ***devPaths_ret,
+                           GSList **devPaths,
                            unsigned int ttl)
 {
     g_autofree char *sanitizedPath = NULL;
     g_autofree char *buf = NULL;
     struct dm_ioctl dm;
     struct dm_target_deps *deps = NULL;
-    g_auto(GStrv) devPaths = NULL;
     size_t i;
 
     memset(&dm, 0, sizeof(dm));
-    *devPaths_ret = NULL;
 
     if (ttl == 0) {
         errno = ELOOP;
@@ -258,24 +257,17 @@ virDevMapperGetTargetsImpl(int controlFD,
         return -1;
     }
 
-    devPaths = g_new0(char *, deps->count + 1);
     for (i = 0; i < deps->count; i++) {
-        devPaths[i] = g_strdup_printf("/dev/block/%u:%u",
-                                      major(deps->dev[i]),
-                                      minor(deps->dev[i]));
-    }
+        char *curpath = g_strdup_printf("/dev/block/%u:%u",
+                                        major(deps->dev[i]),
+                                        minor(deps->dev[i]));
 
-    for (i = 0; i < deps->count; i++) {
-        g_auto(GStrv) tmpPaths = NULL;
+        *devPaths = g_slist_prepend(*devPaths, curpath);
 
-        if (virDevMapperGetTargetsImpl(controlFD, devPaths[i], &tmpPaths, ttl - 1) < 0)
-            return -1;
-
-        if (virStringListMerge(&devPaths, &tmpPaths) < 0)
+        if (virDevMapperGetTargetsImpl(controlFD, curpath, devPaths, ttl - 1) < 0)
             return -1;
     }
 
-    *devPaths_ret = g_steal_pointer(&devPaths);
     return 0;
 }
 
@@ -283,11 +275,10 @@ virDevMapperGetTargetsImpl(int controlFD,
 /**
  * virDevMapperGetTargets:
  * @path: devmapper target
- * @devPaths: returned string list of devices
+ * @devPaths: filled in by a GSList containing the paths
  *
  * For given @path figure out its targets, and store them in
- * @devPaths array. Note, @devPaths is a string list so it's NULL
- * terminated.
+ * @devPaths.
  *
  * If @path is not a devmapper device, @devPaths is set to NULL and
  * success is returned.
@@ -301,10 +292,11 @@ virDevMapperGetTargetsImpl(int controlFD,
  */
 int
 virDevMapperGetTargets(const char *path,
-                       char ***devPaths)
+                       GSList **devPaths)
 {
     VIR_AUTOCLOSE controlFD = -1;
     const unsigned int ttl = 32;
+    g_autoptr(virGSListString) paths = NULL;
 
     /* Arbitrary limit on recursion level. A devmapper target can
      * consist of devices or yet another targets. If that's the
@@ -321,7 +313,11 @@ virDevMapperGetTargets(const char *path,
         return -1;
     }
 
-    return virDevMapperGetTargetsImpl(controlFD, path, devPaths, ttl);
+    if (virDevMapperGetTargetsImpl(controlFD, path, &paths, ttl) < 0)
+        return -1;
+
+    *devPaths = g_slist_reverse(g_steal_pointer(&paths));
+    return 0;
 }
 
 
@@ -346,7 +342,7 @@ virIsDevMapperDevice(const char *dev_name)
 
 int
 virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
-                       char ***devPaths G_GNUC_UNUSED)
+                       GSlist **devPaths G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;

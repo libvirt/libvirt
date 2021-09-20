@@ -54,16 +54,14 @@ qemuDomainGetUnplugTimeout(virDomainObj *vm)
 
 int
 virDevMapperGetTargets(const char *path,
-                       char ***devPaths)
+                       GSList **devPaths)
 {
     *devPaths = NULL;
 
     if (STREQ(path, "/dev/mapper/virt")) {
-        *devPaths = g_new0(char *, 4);
-        (*devPaths)[0] = g_strdup("/dev/block/8:0");  /* /dev/sda */
-        (*devPaths)[1] = g_strdup("/dev/block/8:16"); /* /dev/sdb */
-        (*devPaths)[2] = g_strdup("/dev/block/8:32"); /* /dev/sdc */
-        (*devPaths)[3] = NULL;
+        *devPaths = g_slist_prepend(*devPaths, g_strdup("/dev/block/8:32")); /* /dev/sdc */
+        *devPaths = g_slist_prepend(*devPaths, g_strdup("/dev/block/8:16")); /* /dev/sdb */
+        *devPaths = g_slist_prepend(*devPaths, g_strdup("/dev/block/8:0")); /* /dev/sda */
     }
 
     return 0;
