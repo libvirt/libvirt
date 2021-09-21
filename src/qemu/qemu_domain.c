@@ -1154,12 +1154,6 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
     g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
 
-    if (!qemuDomainSupportsEncryptedSecret(priv)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("encrypted secrets are not supported"));
-        return NULL;
-    }
-
     secinfo = g_new0(qemuDomainSecretInfo, 1);
 
     secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
@@ -1232,20 +1226,6 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
     virSecureErase(secret, secretlen);
 
     return secinfo;
-}
-
-
-/**
- * qemuDomainSupportsEncryptedSecret:
- * @priv: qemu domain private data
- *
- * Returns true if libvirt can use encrypted 'secret' objects with VM which
- * @priv belongs to.
- */
-bool
-qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivate *priv)
-{
-    return !!priv->masterKey;
 }
 
 
@@ -1404,8 +1384,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-        if (!qemuDomainSupportsEncryptedSecret(priv) ||
-            (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI && !iscsiHasPS)) {
+        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI && !iscsiHasPS) {
             srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
                                                             src->auth->username,
                                                             &src->auth->seclookupdef);
@@ -10888,7 +10867,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
                 virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
                 qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(src);
 
-                if (!qemuDomainSupportsEncryptedSecret(priv) || !iscsiHasPS) {
+                if (!iscsiHasPS) {
                     srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
                                                                     src->auth->username,
                                                                     &src->auth->seclookupdef);
