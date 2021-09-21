@@ -113,7 +113,6 @@
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='disk-share-rw'/>
-  <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
   <flag name='pcie-pci-bridge'/>

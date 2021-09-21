@@ -75,7 +75,6 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>
   <flag name='disk-share-rw'/>
-  <flag name='iscsi.password-secret'/>
   <flag name='dump-completed'/>
   <flag name='virtio-gpu-ccw'/>
   <flag name='virtio-keyboard-ccw'/>

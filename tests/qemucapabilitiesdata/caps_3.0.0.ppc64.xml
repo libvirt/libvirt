@@ -105,7 +105,6 @@
   <flag name='machine.pseries.resize-hpt'/>
   <flag name='spapr-vty'/>
   <flag name='disk-share-rw'/>
-  <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
   <flag name='machine.pseries.max-cpu-compat'/>
   <flag name='dump-completed'/>

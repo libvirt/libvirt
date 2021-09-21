@@ -148,7 +148,6 @@
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
   <flag name='disk-share-rw'/>
-  <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>

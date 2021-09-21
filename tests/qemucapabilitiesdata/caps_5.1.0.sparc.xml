@@ -44,7 +44,6 @@
   <flag name='vnc-multi-servers'/>
   <flag name='chardev-reconnect'/>
   <flag name='disk-share-rw'/>
-  <flag name='iscsi.password-secret'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
   <flag name='qcow2-luks'/>
