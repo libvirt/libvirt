@@ -1455,7 +1455,6 @@ mymain(void)
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST_NOCAPS("luks-disks");
     DO_TEST_NOCAPS("luks-disks-source");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-qcow2");
     DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST_CAPS_VER("luks-disks-source-qcow2", "5.2.0");
     DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
