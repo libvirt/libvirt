@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=expander-test,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-expander-test/master-key.aes \
 -machine pc-i440fx-2.5,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \

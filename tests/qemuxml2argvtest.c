@@ -1701,7 +1701,6 @@ mymain(void)
     driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
-            QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_OBJECT_TLS_CREDS_X509);
     driver.config->chardevTLS = 0;
@@ -2108,16 +2107,16 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-translation");
     qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
 
-    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST("luks-disks", QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST("luks-disks-source", QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST_PARSE_ERROR("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET);
-    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_OBJECT_SECRET, QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_NOCAPS("luks-disks");
+    DO_TEST_NOCAPS("luks-disks-source");
+    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-qcow2");
+    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST_CAPS_VER("luks-disks-source-qcow2", "5.2.0");
     DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
     DO_TEST_PARSE_ERROR_NOCAPS("luks-disk-invalid");
-    DO_TEST_PARSE_ERROR("luks-disks-source-both", QEMU_CAPS_OBJECT_SECRET);
+    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-both");
 
     DO_TEST_NOCAPS("memtune");
     DO_TEST_NOCAPS("memtune-unlimited");
@@ -3270,7 +3269,6 @@ mymain(void)
                  ARG_END);
 
     DO_TEST("name-escape",
-            QEMU_CAPS_OBJECT_SECRET,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_SPICE,
@@ -3284,7 +3282,7 @@ mymain(void)
             QEMU_CAPS_CCID_EMULATED,
             QEMU_CAPS_VIRTIO_SCSI);
 
-    DO_TEST("master-key", QEMU_CAPS_OBJECT_SECRET);
+    DO_TEST_NOCAPS("master-key");
     DO_TEST("usb-long-port-path",
             QEMU_CAPS_USB_HUB);
     DO_TEST_PARSE_ERROR("usb-too-long-port-path-invalid",
@@ -3409,7 +3407,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_HDA_DUPLEX,
             QEMU_CAPS_CCID_EMULATED,
-            QEMU_CAPS_QCOW2_LUKS, QEMU_CAPS_OBJECT_SECRET);
+            QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("user-aliases2", QEMU_CAPS_DEVICE_IOH3420, QEMU_CAPS_ICH9_AHCI);
     DO_TEST("user-aliases-usb", QEMU_CAPS_KVM,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,

@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-riscv64 \
 -name guest=riscv64,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-riscv64/master-key.aes \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off \
 -m 2048 \
 -realtime mlock=off \

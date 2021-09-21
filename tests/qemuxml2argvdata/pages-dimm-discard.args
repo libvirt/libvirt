@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fedora,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-fedora/master-key.aes \
 -machine pc-i440fx-2.3,accel=tcg,usb=off,dump-guest-core=off \
 -m size=1048576k,slots=16,maxmem=1099511627776k \
 -realtime mlock=off \

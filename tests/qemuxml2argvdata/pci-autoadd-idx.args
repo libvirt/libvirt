@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fdr-br,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-fdr-br/master-key.aes \
 -machine pc-1.2,accel=tcg,usb=off,dump-guest-core=off \
 -m 2048 \
 -realtime mlock=off \

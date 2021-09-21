@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=gentoo,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-gentoo/master-key.aes \
 -machine pc-i440fx-1.4,accel=kvm,usb=off,dump-guest-core=off \
 -m 4096 \
 -realtime mlock=off \

@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=instance-00000092,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-instance-00000092/master-key.aes \
 -machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 28672 \
 -mem-prealloc \

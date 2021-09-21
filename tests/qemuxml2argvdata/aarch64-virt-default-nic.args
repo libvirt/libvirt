@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=aarch64-virt-default-nic,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-aarch64-virt-default/master-key.aes \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -cpu cortex-a53 \
 -m 1024 \

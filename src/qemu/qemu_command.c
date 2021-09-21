@@ -200,15 +200,6 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
 
-    /* If the -object secret does not exist, then just return. This just
-     * means the domain won't be able to use a secret master key and is
-     * not a failure.
-     */
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET)) {
-        VIR_INFO("secret object is not supported by this QEMU binary");
-        return 0;
-    }
-
     if (!(alias = qemuDomainGetMasterKeyAlias()))
         return -1;
 

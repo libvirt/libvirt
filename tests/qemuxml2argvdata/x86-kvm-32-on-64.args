@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=kvm,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-kvm/master-key.aes \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
 -cpu qemu32 \
 -m 4096 \

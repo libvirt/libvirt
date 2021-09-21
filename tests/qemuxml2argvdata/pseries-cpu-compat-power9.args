@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pseries,accel=kvm,usb=off,dump-guest-core=off,max-cpu-compat=power9 \
 -cpu host \
 -m 256 \

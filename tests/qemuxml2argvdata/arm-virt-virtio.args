@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-arm \
 -name guest=armtest,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-armtest/master-key.aes \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off \
 -m 1024 \
 -realtime mlock=off \

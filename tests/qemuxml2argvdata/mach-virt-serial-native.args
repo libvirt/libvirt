@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=guest,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
 -machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
 -m 512 \
 -realtime mlock=off \

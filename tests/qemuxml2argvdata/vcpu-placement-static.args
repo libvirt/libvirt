@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=dummy2,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-dummy2/master-key.aes \
 -machine pc-q35-2.3,accel=kvm,usb=off,dump-guest-core=off \
 -m 128 \
 -realtime mlock=off \

@@ -557,10 +557,6 @@ qemuDomainMasterKeyReadFile(qemuDomainObjPrivate *priv)
     uint8_t *masterKey = NULL;
     ssize_t masterKeyLen = 0;
 
-    /* If we don't have the capability, then do nothing. */
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
-        return 0;
-
     if (!(path = qemuDomainGetMasterKeyFilePath(priv->libDir)))
         return -1;
 
@@ -648,10 +644,6 @@ qemuDomainMasterKeyCreate(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree uint8_t *key = NULL;
-
-    /* If we don't have the capability, then do nothing. */
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET))
-        return 0;
 
     key = g_new0(uint8_t, QEMU_DOMAIN_MASTER_KEY_LEN);
 
@@ -1253,8 +1245,7 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
 bool
 qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivate *priv)
 {
-    return virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
-           priv->masterKey;
+    return !!priv->masterKey;
 }
 
 
@@ -5362,8 +5353,7 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
     g_autofree char *encalias = NULL;
 
     if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
-        virStorageSourceIsEmpty(disk->src) ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+        virStorageSourceIsEmpty(disk->src))
         return 0;
 
     /* network storage authentication secret */
@@ -5546,8 +5536,7 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDef *hostdev,
     virDomainHostdevSubsysSCSIiSCSI *iscsisrc = &scsisrc->u.iscsi;
     g_autofree char *authalias = NULL;
 
-    if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS) ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_SECRET))
+    if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS))
         return 0;
 
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||

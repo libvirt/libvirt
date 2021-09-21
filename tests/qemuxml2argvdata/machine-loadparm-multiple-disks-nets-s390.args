@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine s390-ccw-virtio,accel=tcg,usb=off,dump-guest-core=off,loadparm=SYSTEM1 \
 -m 214 \
 -realtime mlock=off \

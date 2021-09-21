@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest/master-key.aes \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off \
 -m 14338 \
 -realtime mlock=off \

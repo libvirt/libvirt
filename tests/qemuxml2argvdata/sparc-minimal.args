@@ -10,6 +10,7 @@ QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-sparc \
 -name guest=redhat62sparc,debug-threads=on \
 -S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-redhat62sparc/master-key.aes \
 -machine SS-5,accel=tcg,usb=off,dump-guest-core=off \
 -m 500 \
 -realtime mlock=off \
