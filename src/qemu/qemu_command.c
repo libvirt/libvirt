@@ -748,34 +748,6 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
 }
 
 
-/* qemuBuildGeneralSecinfoURI:
- * @uri: Pointer to the URI structure to add to
- * @secinfo: Pointer to the secret info data (if present)
- *
- * If we have a secinfo, then build the command line options for
- * the secret info for the "general" case (somewhat a misnomer since
- * an iscsi disk is the only one with a secinfo).
- *
- * Returns 0 on success or if no secinfo,
- * -1 and error message if fail to add secret information
- */
-static int
-qemuBuildGeneralSecinfoURI(virURI *uri G_GNUC_UNUSED,
-                           qemuDomainSecretInfo *secinfo)
-{
-    if (!secinfo)
-        return 0;
-
-    switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
-    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
-        return -1;
-    }
-
-    return 0;
-}
-
-
 /* qemuBuildRBDSecinfoURI:
  * @uri: Pointer to the URI structure to add to
  * @secinfo: Pointer to the secret info data (if present)
@@ -891,8 +863,7 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
 
 
 static char *
-qemuBuildNetworkDriveURI(virStorageSource *src,
-                         qemuDomainSecretInfo *secinfo)
+qemuBuildNetworkDriveURI(virStorageSource *src)
 {
     g_autoptr(virURI) uri = NULL;
 
@@ -901,9 +872,6 @@ qemuBuildNetworkDriveURI(virStorageSource *src,
 
     if (src->hosts->socket)
         uri->query = g_strdup_printf("socket=%s", src->hosts->socket);
-
-    if (qemuBuildGeneralSecinfoURI(uri, secinfo) < 0)
-        return NULL;
 
     return virURIFormat(uri);
 }
@@ -965,7 +933,7 @@ qemuBuildNetworkDriveStr(virStorageSource *src,
                 return virBufferContentAndReset(&buf);
             }
             /* NBD code uses URI formatting scheme as others in some cases */
-            ret = qemuBuildNetworkDriveURI(src, secinfo);
+            ret = qemuBuildNetworkDriveURI(src);
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_HTTP:
@@ -975,7 +943,7 @@ qemuBuildNetworkDriveStr(virStorageSource *src,
         case VIR_STORAGE_NET_PROTOCOL_TFTP:
         case VIR_STORAGE_NET_PROTOCOL_ISCSI:
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
-            ret = qemuBuildNetworkDriveURI(src, secinfo);
+            ret = qemuBuildNetworkDriveURI(src);
             break;
 
         case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
