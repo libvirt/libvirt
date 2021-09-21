@@ -4501,24 +4501,12 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDef *dev)
     g_autoptr(virJSONValue) srcprops = NULL;
     virDomainHostdevSubsysSCSI *scsisrc = &dev->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIiSCSI *iscsisrc = &scsisrc->u.iscsi;
-    qemuDomainStorageSourcePrivate *srcPriv =
-        QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(iscsisrc->src);
 
-    if (qemuDiskSourceNeedsProps(iscsisrc->src)) {
-        if (!(srcprops = qemuDiskSourceGetProps(iscsisrc->src)))
-            return NULL;
-        if (!(netsource = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
-            return NULL;
-        virBufferAsprintf(&buf, "%s,if=none,format=raw", netsource);
-    } else {
-        /* Rather than pull what we think we want - use the network disk code */
-        if (!(netsource = qemuBuildNetworkDriveStr(iscsisrc->src, srcPriv ?
-                                                   srcPriv->secinfo : NULL)))
-            return NULL;
-        virBufferAddLit(&buf, "file=");
-        virQEMUBuildBufferEscapeComma(&buf, netsource);
-        virBufferAddLit(&buf, ",if=none,format=raw");
-    }
+    if (!(srcprops = qemuDiskSourceGetProps(iscsisrc->src)))
+        return NULL;
+    if (!(netsource = virQEMUBuildDriveCommandlineFromJSON(srcprops)))
+        return NULL;
+    virBufferAsprintf(&buf, "%s,if=none,format=raw", netsource);
 
     return virBufferContentAndReset(&buf);
 }
