@@ -73,11 +73,6 @@ testCryptoEncrypt(const void *opaque)
     g_autofree uint8_t *ciphertext = NULL;
     size_t ciphertextlen = 0;
 
-    if (!virCryptoHaveCipher(data->algorithm)) {
-        fprintf(stderr, "cipher algorithm=%d unavailable\n", data->algorithm);
-        return EXIT_AM_SKIP;
-    }
-
     enckey = g_new0(uint8_t, enckeylen);
     iv = g_new0(uint8_t, ivlen);
 

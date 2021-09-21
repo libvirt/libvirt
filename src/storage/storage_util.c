@@ -839,12 +839,6 @@ storageBackendCreateQemuImgCheckEncryption(int format,
                            _("no secret provided for luks encryption"));
             return -1;
         }
-        if (!virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("luks encryption usage requires encrypted "
-                             "secret generation to be supported"));
-            return -1;
-        }
     } else {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("volume encryption unsupported with format %s"), type);

@@ -1253,8 +1253,7 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
 bool
 qemuDomainSupportsEncryptedSecret(qemuDomainObjPrivate *priv)
 {
-    return virCryptoHaveCipher(VIR_CRYPTO_CIPHER_AES256CBC) &&
-           virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
+    return virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_SECRET) &&
            priv->masterKey;
 }
 

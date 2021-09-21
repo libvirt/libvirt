@@ -100,33 +100,6 @@ virCryptoHashString(virCryptoHash hash,
 }
 
 
-/* virCryptoHaveCipher:
- * @algorithm: Specific cipher algorithm desired
- *
- * Expected to be called prior to virCryptoEncryptData in order
- * to determine whether the requested encryption option is available,
- * so that "other" alternatives can be taken if the algorithm is
- * not available.
- *
- * Returns true if we can support the encryption.
- */
-bool
-virCryptoHaveCipher(virCryptoCipher algorithm)
-{
-    switch (algorithm) {
-
-    case VIR_CRYPTO_CIPHER_AES256CBC:
-        return true;
-
-    case VIR_CRYPTO_CIPHER_NONE:
-    case VIR_CRYPTO_CIPHER_LAST:
-        break;
-    };
-
-    return false;
-}
-
-
 /* virCryptoEncryptDataAESgntuls:
  *
  * Performs the AES gnutls encryption

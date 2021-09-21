@@ -2092,7 +2092,6 @@ virConfWriteMem;
 virCryptoEncryptData;
 virCryptoHashBuf;
 virCryptoHashString;
-virCryptoHaveCipher;
 
 
 # util/virdaemon.h

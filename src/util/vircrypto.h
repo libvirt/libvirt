@@ -54,8 +54,6 @@ virCryptoHashString(virCryptoHash hash,
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
-bool virCryptoHaveCipher(virCryptoCipher algorithm);
-
 int virCryptoEncryptData(virCryptoCipher algorithm,
                          uint8_t *enckey, size_t enckeylen,
                          uint8_t *iv, size_t ivlen,
