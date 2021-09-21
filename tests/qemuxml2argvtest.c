@@ -1293,20 +1293,15 @@ mymain(void)
 
     DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
 
-    DO_TEST_NOCAPS("disk-cdrom");
     DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST_CAPS_LATEST("disk-cdrom-bus-other");
     DO_TEST_NOCAPS("disk-iscsi");
-    DO_TEST("disk-cdrom-network", QEMU_CAPS_KVM);
     DO_TEST_CAPS_VER("disk-cdrom-network", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
-    DO_TEST("disk-cdrom-tray",
-            QEMU_CAPS_VIRTIO_TX_ALG);
     DO_TEST_CAPS_VER("disk-cdrom-tray", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
-    DO_TEST_NOCAPS("disk-floppy");
     DO_TEST_CAPS_VER("disk-floppy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_CAPS_VER("disk-floppy-q35-2_9", "2.12.0");
@@ -1324,10 +1319,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_NOCAPS("disk-boot-disk");
     DO_TEST_NOCAPS("disk-boot-cdrom");
-    DO_TEST_NOCAPS("floppy-drive-fat");
     DO_TEST_CAPS_VER("floppy-drive-fat", "2.12.0");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
-    DO_TEST_NOCAPS("disk-readonly-disk");
     DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
     DO_TEST_NOCAPS("disk-fmt-qcow");
@@ -1337,7 +1330,6 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_PARSE_ERROR_NOCAPS("disk-shared-qcow");
-    DO_TEST_NOCAPS("disk-error-policy");
     DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
@@ -1347,10 +1339,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("disk-transient", "x86_64", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-transient");
-    DO_TEST_NOCAPS("disk-network-nbd");
     DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");
-    DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-network-iscsi-modern",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_BLOCK);
@@ -1359,20 +1349,15 @@ mymain(void)
     DO_TEST_PARSE_ERROR_NOCAPS("disk-network-iscsi-auth-secrettype-invalid");
     DO_TEST_PARSE_ERROR_NOCAPS("disk-network-iscsi-auth-wrong-secrettype");
     DO_TEST_PARSE_ERROR_NOCAPS("disk-network-source-auth-both");
-    DO_TEST("disk-network-gluster",
-            QEMU_CAPS_GLUSTER_DEBUG_LEVEL);
     DO_TEST_CAPS_VER("disk-network-gluster", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-gluster");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_FAILURE_NOCAPS("disk-network-rbd-no-colon");
-    DO_TEST_NOCAPS("disk-network-sheepdog");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
-    DO_TEST_NOCAPS("disk-network-source-auth");
     DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
-    DO_TEST("disk-network-vxhs", QEMU_CAPS_VXHS);
     DO_TEST_CAPS_LATEST("disk-network-nfs");
     driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
@@ -1412,7 +1397,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);
-    DO_TEST_NOCAPS("disk-aio");
     DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
@@ -1420,9 +1404,6 @@ mymain(void)
     DO_TEST_NOCAPS("disk-source-pool-mode");
     DO_TEST("disk-ioeventfd",
             QEMU_CAPS_VIRTIO_IOEVENTFD,
-            QEMU_CAPS_VIRTIO_TX_ALG,
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-copy_on_read",
             QEMU_CAPS_VIRTIO_TX_ALG,
             QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
