@@ -604,10 +604,10 @@ class CLexer:
                         continue
 
                     j = i
-                    while (j + 1) < nline and line[j+1] in "+-*><=/%&!|":
+                    while (j + 1) < nline and line[j + 1] in "+-*><=/%&!|":
                         j = j + 1
 
-                    self.tokens.append(('op', line[i:j+1]))
+                    self.tokens.append(('op', line[i:j + 1]))
                     i = j + 1
                     continue
                 s = i
