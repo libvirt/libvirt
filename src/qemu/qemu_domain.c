@@ -1093,43 +1093,6 @@ qemuDomainVideoPrivateDispose(void *obj)
 }
 
 
-/* qemuDomainSecretPlainSetup:
- * @secinfo: Pointer to secret info
- * @usageType: The virSecretUsageType
- * @username: username to use for authentication (may be NULL)
- * @seclookupdef: Pointer to seclookupdef data
- *
- * Taking a secinfo, fill in the plaintext information
- *
- * Returns 0 on success, -1 on failure with error message
- */
-static int
-qemuDomainSecretPlainSetup(qemuDomainSecretInfo *secinfo,
-                           virSecretUsageType usageType,
-                           const char *username,
-                           virSecretLookupTypeDef *seclookupdef)
-{
-    VIR_IDENTITY_AUTORESTORE virIdentity *oldident = virIdentityElevateCurrent();
-    g_autoptr(virConnect) conn = virGetConnectSecret();
-    int ret = -1;
-
-    if (!oldident)
-        return -1;
-
-    if (!conn)
-        return -1;
-
-    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN;
-    secinfo->s.plain.username = g_strdup(username);
-
-    ret = virSecretGetSecretString(conn, seclookupdef, usageType,
-                                   &secinfo->s.plain.secret,
-                                   &secinfo->s.plain.secretlen);
-
-    return ret;
-}
-
-
 /* qemuDomainSecretAESSetup:
  * @priv: pointer to domain private object
  * @alias: alias of the secret
@@ -1224,35 +1187,6 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
     secinfo = qemuDomainSecretAESSetup(priv, alias, username, secret, secretlen);
 
     virSecureErase(secret, secretlen);
-
-    return secinfo;
-}
-
-
-/* qemuDomainSecretInfoNewPlain:
- * @usageType: Secret usage type
- * @username: username
- * @lookupDef: lookup def describing secret
- *
- * Helper function to create a secinfo to be used for secinfo consumers. This
- * sets up a 'plain' (unencrypted) secret for legacy consumers.
- *
- * Returns @secinfo on success, NULL on failure. Caller is responsible
- * to eventually free @secinfo.
- */
-static qemuDomainSecretInfo *
-qemuDomainSecretInfoNewPlain(virSecretUsageType usageType,
-                             const char *username,
-                             virSecretLookupTypeDef *lookupDef)
-{
-    qemuDomainSecretInfo *secinfo = NULL;
-
-    secinfo = g_new0(qemuDomainSecretInfo, 1);
-
-    if (qemuDomainSecretPlainSetup(secinfo, usageType, username, lookupDef) < 0) {
-        g_clear_pointer(&secinfo, qemuDomainSecretInfoFree);
-        return NULL;
-    }
 
     return secinfo;
 }
@@ -1366,7 +1300,6 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
                                      const char *aliasformat)
 {
     qemuDomainStorageSourcePrivate *srcPriv;
-    bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
     bool hasAuth = qemuDomainStorageSourceHasAuth(src);
     bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
 
@@ -1384,19 +1317,11 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-        if (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI && !iscsiHasPS) {
-            srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
-                                                            src->auth->username,
-                                                            &src->auth->seclookupdef);
-        } else {
-            srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasprotocol,
-                                                                  "auth",
-                                                                  usageType,
-                                                                  src->auth->username,
-                                                                  &src->auth->seclookupdef);
-        }
-
-        if (!srcPriv->secinfo)
+        if (!(srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasprotocol,
+                                                                    "auth",
+                                                                    usageType,
+                                                                    src->auth->username,
+                                                                    &src->auth->seclookupdef)))
             return -1;
     }
 
@@ -4777,15 +4702,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         return -1;
     }
 
-    /* Use QEMU_CAPS_ISCSI_PASSWORD_SECRET as witness that iscsi 'initiator-name'
-     * option is available, it was introduced at the same time. */
-    if (src->initiator.iqn &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("iSCSI initiator IQN not supported with this QEMU binary"));
-        return -1;
-    }
-
     if (src->sliceStorage) {
         /* In pre-blockdev era we can't configure the slice so we can allow them
          * only for detected backing store entries as they are populated
@@ -5322,7 +5238,6 @@ qemuDomainChrDefPostParse(virDomainChrDef *chr,
  */
 static int
 qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
-                                                virQEMUCaps *qemuCaps,
                                                 unsigned int parseFlags)
 {
     qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
@@ -5344,8 +5259,7 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
          * status XML */
         if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_NETWORK &&
             (disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD ||
-             (disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI &&
-              virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET))))
+             disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI))
             restoreAuthSecret = true;
     }
 
@@ -5385,7 +5299,6 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
 
 static int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
-                                 virQEMUCaps *qemuCaps,
                                  unsigned int parseFlags)
 {
     /* set default disk types and drivers */
@@ -5402,8 +5315,7 @@ qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
         disk->mirror->format == VIR_STORAGE_FILE_NONE)
         disk->mirror->format = VIR_STORAGE_FILE_RAW;
 
-    if (qemuDomainDeviceDiskDefPostParseRestoreSecAlias(disk, qemuCaps,
-                                                        parseFlags) < 0)
+    if (qemuDomainDeviceDiskDefPostParseRestoreSecAlias(disk, parseFlags) < 0)
         return -1;
 
     /* regenerate TLS alias for old status XMLs */
@@ -5507,7 +5419,6 @@ qemuDomainVsockDefPostParse(virDomainVsockDef *vsock)
  */
 static int
 qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDef *hostdev,
-                                                   virQEMUCaps *qemuCaps,
                                                    unsigned int parseFlags)
 {
     qemuDomainStorageSourcePrivate *priv;
@@ -5521,7 +5432,6 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDef *hostdev,
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
         scsisrc->protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET) ||
         !qemuDomainStorageSourceHasAuth(iscsisrc->src))
         return 0;
 
@@ -5611,8 +5521,7 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDef *hostdev,
 {
     virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
 
-    if (qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(hostdev, qemuCaps,
-                                                           parseFlags) < 0)
+    if (qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(hostdev, parseFlags) < 0)
         return -1;
 
     if (qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(hostdev, qemuCaps,
@@ -5732,8 +5641,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, qemuCaps,
-                                               parseFlags);
+        ret = qemuDomainDeviceDiskDefPostParse(dev->data.disk, parseFlags);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
@@ -10863,24 +10771,15 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
             }
 
             if (src->auth) {
-                bool iscsiHasPS = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ISCSI_PASSWORD_SECRET);
                 virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
                 qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(src);
 
-                if (!iscsiHasPS) {
-                    srcPriv->secinfo = qemuDomainSecretInfoNewPlain(usageType,
-                                                                    src->auth->username,
-                                                                    &src->auth->seclookupdef);
-                } else {
-                    srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
-                                                                          backendalias,
-                                                                          NULL,
-                                                                          usageType,
-                                                                          src->auth->username,
-                                                                          &src->auth->seclookupdef);
-                }
-
-                if (!srcPriv->secinfo)
+                if (!(srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
+                                                                            backendalias,
+                                                                            NULL,
+                                                                            usageType,
+                                                                            src->auth->username,
+                                                                            &src->auth->seclookupdef)))
                     return -1;
             }
         }

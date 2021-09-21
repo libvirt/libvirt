@@ -1353,8 +1353,7 @@ mymain(void)
     DO_TEST("disk-network-iscsi", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-network-iscsi-modern",
             QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_BLOCK,
-            QEMU_CAPS_ISCSI_PASSWORD_SECRET);
+            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST_CAPS_VER("disk-network-iscsi", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
     DO_TEST_PARSE_ERROR_NOCAPS("disk-network-iscsi-auth-secrettype-invalid");
