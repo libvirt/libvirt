@@ -342,7 +342,7 @@ virIsDevMapperDevice(const char *dev_name)
 
 int
 virDevMapperGetTargets(const char *path G_GNUC_UNUSED,
-                       GSlist **devPaths G_GNUC_UNUSED)
+                       GSList **devPaths G_GNUC_UNUSED)
 {
     errno = ENOSYS;
     return -1;
