@@ -1450,15 +1450,18 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER("disk-arm-virtio-sd", "aarch64", "4.0.0");
     DO_TEST_CAPS_ARCH_LATEST("disk-arm-virtio-sd", "aarch64");
 
-    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST_NOCAPS("luks-disks");
-    DO_TEST_NOCAPS("luks-disks-source");
-    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_CAPS_VER("encrypted-disk", "4.1.0");
+    DO_TEST_CAPS_LATEST("encrypted-disk");
+    DO_TEST_CAPS_VER("encrypted-disk-usage", "4.1.0");
+    DO_TEST_CAPS_LATEST("encrypted-disk-usage");
+    DO_TEST_CAPS_VER("luks-disks", "4.1.0");
+    DO_TEST_CAPS_LATEST("luks-disks");
+    DO_TEST_CAPS_VER("luks-disks-source", "4.1.0");
+    DO_TEST_CAPS_LATEST("luks-disks-source");
     DO_TEST_CAPS_VER("luks-disks-source-qcow2", "5.2.0");
     DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disk-invalid");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-both");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("luks-disk-invalid");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("luks-disks-source-both");
 
     DO_TEST_NOCAPS("disk-ide-split");
     DO_TEST("disk-ide-wwn",
