@@ -92,18 +92,10 @@ struct _qemuDomainUnpluggingDevice {
 
 /* Type of domain secret */
 typedef enum {
-    VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN = 0,
     VIR_DOMAIN_SECRET_INFO_TYPE_AES,  /* utilize GNUTLS_CIPHER_AES_256_CBC */
 
     VIR_DOMAIN_SECRET_INFO_TYPE_LAST
 } qemuDomainSecretInfoType;
-
-typedef struct _qemuDomainSecretPlain qemuDomainSecretPlain;
-struct _qemuDomainSecretPlain {
-    char *username;
-    uint8_t *secret;
-    size_t secretlen;
-};
 
 #define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */
                                     /*    initialization vector */
@@ -119,7 +111,6 @@ typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
 struct _qemuDomainSecretInfo {
     qemuDomainSecretInfoType type;
     union {
-        qemuDomainSecretPlain plain;
         qemuDomainSecretAES aes;
     } s;
 };

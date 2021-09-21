@@ -658,15 +658,6 @@ qemuDomainMasterKeyCreate(virDomainObj *vm)
 
 
 static void
-qemuDomainSecretPlainClear(struct _qemuDomainSecretPlain *secret)
-{
-    VIR_FREE(secret->username);
-    virSecureErase(secret->secret, secret->secretlen);
-    g_clear_pointer(&secret->secret, g_free);
-}
-
-
-static void
 qemuDomainSecretAESClear(struct _qemuDomainSecretAES *secret,
                          bool keepAlias)
 {
@@ -687,10 +678,6 @@ qemuDomainSecretInfoClear(qemuDomainSecretInfo *secinfo,
         return;
 
     switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        qemuDomainSecretPlainClear(&secinfo->s.plain);
-        break;
-
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
         qemuDomainSecretAESClear(&secinfo->s.aes, keepAlias);
         break;

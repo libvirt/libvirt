@@ -760,28 +760,13 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
  * -1 and error message if fail to add secret information
  */
 static int
-qemuBuildGeneralSecinfoURI(virURI *uri,
+qemuBuildGeneralSecinfoURI(virURI *uri G_GNUC_UNUSED,
                            qemuDomainSecretInfo *secinfo)
 {
     if (!secinfo)
         return 0;
 
     switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        if (secinfo->s.plain.secret) {
-            if (!virStringBufferIsPrintable(secinfo->s.plain.secret,
-                                            secinfo->s.plain.secretlen)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("found non printable characters in secret"));
-                return -1;
-            }
-            uri->user = g_strdup_printf("%s:%s", secinfo->s.plain.username,
-                                        secinfo->s.plain.secret);
-        } else {
-            uri->user = g_strdup(secinfo->s.plain.username);
-        }
-        break;
-
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
     case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
         return -1;
@@ -806,24 +791,12 @@ static int
 qemuBuildRBDSecinfoURI(virBuffer *buf,
                        qemuDomainSecretInfo *secinfo)
 {
-    g_autofree char *base64secret = NULL;
-
     if (!secinfo) {
         virBufferAddLit(buf, ":auth_supported=none");
         return 0;
     }
 
     switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_PLAIN:
-        base64secret = g_base64_encode(secinfo->s.plain.secret,
-                                       secinfo->s.plain.secretlen);
-        virBufferEscape(buf, '\\', ":", ":id=%s", secinfo->s.plain.username);
-        virBufferEscape(buf, '\\', ":",
-                        ":key=%s:auth_supported=cephx\\;none",
-                        base64secret);
-        virSecureEraseString(base64secret);
-        break;
-
     case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
         virBufferEscape(buf, '\\', ":", ":id=%s:auth_supported=cephx\\;none",
                         secinfo->s.aes.username);
