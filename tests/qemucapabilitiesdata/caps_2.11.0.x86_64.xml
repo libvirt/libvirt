@@ -106,7 +106,6 @@
   <flag name='spice-gl'/>
   <flag name='qxl.vram64_size_mb'/>
   <flag name='chardev-logfile'/>
-  <flag name='secret'/>
   <flag name='pxb'/>
   <flag name='pxb-pcie'/>
   <flag name='nec-usb-xhci-ports'/>
