@@ -1324,12 +1324,12 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
     DO_TEST_NOCAPS("disk-fmt-qcow");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-fmt-cow");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-fmt-dir");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-fmt-iso");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-cow");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-dir");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-iso");
     DO_TEST_CAPS_VER("disk-shared", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-shared");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-shared-qcow");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-shared-qcow");
     DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
@@ -1346,9 +1346,9 @@ mymain(void)
             QEMU_CAPS_SCSI_BLOCK);
     DO_TEST_CAPS_VER("disk-network-iscsi", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-network-iscsi-auth-secrettype-invalid");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-network-iscsi-auth-wrong-secrettype");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-network-source-auth-both");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-source-auth-both");
     DO_TEST_CAPS_VER("disk-network-gluster", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-gluster");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
@@ -1373,16 +1373,14 @@ mymain(void)
     DO_TEST_NOCAPS("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
-    DO_TEST_PARSE_ERROR("disk-device-lun-type-invalid",
-                        QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
     DO_TEST("disk-usb-device",
             QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST("disk-usb-device-removable",
             QEMU_CAPS_DEVICE_USB_STORAGE,
             QEMU_CAPS_USB_STORAGE_REMOVABLE);
-    DO_TEST_PARSE_ERROR("disk-usb-pci",
-                        QEMU_CAPS_DEVICE_USB_STORAGE);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-usb-pci");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
     DO_TEST("disk-scsi-disk-split",
@@ -1391,8 +1389,7 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST("disk-scsi-disk-vpd",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST("disk-sata-device",
             QEMU_CAPS_ICH9_AHCI);
@@ -1412,16 +1409,11 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
     DO_TEST_NOCAPS("disk-snapshot");
-    DO_TEST_PARSE_ERROR("disk-same-targets",
-                        QEMU_CAPS_SCSI_LSI,
-                        QEMU_CAPS_DEVICE_USB_STORAGE);
-    DO_TEST_PARSE_ERROR("disk-missing-target-invalid", QEMU_CAPS_SCSI_LSI);
-    DO_TEST_PARSE_ERROR("disk-address-conflict",
-                        QEMU_CAPS_ICH9_AHCI);
-    DO_TEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict",
-                        QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST_PARSE_ERROR("hostdevs-drive-address-conflict",
-                        QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-same-targets");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-missing-target-invalid");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-address-conflict");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdevs-drive-address-conflict");
     DO_TEST("event_idx",
             QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
             QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
@@ -1433,12 +1425,10 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST("disk-serial",
             QEMU_CAPS_KVM);
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-fdc-incompatible-address");
-    DO_TEST_PARSE_ERROR_NOCAPS("disk-ide-incompatible-address");
-    DO_TEST_PARSE_ERROR("disk-sata-incompatible-address",
-                        QEMU_CAPS_ICH9_AHCI);
-    DO_TEST_PARSE_ERROR("disk-scsi-incompatible-address",
-                        QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fdc-incompatible-address");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-ide-incompatible-address");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-sata-incompatible-address");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-incompatible-address");
     DO_TEST_CAPS_VER("disk-backing-chains-index", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-backing-chains-index");
     DO_TEST_CAPS_VER("disk-backing-chains-noindex", "2.12.0");
