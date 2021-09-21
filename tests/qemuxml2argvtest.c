@@ -1290,6 +1290,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hugepages-memaccess3");
     DO_TEST_CAPS_LATEST("hugepages-nvdimm");
     DO_TEST_NOCAPS("nosharepages");
+
+    DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
+
     DO_TEST_NOCAPS("disk-cdrom");
     DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
@@ -1317,7 +1320,6 @@ mymain(void)
     DO_TEST("disk-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-ccw-many", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
-    DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
     DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_NOCAPS("disk-boot-disk");
@@ -1467,6 +1469,29 @@ mymain(void)
 
     DO_TEST_CAPS_ARCH_VER("disk-arm-virtio-sd", "aarch64", "4.0.0");
     DO_TEST_CAPS_ARCH_LATEST("disk-arm-virtio-sd", "aarch64");
+
+    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_NOCAPS("luks-disks");
+    DO_TEST_NOCAPS("luks-disks-source");
+    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-qcow2");
+    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_CAPS_VER("luks-disks-source-qcow2", "5.2.0");
+    DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
+    DO_TEST_PARSE_ERROR_NOCAPS("luks-disk-invalid");
+    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-both");
+
+    DO_TEST_NOCAPS("disk-ide-split");
+    DO_TEST("disk-ide-wwn",
+            QEMU_CAPS_IDE_DRIVE_WWN,
+            QEMU_CAPS_SCSI_DISK_WWN);
+
+    DO_TEST_NOCAPS("disk-geometry");
+    DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
+
+    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "2.12.0");
+    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
+    DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
     DO_TEST("graphics-egl-headless",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
@@ -2104,17 +2129,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("cpu-translation");
     qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
 
-    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST_NOCAPS("luks-disks");
-    DO_TEST_NOCAPS("luks-disks-source");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-qcow2");
-    DO_TEST("luks-disks-source-qcow2", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST_CAPS_VER("luks-disks-source-qcow2", "5.2.0");
-    DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disk-invalid");
-    DO_TEST_PARSE_ERROR_NOCAPS("luks-disks-source-both");
-
     DO_TEST_NOCAPS("memtune");
     DO_TEST_NOCAPS("memtune-unlimited");
     DO_TEST_NOCAPS("blkiotune");
@@ -2432,14 +2446,6 @@ mymain(void)
     DO_TEST("mach-virt-console-virtio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO);
     DO_TEST_PARSE_ERROR_NOCAPS("mach-virt-serial-invalid-machine");
-
-    DO_TEST_NOCAPS("disk-ide-split");
-    DO_TEST("disk-ide-wwn",
-            QEMU_CAPS_IDE_DRIVE_WWN,
-            QEMU_CAPS_SCSI_DISK_WWN);
-
-    DO_TEST_NOCAPS("disk-geometry");
-    DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
 
     DO_TEST("video-device-pciaddr-default",
             QEMU_CAPS_KVM,
@@ -3409,10 +3415,6 @@ mymain(void)
     DO_TEST("user-aliases-usb", QEMU_CAPS_KVM,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
             QEMU_CAPS_ICH9_USB_EHCI1);
-
-    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "2.12.0");
-    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
-    DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
     DO_TEST_CAPS_LATEST("tseg-explicit-size");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-i440fx");
