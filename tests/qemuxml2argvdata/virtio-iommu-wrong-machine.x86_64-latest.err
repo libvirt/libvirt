@@ -1,0 +1,1 @@
+unsupported configuration: IOMMU device: 'virtio' is only supported with Q35 and ARM Virt machines

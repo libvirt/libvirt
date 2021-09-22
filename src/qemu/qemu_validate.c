@@ -4866,6 +4866,14 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+        if (!qemuDomainIsARMVirt(def) &&
+            !qemuDomainIsQ35(def)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is only supported with "
+                             "Q35 and ARM Virt machines"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
