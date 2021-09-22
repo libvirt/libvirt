@@ -642,13 +642,13 @@ testCompareXMLToArgv(const void *data)
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
 
+    memset(&monitor_chr, 0, sizeof(monitor_chr));
+
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
         goto cleanup;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
-
-    memset(&monitor_chr, 0, sizeof(monitor_chr));
 
     if (!(conn = virGetConnect()))
         goto cleanup;
