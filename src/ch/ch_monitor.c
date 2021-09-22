@@ -177,31 +177,31 @@ virCHMonitorBuildMemoryJson(virJSONValue *content, virDomainDef *vmdef)
 static int
 virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
 {
-    virJSONValue *disk = virJSONValueNewObject();
+    g_autoptr(virJSONValue) disk = virJSONValueNewObject();
 
     if (!diskdef->src)
-        goto cleanup;
+        return -1;
 
     switch (diskdef->src->type) {
     case VIR_STORAGE_TYPE_FILE:
         if (!diskdef->src->path) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("Missing disk file path in domain"));
-            goto cleanup;
+            return -1;
         }
         if (diskdef->bus != VIR_DOMAIN_DISK_BUS_VIRTIO) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Only virtio bus types are supported for '%s'"), diskdef->src->path);
-            goto cleanup;
+            return -1;
         }
         if (virJSONValueObjectAppendString(disk, "path", diskdef->src->path) < 0)
-            goto cleanup;
+            return -1;
         if (diskdef->src->readonly) {
             if (virJSONValueObjectAppendBoolean(disk, "readonly", true) < 0)
-                goto cleanup;
+                return -1;
         }
         if (virJSONValueArrayAppend(disks, &disk) < 0)
-            goto cleanup;
+            return -1;
 
         break;
     case VIR_STORAGE_TYPE_NONE:
@@ -213,14 +213,10 @@ virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
     case VIR_STORAGE_TYPE_VHOST_USER:
     default:
         virReportEnumRangeError(virStorageType, diskdef->src->type);
-        goto cleanup;
+        return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(disk);
-    return -1;
 }
 
 static int
