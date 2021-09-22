@@ -1530,6 +1530,30 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 }
 
 
+static virDomainSnapshotDef*
+qemuSnapshotCreateXMLParse(virDomainObj *vm,
+                           virQEMUDriver *driver,
+                           const char *xmlDesc,
+                           unsigned int flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) ||
+        !virDomainObjIsActive(vm))
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE;
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
+        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
+
+    return virDomainSnapshotDefParseString(xmlDesc, driver->xmlopt,
+                                           priv->qemuCaps, NULL, parse_flags);
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1543,7 +1567,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     virDomainMomentObj *current = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
-    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
     int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1572,8 +1595,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
         (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))
         update_current = false;
-    if (redefine)
-        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         return NULL;
@@ -1583,15 +1604,8 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                        _("cannot halt after transient domain snapshot"));
         return NULL;
     }
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) ||
-        !virDomainObjIsActive(vm))
-        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE;
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE)
-        parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_VALIDATE;
-
-    if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->xmlopt,
-                                                priv->qemuCaps, NULL, parse_flags)))
+    if (!(def = qemuSnapshotCreateXMLParse(vm, driver, xmlDesc, flags)))
         return NULL;
 
     /* reject snapshot names containing slashes or starting with dot as
