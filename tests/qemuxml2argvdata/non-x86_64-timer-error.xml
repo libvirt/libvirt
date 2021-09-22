@@ -4,7 +4,7 @@
   <memory>262144</memory>
   <currentMemory>262144</currentMemory>
   <os>
-    <type arch='s390x' machine='s390-ccw'>hvm</type>
+    <type arch='s390x' machine='s390-ccw-virtio'>hvm</type>
   </os>
   <clock offset='utc'>
     <timer name='tsc' present='yes'/>
