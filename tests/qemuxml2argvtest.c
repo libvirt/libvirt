@@ -1322,7 +1322,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
-    DO_TEST_NOCAPS("disk-fmt-qcow");
+    DO_TEST_CAPS_VER("disk-fmt-qcow", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-fmt-qcow");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-cow");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-dir");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-iso");
@@ -1386,8 +1387,10 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
-    DO_TEST_NOCAPS("disk-source-pool");
-    DO_TEST_NOCAPS("disk-source-pool-mode");
+    DO_TEST_CAPS_VER("disk-source-pool", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-source-pool");
+    DO_TEST_CAPS_VER("disk-source-pool-mode", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-source-pool-mode");
     DO_TEST_CAPS_LATEST("disk-ioeventfd");
     DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
