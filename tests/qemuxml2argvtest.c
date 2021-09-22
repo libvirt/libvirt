@@ -1297,7 +1297,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST_CAPS_LATEST("disk-cdrom-bus-other");
-    DO_TEST_NOCAPS("disk-iscsi");
     DO_TEST_CAPS_VER("disk-cdrom-network", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
     DO_TEST_CAPS_VER("disk-cdrom-tray", "2.12.0");

@@ -33,7 +33,7 @@ QEMU_AUDIO_DRV=none \
 -device ide-hd,bus=ide.0,unit=1,drive=drive-ide0-0-1,id=ide0-0-1,write-cache=on \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-scsi0-0-0,cache=none \
 -device scsi-hd,bus=scsi0.0,scsi-id=0,drive=drive-scsi0-0-0,id=scsi0-0-0,write-cache=on \
--drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-virtio-disk0,cache=writethrough \
+-drive file=/dev/disk/by-path/ip-192.168.44.1:3260-iscsi-iqn.2011-02.lan.hdserver:hydrar-desktop.win7vm-lun-0,format=qcow2,if=none,id=drive-virtio-disk0,cache=writethrough \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,write-cache=off \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-usb-disk1,cache=directsync \
 -device usb-storage,bus=usb.0,port=1,drive=drive-usb-disk1,id=usb-disk1,removable=off,write-cache=off \

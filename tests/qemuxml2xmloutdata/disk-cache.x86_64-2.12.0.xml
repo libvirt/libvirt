@@ -34,7 +34,7 @@
     </disk>
     <disk type='block' device='disk'>
       <driver name='qemu' type='qcow2' cache='writethrough'/>
-      <source dev='/dev/HostVG/QEMUGuest1'/>
+      <source dev='/dev/disk/by-path/ip-192.168.44.1:3260-iscsi-iqn.2011-02.lan.hdserver:hydrar-desktop.win7vm-lun-0'/>
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </disk>
