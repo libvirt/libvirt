@@ -1080,15 +1080,15 @@ mymain(void)
             QEMU_CAPS_VIRTIO_BLK_SCSI);
 
     /* Simplest possible <audio>, all supported with ENV */
-    DO_TEST_NOCAPS("audio-none-minimal");
-    DO_TEST_NOCAPS("audio-alsa-minimal");
-    DO_TEST_NOCAPS("audio-coreaudio-minimal");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-jack-minimal");
-    DO_TEST_NOCAPS("audio-oss-minimal");
-    DO_TEST_NOCAPS("audio-pulseaudio-minimal");
-    DO_TEST_NOCAPS("audio-sdl-minimal");
-    DO_TEST_NOCAPS("audio-spice-minimal");
-    DO_TEST_NOCAPS("audio-file-minimal");
+    DO_TEST_CAPS_VER("audio-none-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-alsa-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-coreaudio-minimal", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-jack-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-oss-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-pulseaudio-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-sdl-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-spice-minimal", "4.1.0");
+    DO_TEST_CAPS_VER("audio-file-minimal", "4.1.0");
 
     DO_TEST_CAPS_LATEST("audio-none-minimal");
     DO_TEST_CAPS_LATEST("audio-alsa-minimal");
@@ -1101,14 +1101,14 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-file-minimal");
 
     /* Best <audio> still compat with old ENV */
-    DO_TEST_NOCAPS("audio-none-best");
-    DO_TEST_NOCAPS("audio-alsa-best");
-    DO_TEST_NOCAPS("audio-coreaudio-best");
-    DO_TEST_NOCAPS("audio-oss-best");
-    DO_TEST_NOCAPS("audio-pulseaudio-best");
-    DO_TEST_NOCAPS("audio-sdl-best");
-    DO_TEST_NOCAPS("audio-spice-best");
-    DO_TEST_NOCAPS("audio-file-best");
+    DO_TEST_CAPS_VER("audio-none-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-alsa-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-coreaudio-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-oss-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-pulseaudio-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-sdl-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-spice-best", "4.1.0");
+    DO_TEST_CAPS_VER("audio-file-best", "4.1.0");
 
     DO_TEST_CAPS_LATEST("audio-none-best");
     DO_TEST_CAPS_LATEST("audio-alsa-best");
@@ -1120,15 +1120,15 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-file-best");
 
     /* Full <audio> only compat with new QEMU -audiodev args */
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-none-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-alsa-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-coreaudio-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-jack-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-oss-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-pulseaudio-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-sdl-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-spice-full");
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-file-full");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-none-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-alsa-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-coreaudio-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-jack-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-oss-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-pulseaudio-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-sdl-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-spice-full", "4.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-file-full", "4.1.0");
 
     DO_TEST_CAPS_LATEST("audio-none-full");
     DO_TEST_CAPS_LATEST("audio-alsa-full");
@@ -1141,7 +1141,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("audio-file-full");
 
     /* Multiple backends not supported with ENV */
-    DO_TEST_PARSE_ERROR_NOCAPS("audio-many-backends");
+    DO_TEST_CAPS_VER_PARSE_ERROR("audio-many-backends", "4.1.0");
     DO_TEST_CAPS_LATEST("audio-many-backends");
 
     /* Validate auto-creation of <audio> for legacy compat */
@@ -1164,7 +1164,7 @@ mymain(void)
 
     g_setenv("QEMU_AUDIO_DRV", "alsa", TRUE);
     driver.config->nogfxAllowHostAudio = true;
-    DO_TEST_NOCAPS("audio-default-nographics");
+    DO_TEST_CAPS_VER("audio-default-nographics", "4.1.0");
     DO_TEST_CAPS_LATEST("audio-default-nographics");
     driver.config->nogfxAllowHostAudio = false;
     g_unsetenv("QEMU_AUDIO_DRV");
