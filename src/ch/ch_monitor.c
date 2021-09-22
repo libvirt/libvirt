@@ -58,7 +58,7 @@ int virCHMonitorPutNoContent(virCHMonitor *mon, const char *endpoint);
 static int
 virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *cpus;
+    g_autoptr(virJSONValue) cpus = NULL;
     unsigned int maxvcpus = 0;
     unsigned int nvcpus = 0;
     virDomainVcpuDef *vcpu;
@@ -75,18 +75,14 @@ virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
     if (maxvcpus != 0 || nvcpus != 0) {
         cpus = virJSONValueNewObject();
         if (virJSONValueObjectAppendNumberInt(cpus, "boot_vcpus", nvcpus) < 0)
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAppendNumberInt(cpus, "max_vcpus", vmdef->maxvcpus) < 0)
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAppend(content, "cpus", &cpus) < 0)
-            goto cleanup;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(cpus);
-    return -1;
 }
 
 static int
