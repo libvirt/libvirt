@@ -1310,9 +1310,9 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST_FAILURE("disk-floppy-pseries", "ppc64");
     DO_TEST_CAPS_LATEST("disk-floppy-tray");
     DO_TEST_CAPS_LATEST("disk-virtio");
-    DO_TEST("disk-virtio-ccw", QEMU_CAPS_CCW);
-    DO_TEST("disk-virtio-ccw-many", QEMU_CAPS_CCW);
-    DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
+    DO_TEST_CAPS_ARCH_LATEST("disk-virtio-ccw", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("disk-virtio-ccw-many", "s390x");
+    DO_TEST_CAPS_ARCH_LATEST("disk-virtio-s390-zpci", "s390x");
     DO_TEST_CAPS_LATEST("disk-order");
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_CAPS_LATEST("disk-boot-disk");
