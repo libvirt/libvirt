@@ -772,6 +772,12 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
 
         if (STREQ(info->args.capsver, "latest")) {
             capsfile = g_strdup(virHashLookup(info->conf->capslatest, info->args.capsarch));
+
+            if (!capsfile) {
+                fprintf(stderr, "'latest' caps for '%s' were not found\n", info->args.capsarch);
+                return -1;
+            }
+
             stripmachinealiases = true;
         } else {
             capsfile = g_strdup_printf("%s/caps_%s.%s.xml",
