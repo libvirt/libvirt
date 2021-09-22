@@ -202,6 +202,7 @@
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
   <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>

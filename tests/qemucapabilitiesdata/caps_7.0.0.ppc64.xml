@@ -214,6 +214,7 @@
   <flag name='dirtyrate-param.mode'/>
   <flag name='blockdev.nbd.tls-hostname'/>
   <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
   <version>6002092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>

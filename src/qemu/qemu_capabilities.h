@@ -644,6 +644,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 425 */
     QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME, /* tls hostname can be overridden for NBD clients */
     QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS, /* -object memory-backend-*.prealloc-threads */
+    QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI, /* -device virtio-iommu-pci */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

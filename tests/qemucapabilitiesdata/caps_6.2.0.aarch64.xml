@@ -204,6 +204,7 @@
   <flag name='rbd-encryption'/>
   <flag name='calc-dirty-rate'/>
   <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='virtio-iommu-pci'/>
   <version>6001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700244</microcodeVersion>
