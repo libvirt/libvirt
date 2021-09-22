@@ -1341,9 +1341,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-transient");
     DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");
-    DO_TEST("disk-network-iscsi-modern",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST_CAPS_VER("disk-network-iscsi", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid");

@@ -39,5 +39,10 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x6,drive=drive-virtio-disk3,id=virtio-disk3 \
 -drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example,file.lun=0,file.transport=tcp,format=raw,if=none,id=drive-scsi0-0-0-0 \
 -device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example:server,file.lun=0,file.transport=tcp,file.initiator-name=iqn.1992-01.com.example:client,format=raw,if=none,id=drive-scsi0-0-0-1 \
+-device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=1,drive=drive-scsi0-0-0-1,id=scsi0-0-0-1 \
+-object secret,id=scsi0-0-0-2-auth-secret0,data=9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1,keyid=masterKey0,iv=AAECAwQFBgcICQoLDA0ODw==,format=base64 \
+-drive file.driver=iscsi,file.portal=example.org:3260,file.target=iqn.1992-01.com.example:server,file.lun=0,file.transport=tcp,file.user=myname,file.password-secret=scsi0-0-0-2-auth-secret0,file.initiator-name=iqn.1992-01.com.example:client,format=raw,if=none,id=drive-scsi0-0-0-2 \
+-device scsi-block,bus=scsi0.0,channel=0,scsi-id=0,lun=2,drive=drive-scsi0-0-0-2,id=scsi0-0-0-2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

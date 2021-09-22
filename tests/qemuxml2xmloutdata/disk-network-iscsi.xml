@@ -60,6 +60,31 @@
       <target dev='sda' bus='scsi'/>
       <address type='drive' controller='0' bus='0' target='0' unit='0'/>
     </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:server/0'>
+        <host name='example.org' port='3260'/>
+        <initiator>
+          <iqn name='iqn.1992-01.com.example:client'/>
+        </initiator>
+      </source>
+      <target dev='sdb' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='1'/>
+    </disk>
+    <disk type='network' device='lun'>
+      <driver name='qemu' type='raw'/>
+      <source protocol='iscsi' name='iqn.1992-01.com.example:server/0'>
+        <host name='example.org' port='3260'/>
+        <initiator>
+          <iqn name='iqn.1992-01.com.example:client'/>
+        </initiator>
+        <auth username='myname'>
+          <secret type='iscsi' usage='mycluster_myname'/>
+        </auth>
+      </source>
+      <target dev='sdc' bus='scsi'/>
+      <address type='drive' controller='0' bus='0' target='0' unit='2'/>
+    </disk>
     <controller type='usb' index='0'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x2'/>
     </controller>
