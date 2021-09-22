@@ -244,7 +244,7 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
 {
     virDomainNetType netType = virDomainNetGetActualType(netdef);
     char macaddr[VIR_MAC_STRING_BUFLEN];
-    virJSONValue *net;
+    g_autoptr(virJSONValue) net = NULL;
 
     // check net type at first
     net = virJSONValueNewObject();
@@ -257,20 +257,20 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
             virSocketAddr netmask;
             g_autofree char *netmaskStr = NULL;
             if (!(addr = virSocketAddrFormat(&ip->address)))
-                goto cleanup;
+                return -1;
             if (virJSONValueObjectAppendString(net, "ip", addr) < 0)
-                goto cleanup;
+                return -1;
 
             if (virSocketAddrPrefixToNetmask(ip->prefix, &netmask, AF_INET) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to translate net prefix %d to netmask"),
                                ip->prefix);
-                goto cleanup;
+                return -1;
             }
             if (!(netmaskStr = virSocketAddrFormat(&netmask)))
-                goto cleanup;
+                return -1;
             if (virJSONValueObjectAppendString(net, "mask", netmaskStr) < 0)
-                goto cleanup;
+                return -1;
         } else if (netdef->guestIP.nips > 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("ethernet type supports a single guest ip"));
@@ -280,12 +280,12 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
         if ((virDomainChrType)netdef->data.vhostuser->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("vhost_user type support UNIX socket in this CH"));
-            goto cleanup;
+            return -1;
         } else {
             if (virJSONValueObjectAppendString(net, "vhost_socket", netdef->data.vhostuser->data.nix.path) < 0)
-                goto cleanup;
+                return -1;
             if (virJSONValueObjectAppendBoolean(net, "vhost_user", true) < 0)
-                goto cleanup;
+                return -1;
         }
         break;
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
@@ -302,26 +302,26 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
     case VIR_DOMAIN_NET_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainNetType, netType);
-        goto cleanup;
+        return -1;
     }
 
     if (netdef->ifname != NULL) {
         if (virJSONValueObjectAppendString(net, "tap", netdef->ifname) < 0)
-            goto cleanup;
+            return -1;
     }
     if (virJSONValueObjectAppendString(net, "mac", virMacAddrFormat(&netdef->mac, macaddr)) < 0)
-        goto cleanup;
+        return -1;
 
 
     if (netdef->virtio != NULL) {
         if (netdef->virtio->iommu == VIR_TRISTATE_SWITCH_ON) {
             if (virJSONValueObjectAppendBoolean(net, "iommu", true) < 0)
-                goto cleanup;
+                return -1;
         }
     }
     if (netdef->driver.virtio.queues) {
         if (virJSONValueObjectAppendNumberInt(net, "num_queues", netdef->driver.virtio.queues) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (netdef->driver.virtio.rx_queue_size || netdef->driver.virtio.tx_queue_size) {
@@ -330,20 +330,16 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
                _("virtio rx_queue_size option %d is not same with tx_queue_size %d"),
                netdef->driver.virtio.rx_queue_size,
                netdef->driver.virtio.tx_queue_size);
-            goto cleanup;
+            return -1;
         }
         if (virJSONValueObjectAppendNumberInt(net, "queue_size", netdef->driver.virtio.rx_queue_size) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (virJSONValueArrayAppend(nets, &net) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    virJSONValueFree(net);
-    return -1;
 }
 
 static int
