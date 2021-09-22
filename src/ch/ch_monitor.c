@@ -345,7 +345,7 @@ virCHMonitorBuildNetJson(virJSONValue *nets, virDomainNetDef *netdef)
 static int
 virCHMonitorBuildNetsJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *nets;
+    g_autoptr(virJSONValue) nets = NULL;
     size_t i;
 
     if (vmdef->nnets > 0) {
@@ -353,17 +353,13 @@ virCHMonitorBuildNetsJson(virJSONValue *content, virDomainDef *vmdef)
 
         for (i = 0; i < vmdef->nnets; i++) {
             if (virCHMonitorBuildNetJson(nets, vmdef->nets[i]) < 0)
-                goto cleanup;
+                return -1;
         }
         if (virJSONValueObjectAppend(content, "net", &nets) < 0)
-            goto cleanup;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(nets);
-    return -1;
 }
 
 static int
