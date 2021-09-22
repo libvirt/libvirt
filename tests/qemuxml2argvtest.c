@@ -1564,7 +1564,7 @@ mymain(void)
     DO_TEST("misc-disable-suspends", QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("misc-enable-s4", QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST_PARSE_ERROR_NOCAPS("misc-enable-s4");
-    DO_TEST_NOCAPS("misc-no-reboot");
+    DO_TEST_CAPS_VER("misc-no-reboot", "5.2.0");
     DO_TEST_CAPS_LATEST("misc-no-reboot");
     DO_TEST_NOCAPS("misc-uuid");
     DO_TEST_PARSE_ERROR_NOCAPS("vhost_queues-invalid");
