@@ -1065,7 +1065,7 @@ qemuDomainVideoPrivateDispose(void *obj)
 }
 
 
-/* qemuDomainSecretAESSetup:
+/* qemuDomainSecretInfoSetup:
  * @priv: pointer to domain private object
  * @alias: alias of the secret
  * @username: username to use (may be NULL)
@@ -1077,11 +1077,11 @@ qemuDomainVideoPrivateDispose(void *obj)
  * Returns qemuDomainSecretInfo *filled with the necessary information.
  */
 static qemuDomainSecretInfo *
-qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
-                         const char *alias,
-                         const char *username,
-                         uint8_t *secret,
-                         size_t secretlen)
+qemuDomainSecretInfoSetup(qemuDomainObjPrivate *priv,
+                          const char *alias,
+                          const char *username,
+                          uint8_t *secret,
+                          size_t secretlen)
 {
     g_autoptr(qemuDomainSecretInfo) secinfo = NULL;
     g_autofree uint8_t *raw_iv = NULL;
@@ -1117,7 +1117,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
 
 
 /**
- * qemuDomainSecretAESSetupFromSecret:
+ * qemuDomainSecretInfoSetupFromSecret:
  * @priv: pointer to domain private object
  * @srcalias: Alias of the disk/hostdev used to generate the secret alias
  * @secretuse: specific usage for the secret (may be NULL if main object is using it)
@@ -1130,12 +1130,12 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
  * secret in case if @srcalias requires more secrets for various usage cases.
  */
 static qemuDomainSecretInfo *
-qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
-                                   const char *srcalias,
-                                   const char *secretuse,
-                                   virSecretUsageType usageType,
-                                   const char *username,
-                                   virSecretLookupTypeDef *seclookupdef)
+qemuDomainSecretInfoSetupFromSecret(qemuDomainObjPrivate *priv,
+                                    const char *srcalias,
+                                    const char *secretuse,
+                                    virSecretUsageType usageType,
+                                    const char *username,
+                                    virSecretLookupTypeDef *seclookupdef)
 {
     qemuDomainSecretInfo *secinfo;
     g_autofree char *alias = qemuAliasForSecret(srcalias, secretuse);
@@ -1154,7 +1154,7 @@ qemuDomainSecretAESSetupFromSecret(qemuDomainObjPrivate *priv,
                                  &secret, &secretlen) < 0)
         return NULL;
 
-    secinfo = qemuDomainSecretAESSetup(priv, alias, username, secret, secretlen);
+    secinfo = qemuDomainSecretInfoSetup(priv, alias, username, secret, secretlen);
 
     virSecureErase(secret, secretlen);
 
@@ -1188,9 +1188,9 @@ qemuDomainSecretInfoTLSNew(qemuDomainObjPrivate *priv,
     }
     seclookupdef.type = VIR_SECRET_LOOKUP_TYPE_UUID;
 
-    return qemuDomainSecretAESSetupFromSecret(priv, srcAlias, NULL,
-                                              VIR_SECRET_USAGE_TYPE_TLS,
-                                              NULL, &seclookupdef);
+    return qemuDomainSecretInfoSetupFromSecret(priv, srcAlias, NULL,
+                                               VIR_SECRET_USAGE_TYPE_TLS,
+                                               NULL, &seclookupdef);
 }
 
 
@@ -1244,8 +1244,8 @@ qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivate *priv,
     g_autofree char *secretalias = qemuAliasForSecret(aliasprotocol, "httpcookie");
     g_autofree char *cookies = qemuBlockStorageSourceGetCookieString(src);
 
-    return qemuDomainSecretAESSetup(priv, secretalias, NULL,
-                                    (uint8_t *) cookies, strlen(cookies));
+    return qemuDomainSecretInfoSetup(priv, secretalias, NULL,
+                                     (uint8_t *) cookies, strlen(cookies));
 }
 
 
@@ -1287,20 +1287,20 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-        if (!(srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasprotocol,
-                                                                    "auth",
-                                                                    usageType,
-                                                                    src->auth->username,
-                                                                    &src->auth->seclookupdef)))
+        if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasprotocol,
+                                                                     "auth",
+                                                                     usageType,
+                                                                     src->auth->username,
+                                                                     &src->auth->seclookupdef)))
             return -1;
     }
 
     if (hasEnc) {
-        if (!(srcPriv->encinfo = qemuDomainSecretAESSetupFromSecret(priv, aliasformat,
-                                                                    "encryption",
-                                                                    VIR_SECRET_USAGE_TYPE_VOLUME,
-                                                                    NULL,
-                                                                    &src->encryption->secrets[0]->seclookupdef)))
+        if (!(srcPriv->encinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasformat,
+                                                                     "encryption",
+                                                                     VIR_SECRET_USAGE_TYPE_VOLUME,
+                                                                     NULL,
+                                                                     &src->encryption->secrets[0]->seclookupdef)))
               return -1;
     }
 
@@ -10740,12 +10740,12 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
                 virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
                 qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(src);
 
-                if (!(srcPriv->secinfo = qemuDomainSecretAESSetupFromSecret(priv,
-                                                                            backendalias,
-                                                                            NULL,
-                                                                            usageType,
-                                                                            src->auth->username,
-                                                                            &src->auth->seclookupdef)))
+                if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv,
+                                                                             backendalias,
+                                                                             NULL,
+                                                                             usageType,
+                                                                             src->auth->username,
+                                                                             &src->auth->seclookupdef)))
                     return -1;
             }
         }
