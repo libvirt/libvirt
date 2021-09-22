@@ -748,31 +748,6 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
 }
 
 
-/* qemuBuildRBDSecinfoURI:
- * @uri: Pointer to the URI structure to add to
- * @secinfo: Pointer to the secret info data (if present)
- *
- * If we have a secinfo, then build the command line options for
- * the secret info for the RBD network storage. Assumption for this
- * is both username and secret exist for plaintext
- *
- * Returns 0 on success or if no secinfo,
- * -1 and error message if fail to add secret information
- */
-static int
-qemuBuildRBDSecinfoURI(virBuffer *buf,
-                       qemuDomainSecretInfo *secinfo)
-{
-    if (!secinfo)
-        virBufferAddLit(buf, ":auth_supported=none");
-    else
-        virBufferEscape(buf, '\\', ":", ":id=%s:auth_supported=cephx\\;none",
-                        secinfo->username);
-
-    return 0;
-}
-
-
 /* qemuBuildTLSx509BackendProps:
  * @tlspath: path to the TLS credentials
  * @listen: boolean listen for client or server setting
@@ -970,8 +945,11 @@ qemuBuildNetworkDriveStr(virStorageSource *src,
             if (src->snapshot)
                 virBufferEscape(&buf, '\\', ":", "@%s", src->snapshot);
 
-            if (qemuBuildRBDSecinfoURI(&buf, secinfo) < 0)
-                return NULL;
+            if (!secinfo)
+                virBufferAddLit(&buf, ":auth_supported=none");
+            else
+                virBufferEscape(&buf, '\\', ":", ":id=%s:auth_supported=cephx\\;none",
+                                secinfo->username);
 
             if (src->nhosts > 0) {
                 virBufferAddLit(&buf, ":mon_host=");
