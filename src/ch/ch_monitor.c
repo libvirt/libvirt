@@ -222,7 +222,7 @@ virCHMonitorBuildDiskJson(virJSONValue *disks, virDomainDiskDef *diskdef)
 static int
 virCHMonitorBuildDisksJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *disks;
+    g_autoptr(virJSONValue) disks = NULL;
     size_t i;
 
     if (vmdef->ndisks > 0) {
@@ -230,17 +230,13 @@ virCHMonitorBuildDisksJson(virJSONValue *content, virDomainDef *vmdef)
 
         for (i = 0; i < vmdef->ndisks; i++) {
             if (virCHMonitorBuildDiskJson(disks, vmdef->disks[i]) < 0)
-                goto cleanup;
+                return -1;
         }
         if (virJSONValueObjectAppend(content, "disks", &disks) < 0)
-            goto cleanup;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(disks);
-    return -1;
 }
 
 static int
