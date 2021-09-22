@@ -90,29 +90,15 @@ struct _qemuDomainUnpluggingDevice {
 #define QEMU_DEVICE_MAPPER_CONTROL_PATH "/dev/mapper/control"
 
 
-/* Type of domain secret */
-typedef enum {
-    VIR_DOMAIN_SECRET_INFO_TYPE_AES,  /* utilize GNUTLS_CIPHER_AES_256_CBC */
-
-    VIR_DOMAIN_SECRET_INFO_TYPE_LAST
-} qemuDomainSecretInfoType;
-
 #define QEMU_DOMAIN_AES_IV_LEN 16   /* 16 bytes for 128 bit random */
                                     /*    initialization vector */
-typedef struct _qemuDomainSecretAES qemuDomainSecretAES;
-struct _qemuDomainSecretAES {
+
+typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
+struct _qemuDomainSecretInfo {
     char *username;
     char *alias;      /* generated alias for secret */
     char *iv;         /* base64 encoded initialization vector */
     char *ciphertext; /* encoded/encrypted secret */
-};
-
-typedef struct _qemuDomainSecretInfo qemuDomainSecretInfo;
-struct _qemuDomainSecretInfo {
-    qemuDomainSecretInfoType type;
-    union {
-        qemuDomainSecretAES aes;
-    } s;
 };
 
 typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;

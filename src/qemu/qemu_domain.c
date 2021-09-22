@@ -658,33 +658,18 @@ qemuDomainMasterKeyCreate(virDomainObj *vm)
 
 
 static void
-qemuDomainSecretAESClear(struct _qemuDomainSecretAES *secret,
-                         bool keepAlias)
-{
-    if (!keepAlias)
-        VIR_FREE(secret->alias);
-
-    VIR_FREE(secret->username);
-    VIR_FREE(secret->iv);
-    VIR_FREE(secret->ciphertext);
-}
-
-
-static void
 qemuDomainSecretInfoClear(qemuDomainSecretInfo *secinfo,
                           bool keepAlias)
 {
     if (!secinfo)
         return;
 
-    switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
-        qemuDomainSecretAESClear(&secinfo->s.aes, keepAlias);
-        break;
+    if (!keepAlias)
+        VIR_FREE(secinfo->alias);
 
-    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
-        break;
-    }
+    VIR_FREE(secinfo->username);
+    VIR_FREE(secinfo->iv);
+    VIR_FREE(secinfo->ciphertext);
 }
 
 
@@ -1106,9 +1091,8 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
 
     secinfo = g_new0(qemuDomainSecretInfo, 1);
 
-    secinfo->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
-    secinfo->s.aes.alias = g_strdup(alias);
-    secinfo->s.aes.username = g_strdup(username);
+    secinfo->alias = g_strdup(alias);
+    secinfo->username = g_strdup(username);
 
     raw_iv = g_new0(uint8_t, ivlen);
 
@@ -1117,7 +1101,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
         return NULL;
 
     /* Encode the IV and save that since qemu will need it */
-    secinfo->s.aes.iv = g_base64_encode(raw_iv, ivlen);
+    secinfo->iv = g_base64_encode(raw_iv, ivlen);
 
     if (virCryptoEncryptData(VIR_CRYPTO_CIPHER_AES256CBC,
                              priv->masterKey, QEMU_DOMAIN_MASTER_KEY_LEN,
@@ -1126,8 +1110,7 @@ qemuDomainSecretAESSetup(qemuDomainObjPrivate *priv,
         return NULL;
 
     /* Now encode the ciphertext and store to be passed to qemu */
-    secinfo->s.aes.ciphertext = g_base64_encode(ciphertext,
-                                                ciphertextlen);
+    secinfo->ciphertext = g_base64_encode(ciphertext, ciphertextlen);
 
     return g_steal_pointer(&secinfo);
 }
@@ -1809,11 +1792,9 @@ qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfo **secinfo,
 
     if (!*secinfo) {
         *secinfo = g_new0(qemuDomainSecretInfo, 1);
-        (*secinfo)->type = VIR_DOMAIN_SECRET_INFO_TYPE_AES;
     }
 
-    if ((*secinfo)->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-        (*secinfo)->s.aes.alias = g_steal_pointer(&*alias);
+    (*secinfo)->alias = g_steal_pointer(&*alias);
 
     return 0;
 }
@@ -1881,13 +1862,11 @@ qemuStorageSourcePrivateDataFormatSecinfo(virBuffer *buf,
                                           qemuDomainSecretInfo *secinfo,
                                           const char *type)
 {
-    if (!secinfo ||
-        secinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES ||
-        !secinfo->s.aes.alias)
+    if (!secinfo || !secinfo->alias)
         return;
 
     virBufferAsprintf(buf, "<secret type='%s' alias='%s'/>\n",
-                      type, secinfo->s.aes.alias);
+                      type, secinfo->alias);
 }
 
 

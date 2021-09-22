@@ -1846,7 +1846,7 @@ qemuDomainGetTLSObjects(virQEMUCaps *qemuCaps,
         if (qemuBuildSecretInfoProps(secinfo, secProps) < 0)
             return -1;
 
-        secAlias = secinfo->s.aes.alias;
+        secAlias = secinfo->alias;
     }
 
     if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
@@ -1890,7 +1890,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
         secinfo = chrSourcePriv->secinfo;
 
     if (secinfo)
-        *secAlias = secinfo->s.aes.alias;
+        *secAlias = secinfo->alias;
 
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
         goto cleanup;

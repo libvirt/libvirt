@@ -746,12 +746,12 @@ qemuBlockStorageSourceGetCURLProps(virStorageSource *src,
     if (!onlytarget) {
         if (src->auth) {
             username = src->auth->username;
-            passwordalias = srcPriv->secinfo->s.aes.alias;
+            passwordalias = srcPriv->secinfo->alias;
         }
 
         if (srcPriv &&
             srcPriv->httpcookie)
-            cookiealias = srcPriv->httpcookie->s.aes.alias;
+            cookiealias = srcPriv->httpcookie->alias;
     } else {
         /* format target string along with cookies */
         cookiestr = qemuBlockStorageSourceGetCookieString(src);
@@ -819,7 +819,7 @@ qemuBlockStorageSourceGetISCSIProps(virStorageSource *src,
 
     if (!onlytarget && src->auth) {
         username = src->auth->username;
-        objalias = srcPriv->secinfo->s.aes.alias;
+        objalias = srcPriv->secinfo->alias;
     }
 
     ignore_value(virJSONValueObjectCreate(&ret,
@@ -885,8 +885,8 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
         return NULL;
 
     if (!onlytarget && src->auth) {
-        username = srcPriv->secinfo->s.aes.username;
-        keysecret = srcPriv->secinfo->s.aes.alias;
+        username = srcPriv->secinfo->username;
+        keysecret = srcPriv->secinfo->alias;
         /* the auth modes are modelled after our old command line generator */
         authmodes = virJSONValueNewArray();
 
@@ -1267,7 +1267,7 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
 {
     qemuDomainStorageSourcePrivate *srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
-    if (!srcPriv || !srcPriv->encinfo || !srcPriv->encinfo->s.aes.alias) {
+    if (!srcPriv || !srcPriv->encinfo || !srcPriv->encinfo->alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing secret info for 'luks' driver"));
         return -1;
@@ -1275,7 +1275,7 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
 
     if (virJSONValueObjectAdd(props,
                               "s:driver", "luks",
-                              "s:key-secret", srcPriv->encinfo->s.aes.alias,
+                              "s:key-secret", srcPriv->encinfo->alias,
                               NULL) < 0)
         return -1;
 
@@ -1313,14 +1313,9 @@ qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
 
     *encprops = NULL;
 
-    /* qemu requires encrypted secrets regardless of encryption method used when
-     * passed using the blockdev infrastructure, thus only
-     * VIR_DOMAIN_SECRET_INFO_TYPE_AES works here. The correct type needs to be
-     * instantiated elsewhere. */
     if (!src->encryption ||
         !srcpriv ||
-        !srcpriv->encinfo ||
-        srcpriv->encinfo->type != VIR_DOMAIN_SECRET_INFO_TYPE_AES)
+        !srcpriv->encinfo)
         return 0;
 
     switch ((virStorageEncryptionFormatType) src->encryption->format) {
@@ -1342,7 +1337,7 @@ qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
 
     return virJSONValueObjectCreate(encprops,
                                     "s:format", encformat,
-                                    "s:key-secret", srcpriv->encinfo->s.aes.alias,
+                                    "s:key-secret", srcpriv->encinfo->alias,
                                     NULL);
 }
 
@@ -1906,17 +1901,17 @@ qemuBlockStorageSourceDetachPrepare(virStorageSource *src,
     data->tlsAlias = g_strdup(src->tlsAlias);
 
     if (srcpriv) {
-        if (srcpriv->secinfo && srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            data->authsecretAlias = g_strdup(srcpriv->secinfo->s.aes.alias);
+        if (srcpriv->secinfo)
+            data->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
 
-        if (srcpriv->encinfo && srcpriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            data->encryptsecretAlias = g_strdup(srcpriv->encinfo->s.aes.alias);
+        if (srcpriv->encinfo)
+            data->encryptsecretAlias = g_strdup(srcpriv->encinfo->alias);
 
         if (srcpriv->httpcookie)
-            data->httpcookiesecretAlias = g_strdup(srcpriv->httpcookie->s.aes.alias);
+            data->httpcookiesecretAlias = g_strdup(srcpriv->httpcookie->alias);
 
         if (srcpriv->tlsKeySecret)
-            data->tlsKeySecretAlias = g_strdup(srcpriv->tlsKeySecret->s.aes.alias);
+            data->tlsKeySecretAlias = g_strdup(srcpriv->tlsKeySecret->alias);
     }
 
     return g_steal_pointer(&data);
@@ -2319,9 +2314,8 @@ qemuBlockStorageSourceCreateGetEncryptionLUKS(virStorageSource *src,
     const char *keysecret = NULL;
 
     if (srcpriv &&
-        srcpriv->encinfo &&
-        srcpriv->encinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-        keysecret = srcpriv->encinfo->s.aes.alias;
+        srcpriv->encinfo)
+        keysecret = srcpriv->encinfo->alias;
 
     if (virJSONValueObjectCreate(&props,
                                  "s:key-secret", keysecret,

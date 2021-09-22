@@ -955,7 +955,7 @@ qemuMigrationParamsEnableTLS(virQEMUDriver *driver,
               qemuDomainSecretInfoTLSNew(priv, QEMU_MIGRATION_TLS_ALIAS_BASE,
                                          cfg->migrateTLSx509secretUUID)))
             return -1;
-        secAlias = priv->migSecinfo->s.aes.alias;
+        secAlias = priv->migSecinfo->alias;
     }
 
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(QEMU_MIGRATION_TLS_ALIAS_BASE)))

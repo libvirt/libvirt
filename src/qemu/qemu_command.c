@@ -707,9 +707,9 @@ qemuBuildSecretInfoProps(qemuDomainSecretInfo *secinfo,
         return -1;
 
     return qemuMonitorCreateObjectProps(propsret, "secret",
-                                        secinfo->s.aes.alias, "s:data",
-                                        secinfo->s.aes.ciphertext, "s:keyid",
-                                        keyid, "s:iv", secinfo->s.aes.iv,
+                                        secinfo->alias, "s:data",
+                                        secinfo->ciphertext, "s:keyid",
+                                        keyid, "s:iv", secinfo->iv,
                                         "s:format", "base64", NULL);
 }
 
@@ -763,20 +763,11 @@ static int
 qemuBuildRBDSecinfoURI(virBuffer *buf,
                        qemuDomainSecretInfo *secinfo)
 {
-    if (!secinfo) {
+    if (!secinfo)
         virBufferAddLit(buf, ":auth_supported=none");
-        return 0;
-    }
-
-    switch ((qemuDomainSecretInfoType) secinfo->type) {
-    case VIR_DOMAIN_SECRET_INFO_TYPE_AES:
+    else
         virBufferEscape(buf, '\\', ":", ":id=%s:auth_supported=cephx\\;none",
-                        secinfo->s.aes.username);
-        break;
-
-    case VIR_DOMAIN_SECRET_INFO_TYPE_LAST:
-        return -1;
-    }
+                        secinfo->username);
 
     return 0;
 }
@@ -1264,8 +1255,8 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
 
         virQEMUBuildBufferEscapeComma(buf, source);
 
-        if (secinfo && secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            virBufferAsprintf(buf, ",file.password-secret=%s", secinfo->s.aes.alias);
+        if (secinfo)
+            virBufferAsprintf(buf, ",file.password-secret=%s", secinfo->alias);
 
         if (disk->src->debug)
             virBufferAsprintf(buf, ",file.debug=%d", disk->src->debugLevel);
@@ -1282,12 +1273,12 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
 
     if (encinfo) {
         if (disk->src->format == VIR_STORAGE_FILE_RAW) {
-            virBufferAsprintf(buf, "key-secret=%s,", encinfo->s.aes.alias);
+            virBufferAsprintf(buf, "key-secret=%s,", encinfo->alias);
             rawluks = true;
         } else if (disk->src->format == VIR_STORAGE_FILE_QCOW2 &&
                    disk->src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             virBufferAddLit(buf, "encrypt.format=luks,");
-            virBufferAsprintf(buf, "encrypt.key-secret=%s,", encinfo->s.aes.alias);
+            virBufferAsprintf(buf, "encrypt.key-secret=%s,", encinfo->alias);
         }
     }
 
@@ -4886,7 +4877,7 @@ qemuBuildChrChardevStr(virLogManager *logManager,
                                                      qemuCaps) < 0)
                     return NULL;
 
-                tlsCertEncSecAlias = chrSourcePriv->secinfo->s.aes.alias;
+                tlsCertEncSecAlias = chrSourcePriv->secinfo->alias;
             }
 
             if (!(objalias = qemuAliasTLSObjFromSrcAlias(charAlias)))
@@ -5046,9 +5037,8 @@ qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
         ret->storageNodeName = src->nodestorage;
         ret->storageAttached = true;
 
-        if (srcpriv && srcpriv->secinfo &&
-            srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES)
-            ret->authsecretAlias = g_strdup(srcpriv->secinfo->s.aes.alias);
+        if (srcpriv && srcpriv->secinfo)
+            ret->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
 
     } else {
         ret->driveAlias = qemuAliasFromHostdev(hostdev);
@@ -8012,7 +8002,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                                                      gfxPriv->secinfo,
                                                      qemuCaps) < 0)
                     return -1;
-                secretAlias = gfxPriv->secinfo->s.aes.alias;
+                secretAlias = gfxPriv->secinfo->alias;
             }
 
             if (qemuBuildTLSx509CommandLine(cmd,
@@ -10898,7 +10888,6 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
 
     if (srcpriv) {
         if (srcpriv->secinfo &&
-            srcpriv->secinfo->type == VIR_DOMAIN_SECRET_INFO_TYPE_AES &&
             qemuBuildSecretInfoProps(srcpriv->secinfo, &data->authsecretProps) < 0)
             return -1;
 
@@ -10914,7 +10903,7 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
             if (qemuBuildSecretInfoProps(srcpriv->tlsKeySecret, &data->tlsKeySecretProps) < 0)
                 return -1;
 
-            tlsKeySecretAlias = srcpriv->tlsKeySecret->s.aes.alias;
+            tlsKeySecretAlias = srcpriv->tlsKeySecret->alias;
         }
     }
 
