@@ -1310,15 +1310,15 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-floppy-q35-2_11");
     DO_TEST_FAILURE("disk-floppy-pseries",
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
-    DO_TEST_NOCAPS("disk-floppy-tray");
-    DO_TEST_NOCAPS("disk-virtio");
+    DO_TEST_CAPS_LATEST("disk-floppy-tray");
+    DO_TEST_CAPS_LATEST("disk-virtio");
     DO_TEST("disk-virtio-ccw", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-ccw-many", QEMU_CAPS_CCW);
     DO_TEST("disk-virtio-s390-zpci", QEMU_CAPS_DEVICE_ZPCI, QEMU_CAPS_CCW);
-    DO_TEST("disk-order", QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST_CAPS_LATEST("disk-order");
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
-    DO_TEST_NOCAPS("disk-boot-disk");
-    DO_TEST_NOCAPS("disk-boot-cdrom");
+    DO_TEST_CAPS_LATEST("disk-boot-disk");
+    DO_TEST_CAPS_LATEST("disk-boot-cdrom");
     DO_TEST_CAPS_VER("floppy-drive-fat", "2.12.0");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
     DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
@@ -1370,61 +1370,44 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-http");
     driver.config->vxhsTLS = 0;
     VIR_FREE(driver.config->vxhsTLSx509certdir);
-    DO_TEST_NOCAPS("disk-no-boot");
+    DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
-    DO_TEST("disk-usb-device",
-            QEMU_CAPS_DEVICE_USB_STORAGE);
-    DO_TEST("disk-usb-device-removable",
-            QEMU_CAPS_DEVICE_USB_STORAGE,
-            QEMU_CAPS_USB_STORAGE_REMOVABLE);
+    DO_TEST_CAPS_LATEST("disk-usb-device");
+    DO_TEST_CAPS_LATEST("disk-usb-device-removable");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-usb-pci");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST_CAPS_LATEST("disk-scsi-device-auto");
-    DO_TEST("disk-scsi-disk-split",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("disk-scsi-disk-wwn",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
-    DO_TEST("disk-scsi-disk-vpd",
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
+    DO_TEST_CAPS_LATEST("disk-scsi-disk-split");
+    DO_TEST_CAPS_LATEST("disk-scsi-disk-wwn");
+    DO_TEST_CAPS_LATEST("disk-scsi-disk-vpd");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
-    DO_TEST("disk-sata-device",
-            QEMU_CAPS_ICH9_AHCI);
+    DO_TEST_CAPS_LATEST("disk-sata-device");
     DO_TEST_CAPS_VER("disk-aio", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST_NOCAPS("disk-source-pool");
     DO_TEST_NOCAPS("disk-source-pool-mode");
-    DO_TEST("disk-ioeventfd",
-            QEMU_CAPS_VIRTIO_IOEVENTFD,
-            QEMU_CAPS_VIRTIO_TX_ALG,
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
+    DO_TEST_CAPS_LATEST("disk-ioeventfd");
     DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST_CAPS_VER("disk-discard", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-discard");
     DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
-    DO_TEST_NOCAPS("disk-snapshot");
+    DO_TEST_CAPS_LATEST("disk-snapshot");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-same-targets");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-missing-target-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-address-conflict");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-hostdev-scsi-address-conflict");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("hostdevs-drive-address-conflict");
-    DO_TEST("event_idx",
-            QEMU_CAPS_VIRTIO_BLK_EVENT_IDX,
-            QEMU_CAPS_VIRTIO_NET_EVENT_IDX,
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("virtio-lun",
-            QEMU_CAPS_VIRTIO_BLK_SCSI);
-    DO_TEST("disk-scsi-lun-passthrough",
-            QEMU_CAPS_SCSI_BLOCK,
-            QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST("disk-serial",
-            QEMU_CAPS_KVM);
+    DO_TEST_CAPS_LATEST("event_idx");
+    DO_TEST_CAPS_LATEST("virtio-lun");
+    DO_TEST_CAPS_LATEST("disk-scsi-lun-passthrough");
+    DO_TEST_CAPS_LATEST("disk-serial");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fdc-incompatible-address");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-ide-incompatible-address");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-sata-incompatible-address");
@@ -1453,13 +1436,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("luks-disk-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("luks-disks-source-both");
 
-    DO_TEST_NOCAPS("disk-ide-split");
-    DO_TEST("disk-ide-wwn",
-            QEMU_CAPS_IDE_DRIVE_WWN,
-            QEMU_CAPS_SCSI_DISK_WWN);
-
-    DO_TEST_NOCAPS("disk-geometry");
-    DO_TEST("disk-blockio", QEMU_CAPS_BLOCKIO);
+    DO_TEST_CAPS_LATEST("disk-ide-split");
+    DO_TEST_CAPS_LATEST("disk-ide-wwn");
+    DO_TEST_CAPS_LATEST("disk-geometry");
+    DO_TEST_CAPS_LATEST("disk-blockio");
 
     DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "2.12.0");
     DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
