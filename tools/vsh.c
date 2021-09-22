@@ -279,7 +279,7 @@ vshCmddefCheckInternals(vshControl *ctl,
         }
 
         if (!(alias = vshCmddefSearch(cmd->alias))) {
-            vshError(ctl, _("command alias '%s' is pointing to a non-existant command '%s'"),
+            vshError(ctl, _("command alias '%s' is pointing to a non-existent command '%s'"),
                      cmd->name, cmd->alias);
             return -1;
         }
