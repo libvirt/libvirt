@@ -365,41 +365,36 @@ virCHMonitorBuildNetsJson(virJSONValue *content, virDomainDef *vmdef)
 static int
 virCHMonitorBuildVMJson(virDomainDef *vmdef, char **jsonstr)
 {
-    virJSONValue *content = virJSONValueNewObject();
-    int ret = -1;
+    g_autoptr(virJSONValue) content = virJSONValueNewObject();
 
     if (vmdef == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("VM is not defined"));
-        goto cleanup;
+        return -1;
     }
 
     if (virCHMonitorBuildPTYJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCHMonitorBuildCPUJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCHMonitorBuildMemoryJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCHMonitorBuildKernelRelatedJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCHMonitorBuildDisksJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (virCHMonitorBuildNetsJson(content, vmdef) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(*jsonstr = virJSONValueToString(content, false)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(content);
-    return ret;
+    return 0;
 }
 
 static int
