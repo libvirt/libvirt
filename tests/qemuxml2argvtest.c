@@ -1349,7 +1349,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-gluster");
     DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
-    DO_TEST_FAILURE_NOCAPS("disk-network-rbd-no-colon");
+    DO_TEST_CAPS_VER_FAILURE("disk-network-rbd-no-colon", "4.1.0");
+    DO_TEST_CAPS_LATEST("disk-network-rbd-no-colon");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
     DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
