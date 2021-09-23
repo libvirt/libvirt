@@ -1453,33 +1453,35 @@ mymain(void)
     /* DO_TEST_CAPS_VER("graphics-vnc-*", "2.11.0"); were added as a demonstration
      * that the old fake-caps tests were already using the new format, thus
      * they can be removed without replacement when "2.11.0" will be retired */
-    DO_TEST("graphics-vnc", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("graphics-vnc", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc");
     DO_TEST_CAPS_VER("graphics-vnc-socket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-socket");
-    DO_TEST("graphics-vnc-websocket",
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-policy", QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("graphics-vnc-websocket", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-websocket");
+    DO_TEST_CAPS_VER("graphics-vnc-policy", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-policy");
     DO_TEST_CAPS_LATEST("graphics-vnc-power");
-    DO_TEST("graphics-vnc-no-listen-attr", QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-remove-generated-socket", QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("graphics-vnc-no-listen-attr", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-no-listen-attr");
+    DO_TEST_CAPS_VER("graphics-vnc-remove-generated-socket", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-remove-generated-socket");
     driver.config->vncAutoUnixSocket = true;
     DO_TEST_CAPS_VER("graphics-vnc-auto-socket-cfg", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket-cfg");
     driver.config->vncAutoUnixSocket = false;
     DO_TEST_CAPS_VER("graphics-vnc-auto-socket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket");
-    DO_TEST("graphics-vnc-none", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-vnc-socket-new-cmdline", QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("graphics-vnc-none", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-none");
+    DO_TEST_CAPS_VER("graphics-vnc-socket-new-cmdline", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-socket-new-cmdline");
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);
     driver.config->vncSASLdir = g_strdup("/root/.sasl2");
-    DO_TEST("graphics-vnc-sasl", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_VER("graphics-vnc-sasl", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-sasl");
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
     DO_TEST_CAPS_VER("graphics-vnc-tls", "2.11.0");
@@ -1491,10 +1493,8 @@ mymain(void)
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
-    DO_TEST("graphics-vnc-egl-headless",
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_EGL_HEADLESS);
+    DO_TEST_CAPS_VER("graphics-vnc-egl-headless", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-egl-headless");
 
     DO_TEST("graphics-sdl",
             QEMU_CAPS_DEVICE_VGA, QEMU_CAPS_SDL);
