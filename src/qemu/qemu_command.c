@@ -7909,10 +7909,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
 
     switch (glisten->type) {
     case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_MULTI_SERVERS))
-            virBufferAddLit(&opt, "vnc=unix:");
-        else
-            virBufferAddLit(&opt, "unix:");
+        virBufferAddLit(&opt, "vnc=unix:");
         virQEMUBuildBufferEscapeComma(&opt, glisten->socket);
         break;
 

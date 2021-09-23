@@ -1471,7 +1471,7 @@ mymain(void)
     DO_TEST_CAPS_VER("graphics-vnc-auto-socket", "2.11.0");
     DO_TEST("graphics-vnc-none", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-socket-new-cmdline", QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_VNC_MULTI_SERVERS);
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);

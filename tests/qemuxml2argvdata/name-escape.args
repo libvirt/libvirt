@@ -36,7 +36,7 @@ QEMU_AUDIO_DRV=spice \
 -device isa-serial,chardev=charserial1,id=serial1 \
 -chardev pipe,id=charchannel0,path=/tmp/guestfwd,,foo \
 -netdev user,guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,id=channel0 \
--vnc unix:/tmp/lib/domain--1-foo=1,,bar=2/vnc.sock \
+-vnc vnc=unix:/tmp/lib/domain--1-foo=1,,bar=2/vnc.sock \
 -spice unix,addr=/tmp/lib/domain--1-foo=1,,bar=2/spice.sock,gl=on,rendernode=/dev/dri/foo,,bar,seamless-migration=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -drive file.driver=iscsi,file.portal=example.foo.org:3260,file.target=iqn.1992-01.com.example:my,,storage,file.lun=1,file.transport=tcp,if=none,format=raw,id=drive-hostdev0 \
