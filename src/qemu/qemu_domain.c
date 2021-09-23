@@ -1406,13 +1406,9 @@ qemuDomainSecretGraphicsPrepare(virQEMUDriverConfig *cfg,
                                 qemuDomainObjPrivate *priv,
                                 virDomainGraphicsDef *graphics)
 {
-    virQEMUCaps *qemuCaps = priv->qemuCaps;
     qemuDomainGraphicsPrivate *gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
 
     if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_VNC)
-        return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509))
         return 0;
 
     if (!cfg->vncTLS)

@@ -767,15 +767,9 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool verifypeer,
                              const char *alias,
                              const char *secalias,
-                             virQEMUCaps *qemuCaps,
+                             virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                              virJSONValue **propsret)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("tls-creds-x509 not supported in this QEMU binary"));
-        return -1;
-    }
-
     if (qemuMonitorCreateObjectProps(propsret, "tls-creds-x509", alias,
                                      "s:dir", tlspath,
                                      "s:endpoint", (isListen ? "server": "client"),

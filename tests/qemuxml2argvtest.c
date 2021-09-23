@@ -1660,22 +1660,18 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     driver.config->chardevTLS = 1;
     DO_TEST("serial-tcp-tlsx509-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_OBJECT_TLS_CREDS_X509);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     driver.config->chardevTLSx509verify = 1;
     DO_TEST("serial-tcp-tlsx509-chardev-verify",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_OBJECT_TLS_CREDS_X509);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     driver.config->chardevTLSx509verify = 0;
     DO_TEST("serial-tcp-tlsx509-chardev-notls",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_OBJECT_TLS_CREDS_X509);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     VIR_FREE(driver.config->chardevTLSx509certdir);
     driver.config->chardevTLSx509certdir = g_strdup("/etc/pki/libvirt-chardev");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST("serial-tcp-tlsx509-secret-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_OBJECT_TLS_CREDS_X509);
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
     driver.config->chardevTLS = 0;
     VIR_FREE(driver.config->chardevTLSx509certdir);
     DO_TEST("serial-many-chardev",

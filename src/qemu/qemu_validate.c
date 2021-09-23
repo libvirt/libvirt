@@ -1083,7 +1083,6 @@ qemuValidateDomainDef(const virDomainDef *def,
                       void *parseOpaque)
 {
     virQEMUDriver *driver = opaque;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
     virQEMUCaps *qemuCaps = parseOpaque;
     size_t i;
@@ -1217,18 +1216,6 @@ qemuValidateDomainDef(const virDomainDef *def,
 
     if (qemuValidateDomainDefConsole(def, qemuCaps) < 0)
         return -1;
-
-    if (cfg->vncTLS && cfg->vncTLSx509secretUUID &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_TLS_CREDS_X509)) {
-        for (i = 0; i < def->ngraphics; i++) {
-            if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("encrypted VNC TLS keys are not supported with "
-                                 "this QEMU binary"));
-                return -1;
-            }
-        }
-    }
 
     for (i = 0; i < def->nsysinfo; i++) {
         if (qemuValidateDomainDefSysinfo(def->sysinfo[i]) < 0)
