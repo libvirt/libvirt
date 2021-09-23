@@ -5457,6 +5457,7 @@
         <choice>
           <value>intel</value>
           <value>smmuv3</value>
+          <value>virtio</value>
         </choice>
       </attribute>
       <optional>

@@ -6451,6 +6451,9 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
 
         return 0;
 
+    case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+        return 0;
+
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
         /* There is no -device for SMMUv3, so nothing to be done here */
         return 0;
@@ -7037,6 +7040,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+        case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
             /* These IOMMUs are formatted in qemuBuildIOMMUCommandLine */
             break;
 

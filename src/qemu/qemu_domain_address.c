@@ -1004,6 +1004,9 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_DEVICE_IOMMU:
         switch ((virDomainIOMMUModel) dev->data.iommu->model) {
+            case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+                return 0;
+
             case VIR_DOMAIN_IOMMU_MODEL_INTEL:
             case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
             case VIR_DOMAIN_IOMMU_MODEL_LAST:
@@ -2382,6 +2385,9 @@ qemuDomainAssignDevicePCISlots(virDomainDef *def,
         virDomainIOMMUDef *iommu = def->iommu;
 
         switch ((virDomainIOMMUModel) iommu->model) {
+        case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+            break;
+
         case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
