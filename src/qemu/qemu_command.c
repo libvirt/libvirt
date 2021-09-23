@@ -6428,15 +6428,14 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                           const virDomainDef *def,
                           virQEMUCaps *qemuCaps)
 {
+    g_autoptr(virJSONValue) props = NULL;
     const virDomainIOMMUDef *iommu = def->iommu;
 
     if (!iommu)
         return 0;
 
     switch (iommu->model) {
-    case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
-        g_autoptr(virJSONValue) props = NULL;
-
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", "intel-iommu",
                                   "S:intremap", qemuOnOffAuto(iommu->intremap),
@@ -6451,7 +6450,6 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
             return -1;
 
         return 0;
-    }
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
         /* There is no -device for SMMUv3, so nothing to be done here */
@@ -7034,12 +7032,12 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 
     if (def->iommu) {
         switch (def->iommu->model) {
-        case VIR_DOMAIN_IOMMU_MODEL_INTEL:
-            /* The 'intel' IOMMu is formatted in qemuBuildIOMMUCommandLine */
-            break;
-
         case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
             virBufferAddLit(&buf, ",iommu=smmuv3");
+            break;
+
+        case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+            /* These IOMMUs are formatted in qemuBuildIOMMUCommandLine */
             break;
 
         case VIR_DOMAIN_IOMMU_MODEL_LAST:
