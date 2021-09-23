@@ -360,28 +360,23 @@ static bool
 cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
-    bool ret = true;
     g_autofree char *dump = NULL;
     unsigned int flags = 0;
-    int inactive;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
 
-    inactive = vshCommandOptBool(cmd, "inactive");
-    if (inactive)
+    if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_NETWORK_XML_INACTIVE;
 
-    dump = virNetworkGetXMLDesc(network, flags);
-
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
+    if (!(dump = virNetworkGetXMLDesc(network, flags))) {
+        virNetworkFree(network);
+        return false;
     }
 
+    vshPrint(ctl, "%s", dump);
     virNetworkFree(network);
-    return ret;
+    return true;
 }
 
 /*

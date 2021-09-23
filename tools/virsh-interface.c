@@ -485,26 +485,23 @@ static bool
 cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
-    bool ret = true;
     g_autofree char *dump = NULL;
     unsigned int flags = 0;
-    bool inactive = vshCommandOptBool(cmd, "inactive");
 
-    if (inactive)
+    if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_INTERFACE_XML_INACTIVE;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, NULL)))
         return false;
 
-    dump = virInterfaceGetXMLDesc(iface, flags);
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
+    if (!(dump = virInterfaceGetXMLDesc(iface, flags))) {
+        virInterfaceFree(iface);
+        return false;
     }
 
+    vshPrint(ctl, "%s", dump);
     virInterfaceFree(iface);
-    return ret;
+    return true;
 }
 
 /*
