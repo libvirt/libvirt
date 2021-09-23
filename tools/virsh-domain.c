@@ -11000,7 +11000,7 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
         goto done;
     }
 
-    if (virDomainMigrateSetMaxDowntime(dom, downtime, 0))
+    if (virDomainMigrateSetMaxDowntime(dom, downtime, 0) < 0)
         goto done;
 
     ret = true;
