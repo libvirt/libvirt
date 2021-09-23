@@ -7955,10 +7955,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
     }
 
     if (graphics->data.vnc.auth.passwd || cfg->vncPassword) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
-            virBufferAddLit(&opt, ",password=on");
-        else
-            virBufferAddLit(&opt, ",password");
+        virBufferAddLit(&opt, ",password=on");
     }
 
     if (cfg->vncTLS) {
@@ -7986,10 +7983,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
     }
 
     if (cfg->vncSASL) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
-            virBufferAddLit(&opt, ",sasl=on");
-        else
-            virBufferAddLit(&opt, ",sasl");
+        virBufferAddLit(&opt, ",sasl=on");
 
         if (cfg->vncSASLdir)
             virCommandAddEnvPair(cmd, "SASL_CONF_PATH", cfg->vncSASLdir);
