@@ -362,7 +362,7 @@ virInterfaceObjListCloneCb(void *payload,
     virInterfaceObj *srcObj = payload;
     struct _virInterfaceObjListCloneData *data = opaque;
     char *xml = NULL;
-    virInterfaceDef *backup = NULL;
+    g_autoptr(virInterfaceDef) backup = NULL;
     virInterfaceObj *obj;
 
     if (data->error)
@@ -379,6 +379,7 @@ virInterfaceObjListCloneCb(void *payload,
 
     if (!(obj = virInterfaceObjListAssignDef(data->dest, backup)))
         goto error;
+    backup = NULL;
     virInterfaceObjEndAPI(&obj);
 
     virObjectUnlock(srcObj);
@@ -387,7 +388,6 @@ virInterfaceObjListCloneCb(void *payload,
  error:
     data->error = true;
     VIR_FREE(xml);
-    virInterfaceDefFree(backup);
     virObjectUnlock(srcObj);
     return 0;
 }

@@ -1096,7 +1096,7 @@ testParseNetworks(testDriver *privconn,
         return -1;
 
     for (i = 0; i < num; i++) {
-        virNetworkDef *def;
+        g_autoptr(virNetworkDef) def = NULL;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "network");
         if (!node)
             return -1;
@@ -1105,10 +1105,9 @@ testParseNetworks(testDriver *privconn,
         if (!def)
             return -1;
 
-        if (!(obj = virNetworkObjAssignDef(privconn->networks, def, 0))) {
-            virNetworkDefFree(def);
+        if (!(obj = virNetworkObjAssignDef(privconn->networks, def, 0)))
             return -1;
-        }
+        def = NULL;
 
         virNetworkObjSetActive(obj, true);
         virNetworkObjEndAPI(&obj);
@@ -1133,7 +1132,7 @@ testParseInterfaces(testDriver *privconn,
         return -1;
 
     for (i = 0; i < num; i++) {
-        virInterfaceDef *def;
+        g_autoptr(virInterfaceDef) def = NULL;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
                                                    "interface");
         if (!node)
@@ -1143,10 +1142,9 @@ testParseInterfaces(testDriver *privconn,
         if (!def)
             return -1;
 
-        if (!(obj = virInterfaceObjListAssignDef(privconn->ifaces, def))) {
-            virInterfaceDefFree(def);
+        if (!(obj = virInterfaceObjListAssignDef(privconn->ifaces, def)))
             return -1;
-        }
+        def = NULL;
 
         virInterfaceObjSetActive(obj, true);
         virInterfaceObjEndAPI(&obj);
@@ -6195,7 +6193,7 @@ testInterfaceDefineXML(virConnectPtr conn,
                        unsigned int flags)
 {
     testDriver *privconn = conn->privateData;
-    virInterfaceDef *def;
+    g_autoptr(virInterfaceDef) def = NULL;
     virInterfaceObj *obj = NULL;
     virInterfaceDef *objdef;
     virInterfacePtr ret = NULL;
@@ -6214,7 +6212,6 @@ testInterfaceDefineXML(virConnectPtr conn,
     ret = virGetInterface(conn, objdef->name, objdef->mac);
 
  cleanup:
-    virInterfaceDefFree(def);
     virInterfaceObjEndAPI(&obj);
     virObjectUnlock(privconn);
     return ret;

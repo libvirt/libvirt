@@ -18,28 +18,23 @@ testCompareXMLToXMLFiles(const char *xml)
 {
     g_autofree char *xmlData = NULL;
     g_autofree char *actual = NULL;
-    int ret = -1;
-    virInterfaceDef *dev = NULL;
+    g_autoptr(virInterfaceDef) dev = NULL;
 
     if (virTestLoadFile(xml, &xmlData) < 0)
-        goto fail;
+        return -1;
 
     if (!(dev = virInterfaceDefParseString(xmlData, 0)))
-        goto fail;
+        return -1;
 
     if (!(actual = virInterfaceDefFormat(dev)))
-        goto fail;
+        return -1;
 
     if (STRNEQ(xmlData, actual)) {
         virTestDifferenceFull(stderr, xmlData, xml, actual, NULL);
-        goto fail;
+        return -1;
     }
 
-    ret = 0;
-
- fail:
-    virInterfaceDefFree(dev);
-    return ret;
+    return 0;
 }
 
 static int

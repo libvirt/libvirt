@@ -387,7 +387,7 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
     }
 
     for (i = 0; i < count; i++) {
-        virInterfaceDef *def;
+        g_autoptr(virInterfaceDef) def = NULL;
         struct netcf_if *iface;
 
         iface = ncf_lookup_by_name(driver->netcf, names[i]);
@@ -416,11 +416,8 @@ static int netcfConnectNumOfInterfacesImpl(virConnectPtr conn,
         }
         ncf_if_free(iface);
 
-        if (!filter(conn, def)) {
-            virInterfaceDefFree(def);
+        if (!filter(conn, def))
             continue;
-        }
-        virInterfaceDefFree(def);
 
         want++;
     }
@@ -481,7 +478,7 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
     }
 
     for (i = 0; i < count && want < nnames; i++) {
-        virInterfaceDef *def;
+        g_autoptr(virInterfaceDef) def = NULL;
         struct netcf_if *iface;
 
         iface = ncf_lookup_by_name(driver->netcf, allnames[i]);
@@ -510,11 +507,8 @@ static int netcfConnectListInterfacesImpl(virConnectPtr conn,
         }
         ncf_if_free(iface);
 
-        if (!filter(conn, def)) {
-            virInterfaceDefFree(def);
+        if (!filter(conn, def))
             continue;
-        }
-        virInterfaceDefFree(def);
 
         names[want++] = g_steal_pointer(&allnames[i]);
     }
@@ -665,7 +659,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         tmp_iface_objs = g_new0(virInterfacePtr, count + 1);
 
     for (i = 0; i < count; i++) {
-        virInterfaceDef *def;
+        g_autoptr(virInterfaceDef) def = NULL;
 
         iface = ncf_lookup_by_name(driver->netcf, names[i]);
         if (!iface) {
@@ -693,20 +687,17 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         if (!virConnectListAllInterfacesCheckACL(conn, def)) {
             ncf_if_free(iface);
             iface = NULL;
-            virInterfaceDefFree(def);
             continue;
         }
 
         if (ifaces) {
-            if (!(iface_obj = virGetInterface(conn, def->name, def->mac))) {
-                virInterfaceDefFree(def);
+            if (!(iface_obj = virGetInterface(conn, def->name, def->mac)))
                 goto cleanup;
-            }
+
             tmp_iface_objs[niface_objs] = iface_obj;
         }
         niface_objs++;
 
-        virInterfaceDefFree(def);
         ncf_if_free(iface);
         iface = NULL;
     }
@@ -743,7 +734,7 @@ static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
 {
     struct netcf_if *iface;
     virInterfacePtr ret = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
 
     virObjectLock(driver);
     iface = ncf_lookup_by_name(driver->netcf, name);
@@ -772,7 +763,6 @@ static virInterfacePtr netcfInterfaceLookupByName(virConnectPtr conn,
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }
@@ -783,7 +773,7 @@ static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
     struct netcf_if *iface;
     int niface;
     virInterfacePtr ret = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
 
     virObjectLock(driver);
     niface = ncf_lookup_by_mac_string(driver->netcf, macstr, 1, &iface);
@@ -820,7 +810,6 @@ static virInterfacePtr netcfInterfaceLookupByMACString(virConnectPtr conn,
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }
@@ -830,7 +819,7 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
 {
     struct netcf_if *iface = NULL;
     char *xmlstr = NULL;
-    virInterfaceDef *ifacedef = NULL;
+    g_autoptr(virInterfaceDef) ifacedef = NULL;
     char *ret = NULL;
     bool active;
 
@@ -880,7 +869,6 @@ static char *netcfInterfaceGetXMLDesc(virInterfacePtr ifinfo,
  cleanup:
     ncf_if_free(iface);
     VIR_FREE(xmlstr);
-    virInterfaceDefFree(ifacedef);
     virObjectUnlock(driver);
     return ret;
 }
@@ -891,7 +879,7 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
 {
     struct netcf_if *iface = NULL;
     char *xmlstr = NULL;
-    virInterfaceDef *ifacedef = NULL;
+    g_autoptr(virInterfaceDef) ifacedef = NULL;
     virInterfacePtr ret = NULL;
 
     virCheckFlags(VIR_INTERFACE_DEFINE_VALIDATE, NULL);
@@ -929,7 +917,6 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
  cleanup:
     ncf_if_free(iface);
     VIR_FREE(xmlstr);
-    virInterfaceDefFree(ifacedef);
     virObjectUnlock(driver);
     return ret;
 }
@@ -937,7 +924,7 @@ static virInterfacePtr netcfInterfaceDefineXML(virConnectPtr conn,
 static int netcfInterfaceUndefine(virInterfacePtr ifinfo)
 {
     struct netcf_if *iface = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
     int ret = -1;
 
     virObjectLock(driver);
@@ -968,7 +955,6 @@ static int netcfInterfaceUndefine(virInterfacePtr ifinfo)
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }
@@ -977,7 +963,7 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
                                 unsigned int flags)
 {
     struct netcf_if *iface = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
     int ret = -1;
     bool active;
 
@@ -1020,7 +1006,6 @@ static int netcfInterfaceCreate(virInterfacePtr ifinfo,
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }
@@ -1029,7 +1014,7 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
                                  unsigned int flags)
 {
     struct netcf_if *iface = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
     int ret = -1;
     bool active;
 
@@ -1072,7 +1057,6 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }
@@ -1080,7 +1064,7 @@ static int netcfInterfaceDestroy(virInterfacePtr ifinfo,
 static int netcfInterfaceIsActive(virInterfacePtr ifinfo)
 {
     struct netcf_if *iface = NULL;
-    virInterfaceDef *def = NULL;
+    g_autoptr(virInterfaceDef) def = NULL;
     int ret = -1;
     bool active;
 
@@ -1105,7 +1089,6 @@ static int netcfInterfaceIsActive(virInterfacePtr ifinfo)
 
  cleanup:
     ncf_if_free(iface);
-    virInterfaceDefFree(def);
     virObjectUnlock(driver);
     return ret;
 }

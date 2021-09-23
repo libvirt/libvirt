@@ -679,7 +679,7 @@ static virInterfaceDef *
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
                         int parentIfType)
 {
-    virInterfaceDef *def;
+    g_autoptr(virInterfaceDef) def = NULL;
     int type;
     char *tmp;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -716,28 +716,28 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_XML_ERROR,
                        _("interface has unsupported type '%s'"),
                        virInterfaceTypeToString(type));
-        goto error;
+        return NULL;
     }
     def->type = type;
 
     if (virInterfaceDefParseName(def, ctxt) < 0)
-       goto error;
+       return NULL;
 
     if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
         /* only recognize these in toplevel bond interfaces */
         if (virInterfaceDefParseStartMode(def, ctxt) < 0)
-            goto error;
+            return NULL;
         if (virInterfaceDefParseMtu(def, ctxt) < 0)
-            goto error;
+            return NULL;
         if (virInterfaceDefParseIfAdressing(def, ctxt) < 0)
-            goto error;
+            return NULL;
     }
 
     if (type != VIR_INTERFACE_TYPE_BRIDGE) {
         /* link status makes no sense for a bridge */
         lnk = virXPathNode("./link", ctxt);
         if (lnk && virInterfaceLinkParseXML(lnk, &def->lnk) < 0)
-            goto error;
+            return NULL;
     }
 
     switch (type) {
@@ -751,11 +751,11 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
             if (!(bridge = virXPathNode("./bridge[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("bridge interface misses the bridge element"));
-                goto error;
+                return NULL;
             }
             ctxt->node = bridge;
             if (virInterfaceDefParseBridge(def, ctxt) < 0)
-                goto error;
+                return NULL;
             break;
         }
         case VIR_INTERFACE_TYPE_BOND: {
@@ -764,11 +764,11 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
             if (!(bond = virXPathNode("./bond[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("bond interface misses the bond element"));
-                goto error;
+                return NULL;
             }
             ctxt->node = bond;
             if (virInterfaceDefParseBond(def, ctxt)  < 0)
-                goto error;
+                return NULL;
             break;
         }
         case VIR_INTERFACE_TYPE_VLAN: {
@@ -777,21 +777,17 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
             if (!(vlan = virXPathNode("./vlan[1]", ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR,
                                "%s", _("vlan interface misses the vlan element"));
-                goto error;
+                return NULL;
             }
             ctxt->node = vlan;
             if (virInterfaceDefParseVlan(def, ctxt)  < 0)
-                goto error;
+                return NULL;
             break;
         }
 
     }
 
-    return def;
-
- error:
-    virInterfaceDefFree(def);
-    return NULL;
+    return g_steal_pointer(&def);
 }
 
 

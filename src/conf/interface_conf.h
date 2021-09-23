@@ -153,6 +153,7 @@ struct _virInterfaceDef {
 
 void
 virInterfaceDefFree(virInterfaceDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virInterfaceDef, virInterfaceDefFree);
 
 virInterfaceDef *
 virInterfaceDefParseString(const char *xmlStr,
