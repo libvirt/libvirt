@@ -9856,6 +9856,7 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
     int nfdlist;
     int *fdlist;
     size_t i;
+    int status;
     bool setlabel = true;
     g_autofree virSecurityModelPtr secmodel = NULL;
     g_autofree virSecurityLabelPtr seclabel = NULL;
@@ -9894,40 +9895,8 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
      */
     if ((pid = virFork()) < 0)
         return false;
-    if (pid == 0) {
-        int status;
 
-        if (setlabel &&
-            virDomainLxcEnterSecurityLabel(secmodel,
-                                           seclabel,
-                                           NULL,
-                                           0) < 0)
-            _exit(EXIT_CANCELED);
-
-        if (virDomainLxcEnterCGroup(dom, 0) < 0)
-            _exit(EXIT_CANCELED);
-
-        if (virDomainLxcEnterNamespace(dom,
-                                       nfdlist,
-                                       fdlist,
-                                       NULL,
-                                       NULL,
-                                       0) < 0)
-            _exit(EXIT_CANCELED);
-
-        /* Fork a second time because entering the
-         * pid namespace only takes effect after fork
-         */
-        if ((pid = virFork()) < 0)
-            _exit(EXIT_CANCELED);
-        if (pid == 0) {
-            execv(cmdargv[0], cmdargv);
-            _exit(errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE);
-        }
-        if (virProcessWait(pid, &status, true) < 0)
-            _exit(EXIT_CANNOT_INVOKE);
-        virProcessExitWithStatus(status);
-    } else {
+    if (pid != 0) {
         for (i = 0; i < nfdlist; i++)
             VIR_FORCE_CLOSE(fdlist[i]);
         VIR_FREE(fdlist);
@@ -9935,8 +9904,33 @@ cmdLxcEnterNamespace(vshControl *ctl, const vshCmd *cmd)
             vshReportError(ctl);
             return false;
         }
+        return true;
     }
 
+    if (setlabel &&
+        virDomainLxcEnterSecurityLabel(secmodel, seclabel, NULL, 0) < 0)
+        _exit(EXIT_CANCELED);
+
+    if (virDomainLxcEnterCGroup(dom, 0) < 0)
+        _exit(EXIT_CANCELED);
+
+    if (virDomainLxcEnterNamespace(dom, nfdlist, fdlist, NULL, NULL, 0) < 0)
+        _exit(EXIT_CANCELED);
+
+    /* Fork a second time because entering the
+     * pid namespace only takes effect after fork
+     */
+    if ((pid = virFork()) < 0)
+        _exit(EXIT_CANCELED);
+
+    if (pid == 0) {
+        execv(cmdargv[0], cmdargv);
+        _exit(errno == ENOENT ? EXIT_ENOENT : EXIT_CANNOT_INVOKE);
+    }
+
+    if (virProcessWait(pid, &status, true) < 0)
+        _exit(EXIT_CANNOT_INVOKE);
+    virProcessExitWithStatus(status);
     return true;
 }
 
