@@ -803,30 +803,30 @@ cmdNodeCpuStats(vshControl *ctl, const vshCmd *cmd)
                          cpu_stats[i]);
             }
         }
+        return true;
+    }
+
+    if (present[VIRSH_CPU_USAGE]) {
+        vshPrint(ctl, "%-15s %5.1llu%%\n",
+                 _("usage:"), cpu_stats[VIRSH_CPU_USAGE]);
+        vshPrint(ctl, "%-15s %5.1llu%%\n",
+                 _("idle:"), 100 - cpu_stats[VIRSH_CPU_USAGE]);
     } else {
-        if (present[VIRSH_CPU_USAGE]) {
-            vshPrint(ctl, "%-15s %5.1llu%%\n",
-                     _("usage:"), cpu_stats[VIRSH_CPU_USAGE]);
-            vshPrint(ctl, "%-15s %5.1llu%%\n",
-                     _("idle:"), 100 - cpu_stats[VIRSH_CPU_USAGE]);
-        } else {
-            double usage, total_time = 0;
-            for (i = 0; i < VIRSH_CPU_USAGE; i++)
-                total_time += cpu_stats[i];
+        double usage, total_time = 0;
+        for (i = 0; i < VIRSH_CPU_USAGE; i++)
+            total_time += cpu_stats[i];
 
-            usage = (cpu_stats[VIRSH_CPU_USER] + cpu_stats[VIRSH_CPU_SYSTEM])
-                / total_time * 100;
+        usage = (cpu_stats[VIRSH_CPU_USER] + cpu_stats[VIRSH_CPU_SYSTEM])
+            / total_time * 100;
 
-            vshPrint(ctl, "%-15s %5.1lf%%\n", _("usage:"), usage);
-            for (i = 0; i < VIRSH_CPU_USAGE; i++) {
-                if (present[i]) {
-                    vshPrint(ctl, "%-15s %5.1lf%%\n", _(virshCPUOutput[i]),
-                             cpu_stats[i] / total_time * 100);
-                }
+        vshPrint(ctl, "%-15s %5.1lf%%\n", _("usage:"), usage);
+        for (i = 0; i < VIRSH_CPU_USAGE; i++) {
+            if (present[i]) {
+                vshPrint(ctl, "%-15s %5.1lf%%\n", _(virshCPUOutput[i]),
+                         cpu_stats[i] / total_time * 100);
             }
         }
     }
-
     return true;
 }
 
