@@ -10988,25 +10988,19 @@ cmdMigrateSetMaxDowntime(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     unsigned long long downtime = 0;
-    bool ret = false;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     if (vshCommandOptULongLong(ctl, cmd, "downtime", &downtime) < 0)
-        goto done;
+        return false;
+
     if (downtime < 1) {
         vshError(ctl, "%s", _("migrate: Invalid downtime"));
-        goto done;
+        return false;
     }
 
-    if (virDomainMigrateSetMaxDowntime(dom, downtime, 0) < 0)
-        goto done;
-
-    ret = true;
-
- done:
-    return ret;
+    return virDomainMigrateSetMaxDowntime(dom, downtime, 0) == 0;
 }
 
 
