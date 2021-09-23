@@ -292,7 +292,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 160 */
               "enable-fips", /* QEMU_CAPS_ENABLE_FIPS */
-              "spice-file-xfer-disable", /* QEMU_CAPS_SPICE_FILE_XFER_DISABLE */
+              "spice-file-xfer-disable", /* X_QEMU_CAPS_SPICE_FILE_XFER_DISABLE */
               "spiceport", /* X_QEMU_CAPS_CHARDEV_SPICEPORT */
               "usb-kbd", /* QEMU_CAPS_DEVICE_USB_KBD */
               "host-pci-multidomain", /* X_QEMU_CAPS_HOST_PCI_MULTIDOMAIN */
@@ -3210,7 +3210,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
     { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
-    { "spice", "disable-agent-file-xfer", QEMU_CAPS_SPICE_FILE_XFER_DISABLE },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },

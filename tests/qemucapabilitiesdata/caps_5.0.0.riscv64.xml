@@ -53,7 +53,6 @@
   <flag name='virtio-mmio'/>
   <flag name='ich9-intel-hda'/>
   <flag name='enable-fips'/>
-  <flag name='spice-file-xfer-disable'/>
   <flag name='usb-kbd'/>
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>

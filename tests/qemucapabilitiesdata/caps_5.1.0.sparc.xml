@@ -18,7 +18,6 @@
   <flag name='rng-egd'/>
   <flag name='drive-discard'/>
   <flag name='enable-fips'/>
-  <flag name='spice-file-xfer-disable'/>
   <flag name='active-commit'/>
   <flag name='change-backing-file'/>
   <flag name='memory-backend-ram'/>
