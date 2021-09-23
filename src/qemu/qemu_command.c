@@ -7963,40 +7963,26 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
 
     if (cfg->vncTLS) {
         qemuDomainGraphicsPrivate *gfxPriv = QEMU_DOMAIN_GRAPHICS_PRIVATE(graphics);
-        if (gfxPriv->tlsAlias) {
-            const char *secretAlias = NULL;
+        const char *secretAlias = NULL;
 
-            if (gfxPriv->secinfo) {
-                if (qemuBuildObjectSecretCommandLine(cmd,
-                                                     gfxPriv->secinfo,
-                                                     qemuCaps) < 0)
-                    return -1;
-                secretAlias = gfxPriv->secinfo->alias;
-            }
-
-            if (qemuBuildTLSx509CommandLine(cmd,
-                                            cfg->vncTLSx509certdir,
-                                            true,
-                                            cfg->vncTLSx509verify,
-                                            secretAlias,
-                                            gfxPriv->tlsAlias,
-                                            qemuCaps) < 0)
+        if (gfxPriv->secinfo) {
+            if (qemuBuildObjectSecretCommandLine(cmd,
+                                                 gfxPriv->secinfo,
+                                                 qemuCaps) < 0)
                 return -1;
-
-            virBufferAsprintf(&opt, ",tls-creds=%s", gfxPriv->tlsAlias);
-        } else {
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VNC_OPTS))
-                virBufferAddLit(&opt, ",tls=on");
-            else
-                virBufferAddLit(&opt, ",tls");
-            if (cfg->vncTLSx509verify) {
-                virBufferAddLit(&opt, ",x509verify=");
-                virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
-            } else {
-                virBufferAddLit(&opt, ",x509=");
-                virQEMUBuildBufferEscapeComma(&opt, cfg->vncTLSx509certdir);
-            }
+            secretAlias = gfxPriv->secinfo->alias;
         }
+
+        if (qemuBuildTLSx509CommandLine(cmd,
+                                        cfg->vncTLSx509certdir,
+                                        true,
+                                        cfg->vncTLSx509verify,
+                                        secretAlias,
+                                        gfxPriv->tlsAlias,
+                                        qemuCaps) < 0)
+            return -1;
+
+        virBufferAsprintf(&opt, ",tls-creds=%s", gfxPriv->tlsAlias);
     }
 
     if (cfg->vncSASL) {
