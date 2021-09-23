@@ -1057,7 +1057,6 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     virStorageVolPtr vol;
     bool bytes = vshCommandOptBool(cmd, "bytes");
     bool physical = vshCommandOptBool(cmd, "physical");
-    bool ret = true;
     int rc;
     unsigned int flags = 0;
 
@@ -1074,41 +1073,36 @@ cmdVolInfo(vshControl *ctl, const vshCmd *cmd)
     else
         rc = virStorageVolGetInfo(vol, &info);
 
-    if (rc == 0) {
-        double val;
-        const char *unit;
+    if (rc < 0) {
+        virStorageVolFree(vol);
+        return false;
+    }
 
-        vshPrint(ctl, "%-15s %s\n", _("Type:"),
-                 virshVolumeTypeToString(info.type));
+    vshPrint(ctl, "%-15s %s\n", _("Type:"),
+             virshVolumeTypeToString(info.type));
 
-        if (bytes) {
-            vshPrint(ctl, "%-15s %llu %s\n", _("Capacity:"),
-                     info.capacity, _("bytes"));
-        } else {
-            val = vshPrettyCapacity(info.capacity, &unit);
-            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
-        }
+    if (bytes) {
+        vshPrint(ctl, "%-15s %llu %s\n", _("Capacity:"), info.capacity, _("bytes"));
 
-        if (bytes) {
-            if (physical)
-                vshPrint(ctl, "%-15s %llu %s\n", _("Physical:"),
-                         info.allocation, _("bytes"));
-            else
-                vshPrint(ctl, "%-15s %llu %s\n", _("Allocation:"),
-                         info.allocation, _("bytes"));
-         } else {
-            val = vshPrettyCapacity(info.allocation, &unit);
-            if (physical)
-                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Physical:"), val, unit);
-            else
-                vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
-         }
+        if (physical)
+            vshPrint(ctl, "%-15s %llu %s\n", _("Physical:"), info.allocation, _("bytes"));
+        else
+            vshPrint(ctl, "%-15s %llu %s\n", _("Allocation:"), info.allocation, _("bytes"));
     } else {
-        ret = false;
+        const char *unit;
+        double val = vshPrettyCapacity(info.capacity, &unit);
+
+        vshPrint(ctl, "%-15s %2.2lf %s\n", _("Capacity:"), val, unit);
+        val = vshPrettyCapacity(info.allocation, &unit);
+
+        if (physical)
+            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Physical:"), val, unit);
+        else
+            vshPrint(ctl, "%-15s %2.2lf %s\n", _("Allocation:"), val, unit);
     }
 
     virStorageVolFree(vol);
-    return ret;
+    return true;
 }
 
 /*
