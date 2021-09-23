@@ -1349,7 +1349,6 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     unsigned long includeVersion;
     unsigned long apiVersion;
     unsigned long daemonVersion;
-    int ret;
     unsigned int major;
     unsigned int minor;
     unsigned int rel;
@@ -1369,8 +1368,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     vshPrint(ctl, _("Compiled against library: libvirt %d.%d.%d\n"),
              major, minor, rel);
 
-    ret = virGetVersion(&libVersion, hvType, &apiVersion);
-    if (ret < 0) {
+    if (virGetVersion(&libVersion, hvType, &apiVersion) < 0) {
         vshError(ctl, "%s", _("failed to get the library version"));
         return false;
     }
@@ -1388,8 +1386,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     vshPrint(ctl, _("Using API: %s %d.%d.%d\n"), hvType,
              major, minor, rel);
 
-    ret = virConnectGetVersion(priv->conn, &hvVersion);
-    if (ret < 0) {
+    if (virConnectGetVersion(priv->conn, &hvVersion) < 0) {
         vshError(ctl, "%s", _("failed to get the hypervisor version"));
         return false;
     }
@@ -1407,8 +1404,7 @@ cmdVersion(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     }
 
     if (vshCommandOptBool(cmd, "daemon")) {
-        ret = virConnectGetLibVersion(priv->conn, &daemonVersion);
-        if (ret < 0) {
+        if (virConnectGetLibVersion(priv->conn, &daemonVersion) < 0) {
             vshError(ctl, "%s", _("failed to get the daemon version"));
         } else {
             major = daemonVersion / 1000000;
