@@ -246,12 +246,12 @@ virDomainVirtioSerialAddrAutoAssign(virDomainDef *def,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 bool
-virDomainUSBAddressPortIsValid(unsigned int *port)
+virDomainUSBAddressPortIsValid(const unsigned int *port)
     ATTRIBUTE_NONNULL(1);
 
 void
 virDomainUSBAddressPortFormatBuf(virBuffer *buf,
-                                 unsigned int *port)
+                                 const unsigned int *port)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 #define VIR_DOMAIN_USB_HUB_PORTS 8

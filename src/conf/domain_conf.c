@@ -6334,7 +6334,7 @@ virDomainVirtioOptionsFormat(virBuffer *buf,
 
 static void ATTRIBUTE_NONNULL(2)
 virDomainDeviceInfoFormat(virBuffer *buf,
-                          virDomainDeviceInfo *info,
+                          const virDomainDeviceInfo *info,
                           unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;

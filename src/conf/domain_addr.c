@@ -1829,7 +1829,7 @@ virDomainVirtioSerialAddrIsComplete(virDomainDeviceInfo *info)
 
 
 bool
-virDomainUSBAddressPortIsValid(unsigned int *port)
+virDomainUSBAddressPortIsValid(const unsigned int *port)
 {
     return port[0] != 0;
 }
@@ -1837,7 +1837,7 @@ virDomainUSBAddressPortIsValid(unsigned int *port)
 
 void
 virDomainUSBAddressPortFormatBuf(virBuffer *buf,
-                                 unsigned int *port)
+                                 const unsigned int *port)
 {
     size_t i;
 
