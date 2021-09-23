@@ -110,7 +110,6 @@
   <flag name='qxl.max_outputs'/>
   <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
-  <flag name='tls-creds-x509'/>
   <flag name='intel-iommu'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>

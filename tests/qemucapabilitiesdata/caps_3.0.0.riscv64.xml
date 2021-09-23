@@ -39,7 +39,6 @@
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='chardev-logfile'/>
   <flag name='drive-detect-zeroes'/>
-  <flag name='tls-creds-x509'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>

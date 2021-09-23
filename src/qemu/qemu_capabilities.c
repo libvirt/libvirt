@@ -384,7 +384,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 225 */
               "spice-unix", /* QEMU_CAPS_SPICE_UNIX */
               "drive-detect-zeroes", /* QEMU_CAPS_DRIVE_DETECT_ZEROES */
-              "tls-creds-x509", /* QEMU_CAPS_OBJECT_TLS_CREDS_X509 */
+              "tls-creds-x509", /* X_QEMU_CAPS_OBJECT_TLS_CREDS_X509 */
               "display", /* X_QEMU_CAPS_DISPLAY */
               "intel-iommu", /* QEMU_CAPS_DEVICE_INTEL_IOMMU */
 
@@ -1269,7 +1269,6 @@ struct virQEMUCapsStringFlags virQEMUCapsObjectTypes[] = {
     { "mptsas1068", QEMU_CAPS_SCSI_MPTSAS1068 },
     { "pxb", QEMU_CAPS_DEVICE_PXB },
     { "pxb-pcie", QEMU_CAPS_DEVICE_PXB_PCIE },
-    { "tls-creds-x509", QEMU_CAPS_OBJECT_TLS_CREDS_X509 },
     { "intel-iommu", QEMU_CAPS_DEVICE_INTEL_IOMMU },
     { "ivshmem-plain", QEMU_CAPS_DEVICE_IVSHMEM_PLAIN },
     { "ivshmem-doorbell", QEMU_CAPS_DEVICE_IVSHMEM_DOORBELL },

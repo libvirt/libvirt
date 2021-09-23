@@ -364,7 +364,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 225 */
     QEMU_CAPS_SPICE_UNIX, /* -spice unix */
     QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
-    QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
+    X_QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
     X_QEMU_CAPS_DISPLAY, /* -display */
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
 
