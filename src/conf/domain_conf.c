@@ -2581,6 +2581,7 @@ virDomainIOMMUDefFree(virDomainIOMMUDef *iommu)
     if (!iommu)
         return;
 
+    virDomainDeviceInfoClear(&iommu->info);
     g_free(iommu);
 }
 
@@ -4276,13 +4277,14 @@ virDomainDeviceGetInfo(const virDomainDeviceDef *device)
         return &device->data.panic->info;
     case VIR_DOMAIN_DEVICE_MEMORY:
         return &device->data.memory->info;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        return &device->data.iommu->info;
     case VIR_DOMAIN_DEVICE_VSOCK:
         return &device->data.vsock->info;
 
     /* The following devices do not contain virDomainDeviceInfo */
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_AUDIO:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_NONE:
@@ -4578,6 +4580,13 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
             return rc;
     }
 
+    device.type = VIR_DOMAIN_DEVICE_IOMMU;
+    if (def->iommu) {
+        device.data.iommu = def->iommu;
+        if ((rc = cb(def, &device, &def->iommu->info, opaque)) != 0)
+            return rc;
+    }
+
     device.type = VIR_DOMAIN_DEVICE_VSOCK;
     if (def->vsock) {
         device.data.vsock = def->vsock;
@@ -4602,12 +4611,6 @@ virDomainDeviceInfoIterateFlags(virDomainDef *def,
         device.type = VIR_DOMAIN_DEVICE_LEASE;
         for (i = 0; i < def->nleases; i++) {
             device.data.lease = def->leases[i];
-            if ((rc = cb(def, &device, NULL, opaque)) != 0)
-                return rc;
-        }
-        device.type = VIR_DOMAIN_DEVICE_IOMMU;
-        if (def->iommu) {
-            device.data.iommu = def->iommu;
             if ((rc = cb(def, &device, NULL, opaque)) != 0)
                 return rc;
         }
@@ -14797,8 +14800,10 @@ virDomainMemoryDefParseXML(virDomainXMLOption *xmlopt,
 
 
 static virDomainIOMMUDef *
-virDomainIOMMUDefParseXML(xmlNodePtr node,
-                          xmlXPathContextPtr ctxt)
+virDomainIOMMUDefParseXML(virDomainXMLOption *xmlopt,
+                          xmlNodePtr node,
+                          xmlXPathContextPtr ctxt,
+                          unsigned int flags)
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr driver;
@@ -14833,6 +14838,10 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
                            &iommu->aw_bits) < 0)
             return NULL;
     }
+
+    if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt,
+                                    &iommu->info, flags) < 0)
+        return NULL;
 
     return g_steal_pointer(&iommu);
 }
@@ -15031,7 +15040,8 @@ virDomainDeviceDefParse(const char *xmlStr,
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
-        if (!(dev->data.iommu = virDomainIOMMUDefParseXML(node, ctxt)))
+        if (!(dev->data.iommu = virDomainIOMMUDefParseXML(xmlopt, node,
+                                                          ctxt, flags)))
             return NULL;
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
@@ -20166,7 +20176,8 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if (n > 0) {
-        if (!(def->iommu = virDomainIOMMUDefParseXML(nodes[0], ctxt)))
+        if (!(def->iommu = virDomainIOMMUDefParseXML(xmlopt, nodes[0],
+                                                     ctxt, flags)))
             return NULL;
     }
     VIR_FREE(nodes);
@@ -22030,7 +22041,7 @@ virDomainIOMMUDefCheckABIStability(virDomainIOMMUDef *src,
         return false;
     }
 
-    return true;
+    return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
 
@@ -27431,6 +27442,8 @@ virDomainIOMMUDefFormat(virBuffer *buf,
     }
 
     virXMLFormatElement(&childBuf, "driver", &driverAttrBuf, NULL);
+
+    virDomainDeviceInfoFormat(&childBuf, &iommu->info, 0);
 
     virBufferAsprintf(&attrBuf, " model='%s'",
                       virDomainIOMMUModelTypeToString(iommu->model));
