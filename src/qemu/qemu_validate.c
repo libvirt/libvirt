@@ -4031,13 +4031,6 @@ qemuValidateDomainDeviceDefSPICEGraphics(const virDomainGraphicsDef *graphics,
         break;
     }
 
-    if (graphics->data.spice.filetransfer == VIR_TRISTATE_BOOL_NO &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_FILE_XFER_DISABLE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("This QEMU can't disable file transfers through spice"));
-            return -1;
-    }
-
     if (graphics->data.spice.gl == VIR_TRISTATE_BOOL_YES) {
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_GL)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

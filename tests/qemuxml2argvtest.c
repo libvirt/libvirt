@@ -1503,8 +1503,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
     DO_TEST("graphics-spice",
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-no-args",
             QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     driver.config->spiceSASL = 1;
@@ -1537,8 +1536,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-spice-agent-file-xfer",
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE_FILE_XFER_DISABLE);
+            QEMU_CAPS_DEVICE_QXL);
     DO_TEST("graphics-spice-socket",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_SPICE_UNIX,
