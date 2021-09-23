@@ -2534,6 +2534,27 @@ virDomainVsockDefFree(virDomainVsockDef *vsock)
 }
 
 
+virDomainIOMMUDef *
+virDomainIOMMUDefNew(void)
+{
+    g_autoptr(virDomainIOMMUDef) iommu = NULL;
+
+    iommu = g_new0(virDomainIOMMUDef, 1);
+
+    return g_steal_pointer(&iommu);
+}
+
+
+void
+virDomainIOMMUDefFree(virDomainIOMMUDef *iommu)
+{
+    if (!iommu)
+        return;
+
+    g_free(iommu);
+}
+
+
 void
 virDomainNetTeamingInfoFree(virDomainNetTeamingInfo *teaming)
 {
@@ -3336,7 +3357,7 @@ void virDomainDeviceDefFree(virDomainDeviceDef *def)
         virDomainMemoryDefFree(def->data.memory);
         break;
     case VIR_DOMAIN_DEVICE_IOMMU:
-        g_free(def->data.iommu);
+        virDomainIOMMUDefFree(def->data.iommu);
         break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         virDomainVsockDefFree(def->data.vsock);
@@ -3674,7 +3695,7 @@ void virDomainDefFree(virDomainDef *def)
         virDomainPanicDefFree(def->panics[i]);
     g_free(def->panics);
 
-    g_free(def->iommu);
+    virDomainIOMMUDefFree(def->iommu);
 
     g_free(def->idmap.uidmap);
     g_free(def->idmap.gidmap);
@@ -14923,11 +14944,11 @@ virDomainIOMMUDefParseXML(xmlNodePtr node,
 {
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr driver;
-    g_autofree virDomainIOMMUDef *iommu = NULL;
+    g_autoptr(virDomainIOMMUDef) iommu = NULL;
 
     ctxt->node = node;
 
-    iommu = g_new0(virDomainIOMMUDef, 1);
+    iommu = virDomainIOMMUDefNew();
 
     if (virXMLPropEnum(node, "model", virDomainIOMMUModelTypeFromString,
                        VIR_XML_PROP_REQUIRED, &iommu->model) < 0)
