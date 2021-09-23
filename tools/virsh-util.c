@@ -137,8 +137,7 @@ virshDomainState(vshControl *ctl,
     /* fall back to virDomainGetInfo if virDomainGetState is not supported */
     if (virDomainGetInfo(dom, &info) < 0)
         return -1;
-    else
-        return info.state;
+    return info.state;
 }
 
 
