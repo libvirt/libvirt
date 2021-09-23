@@ -3374,7 +3374,6 @@ qemuDomainScreenshot(virDomainPtr dom,
     const char *videoAlias = NULL;
     char *ret = NULL;
     bool unlink_tmp = false;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     virCheckFlags(0, NULL);
 
@@ -3382,7 +3381,6 @@ qemuDomainScreenshot(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainScreenshotEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
@@ -10559,7 +10557,6 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     g_autofree char *tmp = NULL;
     int fd = -1, ret = -1;
     qemuDomainObjPrivate *priv;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     virCheckFlags(VIR_MEMORY_VIRTUAL | VIR_MEMORY_PHYSICAL, -1);
 
@@ -10567,7 +10564,6 @@ qemuDomainMemoryPeek(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-    cfg = virQEMUDriverGetConfig(driver);
 
     if (virDomainMemoryPeekEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
