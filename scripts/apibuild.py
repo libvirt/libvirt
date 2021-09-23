@@ -2030,8 +2030,9 @@ class CParser:
 
 class docBuilder:
     """A documentation builder"""
-    def __init__(self, name, path='.', directories=['.'], includes=[]):
+    def __init__(self, name, syms, path='.', directories=['.'], includes=[]):
         self.name = name
+        self.syms = syms
         self.path = path
         self.directories = directories
         if name == "libvirt":
@@ -2044,6 +2045,7 @@ class docBuilder:
             self.includes = includes + list(admin_included_files.keys())
         self.modules = {}
         self.headers = {}
+        self.versions = {}
         self.idx = index()
         self.xref = {}
         self.index = {}
@@ -2114,6 +2116,44 @@ class docBuilder:
             self.modules[module] = idx
             self.idx.merge_public(idx)
 
+    def scanVersions(self):
+        prefix = self.name.upper().replace("-", "_") + "_"
+
+        version = None
+        prevversion = None
+        with open(self.syms, "r") as syms:
+            while True:
+                line = syms.readline()
+                if not line:
+                    break
+                line = line.strip()
+                if line.startswith("#"):
+                    continue
+                if line == "":
+                    continue
+
+                if line.startswith(prefix) and line.endswith(" {"):
+                    version = line[len(prefix):-2]
+                elif line == "global:":
+                    continue
+                elif line == "local:":
+                    continue
+                elif line.startswith("}"):
+                    if prevversion is None:
+                        if line != "};":
+                            raise Exception("Unexpected closing version")
+                    else:
+                        if line != ("} %s%s;" % (prefix, prevversion)):
+                            raise Exception("Unexpected end of version '%s': %s'" % (line, "} " + prefix + version))
+
+                    prevversion = version
+                    version = None
+                elif line.endswith(";") and version is not None:
+                    func = line[:-1]
+                    self.versions[func] = version
+                else:
+                    raise Exception("Unexpected line in syms file: %s" % line)
+
     def scan(self):
         for directory in self.directories:
             files = glob.glob(directory + "/*.c")
@@ -2136,6 +2176,7 @@ class docBuilder:
                     self.headers[file] = None
         self.scanHeaders()
         self.scanModules()
+        self.scanVersions()
 
     def modulename_file(self, file):
         module = os.path.basename(file)
@@ -2275,9 +2316,17 @@ class docBuilder:
             print("=>", id)
 
         # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
-        output.write("    <%s name='%s' file='%s' module='%s'>\n" % (id.type,
-                     name, self.modulename_file(id.header),
-                     self.modulename_file(id.module)))
+        if id.type == "function":
+            ver = self.versions[name]
+            if ver is None:
+                raise Exception("Missing version for '%s'" % name)
+            output.write("    <function name='%s' file='%s' module='%s' version='%s'>\n" % (
+                name, self.modulename_file(id.header),
+                self.modulename_file(id.module), self.versions[name]))
+        else:
+            output.write("    <functype name='%s' file='%s' module='%s'>\n" % (
+                name, self.modulename_file(id.header),
+                self.modulename_file(id.module)))
         #
         # Processing of conditionals modified by Bill 1/1/05
         #
@@ -2406,9 +2455,16 @@ class app:
         print(msg)
 
     def rebuild(self, name, srcdir, builddir):
-        if name not in ["libvirt", "libvirt-qemu", "libvirt-lxc", "libvirt-admin"]:
+        syms = {
+            "libvirt": srcdir + "/../src/libvirt_public.syms",
+            "libvirt-qemu": srcdir + "/../src/libvirt_qemu.syms",
+            "libvirt-lxc": srcdir + "/../src/libvirt_lxc.syms",
+            "libvirt-admin": srcdir + "/../src/admin/libvirt_admin_public.syms",
+        }
+        if name not in syms:
             self.warning("rebuild() failed, unknown module %s" % name)
             return None
+
         builder = None
         if glob.glob(srcdir + "/../src/libvirt.c") != []:
             if not quiet:
@@ -2418,7 +2474,7 @@ class app:
                     srcdir + "/../src/util",
                     srcdir + "/../include/libvirt",
                     builddir + "/../include/libvirt"]
-            builder = docBuilder(name, builddir, dirs, [])
+            builder = docBuilder(name, syms[name], builddir, dirs, [])
         else:
             self.warning("rebuild() failed, unable to guess the module")
             return None
