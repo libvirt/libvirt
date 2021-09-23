@@ -112,7 +112,6 @@
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
-  <flag name='vnc-opts'/>
   <flag name='input-linux'/>
   <flag name='virtio-blk.queue-size'/>
   <version>2012000</version>

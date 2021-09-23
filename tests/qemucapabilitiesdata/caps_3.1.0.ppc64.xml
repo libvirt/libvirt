@@ -151,7 +151,6 @@
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
-  <flag name='vnc-opts'/>
   <flag name='input-linux'/>
   <flag name='virtio-blk.queue-size'/>
   <version>3000091</version>

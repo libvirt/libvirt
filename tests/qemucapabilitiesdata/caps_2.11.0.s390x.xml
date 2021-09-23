@@ -99,7 +99,6 @@
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='fsdev.createmode'/>
-  <flag name='vnc-opts'/>
   <flag name='input-linux'/>
   <version>2011000</version>
   <kvmVersion>0</kvmVersion>

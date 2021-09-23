@@ -616,7 +616,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vhost-user-blk", /* QEMU_CAPS_DEVICE_VHOST_USER_BLK */
               "cpu-max", /* QEMU_CAPS_CPU_MAX */
               "memory-backend-file.x-use-canonical-path-for-ramblock-id", /* QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID */
-              "vnc-opts", /* QEMU_CAPS_VNC_OPTS */
+              "vnc-opts", /* X_QEMU_CAPS_VNC_OPTS */
               "migration-param.block-bitmap-mapping", /* QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING */
 
               /* 395 */
@@ -3215,7 +3215,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
     { "vnc", "vnc", QEMU_CAPS_VNC_MULTI_SERVERS },
-    { "vnc", "display", QEMU_CAPS_VNC_OPTS },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
     { "vnc", "audiodev", QEMU_CAPS_AUDIODEV },
 };

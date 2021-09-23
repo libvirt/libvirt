@@ -91,7 +91,6 @@
   <flag name='fsdev.createmode'/>
   <flag name='ncr53c90'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
-  <flag name='vnc-opts'/>
   <flag name='audiodev'/>
   <flag name='blockdev-backup'/>
   <flag name='rotation-rate'/>
