@@ -535,7 +535,6 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
@@ -549,17 +548,15 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    iface = virInterfaceDefineXML(priv->conn, buffer, flags);
-
-    if (iface != NULL) {
-        vshPrintExtra(ctl, _("Interface %s defined from %s\n"),
-                      virInterfaceGetName(iface), from);
-        virInterfaceFree(iface);
-    } else {
+    if (!(iface = virInterfaceDefineXML(priv->conn, buffer, flags))) {
         vshError(ctl, _("Failed to define interface from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Interface %s defined from %s\n"),
+                  virInterfaceGetName(iface), from);
+    virInterfaceFree(iface);
+    return true;
 }
 
 /*
@@ -584,21 +581,20 @@ static bool
 cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
-    bool ret = true;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
         return false;
 
-    if (virInterfaceUndefine(iface) == 0) {
-        vshPrintExtra(ctl, _("Interface %s undefined\n"), name);
-    } else {
+    if (virInterfaceUndefine(iface) < 0) {
         vshError(ctl, _("Failed to undefine interface %s"), name);
-        ret = false;
+        virInterfaceFree(iface);
+        return false;
     }
 
+    vshPrintExtra(ctl, _("Interface %s undefined\n"), name);
     virInterfaceFree(iface);
-    return ret;
+    return true;
 }
 
 /*
@@ -623,21 +619,20 @@ static bool
 cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
-    bool ret = true;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
         return false;
 
-    if (virInterfaceCreate(iface, 0) == 0) {
-        vshPrintExtra(ctl, _("Interface %s started\n"), name);
-    } else {
+    if (virInterfaceCreate(iface, 0) < 0) {
         vshError(ctl, _("Failed to start interface %s"), name);
-        ret = false;
+        virInterfaceFree(iface);
+        return false;
     }
 
+    vshPrintExtra(ctl, _("Interface %s started\n"), name);
     virInterfaceFree(iface);
-    return ret;
+    return true;
 }
 
 /*
@@ -662,21 +657,20 @@ static bool
 cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
 {
     virInterfacePtr iface;
-    bool ret = true;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
         return false;
 
-    if (virInterfaceDestroy(iface, 0) == 0) {
-        vshPrintExtra(ctl, _("Interface %s destroyed\n"), name);
-    } else {
+    if (virInterfaceDestroy(iface, 0) < 0) {
         vshError(ctl, _("Failed to destroy interface %s"), name);
-        ret = false;
+        virInterfaceFree(iface);
+        return false;
     }
 
+    vshPrintExtra(ctl, _("Interface %s destroyed\n"), name);
     virInterfaceFree(iface);
-    return ret;
+    return false;
 }
 
 /*

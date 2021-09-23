@@ -209,7 +209,6 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
@@ -228,15 +227,15 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
     else
         network = virNetworkCreateXML(priv->conn, buffer);
 
-    if (network != NULL) {
-        vshPrintExtra(ctl, _("Network %s created from %s\n"),
-                      virNetworkGetName(network), from);
-        virNetworkFree(network);
-    } else {
+    if (!network) {
         vshError(ctl, _("Failed to create network from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Network %s created from %s\n"),
+                  virNetworkGetName(network), from);
+    virNetworkFree(network);
+    return true;
 }
 
 /*
@@ -267,7 +266,6 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
 {
     virNetworkPtr network;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
@@ -286,15 +284,15 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
     else
         network = virNetworkDefineXML(priv->conn, buffer);
 
-    if (network != NULL) {
-        vshPrintExtra(ctl, _("Network %s defined from %s\n"),
-                      virNetworkGetName(network), from);
-        virNetworkFree(network);
-    } else {
+    if (!network) {
         vshError(ctl, _("Failed to define network from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Network %s defined from %s\n"),
+                  virNetworkGetName(network), from);
+    virNetworkFree(network);
+    return true;
 }
 
 /*

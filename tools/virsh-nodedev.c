@@ -57,7 +57,6 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
 {
     virNodeDevicePtr dev = NULL;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
@@ -67,18 +66,15 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    dev = virNodeDeviceCreateXML(priv->conn, buffer, 0);
-
-    if (dev != NULL) {
-        vshPrintExtra(ctl, _("Node device %s created from %s\n"),
-                      virNodeDeviceGetName(dev), from);
-        virNodeDeviceFree(dev);
-    } else {
+    if (!(dev = virNodeDeviceCreateXML(priv->conn, buffer, 0))) {
         vshError(ctl, _("Failed to create node device from %s"), from);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Node device %s created from %s\n"),
+                  virNodeDeviceGetName(dev), from);
+    virNodeDeviceFree(dev);
+    return true;
 }
 
 
@@ -1077,7 +1073,6 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virNodeDevice *dev = NULL;
     const char *from = NULL;
-    bool ret = true;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
 
@@ -1087,18 +1082,15 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    dev = virNodeDeviceDefineXML(priv->conn, buffer, 0);
-
-    if (dev != NULL) {
-        vshPrintExtra(ctl, _("Node device '%s' defined from '%s'\n"),
-                      virNodeDeviceGetName(dev), from);
-        virNodeDeviceFree(dev);
-    } else {
+    if (!(dev = virNodeDeviceDefineXML(priv->conn, buffer, 0))) {
         vshError(ctl, _("Failed to define node device from '%s'"), from);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Node device '%s' defined from '%s'\n"),
+                  virNodeDeviceGetName(dev), from);
+    virNodeDeviceFree(dev);
+    return true;
 }
 
 

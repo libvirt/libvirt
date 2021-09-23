@@ -1242,7 +1242,6 @@ static bool
 cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    bool ret = false;
     g_autofree char *result = NULL;
     g_auto(GStrv) list = NULL;
     unsigned int flags = 0;
@@ -1259,16 +1258,12 @@ cmdCPUBaseline(vshControl *ctl, const vshCmd *cmd)
     if (!(list = vshExtractCPUDefXMLs(ctl, from)))
         return false;
 
-    result = virConnectBaselineCPU(priv->conn, (const char **)list,
-                                   g_strv_length(list),
-                                   flags);
+    if (!(result = virConnectBaselineCPU(priv->conn, (const char **)list,
+                                         g_strv_length(list), flags)))
+        return false;
 
-    if (result) {
-        vshPrint(ctl, "%s", result);
-        ret = true;
-    }
-
-    return ret;
+    vshPrint(ctl, "%s", result);
+    return true;
 }
 
 /*
