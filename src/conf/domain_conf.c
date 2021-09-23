@@ -29708,6 +29708,10 @@ virDomainDeviceDefCopy(virDomainDeviceDef *src,
         virDomainShmemDefFormat(&buf, src->data.shmem, flags);
         rc = 0;
         break;
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        virDomainIOMMUDefFormat(&buf, src->data.iommu);
+        rc = 0;
+        break;
     case VIR_DOMAIN_DEVICE_VSOCK:
         virDomainVsockDefFormat(&buf, src->data.vsock);
         rc = 0;
@@ -29720,7 +29724,6 @@ virDomainDeviceDefCopy(virDomainDeviceDef *src,
     case VIR_DOMAIN_DEVICE_SMARTCARD:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Copying definition of '%d' type "
