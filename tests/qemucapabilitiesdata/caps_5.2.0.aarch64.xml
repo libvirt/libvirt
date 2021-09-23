@@ -106,7 +106,6 @@
   <flag name='kernel-irqchip'/>
   <flag name='virtio.iommu_platform'/>
   <flag name='virtio.ats'/>
-  <flag name='vnc-multi-servers'/>
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>

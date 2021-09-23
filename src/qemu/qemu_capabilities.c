@@ -435,7 +435,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "loadparm", /* QEMU_CAPS_LOADPARM */
               "spapr-pci-host-bridge", /* QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE */
               "spapr-pci-host-bridge.numa_node", /* QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE */
-              "vnc-multi-servers", /* QEMU_CAPS_VNC_MULTI_SERVERS */
+              "vnc-multi-servers", /* X_QEMU_CAPS_VNC_MULTI_SERVERS */
 
               /* 265 */
               "virtio-net.tx_queue_size", /* QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
@@ -3214,7 +3214,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
-    { "vnc", "vnc", QEMU_CAPS_VNC_MULTI_SERVERS },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
     { "vnc", "audiodev", QEMU_CAPS_AUDIODEV },
 };
