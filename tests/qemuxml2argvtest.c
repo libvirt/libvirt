@@ -1455,6 +1455,7 @@ mymain(void)
      * they can be removed without replacement when "2.11.0" will be retired */
     DO_TEST("graphics-vnc", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_VER("graphics-vnc-socket", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-socket");
     DO_TEST("graphics-vnc-websocket",
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
@@ -1467,8 +1468,10 @@ mymain(void)
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
     driver.config->vncAutoUnixSocket = true;
     DO_TEST_CAPS_VER("graphics-vnc-auto-socket-cfg", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket-cfg");
     driver.config->vncAutoUnixSocket = false;
     DO_TEST_CAPS_VER("graphics-vnc-auto-socket", "2.11.0");
+    DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket");
     DO_TEST("graphics-vnc-none", QEMU_CAPS_VNC, QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("graphics-vnc-socket-new-cmdline", QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
