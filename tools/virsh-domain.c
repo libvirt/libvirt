@@ -6531,7 +6531,6 @@ virshCPUCountCollect(vshControl *ctl,
                      unsigned int flags,
                      bool checkState)
 {
-    int ret = -2;
     virDomainInfo info;
     int count;
     g_autoptr(xmlDoc) xml = NULL;
@@ -6552,11 +6551,11 @@ virshCPUCountCollect(vshControl *ctl,
     /* fallback code */
     if (!(last_error->code == VIR_ERR_NO_SUPPORT ||
           last_error->code == VIR_ERR_INVALID_ARG))
-        goto cleanup;
+        return -2;
 
     if (flags & VIR_DOMAIN_VCPU_GUEST) {
         vshError(ctl, "%s", _("Failed to retrieve vCPU count from the guest"));
-        goto cleanup;
+        return -2;
     }
 
     if (!(flags & (VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG)) &&
@@ -6566,36 +6565,32 @@ virshCPUCountCollect(vshControl *ctl,
     vshResetLibvirtError();
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-            count = virDomainGetMaxVcpus(dom);
-        } else {
-           if (virDomainGetInfo(dom, &info) < 0)
-               goto cleanup;
+        if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+            return virDomainGetMaxVcpus(dom);
 
-           count = info.nrVirtCpu;
+       if (virDomainGetInfo(dom, &info) < 0)
+           return -2;
+
+       return info.nrVirtCpu;
+    }
+
+    if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
+                                 &xml, &ctxt) < 0)
+        return -2;
+
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
+        if (virXPathInt("string(/domain/vcpu)", ctxt, &count) < 0) {
+            vshError(ctl, "%s", _("Failed to retrieve maximum vcpu count"));
+            return -2;
         }
     } else {
-        if (virshDomainGetXMLFromDom(ctl, dom, VIR_DOMAIN_XML_INACTIVE,
-                                     &xml, &ctxt) < 0)
-            goto cleanup;
-
-        if (flags & VIR_DOMAIN_VCPU_MAXIMUM) {
-            if (virXPathInt("string(/domain/vcpu)", ctxt, &count) < 0) {
-                vshError(ctl, "%s", _("Failed to retrieve maximum vcpu count"));
-                goto cleanup;
-            }
-        } else {
-            if (virXPathInt("string(/domain/vcpu/@current)", ctxt, &count) < 0) {
-                vshError(ctl, "%s", _("Failed to retrieve current vcpu count"));
-                goto cleanup;
-            }
+        if (virXPathInt("string(/domain/vcpu/@current)", ctxt, &count) < 0) {
+            vshError(ctl, "%s", _("Failed to retrieve current vcpu count"));
+            return -2;
         }
     }
 
-    ret = count;
- cleanup:
-
-    return ret;
+    return count;
 }
 
 static bool
