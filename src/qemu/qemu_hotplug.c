@@ -526,8 +526,7 @@ qemuDomainChangeMediaBlockdev(virQEMUDriver *driver,
         return -1;
 
     if (!virStorageSourceIsEmpty(newsrc)) {
-        if (!(newbackend = qemuBuildStorageSourceChainAttachPrepareBlockdev(newsrc,
-                                                                            priv->qemuCaps)))
+        if (!(newbackend = qemuBuildStorageSourceChainAttachPrepareBlockdev(newsrc)))
             return -1;
 
         if (qemuDomainDiskGetBackendAlias(disk, priv->qemuCaps, &nodename) < 0)
@@ -734,8 +733,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
             return -1;
     } else if (blockdev) {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
-                                                                      priv->qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src)))
             return -1;
 
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON) {
@@ -1831,8 +1829,7 @@ qemuDomainAddTLSObjects(virQEMUDriver *driver,
 
 
 int
-qemuDomainGetTLSObjects(virQEMUCaps *qemuCaps,
-                        qemuDomainSecretInfo *secinfo,
+qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
                         const char *tlsCertdir,
                         bool tlsListen,
                         bool tlsVerify,
@@ -1850,7 +1847,7 @@ qemuDomainGetTLSObjects(virQEMUCaps *qemuCaps,
     }
 
     if (qemuBuildTLSx509BackendProps(tlsCertdir, tlsListen, tlsVerify,
-                                     alias, secAlias, qemuCaps, tlsProps) < 0)
+                                     alias, secAlias, tlsProps) < 0)
         return -1;
 
     return 0;
@@ -1895,7 +1892,7 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
         goto cleanup;
 
-    if (qemuDomainGetTLSObjects(priv->qemuCaps, secinfo,
+    if (qemuDomainGetTLSObjects(secinfo,
                                 cfg->chardevTLSx509certdir,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,

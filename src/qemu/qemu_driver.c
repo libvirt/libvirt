@@ -14076,8 +14076,7 @@ qemuDomainBlockPivot(virQEMUDriver *driver,
                 virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY) &&
                 virStorageSourceHasBacking(disk->mirror)) {
 
-                if (!(chainattachdata = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->mirror->backingStore,
-                                                                                         priv->qemuCaps)))
+                if (!(chainattachdata = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->mirror->backingStore)))
                     return -1;
 
                 reopenactions = virJSONValueNewArray();
@@ -14898,12 +14897,10 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                 g_autoptr(virStorageSource) terminator = virStorageSourceNew();
 
                 if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                                 terminator,
-                                                                                 priv->qemuCaps)))
+                                                                                 terminator)))
                     goto endjob;
             } else {
-                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror,
-                                                                              priv->qemuCaps)))
+                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror)))
                     goto endjob;
             }
         } else {
@@ -14917,8 +14914,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
             if (mirror_shallow) {
                 /* if external backing store is populated we'll need to open it */
                 if (virStorageSourceHasBacking(mirror)) {
-                    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore,
-                                                                                  priv->qemuCaps)))
+                    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore)))
                         goto endjob;
 
                     mirrorBacking = mirror->backingStore;
@@ -14932,8 +14928,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
             }
 
             if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                               mirrorBacking,
-                                                                               priv->qemuCaps)))
+                                                                               mirrorBacking)))
                 goto endjob;
         }
 

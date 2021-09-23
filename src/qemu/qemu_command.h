@@ -77,7 +77,6 @@ int qemuBuildTLSx509BackendProps(const char *tlspath,
                                  bool verifypeer,
                                  const char *alias,
                                  const char *secalias,
-                                 virQEMUCaps *qemuCaps,
                                  virJSONValue **propsret);
 
 /* Open a UNIX socket for chardev FD passing */
@@ -121,8 +120,7 @@ qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk);
 
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
-                                          qemuBlockStorageSourceAttachData *data,
-                                          virQEMUCaps *qemuCaps);
+                                          qemuBlockStorageSourceAttachData *data);
 
 
 qemuBlockStorageSourceChainData *
@@ -135,13 +133,11 @@ qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk);
 
 
 qemuBlockStorageSourceChainData *
-qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top,
-                                                 virQEMUCaps *qemuCaps);
+qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top);
 
 qemuBlockStorageSourceChainData *
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
-                                                    virStorageSource *backingStore,
-                                                    virQEMUCaps *qemuCaps);
+                                                    virStorageSource *backingStore);
 
 char
 *qemuBuildDiskDeviceStr(const virDomainDef *def,

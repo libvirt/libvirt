@@ -754,7 +754,6 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
  * @verifypeer: boolean to enable peer verification (form of authorization)
  * @alias: alias for the TLS credentials object
  * @secalias: if one exists, the alias of the security object for passwordid
- * @qemuCaps: capabilities
  * @propsret: json properties to return
  *
  * Create a backend string for the tls-creds-x509 object.
@@ -767,7 +766,6 @@ qemuBuildTLSx509BackendProps(const char *tlspath,
                              bool verifypeer,
                              const char *alias,
                              const char *secalias,
-                             virQEMUCaps *qemuCaps G_GNUC_UNUSED,
                              virJSONValue **propsret)
 {
     if (qemuMonitorCreateObjectProps(propsret, "tls-creds-x509", alias,
@@ -809,7 +807,7 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
     g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, alias,
-                                     certEncSecretAlias, qemuCaps, &props) < 0)
+                                     certEncSecretAlias, &props) < 0)
         return -1;
 
     if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
@@ -1936,8 +1934,7 @@ qemuBuildDiskSourceCommandLine(virCommand *cmd,
         if (virStorageSourceIsEmpty(disk->src))
             return 0;
 
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src,
-                                                                      qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src)))
             return -1;
 
         if (disk->copy_on_read == VIR_TRISTATE_SWITCH_ON &&
@@ -5062,7 +5059,7 @@ qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
     }
 
     if (src &&
-        qemuBuildStorageSourceAttachPrepareCommon(src, ret, qemuCaps) < 0)
+        qemuBuildStorageSourceAttachPrepareCommon(src, ret) < 0)
         return NULL;
 
     return g_steal_pointer(&ret);
@@ -9962,8 +9959,7 @@ qemuBuildPflashBlockdevOne(virCommand *cmd,
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     size_t i;
 
-    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(src,
-                                                                  qemuCaps)))
+    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(src)))
         return -1;
 
     for (i = data->nsrcdata; i > 0; i--) {
@@ -10840,15 +10836,13 @@ qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk)
  * qemuBuildStorageSourceAttachPrepareCommon:
  * @src: storage source
  * @data: already initialized data for disk source addition
- * @qemuCaps: qemu capabilities object
  *
  * Prepare data for configuration associated with the disk source such as
  * secrets/TLS/pr objects etc ...
  */
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
-                                          qemuBlockStorageSourceAttachData *data,
-                                          virQEMUCaps *qemuCaps)
+                                          qemuBlockStorageSourceAttachData *data)
 {
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     const char *tlsKeySecretAlias = NULL;
@@ -10881,7 +10875,7 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
 
     if (src->haveTLS == VIR_TRISTATE_BOOL_YES &&
         qemuBuildTLSx509BackendProps(src->tlsCertdir, false, true, src->tlsAlias,
-                                     tlsKeySecretAlias, qemuCaps, &data->tlsProps) < 0)
+                                     tlsKeySecretAlias, &data->tlsProps) < 0)
         return -1;
 
     return 0;
@@ -10907,7 +10901,7 @@ qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk,
     if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
         return NULL;
 
-    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem, qemuCaps) < 0)
+    if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem) < 0)
         return NULL;
 
     VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);
@@ -10943,15 +10937,14 @@ qemuBuildStorageSourceChainAttachPrepareChardev(virDomainDiskDef *disk)
 static int
 qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainData *data,
                                                     virStorageSource *src,
-                                                    virStorageSource *backingStore,
-                                                    virQEMUCaps *qemuCaps)
+                                                    virStorageSource *backingStore)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
 
     if (!(elem = qemuBlockStorageSourceAttachPrepareBlockdev(src, backingStore, true)))
         return -1;
 
-    if (qemuBuildStorageSourceAttachPrepareCommon(src, elem, qemuCaps) < 0)
+    if (qemuBuildStorageSourceAttachPrepareCommon(src, elem) < 0)
         return -1;
 
     VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, elem);
@@ -10963,14 +10956,12 @@ qemuBuildStorageSourceChainAttachPrepareBlockdevOne(qemuBlockStorageSourceChainD
 /**
  * qemuBuildStorageSourceChainAttachPrepareBlockdev:
  * @top: storage source chain
- * @qemuCaps: qemu capabilities object
  *
  * Prepares qemuBlockStorageSourceChainData *for attaching the chain of images
  * starting at @top via -blockdev.
  */
 qemuBlockStorageSourceChainData *
-qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top,
-                                                 virQEMUCaps *qemuCaps)
+qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     virStorageSource *n;
@@ -10979,8 +10970,7 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top,
 
     for (n = top; virStorageSourceIsBacking(n); n = n->backingStore) {
         if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, n,
-                                                                n->backingStore,
-                                                                qemuCaps) < 0)
+                                                                n->backingStore) < 0)
             return NULL;
     }
 
@@ -10992,22 +10982,19 @@ qemuBuildStorageSourceChainAttachPrepareBlockdev(virStorageSource *top,
  * qemuBuildStorageSourceChainAttachPrepareBlockdevTop:
  * @top: storage source chain
  * @backingStore: a storage source to use as backing of @top
- * @qemuCaps: qemu capabilities object
  *
  * Prepares qemuBlockStorageSourceChainData *for attaching of @top image only
  * via -blockdev.
  */
 qemuBlockStorageSourceChainData *
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
-                                                    virStorageSource *backingStore,
-                                                    virQEMUCaps *qemuCaps)
+                                                    virStorageSource *backingStore)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceChainData, 1);
 
-    if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, backingStore,
-                                                            qemuCaps) < 0)
+    if (qemuBuildStorageSourceChainAttachPrepareBlockdevOne(data, top, backingStore) < 0)
         return NULL;
 
     return g_steal_pointer(&data);

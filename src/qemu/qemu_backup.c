@@ -323,8 +323,7 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
 
     /* use original disk as backing to prevent opening the backing chain */
     if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->store,
-                                                                           dd->backingStore,
-                                                                           priv->qemuCaps)))
+                                                                           dd->backingStore)))
         return -1;
 
     return 0;
@@ -728,7 +727,7 @@ qemuBackupBeginPrepareTLS(virDomainObj *vm,
 
     if (qemuBuildTLSx509BackendProps(cfg->backupTLSx509certdir, true,
                                      cfg->backupTLSx509verify, tlsObjAlias,
-                                     tlsKeySecretAlias, priv->qemuCaps,
+                                     tlsKeySecretAlias,
                                      tlsProps) < 0)
         return -1;
 

@@ -43,8 +43,7 @@ int qemuDomainAddTLSObjects(virQEMUDriver *driver,
                             virJSONValue **secProps,
                             virJSONValue **tlsProps);
 
-int qemuDomainGetTLSObjects(virQEMUCaps *qemuCaps,
-                            qemuDomainSecretInfo *secinfo,
+int qemuDomainGetTLSObjects(qemuDomainSecretInfo *secinfo,
                             const char *tlsCertdir,
                             bool tlsListen,
                             bool tlsVerify,

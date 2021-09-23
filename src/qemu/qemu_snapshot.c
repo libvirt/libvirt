@@ -1023,8 +1023,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
         return -1;
 
     if (!(dd->crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(dd->src,
-                                                                           terminator,
-                                                                           priv->qemuCaps)))
+                                                                           terminator)))
         return -1;
 
     if (reuse) {
