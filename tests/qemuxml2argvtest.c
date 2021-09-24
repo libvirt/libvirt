@@ -558,7 +558,6 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
     g_auto(GStrv) args = NULL;
     g_autoptr(virDomainObj) vm = NULL;
     qemuDomainObjPrivate *priv = NULL;
-    size_t nargs = 0;
     GHashTable *schema = NULL;
     g_autoptr(virCommand) cmd = NULL;
     unsigned int parseFlags = info->parseFlags;
@@ -600,7 +599,7 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
     if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags)))
         return -1;
 
-    if (virCommandGetArgList(cmd, &args, &nargs) < 0)
+    if (virCommandGetArgList(cmd, &args) < 0)
         return -1;
 
     if (testCompareXMLToArgvValidateSchemaCommand(args, schema) < 0)

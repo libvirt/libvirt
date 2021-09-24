@@ -2164,8 +2164,7 @@ virCommandToString(virCommand *cmd,
 
 int
 virCommandGetArgList(virCommand *cmd,
-                     char ***args,
-                     size_t *nargs)
+                     char ***args)
 {
     size_t i;
 
@@ -2175,7 +2174,6 @@ virCommandGetArgList(virCommand *cmd,
     }
 
     *args = g_new0(char *, cmd->nargs);
-    *nargs = cmd->nargs - 1;
 
     for (i = 1; i < cmd->nargs; i++)
         (*args)[i - 1] = g_strdup(cmd->args[i]);
