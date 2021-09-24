@@ -1806,51 +1806,44 @@ vshCommandOptTimeoutToMs(vshControl *ctl, const vshCmd *cmd, int *timeout)
  * ---------------
  */
 
-/* Return a non-NULL string representation of a typed parameter; exit
- * if we are out of memory.  */
+/* Return a non-NULL string representation of a typed parameter; exit on
+ * unknown type. */
 char *
 vshGetTypedParamValue(vshControl *ctl, virTypedParameterPtr item)
 {
-    char *str = NULL;
-
     switch (item->type) {
     case VIR_TYPED_PARAM_INT:
-        str = g_strdup_printf("%d", item->value.i);
+        return g_strdup_printf("%d", item->value.i);
         break;
 
     case VIR_TYPED_PARAM_UINT:
-        str = g_strdup_printf("%u", item->value.ui);
+        return g_strdup_printf("%u", item->value.ui);
         break;
 
     case VIR_TYPED_PARAM_LLONG:
-        str = g_strdup_printf("%lld", item->value.l);
+        return g_strdup_printf("%lld", item->value.l);
         break;
 
     case VIR_TYPED_PARAM_ULLONG:
-        str = g_strdup_printf("%llu", item->value.ul);
+        return g_strdup_printf("%llu", item->value.ul);
         break;
 
     case VIR_TYPED_PARAM_DOUBLE:
-        str = g_strdup_printf("%f", item->value.d);
+        return g_strdup_printf("%f", item->value.d);
         break;
 
     case VIR_TYPED_PARAM_BOOLEAN:
-        str = g_strdup(item->value.b ? _("yes") : _("no"));
+        return g_strdup(item->value.b ? _("yes") : _("no"));
         break;
 
     case VIR_TYPED_PARAM_STRING:
-        str = g_strdup(item->value.s);
+        return g_strdup(item->value.s);
         break;
 
     default:
         vshError(ctl, _("unimplemented parameter type %d"), item->type);
-    }
-
-    if (!str) {
-        vshError(ctl, "%s", _("Out of memory"));
         exit(EXIT_FAILURE);
     }
-    return str;
 }
 
 void
