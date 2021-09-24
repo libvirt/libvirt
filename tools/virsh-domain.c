@@ -11040,12 +11040,12 @@ cmdMigrateCompCache(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     rc = vshCommandOptULongLong(ctl, cmd, "size", &size);
-    if (rc < 0) {
+    if (rc < 0)
         return false;
-    } else if (rc != 0) {
-        if (virDomainMigrateSetCompressionCache(dom, size, 0) < 0)
-            return false;
-    }
+
+    if (rc != 0 &&
+        (virDomainMigrateSetCompressionCache(dom, size, 0) < 0))
+        return false;
 
     if (virDomainMigrateGetCompressionCache(dom, &size, 0) < 0)
         return false;
@@ -11426,11 +11426,9 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
         /* We got what we came for so return successfully */
         ret = true;
-        if (!all) {
+        if (!all)
             break;
-        } else {
-            vshPrint(ctl, "\n");
-        }
+        vshPrint(ctl, "\n");
     }
 
     if (!ret) {
