@@ -659,12 +659,9 @@ cmdAttachDisk(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (mode) {
-        if (STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
-            vshError(ctl, _("No support for %s in command 'attach-disk'"),
-                     mode);
-            return false;
-        }
+    if (mode && STRNEQ(mode, "readonly") && STRNEQ(mode, "shareable")) {
+        vshError(ctl, _("No support for %s in command 'attach-disk'"), mode);
+        return false;
     }
 
     if (wwn && !virValidateWWN(wwn))
