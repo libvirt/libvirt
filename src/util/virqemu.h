@@ -30,6 +30,10 @@ typedef int (*virQEMUBuildCommandLineJSONArrayFormatFunc)(const char *key,
                                                           virJSONValue *array,
                                                           virBuffer *buf,
                                                           const char *skipKey);
+int virQEMUBuildCommandLineJSONArrayObjectsStr(const char *key,
+                                               virJSONValue *array,
+                                               virBuffer *buf,
+                                               const char *skipKey);
 int virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
                                            virJSONValue *array,
                                            virBuffer *buf,

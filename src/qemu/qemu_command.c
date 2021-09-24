@@ -183,6 +183,34 @@ qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
 }
 
 
+static int
+qemuBuildNetdevCommandlineFromJSON(virCommand *cmd,
+                                   virJSONValue *props,
+                                   virQEMUCaps *qemuCaps)
+{
+    g_autofree char *arg = NULL;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NETDEV_JSON)) {
+        if (!(arg = virJSONValueToString(props, false)))
+            return -1;
+    } else {
+        const char *type = virJSONValueObjectGetString(props, "type");
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+        virBufferAsprintf(&buf, "%s,", type);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "type",
+                                        virQEMUBuildCommandLineJSONArrayObjectsStr) < 0)
+            return -1;
+
+        arg = virBufferContentAndReset(&buf);
+    }
+
+    virCommandAddArgList(cmd, "-netdev", arg, NULL);
+    return 0;
+}
+
+
 /**
  * qemuBuildMasterKeyCommandLine:
  * @cmd: the command to modify
@@ -8402,13 +8430,11 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               virNetDevVPortProfileOp vmop,
                               bool standalone,
                               size_t *nnicindexes,
-                              int **nicindexes,
-                              unsigned int flags)
+                              int **nicindexes)
 {
     virDomainDef *def = vm->def;
     int ret = -1;
     g_autofree char *nic = NULL;
-    g_autofree char *host = NULL;
     g_autofree char *chardev = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
@@ -8662,11 +8688,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                                              slirpfdName, vdpafdName)))
         goto cleanup;
 
-    if (!(host = virQEMUBuildNetdevCommandlineFromJSON(hostnetprops,
-                                                       (flags & QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON))))
+    if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)
         goto cleanup;
-
-    virCommandAddArgList(cmd, "-netdev", host, NULL);
 
     /* Possible combinations:
      *
@@ -8740,8 +8763,7 @@ qemuBuildNetCommandLine(virQEMUDriver *driver,
                         bool standalone,
                         size_t *nnicindexes,
                         int **nicindexes,
-                        unsigned int *bootHostdevNet,
-                        unsigned int flags)
+                        unsigned int *bootHostdevNet)
 {
     size_t i;
     int last_good_net = -1;
@@ -8765,7 +8787,7 @@ qemuBuildNetCommandLine(virQEMUDriver *driver,
             if (qemuBuildInterfaceCommandLine(driver, vm, logManager, secManager, cmd, net,
                                               qemuCaps, bootNet, vmop,
                                               standalone, nnicindexes,
-                                              nicindexes, flags) < 0)
+                                              nicindexes) < 0)
                 goto error;
 
             last_good_net = i;
@@ -9289,8 +9311,7 @@ qemuBuildChannelsCommandLine(virLogManager *logManager,
                              virQEMUDriverConfig *cfg,
                              const virDomainDef *def,
                              virQEMUCaps *qemuCaps,
-                             bool chardevStdioLogd,
-                             unsigned int flags)
+                             bool chardevStdioLogd)
 {
     size_t i;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
@@ -9302,7 +9323,6 @@ qemuBuildChannelsCommandLine(virLogManager *logManager,
         virDomainChrDef *channel = def->channels[i];
         g_autofree char *chardevstr = NULL;
         g_autoptr(virJSONValue) netdevprops = NULL;
-        g_autofree char *netdevstr = NULL;
 
         if (!(chardevstr = qemuBuildChrChardevStr(logManager, secManager,
                                                   cmd, cfg, def,
@@ -9319,11 +9339,8 @@ qemuBuildChannelsCommandLine(virLogManager *logManager,
             if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(channel)))
                 return -1;
 
-            if (!(netdevstr = virQEMUBuildNetdevCommandlineFromJSON(netdevprops,
-                                                                    (flags & QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON))))
+            if (qemuBuildNetdevCommandlineFromJSON(cmd, netdevprops, qemuCaps) < 0)
                 return -1;
-
-            virCommandAddArgList(cmd, "-netdev", netdevstr, NULL);
             break;
 
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
@@ -10471,7 +10488,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 
     if (qemuBuildNetCommandLine(driver, vm, logManager, secManager, cmd,
                                 qemuCaps, vmop, standalone,
-                                nnicindexes, nicindexes, &bootHostdevNet, flags) < 0)
+                                nnicindexes, nicindexes, &bootHostdevNet) < 0)
         return NULL;
 
     if (qemuBuildSmartcardCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
@@ -10487,7 +10504,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
         return NULL;
 
     if (qemuBuildChannelsCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                     chardevStdioLogd, flags) < 0)
+                                     chardevStdioLogd) < 0)
         return NULL;
 
     if (qemuBuildConsoleCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,

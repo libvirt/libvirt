@@ -127,7 +127,7 @@ virQEMUBuildCommandLineJSONArrayNumbered(const char *key,
  *
  *  guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,guestfwd=...
  */
-static int
+int
 virQEMUBuildCommandLineJSONArrayObjectsStr(const char *key,
                                            virJSONValue *array,
                                            virBuffer *buf,
