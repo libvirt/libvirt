@@ -245,18 +245,18 @@ static virDomainPtr
 virshDomainDefine(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virDomainPtr dom;
-    if (flags) {
-        dom = virDomainDefineXMLFlags(conn, xml, flags);
-        /* If validate is the only flag, just drop it and
-         * try again.
-         */
-        if (!dom) {
-            if ((virGetLastErrorCode() == VIR_ERR_NO_SUPPORT) &&
-                (flags == VIR_DOMAIN_DEFINE_VALIDATE))
-                dom = virDomainDefineXML(conn, xml);
-        }
-    } else {
-        dom = virDomainDefineXML(conn, xml);
+
+    if (!flags)
+        return virDomainDefineXML(conn, xml);
+
+    dom = virDomainDefineXMLFlags(conn, xml, flags);
+    /* If validate is the only flag, just drop it and
+     * try again.
+     */
+    if (!dom) {
+        if ((virGetLastErrorCode() == VIR_ERR_NO_SUPPORT) &&
+            (flags == VIR_DOMAIN_DEFINE_VALIDATE))
+            dom = virDomainDefineXML(conn, xml);
     }
     return dom;
 }
