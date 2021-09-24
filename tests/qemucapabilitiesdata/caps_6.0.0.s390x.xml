@@ -79,7 +79,6 @@
   <flag name='virtio-mouse-ccw'/>
   <flag name='virtio-tablet-ccw'/>
   <flag name='qcow2-luks'/>
-  <flag name='seccomp-blacklist'/>
   <flag name='query-cpus-fast'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>

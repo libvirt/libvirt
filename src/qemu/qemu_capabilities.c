@@ -468,7 +468,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 285 */
               "qcow2-luks", /* QEMU_CAPS_QCOW2_LUKS */
               "pcie-pci-bridge", /* QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE */
-              "seccomp-blacklist", /* QEMU_CAPS_SECCOMP_BLACKLIST */
+              "seccomp-blacklist", /* X_QEMU_CAPS_SECCOMP_BLACKLIST */
               "query-cpus-fast", /* QEMU_CAPS_QUERY_CPUS_FAST */
               "disk-write-cache", /* QEMU_CAPS_DISK_WRITE_CACHE */
 
@@ -3209,7 +3209,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
-    { "sandbox", "elevateprivileges", QEMU_CAPS_SECCOMP_BLACKLIST },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
