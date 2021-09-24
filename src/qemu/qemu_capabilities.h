@@ -625,6 +625,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_MEMORY_BACKEND_RESERVE, /* -object memory-backend-*.reserve= */
     QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG, /* -M pc PIIX4_PM.acpi-root-pci-hotplug */
     QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE, /* -M q35 ICH9-LPC.acpi-pci-hotplug-with-bridge-support */
+    QEMU_CAPS_NETDEV_JSON, /* -netdev accepts JSON */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
