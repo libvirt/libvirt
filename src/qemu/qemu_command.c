@@ -6452,6 +6452,18 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
         return 0;
 
     case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+        if (virJSONValueObjectAdd(&props,
+                                  "s:driver", "virtio-iommu",
+                                  NULL) < 0) {
+            return -1;
+        }
+
+        if (qemuBuildDeviceAddressProps(props, def, &iommu->info) < 0)
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
+            return -1;
+
         return 0;
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
