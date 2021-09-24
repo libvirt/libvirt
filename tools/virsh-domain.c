@@ -13602,10 +13602,10 @@ static bool
 cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    int ret = -1;
     const vshCmdOpt *opt = NULL;
     g_autofree const char **mountpoints = NULL;
     size_t nmountpoints = 0;
+    int count = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -13615,16 +13615,13 @@ cmdDomFSFreeze(vshControl *ctl, const vshCmd *cmd)
         mountpoints[nmountpoints-1] = opt->data;
     }
 
-    ret = virDomainFSFreeze(dom, mountpoints, nmountpoints, 0);
-    if (ret < 0) {
+    if ((count = virDomainFSFreeze(dom, mountpoints, nmountpoints, 0)) < 0) {
         vshError(ctl, _("Unable to freeze filesystems"));
-        goto cleanup;
+        return false;
     }
 
-    vshPrintExtra(ctl, _("Froze %d filesystem(s)\n"), ret);
-
- cleanup:
-    return ret >= 0;
+    vshPrintExtra(ctl, _("Froze %d filesystem(s)\n"), count);
+    return true;
 }
 
 static const vshCmdInfo info_domfsthaw[] = {
@@ -13650,10 +13647,10 @@ static bool
 cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    int ret = -1;
     const vshCmdOpt *opt = NULL;
     g_autofree const char **mountpoints = NULL;
     size_t nmountpoints = 0;
+    int count = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -13663,16 +13660,13 @@ cmdDomFSThaw(vshControl *ctl, const vshCmd *cmd)
         mountpoints[nmountpoints-1] = opt->data;
     }
 
-    ret = virDomainFSThaw(dom, mountpoints, nmountpoints, 0);
-    if (ret < 0) {
+    if ((count = virDomainFSThaw(dom, mountpoints, nmountpoints, 0)) < 0) {
         vshError(ctl, _("Unable to thaw filesystems"));
-        goto cleanup;
+        return false;
     }
 
-    vshPrintExtra(ctl, _("Thawed %d filesystem(s)\n"), ret);
-
- cleanup:
-    return ret >= 0;
+    vshPrintExtra(ctl, _("Thawed %d filesystem(s)\n"), count);
+    return true;
 }
 
 static const vshCmdInfo info_domfsinfo[] = {
