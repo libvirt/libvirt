@@ -161,20 +161,12 @@ qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
                                    virQEMUCaps *qemuCaps)
 {
     g_autofree char *arg = NULL;
-    const char *type = virJSONValueObjectGetString(props, "qom-type");
-    const char *alias = virJSONValueObjectGetString(props, "id");
-
-    if (!type || !alias) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"),
-                       NULLSTR(type), NULLSTR(alias));
-        return -1;
-    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON)) {
         if (!(arg = virJSONValueToString(props, false)))
             return -1;
     } else {
+        const char *type = virJSONValueObjectGetString(props, "qom-type");
         g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
         virBufferAsprintf(&buf, "%s,", type);
