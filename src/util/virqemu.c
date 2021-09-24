@@ -283,36 +283,6 @@ virQEMUBuildCommandLineJSON(virJSONValue *value,
 }
 
 
-/**
- * virQEMUBuildNetdevCommandlineFromJSON:
- * @props: JSON properties describing a netdev
- * @rawjson: don't transform to commandline args, but just stringify json
- *
- * Converts @props into arguments for -netdev including all the quirks and
- * differences between the monitor and command line syntax.
- *
- * @rawjson is meant for testing of the schema in the xml2argvtest
- */
-char *
-virQEMUBuildNetdevCommandlineFromJSON(virJSONValue *props,
-                                      bool rawjson)
-{
-    const char *type = virJSONValueObjectGetString(props, "type");
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    if (rawjson)
-        return virJSONValueToString(props, false);
-
-    virBufferAsprintf(&buf, "%s,", type);
-
-    if (virQEMUBuildCommandLineJSON(props, &buf, "type",
-                                    virQEMUBuildCommandLineJSONArrayObjectsStr) < 0)
-        return NULL;
-
-    return virBufferContentAndReset(&buf);
-}
-
-
 char *
 virQEMUBuildDriveCommandlineFromJSON(virJSONValue *srcdef)
 {
