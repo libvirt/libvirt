@@ -6423,7 +6423,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         goto cleanup;
 
     if (!(cmd = qemuProcessCreatePretendCmdBuild(driver, vm, NULL,
-                                                 qemuCheckFips(vm), true, false)))
+                                                 qemuCheckFips(vm), true)))
         goto cleanup;
 
     ret = virCommandToString(cmd, false);

@@ -43,10 +43,6 @@
 VIR_ENUM_DECL(qemuVideo);
 VIR_ENUM_DECL(qemuSoundCodec);
 
-typedef enum {
-    QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON = 1 << 0,
-} qemuBuildCommandLineFlags;
-
 virCommand *qemuBuildCommandLine(virQEMUDriver *driver,
                                    virLogManager *logManager,
                                    virSecurityManager *secManager,

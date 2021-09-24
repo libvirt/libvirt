@@ -7756,14 +7756,8 @@ qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  const char *migrateURI,
                                  bool enableFips,
-                                 bool standalone,
-                                 bool jsonPropsValidation)
+                                 bool standalone)
 {
-    unsigned int buildflags = 0;
-
-    if (jsonPropsValidation)
-        buildflags = QEMU_BUILD_COMMANDLINE_VALIDATE_KEEP_JSON;
-
     VIR_DEBUG("Building emulator command line");
     return qemuBuildCommandLine(driver,
                                 NULL,
@@ -7776,7 +7770,7 @@ qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                 enableFips,
                                 NULL,
                                 NULL,
-                                buildflags);
+                                0);
 }
 
 

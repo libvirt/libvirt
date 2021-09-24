@@ -105,8 +105,7 @@ virCommand *qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                                virDomainObj *vm,
                                                const char *migrateURI,
                                                bool enableFips,
-                                               bool standalone,
-                                               bool jsonPropsValidation);
+                                               bool standalone);
 
 int qemuProcessInit(virQEMUDriver *driver,
                     virDomainObj *vm,

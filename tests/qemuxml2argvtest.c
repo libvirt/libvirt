@@ -386,8 +386,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                                virDomainObj *vm,
                                const char *migrateURI,
                                struct testQemuInfo *info,
-                               unsigned int flags,
-                               bool jsonPropsValidation)
+                               unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool enableFips = !!(flags & FLAG_FIPS_HOST);
@@ -484,8 +483,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         enableFips = false;
 
     return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
-                                            enableFips, false,
-                                            jsonPropsValidation);
+                                            enableFips, false);
 }
 
 
@@ -538,8 +536,7 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
     if (virBitmapParse("0-3", &priv->autoNodeset, 4) < 0)
         return -1;
 
-    if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags,
-                                               true)))
+    if (!(cmd = testCompareXMLToArgvCreateArgs(drv, vm, migrateURI, info, flags)))
         return -1;
 
     if (virCommandGetArgList(cmd, &args, &nargs) < 0)
@@ -743,7 +740,7 @@ testCompareXMLToArgv(const void *data)
     virResetLastError();
 
     if (!(cmd = testCompareXMLToArgvCreateArgs(&driver, vm, migrateURI, info,
-                                               flags, false))) {
+                                               flags))) {
         err = virGetLastError();
         if (!err) {
             VIR_TEST_DEBUG("no error was reported for expected failure");
