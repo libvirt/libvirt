@@ -2923,7 +2923,6 @@ cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
     const char *path = NULL;
     unsigned long long size = 0;
     unsigned int flags = 0;
-    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "path", (const char **) &path) < 0)
         return false;
@@ -2942,12 +2941,11 @@ cmdBlockresize(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainBlockResize(dom, path, size, flags) < 0) {
         vshError(ctl, _("Failed to resize block device '%s'"), path);
-    } else {
-        vshPrintExtra(ctl, _("Block device '%s' is resized"), path);
-        ret = true;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Block device '%s' is resized"), path);
+    return true;
 }
 
 #ifndef WIN32
@@ -3421,19 +3419,17 @@ cmdSuspend(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     const char *name;
-    bool ret = true;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainSuspend(dom) == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' suspended\n"), name);
-    } else {
+    if (virDomainSuspend(dom) != 0) {
         vshError(ctl, _("Failed to suspend domain '%s'"), name);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Domain '%s' suspended\n"), name);
+    return true;
 }
 
 /*
@@ -5802,20 +5798,18 @@ static bool
 cmdResume(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     const char *name;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainResume(dom) == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' resumed\n"), name);
-    } else {
+    if (virDomainResume(dom) != 0) {
         vshError(ctl, _("Failed to resume domain '%s'"), name);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Domain '%s' resumed\n"), name);
+    return true;
 }
 
 /*
@@ -5997,20 +5991,18 @@ static bool
 cmdReset(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     const char *name;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainReset(dom, 0) == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' was reset\n"), name);
-    } else {
+    if (virDomainReset(dom, 0) != 0) {
         vshError(ctl, _("Failed to reset domain '%s'"), name);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Domain '%s' was reset\n"), name);
+    return true;
 }
 
 /*
@@ -8183,7 +8175,6 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     const char *from = NULL;
-    bool ret = true;
     char *buffer;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
@@ -8203,14 +8194,14 @@ cmdDefine(vshControl *ctl, const vshCmd *cmd)
         dom = virDomainDefineXML(priv->conn, buffer);
     VIR_FREE(buffer);
 
-    if (dom != NULL) {
-        vshPrintExtra(ctl, _("Domain '%s' defined from %s\n"),
-                      virDomainGetName(dom), from);
-    } else {
+    if (!dom) {
         vshError(ctl, _("Failed to define domain from %s"), from);
-        ret = false;
+        return false;
     }
-    return ret;
+
+    vshPrintExtra(ctl, _("Domain '%s' defined from %s\n"),
+                  virDomainGetName(dom), from);
+    return true;
 }
 
 /*
@@ -8239,7 +8230,6 @@ static bool
 cmdDestroy(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     const char *name;
     unsigned int flags = 0;
     int result;
@@ -8255,14 +8245,13 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
     else
        result = virDomainDestroy(dom);
 
-    if (result == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' destroyed\n"), name);
-    } else {
+    if (result < 0) {
         vshError(ctl, _("Failed to destroy domain '%s'"), name);
-        ret = false;
+        return false;
     }
 
-    return ret;
+    vshPrintExtra(ctl, _("Domain '%s' destroyed\n"), name);
+    return true;
 }
 
 /*
@@ -9955,7 +9944,6 @@ static bool
 cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     g_autofree char *dump = NULL;
     unsigned int flags = 0;
     bool inactive = vshCommandOptBool(cmd, "inactive");
@@ -9975,14 +9963,11 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    dump = virDomainGetXMLDesc(dom, flags);
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
-    }
+    if (!(dump = virDomainGetXMLDesc(dom, flags)))
+        return false;
 
-    return ret;
+    vshPrint(ctl, "%s", dump);
+    return true;
 }
 
 /*
@@ -10016,7 +10001,6 @@ static const vshCmdOptDef opts_domxmlfromnative[] = {
 static bool
 cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = true;
     const char *format = NULL;
     const char *configFile = NULL;
     g_autofree char *configData = NULL;
@@ -10032,13 +10016,11 @@ cmdDomXMLFromNative(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     xmlData = virConnectDomainXMLFromNative(priv->conn, format, configData, flags);
-    if (xmlData != NULL) {
-        vshPrint(ctl, "%s", xmlData);
-    } else {
-        ret = false;
-    }
+    if (!xmlData)
+        return false;
 
-    return ret;
+    vshPrint(ctl, "%s", xmlData);
+    return true;
 }
 
 /*
