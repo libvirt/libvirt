@@ -2702,7 +2702,6 @@ virshBlockJobAbort(virDomainPtr dom,
 static bool
 cmdBlockjob(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     bool raw = vshCommandOptBool(cmd, "raw");
     bool bytes = vshCommandOptBool(cmd, "bytes");
     bool abortMode = vshCommandOptBool(cmd, "abort");
@@ -2735,13 +2734,10 @@ cmdBlockjob(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (bandwidth)
-        ret = virshBlockJobSetSpeed(ctl, cmd, dom, path, bytes);
-    else if (abortMode || pivot || async)
-        ret = virshBlockJobAbort(dom, path, pivot, async);
-    else
-        ret = virshBlockJobInfo(ctl, dom, path, raw, bytes);
-
-    return ret;
+        return virshBlockJobSetSpeed(ctl, cmd, dom, path, bytes);
+    if (abortMode || pivot || async)
+        return virshBlockJobAbort(dom, path, pivot, async);
+    return virshBlockJobInfo(ctl, dom, path, raw, bytes);
 }
 
 /*
@@ -5063,7 +5059,6 @@ cmdSchedInfoUpdateOne(vshControl *ctl,
                       const char *field, const char *value)
 {
     virTypedParameterPtr param;
-    int ret = -1;
     size_t i;
 
     for (i = 0; i < nsrc_params; i++) {
@@ -5078,14 +5073,11 @@ cmdSchedInfoUpdateOne(vshControl *ctl,
             vshSaveLibvirtError();
             return -1;
         }
-        ret = 0;
-        break;
+        return 0;
     }
 
-    if (ret < 0)
-        vshError(ctl, _("invalid scheduler option: %s"), field);
-
-    return ret;
+    vshError(ctl, _("invalid scheduler option: %s"), field);
+    return -1;
 }
 
 static int
@@ -5529,7 +5521,6 @@ virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
     g_autoptr(GDateTime) now = g_date_time_new_now_local();
     g_autofree char *nowstr = NULL;
     const char *ext = NULL;
-    char *ret = NULL;
 
     if (!dom) {
         vshError(ctl, "%s", _("Invalid domain supplied"));
@@ -5544,10 +5535,8 @@ virshGenFileName(vshControl *ctl, virDomainPtr dom, const char *mime)
 
     nowstr = g_date_time_format(now, "%Y-%m-%d-%H:%M:%S");
 
-    ret = g_strdup_printf("%s-%s%s", virDomainGetName(dom),
-                          nowstr, NULLSTR_EMPTY(ext));
-
-    return ret;
+    return g_strdup_printf("%s-%s%s", virDomainGetName(dom),
+                           nowstr, NULLSTR_EMPTY(ext));
 }
 
 static bool
@@ -5686,7 +5675,6 @@ static bool
 cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     bool current = vshCommandOptBool(cmd, "current");
@@ -5727,10 +5715,9 @@ cmdSetLifecycleAction(vshControl *ctl, const vshCmd *cmd)
 
     if (virDomainSetLifecycleAction(dom, type, action, flags) < 0) {
         vshError(ctl, "%s", _("Unable to change lifecycle action."));
-        ret = false;
+        return false;
     }
-
-    return ret;
+    return true;
 }
 
 /*
@@ -6469,15 +6456,14 @@ static bool
 cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    bool ret = true;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
     if (virDomainAbortJob(dom) < 0)
-        ret = false;
+        return false;
 
-    return ret;
+    return true;
 }
 
 /*
@@ -11920,12 +11906,12 @@ virshDomainDetachInterface(char *doc,
     xmlNodePtr cur = NULL, matchNode = NULL;
     g_autofree char *detach_xml = NULL;
     char buf[64];
-    int diff_mac, ret = -1;
+    int diff_mac = -1;
     size_t i;
 
     if (!(xml = virXMLParseStringCtxt(doc, _("(domain_definition)"), &ctxt))) {
         vshError(ctl, "%s", _("Failed to get interface information"));
-        goto cleanup;
+        return false;
     }
 
     g_snprintf(buf, sizeof(buf), "/domain/devices/interface[@type='%s']", type);
@@ -11933,13 +11919,13 @@ virshDomainDetachInterface(char *doc,
     if (obj == NULL || obj->type != XPATH_NODESET ||
         obj->nodesetval == NULL || obj->nodesetval->nodeNr == 0) {
         vshError(ctl, _("No interface found whose type is %s"), type);
-        goto cleanup;
+        return false;
     }
 
     if (!mac && obj->nodesetval->nodeNr > 1) {
         vshError(ctl, _("Domain has %d interfaces. Please specify which one "
                         "to detach using --mac"), obj->nodesetval->nodeNr);
-        goto cleanup;
+        return false;
     }
 
     if (!mac) {
@@ -11962,7 +11948,7 @@ virshDomainDetachInterface(char *doc,
                                         "MAC address %s. You must use detach-device and "
                                         "specify the device pci address to remove it."),
                                  mac);
-                        goto cleanup;
+                        return false;
                     }
                     matchNode = obj->nodesetval->nodeTab[i];
                 }
@@ -11972,22 +11958,18 @@ virshDomainDetachInterface(char *doc,
     }
     if (!matchNode) {
         vshError(ctl, _("No interface with MAC address %s was found"), mac);
-        goto cleanup;
+        return false;
     }
 
  hit:
     if (!(detach_xml = virXMLNodeToString(xml, matchNode))) {
         vshSaveLibvirtError();
-        goto cleanup;
+        return false;
     }
 
     if (flags != 0 || current)
-        ret = virDomainDetachDeviceFlags(dom, detach_xml, flags);
-    else
-        ret = virDomainDetachDevice(dom, detach_xml);
-
- cleanup:
-    return ret == 0;
+        return virDomainDetachDeviceFlags(dom, detach_xml, flags) == 0;
+    return virDomainDetachDevice(dom, detach_xml) == 0;
 }
 
 
