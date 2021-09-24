@@ -3188,15 +3188,13 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
 
 static int
-qemuBuildMemoryCellBackendStr(virDomainDef *def,
-                              virQEMUDriverConfig *cfg,
-                              size_t cell,
-                              qemuDomainObjPrivate *priv,
-                              virBuffer *buf)
+qemuBuildMemoryCellBackendProps(virDomainDef *def,
+                                virQEMUDriverConfig *cfg,
+                                size_t cell,
+                                qemuDomainObjPrivate *priv,
+                                virJSONValue **props)
 {
-    g_autoptr(virJSONValue) props = NULL;
     g_autofree char *alias = NULL;
-    int rc;
     virDomainMemoryDef mem = { 0 };
     unsigned long long memsize = virDomainNumaGetNodeMemorySize(def->numa,
                                                                 cell);
@@ -3207,14 +3205,7 @@ qemuBuildMemoryCellBackendStr(virDomainDef *def,
     mem.targetNode = cell;
     mem.info.alias = alias;
 
-    if ((rc = qemuBuildMemoryBackendProps(&props, alias, cfg,
-                                          priv, def, &mem, false, false)) < 0)
-        return -1;
-
-    if (qemuBuildObjectCommandlineFromJSON(buf, props, priv->qemuCaps) < 0)
-        return -1;
-
-    return rc;
+    return qemuBuildMemoryBackendProps(props, alias, cfg, priv, def, &mem, false, false);
 }
 
 
@@ -7407,7 +7398,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
     size_t i, j;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    virBuffer *nodeBackends = NULL;
+    virJSONValue **nodeBackends = NULL;
     bool needBackend = false;
     bool hmat = false;
     int ret = -1;
@@ -7427,7 +7418,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         hmat = true;
     }
 
-    nodeBackends = g_new0(virBuffer, ncells);
+    nodeBackends = g_new0(virJSONValue *, ncells);
 
     /* using of -numa memdev= cannot be combined with -numa mem=, thus we
      * need to check which approach to use */
@@ -7437,8 +7428,8 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         int rc;
 
         for (i = 0; i < ncells; i++) {
-            if ((rc = qemuBuildMemoryCellBackendStr(def, cfg, i, priv,
-                                                    &nodeBackends[i])) < 0)
+            if ((rc = qemuBuildMemoryCellBackendProps(def, cfg, i, priv,
+                                                      &nodeBackends[i])) < 0)
                 goto cleanup;
 
             if (rc == 0)
@@ -7467,8 +7458,14 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
 
         if (needBackend) {
+            g_auto(virBuffer) objbuf = VIR_BUFFER_INITIALIZER;
+
+            if (qemuBuildObjectCommandlineFromJSON(&objbuf, nodeBackends[i],
+                                                   priv->qemuCaps) < 0)
+                goto cleanup;
+
             virCommandAddArg(cmd, "-object");
-            virCommandAddArgBuffer(cmd, &nodeBackends[i]);
+            virCommandAddArgBuffer(cmd, &objbuf);
         }
 
         virCommandAddArg(cmd, "-numa");
@@ -7526,7 +7523,7 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
  cleanup:
     if (nodeBackends) {
         for (i = 0; i < ncells; i++)
-            virBufferFreeAndReset(&nodeBackends[i]);
+            virJSONValueFree(nodeBackends[i]);
 
         VIR_FREE(nodeBackends);
     }
