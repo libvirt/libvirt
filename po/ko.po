@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-20 07:36+0000\n"
+"PO-Revision-Date: 2021-09-24 00:05+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -26906,7 +26906,8 @@ msgstr ""
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with virtualport type='%s'"
-msgstr "인터페이스 %s - 가상 포트 유형이 '%s'인 네트워크 인터페이스에 대해 <분리된 포트='예'/>가 지원되지 않습니다"
+msgstr ""
+"연결장치 %s - <port isolated='yes'/>가 가상 포트 유형='%s'인 네트워크 연결장치를 위해 지원되지 않습니다"
 
 #, c-format
 msgid ""
@@ -27084,7 +27085,7 @@ msgstr "소개:"
 
 #, c-format
 msgid "invalid \"trunk='%s'\" in <vlan> - must be yes or no"
-msgstr "<vlan>에서 잘못된 \"trunk='%s'\" - yes 또는 no이어야 합니다 "
+msgstr "<vlan>에서 잘못된 \"trunk='%s'\" - yes 또는 no이어야 합니다"
 
 #, c-format
 msgid ""
@@ -27145,7 +27146,7 @@ msgstr "네트워크 %s의 <dns>에서 잘못된 <srv> 요소가 발견되었습
 
 #, c-format
 msgid "invalid <txt> element found in <dns> of network %s"
-msgstr "네트워크 %s의 <dns>에서 잘못된 <txt> 요소가 발견되었습니다 "
+msgstr "네트워크 %s의 <dns>에서 잘못된 <txt> 요소가 발견되었습니다"
 
 msgid "invalid CPU cache level, must be in range [1,3]"
 msgstr "잘못된 CPU 캐시 수준, [1,3] 범위에 있어야 합니다"
@@ -27212,7 +27213,7 @@ msgid "invalid PCI vendor ID supplied for '%s'"
 msgstr "'%s'을 위해 공급된 잘못된 PCI 제조사 ID"
 
 msgid "invalid RNG rate bytes value"
-msgstr "잘못된 RNG rate bytes 값 "
+msgstr "잘못된 RNG 비율 바이트 값"
 
 msgid "invalid RNG rate period value"
 msgstr "잘못된 RNG rate period 값"
@@ -27350,8 +27351,7 @@ msgstr "TLS 세션에 대한 잘못된 암호화 크기"
 msgid ""
 "invalid configuration in <vlan> - \"trunk='no'\" is not allowed with a "
 "native vlan id"
-msgstr ""
-"<vlan>에서 잘못된 설정 - \"trunk='no'\"는 기본 vlan id에 허용되지 않습니다 "
+msgstr "<vlan>에서 잘못된 구성 - \"trunk='no'\"는 기본 vlan id로 허용되지 않습니다"
 
 msgid "invalid connection pointer in"
 msgstr "잘못된 연결 포인터"
@@ -27416,7 +27416,7 @@ msgstr "잘못된 오류 동작: '%s'\n"
 
 #, c-format
 msgid "invalid fd %d for %s"
-msgstr "%s에 대한 잘못된 fd %d"
+msgstr "잘못된 fd %d (%s를 위한)"
 
 #, c-format
 msgid "invalid firmware feature enabled value '%s'"
@@ -27497,14 +27497,14 @@ msgstr "net 장치에 잘못된 json이 저장된 구성 파일 '%s': '%.60s'"
 
 #, c-format
 msgid "invalid keycode %u of %s codeset"
-msgstr "잘못된 키 코드 %u/%s 코드 세트"
+msgstr "잘못된 키코드 %u (%s 코드세트의)"
 
 #, c-format
 msgid "invalid keycode: '%s'"
 msgstr "잘못된 키 코드: '%s'"
 
 msgid "invalid length for new profile"
-msgstr "새 프로파일으리 잘못된 길이 "
+msgstr "새로운 프로파일의 잘못된 길이"
 
 #, c-format
 msgid "invalid lifecycle action '%u'"
@@ -27596,10 +27596,10 @@ msgid "invalid node cpu active value"
 msgstr "잘못된 노드 cpu 활성화 값"
 
 msgid "invalid node cpu cores value"
-msgstr "잘못된 노드 cpu 코어 값 "
+msgstr "잘못된 노드 cpu 코어 값"
 
 msgid "invalid node cpu mhz value"
-msgstr "잘못된 노드 cpu mhz 값 "
+msgstr "잘못된 노드 cpu mhz 값"
 
 msgid "invalid node cpu nodes value"
 msgstr "잘못된 노드 cpu 노드 값"
@@ -27608,7 +27608,7 @@ msgid "invalid node cpu sockets value"
 msgstr "잘못된 노드 cpu 소켓 값"
 
 msgid "invalid node cpu threads value"
-msgstr "잘못된 노드 cpu 스레드 값 "
+msgstr "잘못된 노드 cpu 쓰레드 값"
 
 msgid "invalid node device pointer"
 msgstr "잘못된 노드 장치 포인터"
