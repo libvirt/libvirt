@@ -171,7 +171,7 @@ qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
         return -1;
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_QAPIFIED)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON)) {
         if (!(arg = virJSONValueToString(props, false)))
             return -1;
     } else {

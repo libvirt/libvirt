@@ -623,7 +623,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "vnc-power-control", /* QEMU_CAPS_VNC_POWER_CONTROL */
               "audiodev", /* QEMU_CAPS_AUDIODEV */
               "blockdev-backup", /* QEMU_CAPS_BLOCKDEV_BACKUP */
-              "object.qapified", /* QEMU_CAPS_OBJECT_QAPIFIED */
+              "object.qapified", /* QEMU_CAPS_OBJECT_JSON */
               "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
 
               /* 400 */
@@ -1582,7 +1582,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },
     { "netdev_add/arg-type/+vhost-vdpa", QEMU_CAPS_NETDEV_VHOST_VDPA },
-    { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_QAPIFIED },
+    { "object-add/arg-type/qom-type/^secret", QEMU_CAPS_OBJECT_JSON },
     { "query-display-options/ret-type/+egl-headless/rendernode", QEMU_CAPS_EGL_HEADLESS_RENDERNODE },
     { "query-display-options/ret-type/+sdl", QEMU_CAPS_SDL },
     { "query-display-options/ret-type/+egl-headless", QEMU_CAPS_EGL_HEADLESS },
@@ -5091,7 +5091,7 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
      * method which doesn't show up in query-command-line-options. As we'll use
      * it only for development and testing purposes we can base the capability
      * on a not entirely related witness. */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_QAPIFIED))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_JSON))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_COMPAT_DEPRECATED);
 }
 

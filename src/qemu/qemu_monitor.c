@@ -700,7 +700,7 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->callbackOpaque = opaque;
 
     if (priv)
-        mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_QAPIFIED);
+        mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_JSON);
 
     if (virSetCloseExec(mon->fd) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
