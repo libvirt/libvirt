@@ -649,6 +649,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 415 */
               "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
+              "device.json", /* QEMU_CAPS_DEVICE_JSON */
     );
 
 
