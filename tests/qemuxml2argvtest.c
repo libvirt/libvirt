@@ -487,6 +487,68 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 }
 
 
+struct testValidateSchemaCommandData {
+    const char *name;
+    const char *schema;
+};
+
+
+static const struct testValidateSchemaCommandData commands[] = {
+    { "-blockdev", "blockdev-add" },
+    { "-netdev", "netdev_add" },
+    { "-object", "object-add" },
+};
+
+static int
+testCompareXMLToArgvValidateSchemaCommand(GStrv args,
+                                          GHashTable *schema)
+{
+    GStrv arg;
+
+    for (arg = args; *arg; arg++) {
+        const char *curcommand = *arg;
+        const char *curargs = *(arg + 1);
+        size_t i;
+
+        for (i = 0; i < G_N_ELEMENTS(commands); i++) {
+            const struct testValidateSchemaCommandData *command = commands + i;
+            g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+            g_autoptr(virJSONValue) jsonargs = NULL;
+
+            if (STRNEQ(curcommand, command->name))
+                continue;
+
+            if (!curargs) {
+                VIR_TEST_VERBOSE("expected arguments for command '%s'",
+                                 command->name);
+                return -1;
+            }
+
+            if (*curargs != '{') {
+                VIR_TEST_DEBUG("skipping validation of '%s': argument is not JSON",
+                               command->name);
+                arg++;
+                break;
+            }
+
+            if (!(jsonargs = virJSONValueFromString(curargs)))
+                return -1;
+
+            if (testQEMUSchemaValidateCommand(command->schema, jsonargs,
+                                              schema, false, false, &debug) < 0) {
+                VIR_TEST_VERBOSE("failed to validate '%s %s' against QAPI schema: %s",
+                                 command->name, curargs, virBufferCurrentContent(&debug));
+                return -1;
+            }
+
+            arg++;
+        }
+    }
+
+    return 0;
+}
+
+
 static int
 testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
                                    const char *migrateURI,
@@ -497,7 +559,6 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
     g_autoptr(virDomainObj) vm = NULL;
     qemuDomainObjPrivate *priv = NULL;
     size_t nargs = 0;
-    size_t i;
     GHashTable *schema = NULL;
     g_autoptr(virCommand) cmd = NULL;
     unsigned int parseFlags = info->parseFlags;
@@ -542,59 +603,8 @@ testCompareXMLToArgvValidateSchema(virQEMUDriver *drv,
     if (virCommandGetArgList(cmd, &args, &nargs) < 0)
         return -1;
 
-    for (i = 0; i < nargs; i++) {
-        g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-        g_autoptr(virJSONValue) jsonargs = NULL;
-
-        if (STREQ(args[i], "-blockdev")) {
-            if (!(jsonargs = virJSONValueFromString(args[i + 1])))
-                return -1;
-
-            if (testQEMUSchemaValidateCommand("blockdev-add", jsonargs,
-                                              schema, false, false, &debug) < 0) {
-                VIR_TEST_VERBOSE("failed to validate -blockdev '%s' against QAPI schema: %s",
-                                 args[i + 1], virBufferCurrentContent(&debug));
-                return -1;
-            }
-
-            i++;
-        } else if (STREQ(args[i], "-netdev")) {
-            if (*args[i + 1] != '{') {
-                i++;
-                continue;
-            }
-
-            if (!(jsonargs = virJSONValueFromString(args[i + 1])))
-                return -1;
-
-            if (testQEMUSchemaValidateCommand("netdev_add", jsonargs,
-                                              schema, false, false, &debug) < 0) {
-                VIR_TEST_VERBOSE("failed to validate -netdev '%s' against QAPI schema: %s",
-                                 args[i + 1], virBufferCurrentContent(&debug));
-                return -1;
-            }
-
-            i++;
-        } else if (STREQ(args[i], "-object")) {
-
-            if (*args[i + 1] != '{') {
-                i++;
-                continue;
-            }
-
-            if (!(jsonargs = virJSONValueFromString(args[i + 1])))
-                return -1;
-
-            if (testQEMUSchemaValidateCommand("object-add", jsonargs,
-                                              schema, false, false, &debug) < 0) {
-                VIR_TEST_VERBOSE("failed to validate -object '%s' against QAPI schema: %s",
-                                 args[i + 1], virBufferCurrentContent(&debug));
-                return -1;
-            }
-
-            i++;
-        }
-    }
+    if (testCompareXMLToArgvValidateSchemaCommand(args, schema) < 0)
+        return -1;
 
     return 0;
 }
