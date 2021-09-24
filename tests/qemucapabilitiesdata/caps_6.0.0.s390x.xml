@@ -135,7 +135,6 @@
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
-  <flag name='fsdev.createmode'/>
   <flag name='vhost-user-fs.bootindex'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>

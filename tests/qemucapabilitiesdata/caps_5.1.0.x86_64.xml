@@ -217,7 +217,6 @@
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='netdev.vhost-vdpa'/>
-  <flag name='fsdev.createmode'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='virtio-pmem-pci'/>

@@ -129,7 +129,6 @@
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='blockdev-hostdev-scsi'/>
-  <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>

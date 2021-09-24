@@ -215,7 +215,6 @@
   <flag name='intel-iommu.aw-bits'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
-  <flag name='fsdev.createmode'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='virtio-pmem-pci'/>

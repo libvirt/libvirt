@@ -136,7 +136,6 @@
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
-  <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>

@@ -603,7 +603,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-balloon.free-page-reporting", /* QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING */
               "block-export-add", /* QEMU_CAPS_BLOCK_EXPORT_ADD */
               "netdev.vhost-vdpa", /* QEMU_CAPS_NETDEV_VHOST_VDPA */
-              "fsdev.createmode", /* QEMU_CAPS_FSDEV_CREATEMODE */
+              "fsdev.createmode", /* X_QEMU_CAPS_FSDEV_CREATEMODE */
 
               /* 385 */
               "ncr53c90", /* QEMU_CAPS_SCSI_NCR53C90 */
@@ -3204,7 +3204,6 @@ struct virQEMUCapsCommandLineProps {
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
-    { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },

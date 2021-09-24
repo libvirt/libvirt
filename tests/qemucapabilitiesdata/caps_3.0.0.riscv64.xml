@@ -74,7 +74,6 @@
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
-  <flag name='fsdev.createmode'/>
   <flag name='vhost-user-blk'/>
   <flag name='input-linux'/>
   <version>3000000</version>
