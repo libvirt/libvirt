@@ -5883,13 +5883,13 @@ cmdShutdown(vshControl *ctl, const vshCmd *cmd)
         rv = virDomainShutdownFlags(dom, flags);
     else
         rv = virDomainShutdown(dom);
-    if (rv == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' is being shutdown\n"), name);
-    } else {
+
+    if (rv != 0) {
         vshError(ctl, _("Failed to shutdown domain '%s'"), name);
         return false;
     }
 
+    vshPrintExtra(ctl, _("Domain '%s' is being shutdown\n"), name);
     return true;
 }
 
@@ -5959,13 +5959,12 @@ cmdReboot(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, &name)))
         return false;
 
-    if (virDomainReboot(dom, flags) == 0) {
-        vshPrintExtra(ctl, _("Domain '%s' is being rebooted\n"), name);
-    } else {
+    if (virDomainReboot(dom, flags) != 0) {
         vshError(ctl, _("Failed to reboot domain '%s'"), name);
         return false;
     }
 
+    vshPrintExtra(ctl, _("Domain '%s' is being rebooted\n"), name);
     return true;
 }
 
