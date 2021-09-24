@@ -10120,7 +10120,7 @@ qemuBuildSeccompSandboxCommandLine(virCommand *cmd,
     }
 
     /* Use blacklist by default if supported */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SECCOMP_BLACKLIST)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SECCOMP_SANDBOX)) {
         virCommandAddArgList(cmd, "-sandbox",
                              "on,obsolete=deny,elevateprivileges=deny,"
                              "spawn=deny,resourcecontrol=deny",
