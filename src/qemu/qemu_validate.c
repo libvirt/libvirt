@@ -195,13 +195,6 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
                                    def->os.machine);
                     return -1;
                 }
-
-                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_KERNEL_IRQCHIP)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("I/O APIC tuning is not supported by "
-                                     "this QEMU binary"));
-                    return -1;
-                }
             }
             break;
 
