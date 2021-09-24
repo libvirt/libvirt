@@ -420,7 +420,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-named-block-nodes", /* QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
               "cpu-cache", /* QEMU_CAPS_CPU_CACHE */
               "qemu-xhci", /* QEMU_CAPS_DEVICE_QEMU_XHCI */
-              "kernel-irqchip", /* QEMU_CAPS_MACHINE_KERNEL_IRQCHIP */
+              "kernel-irqchip", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP */
               "kernel-irqchip.split", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP_SPLIT */
 
               /* 255 */
@@ -3205,7 +3205,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "fsdev", "fmode", QEMU_CAPS_FSDEV_CREATEMODE }, /* Could have also checked fsdev->dmode */
-    { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
