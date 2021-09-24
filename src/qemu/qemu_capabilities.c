@@ -646,6 +646,9 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "piix4.acpi-root-pci-hotplug", /* QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG */
               "ich9.acpi-hotplug-bridge", /* QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE */
               "netdev.json", /* QEMU_CAPS_NETDEV_JSON */
+
+              /* 415 */
+              "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
     );
 
 

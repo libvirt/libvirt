@@ -627,6 +627,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE, /* -M q35 ICH9-LPC.acpi-pci-hotplug-with-bridge-support */
     QEMU_CAPS_NETDEV_JSON, /* -netdev accepts JSON */
 
+    /* 415 */
+    QEMU_CAPS_CHARDEV_JSON, /* -chardev accepts JSON */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 
