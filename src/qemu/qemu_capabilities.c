@@ -3208,7 +3208,7 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "machine", "kernel_irqchip", QEMU_CAPS_MACHINE_KERNEL_IRQCHIP },
     { "numa", NULL, QEMU_CAPS_NUMA }, /* not needed after qemuCaps->version < 3000000 */
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
-    { "sandbox", "enable", QEMU_CAPS_SECCOMP_SANDBOX },
+    { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
