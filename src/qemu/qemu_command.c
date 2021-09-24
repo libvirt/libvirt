@@ -156,10 +156,11 @@ VIR_ENUM_IMPL(qemuAudioDriver,
 
 
 static int
-qemuBuildObjectCommandlineFromJSON(virBuffer *buf,
+qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
                                    virQEMUCaps *qemuCaps)
 {
+    g_autofree char *arg = NULL;
     const char *type = virJSONValueObjectGetString(props, "qom-type");
     const char *alias = virJSONValueObjectGetString(props, "id");
 
@@ -171,13 +172,22 @@ qemuBuildObjectCommandlineFromJSON(virBuffer *buf,
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_OBJECT_QAPIFIED)) {
-        return virJSONValueToBuffer(props, buf, false);
+        if (!(arg = virJSONValueToString(props, false)))
+            return -1;
     } else {
-        virBufferAsprintf(buf, "%s,", type);
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-        return virQEMUBuildCommandLineJSON(props, buf, "qom-type",
-                                           virQEMUBuildCommandLineJSONArrayBitmap);
+        virBufferAsprintf(&buf, "%s,", type);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "qom-type",
+                                        virQEMUBuildCommandLineJSONArrayBitmap) < 0)
+            return -1;
+
+        arg = virBufferContentAndReset(&buf);
     }
+
+    virCommandAddArgList(cmd, "-object", arg, NULL);
+    return 0;
 }
 
 
@@ -197,7 +207,6 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
 {
     g_autofree char *alias = NULL;
     g_autofree char *path = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
 
     if (!(alias = qemuDomainGetMasterKeyAlias()))
@@ -217,11 +226,8 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
 }
@@ -732,17 +738,13 @@ qemuBuildObjectSecretCommandLine(virCommand *cmd,
                                  qemuDomainSecretInfo *secinfo,
                                  virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildSecretInfoProps(secinfo, &props) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
 }
@@ -803,18 +805,14 @@ qemuBuildTLSx509CommandLine(virCommand *cmd,
                             const char *alias,
                             virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
 
     if (qemuBuildTLSx509BackendProps(tlspath, isListen, verifypeer, alias,
                                      certEncSecretAlias, &props) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
 }
@@ -1852,16 +1850,11 @@ qemuBuildObjectCommandline(virCommand *cmd,
                            virJSONValue *objProps,
                            virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
     if (!objProps)
         return 0;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, objProps, qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, objProps, qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
 }
@@ -3210,7 +3203,7 @@ qemuBuildMemoryCellBackendProps(virDomainDef *def,
 
 
 static int
-qemuBuildMemoryDimmBackendStr(virBuffer *buf,
+qemuBuildMemoryDimmBackendStr(virCommand *cmd,
                               virDomainMemoryDef *mem,
                               virDomainDef *def,
                               virQEMUDriverConfig *cfg,
@@ -3231,7 +3224,7 @@ qemuBuildMemoryDimmBackendStr(virBuffer *buf,
                                     priv, def, mem, true, false) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -3946,16 +3939,12 @@ qemuBuildInputCommandLine(virCommand *cmd,
 
         if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
             g_autoptr(virJSONValue) props = NULL;
-            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
             if (!(props = qemuBuildInputEvdevProps(input)))
                 return -1;
 
-            if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+            if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
                 return -1;
-
-            virCommandAddArg(cmd, "-object");
-            virCommandAddArgBuffer(cmd, &buf);
         } else {
             g_autofree char *devstr = NULL;
 
@@ -5523,11 +5512,9 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
 
     for (i = 0; i < def->nrngs; i++) {
         g_autoptr(virJSONValue) props = NULL;
-        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         virDomainRNGDef *rng = def->rngs[i];
         g_autofree char *chardev = NULL;
         g_autofree char *devstr = NULL;
-        int rc;
 
         if (!rng->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5547,13 +5534,8 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
         if (qemuBuildRNGBackendProps(rng, &props) < 0)
             return -1;
 
-        rc = qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps);
-
-        if (rc < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
             return -1;
-
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgBuffer(cmd, &buf);
 
         /* add the device */
         if (qemuCommandAddExtDevice(cmd, &rng->info) < 0)
@@ -7128,7 +7110,6 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     g_autoptr(virJSONValue) props = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainMemoryDef mem = { 0 };
 
     mem.size = virDomainDefGetMemoryInitial(def);
@@ -7139,11 +7120,9 @@ qemuBuildMemCommandLineMemoryDefaultBackend(virCommand *cmd,
                                     priv, def, &mem, false, true) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
     return 0;
 }
 
@@ -7222,17 +7201,13 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->niothreadids; i++) {
         g_autoptr(virJSONValue) props = NULL;
-        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         g_autofree char *alias = g_strdup_printf("iothread%u", def->iothreadids[i]->iothread_id);
 
         if (qemuMonitorCreateObjectProps(&props, "iothread", alias, NULL) < 0)
             return -1;
 
-        if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
             return -1;
-
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgBuffer(cmd, &buf);
     }
 
     return 0;
@@ -7461,14 +7436,9 @@ qemuBuildNumaCommandLine(virQEMUDriverConfig *cfg,
         ssize_t initiator = virDomainNumaGetNodeInitiator(def->numa, i);
 
         if (needBackend) {
-            g_auto(virBuffer) objbuf = VIR_BUFFER_INITIALIZER;
-
-            if (qemuBuildObjectCommandlineFromJSON(&objbuf, nodeBackends[i],
+            if (qemuBuildObjectCommandlineFromJSON(cmd, nodeBackends[i],
                                                    priv->qemuCaps) < 0)
                 goto cleanup;
-
-            virCommandAddArg(cmd, "-object");
-            virCommandAddArgBuffer(cmd, &objbuf);
         }
 
         virCommandAddArg(cmd, "-numa");
@@ -7546,14 +7516,10 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
     for (i = 0; i < def->nmems; i++) {
-        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
         char *dimmStr;
 
-        if (qemuBuildMemoryDimmBackendStr(&buf, def->mems[i], def, cfg, priv) < 0)
+        if (qemuBuildMemoryDimmBackendStr(cmd, def->mems[i], def, cfg, priv) < 0)
             return -1;
-
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgBuffer(cmd, &buf);
 
         if (!(dimmStr = qemuBuildMemoryDeviceStr(def, def->mems[i], priv->qemuCaps)))
             return -1;
@@ -9063,10 +9029,8 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
                           bool chardevStdioLogd)
 {
     g_autoptr(virJSONValue) memProps = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *devstr = NULL;
     g_autofree char *chardev = NULL;
-    int rc;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
         QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
     if (chardevStdioLogd)
@@ -9107,13 +9071,8 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
         if (!(memProps = qemuBuildShmemBackendMemProps(shmem)))
             return -1;
 
-        rc = qemuBuildObjectCommandlineFromJSON(&buf, memProps, qemuCaps);
-
-        if (rc < 0)
+        if (qemuBuildObjectCommandlineFromJSON(cmd, memProps, qemuCaps) < 0)
             return -1;
-
-        virCommandAddArg(cmd, "-object");
-        virCommandAddArgBuffer(cmd, &buf);
 
         G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
@@ -9835,7 +9794,6 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
                         virDomainSEVDef *sev)
 {
     g_autoptr(virJSONValue) props = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *dhpath = NULL;
     g_autofree char *sessionpath = NULL;
@@ -9858,11 +9816,9 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
     return 0;
 }
 
@@ -9871,18 +9827,15 @@ static int
 qemuBuildPVCommandLine(virDomainObj *vm, virCommand *cmd)
 {
     g_autoptr(virJSONValue) props = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     qemuDomainObjPrivate *priv = vm->privateData;
 
     if (qemuMonitorCreateObjectProps(&props, "s390-pv-guest", "lsec0",
                                      NULL) < 0)
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
     return 0;
 }
 
@@ -10012,7 +9965,6 @@ qemuBuildManagedPRCommandLine(virCommand *cmd,
                               const virDomainDef *def,
                               qemuDomainObjPrivate *priv)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
 
     if (!virDomainDefHasManagedPR(def))
@@ -10021,11 +9973,8 @@ qemuBuildManagedPRCommandLine(virCommand *cmd,
     if (!(props = qemuBuildPRManagedManagerInfoProps(priv)))
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     return 0;
 }
@@ -10095,7 +10044,6 @@ qemuBuildDBusVMStateCommandLine(virCommand *cmd,
                                 virQEMUDriver *driver,
                                 virDomainObj *vm)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
     qemuDomainObjPrivate *priv = QEMU_DOMAIN_PRIVATE(vm);
 
@@ -10110,11 +10058,8 @@ qemuBuildDBusVMStateCommandLine(virCommand *cmd,
     if (!(props = qemuBuildDBusVMStateInfoProps(driver, vm)))
         return -1;
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, priv->qemuCaps) < 0)
+    if (qemuBuildObjectCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
         return -1;
-
-    virCommandAddArg(cmd, "-object");
-    virCommandAddArgBuffer(cmd, &buf);
 
     priv->dbusVMState = true;
 
