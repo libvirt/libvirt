@@ -3887,12 +3887,10 @@ qemuBuildUSBInputDevStr(const virDomainDef *def,
 }
 
 
-static char *
-qemuBuildObjectInputDevStr(virDomainInputDef *dev,
-                           virQEMUCaps *qemuCaps)
+static virJSONValue *
+qemuBuildInputEvdevProps(virDomainInputDef *dev)
 {
     g_autoptr(virJSONValue) props = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (qemuMonitorCreateObjectProps(&props, "input-linux", dev->info.alias,
                                      "s:evdev", dev->source.evdev,
@@ -3908,10 +3906,7 @@ qemuBuildObjectInputDevStr(virDomainInputDef *dev,
                               virDomainInputSourceGrabToggleTypeToString(dev->source.grabToggle),
                               NULL);
 
-    if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
-        return NULL;
-
-    return virBufferContentAndReset(&buf);
+    return g_steal_pointer(&props);
 }
 
 
@@ -3931,10 +3926,6 @@ qemuBuildInputDevStr(char **devstr,
         if (!(*devstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
             return -1;
         break;
-    case VIR_DOMAIN_INPUT_BUS_NONE:
-        if (!(*devstr = qemuBuildObjectInputDevStr(input, qemuCaps)))
-            return -1;
-        break;
     }
     return 0;
 }
@@ -3949,20 +3940,32 @@ qemuBuildInputCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->ninputs; i++) {
         virDomainInputDef *input = def->inputs[i];
-        g_autofree char *devstr = NULL;
 
         if (qemuCommandAddExtDevice(cmd, &input->info) < 0)
             return -1;
 
-        if (qemuBuildInputDevStr(&devstr, def, input, qemuCaps) < 0)
-            return -1;
+        if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
+            g_autoptr(virJSONValue) props = NULL;
+            g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-        if (devstr) {
-            if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV)
-                virCommandAddArg(cmd, "-object");
-            else
+            if (!(props = qemuBuildInputEvdevProps(input)))
+                return -1;
+
+            if (qemuBuildObjectCommandlineFromJSON(&buf, props, qemuCaps) < 0)
+                return -1;
+
+            virCommandAddArg(cmd, "-object");
+            virCommandAddArgBuffer(cmd, &buf);
+        } else {
+            g_autofree char *devstr = NULL;
+
+            if (qemuBuildInputDevStr(&devstr, def, input, qemuCaps) < 0)
+                return -1;
+
+            if (devstr) {
                 virCommandAddArg(cmd, "-device");
-            virCommandAddArg(cmd, devstr);
+                virCommandAddArg(cmd, devstr);
+            }
         }
     }
 
