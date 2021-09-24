@@ -4165,11 +4165,6 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
     }
 
     if ((fs->fmode != 0) || (fs->dmode != 0)) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_CREATEMODE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                        _("fmode and dmode are not supported with this QEMU binary"));
-            return -1;
-        }
         if (fs->accessmode != VIR_DOMAIN_FS_ACCESSMODE_MAPPED) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("fmode and dmode must be used with accessmode=mapped"));
