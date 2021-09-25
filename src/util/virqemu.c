@@ -219,7 +219,13 @@ virQEMUBuildCommandLineJSONRecurse(const char *key,
             return -1;
         }
 
-        if (!arrayFunc || arrayFunc(key, value, buf, skipKey) < 0) {
+        if (!arrayFunc) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("JSON array -> commandline conversion function not provided"));
+            return -1;
+        }
+
+        if (arrayFunc(key, value, buf, skipKey) < 0) {
             /* fallback, treat the array as a non-bitmap, adding the key
              * for each member */
             for (i = 0; i < virJSONValueArraySize(value); i++) {
