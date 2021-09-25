@@ -158,23 +158,17 @@ virQEMUBuildCommandLineJSONIterate(const char *key,
                                    void *opaque)
 {
     struct virQEMUCommandLineJSONIteratorData *data = opaque;
+    g_autofree char *tmpkey = NULL;
 
     if (STREQ_NULLABLE(key, data->skipKey))
         return 0;
 
-    if (data->prefix) {
-        g_autofree char *tmpkey = NULL;
+    if (data->prefix)
+        key = tmpkey = g_strdup_printf("%s.%s", data->prefix, key);
 
-        tmpkey = g_strdup_printf("%s.%s", data->prefix, key);
-
-        return virQEMUBuildCommandLineJSONRecurse(tmpkey, value, data->buf,
-                                                  data->skipKey,
-                                                  data->arrayFunc, false);
-    } else {
-        return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
-                                                  data->skipKey,
-                                                  data->arrayFunc, false);
-    }
+    return virQEMUBuildCommandLineJSONRecurse(key, value, data->buf,
+                                              data->skipKey,
+                                              data->arrayFunc, false);
 }
 
 
