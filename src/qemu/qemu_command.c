@@ -345,9 +345,7 @@ qemuBuildDeviceAddressPCIStr(virBuffer *buf,
 
             if (!contAlias) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Device alias was not set for PCI "
-                                 "controller with index %u required "
-                                 "for device at address %s"),
+                               _("Device alias was not set for PCI controller with index '%u' required for device at address '%s'"),
                                info->addr.pci.bus, devStr);
                 return -1;
             }
@@ -372,9 +370,7 @@ qemuBuildDeviceAddressPCIStr(virBuffer *buf,
 
     if (!contAlias) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not find PCI "
-                         "controller with index %u required "
-                         "for device at address %s"),
+                       _("Could not find PCI controller with index '%u' required for device at address '%s'"),
                        info->addr.pci.bus, devStr);
         return -1;
     }
