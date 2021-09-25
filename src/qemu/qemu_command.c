@@ -221,6 +221,33 @@ qemuBuildNetdevCommandlineFromJSON(virCommand *cmd,
 }
 
 
+static G_GNUC_UNUSED int
+qemuBuildDeviceCommandlineFromJSON(virCommand *cmd,
+                                   virJSONValue *props,
+                                   virQEMUCaps *qemuCaps)
+{
+    g_autofree char *arg = NULL;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_JSON)) {
+        if (!(arg = virJSONValueToString(props, false)))
+            return -1;
+    } else {
+        const char *driver = virJSONValueObjectGetString(props, "driver");
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+
+        virBufferAsprintf(&buf, "%s,", driver);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
+            return -1;
+
+        arg = virBufferContentAndReset(&buf);
+    }
+
+    virCommandAddArgList(cmd, "-device", arg, NULL);
+    return 0;
+}
+
+
 /**
  * qemuBuildMasterKeyCommandLine:
  * @cmd: the command to modify
