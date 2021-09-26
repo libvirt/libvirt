@@ -656,7 +656,7 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshStorageVol) vol = NULL;
     bool ret = false;
     int fd = -1;
-    virStreamPtr st = NULL;
+    g_autoptr(virshStream) st = NULL;
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
     virshControl *priv = ctl->privData;
@@ -731,8 +731,6 @@ cmdVolUpload(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (st)
-        virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -776,7 +774,7 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshStorageVol) vol = NULL;
     bool ret = false;
     int fd = -1;
-    virStreamPtr st = NULL;
+    g_autoptr(virshStream) st = NULL;
     const char *name = NULL;
     unsigned long long offset = 0, length = 0;
     bool created = false;
@@ -851,8 +849,6 @@ cmdVolDownload(vshControl *ctl, const vshCmd *cmd)
     VIR_FORCE_CLOSE(fd);
     if (!ret && created)
         unlink(file);
-    if (st)
-        virStreamFree(st);
     return ret;
 }
 

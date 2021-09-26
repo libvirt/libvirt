@@ -33,6 +33,7 @@
 # include "internal.h"
 # include "virsh.h"
 # include "virsh-console.h"
+# include "virsh-util.h"
 # include "virlog.h"
 # include "virfile.h"
 # include "viralloc.h"
@@ -117,8 +118,8 @@ virConsoleShutdown(virConsole *con,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot terminate console stream"));
         }
-        virStreamFree(con->st);
-        con->st = NULL;
+
+        g_clear_pointer(&con->st, virshStreamFree);
     }
     VIR_FREE(con->streamToTerminal.data);
     VIR_FREE(con->terminalToStream.data);
@@ -140,8 +141,7 @@ virConsoleDispose(void *obj)
 {
     virConsole *con = obj;
 
-    if (con->st)
-        virStreamFree(con->st);
+    virshStreamFree(con->st);
 
     virCondDestroy(&con->cond);
     virResetError(&con->error);

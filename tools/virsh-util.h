@@ -89,6 +89,11 @@ void
 virshStorageVolFree(virStorageVolPtr vol);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshStorageVol, virshStorageVolFree);
 
+typedef virStream virshStream;
+void
+virshStreamFree(virStreamPtr stream);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshStream, virshStreamFree);
+
 int
 virshDomainState(vshControl *ctl,
                  virDomainPtr dom,

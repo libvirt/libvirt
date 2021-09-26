@@ -5540,7 +5540,7 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
     const char *name = NULL;
     char *file = NULL;
     int fd = -1;
-    virStreamPtr st = NULL;
+    g_autoptr(virshStream) st = NULL;
     unsigned int screen = 0;
     unsigned int flags = 0; /* currently unused */
     bool ret = false;
@@ -5610,8 +5610,6 @@ cmdScreenshot(vshControl *ctl, const vshCmd *cmd)
         unlink(file);
     if (generated)
         VIR_FREE(file);
-    if (st)
-        virStreamFree(st);
     VIR_FORCE_CLOSE(fd);
     VIR_FREE(mime);
     return ret;
