@@ -612,7 +612,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
 
     /* In case of fake reboot qemu shutdown state is transient so don't
      * change domain state nor send events. */
-    if (!priv->fakeReboot ||
+    if (!priv->fakeReboot &&
         vm->def->onPoweroff != VIR_DOMAIN_LIFECYCLE_ACTION_RESTART) {
         VIR_DEBUG("Transitioned guest %s to shutdown state",
                   vm->def->name);
