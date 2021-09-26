@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include "virsh-network.h"
+#include "virsh-util.h"
 
 #include "internal.h"
 #include "viralloc.h"
@@ -155,7 +156,7 @@ static const vshCmdOptDef opts_network_autostart[] = {
 static bool
 cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     const char *name;
     int autostart;
 
@@ -169,7 +170,6 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("failed to mark network %s as autostarted"), name);
         else
             vshError(ctl, _("failed to unmark network %s as autostarted"), name);
-        virNetworkFree(network);
         return false;
     }
 
@@ -178,7 +178,6 @@ cmdNetworkAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrintExtra(ctl, _("Network %s unmarked as autostarted\n"), name);
 
-    virNetworkFree(network);
     return true;
 }
 
@@ -207,7 +206,7 @@ static const vshCmdOptDef opts_network_create[] = {
 static bool
 cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
@@ -234,7 +233,6 @@ cmdNetworkCreate(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Network %s created from %s\n"),
                   virNetworkGetName(network), from);
-    virNetworkFree(network);
     return true;
 }
 
@@ -264,7 +262,7 @@ static const vshCmdOptDef opts_network_define[] = {
 static bool
 cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
@@ -291,7 +289,6 @@ cmdNetworkDefine(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Network %s defined from %s\n"),
                   virNetworkGetName(network), from);
-    virNetworkFree(network);
     return true;
 }
 
@@ -316,7 +313,7 @@ static const vshCmdOptDef opts_network_destroy[] = {
 static bool
 cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     bool ret = true;
     const char *name;
 
@@ -330,7 +327,6 @@ cmdNetworkDestroy(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNetworkFree(network);
     return ret;
 }
 
@@ -359,7 +355,7 @@ static const vshCmdOptDef opts_network_dumpxml[] = {
 static bool
 cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     g_autofree char *dump = NULL;
     unsigned int flags = 0;
 
@@ -370,12 +366,10 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_NETWORK_XML_INACTIVE;
 
     if (!(dump = virNetworkGetXMLDesc(network, flags))) {
-        virNetworkFree(network);
         return false;
     }
 
     vshPrint(ctl, "%s", dump);
-    virNetworkFree(network);
     return true;
 }
 
@@ -400,7 +394,7 @@ static const vshCmdOptDef opts_network_info[] = {
 static bool
 cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     char uuid[VIR_UUID_STRING_BUFLEN];
     int autostart;
     int persistent = -1;
@@ -435,7 +429,6 @@ cmdNetworkInfo(vshControl *ctl, const vshCmd *cmd)
         vshPrint(ctl, "%-15s %s\n", _("Bridge:"), bridge);
 
     VIR_FREE(bridge);
-    virNetworkFree(network);
     return true;
 }
 
@@ -467,8 +460,7 @@ virshNetworkListFree(struct virshNetworkList *list)
 
     if (list && list->nets) {
         for (i = 0; i < list->nnets; i++) {
-            if (list->nets[i])
-                virNetworkFree(list->nets[i]);
+            virshNetworkFree(list->nets[i]);
         }
         g_free(list->nets);
     }
@@ -626,8 +618,7 @@ virshNetworkListCollect(vshControl *ctl,
 
  remove_entry:
         /* the pool has to be removed as it failed one of the filters */
-        virNetworkFree(list->nets[i]);
-        list->nets[i] = NULL;
+        g_clear_pointer(&list->nets[i], virshNetworkFree);
         deleted++;
     }
 
@@ -825,14 +816,13 @@ static const vshCmdOptDef opts_network_name[] = {
 static bool
 cmdNetworkName(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
 
     if (!(network = virshCommandOptNetworkBy(ctl, cmd, NULL,
                                              VIRSH_BYUUID)))
         return false;
 
     vshPrint(ctl, "%s\n", virNetworkGetName(network));
-    virNetworkFree(network);
     return true;
 }
 
@@ -857,7 +847,7 @@ static const vshCmdOptDef opts_network_start[] = {
 static bool
 cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     bool ret = true;
     const char *name = NULL;
 
@@ -870,7 +860,6 @@ cmdNetworkStart(vshControl *ctl, const vshCmd *cmd)
         vshError(ctl, _("Failed to start network %s"), name);
         ret = false;
     }
-    virNetworkFree(network);
     return ret;
 }
 
@@ -895,7 +884,7 @@ static const vshCmdOptDef opts_network_undefine[] = {
 static bool
 cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     bool ret = true;
     const char *name;
 
@@ -909,7 +898,6 @@ cmdNetworkUndefine(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNetworkFree(network);
     return ret;
 }
 
@@ -972,7 +960,7 @@ static bool
 cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     const char *commandStr = NULL;
     const char *sectionStr = NULL;
     int command, section, parentIndex = -1;
@@ -1071,7 +1059,6 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
     ret = true;
  cleanup:
     vshReportError(ctl);
-    virNetworkFree(network);
     return ret;
 }
 
@@ -1096,7 +1083,7 @@ static const vshCmdOptDef opts_network_uuid[] = {
 static bool
 cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
     if (!(network = virshCommandOptNetworkBy(ctl, cmd, NULL,
@@ -1108,7 +1095,6 @@ cmdNetworkUuid(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, "%s", _("failed to get network UUID"));
 
-    virNetworkFree(network);
     return true;
 }
 
@@ -1150,8 +1136,8 @@ static bool
 cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virNetworkPtr network = NULL;
-    virNetworkPtr network_edited = NULL;
+    g_autoptr(virshNetwork) network = NULL;
+    g_autoptr(virshNetwork) network_edited = NULL;
     virshControl *priv = ctl->privData;
 
     network = virshCommandOptNetwork(ctl, cmd, NULL);
@@ -1176,11 +1162,6 @@ cmdNetworkEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (network)
-        virNetworkFree(network);
-    if (network_edited)
-        virNetworkFree(network_edited);
-
     return ret;
 }
 
@@ -1293,7 +1274,7 @@ static const vshCmdOptDef opts_network_event[] = {
 static bool
 cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr net = NULL;
+    g_autoptr(virshNetwork) net = NULL;
     bool ret = false;
     int eventId = -1;
     int timeout = 0;
@@ -1362,8 +1343,6 @@ cmdNetworkEvent(vshControl *ctl, const vshCmd *cmd)
     if (eventId >= 0 &&
         virConnectNetworkEventDeregisterAny(priv->conn, eventId) < 0)
         ret = false;
-    if (net)
-        virNetworkFree(net);
     return ret;
 }
 
@@ -1417,7 +1396,7 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
     bool ret = false;
     size_t i;
     unsigned int flags = 0;
-    virNetworkPtr network = NULL;
+    g_autoptr(virshNetwork) network = NULL;
     g_autoptr(vshTable) table = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "mac", &mac) < 0)
@@ -1477,7 +1456,6 @@ cmdNetworkDHCPLeases(vshControl *ctl, const vshCmd *cmd)
             virNetworkDHCPLeaseFree(leases[i]);
         VIR_FREE(leases);
     }
-    virNetworkFree(network);
     return ret;
 }
 
@@ -1511,7 +1489,7 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     char *buffer = NULL;
-    virNetworkPtr network = NULL;
+    g_autoptr(virshNetwork) network = NULL;
     unsigned int flags = 0;
 
     network = virshCommandOptNetwork(ctl, cmd, NULL);
@@ -1546,8 +1524,6 @@ cmdNetworkPortCreate(vshControl *ctl, const vshCmd *cmd)
     VIR_FREE(buffer);
     if (port)
         virNetworkPortFree(port);
-    if (network)
-        virNetworkFree(network);
     return ret;
 }
 
@@ -1573,7 +1549,7 @@ static const vshCmdOptDef opts_network_port_dumpxml[] = {
 static bool
 cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network;
+    g_autoptr(virshNetwork) network = NULL;
     virNetworkPortPtr port = NULL;
     bool ret = true;
     g_autofree char *dump = NULL;
@@ -1596,8 +1572,6 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (port)
         virNetworkPortFree(port);
-    if (network)
-        virNetworkFree(network);
     return ret;
 }
 
@@ -1624,7 +1598,7 @@ static const vshCmdOptDef opts_network_port_delete[] = {
 static bool
 cmdNetworkPortDelete(vshControl *ctl, const vshCmd *cmd)
 {
-    virNetworkPtr network = NULL;
+    g_autoptr(virshNetwork) network = NULL;
     virNetworkPortPtr port = NULL;
     bool ret = true;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
@@ -1649,8 +1623,6 @@ cmdNetworkPortDelete(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (port)
         virNetworkPortFree(port);
-    if (network)
-        virNetworkFree(network);
     return ret;
 }
 
@@ -1703,7 +1675,7 @@ virshNetworkPortListCollect(vshControl *ctl,
 {
     struct virshNetworkPortList *list = g_new0(struct virshNetworkPortList, 1);
     int ret;
-    virNetworkPtr network = NULL;
+    g_autoptr(virshNetwork) network = NULL;
     bool success = false;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
@@ -1728,9 +1700,6 @@ virshNetworkPortListCollect(vshControl *ctl,
         virshNetworkPortListFree(list);
         list = NULL;
     }
-
-    if (network)
-        virNetworkFree(network);
 
     return list;
 }

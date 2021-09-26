@@ -297,6 +297,17 @@ virshInterfaceFree(virInterfacePtr iface)
 
 
 void
+virshNetworkFree(virNetworkPtr network)
+{
+    if (!network)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virNetworkFree(network); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+void
 virshSecretFree(virSecretPtr secret)
 {
     if (!secret)

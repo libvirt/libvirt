@@ -59,6 +59,11 @@ void
 virshInterfaceFree(virInterfacePtr iface);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshInterface, virshInterfaceFree);
 
+typedef virNetwork virshNetwork;
+void
+virshNetworkFree(virNetworkPtr network);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshNetwork, virshNetworkFree);
+
 typedef virSecret virshSecret;
 void
 virshSecretFree(virSecretPtr secret);

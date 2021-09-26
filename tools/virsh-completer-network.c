@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-network.h"
+#include "virsh-util.h"
 #include "viralloc.h"
 #include "virsh-network.h"
 #include "virsh.h"
@@ -60,7 +61,7 @@ virshNetworkNameCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
     for (i = 0; i < nnets; i++)
-        virNetworkFree(nets[i]);
+        virshNetworkFree(nets[i]);
     g_free(nets);
     return ret;
 }
@@ -170,7 +171,7 @@ virshNetworkUUIDCompleter(vshControl *ctl,
 
  cleanup:
     for (i = 0; i < nnets; i++)
-        virNetworkFree(nets[i]);
+        virshNetworkFree(nets[i]);
     g_free(nets);
     return ret;
 }
@@ -183,7 +184,7 @@ virshNetworkDhcpMacCompleter(vshControl *ctl,
 {
     virshControl *priv = ctl->privData;
     virNetworkDHCPLeasePtr *leases = NULL;
-    virNetworkPtr network = NULL;
+    g_autoptr(virshNetwork) network = NULL;
     int nleases;
     size_t i = 0;
     char **ret = NULL;
@@ -215,6 +216,5 @@ virshNetworkDhcpMacCompleter(vshControl *ctl,
             virNetworkDHCPLeaseFree(leases[i]);
         VIR_FREE(leases);
     }
-    virNetworkFree(network);
     return ret;
 }
