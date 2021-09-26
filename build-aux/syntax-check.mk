@@ -868,7 +868,7 @@ sc_gettext_init:
 	  $(_sc_search_regexp)
 
 sc_prohibit_obj_free_apis_in_virsh:
-	@prohibit='\bvir(Domain|DomainSnapshot|Interface|Network|NodeDevice|Secret|StoragePool|StorageVol)Free\b' \
+	@prohibit='\bvir(Domain|DomainSnapshot|Interface|Network|NodeDevice|NWFilter|Secret|StoragePool|StorageVol)Free\b' \
 	in_vc_files='virsh.*\.[ch]$$' \
 	exclude='sc_prohibit_obj_free_apis_in_virsh' \
 	halt='avoid using public virXXXFree in virsh, use virsh-prefixed wrappers instead' \

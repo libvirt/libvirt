@@ -319,6 +319,17 @@ virshNodeDeviceFree(virNodeDevicePtr device)
 
 
 void
+virshNWFilterFree(virNWFilterPtr nwfilter)
+{
+    if (!nwfilter)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virNWFilterFree(nwfilter); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+void
 virshSecretFree(virSecretPtr secret)
 {
     if (!secret)

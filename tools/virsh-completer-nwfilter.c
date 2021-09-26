@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-nwfilter.h"
+#include "virsh-util.h"
 #include "viralloc.h"
 #include "virsh.h"
 #include "virstring.h"
@@ -56,7 +57,7 @@ virshNWFilterNameCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
     for (i = 0; i < nnwfilters; i++)
-        virNWFilterFree(nwfilters[i]);
+        virshNWFilterFree(nwfilters[i]);
     g_free(nwfilters);
     return ret;
 }

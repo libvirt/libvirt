@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include "virsh-nwfilter.h"
+#include "virsh-util.h"
 
 #include "internal.h"
 #include "viralloc.h"
@@ -91,7 +92,7 @@ static const vshCmdOptDef opts_nwfilter_define[] = {
 static bool
 cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virNWFilterPtr nwfilter;
+    g_autoptr(virshNWFilter) nwfilter = NULL;
     const char *from = NULL;
     bool ret = true;
     g_autofree char *buffer = NULL;
@@ -115,7 +116,6 @@ cmdNWFilterDefine(vshControl *ctl, const vshCmd *cmd)
     if (nwfilter != NULL) {
         vshPrintExtra(ctl, _("Network filter %s defined from %s\n"),
                       virNWFilterGetName(nwfilter), from);
-        virNWFilterFree(nwfilter);
     } else {
         vshError(ctl, _("Failed to define network filter from %s"), from);
         ret = false;
@@ -149,7 +149,7 @@ static const vshCmdOptDef opts_nwfilter_undefine[] = {
 static bool
 cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virNWFilterPtr nwfilter;
+    g_autoptr(virshNWFilter) nwfilter = NULL;
     bool ret = true;
     const char *name;
 
@@ -163,7 +163,6 @@ cmdNWFilterUndefine(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNWFilterFree(nwfilter);
     return ret;
 }
 
@@ -193,7 +192,7 @@ static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
 static bool
 cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virNWFilterPtr nwfilter;
+    g_autoptr(virshNWFilter) nwfilter = NULL;
     bool ret = true;
     g_autofree char *dump = NULL;
 
@@ -207,7 +206,6 @@ cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNWFilterFree(nwfilter);
     return ret;
 }
 
@@ -239,8 +237,7 @@ virshNWFilterListFree(struct virshNWFilterList *list)
 
     if (list && list->filters) {
         for (i = 0; i < list->nfilters; i++) {
-            if (list->filters[i])
-                virNWFilterFree(list->filters[i]);
+            virshNWFilterFree(list->filters[i]);
         }
         g_free(list->filters);
     }
@@ -418,8 +415,8 @@ static bool
 cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virNWFilterPtr nwfilter = NULL;
-    virNWFilterPtr nwfilter_edited = NULL;
+    g_autoptr(virshNWFilter) nwfilter = NULL;
+    g_autoptr(virshNWFilter) nwfilter_edited = NULL;
     virshControl *priv = ctl->privData;
 
     nwfilter = virshCommandOptNWFilter(ctl, cmd, NULL);
@@ -445,11 +442,6 @@ cmdNWFilterEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (nwfilter)
-        virNWFilterFree(nwfilter);
-    if (nwfilter_edited)
-        virNWFilterFree(nwfilter_edited);
-
     return ret;
 }
 

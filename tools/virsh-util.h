@@ -69,6 +69,11 @@ void
 virshNodeDeviceFree(virNodeDevicePtr device);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshNodeDevice, virshNodeDeviceFree);
 
+typedef virNWFilter virshNWFilter;
+void
+virshNWFilterFree(virNWFilterPtr nwfilter);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshNWFilter, virshNWFilterFree);
+
 typedef virSecret virshSecret;
 void
 virshSecretFree(virSecretPtr secret);
