@@ -2388,7 +2388,7 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 {
     g_autofree char *ret = NULL;
     const char *tmpdir;
-    int fd;
+    VIR_AUTOCLOSE fd = -1;
 
     tmpdir = getenv("TMPDIR");
     if (!tmpdir) tmpdir = "/tmp";
@@ -2403,7 +2403,6 @@ vshEditWriteToTempFile(vshControl *ctl, const char *doc)
     if (safewrite(fd, doc, strlen(doc)) == -1) {
         vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
                  ret, g_strerror(errno));
-        VIR_FORCE_CLOSE(fd);
         unlink(ret);
         return NULL;
     }
