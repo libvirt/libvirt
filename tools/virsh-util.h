@@ -64,6 +64,11 @@ void
 virshSecretFree(virSecretPtr secret);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshSecret, virshSecretFree);
 
+typedef virStoragePool virshStoragePool;
+void
+virshStoragePoolFree(virStoragePoolPtr pool);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshStoragePool, virshStoragePoolFree);
+
 int
 virshDomainState(vshControl *ctl,
                  virDomainPtr dom,

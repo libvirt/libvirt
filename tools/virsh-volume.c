@@ -83,7 +83,7 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                      const char **name, unsigned int flags)
 {
     virStorageVolPtr vol = NULL;
-    virStoragePoolPtr pool = NULL;
+    g_autoptr(virshStoragePool) pool = NULL;
     const char *n = NULL, *p = NULL;
     virshControl *priv = ctl->privData;
 
@@ -102,7 +102,6 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
 
         if (virStoragePoolIsActive(pool) != 1) {
             vshError(ctl, _("pool '%s' is not active"), p);
-            virStoragePoolFree(pool);
             return NULL;
         }
     }
@@ -145,7 +144,7 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
     /* If the pool was specified, then make sure that the returned
      * volume is from the given pool */
     if (pool && vol) {
-        virStoragePoolPtr volpool = NULL;
+        g_autoptr(virshStoragePool) volpool = NULL;
 
         if ((volpool = virStoragePoolLookupByVolume(vol))) {
             if (STRNEQ(virStoragePoolGetName(volpool),
@@ -157,12 +156,8 @@ virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                 virStorageVolFree(vol);
                 vol = NULL;
             }
-            virStoragePoolFree(volpool);
         }
     }
-
-    if (pool)
-        virStoragePoolFree(pool);
 
     return vol;
 }
@@ -234,7 +229,7 @@ virshVolSize(const char *data, unsigned long long *val)
 static bool
 cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
 {
-    virStoragePoolPtr pool;
+    g_autoptr(virshStoragePool) pool = NULL;
     virStorageVolPtr vol = NULL;
     g_autofree char *xml = NULL;
     bool printXML = vshCommandOptBool(cmd, "print-xml");
@@ -373,7 +368,6 @@ cmdVolCreateAs(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     if (vol)
         virStorageVolFree(vol);
-    virStoragePoolFree(pool);
     return ret;
 }
 
@@ -403,7 +397,7 @@ static const vshCmdOptDef opts_vol_create[] = {
 static bool
 cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
 {
-    virStoragePoolPtr pool;
+    g_autoptr(virshStoragePool) pool = NULL;
     virStorageVolPtr vol;
     const char *from = NULL;
     bool ret = false;
@@ -434,7 +428,6 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    virStoragePoolFree(pool);
     return ret;
 }
 
@@ -474,7 +467,7 @@ static const vshCmdOptDef opts_vol_create_from[] = {
 static bool
 cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 {
-    virStoragePoolPtr pool = NULL;
+    g_autoptr(virshStoragePool) pool = NULL;
     virStorageVolPtr newvol = NULL, inputvol = NULL;
     const char *from = NULL;
     bool ret = false;
@@ -513,8 +506,6 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (pool)
-        virStoragePoolFree(pool);
     if (inputvol)
         virStorageVolFree(inputvol);
     if (newvol)
@@ -582,7 +573,7 @@ static const vshCmdOptDef opts_vol_clone[] = {
 static bool
 cmdVolClone(vshControl *ctl, const vshCmd *cmd)
 {
-    virStoragePoolPtr origpool = NULL;
+    g_autoptr(virshStoragePool) origpool = NULL;
     virStorageVolPtr origvol = NULL, newvol = NULL;
     const char *name = NULL;
     g_autofree char *origxml = NULL;
@@ -637,8 +628,6 @@ cmdVolClone(vshControl *ctl, const vshCmd *cmd)
         virStorageVolFree(origvol);
     if (newvol)
         virStorageVolFree(newvol);
-    if (origpool)
-        virStoragePoolFree(origpool);
     return ret;
 }
 
@@ -1395,7 +1384,7 @@ static bool
 cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     virStorageVolInfo volumeInfo;
-    virStoragePoolPtr pool;
+    g_autoptr(virshStoragePool) pool = NULL;
     const char *unit;
     double val;
     bool details = vshCommandOptBool(cmd, "details");
@@ -1521,7 +1510,6 @@ cmdVolList(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     /* Cleanup remaining memory */
     VIR_FREE(volInfoTexts);
-    virStoragePoolFree(pool);
     virshStorageVolListFree(list);
 
     /* Return the desired value */
@@ -1585,7 +1573,7 @@ static const vshCmdOptDef opts_vol_pool[] = {
 static bool
 cmdVolPool(vshControl *ctl, const vshCmd *cmd)
 {
-    virStoragePoolPtr pool;
+    g_autoptr(virshStoragePool) pool = NULL;
     virStorageVolPtr vol;
     char uuid[VIR_UUID_STRING_BUFLEN];
 
@@ -1615,7 +1603,6 @@ cmdVolPool(vshControl *ctl, const vshCmd *cmd)
 
     /* Cleanup */
     virStorageVolFree(vol);
-    virStoragePoolFree(pool);
     return true;
 }
 

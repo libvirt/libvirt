@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-pool.h"
+#include "virsh-util.h"
 #include "conf/storage_conf.h"
 #include "viralloc.h"
 #include "virsh-pool.h"
@@ -61,7 +62,7 @@ virshStoragePoolNameCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
     for (i = 0; i < npools; i++)
-        virStoragePoolFree(pools[i]);
+        virshStoragePoolFree(pools[i]);
     g_free(pools);
     return ret;
 }

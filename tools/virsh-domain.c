@@ -3801,7 +3801,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
             }
 
             if (pool) {
-                virStoragePoolPtr storagepool = NULL;
+                g_autoptr(virshStoragePool) storagepool = NULL;
 
                 if (!source) {
                     vshError(ctl,
@@ -3820,7 +3820,6 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
                 }
 
                 vol.vol = virStorageVolLookupByName(storagepool, source);
-                virStoragePoolFree(storagepool);
 
             } else {
                vol.vol = virStorageVolLookupByPath(priv->conn, source);
