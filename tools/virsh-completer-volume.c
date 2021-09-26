@@ -65,7 +65,7 @@ virshStorageVolNameCompleter(vshControl *ctl,
 
  cleanup:
     for (i = 0; i < nvols; i++)
-        virStorageVolFree(vols[i]);
+        virshStorageVolFree(vols[i]);
     g_free(vols);
     return ret;
 }
@@ -104,7 +104,7 @@ virshStorageVolKeyCompleter(vshControl *ctl,
             const char *key = virStorageVolGetKey(vols[j]);
             tmp[nvols] = g_strdup(key);
             nvols++;
-            virStorageVolFree(vols[j]);
+            virshStorageVolFree(vols[j]);
         }
 
         g_free(vols);

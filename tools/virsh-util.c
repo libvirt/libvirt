@@ -318,6 +318,17 @@ virshStoragePoolFree(virStoragePoolPtr pool)
 }
 
 
+void
+virshStorageVolFree(virStorageVolPtr vol)
+{
+    if (!vol)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virStorageVolFree(vol); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
 int
 virshDomainGetXMLFromDom(vshControl *ctl,
                          virDomainPtr dom,

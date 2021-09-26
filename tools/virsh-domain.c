@@ -3942,8 +3942,7 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     for (i = 0; i < nvols; i++) {
         VIR_FREE(vols[i].source);
         VIR_FREE(vols[i].target);
-        if (vols[i].vol)
-            virStorageVolFree(vols[i].vol);
+        virshStorageVolFree(vols[i].vol);
     }
     VIR_FREE(vols);
 
