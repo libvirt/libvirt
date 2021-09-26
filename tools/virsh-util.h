@@ -54,6 +54,11 @@ void
 virshDomainSnapshotFree(virDomainSnapshotPtr snap);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomainSnapshot, virshDomainSnapshotFree);
 
+typedef virInterface virshInterface;
+void
+virshInterfaceFree(virInterfacePtr iface);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshInterface, virshInterfaceFree);
+
 typedef virSecret virshSecret;
 void
 virshSecretFree(virSecretPtr secret);

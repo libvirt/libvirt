@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-interface.h"
+#include "virsh-util.h"
 #include "viralloc.h"
 #include "virsh.h"
 #include "virstring.h"
@@ -59,7 +60,7 @@ virshInterfaceStringHelper(vshControl *ctl,
     }
 
     for (i = 0; i < nifaces; i++)
-        virInterfaceFree(ifaces[i]);
+        virshInterfaceFree(ifaces[i]);
     g_free(ifaces);
 
     return g_steal_pointer(&tmp);

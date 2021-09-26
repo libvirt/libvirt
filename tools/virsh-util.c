@@ -286,6 +286,17 @@ virshDomainSnapshotFree(virDomainSnapshotPtr snap)
 
 
 void
+virshInterfaceFree(virInterfacePtr iface)
+{
+    if (!iface)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virInterfaceFree(iface); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+void
 virshSecretFree(virSecretPtr secret)
 {
     if (!secret)

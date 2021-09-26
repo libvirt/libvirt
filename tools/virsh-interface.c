@@ -29,6 +29,7 @@
 
 #include <config.h>
 #include "virsh-interface.h"
+#include "virsh-util.h"
 
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
@@ -109,8 +110,8 @@ static bool
 cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virInterfacePtr iface = NULL;
-    virInterfacePtr iface_edited = NULL;
+    g_autoptr(virshInterface) iface = NULL;
+    g_autoptr(virshInterface) iface_edited = NULL;
     unsigned int flags = VIR_INTERFACE_XML_INACTIVE;
     virshControl *priv = ctl->privData;
 
@@ -136,11 +137,6 @@ cmdInterfaceEdit(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    if (iface)
-        virInterfaceFree(iface);
-    if (iface_edited)
-        virInterfaceFree(iface_edited);
-
     return ret;
 }
 
@@ -172,8 +168,7 @@ virshInterfaceListFree(struct virshInterfaceList *list)
 
     if (list && list->ifaces) {
         for (i = 0; i < list->nifaces; i++) {
-            if (list->ifaces[i])
-                virInterfaceFree(list->ifaces[i]);
+            virshInterfaceFree(list->ifaces[i]);
         }
         g_free(list->ifaces);
     }
@@ -411,14 +406,13 @@ static const vshCmdOptDef opts_interface_name[] = {
 static bool
 cmdInterfaceName(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
 
     if (!(iface = virshCommandOptInterfaceBy(ctl, cmd, NULL, NULL,
                                              VIRSH_BYMAC)))
         return false;
 
     vshPrint(ctl, "%s\n", virInterfaceGetName(iface));
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -448,14 +442,13 @@ static const vshCmdOptDef opts_interface_mac[] = {
 static bool
 cmdInterfaceMAC(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
 
     if (!(iface = virshCommandOptInterfaceBy(ctl, cmd, NULL, NULL,
                                              VIRSH_BYNAME)))
         return false;
 
     vshPrint(ctl, "%s\n", virInterfaceGetMACString(iface));
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -484,7 +477,7 @@ static const vshCmdOptDef opts_interface_dumpxml[] = {
 static bool
 cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
     g_autofree char *dump = NULL;
     unsigned int flags = 0;
 
@@ -494,13 +487,10 @@ cmdInterfaceDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(iface = virshCommandOptInterface(ctl, cmd, NULL)))
         return false;
 
-    if (!(dump = virInterfaceGetXMLDesc(iface, flags))) {
-        virInterfaceFree(iface);
+    if (!(dump = virInterfaceGetXMLDesc(iface, flags)))
         return false;
-    }
 
     vshPrint(ctl, "%s", dump);
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -530,7 +520,7 @@ static const vshCmdOptDef opts_interface_define[] = {
 static bool
 cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     unsigned int flags = 0;
@@ -552,7 +542,6 @@ cmdInterfaceDefine(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Interface %s defined from %s\n"),
                   virInterfaceGetName(iface), from);
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -577,7 +566,7 @@ static const vshCmdOptDef opts_interface_undefine[] = {
 static bool
 cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
@@ -585,12 +574,10 @@ cmdInterfaceUndefine(vshControl *ctl, const vshCmd *cmd)
 
     if (virInterfaceUndefine(iface) < 0) {
         vshError(ctl, _("Failed to undefine interface %s"), name);
-        virInterfaceFree(iface);
         return false;
     }
 
     vshPrintExtra(ctl, _("Interface %s undefined\n"), name);
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -615,7 +602,7 @@ static const vshCmdOptDef opts_interface_start[] = {
 static bool
 cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
@@ -623,12 +610,10 @@ cmdInterfaceStart(vshControl *ctl, const vshCmd *cmd)
 
     if (virInterfaceCreate(iface, 0) < 0) {
         vshError(ctl, _("Failed to start interface %s"), name);
-        virInterfaceFree(iface);
         return false;
     }
 
     vshPrintExtra(ctl, _("Interface %s started\n"), name);
-    virInterfaceFree(iface);
     return true;
 }
 
@@ -653,7 +638,7 @@ static const vshCmdOptDef opts_interface_destroy[] = {
 static bool
 cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
 {
-    virInterfacePtr iface;
+    g_autoptr(virshInterface) iface = NULL;
     const char *name;
 
     if (!(iface = virshCommandOptInterface(ctl, cmd, &name)))
@@ -661,12 +646,10 @@ cmdInterfaceDestroy(vshControl *ctl, const vshCmd *cmd)
 
     if (virInterfaceDestroy(iface, 0) < 0) {
         vshError(ctl, _("Failed to destroy interface %s"), name);
-        virInterfaceFree(iface);
         return false;
     }
 
     vshPrintExtra(ctl, _("Interface %s destroyed\n"), name);
-    virInterfaceFree(iface);
     return false;
 }
 
@@ -809,7 +792,8 @@ static bool
 cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virInterfacePtr if_handle = NULL, br_handle = NULL;
+    g_autoptr(virshInterface) if_handle = NULL;
+    g_autoptr(virshInterface) br_handle = NULL;
     const char *if_name, *br_name;
     char *if_type = NULL, *if2_name = NULL, *delay_str = NULL;
     bool stp = false, nostart = false;
@@ -988,10 +972,6 @@ cmdInterfaceBridge(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (if_handle)
-       virInterfaceFree(if_handle);
-    if (br_handle)
-       virInterfaceFree(br_handle);
     VIR_FREE(if_xml);
     VIR_FREE(br_xml);
     VIR_FREE(if_type);
@@ -1030,7 +1010,8 @@ static bool
 cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
 {
     bool ret = false;
-    virInterfacePtr if_handle = NULL, br_handle = NULL;
+    g_autoptr(virshInterface) if_handle = NULL;
+    g_autoptr(virshInterface) br_handle = NULL;
     const char *br_name;
     char *if_type = NULL, *if_name = NULL;
     bool nostart = false;
@@ -1187,10 +1168,6 @@ cmdInterfaceUnbridge(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (if_handle)
-       virInterfaceFree(if_handle);
-    if (br_handle)
-       virInterfaceFree(br_handle);
     VIR_FREE(if_xml);
     VIR_FREE(br_xml);
     VIR_FREE(if_type);
