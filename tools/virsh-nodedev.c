@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include "virsh-nodedev.h"
+#include "virsh-util.h"
 
 #include "internal.h"
 #include "viralloc.h"
@@ -55,7 +56,7 @@ static const vshCmdOptDef opts_node_device_create[] = {
 static bool
 cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevicePtr dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
@@ -73,7 +74,6 @@ cmdNodeDeviceCreate(vshControl *ctl, const vshCmd *cmd)
 
     vshPrintExtra(ctl, _("Node device %s created from %s\n"),
                   virNodeDeviceGetName(dev), from);
-    virNodeDeviceFree(dev);
     return true;
 }
 
@@ -140,7 +140,7 @@ vshFindNodeDevice(vshControl *ctl, const char *value)
 static bool
 cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevice *dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     bool ret = false;
     const char *device_value = NULL;
 
@@ -160,8 +160,6 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dev)
-        virNodeDeviceFree(dev);
     return ret;
 }
 
@@ -207,8 +205,7 @@ virshNodeDeviceListFree(struct virshNodeDeviceList *list)
 
     if (list && list->devices) {
         for (i = 0; i < list->ndevices; i++) {
-            if (list->devices[i])
-                virNodeDeviceFree(list->devices[i]);
+            virshNodeDeviceFree(list->devices[i]);
         }
         g_free(list->devices);
     }
@@ -327,8 +324,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
 
  remove_entry:
         /* the device has to be removed as it failed one of the filters */
-        virNodeDeviceFree(list->devices[i]);
-        list->devices[i] = NULL;
+        g_clear_pointer(&list->devices[i], virshNodeDeviceFree);
         deleted++;
     }
 
@@ -576,7 +572,7 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
 static bool
 cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevicePtr device = NULL;
+    g_autoptr(virshNodeDevice) device = NULL;
     g_autofree char *xml = NULL;
     const char *device_value = NULL;
     bool ret = false;
@@ -596,8 +592,6 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (device)
-        virNodeDeviceFree(device);
     return ret;
 }
 
@@ -634,7 +628,7 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
     const char *driverName = NULL;
-    virNodeDevicePtr device;
+    g_autoptr(virshNodeDevice) device = NULL;
     bool ret = true;
     virshControl *priv = ctl->privData;
 
@@ -664,7 +658,6 @@ cmdNodeDeviceDetach(vshControl *ctl, const vshCmd *cmd)
     else
         vshError(ctl, _("Failed to detach device %s"), name);
 
-    virNodeDeviceFree(device);
     return ret;
 }
 
@@ -696,7 +689,7 @@ static bool
 cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
-    virNodeDevicePtr device;
+    g_autoptr(virshNodeDevice) device = NULL;
     bool ret = true;
     virshControl *priv = ctl->privData;
 
@@ -715,7 +708,6 @@ cmdNodeDeviceReAttach(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNodeDeviceFree(device);
     return ret;
 }
 
@@ -747,7 +739,7 @@ static bool
 cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
-    virNodeDevicePtr device;
+    g_autoptr(virshNodeDevice) device = NULL;
     bool ret = true;
     virshControl *priv = ctl->privData;
 
@@ -766,7 +758,6 @@ cmdNodeDeviceReset(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNodeDeviceFree(device);
     return ret;
 }
 
@@ -910,7 +901,7 @@ static const vshCmdOptDef opts_node_device_event[] = {
 static bool
 cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevicePtr dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     bool ret = false;
     int eventId = -1;
     int timeout = 0;
@@ -988,8 +979,6 @@ cmdNodeDeviceEvent(vshControl *ctl, const vshCmd *cmd)
     if (eventId >= 0 &&
         virConnectNodeDeviceEventDeregisterAny(priv->conn, eventId) < 0)
         ret = false;
-    if (dev)
-        virNodeDeviceFree(dev);
     return ret;
 }
 
@@ -1020,7 +1009,7 @@ static const vshCmdOptDef opts_node_device_undefine[] = {
 static bool
 cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virNodeDevice *dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     bool ret = false;
     const char *device_value = NULL;
 
@@ -1041,8 +1030,6 @@ cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     ret = true;
  cleanup:
-    if (dev)
-        virNodeDeviceFree(dev);
     return ret;
 }
 
@@ -1071,7 +1058,7 @@ static const vshCmdOptDef opts_node_device_define[] = {
 static bool
 cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
-    virNodeDevice *dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     const char *from = NULL;
     g_autofree char *buffer = NULL;
     virshControl *priv = ctl->privData;
@@ -1089,7 +1076,6 @@ cmdNodeDeviceDefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 
     vshPrintExtra(ctl, _("Node device '%s' defined from '%s'\n"),
                   virNodeDeviceGetName(dev), from);
-    virNodeDeviceFree(dev);
     return true;
 }
 
@@ -1121,7 +1107,7 @@ static bool
 cmdNodeDeviceStart(vshControl *ctl, const vshCmd *cmd)
 {
     const char *name = NULL;
-    virNodeDevice *device;
+    g_autoptr(virshNodeDevice) device = NULL;
     bool ret = true;
     virshControl *priv = ctl->privData;
 
@@ -1140,7 +1126,6 @@ cmdNodeDeviceStart(vshControl *ctl, const vshCmd *cmd)
         ret = false;
     }
 
-    virNodeDeviceFree(device);
     return ret;
 }
 
@@ -1175,7 +1160,7 @@ static const vshCmdOptDef opts_node_device_autostart[] = {
 static bool
 cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevice *dev = NULL;
+    g_autoptr(virshNodeDevice) dev = NULL;
     bool ret = false;
     const char *name = NULL;
     int autostart;
@@ -1204,8 +1189,6 @@ cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (dev)
-        virNodeDeviceFree(dev);
     return ret;
 }
 
@@ -1237,7 +1220,7 @@ static const vshCmdOptDef opts_node_device_info[] = {
 static bool
 cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
 {
-    virNodeDevicePtr device = NULL;
+    g_autoptr(virshNodeDevice) device = NULL;
     const char *device_value = NULL;
     bool ret = false;
     int autostart;
@@ -1265,8 +1248,6 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    if (device)
-        virNodeDeviceFree(device);
     return ret;
 }
 

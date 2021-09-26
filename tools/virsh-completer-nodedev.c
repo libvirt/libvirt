@@ -21,6 +21,7 @@
 #include <config.h>
 
 #include "virsh-completer-nodedev.h"
+#include "virsh-util.h"
 #include "conf/node_device_conf.h"
 #include "viralloc.h"
 #include "virsh-nodedev.h"
@@ -58,7 +59,7 @@ virshNodeDeviceNameCompleter(vshControl *ctl,
     ret = g_steal_pointer(&tmp);
 
     for (i = 0; i < ndevs; i++)
-        virNodeDeviceFree(devs[i]);
+        virshNodeDeviceFree(devs[i]);
     g_free(devs);
     return ret;
 }

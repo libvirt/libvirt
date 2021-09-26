@@ -64,6 +64,11 @@ void
 virshNetworkFree(virNetworkPtr network);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshNetwork, virshNetworkFree);
 
+typedef virNodeDevice virshNodeDevice;
+void
+virshNodeDeviceFree(virNodeDevicePtr device);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshNodeDevice, virshNodeDeviceFree);
+
 typedef virSecret virshSecret;
 void
 virshSecretFree(virSecretPtr secret);

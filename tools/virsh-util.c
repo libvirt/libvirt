@@ -308,6 +308,17 @@ virshNetworkFree(virNetworkPtr network)
 
 
 void
+virshNodeDeviceFree(virNodeDevicePtr device)
+{
+    if (!device)
+        return;
+
+    vshSaveLibvirtHelperError();
+    virNodeDeviceFree(device); /* sc_prohibit_obj_free_apis_in_virsh */
+}
+
+
+void
 virshSecretFree(virSecretPtr secret)
 {
     if (!secret)
