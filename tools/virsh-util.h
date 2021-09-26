@@ -40,15 +40,9 @@ virshCommandOptDomain(vshControl *ctl,
                       const char **name);
 
 typedef virDomain virshDomain;
-
 void
 virshDomainFree(virDomainPtr dom);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomain, virshDomainFree);
-
-typedef virSecret virshSecret;
-void
-virshSecretFree(virSecretPtr secret);
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshSecret, virshSecretFree);
 
 typedef virDomainCheckpoint virshDomainCheckpoint;
 void
@@ -59,6 +53,11 @@ typedef virDomainSnapshot virshDomainSnapshot;
 void
 virshDomainSnapshotFree(virDomainSnapshotPtr snap);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshDomainSnapshot, virshDomainSnapshotFree);
+
+typedef virSecret virshSecret;
+void
+virshSecretFree(virSecretPtr secret);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virshSecret, virshSecretFree);
 
 int
 virshDomainState(vshControl *ctl,
