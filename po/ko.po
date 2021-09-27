@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-26 05:12+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-27 07:54+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -66,13 +66,13 @@ msgstr ""
 "\n"
 "  기본 경로:\n"
 "\n"
-"Configuration file (unless overridden by -f):\n"
+"구성 파일 (unless overridden by -f):\n"
 "$XDG_CONFIG_HOME/libvirt/virtlockd.conf\n"
 "\n"
-"Sockets:\n"
+"소켓:\n"
 "$XDG_RUNTIME_DIR/libvirt/virtlockd-sock\n"
 "\n"
-"PID file:\n"
+"PID 파일:\n"
 "$XDG_RUNTIME_DIR/libvirt/virtlockd.pid\n"
 "\n"
 
@@ -93,13 +93,13 @@ msgstr ""
 "\n"
 "  기본 경로:\n"
 "\n"
-"Configuration file (unless overridden by -f):\n"
+"구성 파일(unless overridden by -f):\n"
 "$XDG_CONFIG_HOME/libvirt/virtlogd.conf\n"
 "\n"
-"Sockets:\n"
+"소켓:\n"
 "$XDG_RUNTIME_DIR/libvirt/virtlogd-sock\n"
 "\n"
-"PID file:\n"
+"PID 파일:\n"
 "$XDG_RUNTIME_DIR/libvirt/virtlogd.pid\n"
 "\n"
 
@@ -121,13 +121,13 @@ msgstr ""
 "\n"
 "  기본 경로:\n"
 "\n"
-"Configuration file (unless overridden by -f):\n"
+"구성 파일 (unless overridden by -f):\n"
 "%s/libvirt/virtlockd.conf\n"
 "\n"
-"Sockets:\n"
+"소켓:\n"
 "%s/libvirt/virtlockd-sock\n"
 "\n"
-"PID file (unless overridden by -p):\n"
+"PID 파일 (unless overridden by -p):\n"
 "%s/virtlockd.pid\n"
 "\n"
 
@@ -155,7 +155,7 @@ msgstr ""
 "    소켓:\n"
 "      %s/libvirt/virtlogd-sock\n"
 "\n"
-"    PID file (unless overridden by -p):\n"
+"    PID 파일 (unless overridden by -p):\n"
 "      %s/virtlogd.pid\n"
 "\n"
 
@@ -171,7 +171,7 @@ msgid ""
 "  SYNOPSIS\n"
 msgstr ""
 "\n"
-"  시놉시스\n"
+"  개요\n"
 
 #, c-format
 msgid ""
@@ -310,7 +310,7 @@ msgid ""
 "Domain '%s' dumped to %s\n"
 msgstr ""
 "\n"
-"도메인 '%s'가 %s에 덤프되었습니다\n"
+"도메인 '%s'가 %s로 덤프되었습니다\n"
 
 #, c-format
 msgid ""
@@ -318,7 +318,7 @@ msgid ""
 "Domain '%s' saved to %s\n"
 msgstr ""
 "\n"
-"도메인 '%s'는 %s에 저장되었습니다\n"
+"도메인 '%s'는 %s로 저장되었습니다\n"
 
 #, c-format
 msgid ""
@@ -434,7 +434,7 @@ msgid ""
 "\n"
 msgstr ""
 "\n"
-"syntax: %s [OPTIONS] [HVTYPE]\n"
+"문맥: %s [OPTIONS] [HVTYPE]\n"
 "\n"
 "하이퍼바이저 유형:\n"
 "\n"
@@ -442,7 +442,7 @@ msgstr ""
 " - lxc\n"
 " - bhyve\n"
 "\n"
-"Options:\n"
+"선택(옵션):\n"
 " -h, --help Display command line help\n"
 " -v, --version Display command version\n"
 " -q, --quiet Don't display progress information\n"
@@ -450,7 +450,7 @@ msgstr ""
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
-msgstr "    밴드폭 제한: %llu bytes/s (%-.3lf %s/s)"
+msgstr "    대역폭 제한: %llu 바이트/초 (%-.3lf %s/s)"
 
 #. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
@@ -458,11 +458,11 @@ msgstr "  이름\n"
 
 #, c-format
 msgid " %s (help keyword '%s')\n"
-msgstr " %s (도움말 키워드 '%s')\n"
+msgstr " %s (도움말 핵심용어 '%s')\n"
 
 #, c-format
 msgid " %s (help keyword '%s'):\n"
-msgstr " %s (도움말 키워드 '%s'):\n"
+msgstr " %s (도움말 핵심용어 '%s'):\n"
 
 msgid " Hypervisors:"
 msgstr " 하이퍼바이저:"
@@ -483,10 +483,10 @@ msgid ""
 " cur=%llu\n"
 " end=%llu\n"
 msgstr ""
-" type=%s\n"
-"bandwidth=%lu\n"
-"cur=%llu\n"
-"end=%llu\n"
+" 유형=%s\n"
+" 대역폭=%lu\n"
+" 현재=%llu\n"
+" 끝=%llu\n"
 
 #, c-format
 msgid ""
@@ -516,13 +516,11 @@ msgstr "%s %s"
 
 #, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
-msgstr "%s %s '%s'은 지원하지 않는 유형'%s'입니다"
+msgstr "%s %s '%s'은 지원하지 않는 유형 '%s'을 가지고 있습니다"
 
 #, c-format
 msgid "%s %s '%s' has unsupported type '%s', expecting '%s' or '%s'"
-msgstr ""
-"%s %s '%s'은 지원하지 않는 유형'%s'을 갖고 있으며, '%s' 또는 '%s'을 예상합니"
-"다"
+msgstr "%s %s '%s'은 지원하지 않는 유형'%s', 예상치 '%s' 또는 '%s'을 갖고 있습니다"
 
 #, c-format
 msgid "%s (out of %d)"
@@ -530,23 +528,23 @@ msgstr "%s (%d 의 밖에)"
 
 #, c-format
 msgid "%s 3d acceleration is not supported"
-msgstr "%s 3d 가속은 지원하지 않습니다"
+msgstr "%s 3d 가속은 지원되지 않습니다"
 
 #, c-format
 msgid "%s array element does not contain a string"
-msgstr "%s 배열 요소는 스티링이 포함되지 않아야 합니다"
+msgstr "%s 배열 요소는 문자열이 포함되지 않습니다"
 
 #, c-format
 msgid "%s array element is missing item %zu"
-msgstr "%s 배열 요소는 항목 %zu에서 누락됩니다"
+msgstr "%s 배열 요소는 항목 %zu를 누락하고 있습니다"
 
 #, c-format
 msgid "%s can't be empty"
-msgstr "%s을 비워둘 수 없음"
+msgstr "%s는 비워둘 수 없습니다"
 
 #, c-format
 msgid "%s cannot be set higher than %s "
-msgstr "%s는 %s 보다 더 높게 메모리를 설정할 수 없습니다 "
+msgstr "%s는 %s 보다 더 높게 설정 할 수 없습니다 "
 
 #, c-format
 msgid "%s cannot parse GID '%s'"
@@ -570,7 +568,7 @@ msgstr "%s는 UID와 GID 매개변수를 예상합니다"
 
 #, c-format
 msgid "%s failed new mode for target '%s' with status '%d'"
-msgstr "%s가 대상 ‘%s’와 상태 '%d'에 대한 새로운 모드에 실패하였습니다"
+msgstr "%s가 대상 ‘%s’를 (상태 '%d'와 함께) 위한 새로운 방법에 실패하였습니다"
 
 #, c-format
 msgid "%s family specified for non-IPv4 address '%s' in network '%s'"
@@ -3197,7 +3195,7 @@ msgid ""
 "Cannot plug '%s' interface into '%s' because new combined inbound floor=%llu "
 "would overcommit average=%llu on network '%s'"
 msgstr ""
-"'%s' 인터페이스를 '%s'에 연결할 수 없습니다, 왜냐하면 새로 결합된 인바운드 floor=%llu가 네트워크 '%s'에서 "
+"'%s' 연결장치를 '%s'에 연결 할 수 없습니다, 왜냐하면 새로 결합된 인바운드 floor=%llu가 네트워크 '%s'에서 "
 "평균=%llu를 초과 커밋하기 때문입니다"
 
 #, c-format
@@ -3389,7 +3387,7 @@ msgstr "네트워크 '%s'에서 호스트 이름 '%s'을 사용할 수 없음"
 
 #, c-format
 msgid "Cannot use migrate v2 protocol with lock manager %s"
-msgstr "잠금 관리자 %s에서 마이그레이션 v2 프로토콜을 사용할 수 없습니다"
+msgstr "잠금 관리자 %s에서 이전 v2 통신규약을 사용 할 수 없습니다"
 
 msgid "Cannot use predefined UUID"
 msgstr "사전 지정된 UUID를 사용 할 수 없음"
@@ -4512,20 +4510,14 @@ msgstr "root 스냅샷 목록을 검색할 수 없음"
 
 #, c-format
 msgid "Could not migrate domain, migration task finished with an error: %s"
-msgstr ""
-"도메인을 마이그레이션 할 수 없습니다, 마이그레이션 작업이 오류로 인해 종료되"
-"었습니다: %s"
+msgstr "도메인을 이전 할 수 없으며, 이전 작업이 오류로 인해 종료되었습니다: %s"
 
 msgid "Could not migrate domain, validation reported a problem"
-msgstr ""
-"도메인을 마이그레이션 할 수 없습니다, 유효성 검사로 부터 문제가 보고되었습니"
-"다"
+msgstr "도메인을 이전 할 수 없습니다, 유효성 검사로부터 문제가 보고되었습니다"
 
 #, c-format
 msgid "Could not migrate domain, validation reported a problem: %s"
-msgstr ""
-"도메인을 마이그레이션 할 수 없습니다, 유효성 검사에서 문제가 보고되었습니다: "
-"%s"
+msgstr "도메인을 이전 할 수 없습니다, 유효성 검사에서 문제가 보고되었습니다: %s"
 
 #, c-format
 msgid "Could not open '%s' to trigger host scan"
@@ -5104,7 +5096,7 @@ msgstr "자손:"
 
 msgid ""
 "Destination libvirt does not support migration with extensible parameters"
-msgstr "대상 libvirt는 확장 가능한 매개변수를 사용한 마이그레이션을 지원하지 않습니다"
+msgstr "대상 libvirt는 확장 가능한 매개변수를 사용한 이전을 지원하지 않습니다"
 
 msgid "Destination libvirt does not support peer-to-peer migration protocol"
 msgstr "목적지 libvirt가 피어간 이전 프로토콜을 지원하지 않습니다"
@@ -5366,7 +5358,7 @@ msgid "Do not change process security label"
 msgstr "프로세스 보안 레이블을 변경하지 마십시오"
 
 msgid "Do not include features that block migration"
-msgstr "이주 (마이그레이션)을 차단하는 기능을 포함하지 마십시오"
+msgstr "이전을 차단하는 기능을 포함하지 마세요"
 
 #, c-format
 msgid "Domain %s didn't show up"
@@ -6218,7 +6210,7 @@ msgstr "만료 시간"
 
 msgid ""
 "Explicit destination hostname is required for TLS migration over UNIX socket"
-msgstr "UNIX 소켓을 통한 TLS 마이그레이션에는 명시적 대상 호스트 이름이 필요합니다"
+msgstr "유닉스 소켓을 통한 TLS 이전에는 명시적인 대상 호스트 이름이 필요합니다"
 
 msgid "Extended attributes are not supported on this system"
 msgstr "확장 속성은 이 시스템에서 지원되지 않습니다"
@@ -6249,7 +6241,7 @@ msgid "FDC unit index %d out of [0..1] range"
 msgstr "FDC 단위 인덱스 %d이가 [0..1] 범위를 벗어났습니다"
 
 msgid "Fail to create socket for incoming migration"
-msgstr "들어오는 마이그레이션을 위한 소켓 생성 실패"
+msgstr "들어오는 이전을 위한 소켓 생성에 실패"
 
 msgid "Failed"
 msgstr "실패"
@@ -6270,7 +6262,7 @@ msgid "Failed testunitready: %s"
 msgstr "시험장치 준비 실패: %s"
 
 msgid "Failed to accept migration connection"
-msgstr "마이그레이션 연결을 수락하지 못했습니다"
+msgstr "이전 연결을 허용하는데 실패함"
 
 #, c-format
 msgid "Failed to access '%s'"
@@ -8002,7 +7994,7 @@ msgid "Failed to send inquiry command: %s"
 msgstr "조회 명령을 보내지 못했습니다. %s"
 
 msgid "Failed to send migration data to destination host"
-msgstr "마이그레이션 데이터를 대상 호스트로 보내지 못했습니다"
+msgstr "이전 자료를 대상 호스트로 보내는데 실패함"
 
 #, c-format
 msgid "Failed to send request to init control %s"
@@ -8784,10 +8776,10 @@ msgid "Get the CPU models for an arch."
 msgstr "아치용 CPU 모델을 가져오십시오."
 
 msgid "Get the maximum migration bandwidth"
-msgstr "최대 이주 (마이그레이션) 대역폭을 확보하십시오"
+msgstr "최대 이전 대역폭을 갖습니다"
 
 msgid "Get the maximum migration bandwidth (in MiB/s) for a domain."
-msgstr "도메인의 최대 마이그레이션 대역폭(MiB/s)을 가져옵니다."
+msgstr "도메인을 위한 최대 이전 대역폭(MiB/s)을 갖습니다."
 
 msgid "Get the name of the parent of a checkpoint"
 msgstr "점검 지점의 상위 이름을 가져옵니다"
@@ -8807,7 +8799,7 @@ msgstr "도메인의 가상 인터페이스의 링크 상태 얻기."
 msgid ""
 "Get/set size of the cache (in bytes) used for compressing repeatedly "
 "transferred memory pages during live migration."
-msgstr "라이브 마이그레이션 동안 반복적으로 전송된 메모리 페이지를 압축하는 데 사용되는 캐시의 크기(바이트)를 가져오거나 설정합니다."
+msgstr "실시간 이전 중에 반복적으로 전송된 메모리 페이지를 압축을 위해 사용되는 캐쉬(바이트)의 크기를 가져오거나 설정합니다."
 
 msgid "Gets or sets the domain's system time"
 msgstr "도메인의 시스템 시간을 가져오거나 설정합니다"
@@ -9184,7 +9176,7 @@ msgid "Incoming cookie data had unexpected name %s vs %s"
 msgstr "들어오는 쿠키 데이터에 예기치 않은 이름 %s 대 %s가 있습니다"
 
 msgid "Incoming migration"
-msgstr "들어오는 마이그레이션"
+msgstr "들어오는 이전"
 
 #, c-format
 msgid "Incomplete vnuma configuration for vnode %zu"
@@ -9927,7 +9919,7 @@ msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
 msgstr "잘못된 메시지 프로그램=%d 유형=%d 직렬=%u 프로세스=%d"
 
 msgid "Invalid migration cookie"
-msgstr "잘못된 마이그레이션 쿠키"
+msgstr "잘못된 이전 쿠키"
 
 #, c-format
 msgid "Invalid mode attribute '%s'"
@@ -10282,7 +10274,7 @@ msgstr "시간 초과에 대한 값이 잘못됨"
 
 #, c-format
 msgid "Invalid value in migratable attribute: '%s'"
-msgstr "마이그레이션 가능한 속성의 잘못된 값: '%s'"
+msgstr "이전 할 수 있는 속성에서 잘못된 값: '%s'"
 
 #, c-format
 msgid "Invalid value of %d for I/O weight"
@@ -10820,7 +10812,7 @@ msgstr "방법오류에 'type' 속성이 누락되어 있음"
 msgid ""
 "Migratable attribute for host-passthrough CPU is not supported by this QEMU "
 "binary"
-msgstr "이 QEMU 바이너리는 호스트 패스스루 CPU의 이주 (마이그레이션) 가능한 속성을 지원하지 않습니다"
+msgstr "호스트-경우하는 CPU를 위해 이전 할 수 있는 속성은 이 QEMU 바이너리에서는 지원하지 않습니다"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "다른 호스트로 도메인 이전. 실시간 이전일 경우 --live 추가."
@@ -10829,24 +10821,24 @@ msgid "Migrated"
 msgstr "이전됨"
 
 msgid "Migration"
-msgstr "마이그레이션"
+msgstr "이전"
 
 msgid ""
 "Migration APIs with extensible parameters are not supported but extended "
 "parameters were passed"
-msgstr "확장 가능한 매개변수가 있는 마이그레이션 API는 지원되지 않지만 확장된 매개변수가 전달되었습니다"
+msgstr "확장 가능한 매개변수가 있는 이전(Migration) API는 지원되지 않지만 확장된 매개변수가 전달되었습니다"
 
 msgid "Migration URI has to specify resource pool and host system"
-msgstr "마이그레이션 URI는 리소스 풀 및 호스트 시스템을 지정해야 합니다"
+msgstr "이전 URI은 자원 풀(pool)과 호스트 시스템을 지정해야 합니다"
 
 msgid "Migration capabilities can only be set by a migration job"
-msgstr "마이그레이션 기능은 마이그레이션 작업으로만 설정할 수 있습니다"
+msgstr "이전 기능은 이전 작업에서만 설정 할 수 있습니다"
 
 msgid "Migration cookie parameters are not provided."
-msgstr "마이그레이션 쿠키 매개변수는 제공되지 않습니다."
+msgstr "이전 쿠키 매개변수는 제공되지 않습니다."
 
 msgid "Migration cookie was not NULL terminated"
-msgstr "마이그레이션 쿠키가 NULL로 종료되지 않았습니다"
+msgstr "이전 쿠키가 NULL로 종료되지 않았습니다"
 
 msgid "Migration failed. Domain is not running on destination host"
 msgstr "이전이 실패하였습니다. 도메인은 대상 호스트에서 동작중이 아닙니다"
@@ -10856,35 +10848,35 @@ msgid "Migration failed. No domain on destination host with matching name '%s'"
 msgstr "이전에 실패했습니다. 일치하는 이름 '%s'와 대상 호스트에서 도메인이 없습니다"
 
 msgid "Migration graphics data already present"
-msgstr "마이그레이션 그래픽 데이터가 이미 있습니다"
+msgstr "이전 그래픽 자료가 이미 존재합니다"
 
 msgid "Migration lockstate data already present"
-msgstr "마이그레이션 잠금 상태 데이터가 이미 있습니다"
+msgstr "이전 잠금상태 자료가 이미 존재합니다"
 
 msgid ""
 "Migration may lead to data corruption if disks use cache other than none or "
 "directsync"
-msgstr "디스크가 none 또는 directsync 이외의 캐쉬를 사용하는 경우 마이그레이션으로 인해 데이터가 손상될 수 있습니다"
+msgstr "이전은 만약 디스크가 none 또는 directsync 이외의 캐쉬를 사용하는 경우에 자료가 손상 될 수도 있습니다"
 
 msgid "Migration not possible without a vCenter"
-msgstr "vCenter 없이 마이그레이션할 수 없습니다"
+msgstr "vCenter 없이 이전 할 수 없습니다"
 
 #, c-format
 msgid "Migration option '%s' is not supported by QEMU binary"
 msgstr "이전 선택(Migration option) '%s'는 QEMU 바이너리에 의해 지원되지 않습니다"
 
 msgid "Migration persistent data already present"
-msgstr "마이그레이션 지속 데이터가 이미 있습니다"
+msgstr "이전 지속 자료는 이미 존재합니다"
 
 msgid "Migration source and destination have to refer to the same vCenter"
-msgstr "마이그레이션 소스 및 대상이 동일한 vCenter를 참조해야 합니다"
+msgstr "이전 원천과 대상은 동일한 vCenter를 참조해야 합니다"
 
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
-msgstr "잠금 드라이버 %s를 사용하여 마이그레이션하려면 쿠키 지원이 필요합니다"
+msgstr "잠금 드라이버 %s를 갖고 있는 이전은 쿠키 지원이 필요합니다"
 
 msgid "Migration without shared storage is unsafe"
-msgstr "공유 저장소가 없는 마이그레이션은 안전하지 않습니다"
+msgstr "공유된 저장소가 없는 이전은 안전하지 않습니다"
 
 msgid "Min guaranteed memory, as scaled integer (default KiB)"
 msgstr "최소 보장 메모리, 크기 조정된 정수(기본 KiB)"
@@ -11189,7 +11181,7 @@ msgid "Missing listen element"
 msgstr "청취 요소 누락"
 
 msgid "Missing lock driver name in migration cookie"
-msgstr "마이그레이션 쿠키에 잠금 드라이버 이름 누락"
+msgstr "이전 쿠키에서 잠금 드라이버 이름이 누락됨"
 
 msgid "Missing lockspaces data from JSON file"
 msgstr "JSON 파일에서 Lockspace 자료가 누락되었습니다"
@@ -11591,13 +11583,13 @@ msgid "N/A"
 msgstr "해당없음"
 
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
-msgstr "마이그레이션 URI가 UNIX 전송 방법을 사용하는 경우 NBD URI를 제공해야 합니다"
+msgstr "NBD URI는 이전 URI가 유닉스 전송 방법을 사용하는 경우에 제공되어야 합니다"
 
 msgid "NBD migration with TLS is not supported"
-msgstr "TLS를 사용한 NBD 마이그레이션은 지원되지 않습니다"
+msgstr "TLS를 사용한 NBD 이전은 지원되지 않습니다"
 
 msgid "NBD migration with TLS is not supported over UNIX socket"
-msgstr "TLS를 사용한 NBD 마이그레이션은 UNIX 소켓을 통해 지원되지 않습니다"
+msgstr "TLS를 사용한 NBD 이전은 유닉스 소켓을 통해 지원되지 않습니다"
 
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
 msgstr "NIC 모델 'e1000'이 주어진 bhyve 바이너리에서 지원되지 않습니다"
@@ -11862,7 +11854,7 @@ msgid "Network is already in use by interface %s"
 msgstr "네트워크는 이미 연결장치 %s에 의해 사용중입니다"
 
 msgid "Network migration data already present"
-msgstr "네트워크 마이그레이션 데이터가 이미 존재합니다"
+msgstr "네트워크 이전 자료가 이미 존재합니다"
 
 msgid "Network namespace support is recommended"
 msgstr "네트워크 네임스페이스 지원이 권장됩니다"
@@ -12649,7 +12641,7 @@ msgid "Only virtio bus types are supported for '%s'"
 msgstr "'%s'에는 오직 virtio 버스 유형만 지원됩니다"
 
 msgid "Only vpxmigr:// migration URIs are supported"
-msgstr "vpxmigr:// 마이그레이션 URI만이 지원됩니다"
+msgstr "vpxmigr:// 이전 URIs만이 지원됩니다"
 
 msgid "Only x509 certificates are supported"
 msgstr "x509 인증서만 지원됩니다"
@@ -12765,7 +12757,7 @@ msgid "Out of space while reading log output: %s"
 msgstr "로그 출력을 읽는 동안 공간 부족: %s"
 
 msgid "Outgoing migration"
-msgstr "나가는 마이그레이션"
+msgstr "나가는 이전(migration)"
 
 #, c-format
 msgid ""
@@ -13515,7 +13507,7 @@ msgid "Renamed"
 msgstr "이름 변경"
 
 msgid "Renaming domains on migration not supported"
-msgstr "마이그레이션에서 도메인 이름을 다시 지정하는 것은 지원되지 않습니다"
+msgstr "이전에서 도메인 이름 변경은 지원되지 않습니다"
 
 msgid "Replace the domain XML associated with a managed save state file"
 msgstr "관리되는 저장 상태 파일과 연결된 도메인 XML 교체"
@@ -14079,7 +14071,7 @@ msgstr ""
 "\n"
 
 msgid "Selecting disks to migrate is not implemented for tunnelled migration"
-msgstr "터널링된 마이그레이션의 경우 마이그레이션할 디스크 선택이 구현되지 않습니다"
+msgstr "이전하는 디스크 선택은 터널링된 이전을 위해서는 구현되지 않았습니다"
 
 msgid "Send keycodes (integers or symbolic names) to the guest"
 msgstr "게스트에게 키코드(정수 또는 기호 이름) 보내기"
@@ -14165,7 +14157,7 @@ msgid "Set the guest agent timeout"
 msgstr "게스트 에이전트 시간 초과 설정"
 
 msgid "Set the maximum migration bandwidth"
-msgstr "최대 마이그레이션 대역폭 설정"
+msgstr "최대 이전 대역폭을 설정합니다"
 
 msgid ""
 "Set the maximum migration bandwidth (in MiB/s) for a domain which is being "
@@ -14429,10 +14421,10 @@ msgid "Some features cannot be reliably used with this QEMU: %s"
 msgstr "일부 기능은 이 QEMU에서 안정적으로 사용할 수 없습니다: %s"
 
 msgid "Some parameters are not supported by migration protocol 2"
-msgstr "일부 매개변수는 마이그레이션 프로토콜 2에서 지원되지 않습니다"
+msgstr "일부 매개변수는 이전 통신규약 2에서 지원되지 않습니다"
 
 msgid "Some parameters are not supported by migration protocol 3"
-msgstr "일부 매개변수는 마이그레이션 프로토콜 3에서 지원되지 않습니다"
+msgstr "일부 매개변수는 이전 통신규약 3에서 지원되지 않습니다"
 
 msgid "Some processes refused to die"
 msgstr "일부 프로세스가 종료를 거부했습니다"
@@ -14769,12 +14761,12 @@ msgstr ""
 "게스트 에이전트가 필요합니다)."
 
 msgid "Switch running migration from pre-copy to post-copy"
-msgstr "실행 중인 마이그레이션을 사전 복사에서 사후 복사로 전환"
+msgstr "사전-복사에서 사후-복사로 실행 중인 이전을 전환합니다"
 
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
 "been started with --postcopy option."
-msgstr "실행 중인 마이그레이션을 사전 복사에서 사후 복사로 전환합니다. 마이그레이션은 --postcopy 옵션으로 시작되어야 합니다."
+msgstr "사전 복사에서 사후 복사로 실행 중인 이전을 전환합니다. 이전은 --postcopy 선택(옵션)과 함께 시작되어야 합니다."
 
 msgid "System is in use"
 msgstr "시스템이 사용중입니다"
@@ -14794,7 +14786,7 @@ msgid "TLS handshake failed %s"
 msgstr "TLS 핸드셰이크 실패 %s"
 
 msgid "TLS migration is not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 TLS 마이그레이션이 지원되지 않습니다"
+msgstr "TLS 이전은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "TLS transport is not supported for disk protocol '%s'"
@@ -15722,7 +15714,7 @@ msgid "The server redirects from '%s' to '%s'"
 msgstr "서버가 '%s'에서 '%s'로 리디렉션되었습니다"
 
 msgid "The slirp-helper doesn't support migration"
-msgstr "slirp-helper는 마이그레이션을 지원하지 않습니다"
+msgstr "slirp-helper는 이전을 지원하지 않습니다"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -15926,7 +15918,7 @@ msgid "Too many disks in fsinfo: %zd for limit %d"
 msgstr "fsinfo에 디스크가 너무 많습니다: %zd (%d 제한에 대한)"
 
 msgid "Too many domain elements in migration cookie"
-msgstr "마이그레이션 쿠키에 너무 많은 도메인 요소가 있습니다"
+msgstr "이전 쿠키에 너무 많은 도메인 요소가 있습니다"
 
 #, c-format
 msgid "Too many domain_checkpoints '%d' for limit '%d'"
@@ -15969,7 +15961,7 @@ msgstr "너무 많은 수준의 심볼릭 링크: %s"
 
 #, c-format
 msgid "Too many migration parameters '%d' for limit '%d'"
-msgstr "제한 '%d'에 대한 마이그레이션 매개변수 '%d'가 너무 많습니다"
+msgstr "제한 '%d'를 위한 이전 매개변수 '%d'가 너무 많습니다"
 
 #, c-format
 msgid "Too many model names '%d' for limit '%d'"
@@ -16098,7 +16090,7 @@ msgid "Turn multithread compression on to tune it"
 msgstr "다중 스레드 압축을 켜서 조정하십시오"
 
 msgid "Turn parallel migration on to tune it"
-msgstr "병렬 마이그레이션을 켜서 조정하십시오"
+msgstr "병렬 이전을 켜서 이를 조정하세요"
 
 msgid "Turn xbzrle compression on to tune it"
 msgstr "xbzrle 압축을 켜서 조정하십시오"
@@ -16108,7 +16100,7 @@ msgstr "유형"
 
 #, c-format
 msgid "Type mismatch for '%s' migration parameter"
-msgstr "'%s' 마이그레이션 매개변수에 대한 유형 불일치"
+msgstr "'%s' 이전 매개변수를 위한 유형 불일치"
 
 msgid "Type:"
 msgstr "유형:"
@@ -16166,7 +16158,7 @@ msgid "URI scheme '%s' for embedded driver is not valid"
 msgstr "포함된 드라이버에 대한 URI 체계 '%s'가 유효하지 않습니다"
 
 msgid "URI to use for disks migration (overrides --disks-port)"
-msgstr "디스크 마이그레이션에 사용할 URI (--disks-port 를 덮어씌웁니다)"
+msgstr "디스크 이전을 위해 사용 할 URI (--disks-port를 재정의합니다)"
 
 #, c-format
 msgid "URI with tcp scheme did not provide a server part: %s"
@@ -18274,7 +18266,7 @@ msgid "Unexpected confirm code '%c' from parent"
 msgstr "상위 프로세서에서 예상치 못한 확인 코드 '%c'"
 
 msgid "Unexpected dconnuri parameter with non-peer2peer migration"
-msgstr "비-peer2peer 마이그레이션이 있는 예기치 않은 dconnuri 매개변수"
+msgstr "비-장치간 이전에 예상치 못한 dconnuri 매개변수"
 
 #, c-format
 msgid "Unexpected device type %d"
@@ -18633,7 +18625,7 @@ msgstr "도메인 잠금 개체에 대한 알 수 없는 잠금 관리자 개체
 
 #, c-format
 msgid "Unknown migration cookie feature %s"
-msgstr "알 수 없는 마이그레이션 쿠키 기능 %s"
+msgstr "알 수 없는 이전 쿠키 기능 %s"
 
 #, c-format
 msgid ""
@@ -18783,11 +18775,11 @@ msgid "Unrecognized value in %s: %s"
 msgstr "%s에서 인식할 수 없는 값: %s"
 
 msgid "Unsafe migration"
-msgstr "안전하지 않은 마이그레이션"
+msgstr "불안전한 이전"
 
 #, c-format
 msgid "Unsafe migration: %s"
-msgstr "안전하지 않은 마이그레이션: %s"
+msgstr "불안전한 이전: %s"
 
 #, c-format
 msgid ""
@@ -19018,7 +19010,7 @@ msgstr "지원되지 않는 청취 유형"
 
 #, c-format
 msgid "Unsupported migration cookie feature %s"
-msgstr "지원되지 않는 마이그레이션 쿠키 기능 %s"
+msgstr "지원되지 않는 이전 쿠키 기능 %s"
 
 #, c-format
 msgid "Unsupported net type %s"
@@ -19134,7 +19126,7 @@ msgstr "사용법"
 msgid ""
 "Usage of listen-address is forbidden when migration URI uses UNIX transport "
 "method"
-msgstr "마이그레이션 URI가 UNIX 전송 방식을 사용하는 경우 수신 주소 사용 금지"
+msgstr "수신-주소의 사용은 이전(migration) URI가 유닉스 전송 방식을 사용 할 때에 금지됩니다"
 
 msgid "Usage:"
 msgstr "사용법:"
@@ -19642,7 +19634,7 @@ msgid "a secret with UUID %s is already defined for use with %s"
 msgstr "UUID %s인 비밀정보가 이미 %s와 사용하기 위해 정의되어 있습니다"
 
 msgid "a slirp-helper cannot be migrated"
-msgstr "slip-helper는 마이그레이션할 수 없습니다"
+msgstr "slip-helper는 이전 할 수 없습니다"
 
 msgid "abort active domain job"
 msgstr "동작중인 도메인 작업을 중단"
@@ -20041,7 +20033,7 @@ msgid "automatically destroy the guest when virsh disconnects"
 msgstr "virsh 연결이 끊어지면 자동으로 게스트를 파괴합니다"
 
 msgid "automatically switch to post-copy migration after one pass of pre-copy"
-msgstr "사전 복사를 한 번 통과한 후 복사 후 마이그레이션으로 자동 전환"
+msgstr "사전-복사를 한 번 통과한 후에 복사-후 이전으로 자동 전환합니다"
 
 msgid "autostart a domain"
 msgstr "자동으로 도메인 시작"
@@ -20590,13 +20582,13 @@ msgid "cannot abort VM start; use virDomainDestroy instead"
 msgstr "VM 시작을 중단할 수 없습니다. 대신 virDomainDestroy 사용"
 
 msgid "cannot abort incoming migration; use virDomainDestroy instead"
-msgstr "들어오는 마이그레이션을 중단할 수 없습니다. 대신 virDomainDestroy 사용"
+msgstr "들어오는 이전을 중지 할 수 없습니다; 대신에 virDomainDestroy 사용합니다"
 
 msgid "cannot abort memory-only dump"
 msgstr "메모리 전용 덤프를 중단할 수 없습니다"
 
 msgid "cannot abort migration in post-copy mode"
-msgstr "사후 복사 모드에서는 마이그레이션을 중단할 수 없습니다"
+msgstr "사후-복사 방법에서 이전을 중지 할 수 없습니다"
 
 msgid "cannot acquire job mutex"
 msgstr "작업 뮤텍스(mutex)를 얻을 수 없음"
@@ -20872,7 +20864,7 @@ msgid "cannot create path '%s'"
 msgstr "경로 %s를 생성할 수 없음"
 
 msgid "cannot create pipe for tunnelled migration"
-msgstr "터널링된 마이그레이션을 위한 파이프를 생성할 수 없습니다"
+msgstr "터널링된 이전을 위한 파이프를 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create snapshot directory '%s'"
@@ -21276,25 +21268,25 @@ msgid "cannot lookup default selinux label for tap fd %d"
 msgstr "탭 fd %d에 대한 기본 selinux 레이블을 조회할 수 없습니다"
 
 msgid "cannot migrate a domain with <hostdev mode='capabilities'>"
-msgstr "<hostdev mode='capabilities'>가 있는 도메인을 마이그레이션할 수 없습니다"
+msgstr "<hostdev mode='capabilities'>가 있는 도메인을 이전 할 수 없습니다"
 
 #, c-format
 msgid "cannot migrate a domain with <hostdev mode='subsystem' type='%s'>"
-msgstr "<hostdev 모드='subsystem' 유형='%s'>인 도메인을 마이그레이션할 수 없습니다"
+msgstr "<hostdev mode='subsystem' type='%s'>인 도메인을 이전 할 수 없습니다"
 
 #, c-format
 msgid "cannot migrate a domain with <interface type='%s'>"
-msgstr "<인터페이스 유형='%s'>인 도메인을 마이그레이션할 수 없습니다"
+msgstr "<interface tyoe='%s'>인 도메인을 이전 할 수 없습니다"
 
 #, c-format
 msgid "cannot migrate domain with %d snapshots"
 msgstr "%d 스냅샷와 함께 도메인을 이전 할 수 없습니다"
 
 msgid "cannot migrate domain with I/O error"
-msgstr "I/O 오류가 있는 도메인을 마이그레이션할 수 없습니다"
+msgstr "입출력(I/O) 오류가 있는 도메인을 이전 할 수 없습니다"
 
 msgid "cannot migrate this domain without dbus-vmstate support"
-msgstr "dbus-vmstate 지원 없이는 이 도메인을 마이그레이션할 수 없습니다"
+msgstr "dbus-vmstate 지원 없는 이 도메인은 이전 할 수 없습니다"
 
 msgid "cannot mix caller fds with blocking execution"
 msgstr "호출자 fds를 실행 차단과 혼합할 수 없습니다"
@@ -21528,7 +21520,7 @@ msgid "cannot parse vnc port %s"
 msgstr "vnc 포트 %s를 구문 분석 할 수 없습니다"
 
 msgid "cannot pass pipe for tunnelled migration"
-msgstr "터널링된 마이그레이션을 위해 파이프를 전달할 수 없습니다"
+msgstr "터널링된 이전을 위해 파이프를 전달 할 수 없습니다"
 
 msgid "cannot perform block operations while checkpoint exists"
 msgstr "체크포인트가 있는 동안 블록 작업을 수행할 수 없습니다"
@@ -21823,7 +21815,7 @@ msgid "cannot set worker name to %s"
 msgstr "작업자 이름을 %s(으)로 설정할 수 없습니다"
 
 msgid "cannot start RDMA migration with no memory hard limit set"
-msgstr "메모리 하드 제한이 설정되어 있지 않으면 RDMA 마이그레이션을 시작할 수 없습니다"
+msgstr "메모리가 강력한 제한 설정이 되지 않아야 RDMA 이전을 시작 할 수 없습니다"
 
 #, c-format
 msgid "cannot stat '%s'"
@@ -22231,7 +22223,7 @@ msgid "comma separated list of compression methods to be used"
 msgstr "사용할 압축 방법의 쉼표로 구분된 목록"
 
 msgid "comma separated list of disks to be migrated"
-msgstr "마이그레이션할 디스크의 쉼표로 구분된 목록"
+msgstr "이전 되어야 할 디스크의 쉼표로 구분된 목록"
 
 msgid "command"
 msgstr "command"
@@ -22319,7 +22311,7 @@ msgid "compress level for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 수준"
 
 msgid "compress repeated pages during live migration"
-msgstr "라이브 마이그레이션 중 반복되는 페이지 압축"
+msgstr "실시간 이전 중 반복되는 페이지 압축"
 
 msgid "compute baseline CPU"
 msgstr "베이스라인 CPU 계산"
@@ -22382,7 +22374,7 @@ msgstr "연결됨"
 msgid ""
 "connection URI of the destination host as seen from the client(normal "
 "migration) or source(p2p migration)"
-msgstr "클라이언트(일반 마이그레이션) 또는 소스(p2p 마이그레이션)에서 본 대상 호스트의 연결 URI"
+msgstr "클라이언트(일반 이전) 또는 원천(p2p 이전)에서 보인 대상 호스트의 연결 URI"
 
 msgid "connection already open"
 msgstr "연결이 이미 열려있습니다"
@@ -23361,7 +23353,7 @@ msgid "dir"
 msgstr "디렉토리"
 
 msgid "direct migration"
-msgstr "직접 마이그레이션"
+msgstr "직접 이전"
 
 msgid "direct migration is not supported by the source host"
 msgstr "직접 이전은 소스 호스트에 의해 지원되지 않습니다"
@@ -23578,7 +23570,7 @@ msgid "disk model '%s' not supported for bus '%s'"
 msgstr "디스크 모델 '%s'은(는) 버스 '%s'에 대해 지원되지 않습니다"
 
 msgid "disk port address is not supported by tunnelled migration"
-msgstr "디스크 포트 주소는 터널링된 마이그레이션에서 지원되지 않습니다"
+msgstr "디스크 포트 주소는 터널링된 이전에서 지원되지 않습니다"
 
 #, c-format
 msgid "disk product is more than %d characters"
@@ -23735,7 +23727,7 @@ msgstr "도메인 %s가 이전되지 않음"
 
 #, c-format
 msgid "domain '%s' is not processing incoming migration"
-msgstr "도메인 '%s'이(가) 들어오는 마이그레이션을 처리하지 않습니다"
+msgstr "도메인 '%s'는 들어오는 이전을 처리하지 않습니다"
 
 #, c-format
 msgid "domain '%s' is not running"
@@ -24175,10 +24167,10 @@ msgid "enable cpus specified by cpumap"
 msgstr "cpumap이 지정한 cpus 활성화"
 
 msgid "enable parallel migration"
-msgstr "병렬 마이그레이션 활성화"
+msgstr "병렬 이전 활성화"
 
 msgid "enable post-copy migration; switch to it using migrate-postcopy command"
-msgstr "복사 후 마이그레이션을 활성화합니다. migrate-postcopy 명령을 사용하여 전환하십시오"
+msgstr "복사-후 이전을 활성화합니다; migrate-postcopy 명령을 사용하여 전환하세요"
 
 msgid "enabled"
 msgstr "사용"
@@ -25782,7 +25774,7 @@ msgid "failed to wait on condition"
 msgstr "조건을 기다리는 데 실패"
 
 msgid "failed to wakeup migration tunnel"
-msgstr "마이그레이션 터널을 깨우지 못했습니다"
+msgstr "이전 터널링을 깨우데 실패함"
 
 #, c-format
 msgid "failed to wipe RBD image %s"
@@ -26044,7 +26036,7 @@ msgid "find potential storage pool sources"
 msgstr "사용가능한 저장소 풀 소스를 찾습니다"
 
 msgid "finish step ignored that migration was cancelled"
-msgstr "마이그레이션이 취소된 완료 단계를 무시하십시오"
+msgstr "이전이 취소된 완료 단계를 무시"
 
 msgid "firewalld backend requested, but service is not running"
 msgstr "firewalld 백엔드가 요청되었지만 서비스가 실행되고 있지 않습니다"
@@ -26120,7 +26112,7 @@ msgid "force console connection (disconnect already connected sessions)"
 msgstr "강제 콘솔 연결(이미 연결된 세션 연결 끊기)"
 
 msgid "force convergence during live migration"
-msgstr "라이브 마이그레이션 중 강제 수렴"
+msgstr "실시간 이전 중에 강제 수렴"
 
 msgid "force device update"
 msgstr "장치 업데이트 강제"
@@ -26135,7 +26127,7 @@ msgid "force media changing"
 msgstr "강제 미디어 변경"
 
 msgid "force migration even if it may be unsafe"
-msgstr "안전하지 않더라도 강제 마이그레이션"
+msgstr "만약 안전하지 않더라도 이전을 강제합니다"
 
 msgid "forcefully stop a physical host interface."
 msgstr "물리적 호스트 인터페이스를 강제로 중지합니다."
@@ -26263,7 +26255,7 @@ msgid "get number of currently active vcpus"
 msgstr "현재 활성 vcpus의 번호를 가져옵니다"
 
 msgid "get post-copy migration bandwidth"
-msgstr "복사 후 마이그레이션 대역폭 얻기"
+msgstr "복사-후 이전 대역폭을 얻기"
 
 msgid "get server workerpool parameters"
 msgstr "서버 작업자 풀 매개변수 가져오기"
@@ -26356,7 +26348,7 @@ msgid ""
 msgstr "그래픽 '소켓' 속성 '%s'은(는) 첫 번째 수신 요소의 '소켓' 속성과 일치해야 합니다('%s' 발견)"
 
 msgid "graphics URI to be used for seamless graphics migration"
-msgstr "원활한 그래픽 마이그레이션에 사용할 그래픽 URI"
+msgstr "원활한 그래픽 이전을 위해 사용 될 그래픽 URI"
 
 msgid "graphics device is needed for attribute value 'display=on' in <hostdev>"
 msgstr "<hostdev>의 속성 값 'display=on'에 그래픽 장치가 필요합니다"
@@ -26521,7 +26513,7 @@ msgid "host isn't capable of IPv6"
 msgstr "호스트가 IPv6을 사용할 수 없습니다"
 
 msgid "host migration TLS directory not configured"
-msgstr "호스트 마이그레이션 TLS 디렉토리가 구성되지 않았습니다"
+msgstr "호스트 이전 TLS 디렉토리가 구성되지 않았습니다"
 
 msgid "host name for source of disk device"
 msgstr "디스크 장치 소스의 호스트 이름"
@@ -26610,7 +26602,7 @@ msgstr "netfs 소스의 호스트 이름을 반드시 지정해야 함"
 
 msgid ""
 "hostname on destination resolved to localhost, but migration requires an FQDN"
-msgstr "대상의 호스트 이름이 localhost로 확인되었지만 마이그레이션에는 FQDN이 필요합니다"
+msgstr "대상에서 호스트 이름은 로컬호스트로(localhost) 확인되었지만, 이전에는 FQDN이 필요합니다"
 
 #, c-format
 msgid "hot unplug is not supported for hostdev mode '%s'"
@@ -26785,7 +26777,7 @@ msgid "includes the password into the connection URI if available"
 msgstr "사용 가능한 경우 연결 URI에 비밀번호를 포함합니다"
 
 msgid "incoming RDMA migration is not supported with this QEMU binary"
-msgstr "들어오는 RDMA 마이그레이션은 이 QEMU 바이너리에서 지원되지 않습니다"
+msgstr "들어오는 RDMA 이전은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "incomplete metadata in '%s'"
@@ -27549,7 +27541,7 @@ msgid "invalid microcode version"
 msgstr "잘못된 마이크로코드 버전"
 
 msgid "invalid migratability value for host CPU model"
-msgstr "호스트 CPU 모델에 대한 잘못된 마이그레이션 가능성 값"
+msgstr "호스트 CPU 모델을 위해 잘못된 이전 가능성 값"
 
 msgid "invalid mode"
 msgstr "잘못된 모드"
@@ -27801,7 +27793,7 @@ msgstr "잘못된 값 %d"
 
 #, c-format
 msgid "invalid value '%s' for migration parameter '%s'"
-msgstr "마이그레이션 매개변수 '%s'에 대한 잘못된 값 '%s'"
+msgstr "이전 매개변수 '%s'를 위한 잘못된 값 '%s'"
 
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
@@ -28395,10 +28387,10 @@ msgid "list vols"
 msgstr "볼륨 목록"
 
 msgid "listen address is not supported by tunnelled migration"
-msgstr "수신 주소는 터널링된 마이그레이션에서 지원되지 않습니다"
+msgstr "수신 주소는 터널링된 이전에서 지원되지 않습니다"
 
 msgid "listen address that destination should bind to for incoming migration"
-msgstr "대상이 들어오는 마이그레이션을 위해 바인딩해야 하는 수신 주소"
+msgstr "대상은 들어오는 이전을 위해 바인딩 해야 하는 주소를 수신합니다"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%s'"
@@ -28431,7 +28423,7 @@ msgid "live detach of shmem model '%s' is not supported"
 msgstr "shmem 모델 '%s'의 라이브 분리가 지원되지 않습니다"
 
 msgid "live migration"
-msgstr "실시간 마이그레이션"
+msgstr "실시간 이전"
 
 msgid "live snapshot creation is supported only during full system snapshots"
 msgstr "라이브 스냅샷 생성은 전체 시스템 스냅샷 중에만 지원됩니다"
@@ -28538,7 +28530,7 @@ msgid "malformed 'wwpn' value"
 msgstr "잘못된 'wwpn' 값"
 
 msgid "malformed <blockDirtyBitmaps> in migration cookie"
-msgstr "마이그레이션 쿠키의 형식이 잘못된 <blockDirtyBitmaps>"
+msgstr "이전 쿠키에서 잘못된 형식 <blockDirtyBitmaps>"
 
 msgid "malformed <sysinfo> uuid element"
 msgstr "잘못된 <sysinfo> uuid 요소"
@@ -28584,7 +28576,7 @@ msgid "malformed group element"
 msgstr "잘못된 형식의 group 요소"
 
 msgid "malformed hostuuid element in migration data"
-msgstr "마이그레이션 데이터의 잘못된 hostuid 요소"
+msgstr "이전 자료에서 잘못된 형식의 hostuid 요소"
 
 #, c-format
 msgid "malformed http cookie '%s' in backing store definition '%s'"
@@ -28951,7 +28943,7 @@ msgid "migrate domain to another host"
 msgstr "도메인을 다른 호스트로 이전"
 
 msgid "migrate uri is not set"
-msgstr "마이그레이션 uri가 설정되지 않았습니다"
+msgstr "이전 uri가 설정되지 않았습니다"
 
 msgid "migrate: Invalid downtime"
 msgstr "이전: 잘못된 다운타임"
@@ -29004,15 +28996,15 @@ msgid ""
 msgstr "비-공유된 저장소의 이전은 터널링된 이전과 이 QEMU에서 지원되지 않습니다"
 
 msgid "migration out job"
-msgstr "마이그레이션 아웃 작업"
+msgstr "이전 아웃 작업"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
-msgstr "마이그레이션 매개변수 '%s'는 %llu보다 작아야 합니다"
+msgstr "이전 매개변수 '%s'는 %llu 보다 작아야 합니다"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %u"
-msgstr "마이그레이션 매개변수 '%s'는 %u보다 작아야 합니다"
+msgstr "이전 매개변수 '%s'는 %u보다 작아야 합니다"
 
 #, c-format
 msgid "migration protocol going backwards %s => %s"
@@ -29041,29 +29033,29 @@ msgid "migration was active, but no RAM info was set"
 msgstr "이전이 작동입니다만, RAM 정보가 설정되지 않았습니다"
 
 msgid "migration with legacy shmem device is not supported"
-msgstr "레거시 shmem 장치를 사용한 마이그레이션은 지원되지 않습니다"
+msgstr "레거시 shmem 장치를 사용한 이전은 지원되지 않습니다"
 
 msgid "migration with non-shared storage with full disk copy"
-msgstr "전체 디스크 복사본이 있는 비공유 저장소로 마이그레이션"
+msgstr "전체 디스크 복사본이 있는 비-공유된 저장소를 갖는 이전"
 
 msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
-msgstr "증분 복사본이 있는 비공유 스토리지로 마이그레이션(소스와 대상 간에 공유되는 동일한 기본 이미지)"
+msgstr "증분 복사본으로 비-공유된 저장소를 갖는 이전 (원천과 대상 간에 공유되는 동일한 기본 이미지)"
 
 msgid "migration with transient disk is not supported"
-msgstr "임시 디스크를 사용한 마이그레이션은 지원되지 않습니다"
+msgstr "임시 디스크를 갖는 이전은 지원되지 않습니다"
 
 msgid "migration with virtiofs device is not supported"
-msgstr "임시 디스크를 사용한 마이그레이션은 지원되지 않습니다"
+msgstr "virtiofs 장치를 사용한 이전은 지원되지 않습니다"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %s"
-msgstr "마이그레이션_주소는 로컬 시스템의 주소가 아니어야 합니다. %s"
+msgstr "이전_주소는 로컬 장비의 주소가 아니어야 합니다: %s"
 
 #, c-format
 msgid "migration_host must not be the address of the local machine: %s"
-msgstr "마이그레이션_호스트는 로컬 시스템의 주소가 아니어야 합니다. %s"
+msgstr "이전_호스트는 로컬 장비의 주소가 아니어야 합니다: %s"
 
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr "minWorkers는 maxWorkers보다 클 수 없습니다"
@@ -29123,9 +29115,7 @@ msgstr "selinux lxc 컨텍스트 파일 '%s'에 'content' 값이 없습니다"
 msgid ""
 "missing 'end' attribute in <address> element in <nat> in <forward> in "
 "network %s"
-msgstr ""
-"네트워크 %s에 <forward>의 <nat>에 있는 <address> 요소에 'end' 속성이 누락되"
-"어 있습니다 "
+msgstr "네트워크 %s에서 <forward>의 <nat>에 있는 <address> 요소에서 'end' 속성이 누락됨"
 
 #, c-format
 msgid "missing 'executable' in '%s'"
@@ -29188,9 +29178,7 @@ msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '서버' 속성이 없습니�
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
 "network %s"
-msgstr ""
-"네트워크 %s에 <forward>의 <nat>에 있는 <address> 요소에 'start' 속성이 누락되"
-"어 있습니다 "
+msgstr "네트워크 %s에서 <forward>의 <nat>에 있는 <address> 요소에 있는 'start' 속성이 누락됨"
 
 msgid "missing 'state' attribute"
 msgstr "누락된 '상태' 속성"
@@ -29215,7 +29203,7 @@ msgid "missing 'url' in JSON backing volume definition"
 msgstr "JSON 백업 볼륨 정의에서 누락된 'url'"
 
 msgid "missing 'usage' attribute for RAM filesystem"
-msgstr "RAM 파일 시스템의 'usage' 속성 누락 "
+msgstr "RAM 파일 시스템의 'usage' 속성 누락됨"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
@@ -29287,7 +29275,7 @@ msgid "missing TPM device backend type"
 msgstr "TPM 장치 백엔드 유형이 누락되어 있음"
 
 msgid "missing Xen migration stream version"
-msgstr "Xen 마이그레이션 스트림 버전 누락"
+msgstr "Xen 이전 스트림 버전이 누락됨"
 
 #, c-format
 msgid "missing address type in network %s"
@@ -29390,7 +29378,7 @@ msgid "missing destination file for disk %s: %s"
 msgstr "%s 디스크에 대한 대상 파일 누락: %s"
 
 msgid "missing dev attribute in <interface> element"
-msgstr "<interface> 요소에 dev 속성이 누락되어 있습니다 "
+msgstr "<interface> 요소에 dev 속성이 누락됨"
 
 #, c-format
 msgid "missing device API for mediated device type '%s'"
@@ -29428,7 +29416,7 @@ msgid "missing domain in checkpoint"
 msgstr "체크포인트에서 누락된 도메인"
 
 msgid "missing domain in snapshot"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "스냅샷에서 도메인이 누락됨"
 
 msgid "missing domain name"
 msgstr "누락된 도메인 이름"
@@ -29456,7 +29444,7 @@ msgid "missing entry in GIC capabilities list"
 msgstr "GIC 기능 목록에 누락된 항목"
 
 msgid "missing entry in migration capabilities list"
-msgstr "마이그레이션 기능 목록에 누락된 항목"
+msgstr "이전 기능 목록에서 누락된 항목"
 
 msgid "missing entry in supported dump formats"
 msgstr "지원되는 덤프 형식의 누락된 항목"
@@ -29469,7 +29457,7 @@ msgid "missing feature name"
 msgstr "기능 이름 누락"
 
 msgid "missing filter parameter table"
-msgstr "필터 매개 변수 표가 누락되어 있음 "
+msgstr "필터 매개 변수 표가 누락됨"
 
 msgid "missing flag name in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에 누락된 플래그 이름"
@@ -29487,7 +29475,7 @@ msgstr "QEMU 기능 캐시에서 호스트 CPU 모델 이름 누락"
 
 #, c-format
 msgid "missing host in migration URI: %s"
-msgstr "마이그레이션 URI에 누락된 호스트: %s"
+msgstr "이전 URI에서 누락된 호스트: %s"
 
 msgid ""
 "missing host specification of NBD server in JSON backing volume definition"
@@ -29574,16 +29562,16 @@ msgid "missing microcode version in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에 누락된 마이크로코드 버전"
 
 msgid "missing migration capability name"
-msgstr "누락된 마이그레이션 기능 이름"
+msgstr "누락된 이전 기능 이름"
 
 msgid "missing migration parameter name"
-msgstr "누락된 마이그레이션 매개변수 이름"
+msgstr "누락된 이전 매개변수 이름"
 
 msgid "missing name element in migration data"
 msgstr "이전 자료에 이름 요소가 누락"
 
 msgid "missing name for disk source"
-msgstr "디스크 소스 이름 누락 "
+msgstr "디스크 원천을 위해 이름이 누락됨"
 
 msgid "missing name for host"
 msgstr "호스트 이름 누락"
@@ -29592,7 +29580,7 @@ msgid "missing name from disk backup element"
 msgstr "디스크 백업 요소에서 이름이 누락"
 
 msgid "missing name from disk snapshot element"
-msgstr "디스크 스냅샷 요소에서 이름이 누락되어 있음 "
+msgstr "디스크 스냅샷 요소에서 이름이 누락됨"
 
 msgid "missing name information"
 msgstr "이름 정보 부재"
@@ -29635,7 +29623,7 @@ msgid "missing or invalid features in CPU data"
 msgstr "CPU 데이터의 누락되거나 잘못된 기능"
 
 msgid "missing or invalid vlan tag id attribute"
-msgstr "누락되어 있거나 잘못된 vlan 태그 id 속성 "
+msgstr "누락되거나 또는 잘못된 vlan 태그 id 속성"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
 msgstr "'nvme' 스토리지의 '장치' 필드가 없거나 형식이 잘못되었습니다"
@@ -29652,10 +29640,10 @@ msgid ""
 msgstr "QEMU 기능 캐시의 SEV ReducedPhysBits 정보 누락 또는 잘못된 형식"
 
 msgid "missing or malformed session-uuid element in migration data"
-msgstr "마이그레이션 데이터에 누락되거나 형식이 잘못된 session-uuid 요소"
+msgstr "이전 자료에서 누락되거나 잘못된 형식의 session-uuid 요소"
 
 msgid "missing or malformed uuid element in migration data"
-msgstr "마이그레이션 데이터에 누락되거나 형식이 잘못된 uuid 요소"
+msgstr "이전 자료에서 누락되거나 잘못된 형식의 uuid 요소"
 
 msgid "missing pagesize argument"
 msgstr "누락된 페이지 크기 인수"
@@ -29671,7 +29659,7 @@ msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
 
 msgid "missing per-device path"
-msgstr "장치 별 경로 누락 "
+msgstr "장치-별 경로가 누락됨"
 
 #, c-format
 msgid "missing persistent configuration for disk '%s'"
@@ -29697,7 +29685,7 @@ msgstr "JSON 백업 볼륨 정의에서 누락된 원격 서버 사양"
 
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %s"
-msgstr "네트워크 %s의 DNS TXT 기록에서 필요한 이름 속성이 누락되어 있음 "
+msgstr "네트워크 %s의 DNS TXT 기록에 있는 필수적인 이름 속성이 누락됨"
 
 msgid "missing required persistent attribute in hostdev teaming element"
 msgstr "hostdev 팀 구성 요소에 필수 영구 속성이 누락되었습니다"
@@ -29714,8 +29702,7 @@ msgstr "네트워크 %s의 DNS SRV 기록에 필요한서비스 속성이 누락
 #, c-format
 msgid ""
 "missing required value attribute in DNS TXT record named '%s' of network %s"
-msgstr ""
-"네트워크 %s의 '%s'라는 DNS TXT 기록에 있는 필요한 값 속성이 누락되어 있음 "
+msgstr "'%s'라는(네트워크 %s의) DNS TXT 기록에 있는 필수적인 값 속성이 누락됨"
 
 msgid "missing required virtualport type"
 msgstr "필요한 가상 포트 유형이 누락되어 있음"
@@ -29739,7 +29726,7 @@ msgstr "'%s'에 대한 보고서 이름이 없습니다"
 
 #, c-format
 msgid "missing scheme in migration URI: %s"
-msgstr "마이그레이션 URI에 누락된 스키마: %s"
+msgstr "이전 URI에서 누락된 계획: %s"
 
 msgid "missing secret info for 'luks' driver"
 msgstr "'luks' 드라이버에 대한 비밀 정보 누락"
@@ -29776,7 +29763,7 @@ msgid ""
 msgstr "JSON 백업 볼륨 정의에서 udp 백업 서버에 대한 소켓 경로 누락"
 
 msgid "missing source address type"
-msgstr "소스 주소 유형 누락 "
+msgstr "원천 주소 유형이 누락됨"
 
 msgid "missing source device"
 msgstr "소스 장치가 빠짐"
@@ -29848,9 +29835,7 @@ msgstr "지원되는 덤프 형식 누락"
 
 msgid ""
 "missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"
-msgstr ""
-"태그 ID가 누락되어 있습니다 - 각 <vlan>에는 최소 하나의 <tag id='n'/> 하위 요"
-"소가 있어야 합니다 "
+msgstr "태그 ID가 누락됨 - 각 <vlan>는 최소 하나의 <tag id='n'/> 하위 요소가 있어야 합니다"
 
 msgid "missing target information for device"
 msgstr "장치의 대상 정보 부재"
@@ -29892,7 +29877,7 @@ msgid "missing username in /node/auth/user field"
 msgstr "/node/auth/user 필드에 사용자 이름 누락"
 
 msgid "missing uuid element in migration data"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "이전 자료에서 누락된 uuid 요소"
 
 #, c-format
 msgid "missing value for cookie '%s'"
@@ -29900,7 +29885,7 @@ msgstr "쿠키 '%s'에 대한 누락된 값"
 
 #, c-format
 msgid "missing value for migration parameter '%s'"
-msgstr "마이그레이션 매개변수 '%s'의 값이 누락되었습니다"
+msgstr "이전 매개변수 '%s'를 위해 누락된 값"
 
 msgid "missing values for acceleration"
 msgstr "가속에 대한 누락된 값"
@@ -29931,7 +29916,7 @@ msgid "missing volume name or file name in gluster source path '%s'"
 msgstr "Gluster 소스 경로 '%s'에 볼륨 이름 또는 파일 이름이 없습니다"
 
 msgid "missing vporttype attribute in migration data"
-msgstr "마이그레이션 데이터에서 vporttype 속성이 누락되어 있음"
+msgstr "이전 자료에서 vporttype 속성이 누락됨"
 
 msgid "missing watchdog model"
 msgstr "와치독 모델이 빠짐"
@@ -30067,9 +30052,7 @@ msgstr "네트워크 '%s'에 같은 이름(%s)을 가진 여러 <portgroup> 요�
 msgid ""
 "multiple DNS SRV records matching all specified fields were found in network "
 "%s"
-msgstr ""
-"네트워크 %s에서 모든 지정돈 필드와 일치하는 여러 DNS SRV 기록이 발견되었습니"
-"다 "
+msgstr "모든 지정된 입력부분과 일치하는 다중 DNS SRV 기록이 네트워크 %s에서 발견되었습니다"
 
 msgid "multiple OpenGL displays are not supported by QEMU"
 msgstr "다중 OpenGL 디스플레이는 QEMU에서 지원되지 않습니다"
@@ -30082,16 +30065,14 @@ msgstr "MAC 주소 %s와 일치하는 여러 장치를 찾았습니다"
 msgid ""
 "multiple forwarding interfaces specified for network '%s', only one is "
 "supported"
-msgstr ""
-"네트워크 '%s'에 대해 여러 포워딩 인터페이스가 지정되어 있습니다, 단지 하나나"
-"의 포워딩 인터페이스만이 지원됩니다 "
+msgstr "네트워크 '%s'를 위해 다중 포워딩 연결 장치가 지정되어 있으며, 단지 하나만 지원됩니다"
 
 msgid "multiple interfaces with matching MAC address"
 msgstr "동일한 MAC 주소에 인터페이스가 여러개 있음"
 
 #, c-format
 msgid "multiple matching DNS HOST records were found in network %s"
-msgstr "네트워크 %s에서 여러개의 일치하는 DNS 호스트 기록이 발견되었습니다 "
+msgstr "다중 일치하는 DNS 호스트 기록은 네트워크 %s에서 발견되었습니다"
 
 msgid "multiple matching devices found"
 msgstr "일치하는 여러 장치가 발견됨"
@@ -30120,7 +30101,7 @@ msgid "must respawn qemu to start inactive snapshot"
 msgstr "비활성 스냅샷을 시작하려면 qemu를 다시 생성해야 합니다"
 
 msgid "mutex initialization failed"
-msgstr "뮤텍스 초기화 실패 "
+msgstr "뮤텍스 초기화에 실패함"
 
 msgid "n - no, throw away my changes"
 msgstr "n - 아니요, 변경 사항을 버리십시오"
@@ -30372,7 +30353,7 @@ msgid "network filter config filename '%s' does not match name '%s'"
 msgstr "네트워크 필터 설정 파일 이름 '%s'이 '%s' 이름과 일치하지 않습니다"
 
 msgid "network filter information in XML"
-msgstr "XML에서 네트워크 필터 정보 "
+msgstr "XML에 있는 네트워크 필터 정보"
 
 msgid "network filter name or uuid"
 msgstr "네트워크 필터 이름 또는 uuid"
@@ -30586,11 +30567,11 @@ msgstr "'%s'를 위해 공급된 잘못된 USB 제조사 ID"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
-msgstr "'%s'에 지정된 WWNN이 없습니다, 또한 자동 생성에 실패했습니다 "
+msgstr "'%s'를 위해 지정된 WWNN이 없고, 자동-생성에 실패함"
 
 #, c-format
 msgid "no WWPN supplied for '%s', and auto-generation failed"
-msgstr "'%s'에 지정된 WWPN이 없습니다, 또한 자동 생성에 실패했습니다 "
+msgstr "'%s'를 위해 공급된 WWPN이 없고, 자동-생성에 실패함"
 
 #, c-format
 msgid "no assigned pty for device %s"
@@ -30649,7 +30630,7 @@ msgstr "MAC 주소 '%s' 및 별칭 '%s'와 일치하는 주소 '%s'에서 장치
 
 #, c-format
 msgid "no device found with alias %s"
-msgstr "별칭 %s의 장치를 찾을 수 없음 "
+msgstr "별칭 %s의 장치를 찾을 수 없음"
 
 #, c-format
 msgid "no disk format for %s was specified"
@@ -30820,7 +30801,7 @@ msgstr "포트 개발 '%s'에 대한 nwfilter 바인딩이 없습니다"
 
 #, c-format
 msgid "no nwfilter with matching name '%s'"
-msgstr "이름 '%s'과 일치하는 nwfilter가 없음 "
+msgstr "이름 '%s'와 일치하는 nwfilter가 없음"
 
 #, c-format
 msgid "no nwfilter with matching uuid '%s'"
@@ -31140,7 +31121,7 @@ msgid "number of compression threads for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 스레드 수"
 
 msgid "number of connections for parallel migration"
-msgstr "병렬 마이그레이션을 위한 연결 수"
+msgstr "병렬 이전을 위한 연결 수"
 
 msgid "number of decompression threads for multithread compression"
 msgstr "다중 스레드 압축을 위한 압축 해제 스레드 수"
@@ -31224,19 +31205,19 @@ msgid "offline"
 msgstr "오프라인"
 
 msgid "offline migration"
-msgstr "오프라인 마이그레이션"
+msgstr "오프라인 이전"
 
 msgid "offline migration cannot handle non-shared storage"
-msgstr "오프라인 마이그레이션은 비공유 스토리지를 처리할 수 없습니다"
+msgstr "오프라인 이전은 비-공유된 저장소를 처리 할 수 없습니다"
 
 msgid "offline migration is not supported by the destination host"
-msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
+msgstr "오프라인 이전은 대상 호스트에 의해 지원되지 않습니다"
 
 msgid "offline migration is not supported by the source host"
-msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되지 않습니다 "
+msgstr "오프라인 이전은 원천 호스트에 의해 지원되지 않습니다"
 
 msgid "offline migration must be specified with the persistent flag set"
-msgstr "오프라인 마이그레이션은 영구 플래그 세트로 지정해야 합니다"
+msgstr "오프라인 이전은 영구 플래그 묶음으로 지정되어야 합니다"
 
 msgid "ok"
 msgstr "ok"
@@ -31397,7 +31378,7 @@ msgstr "pSeries 게스트만 'pseries' 모델의 패닉 장치를 지원합니�
 
 #, c-format
 msgid "only scheme, host and port are supported in vz migration URI: %s"
-msgstr "vz 마이그레이션 URI에서는 스키마, 호스트 및 포트만 지원됩니다. %s"
+msgstr "계획, 호스트와 포트만 vz 이전 URI에서 지원됩니다: %s"
 
 msgid "only sending a signal to pid 1 is supported"
 msgstr "pid 1로 신호를 보내는 것만 지원됩니다"
@@ -31415,7 +31396,7 @@ msgid "only snapshot=no is supported with vhostuser disk"
 msgstr "vhostuser 디스크에서는 snapshot=no만 지원됩니다"
 
 msgid "only supports mount filesystem type"
-msgstr "마운트 파일 시스템 유형만이 지원됨 "
+msgstr "적재된 파일 시스템 유형만이 지원됩니다"
 
 msgid "only supports passthrough accessmode"
 msgstr "통과 액세스 모드만 지원"
@@ -31551,7 +31532,7 @@ msgid "outbound rate larger than maximum %u"
 msgstr "최대 %u보다 큰 아웃바운드 비율"
 
 msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "이 QEMU 바이너리에서는 나가는 RDMA 마이그레이션이 지원되지 않습니다"
+msgstr "나가는 RDMA 이전은 이 QEMU 바이너리에서는 지원되지 않습니다"
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
@@ -31696,7 +31677,7 @@ msgid "passphrase is too long for the buffer"
 msgstr "버퍼에 비해 암호가 너무 깁니다"
 
 msgid "passthrough mode requires a character device type attribute"
-msgstr "통과 모드에는 문장 장치 유형 속성이 필요합니다 "
+msgstr "통과 방식에는 문장 장치 유형 속성이 필요합니다"
 
 #, c-format
 msgid "path '%s' doesn't reference a file"
@@ -31790,7 +31771,7 @@ msgid "peeking is only supported for disk with 'raw' format not '%s'"
 msgstr "엿보기는 '%s'가 아닌 '원시' 형식의 디스크에만 지원됩니다"
 
 msgid "peer-2-peer migration"
-msgstr "피어간 마이그레이션"
+msgstr "장치간 이전"
 
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
 msgstr "/path/to/device,weight,... 형식의 장치별 IO 가중치,..."
@@ -31866,10 +31847,10 @@ msgstr "pid"
 
 #, c-format
 msgid "pid_value in %s is too large"
-msgstr "%s에 있는 pid_value가 너무 큽니다 "
+msgstr "%s에 있는 pid_value가 너무 큽니다"
 
 msgid "pin all memory before starting RDMA live migration"
-msgstr "RDMA 라이브 마이그레이션을 시작하기 전에 모든 메모리 고정"
+msgstr "RDMA 실시간 이전을 시작하기 전에 모든 메모리 고정합니다"
 
 msgid "platform unsupported"
 msgstr "지원되지 않는 플랫폼"
@@ -31887,7 +31868,7 @@ msgid "poll failed in libxlTunnel3MigrationSrcFunc"
 msgstr "libxlTunnel3MigrationSrcFunc에서 폴링 실패"
 
 msgid "poll failed in migration tunnel"
-msgstr "마이그레이션 터널에서 폴링 실패"
+msgstr "이전 터널에서 폴링 실패됨"
 
 #, c-format
 msgid "poll-grow (%u) must be less than or equal to %d"
@@ -31966,7 +31947,7 @@ msgid "port cannot be specified in 'nfs' protocol host"
 msgstr "'NFS' 프로토콜 호스트에서 포트를 지정할 수 없습니다"
 
 msgid "port to use by target server for incoming disks migration"
-msgstr "들어오는 디스크 마이그레이션을 위해 대상 서버에서 사용할 포트"
+msgstr "들어오는 디스크 이전을 위해 대상 서버에서 사용 할 포트"
 
 msgid "port-profile setlink timed out"
 msgstr "포트 프로필 설정 링크 시간 초과"
@@ -31978,19 +31959,19 @@ msgid "post-copy"
 msgstr "사후-복사"
 
 msgid "post-copy can only be started while outgoing migration is in progress"
-msgstr "사후 복사는 나가는 마이그레이션이 진행 중인 동안에만 시작할 수 있습니다"
+msgstr "사후-복사는 나가는 마이그레이션이 진행 중일 때만 시작 될 수 있습니다"
 
 msgid "post-copy failed"
 msgstr "사후 복사 실패"
 
 msgid "post-copy is not supported with tunnelled migration"
-msgstr "터널링된 마이그레이션에서는 사후 복사가 지원되지 않습니다"
+msgstr "사후-복사는 터널링된 이전에서 지원되지 않습니다"
 
 msgid "post-copy migration bandwidth limit in MiB/s"
-msgstr "복사 후 마이그레이션 대역폭 제한(MiB/s)"
+msgstr "복사-후 이전 대역폭 제한 (MiB/s)"
 
 msgid "post-copy migration is not supported with non-live or paused migration"
-msgstr "사후 복사 마이그레이션은 라이브가 아닌 마이그레이션 또는 일시 중지된 마이그레이션에서 지원되지 않습니다"
+msgstr "사후-복사 이전은 비-실시간 또는 일시 중지된 이전에는 지원되지 않습니다"
 
 msgid "potentially unsafe disk format probing"
 msgstr "잠재적으로 안전하지 않은 디스크 형식 검사"
@@ -32032,7 +32013,7 @@ msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 msgid ""
 "pre-creation of storage targets for incremental storage migration is not "
 "supported"
-msgstr "증분 스토리지 마이그레이션을 위한 스토리지 대상의 사전 생성은 지원되지 않습니다"
+msgstr "증분 저장소 이전을 위한 저장소 대상의 사전-생성은 지원되지 않습니다"
 
 msgid "preallocate is not supported on this platform"
 msgstr "이 플랫폼에서는 사전 할당이 지원되지 않습니다"
@@ -32062,7 +32043,7 @@ msgid "pretty-print the output"
 msgstr "출력물을 예쁘게 인쇄"
 
 msgid "prevent any configuration changes to domain until migration ends"
-msgstr "마이그레이션이 끝날 때까지 도메인에 대한 구성 변경 방지"
+msgstr "이전이 끝날 때까지 도메인에 대한 구성 변경 방지"
 
 msgid "print XML document rather than attach the disk"
 msgstr "디스크를 첨부하는 대신 XML 문서 인쇄"
@@ -32147,7 +32128,7 @@ msgstr "프로파일 ID 매개 변수가 너무 큼"
 
 #, c-format
 msgid "program mismatch (actual %x, expected %x)"
-msgstr "프로그램 불일치 (실제 %x, 기대값 %x) "
+msgstr "프로그램 불일치 (실제 %x, 예상 %x)"
 
 #, c-format
 msgid "program mismatch in event (actual 0x%x, expected 0x%x)"
@@ -32171,7 +32152,7 @@ msgid "protocol used by disk device source"
 msgstr "디스크 장치 소스에서 사용하는 프로토콜"
 
 msgid "provide XML suitable for migrations"
-msgstr "마이그레이션에 적합한 XML 제공"
+msgstr "이전을 위한 적절한 XML을 제공합니다"
 
 #, c-format
 msgid "ps2 bus does not support %s input device"
@@ -32405,7 +32386,7 @@ msgstr "쿼리 버전 응답에 'qemu' 데이터가 누락되었습니다"
 
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
-msgstr "최대 복사 후 마이그레이션 속도 쿼리는 QEMU 바이너리에서 지원되지 않습니다"
+msgstr "최대 복사-후 이전 속도 쿼리는 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
 msgstr "디스크 드라이버 요소의 queues 속성은 virtio-blk에서만 지원됩니다"
@@ -32509,7 +32490,7 @@ msgid "received malformed monitor, check the XML definition"
 msgstr "잘못된 형식의 모니터 수신, XML 정의 확인"
 
 msgid "received unexpected cookie with P2P migration"
-msgstr "P2P 마이그레이션과 함께 예기치 않은 쿠키를 받았습니다"
+msgstr "P2P 이전과 함께 예상치 않은 쿠키를 받았습니다"
 
 msgid "recv handler failed"
 msgstr "recv 핸들러 실패"
@@ -32537,7 +32518,7 @@ msgstr "기존 로깅 출력 세트 재정의"
 
 #, c-format
 msgid "referenced filter '%s' is missing"
-msgstr "참조 필터 '%s'가 누락되어 있음 "
+msgstr "참조된 필터 '%s'가 누락됨"
 
 msgid "refresh a pool"
 msgstr "풀 새로 고침"
@@ -32826,7 +32807,7 @@ msgid "return the physical size of the volume in allocation field"
 msgstr "할당 필드에 볼륨의 물리적 크기를 반환"
 
 msgid "return the pool uuid rather than pool name"
-msgstr "풀 이름 대신 풀 uuid 반환 "
+msgstr "풀(pool) 이름 대신에 풀(pool) uuid 반환합니다"
 
 msgid "returned buffer is not same size as requested"
 msgstr "반환된 버퍼가 요청한 크기와 동일하지 않습니다"
@@ -32838,7 +32819,7 @@ msgid "returns the storage pool for a given volume key or path"
 msgstr "주어진 볼륨 키 또는 경로의 저장 풀을 반환"
 
 msgid "returns the volume key for a given volume name or path"
-msgstr "주어진 볼륨 이름이나 경로의 볼륨 키 반환 "
+msgstr "주어진 볼륨 이름이나 경로를 위한 볼륨 키를 반환합니다"
 
 msgid "returns the volume name for a given volume key or path"
 msgstr "주어진 볼륨 키 또는 경로의 볼륨 이름을 반환로"
@@ -32898,7 +32879,8 @@ msgstr "규칙 노드에는 방향 속성이 필요함"
 msgid ""
 "run action specified by --timeout-* option (suspend by default) if live "
 "migration exceeds timeout (in seconds)"
-msgstr "실시간 마이그레이션이 시간 초과(초)를 초과하는 경우 --timeout-* 옵션으로 지정된 작업 실행(기본적으로 일시 중단)"
+msgstr ""
+"만약 실시간 이전이 시간 초과(초 단위에서)를 넘기는 경우 --timeout-* 선택(옵션)(기본으로 일시 중단)에 의해 지정된 작업 실행"
 
 msgid "running"
 msgstr "실행 중"
@@ -32973,7 +32955,7 @@ msgstr "sbbc 구성은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
-msgstr "체계 및 호스트는 필수 vz 마이그레이션 URI입니다. %s"
+msgstr "계획과 호스트는 필수 vz 이전 URI입니다: %s"
 
 msgid "sclpconsole is not supported in this QEMU binary"
 msgstr "sclpconsole은 이 QEMU 바이너리에서 지원되지 않습니다"
@@ -33156,7 +33138,7 @@ msgid "set on all NUMA cells"
 msgstr "모든 NUMA 셀에 설정"
 
 msgid "set post-copy migration bandwidth"
-msgstr "복사 후 마이그레이션 대역폭 설정"
+msgstr "복사-후 이전 대역폭을 설정합니다"
 
 msgid "set server workerpool parameters"
 msgstr "서버 작업자 풀 매개변수 설정"
@@ -33248,7 +33230,7 @@ msgid "setting virtiofs boot order is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 virtiofs 부팅 순서 설정이 지원되지 않습니다"
 
 msgid "setuid or setgid failed"
-msgstr "setuid 또는 setgid 실패 "
+msgstr "setuid 또는 setgid 실패함"
 
 #, c-format
 msgid "setup of pcap handle failed: %s"
@@ -33258,7 +33240,7 @@ msgid "sgio can be used only with device='lun'"
 msgstr "sgio는 device='lun'에서만 사용할 수 있습니다"
 
 msgid "sgio is only supported for scsi host device"
-msgstr "sgio는 scsi 호스트 장치에 대해서만 지원됩니다 "
+msgstr "sgio는 scsi 호스트 장치만 지원됩니다"
 
 #, c-format
 msgid "sgio of shared disk '%s' conflicts with other active domains"
@@ -33296,7 +33278,7 @@ msgstr "쉽독 프로토콜은 하나의 호스트만 허용합니다"
 msgid ""
 "shmem device '%s' cannot be migrated, only shmem with role='%s' can be "
 "migrated"
-msgstr "shmem 장치 '%s'를 마이그레이션할 수 없습니다. 역할='%s'인 shmem만 마이그레이션할 수 있습니다"
+msgstr "shmem 장치 '%s'를 이전 될 수 없으며, role='%s'인 shmem만이 이전 될 수 있습니다"
 
 msgid "shmem element must contain 'name' attribute"
 msgstr "shmem 요소에는 '이름' 속성이 포함되어야 합니다"
@@ -33428,7 +33410,7 @@ msgstr "스냅샷 %s이 목록에서 사라짐"
 
 #, c-format
 msgid "snapshot '%s' does not have a parent"
-msgstr "스냅샷 '%s'에는 부모가 없습니다 "
+msgstr "스냅샷 '%s'는 모체가 없습니다"
 
 #, c-format
 msgid "snapshot '%s' has no parent"
@@ -33439,13 +33421,13 @@ msgid "snapshot '%s' lacks domain '%s' rollback info"
 msgstr "스냅샷 '%s'에 도메인 '%s' 롤백 정보가 없습니다"
 
 msgid "snapshot information"
-msgstr "스냅샷 정보 "
+msgstr "스냅샷 정보"
 
 msgid "snapshot job"
 msgstr "스냅샷 작업"
 
 msgid "snapshot name"
-msgstr "스냅샷 이름 "
+msgstr "스냅샷 이름"
 
 msgid ""
 "snapshot without memory state, removal of existing managed saved state "
@@ -33487,9 +33469,7 @@ msgstr "저장소에 대한 소스 장치"
 msgid ""
 "source for disk '%s' is not a regular file; refusing to generate external "
 "snapshot name"
-msgstr ""
-"디스크 '%s'의 소스는 정규 파일이 아닙니다; 외부 스냅샷 이름 생성을 거부합니"
-"다 "
+msgstr "디스크 '%s'의 원천는 정규 파일이 아닙니다; 외부 스냅샷 이름 생성을 거부함"
 
 msgid "source media is a block device"
 msgstr "소스 미디어는 블록 장치입니다"
@@ -33504,7 +33484,7 @@ msgid "source of network interface"
 msgstr "네트워크 인터페이스 소스"
 
 msgid "source of the media"
-msgstr "미디어의 소스 "
+msgstr "미디어의 원천"
 
 msgid "source path for underlying storage"
 msgstr "저장소에 대한 소스 경로"
@@ -33608,7 +33588,7 @@ msgstr "업무 시작"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
-msgstr "범위의 시작 %s - 네트워크 %s/%d의 %s는 네트워크 주소입니다"
+msgstr "범위의 시작 %s - %s는( 네트워크 %s/%d에서) 네트워크 주소입니다"
 
 #, c-format
 msgid "start_cpu %d larger than maximum of %d"
@@ -33808,11 +33788,11 @@ msgstr "%s의 문자열 %s는 비어 있으면 안 됩니다"
 
 #, c-format
 msgid "string parameter '%s' unsupported"
-msgstr "문자열 매개 변수 '%s'가 지원되지 않습니다 "
+msgstr "문자열 매개 변수 '%s'는 지원안됨"
 
 #, c-format
 msgid "string parameter name '%.*s' too long"
-msgstr "문자열 매개 변수 이름 '%.*s'이 너무 깁니다 "
+msgstr "문자열 매개 변수 이름 '%.*s'가 너무 길어요"
 
 msgid "subdriver of disk device"
 msgstr "디스크 장치의 하부 드라이버"
@@ -33841,7 +33821,7 @@ msgstr "시간 초과 후 사후 복사로 전환"
 msgid ""
 "switching to post-copy requires migration to be started with "
 "VIR_MIGRATE_POSTCOPY flag"
-msgstr "사후 복사로 전환하려면 VIR_MIGRATE_POSTCOPY 플래그로 마이그레이션을 시작해야 합니다"
+msgstr "사후-복사로 전환하려면 VIR_MIGRATE_POSTCOPY 플래그로 시작되어야 할 이전이 필요합니다"
 
 msgid "swtpm failed to start"
 msgstr "swtpm을 시작하지 못했습니다"
@@ -33851,7 +33831,7 @@ msgid "syntax: %s DEVICE [-g]|[-p]\n"
 msgstr "구문: %s 장치 [-g]|[-p]\n"
 
 msgid "sysconf(_SC_OPEN_MAX) failed"
-msgstr "sysconf(_SC_OPEN_MAX) 실패 "
+msgstr "sysconf(_SC_OPEN_MAX) 실패함"
 
 #, c-format
 msgid "sysctl failed for '%s'"
@@ -34000,8 +33980,7 @@ msgid ""
 "the <forward> 'dev' attribute cannot be used when <address> or <pf> sub-"
 "elements are present in network %s"
 msgstr ""
-"네트워크 %s에 <address> 또는 <pf> 하위 요소가 있을 때 <forward> 'dev' 속성을 "
-"사용할 수 없습니다 "
+"네트워크 %s에 <address> 또는 <pf> 하위-요소가 존재 할 때 <forward> 'dev' 속성을 사용 할 수 없습니다"
 
 msgid "the CPU is incompatible with host CPU"
 msgstr "이 CPU는 호스트 CPU와 호환되지 않습니다"
@@ -34012,7 +33991,7 @@ msgstr "CPU는 호스트 CPU: %s와 호환되지 않습니다"
 
 #, c-format
 msgid "the MAC address '%s' matches multiple interfaces"
-msgstr "MAC 주소 '%s'가 여러 인터페이스와 일치합니다 "
+msgstr "MAC 주소 '%s'가 여러 연결장치와 일치합니다"
 
 #, c-format
 msgid "the QEMU binary does not support %s"
@@ -34057,7 +34036,7 @@ msgid "the copy job is not persisted if VM is turned off"
 msgstr "VM이 꺼져 있으면 복사 작업이 지속되지 않습니다"
 
 msgid "the default lockspace already exists"
-msgstr "기본값 잠금 공간이 이미 존재합니다 "
+msgstr "기본 잠금 공간이 이미 존재합니다"
 
 msgid "the domain already has a vsock device"
 msgstr "도메인에 이미 vsock 장치가 있습니다"
@@ -34132,55 +34111,44 @@ msgstr "이 QEMU 바이너리에서 지원되지 않는 일부 블록 I/O 조절
 
 #, c-format
 msgid "there is already a DNS TXT record with name '%s' in network %s"
-msgstr "네트워크 %s에 '%s'라는 이름으로된 DNS TXT 기록이 이미 존재합니다 "
+msgstr "네트워크 %s에서 이름 '%s'라는 DNS TXT 기록이 이미 존재합니다"
 
 #, c-format
 msgid ""
 "there is already at least one DNS HOST record with a matching field in "
 "network %s"
-msgstr ""
-"네트워크 %s에 있는 필드와 일치하는 최소 하나의 DNS 호스트 기록이 이미 존재합"
-"니다 "
+msgstr "네트워크 %s에서 일치하는 부분과 최소 하나의 DNS 호스트 기록이 이미 존재합니다"
 
 #, c-format
 msgid ""
 "there is already at least one DNS SRV record matching all specified fields "
 "in network %s"
-msgstr ""
-"네트워크 %s에 있는 모든 지정된 필드와 일치하는 최소 하나의 DNS SRV 기록이 이"
-"미 존재합니다 "
+msgstr "네트워크 %s에 있는 모든 지정된 부분과 일치하는 최소 하나의 DNS SRV 기록이 이미 존재합니다"
 
 #, c-format
 msgid ""
 "there is an existing dhcp host entry in network '%s' that matches \"<host "
 "mac='%s' name='%s' ip='%s'/>\""
 msgstr ""
-"네트워크 '%s'에서 \"<host mac='%s' name='%s' ip='%s'/>\"와 일치하는 기존 "
-"dhcp 호스트 항목이 있습니다 "
+"<host mac='%s' name='%s' ip='%s'/>\"와 일치하는 '%s' 네트워크에서 기존 dhcp 호스트 항목이 있습니다"
 
 #, c-format
 msgid ""
 "there is an existing dhcp range entry in network '%s' that matches \"<range "
 "start='%s' end='%s'/>\""
-msgstr ""
-"네트워크 '%s'에서 \"<range start='%s' end='%s'/>\"와 일치하는 기존 dhcp 범위 "
-"항목이 있습니다 "
+msgstr "\"<range start='%s' end='%s'/>\"와 일치하는 네트워크 '%s'에서 기존 dhcp 범위 항목이 있습니다"
 
 #, c-format
 msgid ""
 "there is an existing interface entry in network '%s' that matches "
 "\"<interface dev='%s'>\""
-msgstr ""
-"네트워크 '%s'에서 \"<interface dev='%s'>\"와 일치하는 기존 인터페이스 항목이 "
-"있습니다 "
+msgstr "\"<interface dev='%s'>\"와 일치하는네트워크 '%s'에서 기존 연결장치 항목이 있습니다"
 
 #, c-format
 msgid ""
 "there is an existing portgroup entry in network '%s' that matches "
 "\"<portgroup name='%s'>\""
-msgstr ""
-"네트워크 '%s'에서 \"<portgroup name='%s'>\"과 일치하는 기존 포트그룹 항목이 "
-"있습니다 "
+msgstr "\"<portgroup name='%s'>\"과 일치하는 네트워크 '%s'에서 기존 포트그룹 항목이 있습니다"
 
 msgid "there is another transaction running."
 msgstr "다른 트랜잭션이 실행 중입니다."
@@ -34220,7 +34188,7 @@ msgid "this domain does not have a device to load snapshots"
 msgstr "이 도메인에는 스냅샷을 불러올 수 있는 장치가 없음"
 
 msgid "this domain does not have a device to take snapshots"
-msgstr "이 도메인에는 스냅샷을 찍을 수 있는 장치가 없음 "
+msgstr "이 도메인은 스냅샷을 찍을 수 있는 장치를 가지고 있지 않습니다"
 
 msgid "this domain exists already"
 msgstr "이미 도메인이 존재함"
@@ -34233,7 +34201,7 @@ msgid "this function is not supported by the connection driver: %s"
 msgstr "이 기능은 연결 드라이버에 의해 지원되지 않음: %s"
 
 msgid "this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"
-msgstr "이 libvirtd 인스턴스는 VIR_MIGRATE_TLS 플래그로만 마이그레이션을 허용합니다"
+msgstr "이와 같은 libvirtd 예제는 VIR_MIGRATE_TLS 플래그로만 이전을 허용합니다"
 
 msgid "this network exists already"
 msgstr "이미 네트워크가 있음"
@@ -34242,7 +34210,7 @@ msgid "this network port exists already"
 msgstr "이 네트워크 포트가 이미 존재함"
 
 msgid "this platform is missing dlopen"
-msgstr "플랫폼에 dlopen이 누락되어 있습니다 "
+msgstr "이와 같은 기술환경은 dlopen이 누락되어 있습니다"
 
 msgid "this qemu does not support TLS transport for NBD"
 msgstr "이 qemu는 NBD에 대한 TLS 전송을 지원하지 않습니다"
@@ -34382,11 +34350,11 @@ msgstr "한계 '%d'에 대한 매개변수 '%d'가 너무 많습니다"
 
 #, c-format
 msgid "too many parameters '%u' for limit '%d'"
-msgstr "한계 '%d'에 대한 매개변수 '%u'가 너무 많습니다"
+msgstr "매개변수 '%u'가(한계 '%d'에 대한) 너무 많습니다"
 
 #, c-format
 msgid "too many parameters '%u' for nparams '%d'"
-msgstr "nparams '%d'에 대한 매개변수 '%u'가 너무 많습니다"
+msgstr "매개변수 '%u'가(nparams '%d'에 대한) 너무 많습니다"
 
 #, c-format
 msgid ""
@@ -34676,7 +34644,7 @@ msgid "transient disk supported only with 'file' type (%s)"
 msgstr "'파일' 유형(%s)에서만 지원되는 임시 디스크"
 
 msgid "transient disks not supported yet"
-msgstr "임시 디스크가 아직 지원되지 않음 "
+msgstr "임시 디스크는 아직 지원되지 않음"
 
 msgid "transient domain cannot have runstate 'shutoff'"
 msgstr "임시 도메인은 실행 상태 '종료'를 가질 수 없습니다"
@@ -34730,7 +34698,7 @@ msgid "tty console"
 msgstr "tty 콘솔"
 
 msgid "tunnelled migration"
-msgstr "터널링을 사용한 마이그레이션"
+msgstr "터널링된 이전"
 
 msgid "tunnelled migration failed to read from qemu"
 msgstr "터널링을 사용한 이전이 qemu에서 읽는 것을 실패했습니다"
@@ -34742,7 +34710,7 @@ msgid "tunnelled migration requested but NULL stream passed"
 msgstr "터널링을 이용한 이전이 요청되었지만 NULL 스트림이 넘겨졌습니다"
 
 msgid "tunnelled offline migration does not make sense"
-msgstr "터널링된 오프라인 마이그레이션은 의미가 없습니다"
+msgstr "터널링된 오프라인 이전은 의미가 없습니다"
 
 #, c-format
 msgid "two master hugepages detected: %llu and %llu"
@@ -34825,7 +34793,7 @@ msgstr "'%s' 네트워크 유형에서 설정을 변경할 수 없음"
 
 #, c-format
 msgid "unable to clear socket security context '%s'"
-msgstr "소켓 보안 문맥 '%s'을 삭제할 수 없음 "
+msgstr "소켓 보안 문맥 '%s'를 지울 수 없음"
 
 #, c-format
 msgid "unable to close %s"
@@ -34952,7 +34920,7 @@ msgstr "요청된 유효한 VMware 백엔드 '%s'를 찾을 수 없습니다"
 #. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
-msgstr "%s를 fsync할 수 없음 "
+msgstr "fsync %s로 할 수 없음"
 
 msgid "unable to generate uuid"
 msgstr "uuid 생성 불가능"
@@ -35022,7 +34990,7 @@ msgid "unable to handle monitor type: %s"
 msgstr "모니터 유형을 처리할 수 없음: %s"
 
 msgid "unable to init mutex"
-msgstr "뮤텍스를 초기화할 수 없음 "
+msgstr "뮤텍스를 초기화 할 수 없음"
 
 msgid "unable to initialize VirtualBox driver API"
 msgstr "VirtualBox 드라이버 API를 초기화할 수 없습니다"
@@ -35224,7 +35192,7 @@ msgstr "tty 특성을 설정하는 데 실패: %s"
 
 #, c-format
 msgid "unable to set user and group to '%ld:%ld' on '%s'"
-msgstr "'%s'에서 사용자 및 그룹을 '%ld:%ld'로 설정할 수 없습니다"
+msgstr "사용자와 그룹을 '%ld:%ld'로('%s'에서 ) 설정 할 수 없습니다"
 
 msgid "unable to set vnet or multiqueue flags on macvtap"
 msgstr "macvtap에서 vnet 또는 multiqueue 플래그를 설정할 수 없습니다"
@@ -35281,10 +35249,10 @@ msgstr "자식 입력에 쓸 수 없음"
 
 #, c-format
 msgid "unable write to %s"
-msgstr "%s에 쓰기할 수 없습니다 "
+msgstr "%s로 작성 할 수 없음"
 
 msgid "unbridge a network device"
-msgstr "네트워크 장치 브리지 해제 "
+msgstr "네트워크 장치 브리지 해제"
 
 msgid "undefine VM on source"
 msgstr "소스의 VM 정의를 없앰"
@@ -35296,7 +35264,7 @@ msgid "undefine a domain"
 msgstr "도메인을 정의하지 않음"
 
 msgid "undefine a network filter"
-msgstr "네트워크 필터를 정의하지 않음 "
+msgstr "네트워크 필터를 정의하지 않음"
 
 msgid "undefine a persistent network"
 msgstr "지속 네트워크 정의를 해제하십시오"
@@ -35465,9 +35433,7 @@ msgstr "예기치 못한 도메인 유형 %d"
 
 #, c-format
 msgid "unexpected element <%s>, expecting <%s>, while updating network '%s'"
-msgstr ""
-"예기치 않은 요소 <%s>가 있습니다, <%s>를 예상합니다 (네트워크 '%s' 업데이트 "
-"중) "
+msgstr "예상치 않은 요소 <%s>, 예상 <%s> (네트워크 '%s' 최신화 중에)"
 
 #, c-format
 msgid "unexpected empty keyword in %s"
@@ -35494,7 +35460,7 @@ msgstr "%s 구조를 위한 호스트-모델 CPU를 기대 할 수 없습니다"
 
 #, c-format
 msgid "unexpected hostdev driver name type %d "
-msgstr "예상치 못한 hostdev 드라이버 이름 유형 %d"
+msgstr "예상치 못한 hostdev 드라이버 이름 유형 %d "
 
 #, c-format
 msgid "unexpected hostdev mode %d"
@@ -35545,7 +35511,7 @@ msgstr "%s에 예기치 못한 이전 상태"
 
 #, c-format
 msgid "unexpected mode 0x%x for %s"
-msgstr "%s에 대한 예기치 않은 모드 0x%x"
+msgstr "예상치못한 방식 0x%x (%s를 위한)"
 
 #, c-format
 msgid "unexpected model name value %d"
@@ -35705,7 +35671,7 @@ msgstr "<domainbackup>의 예기치 않은 전송"
 
 #, c-format
 msgid "unexpected type %d for field %s"
-msgstr "필드 %s에 대한 예기치 않은 유형 %d"
+msgstr "예상치 못한 유형 %d (필드 %s에 대한)"
 
 #, c-format
 msgid "unexpected type for file '%s'"
@@ -35747,7 +35713,7 @@ msgid "unexpected zero/negative length request %lld"
 msgstr "예기치 않은 0/음수 길이 요청 %lld"
 
 msgid "unexpectedly failed"
-msgstr "예기치 못하게 실패함 "
+msgstr "예상치 못하게 실패함"
 
 #, c-format
 msgid "unimplemented parameter type %d"
@@ -36045,7 +36011,7 @@ msgstr "알 수 없는 인덱싱 값 '%u'"
 
 #, c-format
 msgid "unknown input bus type '%s'"
-msgstr "알려지지 않은 입력 버스 유형 '%s' "
+msgstr "알지 못하는 입력 버스 유형 '%s'"
 
 #, c-format
 msgid "unknown input device type '%s'"
@@ -36109,14 +36075,14 @@ msgstr "알 수 없는 메타데이터 유형 '%d'"
 
 #, c-format
 msgid "unknown migratable value for '%s' host CPU model property"
-msgstr "'%s' 호스트 CPU 모델 속성에 대한 알 수 없는 마이그레이션 가능한 값"
+msgstr "'%s' 호스트 CPU 모델 속성을 위해 알지 못하는 이전 가능 값"
 
 #, c-format
 msgid "unknown migration parameter '%s'"
-msgstr "알 수 없는 마이그레이션 매개변수 '%s'"
+msgstr "알 수 없는 이전 매개변수 '%s'"
 
 msgid "unknown migration protocol"
-msgstr "알 수 없는 마이그레이션 프로토콜"
+msgstr "알 수 없는 이전 통신 규약"
 
 #, c-format
 msgid "unknown mii bonding carrier %s"
@@ -36186,7 +36152,7 @@ msgstr "알 수 없는 posix 잠금 값 '%s'"
 
 #, c-format
 msgid "unknown procedure: %d"
-msgstr "알려지지 않은 절차: %d "
+msgstr "알지 못하는 절차: %d"
 
 #, c-format
 msgid "unknown protocol transport type '%s'"
@@ -36242,7 +36208,7 @@ msgid "unknown smartcard device mode: %s"
 msgstr "알 수 없는 스마트카드 장치 모드: %s"
 
 msgid "unknown smartcard mode"
-msgstr "알 수 없는 스마트카드 모드 "
+msgstr "알지 못하는 스마트카드 방법"
 
 #, c-format
 msgid "unknown smartcard type %d"
@@ -36410,7 +36376,7 @@ msgid "unknown xattr value '%s'"
 msgstr "알 수 없는 xattr 값 '%s'"
 
 msgid "unlimited"
-msgstr "제한 없음 "
+msgstr "제한 없음"
 
 #, c-format
 msgid "unlink(\"%s\")"
@@ -36452,7 +36418,7 @@ msgid "unrecognized section name '%s'"
 msgstr "인식할 수 없는 섹션 이름 '%s'"
 
 msgid "unspecified error"
-msgstr "지정되지 않은 오류 "
+msgstr "지정되지 않은 오류"
 
 #, c-format
 msgid ""
@@ -36773,7 +36739,7 @@ msgstr "지원되지 않는 rtc 타이머 트랙 '%s'"
 
 #, c-format
 msgid "unsupported scheme %s in migration URI %s"
-msgstr "마이그레이션 URI %s의 지원되지 않는 체계 %s"
+msgstr "이전 URI %s에서 지원되지 않는 계획 %s"
 
 #, c-format
 msgid "unsupported secret event ID %d"
@@ -36861,7 +36827,7 @@ msgid "usb-serial requires address of usb type"
 msgstr "usb 시리얼에는 usb 유형의 주소가 필요합니다"
 
 msgid "use TLS for migration"
-msgstr "마이그레이션에 TLS 사용"
+msgstr "이전을 위해 TLS 사용합니다"
 
 msgid "use an editor to change the metadata"
 msgstr "편집기를 사용하여 메타데이터 변경"
@@ -36891,7 +36857,7 @@ msgid "use of host cdrom passthrough"
 msgstr "호스트 cdrom 패스스루 사용"
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
-msgstr "피어간 마이그레이션에 대해 virDomainMigrateToURI3를 사용합니다 "
+msgstr "장치간 이전을 위해 virDomainMigrateToURI3를 사용합니다"
 
 msgid "user"
 msgstr "사용자"
@@ -36925,7 +36891,7 @@ msgstr "유닉스 소켓 사용과 원격서버 '%s'은 지원되지 않습니�
 
 #, c-format
 msgid "uuidstr in %s must be a valid UUID"
-msgstr "%s에서 uuidstr는 올바른 UUID이어야 합니다 "
+msgstr "%s에서 uuidstr는 유효한 UUID이어야 합니다"
 
 #, c-format
 msgid "v1 controller '%s' is not enabled for group"
@@ -36977,7 +36943,7 @@ msgid "vDPA devices are not supported with this QEMU binary"
 msgstr "vDPA 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "vDPA devices cannot be migrated"
-msgstr "vDPA 디바이스는 마이그레이션할 수 없습니다"
+msgstr "vDPA 장치는 이전 될 수 없습니다"
 
 msgid "vTPM usage specified, but name is missing"
 msgstr "vTPM 사용이 지정되어 있으나, 이름이 누락되어 있습니다"
@@ -37181,10 +37147,10 @@ msgid "vgamem attribute only supported for video type qxl"
 msgstr "vgamem 속성은 비디오 유형 qxl에 대해서만 지원됨"
 
 msgid "vhost-net is not supported with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "vhost-net은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "vhost-net is only supported for virtio network interfaces"
-msgstr "vhost-net은 virtio 네트워크 인터페이스에 대해서만 지원됨 "
+msgstr "vhost-net은 virtio 네트워크 연결장치를 위해서만 지원됩니다"
 
 msgid "vhost-net was requested for an interface, but is unavailable"
 msgstr "vhost-net이 인터페이스에 대해 요청되었지만 사용할 수 없습니다"
@@ -37251,7 +37217,7 @@ msgid "virDomainManagedSaveGetXMLDesc with secure flag"
 msgstr "보안 플래그가 있는 virDomainManagedSaveGetXMLDesc"
 
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
-msgstr "보안 플래그와 함께 virDomainSnapshotGetXMLDesc "
+msgstr "보안 플래그와 함께 virDomainSnapshotGetXMLDesc"
 
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs는 WIN32에 대해 구현되지 않았습니다"
@@ -37284,7 +37250,7 @@ msgid "virInterfaceDefFormat missing interface name"
 msgstr "virInterfaceDefFormat 인터페이스 이름 빠짐"
 
 msgid "virInterfaceDefFormat unknown startmode"
-msgstr "알려져 있지 않은 startmode virInterfaceDefFormat "
+msgstr "알려져 있지 않은 startmode virInterfaceDefFormat"
 
 #, c-format
 msgid ""
@@ -37558,17 +37524,17 @@ msgid "volume encryption unsupported with format %s"
 msgstr "%s 형식이 지원되지 않는 볼륨 암호화"
 
 msgid "volume key or path"
-msgstr "볼륨 키 또는 경로 "
+msgstr "볼륨 키 또는 경로"
 
 #, c-format
 msgid "volume name '%s' cannot contain '/'"
 msgstr "볼륨 이름 '%s'에는 '/'가 포함될 수 없습니다"
 
 msgid "volume name or key"
-msgstr "볼륨 이름 또는 키 "
+msgstr "볼륨 이름 또는 키"
 
 msgid "volume name or path"
-msgstr "볼륨 이름 또는 경로 "
+msgstr "볼륨 이름 또는 경로"
 
 msgid "volume offset to download from"
 msgstr "내려받기 할 볼륨 오프셋"
@@ -37702,7 +37668,7 @@ msgid "where to save the data"
 msgstr "데이터를 저장할 위치"
 
 msgid "where to store the screenshot"
-msgstr "스크린샷을 저장할 위치 "
+msgstr "스크린샷을 저장해야 할 위치"
 
 msgid "which event type to wait for"
 msgstr "어떤 이벤트 유형을 기다릴지"
@@ -37790,7 +37756,7 @@ msgstr "xml 수정은 지원되지 않음"
 
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
-msgstr "xsd:dateTime 값 '%s' 에 예상치 않는 형식이 있음 "
+msgstr "xsd:dateTime 값 '%s'은 예상치 못한 형식을 갖고 있습니다"
 
 msgid "y - yes, start editor again"
 msgstr "y - 예, 편집기를 다시 시작합니다"
