@@ -3730,19 +3730,23 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 }
 
 
-char *
-qemuBuildMemoryDeviceStr(const virDomainDef *def,
-                         virDomainMemoryDef *mem,
-                         virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+virJSONValue *
+qemuBuildMemoryDeviceProps(const virDomainDef *def,
+                           virDomainMemoryDef *mem)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     const char *device = NULL;
+    g_autofree char *uuidstr = NULL;
+    virTristateBool unarmed = VIR_TRISTATE_BOOL_ABSENT;
+    g_autofree char *memdev = NULL;
 
     if (!mem->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing alias for memory device"));
         return NULL;
     }
+
+    memdev = g_strdup_printf("mem%s", mem->info.alias);
 
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_DIMM:
@@ -3768,37 +3772,31 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
         break;
     }
 
-    virBufferAsprintf(&buf, "%s,", device);
-
-    if (mem->targetNode >= 0)
-        virBufferAsprintf(&buf, "node=%d,", mem->targetNode);
-
-    if (mem->labelsize)
-        virBufferAsprintf(&buf, "label-size=%llu,", mem->labelsize * 1024);
-
-    if (mem->blocksize) {
-        virBufferAsprintf(&buf, "block-size=%llu,", mem->blocksize * 1024);
-        virBufferAsprintf(&buf, "requested-size=%llu,", mem->requestedsize * 1024);
-    }
+    if (mem->readonly)
+        unarmed = VIR_TRISTATE_BOOL_YES;
 
     if (mem->uuid) {
-        char uuidstr[VIR_UUID_STRING_BUFLEN];
-
+        uuidstr = g_new0(char, VIR_UUID_STRING_BUFLEN);
         virUUIDFormat(mem->uuid, uuidstr);
-        virBufferAsprintf(&buf, "uuid=%s,", uuidstr);
     }
 
-    if (mem->readonly) {
-        virBufferAddLit(&buf, "unarmed=on,");
-    }
-
-    virBufferAsprintf(&buf, "memdev=mem%s,id=%s",
-                      mem->info.alias, mem->info.alias);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &mem->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", device,
+                                 "k:node", mem->targetNode,
+                                 "P:label-size", mem->labelsize * 1024,
+                                 "P:block-size", mem->blocksize * 1024,
+                                 "P:requested-size", mem->requestedsize * 1024,
+                                 "S:uuid", uuidstr,
+                                 "T:unarmed", unarmed,
+                                 "s:memdev", memdev,
+                                 "s:id", mem->info.alias,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &mem->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -7863,17 +7861,16 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
     /* memory hotplug requires NUMA to be enabled - we already checked
      * that memory devices are present only when NUMA is */
     for (i = 0; i < def->nmems; i++) {
-        char *dimmStr;
+        g_autoptr(virJSONValue) props = NULL;
 
         if (qemuBuildMemoryDimmBackendStr(cmd, def->mems[i], def, cfg, priv) < 0)
             return -1;
 
-        if (!(dimmStr = qemuBuildMemoryDeviceStr(def, def->mems[i], priv->qemuCaps)))
+        if (!(props = qemuBuildMemoryDeviceProps(def, def->mems[i])))
             return -1;
 
-        virCommandAddArgList(cmd, "-device", dimmStr, NULL);
-
-        VIR_FREE(dimmStr);
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+            return -1;
     }
 
     return 0;

@@ -2434,7 +2434,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned long long oldmem = virDomainDefGetMemoryTotal(vm->def);
     unsigned long long newmem = oldmem + mem->size;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     g_autofree char *objalias = NULL;
     bool objAdded = false;
     bool releaseaddr = false;
@@ -2463,7 +2463,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
 
     objalias = g_strdup_printf("mem%s", mem->info.alias);
 
-    if (!(devstr = qemuBuildMemoryDeviceStr(vm->def, mem, priv->qemuCaps)))
+    if (!(devprops = qemuBuildMemoryDeviceProps(vm->def, mem)))
         goto cleanup;
 
     if (qemuBuildMemoryBackendProps(&props, objalias, cfg,
@@ -2495,7 +2495,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
         goto exit_monitor;
     objAdded = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
