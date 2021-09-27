@@ -9230,60 +9230,64 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
 }
 
 
-static char *
-qemuBuildShmemDevLegacyStr(virDomainDef *def,
-                           virDomainShmemDef *shmem,
-                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+static virJSONValue *
+qemuBuildShmemDevLegacyProps(virDomainDef *def,
+                             virDomainShmemDef *shmem)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *size = NULL;
+    const char *shm = NULL;
+    g_autofree char *chardev = NULL;
 
-    virBufferAddLit(&buf, "ivshmem");
-    virBufferAsprintf(&buf, ",id=%s", shmem->info.alias);
+    /* while this would result in a type error with newer qemus, the 'ivshmem'
+     * device was removed in qemu-4.0, so for the sake of not changing the
+     * commandline we do this hack */
+    size = g_strdup_printf("%llum", shmem->size >> 20);
 
-    if (shmem->size)
-        virBufferAsprintf(&buf, ",size=%llum", shmem->size >> 20);
+    if (shmem->server.enabled)
+        chardev = g_strdup_printf("char%s", shmem->info.alias);
+    else
+        shm = shmem->name;
 
-    if (!shmem->server.enabled) {
-        virBufferAsprintf(&buf, ",shm=%s", shmem->name);
-    } else {
-        virBufferAsprintf(&buf, ",chardev=char%s", shmem->info.alias);
-        if (shmem->msi.enabled) {
-            virBufferAddLit(&buf, ",msi=on");
-            if (shmem->msi.vectors)
-                virBufferAsprintf(&buf, ",vectors=%u", shmem->msi.vectors);
-            if (shmem->msi.ioeventfd)
-                virBufferAsprintf(&buf, ",ioeventfd=%s",
-                                  virTristateSwitchTypeToString(shmem->msi.ioeventfd));
-        }
-    }
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "ivshmem",
+                                 "s:id", shmem->info.alias,
+                                 "s:size", size,
+                                 "S:shm", shm,
+                                 "S:chardev", chardev,
+                                 "B:msi", shmem->msi.enabled,
+                                 "p:vectors", shmem->msi.vectors,
+                                 "T:ioeventfd", shmem->msi.ioeventfd,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &shmem->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
-char *
-qemuBuildShmemDevStr(virDomainDef *def,
-                     virDomainShmemDef *shmem,
-                     virQEMUCaps *qemuCaps G_GNUC_UNUSED)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAdd(&buf, virDomainShmemModelTypeToString(shmem->model), -1);
-    virBufferAsprintf(&buf, ",id=%s", shmem->info.alias);
+virJSONValue *
+qemuBuildShmemDevProps(virDomainDef *def,
+                       virDomainShmemDef *shmem)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *chardev = NULL;
+    g_autofree char *memdev = NULL;
+    virTristateSwitch master = VIR_TRISTATE_SWITCH_ABSENT;
 
     if (shmem->server.enabled) {
-        virBufferAsprintf(&buf, ",chardev=char%s", shmem->info.alias);
+        chardev = g_strdup_printf("char%s", shmem->info.alias);
     } else {
-        virBufferAsprintf(&buf, ",memdev=shmmem-%s", shmem->info.alias);
+        memdev = g_strdup_printf("shmmem-%s", shmem->info.alias);
 
         switch (shmem->role) {
         case VIR_DOMAIN_SHMEM_ROLE_MASTER:
-            virBufferAddLit(&buf, ",master=on");
+            master = VIR_TRISTATE_SWITCH_ON;
             break;
         case VIR_DOMAIN_SHMEM_ROLE_PEER:
-            virBufferAddLit(&buf, ",master=off");
+            master = VIR_TRISTATE_SWITCH_OFF;
             break;
         case VIR_DOMAIN_SHMEM_ROLE_DEFAULT:
         case VIR_DOMAIN_SHMEM_ROLE_LAST:
@@ -9291,17 +9295,21 @@ qemuBuildShmemDevStr(virDomainDef *def,
         }
     }
 
-    if (shmem->msi.vectors)
-        virBufferAsprintf(&buf, ",vectors=%u", shmem->msi.vectors);
-    if (shmem->msi.ioeventfd) {
-        virBufferAsprintf(&buf, ",ioeventfd=%s",
-                          virTristateSwitchTypeToString(shmem->msi.ioeventfd));
-    }
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &shmem->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", virDomainShmemModelTypeToString(shmem->model),
+                                 "s:id", shmem->info.alias,
+                                 "S:chardev", chardev,
+                                 "S:memdev", memdev,
+                                 "S:master", qemuOnOffAuto(master),
+                                 "p:vectors", shmem->msi.vectors,
+                                 "T:ioeventfd", shmem->msi.ioeventfd,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &shmem->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -9337,7 +9345,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
                           bool chardevStdioLogd)
 {
     g_autoptr(virJSONValue) memProps = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devProps = NULL;
     g_autofree char *chardev = NULL;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
         QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
@@ -9372,7 +9380,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
 
     switch (shmem->model) {
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM:
-        devstr = qemuBuildShmemDevLegacyStr(def, shmem, qemuCaps);
+        devProps = qemuBuildShmemDevLegacyProps(def, shmem);
         break;
 
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_PLAIN:
@@ -9384,20 +9392,21 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
 
         G_GNUC_FALLTHROUGH;
     case VIR_DOMAIN_SHMEM_MODEL_IVSHMEM_DOORBELL:
-        devstr = qemuBuildShmemDevStr(def, shmem, qemuCaps);
+        devProps = qemuBuildShmemDevProps(def, shmem);
         break;
 
     case VIR_DOMAIN_SHMEM_MODEL_LAST:
         break;
     }
 
-    if (!devstr)
+    if (!devProps)
         return -1;
 
     if (qemuCommandAddExtDevice(cmd, &shmem->info) < 0)
         return -1;
 
-    virCommandAddArgList(cmd, "-device", devstr, NULL);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devProps, qemuCaps) < 0)
+        return -1;
 
     if (shmem->server.enabled) {
         chardev = qemuBuildChrChardevStr(logManager, secManager,

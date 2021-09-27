@@ -3004,7 +3004,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
                             virDomainShmemDef *shmem)
 {
     int ret = -1;
-    g_autofree char *shmstr = NULL;
+    g_autoptr(virJSONValue) devProps = NULL;
     g_autofree char *charAlias = NULL;
     g_autofree char *memAlias = NULL;
     bool release_backing = false;
@@ -3040,7 +3040,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
         (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0))
         return -1;
 
-    if (!(shmstr = qemuBuildShmemDevStr(vm->def, shmem, priv->qemuCaps)))
+    if (!(devProps = qemuBuildShmemDevProps(vm->def, shmem)))
         goto cleanup;
 
     if (shmem->server.enabled) {
@@ -3067,7 +3067,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
     if (qemuDomainAttachExtensionDevice(priv->mon, &shmem->info) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDevice(priv->mon, shmstr) < 0) {
+    if (qemuMonitorAddDeviceProps(priv->mon, &devProps) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &shmem->info));
         goto exit_monitor;
     }
