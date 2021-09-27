@@ -4157,21 +4157,22 @@ qemuBuildHostNetStr(virDomainNetDef *net,
 }
 
 
-char *
-qemuBuildWatchdogDevStr(const virDomainDef *def,
-                        virDomainWatchdogDef *dev,
-                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+virJSONValue *
+qemuBuildWatchdogDevProps(const virDomainDef *def,
+                          virDomainWatchdogDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
-    virBufferAsprintf(&buf, "%s,id=%s",
-                      virDomainWatchdogModelTypeToString(dev->model),
-                      dev->info.alias);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", virDomainWatchdogModelTypeToString(dev->model),
+                                 "s:id", dev->info.alias,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -4181,7 +4182,7 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
                              virQEMUCaps *qemuCaps)
 {
     virDomainWatchdogDef *watchdog = def->watchdog;
-    g_autofree char *optstr = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     const char *action;
     int actualAction;
 
@@ -4191,13 +4192,11 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
     if (qemuCommandAddExtDevice(cmd, &def->watchdog->info) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-
-    optstr = qemuBuildWatchdogDevStr(def, watchdog, qemuCaps);
-    if (!optstr)
+    if (!(props = qemuBuildWatchdogDevProps(def, watchdog)))
         return -1;
 
-    virCommandAddArg(cmd, optstr);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps))
+        return -1;
 
     /* qemu doesn't have a 'dump' action; we tell qemu to 'pause', then
        libvirt listens for the watchdog event, and we perform the dump

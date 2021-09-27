@@ -3121,7 +3121,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_WATCHDOG, { .watchdog = watchdog } };
-    g_autofree char *watchdogstr = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     bool releaseAddress = false;
     int rv;
 
@@ -3145,7 +3145,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (!(watchdogstr = qemuBuildWatchdogDevStr(vm->def, watchdog, priv->qemuCaps)))
+    if (!(props = qemuBuildWatchdogDevProps(vm->def, watchdog)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3203,7 +3203,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
     }
 
     if (rv >= 0)
-        rv = qemuMonitorAddDevice(priv->mon, watchdogstr);
+        rv = qemuMonitorAddDeviceProps(priv->mon, &props);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         releaseAddress = false;

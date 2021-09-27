@@ -234,9 +234,9 @@ char *qemuBuildShmemDevStr(virDomainDef *def,
                            virQEMUCaps *qemuCaps)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-char *qemuBuildWatchdogDevStr(const virDomainDef *def,
-                              virDomainWatchdogDef *dev,
-                              virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildWatchdogDevProps(const virDomainDef *def,
+                          virDomainWatchdogDef *dev);
 
 int qemuBuildInputDevStr(char **devstr,
                          const virDomainDef *def,
