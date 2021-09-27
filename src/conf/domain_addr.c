@@ -303,6 +303,23 @@ virDomainPCIAddressFlagsCompatible(virPCIDeviceAddress *addr,
     virErrorNumber errType = (fromConfig
                               ? VIR_ERR_XML_ERROR : VIR_ERR_INTERNAL_ERROR);
 
+    if (devFlags & VIR_PCI_CONNECT_INTEGRATED) {
+        if (addr->bus == 0) {
+            /* pcie-root doesn't usually allow endpoint devices to be
+             * plugged directly into it, but for integrated devices
+             * that's exactly what we want */
+            busFlags |= VIR_PCI_CONNECT_AUTOASSIGN;
+        } else {
+            if (reportError) {
+                virReportError(errType,
+                               _("The device at PCI address %s needs to be "
+                                 "an integrated device (bus=0)"),
+                               addrStr);
+            }
+            return false;
+        }
+    }
+
     if (fromConfig) {
         /* If the requested connection was manually specified in
          * config, allow a PCI device to connect to a PCIe slot, or
