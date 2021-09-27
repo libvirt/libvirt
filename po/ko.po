@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-25 08:06+0000\n"
-"Last-Translator: jason lee <ppark5237@gmail.com>\n"
+"PO-Revision-Date: 2021-09-26 05:12+0000\n"
+"Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -27726,7 +27726,7 @@ msgstr "잘못된 스냅샷 이름 '%s': 이름에 '/'를 포함시킬 수 없�
 
 #, c-format
 msgid "invalid snapshot name '%s': name can't start with '.'"
-msgstr "잘못된 스냅샷 이름 '%s': 이름은 '.'로 시작할 수 없음 "
+msgstr "잘못된 스냅샷 이름 '%s': 이름은 '.'로 시작 할 수 없음"
 
 #, c-format
 msgid "invalid ssid value '%s' for '%s'"
@@ -27900,13 +27900,13 @@ msgid "iotune is not supported with vhostuser disk"
 msgstr "iotune는 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid "iowait:"
-msgstr "iowait: (아이오웨이트)"
+msgstr "iowait(입출력 대기):"
 
 msgid "ipset name contains invalid characters"
-msgstr "ipset 이름에 잘못된 문자가 들어 있습니다 "
+msgstr "ipset 이름은 잘못된 문자를 포함합니다"
 
 msgid "ipset name is too long"
-msgstr "ipset 이름이 너무 깁니다 "
+msgstr "ipset 이름이 너무 깁니다"
 
 msgid "is not active"
 msgstr "활성화 상태가 아닙니다"
@@ -28021,7 +28021,7 @@ msgstr "libvirt 관리 데몬:"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
-msgstr "libvirt가 '%s' 드라이버 없이 빌드되었습니다 "
+msgstr "libvirt가 '%s' 드라이버 없이 제작(빌드)되었습니다"
 
 msgid "libvirt was not compiled with libpcap and \""
 msgstr "libvirt가 libcap과 \"로 컴파일되지 않았습니다"
@@ -28047,7 +28047,7 @@ msgid "libxenlight does not support disk format %s with disk driver %s"
 msgstr "libxenlight는 디스크 드라이버 %s가 있는 디스크 형식 %s를 지원하지 않습니다"
 
 msgid "libxenlight does not support transient disks"
-msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
+msgstr "libxenlight는 임시 디스크를 지원하지 않음"
 
 msgid "libxenlight failed to attach USB controller"
 msgstr "libxenlight가 USB 컨트롤러를 연결하지 못했습니다"
@@ -28251,7 +28251,7 @@ msgid "list inactive pools"
 msgstr "비활성화 풀 목록"
 
 msgid "list is not closed with ]"
-msgstr "목록이 ]로 종료되지 않음 "
+msgstr "목록이 ]로 종료되지 않음"
 
 msgid "list name of active pools only"
 msgstr "활성 풀의 이름만 나열"
@@ -28260,7 +28260,7 @@ msgid "list network filter bindings"
 msgstr "네트워크 필터 바인딩 나열"
 
 msgid "list network filters"
-msgstr "네트워크 필터 나열 "
+msgstr "네트워크 필터 나열"
 
 msgid "list network names only"
 msgstr "네트워크 이름만 나열"
@@ -28374,16 +28374,16 @@ msgid "list table (default)"
 msgstr "목록 테이블(기본값)"
 
 msgid "list the name, rather than the full xml"
-msgstr "전체 xml 대신 이름을 나열합니다 "
+msgstr "전체 xml 대신에 이름을 나열합니다"
 
 msgid "list transient domains"
-msgstr "임시 도메인 목록 "
+msgstr "임시 도메인 목록"
 
 msgid "list transient networks"
-msgstr "임시 네트워크 목록 "
+msgstr "임시 네트워크 목록"
 
 msgid "list transient pools"
-msgstr "임시 풀 목록 "
+msgstr "임시 풀 목록"
 
 msgid "list uuid's only"
 msgstr "uuid만 나열"
@@ -28448,10 +28448,10 @@ msgid "loadparm cannot be an empty string"
 msgstr "loadparm은 빈 문자열일 수 없습니다"
 
 msgid "lock manager connection has been restricted"
-msgstr "잠금 관리자 연결이 제한되어 있습니다 "
+msgstr "잠금 관리자 연결이 제한되어 있습니다"
 
 msgid "lock owner details have not been registered"
-msgstr "잠금 소유자 상세 정보가 등록되어 있지 않습니다 "
+msgstr "잠금 소유자 상세정보는 등록되어 있지 않습니다"
 
 msgid "logfile not supported in this QEMU binary"
 msgstr "로그파일은 이 QEMU 바이너리에서 지원되지 않음"
@@ -28597,7 +28597,7 @@ msgid "malformed in-kernel GIC information in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시의 잘못된 커널 내 GIC 정보"
 
 msgid "malformed ipset flags"
-msgstr "잘못된 ipset 플래그 "
+msgstr "잘못된 ipset 플래그"
 
 #, c-format
 msgid "malformed mac address '%s'"
@@ -28873,7 +28873,7 @@ msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'를 지�
 
 #, c-format
 msgid "memory filename '%s' requires external snapshot"
-msgstr "메모리 파일 이름 '%s'에는 외부 스냅샷이 필요합니다 "
+msgstr "메모리 파일 이름 '%s'는 외부 스냅샷이 필요합니다"
 
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
@@ -28904,7 +28904,7 @@ msgid "memory snapshot file path (%s) must be absolute"
 msgstr "메모리 스냅샷 파일 경로(%s)는 절대 경로여야 합니다"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
-msgstr "메모리 상태는 오프라인 또는 디스크 전용 스냅샷으로 저장할 수 없습니다 "
+msgstr "메모리 상태는 오프라인 또는 디스크 전용 스냅샷으로 저장 할 수 없습니다"
 
 msgid "memory-only dump failed for unknown reason"
 msgstr "알 수 없는 이유로 메모리 전용 덤프가 실패했습니다"
@@ -28957,51 +28957,51 @@ msgid "migrate: Invalid downtime"
 msgstr "이전: 잘못된 다운타임"
 
 msgid "migrate: Unexpected --timeout-* option without --timeout"
-msgstr "마이그레이션: --timeout이 없는 예기치 않은 --timeout-* 옵션"
+msgstr "이전: --timeout이 없는 예기치 않은 --timeout-* 선택(옵션)"
 
 msgid "migrate: Unexpected timeout for offline migration"
-msgstr "마이그레이션: 오프라인 마이그레이션에 대한 예기치 않은 시간 초과"
+msgstr "이전: 오프라인 이전에 대한 예기치 않은 시간 초과"
 
 #, c-format
 msgid "migrate_tls_x509_cert_dir directory '%s' does not exist"
 msgstr "migrate_tls_x509_cert_dir 디렉토리 '%s'가 존재하지 않습니다"
 
 msgid "migrated"
-msgstr "마이그레이션됨"
+msgstr "이전됨"
 
 msgid "migrating"
-msgstr "마이그레이션 중"
+msgstr "이전 중"
 
 msgid "migration"
-msgstr "이전(migration)"
+msgstr "이전"
 
 msgid "migration URI is not supported by tunnelled migration"
-msgstr "마이그레이션 URI는 터널링된 마이그레이션에서 지원되지 않습니다"
+msgstr "이전 URI는 터널링된 이전에서 지원되지 않습니다"
 
 msgid "migration URI, usually can be omitted"
 msgstr "이전 URI, 주로 생략 가능"
 
 msgid "migration bandwidth limit in MiB/s"
-msgstr "마이그레이션 대역폭 제한(MiB/s)"
+msgstr "이전 대역폭 제한(MiB/s)"
 
 msgid "migration canceled"
-msgstr "마이그레이션 취소됨"
+msgstr "이전 취소됨"
 
 msgid "migration in job"
-msgstr "업무에서의 마이그레이션"
+msgstr "업무에서의 이전"
 
 #, c-format
 msgid "migration of disk %s failed"
-msgstr "디스크 %s 마이그레이션 실패"
+msgstr "디스크 %s의 이전이 실패됨"
 
 #, c-format
 msgid "migration of disk %s failed: %s"
-msgstr "디스크 %s 마이그레이션 실패: %s"
+msgstr "디스크 %s의 이전이 실패됨: %s"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
-msgstr "비공유 스토리지의 마이그레이션은 터널링된 마이그레이션 및 이 QEMU에서 지원되지 않습니다"
+msgstr "비-공유된 저장소의 이전은 터널링된 이전과 이 QEMU에서 지원되지 않습니다"
 
 msgid "migration out job"
 msgstr "마이그레이션 아웃 작업"
@@ -29016,26 +29016,26 @@ msgstr "마이그레이션 매개변수 '%s'는 %u보다 작아야 합니다"
 
 #, c-format
 msgid "migration protocol going backwards %s => %s"
-msgstr "마이그레이션 프로토콜이 %s => %s로 이동합니다"
+msgstr "이전 통신규약이 %s => %s로 이동합니다"
 
 msgid "migration statistics are available only on the source host"
-msgstr "마이그레이션 통계는 소스 호스트에서만 사용할 수 있습니다"
+msgstr "이전 통계는 원천 호스트에서만 사용 할 수 있습니다"
 
 msgid "migration successfully aborted"
-msgstr "마이그레이션이 성공적으로 중단되었습니다"
+msgstr "이전이 성공적으로 중단되었습니다"
 
 #, c-format
 msgid "migration successfully aborted: %s"
-msgstr "마이그레이션이 성공적으로 중단됨: %s"
+msgstr "이전이 성공적으로 중단됨: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
-msgstr "이전이 작동중이지만, RAM '남아있는' 데이터를 잃어버렸습니다"
+msgstr "이전이 작동 중이고, 하지만 RAM '남아 있는' 자료가 누락되었습니다"
 
 msgid "migration was active, but RAM 'total' data was missing"
-msgstr "이전이 작동중이지만, RAM '전체' 데이터를 잃어버렸습니다"
+msgstr "이전이 작동 중이지만, RAM '전체' 자료가 누락되었습니다"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr "이전이 작동중이지만, RAM에 '전송된' 데이터를 잃어버렸습니다"
+msgstr "이전이 작동 중이지만, RAM에 '전송된' 자료를 잃어버렸습니다"
 
 msgid "migration was active, but no RAM info was set"
 msgstr "이전이 작동입니다만, RAM 정보가 설정되지 않았습니다"
@@ -30225,7 +30225,7 @@ msgid "netcat path not valid with native proxy mode"
 msgstr "netcat 경로가 기본 프록시 모드에서 유효하지 않습니다"
 
 msgid "netdir"
-msgstr "netdir"
+msgstr "네트워크 디렉토리(netdir)"
 
 msgid "netlink error"
 msgstr "네트워크 링크 에러"
@@ -30344,7 +30344,7 @@ msgid ""
 msgstr "네트워크 '%s'는 hostdev 모드를 사용하지만 정방향 개발 및 인터페이스 풀이 없습니다"
 
 msgid "network configuration using opaque shell scripts"
-msgstr "불투명한 쉘 스크립트를 사용한 네트워크 구성"
+msgstr "opaque 쉘 스크립트를 사용한 네트워크 구성"
 
 #, c-format
 msgid ""
@@ -31215,7 +31215,7 @@ msgstr "개체 소품은 NULL일 수 없습니다"
 
 #, c-format
 msgid "object size %zu of %s is not larger than parent class %zu"
-msgstr "%s의 개체 크기 %zu가 상위 클래스 %zu보다 크지 않습니다"
+msgstr "%zu가(%s의 객체 크기) 상위 클래스 %zu보다 크지 않습니다"
 
 msgid "occupied"
 msgstr "이미 주인이 있는"
@@ -33776,9 +33776,9 @@ msgstr "저장소 풀에 type 속성이 누락되어 있습니다"
 msgid "storage pool only supports LUKS encrypted volumes"
 msgstr "저장소 풀이 암호화된 볼륨을 지원하지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "storage pool protocol ver '%s' is malformed"
-msgstr "저장소 풀 '%s'가 이미 동작중입니다"
+msgstr "저장소 풀 통신규약 버전 '%s'가 잘못된 형식입니다"
 
 #, fuzzy, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
