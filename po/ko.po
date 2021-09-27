@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-08-16 12:27+0000\n"
-"PO-Revision-Date: 2021-09-24 00:05+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2021-09-25 08:06+0000\n"
+"Last-Translator: jason lee <ppark5237@gmail.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -2987,17 +2987,14 @@ msgstr "저장소 제어기를 가져 올 수 없습니다"
 msgid "Cannot get storage controller bus"
 msgstr "저장소 제어기 버스를 가져 올 수 없습니다"
 
-#, fuzzy
 msgid "Cannot get storage controller by name"
-msgstr "컨트롤러 인덱스 %s를 구문 분석할 수 없습니다"
+msgstr "이름으로 저장소 제어기를 가져올 수 없습니다"
 
-#, fuzzy
 msgid "Cannot get storage controller name"
-msgstr "컨트롤러 인덱스 %s를 구문 분석할 수 없습니다"
+msgstr "저장소 제어기의 이름을 가져올 수 없습니다"
 
-#, fuzzy
 msgid "Cannot initialize thread local for current identity"
-msgstr "모니터 조건을 초기화할 수 없음"
+msgstr "현재 ID에 대해 로컬 스레드를 초기화할 수 없습니다"
 
 #, c-format
 msgid ""
@@ -3748,9 +3745,9 @@ msgstr "Config는 상속 네트 네임스페이스와 사설 네트워크 인터
 msgid "Config entry '%s' must represent a boolean value (true|false)"
 msgstr "구성 항목 '%s'는 bool 값 나타내야 합니다(참 또는 거짓)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Config entry '%s' must represent an integer value"
-msgstr "장치 유형 '%s'가 정수가 아닙니다"
+msgstr "구성 항목 '%s'는 정수 값을 나타내야 합니다"
 
 msgid "Configuration file"
 msgstr "설정 파일"
@@ -7188,9 +7185,8 @@ msgstr "비활성화 풀의 번호를 가져오는데 실패했습니다"
 msgid "Failed to get udev device for syspath '%s'"
 msgstr "syspath '%s'에 대한 udev 장치를 가져오지 못했습니다"
 
-#, fuzzy
 msgid "Failed to get uuid of secret"
-msgstr "생성된 비밀정보의 UUID를 얻는 데 실패"
+msgstr "비밀의 uuid를 가져오지 못했습니다"
 
 msgid "Failed to get valid client socket identity"
 msgstr "유효한 클라이언트 소켓 ID를 가져오지 못했습니다"
@@ -7354,9 +7350,9 @@ msgstr "PCI 스텁 모듈 %s를 적재하는데 실패했습니다: 관리상 �
 msgid "Failed to load config for binding '%s'"
 msgstr "바인딩 '%s'를 위한 구성을 적재 하는데 실패하였습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load config for domain '%s'"
-msgstr "'%s' 도메인 보기 실패"
+msgstr "도메인 '%s'에 대한 구성을 로드하지 못했습니다"
 
 #, c-format
 msgid "Failed to load module '%s': %s"
@@ -12869,9 +12865,9 @@ msgid ""
 "domain %s"
 msgstr "PCI 장치 %04x:%02x:%02x.%x(네트워크 %s에서 할당된)는 이미 도메인 %s의해 사용 중입니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "PCI device %s is in use"
-msgstr "장치 %s가 이미 사용중입니다"
+msgstr "PCI 장치 %s가 사용 중입니다"
 
 #, c-format
 msgid "PCI device %s is in use by driver %s, domain %s"
@@ -19583,9 +19579,9 @@ msgstr "[--%s] <number>"
 msgid "[--%s] <string>"
 msgstr "[--%s] <string>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "[<%s>]..."
-msgstr "<%s>..."
+msgstr "[<%s>]..."
 
 #, c-format
 msgid "[[--%s] <string>]..."
@@ -23541,7 +23537,7 @@ msgid "disk device='lun' is not supported for usb bus"
 msgstr "disk device='lun'은 USB 버스에서 지원되지 않습니다"
 
 msgid "disk device='lun' is only valid for block type disk source"
-msgstr ""
+msgstr "disk device='lun'은 블록 유형 디스크 소스에만 유효합니다"
 
 msgid "disk does not have an alias"
 msgstr "디스크에 별칭이 없습니다"
@@ -27998,262 +27994,234 @@ msgid "level %u cache size %llu does not match expected size %llu"
 msgstr "수준 %u 캐시 크기 %llu가 예상 크기 %llu와 일치하지 않습니다"
 
 msgid "libnl was not available at build time"
-msgstr ""
+msgstr "빌드 시 libnl을 사용할 수 없습니다"
 
-#, fuzzy
 msgid "library call failed"
-msgstr "nl_recv 실패"
+msgstr "라이브러리 호출 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "library call failed: %s"
-msgstr "작업 실패: %s"
+msgstr "라이브러리 호출 실패: %s"
 
-#, fuzzy
 msgid "libssh transport error"
-msgstr "SSH 전송 오류"
+msgstr "libssh 전송 오류"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libssh transport error: %s"
-msgstr "SSH 전송 오류: %s"
+msgstr "libssh 전송 오류: %s"
 
 msgid "libssh transport support was not enabled"
-msgstr ""
+msgstr "libssh 전송 지원이 활성화되지 않았습니다"
 
 msgid "libssh2 transport support was not enabled"
-msgstr ""
+msgstr "libssh2 전송 지원이 활성화되지 않았습니다"
 
 msgid "libvirt management daemon:"
-msgstr ""
+msgstr "libvirt 관리 데몬:"
 
 #, c-format
 msgid "libvirt was built without the '%s' driver"
 msgstr "libvirt가 '%s' 드라이버 없이 빌드되었습니다 "
 
 msgid "libvirt was not compiled with libpcap and \""
-msgstr ""
+msgstr "libvirt가 libcap과 \"로 컴파일되지 않았습니다"
 
 msgid "libvirt will automatically detach/attach the device from/to host"
-msgstr ""
+msgstr "libvirt는 호스트에서 자동으로 장치를 분리/연결합니다"
 
 msgid "libvirt-guests is configured not to start any guests on boot"
-msgstr ""
+msgstr "libvirt-guests는 부팅 시 게스트를 시작하지 않도록 구성되어 있습니다"
 
 msgid "libvirt.so is not safe to use from setuid/setgid programs"
-msgstr ""
+msgstr "libvirt.so는 setuid/setgid 프로그램에서 사용하기에 안전하지 않습니다"
 
 msgid "libvirtd quit during handshake"
-msgstr ""
+msgstr "libvirtd 핸드셰이크 중 종료"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight does not support disk driver %s"
-msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
+msgstr "libxenlight는 디스크 드라이버 %s를 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight does not support disk format %s with disk driver %s"
-msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
+msgstr "libxenlight는 디스크 드라이버 %s가 있는 디스크 형식 %s를 지원하지 않습니다"
 
 msgid "libxenlight does not support transient disks"
 msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
 
 msgid "libxenlight failed to attach USB controller"
-msgstr ""
+msgstr "libxenlight가 USB 컨트롤러를 연결하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to attach disk '%s'"
-msgstr "디스크 부착 성공"
+msgstr "libxenlight가 디스크 '%s'를 연결하지 못했습니다"
 
-#, fuzzy
 msgid "libxenlight failed to attach network device"
-msgstr "네트워크 장치 브리지 해제 "
+msgstr "libxenlight가 네트워크 장치를 연결하지 못했습니다"
 
-#, fuzzy
 msgid "libxenlight failed to attach pci device "
-msgstr "장치 %s 재부착 실패"
+msgstr "libxenlight가 pci 장치를 연결하지 못했습니다 "
 
 #, c-format
 msgid "libxenlight failed to attach usb device Busnum:%3x, Devnum:%3x"
-msgstr ""
+msgstr "libxenlight가 USB 장치 버스 번호:%3x, Devnum:%3x를 연결하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to change media for disk '%s'"
-msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
+msgstr "libxenlight가 디스크 '%s'의 미디어를 변경하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to create new domain '%s'"
-msgstr "'%s' 도메인 보기 실패"
+msgstr "libxenlight가 새 도메인 '%s'를 작성하지 못했습니다"
 
 msgid "libxenlight failed to detach USB controller"
-msgstr ""
+msgstr "libxenlight가 USB 컨트롤러를 분리하지 못했습니다"
 
 #, c-format
 msgid "libxenlight failed to detach USB device Busnum: %3x, Devnum: %3x"
-msgstr ""
+msgstr "libxenlight가 USB 장치 버스 번호를 분리하지 못했습니다: %3x, Devnum: %3x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to detach disk '%s'"
-msgstr "디스크 탈착 실패"
+msgstr "libxenlight가 디스크 '%s'를 분리하지 못했습니다"
 
-#, fuzzy
 msgid "libxenlight failed to detach network device"
-msgstr "장치 %s를 분리하는데 실패"
+msgstr "libxenlight가 네트워크 장치를 분리하지 못했습니다"
 
-#, fuzzy
 msgid "libxenlight failed to detach pci device "
-msgstr "장치 %s를 분리하는데 실패"
+msgstr "libxenlight가 pci 장치를 분리하지 못했습니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to parse UUID '%s'"
-msgstr "%s 구문 분석 실패"
+msgstr "libxenlight가 UUID '%s'를 구문 분석하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to resolve security label '%s'"
-msgstr "보안 레이블을 할당하는데 실패"
+msgstr "libxenlight가 보안 레이블 '%s'를 확인하지 못했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxenlight failed to restore domain '%s'"
-msgstr "'%s' 도메인 보기 실패"
+msgstr "libxenlight가 '%s' 도메인을 복원하지 못했습니다"
 
 msgid "libxenlight failed to store userdata"
-msgstr ""
+msgstr "libxenlight가 사용자 데이터를 저장하지 못했습니다"
 
 msgid "libxenlight state driver is not active"
 msgstr "libxenlight 상태 드라이버가 작동 중이 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "libxl_domain_info failed for domain '%d'"
-msgstr "도메인 %d에 대한 cputime을 읽을 수 없음"
+msgstr "도메인 '%d'에 대해 libxl_domain_info가 실패했습니다"
 
 msgid "libxl_get_cpu_topology failed"
-msgstr ""
+msgstr "libxl_get_cpu_topology 실패"
 
-#, fuzzy
 msgid "libxl_get_numainfo failed"
-msgstr "libhal_get_all_devices 실패"
+msgstr "libxl_get_numainfo 실패"
 
-#, fuzzy
 msgid "libxl_get_physinfo_info failed"
-msgstr "libhal_get_all_devices 실패"
+msgstr "libxl_get_physinfo_info 실패"
 
 #, c-format
 msgid "libxml2 doesn't handle %s encoding"
-msgstr ""
+msgstr "libxml2가 %s 인코딩을 처리하지 않습니다"
 
-#, fuzzy
 msgid "lifecycle action to set"
-msgstr "예기치 못한 않은 생명주기 동작 %d"
+msgstr "설정할 수명 주기 작업"
 
 msgid "lifecycle type to modify"
-msgstr ""
+msgstr "수정할 수명 주기 유형"
 
-#, fuzzy
 msgid "limit list to children of current snapshot"
-msgstr "현재 스냅샷 설정"
+msgstr "현재 스냅샷의 자식으로 목록 제한"
 
 msgid "limit list to children of given checkpoint"
-msgstr ""
+msgstr "지정된 체크포인트의 자식으로 목록 제한"
 
-#, fuzzy
 msgid "limit list to children of given snapshot"
-msgstr "스냅샷이 아닌 자식 스냅샷을 삭제"
+msgstr "주어진 스냅샷의 자식으로 목록 제한"
 
 #, c-format
 msgid "line %d corrupt ipaddr \"%s\""
-msgstr ""
+msgstr "줄 %d 손상된 ipadr \"%s\""
 
-#, fuzzy
 msgid "list UUID of active pools only"
-msgstr "비활성화 풀 목록"
+msgstr "활성 풀의 UUID만 나열"
 
-#, fuzzy
 msgid "list all domain blocks"
-msgstr "도메인 목록"
+msgstr "모든 도메인 블록 나열"
 
-#, fuzzy
 msgid "list all domain virtual interfaces"
-msgstr "도메인의 가상 인터페이스의 링크 상태 얻기"
+msgstr "모든 도메인 가상 인터페이스 나열"
 
 msgid "list authorized SSH keys for given user (via agent)"
-msgstr ""
+msgstr "지정된 사용자에 대해 승인된 SSH 키 나열(에이전트를 통해)"
 
 msgid "list available servers on a daemon"
-msgstr ""
+msgstr "데몬에서 사용 가능한 서버 나열"
 
 msgid "list checkpoint names only"
-msgstr ""
+msgstr "체크포인트 이름만 나열"
 
-#, fuzzy
 msgid "list checkpoints in a tree"
-msgstr "장치를 트리로 나열"
+msgstr "트리에 체크포인트 나열"
 
 msgid "list clients connected to <server>"
-msgstr ""
+msgstr "<서버>에 연결된 클라이언트 나열"
 
 msgid "list devices in a tree"
 msgstr "장치를 트리로 나열"
 
 msgid "list domain IDs only"
-msgstr ""
+msgstr "도메인 ID만 나열"
 
-#, fuzzy
 msgid "list domain names only"
-msgstr "도메인 목록"
+msgstr "도메인 이름만 나열"
 
 msgid "list domains"
 msgstr "도메인 목록"
 
-#, fuzzy
 msgid "list domains in other states"
-msgstr "도메인을 다른 호스트로 이전"
+msgstr "다른 주에 있는 도메인 나열"
 
-#, fuzzy
 msgid "list domains in paused state"
-msgstr "도메인이 '%s'가 일시중지되지 않았습니다"
+msgstr "일시 중지 상태의 도메인 나열"
 
-#, fuzzy
 msgid "list domains in running state"
-msgstr "도메인이 실행 상태가 아닙니다"
+msgstr "실행 중인 상태의 도메인 나열"
 
-#, fuzzy
 msgid "list domains in shutoff state"
-msgstr "도메인이 shutoff 상태가 아닙니다"
+msgstr "실행 중인 상태의 도메인 나열"
 
-#, fuzzy
 msgid "list domains with autostart disabled"
-msgstr "자동 시작으로 %s 도메인을 표시하기 실패"
+msgstr "자동 시작이 비활성화된 도메인 나열"
 
-#, fuzzy
 msgid "list domains with autostart enabled"
-msgstr "자동 시작으로 %s 도메인을 표시하기 실패"
+msgstr "자동 시작이 활성화된 도메인 나열"
 
 msgid "list domains with existing checkpoint"
-msgstr ""
+msgstr "기존 체크포인트가 있는 도메인 나열"
 
-#, fuzzy
 msgid "list domains with existing snapshot"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "기존 스냅샷이 있는 도메인 나열"
 
-#, fuzzy
 msgid "list domains with managed save state"
-msgstr "이름 '%s'와 일치하는 도메인이 없음 "
+msgstr "관리되는 저장 상태로 도메인 나열"
 
-#, fuzzy
 msgid "list domains without a checkpoint"
-msgstr "부모 없는 스냅샷 목록만 나열"
+msgstr "체크포인트 없이 도메인 나열"
 
-#, fuzzy
 msgid "list domains without a snapshot"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "스냅샷 없이 도메인 나열"
 
-#, fuzzy
 msgid "list domains without managed save"
-msgstr "%s라는 이름의 도메인이 없습니다 "
+msgstr "관리되는 저장 없이 도메인 나열"
 
-#, fuzzy
 msgid "list ephemeral secrets"
-msgstr "비밀정보 목록 나열"
+msgstr "일시적인 비밀 나열"
 
 msgid "list inactive & active devices"
-msgstr ""
+msgstr "비활성 및 활성 장치 나열"
 
 msgid "list inactive & active domains"
 msgstr "비활성화 & 활성화 도메인 보기"
@@ -28268,7 +28236,7 @@ msgid "list inactive & active pools"
 msgstr "비활성화 & 활성화 된 풀 목록"
 
 msgid "list inactive devices"
-msgstr ""
+msgstr "비활성 장치 나열"
 
 msgid "list inactive domains"
 msgstr "비활성화 도메인 보기"
@@ -28285,98 +28253,80 @@ msgstr "비활성화 풀 목록"
 msgid "list is not closed with ]"
 msgstr "목록이 ]로 종료되지 않음 "
 
-#, fuzzy
 msgid "list name of active pools only"
-msgstr "비활성화 & 활성화 된 풀 목록"
+msgstr "활성 풀의 이름만 나열"
 
-#, fuzzy
 msgid "list network filter bindings"
-msgstr "네트워크 필터 나열 "
+msgstr "네트워크 필터 바인딩 나열"
 
 msgid "list network filters"
 msgstr "네트워크 필터 나열 "
 
-#, fuzzy
 msgid "list network names only"
-msgstr "네트워크 목록"
+msgstr "네트워크 이름만 나열"
 
-#, fuzzy
 msgid "list network ports"
-msgstr "네트워크 목록"
+msgstr "네트워크 포트 나열"
 
 msgid "list networks"
 msgstr "네트워크 목록"
 
-#, fuzzy
 msgid "list networks with autostart disabled"
-msgstr "자동 시작으로 %s 네트워크를 표시하기 실패"
+msgstr "자동 시작이 비활성화된 네트워크 나열"
 
-#, fuzzy
 msgid "list networks with autostart enabled"
-msgstr "자동 시작으로 %s 네트워크를 표시하기 실패"
+msgstr "자동 시작이 활성화된 네트워크 나열"
 
-#, fuzzy
 msgid "list non-ephemeral secrets"
-msgstr "비밀정보 목록 나열"
+msgstr "일시적이지 않은 비밀 나열"
 
-#, fuzzy
 msgid "list non-private secrets"
-msgstr "비밀정보 목록 나열"
+msgstr "비공개 비밀 나열"
 
 msgid "list of cpus to enable or disable"
-msgstr ""
+msgstr "활성화 또는 비활성화할 CPU 목록"
 
 msgid "list of domains to get stats for"
-msgstr ""
+msgstr "통계를 가져올 도메인 목록"
 
-#, fuzzy
 msgid "list only active domains"
-msgstr "비활성화 도메인 보기"
+msgstr "활성 도메인만 나열"
 
-#, fuzzy
 msgid "list only checkpoints that are not leaves (with children)"
-msgstr "자식 없는 스냅샷 목록만 나열"
+msgstr "잎이 아닌 체크포인트만 나열(자식 포함)"
 
-#, fuzzy
 msgid "list only checkpoints without children"
-msgstr "자식 없는 스냅샷 목록만 나열"
+msgstr "자식이 없는 체크포인트만 나열"
 
-#, fuzzy
 msgid "list only checkpoints without parents"
-msgstr "부모 없는 스냅샷 목록만 나열"
+msgstr "부모가 없는 체크포인트만 나열"
 
-#, fuzzy
 msgid "list only domains in other states"
-msgstr "도메인 상태 빠짐"
+msgstr "다른 주에 있는 도메인만 나열"
 
 msgid "list only inactive domains"
 msgstr "비활성화 도메인만 목록화합니다"
 
-#, fuzzy
 msgid "list only paused domains"
-msgstr "비활성화 도메인 보기"
+msgstr "일시중지된 도메인만 나열"
 
-#, fuzzy
 msgid "list only persistent domains"
-msgstr "임시 도메인 목록 "
+msgstr "영구 도메인만 나열"
 
-#, fuzzy
 msgid "list only running domains"
-msgstr "임시 도메인 목록 "
+msgstr "실행 중인 도메인만 나열"
 
-#, fuzzy
 msgid "list only shutoff domains"
-msgstr "임시 도메인 목록 "
+msgstr "차단 도메인만 나열"
 
-#, fuzzy
 msgid "list only snapshots that are not leaves (with children)"
-msgstr "자식 없는 스냅샷 목록만 나열"
+msgstr "잎이 아닌 스냅샷만 나열(자식 포함)"
 
 msgid "list only snapshots that have metadata that would prevent undefine"
-msgstr ""
+msgstr "정의 취소를 방지하는 메타데이터가 있는 스냅샷만 나열"
 
 msgid "list only snapshots that have no metadata managed by libvirt"
-msgstr ""
+msgstr "libvirt에서 관리하는 메타데이터가 없는 스냅샷만 나열"
 
 msgid "list only snapshots without children"
 msgstr "자식 없는 스냅샷 목록만 나열"
@@ -28387,17 +28337,14 @@ msgstr "부모 없는 스냅샷 목록만 나열"
 msgid "list only transient domains"
 msgstr "임시 도메인만 목록화합니다"
 
-#, fuzzy
 msgid "list persistent domains"
-msgstr "임시 도메인 목록 "
+msgstr "영구 도메인 나열"
 
-#, fuzzy
 msgid "list persistent networks"
-msgstr "임시 네트워크 목록 "
+msgstr "영구 네트워크 나열"
 
-#, fuzzy
 msgid "list persistent pools"
-msgstr "임시 풀 목록 "
+msgstr "영구 풀 나열"
 
 msgid "list physical host interfaces"
 msgstr "물리적 호스트 인터페이스 목록"
@@ -28406,29 +28353,25 @@ msgid "list pools"
 msgstr "풀 목록"
 
 msgid "list pools with autostart disabled"
-msgstr ""
+msgstr "자동 시작이 비활성화된 풀 나열"
 
-#, fuzzy
 msgid "list pools with autostart enabled"
-msgstr "자동 시작으로 %s 풀을 표시하기 실패"
+msgstr "자동 시작이 활성화된 풀 나열"
 
-#, fuzzy
 msgid "list private secrets"
-msgstr "비밀정보 목록 나열"
+msgstr "개인 비밀 나열"
 
 msgid "list secrets"
 msgstr "비밀정보 목록 나열"
 
-#, fuzzy
 msgid "list snapshot names only"
-msgstr "스냅샷 이름 "
+msgstr "스냅샷 이름만 나열"
 
-#, fuzzy
 msgid "list snapshots in a tree"
-msgstr "장치를 트리로 나열"
+msgstr "트리에 스냅샷 나열"
 
 msgid "list table (default)"
-msgstr ""
+msgstr "목록 테이블(기본값)"
 
 msgid "list the name, rather than the full xml"
 msgstr "전체 xml 대신 이름을 나열합니다 "
@@ -28443,68 +28386,66 @@ msgid "list transient pools"
 msgstr "임시 풀 목록 "
 
 msgid "list uuid's only"
-msgstr ""
+msgstr "uuid만 나열"
 
-#, fuzzy
 msgid "list valid event types"
-msgstr "잘못된 보안 유형 %s"
+msgstr "유효한 이벤트 유형 나열"
 
 msgid "list vols"
 msgstr "볼륨 목록"
 
-#, fuzzy
 msgid "listen address is not supported by tunnelled migration"
-msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
+msgstr "수신 주소는 터널링된 마이그레이션에서 지원되지 않습니다"
 
 msgid "listen address that destination should bind to for incoming migration"
-msgstr ""
+msgstr "대상이 들어오는 마이그레이션을 위해 바인딩해야 하는 수신 주소"
 
 #, c-format
 msgid "listen type 'none' is not available for graphics type '%s'"
-msgstr ""
+msgstr "그래픽 유형 '%s'에는 수신 유형 '없음'을 사용할 수 없습니다"
 
 #, c-format
 msgid "listen type 'socket' is not available for graphics type '%s'"
-msgstr ""
+msgstr "그래픽 유형 '%s'에 대해 수신 유형 '소켓'을 사용할 수 없습니다"
 
 msgid "lists not allowed in VMX format"
 msgstr "VMX 형식의 목록은 허용되지 않습니다"
 
 msgid "live"
-msgstr ""
+msgstr "라이브"
 
-#, fuzzy, c-format
+#, c-format
 msgid "live attach of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 라이브 연결이 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "live attach of shmem model '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "shmem 모델 '%s'의 라이브 연결이 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "live detach of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 실시간 분리가 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "live detach of shmem model '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "shmem 모델 '%s'의 라이브 분리가 지원되지 않습니다"
 
 msgid "live migration"
 msgstr "실시간 마이그레이션"
 
 msgid "live snapshot creation is supported only during full system snapshots"
-msgstr ""
+msgstr "라이브 스냅샷 생성은 전체 시스템 스냅샷 중에만 지원됩니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "live update of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 라이브 업데이트가 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "loadparm '%s' exceeds 8 characters"
-msgstr "리소스 이름 '%s'이 %d자를 초과합니다 "
+msgstr "loadparm '%s'이(가) 8자를 초과합니다"
 
 msgid "loadparm cannot be an empty string"
-msgstr ""
+msgstr "loadparm은 빈 문자열일 수 없습니다"
 
 msgid "lock manager connection has been restricted"
 msgstr "잠금 관리자 연결이 제한되어 있습니다 "
@@ -28515,119 +28456,113 @@ msgstr "잠금 소유자 상세 정보가 등록되어 있지 않습니다 "
 msgid "logfile not supported in this QEMU binary"
 msgstr "로그파일은 이 QEMU 바이너리에서 지원되지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "logical volume '%s' is sparse, volume wipe not supported"
-msgstr "%s 볼륨 생성은 지원되지 않습니다 "
+msgstr "논리 볼륨 '%s'가 희소합니다. 볼륨 지우기가 지원되지 않습니다"
 
 msgid "loop until timeout or interrupt, rather than one-shot"
-msgstr ""
+msgstr "원샷이 보다는, 타임아웃 또는 인터럽트까지 루프"
 
 msgid ""
 "luks encryption usage requires encrypted secret generation to be supported"
-msgstr ""
+msgstr "luks 암호화를 사용하려면 암호화된 비밀 생성이 지원되어야 합니다"
 
 msgid "lxc state driver is not active"
 msgstr "lxc 상태 드라이버가 작동중이 아닙니다"
 
 msgid "lxc.mount.fstab or lxc.mount found, use lxc.mount.entry lines instead"
-msgstr ""
+msgstr "lxc.mount.fstab 또는 lxc.mount를 찾았습니다. 대신 lxc.mount.entry 행을 사용하십시오"
 
 msgid "lxcChild() passed invalid vm definition"
 msgstr "lxcChild()가 잘못된 vm 정의를 받았습니다"
 
-#, fuzzy
 msgid "machine already powered down"
-msgstr "도메인의 전원이 켜있지 않습니다"
+msgstr "이미 전원이 꺼진 기계"
 
 msgid "machine is not in poweroff|saved|aborted state, so couldn't start it"
-msgstr ""
+msgstr "시스템이 전원 끄기|저장됨|중단된 상태가 아니므로 시작할 수 없습니다"
 
 msgid "machine is null"
 msgstr "기계가 null입니다"
 
-#, fuzzy
 msgid "machine not in running state to suspend it"
-msgstr "도메인이 실행 상태가 아닙니다"
+msgstr "시스템을 일시 중단하기 위해 실행 중인 상태가 아닙니다"
 
 msgid "machine not paused, so can't resume it"
-msgstr ""
+msgstr "시스템이 일시 중지되지 않았으므로 다시 시작할 수 없습니다"
 
-#, fuzzy
 msgid "machine not running, so can't reboot it"
-msgstr "도메인이 실행 상태가 아닙니다"
+msgstr "컴퓨터가 실행되고 있지 않으므로 재부팅할 수 없습니다"
 
 msgid "machine paused, so can't power it down"
-msgstr ""
+msgstr "기계가 일시 중지되었으므로 전원을 끌 수 없습니다"
 
 #, c-format
 msgid "machine type '%s'"
-msgstr ""
+msgstr "기계 유형 '%s'"
 
 msgid "machine type (/domain/os/type/@machine)"
-msgstr ""
+msgstr "머신 유형(/domain/os/type/@machine)"
 
 msgid "make added vcpus hot(un)pluggable"
-msgstr ""
+msgstr "추가된 vcpus를 핫(un)플러그 가능하게 만들기"
 
 msgid "make live change persistent"
-msgstr ""
+msgstr "실시간 변경을 지속적으로 유지"
 
 msgid "make the copy share a backing chain"
-msgstr ""
+msgstr "사본이 백킹 체인을 공유하도록 하십시오"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr ""
+msgstr "'원시' 드라이버의 잘못된 '오프셋' 속성"
 
-#, fuzzy
 msgid "malformed 'prefix' field"
-msgstr "잘못된 ipset 플래그 "
+msgstr "잘못된 '접두사' 필드"
 
 #, c-format
 msgid "malformed 'readahead' field in backing store definition '%s'"
-msgstr ""
+msgstr "백업 저장소 정의 '%s'의 형식이 잘못된 '미리 읽기' 필드"
 
 msgid "malformed 'size' property of 'raw' driver"
-msgstr ""
+msgstr "'원시' 드라이버의 잘못된 '크기' 속성"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%s'"
-msgstr ""
+msgstr "백업 저장소 정의 '%s'의 잘못된 'sslverify' 필드"
 
 #, c-format
 msgid "malformed 'timeout' field in backing store definition '%s'"
-msgstr ""
+msgstr "백업 저장소 정의 '%s'의 형식이 잘못된 '시간 초과' 필드"
 
-#, fuzzy
 msgid "malformed 'wwpn' value"
-msgstr "잘못된 'queues' 값 '%s'"
+msgstr "잘못된 'wwpn' 값"
 
 msgid "malformed <blockDirtyBitmaps> in migration cookie"
-msgstr ""
+msgstr "마이그레이션 쿠키의 형식이 잘못된 <blockDirtyBitmaps>"
 
 msgid "malformed <sysinfo> uuid element"
 msgstr "잘못된 <sysinfo> uuid 요소"
 
 msgid "malformed <tempBlockDirtyBitmaps> in status XML"
-msgstr ""
+msgstr "상태 XML의 형식이 잘못된 <tempBlockDirtyBitmaps>"
 
 msgid "malformed GIC version in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시의 잘못된 GIC 버전"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed QAPI schema when querying '%s' of '%s'"
-msgstr "심볼릭 링크 '%s'를 '%s'에 대해 만들 수 없음"
+msgstr "'%s'의 '%s'를 쿼리할 때 형식이 잘못된 QAPI 스키마"
 
-#, fuzzy
 msgid "malformed QMP schema"
-msgstr "잘못된 ipset 플래그 "
+msgstr "잘못된 QMP 스키마"
 
 #, c-format
 msgid "malformed TLS secret uuid '%s' provided"
-msgstr ""
+msgstr "잘못된 형식의 TLS 암호 uuid '%s'가 제공되었습니다"
 
 #, c-format
 msgid "malformed backing store path for protocol %s"
-msgstr ""
+msgstr "프로토콜 %s에 대한 형식이 잘못된 백업 저장소 경로"
 
 msgid "malformed capacity element"
 msgstr "잘못된 형식의 용량 요소"
@@ -28635,12 +28570,12 @@ msgstr "잘못된 형식의 용량 요소"
 msgid "malformed char device string"
 msgstr "잘못된 형식의 문자 장치 문자열"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed disk path: %s"
-msgstr "잘못된 ipset 플래그 "
+msgstr "잘못된 디스크 경로: %s"
 
 msgid "malformed emulated GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시의 잘못된 에뮬레이트된 GIC 정보"
 
 msgid "malformed genid element"
 msgstr "잘못된 genid 요소"
@@ -28648,20 +28583,18 @@ msgstr "잘못된 genid 요소"
 msgid "malformed group element"
 msgstr "잘못된 형식의 group 요소"
 
-#, fuzzy
 msgid "malformed hostuuid element in migration data"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "마이그레이션 데이터의 잘못된 hostuid 요소"
 
 #, c-format
 msgid "malformed http cookie '%s' in backing store definition '%s'"
-msgstr ""
+msgstr "백업 저장소 정의 '%s'의 잘못된 http 쿠키 '%s'"
 
-#, fuzzy
 msgid "malformed hyperv panic data"
-msgstr "잘못된 형식의 문자 장치 문자열"
+msgstr "잘못된 Hyperv 패닉 데이터"
 
 msgid "malformed in-kernel GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시의 잘못된 커널 내 GIC 정보"
 
 msgid "malformed ipset flags"
 msgstr "잘못된 ipset 플래그 "
@@ -28671,23 +28604,22 @@ msgid "malformed mac address '%s'"
 msgstr "잘못된 MAC 주소 '%s'"
 
 msgid "malformed machine cpu count in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시의 잘못된 컴퓨터 CPU 수"
 
-#, fuzzy
 msgid "malformed mtu size"
-msgstr "잘못된 형식의 크기 %s"
+msgstr "잘못된 mtu 크기"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed namespace '%s'"
-msgstr "잘못된 MAC 주소 '%s'"
+msgstr "형식이 잘못된 네임스페이스 '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed namespace name: %s"
-msgstr "잘못된 MAC 주소 '%s'"
+msgstr "잘못된 네임스페이스 이름: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed nbd string '%s'"
-msgstr "잘못된 형식의 문자 장치 문자열"
+msgstr "잘못된 nbd 문자열 '%s'"
 
 msgid "malformed netlink response message"
 msgstr "잘못된 형식의 넷링크 응답 메시지"
@@ -28695,41 +28627,38 @@ msgstr "잘못된 형식의 넷링크 응답 메시지"
 msgid "malformed octal mode"
 msgstr "잘못된 형식의 8진 모드"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed output of %s: %s"
-msgstr "잘못된 ipset 플래그 "
+msgstr "%s의 잘못된 출력: %s"
 
 msgid "malformed owner element"
 msgstr "잘못된 형식의 owner 요소"
 
-#, fuzzy
 msgid "malformed prManager reply"
-msgstr "잘못된 형식의 owner 요소"
+msgstr "잘못된 형식의 prManager 응답"
 
 msgid "malformed qemu-current-machine reply"
-msgstr ""
+msgstr "잘못된 형식의 qemu-current-machine 응답"
 
-#, fuzzy
 msgid "malformed query string"
-msgstr "잘못된 형식의 문자 장치 문자열"
+msgstr "잘못된 쿼리 문자열"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed refcount %s on %s"
-msgstr "'%s'에 잘못된 형식의 키워드 인자"
+msgstr "%s의 잘못된 참조 횟수 %s"
 
 msgid "malformed refreservation reported"
-msgstr ""
+msgstr "잘못된 형식의 예약 보고됨"
 
-#, fuzzy
 msgid "malformed return value"
-msgstr "잘못된 형식의 볼륨 확장 크기 값"
+msgstr "잘못된 반환 값"
 
 msgid "malformed s390 panic data"
-msgstr ""
+msgstr "잘못된 형식의 s390 패닉 데이터"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed signal name: %s"
-msgstr "잘못된 형식의 크기 %s"
+msgstr "잘못된 신호 이름: %s"
 
 msgid "malformed uuid element"
 msgstr "잘못 구성된 uuid 요소"
@@ -28738,21 +28667,19 @@ msgstr "잘못 구성된 uuid 요소"
 msgid "malformed uuid element for '%s'"
 msgstr "'%s'에 대해 잘못된 형식의 uuid 요소"
 
-#, fuzzy, c-format
+#, c-format
 msgid "malformed value '%s' of 'offset' attribute of slice"
-msgstr "잘못된 'floor_sum' 속성: %s"
+msgstr "조각의 '오프셋' 속성 값 '%s'가 잘못되었습니다"
 
 #, c-format
 msgid "malformed value '%s' of 'size' attribute of slice"
-msgstr ""
+msgstr "조각의 '크기' 속성 값 '%s'가 잘못되었습니다"
 
-#, fuzzy
 msgid "malformed volsize reported"
-msgstr "잘못된 형식의 8진 모드"
+msgstr "잘못된 volsize 보고됨"
 
-#, fuzzy
 msgid "malformed volume allocation value"
-msgstr "잘못된 형식의 볼륨 확장 크기 값"
+msgstr "잘못된 볼륨 할당 값"
 
 msgid "malformed volume extent devices value"
 msgstr "잘못된 볼륨 확장 장치 값"
@@ -28770,59 +28697,53 @@ msgid "malformed volume extent stripes value"
 msgstr "잘못된 볼륨 확장 스트라이프 값"
 
 msgid "malformed/missing addr in dimm memory info"
-msgstr ""
+msgstr "dimm 메모리 정보의 잘못된 형식/누락된 addr"
 
 msgid "malformed/missing hotpluggable in dimm memory info"
-msgstr ""
+msgstr "dimm 메모리 정보에 잘못된 형식/누락된 핫플러그 가능"
 
 msgid "malformed/missing hotplugged in dimm memory info"
-msgstr ""
+msgstr "dimm 메모리 정보의 핫플러그 형식이 잘못되었거나 누락되었습니다"
 
 msgid "malformed/missing slot in dimm memory info"
-msgstr ""
+msgstr "dimm 메모리 정보의 잘못된 형식/누락된 슬롯"
 
-#, fuzzy
 msgid "managed save of a domain state"
-msgstr "도메인 상태를 파일에 저장"
+msgstr "도메인 상태의 관리되는 저장"
 
 msgid "managing externally launched configuration"
-msgstr ""
+msgstr "외부에서 실행된 구성 관리"
 
 msgid "manipulate authorized SSH keys file for given user (via agent)"
-msgstr ""
+msgstr "지정된 사용자에 대한 승인된 SSH 키 파일 조작(에이전트를 통해)"
 
 msgid "mark inactive domains with managed save state"
-msgstr ""
+msgstr "관리되는 저장 상태로 비활성 도메인 표시"
 
-#, fuzzy
 msgid "masterbus not found"
-msgstr "도메인을 찾을 수 없음"
+msgstr "마스터 버스를 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "match mode %s not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "일치 모드 %s가 지원되지 않습니다"
 
-#, fuzzy
 msgid "matching input device not found"
-msgstr "usb 장치를 찾을 수 없음"
+msgstr "일치하는 입력 장치를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "matching memory device was not found"
-msgstr "노드 디바이스 찾을 수 없음"
+msgstr "일치하는 메모리 장치를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "matching shmem device was not found"
-msgstr "usb 장치를 찾을 수 없음"
+msgstr "일치하는 shmem 장치를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "matching vsock device not found"
-msgstr "usb 장치를 찾을 수 없음"
+msgstr "일치하는 vsock 장치를 찾을 수 없음"
 
 msgid "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
 
 msgid "maxWorkers must not be switched from zero to non-zero and vice versa"
-msgstr ""
+msgstr "maxWorkers는 0에서 0이 아닌 값으로 또는 그 반대로 전환되어서는 안 됩니다"
 
 msgid "maxcells > REMOTE_NODE_MAX_CELLS"
 msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
@@ -28830,37 +28751,36 @@ msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 msgid "maxerrors too large"
 msgstr "maxerrors가 너무 큽니다"
 
-#, fuzzy
 msgid "maxids > REMOTE_DOMAIN_LIST_MAX"
-msgstr "maxStats > REMOTE_DOMAIN_MEMORY_STATS_MAX"
+msgstr "최대 ID > REMOTE_DOMAIN_LIST_MAX"
 
 msgid "maximum"
-msgstr ""
+msgstr "최대"
 
 msgid "maximum CPU is not supported by QEMU binary"
-msgstr ""
+msgstr "QEMU 바이너리는 최대 CPU를 지원하지 않습니다"
 
 msgid "maximum amount of in-flight data during the copy"
-msgstr ""
+msgstr "복사 중 최대 인플라이트 데이터 양"
 
 msgid ""
 "maximum memory size must be equal or greater than the actual memory size"
-msgstr ""
+msgstr "최대 메모리 크기는 실제 메모리 크기보다 크거나 같아야 합니다"
 
 msgid "maximum memory size overflowed after alignment"
-msgstr ""
+msgstr "정렬 후 최대 메모리 크기가 오버플로됨"
 
 msgid "maximum tolerable downtime (in milliseconds) for migration"
 msgstr "이전을 위한 최대 허용 가능한 가동 중지 시간(밀리초 단위)"
 
 msgid "maximum vCPU count must not be less than current vCPU count"
-msgstr ""
+msgstr "최대 vCPU 수는 현재 vCPU 수보다 작아서는 안 됩니다"
 
 msgid "maximum vcpu count of a live domain can't be modified"
-msgstr ""
+msgstr "라이브 도메인의 최대 vcpu 수는 수정할 수 없습니다"
 
 msgid "maximum vcpus count must be an integer"
-msgstr ""
+msgstr "최대 vcpus 수는 정수여야 합니다"
 
 msgid "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
@@ -28868,21 +28788,17 @@ msgstr "maxinfo * maplen > REMOTE_CPUMAPS_MAX"
 msgid "maxinfo > REMOTE_VCPUINFO_MAX"
 msgstr "maxinfo > REMOTE_VCPUINFO_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_DOMAIN_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_DOMAIN_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_DOMAIN_SNAPSHOT_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_INTERFACE_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_INTERFACE_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_NETWORK_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_NETWORK_LIST_MAX"
 
 msgid "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
@@ -28890,42 +28806,37 @@ msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
 msgid "maxnames > REMOTE_NODE_DEVICE_LIST_MAX"
 msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_NWFILTER_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_NWFILTER_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_STORAGE_POOL_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_STORAGE_POOL_LIST_MAX"
 
-#, fuzzy
 msgid "maxnames > REMOTE_STORAGE_VOL_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 이름 > REMOTE_STORAGE_VOL_LIST_MAX"
 
-#, fuzzy
 msgid "maxuuids > REMOTE_SECRET_LIST_MAX"
-msgstr "maxnames > REMOTE_NODE_DEVICE_CAPS_LIST_MAX"
+msgstr "최대 ID > REMOTE_SECRET_LIST_MAX"
 
 msgid "mdev attribute missing name or value"
-msgstr ""
+msgstr "mdev 속성에 이름 또는 값이 없습니다"
 
 msgid "mdevctl JSON response contains no devices"
-msgstr ""
+msgstr "mdevctl JSON 응답에 장치가 없습니다"
 
 #, c-format
 msgid "mediated device %s is in use by driver %s, domain %s"
-msgstr ""
+msgstr "중재된 장치 %s가 드라이버 %s, 도메인 %s에서 사용 중입니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "mediated device '%s' not found"
-msgstr "노드 디바이스 찾을 수 없음"
+msgstr "중재된 장치 '%s'를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "mediated devices are not supported on non-linux platforms"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "미디에이션된 장치는 Linux가 아닌 플랫폼에서 지원되지 않습니다"
 
 msgid "mem(Suspend-to-RAM), disk(Suspend-to-Disk), hybrid(Hybrid-Suspend)"
-msgstr ""
+msgstr "메모리(램-중단), 디스크(디스크-중단), 하이브리드 (하이브리드-중단)"
 
 #, c-format
 msgid "memory access mode '%s' not supported without guest numa node"
@@ -28934,29 +28845,28 @@ msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'를 지�
 msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "메모리 속성: [file=]name[,snapshot=type]"
 
-#, fuzzy
 msgid "memory device alias is not assigned"
-msgstr "문자 장치 %s가 PTY를 사용하고 있지 않음"
+msgstr "메모리 장치 별칭이 할당되지 않았습니다"
 
 #, c-format
 msgid ""
 "memory device base '0x%llx' is already being used by another memory device"
-msgstr ""
+msgstr "메모리 장치 기반 '0x%llx'는 이미 다른 메모리 장치에서 사용 중입니다"
 
 #, c-format
 msgid "memory device count '%u' exceeds slots count '%u'"
-msgstr ""
+msgstr "메모리 장치 수 '%u'가 슬롯 수 '%u'를 초과합니다"
 
 #, c-format
 msgid "memory device slot '%u' exceeds slots count '%u'"
-msgstr ""
+msgstr "메모리 장치 슬롯 '%u'가 슬롯 수 '%u'를 초과합니다"
 
 #, c-format
 msgid "memory device slot '%u' is already being used by another memory device"
-msgstr ""
+msgstr "메모리 장치 슬롯 '%u'는 이미 다른 메모리 장치에서 사용 중입니다"
 
 msgid "memory device total size exceeds hotplug space"
-msgstr ""
+msgstr "메모리 장치의 총 크기가 핫플러그 공간을 초과합니다"
 
 msgid "memory devices are not supported by this driver"
 msgstr "이 버전의 qemu에서는 메모리 부울 장치 유형 '%s'를 지원하지 않습니다"
@@ -28968,98 +28878,93 @@ msgstr "메모리 파일 이름 '%s'에는 외부 스냅샷이 필요합니다 "
 msgid ""
 "memory hard_limit tunable value must be lower than or equal to "
 "swap_hard_limit"
-msgstr ""
+msgstr "메모리 hard_limit 조정 가능 값은 swap_hard_limit보다 작거나 같아야 합니다"
 
-#, fuzzy
 msgid "memory hotplug isn't supported by this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리는 메모리 핫플러그를 지원하지 않습니다"
 
 msgid ""
 "memory hotplug tunables <maxMemory> are not supported by this hypervisor "
 "driver"
-msgstr ""
+msgstr "메모리 핫플러그 튜너블 <maxMemory>는 이 하이퍼바이저 드라이버에서 지원되지 않습니다"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
 msgstr "메모리 들여다보기 요청이 원격 프로토콜에 대해 너무 큼, %zi > %d"
 
 msgid "memory size can't be changed unless domain is powered down"
-msgstr ""
+msgstr "도메인의 전원이 꺼지지 않는 한 메모리 크기를 변경할 수 없습니다"
 
 #, c-format
 msgid "memory size of NUMA node '%zu' overflowed after alignment"
-msgstr ""
+msgstr "정렬 후 NUMA 노드 '%zu'의 메모리 크기가 오버플로되었습니다"
 
 #, c-format
 msgid "memory snapshot file path (%s) must be absolute"
-msgstr ""
+msgstr "메모리 스냅샷 파일 경로(%s)는 절대 경로여야 합니다"
 
 msgid "memory state cannot be saved with offline or disk-only snapshot"
 msgstr "메모리 상태는 오프라인 또는 디스크 전용 스냅샷으로 저장할 수 없습니다 "
 
 msgid "memory-only dump failed for unknown reason"
-msgstr ""
+msgstr "알 수 없는 이유로 메모리 전용 덤프가 실패했습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "memory-only dump failed: %s"
-msgstr "작업 실패: %s"
+msgstr "메모리 전용 덤프 실패: %s"
 
 msgid "message"
 msgstr "메세지"
 
 msgid "metadata cache max size control is not supported with this QEMU binary"
-msgstr ""
+msgstr "이 QEMU 바이너리에서는 메타데이터 캐시 최대 크기 제어가 지원되지 않습니다"
 
 msgid "metadata cache max size control is supported only with qcow2 images"
-msgstr ""
+msgstr "메타데이터 캐시 최대 크기 제어는 qcow2 이미지에서만 지원됩니다"
 
-#, fuzzy
 msgid "metadata not found"
-msgstr "도메인을 찾을 수 없음"
+msgstr "메타데이터를 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "metadata not found: %s"
-msgstr "도메인을 찾을 수 없음: %s"
+msgstr "메타데이터를 찾을 수 없음: %s"
 
 msgid "metadata preallocation conflicts with backing store"
-msgstr ""
+msgstr "메타데이터 사전 할당이 백업 저장소와 충돌합니다"
 
-#, fuzzy
 msgid "metadata preallocation is not supported for block volumes"
-msgstr "vport 작동 '%s'은 host%d에 대해 지원되지 않습니다"
+msgstr "블록 볼륨에는 메타데이터 사전 할당이 지원되지 않습니다"
 
-#, fuzzy
 msgid "metadata preallocation is not supported for raw volumes"
-msgstr "vport 작동 '%s'은 host%d에 대해 지원되지 않습니다"
+msgstr "원시 볼륨에는 메타데이터 사전 할당이 지원되지 않습니다"
 
 msgid "metadata preallocation only available with qcow2"
-msgstr ""
+msgstr "qcow2에서만 사용할 수 있는 메타데이터 사전 할당"
 
 msgid "metadata title can't contain newlines"
 msgstr "메다자료 제목는 줄 바꿈을 포함 할 수 없습니다"
 
 msgid "metadata_cache is not supported with vhostuser disk"
-msgstr ""
+msgstr "메타데이터_캐시는 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid "migrate domain to another host"
 msgstr "도메인을 다른 호스트로 이전"
 
-#, fuzzy
 msgid "migrate uri is not set"
-msgstr "도메인을 다른 호스트로 이전"
+msgstr "마이그레이션 uri가 설정되지 않았습니다"
 
 msgid "migrate: Invalid downtime"
 msgstr "이전: 잘못된 다운타임"
 
 msgid "migrate: Unexpected --timeout-* option without --timeout"
-msgstr ""
+msgstr "마이그레이션: --timeout이 없는 예기치 않은 --timeout-* 옵션"
 
 msgid "migrate: Unexpected timeout for offline migration"
-msgstr ""
+msgstr "마이그레이션: 오프라인 마이그레이션에 대한 예기치 않은 시간 초과"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migrate_tls_x509_cert_dir directory '%s' does not exist"
-msgstr "템플릿 '%s'는 존재하지 않습니다"
+msgstr "migrate_tls_x509_cert_dir 디렉토리 '%s'가 존재하지 않습니다"
 
 msgid "migrated"
 msgstr "마이그레이션됨"
@@ -29070,63 +28975,58 @@ msgstr "마이그레이션 중"
 msgid "migration"
 msgstr "이전(migration)"
 
-#, fuzzy
 msgid "migration URI is not supported by tunnelled migration"
-msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
+msgstr "마이그레이션 URI는 터널링된 마이그레이션에서 지원되지 않습니다"
 
 msgid "migration URI, usually can be omitted"
 msgstr "이전 URI, 주로 생략 가능"
 
 msgid "migration bandwidth limit in MiB/s"
-msgstr ""
+msgstr "마이그레이션 대역폭 제한(MiB/s)"
 
 msgid "migration canceled"
 msgstr "마이그레이션 취소됨"
 
-#, fuzzy
 msgid "migration in job"
-msgstr "마이그레이션 취소됨"
+msgstr "업무에서의 마이그레이션"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %s failed"
-msgstr "'%s'에 대한 stat이 실패했습니다"
+msgstr "디스크 %s 마이그레이션 실패"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration of disk %s failed: %s"
-msgstr "작업 실패: %s"
+msgstr "디스크 %s 마이그레이션 실패: %s"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
-msgstr ""
+msgstr "비공유 스토리지의 마이그레이션은 터널링된 마이그레이션 및 이 QEMU에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "migration out job"
-msgstr "마이그레이션"
+msgstr "마이그레이션 아웃 작업"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
-msgstr ""
+msgstr "마이그레이션 매개변수 '%s'는 %llu보다 작아야 합니다"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %u"
-msgstr ""
+msgstr "마이그레이션 매개변수 '%s'는 %u보다 작아야 합니다"
 
 #, c-format
 msgid "migration protocol going backwards %s => %s"
-msgstr ""
+msgstr "마이그레이션 프로토콜이 %s => %s로 이동합니다"
 
-#, fuzzy
 msgid "migration statistics are available only on the source host"
-msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되지 않습니다 "
+msgstr "마이그레이션 통계는 소스 호스트에서만 사용할 수 있습니다"
 
-#, fuzzy
 msgid "migration successfully aborted"
-msgstr "이전 URI, 주로 생략 가능"
+msgstr "마이그레이션이 성공적으로 중단되었습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "migration successfully aborted: %s"
-msgstr "이전 URI, 주로 생략 가능"
+msgstr "마이그레이션이 성공적으로 중단됨: %s"
 
 msgid "migration was active, but RAM 'remaining' data was missing"
 msgstr "이전이 작동중이지만, RAM '남아있는' 데이터를 잃어버렸습니다"
@@ -29141,64 +29041,62 @@ msgid "migration was active, but no RAM info was set"
 msgstr "이전이 작동입니다만, RAM 정보가 설정되지 않았습니다"
 
 msgid "migration with legacy shmem device is not supported"
-msgstr ""
+msgstr "레거시 shmem 장치를 사용한 마이그레이션은 지원되지 않습니다"
 
 msgid "migration with non-shared storage with full disk copy"
-msgstr ""
+msgstr "전체 디스크 복사본이 있는 비공유 저장소로 마이그레이션"
 
 msgid ""
 "migration with non-shared storage with incremental copy (same base image "
 "shared between source and destination)"
-msgstr ""
+msgstr "증분 복사본이 있는 비공유 스토리지로 마이그레이션(소스와 대상 간에 공유되는 동일한 기본 이미지)"
 
 msgid "migration with transient disk is not supported"
-msgstr ""
+msgstr "임시 디스크를 사용한 마이그레이션은 지원되지 않습니다"
 
-#, fuzzy
 msgid "migration with virtiofs device is not supported"
-msgstr "%s 볼륨 생성은 지원되지 않습니다 "
+msgstr "임시 디스크를 사용한 마이그레이션은 지원되지 않습니다"
 
 #, c-format
 msgid "migration_address must not be the address of the local machine: %s"
-msgstr ""
+msgstr "마이그레이션_주소는 로컬 시스템의 주소가 아니어야 합니다. %s"
 
 #, c-format
 msgid "migration_host must not be the address of the local machine: %s"
-msgstr ""
+msgstr "마이그레이션_호스트는 로컬 시스템의 주소가 아니어야 합니다. %s"
 
 msgid "minWorkers cannot be larger than maxWorkers"
-msgstr ""
+msgstr "minWorkers는 maxWorkers보다 클 수 없습니다"
 
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
-msgstr ""
+msgstr "NVDIMM의 최소 대상 크기는 256MB에 레이블 크기를 더한 크기여야 합니다"
 
 msgid "mirror requires file name"
 msgstr "미러에는 파일 이름이 필요합니다"
 
-#, fuzzy
 msgid "mirror requires source element"
-msgstr "미러에는 파일 이름이 필요합니다"
+msgstr "미러에는 소스 요소가 필요합니다"
 
 msgid "mirror without type only supported by copy job"
-msgstr ""
+msgstr "복사 작업에서만 지원되는 유형 없는 미러"
 
-#, fuzzy, c-format
+#, c-format
 msgid "mishandled storage format '%s'"
-msgstr "'%s' 도메인 보기 실패"
+msgstr "잘못 처리된 스토리지 형식 '%s'"
 
 #, c-format
 msgid ""
 "mismatch between configured type for snapshot disk '%s' and the type of "
 "existing file '%s'"
-msgstr ""
+msgstr "스냅샷 디스크 '%s'에 대해 구성된 유형과 기존 파일 '%s' 유형이 일치하지 않습니다"
 
 #, c-format
 msgid "mismatch of address family in range %s - %s"
-msgstr ""
+msgstr "%s - %s 범위의 주소 계열이 일치하지 않습니다"
 
 #, c-format
 msgid "mismatch of address family in range %s - %s for network %s"
-msgstr ""
+msgstr "네트워크 %s에 대한 %s - %s 범위의 주소 패밀리가 일치하지 않습니다"
 
 msgid "mismatched header magic"
 msgstr "일치하지 않는 헤더 매직"
@@ -29206,13 +29104,12 @@ msgstr "일치하지 않는 헤더 매직"
 msgid "missing \""
 msgstr "빠짐 \""
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing %s in <virtualport type='%s'>"
-msgstr "필요한 가상 포트 유형이 누락되어 있음"
+msgstr "<가상 포트 유형='%s'>에서 누락된 %s"
 
-#, fuzzy
 msgid "missing 'DateTime' element"
-msgstr "root 요소가 누락되어 있음"
+msgstr "누락된 'DateTime' 요소"
 
 #, c-format
 msgid "missing 'architecture' in '%s'"
@@ -29220,7 +29117,7 @@ msgstr "'%s'에서 '구조'가 누락되었습니다"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
-msgstr ""
+msgstr "selinux lxc 컨텍스트 파일 '%s'에 'content' 값이 없습니다"
 
 #, c-format
 msgid ""
@@ -29232,63 +29129,60 @@ msgstr ""
 
 #, c-format
 msgid "missing 'executable' in '%s'"
-msgstr ""
+msgstr "'%s'에 '실행 파일'이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
-msgstr "역할 '%s'의 SELinux 문맥을 설정할 수 없음"
+msgstr "selinux lxc 컨텍스트 파일 '%s'에 '파일' 값이 없습니다"
 
 msgid "missing 'filename' field in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 누락된 '파일 이름' 필드"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'filename' in '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "'%s'에 '파일 이름'이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'format' in '%s'"
-msgstr "도메인 상태 빠짐"
+msgstr "'%s'에 '형식'이 없습니다"
 
-#, fuzzy
 msgid "missing 'guid' attribute"
-msgstr "부팅 순서 속성 누락 "
+msgstr "누락된 'guid' 속성"
 
-#, fuzzy
 msgid "missing 'id' attribute for mediated device's <type> element"
-msgstr "인터페이스의 <actual> 요소에서 유형 속성이 누락되어 있음"
+msgstr "미디에이션된 기기의 <type> 요소에 대한 'id' 속성이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing 'machines' in '%s'"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "'%s'에 '머신'이 없습니다"
 
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 호스트 CPU 모델 속성에 대한 '이름' 속성 누락"
 
-#, fuzzy
 msgid "missing 'namespace' attribute to disk source"
-msgstr "디스크 소스 이름 누락 "
+msgstr "디스크 소스에 대한 '네임스페이스' 속성 누락"
 
 #, c-format
 msgid "missing 'nvram-template' in '%s'"
-msgstr ""
+msgstr "'%s'에 'nvram-template'이 없습니다"
 
 msgid "missing 'path' attribute for vhostuser disk source"
-msgstr ""
+msgstr "vhostuser 디스크 소스에 대한 '경로' 속성 누락"
 
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
-msgstr ""
+msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '경로' 속성이 없습니다"
 
 msgid "missing 'portal' address in iSCSI backing definition"
-msgstr ""
+msgstr "iSCSI 백업 정의에 '포털' 주소가 없습니다"
 
 #, c-format
 msgid "missing 'process' value in selinux lxc contexts file '%s'"
-msgstr ""
+msgstr "selinux lxc 컨텍스트 파일 '%s'에 '프로세스' 값이 없습니다"
 
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
-msgstr ""
+msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '서버' 속성이 없습니다"
 
 #, c-format
 msgid ""
@@ -29298,57 +29192,53 @@ msgstr ""
 "네트워크 %s에 <forward>의 <nat>에 있는 <address> 요소에 'start' 속성이 누락되"
 "어 있습니다 "
 
-#, fuzzy
 msgid "missing 'state' attribute"
-msgstr "도메인 유형 속성이 누락되어 있음"
+msgstr "누락된 '상태' 속성"
 
 msgid "missing 'target' in iSCSI backing definition"
-msgstr ""
+msgstr "iSCSI 백업 정의에 '대상'이 없습니다"
 
 msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "offset='timezone'으로 지정한 클럭의 'timezone' 특성 빠"
 
 msgid "missing 'type' attribute for vhostuser disk source"
-msgstr ""
+msgstr "vhostuser 디스크 소스에 대한 '유형' 속성이 없습니다"
 
-#, fuzzy
 msgid "missing 'type' attribute to disk source"
-msgstr "디스크 소스 이름 누락 "
+msgstr "디스크 소스에 '유형' 속성이 없습니다"
 
 #, c-format
 msgid "missing 'type'(%s) or 'alias'(%s) field of QOM 'object'"
-msgstr ""
+msgstr "QOM '개체'의 '유형'(%s) 또는 '별칭'(%s) 필드가 없습니다"
 
 msgid "missing 'url' in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 누락된 'url'"
 
 msgid "missing 'usage' attribute for RAM filesystem"
 msgstr "RAM 파일 시스템의 'usage' 속성 누락 "
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
-msgstr ""
+msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '사용자' 또는 '그룹' 속성이 없습니다"
 
-#, fuzzy
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
-msgstr "HyperV Enlightenment 기능 '%s'의 'state' 속성이 누락되어 잇음"
+msgstr "HyperV 기능 'vendor_id'에 대한 '값' 속성이 없습니다"
 
 msgid ""
 "missing 'vdisk-id' or 'server' attribute in JSON backing definition for VxHS "
 "volume"
-msgstr ""
+msgstr "VxHS 볼륨에 대한 JSON 백업 정의에 'vdisk-id' 또는 'server' 속성이 없습니다"
 
 msgid ""
 "missing 'volume', 'path' or 'server' attribute in JSON backing definition "
 "for gluster volume"
-msgstr ""
+msgstr "Gluster 볼륨에 대한 JSON 지원 정의에서 '볼륨', '경로' 또는 '서버' 속성이 누락되었습니다"
 
-#, fuzzy
 msgid "missing <target> element for <memory> device"
-msgstr "임대의 'target' 요소가 누락되어 있음"
+msgstr "<memory> 장치에 대한 <target> 요소 누락"
 
 msgid "missing <type> element in <capability> element"
-msgstr ""
+msgstr "<capability> 요소에 <type> 요소가 없습니다"
 
 msgid "missing @managed attribute for <reservations/>"
 msgstr "<reservations/>를 @managed 속성 누락"
@@ -29356,9 +29246,8 @@ msgstr "<reservations/>를 @managed 속성 누락"
 msgid "missing CPU data architecture"
 msgstr "CPU 자료 구조가 누락되었습니다"
 
-#, fuzzy
 msgid "missing CPU definition"
-msgstr "(CPU 정의)"
+msgstr "CPU 정의 누락"
 
 msgid "missing EGD backend type"
 msgstr "EGD 백엔드 유형이 누락되어 있음"
@@ -29367,10 +29256,10 @@ msgid "missing GIC version"
 msgstr "GIC 버전 누락"
 
 msgid "missing GIC version in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 GIC 버전 누락"
 
 msgid "missing IFLA_VF_INFO in netlink response"
-msgstr ""
+msgstr "넷링크 응답에서 IFLA_VF_INFO 누락"
 
 msgid "missing RNG device backend model"
 msgstr "RNG 장치 백엔드 모델이 누락되어 있음"
@@ -29383,13 +29272,13 @@ msgid "missing SCSI host capability type for '%s'"
 msgstr "'%s'에 대한 SISI 호스트 기능 유형 빠짐"
 
 msgid "missing SEV certChain information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 누락된 SEV certChain 정보"
 
 msgid "missing SEV pdh information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 누락된 SEV pdh 정보"
 
 msgid "missing SEV platform data in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 누락된 SEV 플랫폼 데이터"
 
 msgid "missing TPM device backend"
 msgstr "TPM 장치 백엔드가 누락되어 있음"
@@ -29397,44 +29286,39 @@ msgstr "TPM 장치 백엔드가 누락되어 있음"
 msgid "missing TPM device backend type"
 msgstr "TPM 장치 백엔드 유형이 누락되어 있음"
 
-#, fuzzy
 msgid "missing Xen migration stream version"
-msgstr "운영 시스템 정보 부재"
+msgstr "Xen 마이그레이션 스트림 버전 누락"
 
 #, c-format
 msgid "missing address type in network %s"
 msgstr "네트워크 %s에서 주소 유형이 누락되어 있음"
 
-#, fuzzy
 msgid "missing alias for memory device"
-msgstr "소스 장치가 빠짐"
+msgstr "메모리 장치에 대한 별칭 누락"
 
-#, fuzzy
 msgid "missing alias for network device"
-msgstr "소스 장치가 빠짐"
+msgstr "네트워크 장치에 대한 별칭 누락"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing alias or qom-type for qemu object '%s'"
-msgstr "도메인 개체의 이름 매개 변수가 누락되어 있음 "
+msgstr "qemu 개체 '%s'에 대한 별칭 또는 qom 유형이 없습니다"
 
 #, c-format
 msgid "missing ap-adapter value for '%s'"
-msgstr ""
+msgstr "'%s'에 대한 ap-어댑터 값이 누락되었습니다"
 
 #, c-format
 msgid "missing ap-domain value for '%s'"
-msgstr ""
+msgstr "'%s'에 대한 누락된 ap-도메인 값"
 
-#, fuzzy
 msgid "missing arch in QEMU capabilities cache"
-msgstr "기능 유형이 빠짐"
+msgstr "QEMU 기능 캐시에 누락된 아치"
 
 msgid "missing argument"
 msgstr "인수가 누락되어 있음"
 
-#, fuzzy
 msgid "missing array element"
-msgstr "용량 요소가 빠짐"
+msgstr "누락된 배열 요소"
 
 #, c-format
 msgid "missing backend for pool type %d"
@@ -29446,14 +29330,14 @@ msgstr "풀(pool) 유형 %d (%s)에 백엔드가 누락됨"
 
 #, c-format
 msgid "missing bitmap name for disk '%s' of checkpoint '%s'"
-msgstr ""
+msgstr "체크포인트 '%s'의 디스크 '%s'에 대한 비트맵 이름이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing block job data for disk '%s'"
-msgstr "%s 장치의 소스 정보 부재"
+msgstr "디스크 '%s'에 대한 블록 작업 데이터가 없습니다"
 
 msgid "missing blocker name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 차단기 이름 누락"
 
 msgid "missing boot device"
 msgstr "부트 장치가 누락되어 있음"
@@ -29464,9 +29348,8 @@ msgstr "기능 이름이 누락"
 msgid "missing capacity element"
 msgstr "용량 요소가 빠짐"
 
-#, fuzzy
 msgid "missing cellno argument"
-msgstr "인수가 누락되어 있음"
+msgstr "누락된 cellno 인수"
 
 msgid "missing connection mode for <reservations/>"
 msgstr "<reservations/>를 위한 연결 모드 누락"
@@ -29474,53 +29357,48 @@ msgstr "<reservations/>를 위한 연결 모드 누락"
 msgid "missing connection type for <reservations/>"
 msgstr "<reservations/>를 위한 연결 유형 누락"
 
-#, fuzzy
 msgid "missing cookie name"
-msgstr "타이머 이름이 누락되어 있음"
+msgstr "쿠키 이름 누락"
 
 msgid "missing cpu name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 CPU 이름 누락"
 
-#, fuzzy
 msgid "missing cpuid-register in CPU data"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "CPU 데이터에 cpuid 레지스터가 없습니다"
 
-#, fuzzy
 msgid "missing cpuset for emulatorpin"
-msgstr "vcpupin에 대해 cpuset가 누락되어 있음"
+msgstr "에뮬레이터핀용 cpuset 누락"
 
-#, fuzzy
 msgid "missing cpuset for iothreadpin"
-msgstr "vcpupin에 대해 cpuset가 누락되어 있음"
+msgstr "iothreadpin에 대한 cpuset 누락"
 
 msgid "missing cpuset for vcpupin"
 msgstr "vcpupin에 대해 cpuset가 누락되어 있음"
 
-#, fuzzy
 msgid "missing creationTime from existing checkpoint"
-msgstr "기존 스냅샷에서 생성 시간이 누락되어 있음"
+msgstr "기존 체크포인트에서 생성 시간 누락"
 
 msgid "missing creationTime from existing snapshot"
 msgstr "기존 스냅샷에서 생성 시간이 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing cssid value for '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "'%s'에 대한 cssid 값이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing destination file for disk %s: %s"
-msgstr "%s의 장치 정보 부재"
+msgstr "%s 디스크에 대한 대상 파일 누락: %s"
 
 msgid "missing dev attribute in <interface> element"
 msgstr "<interface> 요소에 dev 속성이 누락되어 있습니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing device API for mediated device type '%s'"
-msgstr "%s의 장치 정보 부재"
+msgstr "미디에이션된 장치 유형 '%s'에 대한 장치 API가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing device type in '%s'"
-msgstr "hub 장치 유형이 누락되어 있음"
+msgstr "'%s'에 누락된 장치 유형"
 
 msgid "missing devices information"
 msgstr "장치 정보 부재"
@@ -29529,111 +29407,101 @@ msgstr "장치 정보 부재"
 msgid "missing devices information for %s"
 msgstr "%s의 장치 정보 부재"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing devno value for '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "'%s'에 대한 devno 값이 없습니다"
 
-#, fuzzy
 msgid "missing disk backing store format"
-msgstr "장치 정보 부재"
+msgstr "누락된 디스크 백업 저장소 형식"
 
-#, fuzzy
 msgid "missing disk backing store source"
-msgstr "억세스할 수 없는 보조 기억 불륨 %s"
+msgstr "누락된 디스크 백업 저장소 소스"
 
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s에 대한 디스크 장치 별칭이 빠짐"
 
 msgid "missing disk source for 'sheepdog' protocol"
-msgstr ""
+msgstr "'쉽독' 프로토콜에 대한 디스크 소스 누락"
 
-#, fuzzy
 msgid "missing domain in checkpoint"
-msgstr "스냅샷에서 도메인이 누락되어 있음 "
+msgstr "체크포인트에서 누락된 도메인"
 
 msgid "missing domain in snapshot"
 msgstr "스냅샷에서 도메인이 누락되어 있음 "
 
-#, fuzzy
 msgid "missing domain name"
-msgstr "도메인 상태 빠짐"
+msgstr "누락된 도메인 이름"
 
 msgid "missing domain type attribute"
 msgstr "도메인 유형 속성이 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing element or attribute '%s'"
-msgstr "부팅 순서 속성 누락 "
+msgstr "누락된 요소 또는 속성 '%s'"
 
-#, fuzzy
 msgid "missing emulated GIC information"
-msgstr "커널 정보 부재"
+msgstr "에뮬레이트된 GIC 정보 누락"
 
 msgid "missing emulated GIC information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 에뮬레이트된 GIC 정보 누락"
 
 msgid "missing emulator in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 에뮬레이터 누락"
 
-#, fuzzy
 msgid "missing encryption description"
-msgstr "root 장치 정보 부재"
+msgstr "암호화 설명 누락"
 
-#, fuzzy
 msgid "missing entry in GIC capabilities list"
-msgstr "기능 유형이 빠짐"
+msgstr "GIC 기능 목록에 누락된 항목"
 
-#, fuzzy
 msgid "missing entry in migration capabilities list"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "마이그레이션 기능 목록에 누락된 항목"
 
-#, fuzzy
 msgid "missing entry in supported dump formats"
-msgstr "운영 시스템 정보 부재"
+msgstr "지원되는 덤프 형식의 누락된 항목"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing existing file for disk %s: %s"
-msgstr "디스크 소스 이름 누락 "
+msgstr "디스크 %s에 대한 기존 파일 누락: %s"
 
-#, fuzzy
 msgid "missing feature name"
-msgstr "CPU 기능 이름이 빠짐"
+msgstr "기능 이름 누락"
 
 msgid "missing filter parameter table"
 msgstr "필터 매개 변수 표가 누락되어 있음 "
 
 msgid "missing flag name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 누락된 플래그 이름"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing gluster volume name for path '%s'"
-msgstr "인증을 위한 사용자 이름이 누락되어 있음"
+msgstr "경로 '%s'에 대한 Gluster 볼륨 이름이 없습니다"
 
 #, c-format
 msgid "missing host CPU model info from QEMU capabilities for binary %s"
-msgstr ""
+msgstr "바이너리 %s에 대한 QEMU 기능에서 호스트 CPU 모델 정보가 누락되었습니다"
 
 msgid "missing host CPU model name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 호스트 CPU 모델 이름 누락"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing host in migration URI: %s"
-msgstr "%s에 있는 root 장치 정보 부재"
+msgstr "마이그레이션 URI에 누락된 호스트: %s"
 
 msgid ""
 "missing host specification of NBD server in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 NBD 서버의 호스트 사양 누락"
 
 msgid "missing host/server or path of SSH JSON backing volume definition"
-msgstr ""
+msgstr "누락된 호스트/서버 또는 SSH JSON 백업 볼륨 정의의 경로"
 
 msgid "missing hostname element in migration data"
 msgstr "이전 자료에 호스트이름 요소가 누락"
 
 msgid ""
 "missing hostname for tcp backing server in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 tcp 백업 서버의 호스트 이름 누락"
 
 msgid "missing hostuuid element in migration data"
 msgstr "이전 자료에 hostuuid 요소가 누락"
@@ -29641,44 +29509,36 @@ msgstr "이전 자료에 hostuuid 요소가 누락"
 msgid "missing hub device type"
 msgstr "hub 장치 유형이 누락되어 있음"
 
-#, fuzzy
 msgid "missing iSCSI hostdev source path name"
-msgstr "소스 경로가 빠짐"
+msgstr "iSCSI hostdev 소스 경로 이름 누락"
 
-#, fuzzy
 msgid "missing in-kernel GIC information"
-msgstr "커널 정보 부재"
+msgstr "커널 내 GIC 정보 누락"
 
-#, fuzzy
 msgid "missing in-kernel GIC information in QEMU capabilities cache"
-msgstr "커널 정보 부재"
+msgstr "QEMU 기능 캐시에서 커널 내 GIC 정보 누락"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing info on pr-manager %s"
-msgstr "%s의 장치 정보 부재"
+msgstr "pr-manager %s에 대한 정보가 없습니다"
 
-#, fuzzy
 msgid "missing initiator IQN"
-msgstr "도메인 상태 빠짐"
+msgstr "이니시에이터 IQN 누락"
 
 msgid "missing input device type"
 msgstr "입력 장치 타입 빠짐"
 
-#, fuzzy
 msgid "missing input volume target path"
-msgstr "저장 풀(pool) 타겟 경로가 빠짐"
+msgstr "누락된 입력 볼륨 대상 경로"
 
-#, fuzzy
 msgid "missing interface information"
-msgstr "커널 정보 부재"
+msgstr "누락된 인터페이스 정보"
 
-#, fuzzy
 msgid "missing ivgen info name string"
-msgstr "커널 정보 부재"
+msgstr "누락된 ivgen 정보 이름 문자열"
 
-#, fuzzy
 msgid "missing job chain data"
-msgstr "도메인 상태 빠짐"
+msgstr "누락된 작업 체인 데이터"
 
 msgid "missing kernel information"
 msgstr "커널 정보 부재"
@@ -29687,41 +29547,37 @@ msgstr "커널 정보 부재"
 msgid "missing kernel information: %s"
 msgstr "커널 정보 누락: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing label for static security driver in domain %s"
-msgstr "도메인 보안 레이블에서 보안 모델이 누락되어 있음"
+msgstr "도메인 %s의 정적 보안 드라이버에 대한 레이블이 없습니다"
 
 msgid "missing listen attribute in migration data"
 msgstr "이전 자료에서 listen 속성이 누락"
 
 msgid "missing listen element"
-msgstr "청취 요소가 누락됨"
+msgstr "청취 요소 누락"
 
-#, fuzzy
 msgid "missing listen element for graphics"
-msgstr "임대의 'key' 요소가 누락되어 있음"
+msgstr "그래픽에 대한 청취 요소 누락"
 
-#, fuzzy
 msgid "missing listen element for spice graphics"
-msgstr "임대의 'key' 요소가 누락되어 있음"
+msgstr "향신료 그래픽에 대한 청취 요소 누락"
 
 msgid "missing machine name in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 누락된 시스템 이름"
 
 #, c-format
 msgid "missing mapping in '%s'"
-msgstr ""
+msgstr "'%s'에 누락된 매핑"
 
 msgid "missing microcode version in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 누락된 마이크로코드 버전"
 
-#, fuzzy
 msgid "missing migration capability name"
-msgstr "기능 유형이 빠짐"
+msgstr "누락된 마이그레이션 기능 이름"
 
-#, fuzzy
 msgid "missing migration parameter name"
-msgstr "필터 매개 변수 표가 누락되어 있음 "
+msgstr "누락된 마이그레이션 매개변수 이름"
 
 msgid "missing name element in migration data"
 msgstr "이전 자료에 이름 요소가 누락"
@@ -29741,21 +29597,19 @@ msgstr "디스크 스냅샷 요소에서 이름이 누락되어 있음 "
 msgid "missing name information"
 msgstr "이름 정보 부재"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing name information in %s"
-msgstr "%s에 있는 root 장치 정보 부재"
+msgstr "%s에 이름 정보가 없습니다"
 
-#, fuzzy
 msgid "missing network device feature name"
-msgstr "너무 긴 네트워크 장치 이름"
+msgstr "누락된 네트워크 장치 기능 이름"
 
 #, c-format
 msgid "missing number of available instances for mediated device type '%s'"
-msgstr ""
+msgstr "조정된 장치 유형 '%s'에 대해 사용 가능한 인스턴스 수가 없습니다"
 
-#, fuzzy
 msgid "missing offset or size attribute of slice"
-msgstr "부팅 순서 속성 누락 "
+msgstr "슬라이스의 오프셋 또는 크기 속성 누락"
 
 msgid "missing operating system information"
 msgstr "운영 시스템 정보 부재"
@@ -29766,58 +29620,52 @@ msgstr "%s의 운영 시스템 정보 부재"
 
 #, c-format
 msgid "missing or broken bitmap '%s' for disk '%s'"
-msgstr ""
+msgstr "디스크 '%s'에 대한 비트맵 '%s'가 없거나 손상되었습니다"
 
-#, fuzzy
 msgid "missing or invalid CPU cache mode"
-msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값 "
+msgstr "CPU 캐시 모드가 없거나 잘못되었습니다"
 
 msgid "missing or invalid CPU model property type in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 CPU 모델 속성 유형"
 
-#, fuzzy
 msgid "missing or invalid cpuid-input-eax in CPU data"
-msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값 "
+msgstr "CPU 데이터에 cpuid-input-eax가 없거나 잘못되었습니다"
 
-#, fuzzy
 msgid "missing or invalid features in CPU data"
-msgstr "CPU 모델 %s에 누락되어 있거나 잘못된 PVR 값 "
+msgstr "CPU 데이터의 누락되거나 잘못된 기능"
 
 msgid "missing or invalid vlan tag id attribute"
 msgstr "누락되어 있거나 잘못된 vlan 태그 id 속성 "
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
-msgstr ""
+msgstr "'nvme' 스토리지의 '장치' 필드가 없거나 형식이 잘못되었습니다"
 
 msgid "missing or malformed 'namespace' field of 'nvme' storage"
-msgstr ""
+msgstr "'nvme' 스토리지의 '네임스페이스' 필드가 없거나 형식이 잘못되었습니다"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 SEV cbitpos 정보"
 
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
-msgstr ""
+msgstr "QEMU 기능 캐시의 SEV ReducedPhysBits 정보 누락 또는 잘못된 형식"
 
-#, fuzzy
 msgid "missing or malformed session-uuid element in migration data"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "마이그레이션 데이터에 누락되거나 형식이 잘못된 session-uuid 요소"
 
-#, fuzzy
 msgid "missing or malformed uuid element in migration data"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "마이그레이션 데이터에 누락되거나 형식이 잘못된 uuid 요소"
 
-#, fuzzy
 msgid "missing pagesize argument"
-msgstr "인수가 누락되어 있음"
+msgstr "누락된 페이지 크기 인수"
 
 msgid "missing parent device"
-msgstr ""
+msgstr "누락된 상위 장치"
 
 #, c-format
 msgid "missing parser implementation for JSON backing volume driver '%s'"
-msgstr ""
+msgstr "JSON 백업 볼륨 드라이버 '%s'에 대한 구문 분석기 구현이 없습니다"
 
 msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
@@ -29825,12 +29673,12 @@ msgstr "<reservations/>를 위한 경로 누락"
 msgid "missing per-device path"
 msgstr "장치 별 경로 누락 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing persistent configuration for disk '%s'"
-msgstr "%s 장치의 대상 정보 부재"
+msgstr "디스크 '%s'에 대한 영구 구성이 없습니다"
 
 msgid "missing pool or image name in ceph backing volume JSON specification"
-msgstr ""
+msgstr "ceph 백업 볼륨 JSON 사양에서 풀 또는 이미지 이름 누락"
 
 msgid "missing pool source name element"
 msgstr "풀(pool) 소스 이름 요소 빠짐"
@@ -29842,23 +29690,22 @@ msgid "missing product"
 msgstr "제품 빠짐"
 
 msgid "missing qemuctime in QEMU capabilities XML"
-msgstr ""
+msgstr "QEMU 기능 XML에서 qemuctime 누락"
 
 msgid "missing remote server specification in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 누락된 원격 서버 사양"
 
 #, c-format
 msgid "missing required name attribute in DNS TXT record of network %s"
 msgstr "네트워크 %s의 DNS TXT 기록에서 필요한 이름 속성이 누락되어 있음 "
 
 msgid "missing required persistent attribute in hostdev teaming element"
-msgstr ""
+msgstr "hostdev 팀 구성 요소에 필수 영구 속성이 누락되었습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "missing required protocol attribute in DNS SRV record '%s' of network '%s'"
-msgstr ""
-"네트워크 %s의 '%s'라는 DNS TXT 기록에 있는 필요한 값 속성이 누락되어 있음 "
+msgstr "네트워크 '%s'의 DNS SRV 레코드 '%s'에 필수 프로토콜 특성이 없습니다"
 
 #, c-format
 msgid "missing required service attribute in DNS SRV record of network '%s'"
@@ -29886,21 +29733,19 @@ msgstr "%s에 있는 root 장치 정보 부재"
 msgid "missing root element"
 msgstr "root 요소가 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing rport name for '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "'%s'에 대한 보고서 이름이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing scheme in migration URI: %s"
-msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
+msgstr "마이그레이션 URI에 누락된 스키마: %s"
 
-#, fuzzy
 msgid "missing secret info for 'luks' driver"
-msgstr "장치의 대상 정보 부재"
+msgstr "'luks' 드라이버에 대한 비밀 정보 누락"
 
-#, fuzzy
 msgid "missing secret uuid or usage attribute"
-msgstr "부팅 순서 속성 누락 "
+msgstr "비밀 uuid 또는 사용 속성 누락"
 
 msgid "missing security model in domain seclabel"
 msgstr "도메인 보안 레이블에서 보안 모델이 누락되어 있음"
@@ -29909,27 +29754,26 @@ msgid "missing security model when using multiple labels"
 msgstr "여러 레이블을 사용할 때 보안 모델이 누락되어 있음"
 
 msgid "missing selfctime in QEMU capabilities XML"
-msgstr ""
+msgstr "QEMU 기능 XML에서 selfctime 누락"
 
 msgid "missing sheepdog URI in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 누락된 쉽독 URI"
 
-#, fuzzy
 msgid "missing sheepdog vdi name"
-msgstr "저장 풀 호스트 이름이 누락되어 있음"
+msgstr "쉽독 vdi 이름 누락"
 
 msgid "missing smartcard device mode"
 msgstr "스마트카드 장치 모드가 누락되어 있음"
 
 msgid "missing socket address type in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 누락된 소켓 주소 유형"
 
 msgid "missing socket for unix transport"
 msgstr "unix 전송에 대해 소켓이 누락되어 있음"
 
 msgid ""
 "missing socket path for udp backing server in JSON backing volume definition"
-msgstr ""
+msgstr "JSON 백업 볼륨 정의에서 udp 백업 서버에 대한 소켓 경로 누락"
 
 msgid "missing source address type"
 msgstr "소스 주소 유형 누락 "
@@ -29953,20 +29797,20 @@ msgstr "%s 장치의 소스 정보 부재"
 msgid "missing source path"
 msgstr "소스 경로가 빠짐"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing ssid value for '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "'%s'에 대한 ssid 값이 없습니다"
 
 msgid "missing state from existing snapshot"
 msgstr "기존 스냅샷에서 상태가 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing storage backend for '%s' storage"
-msgstr "'%s'에 대한 저장 기능 유형이 빠짐"
+msgstr "'%s' 스토리지에 대한 스토리지 백엔드 누락"
 
 #, c-format
 msgid "missing storage backend for network files using %s protocol"
-msgstr ""
+msgstr "%s 프로토콜을 사용하는 네트워크 파일에 대한 스토리지 백엔드가 없습니다"
 
 #, c-format
 msgid "missing storage capability type for '%s'"
@@ -29993,17 +29837,14 @@ msgstr "저장 풀(pool) 소스 경로가 빠짐"
 msgid "missing storage pool target path"
 msgstr "저장 풀(pool) 타겟 경로가 빠짐"
 
-#, fuzzy
 msgid "missing storage source format"
-msgstr "저장 풀(pool) 소스 경로가 빠짐"
+msgstr "누락된 스토리지 소스 형식"
 
-#, fuzzy
 msgid "missing storage source type"
-msgstr "저장 풀(pool) 소스 경로가 빠짐"
+msgstr "누락된 스토리지 소스 유형"
 
-#, fuzzy
 msgid "missing supported dump formats"
-msgstr "소스 경로가 빠짐"
+msgstr "지원되는 덤프 형식 누락"
 
 msgid ""
 "missing tag id - each <vlan> must have at least one <tag id='n'/> subelement"
@@ -30019,7 +29860,7 @@ msgid "missing target information for device %s"
 msgstr "%s 장치의 대상 정보 부재"
 
 msgid "missing the host address for the iSCSI hostdev"
-msgstr ""
+msgstr "iSCSI hostdev의 호스트 주소 누락"
 
 msgid "missing timer name"
 msgstr "타이머 이름이 누락되어 있음"
@@ -30028,18 +29869,18 @@ msgid "missing tlsPort attribute in migration data"
 msgstr "이전할 자료에서 tlsPort 속성이 누락되어 있음"
 
 msgid "missing tmpfs size, set the size option"
-msgstr ""
+msgstr "누락된 tmpfs 크기입니다. 크기 옵션을 설정하십시오"
 
 msgid "missing type attribute in migration data"
 msgstr "이전 자료에서 유형 속성이 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing type for SCSI target capability for '%s'"
-msgstr "'%s'에 대한 저장 기능 유형이 빠짐"
+msgstr "'%s'에 대한 SCSI 대상 기능에 대한 유형이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing type id attribute for '%s'"
-msgstr "도메인 유형 속성이 누락되어 있음"
+msgstr "'%s'에 대한 유형 ID 속성이 없습니다"
 
 msgid "missing type in redirdev"
 msgstr "redirdev에 유형이 누락되어 있음"
@@ -30047,34 +29888,31 @@ msgstr "redirdev에 유형이 누락되어 있음"
 msgid "missing username for auth"
 msgstr "인증을 위한 사용자 이름이 누락되어 있음"
 
-#, fuzzy
 msgid "missing username in /node/auth/user field"
-msgstr "인증을 위한 사용자 이름이 누락되어 있음"
+msgstr "/node/auth/user 필드에 사용자 이름 누락"
 
 msgid "missing uuid element in migration data"
 msgstr "마이그레이션 데이터에 uuid 요소가 누락되어 있음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing value for cookie '%s'"
-msgstr "호스트 이름 누락 "
+msgstr "쿠키 '%s'에 대한 누락된 값"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing value for migration parameter '%s'"
-msgstr "%s 장치의 소스 정보 부재"
+msgstr "마이그레이션 매개변수 '%s'의 값이 누락되었습니다"
 
-#, fuzzy
 msgid "missing values for acceleration"
-msgstr "장치 정보 부재"
+msgstr "가속에 대한 누락된 값"
 
 msgid "missing vendor"
 msgstr "제조사 누락"
 
 msgid "missing version in QEMU capabilities cache"
-msgstr ""
+msgstr "QEMU 기능 캐시에 누락된 버전"
 
-#, fuzzy
 msgid "missing vhost-scsi hostdev source wwpn"
-msgstr "저장 풀(pool) 소스 경로가 빠짐"
+msgstr "vhost-scsi hostdev 소스 wwpn 누락"
 
 msgid "missing video model and cannot determine default"
 msgstr "비디오 모델이 빠져있으며, 기본 모델명을 결정할 수 없음"
@@ -30082,16 +29920,15 @@ msgstr "비디오 모델이 빠져있으며, 기본 모델명을 결정할 수 �
 msgid "missing vlan tag data"
 msgstr "vlan 태그 데이터 누락되어 있음"
 
-#, fuzzy
 msgid "missing volume name and path for gluster volume"
-msgstr "볼륨 이름 요소가 빠짐"
+msgstr "gluster 볼륨에 대한 볼륨 이름 및 경로 누락"
 
 msgid "missing volume name element"
 msgstr "볼륨 이름 요소가 빠짐"
 
 #, c-format
 msgid "missing volume name or file name in gluster source path '%s'"
-msgstr ""
+msgstr "Gluster 소스 경로 '%s'에 볼륨 이름 또는 파일 이름이 없습니다"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "마이그레이션 데이터에서 vporttype 속성이 누락되어 있음"
@@ -30099,49 +29936,48 @@ msgstr "마이그레이션 데이터에서 vporttype 속성이 누락되어 있�
 msgid "missing watchdog model"
 msgstr "와치독 모델이 빠짐"
 
-#, fuzzy, c-format
+#, c-format
 msgid "missing wwpn identifier for '%s'"
-msgstr "%s에 대한 디스크 장치 별칭이 빠짐"
+msgstr "'%s'에 대한 wwpn 식별자가 없습니다"
 
 msgid ""
 "mixing internal and external targets for a snapshot is not yet supported"
-msgstr ""
+msgstr "스냅샷에 대한 내부 및 외부 대상 혼합은 아직 지원되지 않습니다"
 
 msgid "mixing nested objects and values is forbidden in JSON deflattening"
-msgstr ""
+msgstr "JSON deflattening에서 중첩된 객체와 값을 혼합하는 것은 금지되어 있습니다"
 
 #, c-format
 msgid "mkdir(\"%s\")"
-msgstr ""
+msgstr "mkdir(\"%s\")"
 
 #, c-format
 msgid ""
 "mkfs is not available on this platform: Failed to make filesystem of type "
 "'%s' on device '%s'"
-msgstr ""
+msgstr "mkfs는 이 플랫폼에서 사용할 수 없습니다. '%s' 장치에서 '%s' 유형의 파일 시스템을 만들지 못했습니다"
 
 msgid "mode of device reading and writing"
 msgstr "읽기 및 쓰기 장치 모드"
 
 #, c-format
 msgid "model '%s' RNG device not present in domain configuration"
-msgstr ""
+msgstr "모델 '%s' RNG 장치가 도메인 구성에 없습니다"
 
 #, c-format
 msgid "model '%s' memory device not present in the domain configuration"
-msgstr ""
+msgstr "모델 '%s' 메모리 장치가 도메인 구성에 없습니다"
 
 #, c-format
 msgid "model '%s' shmem device not present in domain configuration"
-msgstr ""
+msgstr "모델 '%s' shmem 장치가 도메인 구성에 없습니다"
 
 #, c-format
 msgid "model '%s' watchdog device not present in domain configuration"
-msgstr ""
+msgstr "모델 '%s' 감시 장치가 도메인 구성에 없습니다"
 
-#, fuzzy
 msgid "model resolution is not supported"
-msgstr "동작을 지원하지 않습니다"
+msgstr "모델 해상도가 지원되지 않습니다"
 
 msgid "model type"
 msgstr "모델 유형"
@@ -30152,24 +29988,20 @@ msgstr "게스트 도메인의 기존 IOThread를 수정합니다"
 msgid "modify cpu state in the guest"
 msgstr "게스트에서 cpu 상태 수정"
 
-#, fuzzy
 msgid "modify/get current state configuration"
-msgstr "초기 설정을 생성할 수 없음"
+msgstr "현재 상태 구성 수정/가져오기"
 
-#, fuzzy
 msgid "modify/get persistent configuration"
-msgstr "도메인의 영구 설정을 변경할 수 없음"
+msgstr "영구 구성 수정/가져오기"
 
-#, fuzzy
 msgid "modify/get running state"
-msgstr "도메인이 실행 상태가 아닙니다"
+msgstr "수정/실행 상태 가져오기"
 
 msgid "modify/get the title instead of description"
-msgstr ""
+msgstr "설명 대신 제목 수정/가져오기"
 
-#, fuzzy
 msgid "monitor failure"
-msgstr "모이터 경로가 없음"
+msgstr "모니터 실패"
 
 #. *
 #. * QEMU_CHECK_MONITOR_FULL:
@@ -30181,24 +30013,23 @@ msgstr "모이터 경로가 없음"
 #. * monitor.
 #.
 msgid "monitor must not be NULL"
-msgstr ""
+msgstr "모니터는 NULL이 아니어야 합니다"
 
-#, fuzzy
 msgid "monitor socket did not show up"
-msgstr "%s 도메인을 보여주지 못함"
+msgstr "모니터 소켓이 나타나지 않았습니다"
 
 #, c-format
 msgid "more than %d vCPUs are only supported on q35-based machine types"
-msgstr ""
+msgstr "%d개 이상의 vCPU는 q35 기반 머신 유형에서만 지원됩니다"
 
 #, c-format
 msgid ""
 "more than %d vCPUs require extended interrupt mode enabled on the iommu "
 "device"
-msgstr ""
+msgstr "%d개 이상의 vCPU에는 iommu 장치에서 활성화된 확장 인터럽트 모드가 필요합니다"
 
 msgid "more than one snapshot claims to be active"
-msgstr ""
+msgstr "둘 이상의 스냅샷이 활성 상태라고 주장합니다"
 
 msgid "mount is not supported on this platform."
 msgstr "적재는 이 플랫폼에서는 지원되지 않습니다."
@@ -30206,32 +30037,31 @@ msgstr "적재는 이 플랫폼에서는 지원되지 않습니다."
 msgid "mount move is not supported on this platform."
 msgstr "적재 이동은 플랫폼에서는 지원되지 않습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid "mount point not found: %s"
-msgstr "도메인을 찾을 수 없음: %s"
+msgstr "마운트 지점을 찾을 수 없음: %s"
 
 msgid "mountpoint path to be frozen"
-msgstr ""
+msgstr "고정할 마운트 지점 경로"
 
 msgid "mountpoint path to be thawed"
-msgstr ""
+msgstr "해동할 마운트 지점 경로"
 
-#, fuzzy
 msgid "msi option is only supported with a server"
-msgstr "sgio는 scsi 호스트 장치에 대해서만 지원됩니다 "
+msgstr "msi 옵션은 서버에서만 지원됩니다"
 
 #, c-format
 msgid ""
 "mtu size only allowed in open, route, nat, and isolated mode, not in %s "
 "(network '%s')"
-msgstr ""
+msgstr "mtu 크기는 %s(네트워크 '%s')가 아닌 개방형, 경로, NAT 및 격리 모드에서만 허용됩니다"
 
 msgid "multidevs is not supported with this QEMU binary"
 msgstr "multidev는 이 QEMU 바이너리에서 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "multiple <portgroup> elements with the same name (%s) in network '%s'"
-msgstr "네트워크 '%s'의 IPv6 요소에서 지원되지 않는 <tftp> 요소 "
+msgstr "네트워크 '%s'에 같은 이름(%s)을 가진 여러 <portgroup> 요소"
 
 #, c-format
 msgid ""
@@ -30241,13 +30071,12 @@ msgstr ""
 "네트워크 %s에서 모든 지정돈 필드와 일치하는 여러 DNS SRV 기록이 발견되었습니"
 "다 "
 
-#, fuzzy
 msgid "multiple OpenGL displays are not supported by QEMU"
-msgstr "spice 그래픽은 QEMU로 지원되지 않음 "
+msgstr "다중 OpenGL 디스플레이는 QEMU에서 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "multiple devices matching MAC address %s found"
-msgstr "동일한 MAC 주소에 인터페이스가 여러개 있음"
+msgstr "MAC 주소 %s와 일치하는 여러 장치를 찾았습니다"
 
 #, c-format
 msgid ""
@@ -30264,16 +30093,15 @@ msgstr "동일한 MAC 주소에 인터페이스가 여러개 있음"
 msgid "multiple matching DNS HOST records were found in network %s"
 msgstr "네트워크 %s에서 여러개의 일치하는 DNS 호스트 기록이 발견되었습니다 "
 
-#, fuzzy
 msgid "multiple matching devices found"
-msgstr "일치하는 인터페이스를 여러개 찾음"
+msgstr "일치하는 여러 장치가 발견됨"
 
 msgid "multiple matching domains found"
-msgstr ""
+msgstr "일치하는 도메인이 여러 개 발견됨"
 
 #, c-format
 msgid "multiple matching domains found: %s"
-msgstr ""
+msgstr "일치하는 도메인이 여러 개 발견됨: %s"
 
 msgid "multiple matching interfaces found"
 msgstr "일치하는 인터페이스를 여러개 찾음"
@@ -30282,37 +30110,35 @@ msgstr "일치하는 인터페이스를 여러개 찾음"
 msgid "multiple matching interfaces found: %s"
 msgstr "일치하는 인터페이스를 여러개 찾음: %s"
 
-#, fuzzy
 msgid "multiple stream callbacks not supported"
-msgstr "허브 유형 %s이 지원되지 않음 "
+msgstr "다중 스트림 콜백이 지원되지 않음"
 
 msgid "must respawn guest to start inactive snapshot"
-msgstr ""
+msgstr "비활성 스냅샷을 시작하려면 게스트를 다시 생성해야 합니다"
 
 msgid "must respawn qemu to start inactive snapshot"
-msgstr ""
+msgstr "비활성 스냅샷을 시작하려면 qemu를 다시 생성해야 합니다"
 
 msgid "mutex initialization failed"
 msgstr "뮤텍스 초기화 실패 "
 
 msgid "n - no, throw away my changes"
-msgstr ""
+msgstr "n - 아니요, 변경 사항을 버리십시오"
 
-#, fuzzy, c-format
+#, c-format
 msgid "name %s cannot contain '/'"
-msgstr "잘못된 스냅샷 이름 '%s': 이름에 '/'를 포함시킬 수 없음"
+msgstr "이름 %s에는 '/'가 포함될 수 없습니다"
 
-#, fuzzy
 msgid "name of checkpoint"
-msgstr "풀의 이름"
+msgstr "체크포인트 이름"
 
 msgid "name of existing snapshot to make current"
-msgstr ""
+msgstr "현재로 만들 기존 스냅샷의 이름"
 
 msgid ""
 "name of file containing xml (or, if it starts with '<', the complete xml "
 "element itself) to add/modify, or to be matched for search"
-msgstr ""
+msgstr "추가/수정하거나 검색을 위해 일치시킬 xml(또는 '<'로 시작하는 경우 완전한 xml 요소 자체)을 포함하는 파일의 이름"
 
 msgid "name of snapshot"
 msgstr "스냅샷 이름"
@@ -30327,62 +30153,61 @@ msgid "name of the volume"
 msgstr "볼륨의 이름"
 
 msgid "namespace key is required when modifying metadata"
-msgstr ""
+msgstr "메타데이터를 수정할 때 네임스페이스 키가 필요합니다"
 
 msgid ""
 "native I/O needs either no disk cache or directsync cache mode, QEMU will "
 "fallback to aio=threads"
 msgstr ""
+"기본 I/O에는 디스크 캐시가 필요하지 않거나 직접 동기화 캐시 모드가 필요하지 않습니다. QEMU는 aio=threads로 대체됩니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "nbd does not support transport '%s'"
-msgstr "libxenlight는 임시 디스크가 지원되지 않음 "
+msgstr "nbd는 '%s' 전송을 지원하지 않습니다"
 
-#, fuzzy
 msgid "nbd port must be in range 0-65535"
-msgstr "rebootTimeout의 잘못된 값, [-1,65535] 범위에 있어야 합니다"
+msgstr "nbd 포트는 0-65535 범위에 있어야 합니다"
 
 msgid "nbd protocol accepts only one host"
-msgstr ""
+msgstr "nbd 프로토콜은 하나의 호스트만 허용합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "nbd_tls_x509_cert_dir directory '%s' does not exist"
-msgstr "템플릿 '%s'는 존재하지 않습니다"
+msgstr "nbd_tls_x509_cert_dir 디렉토리 '%s'가 존재하지 않습니다"
 
 msgid "ncpumaps > REMOTE_VCPUINFO_MAX"
 msgstr "ncpumaps > REMOTE_VCPUINFO_MAX"
 
-#, fuzzy, c-format
+#, c-format
 msgid "ncpus count exceeds maximum: %u > %u"
-msgstr "vCPU 갯수가 최대 갯수를 초과: %d > %d"
+msgstr "ncpus 수가 최대값을 초과함: %u > %u"
 
 msgid "ncpus must be 1 when start_cpu is -1"
-msgstr ""
+msgstr "start_cpu가 -1일 때 ncpus는 1이어야 합니다"
 
 msgid "ncpus too large"
 msgstr "ncpus가 너무 큽니다"
 
 msgid "ncr53c90 SCSI controller is not a built-in for this machine"
-msgstr ""
+msgstr "ncr53c90 SCSI 컨트롤러는 이 시스템에 내장되어 있지 않습니다"
 
 msgid "ncr53c90 can only be used as first SCSI controller"
-msgstr ""
+msgstr "ncr53c90은 첫 번째 SCSI 컨트롤러로만 사용할 수 있습니다"
 
 msgid "need at least one serial port to use SGA"
-msgstr ""
+msgstr "SGA를 사용하려면 최소한 하나의 직렬 포트가 필요합니다"
 
 msgid "need either --dest or --xml"
-msgstr ""
+msgstr "--dest 또는 --xml이 필요합니다"
 
-#, fuzzy
 msgid "need either domain or domain XML"
-msgstr "네이티브 설정을 도메인 XML로 변환합니다"
+msgstr "도메인 또는 도메인 XML 필요"
 
 msgid "needs rawio capability"
-msgstr ""
+msgstr "rawio 기능이 필요합니다"
 
 msgid "negative size requires --shrink"
-msgstr ""
+msgstr "음수 크기에는 --shrink가 필요합니다"
 
 #. 56 is good for Kerberos
 #, c-format
@@ -30394,20 +30219,19 @@ msgid "negotiation SSF %d was not strong enough"
 msgstr "SSF %d 협상이 충분히 강력하지 않았습니다"
 
 msgid "nested JSON array to commandline conversion is not supported"
-msgstr ""
+msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않습니다"
 
 msgid "netcat path not valid with native proxy mode"
-msgstr ""
+msgstr "netcat 경로가 기본 프록시 모드에서 유효하지 않습니다"
 
 msgid "netdir"
-msgstr ""
+msgstr "netdir"
 
 msgid "netlink error"
-msgstr ""
+msgstr "네트워크 링크 에러"
 
-#, fuzzy
 msgid "netlink event service not running"
-msgstr "네트워크가 실행되고 있지 않음"
+msgstr "netlink 이벤트 서비스가 실행되지 않음"
 
 #, c-format
 msgid "netmask not allowed for IPv6 address '%s' in network '%s'"
@@ -30428,28 +30252,29 @@ msgstr "네트워크 %s가 실행중이 아님"
 msgid "network '%s' already exists with uuid %s"
 msgstr "uuid %s를 갖는 네트워크 '%s'가 이미 존재합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' claims dev='%s' is already in use by a different port"
-msgstr "네트워크 '%s'에는 도메인에 의해 사용 중인 dev='%s'가 없습니다"
+msgstr "네트워크 '%s'는 dev='%s'가 이미 다른 포트에서 사용 중이라고 주장합니다"
 
 #, c-format
 msgid ""
 "network '%s' claims the PCI device at domain=%d bus=%d slot=%d function=%d "
 "is already in use by a different network port"
 msgstr ""
+"네트워크 '%s'가 도메인=%d 버스=%d 슬롯=%d 기능=%d의 PCI 장치를 다른 네트워크 포트에서 이미 사용 중이라고 주장합니다"
 
 #, c-format
 msgid "network '%s' does not have a bridge name."
 msgstr "네트워크 '%s'가 브리지 이름을 가지고 있지 않습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' doesn't have PCI device %04x:%02x:%02x.%x in use by domain"
-msgstr "네트워크 '%s'에는 도메인에 의해 사용 중인 dev='%s'가 없습니다"
+msgstr "네트워크 '%s'에는 도메인에서 사용 중인 PCI 장치 %04x:%02x:%02x.%x가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "network '%s' doesn't have PCI device %04x:%02x:%02x.%x in use by network port"
-msgstr "네트워크 '%s'에는 도메인에 의해 사용 중인 dev='%s'가 없습니다"
+msgstr "네트워크 '%s'에는 네트워크 포트에서 사용 중인 PCI 장치 %04x:%02x:%02x.%x가 없습니다"
 
 #, c-format
 msgid "network '%s' doesn't have an IP address"
@@ -30459,25 +30284,27 @@ msgstr "네트워크 '%s'는 IP 주소를 가지고 있지 않습니다"
 msgid "network '%s' doesn't have dev='%s' in use by domain"
 msgstr "네트워크 '%s'에는 도메인에 의해 사용 중인 dev='%s'가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' doesn't have dev='%s' in use by network port '%s'"
-msgstr "네트워크 '%s'에는 도메인에 의해 사용 중인 dev='%s'가 없습니다"
+msgstr "네트워크 '%s'에는 네트워크 포트 '%s'에서 사용 중인 dev='%s'가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' has an invalid netmask or IP address in route definition"
-msgstr "브리지 '%s'에 잘못된 넷마스크 또는 IP 주소가 있음 "
+msgstr "네트워크 '%s'의 경로 정의에 잘못된 넷마스크 또는 IP 주소가 있습니다"
 
 #, c-format
 msgid ""
 "network '%s' has forward mode '%s'  but lists a device by PCI address in the "
 "device pool. This is only supported for networks with forward mode 'hostdev'"
 msgstr ""
+"네트워크 '%s'에 정방향 모드 '%s'가 있지만 장치 풀의 PCI 주소별로 장치를 나열합니다. 이것은 순방향 모드가 'hostdev'인 "
+"네트워크에서만 지원됩니다"
 
 #, c-format
 msgid ""
 "network '%s' has multiple default <portgroup> elements (%s and %s), but only "
 "one default is allowed"
-msgstr ""
+msgstr "네트워크 '%s'에는 기본 <portgroup> 요소(%s 및 %s)가 여러 개 있지만 기본값은 하나만 허용됩니다"
 
 #, c-format
 msgid "network '%s' has no associated interface or bridge"
@@ -30488,9 +30315,9 @@ msgstr ""
 msgid "network '%s' has no bridge name defined"
 msgstr "네트워크 '%s'는 정의된 브릿지 이름이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network '%s' in %s must match connection"
-msgstr "네트워크 '%s'가 여전히 실행중입니다"
+msgstr "%s의 네트워크 '%s'는 연결과 일치해야 합니다"
 
 #, c-format
 msgid "network '%s' is already defined with uuid %s"
@@ -30503,43 +30330,42 @@ msgstr "네트워크 '%s'가 동작 중이 아님"
 #, c-format
 msgid ""
 "network '%s' requires exclusive access to interfaces, but none are available"
-msgstr ""
+msgstr "네트워크 '%s'에는 인터페이스에 대한 단독 액세스가 필요하지만 사용할 수 있는 항목이 없습니다"
 
 #, c-format
 msgid ""
 "network '%s' uses a direct mode, but has no forward dev and no interface pool"
-msgstr ""
+msgstr "네트워크 '%s'는 직접 모드를 사용하지만 정방향 개발 및 인터페이스 풀이 없습니다"
 
 #, c-format
 msgid ""
 "network '%s' uses a hostdev mode, but has no forward dev and no interface "
 "pool"
-msgstr ""
+msgstr "네트워크 '%s'는 hostdev 모드를 사용하지만 정방향 개발 및 인터페이스 풀이 없습니다"
 
 msgid "network configuration using opaque shell scripts"
-msgstr ""
+msgstr "불투명한 쉘 스크립트를 사용한 네트워크 구성"
 
 #, c-format
 msgid ""
 "network device saved config file '%s' has unexpected contents, missing both "
 "'MAC' and 'adminMAC': '%.60s'"
 msgstr ""
+"네트워크 장치에 저장된 구성 파일 '%s'에 예기치 않은 내용이 있습니다. 'MAC' 및 'adminMAC' 모두 누락됨: '%.60s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network device with mac %s already exists"
-msgstr "예기치 못한 도메인 %s가 이미 존재함"
+msgstr "mac %s가 있는 네트워크 장치가 이미 있습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network event callback %d not registered"
-msgstr "도메인 이벤트 %d가 등록되어 있지 않습니다 "
+msgstr "네트워크 이벤트 콜백 %d가 등록되지 않았습니다"
 
-#, fuzzy
 msgid "network filter binding port dev"
-msgstr "네트워크 필터 이름 또는 uuid"
+msgstr "네트워크 필터 바인딩 포트 개발"
 
-#, fuzzy
 msgid "network filter binding portdev"
-msgstr "네트워크 필터 이름 또는 uuid"
+msgstr "네트워크 필터 바인딩 portdev"
 
 #, c-format
 msgid "network filter config filename '%s' does not match name '%s'"
@@ -30583,30 +30409,27 @@ msgstr "네트워크 이름 또는 uuid"
 msgid "network port %s exists already"
 msgstr "네트워크 포트 %s가 이미 존재합니다"
 
-#, fuzzy
 msgid "network port has no mac"
-msgstr "네트워크 %s가 실행중이 아님"
+msgstr "네트워크 포트에 mac이 없습니다"
 
 msgid "network port has no owner UUID"
-msgstr ""
+msgstr "네트워크 포트에 소유자 UUID가 없습니다"
 
 msgid "network port has no owner name"
 msgstr "네트워크 포트는 사용자 이름을 가지지 않습니다"
 
-#, fuzzy
 msgid "network port has no uuid"
-msgstr "네트워크 이름 또는 uuid"
+msgstr "네트워크 포트에 uuid가 없습니다"
 
 msgid "network port information in XML"
 msgstr "XML안에서 네트워크 포트 정보"
 
-#, fuzzy
 msgid "network port not found"
-msgstr "네트워크를 찾을 수 없음"
+msgstr "네트워크 포트를 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "network port not found: %s"
-msgstr "네트워크를 찾을 수 없음: %s"
+msgstr "네트워크 포트를 찾을 수 없음: %s"
 
 msgid "network state driver is not active"
 msgstr "네트워크 상태 드라이버가 실행중이 아닙니다"
@@ -30615,74 +30438,66 @@ msgid "network uuid"
 msgstr "네트워크 uuid"
 
 msgid "network-based listen isn't possible, network driver isn't present"
-msgstr ""
+msgstr "네트워크 기반 수신이 불가능하고 네트워크 드라이버가 없습니다"
 
 msgid "network_update_xml"
 msgstr "network_update_xml"
 
-#, fuzzy
 msgid "new bridge device name"
-msgstr "현재 브리지 장치 이름"
+msgstr "새 브리지 장치 이름"
 
 msgid "new capacity for the vol, as scaled integer (default bytes)"
-msgstr ""
+msgstr "크기가 조정된 정수(기본 바이트)로 표시되는 볼륨의 새 용량"
 
-#, fuzzy
 msgid "new domain name"
-msgstr "도메인 id 또는 도메인명"
+msgstr "새 도메인 이름"
 
 msgid "new maximum memory size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "새로운 최대 메모리 크기, 스케일링된 정수(기본 KiB)"
 
 msgid "new memory size, as scaled integer (default KiB)"
-msgstr ""
+msgstr "새 메모리 크기, 크기가 조정된 정수(기본 KiB)"
 
-#, fuzzy
 msgid "new metadata to set"
-msgstr "메타데이터 길이가 범위를 벗어남"
+msgstr "설정할 새 메타데이터"
 
-#, fuzzy
 msgid "new state of the device"
-msgstr "이 장치에 대한 부모가 없음"
+msgstr "장치의 새 상태"
 
-#, fuzzy
 msgid "new xml too large to fit in file"
-msgstr "설정 파일 구문 분석 실패"
+msgstr "새 xml이 너무 커서 파일에 맞지 않습니다"
 
 msgid "nfsvers value for NFS pool mount option"
-msgstr ""
+msgstr "NFS 풀 마운트 옵션의 nfsvers 값"
 
 #, c-format
 msgid "nkeycodes must be <= %d"
-msgstr ""
+msgstr "nkeycodes는 <= %d이어야 합니다"
 
 msgid "nl_recv failed"
 msgstr "nl_recv 실패"
 
 msgid "nl_recv failed - returned 0 bytes"
-msgstr ""
+msgstr "nl_recv 실패 - 0바이트 반환"
 
-#, fuzzy
 msgid "nl_recv returned with error"
-msgstr "오류 없이 완료되었습니다 "
+msgstr "nl_recv가 오류와 함께 반환되었습니다"
 
 msgid "no"
 msgstr "아니요"
 
-#, fuzzy
 msgid "no CPU model specified"
-msgstr "알려지지 않은 CPU 모델 %s"
+msgstr "지정된 CPU 모델 없음"
 
 #, c-format
 msgid "no CPU model specified at index %zu"
-msgstr ""
+msgstr "인덱스 %zu에 CPU 모델이 지정되지 않았습니다"
 
 msgid "no CPUs found"
 msgstr "CPU를 찾을 수 없음"
 
-#, fuzzy
 msgid "no CPUs given"
-msgstr "CPU를 찾을 수 없음"
+msgstr "CPU가 제공되지 않음"
 
 msgid "no FLR, PM reset or bus reset available"
 msgstr "FLR, PM 또는 버스 리셋을 사용할 수 없습니다"
@@ -30690,9 +30505,9 @@ msgstr "FLR, PM 또는 버스 리셋을 사용할 수 없습니다"
 msgid "no IFLA_PORT_RESPONSE found in netlink message"
 msgstr "netlink 메세지에서 IFLA_PORT_RESPONSE를 찾을 수 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no IP address found for interface '%s'"
-msgstr "호스트 '%s'에 대한 IP 주소 검색 실패: %s"
+msgstr "인터페이스 '%s'에 대한 IP 주소를 찾을 수 없습니다"
 
 #, c-format
 msgid "no PCI bus ID supplied for '%s'"
@@ -30718,9 +30533,8 @@ msgstr "'%s'에 대해 PCI 슬롯 ID가 지정되지 않았습니다"
 msgid "no PCI vendor ID supplied for '%s'"
 msgstr "'%s'를 위해 공급된 PCI 제조사 ID가 없습니다"
 
-#, fuzzy
 msgid "no SASL mechanisms are available"
-msgstr "사용 가능한 연결 드라이버가 없음"
+msgstr "SASL 메커니즘을 사용할 수 없습니다"
 
 #, c-format
 msgid "no SCSI LUN ID supplied for '%s'"
@@ -30784,14 +30598,13 @@ msgstr "장치 %s에 대해 할당된 pty가 없음"
 
 #, c-format
 msgid "no audio device with ID %u"
-msgstr ""
+msgstr "ID가 %u인 오디오 장치가 없습니다"
 
 msgid "no autostart"
 msgstr "자동 시작 안함"
 
-#, fuzzy
 msgid "no available memory line found"
-msgstr "잘못된 메모리 크기 %d를 갖음"
+msgstr "사용 가능한 메모리 라인을 찾을 수 없습니다"
 
 #, c-format
 msgid "no block device path supplied for '%s'"
@@ -30799,18 +30612,17 @@ msgstr "'%s'에 대한 블럭 장치 경로가 제공되지 않았습니다"
 
 #, c-format
 msgid "no call waiting for reply with prog %d vers %d serial %d"
-msgstr ""
+msgstr "프로그램 %d 대 %d 일련 번호 %d에 대한 응답을 기다리는 호출이 없습니다"
 
-#, fuzzy
 msgid "no cgroup backend available"
-msgstr "존재하는 콘솔 장치가 없습니다"
+msgstr "사용 가능한 cgroup 백엔드가 없습니다"
 
 msgid "no client username was found"
 msgstr "클라이언트 사용자명을 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no client with matching id '%llu' found"
-msgstr "uuid '%s'와 일치하는 비밀 정보 없음"
+msgstr "일치하는 ID '%llu'를 가진 클라이언트가 없습니다"
 
 #, c-format
 msgid "no config file for %s"
@@ -30833,36 +30645,36 @@ msgstr "'%s'에 대한 장치 기능이 없음"
 #, c-format
 msgid ""
 "no device found at address '%s' matching MAC address '%s' and alias '%s'"
-msgstr ""
+msgstr "MAC 주소 '%s' 및 별칭 '%s'와 일치하는 주소 '%s'에서 장치를 찾을 수 없습니다"
 
 #, c-format
 msgid "no device found with alias %s"
 msgstr "별칭 %s의 장치를 찾을 수 없음 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "no disk format for %s was specified"
-msgstr "디스크 형식 %s이 지원되지 않습니다 "
+msgstr "%s에 대한 디스크 형식이 지정되지 않았습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no disk found with alias '%s' or id '%s'"
-msgstr "별칭 %s의 장치를 찾을 수 없음 "
+msgstr "별칭 '%s' 또는 ID가 '%s'인 디스크를 찾을 수 없습니다"
 
 #, c-format
 msgid "no disk named '%s'"
 msgstr "'%s'라는 디스크가 없음"
 
 msgid "no disks selected for backup"
-msgstr ""
+msgstr "백업을 위해 선택한 디스크가 없습니다"
 
 msgid "no domain XML passed"
 msgstr "도메인 XML이 넘겨지지 않음"
 
 msgid "no domain backup job present"
-msgstr ""
+msgstr "도메인 백업 작업이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no domain checkpoint with matching name '%s'"
-msgstr "일치하는 이름 '%s'의 도메인 스냅샷이 없음"
+msgstr "이름 '%s'와 일치하는 도메인 체크포인트가 없습니다"
 
 msgid "no domain config"
 msgstr "도메인 설정 없음"
@@ -30900,48 +30712,43 @@ msgstr "오류 없음"
 msgid "no extended partition found and no primary partition available"
 msgstr "확장 파티션을 찾지 못했으며, 기본 파티션도 사용할 수 없습니다"
 
-#, fuzzy
 msgid "no file descriptor received"
-msgstr "파일 설명자 %d에 액세스할 수 없습니다 "
+msgstr "파일 설명자가 수신되지 않았습니다"
 
 #, c-format
 msgid "no firmwares found in %s"
-msgstr ""
+msgstr "%s에서 펌웨어를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no free memory device slot available"
-msgstr "존재하는 콘솔 장치가 없습니다"
+msgstr "사용 가능한 여유 메모리 장치 슬롯이 없습니다"
 
-#, fuzzy
 msgid "no fs mount option name specified"
-msgstr "마운트 이름공간을 공유 해제 할 수 없음"
+msgstr "fs 마운트 옵션 이름이 지정되지 않았습니다"
 
-#, fuzzy
 msgid "no guest CPU model specified"
-msgstr "마스터 USB 컨트롤러가 지정되어 있지 않습니다"
+msgstr "게스트 CPU 모델이 지정되지 않았습니다"
 
 msgid "no host device manager defined"
-msgstr ""
+msgstr "호스트 장치 관리자가 정의되지 않았습니다"
 
-#, fuzzy
 msgid "no hostname found"
-msgstr "CPU를 찾을 수 없음"
+msgstr "호스트 이름을 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no hostname found for domain %s"
-msgstr "도메인 설명이 없음: %s"
+msgstr "%s 도메인에 대한 호스트 이름을 찾을 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no hostname found: %s"
-msgstr "도메인을 찾을 수 없음: %s"
+msgstr "호스트 이름을 찾을 수 없음: %s"
 
 #, c-format
 msgid "no iSCSI interface defined for IQN %s"
 msgstr "IQN %s 를 위해 정의된 iSCSI 연결장치가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no interface with matching mac '%s'"
-msgstr "이름 '%s'과 일치하는 nwfilter가 없음 "
+msgstr "일치하는 mac '%s'가 있는 인터페이스가 없습니다"
 
 #, c-format
 msgid "no interface with matching name '%s'"
@@ -30957,28 +30764,25 @@ msgid "no limit"
 msgstr "무제한"
 
 msgid "no loader path specified and firmware auto selection disabled"
-msgstr ""
+msgstr "지정된 로더 경로가 없고 펌웨어 자동 선택이 비활성화됨"
 
 msgid "no map for cgroup BPF prog"
-msgstr ""
+msgstr "cgroup BPF 프로그램에 대한 맵 없음"
 
-#, fuzzy
 msgid "no matching RNG device was found"
-msgstr "RNG 장치 모델이 누락되어 있음"
+msgstr "일치하는 RNG 장치를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no matching filesystem device was found"
-msgstr "%s에 대해 너무 많은 파일 시스템이 감지되었습니다 "
+msgstr "일치하는 파일 시스템 장치를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no matching redirdev was not found"
-msgstr "클라이언트 사용자명을 찾을 수 없습니다"
+msgstr "일치하는 redirdev를 찾을 수 없습니다"
 
 msgid "no medium attachments"
-msgstr ""
+msgstr "첨부 수단 없음"
 
 msgid "no model provided for USB controller"
-msgstr ""
+msgstr "USB 컨트롤러에 제공되는 모델 없음"
 
 msgid "no monitor path"
 msgstr "모이터 경로가 없음"
@@ -30999,21 +30803,20 @@ msgstr "uuid '%s'와 일치하는 네트워크 없음"
 msgid "no network with matching uuid '%s' (%s)"
 msgstr "uuid '%s'(%s)와 일치하는 네트워크 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no node device for '%s' with matching wwnn '%s' and wwpn '%s'"
-msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
+msgstr "wwnn '%s' 및 wwpn '%s'와 일치하는 '%s'에 대한 노드 장치가 없습니다"
 
 #, c-format
 msgid "no node device with matching name '%s'"
 msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
 
-#, fuzzy
 msgid "no node device with matching name 'scsi_host12'"
-msgstr "이름이 '%s'와 일치하는 노드 디바이스가 없음"
+msgstr "일치하는 이름이 'scsi_host12'인 노드 장치가 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no nwfilter binding for port dev '%s'"
-msgstr "이름 '%s'과 일치하는 nwfilter가 없음 "
+msgstr "포트 개발 '%s'에 대한 nwfilter 바인딩이 없습니다"
 
 #, c-format
 msgid "no nwfilter with matching name '%s'"
@@ -31027,40 +30830,37 @@ msgid "no parent for this device"
 msgstr "이 장치에 대한 부모가 없음"
 
 msgid "no polkit agent available to authenticate"
-msgstr ""
+msgstr "인증에 사용할 수 있는 폴킷 에이전트가 없습니다"
 
 #, c-format
 msgid "no polkit agent available to authenticate action '%s'"
-msgstr ""
+msgstr "작업 '%s'를 인증하는 데 사용할 수 있는 폴킷 에이전트가 없습니다"
 
-#, fuzzy
 msgid "no prefix found"
-msgstr "쓰레드를 찾을 수 없습니다"
+msgstr "접두사를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no rbd option name specified"
-msgstr "init 바이너리를 지정해야 합니다"
+msgstr "rbd 옵션 이름이 지정되지 않았습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no rbd option value specified for name '%s'"
-msgstr "'%s'에 지정된 데이터 센터를 찾을 수 없습니다 "
+msgstr "이름 '%s'에 대해 지정된 rbd 옵션 값이 없습니다"
 
 #, c-format
 msgid "no removable media size supplied for '%s'"
 msgstr "'%s'의 이동식 매체 크기가 제공되지 않음"
 
 msgid "no replacement string in template"
-msgstr ""
+msgstr "템플릿에 대체 문자열이 없습니다"
 
 msgid "no running guests."
 msgstr "실행 중인 게스트가 없습니다."
 
-#, fuzzy
 msgid "no screens to take screenshot from"
-msgstr "스크린샷을 저장할 위치 "
+msgstr "스크린샷을 찍을 화면이 없습니다"
 
 msgid "no secret provided for luks encryption"
-msgstr ""
+msgstr "luks 암호화를 위해 제공된 비밀 없음"
 
 #, c-format
 msgid "no secret with matching usage '%s'"
@@ -31070,9 +30870,9 @@ msgstr "사용법 '%s'와 일치하는 비밀정보 없음"
 msgid "no secret with matching uuid '%s'"
 msgstr "uuid '%s'와 일치하는 비밀 정보 없음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no server with matching name '%s' found"
-msgstr "일치하는 '%s'라는 이름의 네트워크 없음"
+msgstr "일치하는 이름 '%s'를 가진 서버를 찾을 수 없습니다"
 
 #, c-format
 msgid "no size supplied for '%s'"
@@ -31081,9 +30881,8 @@ msgstr "'%s'에 대한 크기가 지정되지 않았습니다"
 msgid "no sockets found"
 msgstr "소켓을 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no space"
-msgstr "상태 없음"
+msgstr "공간 없음"
 
 msgid "no state"
 msgstr "상태 없음"
@@ -31100,17 +30899,17 @@ msgstr "대상 경로 '%s'와 일치하는 저장소 풀이 없습니다"
 msgid "no storage pool with matching target path '%s' (%s)"
 msgstr "대상 경로 '%s' (%s)와 일치하는 저장소 풀이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no storage pool with matching uuid '%s'"
-msgstr "이름이 '%s'와 일치하는 저장소 풀이 없음"
+msgstr "일치하는 uuid '%s' 스토리지 풀이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no storage pool with matching uuid '%s' (%s)"
-msgstr "이름이 '%s'와 일치하는 저장소 풀이 없음"
+msgstr "일치하는 uuid '%s'(%s) 스토리지 풀이 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "no storage pools were found on host '%s'"
-msgstr "이름이 '%s'와 일치하는 저장소 풀이 없음"
+msgstr "호스트 '%s'에서 스토리지 풀을 찾을 수 없습니다"
 
 #, c-format
 msgid "no storage vol with matching key %s"
@@ -31132,31 +30931,29 @@ msgstr "경로 '%s'와 일치하는 저장소 볼륨이 없습니다"
 msgid "no storage vol with matching path '%s' (%s)"
 msgstr "경로 '%s' (%s)와 일치하는 저장소 볼륨이 없습니다"
 
-#, fuzzy
 msgid "no stream callback registered"
-msgstr "스트림에 이미 등록된 콜백이 있습니다"
+msgstr "등록된 스트림 콜백 없음"
 
 msgid "no such screen ID"
-msgstr ""
+msgstr "해당 화면 ID가 없습니다"
 
 msgid "no suitable callback for host key verification"
-msgstr ""
+msgstr "호스트 키 확인을 위한 적절한 콜백 없음"
 
 msgid "no suitable callback for input of key passphrase"
-msgstr ""
+msgstr "키 암호 입력에 적합한 콜백이 없습니다"
 
 msgid "no suitable callback for input of keyboard response"
-msgstr ""
+msgstr "키보드 응답 입력에 적합한 콜백 없음"
 
-#, fuzzy
 msgid "no suitable info found"
-msgstr "인터페이스를 찾을 수 없음"
+msgstr "적절한 정보를 찾을 수 없습니다"
 
 msgid "no suitable method to retrieve authentication credentials"
-msgstr ""
+msgstr "인증 자격 증명을 검색하는 적절한 방법이 없습니다"
 
 msgid "no suitable method to retrieve key passphrase"
-msgstr ""
+msgstr "키 암호를 검색하는 적절한 방법이 없습니다"
 
 #, c-format
 msgid "no system UUID supplied for '%s'"
@@ -31173,48 +30970,43 @@ msgstr "'%s'에 대해 타겟 이름이 지정되지 않았습니다"
 msgid "no threads found"
 msgstr "쓰레드를 찾을 수 없습니다"
 
-#, fuzzy
 msgid "no tls service found, unable to update tls files"
-msgstr ""
-"장치 %s를 %s에 마운트하는데 실패했습니다, 파일 시스템을 감지할 수 없습니다 "
+msgstr "TLS 서비스를 찾을 수 없습니다. TLS 파일을 업데이트할 수 없습니다"
 
 msgid "no transaction running, nothing to be committed."
-msgstr ""
+msgstr "실행 중인 트랜잭션이 없고 커밋할 항목이 없습니다."
 
 msgid "no transaction running, nothing to rollback."
-msgstr ""
+msgstr "실행 중인 트랜잭션이 없고 롤백할 항목이 없습니다."
 
-#, fuzzy, c-format
+#, c-format
 msgid "no unused %s names available"
-msgstr "존재하는 콘솔 장치가 없습니다"
+msgstr "사용하지 않은 %s 이름이 없습니다"
 
 msgid "no valid connection"
 msgstr "유효하지 않은 연결"
 
-#, fuzzy
 msgid "no valid netlink response was received"
-msgstr "잘못된 형식의 넷링크 응답 메시지"
+msgstr "유효한 넷링크 응답이 수신되지 않았습니다"
 
 msgid "no vcpus selected for modification"
-msgstr ""
+msgstr "수정할 vcpus가 선택되지 않았습니다"
 
-#, fuzzy
 msgid "no virtio-serial controllers are available"
-msgstr "존재하는 콘솔 장치가 없습니다"
+msgstr "사용 가능한 virtio 직렬 컨트롤러가 없습니다"
 
-#, fuzzy
 msgid "no x86 CPU data found"
-msgstr "CPU를 찾을 수 없음"
+msgstr "x86 CPU 데이터를 찾을 수 없습니다"
 
 #, c-format
 msgid ""
 "node '%s' has unexpected NULL content. This could be caused by malformed "
 "input, or a memory allocation failure"
-msgstr ""
+msgstr "노드 '%s'에 예기치 않은 NULL 콘텐츠가 있습니다. 잘못된 입력 또는 메모리 할당 실패로 인해 발생할 수 있습니다"
 
 #, c-format
 msgid "node '%s' has unexpected type %d"
-msgstr ""
+msgstr "노드 '%s'에 예기치 않은 유형 %d가 있습니다"
 
 msgid "node CPU stats not implemented on this platform"
 msgstr "이 플랫폼에서 구현되어 않은 노드 CPU 통계"
@@ -31227,18 +31019,17 @@ msgstr "node cpu map"
 
 #, c-format
 msgid "node device '%s' in %s must match connection"
-msgstr ""
+msgstr "%s의 노드 장치 '%s'는 연결과 일치해야 합니다"
 
 msgid "node device details in XML"
 msgstr "XML로 된 노드 장치 상세정보"
 
-#, fuzzy, c-format
+#, c-format
 msgid "node device event callback %d not registered"
-msgstr "도메인 이벤트 %d가 등록되어 있지 않습니다 "
+msgstr "노드 장치 이벤트 콜백 %d가 등록되지 않았습니다"
 
-#, fuzzy
 msgid "node get memory parameters not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "이 플랫폼에서 구현되지 않은 노드 가져오기 메모리 매개변수"
 
 msgid "node info not implemented on this platform"
 msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
@@ -31246,32 +31037,28 @@ msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
 msgid "node information"
 msgstr "노드 정보"
 
-#, fuzzy
 msgid "node memory stats not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "이 플랫폼에서 구현되지 않은 노드 메모리 통계"
 
-#, fuzzy
 msgid "node online CPU map not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "이 플랫폼에서 구현되지 않은 노드 온라인 CPU 맵"
 
-#, fuzzy
 msgid "node present CPU map not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "노드 현재 CPU 맵이 이 플랫폼에서 구현되지 않았습니다"
 
-#, fuzzy
 msgid "node set memory parameters not implemented on this platform"
-msgstr "이 플랫폼에는 노드 정보가 구현되어 있지 않습니다"
+msgstr "이 플랫폼에서 구현되지 않은 노드 세트 메모리 매개변수"
 
-#, fuzzy, c-format
+#, c-format
 msgid "node-name '%s' too long for qemu"
-msgstr "너무 긴 목적지 브리지 이름 %s"
+msgstr "노드 이름 '%s'가 qemu에 대해 너무 깁니다"
 
 msgid "nodedev state driver is not active"
 msgstr "nodedev 상태 드라이버는 실행중이 아닙니다"
 
 #, c-format
 msgid "nodeset attribute of hugepages of sizes %llu and %llu intersect"
-msgstr ""
+msgstr "크기가 %llu 및 %llu인 거대한 페이지의 nodeset 속성이 교차합니다"
 
 msgid "nodeset for NUMA memory tuning must be set if 'placement' is 'static'"
 msgstr ""
@@ -31279,11 +31066,10 @@ msgstr ""
 
 #, c-format
 msgid "non unique alias detected: %s"
-msgstr ""
+msgstr "고유하지 않은 별칭이 감지됨: %s"
 
-#, fuzzy
 msgid "non-file destination not supported yet"
-msgstr "디스크 스냅샷이 아직 지원되지 않음 "
+msgstr "파일이 아닌 대상은 아직 지원되지 않습니다"
 
 msgid "none"
 msgstr "없음"
@@ -31294,89 +31080,86 @@ msgstr "0이 아닌 ncpus는 NULL cpus와 합치하지 않습니다"
 msgid "nonzero ncpus doesn't match with NULL xmlCPUs"
 msgstr "0이 아닌 ncpus는 NULL xmlCPUs 정의와 합치하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "not a hugetlbfs mount: '%s'"
-msgstr "단위 '%s'를 구문 분석할 수 없음"
+msgstr "hugetlbfs 마운트가 아닙니다: '%s'"
 
 msgid "not specified"
 msgstr "지정되지 않음"
 
-#, fuzzy
 msgid "not supported on non-linux platforms"
-msgstr "지원되지 않는 설정 포맷 '%s'"
+msgstr "비 Linux 플랫폼에서 지원되지 않음"
 
-#, fuzzy
 msgid "nothing selected for snapshot"
-msgstr "스냅샷 %s의 메타데이터를 저장할 수 없음"
+msgstr "스냅샷에 대해 선택된 항목이 없습니다"
 
 msgid "notify server to update TLS related files online."
-msgstr ""
+msgstr "TLS 관련 파일을 온라인으로 업데이트하도록 서버에 알립니다."
 
 msgid ""
 "notify server to update the CA cert, CA CRL, server cert / key without "
 "restarts. See OPTIONS for currently supported attributes."
 msgstr ""
+"다시 시작하지 않고 CA 인증서, CA CRL, 서버 인증서/키를 업데이트하도록 서버에 알립니다. 현재 지원되는 속성은 OPTIONS를 "
+"참조하세요."
 
-#, fuzzy, c-format
+#, c-format
 msgid "nparams count exceeds maximum: %u > %u"
-msgstr "vCPU 갯수가 최대 갯수를 초과: %d > %d"
+msgstr "nparams 수가 최대값을 초과함: %u > %u"
 
 #, c-format
 msgid "nparams in %s must be %d"
-msgstr ""
+msgstr "%s의 nparams는 %d여야 합니다"
 
 #, c-format
 msgid "nparams in %s must be equal to %d"
-msgstr ""
+msgstr "%s의 nparams는 %d와 같아야 합니다"
 
 msgid "nparams too large"
 msgstr "nparams가 너무 큽니다"
 
-#, fuzzy
 msgid "num-queues property isn't supported by this QEMU binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+msgstr "이 QEMU 바이너리는 num-queues 속성을 지원하지 않습니다"
 
-#, fuzzy
 msgid "numa parameters are not supported by vz driver"
-msgstr "시간 초과 매개 변수를 지원하지 않음 "
+msgstr "numa 매개변수는 vz 드라이버에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "numad is not available on this host"
-msgstr "이 호스트에서 블록 I/O 튜닝을 사용할 수 없음 "
+msgstr "이 호스트에서 numad를 사용할 수 없습니다"
 
 msgid "number"
 msgstr "숫자"
 
 msgid "number of bytes read:"
-msgstr ""
+msgstr "읽은 바이트 수:"
 
 msgid "number of bytes written:"
-msgstr ""
+msgstr "쓰여진 바이트 수:"
 
 msgid "number of compression threads for multithread compression"
-msgstr ""
+msgstr "다중 스레드 압축을 위한 압축 스레드 수"
 
 msgid "number of connections for parallel migration"
-msgstr ""
+msgstr "병렬 마이그레이션을 위한 연결 수"
 
 msgid "number of decompression threads for multithread compression"
-msgstr ""
+msgstr "다중 스레드 압축을 위한 압축 해제 스레드 수"
 
 msgid "number of flush operations:"
 msgstr "활동 작업 수:"
 
 msgid ""
 "number of millisecs the shared memory service should sleep before next scan"
-msgstr ""
+msgstr "공유 메모리 서비스가 다음 스캔 전에 휴면해야 하는 시간(밀리초)"
 
 msgid "number of pages to scan before the shared memory service goes to sleep"
-msgstr ""
+msgstr "공유 메모리 서비스가 절전 모드로 전환되기 전에 스캔할 페이지 수"
 
 msgid "number of read operations:"
 msgstr "읽기 동작 수:"
 
 msgid "number of seconds to squelch traffic on newly connected ports"
-msgstr ""
+msgstr "새로 연결된 포트에서 트래픽을 억제하는 데 걸리는 시간(초)"
 
 msgid "number of virtual CPUs"
 msgstr "가상 CPU 수"
@@ -31388,44 +31171,38 @@ msgid "numbers not allowed in VMX format"
 msgstr "VMX 형식에서 숫자는 허용되지 않습니다"
 
 msgid "numerical overflow"
-msgstr ""
+msgstr "숫자 오버플로"
 
 #, c-format
 msgid "numerical overflow: %s"
-msgstr ""
+msgstr "숫자 오버플로: %s"
 
 msgid "nvcpus is zero"
-msgstr ""
+msgstr "nvcpus는 0입니다"
 
-#, fuzzy
 msgid "nvdimm align property is not available with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리에서는 nvdimm align 속성을 사용할 수 없습니다"
 
-#, fuzzy
 msgid "nvdimm isn't supported by this QEMU binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+msgstr "이 QEMU 바이너리는 nvdimm을 지원하지 않습니다"
 
 msgid "nvdimm label must be at least 128KiB"
-msgstr ""
+msgstr "nvdimm 레이블은 128KiB 이상이어야 합니다"
 
-#, fuzzy
 msgid "nvdimm pmem property is not available with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "nvdimm pmem 속성은 이 QEMU 바이너리에서 사용할 수 없습니다"
 
-#, fuzzy
 msgid "nvdimm readonly property is not available with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리에서는 nvdimm 읽기 전용 속성을 사용할 수 없습니다"
 
 msgid "nvram address type must be spaprvio"
-msgstr ""
+msgstr "nvram 주소 유형은 spaprvio여야 합니다"
 
-#, fuzzy
 msgid "nvram device is not supported by this QEMU binary"
-msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
+msgstr "nvram 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "nvram device is only supported for PPC64"
-msgstr "단일 nvram 장치만이 지원됨"
+msgstr "nvram 장치는 PPC64에만 지원됩니다"
 
 msgid "nwfilter is in use"
 msgstr "nwfilter가 사용되고 있음"
@@ -31434,14 +31211,14 @@ msgid "nwfilter state driver is not active"
 msgstr "nwfilter 상태 드라이버가 작동중이 아닙니다"
 
 msgid "object props can't be NULL"
-msgstr ""
+msgstr "개체 소품은 NULL일 수 없습니다"
 
 #, c-format
 msgid "object size %zu of %s is not larger than parent class %zu"
-msgstr ""
+msgstr "%s의 개체 크기 %zu가 상위 클래스 %zu보다 크지 않습니다"
 
 msgid "occupied"
-msgstr ""
+msgstr "이미 주인이 있는"
 
 msgid "offline"
 msgstr "오프라인"
@@ -31449,9 +31226,8 @@ msgstr "오프라인"
 msgid "offline migration"
 msgstr "오프라인 마이그레이션"
 
-#, fuzzy
 msgid "offline migration cannot handle non-shared storage"
-msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되지 않습니다 "
+msgstr "오프라인 마이그레이션은 비공유 스토리지를 처리할 수 없습니다"
 
 msgid "offline migration is not supported by the destination host"
 msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
@@ -31459,66 +31235,62 @@ msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되�
 msgid "offline migration is not supported by the source host"
 msgstr "오프라인 마이그레이션은 소스 호스트에 의해 지원되지 않습니다 "
 
-#, fuzzy
 msgid "offline migration must be specified with the persistent flag set"
-msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
+msgstr "오프라인 마이그레이션은 영구 플래그 세트로 지정해야 합니다"
 
 msgid "ok"
 msgstr "ok"
 
-#, fuzzy
 msgid "old qcow/qcow2 encryption is not supported"
-msgstr "동작을 지원하지 않습니다"
+msgstr "이전 qcow/qcow2 암호화는 지원되지 않습니다"
 
 msgid ""
 "on_reboot, on_poweroff and on_crash parameters are not supported by vz driver"
-msgstr ""
+msgstr "on_reboot, on_poweroff 및 on_crash 매개변수는 vz 드라이버에서 지원되지 않습니다"
 
 msgid "one of --enable, --disable is required"
-msgstr ""
+msgstr "--enable, --disable 중 하나가 필요합니다"
 
-#, fuzzy
 msgid "one of --list, --all, or --event <type> is required"
-msgstr "--%s 또는 --current가 필요함 "
+msgstr "--list, --all 또는 --event <유형> 중 하나가 필요합니다"
 
 msgid "online non-hotpluggable vcpus must be ordered in ascending order"
-msgstr ""
+msgstr "핫플러그가 불가능한 온라인 vcpus는 오름차순으로 주문해야 합니다"
 
 msgid ""
 "online non-hotpluggable vcpus need to be ordered prior to hotplugable vcpus"
-msgstr ""
+msgstr "핫플러그 방식이 아닌 온라인 vcpus는 핫플러그 방식 vcpus보다 먼저 주문해야 합니다"
 
 msgid "only 'dimm' addresses are supported for the pc-dimm device"
-msgstr ""
+msgstr "pc-dimm 장치에는 'dimm' 주소만 지원됩니다"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
-msgstr ""
+msgstr "공유 메모리 장치에는 'pci' 주소만 지원됩니다"
 
 msgid "only 'pci' addresses are supported for the virtio-pmem device"
-msgstr ""
+msgstr "virtio-pmem 장치에는 'pci' 주소만 지원됩니다"
 
 msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
-msgstr ""
+msgstr "각 유형(sdl, vnc, spice, headless)의 그래픽 장치 1개만 지원됩니다"
 
 msgid "only JSON objects can be top level"
-msgstr ""
+msgstr "JSON 객체만 최상위 레벨이 될 수 있습니다"
 
 msgid "only RAW volumes are supported by this storage pool"
-msgstr ""
+msgstr "이 스토리지 풀은 RAW 볼륨만 지원합니다"
 
 msgid "only S390 guests support panic device of model 's390'"
-msgstr ""
+msgstr "S390 게스트만 모델 '390'의 패닉 장치를 지원합니다"
 
 msgid "only TCP protocol can be converted to InetSocketAddress"
-msgstr ""
+msgstr "TCP 프로토콜만 InetSocketAddress로 변환할 수 있습니다"
 
 msgid "only TCP transport is supported for iSCSI volumes"
-msgstr ""
+msgstr "iSCSI 볼륨에는 TCP 전송만 지원됩니다"
 
-#, fuzzy
 msgid "only USB input devices are supported"
-msgstr "단일 TPM 장치만 지원됨"
+msgstr "USB 입력 장치만 지원됩니다"
 
 msgid "only a single IOMMU device is supported"
 msgstr "단일 IOMMU 장치만 지원됨"
@@ -31527,7 +31299,7 @@ msgid "only a single TPM Proxy device is supported"
 msgstr "단일 TPM 프락시 장치만이 지원됨"
 
 msgid "only a single TPM non-proxy device is supported"
-msgstr ""
+msgstr "단일 TPM 비프록시 장치만 지원됩니다"
 
 msgid "only a single memory balloon device is supported"
 msgstr "단일 메모리 부울 장치만이 지원됨"
@@ -31541,39 +31313,36 @@ msgstr "단일 vsock 장치만이 지원됨"
 msgid "only a single watchdog device is supported"
 msgstr "와치독 장치는 한개만 지원합니다"
 
-#, fuzzy
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
-msgstr "sgio는 scsi 호스트 장치에 대해서만 지원됩니다 "
+msgstr "'패스스루' 입력 장치에는 'virtio' 버스만 지원됩니다"
 
 msgid "only can reboot running/paused domain"
-msgstr ""
+msgstr "실행/일시 중지된 도메인만 재부팅할 수 있습니다"
 
 msgid "only can resume paused domain"
-msgstr ""
+msgstr "일시중지된 도메인만 재개할 수 있습니다"
 
 msgid "only can shutdown running/paused domain"
-msgstr ""
+msgstr "실행/일시 중지된 도메인만 종료할 수 있습니다"
 
 msgid "only can suspend running domain"
-msgstr ""
+msgstr "실행 중인 도메인만 일시 중지할 수 있습니다"
 
-#, fuzzy
 msgid "only connect if safe console handling is supported"
-msgstr "단일 RNG 백엔드만이 지원됨"
+msgstr "안전한 콘솔 처리가 지원되는 경우에만 연결"
 
 #, c-format
 msgid "only cpu feature policies 'require' and 'disable' are supported for %s"
-msgstr ""
+msgstr "CPU 기능 정책 'require' 및 'disable'만 %s에 대해 지원됩니다"
 
 msgid "only i686 and x86_64 guests support panic device of model 'hyperv'"
-msgstr ""
+msgstr "i686 및 x86_64 게스트만 'hyperv' 모델의 패닉 장치를 지원합니다"
 
-#, fuzzy
 msgid "only list pool of specified type(s) (if supported)"
-msgstr "nmdm 콘솔 형식만 지원합니다"
+msgstr "지정된 유형의 풀만 나열(지원되는 경우)"
 
 msgid "only model 'netfront' is supported for Xen PV(H) domains"
-msgstr ""
+msgstr "Xen PV(H) 도메인에는 'netfront' 모델만 지원됩니다"
 
 msgid "only nmdm console types are supported"
 msgstr "nmdm 콘솔 형식만 지원합니다"
@@ -31585,11 +31354,10 @@ msgid "only one TPM backend is supported"
 msgstr "단일 TPM 백엔드만 지원됨"
 
 msgid "only one audio backend is supported with this QEMU binary"
-msgstr ""
+msgstr "이 QEMU 바이너리에서는 하나의 오디오 백엔드만 지원됩니다"
 
-#, fuzzy
 msgid "only one backup job is supported"
-msgstr "단일 RNG 백엔드만이 지원됨"
+msgstr "하나의 백업 작업만 지원됩니다"
 
 msgid "only one emulatorpin is supported"
 msgstr "오직 하나의 emulatorpin만 지원됨"
@@ -31601,18 +31369,16 @@ msgid "only one filesystem supported"
 msgstr "오직 하나의 파일시스템만 지원됨"
 
 msgid "only one hotpluggable entity can be selected"
-msgstr ""
+msgstr "하나의 핫플러그 가능한 엔터티만 선택할 수 있습니다"
 
-#, fuzzy
 msgid "only one log element is allowed for character device"
-msgstr "네트워크 %s의 <forward>에서는 하나의 <pf> 요소만이 허용됨"
+msgstr "문자 장치에는 하나의 로그 요소만 허용됩니다"
 
 msgid "only one numatune is supported"
 msgstr "오직 하나의 numatune만 지원됨"
 
-#, fuzzy
 msgid "only one protocol element is allowed for character device"
-msgstr "네트워크 %s의 <forward>에서는 하나의 <pf> 요소만이 허용됨"
+msgstr "문자 장치에는 하나의 프로토콜 요소만 허용됩니다"
 
 msgid "only one resource element is supported"
 msgstr "오직 하나의 리소스 요소만이 지원됨"
@@ -31620,51 +31386,45 @@ msgstr "오직 하나의 리소스 요소만이 지원됨"
 msgid "only one set of redirection filter rule is supported"
 msgstr "오직 한가지 리다이렉션 필터 룰만 사용 가능합니다"
 
-#, fuzzy
 msgid "only one source element is allowed for character device"
-msgstr "오직 하나의 리소스 요소만이 지원됨"
+msgstr "문자 장치에는 하나의 소스 요소만 허용됩니다"
 
-#, fuzzy
 msgid "only one source host address may be specified for the iSCSI hostdev"
-msgstr "scsi hostdev 장치에 대해 하나 이상의 소스 주소가 지정되어 있음"
+msgstr "iSCSI hostdev에 대해 하나의 소스 호스트 주소만 지정할 수 있습니다"
 
 msgid "only pSeries guests support panic device of model 'pseries'"
-msgstr ""
+msgstr "pSeries 게스트만 'pseries' 모델의 패닉 장치를 지원합니다"
 
 #, c-format
 msgid "only scheme, host and port are supported in vz migration URI: %s"
-msgstr ""
+msgstr "vz 마이그레이션 URI에서는 스키마, 호스트 및 포트만 지원됩니다. %s"
 
-#, fuzzy
 msgid "only sending a signal to pid 1 is supported"
-msgstr "와치독 장치는 한개만 지원합니다"
+msgstr "pid 1로 신호를 보내는 것만 지원됩니다"
 
 msgid "only single ISA controller is supported"
-msgstr ""
+msgstr "단일 ISA 컨트롤러만 지원됩니다"
 
-#, fuzzy
 msgid "only single USB controller is supported"
-msgstr "단일 TPM 장치만 지원됨"
+msgstr "단일 USB 컨트롤러만 지원됩니다"
 
 msgid "only single input device is supported"
 msgstr "단일 입력 장치만이 지원됨"
 
 msgid "only snapshot=no is supported with vhostuser disk"
-msgstr ""
+msgstr "vhostuser 디스크에서는 snapshot=no만 지원됩니다"
 
 msgid "only supports mount filesystem type"
 msgstr "마운트 파일 시스템 유형만이 지원됨 "
 
-#, fuzzy
 msgid "only supports passthrough accessmode"
-msgstr "마운트 파일 시스템 유형만이 지원됨 "
+msgstr "통과 액세스 모드만 지원"
 
-#, fuzzy
 msgid "only tablet input devices are supported"
-msgstr "단일 nvram 장치만이 지원됨"
+msgstr "태블릿 입력 장치만 지원됩니다"
 
 msgid "only the 'qemu' driver can be used with network disks"
-msgstr ""
+msgstr "'qemu' 드라이버만 네트워크 디스크와 함께 사용할 수 있습니다"
 
 msgid "only two serial ports are supported"
 msgstr "시리얼 포트 두개 까지만 지원합니다"
@@ -31676,29 +31436,29 @@ msgid "open an editor to modify the description"
 msgstr "설명을 수정하기 위해 편집기 열기"
 
 msgid "open disk image file failed"
-msgstr ""
+msgstr "디스크 이미지 파일 열기 실패"
 
 #, c-format
 msgid "open(\"%s\")"
-msgstr ""
+msgstr "열기(\"%s\")"
 
 msgid "opened"
-msgstr ""
+msgstr "열린"
 
 #, c-format
 msgid "openwsman: %s"
-msgstr ""
+msgstr "openwsman: %s"
 
 #, c-format
 msgid "operation '%s' not supported for backend '%s'"
-msgstr ""
+msgstr "백엔드 '%s'에 대해 작업 '%s'가 지원되지 않습니다"
 
 msgid "operation aborted"
 msgstr "작업이 중단됨"
 
-#, fuzzy, c-format
+#, c-format
 msgid "operation aborted: %s"
-msgstr "작업 실패: %s"
+msgstr "작업이 중단됨: %s"
 
 msgid "operation failed"
 msgstr "작업 실패"
@@ -31710,25 +31470,24 @@ msgstr "작업 실패: %s"
 msgid "operation forbidden for read only access"
 msgstr "읽기 전용 액세스에 대해 작업이 허용되지 않음"
 
-#, fuzzy, c-format
+#, c-format
 msgid "operation forbidden: %s"
-msgstr "작업 실패: %s"
+msgstr "금지된 작업: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "operation type %d not supported"
-msgstr "동작을 지원하지 않습니다"
+msgstr "작업 유형 %d가 지원되지 않습니다"
 
-#, fuzzy
 msgid "optdata"
-msgstr "메타데이터: "
+msgstr "옵트 데이터"
 
-#, fuzzy, c-format
+#, c-format
 msgid "option %s requires a positive integer argument"
-msgstr "'-%c' 옵션에는 인수가 필요함"
+msgstr "옵션 %s에는 양의 정수 인수가 필요합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "option %s takes a numeric argument"
-msgstr "'-%c' 옵션에는 인수가 필요함"
+msgstr "옵션 %s는 숫자 인수를 사용합니다"
 
 #, c-format
 msgid "option '-%c' requires an argument"
@@ -31738,30 +31497,28 @@ msgstr "'-%c' 옵션에는 인수가 필요함"
 msgid "option '-%c'/'--%s' requires an argument"
 msgstr "'-%c'/'--%s' 옵션에는 인수가 필요함"
 
-#, fuzzy, c-format
+#, c-format
 msgid "option --%s already seen"
-msgstr "연결이 이미 열려있습니다"
+msgstr "옵션 --%s가 이미 표시됨"
 
 #, c-format
 msgid "option parsing failed: %s\n"
 msgstr "선택 구문 분석하기 실패: %s\n"
 
-#, fuzzy
 msgid "optional CPU features are not supported"
-msgstr "시리얼 포트 두개 까지만 지원합니다"
+msgstr "선택적 CPU 기능은 지원되지 않습니다"
 
 msgid "optional file of source xml to query for pools"
 msgstr "풀에 대해 질의할 소스 xml 파일(선택적임)"
 
 msgid "optional file to read keys from"
-msgstr ""
+msgstr "키를 읽을 선택적 파일"
 
 msgid "optional host to query"
 msgstr "질의를 할 선택적인 호스트"
 
-#, fuzzy
 msgid "optional initiator IQN to use for query"
-msgstr "질의를 할 선택적인 포트"
+msgstr "쿼리에 사용할 선택적 이니시에이터 IQN"
 
 msgid "optional port to query"
 msgstr "질의를 할 선택적인 포트"
@@ -31769,64 +31526,58 @@ msgstr "질의를 할 선택적인 포트"
 msgid "options"
 msgstr "선택"
 
-#, fuzzy
 msgid "os.type is not defined"
-msgstr "컨테이너가 정의되지 않았습니다"
+msgstr "os.type이 정의되지 않았습니다"
 
 #, c-format
 msgid "out of bounds index - count %zu at %zu"
-msgstr ""
+msgstr "범위를 벗어난 인덱스 - %zu에서 %zu를 계산합니다"
 
 msgid "out of memory"
 msgstr "메모리 부족"
 
-#, fuzzy, c-format
+#, c-format
 msgid "out of memory: %s"
-msgstr "메모리 부족"
+msgstr "메모리 부족: %s"
 
 msgid "outbound average is mandatory"
-msgstr ""
+msgstr "아웃바운드 평균은 필수입니다"
 
-#, fuzzy
 msgid "outbound floor is unsupported yet"
-msgstr "임시 디스크가 아직 지원되지 않음 "
+msgstr "발신층은 아직 지원되지 않습니다"
 
 #, c-format
 msgid "outbound rate larger than maximum %u"
-msgstr ""
+msgstr "최대 %u보다 큰 아웃바운드 비율"
 
-#, fuzzy
 msgid "outgoing RDMA migration is not supported with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리에서는 나가는 RDMA 마이그레이션이 지원되지 않습니다"
 
-#, fuzzy
 msgid "output an XML string for the hypervisor sysinfo, if available"
-msgstr "하이퍼바이저 시스템 정보 인쇄"
+msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
 
 msgid "output to stderr"
-msgstr ""
+msgstr "stderr로 출력"
 
 #, c-format
 msgid "overflow in converting %ld MiB/s to bytes\n"
-msgstr ""
+msgstr "%ld MiB/s를 바이트로 변환하는 중 오버플로\n"
 
 msgid "override the destination host name used for TLS verification"
-msgstr ""
+msgstr "TLS 확인에 사용되는 대상 호스트 이름 재정의"
 
-#, fuzzy
 msgid "overwrite any existing data"
-msgstr "기존 스냅샷 이름을 변경하는 것을 허용"
+msgstr "기존 데이터 덮어쓰기"
 
-#, fuzzy, c-format
+#, c-format
 msgid "owner %lld does not hold the resource lock"
-msgstr "대상 도메인 최대 메모리 %lld가 소스 %lld와 일치하지 않음"
+msgstr "소유자 %lld가 리소스 잠금을 보유하지 않습니다"
 
 msgid "p2p migration is not supported by the source host"
 msgstr "p2p 이전은 소스 호스트에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "packed driver option is only supported for virtio devices"
-msgstr "vhost-net은 virtio 네트워크 인터페이스에 대해서만 지원됨 "
+msgstr "패키지 드라이버 옵션은 virtio 장치에만 지원됩니다"
 
 #, c-format
 msgid "packet %d bytes received from server too large, want %d"
@@ -31836,42 +31587,37 @@ msgstr "서버에서 수신된 패킷 %d 바이트는 너무 크며, %d를 원�
 msgid "packet %d bytes received from server too small, want %d"
 msgstr "서버에서 수신된 패킷 %d 바이트가 너무 크고, %d를 원합니다"
 
-#, fuzzy
 msgid "page cache size for xbzrle compression"
-msgstr "TLS 세션에 대한 잘못된 암호화 크기"
+msgstr "xbzrle 압축을 위한 페이지 캐시 크기"
 
 msgid "page count"
-msgstr ""
+msgstr "페이지 수"
 
-#, fuzzy
 msgid "page info is not supported on this platform"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "페이지 정보는 이 플랫폼에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "page pool allocation is not supported on this platform"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "이 플랫폼에서는 페이지 풀 할당이 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "page size %u is not available"
-msgstr "시스템이 사용 불가능합니다 "
+msgstr "페이지 크기 %u를 사용할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "page size %u is not available on node %d"
-msgstr "시스템이 사용 불가능합니다 "
+msgstr "페이지 크기 %u는 노드 %d에서 사용할 수 없습니다"
 
 msgid "page size (in kibibytes)"
-msgstr ""
+msgstr "페이지 크기(키비바이트)"
 
-#, fuzzy
 msgid "panic is supported only with ISA address type"
-msgstr "지원되지 않는 콘솔 대상 유형 %s"
+msgstr "패닉은 ISA 주소 유형에서만 지원됩니다"
 
 msgid "panicked"
 msgstr "당황됨"
 
-#, fuzzy
 msgid "parallel ports are not supported"
-msgstr "시리얼 포트 두개 까지만 지원합니다"
+msgstr "병렬 포트는 지원되지 않습니다"
 
 #, c-format
 msgid "parallels bus does not support %s input device"
@@ -31879,117 +31625,117 @@ msgstr "병렬 버스는 %s 입력 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "parallels containers don't support input bus %s"
-msgstr ""
+msgstr "병렬 컨테이너는 입력 버스 %s를 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parameter %s too big for destination"
-msgstr "유형 %s가 목적지로는 너무 큼"
+msgstr "매개변수 %s가 대상에 비해 너무 큽니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parameter '%s' not supported"
-msgstr "문자열 매개 변수 '%s'가 지원되지 않습니다 "
+msgstr "매개변수 '%s'가 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parameter '%s' occurs multiple times"
-msgstr "문자열 매개 변수 '%s'가 지원되지 않습니다 "
+msgstr "매개변수 '%s'가 여러 번 발생합니다"
 
 #, c-format
 msgid "parameter '%s' of command '%s' has incorrect alias option"
-msgstr ""
+msgstr "명령 '%s'의 매개변수 '%s'에 잘못된 별칭 옵션이 있습니다"
 
 #, c-format
 msgid "parameter '%s' of command '%s' misused VSH_OFLAG_REQ"
-msgstr ""
+msgstr "명령 '%s'의 매개변수 '%s'가 VSH_OFLAG_REQ를 잘못 사용했습니다"
 
 #, c-format
 msgid ""
 "parameter '%s' of command '%s' must be listed before optional parameters"
-msgstr ""
+msgstr "명령 '%s'의 매개변수 '%s'는 선택적 매개변수 앞에 나열되어야 합니다"
 
 #, c-format
 msgid "parameter '%s' of command '%s' must be listed last"
-msgstr ""
+msgstr "명령 '%s'의 매개변수 '%s'는 마지막에 나열되어야 합니다"
 
 #, c-format
 msgid "parameter '%s' of command '%s' must use VSH_OFLAG_REQ flag"
-msgstr ""
+msgstr "명령 '%s'의 매개변수 '%s'는 VSH_OFLAG_REQ 플래그를 사용해야 합니다"
 
 msgid "parameter=value"
 msgstr "parameter=value"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parent %s for moment %s not found"
-msgstr "특징 %s가 CPU 모델 %s에 의해 요청되었으나, 찾을 수 없음"
+msgstr "순간 %s에 대한 상위 %s를 찾을 수 없습니다"
 
 #, c-format
 msgid "parent %s would create cycle to %s"
-msgstr ""
+msgstr "상위 %s가 %s에 대한 주기를 생성합니다"
 
 #, c-format
 msgid "parent '%s' is not an fc_host for the wwnn/wwpn"
-msgstr ""
+msgstr "상위 '%s'는 wwnn/wwpn에 대한 fc_host가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parent '%s' is not properly formatted"
-msgstr "경로 '%s'가 절대경로가 아닙니다"
+msgstr "상위 '%s'의 형식이 올바르지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "parent '%s' specified for vHBA does not exist"
-msgstr "템플릿 '%s'는 존재하지 않습니다"
+msgstr "vHBA에 대해 지정된 상위 '%s'가 존재하지 않습니다"
 
 msgid "parser error"
 msgstr "구문 분석 오류"
 
 msgid "partial string to autocomplete"
-msgstr ""
+msgstr "자동 완성할 부분 문자열"
 
 msgid "pass file descriptors N,M,... to the guest"
-msgstr ""
+msgstr "파일 설명자 N,M,...을 게스트에게 전달"
 
 msgid "passphrase is too long for the buffer"
-msgstr ""
+msgstr "버퍼에 비해 암호가 너무 깁니다"
 
 msgid "passthrough mode requires a character device type attribute"
 msgstr "통과 모드에는 문장 장치 유형 속성이 필요합니다 "
 
-#, fuzzy, c-format
+#, c-format
 msgid "path '%s' doesn't reference a file"
-msgstr "데이터 저장소 경로 '%s'가 파일을 참조하지 않음 "
+msgstr "경로 '%s'가 파일을 참조하지 않습니다"
 
 #, c-format
 msgid "path '%s' is not absolute"
 msgstr "경로 '%s'가 절대경로가 아닙니다"
 
 msgid "path does not exist, skipping file type checks"
-msgstr ""
+msgstr "경로가 존재하지 않습니다. 파일 형식 검사를 건너뜁니다"
 
 #, c-format
 msgid "path is required for model '%s'"
-msgstr ""
+msgstr "모델 '%s'에 대한 경로가 필요합니다"
 
 msgid "path is required for model 'nvdimm'"
-msgstr ""
+msgstr "'nvdimm' 모델에 대한 경로가 필요합니다"
 
 msgid "path of backing file in chain for a partial pull"
-msgstr ""
+msgstr "부분 풀을 위한 체인의 백업 파일 경로"
 
 msgid "path of base file to commit into (default bottom of chain)"
-msgstr ""
+msgstr "커밋할 기본 파일의 경로(기본 체인 맨 아래)"
 
 msgid "path of the copy to create"
 msgstr "생성할 코드 경로"
 
 msgid "path of top file to commit from (default top of chain)"
-msgstr ""
+msgstr "커밋할 최상위 파일의 경로(기본 체인 상단)"
 
 msgid "path to emulator binary (/domain/devices/emulator)"
-msgstr ""
+msgstr "에뮬레이터 바이너리 경로(/domain/devices/emulator)"
 
 msgid "path to inputvol secret data file is required"
-msgstr ""
+msgstr "inputvol 비밀 데이터 파일의 경로가 필요합니다"
 
 msgid "path to secret data file is required"
-msgstr ""
+msgstr "비밀 데이터 파일의 경로가 필요합니다"
 
 msgid "pause"
 msgstr "일시정지"
@@ -32012,42 +31758,42 @@ msgstr "pcap_setdirection: %s"
 msgid "pcap_setfilter: %s"
 msgstr "pcap_setfilter: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pci backend driver '%s' is not supported"
-msgstr "디스크 드라이버 %s가 지원되지 않습니다 "
+msgstr "pci 백엔드 드라이버 '%s'가 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pci device %s is not a PCI-Express device"
-msgstr "장치 %s는 PCI 장치가 아닙니다"
+msgstr "pci 장치 %s는 PCI-Express 장치가 아닙니다"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'kvm')"
-msgstr ""
+msgstr "pci 장치 할당 백엔드 드라이버(예: 'vfio' 또는 'kvm')"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
-msgstr ""
+msgstr "pci-expander-bus 컨트롤러는 440fx 기반 머신 유형에서만 지원됩니다"
 
 msgid "pci-root and pcie-root controllers should have index 0"
-msgstr ""
+msgstr "pci-root 및 pcie-root 컨트롤러에는 인덱스 0이 있어야 합니다"
 
 msgid "pci-root and pcie-root controllers should not have an address"
-msgstr ""
+msgstr "pci-root 및 pcie-root 컨트롤러에는 주소가 없어야 합니다"
 
 msgid "pcie-expander-bus controllers are not supported with this machine type"
-msgstr ""
+msgstr "pcie-expander-bus 컨트롤러는 이 머신 유형에서 지원되지 않습니다"
 
 msgid "peeking is not supported for vhostuser disk"
-msgstr ""
+msgstr "vhostuser 디스크에는 엿보기가 지원되지 않습니다"
 
 #, c-format
 msgid "peeking is only supported for disk with 'raw' format not '%s'"
-msgstr ""
+msgstr "엿보기는 '%s'가 아닌 '원시' 형식의 디스크에만 지원됩니다"
 
 msgid "peer-2-peer migration"
 msgstr "피어간 마이그레이션"
 
 msgid "per-device IO Weights, in the form of /path/to/device,weight,..."
-msgstr ""
+msgstr "/path/to/device,weight,... 형식의 장치별 IO 가중치,..."
 
 msgid "per-device boot elements cannot be used together with os/boot elements"
 msgstr "장치 별 boot 요소는 os/boot 요소와 함께 사용할 수 없습니다"
@@ -32055,68 +31801,65 @@ msgstr "장치 별 boot 요소는 os/boot 요소와 함께 사용할 수 없습�
 msgid ""
 "per-device bytes read per second, in the form of /path/to/device,"
 "read_bytes_sec,..."
-msgstr ""
+msgstr "/path/to/device,read_bytes_sec의 형식의 초당 장치당 바이트 읽기."
 
 msgid ""
 "per-device bytes wrote per second, in the form of /path/to/device,"
 "write_bytes_sec,..."
-msgstr ""
+msgstr "/path/to/device,write_bytes_sec의 형식의 초당 작성된 장치당 바이트."
 
 msgid ""
 "per-device read I/O limit per second, in the form of /path/to/device,"
 "read_iops_sec,..."
-msgstr ""
+msgstr "/path/to/device,read_iops_sec,... 형식의 장치당 초당 읽기 I/O 제한."
 
 msgid ""
 "per-device write I/O limit per second, in the form of /path/to/device,"
 "write_iops_sec,..."
-msgstr ""
+msgstr "/path/to/device,write_iops_sec 형식으로 초당 장치 쓰기 I/O 제한,..."
 
 #, c-format
 msgid "perf event '%s' was already specified"
 msgstr "perf 사건 '%s'가 이미 지정되어 있음"
 
 msgid "perf events which will be disabled"
-msgstr ""
+msgstr "비활성화될 perf 이벤트"
 
 msgid "perf events which will be enabled"
-msgstr ""
+msgstr "활성화될 perf 이벤트"
 
 msgid "perform a live core dump if supported"
 msgstr "지원되는 경우 라이브 코어 덤프를 합니다"
 
 msgid "perform selected wiping algorithm"
-msgstr ""
+msgstr "선택한 삭제 알고리즘 수행"
 
 msgid "period in seconds to set collection"
-msgstr ""
+msgstr "컬렉션을 설정하는 기간(초)"
 
 msgid "persist VM on destination"
 msgstr "목적지의 영구적인 VM"
 
-#, fuzzy, c-format
+#, c-format
 msgid "persistent attach of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 영구 연결이 지원되지 않습니다"
 
-#, fuzzy
 msgid "persistent attach of device is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치의 영구 연결은 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "persistent detach of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 영구 분리가 지원되지 않습니다"
 
-#, fuzzy
 msgid "persistent detach of device is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치의 영구 분리는 지원되지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "persistent update of device '%s' is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치 '%s'의 영구 업데이트가 지원되지 않습니다"
 
-#, fuzzy
 msgid "persistent update of device is not supported"
-msgstr "디스크 캐시 모드 %s가 지원되지 않습니다 "
+msgstr "장치의 영구 업데이트는 지원되지 않습니다"
 
 msgid "pid"
 msgstr "pid"
@@ -32126,39 +31869,37 @@ msgid "pid_value in %s is too large"
 msgstr "%s에 있는 pid_value가 너무 큽니다 "
 
 msgid "pin all memory before starting RDMA live migration"
-msgstr ""
+msgstr "RDMA 라이브 마이그레이션을 시작하기 전에 모든 메모리 고정"
 
-#, fuzzy
 msgid "platform unsupported"
-msgstr "동작을 지원하지 않습니다"
+msgstr "지원되지 않는 플랫폼"
 
 msgid "ploop"
-msgstr ""
+msgstr "덩어리"
 
 msgid "pmsuspended"
 msgstr "pmsuspended"
 
 msgid "polkit text authentication agent unavailable"
-msgstr ""
+msgstr "폴킷 텍스트 인증 에이전트를 사용할 수 없습니다"
 
 msgid "poll failed in libxlTunnel3MigrationSrcFunc"
-msgstr ""
+msgstr "libxlTunnel3MigrationSrcFunc에서 폴링 실패"
 
-#, fuzzy
 msgid "poll failed in migration tunnel"
-msgstr "오프라인 마이그레이션"
+msgstr "마이그레이션 터널에서 폴링 실패"
 
 #, c-format
 msgid "poll-grow (%u) must be less than or equal to %d"
-msgstr ""
+msgstr "poll-grow(%u)는 %d보다 작거나 같아야 합니다"
 
 #, c-format
 msgid "poll-max-ns (%llu) must be less than or equal to %d"
-msgstr ""
+msgstr "poll-max-ns(%llu)는 %d보다 작거나 같아야 합니다"
 
 #, c-format
 msgid "poll-shrink (%u) must be less than or equal to %d"
-msgstr ""
+msgstr "폴링 축소(%u)는 %d보다 작거나 같아야 합니다"
 
 #, c-format
 msgid "pool '%s' already exists with uuid %s"
@@ -32172,17 +31913,17 @@ msgstr "풀 '%s'에 실행중인 동기화되지 않은 작업이 있습니다."
 msgid "pool '%s' is already defined with uuid %s"
 msgstr "풀 '%s'은 이미 uuid %s로 정의되어 있습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool '%s' is not active"
-msgstr "저장소 풀 '%s'가 이미 동작중이 아닙니다"
+msgstr "풀 '%s'가 활성 상태가 아닙니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pool '%s' is starting up"
-msgstr "저장소 풀 '%s'가 아직 동작 중입니다"
+msgstr "풀 '%s'를 시작하는 중입니다"
 
 #, c-format
 msgid "pool = '%s', volume = '%s'"
-msgstr ""
+msgstr "풀 = '%s', 볼륨 = '%s'"
 
 msgid "pool does not support pool deletion"
 msgstr "풀이 풀 삭제를 지원하지 않습니다"
@@ -32212,154 +31953,140 @@ msgstr "풀 유형 '%s'는 소스 발견을 지원하지 않습니다"
 
 #, c-format
 msgid "port %u out of range in USB address bus: %u port: %s"
-msgstr ""
+msgstr "USB 주소 버스의 %u 포트가 범위를 벗어났습니다: %u 포트: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "port '%s' out of range"
-msgstr "값 '%s'이 %s 범위를 벗어남 "
+msgstr "포트 '%s'가 범위를 벗어났습니다"
 
-#, fuzzy
 msgid "port UUID"
-msgstr "비밀 UUID"
+msgstr "포트 UUID"
 
 msgid "port cannot be specified in 'nfs' protocol host"
-msgstr ""
+msgstr "'NFS' 프로토콜 호스트에서 포트를 지정할 수 없습니다"
 
 msgid "port to use by target server for incoming disks migration"
-msgstr ""
+msgstr "들어오는 디스크 마이그레이션을 위해 대상 서버에서 사용할 포트"
 
 msgid "port-profile setlink timed out"
-msgstr ""
+msgstr "포트 프로필 설정 링크 시간 초과"
 
 msgid "possible loop in QMP schema"
-msgstr ""
+msgstr "QMP 스키마에서 가능한 루프"
 
 msgid "post-copy"
 msgstr "사후-복사"
 
 msgid "post-copy can only be started while outgoing migration is in progress"
-msgstr ""
+msgstr "사후 복사는 나가는 마이그레이션이 진행 중인 동안에만 시작할 수 있습니다"
 
-#, fuzzy
 msgid "post-copy failed"
-msgstr "sockpair가 실패했습니다"
+msgstr "사후 복사 실패"
 
-#, fuzzy
 msgid "post-copy is not supported with tunnelled migration"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "터널링된 마이그레이션에서는 사후 복사가 지원되지 않습니다"
 
 msgid "post-copy migration bandwidth limit in MiB/s"
-msgstr ""
+msgstr "복사 후 마이그레이션 대역폭 제한(MiB/s)"
 
-#, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
-msgstr "오프라인 마이그레이션은 대상 호스트에 의해 지원되지 않습니다 "
+msgstr "사후 복사 마이그레이션은 라이브가 아닌 마이그레이션 또는 일시 중지된 마이그레이션에서 지원되지 않습니다"
 
 msgid "potentially unsafe disk format probing"
-msgstr ""
+msgstr "잠재적으로 안전하지 않은 디스크 형식 검사"
 
 msgid "potentially unsafe use of host CPU passthrough"
-msgstr ""
+msgstr "잠재적으로 안전하지 않은 호스트 CPU 패스스루 사용"
 
 msgid "power-of-two granularity to use during the copy"
-msgstr ""
+msgstr "복사 중에 사용할 2의 거듭제곱 세분성"
 
 msgid "poweroff"
-msgstr ""
+msgstr "전원 끄기"
 
-#, fuzzy, c-format
+#, c-format
 msgid "pr helper %s didn't show up"
-msgstr "%s 도메인을 보여주지 못함"
+msgstr "pr 도우미 %s가 표시되지 않았습니다"
 
 #, c-format
 msgid "pr helper %s died unexpectedly"
-msgstr ""
+msgstr "pr 도우미 %s가 예기치 않게 종료되었습니다"
 
 #, c-format
 msgid "pr helper died and reported: %s"
-msgstr ""
+msgstr "pr 도우미 종료가 보고됨: %s"
 
 msgid "pr helper socked did not show up"
-msgstr ""
+msgstr "pr helper socked가 나타나지 않았습니다"
 
 #, c-format
 msgid "prctl failed to enable '%s' in the AMBIENT set"
-msgstr ""
+msgstr "prctl이 AMBIENT 세트에서 '%s'를 활성화하지 못했습니다"
 
-#, fuzzy
 msgid "prctl failed to reset KEEPCAPS"
-msgstr "%s 설정 실패 "
+msgstr "prctl이 KEEPCAPS를 재설정하지 못했습니다"
 
-#, fuzzy
 msgid "prctl failed to set KEEPCAPS"
-msgstr "%s 설정 실패 "
+msgstr "prctl이 KEEPCAPS를 설정하지 못했습니다"
 
 msgid ""
 "pre-creation of storage targets for incremental storage migration is not "
 "supported"
-msgstr ""
+msgstr "증분 스토리지 마이그레이션을 위한 스토리지 대상의 사전 생성은 지원되지 않습니다"
 
-#, fuzzy
 msgid "preallocate is not supported on this platform"
-msgstr "CPU 친화도 처리가 이 플랫폼에서는 지원되지 않습니다"
+msgstr "이 플랫폼에서는 사전 할당이 지원되지 않습니다"
 
-#, fuzzy
 msgid "preallocate is only supported for an unencrypted raw volume"
-msgstr "저장소 풀이 암호화된 볼륨을 지원하지 않음"
+msgstr "사전 할당은 암호화되지 않은 원시 볼륨에 대해서만 지원됩니다"
 
-#, fuzzy
 msgid "preallocate is only supported for raw type volume"
-msgstr "램 속성은 qxl 유형에만 지원됨"
+msgstr "사전할당은 원시 유형 볼륨에 대해서만 지원됩니다"
 
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "메타 데이터를 사전 할당 (전체 할당 대신 qcow2에 대해)"
 
-#, fuzzy
 msgid "prefix too long"
-msgstr "ipset 이름이 너무 깁니다 "
+msgstr "접두사가 너무 깁니다"
 
 msgid "preserve sparseness of volume"
-msgstr ""
+msgstr "볼륨의 희소성을 유지"
 
 msgid "pretty-print any JSON output"
-msgstr ""
+msgstr "그 어떠한 JSON 출력이라도 예쁘게 인쇄"
 
 msgid "pretty-print any qemu monitor protocol output"
-msgstr ""
+msgstr "그 어떠한 qemu 모니터 프로토콜이라도 출력을 예쁘게 인쇄"
 
 msgid "pretty-print the output"
-msgstr ""
+msgstr "출력물을 예쁘게 인쇄"
 
 msgid "prevent any configuration changes to domain until migration ends"
-msgstr ""
+msgstr "마이그레이션이 끝날 때까지 도메인에 대한 구성 변경 방지"
 
-#, fuzzy
 msgid "print XML document rather than attach the disk"
-msgstr "XML 문서를 생성하지 않고 출력합니다"
+msgstr "디스크를 첨부하는 대신 XML 문서 인쇄"
 
-#, fuzzy
 msgid "print XML document rather than attach the interface"
-msgstr "XML 문서를 생성하지 않고 출력합니다"
+msgstr "인터페이스를 첨부하는 대신 XML 문서를 인쇄하십시오"
 
-#, fuzzy
 msgid "print XML document rather than change media"
-msgstr "XML 문서를 생성하지 않고 출력합니다"
+msgstr "미디어를 변경하는 대신 XML 문서 인쇄"
 
 msgid "print XML document rather than create"
 msgstr "XML 문서를 생성하지 않고 출력합니다"
 
-#, fuzzy
 msgid "print XML document rather than detach the disk"
-msgstr "XML 문서를 생성하지 않고 출력합니다"
+msgstr "디스크를 분리하지 않고 XML 문서를 인쇄합니다"
 
 msgid "print XML document, but don't define/create"
 msgstr "XML 문서를 인쇄하되, 정의하거나 만들지는 않습니다"
 
 msgid "print a more human readable output"
-msgstr ""
+msgstr "더 사람이 읽을 수 있는 출력을 인쇄합니다"
 
 msgid "print domain's time in human readable form"
-msgstr ""
+msgstr "사람이 읽을 수 있는 형식으로 도메인 시간 인쇄"
 
 msgid "print help"
 msgstr "도움말 프린트하기"
@@ -32371,11 +32098,10 @@ msgid "print lease info for a given network"
 msgstr "주어진 네트워크를 위한 임대 정보를 출력합니다"
 
 msgid "print statistics for any kind of job (even failed ones)"
-msgstr ""
+msgstr "모든 종류의 작업에 대한 통계 인쇄(실패한 작업도 포함)"
 
-#, fuzzy
 msgid "print the admin server URI"
-msgstr "도메인의 호스트 이름 인쇄"
+msgstr "관리 서버 URI 인쇄"
 
 msgid "print the current directory"
 msgstr "현재 디렉터리를 출력"
@@ -32393,22 +32119,22 @@ msgid "print the hypervisor sysinfo"
 msgstr "하이퍼바이저 시스템 정보 인쇄"
 
 msgid "print the raw data returned by libvirt"
-msgstr ""
+msgstr "libvirt에서 반환된 원시 데이터를 인쇄합니다"
 
 msgid "prints by percentage during 1 second."
-msgstr ""
+msgstr "1초 동안 백분율로 인쇄합니다."
 
 msgid "prints specified cell statistics only."
-msgstr ""
+msgstr "지정된 셀 통계만 인쇄합니다."
 
 msgid "prints specified cpu statistics only."
-msgstr ""
+msgstr "지정된 CPU 통계만 인쇄합니다."
 
 msgid "process exited while connecting to monitor"
-msgstr ""
+msgstr "모니터에 연결하는 동안 프로세스가 종료되었습니다"
 
 msgid "product is not supported with vhostuser disk"
-msgstr ""
+msgstr "제품은 vhostuser 디스크에서 지원되지 않습니다"
 
 msgid "profile does not exist"
 msgstr "프로파일이 존재하지 않음"
@@ -32423,30 +32149,29 @@ msgstr "프로파일 ID 매개 변수가 너무 큼"
 msgid "program mismatch (actual %x, expected %x)"
 msgstr "프로그램 불일치 (실제 %x, 기대값 %x) "
 
-#, fuzzy, c-format
+#, c-format
 msgid "program mismatch in event (actual 0x%x, expected 0x%x)"
-msgstr "프로그램 불일치 (실제 %x, 기대값 %x) "
+msgstr "이벤트의 프로그램 불일치(실제 0x%x, 예상 0x%x)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
-msgstr ""
-"네트워크 %s의 '%s'라는 DNS TXT 기록에 있는 필요한 값 속성이 누락되어 있음 "
+msgstr "네트워크 %s의 DNS TXT 레코드 이름 '%s'에 금지된 문자가 있습니다"
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
-msgstr ""
+msgstr "프로토콜 '%s'는 하나의 호스트만 허용합니다"
 
 msgid "protocol 'sheepdog' accepts up to one host"
-msgstr ""
+msgstr "프로토콜 'sheepdog'은 최대 하나의 호스트를 허용합니다"
 
 msgid "protocol misses the family attribute"
 msgstr "프로토콜에 패밀리 특성이 빠졌습니다"
 
 msgid "protocol used by disk device source"
-msgstr ""
+msgstr "디스크 장치 소스에서 사용하는 프로토콜"
 
 msgid "provide XML suitable for migrations"
-msgstr ""
+msgstr "마이그레이션에 적합한 XML 제공"
 
 #, c-format
 msgid "ps2 bus does not support %s input device"
@@ -32454,49 +32179,47 @@ msgstr "ps2 버스는 %s 입력 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "pull mode backup for disk '%s' requires qcow2 driver"
-msgstr ""
+msgstr "디스크 '%s'에 대한 풀 모드 백업에는 qcow2 드라이버가 필요합니다"
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address' field for interface '%s'"
-msgstr ""
+msgstr "qemu 에이전트가 '%s' 인터페이스에 대한 'ip-address' 필드를 제공하지 않았습니다"
 
 #, c-format
 msgid "qemu agent didn't provide 'ip-address-type' field for interface '%s'"
-msgstr ""
+msgstr "qemu 에이전트가 '%s' 인터페이스에 대한 'ip-address-type' 필드를 제공하지 않았습니다"
 
 msgid "qemu agent didn't provide 'name' field"
-msgstr ""
+msgstr "qemu 에이전트가 '이름' 필드를 제공하지 않았습니다"
 
 msgid "qemu agent didn't return an array of disks"
-msgstr ""
+msgstr "qemu 에이전트가 디스크 배열을 반환하지 않았습니다"
 
 msgid "qemu agent didn't return an array of interfaces"
-msgstr ""
+msgstr "qemu 에이전트가 인터페이스 배열을 반환하지 않았습니다"
 
 msgid "qemu agent didn't return an array of keys"
-msgstr ""
+msgstr "qemu 에이전트가 키 배열을 반환하지 않았습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qemu block name '%s' doesn't match expected '%s'"
-msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
+msgstr "qemu 블록 이름 '%s'가 예상되는 '%s'와 일치하지 않습니다"
 
 #, c-format
 msgid "qemu didn't report thread id for vcpu '%zu'"
-msgstr ""
+msgstr "qemu가 vcpu '%zu'에 대한 스레드 ID를 보고하지 않았습니다"
 
 msgid "qemu does not allow specifying screen ID"
-msgstr ""
+msgstr "qemu는 화면 ID 지정을 허용하지 않습니다"
 
-#, fuzzy
 msgid "qemu does not support SGA"
-msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
+msgstr "qemu는 SGA를 지원하지 않습니다"
 
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
-msgstr ""
+msgstr "qemu는 SMBIOS 테이블의 유형 2에 대해 둘 이상의 항목을 지원하지 않습니다"
 
-#, fuzzy
 msgid "qemu does not support the accel2d setting"
-msgstr "풀이 풀 삭제를 지원하지 않습니다"
+msgstr "qemu는 accel2d 설정을 지원하지 않습니다"
 
 msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr "quem은 PMSUSPENDED 상태에서 스냅샷 복구를 지원하지 않습니다"
@@ -32508,275 +32231,261 @@ msgstr "qume는 PMSUSPENDED 게스트의 스냅샷 생성을 지원하지 않습
 msgid "qemu emulator '%s' does not support xen"
 msgstr "qeum 에뮬레이터 '%s'가 xen을 지원하지 않습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qemu monitor event callback %d not registered"
-msgstr "도메인 이벤트 %d가 등록되어 있지 않습니다 "
+msgstr "qemu 모니터 이벤트 콜백 %d가 등록되지 않았습니다"
 
 #, c-format
 msgid "qemu reported thread id for inactive vcpu '%zu'"
-msgstr ""
+msgstr "qemu에서 비활성 vcpu '%zu'에 대한 쓰레드 ID를 보고했습니다"
 
 msgid "qemu returned malformed time"
-msgstr ""
+msgstr "qemu가 잘못된 시간을 반환했습니다"
 
 msgid "qemu state driver is not active"
 msgstr "qemu 상태 드라이버가 실행중이 아닙니다"
 
-#, fuzzy
 msgid "qemu unexpectedly closed the monitor"
-msgstr "예기치 못한 코드 경로"
+msgstr "qemu가 예기치 않게 모니터를 닫았습니다"
 
 msgid "qemu-machines reply has malformed 'numa-mem-supported' data"
-msgstr ""
+msgstr "qemu-machines 응답에 잘못된 'numa-mem 지원' 데이터가 있습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qom-get invalid object property type %d"
-msgstr "잘못된 보안 유형 %s"
+msgstr "qom-get 잘못된 개체 속성 유형 %d"
 
-#, fuzzy
 msgid "qom-get reply was missing return data"
-msgstr "정보 이전 응답에 반환 상태가 빠져있었습니다"
+msgstr "qom-get 응답에 반환 데이터가 누락되었습니다"
 
 msgid "qom-list reply data was missing 'name'"
-msgstr ""
+msgstr "qom-list 응답 데이터에 '이름'이 누락되었습니다"
 
 msgid "qom-list reply has malformed 'type' data"
-msgstr ""
+msgstr "qom-list 응답에 잘못된 '유형' 데이터가 있습니다"
 
 msgid "qom-list-types reply data was missing 'name'"
-msgstr ""
+msgstr "qom-list-types 응답 데이터에 '이름'이 누락되었습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "qom-set invalid object property type %d"
-msgstr "잘못된 보안 유형 %s"
+msgstr "qom-set 잘못된 개체 속성 유형 %d"
 
 msgid "query -rx-filter return data missing array element"
-msgstr ""
+msgstr "쿼리 -rx-filter 반환 데이터 누락된 배열 요소"
 
 msgid "query information about the guest (via agent)"
 msgstr "게스트(에이전트를 통해서)에 대한 쿼리 정보"
 
 msgid "query is supported only with HTTP(S) protocols"
-msgstr ""
+msgstr "쿼리는 HTTP(S) 프로토콜에서만 지원됩니다"
 
-#, fuzzy
 msgid "query or modify state of vcpu in the guest (via agent)"
-msgstr "게스트에서 cpu 상태 수정"
+msgstr "에이전트를 통해 게스트의 vcpu 상태 쿼리 또는 수정"
 
-#, fuzzy
 msgid "query-block device entry was not in expected format"
-msgstr "blockstats 장치 엔트리가 원하는 형식이 아니었습니다"
+msgstr "쿼리 블록 장치 항목이 예상 형식이 아닙니다"
 
 msgid "query-commands reply data was missing 'name'"
-msgstr ""
+msgstr "쿼리 명령 응답 데이터에 '이름'이 누락되었습니다"
 
 msgid "query-cpu-definitions reply data was missing 'name'"
-msgstr ""
+msgstr "쿼리 CPU 정의 응답 데이터에 '이름'이 누락되었습니다"
 
 msgid "query-cpu-model-comparison reply data was missing 'result'"
-msgstr ""
+msgstr "쿼리 CPU 모델 비교 응답 데이터에 '결과'가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'calc-time' data"
-msgstr ""
+msgstr "query-dirty-rate 응답에 'calc-time' 데이터가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'dirty-rate' data"
-msgstr ""
+msgstr "query-dirty-rate 응답에 'dirty-rate' 데이터가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'return' data"
-msgstr ""
+msgstr "query-dirty-rate 응답에 'return' 데이터가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'start-time' data"
-msgstr ""
+msgstr "query-dirty-rate 응답에 'start-time' 데이터가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'status' data"
-msgstr ""
+msgstr "query-dirty-rate 응답에 '상태' 데이터가 누락되었습니다"
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
+msgstr "쿼리 fdsets 응답에 'fdset-id'가 누락되었습니다"
 
 msgid "query-fdsets return data missing 'fd'"
-msgstr ""
+msgstr "query-fdsets는 'fd'가 누락된 데이터를 반환합니다"
 
 msgid "query-fdsets return data missing fd array element"
-msgstr ""
+msgstr "query-fdsets는 fd 배열 요소가 누락된 데이터를 반환합니다"
 
 msgid "query-fdsets return data missing fdset array element"
-msgstr ""
+msgstr "query-fdsets는 fdset 배열 요소가 누락된 데이터를 반환합니다"
 
 msgid "query-hotpluggable-cpus didn't return device props"
-msgstr ""
+msgstr "query-hotpluggable-cpus가 장치 소품을 반환하지 않았습니다"
 
 msgid "query-hotpluggable-cpus didn't return device type"
-msgstr ""
+msgstr "query-hotpluggable-cpus가 장치 유형을 반환하지 않았습니다"
 
 msgid "query-hotpluggable-cpus didn't return vcpus-count"
-msgstr ""
+msgstr "query-hotpluggable-cpus가 vcpus-count를 반환하지 않았습니다"
 
 msgid "query-hotpluggable-cpus entry doesn't report topology information"
-msgstr ""
+msgstr "query-hotpluggable-cpus 항목은 토폴로지 정보를 보고하지 않습니다"
 
 msgid "query-iothreads reply data was missing 'id'"
-msgstr ""
+msgstr "query-iothreads 응답 데이터에 'id'가 누락되었습니다"
 
 msgid "query-iothreads reply has malformed 'thread-id' data"
-msgstr ""
+msgstr "query-iothreads 응답에 잘못된 'thread-id' 데이터가 있습니다"
 
 msgid "query-kvm replied unexpected data"
-msgstr ""
+msgstr "query-kvm이 예기치 않은 데이터에 응답했습니다"
 
 msgid "query-machines reply data was missing 'name'"
-msgstr ""
+msgstr "쿼리 시스템 응답 데이터에 '이름'이 누락되었습니다"
 
 msgid "query-machines reply has malformed 'alias' data"
-msgstr ""
+msgstr "쿼리 시스템 응답에 잘못된 '별칭' 데이터가 있습니다"
 
 msgid "query-machines reply has malformed 'cpu-max' data"
-msgstr ""
+msgstr "쿼리 시스템 응답에 잘못된 'cpu-max' 데이터가 있습니다"
 
 msgid "query-machines reply has malformed 'default-cpu-type' data"
-msgstr ""
+msgstr "쿼리 머신 응답에 잘못된 'default-cpu-type' 데이터가 있습니다"
 
 msgid "query-machines reply has malformed 'default-ram-id' data"
-msgstr ""
+msgstr "쿼리 머신 응답에 잘못된 'default-ram-id' 데이터가 있습니다"
 
 msgid "query-machines reply has malformed 'is-default' data"
-msgstr ""
+msgstr "쿼리 시스템 응답에 잘못된 '기본값' 데이터가 있습니다"
 
 msgid "query-memory-devices reply data doesn't contain enum data"
-msgstr ""
+msgstr "query-memory-devices 응답 데이터에 열거형 데이터가 포함되어 있지 않습니다"
 
 msgid "query-memory-devices reply data doesn't contain enum type discriminator"
-msgstr ""
+msgstr "query-memory-devices 응답 데이터에 열거형 구분자가 포함되어 있지 않습니다"
 
-#, fuzzy
 msgid "query-named-block-nodes entry was not in expected format"
-msgstr "blockstats 장치 엔트리가 원하는 형식이 아니었습니다"
+msgstr "query-named-block-nodes 항목이 예상 형식이 아닙니다"
 
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
-msgstr ""
+msgstr "query-sev-capabilities 응답에 'cbitpos' 필드가 누락되었습니다"
 
 msgid "query-sev-capabilities reply was missing 'cert-chain' field"
-msgstr ""
+msgstr "query-sev-capabilities 응답에 'cert-chain' 필드가 누락되었습니다"
 
 msgid "query-sev-capabilities reply was missing 'pdh' field"
-msgstr ""
+msgstr "query-sev-capabilities 응답에 'pdh' 필드가 누락되었습니다"
 
 msgid "query-sev-capabilities reply was missing 'reduced-phys-bits' field"
-msgstr ""
+msgstr "query-sev-capabilities 응답에 'reduced-phys-bits' 필드가 누락되었습니다"
 
-#, fuzzy
 msgid "query-status reply was missing running state"
-msgstr "정보 이전 응답에 반환 상태가 빠져있었습니다"
+msgstr "쿼리 상태 응답에 실행 상태가 누락되었습니다"
 
-#, fuzzy
 msgid "query-target reply was missing arch data"
-msgstr "정보 풍선 응답에 풍선 데이터가 빠져있었습니다"
+msgstr "쿼리 대상 응답에 아치 데이터가 누락되었습니다"
 
 msgid "query-version reply was missing 'major' version"
-msgstr ""
+msgstr "쿼리 버전 응답에 '주요' 버전이 누락되었습니다"
 
 msgid "query-version reply was missing 'micro' version"
-msgstr ""
+msgstr "쿼리 버전 응답에 '마이크로' 버전이 누락되었습니다"
 
 msgid "query-version reply was missing 'minor' version"
-msgstr ""
+msgstr "쿼리 버전 응답에 '부(minor)' 버전이 누락되었습니다"
 
 msgid "query-version reply was missing 'package' version"
-msgstr ""
+msgstr "쿼리 버전 응답에 '패키지' 버전이 누락되었습니다"
 
-#, fuzzy
 msgid "query-version reply was missing 'qemu' data"
-msgstr "정보 이전 응답에 반환 상태가 빠져있었습니다"
+msgstr "쿼리 버전 응답에 'qemu' 데이터가 누락되었습니다"
 
 msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
-msgstr ""
+msgstr "최대 복사 후 마이그레이션 속도 쿼리는 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
-msgstr ""
+msgstr "디스크 드라이버 요소의 queues 속성은 virtio-blk에서만 지원됩니다"
 
 msgid "quiesce guest's file systems"
-msgstr ""
+msgstr "게스트의 파일 시스템 정지"
 
 msgid "quit this interactive terminal"
 msgstr "대화식 터미널 종료"
 
 msgid "ram attribute only supported for video type qxl"
-msgstr ""
+msgstr "비디오 유형 qxl에 대해서만 지원되는 ram 속성"
 
 #, c-format
 msgid "range %s - %s is not entirely within network %s/%d"
-msgstr ""
+msgstr "범위 %s - %s가 완전히 네트워크 %s/%d 내에 있지 않습니다"
 
 #, c-format
 msgid "range %s - %s is reversed "
-msgstr ""
+msgstr "범위 %s - %s가 반전되었습니다 "
 
 #, c-format
 msgid "range %s - %s is too large (> 65535)"
-msgstr ""
+msgstr "범위 %s - %s가 너무 큽니다(> 65535)"
 
 #, c-format
 msgid "range %s - %s start larger than end"
-msgstr ""
+msgstr "범위 %s - %s가 끝보다 크게 시작합니다"
 
 msgid "rawio can be used only with device='lun'"
-msgstr ""
+msgstr "rawio는 device='lun'에서만 사용할 수 있습니다"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "rawio는 scsi 호스트 장치만 지원됩니다"
 
 msgid "read I/O operations limit per second"
-msgstr ""
+msgstr "초당 읽기 I/O 작업 제한"
 
-#, fuzzy
 msgid "read I/O operations max"
-msgstr "재개 동작이 실패했습니다"
+msgstr "읽기 I/O 작업 최대"
 
 msgid "read error on pipe"
-msgstr ""
+msgstr "파이프에서 읽기 오류"
 
 msgid "read max, as scaled integer (default bytes)"
-msgstr ""
+msgstr "최대 읽기, 스케일링된 정수(기본 바이트)"
 
 #, c-format
 msgid "read only access prevents %s"
 msgstr "읽기 전용 접근으로 %s 막습니다"
 
-#, fuzzy
 msgid "read secret from file"
-msgstr "XML 파일에서 분리 장치"
+msgstr "파일에서 비밀 읽기"
 
 msgid "read the secret from file without converting from base64"
-msgstr ""
+msgstr "base64에서 변환하지 않고 파일에서 비밀 읽기"
 
-#, fuzzy
 msgid "read the secret from the terminal"
-msgstr "하이퍼바이저에서 연결 끊기 실패"
+msgstr "터미널에서 비밀 읽기"
 
 msgid "read throughput limit, as scaled integer (default bytes)"
-msgstr ""
+msgstr "읽기 처리량 제한, 조정된 정수(기본 바이트)"
 
 msgid "read-only connection"
 msgstr "읽기 전용 연결"
 
 msgid "readahead is supported only with HTTP(S)/FTP(s) protocols"
-msgstr ""
+msgstr "미리 읽기는 HTTP(S)/FTP(s) 프로토콜에서만 지원됩니다"
 
-#, fuzzy
 msgid "readahead setting is not supported with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리에서는 미리 읽기 설정이 지원되지 않습니다"
 
-#, fuzzy
 msgid "readonly ide disks are not supported"
-msgstr "임시 디스크가 아직 지원되지 않음 "
+msgstr "읽기 전용 IDE 디스크는 지원되지 않습니다"
 
 msgid "readonly is not supported with vhostuser disk"
-msgstr ""
+msgstr "읽기 전용은 vhostuser 디스크에서 지원되지 않습니다"
 
-#, fuzzy
 msgid "readonly sata disks are not supported"
-msgstr "임시 디스크가 아직 지원되지 않음 "
+msgstr "읽기 전용 sata 디스크는 지원되지 않습니다"
 
 msgid "ready"
 msgstr "준비됨"
@@ -32787,50 +32496,44 @@ msgstr "장치 드라이버에 노드 장치를 재부착"
 msgid "reboot a domain"
 msgstr "도메인을 재시작"
 
-#, fuzzy
 msgid "reboot timeout is not supported by this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리는 재부팅 시간 초과를 지원하지 않습니다"
 
 msgid "received error event on socket"
-msgstr ""
+msgstr "소켓에서 수신된 오류 이벤트"
 
 msgid "received hangup event on socket"
-msgstr ""
+msgstr "소켓에서 hangup 이벤트를 수신했습니다"
 
 msgid "received malformed monitor, check the XML definition"
-msgstr ""
+msgstr "잘못된 형식의 모니터 수신, XML 정의 확인"
 
 msgid "received unexpected cookie with P2P migration"
-msgstr ""
+msgstr "P2P 마이그레이션과 함께 예기치 않은 쿠키를 받았습니다"
 
-#, fuzzy
 msgid "recv handler failed"
-msgstr "nl_recv 실패"
+msgstr "recv 핸들러 실패"
 
-#, fuzzy
 msgid "recv holeHandler failed"
-msgstr "재개 동작이 실패했습니다"
+msgstr "recv holeHandler가 실패했습니다"
 
 msgid "redefine metadata for existing checkpoint"
-msgstr ""
+msgstr "기존 체크포인트에 대한 메타데이터 재정의"
 
-#, fuzzy
 msgid "redefine metadata for existing snapshot"
-msgstr "기존 스냅샷에서 상태가 누락되어 있음"
+msgstr "기존 스냅샷에 대한 메타데이터 재정의"
 
-#, fuzzy
 msgid "redefine the XML for a domain's managed save state file"
-msgstr "파일에 저장된 상태에서 도메인을 복구"
+msgstr "도메인의 관리되는 저장 상태 파일에 대한 XML 재정의"
 
-#, fuzzy
 msgid "redefine the XML for a domain's saved state file"
-msgstr "파일에 저장된 상태에서 도메인을 복구"
+msgstr "도메인의 저장된 상태 파일에 대한 XML 재정의"
 
 msgid "redefine the existing set of logging filters"
-msgstr ""
+msgstr "기존 로깅 필터 세트 재정의"
 
 msgid "redefine the existing set of logging outputs"
-msgstr ""
+msgstr "기존 로깅 출력 세트 재정의"
 
 #, c-format
 msgid "referenced filter '%s' is missing"
@@ -32840,32 +32543,32 @@ msgid "refresh a pool"
 msgstr "풀 새로 고침"
 
 msgid "refresh ploop failed: unable to delete DiskDescriptor.xml"
-msgstr ""
+msgstr "루프 새로 고침 실패: DiskDescriptor.xml을 삭제할 수 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "refusing to generate file name for disk '%s'"
-msgstr "드라이버 이름 '%s'가 디스크 '%s'에 대해 지원되지 않음"
+msgstr "디스크 '%s'에 대한 파일 이름 생성을 거부합니다"
 
 msgid "remoteDomainAuthorizedSSHKeysGet: returned number of keys exceeds limit"
-msgstr ""
+msgstr "remoteDomainAuthorizedSSHKeysGet: 반환된 키 수가 제한을 초과했습니다"
 
 msgid "remoteDomainAuthorizedSSHKeysSet: returned number of keys exceeds limit"
-msgstr ""
+msgstr "remoteDomainAuthorizedSSHKeysSet: 반환된 키 수가 제한을 초과했습니다"
 
 msgid "remoteDomainBlockStatsFlags: returned number of stats exceeds limit"
-msgstr ""
+msgstr "remoteDomainBlockStatsFlags: 반환된 통계 수가 제한을 초과했습니다"
 
 msgid "remoteDomainGetCPUStats: returned number of stats exceeds limit"
-msgstr ""
+msgstr "remoteDomainGetCPUStats: 반환된 통계 수가 제한을 초과했습니다"
 
 msgid "remoteDomainGetMessages: returned number of msgs exceeds limit"
-msgstr ""
+msgstr "remoteDomainGetMessages: 반환된 메시지 수가 제한을 초과했습니다"
 
 msgid "remoteNodeGetCPUStats: returned number of stats exceeds limit"
-msgstr ""
+msgstr "remoteNodeGetCPUStats: 반환된 통계 수가 제한을 초과했습니다"
 
 msgid "remoteNodeGetMemoryStats: returned number of stats exceeds limit"
-msgstr ""
+msgstr "remoteNodeGetMemoryStats: 반환된 통계 수가 제한을 초과했습니다"
 
 msgid "remote_open: for 'ext' transport, command is required"
 msgstr "remote_open: 'ext' 전송, 명령이 필요합니다"
@@ -32873,169 +32576,156 @@ msgstr "remote_open: 'ext' 전송, 명령이 필요합니다"
 msgid ""
 "remote_open: transport in URL not recognised (should be tls|unix|ssh|ext|tcp|"
 "libssh2|libssh)"
-msgstr ""
+msgstr "remote_open: URL의 전송이 인식되지 않음(tls|unix|ssh|ext|tcp|libssh2|libssh여야 함)"
 
-#, fuzzy
 msgid "removable is only valid for usb disks"
-msgstr "모드 속성은 게스트 CPU에 대해서만 허용됨"
+msgstr "이동식 USB 디스크에만 유효합니다"
 
 msgid "remove all associated storage volumes (use with caution)"
-msgstr ""
+msgstr "연결된 모든 스토리지 볼륨 제거(주의해서 사용)"
 
 msgid "remove all domain checkpoint metadata (vm must be inactive)"
-msgstr ""
+msgstr "모든 도메인 체크포인트 메타데이터 제거(vm은 비활성화되어야 함)"
 
 msgid "remove all domain snapshot metadata (vm must be inactive)"
-msgstr ""
+msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되어야 함)"
 
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
-msgstr ""
+msgstr "연결된 스토리지 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist 참조)"
 
-#, fuzzy
 msgid "remove domain managed state file"
-msgstr "파일에 저장된 상태에서 도메인을 복구"
+msgstr "도메인 관리 상태 파일 제거"
 
 msgid "remove keys from the authorized keys file"
-msgstr ""
+msgstr "인증된 키 파일에서 키 제거"
 
 msgid "remove nvram file, if inactive"
-msgstr ""
+msgstr "비활성인 경우 nvram 파일 제거"
 
 msgid "remove the metadata corresponding to an uri"
-msgstr ""
+msgstr "URI에 해당하는 메타데이터를 제거합니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "removing block or network volumes is not supported: %s"
-msgstr "비파일 볼륨 생성이 지원되지 않음 "
+msgstr "블록 또는 네트워크 볼륨 제거는 지원되지 않습니다. %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "removing of '%s' volumes is not supported by the gluster backend: %s"
-msgstr "%s 볼륨 생성은 지원되지 않습니다 "
+msgstr "'%s' 볼륨 제거는 Gluster 백엔드에서 지원되지 않습니다. %s"
 
-#, fuzzy
 msgid "rename a domain"
-msgstr "도메인을 다시 시작"
+msgstr "도메인 이름 바꾸기"
 
 msgid "rename to new name during migration (if supported)"
 msgstr "이전시 새 이름으로 변경(지원되는 경우에만)"
 
 #, c-format
 msgid "rename(\"%s\", \"%s\")"
-msgstr ""
+msgstr "이름 바꾸기(\"%s\", \"%s\")"
 
 msgid "reply data was missing 'name'"
-msgstr ""
+msgstr "회신 데이터에 '이름'이 누락되었습니다"
 
 msgid "reply data was missing 'option' name or parameters"
-msgstr ""
+msgstr "응답 데이터에 '옵션' 이름 또는 매개변수가 누락되었습니다"
 
-#, fuzzy
 msgid "reply was missing return data"
-msgstr "정보 이전 응답에 반환 상태가 빠져있었습니다"
+msgstr "회신에 반환 데이터가 누락되었습니다"
 
 msgid "report"
 msgstr "보고"
 
 msgid "report active users"
-msgstr ""
+msgstr "활성 사용자 보고"
 
 msgid "report daemon version too"
 msgstr "데몬 버전을 얻는데 실패"
 
 msgid "report disk information"
-msgstr ""
+msgstr "디스크 정보 보고"
 
-#, fuzzy
 msgid "report domain IOThread information"
-msgstr "도메인 정보"
+msgstr "도메인 IOThread 정보 보고"
 
 msgid "report domain balloon statistics"
-msgstr ""
+msgstr "보고서 도메인 풍선 통계"
 
-#, fuzzy
 msgid "report domain block device statistics"
-msgstr "도메인 블록 장치 크기 정보"
+msgstr "도메인 차단 장치 통계 보고"
 
 msgid "report domain dirty rate information"
-msgstr ""
+msgstr "도메인 더티 레이트 정보 보고"
 
 msgid "report domain memory usage"
-msgstr ""
+msgstr "도메인 메모리 사용량 보고"
 
-#, fuzzy
 msgid "report domain network interface information"
-msgstr "인터페이스 정보 보기 실패"
+msgstr "도메인 네트워크 인터페이스 정보 보고"
 
 msgid "report domain perf event statistics"
-msgstr ""
+msgstr "도메인 성능 이벤트 통계 보고"
 
 msgid "report domain physical cpu usage"
-msgstr ""
+msgstr "도메인 물리적 CPU 사용량 보고"
 
-#, fuzzy
 msgid "report domain state"
-msgstr "도메인 상태"
+msgstr "도메인 상태 보고"
 
-#, fuzzy
 msgid "report domain virtual cpu information"
-msgstr "도메인 정보"
+msgstr "도메인 가상 CPU 정보 보고"
 
-#, fuzzy
 msgid "report error if CPUs are incompatible"
-msgstr "CPU는 호환되지 않음"
+msgstr "CPU가 호환되지 않는 경우 오류 보고"
 
-#, fuzzy
 msgid "report filesystem information"
-msgstr "XML에서 네트워크 필터 정보 "
+msgstr "파일 시스템 정보 보고"
 
-#, fuzzy
 msgid "report hostname"
-msgstr "호스트명 보기 실패"
+msgstr "호스트 이름 보고"
 
 msgid "report only stats that are accessible instantly"
-msgstr ""
+msgstr "즉시 액세스할 수 있는 통계만 보고"
 
 msgid "report operating system information"
 msgstr "운영 시스템 정보 보고"
 
-#, fuzzy
 msgid "report timezone information"
-msgstr "도메인 정보"
+msgstr "시간대 정보 보고"
 
 #, c-format
 msgid "requested USB port %s not present on USB bus %u"
-msgstr ""
+msgstr "요청한 USB 포트 %s가 USB 버스 %u에 없습니다"
 
 #, c-format
 msgid "requested authentication type %s rejected"
 msgstr "요청된 인증 유형 %s가 거부되었습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid "requested cpu amount exceeds maximum (%d > %d)"
-msgstr "vCPU 갯수가 최대 갯수를 초과: %d > %d"
+msgstr "요청된 CPU 양이 최대값을 초과합니다(%d > %d)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "requested cpu amount exceeds maximum supported amount (%d > %d)"
-msgstr "vCPU 갯수가 최대 갯수를 초과: %d > %d"
+msgstr "요청된 CPU 양이 지원되는 최대 양을 초과합니다(%d > %d)"
 
 msgid "requested size of the cache (in bytes) used for compression"
-msgstr ""
+msgstr "압축에 사용된 캐쉬의 요청된 크기(바이트)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "requested target '%s' does not match target '%s'"
-msgstr "대상 도메인 이름 '%s'이 소스 '%s'와 일치하지 않음"
+msgstr "요청한 대상 '%s'가 대상 '%s'와 일치하지 않습니다"
 
 #, c-format
 msgid "requested vcpu '%d' is not present in the domain"
-msgstr ""
+msgstr "요청한 vcpu '%d'가 도메인에 없습니다"
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "requested vcpu count is greater than the count of enabled vcpus in the "
 "domain: %d > %d"
-msgstr "요청된 vcpu가 도메인에서 허용할 수 있는 최대 갯수보다 큽니다: %d > %d"
+msgstr "요청한 vcpu 수가 도메인에서 활성화된 vcpu 수보다 큽니다. %d > %d"
 
 #, c-format
 msgid ""
@@ -33055,16 +32745,14 @@ msgid ""
 msgstr ""
 "요청된 vcpu가 영구 도메인에서 최대 허용 할 수 있는vcpus 보다 큽니다: %u > %u"
 
-#, fuzzy
 msgid "require atomic operation"
-msgstr "동작 중 타임 아웃"
+msgstr "원자적 연산이 필요합니다"
 
 msgid "resctrl locking is not supported on this platform"
-msgstr ""
+msgstr "이 플랫폼에서는 resctrl 잠금이 지원되지 않습니다"
 
-#, fuzzy
 msgid "reservations not supported with this QEMU binary"
-msgstr "vhost-net이 QEMU 바이너리에서는 지원되지 않음 "
+msgstr "이 QEMU 바이너리에서 지원되지 않는 예약"
 
 msgid "reset"
 msgstr "초기화"
@@ -33081,16 +32769,15 @@ msgstr "코어 덤프한 도메인을 재설정"
 msgid "resize a vol"
 msgstr "볼륨 크기 조정"
 
-#, fuzzy
 msgid "resize of qcow2 encrypted image is not supported"
-msgstr "fs 포맷 %s은 지원되지 않음"
+msgstr "qcow2 암호화된 이미지의 크기 조정은 지원되지 않습니다"
 
 msgid "resource busy"
-msgstr ""
+msgstr "리소스 사용 중"
 
 #, c-format
 msgid "resource busy: %s"
-msgstr ""
+msgstr "리소스 사용 중: %s"
 
 msgid "resource relabeling is not compatible with 'none' label type"
 msgstr "자원 이름 변경은 'none' 이름표 형식과 호환되지 않습니다"
@@ -33098,13 +32785,11 @@ msgstr "자원 이름 변경은 'none' 이름표 형식과 호환되지 않습�
 msgid "restore a domain from a saved state in a file"
 msgstr "파일에 저장된 상태에서 도메인을 복구"
 
-#, fuzzy
 msgid "restore domain into paused state"
-msgstr "파일에 저장된 상태에서 도메인을 복구"
+msgstr "도메인을 일시 중지 상태로 복원"
 
-#, fuzzy
 msgid "restore domain into running state"
-msgstr "도메인이 실행 상태가 아닙니다"
+msgstr "도메인을 실행 상태로 복원"
 
 msgid "restored"
 msgstr "복구됨"
@@ -33122,9 +32807,8 @@ msgstr "재개 동작이 실패했습니다"
 msgid "resuming after dump failed"
 msgstr "덤프한 후 재개하는 데 실패했습니다"
 
-#, fuzzy
 msgid "resuming after snapshot failed"
-msgstr "덤프한 후 재개하는 데 실패했습니다"
+msgstr "스냅샷 실패 후 재개"
 
 msgid "retrieve client's identity info from server"
 msgstr ""
