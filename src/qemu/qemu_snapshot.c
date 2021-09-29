@@ -1702,7 +1702,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     virQEMUDriver *driver = domain->conn->privateData;
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainSnapshotDef) def = NULL;
@@ -1724,10 +1723,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_RET(VIR_DOMAIN_SNAPSHOT_CREATE_LIVE,
                             VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE,
                             NULL);
-
-    if ((redefine && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)) ||
-        (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA))
-        update_current = false;
 
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         return NULL;
@@ -1823,7 +1818,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 
  endjob:
     if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (update_current)
+        if (!redefine || (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
             qemuSnapshotSetCurrent(vm, snap);
 
         if (qemuDomainSnapshotWriteMetadata(vm, snap,
