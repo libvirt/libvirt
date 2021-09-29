@@ -1760,15 +1760,18 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                                           driver->xmlopt,
                                           flags) < 0)
             goto endjob;
+
+        if (!snap) {
+            if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+                goto endjob;
+        }
     } else {
         if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
             goto endjob;
 
         if (qemuSnapshotPrepare(vm, def, &flags) < 0)
             goto endjob;
-    }
 
-    if (!snap) {
         if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
             goto endjob;
 
