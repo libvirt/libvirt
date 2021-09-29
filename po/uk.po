@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-09-24 14:41+0000\n"
-"PO-Revision-Date: 2021-08-26 14:44+0000\n"
+"PO-Revision-Date: 2021-09-29 08:05+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -2119,7 +2119,7 @@ msgid "Available:"
 msgstr "Доступний:"
 
 msgid "BIOS serial console only supported on x86 architectures"
-msgstr ""
+msgstr "Підтримку послідовної консолі BIOS передбачено лише на архітектурах x86"
 
 msgid "Backup"
 msgstr "Резервування"
@@ -3990,6 +3990,7 @@ msgstr "Налаштувати мережу на автоматичний зап
 
 msgid "Configure a node device to be automatically started at boot."
 msgstr ""
+"Налаштувати вузловий пристрій на автоматичний запуск під час завантаження."
 
 msgid "Configure a pool to be automatically started at boot."
 msgstr ""
@@ -4041,7 +4042,7 @@ msgid "Connections from inside daemon must be direct"
 msgstr "З'єднання із внутрішньої фонової служби мають бути безпосередніми"
 
 msgid "Console can only be enabled for a PTY"
-msgstr ""
+msgstr "Консоль можна вмикати лише для PTY"
 
 msgid "Constant pages:"
 msgstr "Незмінні сторінки:"
@@ -5463,7 +5464,7 @@ msgstr "Пристрій %s не є містком"
 
 #, c-format
 msgid "Device %s marked as autostarted\n"
-msgstr ""
+msgstr "Пристрій %s позначено як такий, що запускається автоматично\n"
 
 #, c-format
 msgid "Device %s not found: could not access %s"
@@ -5488,6 +5489,7 @@ msgstr "Пристрій %s від'єднано від містка %s\n"
 #, c-format
 msgid "Device %s unmarked as autostarted\n"
 msgstr ""
+"Позначення пристрою %s як такого, що запускається автоматично, скасовано\n"
 
 #, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -6105,6 +6107,8 @@ msgstr "EOF у stdout"
 
 msgid "Echo back arguments, possibly with quoting. Used for internal testing."
 msgstr ""
+"Вивести у відповіді аргументи, можливо з лапками. Використовується для "
+"внутрішнього тестування."
 
 msgid "Edit the XML configuration for a domain."
 msgstr "Змінити налаштування XML домену."
@@ -7595,7 +7599,7 @@ msgid "Failed to initialize cgroup backend."
 msgstr "Не вдалося ініціалізувати модуль cgroup."
 
 msgid "Failed to initialize host cpu features"
-msgstr ""
+msgstr "Не вдалося ініціалізувати можливості процесора основної системи"
 
 msgid "Failed to initialize libpciaccess"
 msgstr "Не вдалося ініціалізувати libpciaccess"
@@ -8824,11 +8828,12 @@ msgid "Feature %s required by CPU model %s not found"
 msgstr "Можливості %s, потрібної для моделі процесора %s, не виявлено"
 
 msgid "Fibre Channel 'appid' is not a printable string"
-msgstr ""
+msgstr "Рядок волоконного каналу «appid» містить спеціальні символи"
 
 #, c-format
 msgid "Fibre Channel 'appid' string length must be between [%d, %d]"
 msgstr ""
+"Рядок волоконного каналу «appid» повинен мати довжину у діапазоні [%d, %d]"
 
 #, c-format
 msgid "Field '%s' too long for destination"
@@ -10600,7 +10605,7 @@ msgstr "Некоректний параметр для вкладеного ст
 
 #, c-format
 msgid "Invalid source mode: %s"
-msgstr ""
+msgstr "Некоректний режим джерела: %s"
 
 #, c-format
 msgid ""
@@ -13183,13 +13188,14 @@ msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Для цього типу архітектури передбачено лише один контролер IDE"
 
 msgid "Only a single console can be configured for this domain"
-msgstr ""
+msgstr "Для цього домену можна налаштувати лише одну консоль"
 
 msgid "Only a single console or serial can be configured for this domain"
 msgstr ""
+"Для цього домену можна налаштувати лише одну консоль або послідовний вхід"
 
 msgid "Only a single serial can be configured for this domain"
-msgstr ""
+msgstr "Для цього домену можна налаштувати лише один послідовний вхід"
 
 msgid "Only bridged veth devices can be detached"
 msgstr "Можна долучати лише пристрої veth з містком"
@@ -14421,7 +14427,7 @@ msgid "Returns basic information about the network"
 msgstr "Повертає загальну інформацію щодо мережі"
 
 msgid "Returns basic information about the node device"
-msgstr ""
+msgstr "Повертає загальну інформацію про вузловий пристрій"
 
 msgid "Returns basic information about the node."
 msgstr "Повертає загальну інформацію про вузол."
@@ -14857,7 +14863,7 @@ msgid "Sending file descriptors is not supported on this socket"
 msgstr "Надсилання дескрипторів файлів не підтримується цим сокетом"
 
 msgid "Serial can only be enabled for a PTY"
-msgstr ""
+msgstr "Послідовний вхід можна вмикати лише для PTY"
 
 #, c-format
 msgid ""
@@ -16003,10 +16009,13 @@ msgstr "Модель диска призначення, %s, не збігаєт�
 #, c-format
 msgid "Target disk queue count %u does not match source %u"
 msgstr ""
+"Кількість записів у черзі диска призначення, %u, не збігається із кількістю "
+"у джерелі, %u"
 
 #, c-format
 msgid "Target disk queue size %u does not match source %u"
 msgstr ""
+"Розмір черги диска призначення, %u, не збігається із розміром у джерелі, %u"
 
 #, c-format
 msgid "Target disk rotation rate %u RPM does not match source %u RPM"
@@ -17359,7 +17368,7 @@ msgstr "Не вдалося отримати доступ до дескрипт�
 
 #, c-format
 msgid "Unable to access file descriptor %d path %s"
-msgstr ""
+msgstr "Не вдалося отримати доступ до дескриптора файла %d, шлях %s"
 
 msgid "Unable to access kernel32.dll"
 msgstr "Не вдалося отримати доступ kernel32.dll"
@@ -18872,7 +18881,7 @@ msgstr "Не вдалось повторно ініціалізувати PCI-п
 
 #, c-format
 msgid "Unable to reset ingress on port %s"
-msgstr ""
+msgstr "Не вдалося скинути право входу на порту %s"
 
 #, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
@@ -19051,7 +19060,7 @@ msgstr "Не вдалося встановити ознаку close-on-exec дл
 
 #, c-format
 msgid "Unable to set autostart on '%s': %s"
-msgstr ""
+msgstr "Не вдалося встановити автозапуск на «%s»: %s"
 
 #, c-format
 msgid "Unable to set backing file %s"
@@ -19282,7 +19291,7 @@ msgstr "Не вдалося записати %s"
 
 #, c-format
 msgid "Unable to write '%s' to '%s'"
-msgstr ""
+msgstr "Не вдалося записати «%s» до «%s»"
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -19596,7 +19605,7 @@ msgid "Unknown Command '%i'"
 msgstr "Невідома команда «%i»"
 
 msgid "Unknown Error"
-msgstr ""
+msgstr "Невідома помилка"
 
 #, c-format
 msgid "Unknown IP address data source %d"
@@ -21301,7 +21310,7 @@ msgstr ""
 "проходу перед-копіювання"
 
 msgid "autostart a defined node device"
-msgstr ""
+msgstr "автоматичний запуску визначеного вузлового пристрою"
 
 msgid "autostart a domain"
 msgstr "автозапуск домену"
@@ -21619,7 +21628,7 @@ msgstr "bool"
 
 #, c-format
 msgid "bool parameter '%s' of command '%s' has completer set"
-msgstr ""
+msgstr "булевий параметр «%s» команди «%s» містить встановлений завершувач"
 
 #, c-format
 msgid "boot order %u is already used by another device"
@@ -23138,7 +23147,7 @@ msgid "cannot set CPU affinity on process %d"
 msgstr "не вдалося встановити спорідненість процесора для процесу %d"
 
 msgid "cannot set autostart for transient device"
-msgstr ""
+msgstr "не можна вказувати автозапуск для проміжного пристрою"
 
 msgid "cannot set autostart for transient domain"
 msgstr "не можна вказувати автозапуск для проміжного домену"
@@ -23309,6 +23318,8 @@ msgid ""
 "cannot update lifecycle action because QEMU was started with incompatible -"
 "no-reboot setting"
 msgstr ""
+"оновлення дії життєвого циклу неможливе, оскільки QEMU було запущено із "
+"несумісним параметром -no-reboot"
 
 #, c-format
 msgid "cannot upload to volume %s"
@@ -23483,7 +23494,7 @@ msgstr ""
 "у драйвері vz не передбачено підтримки режиму зміни розташування процесорів"
 
 msgid "changing device 'acpi index' is not allowed"
-msgstr ""
+msgstr "не можна змінювати «acpi index» пристрою"
 
 msgid "changing device alias is not allowed"
 msgstr "не можна змінювати альтернативні назви пристроїв"
@@ -23676,7 +23687,7 @@ msgstr "команда «%s» не підтримує параметр --%s"
 
 #, c-format
 msgid "command '%s' has handler set"
-msgstr ""
+msgstr "для команди «%s» встановлено обробник"
 
 #, c-format
 msgid "command '%s' has inconsistent alias"
@@ -23684,15 +23695,15 @@ msgstr "команда «%s» має несумісні альтернативн
 
 #, c-format
 msgid "command '%s' has info set"
-msgstr ""
+msgstr "для команди «%s» встановлено відомості"
 
 #, c-format
 msgid "command '%s' has multiple flags set"
-msgstr ""
+msgstr "для команди «%s» встановлено декілька прапорців"
 
 #, c-format
 msgid "command '%s' has options set"
-msgstr ""
+msgstr "для команди «%s» встановлено параметри"
 
 #, c-format
 msgid "command '%s' has too many options"
@@ -23713,10 +23724,13 @@ msgstr "для команди «%s» потрібно вказати парам�
 #, c-format
 msgid "command alias '%s' is pointing to a non-existant command '%s'"
 msgstr ""
+"альтернативна назва команди, «%s», вказує на команду, якої не існує, «%s»"
 
 #, c-format
 msgid "command alias '%s' is pointing to another command alias '%s'"
 msgstr ""
+"альтернативна назва команди, «%s», вказує на альтернативну назву іншої "
+"команди, «%s»"
 
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
@@ -25650,6 +25664,7 @@ msgstr "тип динамічної мітки має використовува
 
 msgid "echo arguments. Used for internal testing."
 msgstr ""
+"повторно вивести аргументи. Використовується для внутрішнього тестування."
 
 msgid "edit XML configuration for a domain"
 msgstr "змінити налаштування XML домену"
@@ -26754,7 +26769,7 @@ msgstr "не вдалося визначити джерело за sourceList"
 
 #, c-format
 msgid "failed to get stat for '%s'"
-msgstr ""
+msgstr "не вдалося отримати статистичні дані для «%s»"
 
 #, c-format
 msgid "failed to get status of interface %s: %s%s%s"
@@ -26872,7 +26887,7 @@ msgstr "не вдалося знайти інтерфейс з MAC-адресо�
 
 #, c-format
 msgid "failed to mark device %s as autostarted"
-msgstr ""
+msgstr "не вдалося позначити пристрій %s для автоматичного запуску"
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -27344,7 +27359,7 @@ msgstr "не вдалося скасувати визначення інтерф
 
 #, c-format
 msgid "failed to unmark device %s as autostarted"
-msgstr ""
+msgstr "не вдалося зняти позначення пристрою %s для автоматичного запуску"
 
 #, c-format
 msgid "failed to unmark network %s as autostarted"
@@ -30988,7 +31003,7 @@ msgstr "не вистачає %s у <virtualport type='%s'>"
 
 #, c-format
 msgid "missing '%s' in 'config' from cloud-hypervisor"
-msgstr ""
+msgstr "не вказано «%s» у «config» з cloud-hypervisor"
 
 msgid "missing 'DateTime' element"
 msgstr "пропущено елемент «DateTime»"
@@ -30999,6 +31014,8 @@ msgstr "пропущено «architecture» у «%s»"
 
 msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
+"не вказано «config» у результатах запиту щодо відомостей, які отримано від "
+"cloud-hypervisor"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
@@ -31018,7 +31035,7 @@ msgstr "пропущено «executable» у «%s»"
 
 #, c-format
 msgid "missing 'file' in '%s' from cloud-hypervisor"
-msgstr ""
+msgstr "не вказано «file» у «%s» з cloud-hypervisor"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
@@ -31895,7 +31912,7 @@ msgstr ""
 "систему типу «%s» на пристрої «%s»"
 
 msgid "mode attribute of <source/> element"
-msgstr ""
+msgstr "атрибут режиму елемента <source/>"
 
 msgid "mode of device reading and writing"
 msgstr "режим читання та запису для пристрою"
@@ -32137,6 +32154,8 @@ msgstr "ncr53c90 можна використовувати лише як пер�
 
 msgid "need at least one serial port to use BIOS serial output"
 msgstr ""
+"для використання послідовного виходу у BIOS потрібен принаймні один "
+"послідовний порт"
 
 msgid "need either --dest or --xml"
 msgstr "слід вказати --dest або --xml"
@@ -33010,7 +33029,7 @@ msgid "node device event callback %d not registered"
 msgstr "зворотний виклик події пристрою вузла %d не зареєстровано"
 
 msgid "node device information"
-msgstr ""
+msgstr "відомості щодо вузлового пристрою"
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "на цій платформі отримання параметрів пам'яті вузлів не передбачено"
@@ -33589,7 +33608,7 @@ msgstr ""
 "вивести рядок XML щодо системної інформації гіпервізора, якщо він доступний"
 
 msgid "output the list of options which are missing completers"
-msgstr ""
+msgstr "вивести список параметрів, де не вистачає завершувачів"
 
 msgid "output to stderr"
 msgstr "вивести повідомлення до stderr"
@@ -34318,16 +34337,22 @@ msgid ""
 "qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
 "to 'reboot'"
 msgstr ""
+"у драйвері qemu не передбачено підтримки встановлення для «onReboot» "
+"значення «destroy» і встановлення для «onPoweroff» значення «reboot»"
 
 msgid ""
 "qemu driver doesn't support the 'preserve' action for "
 "'on_reboot'/'on_poweroff'"
 msgstr ""
+"у драйвері qemu не передбачено підтримки дії «preserve» для "
+"«on_reboot»/«on_poweroff»"
 
 msgid ""
 "qemu driver doesn't support the 'rename-restart' action for "
 "'on_reboot'/'on_poweroff'/'on_crash'"
 msgstr ""
+"у драйвері qemu не передбачено підтримки дії «rename-restart» для "
+"«on_reboot»/«on_poweroff»/«on_crash»"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -34531,6 +34556,8 @@ msgstr ""
 
 msgid "queue-size property isn't supported by this QEMU binary"
 msgstr ""
+"підтримки властивості queue-size у цьому виконуваному файлі QEMU не "
+"передбачено"
 
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
 msgstr ""
@@ -35730,7 +35757,7 @@ msgid "source-host for underlying storage"
 msgstr "основна система для базового сховища"
 
 msgid "source-mode is mandatory"
-msgstr ""
+msgstr "source-mode є обов'язковим"
 
 #, c-format
 msgid "spapr-vio address %#llx already in use"
@@ -35800,7 +35827,7 @@ msgid "spicevmc device type only supports virtio"
 msgstr "для пристроїв типу spicevmc передбачено підтримку лише virtio"
 
 msgid "split each argument on ','; ',,' is an escape sequence"
-msgstr ""
+msgstr "поділити кожен аргумент на «,»; «,,» -- послідовність екранування"
 
 #, c-format
 msgid "splitting StorageUrl failed %s"
@@ -36963,6 +36990,8 @@ msgid ""
 "transient disk backing image sharing with destroy action of lifecycle isn't "
 "supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки спільного "
+"використання резервного образу диска із дією знищення у життєвому циклі"
 
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
@@ -37385,7 +37414,7 @@ msgstr "не вдалося обробити запис пристрою blkio �
 
 #, c-format
 msgid "unable to parse contents of 'file' field in '%s' from cloud-hypervisor"
-msgstr ""
+msgstr "не вдалося обробити вміст поля «file» у «%s» з cloud-hypervisor"
 
 #, c-format
 msgid "unable to parse diskspec: %s"
