@@ -1630,6 +1630,69 @@ qemuSnapshotCreateXMLValidateDef(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotCreateAlignDisks(virDomainObj *vm,
+                             virDomainSnapshotDef *def,
+                             virQEMUDriver *driver,
+                             unsigned int flags)
+{
+    g_autofree char *xml = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+    bool align_match = true;
+
+    /* Easiest way to clone inactive portion of vm->def is via
+     * conversion in and back out of xml.  */
+    if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
+                                        vm->def, priv->origCPU,
+                                        true, true)) ||
+        !(def->parent.dom = virDomainDefParseString(xml, driver->xmlopt,
+                                                    priv->qemuCaps,
+                                                    VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                                    VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        return -1;
+
+    if (vm->newDef) {
+        def->parent.inactiveDom = virDomainDefCopy(vm->newDef,
+                                                   driver->xmlopt, priv->qemuCaps, true);
+        if (!def->parent.inactiveDom)
+            return -1;
+    }
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+        align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+        align_match = false;
+        if (virDomainObjIsActive(vm))
+            def->state = VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
+        else
+            def->state = VIR_DOMAIN_SNAPSHOT_SHUTOFF;
+        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+    } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+        def->state = virDomainObjGetState(vm, NULL);
+        align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+        align_match = false;
+    } else {
+        def->state = virDomainObjGetState(vm, NULL);
+
+        if (virDomainObjIsActive(vm) &&
+            def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("internal snapshot of a running VM "
+                             "must include the memory state"));
+            return -1;
+        }
+
+        def->memory = (def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF ?
+                       VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
+                       VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
+    }
+    if (virDomainSnapshotAlignDisks(def, align_location, align_match) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1637,16 +1700,12 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                       unsigned int flags)
 {
     virQEMUDriver *driver = domain->conn->privateData;
-    g_autofree char *xml = NULL;
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     virDomainMomentObj *current = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
-    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    bool align_match = true;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
@@ -1702,54 +1761,10 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                                           flags) < 0)
             goto endjob;
     } else {
-        /* Easiest way to clone inactive portion of vm->def is via
-         * conversion in and back out of xml.  */
-        if (!(xml = qemuDomainDefFormatLive(driver, priv->qemuCaps,
-                                            vm->def, priv->origCPU,
-                                            true, true)) ||
-            !(def->parent.dom = virDomainDefParseString(xml, driver->xmlopt,
-                                                        priv->qemuCaps,
-                                                        VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                                        VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+        if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
             goto endjob;
 
-        if (vm->newDef) {
-            def->parent.inactiveDom = virDomainDefCopy(vm->newDef,
-                                                       driver->xmlopt, priv->qemuCaps, true);
-            if (!def->parent.inactiveDom)
-                goto endjob;
-        }
-
-        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-            align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-            align_match = false;
-            if (virDomainObjIsActive(vm))
-                def->state = VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
-            else
-                def->state = VIR_DOMAIN_SNAPSHOT_SHUTOFF;
-            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
-        } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            def->state = virDomainObjGetState(vm, NULL);
-            align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-            align_match = false;
-        } else {
-            def->state = virDomainObjGetState(vm, NULL);
-
-            if (virDomainObjIsActive(vm) &&
-                def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("internal snapshot of a running VM "
-                                 "must include the memory state"));
-                goto endjob;
-            }
-
-            def->memory = (def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF ?
-                           VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
-                           VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
-        }
-        if (virDomainSnapshotAlignDisks(def, align_location,
-                                        align_match) < 0 ||
-            qemuSnapshotPrepare(vm, def, &flags) < 0)
+        if (qemuSnapshotPrepare(vm, def, &flags) < 0)
             goto endjob;
     }
 
