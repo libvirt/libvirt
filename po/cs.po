@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-08-16 12:27+0000\n"
+"POT-Creation-Date: 2021-09-24 14:41+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -44,7 +44,6 @@ msgstr ""
 "skupině)\n"
 "\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -437,7 +436,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "Limit propustnosti: %llu bajtů/s (%-.3lf %s/s)"
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr " NÁZEV\n"
 
@@ -683,16 +681,6 @@ msgstr "%s není v tomto sestavení QEMU podporováno"
 msgid "%s object has invalid dynamic type"
 msgstr "objekt %s nemá platný dynamický typ"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "objekt %s postrádá vyžadovanou vlastnost „%s“"
@@ -1468,7 +1456,6 @@ msgstr "(definice_rozhraní)"
 msgid "(libxl_migration_cookie)"
 msgstr "(_cookie_stehovani)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(xml_metadata)"
 
@@ -1529,7 +1516,6 @@ msgstr "(testovaci ovladac)"
 msgid "(volume_definition)"
 msgstr "(definice_svazku)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2045,6 +2031,9 @@ msgstr ""
 msgid "Available:"
 msgstr "Dostupný:"
 
+msgid "BIOS serial console only supported on x86 architectures"
+msgstr ""
+
 msgid "Backup"
 msgstr ""
 
@@ -2456,14 +2445,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Volání do %s pro neočekávaný typ „%s“"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Volání do %s pro neočekávaný typ „%s“, očekáváno „%s“"
@@ -3847,6 +3832,9 @@ msgstr "Nastaví doménu, aby byla automaticky spuštěna při startu."
 msgid "Configure a network to be automatically started at boot."
 msgstr "Nastavit síť tak, aby byla automaticky spouštěna při startu."
 
+msgid "Configure a node device to be automatically started at boot."
+msgstr ""
+
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Nastavit úložiště tak, aby bylo automaticky spouštěno při startu."
 
@@ -3891,6 +3879,9 @@ msgstr "Připojeno ke správnímu serveru"
 
 msgid "Connections from inside daemon must be direct"
 msgstr "Je třeba, aby spojení zevnitř procesu služby byla přímá"
+
+msgid "Console can only be enabled for a PTY"
+msgstr ""
 
 msgid "Constant pages:"
 msgstr "Konstantní stránky:"
@@ -4831,7 +4822,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "nepodařilo se získat informace o fondu"
 
@@ -5282,6 +5272,10 @@ msgid "Device %s is not a bridge"
 msgstr "Zařízení %s není most"
 
 #, c-format
+msgid "Device %s marked as autostarted\n"
+msgstr ""
+
+#, c-format
 msgid "Device %s not found: could not access %s"
 msgstr "Zařízení %s nenalezeno: není možné přistupovat k %s"
 
@@ -5300,6 +5294,10 @@ msgstr ""
 #, c-format
 msgid "Device %s un-attached from bridge %s\n"
 msgstr "Zařízení %s odpojeno z mostu %s\n"
+
+#, c-format
+msgid "Device %s unmarked as autostarted\n"
+msgstr ""
 
 #, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -5685,7 +5683,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "Doména má %d rozhraní. Určete které odpojit pomocí --mac"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5912,8 +5909,8 @@ msgstr "Konec souboru na standardním vstupu"
 msgid "EOF on stdout"
 msgstr "Konec souboru (EOF) na standardním výstupu"
 
-msgid "Echo back arguments, possibly with quoting."
-msgstr "Vypisovat v ozvěně (echo) argumenty (pokud třeba obklopené uvozovkami)"
+msgid "Echo back arguments, possibly with quoting. Used for internal testing."
+msgstr ""
 
 msgid "Edit the XML configuration for a domain."
 msgstr "Upravit XML nastavení domény."
@@ -6516,17 +6513,6 @@ msgstr "Nepodařilo se přidělit seznam PCI zařízení: %s"
 msgid "Failed to allocate XML buffer"
 msgstr "nepodařilo se přidělit XML vyrovnávací paměť"
 
-#, c-format
-msgid "Failed to allocate memory for checkpoint directory for domain %s"
-msgstr "Nepodařilo se přidělit paměť pro složku kontrolního bodu pro doménu %s"
-
-msgid "Failed to allocate memory for path"
-msgstr "Nepodařil ose přidělit paměť pro umístění"
-
-#, c-format
-msgid "Failed to allocate memory for snapshot directory for domain %s"
-msgstr "Nepodařilo se přidělit paměť pro složku zachycených stavů domény %s"
-
 #, fuzzy, c-format
 msgid "Failed to allocate slirp for '%s'"
 msgstr "Nepodařilo se předpřidělit prostor pro soubor „%s“"
@@ -6907,19 +6893,12 @@ msgstr "Nepodařilo se vytvořit vlákno"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Nepodařilo se vytvořit vlákno pro příjem dat migrace"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Nepodařilo se vytvořit vlákno pro obsloužení restartu procesu služby"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Nepodařilo se vytvořit vlákno pro obsluhu vypnutí domény"
 
-#. Not much else can be done
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Nepodařilo se vytvořit vlákno pro obsluhu obnovování fondu"
 
@@ -7413,6 +7392,9 @@ msgstr ""
 msgid "Failed to initialize cgroup backend."
 msgstr "mutex se nepodařilo inicializovat"
 
+msgid "Failed to initialize host cpu features"
+msgstr ""
+
 msgid "Failed to initialize libpciaccess"
 msgstr "Nepodařilo se inicializovat libpciaccess"
 
@@ -7472,7 +7454,6 @@ msgstr "Nepodařilo se vypsat aktivní sítě"
 msgid "Failed to list active pools"
 msgstr "Nepodařilo se vypsat aktivní fondy"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "Nepodařilo se vypsat domény"
 
@@ -7488,27 +7469,21 @@ msgstr "Nepodařilo se vypsat neaktivní sítě"
 msgid "Failed to list inactive pools"
 msgstr "Nepodařilo se vypsat neaktivní fondy"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "Nepodařilo se vypsat rozhraní"
 
-#. there was an error during the call
 msgid "Failed to list network filter bindings"
 msgstr "Nepodařilo se vypsat navázání pravidla brány firewall"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Nepodařilo se vypsat filtry sítě"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "Nepodařilo se vypsat sítě"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Nepodařilo se vypsat zařízení uzlu"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "Nepodařilo se vypsat tajemství uzlu"
 
@@ -7516,7 +7491,6 @@ msgstr "Nepodařilo se vypsat tajemství uzlu"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Nepodařilo se vypsat trvalé hosty na $uri"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "Nepodařilo se vypsat fondy"
 
@@ -7536,7 +7510,6 @@ msgstr "Nepodařilo se vypsat přechodné hosty"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "Nepodařilo se vypsat vcpus pro doménu „%d“ s libxenlight"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "Nepodařilo se vypsat svazky"
 
@@ -8119,9 +8092,6 @@ msgstr "Nepodařilo se obnovit chod domény „%d“ s libxenlight"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Nepodařilo se obnovit hosta %s po selhání"
@@ -8626,6 +8596,13 @@ msgstr "Generace 'ipv6' zadána pro ne-IPv6 adresu „%s“ v síti „%s“"
 msgid "Feature %s required by CPU model %s not found"
 msgstr "Vlastnost %s požadovaná modelem procesoru %s nebyla nalezena"
 
+msgid "Fibre Channel 'appid' is not a printable string"
+msgstr ""
+
+#, c-format
+msgid "Fibre Channel 'appid' string length must be between [%d, %d]"
+msgstr ""
+
 #, c-format
 msgid "Field '%s' too long for destination"
 msgstr "Kolonka „%s“ je pro cíl příliš dlouhá"
@@ -8746,63 +8723,10 @@ msgstr ""
 "První na souboru založený pevný disk nemá zdroj – není možné vyvodit datové "
 "úložiště a popis umístění VMX souboru"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "Příznak „%s“ je vyžadován příznakem „%s“"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "Příznaky „%s“ a „%s“ není možné použít dohromady"
@@ -9781,15 +9705,6 @@ msgstr "Neplatný typ adresy „%s“ pro disk „%s“ s typem sběrnice „%s�
 msgid "Invalid address."
 msgstr "Neplatná adresa."
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "Neplatný argument"
 
@@ -10419,6 +10334,10 @@ msgstr "Neplatné nastavení pro ccf-assist stav"
 
 msgid "Invalid setting for nested HV state"
 msgstr "Neplatné nastavení pro stav vnořeného HV"
+
+#, c-format
+msgid "Invalid source mode: %s"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -12072,12 +11991,6 @@ msgstr "SATA není touto binárkou QEMU podporováno"
 msgid "NVMe namespace can't be zero"
 msgstr "velikost hugepages nemůže být nula"
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Název"
 
@@ -12360,10 +12273,6 @@ msgstr "registrováno příliš mnoho ovladačů"
 #, c-format
 msgid "No active block job '%s'"
 msgstr "Žádná aktivní bloková úloha „%s“"
-
-#, c-format
-msgid "No active operation on device: %s"
-msgstr "Žádná aktivní operace na zařízení: %s"
 
 msgid "No addresses to bind to"
 msgstr "Žádná adresa na kterou navázat"
@@ -12919,6 +12828,15 @@ msgstr "Je podporováno pouze VNC"
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr "Pro tento typ stroje je podporován pouze jediný IDE řadič"
 
+msgid "Only a single console can be configured for this domain"
+msgstr ""
+
+msgid "Only a single console or serial can be configured for this domain"
+msgstr ""
+
+msgid "Only a single serial can be configured for this domain"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr "Odpojit je možné pouze veth zařízení v mostu"
 
@@ -13058,10 +12976,6 @@ msgstr "řídící soubor OpenVZ /proc/vz není přístupný"
 msgid "Operation cancelled by client"
 msgstr "Operace zrušena klintem"
 
-#, c-format
-msgid "Operation is not supported for device: %s"
-msgstr "Operace není pro zařízení podporovaná: %s"
-
 msgid "Operation not supported"
 msgstr "Operace nepodporována"
 
@@ -13092,20 +13006,6 @@ msgstr ""
 "Volba „%s“ není platná pro PCI řadič s pořadovým číslem „%d“, modelu „%s“ a "
 "modelName „%s“"
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "Volba --%s je vyžadována volbou --%s"
@@ -13126,20 +13026,6 @@ msgstr "Argument volby je prázdný"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr "kousky typů statistiky 0x%x nejsou tímto procesem služby podporovány"
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Volby --%s a --%s není možné použít naráz"
@@ -13383,7 +13269,6 @@ msgstr "Zpracovaná JSON odpověď „%s“ není objekt"
 msgid "Partition path '%s' must start with '/'"
 msgstr "Je třeba, aby popis umístění oddílu „%s“ začínal na „/“"
 
-#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Zadávání tajných hodnot na příkazovém řádku je nebezpečné!"
 
@@ -14129,6 +14014,9 @@ msgstr "Vypíše základní informace o doméně."
 msgid "Returns basic information about the network"
 msgstr "Vrátí základní informace o síti."
 
+msgid "Returns basic information about the node device"
+msgstr ""
+
 msgid "Returns basic information about the node."
 msgstr "Vypíše základní informace o uzlu"
 
@@ -14242,7 +14130,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "Stav S4 je pro tuto doménu vypnutý"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14553,6 +14440,9 @@ msgstr "Poslat signál procesům v hostovi"
 msgid "Sending file descriptors is not supported on this socket"
 msgstr "Posílání popisovačů souboru není na tomto soketu podporováno"
 
+msgid "Serial can only be enabled for a PTY"
+msgstr ""
+
 #, c-format
 msgid ""
 "Serial device with target type '%s' and target model '%s' not compatible "
@@ -14768,9 +14658,6 @@ msgstr "Čas nastavení:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "Mapování sdílené paměti není tímto QEMU podporováno"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "Sdílená paměť: \n"
 
@@ -14849,7 +14736,6 @@ msgstr "Přeskakování není s tímto proudem podporováno"
 msgid "Snapshot"
 msgstr "Zachycený stav"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "XML nastavení zachyceného stavu %s nezměněna.\n"
@@ -15324,7 +15210,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s nemůže být prázdné"
 
-#. title
 msgid "Target"
 msgstr "Cíl"
 
@@ -15598,6 +15483,14 @@ msgstr "Diskové zařízení %s cíle se neshoduje se zdrojovým %s"
 #, c-format
 msgid "Target disk model %s does not match source %s"
 msgstr "Model „%s“ cílového disku se neshoduje se zdrojovým %s"
+
+#, c-format
+msgid "Target disk queue count %u does not match source %u"
+msgstr ""
+
+#, c-format
+msgid "Target disk queue size %u does not match source %u"
+msgstr ""
 
 #, c-format
 msgid "Target disk rotation rate %u RPM does not match source %u RPM"
@@ -16310,9 +16203,6 @@ msgstr "Už zde nejsou žádné volné %s."
 msgid "This QEMU binary doesn't support zPCI"
 msgstr "Tato binárka QEMU nepodporuje zPCI"
 
-msgid "This QEMU can't disable file transfers through spice"
-msgstr "Toto QEMU nemůže vypnout přenosy souborů prostřednictvím spice"
-
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr "Toto QEMU nepodporuje '-device usb-storage'"
 
@@ -16618,11 +16508,9 @@ msgstr "Pokus o zápis do soketu ve stavu chyby"
 msgid "Try again?"
 msgstr "Zkusit znovu?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "Zkouší se uvolnit MultiCURL objekt, který je stále používán"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "Zkouší se uvolnit SharedCURL objekt, který je stále používán"
 
@@ -16816,6 +16704,10 @@ msgstr "Nedaří se přistupovat k souboru s nastaveními %s"
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "Nedaří se přistupovat k popisovači souboru %d"
+
+#, c-format
+msgid "Unable to access file descriptor %d path %s"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to access kernel32.dll"
@@ -17274,14 +17166,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%s': device in use"
-msgstr ""
-
-#, c-format
-msgid "Unable to destroy qos on port %s"
-msgstr ""
-
-#, c-format
-msgid "Unable to destroy queue on port %s"
 msgstr ""
 
 #, c-format
@@ -18343,6 +18227,10 @@ msgid "Unable to reset PCI device %s: %s"
 msgstr "Nedaří se resetovat PCI zařízení %s: %s"
 
 #, c-format
+msgid "Unable to reset ingress on port %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
 msgstr "Nedaří se přeložit adresu „%s“ služby „%s“: %s"
 
@@ -18512,6 +18400,10 @@ msgstr "Nedaří se nastavit XATTR %s na %s"
 #, fuzzy
 msgid "Unable to set agent close-on-exec flag"
 msgstr "Nedaří se nastavit příznak close-on-exec (zavřít při vykonání)"
+
+#, c-format
+msgid "Unable to set autostart on '%s': %s"
+msgstr ""
 
 #, c-format
 msgid "Unable to set backing file %s"
@@ -18736,6 +18628,10 @@ msgstr "Nedaří se hlídat pty konzole hostitele"
 #, c-format
 msgid "Unable to write %s"
 msgstr "Nedaří se zapsat %s"
+
+#, c-format
+msgid "Unable to write '%s' to '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -19052,6 +18948,9 @@ msgstr "Neznámý výrobce procesoru %s"
 msgid "Unknown Command '%i'"
 msgstr ""
 
+msgid "Unknown Error"
+msgstr ""
+
 #, c-format
 msgid "Unknown IP address data source %d"
 msgstr "Neznámý zdroj dat IP adresy %d"
@@ -19190,7 +19089,6 @@ msgstr "Neznámý typ enable %d v síti"
 msgid "Unknown error"
 msgstr "Neznámá chyba"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "Neznámá chybová hodnota"
 
@@ -19958,12 +19856,10 @@ msgstr "Výřečnější zprávy"
 msgid "Video adapters are not supported int containers."
 msgstr "Videoadaptéry nejsou v kontejnerech podporovány."
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "Virsh – nástroj libvirt %s pro příkazový řádek\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "Virt-admin – nástroj příkazového řádku pro libvirt %s\n"
@@ -20245,16 +20141,6 @@ msgstr ""
 msgid "a block I/O throttling is not supported for vhostuser disk"
 msgstr ""
 
-msgid ""
-"a block I/O throttling length parameter is not supported with this QEMU "
-"binary"
-msgstr ""
-"parametr délky omezování blokového vstupu/výstupu není s tímto sestavením "
-"QEMU podporován"
-
-msgid "a block I/O throttling parameter is not supported with this QEMU binary"
-msgstr "parametr řízení vstupu/výstupu není touto QEMU binárkou podporován"
-
 msgid "a device with the same address already exists "
 msgstr "zařízení s touto adresou už existuje."
 
@@ -20451,11 +20337,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "přiřadit novou kapacitu, namísto ponechání řídké (sparse)"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "přidělená vyrovnávací paměť netlink je příliš malá"
 
@@ -20719,6 +20600,9 @@ msgstr "po odpojení virsh automaticky hosta zlikvidovat"
 
 msgid "automatically switch to post-copy migration after one pass of pre-copy"
 msgstr "automaticky přepnout post-copy stěhování po jednom průchodu pre-copy"
+
+msgid "autostart a defined node device"
+msgstr ""
 
 msgid "autostart a domain"
 msgstr "automaticky spustit doménu"
@@ -21028,6 +20912,10 @@ msgstr "rozhraní typu most postrádá prvek bond"
 
 msgid "bool"
 msgstr "bool"
+
+#, c-format
+msgid "bool parameter '%s' of command '%s' has completer set"
+msgstr ""
 
 #, c-format
 msgid "boot order %u is already used by another device"
@@ -22131,7 +22019,6 @@ msgstr "nedaří se otevřít umístění „%s“"
 msgid "cannot open path '%s' in '%s'"
 msgstr "nedaří se otevřít umístění „%s“ v „%s“"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "nelze otevřít svazek '%s'"
@@ -22499,6 +22386,9 @@ msgstr "nedaří se odeslat na netlink soket"
 msgid "cannot set CPU affinity on process %d"
 msgstr "nedaří se nastavit pevné přiřazení procesoru na procesu %d"
 
+msgid "cannot set autostart for transient device"
+msgstr ""
+
 msgid "cannot set autostart for transient domain"
 msgstr "není možné nastavit automatické spouštění pro přechodnou doménu"
 
@@ -22662,11 +22552,9 @@ msgid "cannot update guest CPU for %s architecture"
 msgstr "u architektury %s není možné aktualizovat procesor hosta"
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with -no-reboot "
-"option"
+"cannot update lifecycle action because QEMU was started with incompatible -"
+"no-reboot setting"
 msgstr ""
-"není možné aktualizovat akci životního cyklu, protože QEMU bylo spuštěno s "
-"volbou -no-reboot"
 
 #, c-format
 msgid "cannot upload to volume %s"
@@ -22832,6 +22720,9 @@ msgstr "změna parametrů hodin není ovladačem vz podporována"
 msgid "changing cpu placement mode is not supported by vz driver"
 msgstr "změna režimu umístění procesoru není ovladačem vz podporována"
 
+msgid "changing device 'acpi index' is not allowed"
+msgstr ""
+
 msgid "changing device alias is not allowed"
 msgstr "Změna alternativního názvu zařízení není dovolena"
 
@@ -22927,7 +22818,6 @@ msgstr "název kontrolního bodu"
 msgid "child didn't write error (status=%d)"
 msgstr "podřízené nahlásilo (status=%d): %s"
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "podřízenému procesu se nepodařilo vytvořit složku „%s“"
@@ -23015,8 +22905,24 @@ msgid "command '%s' doesn't support option --%s"
 msgstr "příkaz „%s“ nepodporuje volbu --%s"
 
 #, c-format
+msgid "command '%s' has handler set"
+msgstr ""
+
+#, c-format
 msgid "command '%s' has inconsistent alias"
 msgstr "příkaz „%s“ má nekonzistentní alias"
+
+#, c-format
+msgid "command '%s' has info set"
+msgstr ""
+
+#, c-format
+msgid "command '%s' has multiple flags set"
+msgstr ""
+
+#, c-format
+msgid "command '%s' has options set"
+msgstr ""
 
 #, c-format
 msgid "command '%s' has too many options"
@@ -23033,6 +22939,14 @@ msgstr "příkaz „%s“ vyžaduje volbu --%s"
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "příkaz „%s“ vyžaduje volbu <%s>"
+
+#, c-format
+msgid "command alias '%s' is pointing to a non-existant command '%s'"
+msgstr ""
+
+#, c-format
+msgid "command alias '%s' is pointing to another command alias '%s'"
+msgstr ""
 
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
@@ -24213,9 +24127,6 @@ msgstr "vypnout procesory určené seznamem procesorů"
 msgid "disable cpus specified by cpumap"
 msgstr "vypnout procesory určené cpumap"
 
-msgid "disable shared memory is not available with this QEMU binary"
-msgstr "vypnutí sdílené paměti není s touto binárkou QEMU k dispozici"
-
 msgid "disabled"
 msgstr "vypnuto"
 
@@ -24278,10 +24189,6 @@ msgstr "disk „%s“ už se nachází v aktivní blokové úloze"
 #, fuzzy, c-format
 msgid "disk '%s' has no media"
 msgstr "ifkey „%s“ nemá žádné req"
-
-#, c-format
-msgid "disk '%s' improperly configured for a device='lun'"
-msgstr "disk „%s“ nesprávně nastaven pro device='lun'"
 
 #, c-format
 msgid "disk '%s' is empty or readonly"
@@ -24948,8 +24855,8 @@ msgstr "trvání (v sekundách) po které umožnit celkové maximum bajtů zápi
 msgid "dynamic label type must use resource relabeling"
 msgstr "je třeba, aby dynamický typ štítků používalo přeštítkování"
 
-msgid "echo arguments"
-msgstr "argumenty echo"
+msgid "echo arguments. Used for internal testing."
+msgstr ""
 
 msgid "edit XML configuration for a domain"
 msgstr "upravit XML nastavení domény"
@@ -25043,14 +24950,8 @@ msgstr "zapnuto"
 msgid "encountered an error on interface %s index %d"
 msgstr "narazilo se na chybu na rozhraní %s pořadového čísla %d"
 
-msgid "encrypted VNC TLS keys are not supported with this QEMU binary"
-msgstr "šifrované VNC TLS klíče nejsou tímto sestavením QEMU podporovány"
-
 msgid "encrypted ploop volumes are not supported with ploop init"
 msgstr "šifrované ploop svazky nejsou podporovány s ploop init"
-
-msgid "encrypted secrets are not supported"
-msgstr "zašifrovaná tajemství nejsou podporována"
 
 #, c-format
 msgid "encryption format %d doesn't match expected format %d"
@@ -26056,6 +25957,10 @@ msgid "failed to get source from sourceList"
 msgstr "nepodařilo se získat zdroj ze seznamu prostředků"
 
 #, c-format
+msgid "failed to get stat for '%s'"
+msgstr ""
+
+#, c-format
 msgid "failed to get status of interface %s: %s%s%s"
 msgstr "nepodařilo se získat stav rozhraní %s: %s%s%s"
 
@@ -26170,6 +26075,10 @@ msgstr "Nepodařilo se připojit (mount) zařízení %s na %s"
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
 msgstr "nepodařilo se vyhledat rozhraní s MAC adresou „%s“"
+
+#, c-format
+msgid "failed to mark device %s as autostarted"
+msgstr ""
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -26639,6 +26548,10 @@ msgid "failed to undefine interface %s: %s%s%s"
 msgstr "nepodařilo se zrušit definování rozhraní %s: %s%s%s"
 
 #, c-format
+msgid "failed to unmark device %s as autostarted"
+msgstr ""
+
+#, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "nepodařilo se odznačit síť %s jako automaticky spouštěnou"
 
@@ -26779,9 +26692,6 @@ msgstr ""
 "získat nebo nastavit nyní definované sady výstupů záznamu událostí procesu "
 "služby"
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr "obsah kolonky „%s“ je chybně formulován"
@@ -27111,9 +27021,6 @@ msgstr "nalezena zápůjčka bez IP adresy"
 msgid "found lease without mac-address"
 msgstr "nalezena zápůjčka bez mac adresy"
 
-msgid "found non printable characters in secret"
-msgstr "v tajemství nalezeny netisknutelné znaky"
-
 msgid "freePageReporting is not supported by this QEMU binary"
 msgstr ""
 
@@ -27139,9 +27046,6 @@ msgstr "úplný popis umístění zdrojového disku"
 
 msgid "fuse_loop failed"
 msgstr "fuse_loop se nezdařilo"
-
-msgid "fw_cfg is not supported with this QEMU"
-msgstr ""
 
 #, c-format
 msgid "g_mkstemp(\"%s\") failed"
@@ -27398,7 +27302,6 @@ msgstr "po vytvoření zachyceného stavu zastavit doménu"
 msgid "handler failed to wait on condition"
 msgstr "obsluze se nezdařilo čekat na podmínku"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "hledání otisku (hash) vedlo v prázdný ukazatel"
 
@@ -27635,9 +27538,6 @@ msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
 msgstr "i – vypnout ověřování správnosti a zkusit znovu definovat"
-
-msgid "iSCSI initiator IQN not supported with this QEMU binary"
-msgstr "IQN iSCSI iniciátoru není s tímto sestavením QEMU podporováno"
 
 msgid "iSCSI storage pool does not support volume creation"
 msgstr "iSCSI fond úložiště nepodporuje vytváření svazků"
@@ -27959,25 +27859,6 @@ msgstr "název rozhraní"
 msgid "interface name %s does not fit into buffer "
 msgstr "název rozhraní %s se nevejde do vyrovnávací paměti"
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "název nebo MAC adresa rozhraní"
 
@@ -29486,12 +29367,6 @@ msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 "ve smyčce do překročení časového limitu nebo přerušení, namísto jednorázově"
 
-msgid ""
-"luks encryption usage requires encrypted secret generation to be supported"
-msgstr ""
-"použití luks šifrování vyžaduje aby bylo podporováno vytváření šifrovaných "
-"tajemství"
-
 msgid "lxc state driver is not active"
 msgstr "ovladač lxc stavu není aktivní"
 
@@ -30178,12 +30053,19 @@ msgstr "chybí \""
 msgid "missing %s in <virtualport type='%s'>"
 msgstr "chybí %s v <virtualport type='%s'>"
 
+#, c-format
+msgid "missing '%s' in 'config' from cloud-hypervisor"
+msgstr ""
+
 msgid "missing 'DateTime' element"
 msgstr "chybí prvek 'DateTime'"
 
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "Chybí architektura procesoru"
+
+msgid "missing 'config' in info query result from cloud-hypervisor"
+msgstr ""
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
@@ -30198,6 +30080,10 @@ msgstr "v síti %s, v prvku <address> v <nat>, ve <forward> chybí atribut 'end'
 #, fuzzy, c-format
 msgid "missing 'executable' in '%s'"
 msgstr "chybí hodnota cssid pro „%s“"
+
+#, c-format
+msgid "missing 'file' in '%s' from cloud-hypervisor"
+msgstr ""
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
@@ -30830,9 +30716,6 @@ msgstr ""
 msgid "missing required virtualport type"
 msgstr "chybí vyžadovaný typ virtuálního portu (virtualport)"
 
-msgid "missing resource partition attribute"
-msgstr "chybí atribut oddíl prostředku"
-
 msgid "missing root device information"
 msgstr "chybí informace o kořenovém zařízení"
 
@@ -31076,6 +30959,9 @@ msgid ""
 "'%s' on device '%s'"
 msgstr ""
 
+msgid "mode attribute of <source/> element"
+msgstr ""
+
 msgid "mode of device reading and writing"
 msgstr "režim čtení a zápisu zařízení"
 
@@ -31124,15 +31010,6 @@ msgstr "změnit/získat název namísto popisu"
 msgid "monitor failure"
 msgstr "selhání monitoru"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "monitor nemůže být prázdný"
 
@@ -31326,8 +31203,8 @@ msgstr ""
 msgid "ncr53c90 can only be used as first SCSI controller"
 msgstr ""
 
-msgid "need at least one serial port to use SGA"
-msgstr "pro použití SGA je zapotřebí přinejmenším jednoho sériového portu"
+msgid "need at least one serial port to use BIOS serial output"
+msgstr ""
 
 msgid "need either --dest or --xml"
 msgstr "je potřeba buď --dest nebo --xml"
@@ -31341,7 +31218,6 @@ msgstr "potřebuje schopnost rawio"
 msgid "negative size requires --shrink"
 msgstr "záporná velikost vyžaduje --shrink"
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "dohodnuté SSF %d nebylo dostatečně silné"
@@ -32189,6 +32065,9 @@ msgstr "podrobnosti o zařízení uzlu v XML"
 msgid "node device event callback %d not registered"
 msgstr "zpětné volání %d události uzlu zařízení neregistrováno"
 
+msgid "node device information"
+msgstr ""
+
 msgid "node get memory parameters not implemented on this platform"
 msgstr "získání parametrů paměti uzlu není na této platformě podporováno"
 
@@ -32745,6 +32624,9 @@ msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr ""
 "vypsat XML řetězec se systémovými informacemi o hypervizoru, pokud jsou k "
 "dispozici"
+
+msgid "output the list of options which are missing completers"
+msgstr ""
 
 msgid "output to stderr"
 msgstr "výstup na standardní chybový"
@@ -33430,9 +33312,6 @@ msgstr "qemu nenahlásilo identifikátor vlákna pro virt. procesor „%zu“"
 msgid "qemu does not allow specifying screen ID"
 msgstr "qemu neumožňuje zadat identifikátor obrazovky"
 
-msgid "qemu does not support SGA"
-msgstr "qemu nepodporuje SGA"
-
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr "qemu nepodporuje více než jednu položku do typu dva v SMBIOS tabulce"
 
@@ -33447,6 +33326,21 @@ msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
 msgstr ""
 "qemu nepodporuje pořizování zachycených stavů hostů, uspaných pomocí jejich "
 "správy napájení"
+
+msgid ""
+"qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
+"to 'reboot'"
+msgstr ""
+
+msgid ""
+"qemu driver doesn't support the 'preserve' action for "
+"'on_reboot'/'on_poweroff'"
+msgstr ""
+
+msgid ""
+"qemu driver doesn't support the 'rename-restart' action for "
+"'on_reboot'/'on_poweroff'/'on_crash'"
+msgstr ""
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -33648,6 +33542,9 @@ msgstr ""
 "dotazování maximální rychlosti migrace po kopírování není tímto sestavením "
 "QEMU podporováno"
 
+msgid "queue-size property isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
 msgstr ""
 "atribut queues (fronty) v prvku ovladače disku je podporován pouze pro "
@@ -33745,9 +33642,6 @@ msgstr "znovupřipojit zařízení uzlu k jeho ovladači"
 
 msgid "reboot a domain"
 msgstr "restartovat doménu"
-
-msgid "reboot timeout is not supported by this QEMU binary"
-msgstr "časový limit restartu není touto binárkou QEMU podporován"
 
 msgid "received error event on socket"
 msgstr "na soketu obdržena chybová událost"
@@ -34801,6 +34695,9 @@ msgstr "umístění zdroje pro úložiště, na kterém se nachází"
 msgid "source-host for underlying storage"
 msgstr "zdrojový hostitel pro úložiště, na kterém se nachází"
 
+msgid "source-mode is mandatory"
+msgstr ""
+
 #, c-format
 msgid "spapr-vio address %#llx already in use"
 msgstr "spapr-vio adresa %#llx už je používána"
@@ -34866,8 +34763,8 @@ msgstr "spice_tls_x509_cert_dir složka „%s“ neexistuje"
 msgid "spicevmc device type only supports virtio"
 msgstr "typ zařízení spicemvc podporuje pouze virtio"
 
-msgid "splash timeout is not supported by this QEMU binary"
-msgstr "časový limit pro splash není touto QEMU binárkou podporován"
+msgid "split each argument on ','; ',,' is an escape sequence"
+msgstr ""
 
 #, c-format
 msgid "splitting StorageUrl failed %s"
@@ -35359,13 +35256,6 @@ msgid "the bandwidth limit is in bytes/s rather than MiB/s"
 msgstr "limit šířky pásma je v bajtech/s namísto MiB/s"
 
 msgid ""
-"the block I/O throttling group parameter is not supported with this QEMU "
-"binary"
-msgstr ""
-"skupinový parametr omezování blokového vstupu/výstupu není s tímto "
-"sestavením QEMU podporován"
-
-msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
 msgstr ""
@@ -35442,20 +35332,6 @@ msgstr "chardev_tls_x509_cert_dir složka „%s“ neexistuje"
 #, c-format
 msgid "the wwnn/wwpn for '%s' are assigned to an HBA"
 msgstr "wwnn/wwpn pro „%s“ je přiřazeno HBA"
-
-msgid ""
-"there are some block I/O throttling length parameters that are not supported "
-"with this QEMU binary"
-msgstr ""
-"jsou zde některé délky parametrů omezování blokového vstupu/výstupu, které "
-"nejsou s tímto sestavením QEMU podporovány"
-
-msgid ""
-"there are some block I/O throttling parameters that are not supported with "
-"this QEMU binary"
-msgstr ""
-"jsou zde nějaké parametry pro řízení vstupu/výstupu, které nejsou tímto "
-"sestavením QEMU podporovány"
 
 #, c-format
 msgid "there is already a DNS TXT record with name '%s' in network %s"
@@ -35670,9 +35546,6 @@ msgstr "dlaždice nejsou ovladačem vz podporovány"
 
 msgid "tls"
 msgstr "tls"
-
-msgid "tls-creds-x509 not supported in this QEMU binary"
-msgstr "tls-creds-x509 není touto binárkou QEMU podporováno"
 
 #, c-format
 msgid "too many NUMA cells: %d > %d"
@@ -36022,6 +35895,11 @@ msgstr ""
 msgid "transient disk '%s' must not be read-only"
 msgstr ""
 
+msgid ""
+"transient disk backing image sharing with destroy action of lifecycle isn't "
+"supported by this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
 msgstr ""
@@ -36254,10 +36132,6 @@ msgid "unable to enable host cpu perf event for %s"
 msgstr "nedaří se zapnout událost výkonnosti procesoru hostitele pro %s"
 
 #, c-format
-msgid "unable to execute '%s', unexpected error: '%s'"
-msgstr "nedaří se spustit „%s“, neočekávaná chyba: „%s“"
-
-#, c-format
 msgid "unable to execute QEMU agent command '%s'"
 msgstr "nedaří se vykonat příkaz QEMU agenta „%s“"
 
@@ -36313,7 +36187,6 @@ msgstr "nedaří se najít qeumu-img"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr "nedaří se najít platnou požadovanou VMware podpůrnou vrstvu „%s“"
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "nedaří se provést fsync %s"
@@ -36440,6 +36313,10 @@ msgstr "nedaří se zpracovat URI: %s"
 #, c-format
 msgid "unable to parse blkio device '%s' '%s'"
 msgstr "nedaří se vyhodnotit blkio zařízení „%s“ „%s“"
+
+#, c-format
+msgid "unable to parse contents of 'file' field in '%s' from cloud-hypervisor"
+msgstr ""
 
 #, c-format
 msgid "unable to parse diskspec: %s"
@@ -37133,8 +37010,6 @@ msgstr "unix"
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr "unixový soket pro spice grafiku není tímto QEMU podporován"
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "neznámý"
 
@@ -38021,28 +37896,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "nepodporované příznaky (0x%lx) ve funkci %s"
@@ -39253,6 +39106,116 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Echo back arguments, possibly with quoting."
+#~ msgstr ""
+#~ "Vypisovat v ozvěně (echo) argumenty (pokud třeba obklopené uvozovkami)"
+
+#~ msgid "Failed to allocate memory for checkpoint directory for domain %s"
+#~ msgstr ""
+#~ "Nepodařilo se přidělit paměť pro složku kontrolního bodu pro doménu %s"
+
+#~ msgid "Failed to allocate memory for path"
+#~ msgstr "Nepodařil ose přidělit paměť pro umístění"
+
+#~ msgid "Failed to allocate memory for snapshot directory for domain %s"
+#~ msgstr "Nepodařilo se přidělit paměť pro složku zachycených stavů domény %s"
+
+#~ msgid "No active operation on device: %s"
+#~ msgstr "Žádná aktivní operace na zařízení: %s"
+
+#~ msgid "Operation is not supported for device: %s"
+#~ msgstr "Operace není pro zařízení podporovaná: %s"
+
+#~ msgid "This QEMU can't disable file transfers through spice"
+#~ msgstr "Toto QEMU nemůže vypnout přenosy souborů prostřednictvím spice"
+
+#~ msgid ""
+#~ "a block I/O throttling length parameter is not supported with this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "parametr délky omezování blokového vstupu/výstupu není s tímto sestavením "
+#~ "QEMU podporován"
+
+#~ msgid ""
+#~ "a block I/O throttling parameter is not supported with this QEMU binary"
+#~ msgstr "parametr řízení vstupu/výstupu není touto QEMU binárkou podporován"
+
+#~ msgid ""
+#~ "cannot update lifecycle action because QEMU was started with -no-reboot "
+#~ "option"
+#~ msgstr ""
+#~ "není možné aktualizovat akci životního cyklu, protože QEMU bylo spuštěno "
+#~ "s volbou -no-reboot"
+
+#~ msgid "disable shared memory is not available with this QEMU binary"
+#~ msgstr "vypnutí sdílené paměti není s touto binárkou QEMU k dispozici"
+
+#~ msgid "disk '%s' improperly configured for a device='lun'"
+#~ msgstr "disk „%s“ nesprávně nastaven pro device='lun'"
+
+#~ msgid "echo arguments"
+#~ msgstr "argumenty echo"
+
+#~ msgid "encrypted VNC TLS keys are not supported with this QEMU binary"
+#~ msgstr "šifrované VNC TLS klíče nejsou tímto sestavením QEMU podporovány"
+
+#~ msgid "encrypted secrets are not supported"
+#~ msgstr "zašifrovaná tajemství nejsou podporována"
+
+#~ msgid "found non printable characters in secret"
+#~ msgstr "v tajemství nalezeny netisknutelné znaky"
+
+#~ msgid "iSCSI initiator IQN not supported with this QEMU binary"
+#~ msgstr "IQN iSCSI iniciátoru není s tímto sestavením QEMU podporováno"
+
+#~ msgid ""
+#~ "luks encryption usage requires encrypted secret generation to be supported"
+#~ msgstr ""
+#~ "použití luks šifrování vyžaduje aby bylo podporováno vytváření "
+#~ "šifrovaných tajemství"
+
+#~ msgid "missing resource partition attribute"
+#~ msgstr "chybí atribut oddíl prostředku"
+
+#~ msgid "need at least one serial port to use SGA"
+#~ msgstr "pro použití SGA je zapotřebí přinejmenším jednoho sériového portu"
+
+#~ msgid "qemu does not support SGA"
+#~ msgstr "qemu nepodporuje SGA"
+
+#~ msgid "reboot timeout is not supported by this QEMU binary"
+#~ msgstr "časový limit restartu není touto binárkou QEMU podporován"
+
+#~ msgid "splash timeout is not supported by this QEMU binary"
+#~ msgstr "časový limit pro splash není touto QEMU binárkou podporován"
+
+#~ msgid ""
+#~ "the block I/O throttling group parameter is not supported with this QEMU "
+#~ "binary"
+#~ msgstr ""
+#~ "skupinový parametr omezování blokového vstupu/výstupu není s tímto "
+#~ "sestavením QEMU podporován"
+
+#~ msgid ""
+#~ "there are some block I/O throttling length parameters that are not "
+#~ "supported with this QEMU binary"
+#~ msgstr ""
+#~ "jsou zde některé délky parametrů omezování blokového vstupu/výstupu, "
+#~ "které nejsou s tímto sestavením QEMU podporovány"
+
+#~ msgid ""
+#~ "there are some block I/O throttling parameters that are not supported "
+#~ "with this QEMU binary"
+#~ msgstr ""
+#~ "jsou zde nějaké parametry pro řízení vstupu/výstupu, které nejsou tímto "
+#~ "sestavením QEMU podporovány"
+
+#~ msgid "tls-creds-x509 not supported in this QEMU binary"
+#~ msgstr "tls-creds-x509 není touto binárkou QEMU podporováno"
+
+#~ msgid "unable to execute '%s', unexpected error: '%s'"
+#~ msgstr "nedaří se spustit „%s“, neočekávaná chyba: „%s“"
 
 #~ msgid "Failed to get PCI SYSFS file"
 #~ msgstr "Nepodařilo se získat soubor PCI SYSFS"

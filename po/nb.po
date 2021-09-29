@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-08-16 12:27+0000\n"
+"POT-Creation-Date: 2021-09-24 14:41+0000\n"
 "PO-Revision-Date: 2015-02-24 05:43+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Norwegian Bokmål (http://www.transifex.com/projects/p/fedora/"
@@ -33,7 +33,6 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -282,7 +281,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NAVN\n"
 
@@ -517,16 +515,6 @@ msgstr ""
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr ""
@@ -1256,7 +1244,6 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1316,7 +1303,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr ""
 
@@ -1796,6 +1782,9 @@ msgstr ""
 msgid "Available:"
 msgstr ""
 
+msgid "BIOS serial console only supported on x86 architectures"
+msgstr ""
+
 msgid "Backup"
 msgstr ""
 
@@ -2185,14 +2174,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr ""
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr ""
@@ -3502,6 +3487,9 @@ msgstr ""
 msgid "Configure a network to be automatically started at boot."
 msgstr ""
 
+msgid "Configure a node device to be automatically started at boot."
+msgstr ""
+
 msgid "Configure a pool to be automatically started at boot."
 msgstr ""
 
@@ -3540,6 +3528,9 @@ msgid "Connected to the admin server"
 msgstr ""
 
 msgid "Connections from inside daemon must be direct"
+msgstr ""
+
+msgid "Console can only be enabled for a PTY"
 msgstr ""
 
 msgid "Constant pages:"
@@ -4471,7 +4462,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr ""
 
@@ -4909,6 +4899,10 @@ msgid "Device %s is not a bridge"
 msgstr ""
 
 #, c-format
+msgid "Device %s marked as autostarted\n"
+msgstr ""
+
+#, c-format
 msgid "Device %s not found: could not access %s"
 msgstr ""
 
@@ -4927,6 +4921,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Device %s un-attached from bridge %s\n"
 msgstr "Domene %s opprettet fra %s\n"
+
+#, c-format
+msgid "Device %s unmarked as autostarted\n"
+msgstr ""
 
 #, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -5295,7 +5293,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5521,7 +5518,7 @@ msgstr ""
 msgid "EOF on stdout"
 msgstr ""
 
-msgid "Echo back arguments, possibly with quoting."
+msgid "Echo back arguments, possibly with quoting. Used for internal testing."
 msgstr ""
 
 msgid "Edit the XML configuration for a domain."
@@ -6061,18 +6058,6 @@ msgstr "Kunne ikke lagre domenet %s til %s"
 msgid "Failed to allocate XML buffer"
 msgstr "Kunne ikke opprette domenet fra %s"
 
-#, c-format
-msgid "Failed to allocate memory for checkpoint directory for domain %s"
-msgstr ""
-
-#, fuzzy
-msgid "Failed to allocate memory for path"
-msgstr "Kunne ikke opprette domenet fra %s"
-
-#, c-format
-msgid "Failed to allocate memory for snapshot directory for domain %s"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Failed to allocate slirp for '%s'"
 msgstr "Kunne ikke opprette domenet fra %s"
@@ -6471,21 +6456,14 @@ msgstr "Kunne ikke opprette domenet fra %s"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Kunne ikke opprette domenet fra %s"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Kunne ikke opprette domenet fra %s"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Kunne ikke opprette domenet fra %s"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Kunne ikke opprette domenet fra %s"
@@ -7002,6 +6980,9 @@ msgstr ""
 msgid "Failed to initialize cgroup backend."
 msgstr ""
 
+msgid "Failed to initialize host cpu features"
+msgstr ""
+
 msgid "Failed to initialize libpciaccess"
 msgstr ""
 
@@ -7067,7 +7048,6 @@ msgstr "Kunne ikke vise aktive nettverk"
 msgid "Failed to list active pools"
 msgstr "Kunne ikke vise aktive domener"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Kunne ikke vise aktive domener"
@@ -7086,32 +7066,26 @@ msgstr "Kunne ikke vise inaktive nettverk"
 msgid "Failed to list inactive pools"
 msgstr "Kunne ikke vise inaktive domener"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Kunne ikke vise inaktive domener"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Kunne ikke vise inaktive domener"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filters"
 msgstr "Kunne ikke starte nettverket %s"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Kunne ikke vise aktive nettverk"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node devices"
 msgstr "Kunne ikke vise inaktive domener"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Kunne ikke vise inaktive nettverk"
@@ -7120,7 +7094,6 @@ msgstr "Kunne ikke vise inaktive nettverk"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Kunne ikke vise inaktive nettverk"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Kunne ikke vise aktive domener"
@@ -7145,7 +7118,6 @@ msgstr "Kunne ikke vise aktive nettverk"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Kunne ikke vise aktive domener"
@@ -7741,9 +7713,6 @@ msgstr "Kunne ikke lagre domenet %s til %s"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr ""
@@ -8251,6 +8220,13 @@ msgstr ""
 msgid "Feature %s required by CPU model %s not found"
 msgstr ""
 
+msgid "Fibre Channel 'appid' is not a printable string"
+msgstr ""
+
+#, c-format
+msgid "Fibre Channel 'appid' string length must be between [%d, %d]"
+msgstr ""
+
 #, c-format
 msgid "Field '%s' too long for destination"
 msgstr ""
@@ -8363,63 +8339,10 @@ msgid ""
 "for VMX file"
 msgstr ""
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -9328,15 +9251,6 @@ msgstr ""
 msgid "Invalid address."
 msgstr ""
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr ""
 
@@ -9930,6 +9844,10 @@ msgid "Invalid setting for ccf-assist state"
 msgstr ""
 
 msgid "Invalid setting for nested HV state"
+msgstr ""
+
+#, c-format
+msgid "Invalid source mode: %s"
 msgstr ""
 
 #, c-format
@@ -11521,12 +11439,6 @@ msgstr ""
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Navn"
 
@@ -11798,10 +11710,6 @@ msgstr "for manger drivere er registrert"
 #, c-format
 msgid "No active block job '%s'"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "No active operation on device: %s"
-msgstr "mangler kildeinformasjon for enhet %s"
 
 msgid "No addresses to bind to"
 msgstr ""
@@ -12342,6 +12250,15 @@ msgstr ""
 msgid "Only a single IDE controller is supported for this machine type"
 msgstr ""
 
+msgid "Only a single console can be configured for this domain"
+msgstr ""
+
+msgid "Only a single console or serial can be configured for this domain"
+msgstr ""
+
+msgid "Only a single serial can be configured for this domain"
+msgstr ""
+
 msgid "Only bridged veth devices can be detached"
 msgstr ""
 
@@ -12475,10 +12392,6 @@ msgstr ""
 msgid "Operation cancelled by client"
 msgstr ""
 
-#, c-format
-msgid "Operation is not supported for device: %s"
-msgstr ""
-
 msgid "Operation not supported"
 msgstr ""
 
@@ -12506,20 +12419,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -12539,20 +12438,6 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
@@ -12785,7 +12670,6 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
-#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr ""
 
@@ -13482,6 +13366,9 @@ msgstr ""
 msgid "Returns basic information about the network"
 msgstr ""
 
+msgid "Returns basic information about the node device"
+msgstr ""
+
 msgid "Returns basic information about the node."
 msgstr ""
 
@@ -13599,7 +13486,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -13893,6 +13779,9 @@ msgstr ""
 msgid "Sending file descriptors is not supported on this socket"
 msgstr ""
 
+msgid "Serial can only be enabled for a PTY"
+msgstr ""
+
 #, c-format
 msgid ""
 "Serial device with target type '%s' and target model '%s' not compatible "
@@ -14087,9 +13976,6 @@ msgstr "CPU-tid:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 #, fuzzy
 msgid "Shared memory:\n"
 msgstr "Brukt minne:"
@@ -14166,7 +14052,6 @@ msgstr ""
 msgid "Snapshot"
 msgstr ""
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr ""
@@ -14622,7 +14507,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
-#. title
 msgid "Target"
 msgstr ""
 
@@ -14884,6 +14768,14 @@ msgstr ""
 
 #, c-format
 msgid "Target disk model %s does not match source %s"
+msgstr ""
+
+#, c-format
+msgid "Target disk queue count %u does not match source %u"
+msgstr ""
+
+#, c-format
+msgid "Target disk queue size %u does not match source %u"
 msgstr ""
 
 #, c-format
@@ -15540,9 +15432,6 @@ msgstr ""
 msgid "This QEMU binary doesn't support zPCI"
 msgstr ""
 
-msgid "This QEMU can't disable file transfers through spice"
-msgstr ""
-
 msgid "This QEMU doesn't support '-device usb-storage'"
 msgstr ""
 
@@ -15842,11 +15731,9 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -16036,6 +15923,10 @@ msgstr "feil ved lesing av konfigurasjonsfil %s"
 
 #, c-format
 msgid "Unable to access file descriptor %d"
+msgstr ""
+
+#, c-format
+msgid "Unable to access file descriptor %d path %s"
 msgstr ""
 
 msgid "Unable to access kernel32.dll"
@@ -16481,14 +16372,6 @@ msgstr ""
 
 #, c-format
 msgid "Unable to destroy '%s': device in use"
-msgstr ""
-
-#, c-format
-msgid "Unable to destroy qos on port %s"
-msgstr ""
-
-#, c-format
-msgid "Unable to destroy queue on port %s"
 msgstr ""
 
 #, c-format
@@ -17542,6 +17425,10 @@ msgid "Unable to reset PCI device %s: %s"
 msgstr ""
 
 #, c-format
+msgid "Unable to reset ingress on port %s"
+msgstr ""
+
+#, c-format
 msgid "Unable to resolve address '%s' service '%s': %s"
 msgstr ""
 
@@ -17709,6 +17596,10 @@ msgid "Unable to set XATTR %s on %s"
 msgstr "Kunne ikke lagre domenet %s til %s"
 
 msgid "Unable to set agent close-on-exec flag"
+msgstr ""
+
+#, c-format
+msgid "Unable to set autostart on '%s': %s"
 msgstr ""
 
 #, fuzzy, c-format
@@ -17924,6 +17815,10 @@ msgstr ""
 
 #, c-format
 msgid "Unable to write %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to write '%s' to '%s'"
 msgstr ""
 
 #, c-format
@@ -18236,6 +18131,9 @@ msgstr "ukjent OS-type %s"
 msgid "Unknown Command '%i'"
 msgstr ""
 
+msgid "Unknown Error"
+msgstr ""
+
 #, c-format
 msgid "Unknown IP address data source %d"
 msgstr ""
@@ -18375,7 +18273,6 @@ msgstr ""
 msgid "Unknown error"
 msgstr "ukjent vert"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr ""
 
@@ -19128,12 +19025,10 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -19402,14 +19297,6 @@ msgstr ""
 msgid "a block I/O throttling is not supported for vhostuser disk"
 msgstr ""
 
-msgid ""
-"a block I/O throttling length parameter is not supported with this QEMU "
-"binary"
-msgstr ""
-
-msgid "a block I/O throttling parameter is not supported with this QEMU binary"
-msgstr ""
-
 msgid "a device with the same address already exists "
 msgstr ""
 
@@ -19586,11 +19473,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr ""
 
@@ -19848,6 +19730,9 @@ msgid "automatically destroy the guest when virsh disconnects"
 msgstr ""
 
 msgid "automatically switch to post-copy migration after one pass of pre-copy"
+msgstr ""
+
+msgid "autostart a defined node device"
 msgstr ""
 
 #, fuzzy
@@ -20137,6 +20022,10 @@ msgid "bond interface misses the bond element"
 msgstr ""
 
 msgid "bool"
+msgstr ""
+
+#, c-format
+msgid "bool parameter '%s' of command '%s' has completer set"
 msgstr ""
 
 #, c-format
@@ -21193,7 +21082,6 @@ msgstr ""
 msgid "cannot open path '%s' in '%s'"
 msgstr ""
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr ""
@@ -21557,6 +21445,9 @@ msgstr ""
 msgid "cannot set CPU affinity on process %d"
 msgstr ""
 
+msgid "cannot set autostart for transient device"
+msgstr ""
+
 msgid "cannot set autostart for transient domain"
 msgstr ""
 
@@ -21715,8 +21606,8 @@ msgid "cannot update guest CPU for %s architecture"
 msgstr ""
 
 msgid ""
-"cannot update lifecycle action because QEMU was started with -no-reboot "
-"option"
+"cannot update lifecycle action because QEMU was started with incompatible -"
+"no-reboot setting"
 msgstr ""
 
 #, c-format
@@ -21873,6 +21764,9 @@ msgstr ""
 msgid "changing cpu placement mode is not supported by vz driver"
 msgstr ""
 
+msgid "changing device 'acpi index' is not allowed"
+msgstr ""
+
 msgid "changing device alias is not allowed"
 msgstr ""
 
@@ -21966,7 +21860,6 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "Kunne ikke opprette domenet fra %s"
@@ -22052,7 +21945,23 @@ msgid "command '%s' doesn't support option --%s"
 msgstr "kommando '%s' støtter ikke opsjonen --%s"
 
 #, c-format
+msgid "command '%s' has handler set"
+msgstr ""
+
+#, c-format
 msgid "command '%s' has inconsistent alias"
+msgstr ""
+
+#, c-format
+msgid "command '%s' has info set"
+msgstr ""
+
+#, c-format
+msgid "command '%s' has multiple flags set"
+msgstr ""
+
+#, c-format
+msgid "command '%s' has options set"
 msgstr ""
 
 #, fuzzy, c-format
@@ -22070,6 +21979,14 @@ msgstr "kommando '%s' krever <%s>-opsjonen"
 #, c-format
 msgid "command '%s' requires <%s> option"
 msgstr "kommando '%s' krever <%s>-opsjonen"
+
+#, c-format
+msgid "command alias '%s' is pointing to a non-existant command '%s'"
+msgstr ""
+
+#, c-format
+msgid "command alias '%s' is pointing to another command alias '%s'"
+msgstr ""
 
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
@@ -23211,9 +23128,6 @@ msgstr ""
 msgid "disable cpus specified by cpumap"
 msgstr ""
 
-msgid "disable shared memory is not available with this QEMU binary"
-msgstr ""
-
 msgid "disabled"
 msgstr ""
 
@@ -23275,10 +23189,6 @@ msgstr ""
 
 #, c-format
 msgid "disk '%s' has no media"
-msgstr ""
-
-#, c-format
-msgid "disk '%s' improperly configured for a device='lun'"
 msgstr ""
 
 #, c-format
@@ -23943,7 +23853,7 @@ msgstr ""
 msgid "dynamic label type must use resource relabeling"
 msgstr ""
 
-msgid "echo arguments"
+msgid "echo arguments. Used for internal testing."
 msgstr ""
 
 #, fuzzy
@@ -24041,13 +23951,7 @@ msgstr ""
 msgid "encountered an error on interface %s index %d"
 msgstr ""
 
-msgid "encrypted VNC TLS keys are not supported with this QEMU binary"
-msgstr ""
-
 msgid "encrypted ploop volumes are not supported with ploop init"
-msgstr ""
-
-msgid "encrypted secrets are not supported"
 msgstr ""
 
 #, c-format
@@ -25065,6 +24969,10 @@ msgid "failed to get source from sourceList"
 msgstr ""
 
 #, c-format
+msgid "failed to get stat for '%s'"
+msgstr ""
+
+#, c-format
 msgid "failed to get status of interface %s: %s%s%s"
 msgstr ""
 
@@ -25181,6 +25089,10 @@ msgstr "kunne ikke åpne fil"
 
 #, c-format
 msgid "failed to lookup interface with MAC address '%s'"
+msgstr ""
+
+#, c-format
+msgid "failed to mark device %s as autostarted"
 msgstr ""
 
 #, fuzzy, c-format
@@ -25665,6 +25577,10 @@ msgstr "Kunne ikke starte nettverket %s"
 msgid "failed to undefine interface %s: %s%s%s"
 msgstr "Kunne ikke definere domenet fra %s"
 
+#, c-format
+msgid "failed to unmark device %s as autostarted"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to unmark network %s as autostarted"
 msgstr "Kunne ikke starte nettverket %s"
@@ -25807,9 +25723,6 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr ""
@@ -26116,9 +26029,6 @@ msgstr ""
 msgid "found lease without mac-address"
 msgstr ""
 
-msgid "found non printable characters in secret"
-msgstr ""
-
 msgid "freePageReporting is not supported by this QEMU binary"
 msgstr ""
 
@@ -26143,9 +26053,6 @@ msgid "fully-qualified path of source disk"
 msgstr ""
 
 msgid "fuse_loop failed"
-msgstr ""
-
-msgid "fw_cfg is not supported with this QEMU"
 msgstr ""
 
 #, c-format
@@ -26388,7 +26295,6 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr "kunne ikke skrive til konfigurasjonsfil"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -26611,9 +26517,6 @@ msgid "hypervisor feature autodetection override"
 msgstr ""
 
 msgid "i - turn off validation and try to redefine again"
-msgstr ""
-
-msgid "iSCSI initiator IQN not supported with this QEMU binary"
 msgstr ""
 
 msgid "iSCSI storage pool does not support volume creation"
@@ -26922,25 +26825,6 @@ msgstr "nettverksnavn"
 msgid "interface name %s does not fit into buffer "
 msgstr ""
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr ""
 
@@ -28426,10 +28310,6 @@ msgstr ""
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 
-msgid ""
-"luks encryption usage requires encrypted secret generation to be supported"
-msgstr ""
-
 msgid "lxc state driver is not active"
 msgstr ""
 
@@ -29075,11 +28955,18 @@ msgstr "mangler \""
 msgid "missing %s in <virtualport type='%s'>"
 msgstr ""
 
+#, c-format
+msgid "missing '%s' in 'config' from cloud-hypervisor"
+msgstr ""
+
 msgid "missing 'DateTime' element"
 msgstr ""
 
 #, c-format
 msgid "missing 'architecture' in '%s'"
+msgstr ""
+
+msgid "missing 'config' in info query result from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -29094,6 +28981,10 @@ msgstr ""
 
 #, c-format
 msgid "missing 'executable' in '%s'"
+msgstr ""
+
+#, c-format
+msgid "missing 'file' in '%s' from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -29719,10 +29610,6 @@ msgid "missing required virtualport type"
 msgstr ""
 
 #, fuzzy
-msgid "missing resource partition attribute"
-msgstr "mangler kildeinformasjon for enhet"
-
-#, fuzzy
 msgid "missing root device information"
 msgstr "mangler informasjon om enheter"
 
@@ -29975,6 +29862,9 @@ msgid ""
 "'%s' on device '%s'"
 msgstr ""
 
+msgid "mode attribute of <source/> element"
+msgstr ""
+
 msgid "mode of device reading and writing"
 msgstr ""
 
@@ -30022,15 +29912,6 @@ msgstr ""
 msgid "monitor failure"
 msgstr ""
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr ""
 
@@ -30210,7 +30091,7 @@ msgstr ""
 msgid "ncr53c90 can only be used as first SCSI controller"
 msgstr ""
 
-msgid "need at least one serial port to use SGA"
+msgid "need at least one serial port to use BIOS serial output"
 msgstr ""
 
 msgid "need either --dest or --xml"
@@ -30226,7 +30107,6 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr ""
@@ -31061,6 +30941,9 @@ msgstr ""
 msgid "node device event callback %d not registered"
 msgstr ""
 
+msgid "node device information"
+msgstr ""
+
 msgid "node get memory parameters not implemented on this platform"
 msgstr ""
 
@@ -31587,6 +31470,9 @@ msgid "outgoing RDMA migration is not supported with this QEMU binary"
 msgstr ""
 
 msgid "output an XML string for the hypervisor sysinfo, if available"
+msgstr ""
+
+msgid "output the list of options which are missing completers"
 msgstr ""
 
 msgid "output to stderr"
@@ -32251,9 +32137,6 @@ msgstr ""
 msgid "qemu does not allow specifying screen ID"
 msgstr ""
 
-msgid "qemu does not support SGA"
-msgstr ""
-
 msgid "qemu does not support more than one entry to Type 2 in SMBIOS table"
 msgstr ""
 
@@ -32264,6 +32147,21 @@ msgid "qemu doesn't support reversion of snapshot taken in PMSUSPENDED state"
 msgstr ""
 
 msgid "qemu doesn't support taking snapshots of PMSUSPENDED guests"
+msgstr ""
+
+msgid ""
+"qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
+"to 'reboot'"
+msgstr ""
+
+msgid ""
+"qemu driver doesn't support the 'preserve' action for "
+"'on_reboot'/'on_poweroff'"
+msgstr ""
+
+msgid ""
+"qemu driver doesn't support the 'rename-restart' action for "
+"'on_reboot'/'on_poweroff'/'on_crash'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -32446,6 +32344,9 @@ msgid ""
 "querying maximum post-copy migration speed is not supported by QEMU binary"
 msgstr ""
 
+msgid "queue-size property isn't supported by this QEMU binary"
+msgstr ""
+
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
 msgstr ""
 
@@ -32534,9 +32435,6 @@ msgstr ""
 
 msgid "reboot a domain"
 msgstr "start et domene på nytt"
-
-msgid "reboot timeout is not supported by this QEMU binary"
-msgstr ""
 
 msgid "received error event on socket"
 msgstr ""
@@ -33564,6 +33462,9 @@ msgstr ""
 msgid "source-host for underlying storage"
 msgstr ""
 
+msgid "source-mode is mandatory"
+msgstr ""
+
 #, c-format
 msgid "spapr-vio address %#llx already in use"
 msgstr ""
@@ -33620,7 +33521,7 @@ msgstr ""
 msgid "spicevmc device type only supports virtio"
 msgstr ""
 
-msgid "splash timeout is not supported by this QEMU binary"
+msgid "split each argument on ','; ',,' is an escape sequence"
 msgstr ""
 
 #, c-format
@@ -34096,11 +33997,6 @@ msgid "the bandwidth limit is in bytes/s rather than MiB/s"
 msgstr ""
 
 msgid ""
-"the block I/O throttling group parameter is not supported with this QEMU "
-"binary"
-msgstr ""
-
-msgid ""
 "the caller doesn't support keepalive protocol; perhaps it's missing event "
 "loop implementation"
 msgstr ""
@@ -34173,16 +34069,6 @@ msgstr ""
 
 #, c-format
 msgid "the wwnn/wwpn for '%s' are assigned to an HBA"
-msgstr ""
-
-msgid ""
-"there are some block I/O throttling length parameters that are not supported "
-"with this QEMU binary"
-msgstr ""
-
-msgid ""
-"there are some block I/O throttling parameters that are not supported with "
-"this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -34383,9 +34269,6 @@ msgid "titles are not supported by vz driver"
 msgstr ""
 
 msgid "tls"
-msgstr ""
-
-msgid "tls-creds-x509 not supported in this QEMU binary"
 msgstr ""
 
 #, c-format
@@ -34675,6 +34558,11 @@ msgstr ""
 msgid "transient disk '%s' must not be read-only"
 msgstr ""
 
+msgid ""
+"transient disk backing image sharing with destroy action of lifecycle isn't "
+"supported by this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
 msgstr ""
@@ -34902,10 +34790,6 @@ msgid "unable to enable host cpu perf event for %s"
 msgstr ""
 
 #, c-format
-msgid "unable to execute '%s', unexpected error: '%s'"
-msgstr ""
-
-#, c-format
 msgid "unable to execute QEMU agent command '%s'"
 msgstr ""
 
@@ -34961,7 +34845,6 @@ msgstr ""
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr ""
@@ -35088,6 +34971,10 @@ msgstr ""
 
 #, c-format
 msgid "unable to parse blkio device '%s' '%s'"
+msgstr ""
+
+#, c-format
+msgid "unable to parse contents of 'file' field in '%s' from cloud-hypervisor"
 msgstr ""
 
 #, c-format
@@ -35778,8 +35665,6 @@ msgstr ""
 msgid "unix socket for spice graphics are not supported with this QEMU"
 msgstr ""
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 #, fuzzy
 msgid "unknown"
 msgstr "ukjent vert"
@@ -36668,28 +36553,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr ""
@@ -37837,6 +37700,18 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <streng>"
+
+#, fuzzy
+#~ msgid "Failed to allocate memory for path"
+#~ msgstr "Kunne ikke opprette domenet fra %s"
+
+#, fuzzy
+#~ msgid "No active operation on device: %s"
+#~ msgstr "mangler kildeinformasjon for enhet %s"
+
+#, fuzzy
+#~ msgid "missing resource partition attribute"
+#~ msgstr "mangler kildeinformasjon for enhet"
 
 #, fuzzy
 #~ msgid "Failed to get PCI SYSFS file"
