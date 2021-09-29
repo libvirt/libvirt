@@ -1814,10 +1814,10 @@ qemuSnapshotCreateXML(virDomainPtr domain,
      * do; we've successfully taken the snapshot, and we are now running
      * on it, so we have to go forward the best we can
      */
-    snapshot = virGetDomainSnapshot(domain, snap->def->name);
+    if (!(snapshot = virGetDomainSnapshot(domain, snap->def->name)))
+        goto endjob;
 
- endjob:
-    if (snapshot && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
         if (!redefine || (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
             qemuSnapshotSetCurrent(vm, snap);
 
@@ -1831,13 +1831,17 @@ qemuSnapshotCreateXML(virDomainPtr domain,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unable to save metadata for snapshot %s"),
                            snap->def->name);
-            virDomainSnapshotObjListRemove(vm->snapshots, snap);
-        } else {
-            virDomainSnapshotLinkParent(vm->snapshots, snap);
+            goto endjob;
         }
-    } else if (snap) {
-        virDomainSnapshotObjListRemove(vm->snapshots, snap);
+
+        virDomainSnapshotLinkParent(vm->snapshots, snap);
+        snap = NULL;
     }
+
+ endjob:
+
+    if (snap)
+        virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
     qemuDomainObjEndAsyncJob(driver, vm);
 
