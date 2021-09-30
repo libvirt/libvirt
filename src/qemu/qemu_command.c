@@ -5810,32 +5810,37 @@ qemuBuildRNGBackendProps(virDomainRNGDef *rng,
 }
 
 
-char *
-qemuBuildRNGDevStr(const virDomainDef *def,
-                   virDomainRNGDef *dev,
-                   virQEMUCaps *qemuCaps)
+virJSONValue *
+qemuBuildRNGDevProps(const virDomainDef *def,
+                     virDomainRNGDef *dev,
+                     virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *rng = g_strdup_printf("obj%s", dev->info.alias);
+    unsigned int period = 0;
 
-    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_RNG, dev) < 0) {
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_RNG, dev, qemuCaps)))
         return NULL;
-    }
-
-    virBufferAsprintf(&buf, ",rng=obj%s,id=%s",
-                      dev->info.alias, dev->info.alias);
 
     if (dev->rate > 0) {
-        virBufferAsprintf(&buf, ",max-bytes=%u", dev->rate);
-        if (dev->period)
-            virBufferAsprintf(&buf, ",period=%u", dev->period);
-        else
-            virBufferAddLit(&buf, ",period=1000");
+        period = dev->period;
+
+        if (period == 0)
+            period = 1000;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
+    if (virJSONValueObjectAdd(props,
+                              "s:rng", rng,
+                              "s:id", dev->info.alias,
+                              "p:max-bytes", dev->rate,
+                              "p:period", period,
+                              NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -5854,7 +5859,7 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
         g_autoptr(virJSONValue) props = NULL;
         virDomainRNGDef *rng = def->rngs[i];
         g_autofree char *chardev = NULL;
-        g_autofree char *devstr = NULL;
+        g_autoptr(virJSONValue) devprops = NULL;
 
         if (!rng->info.alias) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -5881,9 +5886,11 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
         if (qemuCommandAddExtDevice(cmd, &rng->info) < 0)
             return -1;
 
-        if (!(devstr = qemuBuildRNGDevStr(def, rng, qemuCaps)))
+        if (!(devprops = qemuBuildRNGDevProps(def, rng, qemuCaps)))
             return -1;
-        virCommandAddArgList(cmd, "-device", devstr, NULL);
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            return -1;
     }
 
     return 0;

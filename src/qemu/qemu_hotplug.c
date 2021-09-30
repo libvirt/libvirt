@@ -2309,7 +2309,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_RNG, { .rng = rng } };
     virErrorPtr orig_err;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     g_autofree char *charAlias = NULL;
     g_autofree char *objAlias = NULL;
     g_autofree char *tlsAlias = NULL;
@@ -2338,7 +2338,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     teardowncgroup = true;
 
     /* build required metadata */
-    if (!(devstr = qemuBuildRNGDevStr(vm->def, rng, priv->qemuCaps)))
+    if (!(devprops = qemuBuildRNGDevProps(vm->def, rng, priv->qemuCaps)))
         goto cleanup;
 
     if (qemuBuildRNGBackendProps(rng, &props) < 0)
@@ -2369,7 +2369,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     if (qemuDomainAttachExtensionDevice(priv->mon, &rng->info) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &rng->info));
         goto exit_monitor;
     }

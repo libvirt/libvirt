@@ -169,9 +169,10 @@ char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDef *dev,
                                 virQEMUCaps *qemuCaps);
 
-char *qemuBuildRNGDevStr(const virDomainDef *def,
-                         virDomainRNGDef *dev,
-                         virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildRNGDevProps(const virDomainDef *def,
+                     virDomainRNGDef *dev,
+                     virQEMUCaps *qemuCaps);
 int qemuBuildRNGBackendProps(virDomainRNGDef *rng,
                              virJSONValue **props);
 
