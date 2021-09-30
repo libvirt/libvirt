@@ -4298,16 +4298,28 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 }
 
 
+/**
+ * qemuDeviceVideoGetModel:
+ * @qemuCaps: qemu capabilities
+ * @video: video device definition
+ * @virtio: the returned video device is a 'virtio' device
+ * @virtioBusSuffix: the returned device needs to get the bus-suffix
+ *
+ * Returns the model fo the device for @video and @qemuCaps. @virtio and
+ * @virtioBusSuffix are filled with the corresponding flags.
+ */
 static const char *
 qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                         const virDomainVideoDef *video,
-                        bool *virtio)
+                        bool *virtio,
+                        bool *virtioBusSuffix)
 {
     const char *model = NULL;
     bool primaryVga = false;
     virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
 
     *virtio = false;
+    *virtioBusSuffix = false;
 
     if (video->accel)
         accel3d = video->accel->accel3d;
@@ -4325,6 +4337,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
         } else {
             model = "vhost-user-gpu";
             *virtio = true;
+            *virtioBusSuffix = true;
         }
     } else {
         if (primaryVga) {
@@ -4347,6 +4360,9 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                     model = "virtio-vga-gl";
                 else
                     model = "virtio-vga";
+
+                *virtio = true;
+                *virtioBusSuffix = false;
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
                 model = "bochs-display";
@@ -4374,7 +4390,9 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                     model = "virtio-gpu-gl";
                 else
                     model = "virtio-gpu";
+
                 *virtio = true;
+                *virtioBusSuffix = true;
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
             case VIR_DOMAIN_VIDEO_TYPE_VGA:
@@ -4413,14 +4431,15 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     const char *model = NULL;
     virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
     bool virtio = false;
+    bool virtioBusSuffix = false;
 
     if (video->accel)
         accel3d = video->accel->accel3d;
 
-    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio)))
+    if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio, &virtioBusSuffix)))
         return NULL;
 
-    if (virtio) {
+    if (virtioBusSuffix) {
         if (qemuBuildVirtioDevStr(&buf, model, qemuCaps,
                                   VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
