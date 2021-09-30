@@ -882,6 +882,7 @@ static int
 qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
                             virQEMUCaps *qemuCaps,
                             char **devtype,
+                            virDomainVirtioOptions **virtioOptions,
                             virTristateSwitch *disableLegacy,
                             virTristateSwitch *disableModern)
 {
@@ -892,13 +893,12 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
     bool has_tmodel = false;
     bool has_ntmodel = false;
     bool useBusSuffix = true;
-    virDomainVirtioOptions *virtioOptions;
 
     *disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
     *disableModern = VIR_TRISTATE_SWITCH_ABSENT;
 
     qemuBuildVirtioDevGetConfigDev(device, qemuCaps, &baseName,
-                                   &virtioOptions, &has_tmodel,
+                                   virtioOptions, &has_tmodel,
                                    &has_ntmodel, &useBusSuffix);
 
     if (!baseName) {
@@ -1011,10 +1011,11 @@ qemuBuildVirtioDevStr(virBuffer *buf,
     g_autofree char *model = NULL;
     virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
     virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
+    virDomainVirtioOptions *virtioOptions = NULL;
 
     virDomainDeviceSetData(&device, devdata);
 
-    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model,
+    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions,
                                     &disableLegacy, &disableModern) < 0)
         return -1;
 
@@ -1030,28 +1031,30 @@ qemuBuildVirtioDevStr(virBuffer *buf,
                           virTristateSwitchTypeToString(disableModern));
     }
 
+    if (virtioOptions) {
+        if (virtioOptions->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(buf, ",iommu_platform=%s",
+                              virTristateSwitchTypeToString(virtioOptions->iommu));
+        }
+        if (virtioOptions->ats != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(buf, ",ats=%s",
+                              virTristateSwitchTypeToString(virtioOptions->ats));
+        }
+        if (virtioOptions->packed != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(buf, ",packed=%s",
+                              virTristateSwitchTypeToString(virtioOptions->packed));
+        }
+    }
+
     return 0;
 }
 
 static void
-qemuBuildVirtioOptionsStr(virBuffer *buf,
-                          virDomainVirtioOptions *virtio)
+qemuBuildVirtioOptionsStr(virBuffer *buf G_GNUC_UNUSED,
+                          virDomainVirtioOptions *virtio G_GNUC_UNUSED)
 {
     if (!virtio)
         return;
-
-    if (virtio->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, ",iommu_platform=%s",
-                          virTristateSwitchTypeToString(virtio->iommu));
-    }
-    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, ",ats=%s",
-                          virTristateSwitchTypeToString(virtio->ats));
-    }
-    if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, ",packed=%s",
-                          virTristateSwitchTypeToString(virtio->packed));
-    }
 }
 
 static int

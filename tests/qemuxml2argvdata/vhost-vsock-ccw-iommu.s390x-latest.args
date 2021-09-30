@@ -31,5 +31,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device vhost-vsock-ccw,id=vsock0,guest-cid=4,vhostfd=6789,iommu_platform=on,devno=fe.0.0002 \
+-device vhost-vsock-ccw,iommu_platform=on,id=vsock0,guest-cid=4,vhostfd=6789,devno=fe.0.0002 \
 -msg timestamp=on
