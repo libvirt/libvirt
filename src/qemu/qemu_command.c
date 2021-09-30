@@ -590,6 +590,90 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 }
 
 
+static void
+qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
+                               bool *has_tmodel,
+                               bool *has_ntmodel)
+{
+    switch ((virDomainDeviceType) device->type) {
+        case VIR_DOMAIN_DEVICE_DISK:
+            *has_tmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_NET:
+            *has_tmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_HOSTDEV:
+            if (device->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+                *has_tmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
+                *has_ntmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
+            }
+            break;
+
+        case VIR_DOMAIN_DEVICE_RNG:
+            *has_tmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_FS:
+            *has_tmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_MEMBALLOON:
+            *has_tmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_VSOCK:
+            *has_tmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
+            *has_ntmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            break;
+
+        case VIR_DOMAIN_DEVICE_INPUT:
+            if (device->data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+                *has_tmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
+                *has_ntmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
+            }
+            break;
+
+        case VIR_DOMAIN_DEVICE_CONTROLLER:
+            if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+                *has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
+                *has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
+            } else if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+                *has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
+                *has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
+            }
+            break;
+
+        case VIR_DOMAIN_DEVICE_LEASE:
+        case VIR_DOMAIN_DEVICE_SOUND:
+        case VIR_DOMAIN_DEVICE_VIDEO:
+        case VIR_DOMAIN_DEVICE_WATCHDOG:
+        case VIR_DOMAIN_DEVICE_GRAPHICS:
+        case VIR_DOMAIN_DEVICE_HUB:
+        case VIR_DOMAIN_DEVICE_REDIRDEV:
+        case VIR_DOMAIN_DEVICE_NONE:
+        case VIR_DOMAIN_DEVICE_SMARTCARD:
+        case VIR_DOMAIN_DEVICE_CHR:
+        case VIR_DOMAIN_DEVICE_NVRAM:
+        case VIR_DOMAIN_DEVICE_SHMEM:
+        case VIR_DOMAIN_DEVICE_TPM:
+        case VIR_DOMAIN_DEVICE_PANIC:
+        case VIR_DOMAIN_DEVICE_MEMORY:
+        case VIR_DOMAIN_DEVICE_IOMMU:
+        case VIR_DOMAIN_DEVICE_AUDIO:
+        case VIR_DOMAIN_DEVICE_LAST:
+        default:
+            break;
+    }
+}
+
+
 static int
 qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
                             const char *baseName,
@@ -642,82 +726,7 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
 
     virBufferAsprintf(&buf, "%s-%s", baseName, implName);
 
-    switch ((virDomainDeviceType) device->type) {
-        case VIR_DOMAIN_DEVICE_DISK:
-            has_tmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_NET:
-            has_tmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_HOSTDEV:
-            if (device->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-                has_tmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
-            }
-            break;
-
-        case VIR_DOMAIN_DEVICE_RNG:
-            has_tmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_FS:
-            has_tmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_MEMBALLOON:
-            has_tmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_VSOCK:
-            has_tmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
-            break;
-
-        case VIR_DOMAIN_DEVICE_INPUT:
-            if (device->data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
-                has_tmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
-            }
-            break;
-
-        case VIR_DOMAIN_DEVICE_CONTROLLER:
-            if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
-                has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
-            } else if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-                has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
-            }
-            break;
-
-        case VIR_DOMAIN_DEVICE_LEASE:
-        case VIR_DOMAIN_DEVICE_SOUND:
-        case VIR_DOMAIN_DEVICE_VIDEO:
-        case VIR_DOMAIN_DEVICE_WATCHDOG:
-        case VIR_DOMAIN_DEVICE_GRAPHICS:
-        case VIR_DOMAIN_DEVICE_HUB:
-        case VIR_DOMAIN_DEVICE_REDIRDEV:
-        case VIR_DOMAIN_DEVICE_NONE:
-        case VIR_DOMAIN_DEVICE_SMARTCARD:
-        case VIR_DOMAIN_DEVICE_CHR:
-        case VIR_DOMAIN_DEVICE_NVRAM:
-        case VIR_DOMAIN_DEVICE_SHMEM:
-        case VIR_DOMAIN_DEVICE_TPM:
-        case VIR_DOMAIN_DEVICE_PANIC:
-        case VIR_DOMAIN_DEVICE_MEMORY:
-        case VIR_DOMAIN_DEVICE_IOMMU:
-        case VIR_DOMAIN_DEVICE_AUDIO:
-        case VIR_DOMAIN_DEVICE_LAST:
-        default:
-            break;
-    }
+    qemuBuildVirtioDevGetConfigDev(device, &has_tmodel, &has_ntmodel);
 
     if (has_tmodel || has_ntmodel) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
