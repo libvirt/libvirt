@@ -3595,11 +3595,11 @@ static const vshCmdOptDef opts_undefine[] = {
     },
     {.name = "nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("remove nvram file, if inactive")
+     .help = N_("remove nvram file")
     },
     {.name = "keep-nvram",
      .type = VSH_OT_BOOL,
-     .help = N_("keep nvram file, if inactive")
+     .help = N_("keep nvram file")
     },
     {.name = NULL}
 };
