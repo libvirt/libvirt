@@ -1049,13 +1049,6 @@ qemuBuildVirtioDevStr(virBuffer *buf,
     return 0;
 }
 
-static void
-qemuBuildVirtioOptionsStr(virBuffer *buf G_GNUC_UNUSED,
-                          virDomainVirtioOptions *virtio G_GNUC_UNUSED)
-{
-    if (!virtio)
-        return;
-}
 
 static int
 qemuBuildRomStr(virBuffer *buf,
@@ -2033,8 +2026,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",queue-size=%u", disk->queue_size);
         }
 
-        qemuBuildVirtioOptionsStr(&opt, disk->virtio);
-
         if (qemuBuildDeviceAddressStr(&opt, def, &disk->info) < 0)
             return NULL;
         break;
@@ -2462,7 +2453,6 @@ qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
         virBufferAsprintf(&buf, ",queue-size=%llu", fs->queue_size);
     virBufferAddLit(&buf, ",tag=");
     virQEMUBuildBufferEscapeComma(&buf, fs->dst);
-    qemuBuildVirtioOptionsStr(&buf, fs->virtio);
 
     if (fs->info.bootIndex)
         virBufferAsprintf(&buf, ",bootindex=%u", fs->info.bootIndex);
@@ -2566,8 +2556,6 @@ qemuBuildFSDevStr(const virDomainDef *def,
                       QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
     virBufferAddLit(&opt, ",mount_tag=");
     virQEMUBuildBufferEscapeComma(&opt, fs->dst);
-
-    qemuBuildVirtioOptionsStr(&opt, fs->virtio);
 
     if (qemuBuildDeviceAddressStr(&opt, def, &fs->info) < 0)
         return NULL;
@@ -2796,8 +2784,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                 virBufferAsprintf(&buf, ",iothread=iothread%u",
                                   def->iothread);
             }
-
-            qemuBuildVirtioOptionsStr(&buf, def->virtio);
             break;
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
             virBufferAddLit(&buf, "lsi");
@@ -2851,7 +2837,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
             virBufferAsprintf(&buf, ",vectors=%d",
                               def->opts.vioserial.vectors);
         }
-        qemuBuildVirtioOptionsStr(&buf, def->virtio);
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
@@ -3860,8 +3845,6 @@ qemuBuildNicDevStr(virDomainDef *def,
         return NULL;
     if (bootindex)
         virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
-    if (usingVirtio)
-        qemuBuildVirtioOptionsStr(&buf, net->virtio);
 
     return virBufferContentAndReset(&buf);
 }
@@ -4151,8 +4134,6 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
                           virTristateSwitchTypeToString(def->memballoon->free_page_reporting));
     }
 
-    qemuBuildVirtioOptionsStr(&buf, def->memballoon->virtio);
-
     if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
         return -1;
 
@@ -4226,8 +4207,6 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
-
-    qemuBuildVirtioOptionsStr(&buf, dev->virtio);
 
     return virBufferContentAndReset(&buf);
 }
@@ -4577,8 +4556,6 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
 
     if (qemuBuildDeviceAddressStr(&buf, def, &video->info) < 0)
         return NULL;
-
-    qemuBuildVirtioOptionsStr(&buf, video->virtio);
 
     return virBufferContentAndReset(&buf);
 }
@@ -5761,8 +5738,6 @@ qemuBuildRNGDevStr(const virDomainDef *def,
         else
             virBufferAddLit(&buf, ",period=1000");
     }
-
-    qemuBuildVirtioOptionsStr(&buf, dev->virtio);
 
     if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
         return NULL;
@@ -10457,8 +10432,6 @@ qemuBuildVsockDevStr(virDomainDef *def,
     virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
     virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
     virBufferAsprintf(&buf, ",vhostfd=%s%u", fdprefix, priv->vhostfd);
-
-    qemuBuildVirtioOptionsStr(&buf, vsock->virtio);
 
     if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info) < 0)
         return NULL;
