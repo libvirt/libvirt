@@ -716,67 +716,147 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 
 static void
 qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
+                               virQEMUCaps *qemuCaps,
+                               const char **baseName,
+                               virDomainVirtioOptions **virtioOptions,
                                bool *has_tmodel,
-                               bool *has_ntmodel)
+                               bool *has_ntmodel,
+                               bool *useBusSuffix)
 {
     switch ((virDomainDeviceType) device->type) {
         case VIR_DOMAIN_DEVICE_DISK:
+            if (virStorageSourceGetActualType(device->data.disk->src) == VIR_STORAGE_TYPE_VHOST_USER)
+                *baseName = "vhost-user-blk";
+            else
+                *baseName = "virtio-blk";
+
+            *virtioOptions = device->data.disk->virtio;
             *has_tmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
+            *baseName = "virtio-net";
+            *virtioOptions = device->data.net->virtio;
             *has_tmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
             if (device->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+                *baseName = "vhost-scsi";
                 *has_tmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
                 *has_ntmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
             }
             break;
 
         case VIR_DOMAIN_DEVICE_RNG:
+            *baseName = "virtio-rng";
+            *virtioOptions = device->data.rng->virtio;
             *has_tmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_FS:
+            switch ((virDomainFSDriverType) device->data.fs->fsdriver) {
+            case VIR_DOMAIN_FS_DRIVER_TYPE_DEFAULT:
+            case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
+            case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
+                *baseName = "virtio-9p";
+                break;
+
+            case VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS:
+                *baseName = "vhost-user-fs";
+                break;
+
+            case VIR_DOMAIN_FS_DRIVER_TYPE_LOOP:
+            case VIR_DOMAIN_FS_DRIVER_TYPE_NBD:
+            case VIR_DOMAIN_FS_DRIVER_TYPE_PLOOP:
+            case VIR_DOMAIN_FS_DRIVER_TYPE_LAST:
+                break;
+
+            }
+            *virtioOptions = device->data.fs->virtio;
             *has_tmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_MEMBALLOON:
+            *baseName = "virtio-balloon";
+            *virtioOptions = device->data.memballoon->virtio;
             *has_tmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_VSOCK:
+            *baseName = "vhost-vsock";
+            *virtioOptions = device->data.vsock->virtio;
             *has_tmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
             *has_ntmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_INPUT:
-            if (device->data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+            *virtioOptions = device->data.input->virtio;
+
+            switch ((virDomainInputType) device->data.input->type) {
+            case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+                *baseName = "virtio-mouse";
+                break;
+
+            case VIR_DOMAIN_INPUT_TYPE_TABLET:
+                *baseName = "virtio-tablet";
+                break;
+
+            case VIR_DOMAIN_INPUT_TYPE_KBD:
+                *baseName = "virtio-keyboard";
+                break;
+
+            case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+                *baseName = "virtio-input-host";
                 *has_tmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
                 *has_ntmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
+                break;
+
+            case VIR_DOMAIN_INPUT_TYPE_EVDEV:
+            case VIR_DOMAIN_INPUT_TYPE_LAST:
+            default:
+                break;
             }
             break;
 
         case VIR_DOMAIN_DEVICE_CONTROLLER:
             if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+                *baseName = "virtio-serial";
+                *virtioOptions = device->data.controller->virtio;
                 *has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
                 *has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
             } else if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+                *baseName = "virtio-scsi";
+                *virtioOptions = device->data.controller->virtio;
                 *has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
                 *has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
             }
             break;
 
+        case VIR_DOMAIN_DEVICE_VIDEO: {
+            bool virtio;
+            bool virtioBusSuffix;
+
+            if (!(*baseName = qemuDeviceVideoGetModel(qemuCaps,
+                                                      device->data.video,
+                                                      &virtio,
+                                                      &virtioBusSuffix)))
+                return;
+
+            if (!virtioBusSuffix)
+                *useBusSuffix = false;
+
+            *virtioOptions = device->data.video->virtio;
+        }
+            break;
+
         case VIR_DOMAIN_DEVICE_LEASE:
         case VIR_DOMAIN_DEVICE_SOUND:
-        case VIR_DOMAIN_DEVICE_VIDEO:
         case VIR_DOMAIN_DEVICE_WATCHDOG:
         case VIR_DOMAIN_DEVICE_GRAPHICS:
         case VIR_DOMAIN_DEVICE_HUB:
@@ -800,7 +880,6 @@ qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
 
 static int
 qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
-                            const char *baseName,
                             virQEMUCaps *qemuCaps,
                             char **devtype,
                             virTristateSwitch *disableLegacy,
@@ -808,14 +887,25 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
 {
     virDomainDeviceInfo *info = virDomainDeviceGetInfo(device);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *baseName = NULL;
     const char *implName = NULL;
     bool has_tmodel = false;
     bool has_ntmodel = false;
+    bool useBusSuffix = true;
+    virDomainVirtioOptions *virtioOptions;
 
     *disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
     *disableModern = VIR_TRISTATE_SWITCH_ABSENT;
 
-    qemuBuildVirtioDevGetConfigDev(device, &has_tmodel, &has_ntmodel);
+    qemuBuildVirtioDevGetConfigDev(device, qemuCaps, &baseName,
+                                   &virtioOptions, &has_tmodel,
+                                   &has_ntmodel, &useBusSuffix);
+
+    if (!baseName) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("unknown base name while formatting virtio device"));
+        return -1;
+    }
 
     virBufferAdd(&buf, baseName, -1);
 
@@ -852,7 +942,8 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
         return -1;
     }
 
-    virBufferAsprintf(&buf, "-%s", implName);
+    if (useBusSuffix)
+        virBufferAsprintf(&buf, "-%s", implName);
 
     if (has_tmodel || has_ntmodel) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
@@ -913,7 +1004,7 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
  */
 static int
 qemuBuildVirtioDevStr(virBuffer *buf,
-                      const char *baseName,
+                      const char *baseName G_GNUC_UNUSED,
                       virQEMUCaps *qemuCaps,
                       virDomainDeviceType devtype,
                       void *devdata)
@@ -925,7 +1016,7 @@ qemuBuildVirtioDevStr(virBuffer *buf,
 
     virDomainDeviceSetData(&device, devdata);
 
-    if (qemuBuildVirtioDevGetConfig(&device, baseName, qemuCaps, &model,
+    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model,
                                     &disableLegacy, &disableModern) < 0)
         return -1;
 
