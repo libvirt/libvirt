@@ -4482,7 +4482,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
     if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio, &virtioBusSuffix)))
         return NULL;
 
-    if (virtioBusSuffix) {
+    if (virtio) {
         if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
         }
