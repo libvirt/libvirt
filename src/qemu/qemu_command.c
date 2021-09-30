@@ -4220,36 +4220,35 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
                                const virDomainDef *def,
                                virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (!virDomainDefHasMemballoon(def))
         return 0;
 
-    if (qemuBuildVirtioDevStr(&buf, qemuCaps,
-                              VIR_DOMAIN_DEVICE_MEMBALLOON,
-                              def->memballoon) < 0) {
-        return -1;
-    }
-
-    virBufferAsprintf(&buf, ",id=%s", def->memballoon->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &def->memballoon->info) < 0)
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_MEMBALLOON,
+                                          def->memballoon, qemuCaps)))
         return -1;
 
-    if (def->memballoon->autodeflate != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(&buf, ",deflate-on-oom=%s",
-                          virTristateSwitchTypeToString(def->memballoon->autodeflate));
-    }
+    if (virJSONValueObjectAdd(props,
+                              "s:id", def->memballoon->info.alias,
+                              NULL) < 0)
+        return -1;
 
-    if (def->memballoon->free_page_reporting != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(&buf, ",free-page-reporting=%s",
-                          virTristateSwitchTypeToString(def->memballoon->free_page_reporting));
-    }
+    if (qemuBuildDeviceAddressProps(props, def, &def->memballoon->info) < 0)
+        return -1;
+
+    if (virJSONValueObjectAdd(props,
+                              "T:deflate-on-oom", def->memballoon->autodeflate,
+                              "T:free-page-reporting", def->memballoon->free_page_reporting,
+                              NULL) < 0)
+        return -1;
 
     if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &buf);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
