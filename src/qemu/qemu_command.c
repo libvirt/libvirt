@@ -990,7 +990,6 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
 /**
  * qemuBuildVirtioDevStr
  * @buf: virBuffer * to append the built string
- * @baseName: qemu virtio device basename string. Ex: virtio-rng for <rng>
  * @qemuCaps: virQEMUCapPtr
  * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
  * @devdata: *Def * of the device definition
@@ -1004,7 +1003,6 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
  */
 static int
 qemuBuildVirtioDevStr(virBuffer *buf,
-                      const char *baseName G_GNUC_UNUSED,
                       virQEMUCaps *qemuCaps,
                       virDomainDeviceType devtype,
                       void *devdata)
@@ -2002,17 +2000,8 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
-            if (qemuBuildVirtioDevStr(&opt, "vhost-user-blk", qemuCaps,
-                                      VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
-                return NULL;
-            }
-        } else {
-            if (qemuBuildVirtioDevStr(&opt, "virtio-blk", qemuCaps,
-                                      VIR_DOMAIN_DEVICE_DISK, disk) < 0) {
-                return NULL;
-            }
-        }
+        if (qemuBuildVirtioDevStr(&opt, qemuCaps, VIR_DOMAIN_DEVICE_DISK, disk) < 0)
+            return NULL;
 
         if (disk->iothread)
             virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
@@ -2461,8 +2450,7 @@ qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildVirtioDevStr(&buf, "vhost-user-fs", priv->qemuCaps,
-                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
+    if (qemuBuildVirtioDevStr(&buf, priv->qemuCaps, VIR_DOMAIN_DEVICE_FS, fs) < 0)
         return NULL;
 
     virBufferAsprintf(&buf, ",id=%s", fs->info.alias);
@@ -2567,8 +2555,7 @@ qemuBuildFSDevStr(const virDomainDef *def,
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildVirtioDevStr(&opt, "virtio-9p", qemuCaps,
-                              VIR_DOMAIN_DEVICE_FS, fs) < 0)
+    if (qemuBuildVirtioDevStr(&opt, qemuCaps, VIR_DOMAIN_DEVICE_FS, fs) < 0)
         return NULL;
 
     virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
@@ -2798,8 +2785,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-            if (qemuBuildVirtioDevStr(&buf, "virtio-scsi", qemuCaps,
-                                      VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
+            if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
                 return -1;
             }
 
@@ -2849,8 +2835,7 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-serial", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
+        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
             return -1;
         }
 
@@ -3744,8 +3729,7 @@ qemuBuildNicDevStr(virDomainDef *def,
     char macaddr[VIR_MAC_STRING_BUFLEN];
 
     if (virDomainNetIsVirtioModel(net)) {
-        if (qemuBuildVirtioDevStr(&buf, "virtio-net", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_NET, net) < 0) {
+        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_NET, net) < 0) {
             return NULL;
         }
 
@@ -4144,7 +4128,7 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
     if (!virDomainDefHasMemballoon(def))
         return 0;
 
-    if (qemuBuildVirtioDevStr(&buf, "virtio-balloon", qemuCaps,
+    if (qemuBuildVirtioDevStr(&buf, qemuCaps,
                               VIR_DOMAIN_DEVICE_MEMBALLOON,
                               def->memballoon) < 0) {
         return -1;
@@ -4216,26 +4200,10 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
 
     switch ((virDomainInputType)dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-mouse", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
-            return NULL;
-        }
-        break;
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-tablet", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
-            return NULL;
-        }
-        break;
     case VIR_DOMAIN_INPUT_TYPE_KBD:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-keyboard", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
-            return NULL;
-        }
-        break;
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-        if (qemuBuildVirtioDevStr(&buf, "virtio-input-host", qemuCaps,
-                                  VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
+        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
             return NULL;
         }
         break;
@@ -4533,8 +4501,7 @@ qemuBuildDeviceVideoStr(const virDomainDef *def,
         return NULL;
 
     if (virtioBusSuffix) {
-        if (qemuBuildVirtioDevStr(&buf, model, qemuCaps,
-                                  VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
+        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
             return NULL;
         }
     } else {
@@ -4840,8 +4807,7 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainHostdevSubsysSCSIVHost *hostsrc = &dev->source.subsys.u.scsi_host;
 
-    if (qemuBuildVirtioDevStr(&buf, "vhost-scsi", qemuCaps,
-                              VIR_DOMAIN_DEVICE_HOSTDEV, dev) < 0) {
+    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_HOSTDEV, dev) < 0) {
         return NULL;
     }
 
@@ -5778,8 +5744,7 @@ qemuBuildRNGDevStr(const virDomainDef *def,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildVirtioDevStr(&buf, "virtio-rng", qemuCaps,
-                              VIR_DOMAIN_DEVICE_RNG, dev) < 0) {
+    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_RNG, dev) < 0) {
         return NULL;
     }
 
@@ -10482,8 +10447,7 @@ qemuBuildVsockDevStr(virDomainDef *def,
     qemuDomainVsockPrivate *priv = (qemuDomainVsockPrivate *)vsock->privateData;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    if (qemuBuildVirtioDevStr(&buf, "vhost-vsock", qemuCaps,
-                              VIR_DOMAIN_DEVICE_VSOCK, vsock) < 0) {
+    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_VSOCK, vsock) < 0) {
         return NULL;
     }
 
