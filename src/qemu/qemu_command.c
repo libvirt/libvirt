@@ -590,36 +590,22 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 }
 
 
-/**
- * qemuBuildVirtioDevStr
- * @buf: virBuffer * to append the built string
- * @baseName: qemu virtio device basename string. Ex: virtio-rng for <rng>
- * @qemuCaps: virQEMUCapPtr
- * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
- * @devdata: *Def * of the device definition
- *
- * Build the qemu virtio -device name from the passed parameters. Currently
- * this is mostly about attaching the correct string prefix to @baseName for
- * the passed @type. So for @baseName "virtio-rng" and devdata->info.type
- * VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI, generate "virtio-rng-pci"
- *
- * Returns: -1 on failure, 0 on success
- */
 static int
-qemuBuildVirtioDevStr(virBuffer *buf,
-                      const char *baseName,
-                      virQEMUCaps *qemuCaps,
-                      virDomainDeviceType devtype,
-                      void *devdata)
+qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
+                            const char *baseName,
+                            virQEMUCaps *qemuCaps,
+                            char **devtype,
+                            virTristateSwitch *disableLegacy,
+                            virTristateSwitch *disableModern)
 {
+    virDomainDeviceInfo *info = virDomainDeviceGetInfo(device);
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *implName = NULL;
-    virDomainDeviceDef device = { .type = devtype };
-    virDomainDeviceInfo *info;
     bool has_tmodel = false;
     bool has_ntmodel = false;
 
-    virDomainDeviceSetData(&device, devdata);
-    info = virDomainDeviceGetInfo(&device);
+    *disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
+    *disableModern = VIR_TRISTATE_SWITCH_ABSENT;
 
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
@@ -654,60 +640,60 @@ qemuBuildVirtioDevStr(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(buf, "%s-%s", baseName, implName);
+    virBufferAsprintf(&buf, "%s-%s", baseName, implName);
 
-    switch (devtype) {
+    switch ((virDomainDeviceType) device->type) {
         case VIR_DOMAIN_DEVICE_DISK:
-            has_tmodel = device.data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.disk->model == VIR_DOMAIN_DISK_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_NET:
-            has_tmodel = device.data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.net->model == VIR_DOMAIN_NET_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
-            if (device.data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-                has_tmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
+            if (device->data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+                has_tmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device->data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
             }
             break;
 
         case VIR_DOMAIN_DEVICE_RNG:
-            has_tmodel = device.data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.rng->model == VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_FS:
-            has_tmodel = device.data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.fs->model == VIR_DOMAIN_FS_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_MEMBALLOON:
-            has_tmodel = device.data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.memballoon->model == VIR_DOMAIN_MEMBALLOON_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_VSOCK:
-            has_tmodel = device.data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
+            has_tmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_TRANSITIONAL;
+            has_ntmodel = device->data.vsock->model == VIR_DOMAIN_VSOCK_MODEL_VIRTIO_NON_TRANSITIONAL;
             break;
 
         case VIR_DOMAIN_DEVICE_INPUT:
-            if (device.data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
-                has_tmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
+            if (device->data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+                has_tmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
             }
             break;
 
         case VIR_DOMAIN_DEVICE_CONTROLLER:
-            if (device.data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
-                has_tmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
-            } else if (device.data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
-                has_tmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
-                has_ntmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
+            if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL) {
+                has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_VIRTIO_SERIAL_VIRTIO_NON_TRANSITIONAL;
+            } else if (device->data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
+                has_tmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device->data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
             }
             break;
 
@@ -739,15 +725,14 @@ qemuBuildVirtioDevStr(virBuffer *buf,
                            _("virtio (non-)transitional models are not "
                              "supported for address type=%s"),
                            virDomainDeviceAddressTypeToString(info->type));
-            return -1;
         }
 
         if (has_tmodel) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
-                virBufferAddLit(buf, "-transitional");
-            } else if (virQEMUCapsGet(qemuCaps,
-                                      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
-                virBufferAddLit(buf, ",disable-legacy=off,disable-modern=off");
+                virBufferAddLit(&buf, "-transitional");
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+                *disableLegacy = VIR_TRISTATE_SWITCH_OFF;
+                *disableModern = VIR_TRISTATE_SWITCH_OFF;
             }
             /* No error if -transitional is not supported: our address
              * allocation will force the device into plain PCI bus, which
@@ -755,20 +740,70 @@ qemuBuildVirtioDevStr(virBuffer *buf,
              */
         } else if (has_ntmodel) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
-                virBufferAddLit(buf, "-non-transitional");
-            } else if (virQEMUCapsGet(qemuCaps,
-                                      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+                virBufferAddLit(&buf, "-non-transitional");
+            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
                 /* Even if the QEMU binary doesn't support the non-transitional
                  * device, we can still make it work by manually disabling legacy
                  * VirtIO and enabling modern VirtIO */
-                virBufferAddLit(buf, ",disable-legacy=on,disable-modern=off");
+                *disableLegacy = VIR_TRISTATE_SWITCH_ON;
+                *disableModern = VIR_TRISTATE_SWITCH_OFF;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("virtio non-transitional model not supported "
-                                 "for this qemu"));
+                               _("virtio non-transitional model not supported for this qemu"));
                 return -1;
             }
         }
+    }
+
+    *devtype = virBufferContentAndReset(&buf);
+
+    return 0;
+}
+
+
+/**
+ * qemuBuildVirtioDevStr
+ * @buf: virBuffer * to append the built string
+ * @baseName: qemu virtio device basename string. Ex: virtio-rng for <rng>
+ * @qemuCaps: virQEMUCapPtr
+ * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
+ * @devdata: *Def * of the device definition
+ *
+ * Build the qemu virtio -device name from the passed parameters. Currently
+ * this is mostly about attaching the correct string prefix to @baseName for
+ * the passed @type. So for @baseName "virtio-rng" and devdata->info.type
+ * VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI, generate "virtio-rng-pci"
+ *
+ * Returns: -1 on failure, 0 on success
+ */
+static int
+qemuBuildVirtioDevStr(virBuffer *buf,
+                      const char *baseName,
+                      virQEMUCaps *qemuCaps,
+                      virDomainDeviceType devtype,
+                      void *devdata)
+{
+    virDomainDeviceDef device = { .type = devtype };
+    g_autofree char *model = NULL;
+    virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
+
+    virDomainDeviceSetData(&device, devdata);
+
+    if (qemuBuildVirtioDevGetConfig(&device, baseName, qemuCaps, &model,
+                                    &disableLegacy, &disableModern) < 0)
+        return -1;
+
+    virBufferAdd(buf, model, -1);
+
+    if (disableLegacy != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, ",disable-legacy=%s",
+                          virTristateSwitchTypeToString(disableLegacy));
+    }
+
+    if (disableModern != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, ",disable-modern=%s",
+                          virTristateSwitchTypeToString(disableModern));
     }
 
     return 0;
