@@ -615,7 +615,8 @@ qemuBuildVirtioDevStr(virBuffer *buf,
     const char *implName = NULL;
     virDomainDeviceDef device = { .type = devtype };
     virDomainDeviceInfo *info;
-    bool has_tmodel, has_ntmodel;
+    bool has_tmodel = false;
+    bool has_ntmodel = false;
 
     virDomainDeviceSetData(&device, devdata);
     info = virDomainDeviceGetInfo(&device);
@@ -667,10 +668,10 @@ qemuBuildVirtioDevStr(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_DEVICE_HOSTDEV:
-            if (device.data.hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST)
-                return 0;
-            has_tmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
+            if (device.data.hostdev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
+                has_tmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device.data.hostdev->source.subsys.u.scsi_host.model == VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_VHOST_MODEL_TYPE_VIRTIO_NON_TRANSITIONAL;
+            }
             break;
 
         case VIR_DOMAIN_DEVICE_RNG:
@@ -694,10 +695,10 @@ qemuBuildVirtioDevStr(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_DEVICE_INPUT:
-            if (device.data.input->type != VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH)
-                return 0;
-            has_tmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
-            has_ntmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
+            if (device.data.input->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
+                has_tmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
+                has_ntmodel = device.data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
+            }
             break;
 
         case VIR_DOMAIN_DEVICE_CONTROLLER:
@@ -707,8 +708,6 @@ qemuBuildVirtioDevStr(virBuffer *buf,
             } else if (device.data.controller->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI) {
                 has_tmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL;
                 has_ntmodel = device.data.controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL;
-            } else {
-                return 0;
             }
             break;
 
@@ -731,43 +730,44 @@ qemuBuildVirtioDevStr(virBuffer *buf,
         case VIR_DOMAIN_DEVICE_AUDIO:
         case VIR_DOMAIN_DEVICE_LAST:
         default:
-            return 0;
+            break;
     }
 
-    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI &&
-        (has_tmodel || has_ntmodel)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("virtio (non-)transitional models are not "
-                         "supported for address type=%s"),
-                       virDomainDeviceAddressTypeToString(info->type));
-        return -1;
-    }
-
-    if (has_tmodel) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
-            virBufferAddLit(buf, "-transitional");
-        } else if (virQEMUCapsGet(qemuCaps,
-                                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
-            virBufferAddLit(buf, ",disable-legacy=off,disable-modern=off");
-        }
-        /* No error if -transitional is not supported: our address
-         * allocation will force the device into plain PCI bus, which
-         * is functionally identical to standard 'virtio-XXX' behavior
-         */
-    } else if (has_ntmodel) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
-            virBufferAddLit(buf, "-non-transitional");
-        } else if (virQEMUCapsGet(qemuCaps,
-                                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
-            /* Even if the QEMU binary doesn't support the non-transitional
-             * device, we can still make it work by manually disabling legacy
-             * VirtIO and enabling modern VirtIO */
-            virBufferAddLit(buf, ",disable-legacy=on,disable-modern=off");
-        } else {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("virtio non-transitional model not supported "
-                             "for this qemu"));
+    if (has_tmodel || has_ntmodel) {
+        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("virtio (non-)transitional models are not "
+                             "supported for address type=%s"),
+                           virDomainDeviceAddressTypeToString(info->type));
             return -1;
+        }
+
+        if (has_tmodel) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+                virBufferAddLit(buf, "-transitional");
+            } else if (virQEMUCapsGet(qemuCaps,
+                                      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+                virBufferAddLit(buf, ",disable-legacy=off,disable-modern=off");
+            }
+            /* No error if -transitional is not supported: our address
+             * allocation will force the device into plain PCI bus, which
+             * is functionally identical to standard 'virtio-XXX' behavior
+             */
+        } else if (has_ntmodel) {
+            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+                virBufferAddLit(buf, "-non-transitional");
+            } else if (virQEMUCapsGet(qemuCaps,
+                                      QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+                /* Even if the QEMU binary doesn't support the non-transitional
+                 * device, we can still make it work by manually disabling legacy
+                 * VirtIO and enabling modern VirtIO */
+                virBufferAddLit(buf, ",disable-legacy=on,disable-modern=off");
+            } else {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("virtio non-transitional model not supported "
+                                 "for this qemu"));
+                return -1;
+            }
         }
     }
 
