@@ -155,6 +155,16 @@ VIR_ENUM_IMPL(qemuAudioDriver,
 );
 
 
+static const char *
+qemuOnOffAuto(virTristateSwitch s)
+{
+    if (s == VIR_TRISTATE_SWITCH_ABSENT)
+        return NULL;
+
+    return virTristateSwitchTypeToString(s);
+}
+
+
 static int
 qemuBuildObjectCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
@@ -988,6 +998,52 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
 
 
 /**
+ * qemuBuildVirtioDevProps
+ * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
+ * @devdata: *Def * of the device definition
+ * @qemuCaps: qemu capabilities
+ *
+ * Build the qemu virtio -device JSON properties name from the passed parameters.
+ */
+static G_GNUC_UNUSED virJSONValue *
+qemuBuildVirtioDevProps(virDomainDeviceType devtype,
+                        void *devdata,
+                        virQEMUCaps *qemuCaps)
+{
+    g_autoptr(virJSONValue) props = NULL;
+    virDomainDeviceDef device = { .type = devtype };
+    g_autofree char *model = NULL;
+    virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
+    virDomainVirtioOptions *virtioOptions = NULL;
+
+    virDomainDeviceSetData(&device, devdata);
+
+    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions,
+                                    &disableLegacy, &disableModern) < 0)
+        return NULL;
+
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", model,
+                                 "S:disable-legacy", qemuOnOffAuto(disableLegacy),
+                                 "T:disable-modern", disableModern,
+                                 NULL) < 0)
+        return NULL;
+
+    if (virtioOptions) {
+        if (virJSONValueObjectAdd(props,
+                                  "T:iommu_platform", virtioOptions->iommu,
+                                  "T:ats", virtioOptions->ats,
+                                  "T:packed", virtioOptions->packed,
+                                  NULL) < 0)
+            return NULL;
+    }
+
+    return g_steal_pointer(&props);
+}
+
+
+/**
  * qemuBuildVirtioDevStr
  * @buf: virBuffer * to append the built string
  * @qemuCaps: virQEMUCapPtr
@@ -1001,7 +1057,7 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
  *
  * Returns: -1 on failure, 0 on success
  */
-static int
+static G_GNUC_UNUSED int
 qemuBuildVirtioDevStr(virBuffer *buf,
                       virQEMUCaps *qemuCaps,
                       virDomainDeviceType devtype,
