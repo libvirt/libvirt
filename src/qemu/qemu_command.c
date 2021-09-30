@@ -815,6 +815,10 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
     *disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
     *disableModern = VIR_TRISTATE_SWITCH_ABSENT;
 
+    qemuBuildVirtioDevGetConfigDev(device, &has_tmodel, &has_ntmodel);
+
+    virBufferAdd(&buf, baseName, -1);
+
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         implName = "pci";
@@ -848,9 +852,7 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
         return -1;
     }
 
-    virBufferAsprintf(&buf, "%s-%s", baseName, implName);
-
-    qemuBuildVirtioDevGetConfigDev(device, &has_tmodel, &has_ntmodel);
+    virBufferAsprintf(&buf, "-%s", implName);
 
     if (has_tmodel || has_ntmodel) {
         if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
