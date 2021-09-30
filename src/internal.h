@@ -91,8 +91,6 @@
 #define STREQ_NULLABLE(a, b) (g_strcmp0(a, b) == 0)
 #define STRNEQ_NULLABLE(a, b) (g_strcmp0(a, b) != 0)
 
-#define NUL_TERMINATE(buf) do { (buf)[sizeof(buf)-1] = '\0'; } while (0)
-
 #ifdef WIN32
 # ifndef O_CLOEXEC
 #  define O_CLOEXEC _O_NOINHERIT

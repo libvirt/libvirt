@@ -485,7 +485,7 @@ virGetHostnameImpl(bool quiet)
                                  "%s", _("failed to determine host name"));
         return NULL;
     }
-    NUL_TERMINATE(hostname);
+    hostname[sizeof(hostname) - 1] = '\0';
 
     if (STRPREFIX(hostname, "localhost") || strchr(hostname, '.')) {
         /* in this case, gethostname returned localhost (meaning we can't
