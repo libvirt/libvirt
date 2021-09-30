@@ -590,6 +590,130 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 }
 
 
+/**
+ * qemuDeviceVideoGetModel:
+ * @qemuCaps: qemu capabilities
+ * @video: video device definition
+ * @virtio: the returned video device is a 'virtio' device
+ * @virtioBusSuffix: the returned device needs to get the bus-suffix
+ *
+ * Returns the model fo the device for @video and @qemuCaps. @virtio and
+ * @virtioBusSuffix are filled with the corresponding flags.
+ */
+static const char *
+qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
+                        const virDomainVideoDef *video,
+                        bool *virtio,
+                        bool *virtioBusSuffix)
+{
+    const char *model = NULL;
+    bool primaryVga = false;
+    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+
+    *virtio = false;
+    *virtioBusSuffix = false;
+
+    if (video->accel)
+        accel3d = video->accel->accel3d;
+
+    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
+        primaryVga = true;
+
+    /* We try to chose the best model for primary video device by preferring
+     * model with VGA compatibility mode.  For some video devices on some
+     * architectures there might not be such model so fallback to one
+     * without VGA compatibility mode. */
+    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+        if (primaryVga) {
+            model = "vhost-user-vga";
+        } else {
+            model = "vhost-user-gpu";
+            *virtio = true;
+            *virtioBusSuffix = true;
+        }
+    } else {
+        if (primaryVga) {
+            switch ((virDomainVideoType) video->type) {
+            case VIR_DOMAIN_VIDEO_TYPE_VGA:
+                model = "VGA";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+                model = "cirrus-vga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+                model = "vmware-svga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_QXL:
+                model = "qxl-vga";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
+                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    model = "virtio-vga-gl";
+                else
+                    model = "virtio-vga";
+
+                *virtio = true;
+                *virtioBusSuffix = false;
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+                model = "bochs-display";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+                model = "ramfb";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+            case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+            case VIR_DOMAIN_VIDEO_TYPE_GOP:
+            case VIR_DOMAIN_VIDEO_TYPE_NONE:
+            case VIR_DOMAIN_VIDEO_TYPE_LAST:
+                break;
+            }
+        } else {
+            switch ((virDomainVideoType) video->type) {
+            case VIR_DOMAIN_VIDEO_TYPE_QXL:
+                model = "qxl";
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
+                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    model = "virtio-gpu-gl";
+                else
+                    model = "virtio-gpu";
+
+                *virtio = true;
+                *virtioBusSuffix = true;
+                break;
+            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+            case VIR_DOMAIN_VIDEO_TYPE_VGA:
+            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
+            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+            case VIR_DOMAIN_VIDEO_TYPE_XEN:
+            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+            case VIR_DOMAIN_VIDEO_TYPE_GOP:
+            case VIR_DOMAIN_VIDEO_TYPE_NONE:
+            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+            case VIR_DOMAIN_VIDEO_TYPE_LAST:
+                break;
+            }
+        }
+    }
+
+    if (!model || STREQ(model, "")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid model for video type '%s'"),
+                       virDomainVideoTypeToString(video->type));
+        return NULL;
+    }
+
+    return model;
+}
+
+
 static void
 qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
                                bool *has_tmodel,
@@ -4295,130 +4419,6 @@ qemuBuildSoundCommandLine(virCommand *cmd,
         }
     }
     return 0;
-}
-
-
-/**
- * qemuDeviceVideoGetModel:
- * @qemuCaps: qemu capabilities
- * @video: video device definition
- * @virtio: the returned video device is a 'virtio' device
- * @virtioBusSuffix: the returned device needs to get the bus-suffix
- *
- * Returns the model fo the device for @video and @qemuCaps. @virtio and
- * @virtioBusSuffix are filled with the corresponding flags.
- */
-static const char *
-qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
-                        const virDomainVideoDef *video,
-                        bool *virtio,
-                        bool *virtioBusSuffix)
-{
-    const char *model = NULL;
-    bool primaryVga = false;
-    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
-
-    *virtio = false;
-    *virtioBusSuffix = false;
-
-    if (video->accel)
-        accel3d = video->accel->accel3d;
-
-    if (video->primary && qemuDomainSupportsVideoVga(video, qemuCaps))
-        primaryVga = true;
-
-    /* We try to chose the best model for primary video device by preferring
-     * model with VGA compatibility mode.  For some video devices on some
-     * architectures there might not be such model so fallback to one
-     * without VGA compatibility mode. */
-    if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-        if (primaryVga) {
-            model = "vhost-user-vga";
-        } else {
-            model = "vhost-user-gpu";
-            *virtio = true;
-            *virtioBusSuffix = true;
-        }
-    } else {
-        if (primaryVga) {
-            switch ((virDomainVideoType) video->type) {
-            case VIR_DOMAIN_VIDEO_TYPE_VGA:
-                model = "VGA";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-                model = "cirrus-vga";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-                model = "vmware-svga";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_QXL:
-                model = "qxl-vga";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
-                    accel3d == VIR_TRISTATE_SWITCH_ON)
-                    model = "virtio-vga-gl";
-                else
-                    model = "virtio-vga";
-
-                *virtio = true;
-                *virtioBusSuffix = false;
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
-                model = "bochs-display";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
-                model = "ramfb";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
-            case VIR_DOMAIN_VIDEO_TYPE_XEN:
-            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
-            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
-            case VIR_DOMAIN_VIDEO_TYPE_GOP:
-            case VIR_DOMAIN_VIDEO_TYPE_NONE:
-            case VIR_DOMAIN_VIDEO_TYPE_LAST:
-                break;
-            }
-        } else {
-            switch ((virDomainVideoType) video->type) {
-            case VIR_DOMAIN_VIDEO_TYPE_QXL:
-                model = "qxl";
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
-                if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
-                    accel3d == VIR_TRISTATE_SWITCH_ON)
-                    model = "virtio-gpu-gl";
-                else
-                    model = "virtio-gpu";
-
-                *virtio = true;
-                *virtioBusSuffix = true;
-                break;
-            case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
-            case VIR_DOMAIN_VIDEO_TYPE_VGA:
-            case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
-            case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
-            case VIR_DOMAIN_VIDEO_TYPE_XEN:
-            case VIR_DOMAIN_VIDEO_TYPE_VBOX:
-            case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
-            case VIR_DOMAIN_VIDEO_TYPE_GOP:
-            case VIR_DOMAIN_VIDEO_TYPE_NONE:
-            case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
-            case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
-            case VIR_DOMAIN_VIDEO_TYPE_LAST:
-                break;
-            }
-        }
-    }
-
-    if (!model || STREQ(model, "")) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("invalid model for video type '%s'"),
-                       virDomainVideoTypeToString(video->type));
-        return NULL;
-    }
-
-    return model;
 }
 
 
