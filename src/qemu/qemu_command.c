@@ -5348,40 +5348,34 @@ qemuBuildHostdevMdevModelTypeString(virDomainHostdevSubsysMediatedDev *mdev)
 }
 
 
-char *
-qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
-                               virDomainHostdevDef *dev,
-                               virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+virJSONValue *
+qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
+                                 virDomainHostdevDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
     g_autofree char *mdevPath = NULL;
-    const char *dev_str = NULL;
 
     mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr);
-    dev_str = qemuBuildHostdevMdevModelTypeString(mdevsrc);
 
-    if (!dev_str)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", qemuBuildHostdevMdevModelTypeString(mdevsrc),
+                                 "s:id", dev->info->alias,
+                                 "s:sysfsdev", mdevPath,
+                                 "S:display", qemuOnOffAuto(mdevsrc->display),
+                                 NULL) < 0)
         return NULL;
 
-    virBufferAdd(&buf, dev_str, -1);
-    virBufferAsprintf(&buf, ",id=%s,sysfsdev=%s", dev->info->alias, mdevPath);
-
-    if (mdevsrc->display != VIR_TRISTATE_SWITCH_ABSENT)
-        virBufferAsprintf(&buf, ",display=%s",
-                          virTristateSwitchTypeToString(mdevsrc->display));
-
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
+    if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
         return NULL;
 
-    if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
+    if (virJSONValueObjectAdd(props,
+                              "T:ramfb", mdevsrc->ramfb,
+                              "p:bootindex", dev->info->bootIndex,
+                              NULL) < 0)
+        return NULL;
 
-    if (mdevsrc->ramfb == VIR_TRISTATE_SWITCH_ON)
-        virBufferAsprintf(&buf, ",ramfb=%s",
-                          virTristateSwitchTypeToString(mdevsrc->ramfb));
-
-    return virBufferContentAndReset(&buf);
+    return g_steal_pointer(&props);
 }
 
 
@@ -5512,6 +5506,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
         virDomainHostdevSubsysMediatedDev *mdevsrc = &subsys->u.mdev;
         g_autofree char *devstr = NULL;
+        g_autoptr(virJSONValue) devprops = NULL;
         g_autofree char *vhostfdName = NULL;
         int vhostfd = -1;
 
@@ -5591,12 +5586,11 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
                 return -1;
             }
 
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr =
-                  qemuBuildHostdevMediatedDevStr(def, hostdev, qemuCaps)))
+            if (!(devprops = qemuBuildHostdevMediatedDevProps(def, hostdev)))
                 return -1;
-            virCommandAddArg(cmd, devstr);
 
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+                return -1;
             break;
 
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_LAST:

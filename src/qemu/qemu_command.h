@@ -199,10 +199,9 @@ qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
                                 virQEMUCaps *qemuCaps,
                                 char *vhostfdName);
 
-char *
-qemuBuildHostdevMediatedDevStr(const virDomainDef *def,
-                               virDomainHostdevDef *dev,
-                               virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
+                                 virDomainHostdevDef *dev);
 
 char *qemuBuildRedirdevDevStr(const virDomainDef *def,
                               virDomainRedirdevDef *dev,
