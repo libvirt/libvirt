@@ -208,7 +208,8 @@ virJSONValue *
 qemuBuildRedirdevDevProps(const virDomainDef *def,
                           virDomainRedirdevDef *dev);
 
-char *qemuBuildZPCIDevStr(virDomainDeviceInfo *dev);
+virJSONValue *
+qemuBuildZPCIDevProps(virDomainDeviceInfo *dev);
 
 int qemuNetworkPrepareDevices(virDomainDef *def);
 

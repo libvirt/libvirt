@@ -2239,48 +2239,44 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     return virBufferContentAndReset(&opt);
 }
 
-char *
-qemuBuildZPCIDevStr(virDomainDeviceInfo *dev)
+
+virJSONValue *
+qemuBuildZPCIDevProps(virDomainDeviceInfo *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    virJSONValue *props = NULL;
+    g_autofree char *alias = g_strdup_printf("zpci%u", dev->addr.pci.zpci.uid.value);
 
-    virBufferAsprintf(&buf,
-                      "zpci,uid=%u,fid=%u,target=%s,id=zpci%u",
-                      dev->addr.pci.zpci.uid.value,
-                      dev->addr.pci.zpci.fid.value,
-                      dev->alias,
-                      dev->addr.pci.zpci.uid.value);
+    virJSONValueObjectCreate(&props,
+                             "s:driver", "zpci",
+                             "u:uid", dev->addr.pci.zpci.uid.value,
+                             "u:fid", dev->addr.pci.zpci.fid.value,
+                             "s:target", dev->alias,
+                             "s:id", alias,
+                             NULL);
 
-    return virBufferContentAndReset(&buf);
+    return props;
 }
 
-static int
-qemuCommandAddZPCIDevice(virCommand *cmd,
-                         virDomainDeviceInfo *dev)
-{
-    g_autofree char *devstr = NULL;
-
-    virCommandAddArg(cmd, "-device");
-
-    if (!(devstr = qemuBuildZPCIDevStr(dev)))
-        return -1;
-
-    virCommandAddArg(cmd, devstr);
-
-    return 0;
-}
 
 static int
 qemuCommandAddExtDevice(virCommand *cmd,
-                        virDomainDeviceInfo *dev)
+                        virDomainDeviceInfo *dev,
+                        virQEMUCaps *qemuCaps)
 {
     if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
         dev->addr.pci.extFlags == VIR_PCI_ADDRESS_EXTENSION_NONE) {
         return 0;
     }
 
-    if (dev->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI)
-        return qemuCommandAddZPCIDevice(cmd, dev);
+    if (dev->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) {
+        g_autoptr(virJSONValue) devprops = NULL;
+
+        if (!(devprops = qemuBuildZPCIDevProps(dev)))
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -2487,7 +2483,7 @@ qemuBuildDiskCommandLine(virCommand *cmd,
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
 
-    if (qemuCommandAddExtDevice(cmd, &disk->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &disk->info, qemuCaps) < 0)
         return -1;
 
     virCommandAddArg(cmd, "-device");
@@ -2595,7 +2591,7 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     virCommandAddArg(cmd, "-chardev");
     virCommandAddArg(cmd, chrdevstr);
 
-    if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &fs->info, priv->qemuCaps) < 0)
         return -1;
 
     if (!(devstr = qemuBuildVHostUserFsDevStr(fs, def, chardev_alias, priv)))
@@ -2693,7 +2689,7 @@ qemuBuildFSDevCommandLine(virCommand *cmd,
         return -1;
     virCommandAddArg(cmd, fsdevstr);
 
-    if (qemuCommandAddExtDevice(cmd, &fs->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &fs->info, qemuCaps) < 0)
         return -1;
 
     virCommandAddArg(cmd, "-device");
@@ -3235,7 +3231,7 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
             return -1;
 
         if (devstr) {
-            if (qemuCommandAddExtDevice(cmd, &cont->info) < 0)
+            if (qemuCommandAddExtDevice(cmd, &cont->info, qemuCaps) < 0)
                 return -1;
 
             virCommandAddArg(cmd, "-device");
@@ -4187,7 +4183,7 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
     if (!def->watchdog)
         return 0;
 
-    if (qemuCommandAddExtDevice(cmd, &def->watchdog->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &def->watchdog->info, qemuCaps) < 0)
         return -1;
 
     if (!(props = qemuBuildWatchdogDevProps(def, watchdog)))
@@ -4239,7 +4235,7 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &def->memballoon->info) < 0)
         return -1;
 
-    if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &def->memballoon->info, qemuCaps) < 0)
         return -1;
 
     if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
@@ -4386,7 +4382,7 @@ qemuBuildInputCommandLine(virCommand *cmd,
     for (i = 0; i < def->ninputs; i++) {
         virDomainInputDef *input = def->inputs[i];
 
-        if (qemuCommandAddExtDevice(cmd, &input->info) < 0)
+        if (qemuCommandAddExtDevice(cmd, &input->info, qemuCaps) < 0)
             return -1;
 
         if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
@@ -4532,7 +4528,7 @@ qemuBuildSoundCommandLine(virCommand *cmd,
         if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
             virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
         } else {
-            if (qemuCommandAddExtDevice(cmd, &sound->info) < 0)
+            if (qemuCommandAddExtDevice(cmd, &sound->info, qemuCaps) < 0)
                 return -1;
 
             virCommandAddArg(cmd, "-device");
@@ -4721,7 +4717,7 @@ qemuBuildVideoCommandLine(virCommand *cmd,
         if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
             continue;
 
-        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info) < 0)
+        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, qemuCaps) < 0)
             return -1;
 
         virCommandAddArg(cmd, "-device");
@@ -5537,7 +5533,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
            if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
                continue;
 
-            if (qemuCommandAddExtDevice(cmd, hostdev->info) < 0)
+            if (qemuCommandAddExtDevice(cmd, hostdev->info, qemuCaps) < 0)
                 return -1;
 
             virCommandAddArg(cmd, "-device");
@@ -5884,7 +5880,7 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
             return -1;
 
         /* add the device */
-        if (qemuCommandAddExtDevice(cmd, &rng->info) < 0)
+        if (qemuCommandAddExtDevice(cmd, &rng->info, qemuCaps) < 0)
             return -1;
 
         if (!(devprops = qemuBuildRNGDevProps(def, rng, qemuCaps)))
@@ -9020,14 +9016,14 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
      *   New way: -netdev type=tap,id=netdev1 -device e1000,id=netdev1
      */
     if (qemuDomainSupportsNicdev(def, net)) {
-        if (qemuCommandAddExtDevice(cmd, &net->info) < 0)
+        if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
             goto cleanup;
 
         if (!(nic = qemuBuildNicDevStr(def, net, net->driver.virtio.queues, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else if (!requireNicdev) {
-        if (qemuCommandAddExtDevice(cmd, &net->info) < 0)
+        if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
             goto cleanup;
 
         if (!(nic = qemuBuildLegacyNicStr(net)))
@@ -9405,7 +9401,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
     if (!devProps)
         return -1;
 
-    if (qemuCommandAddExtDevice(cmd, &shmem->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &shmem->info, qemuCaps) < 0)
         return -1;
 
     if (qemuBuildDeviceCommandlineFromJSON(cmd, devProps, qemuCaps) < 0)
@@ -10551,7 +10547,7 @@ qemuBuildVsockCommandLine(virCommand *cmd,
     virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     priv->vhostfd = -1;
 
-    if (qemuCommandAddExtDevice(cmd, &vsock->info) < 0)
+    if (qemuCommandAddExtDevice(cmd, &vsock->info, qemuCaps) < 0)
         return -1;
 
     virCommandAddArgList(cmd, "-device", devstr, NULL);

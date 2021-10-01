@@ -139,22 +139,6 @@ qemuDomainDeleteDevice(virDomainObj *vm,
 
 
 static int
-qemuDomainAttachZPCIDevice(qemuMonitor *mon,
-                           virDomainDeviceInfo *info)
-{
-    g_autofree char *devstr_zpci = NULL;
-
-    if (!(devstr_zpci = qemuBuildZPCIDevStr(info)))
-        return -1;
-
-    if (qemuMonitorAddDevice(mon, devstr_zpci) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 qemuDomainDetachZPCIDevice(qemuMonitor *mon,
                            virDomainDeviceInfo *info)
 {
@@ -178,8 +162,15 @@ qemuDomainAttachExtensionDevice(qemuMonitor *mon,
         return 0;
     }
 
-    if (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI)
-        return qemuDomainAttachZPCIDevice(mon, info);
+    if (info->addr.pci.extFlags & VIR_PCI_ADDRESS_EXTENSION_ZPCI) {
+        g_autoptr(virJSONValue) devprops = NULL;
+
+        if (!(devprops = qemuBuildZPCIDevProps(info)))
+            return -1;
+
+        if (qemuMonitorAddDeviceProps(mon, &devprops) < 0)
+            return -1;
+    }
 
     return 0;
 }
