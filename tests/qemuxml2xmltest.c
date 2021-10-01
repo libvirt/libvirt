@@ -424,6 +424,10 @@ mymain(void)
     DO_TEST_NOCAPS("input-usbtablet");
     DO_TEST_NOCAPS("misc-acpi");
     DO_TEST("misc-disable-s3", QEMU_CAPS_PIIX_DISABLE_S3);
+    DO_TEST("pc-i440fx-acpi-root-hotplug-disable",
+            QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG);
+    DO_TEST("pc-i440fx-acpi-root-hotplug-enable",
+            QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG);
     DO_TEST("misc-disable-suspends",
             QEMU_CAPS_PIIX_DISABLE_S3,
             QEMU_CAPS_PIIX_DISABLE_S4);

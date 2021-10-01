@@ -3872,6 +3872,14 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
     /* hotplug */
     if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
         switch ((virDomainControllerModelPCI) cont->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("setting the %s property on a '%s' device is not supported by this QEMU binary"),
+                               "hotplug", "pci-root");
+                return -1;
+            }
+            break;
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG)) {
@@ -3882,7 +3890,6 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
             }
             break;
 
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
