@@ -444,9 +444,8 @@ chMonitorCreateSocket(const char *socket_path)
 virCHMonitor *
 virCHMonitorNew(virDomainObj *vm, const char *socketdir)
 {
-    virCHMonitor *ret = NULL;
-    virCHMonitor *mon = NULL;
-    virCommand *cmd = NULL;
+    g_autoptr(virCHMonitor) mon = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int socket_fd = 0;
 
     if (virCHMonitorInitialize() < 0)
@@ -458,7 +457,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     if (!vm->def) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("VM is not defined"));
-        goto cleanup;
+        return NULL;
     }
 
     /* prepare to launch Cloud-Hypervisor socket */
@@ -467,7 +466,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
         virReportSystemError(errno,
                              _("Cannot create socket directory '%s'"),
                              socketdir);
-        goto cleanup;
+        return NULL;
     }
 
     cmd = virCommandNew(vm->def->emulator);
@@ -477,7 +476,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
         virReportSystemError(errno,
                              _("Cannot create socket '%s'"),
                              mon->socketpath);
-        goto cleanup;
+        return NULL;
     }
 
     virCommandAddArg(cmd, "--api-socket");
@@ -486,7 +485,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
 
     /* launch Cloud-Hypervisor socket */
     if (virCommandRunAsync(cmd, &mon->pid) < 0)
-        goto cleanup;
+        return NULL;
 
     /* get a curl handle */
     mon->handle = curl_easy_init();
@@ -494,13 +493,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     /* now has its own reference */
     mon->vm = virObjectRef(vm);
 
-    ret = mon;
-    mon = NULL;
-
- cleanup:
-    virCHMonitorClose(mon);
-    virCommandFree(cmd);
-    return ret;
+    return g_steal_pointer(&mon);
 }
 
 static void virCHMonitorDispose(void *opaque)

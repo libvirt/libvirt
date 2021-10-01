@@ -53,6 +53,7 @@ struct _virCHMonitor {
 
 virCHMonitor *virCHMonitorNew(virDomainObj *vm, const char *socketdir);
 void virCHMonitorClose(virCHMonitor *mon);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHMonitor, virCHMonitorClose);
 
 int virCHMonitorCreateVM(virCHMonitor *mon);
 int virCHMonitorBootVM(virCHMonitor *mon);
