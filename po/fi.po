@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-09-24 14:41+0000\n"
-"PO-Revision-Date: 2021-09-20 07:36+0000\n"
+"PO-Revision-Date: 2021-10-01 15:05+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -17892,7 +17892,7 @@ msgstr "Ei voi kirjoittaa %s:lle"
 
 #, c-format
 msgid "Unable to write '%s' to '%s'"
-msgstr ""
+msgstr "Ei voi kirjoittaa '%s' '%s':lle"
 
 #, fuzzy, c-format
 msgid "Unable to write pid file '%s/%s.pid'"
@@ -18211,7 +18211,7 @@ msgid "Unknown Command '%i'"
 msgstr "Tuntematon komento: '%i'"
 
 msgid "Unknown Error"
-msgstr ""
+msgstr "Tuntematon virhe"
 
 #, c-format
 msgid "Unknown IP address data source %d"
