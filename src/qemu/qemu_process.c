@@ -6264,7 +6264,7 @@ qemuProcessPrepareDomainNUMAPlacement(virDomainObj *vm)
 
 
 static void
-qemuProcessPrepareDomainDiskBootorder(virDomainDef *def)
+qemuProcessPrepareDeviceBootorder(virDomainDef *def)
 {
     size_t i;
     unsigned int bootCD = 0;
@@ -6349,8 +6349,6 @@ qemuProcessPrepareDomainStorage(virQEMUDriver *driver,
         if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)
             return -1;
     }
-
-    qemuProcessPrepareDomainDiskBootorder(vm->def);
 
     return 0;
 }
@@ -6558,6 +6556,8 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
 
     if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
         return -1;
+
+    qemuProcessPrepareDeviceBootorder(vm->def);
 
     VIR_DEBUG("Setting graphics devices");
     if (qemuProcessSetupGraphics(driver, vm, priv->qemuCaps, flags) < 0)
