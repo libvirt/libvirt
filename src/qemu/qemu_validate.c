@@ -5039,7 +5039,6 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                             void *opaque,
                             void *parseOpaque)
 {
-    int ret = 0;
     virQEMUDriver *driver = opaque;
     g_autoptr(virQEMUCaps) qemuCapsLocal = NULL;
     virQEMUCaps *qemuCaps = parseOpaque;
@@ -5057,99 +5056,76 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
-        ret = qemuValidateDomainDeviceDefNetwork(dev->data.net, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefNetwork(dev->data.net, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuValidateDomainChrDef(dev->data.chr, def, qemuCaps);
-        break;
+        return qemuValidateDomainChrDef(dev->data.chr, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-        ret = qemuValidateDomainSmartcardDef(dev->data.smartcard, qemuCaps);
-        break;
+        return qemuValidateDomainSmartcardDef(dev->data.smartcard, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_RNG:
-        ret = qemuValidateDomainRNGDef(dev->data.rng, qemuCaps);
-        break;
+        return qemuValidateDomainRNGDef(dev->data.rng, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_REDIRDEV:
-        ret = qemuValidateDomainRedirdevDef(dev->data.redirdev, def, qemuCaps);
-        break;
+        return qemuValidateDomainRedirdevDef(dev->data.redirdev, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_WATCHDOG:
-        ret = qemuValidateDomainWatchdogDef(dev->data.watchdog, def);
-        break;
+        return qemuValidateDomainWatchdogDef(dev->data.watchdog, def);
 
     case VIR_DOMAIN_DEVICE_HOSTDEV:
-        ret = qemuValidateDomainDeviceDefHostdev(dev->data.hostdev, def,
+        return qemuValidateDomainDeviceDefHostdev(dev->data.hostdev, def,
                                                  qemuCaps);
-        break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:
-        ret = qemuValidateDomainDeviceDefVideo(dev->data.video, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefVideo(dev->data.video, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_DISK:
-        ret = qemuValidateDomainDeviceDefDisk(dev->data.disk, def, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefDisk(dev->data.disk, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_CONTROLLER:
-        ret = qemuValidateDomainDeviceDefController(dev->data.controller, def,
+        return qemuValidateDomainDeviceDefController(dev->data.controller, def,
                                                     qemuCaps);
-        break;
 
     case VIR_DOMAIN_DEVICE_VSOCK:
-        ret = qemuValidateDomainDeviceDefVsock(dev->data.vsock, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefVsock(dev->data.vsock, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_TPM:
-        ret = qemuValidateDomainDeviceDefTPM(dev->data.tpm, def, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefTPM(dev->data.tpm, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
-        ret = qemuValidateDomainDeviceDefGraphics(dev->data.graphics, def,
+        return qemuValidateDomainDeviceDefGraphics(dev->data.graphics, def,
                                                   driver, qemuCaps);
-        break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
-        ret = qemuValidateDomainDeviceDefInput(dev->data.input, def, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefInput(dev->data.input, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
-        ret = qemuValidateDomainDeviceDefMemballoon(dev->data.memballoon, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefMemballoon(dev->data.memballoon, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_IOMMU:
-        ret = qemuValidateDomainDeviceDefIOMMU(dev->data.iommu, def, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefIOMMU(dev->data.iommu, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_FS:
-        ret = qemuValidateDomainDeviceDefFS(dev->data.fs, def, driver, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefFS(dev->data.fs, def, driver, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_NVRAM:
-        ret = qemuValidateDomainDeviceDefNVRAM(dev->data.nvram, def, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefNVRAM(dev->data.nvram, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_HUB:
-        ret = qemuValidateDomainDeviceDefHub(dev->data.hub, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefHub(dev->data.hub, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_SOUND:
-        ret = qemuValidateDomainDeviceDefSound(dev->data.sound, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefSound(dev->data.sound, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = qemuValidateDomainDeviceDefMemory(dev->data.memory, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefMemory(dev->data.memory, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_SHMEM:
-        ret = qemuValidateDomainDeviceDefShmem(dev->data.shmem, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefShmem(dev->data.shmem, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_AUDIO:
-        ret = qemuValidateDomainDeviceDefAudio(dev->data.audio, qemuCaps);
-        break;
+        return qemuValidateDomainDeviceDefAudio(dev->data.audio, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_PANIC:
@@ -5158,5 +5134,5 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         break;
     }
 
-    return ret;
+    return 0;
 }
