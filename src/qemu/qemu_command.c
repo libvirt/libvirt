@@ -1133,7 +1133,47 @@ qemuBuildVirtioDevStr(virBuffer *buf,
 }
 
 
-static int
+static int G_GNUC_UNUSED
+qemuBuildRomProps(virJSONValue *props,
+                  virDomainDeviceInfo *info)
+{
+    const char *romfile = NULL;
+    int rombar = -1;
+
+    if (info->romenabled == VIR_TRISTATE_BOOL_ABSENT &&
+        info->rombar == VIR_TRISTATE_SWITCH_ABSENT &&
+        !info->romfile)
+        return 0;
+
+    if (info->romenabled == VIR_TRISTATE_BOOL_NO) {
+        romfile = "";
+    } else {
+        romfile = info->romfile;
+
+        switch (info->rombar) {
+        case VIR_TRISTATE_SWITCH_OFF:
+            rombar = 0;
+            break;
+        case VIR_TRISTATE_SWITCH_ON:
+            rombar = 1;
+            break;
+        case VIR_TRISTATE_SWITCH_ABSENT:
+        case VIR_TRISTATE_SWITCH_LAST:
+            break;
+        }
+    }
+
+    if (virJSONValueObjectAdd(props,
+                              "k:rombar", rombar,
+                              "S:romfile", romfile,
+                              NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int G_GNUC_UNUSED
 qemuBuildRomStr(virBuffer *buf,
                 virDomainDeviceInfo *info)
 {
