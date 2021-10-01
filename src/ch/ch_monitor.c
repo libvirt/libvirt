@@ -154,22 +154,19 @@ virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
 static int
 virCHMonitorBuildMemoryJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *memory;
     unsigned long long total_memory = virDomainDefGetMemoryInitial(vmdef) * 1024;
 
     if (total_memory != 0) {
-        memory = virJSONValueNewObject();
+        g_autoptr(virJSONValue) memory = virJSONValueNewObject();
+
         if (virJSONValueObjectAppendNumberUlong(memory, "size", total_memory) < 0)
-            goto cleanup;
+            return -1;
+
         if (virJSONValueObjectAppend(content, "memory", &memory) < 0)
-            goto cleanup;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(memory);
-    return -1;
 }
 
 static int
