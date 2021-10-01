@@ -6498,6 +6498,8 @@ virDomainDeviceBootParseXML(xmlNodePtr node,
                        &info->bootIndex) < 0)
         return -1;
 
+    info->effectiveBootIndex = info->bootIndex;
+
     loadparm = virXMLPropString(node, "loadparm");
     if (loadparm) {
         if (virStringToUpper(&info->loadparm, loadparm) != 1) {

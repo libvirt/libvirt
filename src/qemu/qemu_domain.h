@@ -270,10 +270,6 @@ struct _qemuDomainDiskPrivate {
     char *qomName; /* QOM path of the disk (also refers to the block backend) */
     char *nodeCopyOnRead; /* nodename of the disk-wide copy-on-read blockdev layer */
 
-    unsigned int effectiveBootindex; /* boot index of the disk based on one
-                                        of the two ways we use to select a boot
-                                        device */
-
     bool transientOverlayCreated; /* the overlay image of a transient disk was
                                      created and the definition was updated */
 };

@@ -149,6 +149,10 @@ struct _virDomainDeviceInfo {
     /* bootIndex is only used for disk, network interface, hostdev
      * and redirdev devices */
     unsigned int bootIndex;
+    /* 'effectiveBootIndex' is same as 'bootIndex' (if provided in the XML) but
+     * not formatted back. This allows HV drivers to update it if <os><boot ..
+     * is present. */
+    unsigned int effectiveBootIndex;
     /* Valid for any PCI device. Can be used for NIC to get
      * stable numbering in Linux */
     unsigned int acpiIndex;

@@ -1869,7 +1869,6 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
                        virDomainDiskDef *disk,
                        virQEMUCaps *qemuCaps)
 {
-    qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     const char *contAlias;
     g_autofree char *backendAlias = NULL;
@@ -2072,8 +2071,8 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
     virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
     /* bootindex for floppies is configured via the fdc controller */
     if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        diskPriv->effectiveBootindex > 0)
-        virBufferAsprintf(&opt, ",bootindex=%u", diskPriv->effectiveBootindex);
+        disk->info.effectiveBootIndex > 0)
+        virBufferAsprintf(&opt, ",bootindex=%u", disk->info.effectiveBootIndex);
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
         if (disk->blockio.logical_block_size > 0)
             virBufferAsprintf(&opt, ",logical_block_size=%u",
@@ -2187,7 +2186,6 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
         g_autofree char *backendStr = NULL;
         g_autofree char *bootindexStr = NULL;
         virDomainDiskDef *disk = def->disks[i];
-        qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
             continue;
@@ -2199,9 +2197,9 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
         else
             driveLetter = 'A';
 
-        if (diskPriv->effectiveBootindex > 0)
+        if (disk->info.effectiveBootIndex > 0)
             bootindexStr = g_strdup_printf("bootindex%c=%u", driveLetter,
-                                           diskPriv->effectiveBootindex);
+                                           disk->info.effectiveBootIndex);
 
         /* with -blockdev we setup the floppy device and it's backend with -device */
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
