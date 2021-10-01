@@ -24,6 +24,14 @@ v7.9.0 (unreleased)
     ``virDomainUpdateDeviceFlags()`` API to adjust amount of memory or ``virsh
     update-memory-device`` for convenience.
 
+  * qemu: support disabling hotplug of devices on the pci-root controller
+
+    the <target hotplug='on|off'/> option is now supported for the
+    pci-root controller on i440fx-based (x86 "pc") machinetypes. This
+    can be used to disable hotplug/unplug of devices from this
+    controller. The default behavior is unchanged (hotplug is
+    allowed).
+
 * **Improvements**
 
 * **Bug fixes**
