@@ -237,12 +237,14 @@ virJSONValue *
 qemuBuildWatchdogDevProps(const virDomainDef *def,
                           virDomainWatchdogDef *dev);
 
-int qemuBuildInputDevStr(char **devstr,
-                         const virDomainDef *def,
-                         virDomainInputDef *input,
-                         virQEMUCaps *qemuCaps)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4);
+virJSONValue *
+qemuBuildInputVirtioDevProps(const virDomainDef *def,
+                             virDomainInputDef *dev,
+                             virQEMUCaps *qemuCaps);
+
+virJSONValue *
+qemuBuildInputUSBDevProps(const virDomainDef *def,
+                          virDomainInputDef *dev);
 
 char *
 qemuBuildVsockDevStr(virDomainDef *def,

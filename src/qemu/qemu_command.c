@@ -4281,21 +4281,19 @@ qemuBuildNVRAMCommandLine(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildVirtioInputDevStr(const virDomainDef *def,
-                           virDomainInputDef *dev,
-                           virQEMUCaps *qemuCaps)
+virJSONValue *
+qemuBuildInputVirtioDevProps(const virDomainDef *def,
+                             virDomainInputDef *dev,
+                             virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *evdev = NULL;
 
     switch ((virDomainInputType)dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
     case VIR_DOMAIN_INPUT_TYPE_KBD:
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_INPUT, dev) < 0) {
-            return NULL;
-        }
         break;
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
     case VIR_DOMAIN_INPUT_TYPE_LAST:
@@ -4304,42 +4302,54 @@ qemuBuildVirtioInputDevStr(const virDomainDef *def,
         return NULL;
     }
 
-    virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
+    if (dev->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH)
+        evdev = dev->source.evdev;
 
-    if (dev->type == VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH) {
-        virBufferAddLit(&buf, ",evdev=");
-        virQEMUBuildBufferEscapeComma(&buf, dev->source.evdev);
-    }
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_INPUT, dev, qemuCaps)))
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectAdd(props,
+                              "s:id", dev->info.alias,
+                              "S:evdev", evdev,
+                              NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
-static char *
-qemuBuildUSBInputDevStr(const virDomainDef *def,
-                        virDomainInputDef *dev,
-                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+
+virJSONValue *
+qemuBuildInputUSBDevProps(const virDomainDef *def,
+                          virDomainInputDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *driver = NULL;
 
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        virBufferAsprintf(&buf, "usb-mouse,id=%s", dev->info.alias);
+        driver = "usb-mouse";
         break;
     case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        virBufferAsprintf(&buf, "usb-tablet,id=%s", dev->info.alias);
+        driver = "usb-tablet";
         break;
     case VIR_DOMAIN_INPUT_TYPE_KBD:
-        virBufferAsprintf(&buf, "usb-kbd,id=%s", dev->info.alias);
+        driver = "usb-kbd";
         break;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", driver,
+                                 "s:id", dev->info.alias,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -4366,27 +4376,6 @@ qemuBuildInputEvdevProps(virDomainInputDef *dev)
 }
 
 
-int
-qemuBuildInputDevStr(char **devstr,
-                     const virDomainDef *def,
-                     virDomainInputDef *input,
-                     virQEMUCaps *qemuCaps)
-{
-    switch (input->bus) {
-    case VIR_DOMAIN_INPUT_BUS_USB:
-        if (!(*devstr = qemuBuildUSBInputDevStr(def, input, qemuCaps)))
-            return -1;
-        break;
-
-    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
-        if (!(*devstr = qemuBuildVirtioInputDevStr(def, input, qemuCaps)))
-            return -1;
-        break;
-    }
-    return 0;
-}
-
-
 static int
 qemuBuildInputCommandLine(virCommand *cmd,
                           const virDomainDef *def,
@@ -4409,15 +4398,29 @@ qemuBuildInputCommandLine(virCommand *cmd,
             if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)
                 return -1;
         } else {
-            g_autofree char *devstr = NULL;
+            g_autoptr(virJSONValue) props = NULL;
 
-            if (qemuBuildInputDevStr(&devstr, def, input, qemuCaps) < 0)
-                return -1;
+            switch ((virDomainInputBus) input->bus) {
+            case VIR_DOMAIN_INPUT_BUS_USB:
+                if (!(props = qemuBuildInputUSBDevProps(def, input)))
+                    return -1;
+                break;
 
-            if (devstr) {
-                virCommandAddArg(cmd, "-device");
-                virCommandAddArg(cmd, devstr);
+            case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+                if (!(props = qemuBuildInputVirtioDevProps(def, input, qemuCaps)))
+                    return -1;
+
+            case VIR_DOMAIN_INPUT_BUS_PS2:
+            case VIR_DOMAIN_INPUT_BUS_XEN:
+            case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+            case VIR_DOMAIN_INPUT_BUS_NONE:
+            case VIR_DOMAIN_INPUT_BUS_LAST:
+                break;
             }
+
+            if (props &&
+                qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+                return -1;
         }
     }
 

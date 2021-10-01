@@ -3229,7 +3229,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
                             virDomainInputDef *input)
 {
     int ret = -1;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_INPUT,
                                { .input = input } };
@@ -3239,28 +3239,38 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     bool teardownlabel = false;
     bool teardowncgroup = false;
 
-    if (input->bus != VIR_DOMAIN_INPUT_BUS_USB &&
-        input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+    if (qemuAssignDeviceInputAlias(vm->def, input, -1) < 0)
+        return -1;
+
+    switch ((virDomainInputBus) input->bus) {
+    case VIR_DOMAIN_INPUT_BUS_USB:
+        if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
+            return -1;
+
+        releaseaddr = true;
+
+        if (!(devprops = qemuBuildInputUSBDevProps(vm->def, input)))
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_INPUT_BUS_VIRTIO:
+        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
+            goto cleanup;
+
+        if (!(devprops = qemuBuildInputVirtioDevProps(vm->def, input, priv->qemuCaps)))
+            goto cleanup;
+        break;
+
+    case VIR_DOMAIN_INPUT_BUS_PS2:
+    case VIR_DOMAIN_INPUT_BUS_XEN:
+    case VIR_DOMAIN_INPUT_BUS_PARALLELS:
+    case VIR_DOMAIN_INPUT_BUS_NONE:
+    case VIR_DOMAIN_INPUT_BUS_LAST:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("input device on bus '%s' cannot be hot plugged."),
                        virDomainInputBusTypeToString(input->bus));
         return -1;
     }
-
-    if (input->bus == VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-        if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
-            return -1;
-    } else if (input->bus == VIR_DOMAIN_INPUT_BUS_USB) {
-        if (virDomainUSBAddressEnsure(priv->usbaddrs, &input->info) < 0)
-            goto cleanup;
-        releaseaddr = true;
-    }
-
-    if (qemuAssignDeviceInputAlias(vm->def, input, -1) < 0)
-        goto cleanup;
-
-    if (qemuBuildInputDevStr(&devstr, vm->def, input, priv->qemuCaps) < 0)
-        goto cleanup;
 
     if (qemuDomainNamespaceSetupInput(vm, input, &teardowndevice) < 0)
         goto cleanup;
@@ -3280,7 +3290,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     if (qemuDomainAttachExtensionDevice(priv->mon, &input->info) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0) {
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &input->info));
         goto exit_monitor;
     }
