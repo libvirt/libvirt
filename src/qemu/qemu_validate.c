@@ -1038,33 +1038,6 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 }
 
 
-static int
-qemuValidateDomainDeviceInfo(virDomainDef *def G_GNUC_UNUSED,
-                             virDomainDeviceDef *dev G_GNUC_UNUSED,
-                             virDomainDeviceInfo *info,
-                             void *opaque)
-{
-    virQEMUCaps *qemuCaps = opaque;
-
-    if (info->acpiIndex) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ACPI_INDEX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ACPI index is not supported with this QEMU"));
-            return -1;
-        }
-
-        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
-            info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ACPI index is only supported for PCI devices"));
-            return -1;
-        }
-    }
-
-    return 0;
-}
-
-
 int
 qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
                             virDomainLifecycleAction onReboot,
@@ -1293,15 +1266,6 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
     }
 
-    /* Explicitly discarding 'const' from 'def' is ok because
-     * we know our callback qemuValidateDomainDeviceInfo will
-     * not modify it
-     */
-    if (virDomainDeviceInfoIterate((virDomainDef *)def,
-                                   qemuValidateDomainDeviceInfo,
-                                   qemuCaps) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -1339,15 +1303,10 @@ qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfo *info,
 
 
 static int
-qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
+qemuValidateDomainDeviceDefAddress(virDomainDeviceInfo *info,
                                    const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
-    virDomainDeviceInfo *info;
-
-    if (!(info = virDomainDeviceGetInfo(dev)))
-        return 0;
-
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
         if (qemuValidateDomainDeviceDefZPCIAddress(info, qemuCaps) < 0)
@@ -1410,6 +1369,38 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
     default:
         virReportEnumRangeError(virDomainDeviceAddressType, info->type);
         return -1;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuValidateDomainDeviceInfo(const virDomainDeviceDef *dev,
+                             const virDomainDef *def,
+                             virQEMUCaps *qemuCaps)
+{
+    virDomainDeviceInfo *info;
+
+    if (!(info = virDomainDeviceGetInfo(dev)))
+        return 0;
+
+    if (qemuValidateDomainDeviceDefAddress(info, def, qemuCaps) < 0)
+        return -1;
+
+    if (info->acpiIndex) {
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ACPI_INDEX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI index is not supported with this QEMU"));
+            return -1;
+        }
+
+        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ACPI index is only supported for PCI devices"));
+            return -1;
+        }
     }
 
     return 0;
@@ -5061,8 +5052,8 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         qemuCaps = qemuCapsLocal;
     }
 
-    if ((ret = qemuValidateDomainDeviceDefAddress(dev, def, qemuCaps)) < 0)
-        return ret;
+    if (qemuValidateDomainDeviceInfo(dev, def, qemuCaps) < 0)
+        return -1;
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_NET:
