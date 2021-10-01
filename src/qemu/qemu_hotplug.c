@@ -1629,7 +1629,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
                                { .hostdev = hostdev } };
     virDomainDeviceInfo *info = hostdev->info;
     int ret;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     bool releaseaddr = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
@@ -1706,7 +1706,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         goto error;
     }
 
-    if (!(devstr = qemuBuildPCIHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
+    if (!(devprops = qemuBuildPCIHostdevDevProps(vm->def, hostdev)))
         goto error;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1714,7 +1714,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if ((ret = qemuDomainAttachExtensionDevice(priv->mon, hostdev->info)) < 0)
         goto exit_monitor;
 
-    if ((ret = qemuMonitorAddDevice(priv->mon, devstr)) < 0)
+    if ((ret = qemuMonitorAddDeviceProps(priv->mon, &devprops)) < 0)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
 
  exit_monitor:

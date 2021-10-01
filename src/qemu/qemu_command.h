@@ -165,9 +165,9 @@ qemuBuildMemoryDeviceProps(const virDomainDef *def,
                            virDomainMemoryDef *mem);
 
 /* Current, best practice */
-char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDef *dev,
-                                virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildPCIHostdevDevProps(const virDomainDef *def,
+                            virDomainHostdevDef *dev);
 
 virJSONValue *
 qemuBuildRNGDevProps(const virDomainDef *def,

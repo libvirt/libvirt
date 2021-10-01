@@ -4732,20 +4732,23 @@ qemuBuildVideoCommandLine(virCommand *cmd,
 }
 
 
-char *
-qemuBuildPCIHostdevDevStr(const virDomainDef *def,
-                          virDomainHostdevDef *dev,
-                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+virJSONValue *
+qemuBuildPCIHostdevDevProps(const virDomainDef *def,
+                            virDomainHostdevDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysPCI *pcisrc = &dev->source.subsys.u.pci;
-    int backend = pcisrc->backend;
     virDomainNetTeamingInfo *teaming;
+    g_autofree char *host = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT,
+                                            pcisrc->addr.domain,
+                                            pcisrc->addr.bus,
+                                            pcisrc->addr.slot,
+                                            pcisrc->addr.function);
+    const char *failover_pair_id = NULL;
 
     /* caller has to assign proper passthrough backend type */
-    switch ((virDomainHostdevSubsysPCIBackendType)backend) {
+    switch ((virDomainHostdevSubsysPCIBackendType) pcisrc->backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
-        virBufferAddLit(&buf, "vfio-pci");
         break;
 
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM:
@@ -4754,24 +4757,9 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid PCI passthrough type '%s'"),
-                       virDomainHostdevSubsysPCIBackendTypeToString(backend));
+                       virDomainHostdevSubsysPCIBackendTypeToString(pcisrc->backend));
         return NULL;
     }
-
-    virBufferAddLit(&buf, ",host=");
-    virBufferAsprintf(&buf,
-                      VIR_PCI_DEVICE_ADDRESS_FMT,
-                      pcisrc->addr.domain,
-                      pcisrc->addr.bus,
-                      pcisrc->addr.slot,
-                      pcisrc->addr.function);
-    virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
-    if (dev->info->effectiveBootIndex > 0)
-        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->effectiveBootIndex);
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
-        return NULL;
-    if (qemuBuildRomStr(&buf, dev->info) < 0)
-        return NULL;
 
     if (dev->parentnet)
         teaming = dev->parentnet->teaming;
@@ -4780,11 +4768,29 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
 
     if (teaming &&
         teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_TRANSIENT &&
-        teaming->persistent) {
-        virBufferAsprintf(&buf,  ",failover_pair_id=%s", teaming->persistent);
-    }
+        teaming->persistent)
+        failover_pair_id = teaming->persistent;
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "vfio-pci",
+                                 "s:host", host,
+                                 "s:id", dev->info->alias,
+                                 "p:bootindex", dev->info->effectiveBootIndex,
+                                 NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
+        return NULL;
+
+    if (qemuBuildRomProps(props, dev->info) < 0)
+        return NULL;
+
+    if (virJSONValueObjectAdd(props,
+                              "S:failover_pair_id", failover_pair_id,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -5536,12 +5542,11 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
             if (qemuCommandAddExtDevice(cmd, hostdev->info, qemuCaps) < 0)
                 return -1;
 
-            virCommandAddArg(cmd, "-device");
-            devstr = qemuBuildPCIHostdevDevStr(def, hostdev, qemuCaps);
-            if (!devstr)
+            if (!(devprops = qemuBuildPCIHostdevDevProps(def, hostdev)))
                 return -1;
-            virCommandAddArg(cmd, devstr);
 
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+                return -1;
             break;
 
         /* SCSI */
