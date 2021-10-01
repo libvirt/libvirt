@@ -1817,15 +1817,15 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
 
     if (data->chardevAdded) {
         if (qemuMonitorDetachCharDev(mon, data->chardevAlias) < 0) {
-            VIR_WARN("Unable to remove chardev %s after failed " "qemuMonitorAddDevice",
+            VIR_WARN("Unable to remove chardev %s after failed 'device_add'",
                      data->chardevAlias);
         }
     }
 
     if (data->driveAdded) {
         if (qemuMonitorDriveDel(mon, data->driveAlias) < 0)
-            VIR_WARN("Unable to remove drive %s (%s) after failed "
-                     "qemuMonitorAddDevice", data->driveAlias, data->driveCmd);
+            VIR_WARN("Unable to remove drive %s (%s) after failed 'device_add'",
+                     data->driveAlias, data->driveCmd);
     }
 
     if (data->formatAttached)
