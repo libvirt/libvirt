@@ -100,7 +100,6 @@ virJSONValue *qemuBuildHostNetStr(virDomainNetDef *net,
 /* Current, best practice */
 char *qemuBuildNicDevStr(virDomainDef *def,
                          virDomainNetDef *net,
-                         unsigned int bootindex,
                          size_t vhostfdSize,
                          virQEMUCaps *qemuCaps);
 
@@ -169,7 +168,6 @@ qemuBuildMemoryDeviceStr(const virDomainDef *def,
 /* Current, best practice */
 char *qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                                 virDomainHostdevDef *dev,
-                                unsigned int bootIndex,
                                 virQEMUCaps *qemuCaps);
 
 char *qemuBuildRNGDevStr(const virDomainDef *def,

@@ -3706,7 +3706,6 @@ qemuBuildLegacyNicStr(virDomainNetDef *net)
 char *
 qemuBuildNicDevStr(virDomainDef *def,
                    virDomainNetDef *net,
-                   unsigned int bootindex G_GNUC_UNUSED,
                    size_t vhostfdSize,
                    virQEMUCaps *qemuCaps)
 {
@@ -4628,7 +4627,6 @@ qemuBuildVideoCommandLine(virCommand *cmd,
 char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDef *dev,
-                          unsigned int bootIndex G_GNUC_UNUSED,
                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -5396,8 +5394,7 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
 static int
 qemuBuildHostdevCommandLine(virCommand *cmd,
                             const virDomainDef *def,
-                            virQEMUCaps *qemuCaps,
-                            unsigned int *bootHostdevNet)
+                            virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -5407,7 +5404,6 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         virDomainHostdevSubsysMediatedDev *mdevsrc = &subsys->u.mdev;
         g_autofree char *devstr = NULL;
         g_autofree char *vhostfdName = NULL;
-        unsigned int bootIndex = hostdev->info->bootIndex;
         int vhostfd = -1;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
@@ -5426,14 +5422,6 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
 
         /* PCI */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI:
-            /* bootNet will be non-0 if boot order was set and no other
-             * net devices were encountered
-             */
-            if (hostdev->parentnet && bootIndex == 0) {
-                bootIndex = *bootHostdevNet;
-                *bootHostdevNet = 0;
-            }
-
            /* Ignore unassigned devices  */
            if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
                continue;
@@ -5442,7 +5430,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
                 return -1;
 
             virCommandAddArg(cmd, "-device");
-            devstr = qemuBuildPCIHostdevDevStr(def, hostdev, bootIndex, qemuCaps);
+            devstr = qemuBuildPCIHostdevDevStr(def, hostdev, qemuCaps);
             if (!devstr)
                 return -1;
             virCommandAddArg(cmd, devstr);
@@ -8649,7 +8637,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               virCommand *cmd,
                               virDomainNetDef *net,
                               virQEMUCaps *qemuCaps,
-                              unsigned int bootindex,
                               virNetDevVPortProfileOp vmop,
                               bool standalone,
                               size_t *nnicindexes,
@@ -8674,10 +8661,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     qemuSlirp *slirp;
     size_t i;
     g_autoptr(virJSONValue) hostnetprops = NULL;
-
-
-    if (!bootindex)
-        bootindex = net->info.bootIndex;
 
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
@@ -8924,8 +8907,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         if (qemuCommandAddExtDevice(cmd, &net->info) < 0)
             goto cleanup;
 
-        if (!(nic = qemuBuildNicDevStr(def, net, bootindex,
-                                       net->driver.virtio.queues, qemuCaps)))
+        if (!(nic = qemuBuildNicDevStr(def, net, net->driver.virtio.queues, qemuCaps)))
             goto cleanup;
         virCommandAddArgList(cmd, "-device", nic, NULL);
     } else if (!requireNicdev) {
@@ -8985,47 +8967,23 @@ qemuBuildNetCommandLine(virQEMUDriver *driver,
                         virNetDevVPortProfileOp vmop,
                         bool standalone,
                         size_t *nnicindexes,
-                        int **nicindexes,
-                        unsigned int *bootHostdevNet)
+                        int **nicindexes)
 {
     size_t i;
     int last_good_net = -1;
     virErrorPtr originalError = NULL;
     virDomainDef *def = vm->def;
 
-    if (def->nnets) {
-        unsigned int bootNet = 0;
+    for (i = 0; i < def->nnets; i++) {
+        virDomainNetDef *net = def->nets[i];
 
-        /* convert <boot dev='network'/> to bootindex since we didn't emit -boot n */
-        for (i = 0; i < def->os.nBootDevs; i++) {
-            if (def->os.bootDevs[i] == VIR_DOMAIN_BOOT_NET) {
-                bootNet = i + 1;
-                break;
-            }
-        }
+        if (qemuBuildInterfaceCommandLine(driver, vm, logManager, secManager, cmd, net,
+                                          qemuCaps, vmop,
+                                          standalone, nnicindexes,
+                                          nicindexes) < 0)
+            goto error;
 
-        for (i = 0; i < def->nnets; i++) {
-            virDomainNetDef *net = def->nets[i];
-
-            if (qemuBuildInterfaceCommandLine(driver, vm, logManager, secManager, cmd, net,
-                                              qemuCaps, bootNet, vmop,
-                                              standalone, nnicindexes,
-                                              nicindexes) < 0)
-                goto error;
-
-            last_good_net = i;
-            /* if this interface is a type='hostdev' interface and we
-             * haven't yet added a "bootindex" parameter to an
-             * emulated network device, save the bootindex - hostdev
-             * interface commandlines will be built later on when we
-             * cycle through all the hostdevs, and we'll use it then.
-             */
-            if (virDomainNetGetActualType(net) == VIR_DOMAIN_NET_TYPE_HOSTDEV &&
-                *bootHostdevNet == 0) {
-                *bootHostdevNet = bootNet;
-            }
-            bootNet = 0;
-        }
+        last_good_net = i;
     }
     return 0;
 
@@ -10560,7 +10518,6 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    unsigned int bootHostdevNet = 0;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
@@ -10708,7 +10665,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 
     if (qemuBuildNetCommandLine(driver, vm, logManager, secManager, cmd,
                                 qemuCaps, vmop, standalone,
-                                nnicindexes, nicindexes, &bootHostdevNet) < 0)
+                                nnicindexes, nicindexes) < 0)
         return NULL;
 
     if (qemuBuildSmartcardCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
@@ -10756,7 +10713,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
                                      chardevStdioLogd) < 0)
         return NULL;
 
-    if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps, &bootHostdevNet) < 0)
+    if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (migrateURI)
