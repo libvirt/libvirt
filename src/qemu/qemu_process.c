@@ -6270,6 +6270,7 @@ qemuProcessPrepareDeviceBootorder(virDomainDef *def)
     unsigned int bootCD = 0;
     unsigned int bootFloppy = 0;
     unsigned int bootDisk = 0;
+    unsigned int bootNetwork = 0;
 
     if (def->os.nBootDevs == 0)
         return;
@@ -6289,7 +6290,9 @@ qemuProcessPrepareDeviceBootorder(virDomainDef *def)
             break;
 
         case VIR_DOMAIN_BOOT_NET:
-            /* network boot is handled in network device formatting code */
+            bootNetwork = i + 1;
+            break;
+
         case VIR_DOMAIN_BOOT_LAST:
         default:
             break;
@@ -6319,6 +6322,28 @@ qemuProcessPrepareDeviceBootorder(virDomainDef *def)
         case VIR_DOMAIN_DISK_DEVICE_LAST:
         default:
             break;
+        }
+    }
+
+    if (def->nnets > 0 && bootNetwork > 0) {
+        /* If network boot is enabled, the first network device gets enabled. If
+         * that one is backed by a host device, then we need to find the first
+         * corresponding host device */
+        if (virDomainNetGetActualType(def->nets[0]) == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
+            for (i = 0; i < def->nhostdevs; i++) {
+                virDomainHostdevDef *hostdev = def->hostdevs[i];
+                virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
+
+                if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
+                    subsys->type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI &&
+                    hostdev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED &&
+                    hostdev->parentnet) {
+                    hostdev->info->effectiveBootIndex = bootNetwork;
+                    break;
+                }
+            }
+        } else {
+            def->nets[0]->info.effectiveBootIndex = bootNetwork;
         }
     }
 }

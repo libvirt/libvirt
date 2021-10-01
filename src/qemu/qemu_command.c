@@ -3706,7 +3706,7 @@ qemuBuildLegacyNicStr(virDomainNetDef *net)
 char *
 qemuBuildNicDevStr(virDomainDef *def,
                    virDomainNetDef *net,
-                   unsigned int bootindex,
+                   unsigned int bootindex G_GNUC_UNUSED,
                    size_t vhostfdSize,
                    virQEMUCaps *qemuCaps)
 {
@@ -3841,8 +3841,8 @@ qemuBuildNicDevStr(virDomainDef *def,
         return NULL;
     if (qemuBuildRomStr(&buf, &net->info) < 0)
         return NULL;
-    if (bootindex)
-        virBufferAsprintf(&buf, ",bootindex=%u", bootindex);
+    if (net->info.effectiveBootIndex > 0)
+        virBufferAsprintf(&buf, ",bootindex=%u", net->info.effectiveBootIndex);
 
     return virBufferContentAndReset(&buf);
 }
@@ -4628,7 +4628,7 @@ qemuBuildVideoCommandLine(virCommand *cmd,
 char *
 qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                           virDomainHostdevDef *dev,
-                          unsigned int bootIndex, /* used iff dev->info->bootIndex == 0 */
+                          unsigned int bootIndex G_GNUC_UNUSED,
                           virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -4660,10 +4660,8 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
                       pcisrc->addr.slot,
                       pcisrc->addr.function);
     virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
-    if (dev->info->bootIndex)
-        bootIndex = dev->info->bootIndex;
-    if (bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", bootIndex);
+    if (dev->info->effectiveBootIndex > 0)
+        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->effectiveBootIndex);
     if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
         return NULL;
     if (qemuBuildRomStr(&buf, dev->info) < 0)
