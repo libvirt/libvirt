@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v7.8.0 (unreleased)
+v7.8.0 (2021-10-01)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -28,11 +24,6 @@ v7.8.0 (unreleased)
     ``virNodeDeviceIsActive()`` checks whether the node device is currently
     active. This information can also be retrieved with the new virsh command
     ``nodedev-info``.
-
-* **Improvements**
-
-* **Bug fixes**
-
 
 v7.7.0 (2021-09-01)
 ===================
