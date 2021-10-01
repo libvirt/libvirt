@@ -1403,6 +1403,14 @@ qemuValidateDomainDeviceInfo(const virDomainDeviceDef *dev,
         }
     }
 
+    if (info->romenabled || info->rombar || info->romfile) {
+        if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("ROM tuning is only supported for PCI devices"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 
