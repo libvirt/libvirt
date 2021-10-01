@@ -9740,20 +9740,18 @@ qemuBuildConsoleCommandLine(virLogManager *logManager,
 }
 
 
-char *
-qemuBuildRedirdevDevStr(const virDomainDef *def,
-                        virDomainRedirdevDef *dev,
-                        virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+virJSONValue *
+qemuBuildRedirdevDevProps(const virDomainDef *def,
+                          virDomainRedirdevDef *dev)
 {
-    size_t i;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainRedirFilterDef *redirfilter = def->redirfilter;
+    g_autofree char *chardev = g_strdup_printf("char%s", dev->info.alias);
+    g_autofree char *filter = NULL;
 
-    virBufferAsprintf(&buf, "usb-redir,chardev=char%s,id=%s",
-                      dev->info.alias, dev->info.alias);
-
-    if (redirfilter && redirfilter->nusbdevs) {
-        virBufferAddLit(&buf, ",filter=");
+    if (redirfilter) {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        size_t i;
 
         for (i = 0; i < redirfilter->nusbdevs; i++) {
             virDomainRedirFilterUSBDevDef *usbdev = redirfilter->usbdevs[i];
@@ -9777,19 +9775,26 @@ qemuBuildRedirdevDevStr(const virDomainDef *def,
             else
                 virBufferAddLit(&buf, "-1:");
 
-            virBufferAsprintf(&buf, "%u", usbdev->allow);
-            if (i < redirfilter->nusbdevs -1)
-                virBufferAddLit(&buf, "|");
+            virBufferAsprintf(&buf, "%u|", usbdev->allow);
         }
+        virBufferTrim(&buf, "|");
+
+        filter = virBufferContentAndReset(&buf);
     }
 
-    if (dev->info.bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", dev->info.bootIndex);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "usb-redir",
+                                 "s:chardev", chardev,
+                                 "s:id", dev->info.alias,
+                                 "S:filter", filter,
+                                 "p:bootindex", dev->info.bootIndex,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -9810,6 +9815,7 @@ qemuBuildRedirdevCommandLine(virLogManager *logManager,
 
     for (i = 0; i < def->nredirdevs; i++) {
         virDomainRedirdevDef *redirdev = def->redirdevs[i];
+        g_autoptr(virJSONValue) devprops = NULL;
         char *devstr;
 
         if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
@@ -9824,11 +9830,11 @@ qemuBuildRedirdevCommandLine(virLogManager *logManager,
         virCommandAddArg(cmd, devstr);
         VIR_FREE(devstr);
 
-        virCommandAddArg(cmd, "-device");
-        if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, qemuCaps)))
+        if (!(devprops = qemuBuildRedirdevDevProps(def, redirdev)))
             return -1;
-        virCommandAddArg(cmd, devstr);
-        VIR_FREE(devstr);
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            return -1;
     }
 
     return 0;

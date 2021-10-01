@@ -204,9 +204,9 @@ virJSONValue *
 qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
                                  virDomainHostdevDef *dev);
 
-char *qemuBuildRedirdevDevStr(const virDomainDef *def,
-                              virDomainRedirdevDef *dev,
-                              virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildRedirdevDevProps(const virDomainDef *def,
+                          virDomainRedirdevDef *dev);
 
 char *qemuBuildZPCIDevStr(virDomainDeviceInfo *dev);
 

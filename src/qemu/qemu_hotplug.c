@@ -1961,7 +1961,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     g_autofree char *charAlias = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     bool chardevAdded = false;
     g_autofree char *tlsAlias = NULL;
     const char *secAlias = NULL;
@@ -1976,7 +1976,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
     if ((virDomainUSBAddressEnsure(priv->usbaddrs, &redirdev->info)) < 0)
         return -1;
 
-    if (!(devstr = qemuBuildRedirdevDevStr(def, redirdev, priv->qemuCaps)))
+    if (!(devprops = qemuBuildRedirdevDevProps(def, redirdev)))
         goto cleanup;
 
     VIR_REALLOC_N(def->redirdevs, def->nredirdevs+1);
@@ -1994,7 +1994,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
         goto exit_monitor;
     chardevAdded = true;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
