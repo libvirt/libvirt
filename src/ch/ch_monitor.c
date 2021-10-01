@@ -112,43 +112,36 @@ virCHMonitorBuildPTYJson(virJSONValue *content, virDomainDef *vmdef)
 static int
 virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *kernel = virJSONValueNewObject();
-    virJSONValue *cmdline = virJSONValueNewObject();
-    virJSONValue *initramfs = virJSONValueNewObject();
+    g_autoptr(virJSONValue) kernel = virJSONValueNewObject();
+    g_autoptr(virJSONValue) cmdline = virJSONValueNewObject();
+    g_autoptr(virJSONValue) initramfs = virJSONValueNewObject();
 
     if (vmdef->os.kernel == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Kernel image path in this domain is not defined"));
-        goto cleanup;
+        return -1;
     } else {
         if (virJSONValueObjectAppendString(kernel, "path", vmdef->os.kernel) < 0)
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAppend(content, "kernel", &kernel) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (vmdef->os.cmdline) {
         if (virJSONValueObjectAppendString(cmdline, "args", vmdef->os.cmdline) < 0)
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAppend(content, "cmdline", &cmdline) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (vmdef->os.initrd != NULL) {
         if (virJSONValueObjectAppendString(initramfs, "path", vmdef->os.initrd) < 0)
-            goto cleanup;
+            return -1;
         if (virJSONValueObjectAppend(content, "initramfs", &initramfs) < 0)
-            goto cleanup;
+            return -1;
     }
 
     return 0;
-
- cleanup:
-    virJSONValueFree(kernel);
-    virJSONValueFree(cmdline);
-    virJSONValueFree(initramfs);
-
-    return -1;
 }
 
 static int
