@@ -2573,7 +2573,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriver *driver,
                               virDomainHostdevDef *hostdev)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     bool added = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
@@ -2601,13 +2601,13 @@ qemuDomainAttachHostUSBDevice(virQEMUDriver *driver,
 
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
-    if (!(devstr = qemuBuildUSBHostdevDevStr(vm->def, hostdev, priv->qemuCaps)))
+    if (!(devprops = qemuBuildUSBHostdevDevProps(vm->def, hostdev, priv->qemuCaps)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs+1);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorAddDevice(priv->mon, devstr);
+    ret = qemuMonitorAddDeviceProps(priv->mon, &devprops);
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         ret = -1;
         goto cleanup;

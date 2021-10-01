@@ -177,9 +177,10 @@ int qemuBuildRNGBackendProps(virDomainRNGDef *rng,
                              virJSONValue **props);
 
 /* Current, best practice */
-char *qemuBuildUSBHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDef *dev,
-                                virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildUSBHostdevDevProps(const virDomainDef *def,
+                            virDomainHostdevDef *dev,
+                            virQEMUCaps *qemuCaps);
 
 char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
                                  virDomainHostdevDef *dev,

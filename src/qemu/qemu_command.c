@@ -4789,15 +4789,17 @@ qemuBuildPCIHostdevDevStr(const virDomainDef *def,
 }
 
 
-char *
-qemuBuildUSBHostdevDevStr(const virDomainDef *def,
-                          virDomainHostdevDef *dev,
-                          virQEMUCaps *qemuCaps)
+virJSONValue *
+qemuBuildUSBHostdevDevProps(const virDomainDef *def,
+                            virDomainHostdevDef *dev,
+                            virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysUSB *usbsrc = &dev->source.subsys.u.usb;
+    unsigned int hostbus = 0;
+    unsigned int hostaddr = 0;
+    g_autofree char *hostdevice = NULL;
 
-    virBufferAddLit(&buf, "usb-host");
     if (!dev->missing) {
         if (usbsrc->bus == 0 && usbsrc->device == 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4806,21 +4808,28 @@ qemuBuildUSBHostdevDevStr(const virDomainDef *def,
         }
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_HOSTDEVICE)) {
-            virBufferAsprintf(&buf, ",hostdevice=/dev/bus/usb/%03d/%03d",
-                              usbsrc->bus, usbsrc->device);
+            hostdevice = g_strdup_printf("/dev/bus/usb/%03d/%03d",
+                                         usbsrc->bus, usbsrc->device);
         } else {
-            virBufferAsprintf(&buf, ",hostbus=%d,hostaddr=%d",
-                              usbsrc->bus, usbsrc->device);
+            hostbus = usbsrc->bus;
+            hostaddr = usbsrc->device;
         }
     }
-    virBufferAsprintf(&buf, ",id=%s", dev->info->alias);
-    if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "usb-host",
+                                 "S:hostdevice", hostdevice,
+                                 "p:hostbus", hostbus,
+                                 "p:hostaddr", hostaddr,
+                                 "s:id", dev->info->alias,
+                                 "p:bootindex",  dev->info->bootIndex,
+                                 NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -5512,12 +5521,11 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         switch ((virDomainHostdevSubsysType) subsys->type) {
         /* USB */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
-            virCommandAddArg(cmd, "-device");
-            if (!(devstr =
-                  qemuBuildUSBHostdevDevStr(def, hostdev, qemuCaps)))
+            if (!(devprops = qemuBuildUSBHostdevDevProps(def, hostdev, qemuCaps)))
                 return -1;
-            virCommandAddArg(cmd, devstr);
 
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+                return -1;
             break;
 
         /* PCI */
