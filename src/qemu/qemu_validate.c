@@ -1345,7 +1345,7 @@ qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
 {
     virDomainDeviceInfo *info;
 
-    if (!(info = virDomainDeviceGetInfo((virDomainDeviceDef *)dev)))
+    if (!(info = virDomainDeviceGetInfo(dev)))
         return 0;
 
     switch ((virDomainDeviceAddressType) info->type) {

@@ -3340,7 +3340,7 @@ virDomainDeviceDef *virDomainDeviceDefCopy(virDomainDeviceDef *src,
                                            const virDomainDef *def,
                                            virDomainXMLOption *xmlopt,
                                            void *parseOpaque);
-virDomainDeviceInfo *virDomainDeviceGetInfo(virDomainDeviceDef *device);
+virDomainDeviceInfo *virDomainDeviceGetInfo(const virDomainDeviceDef *device);
 void virDomainDeviceSetData(virDomainDeviceDef *device,
                             void *devicedata);
 void virDomainTPMDefFree(virDomainTPMDef *def);

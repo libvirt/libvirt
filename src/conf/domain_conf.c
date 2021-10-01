@@ -4171,7 +4171,7 @@ virDomainObjGetOneDef(virDomainObj *vm,
 }
 
 virDomainDeviceInfo *
-virDomainDeviceGetInfo(virDomainDeviceDef *device)
+virDomainDeviceGetInfo(const virDomainDeviceDef *device)
 {
     switch ((virDomainDeviceType) device->type) {
     case VIR_DOMAIN_DEVICE_DISK:
