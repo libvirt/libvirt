@@ -239,6 +239,7 @@
   <flag name='set-action'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='virtio-mem-pci'/>
+  <flag name='piix4-acpi-root-hotplug-en'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
