@@ -121,7 +121,6 @@ virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
                        _("Kernel image path in this domain is not defined"));
         goto cleanup;
     } else {
-        kernel = virJSONValueNewObject();
         if (virJSONValueObjectAppendString(kernel, "path", vmdef->os.kernel) < 0)
             goto cleanup;
         if (virJSONValueObjectAppend(content, "kernel", &kernel) < 0)
@@ -136,7 +135,6 @@ virCHMonitorBuildKernelRelatedJson(virJSONValue *content, virDomainDef *vmdef)
     }
 
     if (vmdef->os.initrd != NULL) {
-        initramfs = virJSONValueNewObject();
         if (virJSONValueObjectAppendString(initramfs, "path", vmdef->os.initrd) < 0)
             goto cleanup;
         if (virJSONValueObjectAppend(content, "initramfs", &initramfs) < 0)
