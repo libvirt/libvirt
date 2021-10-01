@@ -468,7 +468,7 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     if (!vm->def) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("VM is not defined"));
-        return NULL;
+        goto cleanup;
     }
 
     /* prepare to launch Cloud-Hypervisor socket */
@@ -502,12 +502,13 @@ virCHMonitorNew(virDomainObj *vm, const char *socketdir)
     mon->handle = curl_easy_init();
 
     /* now has its own reference */
-    virObjectRef(mon);
     mon->vm = virObjectRef(vm);
 
     ret = mon;
+    mon = NULL;
 
  cleanup:
+    virCHMonitorClose(mon);
     virCommandFree(cmd);
     return ret;
 }
