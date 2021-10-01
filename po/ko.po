@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-09-24 14:41+0000\n"
-"PO-Revision-Date: 2021-09-29 08:04+0000\n"
+"PO-Revision-Date: 2021-10-01 15:05+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -10359,7 +10359,7 @@ msgstr "표시할 CPU 수 값이 잘못되었습니다"
 
 #, c-format
 msgid "Invalid value for option %s"
-msgstr "선택(옵션) %s에 잘못된 값"
+msgstr "옵션 %s에 잘못된 값"
 
 msgid "Invalid value for start CPU"
 msgstr "시작 CPU 값이 잘못되었습니다"
@@ -10971,8 +10971,7 @@ msgstr "vCenter 없이 이전 할 수 없습니다"
 
 #, c-format
 msgid "Migration option '%s' is not supported by QEMU binary"
-msgstr ""
-"이전 선택(Migration option) '%s'는 QEMU 바이너리에 의해 지원되지 않습니다"
+msgstr "이전 옵션 '%s'는 QEMU 바이너리에 의해 지원되지 않습니다"
 
 msgid "Migration persistent data already present"
 msgstr "이전 지속 자료는 이미 존재합니다"
@@ -13689,9 +13688,7 @@ msgstr "요청한 볼륨 '%s'가 풀 '%s'에 있지 않습니다"
 msgid ""
 "Required option '%s' is not set for PCI controller with index '%d', model "
 "'%s' and modelName '%s'"
-msgstr ""
-"필수 선택(옵션) '%s'가 색인 '%d', 모델 '%s' 과 모델이름 '%s'가 있는 PCI 제어"
-"기를 위해 설정되지 않았습니다"
+msgstr "필수 선택 '%s'가 색인 '%d', 모델 '%s' 과 모델이름 '%s'가 있는 PCI 제어기를 위해 설정되지 않았습니다"
 
 #, c-format
 msgid ""
@@ -14923,9 +14920,7 @@ msgstr "사전-복사에서 사후-복사로 실행 중인 이전을 전환합�
 msgid ""
 "Switch running migration from pre-copy to post-copy. The migration must have "
 "been started with --postcopy option."
-msgstr ""
-"사전 복사에서 사후 복사로 실행 중인 이전을 전환합니다. 이전은 --postcopy 선택"
-"(옵션)과 함께 시작되어야 합니다."
+msgstr "사전 복사에서 사후 복사로 실행 중인 이전을 전환합니다. 이전은 --postcopy 옵션과 함께 시작되어야 합니다."
 
 msgid "System is in use"
 msgstr "시스템이 사용중입니다"
@@ -15193,7 +15188,7 @@ msgstr "대상 장치 주소 유형 %s은 소스 %s와 일치하지 않습니다
 
 #, c-format
 msgid "Target device ats option '%s' does not match source '%s'"
-msgstr "대상 장치 ats 선택 '%s'은 소스 '%s'와 일치하지 않습니다"
+msgstr "대상 장치 ats 옵션 '%s'은 원천 '%s'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target device ccid address %d:%d does not match source %d:%d"
@@ -15221,7 +15216,7 @@ msgstr "대상 장치 isa 주소 %d:%d가 소스 %d:%d와 일치하지 않습니
 
 #, c-format
 msgid "Target device packed option '%s' does not match source '%s'"
-msgstr "대상 장치 포장 선택 '%s'은 소스 '%s'와 일치하지 않습니다"
+msgstr "대상 장치 포장 옵션 '%s'은 소스 '%s'와 일치하지 않습니다"
 
 msgid "Target device virtio options don't match the source"
 msgstr "대상 장치 virtio 옵션이 소스와 일치하지 않습니다"
@@ -20561,7 +20556,7 @@ msgstr "bool"
 
 #, c-format
 msgid "bool parameter '%s' of command '%s' has completer set"
-msgstr ""
+msgstr "명령 '%s'의 불(bool) 매개변수 '%s'는 완성자 묶음(set)을 가지고 있습니다"
 
 #, c-format
 msgid "boot order %u is already used by another device"
@@ -22005,7 +22000,7 @@ msgid "cannot set CPU affinity on process %d"
 msgstr "프로세스 %d의 CPU 친화도를 지정 할 수 없습니다"
 
 msgid "cannot set autostart for transient device"
-msgstr ""
+msgstr "임시 장치를 위해 자동 시작을 설정 할 수 없습니다"
 
 msgid "cannot set autostart for transient domain"
 msgstr "임시 도메인에 대해 autostart를 설정할 수 없음"
@@ -22168,7 +22163,7 @@ msgstr "%s 구조에 대한 CPU 자료를 복호화 할 수 없음"
 msgid ""
 "cannot update lifecycle action because QEMU was started with incompatible -"
 "no-reboot setting"
-msgstr ""
+msgstr "QEMU가 incompatiable-no-reboot 설정으로 시작되었기 때문에 수명 주기 작업을 최신화 할 수 없습니다"
 
 #, c-format
 msgid "cannot upload to volume %s"
@@ -22330,7 +22325,7 @@ msgid "changing cpu placement mode is not supported by vz driver"
 msgstr "cpu 배치 모드 변경은 vz 드라이버에서 지원되지 않습니다"
 
 msgid "changing device 'acpi index' is not allowed"
-msgstr ""
+msgstr "장치 'acpi index' 변경하기는 허용되지 않습니다"
 
 msgid "changing device alias is not allowed"
 msgstr "장치 별칭 변경은 허용되지 않습니다"
@@ -22510,7 +22505,7 @@ msgstr "명령 '%s'는 --%s 옵션을 지원하지 않음"
 
 #, c-format
 msgid "command '%s' has handler set"
-msgstr ""
+msgstr "명령 '%s'는 handler set를 가지고 있습니다"
 
 #, c-format
 msgid "command '%s' has inconsistent alias"
@@ -22518,15 +22513,15 @@ msgstr "명령 '%s'에 일치하지 않는 별칭이 있습니다"
 
 #, c-format
 msgid "command '%s' has info set"
-msgstr ""
+msgstr "명령 '%s'는 정보 설정(set)을 가지고 있습니다"
 
 #, c-format
 msgid "command '%s' has multiple flags set"
-msgstr ""
+msgstr "명령 '%s'는 다중 플래그 구성(set)을 가지고 있습니다"
 
 #, c-format
 msgid "command '%s' has options set"
-msgstr ""
+msgstr "명령 '%s'는 선택(옵션) 설정(set)을 가지고 있습니다"
 
 #, c-format
 msgid "command '%s' has too many options"
@@ -22546,11 +22541,11 @@ msgstr "'%s' 명령은 <%s> 옵션이 필요함"
 
 #, c-format
 msgid "command alias '%s' is pointing to a non-existant command '%s'"
-msgstr ""
+msgstr "명령 별칭 '%s'는 존재하지 않는 명령 '%s'를 지시하고 있습니다"
 
 #, c-format
 msgid "command alias '%s' is pointing to another command alias '%s'"
-msgstr ""
+msgstr "명령 별칭 '%s'는 다른 명령 별칭 '%s'를 지시하고 있습니다"
 
 msgid "command groups and command are both NULL run vshInit before reloading"
 msgstr ""
@@ -24407,7 +24402,7 @@ msgid "dynamic label type must use resource relabeling"
 msgstr "동적 레이블 유형은 리소스 재레이블을 사용해야 합니다"
 
 msgid "echo arguments. Used for internal testing."
-msgstr ""
+msgstr "에코 인수. 내부 시험을 위해 사용됩니다."
 
 msgid "edit XML configuration for a domain"
 msgstr "도메인을 위한 XML 설정 편집"
@@ -25494,7 +25489,7 @@ msgstr "sourceList에서 소스를 얻는 데 실패했습니다"
 
 #, c-format
 msgid "failed to get stat for '%s'"
-msgstr ""
+msgstr "'%s;를 위해 가져 올 수 없습니다"
 
 #, c-format
 msgid "failed to get status of interface %s: %s%s%s"
@@ -25614,7 +25609,7 @@ msgstr "MAC 주소 '%s'의 연결장치를 검색하는데 실패"
 
 #, c-format
 msgid "failed to mark device %s as autostarted"
-msgstr ""
+msgstr "자동 시작되는 장치 %s를 표시하는데 실패함"
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -26076,7 +26071,7 @@ msgstr "인터페이스 %s의 정의를 해제하는데 실패했습니다: %s%s
 
 #, c-format
 msgid "failed to unmark device %s as autostarted"
-msgstr ""
+msgstr "자동시작되는 장치 %s를 표시하지 않는데 실패함"
 
 #, c-format
 msgid "failed to unmark network %s as autostarted"
@@ -29476,7 +29471,7 @@ msgstr "<가상 포트 유형='%s'>에서 누락된 %s"
 
 #, c-format
 msgid "missing '%s' in 'config' from cloud-hypervisor"
-msgstr ""
+msgstr "클라우드-하이퍼바이저에서 'config'에 있는 '%s'가 누락됨"
 
 msgid "missing 'DateTime' element"
 msgstr "누락된 'DateTime' 요소"
@@ -29486,7 +29481,7 @@ msgid "missing 'architecture' in '%s'"
 msgstr "'%s'에서 '구조'가 누락되었습니다"
 
 msgid "missing 'config' in info query result from cloud-hypervisor"
-msgstr ""
+msgstr "클라우드-하이퍼바이저에서 정보 쿼리 결과에 있는 'config'가 누락됨"
 
 #, c-format
 msgid "missing 'content' value in selinux lxc contexts file '%s'"
@@ -29506,7 +29501,7 @@ msgstr "'%s'에 '실행 파일'이 없습니다"
 
 #, c-format
 msgid "missing 'file' in '%s' from cloud-hypervisor"
-msgstr ""
+msgstr "클라우드-하이퍼바이저에서 '%s'에 있는 'file'이 누락됨"
 
 #, c-format
 msgid "missing 'file' value in selinux lxc contexts file '%s'"
@@ -30337,7 +30332,7 @@ msgstr ""
 "템을 만들지 못했습니다"
 
 msgid "mode attribute of <source/> element"
-msgstr ""
+msgstr "<source/> 요소의 방법(mode) 속성"
 
 msgid "mode of device reading and writing"
 msgstr "읽기 및 쓰기 장치 모드"
@@ -30574,7 +30569,7 @@ msgid "ncr53c90 can only be used as first SCSI controller"
 msgstr "ncr53c90은 첫 번째 SCSI 컨트롤러로만 사용할 수 있습니다"
 
 msgid "need at least one serial port to use BIOS serial output"
-msgstr ""
+msgstr "바이오스 시리얼 출력(output)을 사용하려면 적어도 하나의 시리얼이 필요합니다"
 
 msgid "need either --dest or --xml"
 msgstr "--dest 또는 --xml이 필요합니다"
@@ -31423,7 +31418,7 @@ msgid "node device event callback %d not registered"
 msgstr "노드 장치 이벤트 콜백 %d가 등록되지 않았습니다"
 
 msgid "node device information"
-msgstr ""
+msgstr "노드 장치 정보"
 
 msgid "node get memory parameters not implemented on this platform"
 msgstr "이 플랫폼에서 구현되지 않은 노드 가져오기 메모리 매개변수"
@@ -31958,7 +31953,7 @@ msgid "output an XML string for the hypervisor sysinfo, if available"
 msgstr "사용 가능한 경우 하이퍼바이저 sysinfo에 대한 XML 문자열을 출력합니다"
 
 msgid "output the list of options which are missing completers"
-msgstr ""
+msgstr "완성자가 누락된 옵션(선택)의 목록을 출력합니다"
 
 msgid "output to stderr"
 msgstr "stderr로 출력"
@@ -32637,16 +32632,19 @@ msgid ""
 "qemu driver doesn't support 'onReboot' set to 'destroy and 'onPoweroff' set "
 "to 'reboot'"
 msgstr ""
+"qemu 드라이버는 'destroy'로 설정된 'onReboot' 와 'reboot'로 설정된 'onPoweroff'를 지원하지 않습니다"
 
 msgid ""
 "qemu driver doesn't support the 'preserve' action for "
 "'on_reboot'/'on_poweroff'"
-msgstr ""
+msgstr "qemu 드라이버는 'on_reboot'/'on_poweroff'를 위한 'preserve' 동작을 지원하지 않습니다"
 
 msgid ""
 "qemu driver doesn't support the 'rename-restart' action for "
 "'on_reboot'/'on_poweroff'/'on_crash'"
 msgstr ""
+"qemu 드라이버는 'on_reboot'/'on_poweroff'/'on_crash'를 위한 'rename-restart' 동작을 "
+"지원하지 않습니다"
 
 #, c-format
 msgid "qemu emulator '%s' does not support xen"
@@ -32832,7 +32830,7 @@ msgid ""
 msgstr "최대 복사-후 이전 속도 쿼리는 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "queue-size property isn't supported by this QEMU binary"
-msgstr ""
+msgstr "이 대기열(queue)-크기 특성은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "queues attribute in disk driver element is only supported by virtio-blk"
 msgstr "디스크 드라이버 요소의 queues 속성은 virtio-blk에서만 지원됩니다"
@@ -33949,7 +33947,7 @@ msgid "source-host for underlying storage"
 msgstr "저장소에 대한 소스 호스트"
 
 msgid "source-mode is mandatory"
-msgstr ""
+msgstr "원쳔-방법은 필수적입니다"
 
 #, c-format
 msgid "spapr-vio address %#llx already in use"
@@ -34017,7 +34015,7 @@ msgid "spicevmc device type only supports virtio"
 msgstr "spicevmc 장치 유형은 virtio 만을 지원합니다"
 
 msgid "split each argument on ','; ',,' is an escape sequence"
-msgstr ""
+msgstr "각 인수를 ','로 나눕니다 ; ',,''은 이스케이프 시퀀스(escape sequence)입니다"
 
 #, c-format
 msgid "splitting StorageUrl failed %s"
@@ -35129,7 +35127,7 @@ msgstr "임시 디스크 '%s'는 읽기 전용이 아니어야 합니다"
 msgid ""
 "transient disk backing image sharing with destroy action of lifecycle isn't "
 "supported by this QEMU binary"
-msgstr ""
+msgstr "수명 주기의 파괴 동작을 갖는 임시 디스크 백업 이미지 공유는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "transient disk not supported by this QEMU binary (%s)"
@@ -35543,7 +35541,7 @@ msgstr "blkio 장치 '%s' '%s'를 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "unable to parse contents of 'file' field in '%s' from cloud-hypervisor"
-msgstr ""
+msgstr "클라우드-하이퍼바이저에서 '%s'에 있는 '파일(file)' 부분의 내용을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "unable to parse diskspec: %s"
