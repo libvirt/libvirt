@@ -25,9 +25,9 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
 -device pcie-pci-bridge,id=pci.2,bus=pci.1,addr=0x0 \
--device pcie-root-port,port=0x9,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x1 \
+-device pcie-root-port,port=9,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x1 \
 -device virtio-scsi-pci,disable-legacy=off,disable-modern=off,id=scsi0,bus=pci.2,addr=0x4 \
 -device virtio-serial-pci,disable-legacy=off,disable-modern=off,id=virtio-serial0,bus=pci.2,addr=0x3 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \

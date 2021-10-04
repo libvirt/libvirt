@@ -32,7 +32,7 @@ QEMU_AUDIO_DRV=none \
 -dtb /aarch64.dtb \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1 \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
--device ioh3420,port=0x10,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
+-device ioh3420,port=16,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x2 \
 -drive file=/aarch64.raw,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-pci,bus=pci.2,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \

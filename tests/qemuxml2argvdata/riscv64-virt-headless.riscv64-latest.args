@@ -23,13 +23,13 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
--device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
--device pcie-root-port,port=0xa,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x2 \
--device pcie-root-port,port=0xb,chassis=4,id=pci.4,bus=pcie.0,addr=0x1.0x3 \
--device pcie-root-port,port=0xc,chassis=5,id=pci.5,bus=pcie.0,addr=0x1.0x4 \
--device pcie-root-port,port=0xd,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
--device pcie-root-port,port=0xe,chassis=7,id=pci.7,bus=pcie.0,addr=0x1.0x6 \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-root-port,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-device pcie-root-port,port=10,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x2 \
+-device pcie-root-port,port=11,chassis=4,id=pci.4,bus=pcie.0,addr=0x1.0x3 \
+-device pcie-root-port,port=12,chassis=5,id=pci.5,bus=pcie.0,addr=0x1.0x4 \
+-device pcie-root-port,port=13,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
+-device pcie-root-port,port=14,chassis=7,id=pci.7,bus=pcie.0,addr=0x1.0x6 \
 -device qemu-xhci,p2=15,p3=15,id=usb,bus=pci.2,addr=0x0 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.3,addr=0x0 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \

@@ -2947,15 +2947,15 @@ qemuBuildControllerSCSIDevProps(const virDomainDef *domainDef,
 
 
 static int
-qemuBuildControllerPCIDevStr(virDomainControllerDef *def,
-                             const virDomainDef *domainDef,
-                             char **devstr)
+qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
+                               const virDomainDef *domainDef,
+                               virJSONValue **devprops)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     const virDomainPCIControllerOpts *pciopts = &def->opts.pciopts;
     const char *modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
 
-    *devstr = NULL;
+    *devprops = NULL;
 
     /* Skip the implicit PHB for pSeries guests */
     if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
@@ -2973,42 +2973,65 @@ qemuBuildControllerPCIDevStr(virDomainControllerDef *def,
 
     switch ((virDomainControllerModelPCI) def->model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-        virBufferAsprintf(&buf, "%s,chassis_nr=%d,id=%s",
-                          modelName, pciopts->chassisNr,
-                          def->info.alias);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", modelName,
+                                     "i:chassis_nr", pciopts->chassisNr,
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
+
         break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-        virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
-                          modelName, pciopts->busNr,
-                          def->info.alias);
-        if (pciopts->numaNode != -1) {
-            virBufferAsprintf(&buf, ",numa_node=%d",
-                              pciopts->numaNode);
-        }
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", modelName,
+                                     "i:bus_nr", pciopts->busNr,
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
+
+        if (pciopts->numaNode != -1 &&
+            virJSONValueObjectAdd(props, "i:numa_node", pciopts->numaNode, NULL) < 0)
+            return -1;
+
         break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
-        virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", modelName,
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
+
         break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-        virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
-                          modelName, pciopts->port,
-                          pciopts->chassis, def->info.alias);
-        if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&buf, ",hotplug=%s",
-                              virTristateSwitchTypeToString(pciopts->hotplug));
-        }
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", modelName,
+                                     "i:port", pciopts->port,
+                                     "i:chassis", pciopts->chassis,
+                                     "s:id", def->info.alias,
+                                     "T:hotplug", pciopts->hotplug,
+                                     NULL) < 0)
+            return -1;
+
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-        virBufferAsprintf(&buf, "%s,index=%d,id=%s",
-                          modelName, pciopts->targetIndex,
-                          def->info.alias);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", modelName,
+                                     "i:index", pciopts->targetIndex,
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
 
-        if (pciopts->numaNode != -1)
-            virBufferAsprintf(&buf, ",numa_node=%d", pciopts->numaNode);
+        if (pciopts->numaNode != -1 &&
+            virJSONValueObjectAdd(props, "i:numa_node", pciopts->numaNode, NULL) < 0)
+            return -1;
+
         break;
     case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -3022,10 +3045,10 @@ qemuBuildControllerPCIDevStr(virDomainControllerDef *def,
         return -1;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
+    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
         return -1;
 
-    *devstr = virBufferContentAndReset(&buf);
+    *devprops = g_steal_pointer(&props);
     return 0;
 }
 
@@ -3110,7 +3133,21 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        return qemuBuildControllerPCIDevStr(def, domainDef, devstr);
+        if (qemuBuildControllerPCIDevProps(def, domainDef, &props) < 0)
+            return -1;
+
+        if (!props)
+            return 0;
+
+        driver = virJSONValueObjectGetString(props, "driver");
+
+        virBufferAsprintf(&buf, "%s,", driver);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
+            return -1;
+
+        *devstr = virBufferContentAndReset(&buf);
+        return 0;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:

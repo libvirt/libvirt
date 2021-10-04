@@ -25,8 +25,8 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device pcie-root-port,port=0x8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
--device pcie-root-port,port=0x9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-root-port,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -device qemu-xhci,id=usb,bus=pci.1,addr=0x0 \
 -drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
 -drive file=/tmp/data.img,format=qcow2,if=none,id=drive-fdc0-0-1 \
