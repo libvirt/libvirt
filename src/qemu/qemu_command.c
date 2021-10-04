@@ -521,6 +521,142 @@ qemuBuildDeviceAddressStr(virBuffer *buf,
 }
 
 
+static int
+qemuBuildDeviceAddresDriveProps(virJSONValue *props,
+                                const virDomainDef *domainDef,
+                                virDomainDeviceInfo *info)
+{
+    g_autofree char *bus = NULL;
+    virDomainControllerDef *controller = NULL;
+    const char *controllerAlias = NULL;
+
+    switch ((virDomainDiskBus) info->addr.drive.diskbus) {
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        /* When domain has builtin IDE controller we don't put it onto cmd
+         * line. Therefore we can't set its alias. In that case, use the
+         * default one. */
+        if (qemuDomainHasBuiltinIDE(domainDef)) {
+            controllerAlias = "ide";
+        } else {
+            if (!(controllerAlias = virDomainControllerAliasFind(domainDef,
+                                                                 VIR_DOMAIN_CONTROLLER_TYPE_IDE,
+                                                                 info->addr.drive.controller)))
+                return -1;
+        }
+
+        bus = g_strdup_printf("%s.%u", controllerAlias, info->addr.drive.bus);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:bus", bus,
+                                  "u:unit", info->addr.drive.unit,
+                                  NULL) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        /* When domain has builtin SATA controller we don't put it onto cmd
+         * line. Therefore we can't set its alias. In that case, use the
+         * default one. */
+        if (qemuDomainIsQ35(domainDef) &&
+            info->addr.drive.controller == 0) {
+            controllerAlias = "ide";
+        } else {
+            if (!(controllerAlias = virDomainControllerAliasFind(domainDef,
+                                                                 VIR_DOMAIN_CONTROLLER_TYPE_SATA,
+                                                                 info->addr.drive.controller)))
+                return -1;
+        }
+
+        bus = g_strdup_printf("%s.%u", controllerAlias, info->addr.drive.unit);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:bus", bus,
+                                  NULL) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        if (virJSONValueObjectAdd(props,
+                                  "u:unit", info->addr.drive.unit,
+                                  NULL) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        if (!(controller = virDomainDeviceFindSCSIController(domainDef, &info->addr.drive))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unable to find a SCSI controller for idx=%d"),
+                           info->addr.drive.controller);
+            return -1;
+        }
+
+        switch ((virDomainControllerModelSCSI) controller->model) {
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+            bus = g_strdup_printf("%s.%u", controller->info.alias, info->addr.drive.bus);
+
+            if (virJSONValueObjectAdd(props,
+                                      "s:bus", bus,
+                                      "u:scsi-id", info->addr.drive.unit,
+                                      NULL) < 0)
+                return -1;
+
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
+            bus = g_strdup_printf("%s.0", controller->info.alias);
+
+            if (virJSONValueObjectAdd(props,
+                                      "s:bus", bus,
+                                      "u:channel", info->addr.drive.bus,
+                                      "u:scsi-id", info->addr.drive.target,
+                                      "u:lun", info->addr.drive.unit,
+                                      NULL) < 0)
+                return -1;
+
+            break;
+
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unexpected SCSI controller model %d"),
+                           controller->model);
+            return -1;
+        }
+
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_LAST:
+    default:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("address type drive is not supported for bus '%s'"),
+                       NULLSTR(virDomainDiskBusTypeToString(info->addr.drive.diskbus)));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int G_GNUC_UNUSED
 qemuBuildDeviceAddressProps(virJSONValue *props,
                             const virDomainDef *domainDef,
@@ -613,8 +749,10 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 
         return 0;
 
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        return qemuBuildDeviceAddresDriveProps(props, domainDef, info);
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:

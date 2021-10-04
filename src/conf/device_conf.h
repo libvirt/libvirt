@@ -57,6 +57,9 @@ struct _virDomainDeviceDriveAddress {
     unsigned int bus;
     unsigned int target;
     unsigned int unit;
+
+    /* internal fields for the address formatter */
+    unsigned int diskbus; /* virDomainDiskBus */
 };
 
 typedef struct _virDomainDeviceVirtioSerialAddress virDomainDeviceVirtioSerialAddress;

@@ -5157,7 +5157,7 @@ virDomainControllerSCSINextUnit(const virDomainDef *def,
 
     for (i = 0; i < def->scsiBusMaxUnit; i++) {
         /* Default to assigning addresses using bus = target = 0 */
-        const virDomainDeviceDriveAddress addr = {controller, 0, 0, i};
+        const virDomainDeviceDriveAddress addr = {controller, 0, 0, i, 0};
 
         if (!virDomainSCSIDriveAddressIsUsed(def, &addr))
             return i;
@@ -7678,7 +7678,7 @@ virDomainDiskDefAssignAddress(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
 
     switch (def->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI: {
-        virDomainDeviceDriveAddress addr = {0, 0, 0, 0};
+        virDomainDeviceDriveAddress addr = {0, 0, 0, 0, 0};
         unsigned int controller;
         unsigned int unit;
 
