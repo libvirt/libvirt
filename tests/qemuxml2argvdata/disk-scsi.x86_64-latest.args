@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device lsi,id=scsi0,bus=pci.0,addr=0x2 \
 -device megasas,id=scsi1,bus=pci.0,addr=0x3 \
 -device mptsas1068,id=scsi2,bus=pci.0,addr=0x4 \
--device spapr-vscsi,id=scsi3,reg=0x00002000 \
+-device spapr-vscsi,id=scsi3,reg=8192 \
 -device pvscsi,id=scsi4,bus=pci.0,addr=0x5 \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-6-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-6-format","read-only":false,"driver":"raw","file":"libvirt-6-storage"}' \

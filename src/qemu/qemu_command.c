@@ -1311,17 +1311,6 @@ qemuBuildRomProps(virJSONValue *props,
 }
 
 
-static int
-qemuBuildIoEventFdStr(virBuffer *buf,
-                      virTristateSwitch use,
-                      virQEMUCaps *qemuCaps G_GNUC_UNUSED)
-{
-    if (use)
-        virBufferAsprintf(buf, ",ioeventfd=%s",
-                          virTristateSwitchTypeToString(use));
-    return 0;
-}
-
 /**
  * qemuBuildSecretInfoProps:
  * @secinfo: pointer to the secret info object
@@ -2875,40 +2864,37 @@ qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
 }
 
 
-static char *
-qemuBuildControllerSCSIDevStr(const virDomainDef *domainDef,
-                              virDomainControllerDef *def,
-                              virQEMUCaps *qemuCaps)
+static virJSONValue *
+qemuBuildControllerSCSIDevProps(const virDomainDef *domainDef,
+                                virDomainControllerDef *def,
+                                virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *iothread = NULL;
     const char *driver = NULL;
 
     switch ((virDomainControllerModelSCSI) def->model) {
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_CONTROLLER, def,
+                                              qemuCaps)))
             return NULL;
-        }
 
-        if (def->iothread) {
-            virBufferAsprintf(&buf, ",iothread=iothread%u",
-                              def->iothread);
-        }
+        if (def->iothread > 0)
+            iothread = g_strdup_printf("iothread%u", def->iothread);
 
-        virBufferAsprintf(&buf, ",id=%s", def->info.alias);
-
-        if (def->queues)
-            virBufferAsprintf(&buf, ",num_queues=%u", def->queues);
-
-        if (def->cmd_per_lun)
-            virBufferAsprintf(&buf, ",cmd_per_lun=%u", def->cmd_per_lun);
-
-        if (def->max_sectors)
-            virBufferAsprintf(&buf, ",max_sectors=%u", def->max_sectors);
-
-        qemuBuildIoEventFdStr(&buf, def->ioeventfd, qemuCaps);
+        if (virJSONValueObjectAdd(props,
+                                  "S:iothread", iothread,
+                                  "s:id", def->info.alias,
+                                  "p:num_queues", def->queues,
+                                  "p:cmd_per_lun", def->cmd_per_lun,
+                                  "p:max_sectors", def->max_sectors,
+                                  "T:ioeventfd", def->ioeventfd,
+                                  NULL) < 0)
+            return NULL;
         break;
+
     case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
         driver = "lsi";
         break;
@@ -2945,13 +2931,18 @@ qemuBuildControllerSCSIDevStr(const virDomainDef *domainDef,
         return NULL;
     }
 
-    if (driver)
-        virBufferAsprintf(&buf, "%s,id=%s", driver, def->info.alias);
+    if (driver) {
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", driver,
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return NULL;
+    }
 
-    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
+    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    return g_steal_pointer(&props);
 }
 
 
@@ -3067,13 +3058,25 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                           char **devstr)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *driver = NULL;
 
     *devstr = NULL;
 
     switch ((virDomainControllerType)def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        if (!(*devstr = qemuBuildControllerSCSIDevStr(domainDef, def, qemuCaps)))
+        if (!(props = qemuBuildControllerSCSIDevProps(domainDef, def, qemuCaps)))
             return -1;
+
+        driver = virJSONValueObjectGetString(props, "driver");
+
+        virBufferAsprintf(&buf, "%s,", driver);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
+            return -1;
+
+        *devstr = virBufferContentAndReset(&buf);
+
         return 0;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
