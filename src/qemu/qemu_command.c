@@ -3968,6 +3968,7 @@ qemuBuildNicDevProps(virDomainDef *def,
                               "s:netdev", netdev,
                               "s:id", net->info.alias,
                               "s:mac", macaddr,
+                              "p:bootindex", net->info.effectiveBootIndex,
                               NULL) < 0)
         return NULL;
 
@@ -3975,11 +3976,6 @@ qemuBuildNicDevProps(virDomainDef *def,
         return NULL;
 
     if (qemuBuildRomProps(props, &net->info) < 0)
-        return NULL;
-
-    if (virJSONValueObjectAdd(props,
-                              "p:bootindex", net->info.effectiveBootIndex,
-                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
