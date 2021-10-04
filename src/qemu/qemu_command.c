@@ -5079,44 +5079,29 @@ qemuBuildSCSIHostdevDrvStr(virDomainHostdevDef *dev)
     return virBufferContentAndReset(&buf);
 }
 
-char *
-qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                           virDomainHostdevDef *dev,
-                           const char *backendAlias)
+virJSONValue *
+qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
+                             virDomainHostdevDef *dev,
+                             const char *backendAlias)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    int model = -1;
-    const char *contAlias;
+    g_autoptr(virJSONValue) props = NULL;
 
-    model = qemuDomainFindSCSIControllerModel(def, dev->info);
-    if (model < 0)
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "scsi-generic",
+                                 NULL) < 0)
         return NULL;
 
-    virBufferAddLit(&buf, "scsi-generic");
-
-    if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                                   dev->info->addr.drive.controller)))
+    if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
         return NULL;
 
-    if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
-        virBufferAsprintf(&buf, ",bus=%s.%d,scsi-id=%d",
-                          contAlias,
-                          dev->info->addr.drive.bus,
-                          dev->info->addr.drive.unit);
-    } else {
-        virBufferAsprintf(&buf, ",bus=%s.0,channel=%d,scsi-id=%d,lun=%d",
-                          contAlias,
-                          dev->info->addr.drive.bus,
-                          dev->info->addr.drive.target,
-                          dev->info->addr.drive.unit);
-    }
+    if (virJSONValueObjectAdd(props,
+                              "s:drive", backendAlias,
+                              "s:id", dev->info->alias,
+                              "p:bootindex", dev->info->bootIndex,
+                              NULL) < 0)
+        return NULL;
 
-    virBufferAsprintf(&buf, ",drive=%s,id=%s", backendAlias, dev->info->alias);
-
-    if (dev->info->bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", dev->info->bootIndex);
-
-    return virBufferContentAndReset(&buf);
+    return g_steal_pointer(&props);
 }
 
 static int
@@ -5604,7 +5589,7 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
                                 virQEMUCaps *qemuCaps)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     const char *backendAlias = NULL;
 
     if (!(data = qemuBuildHostdevSCSIAttachPrepare(hostdev, &backendAlias, qemuCaps)))
@@ -5613,10 +5598,11 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
     if (qemuBuildBlockStorageSourceAttachDataCommandline(cmd, data, qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(def, hostdev, backendAlias)))
+    if (!(devprops = qemuBuildSCSIHostdevDevProps(def, hostdev, backendAlias)))
         return -1;
-    virCommandAddArg(cmd, devstr);
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

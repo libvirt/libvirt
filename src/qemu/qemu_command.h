@@ -182,9 +182,10 @@ qemuBuildUSBHostdevDevProps(const virDomainDef *def,
                             virDomainHostdevDef *dev,
                             virQEMUCaps *qemuCaps);
 
-char *qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
-                                 virDomainHostdevDef *dev,
-                                 const char *backendAlias);
+virJSONValue *
+qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
+                             virDomainHostdevDef *dev,
+                             const char *backendAlias);
 
 qemuBlockStorageSourceAttachData *
 qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,

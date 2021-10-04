@@ -2639,7 +2639,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
     virErrorPtr orig_err;
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
     const char *backendalias = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
@@ -2683,7 +2683,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
                                                    priv->qemuCaps)))
         goto cleanup;
 
-    if (!(devstr = qemuBuildSCSIHostdevDevStr(vm->def, hostdev, backendalias)))
+    if (!(devprops = qemuBuildSCSIHostdevDevProps(vm->def, hostdev, backendalias)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
@@ -2693,7 +2693,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
     if (qemuBlockStorageSourceAttachApply(priv->mon, data) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
