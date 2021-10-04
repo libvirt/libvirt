@@ -1963,28 +1963,37 @@ qemuBuildDiskThrottling(virDomainDiskDef *disk,
 
 
 static void
-qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDef *disk,
-                                          virBuffer *buf)
+qemuBuildDiskGetErrorPolicy(virDomainDiskDef *disk,
+                            const char **wpolicy,
+                            const char **rpolicy)
 {
-    const char *wpolicy = NULL;
-    const char *rpolicy = NULL;
-
     if (disk->error_policy)
-        wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
+        *wpolicy = virDomainDiskErrorPolicyTypeToString(disk->error_policy);
 
     if (disk->rerror_policy)
-        rpolicy = virDomainDiskErrorPolicyTypeToString(disk->rerror_policy);
+        *rpolicy = virDomainDiskErrorPolicyTypeToString(disk->rerror_policy);
 
     if (disk->error_policy == VIR_DOMAIN_DISK_ERROR_POLICY_ENOSPACE) {
         /* in the case of enospace, the option is spelled
          * differently in qemu, and it's only valid for werror,
          * not for rerror, so leave rerror NULL.
          */
-        wpolicy = "enospc";
-    } else if (!rpolicy) {
+        *wpolicy = "enospc";
+    } else if (!*rpolicy) {
         /* for other policies, rpolicy can match wpolicy */
-        rpolicy = wpolicy;
+        *rpolicy = *wpolicy;
     }
+}
+
+
+static void
+qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDef *disk,
+                                          virBuffer *buf)
+{
+    const char *wpolicy = NULL;
+    const char *rpolicy = NULL;
+
+    qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
 
     if (wpolicy)
         virBufferAsprintf(buf, ",werror=%s", wpolicy);
