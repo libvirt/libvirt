@@ -2257,8 +2257,7 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
 
         qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
-        if (disk->event_idx &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_EVENT_IDX)) {
+        if (disk->event_idx) {
             virBufferAsprintf(&opt, ",event_idx=%s",
                               virTristateSwitchTypeToString(disk->event_idx));
         }
@@ -3999,8 +3998,7 @@ qemuBuildNicDevStr(virDomainDef *def,
             }
         }
         qemuBuildIoEventFdStr(&buf, net->driver.virtio.ioeventfd, qemuCaps);
-        if (net->driver.virtio.event_idx &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_EVENT_IDX)) {
+        if (net->driver.virtio.event_idx) {
             virBufferAsprintf(&buf, ",event_idx=%s",
                               virTristateSwitchTypeToString(net->driver.virtio.event_idx));
         }
