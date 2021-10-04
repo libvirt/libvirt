@@ -148,7 +148,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-tx-alg", /* QEMU_CAPS_VIRTIO_TX_ALG */
               "device-qxl-vga", /* X_QEMU_CAPS_DEVICE_QXL_VGA */
               "pci-multifunction", /* X_QEMU_CAPS_PCI_MULTIFUNCTION */
-              "virtio-blk-pci.ioeventfd", /* QEMU_CAPS_VIRTIO_IOEVENTFD */
+              "virtio-blk-pci.ioeventfd", /* X_QEMU_CAPS_VIRTIO_IOEVENTFD */
 
               /* 60 */
               "sga", /* X_QEMU_CAPS_SGA */
@@ -1403,7 +1403,6 @@ virQEMUCapsDevicePropsVirtioBlkSCSIDefault(virJSONValue *props,
 
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
-    { "ioeventfd", QEMU_CAPS_VIRTIO_IOEVENTFD, NULL },
     { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, NULL },
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
     { "logical_block_size", QEMU_CAPS_BLOCKIO, NULL },
