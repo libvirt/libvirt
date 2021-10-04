@@ -1346,9 +1346,9 @@ qemuBuildRomStr(virBuffer *buf,
 static int
 qemuBuildIoEventFdStr(virBuffer *buf,
                       virTristateSwitch use,
-                      virQEMUCaps *qemuCaps)
+                      virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    if (use && virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOEVENTFD))
+    if (use)
         virBufferAsprintf(buf, ",ioeventfd=%s",
                           virTristateSwitchTypeToString(use));
     return 0;
