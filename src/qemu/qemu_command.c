@@ -1271,7 +1271,7 @@ qemuBuildVirtioDevStr(virBuffer *buf,
 }
 
 
-static int G_GNUC_UNUSED
+static int
 qemuBuildRomProps(virJSONValue *props,
                   virDomainDeviceInfo *info)
 {
@@ -1310,38 +1310,6 @@ qemuBuildRomProps(virJSONValue *props,
     return 0;
 }
 
-
-static int G_GNUC_UNUSED
-qemuBuildRomStr(virBuffer *buf,
-                virDomainDeviceInfo *info)
-{
-    if (info->romenabled || info->rombar || info->romfile) {
-        /* Passing an empty romfile= tells QEMU to disable ROM entirely for
-         * this device, and makes other settings irrelevant */
-        if (info->romenabled == VIR_TRISTATE_BOOL_NO) {
-            virBufferAddLit(buf, ",romfile=");
-            return 0;
-        }
-
-        switch (info->rombar) {
-        case VIR_TRISTATE_SWITCH_OFF:
-            virBufferAddLit(buf, ",rombar=0");
-            break;
-        case VIR_TRISTATE_SWITCH_ON:
-            virBufferAddLit(buf, ",rombar=1");
-            break;
-        case VIR_TRISTATE_SWITCH_ABSENT:
-        case VIR_TRISTATE_SWITCH_LAST:
-            break;
-        }
-        if (info->romfile) {
-           virBufferAddLit(buf, ",romfile=");
-           virQEMUBuildBufferEscapeComma(buf, info->romfile);
-        }
-    }
-
-    return 0;
-}
 
 static int
 qemuBuildIoEventFdStr(virBuffer *buf,
