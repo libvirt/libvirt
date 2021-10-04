@@ -134,10 +134,10 @@ qemuBlockStorageSourceChainData *
 qemuBuildStorageSourceChainAttachPrepareBlockdevTop(virStorageSource *top,
                                                     virStorageSource *backingStore);
 
-char
-*qemuBuildDiskDeviceStr(const virDomainDef *def,
-                        virDomainDiskDef *disk,
-                        virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildDiskDeviceProps(const virDomainDef *def,
+                         virDomainDiskDef *disk,
+                         virQEMUCaps *qemuCaps);
 
 char *
 qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,

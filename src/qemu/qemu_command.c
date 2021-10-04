@@ -2002,31 +2002,6 @@ qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDef *disk,
 }
 
 
-static void
-qemuBuildDiskFrontendAttributes(virDomainDiskDef *disk,
-                                virBuffer *buf)
-{
-    /* generate geometry command string */
-    if (disk->geometry.cylinders > 0 &&
-        disk->geometry.heads > 0 &&
-        disk->geometry.sectors > 0) {
-        virBufferAsprintf(buf, ",cyls=%u,heads=%u,secs=%u",
-                          disk->geometry.cylinders,
-                          disk->geometry.heads,
-                          disk->geometry.sectors);
-
-        if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
-            virBufferAsprintf(buf, ",bios-chs-trans=%s",
-                              virDomainDiskGeometryTransTypeToString(disk->geometry.trans));
-    }
-
-    if (disk->serial) {
-        virBufferAddLit(buf, ",serial=");
-        virBufferEscape(buf, '\\', " ", "%s", disk->serial);
-    }
-}
-
-
 static char *
 qemuBuildDriveStr(virDomainDiskDef *disk,
                   virQEMUCaps *qemuCaps)
@@ -2099,82 +2074,46 @@ qemuBuildDriveStr(virDomainDiskDef *disk,
 }
 
 
-static int
-qemuBuildDriveDevCacheStr(virDomainDiskDef *disk,
-                          virBuffer *buf,
-                          virQEMUCaps *qemuCaps)
+virJSONValue *
+qemuBuildDiskDeviceProps(const virDomainDef *def,
+                         virDomainDiskDef *disk,
+                         virQEMUCaps *qemuCaps)
 {
-    bool wb;
-
-    if (disk->cachemode == VIR_DOMAIN_DISK_CACHE_DEFAULT)
-        return 0;
-
-    /* VIR_DOMAIN_DISK_DEVICE_LUN translates into 'scsi-block'
-     * where any caching setting makes no sense. */
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
-        return 0;
-
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_WRITE_CACHE))
-        return 0;
-
-    if (qemuDomainDiskCachemodeFlags(disk->cachemode, &wb, NULL, NULL) < 0)
-        return -1;
-
-    virBufferStrcat(buf, ",write-cache=",
-                    virTristateSwitchTypeToString(virTristateSwitchFromBool(wb)),
-                    NULL);
-
-    return 0;
-}
-
-
-char *
-qemuBuildDiskDeviceStr(const virDomainDef *def,
-                       virDomainDiskDef *disk,
-                       virQEMUCaps *qemuCaps)
-{
-    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
-    const char *contAlias;
-    g_autofree char *backendAlias = NULL;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *driver = NULL;
     g_autofree char *scsiVPDDeviceId = NULL;
-    int controllerModel;
+    virTristateSwitch shareRW = VIR_TRISTATE_SWITCH_ABSENT;
+    g_autofree char *chardev = NULL;
+    g_autofree char *drive = NULL;
+    unsigned int bootindex = 0;
+    unsigned int logical_block_size = 0;
+    unsigned int physical_block_size = 0;
+    g_autoptr(virJSONValue) wwn = NULL;
+    g_autofree char *serial = NULL;
+    virTristateSwitch removable = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateSwitch writeCache = VIR_TRISTATE_SWITCH_ABSENT;
+    const char *biosCHSTrans = NULL;
+    const char *wpolicy = NULL;
+    const char *rpolicy = NULL;
 
     switch ((virDomainDiskBus) disk->bus) {
     case VIR_DOMAIN_DISK_BUS_IDE:
+    case VIR_DOMAIN_DISK_BUS_SATA:
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-            virBufferAddLit(&opt, "ide-cd");
+            driver = "ide-cd";
         else
-            virBufferAddLit(&opt, "ide-hd");
+            driver = "ide-hd";
 
-        /* When domain has builtin IDE controller we don't put it onto cmd
-         * line. Therefore we can't set its alias. In that case, use the
-         * default one. */
-        if (qemuDomainHasBuiltinIDE(def)) {
-            contAlias = "ide";
-        } else {
-            if (!(contAlias = virDomainControllerAliasFind(def,
-                                                           VIR_DOMAIN_CONTROLLER_TYPE_IDE,
-                                                           disk->info.addr.drive.controller)))
-                return NULL;
-        }
-        virBufferAsprintf(&opt, ",bus=%s.%d,unit=%d",
-                          contAlias,
-                          disk->info.addr.drive.bus,
-                          disk->info.addr.drive.unit);
         break;
 
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        controllerModel = qemuDomainFindSCSIControllerModel(def, &disk->info);
-        if (controllerModel < 0)
-            return NULL;
-
         if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
-            virBufferAddLit(&opt, "scsi-block");
+            driver = "scsi-block";
         } else {
             if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-                virBufferAddLit(&opt, "scsi-cd");
+                driver = "scsi-cd";
             else
-                virBufferAddLit(&opt, "scsi-hd");
+                driver = "scsi-hd";
 
             /* qemu historically used the name of -drive as one of the device
              * ids in the Vital Product Data Device Identification page if
@@ -2191,116 +2130,56 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
             }
         }
 
-        if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,
-                                                       disk->info.addr.drive.controller)))
-           return NULL;
-
-        switch ((virDomainControllerModelSCSI)controllerModel) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
-            virBufferAsprintf(&opt, ",bus=%s.%d,scsi-id=%d",
-                              contAlias,
-                              disk->info.addr.drive.bus,
-                              disk->info.addr.drive.unit);
-            break;
-
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-            virBufferAsprintf(&opt, ",bus=%s.0,channel=%d,scsi-id=%d,lun=%d",
-                              contAlias,
-                              disk->info.addr.drive.bus,
-                              disk->info.addr.drive.target,
-                              disk->info.addr.drive.unit);
-            break;
-
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected SCSI controller model %d"),
-                           controllerModel);
-            return NULL;
-        }
-
-        if (scsiVPDDeviceId)
-            virBufferStrcat(&opt, ",device_id=", scsiVPDDeviceId, NULL);
-
         break;
 
-    case VIR_DOMAIN_DISK_BUS_SATA:
-        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM)
-            virBufferAddLit(&opt, "ide-cd");
-        else
-            virBufferAddLit(&opt, "ide-hd");
+    case VIR_DOMAIN_DISK_BUS_VIRTIO: {
+        virTristateSwitch scsi = VIR_TRISTATE_SWITCH_ABSENT;
+        g_autofree char *iothread = NULL;
 
-        /* When domain has builtin SATA controller we don't put it onto cmd
-         * line. Therefore we can't set its alias. In that case, use the
-         * default one. */
-        if (qemuDomainIsQ35(def) &&
-            disk->info.addr.drive.controller == 0) {
-            contAlias = "ide";
-        } else {
-            if (!(contAlias = virDomainControllerAliasFind(def,
-                                                           VIR_DOMAIN_CONTROLLER_TYPE_SATA,
-                                                           disk->info.addr.drive.controller)))
-                return NULL;
-        }
-        virBufferAsprintf(&opt, ",bus=%s.%d",
-                          contAlias,
-                          disk->info.addr.drive.unit);
-        break;
+        if (disk->iothread > 0)
+            iothread = g_strdup_printf("iothread%u", disk->iothread);
 
-    case VIR_DOMAIN_DISK_BUS_VIRTIO:
-        if (qemuBuildVirtioDevStr(&opt, qemuCaps, VIR_DOMAIN_DEVICE_DISK, disk) < 0)
-            return NULL;
-
-        if (disk->iothread)
-            virBufferAsprintf(&opt, ",iothread=iothread%u", disk->iothread);
-
-        qemuBuildIoEventFdStr(&opt, disk->ioeventfd, qemuCaps);
-        if (disk->event_idx) {
-            virBufferAsprintf(&opt, ",event_idx=%s",
-                              virTristateSwitchTypeToString(disk->event_idx));
-        }
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI) &&
-            !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED) &&
-              disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
             /* if sg_io is true but the scsi option isn't supported,
              * that means it's just always on in this version of qemu.
              */
-            virBufferAsprintf(&opt, ",scsi=%s",
-                              (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN)
-                              ? "on" : "off");
+            if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
+                scsi = VIR_TRISTATE_SWITCH_ON;
+            } else {
+                if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI_DEFAULT_DISABLED))
+                    scsi = VIR_TRISTATE_SWITCH_OFF;
+            }
         }
 
-        if (disk->queues) {
-            virBufferAsprintf(&opt, ",num-queues=%u", disk->queues);
-        }
-        if (disk->queue_size > 0) {
-            virBufferAsprintf(&opt, ",queue-size=%u", disk->queue_size);
-        }
-
-        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info) < 0)
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_DISK, disk, qemuCaps)))
             return NULL;
+
+        if (virJSONValueObjectAdd(props,
+                                  "S:iothread", iothread,
+                                  "T:ioeventfd", disk->ioeventfd,
+                                  "T:event_idx", disk->event_idx,
+                                  "T:scsi", scsi,
+                                  "p:num-queues", disk->queues,
+                                  "p:queue-size", disk->queue_size,
+                                  NULL) < 0)
+            return NULL;
+    }
         break;
 
     case VIR_DOMAIN_DISK_BUS_USB:
-        virBufferAddLit(&opt, "usb-storage");
+        driver = "usb-storage";
 
-        if (qemuBuildDeviceAddressStr(&opt, def, &disk->info) < 0)
-            return NULL;
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
+            if (disk->removable == VIR_TRISTATE_SWITCH_ABSENT)
+                removable = VIR_TRISTATE_SWITCH_OFF;
+            else
+                removable = disk->removable;
+        }
+
         break;
 
     case VIR_DOMAIN_DISK_BUS_FDC:
-        virBufferAsprintf(&opt, "floppy,unit=%d", disk->info.addr.drive.unit);
+        driver = "floppy";
         break;
 
     case VIR_DOMAIN_DISK_BUS_XEN:
@@ -2315,74 +2194,105 @@ qemuBuildDiskDeviceStr(const virDomainDef *def,
         return NULL;
     }
 
-    if (disk->src->shared &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
-        virBufferAddLit(&opt, ",share-rw=on");
-
-    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
-        backendAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
-
-        virBufferAsprintf(&opt, ",chardev=%s", backendAlias);
-    } else {
-        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+    if (driver) {
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", driver,
+                                     NULL) < 0)
             return NULL;
-
-        if (backendAlias)
-            virBufferAsprintf(&opt, ",drive=%s", backendAlias);
     }
 
-    virBufferAsprintf(&opt, ",id=%s", disk->info.alias);
+    if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE)
+        disk->info.addr.drive.diskbus = disk->bus;
+
+    if (qemuBuildDeviceAddressProps(props, def, &disk->info) < 0)
+        return NULL;
+
+    if (disk->src->shared &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_SHARE_RW))
+        shareRW = VIR_TRISTATE_SWITCH_ON;
+
+    if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
+        chardev = qemuDomainGetVhostUserChrAlias(disk->info.alias);
+    } else {
+        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &drive) < 0)
+            return NULL;
+    }
+
     /* bootindex for floppies is configured via the fdc controller */
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-        disk->info.effectiveBootIndex > 0)
-        virBufferAsprintf(&opt, ",bootindex=%u", disk->info.effectiveBootIndex);
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY)
+        bootindex = disk->info.effectiveBootIndex;
+
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKIO)) {
-        if (disk->blockio.logical_block_size > 0)
-            virBufferAsprintf(&opt, ",logical_block_size=%u",
-                              disk->blockio.logical_block_size);
-        if (disk->blockio.physical_block_size > 0)
-            virBufferAsprintf(&opt, ",physical_block_size=%u",
-                              disk->blockio.physical_block_size);
+        logical_block_size = disk->blockio.logical_block_size;
+        physical_block_size = disk->blockio.physical_block_size;
     }
 
     if (disk->wwn) {
-        if (STRPREFIX(disk->wwn, "0x"))
-            virBufferAsprintf(&opt, ",wwn=%s", disk->wwn);
-        else
-            virBufferAsprintf(&opt, ",wwn=0x%s", disk->wwn);
+        unsigned long long w = 0;
+
+        if (virStrToLong_ull(disk->wwn, NULL, 16, &w) < 0) {
+            virReportError(VIR_ERR_INVALID_ARG,
+                           _("Failed to parse wwn '%s' as number"), disk->wwn);
+            return NULL;
+        }
+
+        wwn = virJSONValueNewNumberUlong(w);
     }
 
-    if (disk->rotation_rate)
-        virBufferAsprintf(&opt, ",rotation_rate=%u", disk->rotation_rate);
+    if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DEFAULT) {
+        /* VIR_DOMAIN_DISK_DEVICE_LUN translates into 'scsi-block'
+         * where any caching setting makes no sense. */
+        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISK_WRITE_CACHE)) {
+            bool wb;
 
-    if (disk->vendor) {
-        virBufferAddLit(&opt, ",vendor=");
-        virQEMUBuildBufferEscapeComma(&opt, disk->vendor);
-    }
+            if (qemuDomainDiskCachemodeFlags(disk->cachemode, &wb, NULL,
+                                             NULL) < 0)
+                return NULL;
 
-    if (disk->product) {
-        virBufferAddLit(&opt, ",product=");
-        virQEMUBuildBufferEscapeComma(&opt, disk->product);
-    }
-
-    if (disk->bus == VIR_DOMAIN_DISK_BUS_USB) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_REMOVABLE)) {
-            if (disk->removable == VIR_TRISTATE_SWITCH_ON)
-                virBufferAddLit(&opt, ",removable=on");
-            else
-                virBufferAddLit(&opt, ",removable=off");
+            writeCache = virTristateSwitchFromBool(wb);
         }
     }
 
-    if (qemuBuildDriveDevCacheStr(disk, &opt, qemuCaps) < 0)
-        return NULL;
+    if (disk->geometry.trans != VIR_DOMAIN_DISK_TRANS_DEFAULT)
+        biosCHSTrans = virDomainDiskGeometryTransTypeToString(disk->geometry.trans);
 
-    qemuBuildDiskFrontendAttributes(disk, &opt);
+    if (disk->serial) {
+        virBuffer buf = VIR_BUFFER_INITIALIZER;
+
+        virBufferEscape(&buf, '\\', " ", "%s", disk->serial);
+        serial = virBufferContentAndReset(&buf);
+    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
-        qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
+        qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
 
-    return virBufferContentAndReset(&opt);
+    if (virJSONValueObjectAdd(props,
+                              "S:device_id", scsiVPDDeviceId,
+                              "T:share-rw", shareRW,
+                              "S:drive", drive,
+                              "S:chardev", chardev,
+                              "s:id", disk->info.alias,
+                              "p:bootindex", bootindex,
+                              "p:logical_block_size", logical_block_size,
+                              "p:physical_block_size", physical_block_size,
+                              "A:wwn", &wwn,
+                              "p:rotation_rate", disk->rotation_rate,
+                              "S:vendor", disk->vendor,
+                              "S:product", disk->product,
+                              "T:removable", removable,
+                              "S:write-cache", qemuOnOffAuto(writeCache),
+                              "p:cyls", disk->geometry.cylinders,
+                              "p:heads", disk->geometry.heads,
+                              "p:secs", disk->geometry.sectors,
+                              "S:bios-chs-trans", biosCHSTrans,
+                              "S:serial", serial,
+                              "S:werror", wpolicy,
+                              "S:rerror", rpolicy,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -2613,7 +2523,7 @@ qemuBuildDiskCommandLine(virCommand *cmd,
                          virDomainDiskDef *disk,
                          virQEMUCaps *qemuCaps)
 {
-    g_autofree char *optstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
 
     if (qemuBuildDiskSourceCommandLine(cmd, disk, qemuCaps) < 0)
         return -1;
@@ -2632,11 +2542,11 @@ qemuBuildDiskCommandLine(virCommand *cmd,
     if (qemuCommandAddExtDevice(cmd, &disk->info, qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-
-    if (!(optstr = qemuBuildDiskDeviceStr(def, disk, qemuCaps)))
+    if (!(devprops = qemuBuildDiskDeviceProps(def, disk, qemuCaps)))
         return -1;
-    virCommandAddArg(cmd, optstr);
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

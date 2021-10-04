@@ -710,7 +710,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool extensionDeviceAttached = false;
     int rc;
@@ -772,7 +772,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         ignore_value(VIR_INSERT_ELEMENT(data->srcdata, 0, data->nsrcdata, backend));
     }
 
-    if (!(devstr = qemuBuildDiskDeviceStr(vm->def, disk, priv->qemuCaps)))
+    if (!(devprops = qemuBuildDiskDeviceProps(vm->def, disk, priv->qemuCaps)))
         goto rollback;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
@@ -782,7 +782,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         extensionDeviceAttached = true;
 
     if (rc == 0)
-        rc = qemuMonitorAddDevice(priv->mon, devstr);
+        rc = qemuMonitorAddDeviceProps(priv->mon, &devprops);
 
     /* Setup throttling of disk via block_set_io_throttle QMP command. This
      * is a hack until the 'throttle' blockdev driver will support modification

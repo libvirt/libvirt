@@ -43,7 +43,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,device_id=abcdefghijklmn,drive=libvirt-4-format,id=scsi1-0-0-0,serial=abcdefghijklmn \
 -blockdev '{"driver":"file","filename":"/tmp/scsidisk3.img","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw","file":"libvirt-3-storage"}' \
--device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi2-0-0-0,drive=libvirt-3-format,id=scsi2-0-0-0,wwn=0x5000c50015ea71ac \
+-device scsi-hd,bus=scsi2.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi2-0-0-0,drive=libvirt-3-format,id=scsi2-0-0-0,wwn=5764824127192592812 \
 -blockdev '{"driver":"file","filename":"/tmp/scsidisk4.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
 -device scsi-hd,bus=scsi3.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi3-0-0-0,drive=libvirt-2-format,id=scsi3-0-0-0 \
