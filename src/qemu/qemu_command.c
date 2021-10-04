@@ -2875,6 +2875,86 @@ qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
 }
 
 
+static char *
+qemuBuildControllerSCSIDevStr(const virDomainDef *domainDef,
+                              virDomainControllerDef *def,
+                              virQEMUCaps *qemuCaps)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *driver = NULL;
+
+    switch ((virDomainControllerModelSCSI) def->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
+        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
+            return NULL;
+        }
+
+        if (def->iothread) {
+            virBufferAsprintf(&buf, ",iothread=iothread%u",
+                              def->iothread);
+        }
+
+        virBufferAsprintf(&buf, ",id=%s", def->info.alias);
+
+        if (def->queues)
+            virBufferAsprintf(&buf, ",num_queues=%u", def->queues);
+
+        if (def->cmd_per_lun)
+            virBufferAsprintf(&buf, ",cmd_per_lun=%u", def->cmd_per_lun);
+
+        if (def->max_sectors)
+            virBufferAsprintf(&buf, ",max_sectors=%u", def->max_sectors);
+
+        qemuBuildIoEventFdStr(&buf, def->ioeventfd, qemuCaps);
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
+        driver = "lsi";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
+        driver = "spapr-vscsi";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
+        driver = "mptsas1068";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
+        driver = "megasas";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
+        driver = "pvscsi";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
+        driver = "am53c974";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
+        driver = "dc-390";
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90: /* It is built-in dev */
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported controller model: %s"),
+                       virDomainControllerModelSCSITypeToString(def->model));
+        return NULL;
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected SCSI controller model %d"),
+                       def->model);
+        return NULL;
+    }
+
+    if (driver)
+        virBufferAsprintf(&buf, "%s,id=%s", driver, def->info.alias);
+
+    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
+        return NULL;
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 /**
  * qemuBuildControllerDevStr:
  * @domainDef: domain definition
@@ -2907,56 +2987,9 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
     switch ((virDomainControllerType)def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        switch ((virDomainControllerModelSCSI) def->model) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
-            if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
-                return -1;
-            }
-
-            if (def->iothread) {
-                virBufferAsprintf(&buf, ",iothread=iothread%u",
-                                  def->iothread);
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC:
-            virBufferAddLit(&buf, "lsi");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI:
-            virBufferAddLit(&buf, "spapr-vscsi");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1068:
-            virBufferAddLit(&buf, "mptsas1068");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSISAS1078:
-            virBufferAddLit(&buf, "megasas");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VMPVSCSI:
-            virBufferAddLit(&buf, "pvscsi");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
-            virBufferAddLit(&buf, "am53c974");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DC390:
-            virBufferAddLit(&buf, "dc-390");
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AUTO:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_BUSLOGIC:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90: /* It is built-in dev */
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported controller model: %s"),
-                           virDomainControllerModelSCSITypeToString(def->model));
+        if (!(*devstr = qemuBuildControllerSCSIDevStr(domainDef, def, qemuCaps)))
             return -1;
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_DEFAULT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected SCSI controller model %d"),
-                           def->model);
-            return -1;
-        }
-        virBufferAsprintf(&buf, ",id=%s", def->info.alias);
-        break;
+        return 0;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
@@ -3069,17 +3102,6 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
                        virDomainControllerTypeToString(def->type));
         return -1;
     }
-
-    if (def->queues)
-        virBufferAsprintf(&buf, ",num_queues=%u", def->queues);
-
-    if (def->cmd_per_lun)
-        virBufferAsprintf(&buf, ",cmd_per_lun=%u", def->cmd_per_lun);
-
-    if (def->max_sectors)
-        virBufferAsprintf(&buf, ",max_sectors=%u", def->max_sectors);
-
-    qemuBuildIoEventFdStr(&buf, def->ioeventfd, qemuCaps);
 
     if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
         return -1;
