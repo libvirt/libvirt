@@ -1693,6 +1693,27 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotCreateWriteMetadata(virDomainObj *vm,
+                                virDomainMomentObj *snap,
+                                virQEMUDriver *driver,
+                                virQEMUDriverConfig *cfg)
+{
+    if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                                        driver->xmlopt,
+                                        cfg->snapshotDir) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unable to save metadata for snapshot %s"),
+                       snap->def->name);
+        return -1;
+    }
+
+    virDomainSnapshotLinkParent(vm->snapshots, snap);
+
+    return 0;
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1821,20 +1842,14 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         if (!redefine || (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
             qemuSnapshotSetCurrent(vm, snap);
 
-        if (qemuDomainSnapshotWriteMetadata(vm, snap,
-                                            driver->xmlopt,
-                                            cfg->snapshotDir) < 0) {
+        if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0) {
             /* if writing of metadata fails, error out rather than trying
              * to silently carry on without completing the snapshot */
             virObjectUnref(snapshot);
             snapshot = NULL;
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unable to save metadata for snapshot %s"),
-                           snap->def->name);
             goto endjob;
         }
 
-        virDomainSnapshotLinkParent(vm->snapshots, snap);
         snap = NULL;
     }
 
