@@ -152,8 +152,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 60 */
               "sga", /* X_QEMU_CAPS_SGA */
-              "virtio-blk-pci.event_idx", /* QEMU_CAPS_VIRTIO_BLK_EVENT_IDX */
-              "virtio-net-pci.event_idx", /* QEMU_CAPS_VIRTIO_NET_EVENT_IDX */
+              "virtio-blk-pci.event_idx", /* X_QEMU_CAPS_VIRTIO_BLK_EVENT_IDX */
+              "virtio-net-pci.event_idx", /* X_QEMU_CAPS_VIRTIO_NET_EVENT_IDX */
               "cache-directsync", /* X_QEMU_CAPS_DRIVE_CACHE_DIRECTSYNC */
               "piix3-usb-uhci", /* QEMU_CAPS_PIIX3_USB_UHCI */
 
@@ -1403,7 +1403,6 @@ virQEMUCapsDevicePropsVirtioBlkSCSIDefault(virJSONValue *props,
 
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
-    { "event_idx", QEMU_CAPS_VIRTIO_BLK_EVENT_IDX, NULL },
     { "scsi", QEMU_CAPS_VIRTIO_BLK_SCSI, virQEMUCapsDevicePropsVirtioBlkSCSIDefault },
     { "logical_block_size", QEMU_CAPS_BLOCKIO, NULL },
     { "num-queues", QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, NULL },
@@ -1420,7 +1419,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "tx", QEMU_CAPS_VIRTIO_TX_ALG, NULL },
-    { "event_idx", QEMU_CAPS_VIRTIO_NET_EVENT_IDX, NULL },
     { "rx_queue_size", QEMU_CAPS_VIRTIO_NET_RX_QUEUE_SIZE, NULL },
     { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, NULL },
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU, NULL },
