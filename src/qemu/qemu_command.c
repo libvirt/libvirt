@@ -5092,22 +5092,6 @@ qemuBuildSCSIHostdevDevStr(const virDomainDef *def,
     if (model < 0)
         return NULL;
 
-    if (model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
-        if (dev->info->addr.drive.target != 0) {
-           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for scsi host device "
-                             "if its controller model is 'lsilogic'"));
-            return NULL;
-        }
-
-        if (dev->info->addr.drive.unit > 7) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("unit must be not more than 7 for scsi host "
-                             "device if its controller model is 'lsilogic'"));
-            return NULL;
-        }
-    }
-
     virBufferAddLit(&buf, "scsi-generic");
 
     if (!(contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_SCSI,

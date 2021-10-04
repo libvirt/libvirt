@@ -1303,7 +1303,117 @@ qemuValidateDomainDeviceDefZPCIAddress(virDomainDeviceInfo *info,
 
 
 static int
-qemuValidateDomainDeviceDefAddress(virDomainDeviceInfo *info,
+qemuValidateDomainDeviceDefAddressDrive(virDomainDeviceInfo *info,
+                                        const virDomainDef *def,
+                                        virQEMUCaps *qemuCaps)
+{
+    virDomainControllerDef *controller = NULL;
+
+    switch ((virDomainDiskBus) info->addr.drive.diskbus) {
+    case VIR_DOMAIN_DISK_BUS_SCSI:
+        /* Setting bus= attr for SCSI drives, causes a controller
+         * to be created. Yes this is slightly odd. It is not possible
+         * to have > 1 bus on a SCSI controller (yet). */
+        if (info->addr.drive.bus != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("SCSI controller only supports 1 bus"));
+            return -1;
+        }
+
+        /* We allow hotplug/hotunplug disks without a controller,
+         * hence we don't error out if controller wasn't found. */
+        if ((controller = virDomainDeviceFindSCSIController(def, &info->addr.drive))) {
+            if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
+                if (info->addr.drive.target != 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("target must be 0 for controller model 'lsilogic'"));
+                    return -1;
+                }
+            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_CHANNEL)) {
+                if (info->addr.drive.target > 7) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("This QEMU doesn't support target greater than 7"));
+                    return -1;
+                }
+
+                if (info->addr.drive.bus != 0 &&
+                    info->addr.drive.unit != 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("This QEMU only supports both bus and unit equal to 0"));
+                    return -1;
+                }
+            }
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_IDE:
+        /* We can only have 1 IDE controller (currently) */
+        if (info->addr.drive.controller != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 IDE controller is supported"));
+            return -1;
+        }
+
+        if (info->addr.drive.target != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for ide controller"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_FDC:
+        /* We can only have 1 FDC controller (currently) */
+        if (info->addr.drive.controller != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc controller is supported"));
+            return -1;
+        }
+
+        /* We can only have 1 FDC bus (currently) */
+        if (info->addr.drive.bus != 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Only 1 fdc bus is supported"));
+            return -1;
+        }
+
+        if (info->addr.drive.target != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for controller fdc"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_SATA:
+        if (info->addr.drive.bus != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("bus must be 0 for sata controller"));
+            return -1;
+        }
+
+        if (info->addr.drive.target != 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("target must be 0 for sata controller"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_BUS_VIRTIO:
+    case VIR_DOMAIN_DISK_BUS_USB:
+    case VIR_DOMAIN_DISK_BUS_XEN:
+    case VIR_DOMAIN_DISK_BUS_SD:
+    case VIR_DOMAIN_DISK_BUS_NONE:
+    case VIR_DOMAIN_DISK_BUS_UML:
+    case VIR_DOMAIN_DISK_BUS_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuValidateDomainDeviceDefAddress(const virDomainDeviceDef *dev,
+                                   virDomainDeviceInfo *info,
                                    const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
@@ -1355,6 +1465,18 @@ qemuValidateDomainDeviceDefAddress(virDomainDeviceInfo *info,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+        /* drive address validation needs a disk bus type filled in. We assume
+         * that it's SCSI if it's not a disk since everything else would be
+         * a SCSI host device. */
+        if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+            info->addr.drive.diskbus = dev->data.disk->bus;
+        else
+            info->addr.drive.diskbus = VIR_DOMAIN_DISK_BUS_SCSI;
+
+        if (qemuValidateDomainDeviceDefAddressDrive(info, def, qemuCaps) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
@@ -1385,7 +1507,7 @@ qemuValidateDomainDeviceInfo(const virDomainDeviceDef *dev,
     if (!(info = virDomainDeviceGetInfo(dev)))
         return 0;
 
-    if (qemuValidateDomainDeviceDefAddress(info, def, qemuCaps) < 0)
+    if (qemuValidateDomainDeviceDefAddress(dev, info, def, qemuCaps) < 0)
         return -1;
 
     if (info->acpiIndex) {
@@ -2532,9 +2654,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                                         const virDomainDef *def,
                                         virQEMUCaps *qemuCaps)
 {
-    virDomainDeviceInfo *diskInfo;
-    int cModel;
-
     if (disk->geometry.cylinders > 0 &&
         disk->geometry.heads > 0 &&
         disk->geometry.sectors > 0) {
@@ -2694,52 +2813,10 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
 
     switch (disk->bus) {
     case VIR_DOMAIN_DISK_BUS_SCSI:
-        diskInfo = (virDomainDeviceInfo *)&disk->info;
-        cModel = qemuDomainFindSCSIControllerModel(def, diskInfo);
-
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected address type for scsi disk"));
             return -1;
-        }
-
-        /* Setting bus= attr for SCSI drives, causes a controller
-         * to be created. Yes this is slightly odd. It is not possible
-         * to have > 1 bus on a SCSI controller (yet). */
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("SCSI controller only supports 1 bus"));
-            return -1;
-        }
-
-        /* We allow hotplug/hotunplug disks without a controller,
-         * hence we don't error out if cModel is < 0. These
-         * validations were originally made under the assumption of
-         * a controller being found though. */
-        if (cModel > 0) {
-            if (cModel == VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC) {
-                if (disk->info.addr.drive.target != 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("target must be 0 for controller "
-                                     "model 'lsilogic'"));
-                    return -1;
-                }
-            } else if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_CHANNEL)) {
-                if (disk->info.addr.drive.target > 7) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("This QEMU doesn't support target "
-                                     "greater than 7"));
-                    return -1;
-                }
-
-                if (disk->info.addr.drive.bus != 0 &&
-                    disk->info.addr.drive.unit != 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("This QEMU only supports both bus and "
-                                     "unit equal to 0"));
-                    return -1;
-                }
-            }
         }
         break;
 
@@ -2747,17 +2824,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected address type for ide disk"));
-            return -1;
-        }
-        /* We can only have 1 IDE controller (currently) */
-        if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 IDE controller is supported"));
-            return -1;
-        }
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for ide controller"));
             return -1;
         }
         break;
@@ -2768,40 +2834,12 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
                            _("unexpected address type for fdc disk"));
             return -1;
         }
-        /* We can only have 1 FDC controller (currently) */
-        if (disk->info.addr.drive.controller != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 fdc controller is supported"));
-            return -1;
-        }
-        /* We can only have 1 FDC bus (currently) */
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Only 1 fdc bus is supported"));
-            return -1;
-        }
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for controller fdc"));
-            return -1;
-        }
         break;
 
     case VIR_DOMAIN_DISK_BUS_SATA:
         if (disk->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("unexpected address type for sata disk"));
-            return -1;
-        }
-
-        if (disk->info.addr.drive.bus != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("bus must be 0 for sata controller"));
-            return -1;
-        }
-        if (disk->info.addr.drive.target != 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("target must be 0 for sata controller"));
             return -1;
         }
         break;
