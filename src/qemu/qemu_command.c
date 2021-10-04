@@ -2955,6 +2955,91 @@ qemuBuildControllerSCSIDevStr(const virDomainDef *domainDef,
 }
 
 
+static int
+qemuBuildControllerPCIDevStr(virDomainControllerDef *def,
+                             const virDomainDef *domainDef,
+                             char **devstr)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const virDomainPCIControllerOpts *pciopts = &def->opts.pciopts;
+    const char *modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
+
+    *devstr = NULL;
+
+    /* Skip the implicit PHB for pSeries guests */
+    if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
+        pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
+        pciopts->targetIndex == 0) {
+        return 0;
+    }
+
+    if (!modelName) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown virDomainControllerPCIModelName value: %d"),
+                       pciopts->modelName);
+        return -1;
+    }
+
+    switch ((virDomainControllerModelPCI) def->model) {
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
+        virBufferAsprintf(&buf, "%s,chassis_nr=%d,id=%s",
+                          modelName, pciopts->chassisNr,
+                          def->info.alias);
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
+        virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
+                          modelName, pciopts->busNr,
+                          def->info.alias);
+        if (pciopts->numaNode != -1) {
+            virBufferAsprintf(&buf, ",numa_node=%d",
+                              pciopts->numaNode);
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
+        virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
+        virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
+                          modelName, pciopts->port,
+                          pciopts->chassis, def->info.alias);
+        if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
+            virBufferAsprintf(&buf, ",hotplug=%s",
+                              virTristateSwitchTypeToString(pciopts->hotplug));
+        }
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
+        virBufferAsprintf(&buf, "%s,index=%d,id=%s",
+                          modelName, pciopts->targetIndex,
+                          def->info.alias);
+
+        if (pciopts->numaNode != -1)
+            virBufferAsprintf(&buf, ",numa_node=%d", pciopts->numaNode);
+        break;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Unsupported PCI Express root controller"));
+        return -1;
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
+    case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unexpected PCI controller model %d"),
+                       def->model);
+        return -1;
+    }
+
+    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
+        return -1;
+
+    *devstr = virBufferContentAndReset(&buf);
+    return 0;
+}
+
+
+
 /**
  * qemuBuildControllerDevStr:
  * @domainDef: domain definition
@@ -3021,76 +3106,8 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
 
         break;
 
-    case VIR_DOMAIN_CONTROLLER_TYPE_PCI: {
-        const virDomainPCIControllerOpts *pciopts = &def->opts.pciopts;
-        const char *modelName = virDomainControllerPCIModelNameTypeToString(pciopts->modelName);
-
-        /* Skip the implicit PHB for pSeries guests */
-        if (def->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
-            pciopts->modelName == VIR_DOMAIN_CONTROLLER_PCI_MODEL_NAME_SPAPR_PCI_HOST_BRIDGE &&
-            pciopts->targetIndex == 0) {
-            return 0;
-        }
-
-        if (!modelName) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unknown virDomainControllerPCIModelName value: %d"),
-                           pciopts->modelName);
-            return -1;
-        }
-
-        switch ((virDomainControllerModelPCI) def->model) {
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_BRIDGE:
-            virBufferAsprintf(&buf, "%s,chassis_nr=%d,id=%s",
-                              modelName, pciopts->chassisNr,
-                              def->info.alias);
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_EXPANDER_BUS:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_EXPANDER_BUS:
-            virBufferAsprintf(&buf, "%s,bus_nr=%d,id=%s",
-                              modelName, pciopts->busNr,
-                              def->info.alias);
-            if (pciopts->numaNode != -1) {
-                virBufferAsprintf(&buf, ",numa_node=%d",
-                                  pciopts->numaNode);
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_DMI_TO_PCI_BRIDGE:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_UPSTREAM_PORT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_TO_PCI_BRIDGE:
-            virBufferAsprintf(&buf, "%s,id=%s", modelName, def->info.alias);
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT_PORT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
-            virBufferAsprintf(&buf, "%s,port=0x%x,chassis=%d,id=%s",
-                              modelName, pciopts->port,
-                              pciopts->chassis, def->info.alias);
-            if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
-                virBufferAsprintf(&buf, ",hotplug=%s",
-                                  virTristateSwitchTypeToString(pciopts->hotplug));
-            }
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-            virBufferAsprintf(&buf, "%s,index=%d,id=%s",
-                              modelName, pciopts->targetIndex,
-                              def->info.alias);
-
-            if (pciopts->numaNode != -1)
-                virBufferAsprintf(&buf, ",numa_node=%d", pciopts->numaNode);
-            break;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Unsupported PCI Express root controller"));
-            return -1;
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_DEFAULT:
-        case VIR_DOMAIN_CONTROLLER_MODEL_PCI_LAST:
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unexpected PCI controller model %d"),
-                           def->model);
-            return -1;
-        }
-        break;
-    }
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
+        return qemuBuildControllerPCIDevStr(def, domainDef, devstr);
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
