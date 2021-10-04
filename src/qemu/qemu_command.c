@@ -3870,37 +3870,30 @@ qemuBuildLegacyNicStr(virDomainNetDef *net)
 }
 
 
-char *
-qemuBuildNicDevStr(virDomainDef *def,
-                   virDomainNetDef *net,
-                   size_t vhostfdSize,
-                   virQEMUCaps *qemuCaps)
+virJSONValue *
+qemuBuildNicDevProps(virDomainDef *def,
+                     virDomainNetDef *net,
+                     size_t vhostfdSize,
+                     virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    bool usingVirtio = false;
+    g_autoptr(virJSONValue) props = NULL;
     char macaddr[VIR_MAC_STRING_BUFLEN];
+    g_autofree char *netdev = g_strdup_printf("host%s", net->info.alias);
 
     if (virDomainNetIsVirtioModel(net)) {
-        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_NET, net) < 0) {
-            return NULL;
-        }
+        const char *tx = NULL;
+        virTristateSwitch mq = VIR_TRISTATE_SWITCH_ABSENT;
+        unsigned long long vectors = 0;
+        virTristateSwitch failover = VIR_TRISTATE_SWITCH_ABSENT;
 
-        usingVirtio = true;
-    } else {
-        virBufferAddStr(&buf, virDomainNetGetModelString(net));
-    }
-
-    if (usingVirtio) {
-        if (net->driver.virtio.txmode &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
-            virBufferAddLit(&buf, ",tx=");
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_TX_ALG)) {
             switch (net->driver.virtio.txmode) {
                 case VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD:
-                    virBufferAddLit(&buf, "bh");
+                    tx = "bh";
                     break;
 
                 case VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER:
-                    virBufferAddLit(&buf, "timer");
+                    tx = "timer";
                     break;
 
                 case VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT:
@@ -3916,100 +3909,80 @@ qemuBuildNicDevStr(virDomainDef *def,
                     return NULL;
             }
         }
-        qemuBuildIoEventFdStr(&buf, net->driver.virtio.ioeventfd, qemuCaps);
-        if (net->driver.virtio.event_idx) {
-            virBufferAsprintf(&buf, ",event_idx=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.event_idx));
-        }
-        if (net->driver.virtio.host.csum) {
-            virBufferAsprintf(&buf, ",csum=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.csum));
-        }
-        if (net->driver.virtio.host.gso) {
-            virBufferAsprintf(&buf, ",gso=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.gso));
-        }
-        if (net->driver.virtio.host.tso4) {
-            virBufferAsprintf(&buf, ",host_tso4=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.tso4));
-        }
-        if (net->driver.virtio.host.tso6) {
-            virBufferAsprintf(&buf, ",host_tso6=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.tso6));
-        }
-        if (net->driver.virtio.host.ecn) {
-            virBufferAsprintf(&buf, ",host_ecn=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.ecn));
-        }
-        if (net->driver.virtio.host.ufo) {
-            virBufferAsprintf(&buf, ",host_ufo=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.ufo));
-        }
-        if (net->driver.virtio.host.mrg_rxbuf) {
-            virBufferAsprintf(&buf, ",mrg_rxbuf=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.host.mrg_rxbuf));
-        }
-        if (net->driver.virtio.guest.csum) {
-            virBufferAsprintf(&buf, ",guest_csum=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.guest.csum));
-        }
-        if (net->driver.virtio.guest.tso4) {
-            virBufferAsprintf(&buf, ",guest_tso4=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.guest.tso4));
-        }
-        if (net->driver.virtio.guest.tso6) {
-            virBufferAsprintf(&buf, ",guest_tso6=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.guest.tso6));
-        }
-        if (net->driver.virtio.guest.ecn) {
-            virBufferAsprintf(&buf, ",guest_ecn=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.guest.ecn));
-        }
-        if (net->driver.virtio.guest.ufo) {
-            virBufferAsprintf(&buf, ",guest_ufo=%s",
-                              virTristateSwitchTypeToString(net->driver.virtio.guest.ufo));
-        }
 
         if (vhostfdSize > 1) {
             if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 /* ccw provides a one to one relation of fds to queues and
                  * does not support the vectors option
                  */
-                virBufferAddLit(&buf, ",mq=on");
+                mq = VIR_TRISTATE_SWITCH_ON;
             } else {
                 /* As advised at https://www.linux-kvm.org/page/Multiqueue
                  * we should add vectors=2*N+2 where N is the vhostfdSize
                  */
-                virBufferAsprintf(&buf, ",mq=on,vectors=%zu", 2 * vhostfdSize + 2);
+                mq = VIR_TRISTATE_SWITCH_ON;
+                vectors = 2 * vhostfdSize + 2;
             }
         }
 
-        if (net->driver.virtio.rx_queue_size)
-            virBufferAsprintf(&buf, ",rx_queue_size=%u", net->driver.virtio.rx_queue_size);
-
-        if (net->driver.virtio.tx_queue_size)
-            virBufferAsprintf(&buf, ",tx_queue_size=%u", net->driver.virtio.tx_queue_size);
-
-        if (net->mtu)
-            virBufferAsprintf(&buf, ",host_mtu=%u", net->mtu);
-
         if (net->teaming && net->teaming->type == VIR_DOMAIN_NET_TEAMING_TYPE_PERSISTENT)
-            virBufferAddLit(&buf, ",failover=on");
+            failover = VIR_TRISTATE_SWITCH_ON;
+
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_NET, net, qemuCaps)))
+            return NULL;
+
+        if (virJSONValueObjectAdd(props,
+                                  "S:tx", tx,
+                                  "T:ioeventfd", net->driver.virtio.ioeventfd,
+                                  "T:event_idx", net->driver.virtio.event_idx,
+                                  "T:csum", net->driver.virtio.host.csum,
+                                  "T:gso", net->driver.virtio.host.gso,
+                                  "T:host_tso4", net->driver.virtio.host.tso4,
+                                  "T:host_tso6", net->driver.virtio.host.tso6,
+                                  "T:host_ecn", net->driver.virtio.host.ecn,
+                                  "T:host_ufo", net->driver.virtio.host.ufo,
+                                  "T:mrg_rxbuf", net->driver.virtio.host.mrg_rxbuf,
+                                  "T:guest_csum", net->driver.virtio.guest.csum,
+                                  "T:guest_tso4", net->driver.virtio.guest.tso4,
+                                  "T:guest_tso6", net->driver.virtio.guest.tso6,
+                                  "T:guest_ecn", net->driver.virtio.guest.ecn,
+                                  "T:guest_ufo", net->driver.virtio.guest.ufo,
+                                  "T:mq", mq,
+                                  "P:vectors", vectors,
+                                  "p:rx_queue_size", net->driver.virtio.rx_queue_size,
+                                  "p:tx_queue_size", net->driver.virtio.tx_queue_size,
+                                  "p:host_mtu", net->mtu,
+                                  "T:failover", failover,
+                                  NULL) < 0)
+            return NULL;
+    } else {
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", virDomainNetGetModelString(net),
+                                     NULL) < 0)
+            return NULL;
     }
 
-    virBufferAsprintf(&buf, ",netdev=host%s", net->info.alias);
-    virBufferAsprintf(&buf, ",id=%s", net->info.alias);
-    virBufferAsprintf(&buf, ",mac=%s",
-                      virMacAddrFormat(&net->mac, macaddr));
+    virMacAddrFormat(&net->mac, macaddr);
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &net->info) < 0)
+    if (virJSONValueObjectAdd(props,
+                              "s:netdev", netdev,
+                              "s:id", net->info.alias,
+                              "s:mac", macaddr,
+                              NULL) < 0)
         return NULL;
-    if (qemuBuildRomStr(&buf, &net->info) < 0)
-        return NULL;
-    if (net->info.effectiveBootIndex > 0)
-        virBufferAsprintf(&buf, ",bootindex=%u", net->info.effectiveBootIndex);
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &net->info) < 0)
+        return NULL;
+
+    if (qemuBuildRomProps(props, &net->info) < 0)
+        return NULL;
+
+    if (virJSONValueObjectAdd(props,
+                              "p:bootindex", net->info.effectiveBootIndex,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -8778,6 +8751,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 {
     virDomainDef *def = vm->def;
     int ret = -1;
+    g_autoptr(virJSONValue) nicprops = NULL;
     g_autofree char *nic = NULL;
     g_autofree char *chardev = NULL;
     int *tapfd = NULL;
@@ -9041,9 +9015,10 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
             goto cleanup;
 
-        if (!(nic = qemuBuildNicDevStr(def, net, net->driver.virtio.queues, qemuCaps)))
+        if (!(nicprops = qemuBuildNicDevProps(def, net, net->driver.virtio.queues, qemuCaps)))
             goto cleanup;
-        virCommandAddArgList(cmd, "-device", nic, NULL);
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, nicprops, qemuCaps) < 0)
+            goto cleanup;
     } else if (!requireNicdev) {
         if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
             goto cleanup;

@@ -98,10 +98,11 @@ virJSONValue *qemuBuildHostNetStr(virDomainNetDef *net,
                                     const char *vdpadev);
 
 /* Current, best practice */
-char *qemuBuildNicDevStr(virDomainDef *def,
-                         virDomainNetDef *net,
-                         size_t vhostfdSize,
-                         virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildNicDevProps(virDomainDef *def,
+                     virDomainNetDef *net,
+                     size_t vhostfdSize,
+                     virQEMUCaps *qemuCaps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDef *disk);
 bool qemuDiskBusIsSD(int bus);

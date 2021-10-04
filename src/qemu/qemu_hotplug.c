@@ -1175,7 +1175,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     int *vhostfd = NULL;
     size_t vhostfdSize = 0;
     size_t queueSize = 0;
-    g_autofree char *nicstr = NULL;
+    g_autoptr(virJSONValue) nicprops = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
     int ret = -1;
     bool releaseaddr = false;
@@ -1484,7 +1484,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     for (i = 0; i < vhostfdSize; i++)
         VIR_FORCE_CLOSE(vhostfd[i]);
 
-    if (!(nicstr = qemuBuildNicDevStr(vm->def, net, queueSize, priv->qemuCaps)))
+    if (!(nicprops = qemuBuildNicDevProps(vm->def, net, queueSize, priv->qemuCaps)))
         goto try_remove;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1495,7 +1495,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         goto try_remove;
     }
 
-    if (qemuMonitorAddDevice(priv->mon, nicstr) < 0) {
+    if (qemuMonitorAddDeviceProps(priv->mon, &nicprops) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &net->info));
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         virDomainAuditNet(vm, NULL, net, "attach", false);
