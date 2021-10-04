@@ -40,6 +40,6 @@ QEMU_AUDIO_DRV=spice \
 -spice unix,addr=/tmp/lib/domain--1-foo=1,,bar=2/spice.sock,gl=on,rendernode=/dev/dri/foo,,bar,seamless-migration=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -drive file.driver=iscsi,file.portal=example.foo.org:3260,file.target=iqn.1992-01.com.example:my,,storage,file.lun=1,file.transport=tcp,if=none,format=raw,id=drive-hostdev0 \
--device scsi-generic,bus=scsi0.0,channel=0,scsi-id=0,lun=4,drive=drive-hostdev0,id=hostdev0 \
+-device scsi-generic,drive=drive-hostdev0,id=hostdev0,bus=scsi0.0,channel=0,scsi-id=0,lun=4 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -msg timestamp=on

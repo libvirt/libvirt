@@ -5088,17 +5088,13 @@ qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
 
     if (virJSONValueObjectCreate(&props,
                                  "s:driver", "scsi-generic",
+                                 "s:drive", backendAlias,
+                                 "s:id", dev->info->alias,
+                                 "p:bootindex", dev->info->bootIndex,
                                  NULL) < 0)
         return NULL;
 
     if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
-        return NULL;
-
-    if (virJSONValueObjectAdd(props,
-                              "s:drive", backendAlias,
-                              "s:id", dev->info->alias,
-                              "p:bootindex", dev->info->bootIndex,
-                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
