@@ -2572,7 +2572,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST("pc-i440fx-acpi-root-hotplug-disable",
-            QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG);
+            QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG);
     DO_TEST_PARSE_ERROR_NOCAPS("pc-i440fx-acpi-root-hotplug-disable");
     DO_TEST("q35-usb2",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,

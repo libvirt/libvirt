@@ -643,7 +643,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 410 */
               "virtio-mem-pci", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI */
               "memory-backend-file.reserve", /* QEMU_CAPS_MEMORY_BACKEND_RESERVE */
-              "piix4-acpi-root-hotplug-en", /* QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG */
+              "piix4.acpi-root-pci-hotplug", /* QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG */
     );
 
 
@@ -1471,7 +1471,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsIDEDrive[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {
     { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3, NULL },
     { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4, NULL },
-    { "acpi-root-pci-hotplug", QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG, NULL },
+    { "acpi-root-pci-hotplug", QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {

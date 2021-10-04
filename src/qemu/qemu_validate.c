@@ -3873,7 +3873,7 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
     if (pciopts->hotplug != VIR_TRISTATE_SWITCH_ABSENT) {
         switch ((virDomainControllerModelPCI) cont->model) {
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
-            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX_ACPI_ROOT_PCI_HOTPLUG)) {
+            if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("setting the %s property on a '%s' device is not supported by this QEMU binary"),
                                "hotplug", "pci-root");

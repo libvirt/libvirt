@@ -231,7 +231,7 @@
   <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='virtio-mem-pci'/>
-  <flag name='piix4-acpi-root-hotplug-en'/>
+  <flag name='piix4.acpi-root-pci-hotplug'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
