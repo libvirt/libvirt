@@ -248,13 +248,11 @@ virJSONValue *
 qemuBuildInputUSBDevProps(const virDomainDef *def,
                           virDomainInputDef *dev);
 
-char *
-qemuBuildVsockDevStr(virDomainDef *def,
-                     virDomainVsockDef *vsock,
-                     virQEMUCaps *qemuCaps,
-                     const char *fdprefix)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    ATTRIBUTE_NONNULL(4);
+virJSONValue *
+qemuBuildVsockDevProps(virDomainDef *def,
+                       virDomainVsockDef *vsock,
+                       virQEMUCaps *qemuCaps,
+                       const char *fdprefix);
 
 /* this function is exported so that tests can mock the FDs */
 int

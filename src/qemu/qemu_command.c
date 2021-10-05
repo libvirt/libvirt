@@ -10589,27 +10589,30 @@ qemuBuildSeccompSandboxCommandLine(virCommand *cmd,
 }
 
 
-char *
-qemuBuildVsockDevStr(virDomainDef *def,
-                     virDomainVsockDef *vsock,
-                     virQEMUCaps *qemuCaps,
-                     const char *fdprefix)
+virJSONValue *
+qemuBuildVsockDevProps(virDomainDef *def,
+                       virDomainVsockDef *vsock,
+                       virQEMUCaps *qemuCaps,
+                       const char *fdprefix)
 {
     qemuDomainVsockPrivate *priv = (qemuDomainVsockPrivate *)vsock->privateData;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *vhostfd = g_strdup_printf("%s%u", fdprefix, priv->vhostfd);
 
-    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_VSOCK, vsock) < 0) {
-        return NULL;
-    }
-
-    virBufferAsprintf(&buf, ",id=%s", vsock->info.alias);
-    virBufferAsprintf(&buf, ",guest-cid=%u", vsock->guest_cid);
-    virBufferAsprintf(&buf, ",vhostfd=%s%u", fdprefix, priv->vhostfd);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &vsock->info) < 0)
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_VSOCK, vsock, qemuCaps)))
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectAdd(props,
+                              "s:id", vsock->info.alias,
+                              "u:guest-cid", vsock->guest_cid,
+                              "s:vhostfd", vhostfd,
+                              NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, &vsock->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -10620,9 +10623,9 @@ qemuBuildVsockCommandLine(virCommand *cmd,
                           virQEMUCaps *qemuCaps)
 {
     qemuDomainVsockPrivate *priv = (qemuDomainVsockPrivate *)vsock->privateData;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
 
-    if (!(devstr = qemuBuildVsockDevStr(def, vsock, qemuCaps, "")))
+    if (!(devprops = qemuBuildVsockDevProps(def, vsock, qemuCaps, "")))
         return -1;
 
     virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -10631,7 +10634,8 @@ qemuBuildVsockCommandLine(virCommand *cmd,
     if (qemuCommandAddExtDevice(cmd, &vsock->info, qemuCaps) < 0)
         return -1;
 
-    virCommandAddArgList(cmd, "-device", devstr, NULL);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

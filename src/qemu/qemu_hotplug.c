@@ -3349,7 +3349,9 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     const char *fdprefix = "vsockfd";
     bool releaseaddr = false;
     g_autofree char *fdname = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
+    bool removeextension = false;
+    bool removehandle = false;
     int ret = -1;
 
     if (vm->def->vsock) {
@@ -3369,7 +3371,7 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
 
     fdname = g_strdup_printf("%s%u", fdprefix, vsockPriv->vhostfd);
 
-    if (!(devstr = qemuBuildVsockDevStr(vm->def, vsock, priv->qemuCaps, fdprefix)))
+    if (!(devprops = qemuBuildVsockDevProps(vm->def, vsock, priv->qemuCaps, fdprefix)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -3377,10 +3379,15 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     if (qemuDomainAttachExtensionDevice(priv->mon, &vsock->info) < 0)
         goto exit_monitor;
 
-    if (qemuMonitorAddDeviceWithFd(priv->mon, devstr, vsockPriv->vhostfd, fdname) < 0) {
-        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &vsock->info));
+    removeextension = true;
+
+    if ((ret = qemuMonitorSendFileHandle(priv->mon, fdname, vsockPriv->vhostfd)) < 0)
         goto exit_monitor;
-    }
+
+    removehandle = true;
+
+    if ((ret = qemuMonitorAddDeviceProps(priv->mon, &devprops)) < 0)
+        goto exit_monitor;
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0) {
         releaseaddr = false;
@@ -3402,6 +3409,10 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     return ret;
 
  exit_monitor:
+    if (removehandle)
+        ignore_value(qemuMonitorCloseFileHandle(priv->mon, fdname));
+    if (removeextension)
+        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &vsock->info));
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         releaseaddr = false;
     goto cleanup;
