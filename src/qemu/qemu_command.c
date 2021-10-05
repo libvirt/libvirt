@@ -4660,99 +4660,120 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildDeviceVideoStr(const virDomainDef *def,
+static int
+qemuBuildDeviceVideoCmd(virCommand *cmd,
+                        const virDomainDef *def,
                         virDomainVideoDef *video,
                         virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     const char *model = NULL;
-    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateSwitch virgl = VIR_TRISTATE_SWITCH_ABSENT;
     bool virtio = false;
     bool virtioBusSuffix = false;
-
-    if (video->accel)
-        accel3d = video->accel->accel3d;
+    g_autoptr(virJSONValue) props = NULL;
 
     if (!(model = qemuDeviceVideoGetModel(qemuCaps, video, &virtio, &virtioBusSuffix)))
-        return NULL;
+        return -1;
 
     if (virtio) {
-        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_VIDEO, video) < 0) {
-            return NULL;
-        }
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_VIDEO, video, qemuCaps)))
+            return -1;
     } else {
-        virBufferAsprintf(&buf, "%s", model);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", model,
+                                     NULL) < 0)
+            return -1;
     }
-
-    virBufferAsprintf(&buf, ",id=%s", video->info.alias);
 
     if (video->backend != VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER &&
         video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
         if (video->accel &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) &&
-            (accel3d == VIR_TRISTATE_SWITCH_ON ||
-             accel3d == VIR_TRISTATE_SWITCH_OFF)) {
-            virBufferAsprintf(&buf, ",virgl=%s",
-                              virTristateSwitchTypeToString(accel3d));
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL)) {
+            virgl = video->accel->accel3d;
         }
     }
 
-    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-        if (video->ram) {
-            /* QEMU accepts bytes for ram_size. */
-            virBufferAsprintf(&buf, ",ram_size=%u", video->ram * 1024);
-        }
+    if (virJSONValueObjectAdd(props,
+                              "s:id", video->info.alias,
+                              "T:virgl", virgl,
+                              NULL) < 0)
+        return -1;
 
-        if (video->vram) {
-            /* QEMU accepts bytes for vram_size. */
-            virBufferAsprintf(&buf, ",vram_size=%u", video->vram * 1024);
-        }
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
+        if (virJSONValueObjectAdd(props,
+                                  "p:ram_size", video->ram * 1024,
+                                  "p:vram_size", video->vram * 1024,
+                                  NULL) < 0)
+            return -1;
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VRAM64)) {
-            /* QEMU accepts mebibytes for vram64_size_mb. */
-            virBufferAsprintf(&buf, ",vram64_size_mb=%u", video->vram64 / 1024);
+            if (virJSONValueObjectAdd(props,
+                                      "u:vram64_size_mb", video->vram64 / 1024,
+                                      NULL) < 0)
+                return -1;
         }
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM)) {
-            /* QEMU accepts mebibytes for vgamem_mb. */
-            virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vgamem / 1024);
+            if (virJSONValueObjectAdd(props,
+                                      "u:vgamem_mb", video->vgamem / 1024,
+                                      NULL) < 0)
+                return -1;
         }
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS)) {
-            if (video->heads)
-                virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
+            if (virJSONValueObjectAdd(props,
+                                      "p:max_outputs", video->heads,
+                                      NULL) < 0)
+                return -1;
         }
     } else if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
         g_autofree char *alias = qemuDomainGetVhostUserChrAlias(video->info.alias);
-        if (video->heads)
-            virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
-        virBufferAsprintf(&buf, ",chardev=%s", alias);
+
+        if (virJSONValueObjectAdd(props,
+                                  "p:max_outputs", video->heads,
+                                  "s:chardev", alias,
+                                  NULL) < 0)
+            return -1;
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS)) {
-            if (video->heads)
-                virBufferAsprintf(&buf, ",max_outputs=%u", video->heads);
-        }
+        unsigned int heads = 0;
+
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS))
+            heads = video->heads;
+
+        if (virJSONValueObjectAdd(props,
+                                  "p:max_outputs", heads,
+                                  NULL) < 0)
+            return -1;
     } else if ((video->type == VIR_DOMAIN_VIDEO_TYPE_VGA &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
                (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM))) {
-        if (video->vram)
-            virBufferAsprintf(&buf, ",vgamem_mb=%u", video->vram / 1024);
+        if (virJSONValueObjectAdd(props,
+                                  "p:vgamem_mb", video->vram / 1024,
+                                  NULL) < 0)
+            return -1;
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_BOCHS) {
-        if (video->vram)
-            virBufferAsprintf(&buf, ",vgamem=%uk", video->vram);
+        if (virJSONValueObjectAdd(props,
+                                  "p:vgamem", video->vram * 1024,
+                                  NULL) < 0)
+            return -1;
     }
 
-    if (video->res && video->res->x && video->res->y) {
-        /* QEMU accepts resolution xres and yres. */
-        virBufferAsprintf(&buf, ",xres=%u,yres=%u", video->res->x, video->res->y);
+    if (video->res) {
+        if (virJSONValueObjectAdd(props,
+                                  "p:xres", video->res->x,
+                                  "p:yres", video->res->y,
+                                  NULL) < 0)
+            return -1;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &video->info) < 0)
-        return NULL;
+    if (qemuBuildDeviceAddressProps(props, def, &video->info) < 0)
+        return -1;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -4801,7 +4822,6 @@ qemuBuildVideoCommandLine(virCommand *cmd,
     }
 
     for (i = 0; i < def->nvideos; i++) {
-        g_autofree char *str = NULL;
         virDomainVideoDef *video = def->videos[i];
 
         if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
@@ -4810,12 +4830,8 @@ qemuBuildVideoCommandLine(virCommand *cmd,
         if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, qemuCaps) < 0)
             return -1;
 
-        virCommandAddArg(cmd, "-device");
-
-        if (!(str = qemuBuildDeviceVideoStr(def, video, qemuCaps)))
+        if (qemuBuildDeviceVideoCmd(cmd, def, video, qemuCaps) < 0)
             return -1;
-
-        virCommandAddArg(cmd, str);
     }
 
     return 0;
