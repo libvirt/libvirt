@@ -9948,24 +9948,33 @@ qemuBuildDomainLoaderCommandLine(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildTPMDevStr(const virDomainDef *def,
+static int
+qemuBuildTPMDevCmd(virCommand *cmd,
+                   const virDomainDef *def,
                    virDomainTPMDef *tpm,
-                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                   virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     const char *model = virDomainTPMModelTypeToString(tpm->model);
+    g_autofree char *tpmdev = g_strdup_printf("tpm-%s", tpm->info.alias);
 
     if (tpm->model == VIR_DOMAIN_TPM_MODEL_TIS && def->os.arch == VIR_ARCH_AARCH64)
         model = "tpm-tis-device";
 
-    virBufferAsprintf(&buf, "%s,tpmdev=tpm-%s,id=%s",
-                      model, tpm->info.alias, tpm->info.alias);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", model,
+                                 "s:tpmdev", tpmdev,
+                                 "s:id", tpm->info.alias,
+                                 NULL) < 0)
+        return -1;
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &tpm->info) < 0)
-        return NULL;
+    if (qemuBuildDeviceAddressProps(props, def, &tpm->info) < 0)
+        return -1;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -10092,11 +10101,8 @@ qemuBuildTPMCommandLine(virCommand *cmd,
         VIR_FREE(fdset);
     }
 
-    if (!(optstr = qemuBuildTPMDevStr(def, tpm, qemuCaps)))
+    if (qemuBuildTPMDevCmd(cmd, def, tpm, qemuCaps) < 0)
         return -1;
-
-    virCommandAddArgList(cmd, "-device", optstr, NULL);
-    VIR_FREE(optstr);
 
     return 0;
 }

@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device spapr-tpm-proxy,id=tpm0,host-path=/dev/tpmrm0 \
 -tpmdev emulator,id=tpm-tpm1,chardev=chrtpm \
 -chardev socket,id=chrtpm,path=/dev/test \
--device tpm-spapr,tpmdev=tpm-tpm1,id=tpm1,reg=0x00004000 \
+-device tpm-spapr,tpmdev=tpm-tpm1,id=tpm1,reg=16384 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

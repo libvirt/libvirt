@@ -37,7 +37,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -device spapr-vty,chardev=charserial1,id=serial1,reg=805310464 \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
 -chardev socket,id=chrtpm,path=/dev/test \
--device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=0x00005000 \
+-device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=20480 \
 -audiodev id=audio1,driver=none \
 -global spapr-nvram.reg=0x4000 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
