@@ -4875,19 +4875,27 @@ qemuBuildUSBHostdevDevProps(const virDomainDef *def,
 }
 
 
-static char *
-qemuBuildHubDevStr(const virDomainDef *def,
+static int
+qemuBuildHubDevCmd(virCommand *cmd,
+                   const virDomainDef *def,
                    virDomainHubDef *dev,
-                   virQEMUCaps *qemuCaps G_GNUC_UNUSED)
+                   virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
-    virBufferAddLit(&buf, "usb-hub");
-    virBufferAsprintf(&buf, ",id=%s", dev->info.alias);
-    if (qemuBuildDeviceAddressStr(&buf, def, &dev->info) < 0)
-        return NULL;
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "usb-hub",
+                                 "s:id", dev->info.alias,
+                                 NULL) < 0)
+        return -1;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -4899,13 +4907,8 @@ qemuBuildHubCommandLine(virCommand *cmd,
     size_t i;
 
     for (i = 0; i < def->nhubs; i++) {
-        virDomainHubDef *hub = def->hubs[i];
-        g_autofree char *optstr = NULL;
-
-        virCommandAddArg(cmd, "-device");
-        if (!(optstr = qemuBuildHubDevStr(def, hub, qemuCaps)))
+        if (qemuBuildHubDevCmd(cmd, def, def->hubs[i], qemuCaps) < 0)
             return -1;
-        virCommandAddArg(cmd, optstr);
     }
 
     return 0;
