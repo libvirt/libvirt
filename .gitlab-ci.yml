@@ -4,6 +4,7 @@ variables:
 stages:
   - containers
   - builds
+  - integration_tests
   - sanity_checks
 
 .script_variables: &script_variables |
@@ -14,7 +15,9 @@ stages:
   export VIR_TEST_VERBOSE="1"
   export VIR_TEST_DEBUG="1"
 
-include: '/ci/gitlab.yml'
+include:
+  - '/ci/gitlab.yml'
+  - '/ci/integration.yml'
 
 .native_build_job:
   extends: .gitlab_native_build_job
