@@ -6945,8 +6945,15 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
         }
         break;
 
-    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_FS:
+        ret = qemuDomainAttachFSDevice(driver, vm, dev->data.fs);
+        if (ret == 0) {
+            alias = dev->data.fs->info.alias;
+            dev->data.fs = NULL;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:

@@ -35,6 +35,7 @@
 #include "qemu_security.h"
 #include "qemu_block.h"
 #include "qemu_snapshot.h"
+#include "qemu_virtiofs.h"
 #include "domain_audit.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
@@ -3416,6 +3417,104 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         releaseaddr = false;
     goto cleanup;
+}
+
+
+int
+qemuDomainAttachFSDevice(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         virDomainFSDef *fs)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_FS,
+                               { .fs = fs } };
+    g_autoptr(virDomainChrSourceDef) chardev = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
+    virErrorPtr origErr = NULL;
+    bool releaseaddr = false;
+    bool chardevAdded = false;
+    bool started = false;
+    g_autofree char *charAlias = NULL;
+    int ret = -1;
+
+    if (fs->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("only virtiofs filesystems can be hotplugged"));
+        return -1;
+    }
+
+    if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
+        return -1;
+
+    if (qemuAssignDeviceFSAlias(vm->def, fs) < 0)
+        goto cleanup;
+
+    chardev = virDomainChrSourceDefNew(priv->driver->xmlopt);
+    chardev->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    chardev->data.nix.path = qemuDomainGetVHostUserFSSocketPath(priv, fs);
+
+    charAlias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
+
+    if (qemuBuildVHostUserFsDevProps(fs, vm->def, charAlias, priv) < 0)
+        goto cleanup;
+
+    if (!fs->sock) {
+        if (qemuVirtioFSPrepareDomain(driver, fs) < 0)
+            goto cleanup;
+
+        if (qemuVirtioFSStart(driver, vm, fs) < 0)
+            goto cleanup;
+        started = true;
+
+        if (qemuVirtioFSSetupCgroup(vm, fs, priv->cgroup) < 0)
+            goto cleanup;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (qemuMonitorAttachCharDev(priv->mon, charAlias, chardev) < 0)
+        goto exit_monitor;
+    chardevAdded = true;
+
+    if (qemuDomainAttachExtensionDevice(priv->mon, &fs->info) < 0)
+        goto exit_monitor;
+
+    if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0) {
+        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &fs->info));
+        goto exit_monitor;
+    }
+
+    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
+        releaseaddr = false;
+        goto cleanup;
+    }
+
+    VIR_APPEND_ELEMENT_COPY(vm->def->fss, vm->def->nfss, fs);
+
+    ret = 0;
+
+ audit:
+    virDomainAuditFS(vm, NULL, fs, "attach", ret == 0);
+ cleanup:
+    if (ret < 0) {
+        virErrorPreserveLast(&origErr);
+        if (releaseaddr)
+            qemuDomainReleaseDeviceAddress(vm, &fs->info);
+        if (started)
+            qemuVirtioFSStop(driver, vm, fs);
+        virErrorRestore(&origErr);
+    }
+
+    return ret;
+
+ exit_monitor:
+    virErrorPreserveLast(&origErr);
+    if (chardevAdded)
+        ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
+    if (qemuDomainObjExitMonitor(driver, vm) < 0)
+        releaseaddr = false;
+    virErrorRestore(&origErr);
+    goto audit;
 }
 
 
