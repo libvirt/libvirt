@@ -2743,7 +2743,9 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
     virDomainCCWAddressSet *ccwaddrs = NULL;
     g_autofree char *vhostfdName = NULL;
     int vhostfd = -1;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
+    bool removeextension = false;
+    bool removehandle = false;
     bool teardowncgroup = false;
     bool teardownlabel = false;
     bool teardowndevice = false;
@@ -2790,10 +2792,10 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
     if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
         goto cleanup;
 
-    if (!(devstr = qemuBuildSCSIVHostHostdevDevStr(vm->def,
-                                                   hostdev,
-                                                   priv->qemuCaps,
-                                                   vhostfdName)))
+    if (!(devprops = qemuBuildSCSIVHostHostdevDevProps(vm->def,
+                                                       hostdev,
+                                                       priv->qemuCaps,
+                                                       vhostfdName)))
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->hostdevs, vm->def->nhostdevs + 1);
@@ -2803,13 +2805,24 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
     if ((ret = qemuDomainAttachExtensionDevice(priv->mon, hostdev->info)) < 0)
         goto exit_monitor;
 
-    if ((ret = qemuMonitorAddDeviceWithFd(priv->mon, devstr, vhostfd,
-                                          vhostfdName)) < 0) {
-        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
+    removeextension = true;
+
+    if ((ret = qemuMonitorSendFileHandle(priv->mon, vhostfdName, vhostfd)))
         goto exit_monitor;
-    }
+
+    removehandle = true;
+
+    if ((ret = qemuMonitorAddDeviceProps(priv->mon, &devprops)) < 0)
+        goto exit_monitor;
+
+    removeextension = false;
+    removehandle = false;
 
  exit_monitor:
+    if (removehandle)
+        ignore_value(qemuMonitorCloseFileHandle(priv->mon, vhostfdName));
+    if (removeextension)
+        ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0)
         goto audit;
 

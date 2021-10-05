@@ -4979,29 +4979,32 @@ qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDef *dev)
     return virBufferContentAndReset(&buf);
 }
 
-char *
-qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
-                           virDomainHostdevDef *dev,
-                           virQEMUCaps *qemuCaps,
-                           char *vhostfdName)
+
+virJSONValue *
+qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
+                                  virDomainHostdevDef *dev,
+                                  virQEMUCaps *qemuCaps,
+                                  char *vhostfdName)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysSCSIVHost *hostsrc = &dev->source.subsys.u.scsi_host;
 
-    if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_HOSTDEV, dev) < 0) {
-        return NULL;
-    }
-
-    virBufferAsprintf(&buf, ",wwpn=%s,vhostfd=%s,id=%s",
-                      hostsrc->wwpn,
-                      vhostfdName,
-                      dev->info->alias);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, dev->info) < 0)
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_HOSTDEV, dev, qemuCaps)))
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectAdd(props,
+                              "s:wwpn", hostsrc->wwpn,
+                              "s:vhostfd", vhostfdName,
+                              "s:id", dev->info->alias,
+                              NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
+
 
 static char *
 qemuBuildSCSIHostdevDrvStr(virDomainHostdevDef *dev)
@@ -5565,7 +5568,6 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
         virDomainHostdevDef *hostdev = def->hostdevs[i];
         virDomainHostdevSubsys *subsys = &hostdev->source.subsys;
         virDomainHostdevSubsysMediatedDev *mdevsrc = &subsys->u.mdev;
-        g_autofree char *devstr = NULL;
         g_autoptr(virJSONValue) devprops = NULL;
         g_autofree char *vhostfdName = NULL;
         int vhostfd = -1;
@@ -5618,14 +5620,14 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
                 virCommandPassFD(cmd, vhostfd,
                                  VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
-                virCommandAddArg(cmd, "-device");
-                if (!(devstr = qemuBuildSCSIVHostHostdevDevStr(def,
-                                                               hostdev,
-                                                               qemuCaps,
-                                                               vhostfdName)))
+                if (!(devprops = qemuBuildSCSIVHostHostdevDevProps(def,
+                                                                   hostdev,
+                                                                   qemuCaps,
+                                                                   vhostfdName)))
                     return -1;
 
-                virCommandAddArg(cmd, devstr);
+                if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+                    return -1;
             }
 
             break;

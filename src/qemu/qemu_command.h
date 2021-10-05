@@ -195,11 +195,11 @@ qemuBlockStorageSourceAttachData *
 qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
                                   virQEMUCaps *qemuCaps);
 
-char *
-qemuBuildSCSIVHostHostdevDevStr(const virDomainDef *def,
-                                virDomainHostdevDef *dev,
-                                virQEMUCaps *qemuCaps,
-                                char *vhostfdName);
+virJSONValue *
+qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
+                                  virDomainHostdevDef *dev,
+                                  virQEMUCaps *qemuCaps,
+                                  char *vhostfdName);
 
 virJSONValue *
 qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
