@@ -2858,40 +2858,6 @@ qemuMonitorDelDevice(qemuMonitor *mon,
 }
 
 
-int
-qemuMonitorAddDeviceWithFd(qemuMonitor *mon,
-                           const char *devicestr,
-                           int fd,
-                           const char *fdname)
-{
-    int ret;
-
-    VIR_DEBUG("device=%s fd=%d fdname=%s", devicestr, fd, NULLSTR(fdname));
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (fd >= 0 && qemuMonitorSendFileHandle(mon, fdname, fd) < 0)
-        return -1;
-
-    ret = qemuMonitorJSONAddDevice(mon, devicestr);
-
-    if (ret < 0 && fd >= 0) {
-        if (qemuMonitorCloseFileHandle(mon, fdname) < 0)
-            VIR_WARN("failed to close device handle '%s'", fdname);
-    }
-
-    return ret;
-}
-
-
-int
-qemuMonitorAddDevice(qemuMonitor *mon,
-                     const char *devicestr)
-{
-    return qemuMonitorAddDeviceWithFd(mon, devicestr, -1, NULL);
-}
-
-
 /**
  * qemuMonitorAddDeviceProps:
  * @mon: monitor object

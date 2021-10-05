@@ -1030,13 +1030,6 @@ int qemuMonitorAttachPCIDiskController(qemuMonitor *mon,
 
 int qemuMonitorAddDeviceProps(qemuMonitor *mon,
                               virJSONValue **props);
-int qemuMonitorAddDevice(qemuMonitor *mon,
-                         const char *devicestr);
-
-int qemuMonitorAddDeviceWithFd(qemuMonitor *mon,
-                               const char *devicestr,
-                               int fd,
-                               const char *fdname);
 
 int qemuMonitorDelDevice(qemuMonitor *mon,
                          const char *devalias);

@@ -237,8 +237,6 @@ int qemuMonitorJSONAttachPCIDiskController(qemuMonitor *mon,
 
 int qemuMonitorJSONAddDeviceProps(qemuMonitor *mon,
                                   virJSONValue **props);
-int qemuMonitorJSONAddDevice(qemuMonitor *mon,
-                             const char *devicestr);
 
 int qemuMonitorJSONDelDevice(qemuMonitor *mon,
                              const char *devalias);
