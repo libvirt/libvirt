@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo/master-key.aes \
 -machine pc,accel=kvm,usb=off,dump-guest-core=off \
--cpu core2duo,+ds,+acpi,+ss,+ht,+tm,+pbe,+ds-cpl,+vmx,+est,+tm2,+cx16,+xtpr,+lahf-lm,l3-cache=off \
+-cpu core2duo,ds=on,acpi=on,ss=on,ht=on,tm=on,pbe=on,ds-cpl=on,vmx=on,est=on,tm2=on,cx16=on,xtpr=on,lahf-lm=on,l3-cache=off \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

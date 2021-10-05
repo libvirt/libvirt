@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-lots-of-disks/master-key.aes \
 -machine pc-i440fx-1.4,accel=tcg,usb=off,dump-guest-core=off \
--cpu qemu64,-kvmclock \
+-cpu qemu64,kvmclock=off \
 -bios /usr/share/seabios/bios.bin \
 -m 3907 \
 -realtime mlock=off \
