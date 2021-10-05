@@ -2049,7 +2049,7 @@ qemuBuildVHostUserFsChardevStr(const virDomainFSDef *fs,
 }
 
 
-static char *
+char *
 qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
                            const virDomainDef *def,
                            const char *chardev_alias,

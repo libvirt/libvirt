@@ -46,6 +46,10 @@ int qemuAssignDeviceNetAlias(virDomainDef *def,
                              virDomainNetDef *net,
                              int idx);
 
+int
+qemuAssignDeviceFSAlias(virDomainDef *def,
+                        virDomainFSDef *fss);
+
 int qemuAssignDeviceRedirdevAlias(virDomainDef *def,
                                   virDomainRedirdevDef *redirdev,
                                   int idx);

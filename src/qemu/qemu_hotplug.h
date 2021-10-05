@@ -107,6 +107,10 @@ int qemuDomainAttachInputDevice(virQEMUDriver *driver,
 int qemuDomainAttachVsockDevice(virQEMUDriver *driver,
                                 virDomainObj *vm,
                                 virDomainVsockDef *vsock);
+int
+qemuDomainAttachFSDevice(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         virDomainFSDef *fs);
 
 int qemuDomainAttachLease(virQEMUDriver *driver,
                           virDomainObj *vm,

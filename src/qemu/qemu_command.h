@@ -144,6 +144,12 @@ char
                         virDomainDiskDef *disk,
                         virQEMUCaps *qemuCaps);
 
+char *
+qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
+                           const virDomainDef *def,
+                           const char *chardev_alias,
+                           qemuDomainObjPrivate *priv);
+
 /* Current, best practice */
 int qemuBuildControllerDevStr(const virDomainDef *domainDef,
                               virDomainControllerDef *def,

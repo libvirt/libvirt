@@ -335,7 +335,7 @@ qemuAssignDeviceNetAlias(virDomainDef *def,
 }
 
 
-static int
+int
 qemuAssignDeviceFSAlias(virDomainDef *def,
                         virDomainFSDef *fss)
 {
