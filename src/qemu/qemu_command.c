@@ -2683,26 +2683,32 @@ qemuBuildFSStr(virDomainFSDef *fs)
 }
 
 
-static char *
-qemuBuildFSDevStr(const virDomainDef *def,
+static int
+qemuBuildFSDevCmd(virCommand *cmd,
+                  const virDomainDef *def,
                   virDomainFSDef *fs,
                   virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) devprops = NULL;
+    g_autofree char *fsdev = g_strdup_printf("%s%s", QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
 
-    if (qemuBuildVirtioDevStr(&opt, qemuCaps, VIR_DOMAIN_DEVICE_FS, fs) < 0)
-        return NULL;
+    if (!(devprops = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_FS, fs, qemuCaps)))
+        return -1;
 
-    virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
-    virBufferAsprintf(&opt, ",fsdev=%s%s",
-                      QEMU_FSDEV_HOST_PREFIX, fs->info.alias);
-    virBufferAddLit(&opt, ",mount_tag=");
-    virQEMUBuildBufferEscapeComma(&opt, fs->dst);
+    if (virJSONValueObjectAdd(devprops,
+                              "s:id", fs->info.alias,
+                              "s:fsdev", fsdev,
+                              "s:mount_tag", fs->dst,
+                              NULL) < 0)
+        return -1;
 
-    if (qemuBuildDeviceAddressStr(&opt, def, &fs->info) < 0)
-        return NULL;
+    if (qemuBuildDeviceAddressProps(devprops, def, &fs->info) < 0)
+        return -1;
 
-    return virBufferContentAndReset(&opt);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -2713,7 +2719,6 @@ qemuBuildFSDevCommandLine(virCommand *cmd,
                           virQEMUCaps *qemuCaps)
 {
     g_autofree char *fsdevstr = NULL;
-    g_autofree char *devicestr = NULL;
 
     virCommandAddArg(cmd, "-fsdev");
     if (!(fsdevstr = qemuBuildFSStr(fs)))
@@ -2723,10 +2728,8 @@ qemuBuildFSDevCommandLine(virCommand *cmd,
     if (qemuCommandAddExtDevice(cmd, &fs->info, qemuCaps) < 0)
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-    if (!(devicestr = qemuBuildFSDevStr(def, fs, qemuCaps)))
+    if (qemuBuildFSDevCmd(cmd, def, fs, qemuCaps) < 0)
         return -1;
-    virCommandAddArg(cmd, devicestr);
 
     return 0;
 }
