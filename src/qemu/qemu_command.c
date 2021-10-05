@@ -1189,7 +1189,7 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
  *
  * Build the qemu virtio -device JSON properties name from the passed parameters.
  */
-static G_GNUC_UNUSED virJSONValue *
+static virJSONValue *
 qemuBuildVirtioDevProps(virDomainDeviceType devtype,
                         void *devdata,
                         virQEMUCaps *qemuCaps)
@@ -1224,69 +1224,6 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
     }
 
     return g_steal_pointer(&props);
-}
-
-
-/**
- * qemuBuildVirtioDevStr
- * @buf: virBuffer * to append the built string
- * @qemuCaps: virQEMUCapPtr
- * @devtype: virDomainDeviceType of the device. Ex: VIR_DOMAIN_DEVICE_TYPE_RNG
- * @devdata: *Def * of the device definition
- *
- * Build the qemu virtio -device name from the passed parameters. Currently
- * this is mostly about attaching the correct string prefix to @baseName for
- * the passed @type. So for @baseName "virtio-rng" and devdata->info.type
- * VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI, generate "virtio-rng-pci"
- *
- * Returns: -1 on failure, 0 on success
- */
-static G_GNUC_UNUSED int
-qemuBuildVirtioDevStr(virBuffer *buf,
-                      virQEMUCaps *qemuCaps,
-                      virDomainDeviceType devtype,
-                      void *devdata)
-{
-    virDomainDeviceDef device = { .type = devtype };
-    g_autofree char *model = NULL;
-    virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
-    virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
-    virDomainVirtioOptions *virtioOptions = NULL;
-
-    virDomainDeviceSetData(&device, devdata);
-
-    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions,
-                                    &disableLegacy, &disableModern) < 0)
-        return -1;
-
-    virBufferAdd(buf, model, -1);
-
-    if (disableLegacy != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, ",disable-legacy=%s",
-                          virTristateSwitchTypeToString(disableLegacy));
-    }
-
-    if (disableModern != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, ",disable-modern=%s",
-                          virTristateSwitchTypeToString(disableModern));
-    }
-
-    if (virtioOptions) {
-        if (virtioOptions->iommu != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(buf, ",iommu_platform=%s",
-                              virTristateSwitchTypeToString(virtioOptions->iommu));
-        }
-        if (virtioOptions->ats != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(buf, ",ats=%s",
-                              virTristateSwitchTypeToString(virtioOptions->ats));
-        }
-        if (virtioOptions->packed != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(buf, ",packed=%s",
-                              virTristateSwitchTypeToString(virtioOptions->packed));
-        }
-    }
-
-    return 0;
 }
 
 
