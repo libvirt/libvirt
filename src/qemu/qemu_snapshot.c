@@ -1714,6 +1714,48 @@ qemuSnapshotCreateWriteMetadata(virDomainObj *vm,
 }
 
 
+static virDomainSnapshotPtr
+qemuSnapshotRedefine(virDomainObj *vm,
+                     virDomainPtr domain,
+                     virDomainSnapshotDef *def,
+                     virQEMUDriver *driver,
+                     virQEMUDriverConfig *cfg,
+                     unsigned int flags)
+{
+    virDomainMomentObj *snap = NULL;
+    virDomainSnapshotPtr ret = NULL;
+
+    if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
+                                      driver->xmlopt,
+                                      flags) < 0)
+        return NULL;
+
+    if (!snap) {
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+            return NULL;
+    }
+    /* XXX Should we validate that the redefined snapshot even
+     * makes sense, such as checking that qemu-img recognizes the
+     * snapshot name in at least one of the domain's disks?  */
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT)
+        qemuSnapshotSetCurrent(vm, snap);
+
+    if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0)
+        goto error;
+
+    ret = virGetDomainSnapshot(domain, snap->def->name);
+    if (!ret)
+        goto error;
+
+    return ret;
+
+ error:
+    virDomainSnapshotObjListRemove(vm->snapshots, snap);
+    return NULL;
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1771,15 +1813,8 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
 
     if (redefine) {
-        if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
-                                          driver->xmlopt,
-                                          flags) < 0)
-            goto endjob;
-
-        if (!snap) {
-            if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-                goto endjob;
-        }
+        snapshot = qemuSnapshotRedefine(vm, domain, def, driver, cfg, flags);
+        goto endjob;
     } else {
         virDomainMomentObj *current = NULL;
 
@@ -1801,11 +1836,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     }
 
     /* actually do the snapshot */
-    if (redefine) {
-        /* XXX Should we validate that the redefined snapshot even
-         * makes sense, such as checking that qemu-img recognizes the
-         * snapshot name in at least one of the domain's disks?  */
-    } else if (virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
             virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             /* external full system or disk snapshot */
@@ -1839,7 +1870,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         goto endjob;
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (!redefine || (flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
+        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
             qemuSnapshotSetCurrent(vm, snap);
 
         if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0) {
