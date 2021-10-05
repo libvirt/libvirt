@@ -30,10 +30,19 @@ targets:
   centos-stream-8:
     jobs:
       - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
 
   centos-stream-9:
     jobs:
       - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
+
   debian-10:
     jobs:
       - arch: x86_64
@@ -135,11 +144,21 @@ targets:
       - arch: s390x
         allow-failure: true
 
-  fedora-34: x86_64
+  fedora-34:
+    jobs:
+      - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
 
   fedora-35:
     jobs:
       - arch: x86_64
+        artifacts:
+          expire_in: 1 day
+          paths:
+            - libvirt-rpms
 
       - arch: mingw32
         allow-failure: true
