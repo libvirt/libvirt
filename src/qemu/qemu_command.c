@@ -2836,37 +2836,51 @@ qemuBuildUSBControllerFindMasterAlias(const virDomainDef *domainDef,
 }
 
 
-static int
-qemuBuildUSBControllerDevStr(const virDomainDef *domainDef,
-                             virDomainControllerDef *def,
-                             virQEMUCaps *qemuCaps,
-                             virBuffer *buf)
+static virJSONValue *
+qemuBuildUSBControllerDevProps(const virDomainDef *domainDef,
+                               virDomainControllerDef *def,
+                               virQEMUCaps *qemuCaps)
 {
+    g_autoptr(virJSONValue) props = NULL;
+
     if (qemuValidateDomainDeviceDefControllerUSB(def, qemuCaps) < 0)
-        return -1;
+        return NULL;
 
-    virBufferAsprintf(buf, "%s", qemuControllerModelUSBTypeToString(def->model));
-
-    if (def->opts.usbopts.ports != -1) {
-        virBufferAsprintf(buf, ",p2=%d,p3=%d",
-                          def->opts.usbopts.ports, def->opts.usbopts.ports);
-    }
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", qemuControllerModelUSBTypeToString(def->model),
+                                 "k:p2", def->opts.usbopts.ports,
+                                 "k:p3", def->opts.usbopts.ports,
+                                 NULL) < 0)
+        return NULL;
 
     if (def->info.mastertype == VIR_DOMAIN_CONTROLLER_MASTER_USB) {
-        const char *masterbus;
+        g_autofree char *masterbus = NULL;
+        const char *alias;
 
-        if (!(masterbus = qemuBuildUSBControllerFindMasterAlias(domainDef, def))) {
+        if (!(alias = qemuBuildUSBControllerFindMasterAlias(domainDef, def))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("masterbus not found"));
-            return -1;
+            return NULL;
         }
-        virBufferAsprintf(buf, ",masterbus=%s.0,firstport=%d",
-                          masterbus, def->info.master.usb.startport);
+
+        masterbus = g_strdup_printf("%s.0", alias);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:masterbus", masterbus,
+                                  "i:firstport", def->info.master.usb.startport,
+                                  NULL) < 0)
+            return NULL;
     } else {
-        virBufferAsprintf(buf, ",id=%s", def->info.alias);
+        if (virJSONValueObjectAdd(props,
+                                  "s:id", def->info.alias,
+                                  NULL) < 0)
+            return NULL;
     }
 
-    return 0;
+    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -3133,9 +3147,19 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
-        if (qemuBuildUSBControllerDevStr(domainDef, def, qemuCaps, &buf) == -1)
+        if (!(props = qemuBuildUSBControllerDevProps(domainDef, def, qemuCaps)))
             return -1;
 
+        driver = virJSONValueObjectGetString(props, "driver");
+
+        virBufferAsprintf(&buf, "%s,", driver);
+
+        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
+            return -1;
+
+        *devstr = virBufferContentAndReset(&buf);
+
+        return 0;
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
