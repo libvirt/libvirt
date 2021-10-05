@@ -1878,9 +1878,17 @@ qemuSetUnprivSGIO(virDomainDeviceDef *dev)
      * whitelist is enabled.  But if requesting unfiltered access, always call
      * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
      */
-    if ((virFileExists(sysfs_path) || val == 1) &&
-        virSetDeviceUnprivSGIO(path, NULL, val) < 0)
-        return -1;
+    if (virFileExists(sysfs_path) || val == 1) {
+        int curr_val;
+
+        if (virGetDeviceUnprivSGIO(path, NULL, &curr_val) < 0)
+            return -1;
+
+        if (curr_val != val &&
+            virSetDeviceUnprivSGIO(path, NULL, val) < 0) {
+            return -1;
+        }
+    }
 
     return 0;
 }
