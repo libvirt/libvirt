@@ -11,7 +11,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
 -machine pc,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
--cpu 'qemu64,hv-relaxed,hv-vapic,hv-spinlocks=0x2fff,hv-vpindex,hv-runtime,hv-synic,hv-stimer,hv-reset,hv-vendor-id=KVM Hv,hv-frequencies,hv-reenlightenment,hv-tlbflush,hv-ipi,hv-evmcs' \
+-cpu 'qemu64,hv-relaxed=on,hv-vapic=on,hv-spinlocks=0x2fff,hv-vpindex=on,hv-runtime=on,hv-synic=on,hv-stimer=on,hv-reset=on,hv-vendor-id=KVM Hv,hv-frequencies=on,hv-reenlightenment=on,hv-tlbflush=on,hv-ipi=on,hv-evmcs=on' \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \

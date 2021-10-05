@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-4.0,accel=tcg,usb=off,dump-guest-core=off \
--cpu 'qemu32,hv-relaxed,hv-vapic,hv-spinlocks=0x2fff,hv-vpindex,hv-runtime,hv-synic,hv-stimer,hv-reset,hv-vendor-id=KVM Hv,hv-frequencies,hv-reenlightenment,hv-tlbflush,hv-ipi,hv-evmcs' \
+-cpu 'qemu32,hv-relaxed=on,hv-vapic=on,hv-spinlocks=0x2fff,hv-vpindex=on,hv-runtime=on,hv-synic=on,hv-stimer=on,hv-reset=on,hv-vendor-id=KVM Hv,hv-frequencies=on,hv-reenlightenment=on,hv-tlbflush=on,hv-ipi=on,hv-evmcs=on' \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \

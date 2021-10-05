@@ -6757,7 +6757,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             break;
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
             if (timer->present == 1)
-                virBufferAddLit(&buf, ",hv-time");
+                virBufferAddLit(&buf, ",hv-time=on");
             break;
         case VIR_DOMAIN_TIMER_NAME_TSC:
             if (timer->frequency > 0)
@@ -6816,11 +6816,11 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",hv-%s",
+                    virBufferAsprintf(&buf, ",hv-%s=on",
                                       virDomainHypervTypeToString(i));
                 if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
                     (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
-                    virBufferAsprintf(&buf, ",%s", VIR_CPU_x86_HV_STIMER_DIRECT);
+                    virBufferAsprintf(&buf, ",%s=on", VIR_CPU_x86_HV_STIMER_DIRECT);
                 break;
 
             case VIR_DOMAIN_HYPERV_SPINLOCKS:
