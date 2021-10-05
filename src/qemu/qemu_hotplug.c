@@ -2181,7 +2181,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virErrorPtr orig_err;
     virDomainDef *vmdef = vm->def;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     g_autoptr(virJSONValue) netdevprops = NULL;
     virDomainChrSourceDef *dev = chr->source;
     g_autofree char *charAlias = NULL;
@@ -2224,7 +2224,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
         if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
             goto cleanup;
     } else {
-        if (qemuBuildChrDeviceStr(&devstr, vmdef, chr, priv->qemuCaps) < 0)
+        if (!(devprops = qemuBuildChrDeviceProps(vmdef, chr, priv->qemuCaps)))
             goto cleanup;
     }
 
@@ -2251,8 +2251,8 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
             goto exit_monitor;
     }
 
-    if (devstr) {
-        if (qemuMonitorAddDevice(priv->mon, devstr) < 0)
+    if (devprops) {
+        if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
             goto exit_monitor;
     }
 

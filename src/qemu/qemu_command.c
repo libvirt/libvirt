@@ -752,8 +752,27 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
         return qemuBuildDeviceAddresDriveProps(props, domainDef, info);
 
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL: {
+        const char *contAlias;
+        g_autofree char *bus = NULL;
+
+        if (!(contAlias = virDomainControllerAliasFind(domainDef,
+                                                       VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
+                                                       info->addr.vioserial.controller)))
+            return -1;
+
+        bus = g_strdup_printf("%s.%d", contAlias, info->addr.vioserial.bus);
+
+        if (virJSONValueObjectAdd(props,
+                                  "s:bus", bus,
+                                  "i:nr", info->addr.vioserial.port,
+                                  NULL) < 0)
+            return -1;
+
+        return 0;
+    }
+
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
@@ -5673,19 +5692,21 @@ qemuBuildMonitorCommandLine(virLogManager *logManager,
 }
 
 
-static char *
-qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
-                                virDomainChrDef *dev)
+static virJSONValue *
+qemuBuildVirtioSerialPortDevProps(const virDomainDef *def,
+                                  virDomainChrDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *contAlias;
+    g_autoptr(virJSONValue) props = NULL;
+    const char *driver;
+    const char *targetname = NULL;
+    g_autofree char *chardev = NULL;
 
     switch (dev->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        virBufferAddLit(&buf, "virtconsole");
+        driver = "virtconsole";
         break;
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        virBufferAddLit(&buf, "virtserialport");
+        driver = "virtserialport";
         break;
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5702,14 +5723,6 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
             return NULL;
         }
 
-        contAlias = virDomainControllerAliasFind(def, VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL,
-                                                 dev->info.addr.vioserial.controller);
-        if (!contAlias)
-            return NULL;
-
-        virBufferAsprintf(&buf, ",bus=%s.%d,nr=%d", contAlias,
-                          dev->info.addr.vioserial.bus,
-                          dev->info.addr.vioserial.port);
     }
 
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
@@ -5722,29 +5735,50 @@ qemuBuildVirtioSerialPortDevStr(const virDomainDef *def,
         return NULL;
     }
 
-    virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
-                      dev->info.alias, dev->info.alias);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", driver,
+                                 NULL) < 0)
+        return NULL;
+
+    if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
+        return NULL;
+
+    chardev = g_strdup_printf("char%s", dev->info.alias);
+
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
         (dev->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC ||
          dev->target.name)) {
-        virBufferAsprintf(&buf, ",name=%s", dev->target.name
-                          ? dev->target.name : "com.redhat.spice.0");
+        if (dev->target.name)
+            targetname = dev->target.name;
+        else
+            targetname = "com.redhat.spice.0";
     }
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectAdd(props,
+                              "s:chardev", chardev,
+                              "s:id", dev->info.alias,
+                              "S:name", targetname,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
-static char *
-qemuBuildSclpDevStr(virDomainChrDef *dev)
+
+static virJSONValue *
+qemuBuildSclpDevProps(virDomainChrDef *dev)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *chardev = g_strdup_printf("char%s", dev->info.alias);
+    const char *driver = NULL;
+
     if (dev->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE) {
         switch (dev->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
-            virBufferAddLit(&buf, "sclpconsole");
+            driver = "sclpconsole";
             break;
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-            virBufferAddLit(&buf, "sclplmconsole");
+            driver = "sclplmconsole";
             break;
         }
     } else {
@@ -5752,10 +5786,15 @@ qemuBuildSclpDevStr(virDomainChrDef *dev)
                        _("Cannot use slcp with devices other than console"));
         return NULL;
     }
-    virBufferAsprintf(&buf, ",chardev=char%s,id=%s",
-                      dev->info.alias, dev->info.alias);
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", driver,
+                                 "s:chardev", chardev,
+                                 "s:id", dev->info.alias,
+                                 NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -9495,12 +9534,14 @@ qemuBuildChrDeviceCommandLine(virCommand *cmd,
                               virDomainChrDef *chr,
                               virQEMUCaps *qemuCaps)
 {
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
-    if (qemuBuildChrDeviceStr(&devstr, def, chr, qemuCaps) < 0)
+    if (!(props = qemuBuildChrDeviceProps(def, chr, qemuCaps)))
         return -1;
 
-    virCommandAddArgList(cmd, "-device", devstr, NULL);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -10950,16 +10991,13 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 }
 
 
-/* This function generates the correct '-device' string for character
- * devices of each architecture.
- */
-static int
-qemuBuildSerialChrDeviceStr(char **deviceStr,
-                            const virDomainDef *def,
-                            virDomainChrDef *serial,
-                            virQEMUCaps *qemuCaps)
+static virJSONValue *
+qemuBuildSerialChrDeviceProps(const virDomainDef *def,
+                              virDomainChrDef *serial,
+                              virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *chardev = g_strdup_printf("char%s", serial->info.alias);
     virQEMUCapsFlags caps;
 
     switch ((virDomainChrSerialTargetModel) serial->targetModel) {
@@ -10976,7 +11014,7 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("'%s' is not supported in this QEMU binary"),
                            virDomainChrSerialTargetModelTypeToString(serial->targetModel));
-            return -1;
+            return NULL;
         }
         break;
 
@@ -10990,27 +11028,37 @@ qemuBuildSerialChrDeviceStr(char **deviceStr,
          * branch and we will not have ended up here. */
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Invalid target model for serial device"));
-        return -1;
+        return NULL;
     }
 
-    virBufferAsprintf(&buf, "%s,chardev=char%s,id=%s",
-                      virDomainChrSerialTargetModelTypeToString(serial->targetModel),
-                      serial->info.alias, serial->info.alias);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", virDomainChrSerialTargetModelTypeToString(serial->targetModel),
+                                 "s:chardev", chardev,
+                                 "s:id", serial->info.alias,
+                                 NULL) < 0)
+        return NULL;
 
-    if (qemuBuildDeviceAddressStr(&buf, def, &serial->info) < 0)
-        return -1;
+    if (qemuBuildDeviceAddressProps(props, def, &serial->info) < 0)
+        return NULL;
 
-    *deviceStr = virBufferContentAndReset(&buf);
-    return 0;
+    return g_steal_pointer(&props);
 }
 
-static int
-qemuBuildParallelChrDeviceStr(char **deviceStr,
-                              virDomainChrDef *chr)
+
+static virJSONValue *
+qemuBuildParallelChrDeviceProps(virDomainChrDef *chr)
 {
-    *deviceStr = g_strdup_printf("isa-parallel,chardev=char%s,id=%s",
-                                 chr->info.alias, chr->info.alias);
-    return 0;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *chardev = g_strdup_printf("char%s", chr->info.alias);
+
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "isa-parallel",
+                                 "s:chardev", chardev,
+                                 "s:id", chr->info.alias,
+                                 NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -11049,48 +11097,38 @@ qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr)
 }
 
 
-static int
-qemuBuildChannelChrDeviceStr(char **deviceStr,
-                             const virDomainDef *def,
-                             virDomainChrDef *chr)
+static virJSONValue *
+qemuBuildChannelChrDeviceProps(const virDomainDef *def,
+                               virDomainChrDef *chr)
 {
     switch ((virDomainChrChannelTargetType)chr->targetType) {
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO:
-        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr)))
-            return -1;
-        break;
+        return qemuBuildVirtioSerialPortDevProps(def, chr);
 
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
         /* guestfwd is as a netdev handled separately */
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_NONE:
     case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_LAST:
-        return -1;
+        break;
     }
 
-    return 0;
+    return NULL;
 }
 
-static int
-qemuBuildConsoleChrDeviceStr(char **deviceStr,
-                             const virDomainDef *def,
-                             virDomainChrDef *chr)
+static virJSONValue *
+qemuBuildConsoleChrDeviceProps(const virDomainDef *def,
+                               virDomainChrDef *chr)
 {
     switch ((virDomainChrConsoleTargetType)chr->targetType) {
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-        if (!(*deviceStr = qemuBuildSclpDevStr(chr)))
-            return -1;
-        break;
+        return qemuBuildSclpDevProps(chr);
 
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
-        if (!(*deviceStr = qemuBuildVirtioSerialPortDevStr(def, chr)))
-            return -1;
-        break;
+        return qemuBuildVirtioSerialPortDevProps(def, chr);
 
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL:
-        break;
-
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_XEN:
     case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_UML:
@@ -11100,42 +11138,36 @@ qemuBuildConsoleChrDeviceStr(char **deviceStr,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported console target type %s"),
                        NULLSTR(virDomainChrConsoleTargetTypeToString(chr->targetType)));
-        return -1;
+        break;
     }
 
-    return 0;
+    return NULL;
 }
 
-int
-qemuBuildChrDeviceStr(char **deviceStr,
-                      const virDomainDef *vmdef,
-                      virDomainChrDef *chr,
-                      virQEMUCaps *qemuCaps)
-{
-    int ret = -1;
 
+virJSONValue *
+qemuBuildChrDeviceProps(const virDomainDef *vmdef,
+                        virDomainChrDef *chr,
+                        virQEMUCaps *qemuCaps)
+{
     switch ((virDomainChrDeviceType)chr->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
-        ret = qemuBuildSerialChrDeviceStr(deviceStr, vmdef, chr, qemuCaps);
-        break;
+        return qemuBuildSerialChrDeviceProps(vmdef, chr, qemuCaps);
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
-        ret = qemuBuildParallelChrDeviceStr(deviceStr, chr);
-        break;
+        return qemuBuildParallelChrDeviceProps(chr);
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
-        ret = qemuBuildChannelChrDeviceStr(deviceStr, vmdef, chr);
-        break;
+        return qemuBuildChannelChrDeviceProps(vmdef, chr);
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
-        ret = qemuBuildConsoleChrDeviceStr(deviceStr, vmdef, chr);
-        break;
+        return qemuBuildConsoleChrDeviceProps(vmdef, chr);
 
     case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
-        return ret;
+        break;
     }
 
-    return ret;
+    return NULL;
 }
 
 

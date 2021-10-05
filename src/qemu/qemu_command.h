@@ -79,12 +79,10 @@ int qemuBuildTLSx509BackendProps(const char *tlspath,
 int
 qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev) G_GNUC_NO_INLINE;
 
-/* Generate '-device' string for chardev device */
-int
-qemuBuildChrDeviceStr(char **deviceStr,
-                      const virDomainDef *vmdef,
-                      virDomainChrDef *chr,
-                      virQEMUCaps *qemuCaps);
+virJSONValue *
+qemuBuildChrDeviceProps(const virDomainDef *vmdef,
+                        virDomainChrDef *chr,
+                        virQEMUCaps *qemuCaps);
 
 virJSONValue *
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr);

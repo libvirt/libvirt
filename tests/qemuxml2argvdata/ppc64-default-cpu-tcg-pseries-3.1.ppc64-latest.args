@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,id=serial0,reg=0x30000000 \
+-device spapr-vty,chardev=charserial0,id=serial0,reg=805306368 \
 -audiodev id=audio1,driver=none \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

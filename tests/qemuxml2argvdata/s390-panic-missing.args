@@ -26,6 +26,6 @@ QEMU_AUDIO_DRV=none \
 -boot strict=on \
 -device virtio-serial-ccw,id=virtio-serial0,devno=fe.0.0000 \
 -chardev pty,id=charconsole0 \
--device virtconsole,chardev=charconsole0,id=console0 \
+-device virtconsole,devno=fe.0.0001,chardev=charconsole0,id=console0 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0002 \
 -msg timestamp=on
