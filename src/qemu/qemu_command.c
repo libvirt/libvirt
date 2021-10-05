@@ -2579,31 +2579,30 @@ qemuBuildVHostUserFsChardevStr(const virDomainFSDef *fs,
 }
 
 
-char *
-qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
-                           const virDomainDef *def,
-                           const char *chardev_alias,
-                           qemuDomainObjPrivate *priv)
+virJSONValue *
+qemuBuildVHostUserFsDevProps(virDomainFSDef *fs,
+                             const virDomainDef *def,
+                             const char *chardev_alias,
+                             qemuDomainObjPrivate *priv)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
-    if (qemuBuildVirtioDevStr(&buf, priv->qemuCaps, VIR_DOMAIN_DEVICE_FS, fs) < 0)
+    if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_FS, fs, priv->qemuCaps)))
         return NULL;
 
-    virBufferAsprintf(&buf, ",id=%s", fs->info.alias);
-    virBufferAsprintf(&buf, ",chardev=%s", chardev_alias);
-    if (fs->queue_size)
-        virBufferAsprintf(&buf, ",queue-size=%llu", fs->queue_size);
-    virBufferAddLit(&buf, ",tag=");
-    virQEMUBuildBufferEscapeComma(&buf, fs->dst);
-
-    if (fs->info.bootIndex)
-        virBufferAsprintf(&buf, ",bootindex=%u", fs->info.bootIndex);
-
-    if (qemuBuildDeviceAddressStr(&buf, def, &fs->info) < 0)
+    if (virJSONValueObjectAdd(props,
+                              "s:id", fs->info.alias,
+                              "s:chardev", chardev_alias,
+                              "P:queue-size", fs->queue_size,
+                              "s:tag", fs->dst,
+                              "p:bootindex", fs->info.bootIndex,
+                              NULL) < 0)
         return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (qemuBuildDeviceAddressProps(props, def, &fs->info) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -2615,7 +2614,7 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
 {
     g_autofree char *chardev_alias = NULL;
     g_autofree char *chrdevstr = NULL;
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
 
     chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
     chrdevstr = qemuBuildVHostUserFsChardevStr(fs, chardev_alias, priv);
@@ -2626,11 +2625,11 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     if (qemuCommandAddExtDevice(cmd, &fs->info, priv->qemuCaps) < 0)
         return -1;
 
-    if (!(devstr = qemuBuildVHostUserFsDevStr(fs, def, chardev_alias, priv)))
+    if (!(devprops = qemuBuildVHostUserFsDevProps(fs, def, chardev_alias, priv)))
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArg(cmd, devstr);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, priv->qemuCaps) < 0)
+        return -1;
 
     return 0;
 }

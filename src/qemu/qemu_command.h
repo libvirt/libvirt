@@ -138,11 +138,11 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
                          virDomainDiskDef *disk,
                          virQEMUCaps *qemuCaps);
 
-char *
-qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
-                           const virDomainDef *def,
-                           const char *chardev_alias,
-                           qemuDomainObjPrivate *priv);
+virJSONValue *
+qemuBuildVHostUserFsDevProps(virDomainFSDef *fs,
+                             const virDomainDef *def,
+                             const char *chardev_alias,
+                             qemuDomainObjPrivate *priv);
 
 /* Current, best practice */
 int
