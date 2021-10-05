@@ -865,12 +865,12 @@ static int virLXCControllerSetupCgroupLimits(virLXCController *ctrl)
     nodeset = virDomainNumatuneGetNodeset(ctrl->def->numa, auto_nodeset, -1);
 
     if (!(ctrl->cgroup = virLXCCgroupCreate(ctrl->def,
-                                            ctrl->initpid,
+                                            getpid(),
                                             ctrl->nnicindexes,
                                             ctrl->nicindexes)))
         goto cleanup;
 
-    if (virCgroupAddMachineProcess(ctrl->cgroup, getpid()) < 0)
+    if (virCgroupAddMachineProcess(ctrl->cgroup, ctrl->initpid) < 0)
         goto cleanup;
 
     /* Add all qemu-nbd tasks to the cgroup */
