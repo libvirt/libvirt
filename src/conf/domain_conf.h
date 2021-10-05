@@ -3765,6 +3765,8 @@ virDomainFSDef *virDomainGetFilesystemForTarget(virDomainDef *def,
 int virDomainFSInsert(virDomainDef *def, virDomainFSDef *fs);
 int virDomainFSIndexByName(virDomainDef *def, const char *name);
 virDomainFSDef *virDomainFSRemove(virDomainDef *def, size_t i);
+ssize_t virDomainFSDefFind(virDomainDef *def,
+                           virDomainFSDef *fs);
 
 unsigned int virDomainVideoDefaultRAM(const virDomainDef *def,
                                       const virDomainVideoType type);

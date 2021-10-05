@@ -410,6 +410,7 @@ virDomainFeatureTypeFromString;
 virDomainFeatureTypeToString;
 virDomainFSAccessModeTypeToString;
 virDomainFSCacheModeTypeToString;
+virDomainFSDefFind;
 virDomainFSDefFree;
 virDomainFSDefNew;
 virDomainFSDriverTypeToString;

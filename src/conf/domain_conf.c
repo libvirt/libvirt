@@ -28918,6 +28918,30 @@ virDomainFSRemove(virDomainDef *def, size_t i)
     return fs;
 }
 
+ssize_t
+virDomainFSDefFind(virDomainDef *def,
+                   virDomainFSDef *fs)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->nfss; i++) {
+        virDomainFSDef *tmp = def->fss[i];
+
+        if (fs->dst && STRNEQ_NULLABLE(fs->dst, tmp->dst))
+            continue;
+
+        if (fs->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
+            !virDomainDeviceInfoAddressIsEqual(&fs->info, &tmp->info))
+            continue;
+
+        if (fs->info.alias && STRNEQ_NULLABLE(fs->info.alias, tmp->info.alias))
+            continue;
+
+        return i;
+    }
+    return -1;
+}
+
 virDomainFSDef *
 virDomainGetFilesystemForTarget(virDomainDef *def,
                                 const char *target)

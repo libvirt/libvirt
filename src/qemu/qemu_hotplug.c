@@ -5206,6 +5206,47 @@ qemuDomainRemoveRedirdevDevice(virQEMUDriver *driver,
 }
 
 
+static int
+qemuDomainRemoveFSDevice(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         virDomainFSDef *fs)
+{
+    g_autofree char *charAlias = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    ssize_t idx;
+    int rc = 0;
+
+    VIR_DEBUG("Removing FS device %s from domain %p %s",
+              fs->info.alias, vm, vm->def->name);
+
+    if (fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+        charAlias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
+
+        qemuDomainObjEnterMonitor(driver, vm);
+
+        if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0)
+            rc = -1;
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0)
+            return -1;
+    }
+
+    virDomainAuditFS(vm, fs, NULL, "detach", rc == 0);
+
+    if (rc < 0)
+        return -1;
+
+    if (!fs->sock && fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
+        qemuVirtioFSStop(driver, vm, fs);
+
+    if ((idx = virDomainFSDefFind(vm->def, fs)) >= 0)
+        virDomainFSRemove(vm->def, idx);
+    qemuDomainReleaseDeviceAddress(vm, &fs->info);
+    virDomainFSDefFree(fs);
+    return 0;
+}
+
+
 static void
 qemuDomainRemoveAuditDevice(virDomainObj *vm,
                             virDomainDeviceDef *detach,
@@ -5244,6 +5285,10 @@ qemuDomainRemoveAuditDevice(virDomainObj *vm,
         virDomainAuditRedirdev(vm, detach->data.redirdev, "detach", success);
         break;
 
+    case VIR_DOMAIN_DEVICE_FS:
+        virDomainAuditFS(vm, detach->data.fs, NULL, "detach", success);
+        break;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_CONTROLLER:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
@@ -5251,7 +5296,6 @@ qemuDomainRemoveAuditDevice(virDomainObj *vm,
         /* These devices don't have associated audit logs */
         break;
 
-    case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -5349,9 +5393,13 @@ qemuDomainRemoveDevice(virQEMUDriver *driver,
             return -1;
         break;
 
+    case VIR_DOMAIN_DEVICE_FS:
+        if (qemuDomainRemoveFSDevice(driver, vm, dev->data.fs) < 0)
+            return -1;
+        break;
+
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LEASE:
-    case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
@@ -6047,6 +6095,31 @@ qemuDomainDetachPrepVsock(virDomainObj *vm,
 
 
 static int
+qemuDomainDetachPrepFS(virDomainObj *vm,
+                       virDomainFSDef *match,
+                       virDomainFSDef **detach)
+{
+    ssize_t idx;
+
+    if ((idx = virDomainFSDefFind(vm->def, match)) < 0) {
+        virReportError(VIR_ERR_DEVICE_MISSING, "%s",
+                       _("matching filesystem not found"));
+        return -1;
+    }
+
+    if (vm->def->fss[idx]->fsdriver != VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("only virtiofs filesystems can be hotplugged"));
+        return -1;
+    }
+
+    *detach = vm->def->fss[idx];
+
+    return 0;
+}
+
+
+static int
 qemuDomainDetachDeviceLease(virQEMUDriver *driver,
                             virDomainObj *vm,
                             virDomainLeaseDef *lease)
@@ -6167,6 +6240,12 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_DEVICE_FS:
+        if (qemuDomainDetachPrepFS(vm, match->data.fs,
+                                   &detach.data.fs) < 0) {
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_DEVICE_SOUND:
     case VIR_DOMAIN_DEVICE_VIDEO:
     case VIR_DOMAIN_DEVICE_GRAPHICS:
