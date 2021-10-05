@@ -147,10 +147,11 @@ qemuBuildVHostUserFsDevStr(virDomainFSDef *fs,
                            qemuDomainObjPrivate *priv);
 
 /* Current, best practice */
-int qemuBuildControllerDevStr(const virDomainDef *domainDef,
-                              virDomainControllerDef *def,
-                              virQEMUCaps *qemuCaps,
-                              char **devstr);
+int
+qemuBuildControllerDevProps(const virDomainDef *domainDef,
+                            virDomainControllerDef *def,
+                            virQEMUCaps *qemuCaps,
+                            virJSONValue **devprops);
 
 int qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                                 const char *alias,

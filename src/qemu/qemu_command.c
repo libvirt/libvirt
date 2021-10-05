@@ -2877,16 +2877,12 @@ qemuBuildUSBControllerDevProps(const virDomainDef *domainDef,
             return NULL;
     }
 
-    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
-        return NULL;
-
     return g_steal_pointer(&props);
 }
 
 
 static virJSONValue *
-qemuBuildControllerSCSIDevProps(const virDomainDef *domainDef,
-                                virDomainControllerDef *def,
+qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
                                 virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -2959,16 +2955,12 @@ qemuBuildControllerSCSIDevProps(const virDomainDef *domainDef,
             return NULL;
     }
 
-    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
-        return NULL;
-
     return g_steal_pointer(&props);
 }
 
 
 static int
 qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
-                               const virDomainDef *domainDef,
                                virJSONValue **devprops)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -3065,9 +3057,6 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
         return -1;
     }
 
-    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
-        return -1;
-
     *devprops = g_steal_pointer(&props);
     return 0;
 }
@@ -3079,8 +3068,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
  * @domainDef: domain definition
  * @def: controller definition
  * @qemuCaps: QEMU binary capabilities
- * @devstr: device string
- * @nusbcontroller: number of USB controllers
+ * @devprops: filled with JSON object describing @def
  *
  * Turn @def into a description of the controller that QEMU will understand,
  * to be used either on the command line or through the monitor.
@@ -3095,89 +3083,65 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
  * Returns: 0 on success, <0 on failure
  */
 int
-qemuBuildControllerDevStr(const virDomainDef *domainDef,
-                          virDomainControllerDef *def,
-                          virQEMUCaps *qemuCaps,
-                          char **devstr)
+qemuBuildControllerDevProps(const virDomainDef *domainDef,
+                            virDomainControllerDef *def,
+                            virQEMUCaps *qemuCaps,
+                            virJSONValue **devprops)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virJSONValue) props = NULL;
-    const char *driver = NULL;
 
-    *devstr = NULL;
+    *devprops = NULL;
 
     switch ((virDomainControllerType)def->type) {
     case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
-        if (!(props = qemuBuildControllerSCSIDevProps(domainDef, def, qemuCaps)))
+        if (!(props = qemuBuildControllerSCSIDevProps(def, qemuCaps)))
             return -1;
 
-        driver = virJSONValueObjectGetString(props, "driver");
-
-        virBufferAsprintf(&buf, "%s,", driver);
-
-        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
-            return -1;
-
-        *devstr = virBufferContentAndReset(&buf);
-
-        return 0;
+        break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
-        if (qemuBuildVirtioDevStr(&buf, qemuCaps, VIR_DOMAIN_DEVICE_CONTROLLER, def) < 0) {
+        if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_CONTROLLER, def,
+                                              qemuCaps)))
             return -1;
-        }
 
-        virBufferAsprintf(&buf, ",id=%s", def->info.alias);
-        if (def->opts.vioserial.ports != -1) {
-            virBufferAsprintf(&buf, ",max_ports=%d",
-                              def->opts.vioserial.ports);
-        }
-        if (def->opts.vioserial.vectors != -1) {
-            virBufferAsprintf(&buf, ",vectors=%d",
-                              def->opts.vioserial.vectors);
-        }
+        if (virJSONValueObjectAdd(props,
+                                  "s:id", def->info.alias,
+                                  "k:max_ports", def->opts.vioserial.ports,
+                                  "k:vectors", def->opts.vioserial.vectors,
+                                  NULL) < 0)
+            return -1;
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
-        virBufferAsprintf(&buf, "usb-ccid,id=%s", def->info.alias);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "usb-ccid",
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
-        virBufferAsprintf(&buf, "ahci,id=%s", def->info.alias);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "ahci",
+                                     "s:id", def->info.alias,
+                                     NULL) < 0)
+            return -1;
+
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         if (!(props = qemuBuildUSBControllerDevProps(domainDef, def, qemuCaps)))
             return -1;
 
-        driver = virJSONValueObjectGetString(props, "driver");
-
-        virBufferAsprintf(&buf, "%s,", driver);
-
-        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
-            return -1;
-
-        *devstr = virBufferContentAndReset(&buf);
-
-        return 0;
         break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
-        if (qemuBuildControllerPCIDevProps(def, domainDef, &props) < 0)
+        if (qemuBuildControllerPCIDevProps(def, &props) < 0)
             return -1;
 
-        if (!props)
-            return 0;
-
-        driver = virJSONValueObjectGetString(props, "driver");
-
-        virBufferAsprintf(&buf, "%s,", driver);
-
-        if (virQEMUBuildCommandLineJSON(props, &buf, "driver", NULL) < 0)
-            return -1;
-
-        *devstr = virBufferContentAndReset(&buf);
-        return 0;
+        break;
 
     case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
     case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
@@ -3190,10 +3154,13 @@ qemuBuildControllerDevStr(const virDomainDef *domainDef,
         return -1;
     }
 
-    if (qemuBuildDeviceAddressStr(&buf, domainDef, &def->info) < 0)
+    if (!props)
+        return 0;
+
+    if (qemuBuildDeviceAddressProps(props, domainDef, &def->info) < 0)
         return -1;
 
-    *devstr = virBufferContentAndReset(&buf);
+    *devprops = g_steal_pointer(&props);
     return 0;
 }
 
@@ -3324,7 +3291,7 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->ncontrollers; i++) {
         virDomainControllerDef *cont = def->controllers[i];
-        g_autofree char *devstr = NULL;
+        g_autoptr(virJSONValue) props = NULL;
 
         if (cont->type != type)
             continue;
@@ -3360,16 +3327,17 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
             continue;
         }
 
-        if (qemuBuildControllerDevStr(def, cont, qemuCaps, &devstr) < 0)
+        if (qemuBuildControllerDevProps(def, cont, qemuCaps, &props) < 0)
             return -1;
 
-        if (devstr) {
-            if (qemuCommandAddExtDevice(cmd, &cont->info, qemuCaps) < 0)
-                return -1;
+        if (!props)
+            continue;
 
-            virCommandAddArg(cmd, "-device");
-            virCommandAddArg(cmd, devstr);
-        }
+        if (qemuCommandAddExtDevice(cmd, &cont->info, qemuCaps) < 0)
+            return -1;
+
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+            return -1;
     }
 
     return 0;

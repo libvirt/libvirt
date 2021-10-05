@@ -828,7 +828,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
 {
     int ret = -1;
     const char* type = virDomainControllerTypeToString(controller->type);
-    g_autofree char *devstr = NULL;
+    g_autoptr(virJSONValue) devprops = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_CONTROLLER,
                                { .controller = controller } };
@@ -862,10 +862,10 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
     if (qemuAssignDeviceControllerAlias(vm->def, controller) < 0)
         goto cleanup;
 
-    if (qemuBuildControllerDevStr(vm->def, controller, priv->qemuCaps, &devstr) < 0)
+    if (qemuBuildControllerDevProps(vm->def, controller, priv->qemuCaps, &devprops) < 0)
         goto cleanup;
 
-    if (!devstr)
+    if (!devprops)
         goto cleanup;
 
     VIR_REALLOC_N(vm->def->controllers, vm->def->ncontrollers+1);
@@ -877,7 +877,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    if ((ret = qemuMonitorAddDevice(priv->mon, devstr)) < 0)
+    if ((ret = qemuMonitorAddDeviceProps(priv->mon, &devprops)) < 0)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &controller->info));
 
  exit_monitor:
