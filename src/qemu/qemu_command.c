@@ -4462,15 +4462,16 @@ qemuGetAudioIDString(const virDomainDef *def, int id)
     return g_strdup_printf("audio%d", audio->id);
 }
 
-static char *
-qemuBuildSoundDevStr(const virDomainDef *def,
+static int
+qemuBuildSoundDevCmd(virCommand *cmd,
+                     const virDomainDef *def,
                      virDomainSoundDef *sound,
                      virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     const char *model = NULL;
+    g_autofree char *audioid = NULL;
 
-    /* Hack for devices with different names in QEMU and libvirt */
     switch (sound->model) {
     case VIR_DOMAIN_SOUND_MODEL_ES1370:
         model = "ES1370";
@@ -4493,21 +4494,29 @@ qemuBuildSoundDevStr(const virDomainDef *def,
     case VIR_DOMAIN_SOUND_MODEL_PCSPK: /* pc-speaker is handled separately */
     case VIR_DOMAIN_SOUND_MODEL_ICH7:
     case VIR_DOMAIN_SOUND_MODEL_LAST:
-        return NULL;
+        return -1;
     }
 
-    virBufferAsprintf(&buf, "%s,id=%s", model, sound->info.alias);
     if (!virDomainSoundModelSupportsCodecs(sound) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
-        g_autofree char *audioid = qemuGetAudioIDString(def, sound->audioId);
-        if (!audioid)
-            return NULL;
-        virBufferAsprintf(&buf, ",audiodev=%s", audioid);
+        if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
+            return -1;
     }
-    if (qemuBuildDeviceAddressStr(&buf, def, &sound->info) < 0)
-        return NULL;
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", model,
+                                 "s:id", sound->info.alias,
+                                 "S:audiodev", audioid,
+                                 NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceAddressProps(props, def, &sound->info) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -4547,7 +4556,6 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->nsounds; i++) {
         virDomainSoundDef *sound = def->sounds[i];
-        g_autofree char *str = NULL;
 
         /* Sadly pcspk device doesn't use -device syntax. Fortunately
          * we don't need to set any PCI address on it, so we don't
@@ -4558,11 +4566,9 @@ qemuBuildSoundCommandLine(virCommand *cmd,
             if (qemuCommandAddExtDevice(cmd, &sound->info, qemuCaps) < 0)
                 return -1;
 
-            virCommandAddArg(cmd, "-device");
-            if (!(str = qemuBuildSoundDevStr(def, sound, qemuCaps)))
+            if (qemuBuildSoundDevCmd(cmd, def, sound, qemuCaps) < 0)
                 return -1;
 
-            virCommandAddArg(cmd, str);
             if (virDomainSoundModelSupportsCodecs(sound)) {
                 for (j = 0; j < sound->ncodecs; j++) {
                     g_autofree char *codecstr = NULL;
