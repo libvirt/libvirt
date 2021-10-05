@@ -4520,30 +4520,36 @@ qemuBuildSoundDevCmd(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildSoundCodecStr(const virDomainDef *def,
+static int
+qemuBuildSoundCodecCmd(virCommand *cmd,
+                       const virDomainDef *def,
                        virDomainSoundDef *sound,
                        virDomainSoundCodecDef *codec,
                        virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *stype;
-    int type;
-
-    type = codec->type;
-    stype = qemuSoundCodecTypeToString(type);
-
-    virBufferAsprintf(&buf, "%s,id=%s-codec%d,bus=%s.0,cad=%d",
-                      stype, sound->info.alias, codec->cad, sound->info.alias, codec->cad);
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *audioid = NULL;
+    g_autofree char *alias = g_strdup_printf("%s-codec%d", sound->info.alias, codec->cad);
+    g_autofree char *bus = g_strdup_printf("%s.0", sound->info.alias);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
-        g_autofree char *audioid = qemuGetAudioIDString(def, sound->audioId);
-        if (!audioid)
-            return NULL;
-        virBufferAsprintf(&buf, ",audiodev=%s", audioid);
+        if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
+            return -1;
     }
 
-    return virBufferContentAndReset(&buf);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", qemuSoundCodecTypeToString(codec->type),
+                                 "s:id", alias,
+                                 "s:bus", bus,
+                                 "i:cad", codec->cad,
+                                 "S:audiodev", audioid,
+                                 NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
+    return 0;
 }
 
 
@@ -4571,30 +4577,16 @@ qemuBuildSoundCommandLine(virCommand *cmd,
 
             if (virDomainSoundModelSupportsCodecs(sound)) {
                 for (j = 0; j < sound->ncodecs; j++) {
-                    g_autofree char *codecstr = NULL;
-                    virCommandAddArg(cmd, "-device");
-                    if (!(codecstr =
-                          qemuBuildSoundCodecStr(def, sound,
-                                                 sound->codecs[j], qemuCaps))) {
+                    if (qemuBuildSoundCodecCmd(cmd, def, sound, sound->codecs[j],
+                                               qemuCaps) < 0)
                         return -1;
-
-                    }
-                    virCommandAddArg(cmd, codecstr);
                 }
-                if (j == 0) {
-                    g_autofree char *codecstr = NULL;
-                    virDomainSoundCodecDef codec = {
-                        VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX,
-                        0
-                    };
-                    virCommandAddArg(cmd, "-device");
-                    if (!(codecstr =
-                          qemuBuildSoundCodecStr(def, sound,
-                                                 &codec, qemuCaps))) {
-                        return -1;
 
-                    }
-                    virCommandAddArg(cmd, codecstr);
+                if (j == 0) {
+                    virDomainSoundCodecDef codec = { VIR_DOMAIN_SOUND_CODEC_TYPE_DUPLEX, 0 };
+
+                    if (qemuBuildSoundCodecCmd(cmd, def, sound, &codec, qemuCaps) < 0)
+                        return -1;
                 }
             }
         }
