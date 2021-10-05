@@ -2057,6 +2057,7 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
                               VIR_DOMAIN_DEVICE_FS, fs) < 0)
         return -1;
 
+    virBufferAsprintf(&opt, ",id=%s", fs->info.alias);
     virBufferAsprintf(&opt, ",chardev=%s", chardev_alias);
     if (fs->queue_size)
         virBufferAsprintf(&opt, ",queue-size=%llu", fs->queue_size);
