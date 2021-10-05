@@ -1,1 +1,1 @@
-unsupported configuration: qemu-xhci not supported in this QEMU binary
+unsupported configuration: USB controller model 'qemu-xhci' not supported in this QEMU binary

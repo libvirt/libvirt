@@ -1,1 +1,1 @@
-unsupported configuration: nec-usb-xhci not supported in this QEMU binary
+unsupported configuration: USB controller model 'nec-xhci' not supported in this QEMU binary
