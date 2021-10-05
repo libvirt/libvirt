@@ -425,103 +425,6 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
 
 
 static int
-qemuBuildDeviceAddressPCIStr(virBuffer *buf,
-                             const virDomainDef *domainDef,
-                             virDomainDeviceInfo *info)
-{
-    g_autofree char *bus = NULL;
-
-    if (!(bus = qemuBuildDeviceAddressPCIGetBus(domainDef, info)))
-        return -1;
-
-    virBufferStrcat(buf, ",bus=", bus, NULL);
-
-    if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_ON)
-        virBufferAddLit(buf, ",multifunction=on");
-    else if (info->addr.pci.multi == VIR_TRISTATE_SWITCH_OFF)
-        virBufferAddLit(buf, ",multifunction=off");
-
-    virBufferAsprintf(buf, ",addr=0x%x", info->addr.pci.slot);
-
-    if (info->addr.pci.function != 0)
-        virBufferAsprintf(buf, ".0x%x", info->addr.pci.function);
-
-    if (info->acpiIndex != 0)
-        virBufferAsprintf(buf, ",acpi-index=%u", info->acpiIndex);
-
-    return 0;
-}
-
-
-static int G_GNUC_UNUSED
-qemuBuildDeviceAddressStr(virBuffer *buf,
-                          const virDomainDef *domainDef,
-                          virDomainDeviceInfo *info)
-{
-    const char *contAlias = NULL;
-
-    switch ((virDomainDeviceAddressType)info->type) {
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
-        if (qemuBuildDeviceAddressPCIStr(buf, domainDef, info) < 0)
-            return -1;
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
-        if (!(contAlias = virDomainControllerAliasFind(domainDef,
-                                                       VIR_DOMAIN_CONTROLLER_TYPE_USB,
-                                                       info->addr.usb.bus)))
-            return -1;
-        virBufferAsprintf(buf, ",bus=%s.0", contAlias);
-        if (virDomainUSBAddressPortIsValid(info->addr.usb.port)) {
-            virBufferAddLit(buf, ",port=");
-            virDomainUSBAddressPortFormatBuf(buf, info->addr.usb.port);
-        }
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
-        if (info->addr.spaprvio.has_reg)
-            virBufferAsprintf(buf, ",reg=0x%08llx", info->addr.spaprvio.reg);
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
-        if (info->addr.ccw.assigned)
-            virBufferAsprintf(buf, ",devno=%x.%x.%04x",
-                              info->addr.ccw.cssid,
-                              info->addr.ccw.ssid,
-                              info->addr.ccw.devno);
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
-        virBufferAsprintf(buf, ",iobase=0x%x,irq=0x%x",
-                          info->addr.isa.iobase,
-                          info->addr.isa.irq);
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
-        virBufferAsprintf(buf, ",slot=%d", info->addr.dimm.slot);
-        if (info->addr.dimm.base)
-            virBufferAsprintf(buf, ",addr=%llu", info->addr.dimm.base);
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
-        break;
-
-    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
-        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuBuildDeviceAddresDriveProps(virJSONValue *props,
                                 const virDomainDef *domainDef,
                                 virDomainDeviceInfo *info)
@@ -657,7 +560,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
 }
 
 
-static int G_GNUC_UNUSED
+static int
 qemuBuildDeviceAddressProps(virJSONValue *props,
                             const virDomainDef *domainDef,
                             virDomainDeviceInfo *info)
