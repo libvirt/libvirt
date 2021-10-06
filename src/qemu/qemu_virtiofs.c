@@ -157,8 +157,7 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
 }
 
 int
-qemuVirtioFSStart(virLogManager *logManager,
-                  virQEMUDriver *driver,
+qemuVirtioFSStart(virQEMUDriver *driver,
                   virDomainObj *vm,
                   virDomainFSDef *fs)
 {
@@ -191,6 +190,11 @@ qemuVirtioFSStart(virLogManager *logManager,
     logpath = qemuVirtioFSCreateLogFilename(cfg, vm->def, fs->info.alias);
 
     if (cfg->stdioLogD) {
+        g_autoptr(virLogManager) logManager = virLogManagerNew(driver->privileged);
+
+        if (!logManager)
+            goto cleanup;
+
         if ((logfd = virLogManagerDomainOpenLogFile(logManager,
                                                     "qemu",
                                                     vm->def->uuid,
