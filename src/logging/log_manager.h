@@ -27,6 +27,8 @@ typedef struct _virLogManager virLogManager;
 virLogManager *virLogManagerNew(bool privileged);
 
 void virLogManagerFree(virLogManager *mgr);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virLogManager, virLogManagerFree);
+
 
 int virLogManagerDomainOpenLogFile(virLogManager *mgr,
                                    const char *driver,
