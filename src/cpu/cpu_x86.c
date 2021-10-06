@@ -3331,6 +3331,67 @@ virCPUx86DataAddFeature(virCPUData *cpuData,
 
 
 static bool
+virCPUx86DataItemIsIdentical(const virCPUx86DataItem *a,
+                             const virCPUx86DataItem *b)
+{
+    if (a->type != b->type)
+        return false;
+
+    switch (a->type) {
+    case VIR_CPU_X86_DATA_NONE:
+        break;
+
+    case VIR_CPU_X86_DATA_CPUID:
+        return memcmp(&a->data.cpuid, &b->data.cpuid, sizeof(a->data.cpuid)) == 0;
+
+    case VIR_CPU_X86_DATA_MSR:
+        return memcmp(&a->data.msr, &b->data.msr, sizeof(a->data.msr)) == 0;
+    }
+
+    return true;
+}
+
+static virCPUCompareResult
+virCPUx86DataIsIdentical(const virCPUData *a,
+                         const virCPUData *b)
+{
+    const virCPUx86Data *adata;
+    const virCPUx86Data *bdata;
+    size_t i;
+    size_t j;
+
+    if (!a || !b)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (a->arch != b->arch)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    if (!((adata = &a->data.x86) && (bdata = &b->data.x86)))
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (adata->len != bdata->len)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    for (i = 0; i < adata->len; ++i) {
+        bool found = false;
+
+        for (j = 0; j < bdata->len; ++j) {
+            if (!virCPUx86DataItemIsIdentical(&adata->items[i],
+                                              &bdata->items[j]))
+                continue;
+
+            found = true;
+            break;
+        }
+
+        if (!found)
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
+
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
+
+static bool
 virCPUx86FeatureIsMSR(const char *name)
 {
     virCPUx86Feature *feature;
@@ -3413,4 +3474,5 @@ struct cpuArchDriver cpuDriverX86 = {
     .copyMigratable = virCPUx86CopyMigratable,
     .validateFeatures = virCPUx86ValidateFeatures,
     .dataAddFeature = virCPUx86DataAddFeature,
+    .dataIsIdentical = virCPUx86DataIsIdentical,
 };
