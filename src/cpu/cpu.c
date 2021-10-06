@@ -1142,6 +1142,34 @@ virCPUDataAddFeature(virCPUData *cpuData,
 
 
 /**
+ * virCPUDataIsIdentical:
+ *
+ * Returns VIR_CPU_COMPARE_IDENTICAL if @a and @b are identical,
+ * VIR_CPU_COMPARE_INCOMPATIBLE if @a and @b are not identical, or
+ * VIR_CPU_COMPARE_ERROR on error.
+ */
+virCPUCompareResult
+virCPUDataIsIdentical(const virCPUData *a,
+                      const virCPUData *b)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("a=%p, b=%p", a, b);
+
+    if (!a || !b)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (!(driver = cpuGetSubDriver(a->arch)))
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (!driver->dataIsIdentical)
+        return VIR_CPU_COMPARE_ERROR;
+
+    return driver->dataIsIdentical(a, b);
+}
+
+
+/**
  * virCPUArchIsSupported:
  *
  * @arch: CPU architecture
