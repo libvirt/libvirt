@@ -515,7 +515,7 @@ int virHostValidateSecureGuests(const char *hvname,
         } else {
             virHostMsgFail(level,
                            "AMD Secure Encrypted Virtualization appears to be "
-                           "disabled in firemare.");
+                           "disabled in firmware.");
             return VIR_HOST_VALIDATE_FAILURE(level);
         }
     }
