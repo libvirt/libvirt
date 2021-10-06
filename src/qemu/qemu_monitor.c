@@ -98,6 +98,9 @@ struct _qemuMonitor {
      * the next monitor msg */
     virError lastError;
 
+    /* Set to true when EOF is detected on the monitor */
+    bool goteof;
+
     int nextSerial;
 
     bool waitGreeting;
@@ -526,7 +529,6 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 {
     qemuMonitor *mon = opaque;
     bool error = false;
-    bool eof = false;
     bool hangup = false;
 
     virObjectRef(mon);
@@ -544,7 +546,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
     if (mon->lastError.code != VIR_ERR_OK) {
         if (cond & (G_IO_HUP | G_IO_ERR))
-            eof = true;
+            mon->goteof = true;
         error = true;
     } else {
         if (cond & G_IO_OUT) {
@@ -562,7 +564,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
                 if (errno == ECONNRESET)
                     hangup = true;
             } else if (got == 0) {
-                eof = true;
+                mon->goteof = true;
             } else {
                 /* Ignore hangup/error cond if we read some data, to
                  * give time for that data to be consumed */
@@ -575,22 +577,19 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
         if (cond & G_IO_HUP) {
             hangup = true;
-            if (!error) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("End of file from qemu monitor"));
-                eof = true;
-            }
+            if (!error)
+                mon->goteof = true;
         }
 
-        if (!error && !eof &&
+        if (!error && !mon->goteof &&
             cond & G_IO_ERR) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Invalid file descriptor while waiting for monitor"));
-            eof = true;
+            mon->goteof = true;
         }
     }
 
-    if (error || eof) {
+    if (error || mon->goteof) {
         if (hangup && mon->logFunc != NULL) {
             /* Check if an error message from qemu is available and if so, use
              * it to overwrite the actual message. It's done only in early
@@ -609,7 +608,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
             /* Already have an error, so clear any new error */
             virResetLastError();
         } else {
-            if (virGetLastErrorCode() == VIR_ERR_OK)
+            if (virGetLastErrorCode() == VIR_ERR_OK && !mon->goteof)
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Error while processing monitor IO"));
             virCopyLastError(&mon->lastError);
@@ -630,7 +629,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
     /* We have to unlock to avoid deadlock against command thread,
      * but is this safe ?  I think it is, because the callback
      * will try to acquire the virDomainObj *mutex next */
-    if (eof) {
+    if (mon->goteof) {
         qemuMonitorEofNotifyCallback eofNotify = mon->cb->eofNotify;
         virDomainObj *vm = mon->vm;
 
@@ -947,6 +946,11 @@ qemuMonitorSend(qemuMonitor *mon,
         VIR_DEBUG("Attempt to send command while error is set %s",
                   NULLSTR(mon->lastError.message));
         virSetError(&mon->lastError);
+        return -1;
+    }
+    if (mon->goteof) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("End of file from qemu monitor"));
         return -1;
     }
 
