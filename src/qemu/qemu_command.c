@@ -5363,16 +5363,12 @@ qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
                                  "s:id", dev->info->alias,
                                  "s:sysfsdev", mdevPath,
                                  "S:display", qemuOnOffAuto(mdevsrc->display),
+                                 "T:ramfb", mdevsrc->ramfb,
+                                 "p:bootindex", dev->info->bootIndex,
                                  NULL) < 0)
         return NULL;
 
     if (qemuBuildDeviceAddressProps(props, def, dev->info) < 0)
-        return NULL;
-
-    if (virJSONValueObjectAdd(props,
-                              "T:ramfb", mdevsrc->ramfb,
-                              "p:bootindex", dev->info->bootIndex,
-                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
