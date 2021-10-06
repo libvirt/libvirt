@@ -161,9 +161,9 @@ virJSONValueObjectAddVArgs(virJSONValue *obj,
 
     while ((key = va_arg(args, char *)) != NULL) {
 
-        if (strlen(key) < 3) {
+        if (strlen(key) < 3 || key[1] != ':') {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("argument key '%s' is too short, missing type prefix"),
+                           _("argument key '%s' is too short or malformed"),
                            key);
             return -1;
         }
