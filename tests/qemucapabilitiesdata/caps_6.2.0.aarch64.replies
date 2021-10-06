@@ -24218,11 +24218,30 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-iommu-pci"
+  },
+  "id": "libvirt-35"
+}
+
+{
+  "return": [
+    {
+      "name": "fake-data",
+      "description": "pretend there's real data here",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-35"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -24297,7 +24316,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -24305,7 +24324,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -24379,7 +24398,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -24387,7 +24406,7 @@
   "arguments": {
     "typename": "max-arm-cpu"
   },
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
@@ -24596,12 +24615,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -25445,7 +25464,7 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
@@ -25453,7 +25472,7 @@
   "arguments": {
     "typename": "virt-6.2-machine"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -25649,7 +25668,7 @@
       "type": "child<cfi.pflash01>"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -25657,7 +25676,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -25760,12 +25779,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -26011,24 +26030,24 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "return": [
     "tpm-tis"
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -26036,12 +26055,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -27389,12 +27408,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -27476,12 +27495,12 @@
       "capability": "background-snapshot"
     }
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-gic-capabilities",
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -27497,7 +27516,7 @@
       "kernel": false
     }
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -27508,7 +27527,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -27540,7 +27559,7 @@
       }
     }
   },
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {

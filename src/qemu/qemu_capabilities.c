@@ -670,6 +670,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev.nbd.tls-hostname", /* QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME */
               "memory-backend-file.prealloc-threads", /* QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS */
               "virtio-iommu-pci", /* QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI */
+              "virtio-iommu.boot-bypass", /* QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS */
     );
 
 
@@ -1579,6 +1580,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioMemPCI[] =
     { "prealloc", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = {
+    { "boot-bypass", QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS, NULL },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "block-commit/arg-type/*top",  QEMU_CAPS_ACTIVE_COMMIT },
@@ -1745,6 +1750,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "virtio-mem-pci", virQEMUCapsDevicePropsVirtioMemPCI,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioMemPCI),
       QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
+    { "virtio-iommu-pci", virQEMUCapsDevicePropsVirtioIOMMU,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioIOMMU),
+      QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {

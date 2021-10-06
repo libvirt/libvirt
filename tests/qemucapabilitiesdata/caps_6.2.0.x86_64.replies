@@ -26636,11 +26636,30 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-iommu-pci"
+  },
+  "id": "libvirt-39"
+}
+
+{
+  "return": [
+    {
+      "name": "fake-data",
+      "description": "pretend there's real data here",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-39"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -26719,7 +26738,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -26727,7 +26746,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -26801,7 +26820,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -26809,7 +26828,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -28549,12 +28568,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -29037,7 +29056,7 @@
       "default-ram-id": "pc.ram"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -29045,7 +29064,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -29148,12 +29167,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -31222,12 +31241,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -31235,12 +31254,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -31248,12 +31267,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -32585,12 +32604,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -32672,16 +32691,16 @@
       "capability": "background-snapshot"
     }
   ],
-  "id": "libvirt-48"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-49"
 }
 
 {
-  "id": "libvirt-49",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-50"
+}
+
+{
+  "id": "libvirt-50",
   "error": {
     "class": "GenericError",
     "desc": "SEV: Failed to open /dev/sev: No such file or directory"
@@ -32696,7 +32715,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -33029,7 +33048,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -33043,7 +33062,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -33376,7 +33395,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {

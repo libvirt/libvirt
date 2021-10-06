@@ -26989,11 +26989,234 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-iommu-pci"
+  },
+  "id": "libvirt-39"
+}
+
+{
+  "return": [
+    {
+      "name": "failover_pair_id",
+      "type": "str"
+    },
+    {
+      "name": "romfile",
+      "type": "str"
+    },
+    {
+      "default-value": -1,
+      "name": "addr",
+      "description": "Slot and optional function number, example: 06.0 or 06",
+      "type": "int32"
+    },
+    {
+      "default-value": 4294967295,
+      "name": "romsize",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-lnksta-dllla",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 1,
+      "name": "rombar",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-extcap-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "acpi-index",
+      "type": "uint32"
+    },
+    {
+      "default-value": false,
+      "name": "multifunction",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "migrate-extra",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "ats",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-ignore-backend-features",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-pm-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "aer",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-flr-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-lnkctl-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-ats-page-aligned",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "page-per-vq",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "x-pcie-deverr-init",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "virtio-pci-bus-master-bug-migration",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "modern-pio-notify",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-pcie",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": "auto",
+      "name": "disable-legacy",
+      "description": "on/off/auto",
+      "type": "OnOffAuto"
+    },
+    {
+      "default-value": false,
+      "name": "disable-modern",
+      "type": "bool"
+    },
+    {
+      "default-value": 0,
+      "name": "len-reserved-regions",
+      "type": "uint32"
+    },
+    {
+      "default-value": 0,
+      "name": "class",
+      "type": "uint32"
+    },
+    {
+      "default-value": true,
+      "name": "use-disabled-flag",
+      "type": "bool"
+    },
+    {
+      "name": "virtio-backend",
+      "type": "child<virtio-iommu-device>"
+    },
+    {
+      "default-value": false,
+      "name": "packed",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "iommu_platform",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "event_idx",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "boot-bypass",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-disable-legacy-check",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "notify_on_empty",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "any_layout",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "use-started",
+      "type": "bool"
+    },
+    {
+      "default-value": true,
+      "name": "indirect_desc",
+      "description": "on/off",
+      "type": "bool"
+    },
+    {
+      "name": "primary-bus",
+      "type": "link<PCI>"
+    }
+  ],
+  "id": "libvirt-39"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -27072,7 +27295,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -27080,7 +27303,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -27154,7 +27377,7 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -27162,7 +27385,7 @@
   "arguments": {
     "typename": "max-x86_64-cpu"
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -28918,12 +29141,12 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -29450,7 +29673,7 @@
       "default-ram-id": "pc.ram"
     }
   ],
-  "id": "libvirt-42"
+  "id": "libvirt-43"
 }
 
 {
@@ -29458,7 +29681,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
@@ -29561,12 +29784,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-43"
+  "id": "libvirt-44"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
@@ -31671,12 +31894,12 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-44"
+  "id": "libvirt-45"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
@@ -31684,12 +31907,12 @@
     "tpm-crb",
     "tpm-tis"
   ],
-  "id": "libvirt-45"
+  "id": "libvirt-46"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
@@ -31697,12 +31920,12 @@
     "passthrough",
     "emulator"
   ],
-  "id": "libvirt-46"
+  "id": "libvirt-47"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
@@ -33038,12 +33261,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-47"
+  "id": "libvirt-48"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-48"
+  "id": "libvirt-49"
 }
 
 {
@@ -33125,16 +33348,16 @@
       "capability": "background-snapshot"
     }
   ],
-  "id": "libvirt-48"
-}
-
-{
-  "execute": "query-sev-capabilities",
   "id": "libvirt-49"
 }
 
 {
-  "id": "libvirt-49",
+  "execute": "query-sev-capabilities",
+  "id": "libvirt-50"
+}
+
+{
+  "id": "libvirt-50",
   "error": {
     "class": "GenericError",
     "desc": "SEV: Failed to open /dev/sev: No such file or directory"
@@ -33149,7 +33372,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -33486,7 +33709,7 @@
       }
     }
   },
-  "id": "libvirt-50"
+  "id": "libvirt-51"
 }
 
 {
@@ -33500,7 +33723,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {
@@ -33837,7 +34060,7 @@
       }
     }
   },
-  "id": "libvirt-51"
+  "id": "libvirt-52"
 }
 
 {

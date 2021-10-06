@@ -21090,11 +21090,30 @@
 }
 
 {
+  "execute": "device-list-properties",
+  "arguments": {
+    "typename": "virtio-iommu-pci"
+  },
+  "id": "libvirt-32"
+}
+
+{
+  "return": [
+    {
+      "name": "fake-data",
+      "description": "pretend there's real data here",
+      "type": "str"
+    }
+  ],
+  "id": "libvirt-32"
+}
+
+{
   "execute": "qom-list-properties",
   "arguments": {
     "typename": "memory-backend-file"
   },
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -21164,7 +21183,7 @@
       "type": "bool"
     }
   ],
-  "id": "libvirt-32"
+  "id": "libvirt-33"
 }
 
 {
@@ -21172,7 +21191,7 @@
   "arguments": {
     "typename": "memory-backend-memfd"
   },
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
@@ -21241,12 +21260,12 @@
       "type": "int"
     }
   ],
-  "id": "libvirt-33"
+  "id": "libvirt-34"
 }
 
 {
   "execute": "query-machines",
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -21424,7 +21443,7 @@
       "default-ram-id": "s390.ram"
     }
   ],
-  "id": "libvirt-34"
+  "id": "libvirt-35"
 }
 
 {
@@ -21432,7 +21451,7 @@
   "arguments": {
     "typename": "none-machine"
   },
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
@@ -21530,12 +21549,12 @@
       "type": "child<container>"
     }
   ],
-  "id": "libvirt-35"
+  "id": "libvirt-36"
 }
 
 {
   "execute": "query-cpu-definitions",
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
@@ -22216,34 +22235,34 @@
       "deprecated": false
     }
   ],
-  "id": "libvirt-36"
+  "id": "libvirt-37"
 }
 
 {
   "execute": "query-tpm-models",
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-37"
+  "id": "libvirt-38"
 }
 
 {
   "execute": "query-tpm-types",
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "return": [
   ],
-  "id": "libvirt-38"
+  "id": "libvirt-39"
 }
 
 {
   "execute": "query-command-line-options",
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
@@ -23419,12 +23438,12 @@
       "option": "drive"
     }
   ],
-  "id": "libvirt-39"
+  "id": "libvirt-40"
 }
 
 {
   "execute": "query-migrate-capabilities",
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -23506,7 +23525,7 @@
       "capability": "background-snapshot"
     }
   ],
-  "id": "libvirt-40"
+  "id": "libvirt-41"
 }
 
 {
@@ -23517,7 +23536,7 @@
       "name": "host"
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
@@ -23574,7 +23593,7 @@
       }
     }
   },
-  "id": "libvirt-41"
+  "id": "libvirt-42"
 }
 
 {
