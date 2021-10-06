@@ -24,5 +24,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device virtio-balloon-ccw,id=balloon0,devno=fe.0.000a,deflate-on-oom=on \
+-device virtio-balloon-ccw,id=balloon0,deflate-on-oom=on,devno=fe.0.000a \
 -msg timestamp=on

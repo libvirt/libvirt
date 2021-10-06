@@ -4231,16 +4231,12 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
 
     if (virJSONValueObjectAdd(props,
                               "s:id", def->memballoon->info.alias,
+                              "T:deflate-on-oom", def->memballoon->autodeflate,
+                              "T:free-page-reporting", def->memballoon->free_page_reporting,
                               NULL) < 0)
         return -1;
 
     if (qemuBuildDeviceAddressProps(props, def, &def->memballoon->info) < 0)
-        return -1;
-
-    if (virJSONValueObjectAdd(props,
-                              "T:deflate-on-oom", def->memballoon->autodeflate,
-                              "T:free-page-reporting", def->memballoon->free_page_reporting,
-                              NULL) < 0)
         return -1;
 
     if (qemuCommandAddExtDevice(cmd, &def->memballoon->info) < 0)
