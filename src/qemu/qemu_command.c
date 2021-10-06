@@ -4776,6 +4776,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
                                  "s:host", host,
                                  "s:id", dev->info->alias,
                                  "p:bootindex", dev->info->effectiveBootIndex,
+                                 "S:failover_pair_id", failover_pair_id,
                                  NULL) < 0)
         return NULL;
 
@@ -4783,11 +4784,6 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
         return NULL;
 
     if (qemuBuildRomProps(props, dev->info) < 0)
-        return NULL;
-
-    if (virJSONValueObjectAdd(props,
-                              "S:failover_pair_id", failover_pair_id,
-                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
