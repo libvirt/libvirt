@@ -166,7 +166,6 @@ qemuExtDevicesCleanupHost(virQEMUDriver *driver,
 int
 qemuExtDevicesStart(virQEMUDriver *driver,
                     virDomainObj *vm,
-                    virLogManager *logManager G_GNUC_UNUSED,
                     bool incomingMigration)
 {
     virDomainDef *def = vm->def;
