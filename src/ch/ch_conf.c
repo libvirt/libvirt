@@ -65,14 +65,8 @@ virCaps *virCHDriverCapsInit(void)
     if (virCapabilitiesInitCaches(caps) < 0)
         goto cleanup;
 
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_HVM,
-                                         caps->host.arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        goto cleanup;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                    caps->host.arch, NULL, NULL, 0, NULL);
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_KVM,

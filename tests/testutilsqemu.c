@@ -165,14 +165,9 @@ testQemuAddGuest(virCaps *caps,
     if (machines == NULL)
         goto error;
 
-    if (!(guest = virCapabilitiesAddGuest(caps,
-                                          VIR_DOMAIN_OSTYPE_HVM,
-                                          arch,
-                                          qemu_emulators[emu_arch],
-                                          NULL,
-                                          nmachines,
-                                          machines)))
-        goto error;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                    arch, qemu_emulators[emu_arch],
+                                    NULL, nmachines, machines);
 
     machines = NULL;
     nmachines = 0;

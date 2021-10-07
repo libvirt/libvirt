@@ -97,14 +97,8 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
                                          LIBEXECDIR)))
         goto error;
 
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_EXE,
-                                         caps->host.arch,
-                                         lxc_path,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        goto error;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                    caps->host.arch, lxc_path, NULL, 0, NULL);
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_LXC,
@@ -116,14 +110,8 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
 
     /* On 64-bit hosts, we can use personality() to request a 32bit process */
     if ((altArch = lxcContainerGetAlt32bitArch(caps->host.arch)) != VIR_ARCH_NONE) {
-        if ((guest = virCapabilitiesAddGuest(caps,
-                                             VIR_DOMAIN_OSTYPE_EXE,
-                                             altArch,
-                                             lxc_path,
-                                             NULL,
-                                             0,
-                                             NULL)) == NULL)
-            goto error;
+        guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                        altArch, lxc_path, NULL, 0, NULL);
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           VIR_DOMAIN_VIRT_LXC,

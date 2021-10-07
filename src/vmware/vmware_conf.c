@@ -78,11 +78,8 @@ vmwareCapsInit(void)
         VIR_WARN("Failed to get host CPU cache info");
 
     /* i686 guests are always supported */
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_HVM,
-                                         VIR_ARCH_I686,
-                                         NULL, NULL, 0, NULL)) == NULL)
-        goto error;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                    VIR_ARCH_I686, NULL, NULL, 0, NULL);
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_VMWARE,
@@ -103,11 +100,8 @@ vmwareCapsInit(void)
          (virCPUCheckFeature(caps->host.cpu->arch, caps->host.cpu, "vmx") ||
           virCPUCheckFeature(caps->host.cpu->arch, caps->host.cpu, "svm")))) {
 
-        if ((guest = virCapabilitiesAddGuest(caps,
-                                             VIR_DOMAIN_OSTYPE_HVM,
-                                             VIR_ARCH_X86_64,
-                                             NULL, NULL, 0, NULL)) == NULL)
-            goto error;
+        guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                        VIR_ARCH_X86_64, NULL, NULL, 0, NULL);
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           VIR_DOMAIN_VIRT_VMWARE,

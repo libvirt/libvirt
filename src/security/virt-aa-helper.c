@@ -642,16 +642,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         return -1;
     }
 
-    if ((guest = virCapabilitiesAddGuest(ctl->caps,
-                                         ostype,
-                                         ctl->arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL) {
-        vah_error(ctl, 0, _("could not allocate memory"));
-        return -1;
-    }
+    guest = virCapabilitiesAddGuest(ctl->caps, ostype, ctl->arch,
+                                    NULL, NULL, 0, NULL);
 
     if ((virtType = virDomainVirtTypeFromString(ctl->virtType)) < 0) {
         vah_error(ctl, 0, _("unknown virtualization type"));

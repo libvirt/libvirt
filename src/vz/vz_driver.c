@@ -83,8 +83,8 @@ vzCapsAddGuestDomain(virCaps *caps,
 {
     virCapsGuest *guest;
 
-    if ((guest = virCapabilitiesAddGuest(caps, ostype, arch, emulator,
-                                         NULL, 0, NULL)) == NULL)
+    guest = virCapabilitiesAddGuest(caps, ostype, arch,
+                                    emulator, NULL, 0, NULL);
         return -1;
 
 

@@ -473,20 +473,17 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
         if ((machines = virCapabilitiesAllocMachines(xen_machines, 1)) == NULL)
             return -1;
 
-        if ((guest = virCapabilitiesAddGuest(caps,
-                                             guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM :
-                                                (guest_archs[i].pvh ? VIR_DOMAIN_OSTYPE_XENPVH :
-                                                 VIR_DOMAIN_OSTYPE_XEN),
-                                             guest_archs[i].arch,
-                                             LIBXL_EXECBIN_DIR "/qemu-system-i386",
-                                             (guest_archs[i].hvm ?
-                                              LIBXL_FIRMWARE_DIR "/hvmloader" :
-                                              NULL),
-                                             1,
-                                             machines)) == NULL) {
-            virCapabilitiesFreeMachines(machines, 1);
-            return -1;
-        }
+        guest = virCapabilitiesAddGuest(caps,
+                                        guest_archs[i].hvm ? VIR_DOMAIN_OSTYPE_HVM :
+                                        (guest_archs[i].pvh ? VIR_DOMAIN_OSTYPE_XENPVH :
+                                         VIR_DOMAIN_OSTYPE_XEN),
+                                        guest_archs[i].arch,
+                                        LIBXL_EXECBIN_DIR "/qemu-system-i386",
+                                        (guest_archs[i].hvm ?
+                                         LIBXL_FIRMWARE_DIR "/hvmloader" :
+                                         NULL),
+                                        1,
+                                        machines);
         machines = NULL;
 
         if (virCapabilitiesAddGuestDomain(guest,

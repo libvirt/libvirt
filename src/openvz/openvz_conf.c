@@ -156,14 +156,8 @@ virCaps *openvzCapsInit(void)
     if (virCapabilitiesInitCaches(caps) < 0)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_EXE,
-                                         caps->host.arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
-        return NULL;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
+                                    caps->host.arch, NULL, NULL, 0, NULL);
 
     if (virCapabilitiesAddGuestDomain(guest,
                                       VIR_DOMAIN_VIRT_OPENVZ,

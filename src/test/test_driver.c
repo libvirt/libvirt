@@ -345,14 +345,8 @@ testBuildCapabilities(virConnectPtr conn)
     }
 
     for (i = 0; i < G_N_ELEMENTS(guest_types); i++) {
-        if ((guest = virCapabilitiesAddGuest(caps,
-                                             guest_types[i],
-                                             VIR_ARCH_I686,
-                                             TEST_EMULATOR,
-                                             NULL,
-                                             0,
-                                             NULL)) == NULL)
-            goto error;
+        guest = virCapabilitiesAddGuest(caps, guest_types[i], VIR_ARCH_I686,
+                                        TEST_EMULATOR, NULL, 0, NULL);
 
         if (virCapabilitiesAddGuestDomain(guest,
                                           VIR_DOMAIN_VIRT_TEST,

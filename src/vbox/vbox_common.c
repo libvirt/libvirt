@@ -100,13 +100,8 @@ vboxCapsInit(void)
     if (virCapabilitiesInitCaches(caps) < 0)
         return NULL;
 
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_HVM,
-                                         caps->host.arch,
-                                         NULL,
-                                         NULL,
-                                         0,
-                                         NULL)) == NULL)
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                    caps->host.arch, NULL, NULL, 0, NULL);
         return NULL;
 
     if (virCapabilitiesAddGuestDomain(guest,

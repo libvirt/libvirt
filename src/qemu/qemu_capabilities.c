@@ -1050,14 +1050,9 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
 
     /* We register kvm as the base emulator too, since we can
      * just give -no-kvm to disable acceleration if required */
-    if ((guest = virCapabilitiesAddGuest(caps,
-                                         VIR_DOMAIN_OSTYPE_HVM,
-                                         guestarch,
-                                         binary,
-                                         NULL,
-                                         nmachines,
-                                         machines)) == NULL)
-        goto cleanup;
+    guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
+                                    guestarch, binary,
+                                    NULL, nmachines, machines);
 
     machines = NULL;
     nmachines = 0;
