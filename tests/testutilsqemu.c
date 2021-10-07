@@ -176,13 +176,8 @@ testQemuAddGuest(virCaps *caps,
         arch == VIR_ARCH_X86_64)
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_CPUSELECTION);
 
-    if (!virCapabilitiesAddGuestDomain(guest,
-                                       VIR_DOMAIN_VIRT_QEMU,
-                                       NULL,
-                                       NULL,
-                                       0,
-                                       NULL))
-        goto error;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                  NULL, NULL, 0, NULL);
 
     if (kvm_machines[emu_arch] != NULL) {
         nmachines = g_strv_length((char **)kvm_machines[emu_arch]);
@@ -191,13 +186,9 @@ testQemuAddGuest(virCaps *caps,
         if (machines == NULL)
             goto error;
 
-        if (!virCapabilitiesAddGuestDomain(guest,
-                                           VIR_DOMAIN_VIRT_KVM,
-                                           qemu_emulators[emu_arch],
-                                           NULL,
-                                           nmachines,
-                                           machines))
-            goto error;
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                      qemu_emulators[emu_arch],
+                                      NULL, nmachines, machines);
     }
 
     return 0;

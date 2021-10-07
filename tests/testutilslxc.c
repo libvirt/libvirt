@@ -23,18 +23,14 @@ testLXCCapsInit(void)
                                     "/usr/libexec/libvirt_lxc", NULL,
                                     0, NULL);
 
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL))
-        goto error;
-
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL);
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
                                     VIR_ARCH_X86_64,
                                     "/usr/libexec/libvirt_lxc", NULL,
                                     0, NULL);
 
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL))
-        goto error;
-
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_LXC, NULL, NULL, 0, NULL);
 
     if (virTestGetDebug()) {
         g_autofree char *caps_str = NULL;

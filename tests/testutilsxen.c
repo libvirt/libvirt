@@ -40,9 +40,8 @@ testXLInitCaps(void)
                                     "/usr/lib/xen/boot/hvmloader",
                                     nmachines, machines);
     machines = NULL;
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
-                                      NULL, 0, NULL) == NULL)
-        goto cleanup;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
+                                  NULL, NULL, 0, NULL);
     nmachines = G_N_ELEMENTS(xen_machines);
     if ((machines = virCapabilitiesAllocMachines(xen_machines, nmachines)) == NULL)
         goto cleanup;
@@ -54,9 +53,8 @@ testXLInitCaps(void)
                                     nmachines, machines);
     machines = NULL;
 
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
-                                      NULL, 0, NULL) == NULL)
-        goto cleanup;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
+                                  NULL, NULL, 0, NULL);
     nmachines = G_N_ELEMENTS(pvh_machines);
     if ((machines = virCapabilitiesAllocMachines(pvh_machines, nmachines)) == NULL)
         goto cleanup;
@@ -68,9 +66,8 @@ testXLInitCaps(void)
                                     nmachines, machines);
     machines = NULL;
 
-    if (virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN, NULL,
-                                      NULL, 0, NULL) == NULL)
-        goto cleanup;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
+                                  NULL, NULL, 0, NULL);
     return caps;
 
  cleanup:

@@ -906,27 +906,22 @@ virTestGenericCapsInit(void)
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
                                     "/usr/bin/acme-virt", NULL, 0, NULL);
 
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
-        return NULL;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
-                                       NULL, NULL, 0, NULL))
-        return NULL;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        return NULL;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST,
+                                  NULL, NULL, 0, NULL);
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                  NULL, NULL, 0, NULL);
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                  NULL, NULL, 0, NULL);
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_X86_64,
                                     "/usr/bin/acme-virt", NULL, 0, NULL);
 
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST, NULL, NULL, 0, NULL))
-        return NULL;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
-                                       NULL, NULL, 0, NULL))
-        return NULL;
-    if (!virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
-                                       NULL, NULL, 0, NULL))
-        return NULL;
-
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST,
+                                  NULL, NULL, 0, NULL);
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                  NULL, NULL, 0, NULL);
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                  NULL, NULL, 0, NULL);
 
     if (virTestGetDebug() > 1) {
         g_autofree char *caps_str = NULL;

@@ -159,13 +159,8 @@ virCaps *openvzCapsInit(void)
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
                                     caps->host.arch, NULL, NULL, 0, NULL);
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      VIR_DOMAIN_VIRT_OPENVZ,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        return NULL;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_OPENVZ,
+                                  NULL, NULL, 0, NULL);
 
     return g_steal_pointer(&caps);
 }

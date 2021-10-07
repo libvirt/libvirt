@@ -68,14 +68,8 @@ virCaps *virCHDriverCapsInit(void)
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     caps->host.arch, NULL, NULL, 0, NULL);
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      VIR_DOMAIN_VIRT_KVM,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        goto cleanup;
-
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                  NULL, NULL, 0, NULL);
     return caps;
 
  cleanup:

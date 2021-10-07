@@ -348,13 +348,8 @@ testBuildCapabilities(virConnectPtr conn)
         guest = virCapabilitiesAddGuest(caps, guest_types[i], VIR_ARCH_I686,
                                         TEST_EMULATOR, NULL, 0, NULL);
 
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          VIR_DOMAIN_VIRT_TEST,
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
-            goto error;
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_TEST,
+                                      NULL, NULL, 0, NULL);
 
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);
         virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_NONPAE);

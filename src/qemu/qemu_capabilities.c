@@ -1065,25 +1065,13 @@ virQEMUCapsInitGuestFromBinary(virCaps *caps,
                                              true, false);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TCG)) {
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          VIR_DOMAIN_VIRT_QEMU,
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL) {
-            goto cleanup;
-        }
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_QEMU,
+                                      NULL, NULL, 0, NULL);
     }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM)) {
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          VIR_DOMAIN_VIRT_KVM,
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL) {
-            goto cleanup;
-        }
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
+                                      NULL, NULL, 0, NULL);
     }
 
     if ((ARCH_IS_X86(guestarch) || guestarch == VIR_ARCH_AARCH64))

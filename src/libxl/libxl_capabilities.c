@@ -486,13 +486,8 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
                                         machines);
         machines = NULL;
 
-        if (virCapabilitiesAddGuestDomain(guest,
-                                          VIR_DOMAIN_VIRT_XEN,
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          NULL) == NULL)
-            return -1;
+        virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
+                                      NULL, NULL, 0, NULL);
 
         if (guest_archs[i].pae)
             virCapabilitiesAddGuestFeature(guest, VIR_CAPS_GUEST_FEATURE_TYPE_PAE);

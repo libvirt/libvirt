@@ -104,13 +104,8 @@ vboxCapsInit(void)
                                     caps->host.arch, NULL, NULL, 0, NULL);
         return NULL;
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      VIR_DOMAIN_VIRT_VBOX,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL)
-        return NULL;
+    virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_VBOX,
+                                  NULL, NULL, 0, NULL);
 
     return g_steal_pointer(&caps);
 }

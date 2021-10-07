@@ -650,15 +650,8 @@ get_definition(vahControl * ctl, const char *xmlStr)
         return -1;
     }
 
-    if (virCapabilitiesAddGuestDomain(guest,
-                                      virtType,
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      NULL) == NULL) {
-        vah_error(ctl, 0, _("could not allocate memory"));
-        return -1;
-    }
+    virCapabilitiesAddGuestDomain(guest, virtType,
+                                  NULL, NULL, 0, NULL);
 
     ctl->def = virDomainDefParseString(xmlStr,
                                        ctl->xmlopt, NULL,

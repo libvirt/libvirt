@@ -88,9 +88,7 @@ vzCapsAddGuestDomain(virCaps *caps,
         return -1;
 
 
-    if (virCapabilitiesAddGuestDomain(guest, virt_type,
-                                      NULL, NULL, 0, NULL) == NULL)
-        return -1;
+    virCapabilitiesAddGuestDomain(guest, virt_type, NULL, NULL, 0, NULL);
 
     return 0;
 }
