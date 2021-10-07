@@ -6813,11 +6813,6 @@ qemuBuildCpuCommandLine(virCommand *cmd,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
-        const char *hvPrefix = "hv-";
-
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
-            hvPrefix = "hv_";
-
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
@@ -6833,8 +6828,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             case VIR_DOMAIN_HYPERV_IPI:
             case VIR_DOMAIN_HYPERV_EVMCS:
                 if (def->hyperv_features[i] == VIR_TRISTATE_SWITCH_ON)
-                    virBufferAsprintf(&buf, ",%s%s",
-                                      hvPrefix,
+                    virBufferAsprintf(&buf, ",hv-%s",
                                       virDomainHypervTypeToString(i));
                 if ((i == VIR_DOMAIN_HYPERV_STIMER) &&
                     (def->hyperv_stimer_direct == VIR_TRISTATE_SWITCH_ON))
