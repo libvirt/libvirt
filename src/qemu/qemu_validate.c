@@ -4882,6 +4882,12 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
+        if (def->features[VIR_DOMAIN_FEATURE_ACPI] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' requires ACPI"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
