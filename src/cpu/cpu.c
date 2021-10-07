@@ -295,6 +295,27 @@ virCPUDataNew(virArch arch)
 
 
 /**
+ * virCPUDataNewCopy:
+ *
+ * Returns a copy of @data or NULL on error.
+ */
+virCPUData *
+virCPUDataNewCopy(virCPUData *data)
+{
+    struct cpuArchDriver *driver;
+
+    VIR_DEBUG("data=%p", data);
+
+    if (!data)
+        return NULL;
+
+    if ((driver = cpuGetSubDriver(data->arch)) && driver->dataCopyNew)
+        return driver->dataCopyNew(data);
+
+    return NULL;
+}
+
+/**
  * virCPUDataFree:
  *
  * @data: CPU data structure to be freed

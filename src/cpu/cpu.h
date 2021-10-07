@@ -62,6 +62,9 @@ typedef int
                      virCPUData **forbidden,
                      virCPUData **vendor);
 
+typedef virCPUData *
+(*cpuArchDataCopyNew)(virCPUData *data);
+
 typedef void
 (*cpuArchDataFree)  (virCPUData *data);
 
@@ -134,6 +137,7 @@ struct cpuArchDriver {
     virCPUArchCompare   compare;
     cpuArchDecode       decode;
     cpuArchEncode       encode;
+    cpuArchDataCopyNew  dataCopyNew;
     cpuArchDataFree     dataFree;
     virCPUArchGetHost   getHost;
     virCPUArchBaseline baseline;
@@ -187,6 +191,9 @@ cpuEncode   (virArch arch,
 
 virCPUData *
 virCPUDataNew(virArch arch);
+
+virCPUData *
+virCPUDataNewCopy(virCPUData *data);
 
 void
 virCPUDataFree(virCPUData *data);
