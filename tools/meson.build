@@ -58,6 +58,11 @@ if conf.has('WITH_HOST_VALIDATE')
       'virt-host-validate-bhyve.c',
     ]
   endif
+  if conf.has('WITH_CH')
+    virt_host_validate_sources += [
+      'virt-host-validate-ch.c',
+    ]
+  endif
 
   executable(
     'virt-host-validate',

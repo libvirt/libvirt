@@ -369,6 +369,7 @@
 @SRCDIR@tools/virsh.h
 @SRCDIR@tools/virt-admin.c
 @SRCDIR@tools/virt-host-validate-bhyve.c
+@SRCDIR@tools/virt-host-validate-ch.c
 @SRCDIR@tools/virt-host-validate-common.c
 @SRCDIR@tools/virt-host-validate-lxc.c
 @SRCDIR@tools/virt-host-validate-qemu.c
