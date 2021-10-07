@@ -82,17 +82,6 @@ typedef struct {
     int deletedEvents;
 } lifecycleEventCounter;
 
-static void
-lifecycleEventCounter_reset(lifecycleEventCounter *counter)
-{
-    counter->startEvents = 0;
-    counter->stopEvents = 0;
-    counter->defineEvents = 0;
-    counter->undefineEvents = 0;
-    counter->unexpectedEvents = 0;
-    counter->createdEvents = 0;
-    counter->deletedEvents = 0;
-}
 
 typedef struct {
     virConnectPtr conn;
@@ -202,12 +191,10 @@ static int
 testDomainCreateXMLOld(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virDomainPtr dom = NULL;
     int ret = -1;
     bool registered = false;
-
-    lifecycleEventCounter_reset(&counter);
 
     if (virConnectDomainEventRegister(test->conn,
                                       domainLifecycleCb,
@@ -242,13 +229,11 @@ static int
 testDomainCreateXMLNew(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
     virDomainPtr dom = NULL;
     int id;
     int ret = -1;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectDomainEventRegisterAny(test->conn, NULL, eventId,
                            VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
@@ -283,14 +268,12 @@ static int
 testDomainCreateXMLMixed(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virDomainPtr dom;
     int ret = -1;
     int id1 = -1;
     int id2 = -1;
     bool registered = false;
-
-    lifecycleEventCounter_reset(&counter);
 
     /* Fun with mixing old and new API, also with global and
      * per-domain.  Handler should be fired three times, once for each
@@ -360,13 +343,11 @@ static int
 testDomainDefine(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
     virDomainPtr dom = NULL;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectDomainEventRegisterAny(test->conn, NULL, eventId,
                            VIR_DOMAIN_EVENT_CALLBACK(&domainLifecycleCb),
@@ -411,15 +392,13 @@ static int
 testDomainStartStopEvent(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int eventId = VIR_DOMAIN_EVENT_ID_LIFECYCLE;
     int id;
     int ret = -1;
     virDomainPtr dom;
     virConnectPtr conn2 = NULL;
     virDomainPtr dom2 = NULL;
-
-    lifecycleEventCounter_reset(&counter);
 
     dom = virDomainLookupByName(test->conn, "test");
     if (dom == NULL)
@@ -476,12 +455,10 @@ static int
 testNetworkCreateXML(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virNetworkPtr net;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectNetworkEventRegisterAny(test->conn, NULL,
                            VIR_NETWORK_EVENT_ID_LIFECYCLE,
@@ -512,12 +489,10 @@ static int
 testNetworkDefine(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virNetworkPtr net;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectNetworkEventRegisterAny(test->conn, NULL,
                            VIR_NETWORK_EVENT_ID_LIFECYCLE,
@@ -563,14 +538,12 @@ static int
 testNetworkStartStopEvent(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int id;
     int ret = 0;
 
     if (!test->net)
         return -1;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectNetworkEventRegisterAny(test->conn, test->net,
                            VIR_NETWORK_EVENT_ID_LIFECYCLE,
@@ -599,12 +572,10 @@ static int
 testStoragePoolCreateXML(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virStoragePoolPtr pool;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
                       VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
@@ -635,12 +606,10 @@ static int
 testStoragePoolDefine(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virStoragePoolPtr pool;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
                       VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
@@ -686,7 +655,7 @@ static int
 testStoragePoolStartStopEvent(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int refreshCounter;
     int id1, id2;
     int ret = 0;
@@ -694,7 +663,6 @@ testStoragePoolStartStopEvent(const void *data)
     if (!test->pool)
         return -1;
 
-    lifecycleEventCounter_reset(&counter);
     refreshCounter = 0;
 
     id1 = virConnectStoragePoolEventRegisterAny(test->conn, test->pool,
@@ -730,11 +698,9 @@ static int
 testStoragePoolBuild(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
                       VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
@@ -762,11 +728,9 @@ static int
 testStoragePoolDelete(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectStoragePoolEventRegisterAny(test->conn, NULL,
                       VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE,
@@ -793,12 +757,10 @@ static int
 testNodeDeviceCreateXML(const void *data)
 {
     const objecteventTest *test = data;
-    lifecycleEventCounter counter;
+    lifecycleEventCounter counter = { 0 };
     virNodeDevicePtr dev;
     int id;
     int ret = 0;
-
-    lifecycleEventCounter_reset(&counter);
 
     id = virConnectNodeDeviceEventRegisterAny(test->conn, NULL,
                         VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE,
