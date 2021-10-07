@@ -481,6 +481,23 @@ virCPUx86DataClear(virCPUx86Data *data)
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virCPUx86Data, virCPUx86DataClear);
 
 
+static virCPUData *
+virCPUx86DataCopyNew(virCPUData *data)
+{
+    virCPUData *copy;
+
+    if (!data)
+        return NULL;
+
+    copy = virCPUDataNew(data->arch);
+    copy->data.x86.len = data->data.x86.len;
+    copy->data.x86.items = g_new0(virCPUx86DataItem, data->data.x86.len);
+    memcpy(copy->data.x86.items, data->data.x86.items,
+           data->data.x86.len * sizeof(*data->data.x86.items));
+
+    return copy;
+}
+
 static void
 virCPUx86DataFree(virCPUData *data)
 {
@@ -3457,6 +3474,7 @@ struct cpuArchDriver cpuDriverX86 = {
     .compare    = virCPUx86Compare,
     .decode     = x86DecodeCPUData,
     .encode     = x86Encode,
+    .dataCopyNew = virCPUx86DataCopyNew,
     .dataFree   = virCPUx86DataFree,
 #if defined(__i386__) || defined(__x86_64__)
     .getHost    = virCPUx86GetHost,
