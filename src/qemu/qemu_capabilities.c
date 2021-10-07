@@ -3387,8 +3387,7 @@ virQEMUCapsCPUFeatureTranslate(virQEMUCaps *qemuCaps,
         table = virQEMUCapsCPUFeaturesX86;
 
     if (!table ||
-        !feature ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES))
+        !feature)
         return feature;
 
     for (entry = table; entry->libvirt; entry++) {
