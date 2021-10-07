@@ -287,7 +287,7 @@ virEventGLibHandleRemove(int watch)
      * 'removed' to prevent reuse
      */
     data->removed = TRUE;
-    g_idle_add(virEventGLibHandleRemoveIdle, data);
+    g_idle_add_full(G_PRIORITY_HIGH, virEventGLibHandleRemoveIdle, data, NULL);
 
     ret = 0;
 
