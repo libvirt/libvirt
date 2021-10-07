@@ -4874,6 +4874,14 @@ qemuValidateDomainDeviceDefIOMMU(const virDomainIOMMUDef *iommu,
                            virDomainIOMMUModelTypeToString(iommu->model));
             return -1;
         }
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI) ||
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("IOMMU device: '%s' is not supported with "
+                             "this QEMU binary"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
