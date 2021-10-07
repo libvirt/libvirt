@@ -199,7 +199,7 @@
   /sys/class/ r,
 
   # for rbd
-  /etc/ceph/ceph.conf r,
+  /etc/ceph/*.conf r,
 
   # Various functions will need to enumerate /tmp (e.g. ceph), allow the base
   # dir and a few known functions like samba support.
