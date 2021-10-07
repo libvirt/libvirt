@@ -3253,6 +3253,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-wrong-machine");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-no-acpi");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address-type");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-iommu-invalid-address");
 
     DO_TEST("cpu-hotplug-startup", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS);
     DO_TEST_PARSE_ERROR("cpu-hotplug-granularity",
