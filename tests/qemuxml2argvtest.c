@@ -2562,6 +2562,22 @@ mymain(void)
     DO_TEST("pc-i440fx-acpi-root-hotplug-disable",
             QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG);
     DO_TEST_PARSE_ERROR_NOCAPS("pc-i440fx-acpi-root-hotplug-disable");
+    DO_TEST("q35-acpi-hotplug-bridge-disable",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
+            QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE);
+    DO_TEST("pc-i440fx-acpi-hotplug-bridge-disable",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE);
+    DO_TEST_PARSE_ERROR_NOCAPS("q35-acpi-hotplug-bridge-disable");
+    DO_TEST_PARSE_ERROR_NOCAPS("pc-i440fx-acpi-hotplug-bridge-disable");
+    /* verify that we fail when acpi-bridge-hotplug option is specified for
+     * archs other than x86
+     */
+    DO_TEST_PARSE_ERROR_NOCAPS("aarch64-acpi-hotplug-bridge-disable");
     DO_TEST("q35-usb2",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,

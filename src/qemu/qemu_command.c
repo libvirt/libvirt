@@ -6102,6 +6102,7 @@ qemuBuildPMCommandLine(virCommand *cmd,
                        qemuDomainObjPrivate *priv)
 {
     virQEMUCaps *qemuCaps = priv->qemuCaps;
+    int acpihp_br = def->pci_features[VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG];
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SET_ACTION)) {
         /* with new qemu we always want '-no-shutdown' on startup and we set
@@ -6145,6 +6146,25 @@ qemuBuildPMCommandLine(virCommand *cmd,
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "%s.disable_s4=%d",
                                pm_object, def->pm.s4 == VIR_TRISTATE_BOOL_NO);
+    }
+
+    if (acpihp_br != VIR_TRISTATE_SWITCH_ABSENT) {
+        const char *pm_object = NULL;
+
+        if (!qemuDomainIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE))
+            pm_object = "PIIX4_PM";
+
+        if (qemuDomainIsQ35(def) &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE))
+            pm_object = "ICH9-LPC";
+
+        if (pm_object != NULL) {
+            virCommandAddArg(cmd, "-global");
+            virCommandAddArgFormat(cmd, "%s.acpi-pci-hotplug-with-bridge-support=%s",
+                                   pm_object,
+                                   virTristateSwitchTypeToString(acpihp_br));
+        }
     }
 
     return 0;
