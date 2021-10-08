@@ -4013,6 +4013,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     qemuMigrationIOThread *iothread = NULL;
     VIR_AUTOCLOSE fd = -1;
     unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
+    unsigned long restore_max_bandwidth = priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
@@ -4024,6 +4025,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     g_autoptr(virDomainDef) persistDef = NULL;
     g_autofree char *timestamp = NULL;
     int rc;
+
+    priv->migMaxBandwidth = migrate_speed;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%lx, resource=%lu, "
@@ -4351,6 +4354,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     if (events)
         priv->signalIOError = false;
 
+    priv->migMaxBandwidth = restore_max_bandwidth;
     virErrorRestore(&orig_err);
 
     return ret;
