@@ -240,6 +240,7 @@
   <flag name='virtio-blk.queue-size'/>
   <flag name='virtio-mem-pci'/>
   <flag name='piix4.acpi-root-pci-hotplug'/>
+  <flag name='piix4.acpi-hotplug-bridge'/>
   <version>6000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>

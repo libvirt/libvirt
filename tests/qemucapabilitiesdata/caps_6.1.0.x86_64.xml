@@ -243,6 +243,8 @@
   <flag name='virtio-mem-pci'/>
   <flag name='memory-backend-file.reserve'/>
   <flag name='piix4.acpi-root-pci-hotplug'/>
+  <flag name='piix4.acpi-hotplug-bridge'/>
+  <flag name='ich9.acpi-hotplug-bridge'/>
   <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
