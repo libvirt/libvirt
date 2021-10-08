@@ -32,6 +32,14 @@ v7.9.0 (unreleased)
     controller. The default behavior is unchanged (hotplug is
     allowed).
 
+  * Add a new global feature for controlling ACPI PCI hotplug on bridges
+
+    A new ``<feature>`` config option ``<acpi-bridge-hotplug>`` under ``<pci>``
+    sub-element have been added to allow users enable/disable ACPI based PCI
+    hotplug for cold plugged bridges (that is, bridges that were present in the
+    domain definition when the guest was first started).This setting is only
+    applicable for x86 guests using qemu driver.
+
 * **Improvements**
 
 * **Bug fixes**
