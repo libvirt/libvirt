@@ -6170,6 +6170,9 @@
             <ref name="ioapic"/>
           </optional>
           <optional>
+            <ref name="pci"/>
+          </optional>
+          <optional>
             <ref name="hpt"/>
           </optional>
           <optional>
@@ -6397,6 +6400,18 @@
           <ref name="rebootTimeoutDelay"/>
         </attribute>
       </optional>
+    </element>
+  </define>
+
+  <define name="pci">
+    <element name="pci">
+      <interleave>
+        <optional>
+          <element name="acpi-bridge-hotplug">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
+      </interleave>
     </element>
   </define>
 

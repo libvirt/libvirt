@@ -428,6 +428,20 @@ mymain(void)
             QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG);
     DO_TEST("pc-i440fx-acpi-root-hotplug-enable",
             QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG);
+    DO_TEST("pc-i440fx-acpi-hotplug-bridge-disable",
+            QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE);
+    DO_TEST("pc-i440fx-acpi-hotplug-bridge-enable",
+            QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE);
+    DO_TEST("q35-acpi-hotplug-bridge-disable",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE);
+    DO_TEST("q35-acpi-hotplug-bridge-enable",
+            QEMU_CAPS_DEVICE_PCI_BRIDGE,
+            QEMU_CAPS_DEVICE_IOH3420,
+            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
+            QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE);
     DO_TEST("misc-disable-suspends",
             QEMU_CAPS_PIIX_DISABLE_S3,
             QEMU_CAPS_PIIX_DISABLE_S4);

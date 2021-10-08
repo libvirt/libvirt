@@ -2044,6 +2044,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_CFPC,
     VIR_DOMAIN_FEATURE_SBBC,
     VIR_DOMAIN_FEATURE_IBS,
+    VIR_DOMAIN_FEATURE_PCI,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -2068,6 +2069,12 @@ typedef enum {
 
     VIR_DOMAIN_HYPERV_LAST
 } virDomainHyperv;
+
+typedef enum {
+    VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG = 0,
+
+    VIR_DOMAIN_PCI_LAST
+} virDomainPCI;
 
 typedef enum {
     VIR_DOMAIN_KVM_HIDDEN = 0,
@@ -2801,6 +2808,7 @@ struct _virDomainDef {
     int features[VIR_DOMAIN_FEATURE_LAST];
     int caps_features[VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST];
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
+    int pci_features[VIR_DOMAIN_PCI_LAST];
     int kvm_features[VIR_DOMAIN_KVM_LAST];
     int msrs_features[VIR_DOMAIN_MSRS_LAST];
     int xen_features[VIR_DOMAIN_XEN_LAST];
@@ -3925,6 +3933,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode);
 VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode);
 VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy);
 VIR_ENUM_DECL(virDomainHyperv);
+VIR_ENUM_DECL(virDomainPCI);
 VIR_ENUM_DECL(virDomainKVM);
 VIR_ENUM_DECL(virDomainXen);
 VIR_ENUM_DECL(virDomainXenPassthroughMode);
