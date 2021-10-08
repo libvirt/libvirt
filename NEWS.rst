@@ -17,6 +17,10 @@ v8.3.0 (unreleased)
 
 * **New features**
 
+  * qemu: Introduce support for virtio-iommu
+
+    This IOMMU device can be used with both Q35 and ARM virt guests.
+
 * **Improvements**
 
 * **Bug fixes**
