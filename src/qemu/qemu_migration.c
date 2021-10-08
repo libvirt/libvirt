@@ -4012,7 +4012,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     g_autofree char *tlsAlias = NULL;
     qemuMigrationIOThread *iothread = NULL;
     VIR_AUTOCLOSE fd = -1;
-    unsigned long migrate_speed = resource ? resource : priv->migMaxBandwidth;
     unsigned long restore_max_bandwidth = priv->migMaxBandwidth;
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
@@ -4026,7 +4025,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     g_autofree char *timestamp = NULL;
     int rc;
 
-    priv->migMaxBandwidth = migrate_speed;
+    if (resource > 0)
+        priv->migMaxBandwidth = resource;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%lx, resource=%lu, "
@@ -4119,7 +4119,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
     if (bwParam &&
         qemuMigrationParamsSetULL(migParams, QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
-                                  migrate_speed * 1024 * 1024) < 0)
+                                  priv->migMaxBandwidth * 1024 * 1024) < 0)
         goto error;
 
     if (qemuMigrationParamsApply(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
@@ -4149,7 +4149,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
             if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
                                                host,
-                                               migrate_speed,
+                                               priv->migMaxBandwidth,
                                                nmigrate_disks,
                                                migrate_disks,
                                                dconn, tlsAlias,
@@ -4197,7 +4197,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     }
 
     if (!bwParam &&
-        qemuMonitorSetMigrationSpeed(priv->mon, migrate_speed) < 0)
+        qemuMonitorSetMigrationSpeed(priv->mon, priv->migMaxBandwidth) < 0)
         goto exit_monitor;
 
     /* connect to the destination qemu if needed */
