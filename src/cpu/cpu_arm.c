@@ -124,6 +124,32 @@ virCPUarmDataClear(virCPUarmData *data)
     g_strfreev(data->features);
 }
 
+static virCPUCompareResult
+virCPUarmDataIsIdentical(const virCPUData *a,
+                         const virCPUData *b)
+{
+    size_t i;
+
+    if (!a || !b)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (a->arch != b->arch)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    if (a->data.arm.pvr != b->data.arm.pvr)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    if (a->data.arm.vendor_id != b->data.arm.vendor_id)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    for (i = 0; i < MAX_CPU_FLAGS; ++i) {
+        if (STRNEQ(a->data.arm.features[i], b->data.arm.features[i]))
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
+
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
+
 static void
 virCPUarmDataFree(virCPUData *cpuData)
 {
@@ -674,4 +700,5 @@ struct cpuArchDriver cpuDriverArm = {
     .baseline = virCPUarmBaseline,
     .update = virCPUarmUpdate,
     .validateFeatures = virCPUarmValidateFeatures,
+    .dataIsIdentical = virCPUarmDataIsIdentical,
 };
