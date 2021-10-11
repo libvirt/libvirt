@@ -9146,6 +9146,7 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
                           smartcard->info.alias);
         break;
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainSmartcardType, smartcard->type);
         return -1;

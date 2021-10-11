@@ -2696,10 +2696,9 @@ virSecuritySELinuxRestoreSecuritySmartcardCallback(virDomainDef *def,
         return virSecuritySELinuxRestoreChardevLabel(mgr, def,
                                                      dev->data.passthru, false);
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown smartcard type %d"),
-                       dev->type);
+        virReportEnumRangeError(virDomainSmartcardType, dev->type);
         return -1;
     }
 
@@ -3103,10 +3102,9 @@ virSecuritySELinuxSetSecuritySmartcardCallback(virDomainDef *def,
         return virSecuritySELinuxSetChardevLabel(mgr, def,
                                                  dev->data.passthru, false);
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown smartcard type %d"),
-                       dev->type);
+        virReportEnumRangeError(virDomainSmartcardType, dev->type);
         return -1;
     }
 

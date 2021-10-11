@@ -2117,6 +2117,7 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
             return -1;
         break;
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainSmartcardType, def->type);
         return -1;

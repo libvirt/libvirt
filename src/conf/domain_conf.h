@@ -1320,7 +1320,7 @@ typedef enum {
 #define VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE "/etc/pki/nssdb"
 
 struct _virDomainSmartcardDef {
-    int type; /* virDomainSmartcardType */
+    virDomainSmartcardType type;
     union {
         /* no extra data for 'host' */
         struct {

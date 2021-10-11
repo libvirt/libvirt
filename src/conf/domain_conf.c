@@ -2884,6 +2884,7 @@ void virDomainSmartcardDefFree(virDomainSmartcardDef *def)
         virObjectUnref(def->data.passthru);
         break;
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
         break;
     }
@@ -11602,7 +11603,6 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
                               unsigned int flags)
 {
     g_autoptr(virDomainSmartcardDef) def = NULL;
-    g_autofree char *mode = NULL;
     g_autofree char *type = NULL;
     g_autofree xmlNodePtr *certificates = NULL;
     int n = 0;
@@ -11611,18 +11611,9 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
     ctxt->node = node;
     def = g_new0(virDomainSmartcardDef, 1);
 
-    mode = virXMLPropString(node, "mode");
-    if (mode == NULL) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing smartcard device mode"));
+    if (virXMLPropEnum(node, "mode", virDomainSmartcardTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &def->type) < 0)
         return NULL;
-    }
-    if ((def->type = virDomainSmartcardTypeFromString(mode)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown smartcard device mode: %s"),
-                       mode);
-        return NULL;
-    }
 
     switch (def->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
@@ -11687,9 +11678,9 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
 
         break;
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("unknown smartcard mode"));
+        virReportEnumRangeError(virDomainSmartcardType, def->type);
         return NULL;
     }
 
@@ -25406,9 +25397,9 @@ virDomainSmartcardDefFormat(virBuffer *buf,
         virDomainChrSourceDefFormat(&childBuf, def->data.passthru, flags);
         break;
 
+    case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected smartcard type %d"), def->type);
+        virReportEnumRangeError(virDomainSmartcardType, def->type);
         return -1;
     }
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
