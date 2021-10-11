@@ -2112,16 +2112,15 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
                            _("this QEMU binary lacks smartcard passthrough mode support"));
             return -1;
         }
+
+        if (qemuValidateDomainChrSourceDef(def->data.passthru, qemuCaps) < 0)
+            return -1;
         break;
 
     default:
         virReportEnumRangeError(virDomainSmartcardType, def->type);
         return -1;
     }
-
-    if (def->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH &&
-        qemuValidateDomainChrSourceDef(def->data.passthru, qemuCaps) < 0)
-        return -1;
 
     return 0;
 }
