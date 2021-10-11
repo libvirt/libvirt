@@ -603,6 +603,23 @@ virCPUppc64DataIsIdentical(const virCPUData *a,
     return VIR_CPU_COMPARE_IDENTICAL;
 }
 
+static virCPUData *
+virCPUppc64DataCopyNew(virCPUData *data)
+{
+    virCPUData *copy;
+    size_t i;
+
+    if (!data)
+        return NULL;
+
+    copy = virCPUDataNew(data->arch);
+    copy->data.ppc64.len = data->data.ppc64.len;
+    for (i = 0; i < copy->data.ppc64.len; ++i)
+        copy->data.ppc64.pvr[i] = data->data.ppc64.pvr[i];
+
+    return copy;
+}
+
 static void
 virCPUppc64DataFree(virCPUData *data)
 {
@@ -768,6 +785,7 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .compare    = virCPUppc64Compare,
     .decode     = ppc64DriverDecode,
     .encode     = NULL,
+    .dataCopyNew = virCPUppc64DataCopyNew,
     .dataFree   = virCPUppc64DataFree,
     .getHost    = virCPUppc64GetHost,
     .baseline   = virCPUppc64Baseline,
