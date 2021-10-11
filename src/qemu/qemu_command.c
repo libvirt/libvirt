@@ -2183,32 +2183,29 @@ qemuBuildFloppyCommandLineControllerOptionsImplicit(virCommand *cmd,
 }
 
 
-static void
+static int
 qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
                                                     unsigned int bootindexA,
                                                     unsigned int bootindexB,
                                                     const char *backendA,
-                                                    const char *backendB)
+                                                    const char *backendB,
+                                                    virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) fdc_opts = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
 
-    virBufferAddLit(&fdc_opts, "isa-fdc,");
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "isa-fdc",
+                                 "S:driveA", backendA,
+                                 "p:bootindexA", bootindexA,
+                                 "S:driveB", backendB,
+                                 "p:bootindexB", bootindexB,
+                                 NULL) < 0)
+        return -1;
 
-    if (backendA)
-        virBufferAsprintf(&fdc_opts, "driveA=%s,", backendA);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
 
-    if (bootindexA > 0)
-        virBufferAsprintf(&fdc_opts, "bootindexA=%u,", bootindexA);
-
-    if (backendB)
-        virBufferAsprintf(&fdc_opts, "driveB=%s,", backendB);
-
-    if (bootindexB > 0)
-        virBufferAsprintf(&fdc_opts, "bootindexB=%u,", bootindexB);
-
-    virBufferTrim(&fdc_opts, ",");
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &fdc_opts);
+    return 0;
 }
 
 
@@ -2251,11 +2248,13 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
         return 0;
 
     if (qemuDomainNeedsFDC(def)) {
-        qemuBuildFloppyCommandLineControllerOptionsExplicit(cmd,
-                                                            bootindexA,
-                                                            bootindexB,
-                                                            backendA,
-                                                            backendB);
+        if (qemuBuildFloppyCommandLineControllerOptionsExplicit(cmd,
+                                                                bootindexA,
+                                                                bootindexB,
+                                                                backendA,
+                                                                backendB,
+                                                                qemuCaps) < 0)
+            return -1;
     } else {
         qemuBuildFloppyCommandLineControllerOptionsImplicit(cmd,
                                                             bootindexA,
