@@ -9980,19 +9980,20 @@ qemuBuildTPMCommandLine(virCommand *cmd,
 
 static int
 qemuBuildTPMProxyCommandLine(virCommand *cmd,
-                             virDomainTPMDef *tpm)
+                             virDomainTPMDef *tpm,
+                             virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    const char *filePath = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
-    filePath = tpm->data.passthrough.source.data.file.path;
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", virDomainTPMModelTypeToString(tpm->model),
+                                 "s:id", tpm->info.alias,
+                                 "s:host-path", tpm->data.passthrough.source.data.file.path,
+                                 NULL) < 0)
+        return -1;
 
-    virCommandAddArg(cmd, "-device");
-    virBufferAsprintf(&buf, "%s,id=%s,host-path=",
-                      virDomainTPMModelTypeToString(tpm->model),
-                      tpm->info.alias);
-    virQEMUBuildBufferEscapeComma(&buf, filePath);
-    virCommandAddArgBuffer(cmd, &buf);
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
@@ -10007,7 +10008,7 @@ qemuBuildTPMsCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->ntpms; i++) {
         if (def->tpms[i]->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
-            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i]) < 0)
+            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i], qemuCaps) < 0)
                 return -1;
         } else if (qemuBuildTPMCommandLine(cmd, def,
                                            def->tpms[i], qemuCaps) < 0) {
