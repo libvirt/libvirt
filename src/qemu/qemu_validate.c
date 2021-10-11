@@ -196,8 +196,8 @@ qemuValidateDomainDefPCIFeature(const virDomainDef *def,
                     return -1;
                 }
 
-                if ((qemuDomainIsQ35(def) && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE)) ||
-                    (!qemuDomainIsQ35(def) && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE))) {
+                if (qemuDomainIsQ35(def) &&
+                    !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("acpi-bridge-hotplug is not available with this QEMU binary"));
                     return -1;

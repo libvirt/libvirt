@@ -202,7 +202,6 @@
   <flag name='input-linux'/>
   <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
-  <flag name='piix4.acpi-hotplug-bridge'/>
   <version>4000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100240</microcodeVersion>

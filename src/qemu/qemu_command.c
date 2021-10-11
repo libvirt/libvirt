@@ -6151,8 +6151,7 @@ qemuBuildPMCommandLine(virCommand *cmd,
     if (acpihp_br != VIR_TRISTATE_SWITCH_ABSENT) {
         const char *pm_object = NULL;
 
-        if (!qemuDomainIsQ35(def) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE))
+        if (!qemuDomainIsQ35(def))
             pm_object = "PIIX4_PM";
 
         if (qemuDomainIsQ35(def) &&
