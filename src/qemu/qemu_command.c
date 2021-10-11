@@ -2153,23 +2153,79 @@ qemuCommandAddExtDevice(virCommand *cmd,
     return 0;
 }
 
+
+static void
+qemuBuildFloppyCommandLineControllerOptionsImplicit(virCommand *cmd,
+                                                    unsigned int bootindexA,
+                                                    unsigned int bootindexB,
+                                                    const char *backendA,
+                                                    const char *backendB)
+{
+    if (backendA) {
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "isa-fdc.driveA=%s", backendA);
+    }
+
+    if (bootindexA > 0) {
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "isa-fdc.bootindexA=%u", bootindexA);
+    }
+
+    if (backendB) {
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "isa-fdc.driveB=%s", backendB);
+    }
+
+    if (bootindexB > 0) {
+        virCommandAddArg(cmd, "-global");
+        virCommandAddArgFormat(cmd, "isa-fdc.bootindexB=%u", bootindexB);
+    }
+}
+
+
+static void
+qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
+                                                    unsigned int bootindexA,
+                                                    unsigned int bootindexB,
+                                                    const char *backendA,
+                                                    const char *backendB)
+{
+    g_auto(virBuffer) fdc_opts = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&fdc_opts, "isa-fdc,");
+
+    if (backendA)
+        virBufferAsprintf(&fdc_opts, "driveA=%s,", backendA);
+
+    if (bootindexA > 0)
+        virBufferAsprintf(&fdc_opts, "bootindexA=%u,", bootindexA);
+
+    if (backendB)
+        virBufferAsprintf(&fdc_opts, "driveB=%s,", backendB);
+
+    if (bootindexB > 0)
+        virBufferAsprintf(&fdc_opts, "bootindexB=%u,", bootindexB);
+
+    virBufferTrim(&fdc_opts, ",");
+    virCommandAddArg(cmd, "-device");
+    virCommandAddArgBuffer(cmd, &fdc_opts);
+}
+
+
 static int
 qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
                                             const virDomainDef *def,
                                             virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) fdc_opts = VIR_BUFFER_INITIALIZER;
-    bool explicitfdc = qemuDomainNeedsFDC(def);
+    unsigned int bootindexA = 0;
+    unsigned int bootindexB = 0;
+    g_autofree char *backendA = NULL;
+    g_autofree char *backendB = NULL;
     bool hasfloppy = false;
-    char driveLetter;
     size_t i;
-
-    virBufferAddLit(&fdc_opts, "isa-fdc,");
 
     for (i = 0; i < def->ndisks; i++) {
         g_autofree char *backendAlias = NULL;
-        g_autofree char *backendStr = NULL;
-        g_autofree char *bootindexStr = NULL;
         virDomainDiskDef *disk = def->disks[i];
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
@@ -2177,45 +2233,35 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
 
         hasfloppy = true;
 
-        if (disk->info.addr.drive.unit)
-            driveLetter = 'B';
-        else
-            driveLetter = 'A';
-
-        if (disk->info.effectiveBootIndex > 0)
-            bootindexStr = g_strdup_printf("bootindex%c=%u", driveLetter,
-                                           disk->info.effectiveBootIndex);
-
         /* with -blockdev we setup the floppy device and it's backend with -device */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-            if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-                return -1;
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+            qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
+            return -1;
 
-            if (backendAlias)
-                backendStr = g_strdup_printf("drive%c=%s", driveLetter, backendAlias);
-        }
-
-        if (!explicitfdc) {
-            if (backendStr) {
-                virCommandAddArg(cmd, "-global");
-                virCommandAddArgFormat(cmd, "isa-fdc.%s", backendStr);
-            }
-
-            if (bootindexStr) {
-                virCommandAddArg(cmd, "-global");
-                virCommandAddArgFormat(cmd, "isa-fdc.%s", bootindexStr);
-            }
+        if (disk->info.addr.drive.unit) {
+            bootindexB = disk->info.effectiveBootIndex;
+            backendB = g_steal_pointer(&backendAlias);
         } else {
-            virBufferStrcat(&fdc_opts, backendStr, ",", NULL);
-            virBufferStrcat(&fdc_opts, bootindexStr, ",", NULL);
+            bootindexA = disk->info.effectiveBootIndex;
+            backendA = g_steal_pointer(&backendAlias);
         }
     }
 
-    if (explicitfdc && hasfloppy) {
-        /* Newer Q35 machine types require an explicit FDC controller */
-        virBufferTrim(&fdc_opts, ",");
-        virCommandAddArg(cmd, "-device");
-        virCommandAddArgBuffer(cmd, &fdc_opts);
+    if (!hasfloppy)
+        return 0;
+
+    if (qemuDomainNeedsFDC(def)) {
+        qemuBuildFloppyCommandLineControllerOptionsExplicit(cmd,
+                                                            bootindexA,
+                                                            bootindexB,
+                                                            backendA,
+                                                            backendB);
+    } else {
+        qemuBuildFloppyCommandLineControllerOptionsImplicit(cmd,
+                                                            bootindexA,
+                                                            bootindexB,
+                                                            backendA,
+                                                            backendB);
     }
 
     return 0;
