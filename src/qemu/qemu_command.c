@@ -10097,14 +10097,22 @@ qemuBuildSecCommandLine(virDomainObj *vm, virCommand *cmd,
 
 static int
 qemuBuildVMCoreInfoCommandLine(virCommand *cmd,
-                               const virDomainDef *def)
+                               const virDomainDef *def,
+                               virQEMUCaps *qemuCaps)
 {
-    virTristateSwitch vmci = def->features[VIR_DOMAIN_FEATURE_VMCOREINFO];
+    g_autoptr(virJSONValue) props = NULL;
 
-    if (vmci != VIR_TRISTATE_SWITCH_ON)
+    if (def->features[VIR_DOMAIN_FEATURE_VMCOREINFO] != VIR_TRISTATE_SWITCH_ON)
         return 0;
 
-    virCommandAddArgList(cmd, "-device", "vmcoreinfo", NULL);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "vmcoreinfo",
+                                 NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -10785,7 +10793,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildNVRAMCommandLine(cmd, def) < 0)
         return NULL;
 
-    if (qemuBuildVMCoreInfoCommandLine(cmd, def) < 0)
+    if (qemuBuildVMCoreInfoCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildSecCommandLine(vm, cmd, def->sec) < 0)
