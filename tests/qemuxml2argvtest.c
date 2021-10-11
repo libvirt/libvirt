@@ -2559,9 +2559,8 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
-    DO_TEST("pc-i440fx-acpi-root-hotplug-disable",
-            QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG);
-    DO_TEST_PARSE_ERROR_NOCAPS("pc-i440fx-acpi-root-hotplug-disable");
+    DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-disable");
+    DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-disable", "5.1.0");
     DO_TEST("q35-acpi-hotplug-bridge-disable",
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
