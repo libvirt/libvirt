@@ -2093,8 +2093,7 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU binary lacks smartcard host "
-                             "mode support"));
+                           _("this QEMU binary lacks smartcard host mode support"));
             return -1;
         }
         break;
@@ -2102,8 +2101,7 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU binary lacks smartcard host "
-                             "mode support"));
+                           _("this QEMU binary lacks smartcard host mode support"));
             return -1;
         }
         break;
@@ -2111,8 +2109,7 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_PASSTHRU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this QEMU binary lacks smartcard "
-                             "passthrough mode support"));
+                           _("this QEMU binary lacks smartcard passthrough mode support"));
             return -1;
         }
         break;
