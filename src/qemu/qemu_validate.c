@@ -179,9 +179,6 @@ qemuValidateDomainDefPCIFeature(const virDomainDef *def,
                                 int feature)
 {
     size_t i;
-    bool q35Dom = qemuDomainIsQ35(def);
-    bool q35cap = q35Dom && virQEMUCapsGet(qemuCaps,
-                                           QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE);
 
     if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
         return 0;
@@ -198,9 +195,9 @@ qemuValidateDomainDefPCIFeature(const virDomainDef *def,
                                    virArchToString(def->os.arch));
                     return -1;
                 }
-                if (!q35cap &&
-                    !virQEMUCapsGet(qemuCaps,
-                                    QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE)) {
+
+                if ((qemuDomainIsQ35(def) && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE)) ||
+                    (!qemuDomainIsQ35(def) && !virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE))) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("acpi-bridge-hotplug is not available with this QEMU binary"));
                     return -1;
