@@ -11063,7 +11063,6 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  * qemuBuildStorageSourceAttachPrepareDrive:
  * @disk: disk object to prepare
  * @qemuCaps: qemu capabilities object
- * @driveBoot: bootable flag for disks which don't have -device part
  *
  * Prepare qemuBlockStorageSourceAttachData *for use with the old approach
  * using -drive/drive_add. See qemuBlockStorageSourceAttachPrepareBlockdev.
