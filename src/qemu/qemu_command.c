@@ -9073,18 +9073,6 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
 
     smartcard = def->smartcards[0];
 
-    /* -device usb-ccid was already emitted along with other
-     * controllers.  For now, qemu handles only one smartcard.  */
-    if (def->nsmartcards > 1 ||
-        smartcard->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID ||
-        smartcard->info.addr.ccid.controller != 0 ||
-        smartcard->info.addr.ccid.slot != 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("this QEMU binary lacks multiple smartcard "
-                         "support"));
-        return -1;
-    }
-
     switch (smartcard->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
         virBufferAddLit(&opt, "ccid-card-emulated,backend=nss-emulated");

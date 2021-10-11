@@ -2086,10 +2086,20 @@ qemuValidateDomainChrDef(const virDomainChrDef *dev,
 
 
 static int
-qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
+qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *smartcard,
+                               const virDomainDef *def,
                                virQEMUCaps *qemuCaps)
 {
-    switch (def->type) {
+    if (def->nsmartcards > 1 ||
+        smartcard->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID ||
+        smartcard->info.addr.ccid.controller != 0 ||
+        smartcard->info.addr.ccid.slot != 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("this QEMU binary lacks multiple smartcard support"));
+        return -1;
+    }
+
+    switch (smartcard->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CCID_EMULATED)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2113,13 +2123,13 @@ qemuValidateDomainSmartcardDef(const virDomainSmartcardDef *def,
             return -1;
         }
 
-        if (qemuValidateDomainChrSourceDef(def->data.passthru, qemuCaps) < 0)
+        if (qemuValidateDomainChrSourceDef(smartcard->data.passthru, qemuCaps) < 0)
             return -1;
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
     default:
-        virReportEnumRangeError(virDomainSmartcardType, def->type);
+        virReportEnumRangeError(virDomainSmartcardType, smartcard->type);
         return -1;
     }
 
@@ -5105,7 +5115,7 @@ qemuValidateDomainDeviceDef(const virDomainDeviceDef *dev,
         return qemuValidateDomainChrDef(dev->data.chr, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_SMARTCARD:
-        return qemuValidateDomainSmartcardDef(dev->data.smartcard, qemuCaps);
+        return qemuValidateDomainSmartcardDef(dev->data.smartcard, def, qemuCaps);
 
     case VIR_DOMAIN_DEVICE_RNG:
         return qemuValidateDomainRNGDef(dev->data.rng, qemuCaps);
