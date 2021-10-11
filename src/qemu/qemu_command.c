@@ -6144,19 +6144,26 @@ qemuBuildSysinfoCommandLine(virCommand *cmd,
 
 static int
 qemuBuildVMGenIDCommandLine(virCommand *cmd,
-                            const virDomainDef *def)
+                            const virDomainDef *def,
+                            virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
     char guid[VIR_UUID_STRING_BUFLEN];
 
     if (!def->genidRequested)
         return 0;
 
     virUUIDFormat(def->genid, guid);
-    virBufferAsprintf(&opts, "vmgenid,guid=%s,id=vmgenid0", guid);
 
-    virCommandAddArg(cmd, "-device");
-    virCommandAddArgBuffer(cmd, &opts);
+    if (virJSONValueObjectCreate(&props,
+                                 "s:driver", "vmgenid",
+                                 "s:guid", guid,
+                                 "s:id", "vmgenid0",
+                                 NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
@@ -10658,7 +10665,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildSysinfoCommandLine(cmd, def) < 0)
         return NULL;
 
-    if (qemuBuildVMGenIDCommandLine(cmd, def) < 0)
+    if (qemuBuildVMGenIDCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     /*
