@@ -6486,7 +6486,8 @@ qemuBuildBootCommandLine(virCommand *cmd,
 
 static int
 qemuBuildIOMMUCommandLine(virCommand *cmd,
-                          const virDomainDef *def)
+                          const virDomainDef *def,
+                          virQEMUCaps *qemuCaps)
 {
     const virDomainIOMMUDef *iommu = def->iommu;
 
@@ -6495,31 +6496,22 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
 
     switch (iommu->model) {
     case VIR_DOMAIN_IOMMU_MODEL_INTEL: {
-        g_auto(virBuffer) opts = VIR_BUFFER_INITIALIZER;
+        g_autoptr(virJSONValue) props = NULL;
 
-        virBufferAddLit(&opts, "intel-iommu");
-        if (iommu->intremap != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&opts, ",intremap=%s",
-                              virTristateSwitchTypeToString(iommu->intremap));
-        }
-        if (iommu->caching_mode != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&opts, ",caching-mode=%s",
-                              virTristateSwitchTypeToString(iommu->caching_mode));
-        }
-        if (iommu->eim != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&opts, ",eim=%s",
-                              virTristateSwitchTypeToString(iommu->eim));
-        }
-        if (iommu->iotlb != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(&opts, ",device-iotlb=%s",
-                              virTristateSwitchTypeToString(iommu->iotlb));
-        }
-        if (iommu->aw_bits > 0)
-            virBufferAsprintf(&opts, ",aw-bits=%d", iommu->aw_bits);
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "intel-iommu",
+                                     "S:intremap", qemuOnOffAuto(iommu->intremap),
+                                     "T:caching-mode", iommu->caching_mode,
+                                     "S:eim", qemuOnOffAuto(iommu->eim),
+                                     "T:device-iotlb", iommu->iotlb,
+                                     "z:aw-bits", iommu->aw_bits,
+                                     NULL) < 0)
+            return -1;
 
-        virCommandAddArg(cmd, "-device");
-        virCommandAddArgBuffer(cmd, &opts);
-        break;
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+            return -1;
+
+        return 0;
     }
 
     case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
@@ -10705,7 +10697,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildBootCommandLine(cmd, def) < 0)
         return NULL;
 
-    if (qemuBuildIOMMUCommandLine(cmd, def) < 0)
+    if (qemuBuildIOMMUCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildGlobalControllerCommandLine(cmd, def) < 0)
