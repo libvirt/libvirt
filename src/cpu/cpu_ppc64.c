@@ -578,6 +578,31 @@ ppc64DriverDecode(virCPUDef *cpu,
     return 0;
 }
 
+static virCPUCompareResult
+virCPUppc64DataIsIdentical(const virCPUData *a,
+                           const virCPUData *b)
+{
+    size_t i;
+
+    if (!a || !b)
+        return VIR_CPU_COMPARE_ERROR;
+
+    if (a->arch != b->arch)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    if (a->data.ppc64.len != b->data.ppc64.len)
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
+
+    for (i = 0; i < a->data.ppc64.len; ++i) {
+        if (a->data.ppc64.pvr[i].mask != b->data.ppc64.pvr[i].mask)
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+        if (a->data.ppc64.pvr[i].value != b->data.ppc64.pvr[i].value)
+            return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
+
+    return VIR_CPU_COMPARE_IDENTICAL;
+}
+
 static void
 virCPUppc64DataFree(virCPUData *data)
 {
@@ -749,4 +774,5 @@ struct cpuArchDriver cpuDriverPPC64 = {
     .update     = virCPUppc64Update,
     .getModels  = virCPUppc64DriverGetModels,
     .convertLegacy = virCPUppc64ConvertLegacy,
+    .dataIsIdentical = virCPUppc64DataIsIdentical,
 };
