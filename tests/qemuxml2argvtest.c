@@ -2560,10 +2560,15 @@ mymain(void)
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE, QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4);
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-disable");
+    DO_TEST_CAPS_LATEST("pc-i440fx-acpi-root-hotplug-enable");
     DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-disable", "5.1.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("pc-i440fx-acpi-root-hotplug-enable", "5.1.0");
     DO_TEST_CAPS_LATEST("q35-acpi-hotplug-bridge-disable");
+    DO_TEST_CAPS_LATEST("q35-acpi-hotplug-bridge-enable");
     DO_TEST_CAPS_LATEST("pc-i440fx-acpi-hotplug-bridge-disable");
+    DO_TEST_CAPS_LATEST("pc-i440fx-acpi-hotplug-bridge-enable");
     DO_TEST_CAPS_VER_PARSE_ERROR("q35-acpi-hotplug-bridge-disable", "6.0.0");
+    DO_TEST_CAPS_VER_PARSE_ERROR("q35-acpi-hotplug-bridge-enable", "6.0.0");
     /* verify that we fail when acpi-bridge-hotplug option is specified for
      * archs other than x86
      */
