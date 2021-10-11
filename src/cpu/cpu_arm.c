@@ -150,6 +150,25 @@ virCPUarmDataIsIdentical(const virCPUData *a,
     return VIR_CPU_COMPARE_IDENTICAL;
 }
 
+static virCPUData *
+virCPUarmDataCopyNew(virCPUData *data)
+{
+    virCPUData *copy;
+    size_t i;
+
+    if (!data)
+        return NULL;
+
+    copy = virCPUDataNew(data->arch);
+    copy->data.arm.pvr = data->data.arm.pvr;
+    copy->data.arm.vendor_id = data->data.arm.vendor_id;
+    copy->data.arm.features = g_new0(char *, MAX_CPU_FLAGS + 1);
+    for (i = 0; i < MAX_CPU_FLAGS; ++i)
+        copy->data.arm.features[i] = g_strdup(data->data.arm.features[i]);
+
+    return copy;
+}
+
 static void
 virCPUarmDataFree(virCPUData *cpuData)
 {
@@ -696,6 +715,7 @@ struct cpuArchDriver cpuDriverArm = {
 #endif
     .decode = NULL,
     .encode = NULL,
+    .dataCopyNew = virCPUarmDataCopyNew,
     .dataFree = virCPUarmDataFree,
     .baseline = virCPUarmBaseline,
     .update = virCPUarmUpdate,
