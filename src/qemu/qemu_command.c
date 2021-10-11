@@ -221,7 +221,7 @@ qemuBuildNetdevCommandlineFromJSON(virCommand *cmd,
 }
 
 
-static G_GNUC_UNUSED int
+static int
 qemuBuildDeviceCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
                                    virQEMUCaps *qemuCaps)
