@@ -39,12 +39,11 @@
 #include "virxml.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
-#if defined(__aarch64__)
+
 /* Shift bit mask for parsing cpu flags */
-# define BIT_SHIFTS(n) (1UL << (n))
+#define BIT_SHIFTS(n) (1UL << (n))
 /* The current max number of cpu flags on ARM is 32 */
-# define MAX_CPU_FLAGS 32
-#endif
+#define MAX_CPU_FLAGS 32
 
 
 VIR_LOG_INIT("cpu.cpu_arm");
