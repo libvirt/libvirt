@@ -9056,16 +9056,10 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
                               virQEMUCaps *qemuCaps,
                               bool chardevStdioLogd)
 {
-    size_t i;
+    g_autoptr(virJSONValue) props = NULL;
     virDomainSmartcardDef *smartcard;
-    g_autofree char *devstr = NULL;
-    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
-    const char *database;
     const char *contAlias = NULL;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    g_autofree char *bus = NULL;
 
     if (!def->nsmartcards)
         return 0;
@@ -9074,37 +9068,56 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
 
     switch (smartcard->type) {
     case VIR_DOMAIN_SMARTCARD_TYPE_HOST:
-        virBufferAddLit(&opt, "ccid-card-emulated,backend=nss-emulated");
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "ccid-card-emulated",
+                                     "s:backend", "nss-emulated",
+                                     NULL) < 0)
+            return -1;
+
         break;
 
-    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES:
-        virBufferAddLit(&opt, "ccid-card-emulated,backend=certificates");
-        for (i = 0; i < VIR_DOMAIN_SMARTCARD_NUM_CERTIFICATES; i++) {
-            virBufferAsprintf(&opt, ",cert%zu=", i + 1);
-            virQEMUBuildBufferEscapeComma(&opt, smartcard->data.cert.file[i]);
-        }
-        if (smartcard->data.cert.database) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_HOST_CERTIFICATES: {
+        const char *database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
+
+        if (smartcard->data.cert.database)
             database = smartcard->data.cert.database;
-        } else {
-            database = VIR_DOMAIN_SMARTCARD_DEFAULT_DATABASE;
-        }
-        virBufferAddLit(&opt, ",db=");
-        virQEMUBuildBufferEscapeComma(&opt, database);
+
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "ccid-card-emulated",
+                                     "s:backend", "certificates",
+                                     "s:cert1", smartcard->data.cert.file[0],
+                                     "s:cert2", smartcard->data.cert.file[1],
+                                     "s:cert3", smartcard->data.cert.file[2],
+                                     "s:db", database,
+                                     NULL) < 0)
+            return -1;
+    }
         break;
 
-    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH:
-        if (!(devstr = qemuBuildChrChardevStr(logManager, secManager,
-                                              cmd, cfg, def,
-                                              smartcard->data.passthru,
-                                              smartcard->info.alias,
-                                              qemuCaps, cdevflags))) {
+    case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH: {
+        unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT | QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
+        g_autofree char *chardevstr = NULL;
+        g_autofree char *chardevalias = g_strdup_printf("char%s", smartcard->info.alias);
+
+        if (chardevStdioLogd)
+            cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+
+        if (!(chardevstr = qemuBuildChrChardevStr(logManager, secManager,
+                                                  cmd, cfg, def,
+                                                  smartcard->data.passthru,
+                                                  smartcard->info.alias,
+                                                  qemuCaps, cdevflags))) {
             return -1;
         }
-        virCommandAddArg(cmd, "-chardev");
-        virCommandAddArg(cmd, devstr);
 
-        virBufferAsprintf(&opt, "ccid-card-passthru,chardev=char%s",
-                          smartcard->info.alias);
+        virCommandAddArgList(cmd, "-chardev", chardevstr, NULL);
+
+        if (virJSONValueObjectCreate(&props,
+                                     "s:driver", "ccid-card-passthru",
+                                     "s:chardev", chardevalias,
+                                     NULL) < 0)
+            return -1;
+    }
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_LAST:
@@ -9118,9 +9131,16 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
                                                    smartcard->info.addr.ccid.controller)))
         return -1;
 
-    virCommandAddArg(cmd, "-device");
-    virBufferAsprintf(&opt, ",id=%s,bus=%s.0", smartcard->info.alias, contAlias);
-    virCommandAddArgBuffer(cmd, &opt);
+    bus = g_strdup_printf("%s.0", contAlias);
+
+    if (virJSONValueObjectAdd(props,
+                              "s:id", smartcard->info.alias,
+                              "s:bus", bus,
+                              NULL) < 0)
+        return -1;
+
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        return -1;
 
     return 0;
 }
