@@ -40,6 +40,10 @@ v7.9.0 (unreleased)
     domain definition when the guest was first started).This setting is only
     applicable for x86 guests using qemu driver.
 
+  * Support hotplug and hotunplug for virtiofs
+
+    Filesystems backed by virtiofsd can now be hotplugged and hotunplugged.
+
 * **Improvements**
 
   * Use of JSON syntax with ``-device`` with upcoming QEMU-6.2
