@@ -3455,7 +3455,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
 
     charAlias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
 
-    if (qemuBuildVHostUserFsDevProps(fs, vm->def, charAlias, priv) < 0)
+    if (!(devprops = qemuBuildVHostUserFsDevProps(fs, vm->def, charAlias, priv)))
         goto cleanup;
 
     if (!fs->sock) {
