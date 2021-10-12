@@ -1046,26 +1046,22 @@ x86ParseCPUID(xmlNodePtr node,
 
 
 static int
-x86ParseMSR(xmlXPathContextPtr ctxt,
+x86ParseMSR(xmlNodePtr node,
             virCPUx86DataItem *item)
 {
-    virCPUx86MSR *msr;
-    unsigned long index;
-    unsigned long eax;
-    unsigned long edx;
+    virCPUx86MSR msr;
 
-    memset(item, 0, sizeof(*item));
+    memset(&msr, 0, sizeof(msr));
 
-    if (virXPathULongHex("string(@index)", ctxt, &index) < 0 ||
-        virXPathULongHex("string(@eax)", ctxt, &eax) < 0 ||
-        virXPathULongHex("string(@edx)", ctxt, &edx) < 0)
+    if (virXMLPropUInt(node, "index", 0, VIR_XML_PROP_REQUIRED, &msr.index) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "eax", 0, VIR_XML_PROP_REQUIRED, &msr.eax) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "edx", 0, VIR_XML_PROP_REQUIRED, &msr.edx) < 0)
         return -1;
 
     item->type = VIR_CPU_X86_DATA_MSR;
-    msr = &item->data.msr;
-    msr->index = index;
-    msr->eax = eax;
-    msr->edx = edx;
+    item->data.msr = msr;
     return 0;
 }
 
@@ -1118,7 +1114,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
                 return -1;
             }
         } else {
-            if (x86ParseMSR(ctxt, &item) < 0) {
+            if (x86ParseMSR(ctxt->node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid msr[%zu] in %s feature"),
                                i, feature->name);
@@ -1807,7 +1803,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
                 return NULL;
             }
         } else {
-            if (x86ParseMSR(ctxt, &item) < 0) {
+            if (x86ParseMSR(ctxt->node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("failed to parse msr[%zu]"), i);
                 return NULL;
