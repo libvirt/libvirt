@@ -1839,7 +1839,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 {
     virQEMUDriver *driver = domain->conn->privateData;
     virDomainSnapshotPtr snapshot = NULL;
-    bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
@@ -1886,7 +1885,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
 
-    if (redefine) {
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         snapshot = qemuSnapshotRedefine(vm, domain, def, driver, cfg, flags);
     } else {
         snapshot = qemuSnapshotCreate(vm, domain, def, driver, cfg, flags);
