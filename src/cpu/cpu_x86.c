@@ -1067,16 +1067,50 @@ x86ParseMSR(xmlNodePtr node,
 
 
 static int
+x86ParseDataItemList(virCPUx86Data *cpudata,
+                     xmlNodePtr node)
+{
+    size_t i;
+
+    if (xmlChildElementCount(node) <= 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("no x86 CPU data found"));
+        return -1;
+    }
+
+    node = xmlFirstElementChild(node);
+    for (i = 0; node; ++i) {
+        virCPUx86DataItem item;
+
+        if (virXMLNodeNameEqual(node, "cpuid")) {
+            if (x86ParseCPUID(node, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid cpuid[%zu]"), i);
+                return -1;
+            }
+        } else {
+            if (x86ParseMSR(node, &item) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Invalid msr[%zu]"), i);
+                return -1;
+            }
+        }
+
+        if (virCPUx86DataAddItem(cpudata, &item) < 0)
+            return -1;
+
+        node = xmlNextElementSibling(node);
+    }
+
+    return 0;
+}
+
+static int
 x86FeatureParse(xmlXPathContextPtr ctxt,
                 const char *name,
                 void *data)
 {
     virCPUx86Map *map = data;
-    g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virCPUx86Feature) feature = NULL;
-    virCPUx86DataItem item;
-    size_t i;
-    int n;
     g_autofree char *str = NULL;
 
     feature = g_new0(virCPUx86Feature, 1);
@@ -1093,38 +1127,8 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     if (STREQ_NULLABLE(str, "no"))
         feature->migratable = false;
 
-    n = virXPathNodeSet("./cpuid|./msr", ctxt, &nodes);
-    if (n < 0)
+    if (x86ParseDataItemList(&feature->data, ctxt->node) < 0)
         return -1;
-
-    if (n == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Missing cpuid or msr element in feature %s"),
-                       feature->name);
-        return -1;
-    }
-
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
-            if (x86ParseCPUID(ctxt->node, &item) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid cpuid[%zu] in %s feature"),
-                               i, feature->name);
-                return -1;
-            }
-        } else {
-            if (x86ParseMSR(ctxt->node, &item) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid msr[%zu] in %s feature"),
-                               i, feature->name);
-                return -1;
-            }
-        }
-
-        if (virCPUx86DataAddItem(&feature->data, &item))
-            return -1;
-    }
 
     if (!feature->migratable)
         VIR_APPEND_ELEMENT_COPY(map->migrate_blockers, map->nblockers, feature);
@@ -1778,41 +1782,13 @@ virCPUx86DataFormat(const virCPUData *data)
 static virCPUData *
 virCPUx86DataParse(xmlXPathContextPtr ctxt)
 {
-    g_autofree xmlNodePtr *nodes = NULL;
     g_autoptr(virCPUData) cpuData = NULL;
-    virCPUx86DataItem item;
-    size_t i;
-    int n;
-
-    n = virXPathNodeSet("/cpudata/cpuid|/cpudata/msr", ctxt, &nodes);
-    if (n <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("no x86 CPU data found"));
-        return NULL;
-    }
 
     if (!(cpuData = virCPUDataNew(VIR_ARCH_X86_64)))
         return NULL;
 
-    for (i = 0; i < n; i++) {
-        ctxt->node = nodes[i];
-        if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
-            if (x86ParseCPUID(ctxt->node, &item) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to parse cpuid[%zu]"), i);
-                return NULL;
-            }
-        } else {
-            if (x86ParseMSR(ctxt->node, &item) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("failed to parse msr[%zu]"), i);
-                return NULL;
-            }
-        }
-
-        if (virCPUx86DataAdd(cpuData, &item) < 0)
-            return NULL;
-    }
+    if (x86ParseDataItemList(&cpuData->data.x86, ctxt->node) < 0)
+        return NULL;
 
     return g_steal_pointer(&cpuData);
 }
