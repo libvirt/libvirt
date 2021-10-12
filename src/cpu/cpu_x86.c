@@ -1021,37 +1021,26 @@ x86FeatureNames(virCPUx86Map *map,
 
 
 static int
-x86ParseCPUID(xmlXPathContextPtr ctxt,
+x86ParseCPUID(xmlNodePtr node,
               virCPUx86DataItem *item)
 {
-    virCPUx86CPUID *cpuid;
-    unsigned long eax_in, ecx_in;
-    unsigned long eax, ebx, ecx, edx;
-    int ret_eax_in, ret_ecx_in, ret_eax, ret_ebx, ret_ecx, ret_edx;
+    virCPUx86CPUID cpuid = { 0 };
 
-    memset(item, 0, sizeof(*item));
-
-    eax_in = ecx_in = 0;
-    eax = ebx = ecx = edx = 0;
-    ret_eax_in = virXPathULongHex("string(@eax_in)", ctxt, &eax_in);
-    ret_ecx_in = virXPathULongHex("string(@ecx_in)", ctxt, &ecx_in);
-    ret_eax = virXPathULongHex("string(@eax)", ctxt, &eax);
-    ret_ebx = virXPathULongHex("string(@ebx)", ctxt, &ebx);
-    ret_ecx = virXPathULongHex("string(@ecx)", ctxt, &ecx);
-    ret_edx = virXPathULongHex("string(@edx)", ctxt, &edx);
-
-    if (ret_eax_in < 0 || ret_ecx_in == -2 ||
-        ret_eax == -2 || ret_ebx == -2 || ret_ecx == -2 || ret_edx == -2)
+    if (virXMLPropUInt(node, "eax_in", 0, VIR_XML_PROP_REQUIRED, &cpuid.eax_in) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "ecx_in", 0, VIR_XML_PROP_NONE, &cpuid.ecx_in) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "eax", 0, VIR_XML_PROP_NONE, &cpuid.eax) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "ebx", 0, VIR_XML_PROP_NONE, &cpuid.ebx) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "ecx", 0, VIR_XML_PROP_NONE, &cpuid.ecx) < 0)
+        return -1;
+    if (virXMLPropUInt(node, "edx", 0, VIR_XML_PROP_NONE, &cpuid.edx) < 0)
         return -1;
 
     item->type = VIR_CPU_X86_DATA_CPUID;
-    cpuid = &item->data.cpuid;
-    cpuid->eax_in = eax_in;
-    cpuid->ecx_in = ecx_in;
-    cpuid->eax = eax;
-    cpuid->ebx = ebx;
-    cpuid->ecx = ecx;
-    cpuid->edx = edx;
+    item->data.cpuid = cpuid;
     return 0;
 }
 
@@ -1122,7 +1111,7 @@ x86FeatureParse(xmlXPathContextPtr ctxt,
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
-            if (x86ParseCPUID(ctxt, &item) < 0) {
+            if (x86ParseCPUID(ctxt->node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Invalid cpuid[%zu] in %s feature"),
                                i, feature->name);
@@ -1812,7 +1801,7 @@ virCPUx86DataParse(xmlXPathContextPtr ctxt)
     for (i = 0; i < n; i++) {
         ctxt->node = nodes[i];
         if (virXMLNodeNameEqual(nodes[i], "cpuid")) {
-            if (x86ParseCPUID(ctxt, &item) < 0) {
+            if (x86ParseCPUID(ctxt->node, &item) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("failed to parse cpuid[%zu]"), i);
                 return NULL;
