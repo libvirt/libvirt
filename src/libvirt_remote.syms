@@ -221,6 +221,7 @@ virNetServerServiceNewTCP;
 virNetServerServiceNewUNIX;
 virNetServerServicePreExecRestart;
 virNetServerServiceSetDispatcher;
+virNetServerServiceTimerActive;
 virNetServerServiceToggle;
 
 

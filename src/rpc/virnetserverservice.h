@@ -78,3 +78,5 @@ void virNetServerServiceToggle(virNetServerService *svc,
                                bool enabled);
 
 void virNetServerServiceClose(virNetServerService *svc);
+
+bool virNetServerServiceTimerActive(virNetServerService *svc);

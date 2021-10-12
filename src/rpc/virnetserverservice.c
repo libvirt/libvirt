@@ -43,6 +43,8 @@ struct _virNetServerService {
     int auth;
     bool readonly;
     size_t nrequests_client_max;
+    int timer;
+    bool timerActive;
 
     virNetTLSContext *tls;
 
@@ -71,9 +73,25 @@ static void virNetServerServiceAccept(virNetSocket *sock,
 {
     virNetServerService *svc = opaque;
     virNetSocket *clientsock = NULL;
+    int rc;
 
-    if (virNetSocketAccept(sock, &clientsock) < 0)
+    rc = virNetSocketAccept(sock, &clientsock);
+    if (rc < 0) {
+        if (rc == -2) {
+            /* Could not accept new client due to EMFILE. Suspend listening on
+             * the socket and set up a timer to enable it later. Hopefully,
+             * some FDs will be closed meanwhile. */
+            VIR_DEBUG("Temporarily suspending listening on svc=%p because accept() on sock=%p failed (errno=%d)",
+                      svc, sock, errno);
+
+            virNetServerServiceToggle(svc, false);
+
+            svc->timerActive = true;
+            /* Retry in 5 seconds. */
+            virEventUpdateTimeout(svc->timer, 5 * 1000);
+        }
         goto cleanup;
+    }
 
     if (!clientsock) /* Connection already went away */
         goto cleanup;
@@ -85,6 +103,21 @@ static void virNetServerServiceAccept(virNetSocket *sock,
 
  cleanup:
     virObjectUnref(clientsock);
+}
+
+
+static void
+virNetServerServiceTimerFunc(int timer,
+                             void *opaque)
+{
+    virNetServerService *svc = opaque;
+
+    VIR_DEBUG("Resuming listening on service svc=%p after previous suspend", svc);
+
+    virNetServerServiceToggle(svc, true);
+
+    virEventUpdateTimeout(timer, -1);
+    svc->timerActive = false;
 }
 
 
@@ -116,6 +149,14 @@ virNetServerServiceNewSocket(virNetSocket **socks,
     svc->readonly = readonly;
     svc->nrequests_client_max = nrequests_client_max;
     svc->tls = virObjectRef(tls);
+
+    virObjectRef(svc);
+    svc->timer = virEventAddTimeout(-1, virNetServerServiceTimerFunc,
+                                    svc, virObjectFreeCallback);
+    if (svc->timer < 0) {
+        virObjectUnref(svc);
+        goto error;
+    }
 
     for (i = 0; i < svc->nsocks; i++) {
         if (virNetSocketListen(svc->socks[i], max_queued_clients) < 0)
@@ -407,6 +448,9 @@ void virNetServerServiceDispose(void *obj)
     virNetServerService *svc = obj;
     size_t i;
 
+    if (svc->timer >= 0)
+        virEventRemoveTimeout(svc->timer);
+
     for (i = 0; i < svc->nsocks; i++)
        virObjectUnref(svc->socks[i]);
     g_free(svc->socks);
@@ -437,4 +481,11 @@ void virNetServerServiceClose(virNetServerService *svc)
         virNetSocketRemoveIOCallback(svc->socks[i]);
         virNetSocketClose(svc->socks[i]);
     }
+}
+
+
+bool
+virNetServerServiceTimerActive(virNetServerService *svc)
+{
+    return svc->timerActive;
 }

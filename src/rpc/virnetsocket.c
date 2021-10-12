@@ -2049,6 +2049,19 @@ int virNetSocketListen(virNetSocket *sock, int backlog)
     return 0;
 }
 
+
+/**
+ * virNetSocketAccept:
+ * @sock: socket to accept connection on
+ * @clientsock: returned client socket
+ *
+ * For given socket @sock accept incoming connection and create
+ * @clientsock representation of the new accepted connection.
+ *
+ * Returns: 0 on success,
+ *         -2 if accepting failed due to EMFILE error,
+ *         -1 otherwise.
+ */
 int virNetSocketAccept(virNetSocket *sock, virNetSocket **clientsock)
 {
     int fd = -1;
@@ -2069,6 +2082,8 @@ int virNetSocketAccept(virNetSocket *sock, virNetSocket **clientsock)
             errno == EAGAIN) {
             ret = 0;
             goto cleanup;
+        } else if (errno == EMFILE) {
+            ret = -2;
         }
 
         virReportSystemError(errno, "%s",

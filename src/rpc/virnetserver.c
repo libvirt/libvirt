@@ -252,6 +252,15 @@ virNetServerDispatchNewMessage(virNetServerClient *client,
 static void
 virNetServerCheckLimits(virNetServer *srv)
 {
+    size_t i;
+
+    for (i = 0; i < srv->nservices; i++) {
+        if (virNetServerServiceTimerActive(srv->services[i])) {
+            VIR_DEBUG("Skipping client-related limits evaluation");
+            return;
+        }
+    }
+
     VIR_DEBUG("Checking client-related limits to re-enable or temporarily "
               "suspend services: nclients=%zu nclients_max=%zu "
               "nclients_unauth=%zu nclients_unauth_max=%zu",
