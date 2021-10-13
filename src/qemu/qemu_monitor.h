@@ -795,10 +795,6 @@ int qemuMonitorExpirePassword(qemuMonitor *mon,
 int qemuMonitorSetBalloon(qemuMonitor *mon,
                           unsigned long long newmem);
 
-/* XXX should we pass the virDomainDiskDef *instead
- * and hide dev_name details inside monitor. Reconsider
- * this when doing the QMP implementation
- */
 int qemuMonitorEjectMedia(qemuMonitor *mon,
                           const char *dev_name,
                           bool force);
