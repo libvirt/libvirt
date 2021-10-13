@@ -803,11 +803,8 @@ virCPUDataFormat(const virCPUData *data)
 virCPUData *
 virCPUDataParse(const char *xmlStr)
 {
-    struct cpuArchDriver *driver;
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    virCPUData *data = NULL;
-    g_autofree char *arch = NULL;
 
     VIR_DEBUG("xmlStr=%s", xmlStr);
 
@@ -817,7 +814,25 @@ virCPUDataParse(const char *xmlStr)
         return NULL;
     }
 
-    if (!(arch = virXPathString("string(/cpudata/@arch)", ctxt))) {
+    return virCPUDataParseNode(ctxt->node);
+}
+
+
+/**
+ * virCPUDataParseNode:
+ *
+ * @node: XML node as produced by virCPUDataFormat
+ *
+ * Parses XML representation of virCPUData structure.
+ *
+ * Returns internal CPU data structure parsed from the XML or NULL on error.
+ */
+virCPUData *virCPUDataParseNode(xmlNodePtr node)
+{
+    g_autofree char *arch = NULL;
+    struct cpuArchDriver *driver;
+
+    if (!(arch = virXMLPropString(node, "arch"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing CPU data architecture"));
         return NULL;
@@ -827,13 +842,11 @@ virCPUDataParse(const char *xmlStr)
         return NULL;
 
     if (!driver->dataParse) {
-        virReportError(VIR_ERR_NO_SUPPORT,
-                       _("cannot parse %s CPU data"), arch);
+        virReportError(VIR_ERR_NO_SUPPORT, _("cannot parse %s CPU data"), arch);
         return NULL;
     }
 
-    data = driver->dataParse(ctxt->node);
-    return data;
+    return driver->dataParse(node);
 }
 
 

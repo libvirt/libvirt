@@ -1464,6 +1464,7 @@ virCPUDataFormat;
 virCPUDataFree;
 virCPUDataNew;
 virCPUDataParse;
+virCPUDataParseNode;
 virCPUExpandFeatures;
 virCPUGetHost;
 virCPUGetHostIsSupported;

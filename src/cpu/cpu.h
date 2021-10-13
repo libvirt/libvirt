@@ -285,3 +285,5 @@ char *virCPUDataFormat(const virCPUData *data)
     ATTRIBUTE_NONNULL(1);
 virCPUData *virCPUDataParse(const char *xmlStr)
     ATTRIBUTE_NONNULL(1);
+virCPUData *virCPUDataParseNode(xmlNodePtr node)
+    ATTRIBUTE_NONNULL(1);
