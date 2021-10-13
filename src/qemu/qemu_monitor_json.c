@@ -2981,18 +2981,21 @@ static int qemuMonitorJSONSaveMemory(qemuMonitor *mon,
 }
 
 
-int qemuMonitorJSONSaveVirtualMemory(qemuMonitor *mon,
-                                     unsigned long long offset,
-                                     unsigned long long length,
-                                     const char *path)
+int
+qemuMonitorJSONSaveVirtualMemory(qemuMonitor *mon,
+                                 unsigned long long offset,
+                                 unsigned long long length,
+                                 const char *path)
 {
     return qemuMonitorJSONSaveMemory(mon, "memsave", offset, length, path);
 }
 
-int qemuMonitorJSONSavePhysicalMemory(qemuMonitor *mon,
-                                      unsigned long long offset,
-                                      unsigned long long length,
-                                      const char *path)
+
+int
+qemuMonitorJSONSavePhysicalMemory(qemuMonitor *mon,
+                                  unsigned long long offset,
+                                  unsigned long long length,
+                                  const char *path)
 {
     return qemuMonitorJSONSaveMemory(mon, "pmemsave", offset, length, path);
 }
