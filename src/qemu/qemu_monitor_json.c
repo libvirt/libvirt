@@ -2220,27 +2220,21 @@ qemuMonitorJSONBlockInfoAdd(GHashTable *table,
                             const char *entryname)
 {
     struct qemuDomainDiskInfo *tmp = NULL;
-    int ret = -1;
+
+    if (g_hash_table_contains(table, entryname)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Duplicate block info for '%s'"), entryname);
+        return -1;
+    }
 
     tmp = g_new0(struct qemuDomainDiskInfo, 1);
 
     *tmp = *info;
-    tmp->nodename = NULL;
+    tmp->nodename = g_strdup(info->nodename);
 
-    if (info->nodename)
-        tmp->nodename = g_strdup(info->nodename);
+    g_hash_table_insert(table, g_strdup(entryname), tmp);
 
-    if (virHashAddEntry(table, entryname, tmp) < 0)
-        goto cleanup;
-
-    tmp = NULL;
-    ret = 0;
-
- cleanup:
-    if (tmp)
-        VIR_FREE(tmp->nodename);
-    VIR_FREE(tmp);
-    return ret;
+    return 0;
 }
 
 
