@@ -388,36 +388,17 @@ mymain(void)
     DO_TEST("graphics-sdl-fullscreen", QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
 
     cfg->spiceTLS = true;
-    DO_TEST("graphics-spice",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE);
-    DO_TEST("graphics-spice-compression",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE);
-    DO_TEST("graphics-spice-qxl-vga",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE);
-    DO_TEST("graphics-spice-socket",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX);
-    DO_TEST("graphics-spice-auto-socket",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX);
+    DO_TEST_CAPS_LATEST("graphics-spice");
+    DO_TEST_CAPS_LATEST("graphics-spice-compression");
+    DO_TEST_CAPS_LATEST("graphics-spice-qxl-vga");
+    DO_TEST_CAPS_LATEST("graphics-spice-socket");
+    DO_TEST_CAPS_LATEST("graphics-spice-auto-socket");
     cfg->spiceAutoUnixSocket = true;
-    DO_TEST("graphics-spice-auto-socket-cfg",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_SPICE);
+    DO_TEST_CAPS_LATEST("graphics-spice-auto-socket-cfg");
     cfg->spiceAutoUnixSocket = false;
     cfg->spiceTLS = false;
-    DO_TEST("graphics-spice-egl-headless",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_EGL_HEADLESS);
-    DO_TEST("graphics-spice-timeout",
-            QEMU_CAPS_DEVICE_VGA,
-            QEMU_CAPS_SPICE);
+    DO_TEST_CAPS_LATEST("graphics-spice-egl-headless");
+    DO_TEST_CAPS_LATEST("graphics-spice-timeout");
 
     DO_TEST("graphics-egl-headless-rendernode",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
