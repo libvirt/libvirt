@@ -2036,10 +2036,11 @@ qemuMonitorJSONGetBalloonInfo(qemuMonitor *mon,
     }
 
 
-int qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
-                                  char *balloonpath,
-                                  virDomainMemoryStatPtr stats,
-                                  unsigned int nr_stats)
+int
+qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
+                              char *balloonpath,
+                              virDomainMemoryStatPtr stats,
+                              unsigned int nr_stats)
 {
     int ret = -1;
     g_autoptr(virJSONValue) cmd = NULL;
