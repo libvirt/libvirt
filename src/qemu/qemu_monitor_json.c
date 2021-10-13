@@ -4154,11 +4154,8 @@ qemuMonitorJSONAddDeviceProps(qemuMonitor *mon,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("device_add", NULL)))
-        return -1;
-
-    if (virJSONValueObjectAppend(cmd, "arguments", props) < 0)
-        return -1;
+     if (!(cmd = qemuMonitorJSONMakeCommandInternal("device_add", props)))
+         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
