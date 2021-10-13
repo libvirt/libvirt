@@ -6609,9 +6609,10 @@ qemuMonitorJSONBuildChrChardevReconnect(virJSONValue *object,
 }
 
 static virJSONValue *
-qemuMonitorJSONAttachCharDevCommand(const char *chrID,
-                                    const virDomainChrSourceDef *chr)
+qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
+                                     const virDomainChrSourceDef *chr)
 {
+    g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) backend = virJSONValueNewObject();
     g_autoptr(virJSONValue) data = virJSONValueNewObject();
     g_autoptr(virJSONValue) addr = NULL;
@@ -6760,10 +6761,13 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         virJSONValueObjectAppend(backend, "data", &data) < 0)
         return NULL;
 
-    return qemuMonitorJSONMakeCommand("chardev-add",
-                                      "s:id", chrID,
-                                      "a:backend", &backend,
-                                      NULL);
+    if (virJSONValueObjectAdd(&props,
+                              "s:id", chrID,
+                              "a:backend", &backend,
+                              NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&props);
 }
 
 
@@ -6774,8 +6778,12 @@ qemuMonitorJSONAttachCharDev(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    g_autoptr(virJSONValue) props = NULL;
 
-    if (!(cmd = qemuMonitorJSONAttachCharDevCommand(chrID, chr)))
+    if (!(props = qemuMonitorJSONAttachCharDevGetProps(chrID, chr)))
+        return -1;
+
+    if (!(cmd = qemuMonitorJSONMakeCommandInternal("chardev-add", &props)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
