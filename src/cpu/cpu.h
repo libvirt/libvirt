@@ -98,7 +98,7 @@ typedef char *
 (*virCPUArchDataFormat)(const virCPUData *data);
 
 typedef virCPUData *
-(*virCPUArchDataParse)(xmlXPathContextPtr ctxt);
+(*virCPUArchDataParse)(xmlNodePtr node);
 
 typedef int
 (*virCPUArchGetModels)(char ***models);

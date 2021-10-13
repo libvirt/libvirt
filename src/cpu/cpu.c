@@ -832,7 +832,7 @@ virCPUDataParse(const char *xmlStr)
         return NULL;
     }
 
-    data = driver->dataParse(ctxt);
+    data = driver->dataParse(ctxt->node);
     return data;
 }
 

@@ -1780,14 +1780,14 @@ virCPUx86DataFormat(const virCPUData *data)
 
 
 static virCPUData *
-virCPUx86DataParse(xmlXPathContextPtr ctxt)
+virCPUx86DataParse(xmlNodePtr node)
 {
     g_autoptr(virCPUData) cpuData = NULL;
 
     if (!(cpuData = virCPUDataNew(VIR_ARCH_X86_64)))
         return NULL;
 
-    if (x86ParseDataItemList(&cpuData->data.x86, ctxt->node) < 0)
+    if (x86ParseDataItemList(&cpuData->data.x86, node) < 0)
         return NULL;
 
     return g_steal_pointer(&cpuData);
