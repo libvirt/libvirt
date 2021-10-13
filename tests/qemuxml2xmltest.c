@@ -415,6 +415,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_EGL_HEADLESS);
+    DO_TEST("graphics-spice-timeout",
+            QEMU_CAPS_DEVICE_VGA,
+            QEMU_CAPS_SPICE);
 
     DO_TEST("graphics-egl-headless-rendernode",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
@@ -766,9 +769,6 @@ mymain(void)
     DO_TEST("graphics-listen-network2",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_VNC);
-    DO_TEST("graphics-spice-timeout",
-            QEMU_CAPS_DEVICE_VGA,
-            QEMU_CAPS_SPICE);
     DO_TEST_NOCAPS("numad-auto-vcpu-no-numatune");
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-cpuset");
