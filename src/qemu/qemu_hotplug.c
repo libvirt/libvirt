@@ -6488,25 +6488,24 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
     virDomainVcpuDef *vcpuinfo = virDomainDefGetVcpu(vm->def, vcpu);
     qemuDomainVcpuPrivate *vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpuinfo);
     unsigned int nvcpus = vcpupriv->vcpus;
-    bool newhotplug = qemuDomainSupportsNewVcpuHotplug(vm);
     int rc;
     int oldvcpus = virDomainDefGetVcpus(vm->def);
     size_t i;
 
-    if (newhotplug) {
-        vcpupriv->alias = g_strdup_printf("vcpu%u", vcpu);
-
-        if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpuinfo)))
-            return -1;
+    if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("cpu hotplug is not supported"));
+        return -1;
     }
+
+    vcpupriv->alias = g_strdup_printf("vcpu%u", vcpu);
+
+    if (!(vcpuprops = qemuBuildHotpluggableCPUProps(vcpuinfo)))
+        return -1;
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (newhotplug) {
-        rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
-    } else {
-        rc = qemuMonitorSetCPU(qemuDomainGetMonitor(vm), vcpu, true);
-    }
+    rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0)
         return -1;
@@ -6517,8 +6516,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
         return -1;
 
     /* start outputting of the new XML element to allow keeping unpluggability */
-    if (newhotplug)
-        vm->def->individualvcpus = true;
+    vm->def->individualvcpus = true;
 
     if (qemuDomainRefreshVcpuInfo(driver, vm, QEMU_ASYNC_JOB_NONE, false) < 0)
         return -1;
