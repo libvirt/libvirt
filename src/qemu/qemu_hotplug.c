@@ -194,6 +194,15 @@ qemuDomainDetachExtensionDevice(qemuMonitor *mon,
 
 
 static int
+qemuHotplugChardevAttach(qemuMonitor *mon,
+                         const char *alias,
+                         virDomainChrSourceDef *def)
+{
+    return qemuMonitorAttachCharDev(mon, alias, def);
+}
+
+
+static int
 qemuHotplugWaitForTrayEject(virDomainObj *vm,
                             virDomainDiskDef *disk)
 {
@@ -1459,7 +1468,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
-        if (qemuMonitorAttachCharDev(priv->mon, charDevAlias, net->data.vhostuser) < 0) {
+        if (qemuHotplugChardevAttach(priv->mon, charDevAlias, net->data.vhostuser) < 0) {
             ignore_value(qemuDomainObjExitMonitor(driver, vm));
             virDomainAuditNet(vm, NULL, net, "attach", false);
             goto cleanup;
@@ -1980,9 +1989,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuMonitorAttachCharDev(priv->mon,
-                                 charAlias,
-                                 redirdev->source) < 0)
+    if (qemuHotplugChardevAttach(priv->mon, charAlias, redirdev->source) < 0)
         goto exit_monitor;
     chardevAdded = true;
 
@@ -2242,7 +2249,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuMonitorAttachCharDev(priv->mon, charAlias, chr->source) < 0)
+    if (qemuHotplugChardevAttach(priv->mon, charAlias, chr->source) < 0)
         goto exit_monitor;
     chardevAttached = true;
 
@@ -2350,8 +2357,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
-        qemuMonitorAttachCharDev(priv->mon, charAlias,
-                                 rng->source.chardev) < 0)
+        qemuHotplugChardevAttach(priv->mon, charAlias, rng->source.chardev) < 0)
         goto exit_monitor;
     chardevAdded = true;
 
@@ -3058,8 +3064,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (shmem->server.enabled) {
-        if (qemuMonitorAttachCharDev(priv->mon, charAlias,
-                                     &shmem->server.chr) < 0)
+        if (qemuHotplugChardevAttach(priv->mon, charAlias, &shmem->server.chr) < 0)
             goto exit_monitor;
     } else {
         if (qemuMonitorAddObject(priv->mon, &props, &memAlias) < 0)
@@ -3472,7 +3477,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuMonitorAttachCharDev(priv->mon, charAlias, chardev) < 0)
+    if (qemuHotplugChardevAttach(priv->mon, charAlias, chardev) < 0)
         goto exit_monitor;
     chardevAdded = true;
 
