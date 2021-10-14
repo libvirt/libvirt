@@ -5137,7 +5137,7 @@ qemuBuildChrChardevStr(virLogManager *logManager,
     if (!(charAlias = qemuAliasChardevFromDevAlias(alias)))
         return NULL;
 
-    switch (dev->type) {
+    switch ((virDomainChrType) dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
         virBufferAsprintf(&buf, "null,id=%s", charAlias);
         break;
@@ -5290,6 +5290,8 @@ qemuBuildChrChardevStr(virLogManager *logManager,
                           dev->data.spiceport.channel);
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported chardev '%s'"),
