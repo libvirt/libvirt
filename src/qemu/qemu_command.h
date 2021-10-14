@@ -87,13 +87,14 @@ qemuBuildChrDeviceProps(const virDomainDef *vmdef,
 virJSONValue *
 qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr);
 
-virJSONValue *qemuBuildHostNetStr(virDomainNetDef *net,
-                                    char **tapfd,
-                                    size_t tapfdSize,
-                                    char **vhostfd,
-                                    size_t vhostfdSize,
-                                    const char *slirpfd,
-                                    const char *vdpadev);
+virJSONValue *
+qemuBuildHostNetProps(virDomainNetDef *net,
+                      char **tapfd,
+                      size_t tapfdSize,
+                      char **vhostfd,
+                      size_t vhostfdSize,
+                      const char *slirpfd,
+                      const char *vdpadev);
 
 /* Current, best practice */
 virJSONValue *

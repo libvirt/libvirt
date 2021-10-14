@@ -3936,13 +3936,13 @@ qemuBuildNicDevProps(virDomainDef *def,
 
 
 virJSONValue *
-qemuBuildHostNetStr(virDomainNetDef *net,
-                    char **tapfd,
-                    size_t tapfdSize,
-                    char **vhostfd,
-                    size_t vhostfdSize,
-                    const char *slirpfd,
-                    const char *vdpadev)
+qemuBuildHostNetProps(virDomainNetDef *net,
+                      char **tapfd,
+                      size_t tapfdSize,
+                      char **vhostfd,
+                      size_t vhostfdSize,
+                      const char *slirpfd,
+                      const char *vdpadev)
 {
     bool is_tap = false;
     virDomainNetType netType = virDomainNetGetActualType(net);
@@ -8975,10 +8975,10 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     if (chardev)
         virCommandAddArgList(cmd, "-chardev", chardev, NULL);
 
-    if (!(hostnetprops = qemuBuildHostNetStr(net,
-                                             tapfdName, tapfdSize,
-                                             vhostfdName, vhostfdSize,
-                                             slirpfdName, vdpafdName)))
+    if (!(hostnetprops = qemuBuildHostNetProps(net,
+                                               tapfdName, tapfdSize,
+                                               vhostfdName, vhostfdSize,
+                                               slirpfdName, vdpafdName)))
         goto cleanup;
 
     if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)

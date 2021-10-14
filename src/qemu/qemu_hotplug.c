@@ -1459,10 +1459,10 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         vdpafdName = g_strdup_printf("/dev/fdset/%d", fdinfo.fdset);
     }
 
-    if (!(netprops = qemuBuildHostNetStr(net,
-                                         tapfdName, tapfdSize,
-                                         vhostfdName, vhostfdSize,
-                                         slirpfdName, vdpafdName))) {
+    if (!(netprops = qemuBuildHostNetProps(net,
+                                           tapfdName, tapfdSize,
+                                           vhostfdName, vhostfdSize,
+                                           slirpfdName, vdpafdName))) {
         ignore_value(qemuDomainObjExitMonitor(driver, vm));
         goto cleanup;
     }
