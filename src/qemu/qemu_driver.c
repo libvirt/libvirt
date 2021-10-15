@@ -20117,7 +20117,8 @@ static const unsigned int qemuDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_TIMEZONE |
     VIR_DOMAIN_GUEST_INFO_HOSTNAME |
     VIR_DOMAIN_GUEST_INFO_FILESYSTEM |
-    VIR_DOMAIN_GUEST_INFO_DISKS;
+    VIR_DOMAIN_GUEST_INFO_DISKS |
+    VIR_DOMAIN_GUEST_INFO_INTERFACES;
 
 static int
 qemuDomainGetGuestInfoCheckSupport(unsigned int types,
@@ -20316,6 +20317,72 @@ qemuAgentFSInfoFormatParams(qemuAgentFSInfo **fsinfo,
     }
 }
 
+static void
+virDomainInterfaceFormatParams(virDomainInterfacePtr *ifaces,
+                               int nifaces,
+                               virTypedParameterPtr *params,
+                               int *nparams, int *maxparams)
+{
+    size_t i;
+    size_t j;
+
+    if (virTypedParamsAddUInt(params, nparams, maxparams,
+                             "if.count", nifaces) < 0)
+        return;
+
+    for (i = 0; i < nifaces; i++) {
+        char param_name[VIR_TYPED_PARAM_FIELD_LENGTH];
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "if.%zu.name", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, ifaces[i]->name) < 0)
+            return;
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "if.%zu.hwaddr", i);
+        if (virTypedParamsAddString(params, nparams, maxparams,
+                                    param_name, ifaces[i]->hwaddr) < 0)
+            return;
+
+        g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                   "if.%zu.addr.count", i);
+        if (virTypedParamsAddUInt(params, nparams, maxparams,
+                                  param_name, ifaces[i]->naddrs) < 0)
+            return;
+
+        for (j = 0; j < ifaces[i]->naddrs; j++) {
+            const char *type = NULL;
+
+            switch (ifaces[i]->addrs[j].type) {
+                case VIR_IP_ADDR_TYPE_IPV4:
+                    type = "ipv4";
+                    break;
+                case VIR_IP_ADDR_TYPE_IPV6:
+                    type = "ipv6";
+                    break;
+            }
+
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "if.%zu.addr.%zu.type", i, j);
+            if (virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, type) < 0)
+            return;
+
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "if.%zu.addr.%zu.addr", i, j);
+            if (virTypedParamsAddString(params, nparams, maxparams,
+                                        param_name, ifaces[i]->addrs[j].addr) < 0)
+            return;
+
+            g_snprintf(param_name, VIR_TYPED_PARAM_FIELD_LENGTH,
+                       "if.%zu.addr.%zu.prefix", i, j);
+            if (virTypedParamsAddUInt(params, nparams, maxparams,
+                                      param_name, ifaces[i]->addrs[j].prefix) < 0)
+            return;
+        }
+    }
+}
 
 static int
 qemuDomainGetGuestInfo(virDomainPtr dom,
@@ -20337,6 +20404,8 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     qemuAgentFSInfo **agentfsinfo = NULL;
     size_t ndisks = 0;
     qemuAgentDiskInfo **agentdiskinfo = NULL;
+    virDomainInterfacePtr *ifaces = NULL;
+    size_t nifaces = 0;
     size_t i;
 
     virCheckFlags(0, -1);
@@ -20402,6 +20471,15 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         }
     }
 
+    if (supportedTypes & VIR_DOMAIN_GUEST_INFO_INTERFACES) {
+        rc = qemuAgentGetInterfaces(agent, &ifaces, report_unsupported);
+        if (rc == -1) {
+            goto exitagent;
+        } else if (rc >= 0) {
+            nifaces = rc;
+        }
+    }
+
     qemuDomainObjExitAgent(vm, agent);
     qemuDomainObjEndAgentJob(vm);
 
@@ -20424,6 +20502,10 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
         qemuDomainObjEndJob(driver, vm);
     }
 
+    if (nifaces > 0) {
+        virDomainInterfaceFormatParams(ifaces, nifaces, params, nparams, &maxparams);
+    }
+
     ret = 0;
 
  cleanup:
@@ -20433,6 +20515,11 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
     for (i = 0; i < ndisks; i++)
         qemuAgentDiskInfoFree(agentdiskinfo[i]);
     g_free(agentdiskinfo);
+    if (ifaces && nifaces > 0) {
+        for (i = 0; i < nifaces; i++)
+            virDomainInterfaceFree(ifaces[i]);
+    }
+    g_free(ifaces);
 
     virDomainObjEndAPI(&vm);
     return ret;
