@@ -388,7 +388,8 @@ static int testSocketCommandNormal(const void *data G_GNUC_UNUSED)
     char buf[100];
     size_t i;
     int ret = -1;
-    virCommand *cmd = virCommandNewArgList("/bin/cat", "/dev/zero", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("/bin/cat", "/dev/zero", NULL);
+
     virCommandAddEnvPassCommon(cmd);
 
     if (virNetSocketNewConnectCommand(cmd, &csock) < 0)
@@ -415,7 +416,8 @@ static int testSocketCommandFail(const void *data G_GNUC_UNUSED)
     virNetSocket *csock = NULL; /* Client socket */
     char buf[100];
     int ret = -1;
-    virCommand *cmd = virCommandNewArgList("/bin/cat", "/dev/does-not-exist", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList("/bin/cat", "/dev/does-not-exist", NULL);
+
     virCommandAddEnvPassCommon(cmd);
 
     if (virNetSocketNewConnectCommand(cmd, &csock) < 0)

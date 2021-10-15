@@ -821,8 +821,6 @@ int virNetSocketNewConnectCommand(virCommand *cmd,
     if (!(*retsock = virNetSocketNew(NULL, NULL, true, sv[0], errfd[0], pid, false)))
         goto error;
 
-    virCommandFree(cmd);
-
     return 0;
 
  error:
@@ -832,7 +830,6 @@ int virNetSocketNewConnectCommand(virCommand *cmd,
     VIR_FORCE_CLOSE(errfd[1]);
 
     virCommandAbort(cmd);
-    virCommandFree(cmd);
 
     return -1;
 }
@@ -856,7 +853,7 @@ int virNetSocketNewConnectSSH(const char *nodename,
                               const char *command,
                               virNetSocket **retsock)
 {
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
 
     *retsock = NULL;
 
@@ -1154,7 +1151,7 @@ virNetSocketNewConnectLibssh(const char *host G_GNUC_UNUSED,
 int virNetSocketNewConnectExternal(const char **cmdargv,
                                    virNetSocket **retsock)
 {
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
 
     *retsock = NULL;
 
