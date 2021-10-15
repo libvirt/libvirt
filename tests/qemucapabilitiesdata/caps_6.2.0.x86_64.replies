@@ -21,7 +21,7 @@
       "minor": 1,
       "major": 6
     },
-    "package": "v6.1.0-1313-gc09124dcb8"
+    "package": "v6.1.0-1510-gc148a05721"
   },
   "id": "libvirt-2"
 }
@@ -1122,7 +1122,10 @@
       "name": "device_add",
       "ret-type": "0",
       "meta-type": "command",
-      "arg-type": "180"
+      "arg-type": "180",
+      "features": [
+        "json-cli"
+      ]
     },
     {
       "name": "device_del",
@@ -1446,9 +1449,9 @@
     },
     {
       "name": "query-sev-attestation-report",
-      "ret-type": "235",
+      "ret-type": "233",
       "meta-type": "command",
-      "arg-type": "234"
+      "arg-type": "232"
     },
     {
       "name": "query-sgx",
@@ -6126,19 +6129,19 @@
           "type": "401"
         },
         {
-          "case": "memory-backend-file",
+          "case": "memory-backend-epc",
           "type": "402"
         },
         {
-          "case": "memory-backend-memfd",
+          "case": "memory-backend-file",
           "type": "403"
         },
         {
-          "case": "memory-backend-ram",
+          "case": "memory-backend-memfd",
           "type": "404"
         },
         {
-          "case": "memory-backend-epc",
+          "case": "memory-backend-ram",
           "type": "405"
         },
         {
@@ -7269,7 +7272,7 @@
       "meta-type": "object"
     },
     {
-      "name": "234",
+      "name": "232",
       "members": [
         {
           "name": "mnonce",
@@ -7279,7 +7282,7 @@
       "meta-type": "object"
     },
     {
-      "name": "235",
+      "name": "233",
       "members": [
         {
           "name": "data",
@@ -11313,10 +11316,10 @@
         "input-barrier",
         "input-linux",
         "iothread",
+        "memory-backend-epc",
         "memory-backend-file",
         "memory-backend-memfd",
         "memory-backend-ram",
-        "memory-backend-epc",
         "pef-guest",
         "pr-manager-helper",
         "qtest",
@@ -11852,6 +11855,61 @@
           "name": "x-use-canonical-path-for-ramblock-id",
           "default": null,
           "type": "bool"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "403",
+      "members": [
+        {
+          "name": "dump",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "host-nodes",
+          "default": null,
+          "type": "[int]"
+        },
+        {
+          "name": "merge",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "policy",
+          "default": null,
+          "type": "423"
+        },
+        {
+          "name": "prealloc",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "prealloc-threads",
+          "default": null,
+          "type": "int"
+        },
+        {
+          "name": "share",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "reserve",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "size",
+          "type": "int"
+        },
+        {
+          "name": "x-use-canonical-path-for-ramblock-id",
+          "default": null,
+          "type": "bool"
         },
         {
           "name": "align",
@@ -11881,7 +11939,7 @@
       "meta-type": "object"
     },
     {
-      "name": "403",
+      "name": "404",
       "members": [
         {
           "name": "dump",
@@ -11944,61 +12002,6 @@
         },
         {
           "name": "seal",
-          "default": null,
-          "type": "bool"
-        }
-      ],
-      "meta-type": "object"
-    },
-    {
-      "name": "404",
-      "members": [
-        {
-          "name": "dump",
-          "default": null,
-          "type": "bool"
-        },
-        {
-          "name": "host-nodes",
-          "default": null,
-          "type": "[int]"
-        },
-        {
-          "name": "merge",
-          "default": null,
-          "type": "bool"
-        },
-        {
-          "name": "policy",
-          "default": null,
-          "type": "423"
-        },
-        {
-          "name": "prealloc",
-          "default": null,
-          "type": "bool"
-        },
-        {
-          "name": "prealloc-threads",
-          "default": null,
-          "type": "int"
-        },
-        {
-          "name": "share",
-          "default": null,
-          "type": "bool"
-        },
-        {
-          "name": "reserve",
-          "default": null,
-          "type": "bool"
-        },
-        {
-          "name": "size",
-          "type": "int"
-        },
-        {
-          "name": "x-use-canonical-path-for-ramblock-id",
           "default": null,
           "type": "bool"
         }
@@ -17168,8 +17171,8 @@
       "parent": "pci-device"
     },
     {
-      "name": "sev-guest",
-      "parent": "confidential-guest-support"
+      "name": "chardev-stdio",
+      "parent": "chardev-fd"
     },
     {
       "name": "usb-wacom-tablet",
@@ -17192,8 +17195,8 @@
       "parent": "pci-vga"
     },
     {
-      "name": "virtio-blk-pci-transitional",
-      "parent": "virtio-blk-pci-base"
+      "name": "kvm-pit",
+      "parent": "pit-common"
     },
     {
       "name": "Haswell-v1-x86_64-cpu",
@@ -17216,8 +17219,8 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "kvm-pit",
-      "parent": "pit-common"
+      "name": "sev-guest",
+      "parent": "confidential-guest-support"
     },
     {
       "name": "ich9-usb-uhci5",
@@ -19472,8 +19475,8 @@
       "parent": "qio-channel"
     },
     {
-      "name": "chardev-stdio",
-      "parent": "chardev-fd"
+      "name": "virtio-blk-pci-transitional",
+      "parent": "virtio-blk-pci-base"
     },
     {
       "name": "virtio-vga",
@@ -29472,7 +29475,7 @@
   "id": "libvirt-48",
   "error": {
     "class": "GenericError",
-    "desc": "Failed to open /dev/sev: No such file or directory"
+    "desc": "SEV: Failed to open /dev/sev: No such file or directory"
   }
 }
 
