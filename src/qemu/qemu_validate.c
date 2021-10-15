@@ -2845,7 +2845,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
             return -1;
         }
         if (disk->queue_size > 0 &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES)) {
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("queue-size property isn't supported by this QEMU binary"));
             return -1;
