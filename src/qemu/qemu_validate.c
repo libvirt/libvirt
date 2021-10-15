@@ -1569,14 +1569,6 @@ qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
     if (!virtio)
         return 0;
 
-    if (virtio->ats != VIR_TRISTATE_SWITCH_ABSENT &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_ATS)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("the ats setting is not supported with this "
-                         "QEMU binary"));
-        return -1;
-    }
-
     if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PACKED_QUEUES)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

@@ -59,7 +59,6 @@
   <flag name='query-cpu-definitions'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
-  <flag name='virtio.ats'/>
   <flag name='loadparm'/>
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>

@@ -411,7 +411,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, /* virtio-*-pci.iommu_platform */
 
     /* 260 */
-    QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */
+    X_QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */
     QEMU_CAPS_LOADPARM, /* -machine loadparm */
     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE, /* -device spapr-pci-host-bridge */
     QEMU_CAPS_SPAPR_PCI_HOST_BRIDGE_NUMA_NODE, /* spapr-pci-host-bridge.numa_node= */
