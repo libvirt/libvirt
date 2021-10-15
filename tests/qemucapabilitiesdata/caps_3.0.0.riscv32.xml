@@ -44,7 +44,6 @@
   <flag name='vhost-scsi'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
-  <flag name='virtio.iommu_platform'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-gpu.max_outputs'/>
   <flag name='vxhs'/>

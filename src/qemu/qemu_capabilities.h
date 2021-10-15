@@ -408,7 +408,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_INTEL_IOMMU_CACHING_MODE, /* intel-iommu.caching-mode */
     QEMU_CAPS_INTEL_IOMMU_EIM, /* intel-iommu.eim */
     QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB, /* intel-iommu.device-iotlb */
-    QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, /* virtio-*-pci.iommu_platform */
+    X_QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, /* virtio-*-pci.iommu_platform */
 
     /* 260 */
     QEMU_CAPS_VIRTIO_PCI_ATS, /* virtio-*-pci.ats */

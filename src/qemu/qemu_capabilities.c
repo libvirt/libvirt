@@ -428,7 +428,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "intel-iommu.caching-mode", /* QEMU_CAPS_INTEL_IOMMU_CACHING_MODE */
               "intel-iommu.eim", /* QEMU_CAPS_INTEL_IOMMU_EIM */
               "intel-iommu.device-iotlb", /* QEMU_CAPS_INTEL_IOMMU_DEVICE_IOTLB */
-              "virtio.iommu_platform", /* QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM */
+              "virtio.iommu_platform", /* X_QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM */
 
               /* 260 */
               "virtio.ats", /* QEMU_CAPS_VIRTIO_PCI_ATS */
@@ -1378,7 +1378,6 @@ struct virQEMUCapsDevicePropsFlags {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBalloon[] = {
     { "deflate-on-oom", QEMU_CAPS_VIRTIO_BALLOON_AUTODEFLATE, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "free-page-reporting", QEMU_CAPS_VIRTIO_BALLOON_FREE_PAGE_REPORTING, NULL },
@@ -1409,7 +1408,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "queue-size", QEMU_CAPS_VIRTIO_BLK_QUEUE_SIZE, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
@@ -1423,7 +1421,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "tx_queue_size", QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, NULL },
     { "host_mtu", QEMU_CAPS_VIRTIO_NET_HOST_MTU, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
@@ -1445,7 +1442,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBrid
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioSCSI[] = {
     { "iothread", QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
@@ -1518,7 +1514,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL, NULL },
     { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
-    { "iommu_platform", QEMU_CAPS_VIRTIO_PCI_IOMMU_PLATFORM, NULL },
     { "ats", QEMU_CAPS_VIRTIO_PCI_ATS, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
