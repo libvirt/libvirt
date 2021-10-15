@@ -124,10 +124,9 @@ VIR_ONCE_GLOBAL_INIT(virNetSocket);
 #ifndef WIN32
 static int virNetSocketForkDaemon(const char *binary)
 {
-    int ret;
-    virCommand *cmd = virCommandNewArgList(binary,
-                                             "--timeout=120",
-                                             NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(binary,
+                                                     "--timeout=120",
+                                                     NULL);
 
     virCommandAddEnvPassCommon(cmd);
     virCommandAddEnvPass(cmd, "XDG_CACHE_HOME");
@@ -135,9 +134,7 @@ static int virNetSocketForkDaemon(const char *binary)
     virCommandAddEnvPass(cmd, "XDG_RUNTIME_DIR");
     virCommandClearCaps(cmd);
     virCommandDaemonize(cmd);
-    ret = virCommandRun(cmd, NULL);
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 #endif
 
@@ -234,7 +231,7 @@ virNetSocketNew(virSocketAddr *localAddr,
                 pid_t pid,
                 bool unlinkUNIX)
 {
-    virNetSocket *sock;
+    g_autoptr(virNetSocket) sock = NULL;
     int no_slow_start = 1;
 
     if (virNetSocketInitialize() < 0)
@@ -300,11 +297,10 @@ virNetSocketNew(virSocketAddr *localAddr,
           sock, fd, errfd, (long long)pid,
           NULLSTR(sock->localAddrStrSASL), NULLSTR(sock->remoteAddrStrSASL));
 
-    return sock;
+    return g_steal_pointer(&sock);
 
  error:
     sock->fd = sock->errfd = -1; /* Caller owns fd/errfd on failure */
-    virObjectUnref(sock);
     return NULL;
 }
 
@@ -667,13 +663,13 @@ int virNetSocketNewConnectUNIX(const char *path,
                                const char *spawnDaemonPath,
                                virNetSocket **retsock)
 {
-    char *lockpath = NULL;
-    int lockfd = -1;
+    g_autofree char *lockpath = NULL;
+    VIR_AUTOCLOSE lockfd = -1;
     int fd = -1;
     int retries = 500;
     virSocketAddr localAddr;
     virSocketAddr remoteAddr;
-    char *rundir = NULL;
+    g_autofree char *rundir = NULL;
     int ret = -1;
     bool daemonLaunched = false;
 
@@ -762,10 +758,7 @@ int virNetSocketNewConnectUNIX(const char *path,
  cleanup:
     if (lockfd != -1) {
         unlink(lockpath);
-        VIR_FORCE_CLOSE(lockfd);
     }
-    VIR_FREE(lockpath);
-    VIR_FREE(rundir);
 
     if (ret < 0 && fd != -1)
         closesocket(fd);
@@ -898,7 +891,7 @@ virNetSocketNewConnectLibSSH2(const char *host,
                               virURI *uri,
                               virNetSocket **retsock)
 {
-    virNetSocket *sock = NULL;
+    g_autoptr(virNetSocket) sock = NULL;
     virNetSSHSession *sess = NULL;
     unsigned int verify;
     int ret = -1;
@@ -985,12 +978,11 @@ virNetSocketNewConnectLibSSH2(const char *host,
         goto error;
 
     sock->sshSession = sess;
-    *retsock = sock;
+    *retsock = g_steal_pointer(&sock);
 
     return 0;
 
  error:
-    virObjectUnref(sock);
     virObjectUnref(sess);
     return ret;
 }
@@ -1030,7 +1022,7 @@ virNetSocketNewConnectLibssh(const char *host,
                              virURI *uri,
                              virNetSocket **retsock)
 {
-    virNetSocket *sock = NULL;
+    g_autoptr(virNetSocket) sock = NULL;
     virNetLibsshSession *sess = NULL;
     unsigned int verify;
     int ret = -1;
@@ -1118,12 +1110,11 @@ virNetSocketNewConnectLibssh(const char *host,
      * trying to close an invalid FD).
      */
     sock->ownsFd = false;
-    *retsock = sock;
+    *retsock = g_steal_pointer(&sock);
 
     return 0;
 
  error:
-    virObjectUnref(sock);
     virObjectUnref(sess);
     return ret;
 }
@@ -1238,7 +1229,7 @@ virNetSocket *virNetSocketNewPostExecRestart(virJSONValue *object)
 
 virJSONValue *virNetSocketPreExecRestart(virNetSocket *sock)
 {
-    virJSONValue *object = NULL;
+    g_autoptr(virJSONValue) object = NULL;
 
     virObjectLock(sock);
 
@@ -1287,11 +1278,10 @@ virJSONValue *virNetSocketPreExecRestart(virNetSocket *sock)
     }
 
     virObjectUnlock(sock);
-    return object;
+    return g_steal_pointer(&object);
 
  error:
     virObjectUnlock(sock);
-    virJSONValueFree(object);
     return NULL;
 }
 
@@ -1740,7 +1730,7 @@ bool virNetSocketHasPendingData(virNetSocket *sock G_GNUC_UNUSED)
 
 static ssize_t virNetSocketReadWire(virNetSocket *sock, char *buf, size_t len)
 {
-    char *errout = NULL;
+    g_autofree char *errout = NULL;
     ssize_t ret;
 
 #if WITH_SSH2
@@ -1804,7 +1794,6 @@ static ssize_t virNetSocketReadWire(virNetSocket *sock, char *buf, size_t len)
         }
     }
 
-    VIR_FREE(errout);
     return ret;
 }
 
@@ -1859,22 +1848,18 @@ static ssize_t virNetSocketReadSASL(virNetSocket *sock, char *buf, size_t len)
     /* Need to read some more data off the wire */
     if (sock->saslDecoded == NULL) {
         ssize_t encodedLen = virNetSASLSessionGetMaxBufSize(sock->saslSession);
-        char *encoded;
-        encoded = g_new0(char, encodedLen);
+        g_autofree char *encoded = g_new0(char, encodedLen);
+
         encodedLen = virNetSocketReadWire(sock, encoded, encodedLen);
 
-        if (encodedLen <= 0) {
-            VIR_FREE(encoded);
+        if (encodedLen <= 0)
             return encodedLen;
-        }
 
         if (virNetSASLSessionDecode(sock->saslSession,
                                     encoded, encodedLen,
                                     &sock->saslDecoded, &sock->saslDecodedLength) < 0) {
-            VIR_FREE(encoded);
             return -1;
         }
-        VIR_FREE(encoded);
 
         sock->saslDecodedOffset = 0;
     }
@@ -2136,7 +2121,7 @@ static void virNetSocketEventHandle(int watch G_GNUC_UNUSED,
 
 static void virNetSocketEventFree(void *opaque)
 {
-    virNetSocket *sock = opaque;
+    g_autoptr(virNetSocket) sock = opaque;
     virFreeCallback ff;
     void *eopaque;
 
@@ -2149,8 +2134,6 @@ static void virNetSocketEventFree(void *opaque)
 
     if (ff)
         ff(eopaque);
-
-    virObjectUnref(sock);
 }
 
 int virNetSocketAddIOCallback(virNetSocket *sock,
