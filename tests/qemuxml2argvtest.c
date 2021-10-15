@@ -490,13 +490,15 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
 struct testValidateSchemaCommandData {
     const char *name;
     const char *schema;
+    bool allowIncomplete; /* relax validator for commands with incomplete schema */
 };
 
 
 static const struct testValidateSchemaCommandData commands[] = {
-    { "-blockdev", "blockdev-add" },
-    { "-netdev", "netdev_add" },
-    { "-object", "object-add" },
+    { "-blockdev", "blockdev-add", false },
+    { "-netdev", "netdev_add", false },
+    { "-object", "object-add", false },
+    { "-device", "device_add", true },
 };
 
 static int
@@ -535,7 +537,9 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
                 return -1;
 
             if (testQEMUSchemaValidateCommand(command->schema, jsonargs,
-                                              schema, false, false, false, &debug) < 0) {
+                                              schema, false, false,
+                                              command->allowIncomplete,
+                                              &debug) < 0) {
                 VIR_TEST_VERBOSE("failed to validate '%s %s' against QAPI schema: %s",
                                  command->name, curargs, virBufferCurrentContent(&debug));
                 return -1;
