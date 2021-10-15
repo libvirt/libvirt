@@ -5098,6 +5098,7 @@ typedef enum {
     VIR_DOMAIN_GUEST_INFO_HOSTNAME = (1 << 3), /* return hostname information */
     VIR_DOMAIN_GUEST_INFO_FILESYSTEM = (1 << 4), /* return filesystem information */
     VIR_DOMAIN_GUEST_INFO_DISKS = (1 << 5), /* return disks information */
+    VIR_DOMAIN_GUEST_INFO_INTERFACES = (1 << 6), /* return interfaces information */
 } virDomainGuestInfoTypes;
 
 int virDomainGetGuestInfo(virDomainPtr domain,
