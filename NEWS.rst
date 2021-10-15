@@ -44,6 +44,11 @@ v7.9.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix problems on ``virsh domstats`` with qemu <5.2.0
+
+    Libvirt v7.2.0 and later called query-dirty-rate, which was introduced in
+    qemu-5.2.0, regardless of qemu version and failed in qemu-5.1.0. This
+    release fixes the bug.
 
 v7.8.0 (2021-10-01)
 ===================
