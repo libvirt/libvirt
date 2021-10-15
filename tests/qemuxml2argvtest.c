@@ -535,7 +535,7 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
                 return -1;
 
             if (testQEMUSchemaValidateCommand(command->schema, jsonargs,
-                                              schema, false, false, &debug) < 0) {
+                                              schema, false, false, false, &debug) < 0) {
                 VIR_TEST_VERBOSE("failed to validate '%s %s' against QAPI schema: %s",
                                  command->name, curargs, virBufferCurrentContent(&debug));
                 return -1;

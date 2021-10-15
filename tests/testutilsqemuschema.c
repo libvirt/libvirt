@@ -25,6 +25,7 @@ struct testQEMUSchemaValidateCtxt {
     GHashTable *schema;
     virBuffer *debug;
     bool allowDeprecated;
+    bool allowIncomplete; /* allow members not (yet) covered by the schema */
 };
 
 
@@ -137,6 +138,10 @@ testQEMUSchemaValidateObjectMember(const char *key,
 
     /* lookup 'member' entry for key */
     if (!(keymember = testQEMUSchemaStealObjectMemberByName(key, data->rootmembers))) {
+        if (data->ctxt->allowIncomplete) {
+            virBufferAddLit(data->ctxt->debug, " schema missing - OK(waived)\n");
+            return 0;
+        }
         virBufferAddLit(data->ctxt->debug, "ERROR: attribute not in schema\n");
         return -1;
     }
@@ -553,6 +558,8 @@ testQEMUSchemaValidate(virJSONValue *obj,
  * @allowDeprecated: don't fails schema validation if @command or one of @arguments
  *                   is deprecated
  * @allowRemoved: skip validation fully if @command was not found
+ * @allowIncomplete: don't fail validation if members not covered by schema are present
+ *                   (for waiving commands with incomplete schema)
  * @debug: a virBuffer which will be filled with debug information if provided
  *
  * Validates whether @command and its @arguments conform to the QAPI schema
@@ -571,11 +578,13 @@ testQEMUSchemaValidateCommand(const char *command,
                               GHashTable *schema,
                               bool allowDeprecated,
                               bool allowRemoved,
+                              bool allowIncomplete,
                               virBuffer *debug)
 {
     struct testQEMUSchemaValidateCtxt ctxt = { .schema = schema,
                                                .debug = debug,
-                                               .allowDeprecated = allowDeprecated };
+                                               .allowDeprecated = allowDeprecated,
+                                               .allowIncomplete = allowIncomplete };
     g_autofree char *schemapatharguments = g_strdup_printf("%s/arg-type", command);
     g_autoptr(virJSONValue) emptyargs = NULL;
     virJSONValue *schemarootcommand;

@@ -342,6 +342,7 @@ testQemuMigrationCookieBlockDirtyBitmaps(const void *opaque)
                                       qmpschema,
                                       false,
                                       false,
+                                      false,
                                       &debug) < 0) {
         VIR_TEST_VERBOSE("failed to validate migration params '%s' against QMP schema: %s",
                          actualJSON, virBufferCurrentContent(&debug));

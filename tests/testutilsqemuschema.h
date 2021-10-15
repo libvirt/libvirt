@@ -35,6 +35,7 @@ testQEMUSchemaValidateCommand(const char *command,
                               GHashTable *schema,
                               bool allowDeprecated,
                               bool allowRemoved,
+                              bool allowIncomplete,
                               virBuffer *debug);
 
 int

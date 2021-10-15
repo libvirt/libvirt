@@ -542,6 +542,7 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTest *test,
     if (testQEMUSchemaValidateCommand(cmdname, args, test->qapischema,
                                       test->skipValidationDeprecated,
                                       test->skipValidationRemoved,
+                                      false,
                                       &debug) < 0) {
         if (virTestGetDebug() == 2) {
             g_autofree char *argstr = NULL;
