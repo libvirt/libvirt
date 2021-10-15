@@ -3279,19 +3279,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("virtio-options-net-packed");
     DO_TEST_CAPS_LATEST("virtio-options-rng-packed");
     DO_TEST_CAPS_LATEST("virtio-options-video-packed");
-    DO_TEST_PARSE_ERROR("virtio-options-controller-iommu", QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-disk-iommu");
-    DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-fs-iommu");
-    DO_TEST_PARSE_ERROR("virtio-options-input-iommu", QEMU_CAPS_VIRTIO_MOUSE,
-                        QEMU_CAPS_VIRTIO_KEYBOARD);
-    DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-net-iommu");
-    DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-memballoon-iommu");
-    DO_TEST_PARSE_ERROR("virtio-options-rng-iommu", QEMU_CAPS_DEVICE_VIRTIO_RNG,
-                        QEMU_CAPS_OBJECT_RNG_RANDOM);
-    DO_TEST_PARSE_ERROR("virtio-options-video-iommu", QEMU_CAPS_DEVICE_VIRTIO_GPU,
-                        QEMU_CAPS_DEVICE_VIRTIO_GPU,
-                        QEMU_CAPS_VIRTIO_GPU_VIRGL,
-                        QEMU_CAPS_DEVICE_VHOST_USER_GPU);
     DO_TEST_PARSE_ERROR("virtio-options-controller-ats", QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-disk-ats");
     DO_TEST_PARSE_ERROR_NOCAPS("virtio-options-fs-ats");
