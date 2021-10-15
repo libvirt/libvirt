@@ -18685,20 +18685,26 @@ struct qemuDomainGetStatsWorker {
     qemuDomainGetStatsFunc func;
     unsigned int stats;
     bool monitor;
+    virQEMUCapsFlags *requiredCaps;
+};
+
+static virQEMUCapsFlags queryDirtyRateRequired[] = {
+    QEMU_CAPS_QUERY_DIRTY_RATE,
+    QEMU_CAPS_LAST,
 };
 
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
-    { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false },
-    { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false },
-    { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true },
-    { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, true },
-    { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false },
-    { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true },
-    { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false },
-    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true },
-    { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false },
-    { qemuDomainGetStatsDirtyRate, VIR_DOMAIN_STATS_DIRTYRATE, true },
-    { NULL, 0, false }
+    { qemuDomainGetStatsState, VIR_DOMAIN_STATS_STATE, false, NULL },
+    { qemuDomainGetStatsCpu, VIR_DOMAIN_STATS_CPU_TOTAL, false, NULL },
+    { qemuDomainGetStatsBalloon, VIR_DOMAIN_STATS_BALLOON, true, NULL },
+    { qemuDomainGetStatsVcpu, VIR_DOMAIN_STATS_VCPU, true, NULL },
+    { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false, NULL },
+    { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true, NULL },
+    { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false, NULL },
+    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, NULL },
+    { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false, NULL },
+    { qemuDomainGetStatsDirtyRate, VIR_DOMAIN_STATS_DIRTYRATE, true, queryDirtyRateRequired },
+    { NULL, 0, false, NULL }
 };
 
 
