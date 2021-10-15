@@ -18710,13 +18710,30 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
 
 static int
 qemuDomainGetStatsCheckSupport(unsigned int *stats,
-                               bool enforce)
+                               bool enforce,
+                               virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int supportedstats = 0;
     size_t i;
 
-    for (i = 0; qemuDomainGetStatsWorkers[i].func; i++)
-        supportedstats |= qemuDomainGetStatsWorkers[i].stats;
+    for (i = 0; qemuDomainGetStatsWorkers[i].func; i++) {
+        bool supportedByQemu = true;
+        virQEMUCapsFlags *requiredCaps = qemuDomainGetStatsWorkers[i].requiredCaps;
+
+        while (requiredCaps && *requiredCaps != QEMU_CAPS_LAST) {
+            if (!virQEMUCapsGet(priv->qemuCaps, *requiredCaps)) {
+                supportedByQemu = false;
+                break;
+            }
+
+            requiredCaps++;
+        }
+
+        if (supportedByQemu) {
+            supportedstats |= qemuDomainGetStatsWorkers[i].stats;
+        }
+    }
 
     if (*stats == 0) {
         *stats = supportedstats;
@@ -18726,7 +18743,7 @@ qemuDomainGetStatsCheckSupport(unsigned int *stats,
     if (enforce &&
         *stats & ~supportedstats) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                       _("Stats types bits 0x%x are not supported by this daemon"),
+                       _("Stats types bits 0x%x are not supported by this daemon or QEMU"),
                        *stats & ~supportedstats);
         return -1;
     }
@@ -18801,7 +18818,6 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     int nstats = 0;
     size_t i;
     int ret = -1;
-    unsigned int privflags = 0;
     unsigned int domflags = 0;
     unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
                                    VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
@@ -18815,9 +18831,6 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
                   VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS, -1);
 
     if (virConnectGetAllDomainStatsEnsureACL(conn) < 0)
-        return -1;
-
-    if (qemuDomainGetStatsCheckSupport(&stats, enforce) < 0)
         return -1;
 
     if (ndoms) {
@@ -18834,15 +18847,23 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
 
     tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);
 
-    if (qemuDomainGetStatsNeedMonitor(stats))
-        privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
-
     for (i = 0; i < nvms; i++) {
         virDomainStatsRecordPtr tmp = NULL;
+        unsigned int privflags = 0;
+        unsigned int requestedStats = stats;
+
         domflags = 0;
         vm = vms[i];
 
         virObjectLock(vm);
+
+        if (qemuDomainGetStatsCheckSupport(&requestedStats, enforce, vm) < 0) {
+            virObjectUnlock(vm);
+            goto cleanup;
+        }
+
+        if (qemuDomainGetStatsNeedMonitor(requestedStats))
+            privflags |= QEMU_DOMAIN_STATS_HAVE_JOB;
 
         if (HAVE_JOB(privflags)) {
             int rv;
@@ -18859,7 +18880,7 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
 
         if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
             domflags |= QEMU_DOMAIN_STATS_BACKING;
-        if (qemuDomainGetStats(conn, vm, stats, &tmp, domflags) < 0) {
+        if (qemuDomainGetStats(conn, vm, requestedStats, &tmp, domflags) < 0) {
             if (HAVE_JOB(domflags) && vm)
                 qemuDomainObjEndJob(driver, vm);
 
