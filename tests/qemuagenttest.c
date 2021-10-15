@@ -907,7 +907,7 @@ testQemuAgentGetInterfaces(const void *data)
         goto cleanup;
 
     if ((ifaces_count = qemuAgentGetInterfaces(qemuMonitorTestGetAgent(test),
-                                               &ifaces)) < 0)
+                                               &ifaces, true)) < 0)
         goto cleanup;
 
     if (ifaces_count != 4) {

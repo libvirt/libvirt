@@ -151,7 +151,8 @@ int qemuAgentSetTime(qemuAgent *mon,
                      bool sync);
 
 int qemuAgentGetInterfaces(qemuAgent *mon,
-                           virDomainInterfacePtr **ifaces);
+                           virDomainInterfacePtr **ifaces,
+                           bool report_unsupported);
 
 int qemuAgentSetUserPassword(qemuAgent *mon,
                              const char *user,

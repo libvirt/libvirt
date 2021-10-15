@@ -2223,17 +2223,20 @@ qemuAgentGetAllInterfaceAddresses(virDomainInterfacePtr **ifaces_ret,
  */
 int
 qemuAgentGetInterfaces(qemuAgent *agent,
-                       virDomainInterfacePtr **ifaces)
+                       virDomainInterfacePtr **ifaces,
+                       bool report_unsupported)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *ret_array = NULL;
+    int rc;
 
     if (!(cmd = qemuAgentMakeCommand("guest-network-get-interfaces", NULL)))
         return -1;
 
-    if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        return -1;
+    if ((rc = qemuAgentCommandFull(agent, cmd, &reply, agent->timeout,
+                                   report_unsupported)) < 0)
+        return rc;
 
     if (!(ret_array = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

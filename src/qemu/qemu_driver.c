@@ -19171,7 +19171,7 @@ qemuDomainInterfaceAddresses(virDomainPtr dom,
             goto endjob;
 
         agent = qemuDomainObjEnterAgent(vm);
-        ret = qemuAgentGetInterfaces(agent, ifaces);
+        ret = qemuAgentGetInterfaces(agent, ifaces, true);
         qemuDomainObjExitAgent(vm, agent);
 
     endjob:
