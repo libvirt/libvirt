@@ -26,12 +26,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -chardev socket,id=charserial0,path=/tmp/serial.sock \
--device isa-serial,chardev=charserial0,id=serial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0"}' \
 -chardev socket,id=charserial1,fd=1729,server=on,wait=off \
--device isa-serial,chardev=charserial1,id=serial1 \
+-device '{"driver":"isa-serial","chardev":"charserial1","id":"serial1"}' \
 -audiodev id=audio1,driver=none \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

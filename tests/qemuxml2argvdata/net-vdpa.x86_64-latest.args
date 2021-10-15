@@ -26,10 +26,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -add-fd set=0,fd=1732,opaque=/dev/vhost-vdpa-0 \
 -netdev vhost-vdpa,vhostdev=/dev/fdset/0,id=hostnet0 \
--device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:95:db:c0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"52:54:00:95:db:c0","bus":"pci.0","addr":"0x2"}' \
 -audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -26,21 +26,21 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"http","url":"http://example.org:80/test.img","timeout":1234,"node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw","file":"libvirt-4-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-4-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-4-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"https","url":"https://example.org:443/test2.img","readahead":1024,"node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"raw","file":"libvirt-3-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-3-format,id=virtio-disk1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-3-format","id":"virtio-disk1"}' \
 -object '{"qom-type":"secret","id":"libvirt-2-storage-httpcookie-secret0","data":"DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"http","url":"http://example.org:1234/test3.img","cookie-secret":"libvirt-2-storage-httpcookie-secret0","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-2-format,id=virtio-disk2 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-2-format","id":"virtio-disk2"}' \
 -object '{"qom-type":"secret","id":"libvirt-1-storage-httpcookie-secret0","data":"DrPR9NA6GKJb7qi1KbjHaealKEMVtOWUl2h3yvO5lgIh6cyLHemmlg+h9fcgwREA","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"https","url":"https://example.org:1234/test4.img?par=val&other=ble","sslverify":false,"cookie-secret":"libvirt-1-storage-httpcookie-secret0","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x5,drive=libvirt-1-format,id=virtio-disk3 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-1-format","id":"virtio-disk3"}' \
 -audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

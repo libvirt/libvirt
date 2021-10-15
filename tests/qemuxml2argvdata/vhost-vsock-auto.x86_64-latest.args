@@ -26,9 +26,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -no-shutdown \
 -no-acpi \
 -boot menu=on,strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
 -audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device vhost-vsock-pci,id=vsock0,guest-cid=42,vhostfd=6789,bus=pci.0,addr=0x2 \
+-device '{"driver":"vhost-vsock-pci","id":"vsock0","guest-cid":42,"vhostfd":"6789","bus":"pci.0","addr":"0x2"}' \
 -msg timestamp=on

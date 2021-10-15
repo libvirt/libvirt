@@ -25,10 +25,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev id=audio1,driver=none \
 -vnc 127.0.0.1:0,audiodev=audio1 \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,vram64_size_mb=0,vgamem_mb=16,max_outputs=1,bus=pci.0,addr=0x2 \
--device vfio-pci,id=hostdev0,sysfsdev=/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc,display=on,bus=pci.0,addr=0x3 \
+-device '{"driver":"qxl-vga","id":"video0","ram_size":67108864,"vram_size":67108864,"vram64_size_mb":0,"vgamem_mb":16,"max_outputs":1,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"vfio-pci","id":"hostdev0","sysfsdev":"/sys/bus/mdev/devices/53764d0e-85a0-42b4-af5c-2046b460b1dc","display":"on","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

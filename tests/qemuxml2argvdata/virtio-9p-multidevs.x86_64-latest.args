@@ -26,16 +26,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -fsdev local,security_model=mapped,multidevs=remap,id=fsdev-fs0,path=/export/fs0 \
--device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=fs0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-9p-pci","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"fs0","bus":"pci.0","addr":"0x2"}' \
 -fsdev local,security_model=mapped,multidevs=forbid,id=fsdev-fs1,path=/export/fs1 \
--device virtio-9p-pci,id=fs1,fsdev=fsdev-fs1,mount_tag=fs1,bus=pci.0,addr=0x3 \
+-device '{"driver":"virtio-9p-pci","id":"fs1","fsdev":"fsdev-fs1","mount_tag":"fs1","bus":"pci.0","addr":"0x3"}' \
 -fsdev local,security_model=mapped,multidevs=warn,id=fsdev-fs2,path=/export/fs2 \
--device virtio-9p-pci,id=fs2,fsdev=fsdev-fs2,mount_tag=fs2,bus=pci.0,addr=0x4 \
+-device '{"driver":"virtio-9p-pci","id":"fs2","fsdev":"fsdev-fs2","mount_tag":"fs2","bus":"pci.0","addr":"0x4"}' \
 -chardev pty,id=charserial0 \
--device isa-serial,chardev=charserial0,id=serial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0"}' \
 -audiodev id=audio1,driver=none \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0xc \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0xc"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

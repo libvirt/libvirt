@@ -26,12 +26,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -global isa-fdc.bootindexA=1 \
 -blockdev '{"driver":"vvfat","dir":"/var/somefiles","floppy":true,"rw":false,"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
--device floppy,unit=0,drive=libvirt-1-format,id=fdc0-0-0 \
+-device '{"driver":"floppy","unit":0,"drive":"libvirt-1-format","id":"fdc0-0-0"}' \
 -audiodev id=audio1,driver=none \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

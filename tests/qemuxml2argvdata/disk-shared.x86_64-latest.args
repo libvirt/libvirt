@@ -26,21 +26,21 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.0","addr":"0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-4-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-4-storage"}' \
--device ide-hd,bus=ide.0,unit=0,share-rw=on,drive=libvirt-4-format,id=ide0-0-0,bootindex=1,write-cache=on,serial=XYZXYZXYZYXXYZYZYXYZY \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"share-rw":true,"drive":"libvirt-4-format","id":"ide0-0-0","bootindex":1,"write-cache":"on","serial":"XYZXYZXYZYXXYZYZYXYZY"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw","file":"libvirt-3-storage"}' \
--device ide-cd,bus=ide.1,unit=0,drive=libvirt-3-format,id=ide0-1-0 \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-3-format","id":"ide0-1-0"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/scsi","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-2-storage"}' \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi0-0-0-0,share-rw=on,drive=libvirt-2-format,id=scsi0-0-0-0,write-cache=on \
+-device '{"driver":"scsi-hd","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi0-0-0-0","share-rw":true,"drive":"libvirt-2-format","id":"scsi0-0-0-0","write-cache":"on"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/virtio","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,share-rw=on,drive=libvirt-1-format,id=virtio-disk0,write-cache=on \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","share-rw":true,"drive":"libvirt-1-format","id":"virtio-disk0","write-cache":"on"}' \
 -audiodev id=audio1,driver=none \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

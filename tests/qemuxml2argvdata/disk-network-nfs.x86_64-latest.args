@@ -26,15 +26,15 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"nfs","server":{"host":"example.com","type":"inet"},"path":"/foo/bar/baz","user":6234,"group":12354,"node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-3-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-3-format,id=virtio-disk0,bootindex=1,write-cache=on,serial=eb90327c-8302-4725-9e1b-4e85ed4dc251 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-3-format","id":"virtio-disk0","bootindex":1,"write-cache":"on","serial":"eb90327c-8302-4725-9e1b-4e85ed4dc251"}' \
 -blockdev '{"driver":"nfs","server":{"host":"example.org","type":"inet"},"path":"/backing/store/nfs","user":1234,"group":5678,"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"qcow2","file":"libvirt-2-storage","backing":null}' \
 -blockdev '{"driver":"gluster","volume":"Volume2","path":"Image","server":[{"type":"unix","path":"/path/to/sock"}],"debug":4,"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":"libvirt-2-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-1-format,id=virtio-disk1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-1-format","id":"virtio-disk1"}' \
 -audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

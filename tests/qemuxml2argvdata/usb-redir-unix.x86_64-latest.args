@@ -26,15 +26,15 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device ich9-usb-ehci1,id=usb,bus=pci.0,addr=0x4.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,addr=0x4 \
--device ich9-usb-uhci2,masterbus=usb.0,firstport=2,bus=pci.0,addr=0x4.0x1 \
--device ich9-usb-uhci3,masterbus=usb.0,firstport=4,bus=pci.0,addr=0x4.0x2 \
+-device '{"driver":"ich9-usb-ehci1","id":"usb","bus":"pci.0","addr":"0x4.0x7"}' \
+-device '{"driver":"ich9-usb-uhci1","masterbus":"usb.0","firstport":0,"bus":"pci.0","multifunction":true,"addr":"0x4"}' \
+-device '{"driver":"ich9-usb-uhci2","masterbus":"usb.0","firstport":2,"bus":"pci.0","addr":"0x4.0x1"}' \
+-device '{"driver":"ich9-usb-uhci3","masterbus":"usb.0","firstport":4,"bus":"pci.0","addr":"0x4.0x2"}' \
 -audiodev id=audio1,driver=none \
 -chardev socket,id=charredir0,path=/tmp/connect.socket \
--device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=1 \
+-device '{"driver":"usb-redir","chardev":"charredir0","id":"redir0","bus":"usb.0","port":"1"}' \
 -chardev socket,id=charredir1,fd=1729,server=on,wait=off \
--device usb-redir,chardev=charredir1,id=redir1,bus=usb.0,port=2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"usb-redir","chardev":"charredir1","id":"redir1","bus":"usb.0","port":"2"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

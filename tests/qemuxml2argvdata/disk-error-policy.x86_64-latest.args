@@ -26,16 +26,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-3-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-3-format,id=ide0-0-0,bootindex=1,write-cache=on,werror=stop,rerror=stop \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-3-format","id":"ide0-0-0","bootindex":1,"write-cache":"on","werror":"stop","rerror":"stop"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-2-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-2-storage"}' \
--device ide-hd,bus=ide.0,unit=1,drive=libvirt-2-format,id=ide0-0-1,write-cache=on,werror=enospc \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":1,"drive":"libvirt-2-format","id":"ide0-0-1","write-cache":"on","werror":"enospc"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest3","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
--device ide-hd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0,write-cache=on,werror=report,rerror=ignore \
+-device '{"driver":"ide-hd","bus":"ide.1","unit":0,"drive":"libvirt-1-format","id":"ide0-1-0","write-cache":"on","werror":"report","rerror":"ignore"}' \
 -audiodev id=audio1,driver=none \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
