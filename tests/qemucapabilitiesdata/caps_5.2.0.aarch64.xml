@@ -183,6 +183,7 @@
   <flag name='input-linux'/>
   <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
+  <flag name='query-dirty-rate'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700243</microcodeVersion>

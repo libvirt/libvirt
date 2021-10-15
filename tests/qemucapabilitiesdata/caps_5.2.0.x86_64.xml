@@ -227,6 +227,7 @@
   <flag name='virtio-blk.queue-size'/>
   <flag name='virtio-mem-pci'/>
   <flag name='piix4.acpi-root-pci-hotplug'/>
+  <flag name='query-dirty-rate'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

@@ -239,6 +239,7 @@
   <flag name='memory-backend-file.reserve'/>
   <flag name='piix4.acpi-root-pci-hotplug'/>
   <flag name='ich9.acpi-hotplug-bridge'/>
+  <flag name='query-dirty-rate'/>
   <version>6001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

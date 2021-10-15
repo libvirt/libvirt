@@ -650,6 +650,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 415 */
               "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
               "device.json", /* QEMU_CAPS_DEVICE_JSON */
+              "query-dirty-rate", /* QEMU_CAPS_QUERY_DIRTY_RATE */
     );
 
 
@@ -1194,6 +1195,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "blockdev-reopen", QEMU_CAPS_BLOCKDEV_REOPEN },
     { "set-numa-node", QEMU_CAPS_NUMA },
     { "set-action", QEMU_CAPS_SET_ACTION },
+    { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

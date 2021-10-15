@@ -630,6 +630,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 415 */
     QEMU_CAPS_CHARDEV_JSON, /* -chardev accepts JSON */
     QEMU_CAPS_DEVICE_JSON, /* -device accepts JSON */
+    QEMU_CAPS_QUERY_DIRTY_RATE, /* accepts query-dirty-rate */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
