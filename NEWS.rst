@@ -19,6 +19,11 @@ v7.10.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: Report guest interface information in ``virDomainGetGuestInfo``
+
+    Libvirt is now able to report interface information from the guest's
+    perspective (using guest agent).
+
 * **Bug fixes**
 
 
