@@ -6825,6 +6825,11 @@
         <ref name="virOnOff"/>
       </attribute>
     </optional>
+    <optional>
+      <attribute name="page_per_vq">
+        <ref name="virOnOff"/>
+      </attribute>
+    </optional>
   </define>
 
   <define name="usbmaster">

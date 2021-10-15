@@ -135,6 +135,12 @@ virDomainCheckVirtioOptionsAreAbsent(virDomainVirtioOptions *virtio)
                          "for virtio devices"));
         return -1;
     }
+
+    if (virtio->page_per_vq != VIR_TRISTATE_SWITCH_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("page_per_vq option is only supported for virtio devices"));
+        return -1;
+    }
     return 0;
 }
 

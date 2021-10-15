@@ -3577,6 +3577,15 @@ virtqueues are actually used depends on the feature negotiation between QEMU,
 vhost backends and guest drivers. Possible values are ``on`` or ``off``.
 :since:`Since 6.3.0 (QEMU and KVM only)`
 
+This optional attribute ``page_per_vq`` controls the layout of the notification
+capabilities exposed to the guest. When enabled, each virtio queue will have a
+dedicated page on the device BAR exposed to the guest. It is recommended to be
+used when vDPA is enabled on the hypervisor, as it enables mapping the
+notification area to the physical device, which is only supported in page
+granularity. The default is determined by QEMU. :since:`Since 7.8.0 (QEMU 2.8)`
+Note: In general you should leave this option alone, unless you are very certain
+you know what you are doing.
+
 :anchor:`<a id="elementsVirtioTransitional"/>`
 
 Virtio transitional devices

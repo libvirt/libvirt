@@ -2740,6 +2740,7 @@ struct _virDomainVirtioOptions {
     virTristateSwitch iommu;
     virTristateSwitch ats;
     virTristateSwitch packed;
+    virTristateSwitch page_per_vq;
 };
 
 

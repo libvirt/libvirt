@@ -1636,6 +1636,10 @@ virDomainVirtioOptionsParseXML(xmlNodePtr driver,
                                  &(*virtio)->packed) < 0)
         return -1;
 
+    if (virXMLPropTristateSwitch(driver, "page_per_vq", VIR_XML_PROP_NONE,
+                                 &(*virtio)->page_per_vq) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -6320,6 +6324,10 @@ virDomainVirtioOptionsFormat(virBuffer *buf,
     if (virtio->packed != VIR_TRISTATE_SWITCH_ABSENT) {
         virBufferAsprintf(buf, " packed='%s'",
                           virTristateSwitchTypeToString(virtio->packed));
+    }
+    if (virtio->page_per_vq != VIR_TRISTATE_SWITCH_ABSENT) {
+        virBufferAsprintf(buf, " page_per_vq='%s'",
+                          virTristateSwitchTypeToString(virtio->page_per_vq));
     }
 }
 
@@ -20814,6 +20822,14 @@ virDomainVirtioOptionsCheckABIStability(virDomainVirtioOptions *src,
                          "match source '%s'"),
                        virTristateSwitchTypeToString(dst->packed),
                        virTristateSwitchTypeToString(src->packed));
+        return false;
+    }
+    if (src->page_per_vq != dst->page_per_vq) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target device page_per_vq option '%s' does not "
+                         "match source '%s'"),
+                       virTristateSwitchTypeToString(dst->page_per_vq),
+                       virTristateSwitchTypeToString(src->page_per_vq));
         return false;
     }
     return true;
