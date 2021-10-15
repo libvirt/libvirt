@@ -524,6 +524,7 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTest *test,
                                              virJSONValue *args)
 {
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
+    bool allowIncomplete = false;
 
     if (!test->qapischema)
         return 0;
@@ -535,14 +536,14 @@ qemuMonitorTestProcessCommandDefaultValidate(qemuMonitorTest *test,
         return -1;
     }
 
-    /* 'device_add' needs to be skipped as it does not have fully defined schema */
+    /* The schema of 'device_add' is incomplete so we relax the validator */
     if (STREQ(cmdname, "device_add"))
-        return 0;
+        allowIncomplete = true;
 
     if (testQEMUSchemaValidateCommand(cmdname, args, test->qapischema,
                                       test->skipValidationDeprecated,
                                       test->skipValidationRemoved,
-                                      false,
+                                      allowIncomplete,
                                       &debug) < 0) {
         if (virTestGetDebug() == 2) {
             g_autofree char *argstr = NULL;
