@@ -1592,6 +1592,7 @@ qemuValidateDomainVirtioOptions(const virDomainVirtioOptions *virtio,
                              "QEMU binary"));
             return -1;
         }
+
     return 0;
 }
 

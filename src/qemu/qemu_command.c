@@ -1122,6 +1122,7 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
                                   "T:iommu_platform", virtioOptions->iommu,
                                   "T:ats", virtioOptions->ats,
                                   "T:packed", virtioOptions->packed,
+                                  "T:page-per-vq", virtioOptions->page_per_vq,
                                   NULL) < 0)
             return NULL;
     }

@@ -18,7 +18,7 @@
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
-      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on'/>
+      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source file='/var/lib/libvirt/images/img1'/>
       <target dev='vda' bus='virtio'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0a' function='0x0'/>
@@ -30,22 +30,22 @@
       <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x1'/>
     </controller>
     <controller type='scsi' index='0' model='virtio-scsi'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x08' function='0x0'/>
     </controller>
     <controller type='pci' index='0' model='pci-root'/>
     <controller type='virtio-serial' index='0'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x09' function='0x0'/>
     </controller>
     <filesystem type='mount' accessmode='passthrough'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source dir='/export/fs1'/>
       <target dir='fs1'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </filesystem>
     <filesystem type='mount' accessmode='mapped'>
-      <driver type='path' wrpolicy='immediate' iommu='on' ats='on' packed='on'/>
+      <driver type='path' wrpolicy='immediate' iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source dir='/export/fs2'/>
       <target dir='fs2'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
@@ -53,23 +53,23 @@
     <interface type='user'>
       <mac address='52:54:56:58:5a:5c'/>
       <model type='virtio'/>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </interface>
     <input type='mouse' bus='virtio'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0e' function='0x0'/>
     </input>
     <input type='keyboard' bus='virtio'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x10' function='0x0'/>
     </input>
     <input type='tablet' bus='virtio'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x11' function='0x0'/>
     </input>
     <input type='passthrough' bus='virtio'>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <source evdev='/dev/input/event1234'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x12' function='0x0'/>
     </input>
@@ -77,7 +77,7 @@
     <input type='keyboard' bus='ps2'/>
     <audio id='1' type='none'/>
     <video>
-      <driver iommu='on' ats='on' packed='on' name='vhostuser'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on' name='vhostuser'/>
       <model type='virtio' heads='1' primary='yes'>
         <acceleration accel3d='yes' rendernode='/dev/dri/test'/>
       </model>
@@ -85,11 +85,11 @@
     </video>
     <memballoon model='virtio'>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0c' function='0x0'/>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
     </memballoon>
     <rng model='virtio'>
       <backend model='random'>/dev/random</backend>
-      <driver iommu='on' ats='on' packed='on'/>
+      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x0d' function='0x0'/>
     </rng>
   </devices>
