@@ -2700,7 +2700,7 @@ guestinfo
 ::
 
    guestinfo domain [--user] [--os] [--timezone] [--hostname] [--filesystem]
-      [--disk]
+      [--disk] [--interface]
 
 Print information about the guest from the point of view of the guest agent.
 Note that this command requires a guest agent to be configured and running in
@@ -2711,7 +2711,7 @@ are supported by the guest agent. You can limit the types of information that
 are returned by specifying one or more flags.  If a requested information
 type is not supported, the processes will provide an exit code of 1.
 Available information types flags are *--user*, *--os*,
-*--timezone*, *--hostname*, *--filesystem* and *--disk*.
+*--timezone*, *--hostname*, *--filesystem*, *--disk* and *--interface*.
 
 Note that depending on the hypervisor type and the version of the guest agent
 running within the domain, not all of the following information may be
@@ -2779,6 +2779,14 @@ returned:
 * ``disk.<num>.alias`` - the device alias of the disk (e.g. sda)
 * ``disk.<num>.guest_alias`` - optional alias assigned to the disk
 
+*--interface* returns:
+* ``if.count`` - the number of interfaces defined on this domain
+* ``if.<num>.name`` - name in the guest (e.g. ``eth0``) for interface <num>
+* ``if.<num>.hwaddr`` - hardware address in the guest for interface <num>
+* ``if.<num>.addr.count`` - the number of IP addresses of interface <num>
+* ``if.<num>.addr.<num1>.type`` - the IP address type of addr <num1> (e.g. ipv4)
+* ``if.<num>.addr.<num1>.addr`` - the IP address of addr <num1>
+* ``if.<num>.addr.<num1>.prefix`` - the prefix of IP address of addr <num1>
 
 guestvcpus
 ----------

@@ -14077,6 +14077,10 @@ static const vshCmdOptDef opts_guestinfo[] = {
      .type = VSH_OT_BOOL,
      .help = N_("report disk information"),
     },
+    {.name = "interface",
+     .type = VSH_OT_BOOL,
+     .help = N_("report interface information"),
+    },
     {.name = NULL}
 };
 
@@ -14102,6 +14106,8 @@ cmdGuestInfo(vshControl *ctl, const vshCmd *cmd)
         types |= VIR_DOMAIN_GUEST_INFO_FILESYSTEM;
     if (vshCommandOptBool(cmd, "disk"))
         types |= VIR_DOMAIN_GUEST_INFO_DISKS;
+    if (vshCommandOptBool(cmd, "interface"))
+        types |= VIR_DOMAIN_GUEST_INFO_INTERFACES;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
