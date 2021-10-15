@@ -4023,6 +4023,7 @@ struct _virQEMUCapsCachePriv {
     gid_t runGid;
     virArch hostArch;
     unsigned int microcodeVersion;
+    virCPUData *cpuData;
     char *kernelVersion;
     char *hostCPUSignature;
 
@@ -4040,6 +4041,7 @@ virQEMUCapsCachePrivFree(void *privData)
 
     g_free(priv->libDir);
     g_free(priv->kernelVersion);
+    virCPUDataFree(priv->cpuData);
     g_free(priv->hostCPUSignature);
     g_free(priv);
 }
@@ -5567,6 +5569,8 @@ virQEMUCapsCacheNew(const char *libDir,
 
     if (uname(&uts) == 0)
         priv->kernelVersion = g_strdup_printf("%s %s", uts.release, uts.version);
+
+    priv->cpuData = virCPUDataGetHost();
 
  cleanup:
     return cache;
