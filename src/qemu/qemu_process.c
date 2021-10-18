@@ -2856,12 +2856,24 @@ qemuProcessResctrlCreate(virQEMUDriver *driver,
 
 
 static char *
-qemuProcessBuildPRHelperPidfilePath(virDomainObj *vm)
+qemuProcessBuildPRHelperPidfilePathOld(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     const char *prdAlias = qemuDomainGetManagedPRAlias();
 
     return virPidFileBuildPath(priv->libDir, prdAlias);
+}
+
+
+static char *
+qemuProcessBuildPRHelperPidfilePath(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autofree char *domname = virDomainDefGetShortName(vm->def);
+    g_autofree char *prdName = g_strdup_printf("%s-%s", domname, qemuDomainGetManagedPRAlias());
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+
+    return virPidFileBuildPath(cfg->stateDir, prdName);
 }
 
 
@@ -2875,6 +2887,14 @@ qemuProcessKillManagedPRDaemon(virDomainObj *vm)
     if (!(pidfile = qemuProcessBuildPRHelperPidfilePath(vm))) {
         VIR_WARN("Unable to construct pr-helper pidfile path");
         return;
+    }
+
+    if (!virFileExists(pidfile)) {
+        g_free(pidfile);
+        if (!(pidfile = qemuProcessBuildPRHelperPidfilePathOld(vm))) {
+            VIR_WARN("Unable to construct pr-helper pidfile path");
+            return;
+        }
     }
 
     virErrorPreserveLast(&orig_err);
