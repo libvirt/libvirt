@@ -1,0 +1,52 @@
+---
+# Configuration for Repo Lockdown - https://github.com/dessant/repo-lockdown
+
+name: 'Repo Lockdown'
+
+on:
+  issues:
+    types: opened
+  pull_request_target:
+    types: opened
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  action:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dessant/repo-lockdown@v2
+        with:
+          issue-comment: |
+            Thank you for your interest in the libvirt project.
+
+            Since this repository is a read-only mirror of the project's master
+            repostory hosted on GitLab, issues opened here are not processed.
+
+            We kindly request that new issues are reported to
+
+              https://gitlab.com/libvirt/libvirt/-/issues/new
+
+            Thank you for your time and understanding.
+          lock-issue: true
+          close-issue: true
+          pr-comment: |
+            Thank you for your interest in the libvirt project.
+
+            Since this repository is a read-only mirror of the project's master
+            repostory hosted on GitLab, merge requests opened here are not
+            processed.
+
+            We kindly request that contributors fork the project at
+
+              https://gitlab.com/libvirt/libvirt/
+
+            push changes to the fork, and then open a new merge request at
+
+              https://gitlab.com/libvirt/libvirt/-/merge_requests/new
+
+            Thank you for your time and understanding.
+          lock-pr: true
+          close-pr: true
