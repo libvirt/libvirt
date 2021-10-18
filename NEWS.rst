@@ -42,6 +42,13 @@ v7.9.0 (unreleased)
 
 * **Improvements**
 
+  * Use of JSON syntax with ``-device`` with upcoming QEMU-6.2
+
+    Libvirt started using JSON directly with the ``-device`` commandline
+    parameter as it's considered the preferred stable syntax for further QEMU
+    releases. If any problems with the conversion are encoutered please
+    report them as soon as possible.
+
 * **Bug fixes**
 
   * qemu: Fix problems on ``virsh domstats`` with qemu <5.2.0
