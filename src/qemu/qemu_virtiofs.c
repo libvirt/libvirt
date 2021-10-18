@@ -39,9 +39,9 @@
 VIR_LOG_INIT("qemu.virtiofs");
 
 
-char *
-qemuVirtioFSCreatePidFilename(virDomainObj *vm,
-                              const char *alias)
+static char *
+qemuVirtioFSCreatePidFilenameOld(virDomainObj *vm,
+                                 const char *alias)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *name = NULL;
@@ -49,6 +49,19 @@ qemuVirtioFSCreatePidFilename(virDomainObj *vm,
     name = g_strdup_printf("%s-fs", alias);
 
     return virPidFileBuildPath(priv->libDir, name);
+}
+
+
+char *
+qemuVirtioFSCreatePidFilename(virDomainObj *vm,
+                              const char *alias)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autofree char *domname = virDomainDefGetShortName(vm->def);
+    g_autofree char *name = g_strdup_printf("%s-%s-fs", domname, alias);
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+
+    return virPidFileBuildPath(cfg->stateDir, name);
 }
 
 
@@ -282,6 +295,12 @@ qemuVirtioFSStop(virQEMUDriver *driver G_GNUC_UNUSED,
 
     if (!(pidfile = qemuVirtioFSCreatePidFilename(vm, fs->info.alias)))
         goto cleanup;
+
+    if (!virFileExists(pidfile)) {
+        g_free(pidfile);
+        if (!(pidfile = qemuVirtioFSCreatePidFilenameOld(vm, fs->info.alias)))
+            goto cleanup;
+    }
 
     if (virPidFileForceCleanupPathFull(pidfile, true) < 0) {
         VIR_WARN("Unable to kill virtiofsd process");
