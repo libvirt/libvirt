@@ -18811,14 +18811,12 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     virQEMUDriver *driver = conn->privateData;
     virErrorPtr orig_err = NULL;
     virDomainObj **vms = NULL;
-    virDomainObj *vm;
     size_t nvms;
     virDomainStatsRecordPtr *tmpstats = NULL;
     bool enforce = !!(flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS);
     int nstats = 0;
     size_t i;
     int ret = -1;
-    unsigned int domflags = 0;
     unsigned int lflags = flags & (VIR_CONNECT_LIST_DOMAINS_FILTERS_ACTIVE |
                                    VIR_CONNECT_LIST_DOMAINS_FILTERS_PERSISTENT |
                                    VIR_CONNECT_LIST_DOMAINS_FILTERS_STATE);
@@ -18848,12 +18846,11 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
     tmpstats = g_new0(virDomainStatsRecordPtr, nvms + 1);
 
     for (i = 0; i < nvms; i++) {
+        virDomainObj *vm = vms[i];
         virDomainStatsRecordPtr tmp = NULL;
         unsigned int privflags = 0;
         unsigned int requestedStats = stats;
-
-        domflags = 0;
-        vm = vms[i];
+        unsigned int domflags = 0;
 
         virObjectLock(vm);
 
