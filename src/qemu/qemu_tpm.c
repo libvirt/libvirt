@@ -385,6 +385,43 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
     return virCommandSetSendBuffer(cmd, g_steal_pointer(&secret), secret_len);
 }
 
+
+/*
+ * qemuTPMCreateConfigFiles: run swtpm_setup --create-config-files skip-if-exist
+ */
+static int
+qemuTPMCreateConfigFiles(const char *swtpm_setup)
+{
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *errbuf = NULL;
+    int exitstatus;
+
+    if (!virTPMSwtpmSetupCapsGet(
+            VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_CREATE_CONFIG_FILES))
+        return 0;
+
+    cmd = virCommandNew(swtpm_setup);
+    if (!cmd)
+        return -1;
+
+    virCommandAddArgList(cmd, "--create-config-files", "skip-if-exist", NULL);
+    virCommandClearCaps(cmd);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+
+    if (virCommandRun(cmd, &exitstatus) < 0)
+        return -1;
+    if (exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not run '%s' to create config files. "
+                         "exitstatus: %d;\nError: %s"),
+                          swtpm_setup, exitstatus, errbuf);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * qemuTPMEmulatorRunSetup
  *
@@ -431,6 +468,9 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
                                _("Did not create EK and certificates since "
                                  "this requires privileged mode for a "
                                  "TPM 1.2\n"), 0600);
+
+    if (!privileged && qemuTPMCreateConfigFiles(swtpm_setup) < 0)
+        return -1;
 
     cmd = virCommandNew(swtpm_setup);
     if (!cmd)
