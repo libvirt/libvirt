@@ -18461,11 +18461,10 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
                         unsigned int privflags)
 {
     size_t i;
-    int ret = -1;
     int rc;
-    GHashTable *stats = NULL;
-    GHashTable *nodestats = NULL;
-    virJSONValue *nodedata = NULL;
+    g_autoptr(GHashTable) stats = NULL;
+    g_autoptr(GHashTable) nodestats = NULL;
+    g_autoptr(virJSONValue) nodedata = NULL;
     qemuDomainObjPrivate *priv = dom->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
@@ -18492,7 +18491,7 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
             nodedata = qemuMonitorQueryNamedBlockNodes(priv->mon);
 
         if (qemuDomainObjExitMonitor(driver, dom) < 0)
-            goto cleanup;
+            return -1;
 
         /* failure to retrieve stats is fine at this point */
         if (rc < 0 || (fetchnodedata && !nodedata))
@@ -18501,31 +18500,26 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
 
     if (nodedata &&
         !(nodestats = qemuBlockGetNodeData(nodedata)))
-        goto cleanup;
+        return -1;
 
     /* When listing backing chains, it's easier to fix up the count
      * after the iteration than it is to iterate twice; but we still
      * want count listed first.  */
     count_index = params->npar;
     if (virTypedParamListAddUInt(params, 0, "block.count") < 0)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < dom->def->ndisks; i++) {
         if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, nodestats,
                                               params, &visited,
                                               visitBacking, driver, cfg, dom,
                                               blockdev) < 0)
-            goto cleanup;
+            return -1;
     }
 
     params->par[count_index].value.ui = visited;
-    ret = 0;
 
- cleanup:
-    virHashFree(stats);
-    virHashFree(nodestats);
-    virJSONValueFree(nodedata);
-    return ret;
+    return 0;
 }
 
 
