@@ -79,8 +79,7 @@ virJSONValue *qemuMonitorJSONQueryBlockstats(qemuMonitor *mon);
 int qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
                                         GHashTable *hash);
 int qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                            GHashTable *stats,
-                                            bool backingChain);
+                                            GHashTable *stats);
 int qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
                                                     GHashTable *stats);
 

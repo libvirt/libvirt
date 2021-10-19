@@ -2617,8 +2617,7 @@ static int
 qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
                                            const char *dev_name,
                                            int depth,
-                                           GHashTable *stats,
-                                           bool backingChain)
+                                           GHashTable *stats)
 {
     g_autofree char *entry_name = qemuDomainStorageAlias(dev_name, depth);
     virJSONValue *backing;
@@ -2627,13 +2626,11 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
                                                     stats, NULL) < 0)
         return -1;
 
-    if (backingChain &&
-        (backing = virJSONValueObjectGetObject(image, "backing-image")) &&
+    if ((backing = virJSONValueObjectGetObject(image, "backing-image")) &&
         qemuMonitorJSONBlockStatsUpdateCapacityOne(backing,
                                                    dev_name,
                                                    depth + 1,
-                                                   stats,
-                                                   true) < 0)
+                                                   stats) < 0)
         return -1;
 
     return 0;
@@ -2642,8 +2639,7 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
 
 int
 qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                        GHashTable *stats,
-                                        bool backingChain)
+                                        GHashTable *stats)
 {
     size_t i;
     g_autoptr(virJSONValue) devices = NULL;
@@ -2668,9 +2664,7 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
             !(image = virJSONValueObjectGetObject(inserted, "image")))
             continue;
 
-        if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, 0,
-                                                       stats,
-                                                       backingChain) < 0)
+        if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, 0, stats) < 0)
             return -1;
     }
 

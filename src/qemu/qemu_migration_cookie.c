@@ -495,7 +495,7 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
     if (blockdev)
         rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
     else
-        rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats, false);
+        rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats);
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
         return -1;
 
