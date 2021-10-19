@@ -18478,14 +18478,14 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
 
-        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, visitBacking);
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, true);
 
         if (rc >= 0) {
             if (blockdev)
                 rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
             else
                 ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats,
-                                                                 visitBacking));
+                                                                 true));
         }
 
         if (fetchnodedata)
