@@ -2660,9 +2660,8 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
                                         GHashTable *stats,
                                         bool backingChain)
 {
-    int ret = -1;
     size_t i;
-    virJSONValue *devices;
+    g_autoptr(virJSONValue) devices = NULL;
 
     if (!(devices = qemuMonitorJSONQueryBlock(mon)))
         return -1;
@@ -2674,10 +2673,10 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
         const char *dev_name;
 
         if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
-            goto cleanup;
+            return -1;
 
         if (!(dev_name = qemuMonitorJSONGetBlockDevDevice(dev)))
-            goto cleanup;
+            return -1;
 
         /* drive may be empty */
         if (!(inserted = virJSONValueObjectGetObject(dev, "inserted")) ||
@@ -2687,14 +2686,10 @@ qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
         if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, 0,
                                                        stats,
                                                        backingChain) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(devices);
-    return ret;
+    return 0;
 }
 
 
