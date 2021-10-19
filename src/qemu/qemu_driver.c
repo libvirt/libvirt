@@ -10051,13 +10051,13 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, false);
+    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, true);
 
     if (capacity && nstats >= 0) {
         if (blockdev)
             rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, blockstats);
         else
-            rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats, false);
+            rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats, true);
     }
 
     if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0 || rc < 0)
