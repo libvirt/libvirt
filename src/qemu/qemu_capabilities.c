@@ -644,10 +644,11 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-mem-pci", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI */
               "memory-backend-file.reserve", /* QEMU_CAPS_MEMORY_BACKEND_RESERVE */
               "piix4.acpi-root-pci-hotplug", /* QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG */
+              "piix4.acpi-hotplug-bridge", /* QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE */
               "ich9.acpi-hotplug-bridge", /* QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE */
-              "netdev.json", /* QEMU_CAPS_NETDEV_JSON */
 
               /* 415 */
+              "netdev.json", /* QEMU_CAPS_NETDEV_JSON */
               "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
               "device.json", /* QEMU_CAPS_DEVICE_JSON */
               "query-dirty-rate", /* QEMU_CAPS_QUERY_DIRTY_RATE */
@@ -1470,6 +1471,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPiix4PM[] = {
     { "disable_s3", QEMU_CAPS_PIIX_DISABLE_S3, NULL },
     { "disable_s4", QEMU_CAPS_PIIX_DISABLE_S4, NULL },
     { "acpi-root-pci-hotplug", QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG, NULL },
+    { "acpi-pci-hotplug-with-bridge-support", QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBRedir[] = {
