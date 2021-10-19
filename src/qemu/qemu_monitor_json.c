@@ -2631,13 +2631,12 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
                                            GHashTable *stats,
                                            bool backingChain)
 {
-    int ret = -1;
-    char *entry_name = qemuDomainStorageAlias(dev_name, depth);
+    g_autofree char *entry_name = qemuDomainStorageAlias(dev_name, depth);
     virJSONValue *backing;
 
     if (qemuMonitorJSONBlockStatsUpdateCapacityData(image, entry_name,
                                                     stats, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (backingChain &&
         (backing = virJSONValueObjectGetObject(image, "backing-image")) &&
@@ -2646,12 +2645,9 @@ qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
                                                    depth + 1,
                                                    stats,
                                                    true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(entry_name);
-    return ret;
+    return 0;
 }
 
 
