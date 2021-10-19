@@ -738,8 +738,7 @@ struct _qemuBlockStats {
 };
 
 int qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
-                                    GHashTable **ret_stats,
-                                    bool backingChain)
+                                    GHashTable **ret_stats)
     ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockStatsUpdateCapacity(qemuMonitor *mon,

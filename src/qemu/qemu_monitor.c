@@ -2056,27 +2056,22 @@ qemuMonitorQueryBlockstats(qemuMonitor *mon)
  * qemuMonitorGetAllBlockStatsInfo:
  * @mon: monitor object
  * @ret_stats: pointer that is filled with a hash table containing the stats
- * @backingChain: recurse into the backing chain of devices
  *
- * Creates a hash table in @ret_stats with block stats of all devices. In case
- * @backingChain is true @ret_stats will additionally contain stats for
- * backing chain members of block devices.
+ * Creates a hash table in @ret_stats with block stats of all devices and the
+ * backing chains for the block devices.
  *
  * Returns < 0 on error, count of supported block stats fields on success.
  */
 int
 qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
-                                GHashTable **ret_stats,
-                                bool backingChain)
+                                GHashTable **ret_stats)
 {
     int ret;
     g_autoptr(GHashTable) stats = virHashNew(g_free);
 
-    VIR_DEBUG("ret_stats=%p, backing=%d", ret_stats, backingChain);
-
     QEMU_CHECK_MONITOR(mon);
 
-    ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, stats, backingChain);
+    ret = qemuMonitorJSONGetAllBlockStatsInfo(mon, stats);
 
     if (ret < 0)
         return -1;

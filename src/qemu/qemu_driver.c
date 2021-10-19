@@ -10051,7 +10051,7 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
     }
 
     qemuDomainObjEnterMonitor(driver, vm);
-    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats, true);
+    nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats);
 
     if (capacity && nstats >= 0) {
         if (blockdev)
@@ -18477,7 +18477,7 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     if (HAVE_JOB(privflags) && virDomainObjIsActive(dom)) {
         qemuDomainObjEnterMonitor(driver, dom);
 
-        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats, true);
+        rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
 
         if (rc >= 0) {
             if (blockdev)

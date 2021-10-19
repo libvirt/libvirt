@@ -1657,7 +1657,7 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
     CHECK0FULL(wr_highest_offset_valid, WR_HIGHEST_OFFSET_VALID, "%d", "%d")
 
     if (qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitorTestGetMonitor(test),
-                                            blockstats, false) < 0)
+                                            blockstats) < 0)
         return -1;
 
     if (!blockstats) {

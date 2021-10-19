@@ -2469,8 +2469,7 @@ static int
 qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
                                     const char *dev_name,
                                     int depth,
-                                    GHashTable *hash,
-                                    bool backingChain)
+                                    GHashTable *hash)
 {
     g_autofree qemuBlockStats *bstats = NULL;
     int nstats = 0;
@@ -2507,10 +2506,8 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
         qemuMonitorJSONAddOneBlockStatsInfo(bstats, nodename, hash) < 0)
         return -1;
 
-    if (backingChain &&
-        (backing = virJSONValueObjectGetObject(dev, "backing")) &&
-        qemuMonitorJSONGetOneBlockStatsInfo(backing, dev_name, depth + 1,
-                                            hash, true) < 0)
+    if ((backing = virJSONValueObjectGetObject(dev, "backing")) &&
+        qemuMonitorJSONGetOneBlockStatsInfo(backing, dev_name, depth + 1, hash) < 0)
         return -1;
 
     return nstats;
@@ -2538,8 +2535,7 @@ qemuMonitorJSONQueryBlockstats(qemuMonitor *mon)
 
 int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
-                                    GHashTable *hash,
-                                    bool backingChain)
+                                    GHashTable *hash)
 {
     int nstats = 0;
     int rc;
@@ -2570,8 +2566,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
         if (*dev_name == '\0')
             dev_name = NULL;
 
-        rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash,
-                                                 backingChain);
+        rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash);
 
         if (rc < 0)
             return -1;
