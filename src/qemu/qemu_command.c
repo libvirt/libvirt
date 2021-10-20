@@ -359,7 +359,7 @@ qemuVirCommandGetDevSet(virCommand *cmd, int fd)
 
 static char *
 qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
-                                virDomainDeviceInfo *info)
+                                const virDomainDeviceInfo *info)
 {
     g_autofree char *devStr = NULL;
     const char *contAlias = NULL;
@@ -427,7 +427,7 @@ qemuBuildDeviceAddressPCIGetBus(const virDomainDef *domainDef,
 static int
 qemuBuildDeviceAddresDriveProps(virJSONValue *props,
                                 const virDomainDef *domainDef,
-                                virDomainDeviceInfo *info)
+                                const virDomainDeviceInfo *info)
 {
     g_autofree char *bus = NULL;
     virDomainControllerDef *controller = NULL;
@@ -563,7 +563,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
 static int
 qemuBuildDeviceAddressProps(virJSONValue *props,
                             const virDomainDef *domainDef,
-                            virDomainDeviceInfo *info)
+                            const virDomainDeviceInfo *info)
 {
     switch ((virDomainDeviceAddressType) info->type) {
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI: {
