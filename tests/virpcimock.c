@@ -18,6 +18,10 @@
 
 #include <config.h>
 
+#define LIBVIRT_VIRPCIVPDPRIV_H_ALLOW
+
+#include "virpcivpdpriv.h"
+
 #if defined(__linux__) || defined(__FreeBSD__) || defined(__APPLE__)
 # define VIR_MOCK_LOOKUP_MAIN
 # include "virmock.h"
@@ -123,6 +127,13 @@ struct pciDeviceAddress {
 };
 # define ADDR_STR_FMT "%04x:%02x:%02x.%u"
 
+struct pciVPD {
+    /* PCI VPD contents (binary, may contain NULLs), NULL if not present. */
+    const char *data;
+    /* VPD length in bytes. */
+    size_t vpd_len;
+};
+
 struct pciDevice {
     struct pciDeviceAddress addr;
     int vendor;
@@ -131,6 +142,7 @@ struct pciDevice {
     int iommuGroup;
     const char *physfn;
     struct pciDriver *driver;   /* Driver attached. NULL if attached to no driver */
+    struct pciVPD vpd;
 };
 
 struct fdCallback {
@@ -537,6 +549,9 @@ pci_device_new_from_stub(const struct pciDevice *data)
         make_symlink(devpath, "physfn", tmp);
     }
 
+    if (dev->vpd.data && dev->vpd.vpd_len)
+        make_file(devpath, "vpd", dev->vpd.data, dev->vpd.vpd_len);
+
     if (pci_device_autobind(dev) < 0)
         ABORT("Unable to bind: %s", devid);
 
@@ -942,6 +957,20 @@ static void
 init_env(void)
 {
     g_autofree char *tmp = NULL;
+    const char fullVPDExampleData[] = {
+        PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_STRING_RESOURCE_FLAG, 0x08, 0x00,
+        't', 'e', 's', 't', 'n', 'a', 'm', 'e',
+        PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG, 0x16, 0x00,
+        'P', 'N', 0x02, '4', '2',
+        'E', 'C', 0x04, '4', '2', '4', '2',
+        'V', 'A', 0x02, 'E', 'X',
+        'R', 'V', 0x02, 0x31, 0x00,
+        PCI_VPD_RESOURCE_END_VAL
+    };
+    struct pciVPD exampleVPD = {
+        .data = fullVPDExampleData,
+        .vpd_len = sizeof(fullVPDExampleData) / sizeof(fullVPDExampleData[0]),
+    };
 
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
         ABORT("Missing LIBVIRT_FAKE_ROOT_DIR env variable\n");
@@ -1008,6 +1037,8 @@ init_env(void)
 
     MAKE_PCI_DEVICE("0000:01:00.0", 0x1cc1, 0x8201, 14, .klass = 0x010802);
     MAKE_PCI_DEVICE("0000:02:00.0", 0x1cc1, 0x8201, 15, .klass = 0x010802);
+
+    MAKE_PCI_DEVICE("0000:03:00.0", 0x15b3, 0xa2d6, 16, .vpd = exampleVPD);
 }
 
 

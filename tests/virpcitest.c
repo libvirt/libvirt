@@ -17,6 +17,7 @@
  */
 
 #include <config.h>
+#include "internal.h"
 
 #include "testutils.h"
 
@@ -26,6 +27,7 @@
 # include <sys/stat.h>
 # include <fcntl.h>
 # include <virpci.h>
+# include <virpcivpd.h>
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -328,6 +330,39 @@ testVirPCIDeviceUnbind(const void *opaque)
     return ret;
 }
 
+
+static int
+testVirPCIDeviceGetVPD(const void *opaque)
+{
+    const struct testPCIDevData *data = opaque;
+    g_autoptr(virPCIDevice) dev = NULL;
+    virPCIDeviceAddress devAddr = {.domain = data->domain, .bus = data->bus,
+                                   .slot = data->slot, .function = data->function};
+    g_autoptr(virPCIVPDResource) res = NULL;
+
+    dev = virPCIDeviceNew(&devAddr);
+    if (!dev)
+        return -1;
+
+    res = virPCIDeviceGetVPD(dev);
+
+    /* Only basic checks - full parser validation is done elsewhere. */
+    if (res->ro == NULL)
+        return -1;
+
+    if (STRNEQ(res->name, "testname")) {
+        VIR_TEST_DEBUG("Unexpected name present in VPD: %s", res->name);
+        return -1;
+    }
+
+    if (STRNEQ(res->ro->part_number, "42")) {
+        VIR_TEST_DEBUG("Unexpected part number value present in VPD: %s", res->ro->part_number);
+        return -1;
+    }
+
+    return 0;
+}
+
 # define FAKEROOTDIRTEMPLATE abs_builddir "/fakerootdir-XXXXXX"
 
 static int
@@ -408,6 +443,8 @@ mymain(void)
     DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
     DO_TEST_PCI(testVirPCIDeviceReattachSingle, 0, 0x0a, 3, 0);
     DO_TEST_PCI_DRIVER(0, 0x0a, 3, 0, NULL);
+
+    DO_TEST_PCI(testVirPCIDeviceGetVPD, 0, 0x03, 0, 0);
 
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);

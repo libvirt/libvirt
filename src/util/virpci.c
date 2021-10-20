@@ -37,6 +37,7 @@
 #include "virkmod.h"
 #include "virstring.h"
 #include "viralloc.h"
+#include "virpcivpd.h"
 
 VIR_LOG_INIT("util.pci");
 
@@ -2640,6 +2641,61 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     return 0;
 }
 
+
+bool
+virPCIDeviceHasVPD(virPCIDevice *dev)
+{
+    g_autofree char *vpdPath = NULL;
+
+    vpdPath = virPCIFile(dev->name, "vpd");
+    if (!virFileExists(vpdPath)) {
+        VIR_INFO("Device VPD file does not exist %s", vpdPath);
+        return false;
+    } else if (!virFileIsRegular(vpdPath)) {
+        VIR_WARN("VPD path does not point to a regular file %s", vpdPath);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * virPCIDeviceGetVPD:
+ * @dev: a PCI device to get a PCI VPD for.
+ *
+ * Obtain a PCI device's Vital Product Data (VPD). VPD is optional in
+ * both PCI Local Bus and PCIe specifications so there is no guarantee it
+ * will be there for a particular device.
+ *
+ * Returns: a pointer to virPCIVPDResource which needs to be freed by the caller
+ * or NULL if getting it failed for some reason (e.g. invalid format, I/O error).
+ */
+virPCIVPDResource *
+virPCIDeviceGetVPD(virPCIDevice *dev)
+{
+    g_autofree char *vpdPath = NULL;
+    int fd;
+    g_autoptr(virPCIVPDResource) res = NULL;
+
+    vpdPath = virPCIFile(dev->name, "vpd");
+    if (!virPCIDeviceHasVPD(dev)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Device %s does not have a VPD"),
+                virPCIDeviceGetName(dev));
+        return NULL;
+    }
+    if ((fd = open(vpdPath, O_RDONLY)) < 0) {
+        virReportSystemError(-fd, _("Failed to open a VPD file '%s'"), vpdPath);
+        return NULL;
+    }
+    res = virPCIVPDParse(fd);
+
+    if (VIR_CLOSE(fd) < 0) {
+        virReportSystemError(errno, _("Unable to close the VPD file, fd: %d"), fd);
+        return NULL;
+    }
+
+    return g_steal_pointer(&res);
+}
+
 #else
 static const char *unsupported = N_("not supported on non-linux platforms");
 
@@ -2712,6 +2768,20 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path G_GNUC_UNUSED,
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
+}
+
+bool
+virPCIDeviceHasVPD(virPCIDevice *dev G_GNUC_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return NULL;
+}
+
+virPCIVPDResource *
+virPCIDeviceGetVPD(virPCIDevice *dev G_GNUC_UNUSED)
+{
+    virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
+    return NULL;
 }
 #endif /* __linux__ */
 

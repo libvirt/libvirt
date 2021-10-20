@@ -24,6 +24,7 @@
 #include "virmdev.h"
 #include "virobject.h"
 #include "virenum.h"
+#include "virpcivpd.h"
 
 typedef struct _virPCIDevice virPCIDevice;
 typedef struct _virPCIDeviceAddress virPCIDeviceAddress;
@@ -268,6 +269,9 @@ int virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
                                  int pfNetDevIdx,
                                  char **pfname,
                                  int *vf_index);
+
+bool virPCIDeviceHasVPD(virPCIDevice *dev);
+virPCIVPDResource * virPCIDeviceGetVPD(virPCIDevice *dev);
 
 int virPCIDeviceUnbind(virPCIDevice *dev);
 int virPCIDeviceRebind(virPCIDevice *dev);
