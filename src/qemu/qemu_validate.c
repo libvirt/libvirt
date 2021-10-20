@@ -194,7 +194,8 @@ qemuValidateDomainDefPCIFeature(const virDomainDef *def,
             case VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG:
                 if (!ARCH_IS_X86(def->os.arch)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("acpi-bridge-hotplug is not available for architecture '%s'"),
+                                   _("acpi-bridge-hotplug is not available "
+                                   "for architecture '%s'"),
                                    virArchToString(def->os.arch));
                     return -1;
                 }
@@ -202,7 +203,8 @@ qemuValidateDomainDefPCIFeature(const virDomainDef *def,
                     !virQEMUCapsGet(qemuCaps,
                                     QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("acpi-bridge-hotplug is not available with this QEMU binary"));
+                                   _("acpi-bridge-hotplug is not available "
+                                   "with this QEMU binary"));
                     return -1;
                 }
                 break;
