@@ -812,7 +812,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 
 
 static void
-qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
+qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
                                virQEMUCaps *qemuCaps,
                                const char **baseName,
                                virDomainVirtioOptions **virtioOptions,
@@ -976,7 +976,7 @@ qemuBuildVirtioDevGetConfigDev(virDomainDeviceDef *device,
 
 
 static int
-qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
+qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
                             virQEMUCaps *qemuCaps,
                             char **devtype,
                             virDomainVirtioOptions **virtioOptions,
@@ -1094,17 +1094,21 @@ qemuBuildVirtioDevGetConfig(virDomainDeviceDef *device,
  */
 static virJSONValue *
 qemuBuildVirtioDevProps(virDomainDeviceType devtype,
-                        void *devdata,
+                        const void *devdata,
                         virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
-    virDomainDeviceDef device = { .type = devtype };
+    const virDomainDeviceDef device = { .type = devtype };
     g_autofree char *model = NULL;
     virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
     virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
     virDomainVirtioOptions *virtioOptions = NULL;
 
-    virDomainDeviceSetData(&device, devdata);
+    /* We temporarily cast the const away here, but that's safe to do
+     * because the called function simply sets the correct member of
+     * device to devdata based on devtype. Futher uses of device will
+     * not touch its contents */
+    virDomainDeviceSetData((virDomainDeviceDef *) &device, (void *) devdata);
 
     if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions,
                                     &disableLegacy, &disableModern) < 0)
