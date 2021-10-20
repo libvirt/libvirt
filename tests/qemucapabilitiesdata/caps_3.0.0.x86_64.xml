@@ -185,7 +185,6 @@
   <flag name='cpu-max'/>
   <flag name='input-linux'/>
   <flag name='virtio-blk.queue-size'/>
-  <flag name='piix4.acpi-hotplug-bridge'/>
   <version>3000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100239</microcodeVersion>
