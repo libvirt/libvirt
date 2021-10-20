@@ -24,6 +24,7 @@
 
 #include "internal.h"
 #include "virbitmap.h"
+#include "virpcivpd.h"
 #include "virscsihost.h"
 #include "virpci.h"
 #include "virvhba.h"
@@ -69,6 +70,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_AP_CARD,           /* s390 AP Card device */
     VIR_NODE_DEV_CAP_AP_QUEUE,          /* s390 AP Queue */
     VIR_NODE_DEV_CAP_AP_MATRIX,         /* s390 AP Matrix device */
+    VIR_NODE_DEV_CAP_VPD,               /* Device provides VPD */
 
     VIR_NODE_DEV_CAP_LAST
 } virNodeDevCapType;
@@ -103,6 +105,7 @@ typedef enum {
     VIR_NODE_DEV_CAP_FLAG_PCI_VIRTUAL_FUNCTION      = (1 << 1),
     VIR_NODE_DEV_CAP_FLAG_PCIE                      = (1 << 2),
     VIR_NODE_DEV_CAP_FLAG_PCI_MDEV                  = (1 << 3),
+    VIR_NODE_DEV_CAP_FLAG_PCI_VPD                   = (1 << 4),
 } virNodeDevPCICapFlags;
 
 typedef enum {
@@ -181,6 +184,7 @@ struct _virNodeDevCapPCIDev {
     int hdrType; /* enum virPCIHeaderType or -1 */
     virMediatedDeviceType **mdev_types;
     size_t nmdev_types;
+    virPCIVPDResource *vpd;
 };
 
 typedef struct _virNodeDevCapUSBDev virNodeDevCapUSBDev;
@@ -418,7 +422,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNodeDevCapsDef, virNodeDevCapsDefFree);
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA          | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD       | \
                  VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      | \
-                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX)
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     | \
+                 VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD)
 
 #define VIR_CONNECT_LIST_NODE_DEVICES_FILTERS_ACTIVE \
     VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE | \

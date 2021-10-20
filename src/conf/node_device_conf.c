@@ -36,6 +36,7 @@
 #include "virrandom.h"
 #include "virlog.h"
 #include "virfcp.h"
+#include "virpcivpd.h"
 
 #define VIR_FROM_THIS VIR_FROM_NODEDEV
 
@@ -70,6 +71,7 @@ VIR_ENUM_IMPL(virNodeDevCap,
               "ap_card",
               "ap_queue",
               "ap_matrix",
+              "vpd",
 );
 
 VIR_ENUM_IMPL(virNodeDevNetCap,
@@ -240,6 +242,77 @@ virNodeDeviceCapMdevTypesFormat(virBuffer *buf,
     }
 }
 
+static void
+virNodeDeviceCapVPDFormatCustomVendorField(virPCIVPDResourceCustom *field, virBuffer *buf)
+{
+    if (field == NULL || field->value == NULL)
+        return;
+
+    virBufferAsprintf(buf, "<vendor_field index='%c'>%s</vendor_field>\n", field->idx,
+                      field->value);
+}
+
+static void
+virNodeDeviceCapVPDFormatCustomSystemField(virPCIVPDResourceCustom *field, virBuffer *buf)
+{
+    if (field == NULL || field->value == NULL)
+        return;
+
+    virBufferAsprintf(buf, "<system_field index='%c'>%s</system_field>\n", field->idx,
+                      field->value);
+}
+
+static inline void
+virNodeDeviceCapVPDFormatRegularField(virBuffer *buf, const char *keyword, const char *value)
+{
+    if (keyword == NULL || value == NULL)
+        return;
+
+    virBufferAsprintf(buf, "<%s>%s</%s>\n", keyword, value, keyword);
+}
+
+static void
+virNodeDeviceCapVPDFormat(virBuffer *buf, virPCIVPDResource *res)
+{
+    if (res == NULL)
+        return;
+
+    virBufferAddLit(buf, "<capability type='vpd'>\n");
+    virBufferAdjustIndent(buf, 2);
+    virBufferEscapeString(buf, "<name>%s</name>\n", res->name);
+
+    if (res->ro != NULL) {
+        virBufferEscapeString(buf, "<fields access='%s'>\n", "readonly");
+
+        virBufferAdjustIndent(buf, 2);
+        virNodeDeviceCapVPDFormatRegularField(buf, "change_level", res->ro->change_level);
+        virNodeDeviceCapVPDFormatRegularField(buf, "manufacture_id", res->ro->manufacture_id);
+        virNodeDeviceCapVPDFormatRegularField(buf, "part_number", res->ro->part_number);
+        virNodeDeviceCapVPDFormatRegularField(buf, "serial_number", res->ro->serial_number);
+        g_ptr_array_foreach(res->ro->vendor_specific,
+                            (GFunc)virNodeDeviceCapVPDFormatCustomVendorField, buf);
+        virBufferAdjustIndent(buf, -2);
+
+        virBufferAddLit(buf, "</fields>\n");
+    }
+
+    if (res->rw != NULL) {
+        virBufferEscapeString(buf, "<fields access='%s'>\n", "readwrite");
+
+        virBufferAdjustIndent(buf, 2);
+        virNodeDeviceCapVPDFormatRegularField(buf, "asset_tag", res->rw->asset_tag);
+        g_ptr_array_foreach(res->rw->vendor_specific,
+                            (GFunc)virNodeDeviceCapVPDFormatCustomVendorField, buf);
+        g_ptr_array_foreach(res->rw->system_specific,
+                            (GFunc)virNodeDeviceCapVPDFormatCustomSystemField, buf);
+        virBufferAdjustIndent(buf, -2);
+
+        virBufferAddLit(buf, "</fields>\n");
+    }
+
+    virBufferAdjustIndent(buf, -2);
+    virBufferAddLit(buf, "</capability>\n");
+}
 
 static void
 virNodeDeviceCapPCIDefFormat(virBuffer *buf,
@@ -314,6 +387,9 @@ virNodeDeviceCapPCIDefFormat(virBuffer *buf,
         virNodeDeviceCapMdevTypesFormat(buf,
                                         data->pci_dev.mdev_types,
                                         data->pci_dev.nmdev_types);
+    }
+    if (data->pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VPD) {
+        virNodeDeviceCapVPDFormat(buf, data->pci_dev.vpd);
     }
     if (data->pci_dev.nIommuGroupDevices) {
         virBufferAsprintf(buf, "<iommuGroup number='%d'>\n",
@@ -673,6 +749,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
+        case VIR_NODE_DEV_CAP_VPD:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -859,6 +936,180 @@ virNodeDevCapMdevTypesParseXML(xmlXPathContextPtr ctxt,
     return ret;
 }
 
+static int
+virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource *res, bool readOnly)
+{
+    int nfields = -1;
+    g_autofree char *index = NULL, *value = NULL, *keyword = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    xmlNodePtr orignode = NULL;
+    size_t i = 0;
+
+    orignode = ctxt->node;
+    if ((nfields = virXPathNodeSet("./vendor_field[@index]", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                _("failed to evaluate <vendor_field> elements"));
+        ctxt->node = orignode;
+        return -1;
+    }
+    for (i = 0; i < nfields; i++) {
+        ctxt->node = nodes[i];
+        if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                    _("<vendor_field> evaluation has failed"));
+            continue;
+        }
+        if (!(value = virXPathString("string(./text())", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                    _("<vendor_field> value evaluation has failed"));
+            continue;
+        }
+        keyword = g_strdup_printf("V%c", index[0]);
+        virPCIVPDResourceUpdateKeyword(res, readOnly, keyword, value);
+        g_free(g_steal_pointer(&index));
+        g_free(g_steal_pointer(&keyword));
+        g_free(g_steal_pointer(&value));
+    }
+    g_free(g_steal_pointer(&nodes));
+    ctxt->node = orignode;
+
+    if (!readOnly) {
+        if ((nfields = virXPathNodeSet("./system_field[@index]", ctxt, &nodes)) < 0) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                    _("failed to evaluate <system_field> elements"));
+            ctxt->node = orignode;
+            return -1;
+        }
+        for (i = 0; i < nfields; i++) {
+            ctxt->node = nodes[i];
+            if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                        _("<system_field> evaluation has failed"));
+                continue;
+            }
+            if (!(value = virXPathString("string(./text())", ctxt))) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                        _("<system_field> value evaluation has failed"));
+                continue;
+            }
+            keyword = g_strdup_printf("Y%c", index[0]);
+            virPCIVPDResourceUpdateKeyword(res, readOnly, keyword, value);
+            g_free(g_steal_pointer(&index));
+            g_free(g_steal_pointer(&keyword));
+            g_free(g_steal_pointer(&value));
+        }
+        ctxt->node = orignode;
+    }
+
+    return 0;
+}
+
+static int
+virNodeDeviceCapVPDParseReadOnlyFields(xmlXPathContextPtr ctxt, virPCIVPDResource *res)
+{
+    const char *keywords[] = {"change_level", "manufacture_id",
+                              "serial_number", "part_number", NULL};
+    g_autofree char *expression = NULL;
+    g_autofree char *result = NULL;
+    size_t i = 0;
+
+    if (res == NULL)
+        return -1;
+
+    res->ro = virPCIVPDResourceRONew();
+
+    while (keywords[i]) {
+        expression = g_strdup_printf("string(./%s)", keywords[i]);
+        result = virXPathString(expression, ctxt);
+        virPCIVPDResourceUpdateKeyword(res, true, keywords[i], result);
+        g_free(g_steal_pointer(&expression));
+        g_free(g_steal_pointer(&result));
+        ++i;
+    }
+    if (virNodeDeviceCapVPDParseCustomFields(ctxt, res, true) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+virNodeDeviceCapVPDParseReadWriteFields(xmlXPathContextPtr ctxt, virPCIVPDResource *res)
+{
+    g_autofree char *assetTag = virXPathString("string(./asset_tag)", ctxt);
+    res->rw = virPCIVPDResourceRWNew();
+    virPCIVPDResourceUpdateKeyword(res, false, "asset_tag", assetTag);
+    if (virNodeDeviceCapVPDParseCustomFields(ctxt, res, false) < 0)
+        return -1;
+
+    return 0;
+}
+
+static int
+virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
+{
+    xmlNodePtr orignode = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    int nfields = -1;
+    g_autofree char *access = NULL;
+    size_t i = 0;
+    g_autoptr(virPCIVPDResource) newres = g_new0(virPCIVPDResource, 1);
+
+    if (res == NULL)
+        return -1;
+
+    orignode = ctxt->node;
+
+    if (!(newres->name = virXPathString("string(./name)", ctxt))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                _("Could not read a device name from the <name> element"));
+        ctxt->node = orignode;
+        return -1;
+    }
+
+    if ((nfields = virXPathNodeSet("./fields[@access]", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                _("no VPD <fields> elements with an access type attribute found"));
+        ctxt->node = orignode;
+        return -1;
+    }
+
+    for (i = 0; i < nfields; i++) {
+        ctxt->node = nodes[i];
+        if (!(access = virXPathString("string(./@access[1])", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                    _("VPD fields access type parsing has failed"));
+            ctxt->node = orignode;
+            return -1;
+        }
+
+        if (STREQ(access, "readonly")) {
+            if (virNodeDeviceCapVPDParseReadOnlyFields(ctxt, newres) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                        _("Could not parse %s VPD resource fields"), access);
+                return -1;
+            }
+        } else if (STREQ(access, "readwrite")) {
+            if (virNodeDeviceCapVPDParseReadWriteFields(ctxt, newres) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                        _("Could not parse %s VPD resource fields"), access);
+                return -1;
+            }
+        } else {
+            virReportError(VIR_ERR_XML_ERROR, _("Unsupported VPD field access type specified %s"),
+                           access);
+            return -1;
+        }
+        g_free(g_steal_pointer(&access));
+    }
+    ctxt->node = orignode;
+
+    /* Replace the existing VPD representation if there is one already. */
+    if (*res != NULL)
+        virPCIVPDResourceFree(*res);
+
+    *res = g_steal_pointer(&newres);
+    return 0;
+}
 
 static int
 virNodeDevAPMatrixCapabilityParseXML(xmlXPathContextPtr ctxt,
@@ -1718,6 +1969,10 @@ virNodeDevPCICapabilityParseXML(xmlXPathContextPtr ctxt,
                                            &pci_dev->nmdev_types) < 0)
             return -1;
         pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+    } else if (STREQ(type, "vpd")) {
+        if (virNodeDeviceCapVPDParseXML(ctxt, &pci_dev->vpd) < 0)
+            return -1;
+        pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
     } else {
         int hdrType = virPCIHeaderTypeFromString(type);
 
@@ -2024,6 +2279,7 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
     case VIR_NODE_DEV_CAP_VPORTS:
     case VIR_NODE_DEV_CAP_SCSI_GENERIC:
     case VIR_NODE_DEV_CAP_VDPA:
+    case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unknown capability type '%d' for '%s'"),
@@ -2287,6 +2543,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         for (i = 0; i < data->pci_dev.nmdev_types; i++)
             virMediatedDeviceTypeFree(data->pci_dev.mdev_types[i]);
         g_free(data->pci_dev.mdev_types);
+        virPCIVPDResourceFree(g_steal_pointer(&data->pci_dev.vpd));
         break;
     case VIR_NODE_DEV_CAP_USB_DEV:
         g_free(data->usb_dev.product_name);
@@ -2352,6 +2609,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
     case VIR_NODE_DEV_CAP_VDPA:
     case VIR_NODE_DEV_CAP_AP_CARD:
     case VIR_NODE_DEV_CAP_AP_QUEUE:
+    case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_LAST:
         /* This case is here to shutup the compiler */
         break;
@@ -2418,6 +2676,7 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
+        case VIR_NODE_DEV_CAP_VPD:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -2487,6 +2746,10 @@ virNodeDeviceCapsListExport(virNodeDeviceDef *def,
 
             if (flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV) {
                 MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_MDEV_TYPES);
+                ncaps++;
+            }
+            if (flags & VIR_NODE_DEV_CAP_FLAG_PCI_VPD) {
+                MAYBE_ADD_CAP(VIR_NODE_DEV_CAP_VPD);
                 ncaps++;
             }
         }
@@ -2749,6 +3012,44 @@ virNodeDeviceGetMdevTypesCaps(const char *sysfspath,
 }
 
 
+/**
+ * virNodeDeviceGetPCIVPDDynamicCap:
+ * @devCapPCIDev: a virNodeDevCapPCIDev for which to add VPD resources.
+ *
+ * While VPD has a read-only portion, there may be a read-write portion per
+ * the specs which may change dynamically.
+ *
+ * Returns: 0 if the operation was successful (even if VPD is not present for
+ * that device since it is optional in the specs, -1 otherwise.
+ */
+static int
+virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
+{
+    g_autoptr(virPCIDevice) pciDev = NULL;
+    virPCIDeviceAddress devAddr;
+    g_autoptr(virPCIVPDResource) res = NULL;
+
+    devAddr.domain = devCapPCIDev->domain;
+    devAddr.bus = devCapPCIDev->bus;
+    devAddr.slot = devCapPCIDev->slot;
+    devAddr.function = devCapPCIDev->function;
+
+    if (!(pciDev = virPCIDeviceNew(&devAddr)))
+        return -1;
+
+    if (virPCIDeviceHasVPD(pciDev)) {
+        /* VPD is optional in PCI(e) specs. If it is there, attempt to add it. */
+        if ((res = virPCIDeviceGetVPD(pciDev))) {
+            devCapPCIDev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_VPD;
+            devCapPCIDev->vpd = g_steal_pointer(&res);
+        } else {
+            virPCIVPDResourceFree(g_steal_pointer(&devCapPCIDev->vpd));
+        }
+    }
+    return 0;
+}
+
+
 /* virNodeDeviceGetPCIDynamicCaps() get info that is stored in sysfs
  * about devices related to this device, i.e. things that can change
  * without this device itself changing. These must be refreshed
@@ -2770,6 +3071,9 @@ virNodeDeviceGetPCIDynamicCaps(const char *sysfsPath,
         return -1;
     if (pci_dev->nmdev_types > 0)
         pci_dev->flags |= VIR_NODE_DEV_CAP_FLAG_PCI_MDEV;
+
+    if (virNodeDeviceGetPCIVPDDynamicCap(pci_dev) < 0)
+        return -1;
 
     return 0;
 }

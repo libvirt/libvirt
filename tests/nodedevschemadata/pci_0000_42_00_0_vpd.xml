@@ -1,0 +1,42 @@
+<device>
+  <name>pci_0000_42_00_0</name>
+  <capability type='pci'>
+    <class>0x020000</class>
+    <domain>0</domain>
+    <bus>66</bus>
+    <slot>0</slot>
+    <function>0</function>
+    <product id='0xa2d6'>MT42822 BlueField-2 integrated ConnectX-6 Dx network controller</product>
+    <vendor id='0x15b3'>Mellanox Technologies</vendor>
+    <capability type='virt_functions' maxCount='16'/>
+    <capability type='vpd'>
+      <name>BlueField-2 DPU 25GbE Dual-Port SFP56, Crypto Enabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket</name>
+      <fields access='readonly'>
+        <change_level>B1</change_level>
+        <manufacture_id>foobar</manufacture_id>
+        <part_number>MBF2H332A-AEEOT</part_number>
+        <serial_number>MT2113X00000</serial_number>
+        <vendor_field index='0'>PCIeGen4 x8</vendor_field>
+        <vendor_field index='2'>MBF2H332A-AEEOT</vendor_field>
+        <vendor_field index='3'>3c53d07eec484d8aab34dabd24fe575aa</vendor_field>
+        <vendor_field index='A'>MLX:MN=MLNX:CSKU=V2:UUID=V3:PCI=V0:MODL=BF2H332A</vendor_field>
+      </fields>
+      <fields access='readwrite'>
+        <asset_tag>fooasset</asset_tag>
+        <vendor_field index='0'>vendorfield0</vendor_field>
+        <vendor_field index='2'>vendorfield2</vendor_field>
+        <vendor_field index='A'>vendorfieldA</vendor_field>
+        <system_field index='B'>systemfieldB</system_field>
+        <system_field index='0'>systemfield0</system_field>
+      </fields>
+    </capability>
+    <iommuGroup number='65'>
+      <address domain='0x0000' bus='0x42' slot='0x00' function='0x0'/>
+    </iommuGroup>
+    <numa node='0'/>
+    <pci-express>
+      <link validity='cap' port='0' speed='16' width='8'/>
+      <link validity='sta' speed='8' width='8'/>
+    </pci-express>
+  </capability>
+</device>

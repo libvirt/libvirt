@@ -42,6 +42,7 @@
 #include "virnetdev.h"
 #include "virmdev.h"
 #include "virutil.h"
+#include "virpcivpd.h"
 
 #include "configmake.h"
 
@@ -1397,6 +1398,7 @@ udevGetDeviceDetails(struct udev_device *device,
     case VIR_NODE_DEV_CAP_AP_MATRIX:
         return udevProcessAPMatrix(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
+    case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:

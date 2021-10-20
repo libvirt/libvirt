@@ -701,6 +701,9 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
             if (type == VIR_NODE_DEV_CAP_MDEV_TYPES &&
                 (cap->data.pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_MDEV))
                 return true;
+            if (type == VIR_NODE_DEV_CAP_VPD &&
+                (cap->data.pci_dev.flags & VIR_NODE_DEV_CAP_FLAG_PCI_VPD))
+                return true;
             break;
 
         case VIR_NODE_DEV_CAP_SCSI_HOST:
@@ -742,6 +745,7 @@ virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
         case VIR_NODE_DEV_CAP_VDPA:
         case VIR_NODE_DEV_CAP_AP_CARD:
         case VIR_NODE_DEV_CAP_AP_QUEUE:
+        case VIR_NODE_DEV_CAP_VPD:
         case VIR_NODE_DEV_CAP_LAST:
             break;
         }
@@ -899,7 +903,8 @@ virNodeDeviceObjMatch(virNodeDeviceObj *obj,
               MATCH_CAP(VDPA)          ||
               MATCH_CAP(AP_CARD)       ||
               MATCH_CAP(AP_QUEUE)      ||
-              MATCH_CAP(AP_MATRIX)))
+              MATCH_CAP(AP_MATRIX)     ||
+              MATCH_CAP(VPD)))
             return false;
     }
 

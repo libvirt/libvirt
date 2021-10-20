@@ -472,6 +472,9 @@ cmdNodeListDevices(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
         case VIR_NODE_DEV_CAP_MDEV:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV;
             break;
+        case VIR_NODE_DEV_CAP_VPD:
+            flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD;
+            break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
             flags |= VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV;
             break;
