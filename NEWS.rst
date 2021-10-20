@@ -44,6 +44,28 @@ v7.9.0 (unreleased)
 
     Filesystems backed by virtiofsd can now be hotplugged and hotunplugged.
 
+  * virpcivpd: Add a PCI VPD parser
+
+    A parser for the standard PCI/PCIe VPD ("I.3. VPD Definitions" in PCI 2.2+
+    and an equivalent definition in "6.28.1 VPD Format" PCIe 4.0) was added
+    along with relevant types to represent PCI VPD in memory. This
+    functionality got added for Linux only at this point (kernels above
+    v2.6.26 have support for exposing VPD via sysfs).
+
+  * virpci: Add PCI VPD-related helper functions to virpci
+
+    In order to utilize the PCI VPD parser, a couple of helper functions got
+    introduced to check for the presence of a VPD file in the sysfs tree and
+    to invoke the PCI VPD parser to get a list of resources representing PCI
+    VPD contents in memory.
+
+  * nodedev: Add PCI VPD capability support
+
+    Support for serializing and deserializing PCI VPD data structures is added
+    following the addition of the PCI VPD parser. A new PCI device capability
+    called "vpd" is introduced holding string resources and keyword resources
+    found in PCI VPD.
+
 * **Improvements**
 
   * Use of JSON syntax with ``-device`` with upcoming QEMU-6.2
