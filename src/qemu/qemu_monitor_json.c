@@ -6518,9 +6518,6 @@ qemuMonitorJSONGetMigrationCapabilities(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound"))
-        return 0;
-
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         return -1;
 
