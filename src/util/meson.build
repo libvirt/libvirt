@@ -105,6 +105,7 @@ util_sources = [
   'virutil.c',
   'viruuid.c',
   'virvhba.c',
+  'virpcivpd.c',
   'virvsock.c',
   'virxml.c',
 ]

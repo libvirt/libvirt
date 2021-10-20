@@ -1143,3 +1143,38 @@ virTestStablePath(const char *path)
 
     return g_strdup(path);
 }
+
+#ifdef __linux__
+/**
+ * virCreateAnonymousFile:
+ * @data: a pointer to data to be written into a new file.
+ * @len: the length of data to be written (in bytes).
+ *
+ * Create a fake fd, write initial data to it.
+ *
+ */
+int
+virCreateAnonymousFile(const uint8_t *data, size_t len)
+{
+    int fd = -1;
+    char path[] = abs_builddir "testutils-memfd-XXXXXX";
+    /* A temp file is used since not all supported distributions support memfd. */
+    if ((fd = g_mkstemp_full(path, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR)) < 0) {
+        return fd;
+    }
+    g_unlink(path);
+
+    if (safewrite(fd, data, len) != len) {
+        VIR_TEST_DEBUG("%s: %s", "failed to write to an anonymous file",
+                g_strerror(errno));
+        goto cleanup;
+    }
+    return fd;
+ cleanup:
+    if (VIR_CLOSE(fd) < 0) {
+        VIR_TEST_DEBUG("%s: %s", "failed to close an anonymous file",
+                g_strerror(errno));
+    }
+    return -1;
+}
+#endif

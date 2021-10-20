@@ -3576,6 +3576,24 @@ virVHBAManageVport;
 virVHBAPathExists;
 
 
+# util/virpcivpd.h
+
+virPCIVPDParse;
+virPCIVPDParseVPDLargeResourceFields;
+virPCIVPDParseVPDLargeResourceString;
+virPCIVPDReadVPDBytes;
+virPCIVPDResourceCustomCompareIndex;
+virPCIVPDResourceCustomFree;
+virPCIVPDResourceCustomUpsertValue;
+virPCIVPDResourceFree;
+virPCIVPDResourceGetFieldValueFormat;
+virPCIVPDResourceIsValidTextValue;
+virPCIVPDResourceROFree;
+virPCIVPDResourceRONew;
+virPCIVPDResourceRWFree;
+virPCIVPDResourceRWNew;
+virPCIVPDResourceUpdateKeyword;
+
 # util/virvsock.h
 virVsockAcquireGuestCid;
 virVsockSetGuestCid;

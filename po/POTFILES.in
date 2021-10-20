@@ -302,6 +302,7 @@
 @SRCDIR@src/util/virnvme.c
 @SRCDIR@src/util/virobject.c
 @SRCDIR@src/util/virpci.c
+@SRCDIR@src/util/virpcivpd.c
 @SRCDIR@src/util/virperf.c
 @SRCDIR@src/util/virpidfile.c
 @SRCDIR@src/util/virpolkit.c

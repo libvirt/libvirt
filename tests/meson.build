@@ -336,6 +336,7 @@ tests += [
   { 'name': 'virtimetest' },
   { 'name': 'virtypedparamtest' },
   { 'name': 'viruritest' },
+  { 'name': 'virpcivpdtest' },
   { 'name': 'vshtabletest', 'link_with': [ libvirt_shell_lib ] },
   { 'name': 'virmigtest' },
 ]

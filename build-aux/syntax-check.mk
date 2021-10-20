@@ -775,9 +775,9 @@ sc_prohibit_windows_special_chars_in_filename:
 	{ echo '$(ME): Windows special chars in filename not allowed' 1>&2; echo exit 1; } || :
 
 sc_prohibit_mixed_case_abbreviations:
-	@prohibit='Pci|Usb|Scsi' \
+	@prohibit='Pci|Usb|Scsi|Vpd' \
 	in_vc_files='\.[ch]$$' \
-	halt='Use PCI, USB, SCSI, not Pci, Usb, Scsi' \
+	halt='Use PCI, USB, SCSI, VPD, not Pci, Usb, Scsi, Vpd' \
 	  $(_sc_search_regexp)
 
 # Require #include <locale.h> in all files that call setlocale()

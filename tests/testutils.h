@@ -173,3 +173,7 @@ int testCompareDomXML2XMLFiles(virCaps *caps,
 
 char *
 virTestStablePath(const char *path);
+
+#ifdef __linux__
+int virCreateAnonymousFile(const uint8_t *data, size_t len);
+#endif
