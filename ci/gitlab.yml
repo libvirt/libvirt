@@ -110,7 +110,7 @@ x86_64-debian-11-container:
 
 x86_64-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid
 
@@ -145,7 +145,7 @@ x86_64-opensuse-leap-152-container:
 
 x86_64-opensuse-tumbleweed-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: opensuse-tumbleweed
 
@@ -288,7 +288,7 @@ s390x-debian-11-container:
 
 aarch64-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid-cross-aarch64
 
@@ -309,7 +309,7 @@ armv7l-debian-sid-container:
 
 i686-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid-cross-i686
 
@@ -337,7 +337,7 @@ ppc64le-debian-sid-container:
 
 s390x-debian-sid-container:
   extends: .container_job
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid-cross-s390x
 
@@ -420,7 +420,7 @@ x86_64-debian-sid:
   extends: .native_build_job
   needs:
     - x86_64-debian-sid-container
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid
 
@@ -477,7 +477,7 @@ x86_64-opensuse-tumbleweed:
   extends: .native_build_job
   needs:
     - x86_64-opensuse-tumbleweed-container
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: opensuse-tumbleweed
     RPM: skip
@@ -583,7 +583,7 @@ aarch64-debian-sid:
   extends: .cross_build_job
   needs:
     - aarch64-debian-sid-container
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid
     CROSS: aarch64
@@ -593,7 +593,7 @@ i686-debian-sid:
   extends: .cross_build_job
   needs:
     - i686-debian-sid-container
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid
     CROSS: i686
@@ -603,7 +603,7 @@ s390x-debian-sid:
   extends: .cross_build_job
   needs:
     - s390x-debian-sid-container
-  allow_failure: false
+  allow_failure: true
   variables:
     NAME: debian-sid
     CROSS: s390x

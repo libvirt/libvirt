@@ -94,8 +94,10 @@ targets:
   debian-sid:
     jobs:
       - arch: x86_64
+        allow-failure: true
 
       - arch: aarch64
+        allow-failure: true
 
       - arch: armv6l
         allow-failure: true
@@ -106,6 +108,7 @@ targets:
         builds: false
 
       - arch: i686
+        allow-failure: true
 
       - arch: mips64el
         allow-failure: true
@@ -120,6 +123,7 @@ targets:
         builds: false
 
       - arch: s390x
+        allow-failure: true
 
   fedora-33: x86_64
 
@@ -150,6 +154,7 @@ targets:
   freebsd-current:
     jobs:
       - arch: x86_64
+        allow-failure: true
         builds: False
 
   opensuse-leap-152:
@@ -161,6 +166,7 @@ targets:
   opensuse-tumbleweed:
     jobs:
       - arch: x86_64
+        allow-failure: true
         variables:
           RPM: skip
 
