@@ -162,7 +162,13 @@
                     This device is capable of creating mediated devices.
                     The sub-elements are summarized in
                     <a href="#MDEVTypesCap">mdev_types capability</a>.
-                 </dd>
+                  </dd>
+                  <dt><code><a id="VPDCapPCI">vpd</a></code></dt>
+                  <dd>
+                    This device exposes a VPD PCI/PCIe capability.
+                    The sub-elements are summarized in
+                    <a href="#VPDCap">vpd capability</a>.
+                  </dd>
                 </dl>
               </dd>
 
@@ -523,6 +529,61 @@
       </dl>
     </p>
 
+    <h3><a id="VPDCap">vpd capability</a></h3>
+
+    <p>
+      <a href="#VPDCapPCI">PCI</a> devices can expose a VPD capability which
+      is optional per PCI Local Bus 2.2+ and PCIe 4.0+ specifications. If
+      the VPD capability is present, then the parent <code>capability</code>
+      element with the <code>vpd</code> type will contain a <code>name</code>
+      element (containing a manufacturer-provided device name) and optionally
+      one or two <code>fields</code> elements with an <code>access</code>
+      attribute set to <code>readonly</code> or <code>readwrite</code>.
+    </p>
+    <p>
+      The read-only <code>fields</code> element may contain the following elements:
+      <dl>
+        <dt><code>change_level</code></dt>
+        <dd>An engineering change level for this add-in card.</dd>
+        <dt><code>manufacture_id</code></dt>
+        <dd>An extension to the Vendor ID (or Subsystem Vendor ID) in the
+          Configuration Space header which allows vendors the flexibility to identify
+          an additional level of detail pertaining to the sourcing of a PCI device.</dd>
+        <dt><code>part_number</code></dt>
+        <dd>An extension to the Device ID (or Subsystem ID) in the Configuration
+          Space header specifying a part number of an add-in card.</dd>
+        <dt><code>serial_number</code></dt>
+        <dd>A unique add-in card Serial Number.</dd>
+        <dt><code>vendor_field</code></dt>
+        <dd>Zero or many of those elements with an <code>index</code> attribute
+          (since-character upper-case ASCII alphanumeric indexes). Contents will vary
+          depending on a vendor.</dd>
+      </dl>
+      All fields are optional and are not guaranteed to be present for a generic PCI device.
+    </p>
+    <p>
+      The read-write <code>fields</code> element may contain the following elements:
+      <dl>
+        <dt><code>asset_tag</code></dt>
+        <dd>A system asset identifier provided by the system owner.</dd>
+        <dt><code>vendor_field</code></dt>
+        <dd>Zero or many of those elements with an <code>index</code> attribute
+          (since-character upper-case ASCII alphanumeric indexes). Contents will vary depending
+          on a vendor.</dd>
+        <dt><code>system_field</code></dt>
+        <dd>Zero or many of those elements with an <code>index</code> attribute (since-character
+          upper-case ASCII alphanumeric indexes, except for letter 'A'). May store system-specific
+          data related to a PCI device.</dd>
+      </dl>
+      All fields are optional and are not guaranteed to be present for a generic PCI device.
+      Read-write fields are not possible to alter via Libvirt at the time of writing but their
+      content is refreshed on each invocation in case this is done by means external to Libvirt.
+    </p>
+    <p>
+      The device name and all fields may contain only the following characters:
+      <code>[0-9a-zA-F -_,.:;=]</code>.
+      The device name may be as large as 65535 bytes while fields are limited with 255 bytes.
+    </p>
 
     <h2><a id="nodeExample">Examples</a></h2>
 
