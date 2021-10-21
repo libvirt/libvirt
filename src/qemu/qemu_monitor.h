@@ -39,7 +39,7 @@ typedef struct _qemuMonitorMessage qemuMonitorMessage;
 struct _qemuMonitorMessage {
     int txFD;
 
-    char *txBuffer;
+    const char *txBuffer;
     int txOffset;
     int txLength;
 

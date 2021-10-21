@@ -420,7 +420,7 @@ static int
 qemuMonitorIOWrite(qemuMonitor *mon)
 {
     int done;
-    char *buf;
+    const char *buf;
     size_t len;
 
     /* If no active message, or fully transmitted, the no-op */

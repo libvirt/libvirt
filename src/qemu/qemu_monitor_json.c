@@ -322,7 +322,7 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
     virBufferAddLit(&cmdbuf, "\r\n");
 
     msg.txLength = virBufferUse(&cmdbuf);
-    msg.txBuffer = virBufferContentAndReset(&cmdbuf);
+    msg.txBuffer = virBufferCurrentContent(&cmdbuf);
     msg.txFD = scm_fd;
 
     ret = qemuMonitorSend(mon, &msg);
@@ -338,8 +338,6 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
     }
 
  cleanup:
-    VIR_FREE(msg.txBuffer);
-
     return ret;
 }
 
