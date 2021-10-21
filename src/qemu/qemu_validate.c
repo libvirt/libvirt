@@ -3906,7 +3906,7 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         case VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PIIX4_ACPI_ROOT_PCI_HOTPLUG)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("setting the %s property on a '%s' device is not supported by this QEMU binary"),
+                               _("setting the '%s' property on a '%s' device is not supported by this QEMU binary"),
                                "hotplug", "pci-root");
                 return -1;
             }
@@ -3915,8 +3915,8 @@ qemuValidateDomainDeviceDefControllerPCI(const virDomainControllerDef *cont,
         case VIR_DOMAIN_CONTROLLER_MODEL_PCIE_SWITCH_DOWNSTREAM_PORT:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_PCIE_ROOT_PORT_HOTPLUG)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("setting the hotplug property on a '%s' device is not supported by this QEMU binary"),
-                               modelName);
+                               _("setting the '%s' property on a '%s' device is not supported by this QEMU binary"),
+                               "hotplug", modelName);
                 return -1;
             }
             break;
