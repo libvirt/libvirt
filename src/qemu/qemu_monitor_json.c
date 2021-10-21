@@ -302,15 +302,14 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
     int ret = -1;
     qemuMonitorMessage msg;
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
-    char *id = NULL;
 
     *reply = NULL;
 
     memset(&msg, 0, sizeof(msg));
 
     if (virJSONValueObjectHasKey(cmd, "execute") == 1) {
-        if (!(id = qemuMonitorNextCommandID(mon)))
-            goto cleanup;
+        g_autofree char *id = qemuMonitorNextCommandID(mon);
+
         if (virJSONValueObjectAppendString(cmd, "id", id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Unable to append command 'id' string"));
@@ -339,7 +338,6 @@ qemuMonitorJSONCommandWithFd(qemuMonitor *mon,
     }
 
  cleanup:
-    VIR_FREE(id);
     VIR_FREE(msg.txBuffer);
 
     return ret;
