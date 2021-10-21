@@ -4079,9 +4079,8 @@ qemuMonitorSetIOThread(qemuMonitor *mon,
  * Retrieve state and addresses of frontend memory devices present in
  * the guest.
  *
- * Returns 0 on success and fills @info with a newly allocated struct; if the
- * data can't be retrieved due to lack of support in qemu, returns -2. On
- * other errors returns -1.
+ * Returns: 0 on success and fills @info with a newly allocated struct,
+ *         -1 otherwise.
  */
 int
 qemuMonitorGetMemoryDeviceInfo(qemuMonitor *mon,

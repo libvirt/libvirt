@@ -8154,10 +8154,6 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
         return -1;
     }
 
-    /* if qemu doesn't support the info request, just carry on */
-    if (rc == -2)
-        return 0;
-
     if (rc < 0)
         return -1;
 
