@@ -175,7 +175,7 @@ qemuMonitorJSONIOProcessEvent(qemuMonitor *mon,
     const char *type;
     qemuEventHandler *handler;
     virJSONValue *data;
-    char *details = NULL;
+    g_autofree char *details = NULL;
     virJSONValue *timestamp;
     long long seconds = -1;
     unsigned int micros = 0;
@@ -199,7 +199,6 @@ qemuMonitorJSONIOProcessEvent(qemuMonitor *mon,
                                                      &micros));
     }
     qemuMonitorEmitEvent(mon, type, seconds, micros, details);
-    VIR_FREE(details);
 
     handler = bsearch(type, eventHandlers, G_N_ELEMENTS(eventHandlers),
                       sizeof(eventHandlers[0]), qemuMonitorEventCompare);
@@ -270,16 +269,12 @@ int qemuMonitorJSONIOProcess(qemuMonitor *mon,
 
         if (nl) {
             int got = nl - (data + used);
-            char *line;
-            line = g_strndup(data + used, got);
+            g_autofree char *line = g_strndup(data + used, got);
+
             used += got + strlen(LINE_ENDING);
             line[got] = '\0'; /* kill \n */
-            if (qemuMonitorJSONIOProcessLine(mon, line, msg) < 0) {
-                VIR_FREE(line);
+            if (qemuMonitorJSONIOProcessLine(mon, line, msg) < 0)
                 return -1;
-            }
-
-            VIR_FREE(line);
         } else {
             break;
         }
@@ -6458,7 +6453,7 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitor *mon,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *caps;
-    virGICCapability *list = NULL;
+    g_autofree virGICCapability *list = NULL;
     size_t i;
     size_t n;
 
@@ -6534,8 +6529,6 @@ qemuMonitorJSONGetGICCapabilities(qemuMonitor *mon,
     *capabilities = g_steal_pointer(&list);
 
  cleanup:
-    VIR_FREE(list);
-
     return ret;
 }
 
@@ -6674,7 +6667,7 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     g_autoptr(virJSONValue) addr = NULL;
-    char *port_str = NULL;
+    g_autofree char *port_str = NULL;
 
     switch ((virStorageNetHostTransport)server->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
@@ -6708,7 +6701,6 @@ qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
     ret = 0;
 
  cleanup:
-    VIR_FREE(port_str);
     return ret;
 }
 
@@ -6848,7 +6840,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     const char *backend_type = NULL;
     const char *host;
     const char *port;
-    char *tlsalias = NULL;
+    g_autofree char *tlsalias = NULL;
     bool telnet;
 
     switch ((virDomainChrType)chr->type) {
@@ -6997,7 +6989,6 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         goto cleanup;
 
  cleanup:
-    VIR_FREE(tlsalias);
     return ret;
 }
 
@@ -7568,7 +7559,7 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
                            qemuMonitorIOThreadInfo *iothreadInfo)
 {
     int ret = -1;
-    char *path = NULL;
+    g_autofree char *path = NULL;
     qemuMonitorJSONObjectProperty prop;
 
     path = g_strdup_printf("/objects/iothread%u", iothreadInfo->iothread_id);
@@ -7591,7 +7582,6 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
     ret = 0;
 
  cleanup:
-    VIR_FREE(path);
     return ret;
 }
 
@@ -7724,7 +7714,7 @@ qemuMonitorJSONFindObjectPathByAlias(qemuMonitor *mon,
                                      char **path)
 {
     qemuMonitorJSONListPath **paths = NULL;
-    char *child = NULL;
+    g_autofree char *child = NULL;
     int npaths;
     int ret = -1;
     size_t i;
@@ -7750,7 +7740,6 @@ qemuMonitorJSONFindObjectPathByAlias(qemuMonitor *mon,
     for (i = 0; i < npaths; i++)
         qemuMonitorJSONListPathFree(paths[i]);
     VIR_FREE(paths);
-    VIR_FREE(child);
     return ret;
 }
 
@@ -7775,7 +7764,6 @@ qemuMonitorJSONFindObjectPathByName(qemuMonitor *mon,
 {
     ssize_t i, npaths = 0;
     int ret = -2;
-    char *nextpath = NULL;
     qemuMonitorJSONListPath **paths = NULL;
 
     VIR_DEBUG("Searching for '%s' Object Path starting at '%s'", name, curpath);
@@ -7797,10 +7785,9 @@ qemuMonitorJSONFindObjectPathByName(qemuMonitor *mon,
          * traversed looking for more entries
          */
         if (paths[i]->type && STRPREFIX(paths[i]->type, "child<")) {
-            nextpath = g_strdup_printf("%s/%s", curpath, paths[i]->name);
+            g_autofree char *nextpath = g_strdup_printf("%s/%s", curpath, paths[i]->name);
 
             ret = qemuMonitorJSONFindObjectPathByName(mon, nextpath, name, path);
-            VIR_FREE(nextpath);
         }
     }
 
@@ -7808,7 +7795,6 @@ qemuMonitorJSONFindObjectPathByName(qemuMonitor *mon,
     for (i = 0; i < npaths; i++)
         qemuMonitorJSONListPathFree(paths[i]);
     VIR_FREE(paths);
-    VIR_FREE(nextpath);
     return ret;
 }
 
@@ -7831,7 +7817,7 @@ qemuMonitorJSONFindLinkPath(qemuMonitor *mon,
                             const char *alias,
                             char **path)
 {
-    char *linkname = NULL;
+    g_autofree char *linkname = NULL;
     int ret = -1;
 
     if (alias) {
@@ -7843,7 +7829,6 @@ qemuMonitorJSONFindLinkPath(qemuMonitor *mon,
     linkname = g_strdup_printf("link<%s>", name);
 
     ret = qemuMonitorJSONFindObjectPathByName(mon, "/", linkname, path);
-    VIR_FREE(linkname);
     return ret;
 }
 
