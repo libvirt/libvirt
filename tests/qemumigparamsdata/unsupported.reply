@@ -1,7 +1,0 @@
-{
-  "id": "libvirt-1",
-  "error": {
-    "class": "CommandNotFound",
-    "desc": "The command query-migrate-parameters has not been found"
-  }
-}

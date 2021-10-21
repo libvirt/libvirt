@@ -219,7 +219,6 @@ mymain(void)
             ret = -1; \
     } while (0)
 
-    DO_TEST("unsupported");
     DO_TEST("empty");
     DO_TEST("basic");
     DO_TEST("tls");
