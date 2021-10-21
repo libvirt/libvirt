@@ -6020,11 +6020,6 @@ int qemuMonitorJSONGetKVMState(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         goto cleanup;
 
-    if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
-        ret = 0;
-        goto cleanup;
-    }
-
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
         goto cleanup;
 
