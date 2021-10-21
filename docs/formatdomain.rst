@@ -1847,9 +1847,6 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
        <e820_host state='on'/>
        <passthrough state='on' mode='share_pt'/>
      </xen>
-     <pci>
-       <acpi-bridge-hotplug state="on"/>
-     </pci>
      <pvspinlock state='on'/>
      <gic version='2'/>
      <ioapic driver='qemu'/>
@@ -1944,32 +1941,6 @@ are:
    e820_host   Expose the host e820 to the guest (PV only)    on, off                                             :since:`6.3.0`
    passthrough Enable IOMMU mappings allowing PCI passthrough on, off; mode - optional string sync_pt or share_pt :since:`6.3.0`
    =========== ============================================== =================================================== ==============
-
-``pci``
-   Various PCI bus related features of the hypervisor.
-
-   ==================== ========================================================================================================= ======= ==============
-   Feature              Description                                                                                               Value   Since
-   ==================== ========================================================================================================= ======= ==============
-   acpi-bridge-hotplug  Enable ACPI based hotplug on the cold-plugged PCI bridges (pc) and pcie-root-ports (q35) (also see notes) on, off :since:`7.9.0`
-   ==================== ========================================================================================================= ======= ==============
-
-   Note: pc machine types (i440fx) have ACPI hotplug enabled by
-   default on cold plugged bridges (bridges that were present in the
-   VM's domain definition before it was started).  Disabling ACPI
-   hotplug leaves only SHPC hotplug enabled; many OSes don't
-   support SHPC hotplug, so this may have the effect of completely
-   disabling hotplug.
-
-   On q35 machinetypes earlier than pc-q35-6.1 (regardless of the QEMU
-   binary version), ACPI hotplug for cold plugged bridges is disabled
-   by default, and native PCIe hotplug is enabled instead. Enabling
-   ACPI hotplug will disable native PCIe hotplug.
-
-   Starting with the pc-q35-6.1 machinetype, ACPI hotplug is enabled
-   on cold plugged bridges by default while native PCIe hotplug is
-   disabled. In this case, disabling ACPI hotplug will re-enable PCIe
-   native hotplug.
 
 ``pmu``
    Depending on the ``state`` attribute (values ``on``, ``off``, default ``on``)

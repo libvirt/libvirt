@@ -172,7 +172,6 @@ VIR_ENUM_IMPL(virDomainFeature,
               "cfpc",
               "sbbc",
               "ibs",
-              "pci",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -211,11 +210,6 @@ VIR_ENUM_IMPL(virDomainXen,
               VIR_DOMAIN_XEN_LAST,
               "e820_host",
               "passthrough",
-);
-
-VIR_ENUM_IMPL(virDomainPCI,
-              VIR_DOMAIN_PCI_LAST,
-              "acpi-bridge-hotplug",
 );
 
 VIR_ENUM_IMPL(virDomainXenPassthroughMode,
@@ -17564,36 +17558,6 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
     return 0;
 }
 
-static int
-virDomainFeaturesPCIDefParse(virDomainDef *def,
-                             xmlNodePtr node)
-{
-    def->features[VIR_DOMAIN_FEATURE_PCI] = VIR_TRISTATE_SWITCH_ON;
-
-    node = xmlFirstElementChild(node);
-    while (node) {
-        int feature;
-        virTristateSwitch value;
-
-        feature = virDomainPCITypeFromString((const char *)node->name);
-        if (feature < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unsupported PCI feature: %s"),
-                           node->name);
-            return -1;
-        }
-
-        if (virXMLPropTristateSwitch(node, "state", VIR_XML_PROP_REQUIRED,
-                                     &value) < 0)
-            return -1;
-
-        def->pci_features[feature] = value;
-
-        node = xmlNextElementSibling(node);
-    }
-
-    return 0;
-}
 
 static int
 virDomainFeaturesXENDefParse(virDomainDef *def,
@@ -17893,10 +17857,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
             break;
         }
 
-        case VIR_DOMAIN_FEATURE_PCI:
-            if (virDomainFeaturesPCIDefParse(def, nodes[i]) < 0)
-                return -1;
-
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -17904,6 +17864,7 @@ virDomainFeaturesDefParse(virDomainDef *def,
 
     return 0;
 }
+
 
 static int
 virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
@@ -21590,7 +21551,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
         case VIR_DOMAIN_FEATURE_HTM:
         case VIR_DOMAIN_FEATURE_NESTED_HV:
         case VIR_DOMAIN_FEATURE_CCF_ASSIST:
-        case VIR_DOMAIN_FEATURE_PCI:
             if (src->features[i] != dst->features[i]) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("State of feature '%s' differs: "
@@ -21842,29 +21802,6 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
                 break;
 
             case VIR_DOMAIN_KVM_LAST:
-                break;
-            }
-        }
-    }
-
-    /* pci */
-    if (src->features[VIR_DOMAIN_FEATURE_PCI] == VIR_TRISTATE_SWITCH_ON) {
-        for (i = 0; i < VIR_DOMAIN_PCI_LAST; i++) {
-            switch ((virDomainPCI) i) {
-            case VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG:
-                if (src->pci_features[i] != dst->pci_features[i]) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("State of PCI feature '%s' differs: "
-                                     "source: '%s', destination: '%s'"),
-                                   virDomainPCITypeToString(i),
-                                   virTristateSwitchTypeToString(src->pci_features[i]),
-                                   virTristateSwitchTypeToString(dst->pci_features[i]));
-                    return false;
-                }
-
-                break;
-
-            case VIR_DOMAIN_PCI_LAST:
                 break;
             }
         }
@@ -28023,30 +27960,6 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
             virBufferAsprintf(&childBuf, "<ibs value='%s'/>\n",
                               virDomainIBSTypeToString(def->features[i]));
-            break;
-
-        case VIR_DOMAIN_FEATURE_PCI:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
-                break;
-
-            virBufferAddLit(&childBuf, "<pci>\n");
-            virBufferAdjustIndent(&childBuf, 2);
-            for (j = 0; j < VIR_DOMAIN_PCI_LAST; j++) {
-                switch ((virDomainPCI) j) {
-                case VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG:
-                    if (def->pci_features[j] != VIR_TRISTATE_SWITCH_ABSENT)
-                        virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
-                                          virDomainPCITypeToString(j),
-                                          virTristateSwitchTypeToString(
-                                              def->pci_features[j]));
-                    break;
-
-                case VIR_DOMAIN_PCI_LAST:
-                    break;
-                }
-            }
-            virBufferAdjustIndent(&childBuf, -2);
-            virBufferAddLit(&childBuf, "</pci>\n");
             break;
 
         case VIR_DOMAIN_FEATURE_LAST:

@@ -173,48 +173,6 @@ qemuValidateDomainDefPSeriesFeature(const virDomainDef *def,
     return 0;
 }
 
-static int
-qemuValidateDomainDefPCIFeature(const virDomainDef *def,
-                                virQEMUCaps *qemuCaps,
-                                int feature)
-{
-    size_t i;
-    bool q35Dom = qemuDomainIsQ35(def);
-    bool q35cap = q35Dom && virQEMUCapsGet(qemuCaps,
-                                           QEMU_CAPS_ICH9_ACPI_HOTPLUG_BRIDGE);
-
-    if (def->features[feature] == VIR_TRISTATE_SWITCH_ABSENT)
-        return 0;
-
-    for (i = 0; i < VIR_DOMAIN_PCI_LAST; i++) {
-        if (def->pci_features[i] == VIR_TRISTATE_SWITCH_ABSENT)
-            continue;
-
-        switch ((virDomainPCI) i) {
-            case VIR_DOMAIN_PCI_ACPI_BRIDGE_HOTPLUG:
-                if (!ARCH_IS_X86(def->os.arch)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("acpi-bridge-hotplug is not available "
-                                   "for architecture '%s'"),
-                                   virArchToString(def->os.arch));
-                    return -1;
-                }
-                if (!q35cap &&
-                    !virQEMUCapsGet(qemuCaps,
-                                    QEMU_CAPS_PIIX4_ACPI_HOTPLUG_BRIDGE)) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("acpi-bridge-hotplug is not available "
-                                   "with this QEMU binary"));
-                    return -1;
-                }
-                break;
-
-            case VIR_DOMAIN_PCI_LAST:
-                break;
-        }
-    }
-    return 0;
-}
 
 static int
 qemuValidateDomainDefFeatures(const virDomainDef *def,
@@ -336,10 +294,6 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
-        case VIR_DOMAIN_FEATURE_PCI:
-            if (qemuValidateDomainDefPCIFeature(def, qemuCaps, i) < 0)
-                return -1;
-            break;
         case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:
