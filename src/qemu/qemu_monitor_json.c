@@ -8622,7 +8622,6 @@ static int
 qemuMonitorJSONExtractPRManagerInfo(virJSONValue *reply,
                                     GHashTable *info)
 {
-    qemuMonitorPRManagerInfo *entry = NULL;
     virJSONValue *data;
     int ret = -1;
     size_t i;
@@ -8630,6 +8629,7 @@ qemuMonitorJSONExtractPRManagerInfo(virJSONValue *reply,
     data = virJSONValueObjectGetArray(reply, "return");
 
     for (i = 0; i < virJSONValueArraySize(data); i++) {
+        g_autofree qemuMonitorPRManagerInfo *entry = NULL;
         virJSONValue *prManager = virJSONValueArrayGet(data, i);
         const char *alias;
 
@@ -8652,7 +8652,6 @@ qemuMonitorJSONExtractPRManagerInfo(virJSONValue *reply,
 
     ret = 0;
  cleanup:
-    VIR_FREE(entry);
     return ret;
 
  malformed:
