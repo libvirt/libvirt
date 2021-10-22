@@ -7288,7 +7288,7 @@ qemuMonitorJSONParseCPUx86FeatureWord(virJSONValue *data,
 static virCPUData *
 qemuMonitorJSONParseCPUx86Features(virJSONValue *data)
 {
-    virCPUData *cpudata = NULL;
+    g_autoptr(virCPUData) cpudata = NULL;
     virCPUx86DataItem item = { 0 };
     size_t i;
 
@@ -7303,10 +7303,9 @@ qemuMonitorJSONParseCPUx86Features(virJSONValue *data)
             goto error;
     }
 
-    return cpudata;
+    return g_steal_pointer(&cpudata);
 
  error:
-    virCPUDataFree(cpudata);
     return NULL;
 }
 
@@ -7418,8 +7417,8 @@ qemuMonitorJSONGetGuestCPUx86(qemuMonitor *mon,
                               virCPUData **data,
                               virCPUData **disabled)
 {
-    virCPUData *cpuEnabled = NULL;
-    virCPUData *cpuDisabled = NULL;
+    g_autoptr(virCPUData) cpuEnabled = NULL;
+    g_autoptr(virCPUData) cpuDisabled = NULL;
     int rc;
 
     if ((rc = qemuMonitorJSONCheckCPUx86(mon)) < 0)
@@ -7436,14 +7435,12 @@ qemuMonitorJSONGetGuestCPUx86(qemuMonitor *mon,
                                      &cpuDisabled) < 0)
         goto error;
 
-    *data = cpuEnabled;
+    *data = g_steal_pointer(&cpuEnabled);
     if (disabled)
-        *disabled = cpuDisabled;
+        *disabled = g_steal_pointer(&cpuDisabled);
     return 0;
 
  error:
-    virCPUDataFree(cpuEnabled);
-    virCPUDataFree(cpuDisabled);
     return -1;
 }
 
@@ -7554,8 +7551,8 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
                            virCPUData **enabled,
                            virCPUData **disabled)
 {
-    virCPUData *cpuEnabled = NULL;
-    virCPUData *cpuDisabled = NULL;
+    g_autoptr(virCPUData) cpuEnabled = NULL;
+    g_autoptr(virCPUData) cpuDisabled = NULL;
     int ret = -1;
 
     if (!(cpuEnabled = virCPUDataNew(arch)) ||
@@ -7576,8 +7573,6 @@ qemuMonitorJSONGetGuestCPU(qemuMonitor *mon,
     ret = 0;
 
  cleanup:
-    virCPUDataFree(cpuEnabled);
-    virCPUDataFree(cpuDisabled);
     return ret;
 }
 
