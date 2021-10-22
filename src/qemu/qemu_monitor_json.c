@@ -605,9 +605,7 @@ static void qemuMonitorJSONHandleResume(qemuMonitor *mon, virJSONValue *data G_G
 static qemuMonitorEventPanicInfo *
 qemuMonitorJSONGuestPanicExtractInfoHyperv(virJSONValue *data)
 {
-    qemuMonitorEventPanicInfo *ret;
-
-    ret = g_new0(qemuMonitorEventPanicInfo, 1);
+    g_autoptr(qemuMonitorEventPanicInfo) ret = g_new0(qemuMonitorEventPanicInfo, 1);
 
     ret->type = QEMU_MONITOR_EVENT_PANIC_INFO_TYPE_HYPERV;
 
@@ -618,20 +616,16 @@ qemuMonitorJSONGuestPanicExtractInfoHyperv(virJSONValue *data)
         virJSONValueObjectGetNumberUlong(data, "arg5", &ret->data.hyperv.arg5) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed hyperv panic data"));
-        goto error;
+        return NULL;
     }
 
-    return ret;
-
- error:
-    qemuMonitorEventPanicInfoFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 static qemuMonitorEventPanicInfo *
 qemuMonitorJSONGuestPanicExtractInfoS390(virJSONValue *data)
 {
-    qemuMonitorEventPanicInfo *ret;
+    g_autoptr(qemuMonitorEventPanicInfo) ret = NULL;
     int core;
     unsigned long long psw_mask, psw_addr;
     const char *reason = NULL;
@@ -645,7 +639,7 @@ qemuMonitorJSONGuestPanicExtractInfoS390(virJSONValue *data)
         virJSONValueObjectGetNumberUlong(data, "psw-addr", &psw_addr) < 0 ||
         !(reason = virJSONValueObjectGetString(data, "reason"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("malformed s390 panic data"));
-        goto error;
+        return NULL;
     }
 
     ret->data.s390.core = core;
@@ -654,11 +648,7 @@ qemuMonitorJSONGuestPanicExtractInfoS390(virJSONValue *data)
 
     ret->data.s390.reason = g_strdup(reason);
 
-    return ret;
-
- error:
-    qemuMonitorEventPanicInfoFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 static qemuMonitorEventPanicInfo *

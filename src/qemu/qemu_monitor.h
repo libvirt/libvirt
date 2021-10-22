@@ -194,6 +194,7 @@ struct _qemuMonitorJobInfo {
 
 char *qemuMonitorGuestPanicEventInfoFormatMsg(qemuMonitorEventPanicInfo *info);
 void qemuMonitorEventPanicInfoFree(qemuMonitorEventPanicInfo *info);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorEventPanicInfo, qemuMonitorEventPanicInfoFree);
 void qemuMonitorEventRdmaGidStatusFree(qemuMonitorRdmaGidStatus *info);
 void qemuMonitorMemoryDeviceSizeChangeFree(qemuMonitorMemoryDeviceSizeChange *info);
 
