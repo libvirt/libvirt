@@ -3542,8 +3542,6 @@ int qemuMonitorJSONGetMigrationStats(qemuMonitor *mon,
 
     ret = 0;
  cleanup:
-    if (ret < 0)
-        memset(stats, 0, sizeof(*stats));
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
