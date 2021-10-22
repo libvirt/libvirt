@@ -5351,7 +5351,7 @@ qemuMonitorJSONMakeCPUModel(virCPUDef *cpu,
     size_t i;
 
     if (virJSONValueObjectAppendString(model, "name", cpu->model) < 0)
-        goto error;
+        return NULL;
 
     if (cpu->nfeatures || !migratable) {
         g_autoptr(virJSONValue) props = virJSONValueNewObject();
@@ -5367,22 +5367,19 @@ qemuMonitorJSONMakeCPUModel(virCPUDef *cpu,
                 enabled = true;
 
             if (virJSONValueObjectAppendBoolean(props, name, enabled) < 0)
-                goto error;
+                return NULL;
         }
 
         if (!migratable &&
             virJSONValueObjectAppendBoolean(props, "migratable", false) < 0) {
-            goto error;
+            return NULL;
         }
 
         if (virJSONValueObjectAppend(model, "props", &props) < 0)
-            goto error;
+            return NULL;
     }
 
     return g_steal_pointer(&model);
-
- error:
-    return NULL;
 }
 
 
@@ -6930,20 +6927,17 @@ qemuMonitorJSONParseCPUx86Features(virJSONValue *data)
     size_t i;
 
     if (!(cpudata = virCPUDataNew(VIR_ARCH_X86_64)))
-        goto error;
+        return NULL;
 
     item.type = VIR_CPU_X86_DATA_CPUID;
     for (i = 0; i < virJSONValueArraySize(data); i++) {
         if (qemuMonitorJSONParseCPUx86FeatureWord(virJSONValueArrayGet(data, i),
                                                   &item.data.cpuid) < 0 ||
             virCPUx86DataAdd(cpudata, &item) < 0)
-            goto error;
+            return NULL;
     }
 
     return g_steal_pointer(&cpudata);
-
- error:
-    return NULL;
 }
 
 
@@ -7049,20 +7043,17 @@ qemuMonitorJSONGetGuestCPUx86(qemuMonitor *mon,
 
     if (qemuMonitorJSONGetCPUx86Data(mon, "feature-words",
                                      &cpuEnabled) < 0)
-        goto error;
+        return -1;
 
     if (disabled &&
         qemuMonitorJSONGetCPUx86Data(mon, "filtered-features",
                                      &cpuDisabled) < 0)
-        goto error;
+        return -1;
 
     *data = g_steal_pointer(&cpuEnabled);
     if (disabled)
         *disabled = g_steal_pointer(&cpuDisabled);
     return 0;
-
- error:
-    return -1;
 }
 
 
