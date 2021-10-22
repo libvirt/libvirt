@@ -4035,7 +4035,7 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
     virJSONValue *element;
     size_t nTable;
     size_t i;
-    virNetDevRxFilter *fil = virNetDevRxFilterNew();
+    g_autoptr(virNetDevRxFilter) fil = virNetDevRxFilterNew();
 
     if (!fil)
         goto cleanup;
@@ -4187,13 +4187,9 @@ qemuMonitorJSONQueryRxFilterParse(virJSONValue *msg,
     }
     fil->vlan.nTable = nTable;
 
+    *filter = g_steal_pointer(&fil);
     ret = 0;
  cleanup:
-    if (ret < 0) {
-        virNetDevRxFilterFree(fil);
-        fil = NULL;
-    }
-    *filter = fil;
     return ret;
 }
 
@@ -4222,10 +4218,6 @@ qemuMonitorJSONQueryRxFilter(qemuMonitor *mon, const char *alias,
 
     ret = 0;
  cleanup:
-    if (ret < 0) {
-        virNetDevRxFilterFree(*filter);
-        *filter = NULL;
-    }
     virJSONValueFree(cmd);
     virJSONValueFree(reply);
     return ret;
