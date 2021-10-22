@@ -766,10 +766,7 @@ esxStorageVolWipe(virStorageVolPtr volume G_GNUC_UNUSED,
 static char *
 esxStorageVolGetPath(virStorageVolPtr volume)
 {
-    char *path;
-
-    path = g_strdup(volume->name);
-    return path;
+    return g_strdup(volume->name);
 }
 
 

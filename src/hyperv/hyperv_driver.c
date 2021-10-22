@@ -2234,10 +2234,7 @@ hypervDomainDestroy(virDomainPtr domain)
 static char *
 hypervDomainGetOSType(virDomainPtr domain G_GNUC_UNUSED)
 {
-    char *osType;
-
-    osType = g_strdup("hvm");
-    return osType;
+    return g_strdup("hvm");
 }
 
 

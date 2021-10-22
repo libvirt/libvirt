@@ -1862,11 +1862,7 @@ virDomainUSBAddressPortFormat(unsigned int *port)
 virDomainUSBAddressSet *
 virDomainUSBAddressSetCreate(void)
 {
-    virDomainUSBAddressSet *addrs;
-
-    addrs = g_new0(virDomainUSBAddressSet, 1);
-
-    return addrs;
+    return g_new0(virDomainUSBAddressSet, 1);
 }
 
 

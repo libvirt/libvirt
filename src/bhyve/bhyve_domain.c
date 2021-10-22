@@ -36,11 +36,7 @@ VIR_LOG_INIT("bhyve.bhyve_domain");
 static void *
 bhyveDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
-    bhyveDomainObjPrivate *priv;
-
-    priv = g_new0(bhyveDomainObjPrivate, 1);
-
-    return priv;
+    return g_new0(bhyveDomainObjPrivate, 1);
 }
 
 static void

@@ -117,10 +117,7 @@ virNWFilterObjListFree(virNWFilterObjList *nwfilters)
 virNWFilterObjList *
 virNWFilterObjListNew(void)
 {
-    virNWFilterObjList *nwfilters;
-
-    nwfilters = g_new0(virNWFilterObjList, 1);
-    return nwfilters;
+    return g_new0(virNWFilterObjList, 1);
 }
 
 

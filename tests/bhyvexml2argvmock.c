@@ -74,10 +74,7 @@ int virNetDevTapCreateInBridgePort(const char *brname G_GNUC_UNUSED,
 
 char *virNetDevTapGetRealDeviceName(char *name G_GNUC_UNUSED)
 {
-    char *fakename;
-
-    fakename = g_strdup("faketapdev");
-    return fakename;
+    return g_strdup("faketapdev");
 }
 
 int virNetDevSetOnline(const char *ifname G_GNUC_UNUSED,

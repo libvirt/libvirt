@@ -64,14 +64,12 @@ static char *get_fake_path(const char *real_path)
 DIR *opendir(const char *name)
 {
     g_autofree char *path = NULL;
-    DIR* ret;
 
     init_syms();
 
     path = get_fake_path(name);
 
-    ret = realopendir(path);
-    return ret;
+    return realopendir(path);
 }
 
 int open(const char *pathname, int flags, ...)

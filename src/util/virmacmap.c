@@ -267,11 +267,7 @@ char *
 virMacMapFileName(const char *dnsmasqStateDir,
                   const char *bridge)
 {
-    char *filename;
-
-    filename = g_strdup_printf("%s/%s.macs", dnsmasqStateDir, bridge);
-
-    return filename;
+    return g_strdup_printf("%s/%s.macs", dnsmasqStateDir, bridge);
 }
 
 

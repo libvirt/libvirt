@@ -1282,13 +1282,10 @@ qemuMonitorTestFullAddItem(qemuMonitorTest *test,
                            size_t line)
 {
     g_autofree char *cmderr = NULL;
-    int ret;
 
     cmderr = g_strdup_printf("wrong expected command in %s:%zu: ", filename, line);
 
-    ret = qemuMonitorTestAddItemVerbatim(test, command, cmderr, response);
-
-    return ret;
+    return qemuMonitorTestAddItemVerbatim(test, command, cmderr, response);
 }
 
 

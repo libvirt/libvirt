@@ -1438,14 +1438,8 @@ void virPCIDeviceAddressCopy(virPCIDeviceAddress *dst,
 char *
 virPCIDeviceAddressAsString(const virPCIDeviceAddress *addr)
 {
-    char *str;
-
-    str = g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT,
-                          addr->domain,
-                          addr->bus,
-                          addr->slot,
-                          addr->function);
-    return str;
+    return g_strdup_printf(VIR_PCI_DEVICE_ADDRESS_FMT, addr->domain,
+                           addr->bus, addr->slot, addr->function);
 }
 
 bool

@@ -28879,10 +28879,7 @@ char
 *virDomainConfigFile(const char *dir,
                      const char *name)
 {
-    char *ret;
-
-    ret = g_strdup_printf("%s/%s.xml", dir, name);
-    return ret;
+    return g_strdup_printf("%s/%s.xml", dir, name);
 }
 
 /* Translates a device name of the form (regex) "[fhv]d[a-z]+" into

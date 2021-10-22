@@ -128,11 +128,7 @@ static char *
 get_key(const char *path,
         const char *name)
 {
-    char *ret;
-
-    ret = g_strdup_printf("%s:%s", path, name);
-
-    return ret;
+    return g_strdup_printf("%s:%s", path, name);
 }
 
 

@@ -107,12 +107,9 @@ virNumaNodesetIsAvailable(virBitmap *nodeset)
 char *
 virTPMCreateCancelPath(const char *devpath)
 {
-    char *path;
     (void)devpath;
 
-    path = g_strdup("/sys/class/misc/tpm0/device/cancel");
-
-    return path;
+    return g_strdup("/sys/class/misc/tpm0/device/cancel");
 }
 
 /**

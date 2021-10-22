@@ -157,11 +157,7 @@ virFirewallSetBackend(virFirewallBackend backend)
 static virFirewallGroup *
 virFirewallGroupNew(void)
 {
-    virFirewallGroup *group;
-
-    group = g_new0(virFirewallGroup, 1);
-
-    return group;
+    return g_new0(virFirewallGroup, 1);
 }
 
 

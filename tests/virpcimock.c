@@ -351,12 +351,8 @@ remove_fd(int fd)
 static char *
 pci_address_format(struct pciDeviceAddress const *addr)
 {
-    char *ret;
-
-    ret = g_strdup_printf(ADDR_STR_FMT,
-                          addr->domain, addr->bus,
-                          addr->device, addr->function);
-    return ret;
+    return g_strdup_printf(ADDR_STR_FMT, addr->domain, addr->bus,
+                           addr->device, addr->function);
 }
 
 static int

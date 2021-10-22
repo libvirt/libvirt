@@ -1666,7 +1666,6 @@ static char *
 testConnectGetSysinfo(virConnectPtr conn G_GNUC_UNUSED,
                       unsigned int flags)
 {
-    char *ret;
     const char *sysinfo = "<sysinfo type='smbios'>\n"
            "  <bios>\n"
            "    <entry name='vendor'>LENOVO</entry>\n"
@@ -1678,8 +1677,7 @@ testConnectGetSysinfo(virConnectPtr conn G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    ret = g_strdup(sysinfo);
-    return ret;
+    return g_strdup(sysinfo);
 }
 
 static const char *
@@ -2706,10 +2704,7 @@ testDomainCoreDump(virDomainPtr domain,
 static char *
 testDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED)
 {
-    char *ret;
-
-    ret = g_strdup("linux");
-    return ret;
+    return g_strdup("linux");
 }
 
 

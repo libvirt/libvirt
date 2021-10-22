@@ -616,10 +616,7 @@ virLockDaemonExecRestartStatePath(bool privileged,
 static char *
 virLockDaemonGetExecRestartMagic(void)
 {
-    char *ret;
-
-    ret = g_strdup_printf("%lld", (long long int)getpid());
-    return ret;
+    return g_strdup_printf("%lld", (long long int)getpid());
 }
 
 

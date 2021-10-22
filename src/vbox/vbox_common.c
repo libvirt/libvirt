@@ -2699,16 +2699,15 @@ static int vboxDomainDestroy(virDomainPtr dom)
     return vboxDomainDestroyFlags(dom, 0);
 }
 
-static char *vboxDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED) {
+static char *vboxDomainGetOSType(virDomainPtr dom G_GNUC_UNUSED)
+{
     /* Returning "hvm" always as suggested on list, cause
      * this functions seems to be badly named and it
      * is supposed to pass the ABI name and not the domain
      * operating system driver as I had imagined ;)
      */
-    char *osType;
 
-    osType = g_strdup("hvm");
-    return osType;
+    return g_strdup("hvm");
 }
 
 static int vboxDomainSetMemory(virDomainPtr dom, unsigned long memory)

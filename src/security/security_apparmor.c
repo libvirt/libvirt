@@ -1169,10 +1169,7 @@ static char *
 AppArmorGetMountOptions(virSecurityManager *mgr G_GNUC_UNUSED,
                         virDomainDef *vm G_GNUC_UNUSED)
 {
-    char *opts;
-
-    opts = g_strdup("");
-    return opts;
+    return g_strdup("");
 }
 
 static const char *

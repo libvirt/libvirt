@@ -3811,18 +3811,15 @@ qemuBuildMemoryDeviceProps(const virDomainDef *def,
 static char *
 qemuBuildLegacyNicStr(virDomainNetDef *net)
 {
-    char *str;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     const char *netmodel = virDomainNetGetModelString(net);
 
-    str = g_strdup_printf("nic,macaddr=%s,netdev=host%s%s%s%s%s",
-                          virMacAddrFormat(&net->mac, macaddr),
-                          net->info.alias,
-                          netmodel ? ",model=" : "",
-                          NULLSTR_EMPTY(netmodel),
-                          (net->info.alias ? ",id=" : ""),
-                          NULLSTR_EMPTY(net->info.alias));
-    return str;
+    return g_strdup_printf("nic,macaddr=%s,netdev=host%s%s%s%s%s",
+                           virMacAddrFormat(&net->mac, macaddr),
+                           net->info.alias, netmodel ? ",model=" : "",
+                           NULLSTR_EMPTY(netmodel),
+                           (net->info.alias ? ",id=" : ""),
+                           NULLSTR_EMPTY(net->info.alias));
 }
 
 

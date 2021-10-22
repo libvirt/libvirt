@@ -30,11 +30,7 @@ static void *
 testClientNew(virNetServerClient *client G_GNUC_UNUSED,
               void *opaque G_GNUC_UNUSED)
 {
-    char *dummy;
-
-    dummy = g_new0(char, 1);
-
-    return dummy;
+    return g_new0(char, 1);
 }
 
 

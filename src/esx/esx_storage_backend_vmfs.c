@@ -1392,10 +1392,7 @@ esxStorageVolGetXMLDesc(virStorageVolPtr volume,
 static char *
 esxStorageVolGetPath(virStorageVolPtr volume)
 {
-    char *path;
-
-    path = g_strdup_printf("[%s] %s", volume->pool, volume->name);
-    return path;
+    return g_strdup_printf("[%s] %s", volume->pool, volume->name);
 }
 
 

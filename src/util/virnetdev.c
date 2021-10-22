@@ -2803,10 +2803,7 @@ static int virNetDevGetMulticastTable(const char *ifname,
 virNetDevRxFilter *
 virNetDevRxFilterNew(void)
 {
-    virNetDevRxFilter *filter;
-
-    filter = g_new0(virNetDevRxFilter, 1);
-    return filter;
+    return g_new0(virNetDevRxFilter, 1);
 }
 
 

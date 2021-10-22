@@ -804,11 +804,7 @@ qemuAliasFromHostdev(const virDomainHostdevDef *hostdev)
 char *
 qemuDomainGetMasterKeyAlias(void)
 {
-    char *alias;
-
-    alias = g_strdup("masterKey0");
-
-    return alias;
+    return g_strdup("masterKey0");
 }
 
 
@@ -837,11 +833,7 @@ qemuAliasForSecret(const char *parentalias,
 char *
 qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
 {
-    char *ret;
-
-    ret = g_strdup_printf("obj%s_tls0", srcAlias);
-
-    return ret;
+    return g_strdup_printf("obj%s_tls0", srcAlias);
 }
 
 
@@ -853,11 +845,7 @@ qemuAliasTLSObjFromSrcAlias(const char *srcAlias)
 char *
 qemuAliasChardevFromDevAlias(const char *devAlias)
 {
-    char *ret;
-
-    ret = g_strdup_printf("char%s", devAlias);
-
-    return ret;
+    return g_strdup_printf("char%s", devAlias);
 }
 
 
@@ -871,11 +859,7 @@ qemuDomainGetManagedPRAlias(void)
 char *
 qemuDomainGetUnmanagedPRAlias(const char *parentalias)
 {
-    char *ret;
-
-    ret = g_strdup_printf("pr-helper-%s", parentalias);
-
-    return ret;
+    return g_strdup_printf("pr-helper-%s", parentalias);
 }
 
 

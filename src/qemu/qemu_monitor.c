@@ -920,10 +920,7 @@ qemuMonitorClose(qemuMonitor *mon)
 char *
 qemuMonitorNextCommandID(qemuMonitor *mon)
 {
-    char *id;
-
-    id = g_strdup_printf("libvirt-%d", ++mon->nextSerial);
-    return id;
+    return g_strdup_printf("libvirt-%d", ++mon->nextSerial);
 }
 
 

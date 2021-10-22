@@ -5944,13 +5944,9 @@ qemuDomainDefFromXML(virQEMUDriver *driver,
                      virQEMUCaps *qemuCaps,
                      const char *xml)
 {
-    virDomainDef *def;
-
-    def = virDomainDefParseString(xml, driver->xmlopt, qemuCaps,
-                                  VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                  VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
-
-    return def;
+    return virDomainDefParseString(xml, driver->xmlopt, qemuCaps,
+                                   VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                   VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE);
 }
 
 

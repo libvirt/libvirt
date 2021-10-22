@@ -365,10 +365,7 @@ static char *
 networkDnsmasqLeaseFileNameDefault(virNetworkDriverState *driver,
                                    const char *netname)
 {
-    char *leasefile;
-
-    leasefile = g_strdup_printf("%s/%s.leases", driver->dnsmasqStateDir, netname);
-    return leasefile;
+    return g_strdup_printf("%s/%s.leases", driver->dnsmasqStateDir, netname);
 }
 
 
@@ -376,10 +373,7 @@ static char *
 networkDnsmasqLeaseFileNameCustom(virNetworkDriverState *driver,
                                   const char *bridge)
 {
-    char *leasefile;
-
-    leasefile = g_strdup_printf("%s/%s.status", driver->dnsmasqStateDir, bridge);
-    return leasefile;
+    return g_strdup_printf("%s/%s.status", driver->dnsmasqStateDir, bridge);
 }
 
 
@@ -387,21 +381,13 @@ static char *
 networkDnsmasqConfigFileName(virNetworkDriverState *driver,
                              const char *netname)
 {
-    char *conffile;
-
-    conffile = g_strdup_printf("%s/%s.conf", driver->dnsmasqStateDir, netname);
-    return conffile;
+    return g_strdup_printf("%s/%s.conf", driver->dnsmasqStateDir, netname);
 }
 
 
 static char *
 networkRadvdPidfileBasename(const char *netname)
-{
-    /* this is simple but we want to be sure it's consistently done */
-    char *pidfilebase;
-
-    pidfilebase = g_strdup_printf("%s-radvd", netname);
-    return pidfilebase;
+{return g_strdup_printf("%s-radvd", netname);
 }
 
 
@@ -409,10 +395,7 @@ static char *
 networkRadvdConfigFileName(virNetworkDriverState *driver,
                            const char *netname)
 {
-    char *configfile;
-
-    configfile = g_strdup_printf("%s/%s-radvd.conf", driver->radvdStateDir, netname);
-    return configfile;
+    return g_strdup_printf("%s/%s-radvd.conf", driver->radvdStateDir, netname);
 }
 
 

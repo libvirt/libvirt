@@ -1601,9 +1601,7 @@ char *
 virNetworkObjGetPortStatusDir(virNetworkObj *net,
                               const char *stateDir)
 {
-    char *ret;
-    ret = g_strdup_printf("%s/%s/ports", stateDir, net->def->name);
-    return ret;
+    return g_strdup_printf("%s/%s/ports", stateDir, net->def->name);
 }
 
 int

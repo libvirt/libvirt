@@ -174,13 +174,11 @@ static int
 virLockManagerSanlockInitLockspace(virLockManagerSanlockDriver *driver,
                                    struct sanlk_lockspace *ls)
 {
-    int ret;
-
     const int max_hosts = 0; /* defaults used in sanlock_init() implementation */
     const unsigned int lockspaceFlags = 0;
 
-    ret = sanlock_write_lockspace(ls, max_hosts, lockspaceFlags, driver->io_timeout);
-    return ret;
+    return sanlock_write_lockspace(ls, max_hosts, lockspaceFlags,
+                                   driver->io_timeout);
 }
 
 /* How many times try adding a lockspace? */
