@@ -5693,7 +5693,7 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
                              virJSONValue *cpu_props,
                              qemuMonitorCPUModelInfo **model_info)
 {
-    qemuMonitorCPUModelInfo *machine_model = NULL;
+    g_autoptr(qemuMonitorCPUModelInfo) machine_model = NULL;
     int ret = -1;
 
     machine_model = g_new0(qemuMonitorCPUModelInfo, 1);
@@ -5714,7 +5714,6 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
     ret = 0;
 
  cleanup:
-    qemuMonitorCPUModelInfoFree(machine_model);
     return ret;
 }
 
