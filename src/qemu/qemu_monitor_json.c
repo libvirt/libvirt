@@ -1470,6 +1470,7 @@ qemuMonitorJSONHumanCommand(qemuMonitor *mon,
     virJSONValue *cmd = NULL;
     virJSONValue *reply = NULL;
     virJSONValue *obj;
+    const char *data;
     int ret = -1;
 
     cmd = qemuMonitorJSONMakeCommand("human-monitor-command",
@@ -1490,13 +1491,8 @@ qemuMonitorJSONHumanCommand(qemuMonitor *mon,
         goto cleanup;
 
     obj = virJSONValueObjectGet(reply, "return");
-
-    if (reply_str) {
-        const char *data;
-
-        data = virJSONValueGetString(obj);
-        *reply_str = g_strdup(NULLSTR_EMPTY(data));
-    }
+    data = virJSONValueGetString(obj);
+    *reply_str = g_strdup(NULLSTR_EMPTY(data));
 
     ret = 0;
 
