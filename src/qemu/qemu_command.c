@@ -3177,9 +3177,9 @@ qemuBuildSkipController(const virDomainControllerDef *controller,
     return false;
 }
 
-static int
+static void
 qemuBuildPMPCIRootHotplugCommandLine(virCommand *cmd,
-                              const virDomainControllerDef *controller)
+                                     const virDomainControllerDef *controller)
 {
     if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI &&
         controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCI_ROOT &&
@@ -3189,7 +3189,7 @@ qemuBuildPMPCIRootHotplugCommandLine(virCommand *cmd,
             virCommandAddArgFormat(cmd, "PIIX4_PM.acpi-root-pci-hotplug=%s",
                                    virTristateSwitchTypeToString(controller->opts.pciopts.hotplug));
     }
-    return 0;
+    return;
 }
 
 static int
@@ -3207,8 +3207,7 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
         if (cont->type != type)
             continue;
 
-        if (qemuBuildPMPCIRootHotplugCommandLine(cmd, cont))
-            continue;
+        qemuBuildPMPCIRootHotplugCommandLine(cmd, cont);
 
         if (qemuBuildSkipController(cont, def))
             continue;
