@@ -1188,7 +1188,8 @@ static bool
 qemuDomainDiskHasEncryptionSecret(virStorageSource *src)
 {
     if (!virStorageSourceIsEmpty(src) && src->encryption &&
-        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+        (src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS ||
+         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2) &&
         src->encryption->nsecrets > 0)
         return true;
 
@@ -4778,6 +4779,11 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                     case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
                         break;
 
+                    case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2:
+                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                       _("luks2 is currently not supported by the qemu encryption engine"));
+                        return -1;
+
                     case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
                     case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
                     default:
@@ -4796,6 +4802,7 @@ qemuDomainValidateStorageSource(virStorageSource *src,
 
                 switch ((virStorageEncryptionFormatType) src->encryption->format) {
                     case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS:
+                    case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2:
                         break;
 
                     case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:

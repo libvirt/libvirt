@@ -44,7 +44,7 @@ VIR_ENUM_IMPL(virStorageEncryptionSecret,
 
 VIR_ENUM_IMPL(virStorageEncryptionFormat,
               VIR_STORAGE_ENCRYPTION_FORMAT_LAST,
-              "default", "qcow", "luks",
+              "default", "qcow", "luks", "luks2",
 );
 
 VIR_ENUM_IMPL(virStorageEncryptionEngine,
