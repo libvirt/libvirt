@@ -276,6 +276,9 @@ testQemuDiskXMLToProps(const void *opaque)
                                        VIR_DOMAIN_DEF_PARSE_STATUS)))
         return -1;
 
+    if (qemuDomainDeviceDiskDefPostParse(disk, 0) < 0)
+        return -1;
+
     if (!(vmdef = virDomainDefNew(data->driver->xmlopt)))
         return -1;
 
@@ -470,32 +473,24 @@ testQemuImageCreateLoadDiskXML(const char *name,
                                virDomainXMLOption *xmlopt)
 
 {
-    virDomainSnapshotDiskDef *diskdef = NULL;
-    g_autoptr(xmlDoc) doc = NULL;
-    g_autoptr(xmlXPathContext) ctxt = NULL;
-    xmlNodePtr node;
+    virDomainDiskDef *disk = NULL;
     g_autofree char *xmlpath = NULL;
-    virStorageSource *ret = NULL;
+    g_autofree char *xmlstr = NULL;
 
     xmlpath = g_strdup_printf("%s%s.xml", testQemuImageCreatePath, name);
 
-    if (!(doc = virXMLParseFileCtxt(xmlpath, &ctxt)))
+    if (virTestLoadFile(xmlpath, &xmlstr) < 0)
         return NULL;
 
-    if (!(node = virXPathNode("//disk", ctxt))) {
-        VIR_TEST_VERBOSE("failed to find <source> element\n");
+    /* qemu stores node names in the status XML portion */
+    if (!(disk = virDomainDiskDefParse(xmlstr, xmlopt,
+                                       VIR_DOMAIN_DEF_PARSE_STATUS)))
         return NULL;
-    }
 
-    diskdef = g_new0(virDomainSnapshotDiskDef, 1);
+    if (qemuDomainDeviceDiskDefPostParse(disk, 0) < 0)
+        return NULL;
 
-    if (virDomainSnapshotDiskDefParseXML(node, ctxt, diskdef,
-                                         VIR_DOMAIN_DEF_PARSE_STATUS,
-                                         xmlopt) == 0)
-        ret = g_steal_pointer(&diskdef->src);
-
-    virDomainSnapshotDiskDefFree(diskdef);
-    return ret;
+    return disk->src;
 }
 
 

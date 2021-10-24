@@ -5218,7 +5218,7 @@ qemuDomainDeviceDiskDefPostParseRestoreSecAlias(virDomainDiskDef *disk,
 }
 
 
-static int
+int
 qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
                                  unsigned int parseFlags)
 {

@@ -857,6 +857,9 @@ int qemuDomainSecretPrepare(virQEMUDriver *driver,
 int qemuDomainDeviceDefValidateDisk(const virDomainDiskDef *disk,
                                     virQEMUCaps *qemuCaps);
 
+int qemuDomainDeviceDiskDefPostParse(virDomainDiskDef *disk,
+                                     unsigned int parseFlags);
+
 int qemuDomainPrepareChannel(virDomainChrDef *chr,
                              const char *domainChannelTargetDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
