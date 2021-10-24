@@ -24,6 +24,12 @@
       defined in the future.
     </p>
     <p>
+      The <code>encryption</code> tag supports an optional <code>engine</code>
+      tag, which allows selecting which component actually handles
+      the encryption. Currently defined values of <code>engine</code> are
+      <code>qemu</code>.
+    </p>
+    <p>
       The <code>encryption</code> tag can currently contain a sequence of
       <code>secret</code> tags, each with mandatory attributes <code>type</code>
       and either <code>uuid</code> or <code>usage</code>

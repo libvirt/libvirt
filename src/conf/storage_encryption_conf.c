@@ -47,6 +47,11 @@ VIR_ENUM_IMPL(virStorageEncryptionFormat,
               "default", "qcow", "luks",
 );
 
+VIR_ENUM_IMPL(virStorageEncryptionEngine,
+              VIR_STORAGE_ENCRYPTION_ENGINE_LAST,
+              "default", "qemu",
+);
+
 static void
 virStorageEncryptionInfoDefClear(virStorageEncryptionInfoDef *def)
 {
@@ -120,6 +125,7 @@ virStorageEncryptionCopy(const virStorageEncryption *src)
     ret->secrets = g_new0(virStorageEncryptionSecret *, src->nsecrets);
     ret->nsecrets = src->nsecrets;
     ret->format = src->format;
+    ret->engine = src->engine;
 
     for (i = 0; i < src->nsecrets; i++) {
         if (!(ret->secrets[i] = virStorageEncryptionSecretCopy(src->secrets[i])))
@@ -239,6 +245,12 @@ virStorageEncryptionParseNode(xmlNodePtr node,
         goto cleanup;
     }
 
+    if (virXMLPropEnum(node, "engine",
+                       virStorageEncryptionEngineTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &encdef->engine) < 0)
+      goto cleanup;
+
     if ((n = virXPathNodeSet("./secret", ctxt, &nodes)) < 0)
         goto cleanup;
 
@@ -327,6 +339,7 @@ int
 virStorageEncryptionFormat(virBuffer *buf,
                            virStorageEncryption *enc)
 {
+    const char *engine;
     const char *format;
     size_t i;
 
@@ -335,7 +348,18 @@ virStorageEncryptionFormat(virBuffer *buf,
                        "%s", _("unexpected encryption format"));
         return -1;
     }
-    virBufferAsprintf(buf, "<encryption format='%s'>\n", format);
+    if (enc->engine == VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT) {
+        virBufferAsprintf(buf, "<encryption format='%s'>\n", format);
+    } else {
+        if (!(engine = virStorageEncryptionEngineTypeToString(enc->engine))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           "%s", _("unexpected encryption engine"));
+            return -1;
+        }
+        virBufferAsprintf(buf, "<encryption format='%s' engine='%s'>\n",
+                          format, engine);
+    }
+
     virBufferAdjustIndent(buf, 2);
 
     for (i = 0; i < enc->nsecrets; i++) {

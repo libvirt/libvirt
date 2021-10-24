@@ -1314,6 +1314,7 @@ qemuBlockStorageSourceGetCryptoProps(virStorageSource *src,
     *encprops = NULL;
 
     if (!src->encryption ||
+        src->encryption->engine != VIR_STORAGE_ENCRYPTION_ENGINE_QEMU ||
         !srcpriv ||
         !srcpriv->encinfo)
         return 0;
@@ -1448,6 +1449,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
          * put a raw layer on top */
     case VIR_STORAGE_FILE_RAW:
         if (src->encryption &&
+            src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_QEMU &&
             src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS) {
             if (qemuBlockStorageSourceGetFormatLUKSProps(src, props) < 0)
                 return NULL;

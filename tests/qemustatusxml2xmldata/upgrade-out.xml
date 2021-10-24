@@ -316,7 +316,7 @@
       <disk type='file' device='disk'>
         <driver name='qemu' type='qcow2'/>
         <source file='/var/lib/libvirt/images/b.qcow2'>
-          <encryption format='luks'>
+          <encryption format='luks' engine='qemu'>
             <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
           </encryption>
           <privateData>
@@ -333,7 +333,7 @@
       <disk type='file' device='disk'>
         <driver name='qemu' type='qcow2'/>
         <source file='/var/lib/libvirt/images/c.qcow2'>
-          <encryption format='luks'>
+          <encryption format='luks' engine='qemu'>
             <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
           </encryption>
           <privateData>
@@ -354,7 +354,7 @@
           <auth username='testuser-iscsi'>
             <secret type='iscsi' usage='testuser-iscsi-secret'/>
           </auth>
-          <encryption format='luks'>
+          <encryption format='luks' engine='qemu'>
             <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
           </encryption>
           <privateData>

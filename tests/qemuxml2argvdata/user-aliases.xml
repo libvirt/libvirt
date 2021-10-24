@@ -55,7 +55,7 @@
       <driver name='qemu' type='qcow2'/>
       <source file='/var/lib/libvirt/images/OtherDemo.img'/>
       <target dev='vdb' bus='virtio'/>
-      <encryption format='luks'>
+      <encryption format='luks' engine='qemu'>
         <secret type='passphrase' uuid='e78d4b51-a2af-485f-b0f5-afca709a80f4'/>
       </encryption>
       <alias name='ua-myEncryptedDisk1'/>

@@ -18,7 +18,7 @@
       <driver name='qemu' type='qcow2'/>
       <source file='/storage/guest_disks/encryptdisk'/>
       <target dev='vda' bus='virtio'/>
-      <encryption format='luks'>
+      <encryption format='luks' engine='qemu'>
         <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
       </encryption>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>

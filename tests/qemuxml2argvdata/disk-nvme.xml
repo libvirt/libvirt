@@ -42,7 +42,7 @@
       <driver name='qemu' type='qcow2' cache='none'/>
       <source type='pci' managed='no' namespace='2'>
         <address domain='0x0001' bus='0x02' slot='0x00' function='0x0'/>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
         </encryption>
       </source>

@@ -17,7 +17,7 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='/storage/guest_disks/encryptdisk'>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
         </encryption>
       </source>
@@ -27,7 +27,7 @@
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw'/>
       <source file='/storage/guest_disks/encryptdisk2'>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' usage='/storage/guest_disks/encryptdisk2'/>
         </encryption>
       </source>
@@ -41,7 +41,7 @@
         <auth username='myname'>
           <secret type='iscsi' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80e80'/>
         </auth>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80f77'/>
         </encryption>
       </source>
@@ -51,7 +51,7 @@
     <disk type='volume' device='disk'>
       <driver name='qemu' type='raw'/>
       <source pool='pool-iscsi' volume='unit:0:0:3' mode='direct'>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80f80'/>
         </encryption>
       </source>
@@ -64,7 +64,7 @@
         <host name='mon1.example.org' port='6321'/>
         <host name='mon2.example.org' port='6322'/>
         <host name='mon3.example.org' port='6322'/>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80fb0'/>
         </encryption>
       </source>

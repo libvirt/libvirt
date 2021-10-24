@@ -49,7 +49,7 @@
         <slices>
           <slice type='storage' offset='1234' size='321'/>
         </slices>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
         </encryption>
       </source>
@@ -75,7 +75,7 @@
         <slices>
           <slice type='storage' offset='1234' size='321'/>
         </slices>
-        <encryption format='luks'>
+        <encryption format='luks' engine='qemu'>
           <secret type='passphrase' uuid='0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f'/>
         </encryption>
       </source>

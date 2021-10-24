@@ -52,6 +52,14 @@ struct _virStorageEncryptionInfoDef {
 };
 
 typedef enum {
+    VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT = 0,
+    VIR_STORAGE_ENCRYPTION_ENGINE_QEMU,
+
+    VIR_STORAGE_ENCRYPTION_ENGINE_LAST,
+} virStorageEncryptionEngine;
+VIR_ENUM_DECL(virStorageEncryptionEngine);
+
+typedef enum {
     /* "default" is only valid for volume creation */
     VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT = 0,
     VIR_STORAGE_ENCRYPTION_FORMAT_QCOW, /* Both qcow and qcow2 */
@@ -63,6 +71,7 @@ VIR_ENUM_DECL(virStorageEncryptionFormat);
 
 typedef struct _virStorageEncryption virStorageEncryption;
 struct _virStorageEncryption {
+    virStorageEncryptionEngine engine;
     int format; /* virStorageEncryptionFormatType */
     int payload_offset;
 
