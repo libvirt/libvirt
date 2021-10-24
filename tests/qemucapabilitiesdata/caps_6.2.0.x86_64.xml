@@ -241,6 +241,7 @@
   <flag name='ich9.acpi-hotplug-bridge'/>
   <flag name='device.json'/>
   <flag name='query-dirty-rate'/>
+  <flag name='rbd-encryption'/>
   <version>6001050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

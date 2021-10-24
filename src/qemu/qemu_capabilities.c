@@ -651,6 +651,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
               "device.json", /* QEMU_CAPS_DEVICE_JSON */
               "query-dirty-rate", /* QEMU_CAPS_QUERY_DIRTY_RATE */
+              "rbd-encryption", /* QEMU_CAPS_RBD_ENCRYPTION */
     );
 
 
@@ -1561,6 +1562,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/$dynamic-auto-read-only", QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC },
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
+    { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
     { "blockdev-add/arg-type/discard", QEMU_CAPS_DRIVE_DISCARD },
     { "blockdev-add/arg-type/detect-zeroes", QEMU_CAPS_DRIVE_DETECT_ZEROES },
     { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
