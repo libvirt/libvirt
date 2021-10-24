@@ -27,7 +27,16 @@
       The <code>encryption</code> tag supports an optional <code>engine</code>
       tag, which allows selecting which component actually handles
       the encryption. Currently defined values of <code>engine</code> are
-      <code>qemu</code>.
+      <code>qemu</code> and <code>librbd</code>.
+      Both <code>qemu</code> and <code>librbd</code> require using the qemu
+      driver.
+      The <code>librbd</code> engine requires qemu version >= 6.1.0,
+      and is only applicable for RBD network disks.
+      If the engine tag is not specified, the <code>qemu</code> engine will be
+      used by default (assuming the qemu driver is used).
+      Note that <code>librbd</code> engine is currently only supported by the
+      qemu VM driver, and is not supported by the storage driver. Furthermore,
+      the storage driver currently ignores the <code>engine</code> tag.
     </p>
     <p>
       The <code>encryption</code> tag can currently contain a sequence of

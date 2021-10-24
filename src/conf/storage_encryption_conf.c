@@ -49,7 +49,7 @@ VIR_ENUM_IMPL(virStorageEncryptionFormat,
 
 VIR_ENUM_IMPL(virStorageEncryptionEngine,
               VIR_STORAGE_ENCRYPTION_ENGINE_LAST,
-              "default", "qemu",
+              "default", "qemu", "librbd",
 );
 
 static void

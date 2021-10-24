@@ -875,6 +875,8 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     qemuDomainStorageSourcePrivate *srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     g_autoptr(virJSONValue) servers = NULL;
     virJSONValue *ret = NULL;
+    g_autoptr(virJSONValue) encrypt = NULL;
+    const char *encformat;
     const char *username = NULL;
     g_autoptr(virJSONValue) authmodes = NULL;
     g_autoptr(virJSONValue) mode = NULL;
@@ -899,12 +901,40 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
             return NULL;
     }
 
+    if (src->encryption &&
+        src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_LIBRBD) {
+        switch ((virStorageEncryptionFormatType) src->encryption->format) {
+            case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS:
+                encformat = "luks";
+                break;
+
+            case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("librbd encryption engine only supports luks/luks2 formats"));
+                return NULL;
+
+            case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
+            case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
+            default:
+                virReportEnumRangeError(virStorageEncryptionFormatType,
+                                        src->encryption->format);
+                return NULL;
+        }
+
+        if (virJSONValueObjectCreate(&encrypt,
+                                     "s:format", encformat,
+                                     "s:key-secret", srcPriv->encinfo->alias,
+                                     NULL) < 0)
+            return NULL;
+    }
+
     if (virJSONValueObjectCreate(&ret,
                                  "s:pool", src->volume,
                                  "s:image", src->path,
                                  "S:snapshot", src->snapshot,
                                  "S:conf", src->configFile,
                                  "A:server", &servers,
+                                 "A:encrypt", &encrypt,
                                  "S:user", username,
                                  "A:auth-client-required", &authmodes,
                                  "S:key-secret", keysecret,

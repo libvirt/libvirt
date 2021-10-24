@@ -54,6 +54,7 @@ struct _virStorageEncryptionInfoDef {
 typedef enum {
     VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT = 0,
     VIR_STORAGE_ENCRYPTION_ENGINE_QEMU,
+    VIR_STORAGE_ENCRYPTION_ENGINE_LIBRBD,
 
     VIR_STORAGE_ENCRYPTION_ENGINE_LAST,
 } virStorageEncryptionEngine;
