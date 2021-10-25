@@ -487,7 +487,7 @@ qcow2GetClusterSize(const char *buf,
     clusterBits = virReadBufInt32BE(buf + QCOWX_HDR_CLUSTER_BITS_OFFSET);
 
     if (clusterBits > 0)
-        return 1 << clusterBits;
+        return 1ULL << clusterBits;
 
     return 0;
 }
