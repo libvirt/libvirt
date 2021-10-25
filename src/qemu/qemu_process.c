@@ -8732,13 +8732,15 @@ qemuProcessReconnect(void *opaque)
         goto error;
     }
 
-    /* In case the domain shutdown while we were not running,
-     * we need to finish the shutdown process. And we need to do it after
-     * we have virQEMUCaps filled in.
+    /* In case the domain shutdown or fake reboot while we were not running,
+     * we need to finish the shutdown or fake reboot process. And we need to
+     * do it after we have virQEMUCaps filled in.
      */
     if (state == VIR_DOMAIN_SHUTDOWN ||
         (state == VIR_DOMAIN_PAUSED &&
-         reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN)) {
+         reason == VIR_DOMAIN_PAUSED_SHUTTING_DOWN) ||
+        (priv->fakeReboot && state == VIR_DOMAIN_PAUSED &&
+         reason == VIR_DOMAIN_PAUSED_USER)) {
         VIR_DEBUG("Finishing shutdown sequence for domain %s",
                   obj->def->name);
         qemuProcessShutdownOrReboot(driver, obj);
