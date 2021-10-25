@@ -1870,15 +1870,8 @@ qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
     processEvent->vm = virObjectRef(vm);
     processEvent->data = g_steal_pointer(&info);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, processEvent) < 0) {
-        qemuProcessEventFree(processEvent);
-        virObjectUnref(vm);
-        goto cleanup;
-    }
+    qemuProcessEventSubmit(driver, &processEvent);
 
-    processEvent = NULL;
- cleanup:
-    qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
 }
 
