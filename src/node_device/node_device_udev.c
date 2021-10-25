@@ -1020,10 +1020,9 @@ static int
 udevProcessMediatedDevice(struct udev_device *dev,
                           virNodeDeviceDef *def)
 {
-    int ret = -1;
     int iommugrp = -1;
-    char *linkpath = NULL;
-    char *canonicalpath = NULL;
+    g_autofree char *linkpath = NULL;
+    g_autofree char *canonicalpath = NULL;
     virNodeDevCapMdev *data = &def->caps->data.mdev;
     struct udev_device *parent_device = NULL;
 
@@ -1039,19 +1038,19 @@ udevProcessMediatedDevice(struct udev_device *dev,
         virReportSystemError(errno,
                              _("failed to wait for file '%s' to appear"),
                              linkpath);
-        goto cleanup;
+        return -1;
     }
 
     if (virFileResolveLink(linkpath, &canonicalpath) < 0) {
         virReportSystemError(errno, _("failed to resolve '%s'"), linkpath);
-        goto cleanup;
+        return -1;
     }
 
     data->type = g_path_get_basename(canonicalpath);
 
     data->uuid = g_strdup(udev_device_get_sysname(dev));
     if ((iommugrp = virMediatedDeviceGetIOMMUGroupNum(data->uuid)) < 0)
-        goto cleanup;
+        return -1;
 
     /* lookup the address of parent device */
     parent_device = udev_device_get_parent(dev);
@@ -1072,11 +1071,7 @@ udevProcessMediatedDevice(struct udev_device *dev,
 
     data->iommuGroupNumber = iommugrp;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(linkpath);
-    VIR_FREE(canonicalpath);
-    return ret;
+    return 0;
 }
 
 
