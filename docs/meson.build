@@ -1,7 +1,9 @@
 docs_html_dir = docdir / 'html'
 
 # xsltproc requires that the -o path ends with '/'
-docs_builddir = meson.current_build_dir() / ''
+# Not using '/' operator due to bug in meson 0.60.0
+# https://github.com/mesonbuild/meson/issues/9450
+docs_builddir = join_paths(meson.current_build_dir(), '')
 
 docs_assets = [
   'android-chrome-192x192.png',
