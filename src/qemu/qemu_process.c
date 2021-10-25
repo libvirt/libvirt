@@ -1845,7 +1845,7 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
-static int
+static void
 qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
                                         virDomainObj *vm,
                                         const char *devAlias,
@@ -1855,7 +1855,6 @@ qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     struct qemuProcessEvent *processEvent = NULL;
     qemuMonitorMemoryDeviceSizeChange *info = NULL;
-    int ret = -1;
 
     virObjectLock(vm);
 
@@ -1878,11 +1877,9 @@ qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
     }
 
     processEvent = NULL;
-    ret = 0;
  cleanup:
     qemuProcessEventFree(processEvent);
     virObjectUnlock(vm);
-    return ret;
 }
 
 

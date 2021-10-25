@@ -413,11 +413,11 @@ typedef void (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
                                                        qemuMonitorEventMemoryFailure *mfp,
                                                        void *opaque);
 
-typedef int (*qemuMonitorDomainMemoryDeviceSizeChange)(qemuMonitor *mon,
-                                                       virDomainObj *vm,
-                                                       const char *alias,
-                                                       unsigned long long size,
-                                                       void *opaque);
+typedef void (*qemuMonitorDomainMemoryDeviceSizeChange)(qemuMonitor *mon,
+                                                        virDomainObj *vm,
+                                                        const char *alias,
+                                                        unsigned long long size,
+                                                        void *opaque);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 struct _qemuMonitorCallbacks {
