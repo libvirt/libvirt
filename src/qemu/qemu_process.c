@@ -523,6 +523,7 @@ qemuProcessFakeReboot(void *opaque)
 
  cleanup:
     priv->pausedShutdown = false;
+    qemuDomainSetFakeReboot(driver, vm, false);
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
@@ -540,7 +541,6 @@ qemuProcessShutdownOrReboot(virQEMUDriver *driver,
         g_autofree char *name = g_strdup_printf("reboot-%s", vm->def->name);
         virThread th;
 
-        qemuDomainSetFakeReboot(driver, vm, false);
         virObjectRef(vm);
         if (virThreadCreateFull(&th,
                                 false,
@@ -551,6 +551,7 @@ qemuProcessShutdownOrReboot(virQEMUDriver *driver,
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
             priv->pausedShutdown = false;
+            qemuDomainSetFakeReboot(driver, vm, false);
             virObjectUnref(vm);
         }
     } else {
