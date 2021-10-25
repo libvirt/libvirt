@@ -473,7 +473,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
                                virDomainXMLOption *xmlopt)
 
 {
-    virDomainDiskDef *disk = NULL;
+    g_autoptr(virDomainDiskDef) disk = NULL;
     g_autofree char *xmlpath = NULL;
     g_autofree char *xmlstr = NULL;
 
@@ -490,7 +490,7 @@ testQemuImageCreateLoadDiskXML(const char *name,
     if (qemuDomainDeviceDiskDefPostParse(disk, 0) < 0)
         return NULL;
 
-    return disk->src;
+    return g_steal_pointer(&disk->src);
 }
 
 
