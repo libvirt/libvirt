@@ -98,6 +98,9 @@
 #include "storage_source.h"
 #include "backup_conf.h"
 
+#include "logging/log_manager.h"
+#include "logging/log_protocol.h"
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_process");
@@ -3066,29 +3069,6 @@ qemuProcessInitPasswords(virQEMUDriver *driver,
     }
 
     return ret;
-}
-
-
-static int
-qemuProcessPrepareChardevDevice(virDomainDef *def G_GNUC_UNUSED,
-                                virDomainChrDef *dev,
-                                void *opaque G_GNUC_UNUSED)
-{
-    int fd;
-    if (dev->source->type != VIR_DOMAIN_CHR_TYPE_FILE)
-        return 0;
-
-    if ((fd = open(dev->source->data.file.path,
-                   O_CREAT | O_APPEND, S_IRUSR|S_IWUSR)) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to pre-create chardev file '%s'"),
-                             dev->source->data.file.path);
-        return -1;
-    }
-
-    VIR_FORCE_CLOSE(fd);
-
-    return 0;
 }
 
 
@@ -6802,6 +6782,200 @@ qemuProcessOpenVhostVsock(virDomainVsockDef *vsock)
 }
 
 
+static int
+qemuProcessPrepareHostBackendChardevFileHelper(const char *path,
+                                               virTristateSwitch append,
+                                               int *fd,
+                                               virLogManager *logManager,
+                                               virSecurityManager *secManager,
+                                               virQEMUCaps *qemuCaps,
+                                               virQEMUDriverConfig *cfg,
+                                               const virDomainDef *def)
+{
+    /* Technically, to pass an FD via /dev/fdset we don't need
+     * any capability check because X_QEMU_CAPS_ADD_FD is already
+     * assumed. But keeping the old style is still handy when
+     * building a standalone command line (e.g. for tests). */
+    if (!logManager &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
+        return 0;
+
+    if (logManager) {
+        int flags = 0;
+
+        if (append == VIR_TRISTATE_SWITCH_ABSENT ||
+            append == VIR_TRISTATE_SWITCH_OFF)
+            flags |= VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
+
+        if ((*fd = virLogManagerDomainOpenLogFile(logManager,
+                                                  "qemu",
+                                                  def->uuid,
+                                                  def->name,
+                                                  path,
+                                                  flags,
+                                                  NULL, NULL)) < 0)
+            return -1;
+    } else {
+        int oflags = O_CREAT | O_WRONLY;
+
+        switch (append) {
+        case VIR_TRISTATE_SWITCH_ABSENT:
+        case VIR_TRISTATE_SWITCH_OFF:
+            oflags |= O_TRUNC;
+            break;
+        case VIR_TRISTATE_SWITCH_ON:
+            oflags |= O_APPEND;
+            break;
+        case VIR_TRISTATE_SWITCH_LAST:
+            break;
+        }
+
+        if ((*fd = qemuDomainOpenFile(cfg, def, path, oflags, NULL)) < 0)
+            return -1;
+
+        if (qemuSecuritySetImageFDLabel(secManager, (virDomainDef*)def, *fd) < 0) {
+            VIR_FORCE_CLOSE(*fd);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+struct qemuProcessPrepareHostBackendChardevData {
+    virQEMUCaps *qemuCaps;
+    virLogManager *logManager;
+    virSecurityManager *secManager;
+    virQEMUDriverConfig *cfg;
+    virDomainDef *def;
+};
+
+
+static int
+qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
+                                        virDomainChrSourceDef *chardev,
+                                        void *opaque)
+{
+    struct qemuProcessPrepareHostBackendChardevData *data = opaque;
+    qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chardev);
+
+    /* this function is also called for the monitor backend which doesn't have
+     * a 'dev' */
+    if (dev) {
+        if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+            /* due to a historical bug in qemu we don't use FD passtrhough for
+             * vhost-sockets for network devices */
+            return 0;
+        }
+    }
+
+    switch ((virDomainChrType) chardev->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        if (qemuProcessPrepareHostBackendChardevFileHelper(chardev->data.file.path,
+                                                           chardev->data.file.append,
+                                                           &charpriv->fd,
+                                                           data->logManager,
+                                                           data->secManager,
+                                                           data->qemuCaps,
+                                                           data->cfg,
+                                                           data->def) < 0)
+            return -1;
+
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (chardev->data.nix.listen &&
+            virQEMUCapsGet(data->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+
+            if (qemuSecuritySetSocketLabel(data->secManager, data->def) < 0)
+                return -1;
+
+            charpriv->fd = qemuOpenChrChardevUNIXSocket(chardev);
+
+            if (qemuSecurityClearSocketLabel(data->secManager, data->def) < 0) {
+                VIR_FORCE_CLOSE(charpriv->fd);
+                return -1;
+            }
+
+            if (charpriv->fd < 0)
+                return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+    default:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported chardev '%s'"),
+                       virDomainChrTypeToString(chardev->type));
+        return -1;
+    }
+
+    if (chardev->logfile) {
+        if (qemuProcessPrepareHostBackendChardevFileHelper(chardev->logfile,
+                                                           chardev->logappend,
+                                                           &charpriv->logfd,
+                                                           data->logManager,
+                                                           data->secManager,
+                                                           data->qemuCaps,
+                                                           data->cfg,
+                                                           data->def) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/* prepare the chardev backends for various devices:
+ * serial/parallel/channel chardevs, vhost-user disks, vhost-user network
+ * interfaces, smartcards, shared memory, and redirdevs */
+static int
+qemuProcessPrepareHostBackendChardev(virDomainObj *vm,
+                                     virQEMUCaps *qemuCaps,
+                                     virSecurityManager *secManager)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    struct qemuProcessPrepareHostBackendChardevData data = {
+        .qemuCaps = qemuCaps,
+        .logManager = NULL,
+        .secManager = secManager,
+        .cfg = cfg,
+        .def = vm->def,
+    };
+    g_autoptr(virLogManager) logManager = NULL;
+
+    if (cfg->stdioLogD) {
+        if (!(logManager = data.logManager = virLogManagerNew(priv->driver->privileged)))
+            return -1;
+    }
+
+    if (qemuDomainDeviceBackendChardevForeach(vm->def,
+                                              qemuProcessPrepareHostBackendChardevOne,
+                                              &data) < 0)
+        return -1;
+
+    if (qemuProcessPrepareHostBackendChardevOne(NULL, priv->monConfig, &data) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuProcessPrepareHost:
  * @driver: qemu driver
@@ -6848,11 +7022,10 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
                                         hostdev_flags) < 0)
         return -1;
 
-    VIR_DEBUG("Preparing chr devices");
-    if (virDomainChrDefForeach(vm->def,
-                               true,
-                               qemuProcessPrepareChardevDevice,
-                               NULL) < 0)
+    VIR_DEBUG("Preparing chr device backends");
+    if (qemuProcessPrepareHostBackendChardev(vm,
+                                             priv->qemuCaps,
+                                             driver->securityManager) < 0)
         return -1;
 
     if (qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, true) < 0)

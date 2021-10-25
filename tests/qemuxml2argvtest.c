@@ -376,6 +376,71 @@ testCheckExclusiveFlags(int flags)
 }
 
 
+static int
+testPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
+                                 virDomainChrSourceDef *chardev,
+                                 void *opaque)
+{
+    virQEMUCaps *qemuCaps = opaque;
+    qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chardev);
+
+    if (dev) {
+        if (dev->type == VIR_DOMAIN_DEVICE_NET) {
+            /* due to a historical bug in qemu we don't use FD passtrhough for
+             * vhost-sockets for network devices */
+            return 0;
+        }
+    }
+
+    switch ((virDomainChrType) chardev->type) {
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_PTY:
+    case VIR_DOMAIN_CHR_TYPE_DEV:
+    case VIR_DOMAIN_CHR_TYPE_PIPE:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_UDP:
+    case VIR_DOMAIN_CHR_TYPE_TCP:
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_FILE:
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+            if (fcntl(1750, F_GETFD) != -1)
+                abort();
+            charpriv->fd = 1750;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        if (chardev->data.nix.listen &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+
+            if (fcntl(1729, F_GETFD) != -1)
+                abort();
+
+            charpriv->fd = 1729;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        break;
+    }
+
+    if (chardev->logfile) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+            if (fcntl(1751, F_GETFD) != -1)
+                abort();
+            charpriv->logfd = 1751;
+        }
+    }
+
+    return 0;
+}
+
+
 static virCommand *
 testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                                virDomainObj *vm,
@@ -390,6 +455,20 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
     if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI, false,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
         return NULL;
+
+    if (qemuDomainDeviceBackendChardevForeach(vm->def,
+                                              testPrepareHostBackendChardevOne,
+                                              info->qemuCaps) < 0)
+        return NULL;
+
+    if (virQEMUCapsGet(info->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+        qemuDomainChrSourcePrivate *monpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(priv->monConfig);
+
+        if (fcntl(1729, F_GETFD) != -1)
+            abort();
+
+        monpriv->fd = 1729;
+    }
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];

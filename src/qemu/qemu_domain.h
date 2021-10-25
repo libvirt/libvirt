@@ -341,6 +341,9 @@ struct _qemuDomainChrSourcePrivate {
     /* for char devices using secret
      * NB: *not* to be written to qemu domain object XML */
     qemuDomainSecretInfo *secinfo;
+
+    int fd; /* file descriptor of the chardev source */
+    int logfd; /* file descriptor of the logging source */
 };
 
 

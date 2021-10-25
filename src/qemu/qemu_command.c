@@ -4967,86 +4967,6 @@ qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
     return g_steal_pointer(&props);
 }
 
-static int
-qemuBuildChrChardevFileStr(virLogManager *logManager,
-                           virSecurityManager *secManager,
-                           virQEMUDriverConfig *cfg,
-                           virQEMUCaps *qemuCaps,
-                           const virDomainDef *def,
-                           virCommand *cmd,
-                           virBuffer *buf,
-                           const char *filearg, const char *fileval,
-                           const char *appendarg, int appendval)
-{
-    /* Technically, to pass an FD via /dev/fdset we don't need
-     * any capability check because X_QEMU_CAPS_ADD_FD is already
-     * assumed. But keeping the old style is still handy when
-     * building a standalone command line (e.g. for tests). */
-    if (logManager ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
-        g_autofree char *fdset = NULL;
-        int logfd;
-        size_t idx;
-
-        if (logManager) {
-            int flags = 0;
-
-            if (appendval == VIR_TRISTATE_SWITCH_ABSENT ||
-                appendval == VIR_TRISTATE_SWITCH_OFF)
-                flags |= VIR_LOG_MANAGER_PROTOCOL_DOMAIN_OPEN_LOG_FILE_TRUNCATE;
-
-            if ((logfd = virLogManagerDomainOpenLogFile(logManager,
-                                                        "qemu",
-                                                        def->uuid,
-                                                        def->name,
-                                                        fileval,
-                                                        flags,
-                                                        NULL, NULL)) < 0)
-                return -1;
-        } else {
-            int oflags = O_CREAT | O_WRONLY;
-
-            switch (appendval) {
-            case VIR_TRISTATE_SWITCH_ABSENT:
-            case VIR_TRISTATE_SWITCH_OFF:
-                oflags |= O_TRUNC;
-                break;
-            case VIR_TRISTATE_SWITCH_ON:
-                oflags |= O_APPEND;
-                break;
-            case VIR_TRISTATE_SWITCH_LAST:
-                break;
-            }
-
-            if ((logfd = qemuDomainOpenFile(cfg, def, fileval, oflags, NULL)) < 0)
-                return -1;
-
-            if (qemuSecuritySetImageFDLabel(secManager, (virDomainDef*)def, logfd) < 0) {
-                VIR_FORCE_CLOSE(logfd);
-                return -1;
-            }
-        }
-
-        virCommandPassFDIndex(cmd, logfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
-        fdset = qemuBuildFDSet(logfd, idx);
-
-        virCommandAddArg(cmd, "-add-fd");
-        virCommandAddArg(cmd, fdset);
-
-        virBufferAsprintf(buf, ",%s=/dev/fdset/%zu,%s=on", filearg, idx, appendarg);
-    } else {
-        virBufferAsprintf(buf, ",%s=", filearg);
-        virQEMUBuildBufferEscapeComma(buf, fileval);
-        if (appendval != VIR_TRISTATE_SWITCH_ABSENT) {
-            virBufferAsprintf(buf, ",%s=%s", appendarg,
-                              virTristateSwitchTypeToString(appendval));
-        }
-    }
-
-    return 0;
-}
-
-
 static void
 qemuBuildChrChardevReconnectStr(virBuffer *buf,
                                 const virDomainChrSourceReconnectDef *def)
@@ -5125,11 +5045,11 @@ enum {
 /* This function outputs a -chardev command line option which describes only the
  * host side of the character device */
 static char *
-qemuBuildChrChardevStr(virLogManager *logManager,
-                       virSecurityManager *secManager,
+qemuBuildChrChardevStr(virLogManager *logManager G_GNUC_UNUSED,
+                       virSecurityManager *secManager G_GNUC_UNUSED,
                        virCommand *cmd,
                        virQEMUDriverConfig *cfg,
-                       const virDomainDef *def,
+                       const virDomainDef *def G_GNUC_UNUSED,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
                        virQEMUCaps *qemuCaps,
@@ -5166,12 +5086,27 @@ qemuBuildChrChardevStr(virLogManager *logManager,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         virBufferAsprintf(&buf, "file,id=%s", charAlias);
 
-        if (qemuBuildChrChardevFileStr(cdevflags & QEMU_BUILD_CHARDEV_FILE_LOGD ?
-                                       logManager : NULL,
-                                       secManager, cfg, qemuCaps, def, cmd, &buf,
-                                       "path", dev->data.file.path,
-                                       "append", dev->data.file.append) < 0)
-            return NULL;
+        if (chrSourcePriv->fd != -1) {
+            g_autofree char *fdset = NULL;
+            size_t idx;
+
+            virCommandPassFDIndex(cmd, chrSourcePriv->fd,
+                                  VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
+            fdset = qemuBuildFDSet(chrSourcePriv->fd, idx);
+            chrSourcePriv->fd = -1;
+
+            virCommandAddArg(cmd, "-add-fd");
+            virCommandAddArg(cmd, fdset);
+
+            virBufferAsprintf(&buf, ",path=/dev/fdset/%zu,append=on", idx);
+        } else {
+            virBufferAddLit(&buf, ",path=");
+            virQEMUBuildBufferEscapeComma(&buf, dev->data.file.path);
+            if (dev->data.file.append != VIR_TRISTATE_SWITCH_ABSENT) {
+                virBufferAsprintf(&buf, ",append=%s",
+                                  virTristateSwitchTypeToString(dev->data.file.append));
+            }
+        }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PIPE:
@@ -5255,24 +5190,11 @@ qemuBuildChrChardevStr(virLogManager *logManager,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(&buf, "socket,id=%s", charAlias);
-        if (dev->data.nix.listen &&
-            (cdevflags & QEMU_BUILD_CHARDEV_UNIX_FD_PASS) &&
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
-            int fd;
+        if (chrSourcePriv->fd != -1) {
+            virBufferAsprintf(&buf, ",fd=%d", chrSourcePriv->fd);
 
-            if (qemuSecuritySetSocketLabel(secManager, (virDomainDef *)def) < 0)
-                return NULL;
-            fd = qemuOpenChrChardevUNIXSocket(dev);
-            if (qemuSecurityClearSocketLabel(secManager, (virDomainDef *)def) < 0) {
-                VIR_FORCE_CLOSE(fd);
-                return NULL;
-            }
-            if (fd < 0)
-                return NULL;
-
-            virBufferAsprintf(&buf, ",fd=%d", fd);
-
-            virCommandPassFD(cmd, fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            virCommandPassFD(cmd, chrSourcePriv->fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+            chrSourcePriv->fd = -1;
         } else {
             virBufferAddLit(&buf, ",path=");
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
@@ -5306,11 +5228,27 @@ qemuBuildChrChardevStr(virLogManager *logManager,
     }
 
     if (dev->logfile) {
-        if (qemuBuildChrChardevFileStr(logManager, secManager, cfg,
-                                       qemuCaps, def, cmd, &buf,
-                                       "logfile", dev->logfile,
-                                       "logappend", dev->logappend) < 0)
-            return NULL;
+        if (chrSourcePriv->logfd != -1) {
+            g_autofree char *fdset = NULL;
+            size_t idx;
+
+            virCommandPassFDIndex(cmd, chrSourcePriv->logfd,
+                                  VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
+            fdset = qemuBuildFDSet(chrSourcePriv->logfd, idx);
+            chrSourcePriv->logfd = -1;
+
+            virCommandAddArg(cmd, "-add-fd");
+            virCommandAddArg(cmd, fdset);
+
+            virBufferAsprintf(&buf, ",logfile=/dev/fdset/%zu,logappend=on", idx);
+        } else {
+            virBufferAddLit(&buf, ",logfile=");
+            virQEMUBuildBufferEscapeComma(&buf, dev->logfile);
+            if (dev->logappend != VIR_TRISTATE_SWITCH_ABSENT) {
+                virBufferAsprintf(&buf, ",logappend=%s",
+                                  virTristateSwitchTypeToString(dev->logappend));
+            }
+        }
     }
 
     return virBufferContentAndReset(&buf);
