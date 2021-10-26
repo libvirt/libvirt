@@ -9,11 +9,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-p/.config \
 /usr/bin/qemu-system-ppc64 \
 -name guest=default-video-type-ppc64-test,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-default-video-type-p/master-key.aes \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-default-video-type-p/master-key.aes"}' \
 -machine pseries,accel=kvm,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
 -cpu host \
 -m 1024 \
--object memory-backend-ram,id=ppc_spapr.ram,size=1073741824 \
+-object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":1073741824}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid 6ba410c5-1e5c-4d57-bee7-2228e7ffa32f \
@@ -24,11 +24,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-p/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
--device usb-kbd,id=input0,bus=usb.0,port=1 \
--device usb-mouse,id=input1,bus=usb.0,port=2 \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
+-device '{"driver":"usb-kbd","id":"input0","bus":"usb.0","port":"1"}' \
+-device '{"driver":"usb-mouse","id":"input1","bus":"usb.0","port":"2"}' \
 -audiodev id=audio1,driver=none \
 -vnc 127.0.0.1:0,audiodev=audio1 \
--device VGA,id=video0,vgamem_mb=16,bus=pci.0,addr=0x2 \
--sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-device '{"driver":"VGA","id":"video0","vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
 -msg timestamp=on
