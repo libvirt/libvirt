@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-09-24 14:41+0000\n"
-"PO-Revision-Date: 2021-09-20 07:36+0000\n"
+"PO-Revision-Date: 2021-10-24 18:05+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -2060,7 +2060,7 @@ msgid "Available:"
 msgstr "Tillgängliga:"
 
 msgid "BIOS serial console only supported on x86 architectures"
-msgstr ""
+msgstr "BIOS seriella konsol stödjs endast på x86-arkitekturer"
 
 msgid "Backup"
 msgstr "Säkerhetskopia"
@@ -3844,7 +3844,7 @@ msgid "Configure a network to be automatically started at boot."
 msgstr "Konfigurera ett nätverk att starta automatiskt vid uppstart."
 
 msgid "Configure a node device to be automatically started at boot."
-msgstr ""
+msgstr "Konfigurera en nodenhet som automatiskt startas vid uppstart."
 
 msgid "Configure a pool to be automatically started at boot."
 msgstr "Konfigurera en pool till att automatiskt starta vid uppstart."
@@ -3892,7 +3892,7 @@ msgid "Connections from inside daemon must be direct"
 msgstr "Anslutningar från insidan av demonen måste vara direkt"
 
 msgid "Console can only be enabled for a PTY"
-msgstr ""
+msgstr "Konsolen kan endast aktiveras för en PTY"
 
 msgid "Constant pages:"
 msgstr "Konstanta sidor:"
@@ -5291,7 +5291,7 @@ msgstr "Enheten %s är inte en brygga"
 
 #, c-format
 msgid "Device %s marked as autostarted\n"
-msgstr ""
+msgstr "Enheten %s markerad som autostartad\n"
 
 #, c-format
 msgid "Device %s not found: could not access %s"
@@ -5315,7 +5315,7 @@ msgstr "Enheten %s bortkopplad från bryggan %s\n"
 
 #, c-format
 msgid "Device %s unmarked as autostarted\n"
-msgstr ""
+msgstr "Enheten %s avmarkerad som autostartad\n"
 
 #, c-format
 msgid "Device '%s' already formatted using '%s'"
@@ -5918,6 +5918,7 @@ msgstr "EOF i standard ut"
 
 msgid "Echo back arguments, possibly with quoting. Used for internal testing."
 msgstr ""
+"Eka tillbaka argument, möjligen med citering. Används för intern testning."
 
 msgid "Edit the XML configuration for a domain."
 msgstr "Redigera XML-konfigurationen för en domän."
@@ -7235,67 +7236,57 @@ msgstr "Misslyckades att hämta VNC-porten. Använder domänen VNC?"
 msgid "Failed to get block stats %s %s"
 msgstr "Misslyckades att hämta block statistik %sl %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get block stats for domain '%s' device '%s'"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades att hämta blockstatistik för domänen ”%s” enhet ”%s”"
 
-#, fuzzy
 msgid "Failed to get capabilities from libxenlight"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "Misslyckades att hämta förmågor från libxenlight"
 
-#, fuzzy
 msgid "Failed to get capability names of the device"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "Misslyckades att hämta förmågenamn för enheten"
 
-#, fuzzy
 msgid "Failed to get capability numbers of the device"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "Misslyckades att hämta förmågenummer för enheten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get capacity of lun: %s"
-msgstr "misslyckades att hämta kapabiliteter"
+msgstr "Misslyckades att hämta kapaciteten på lun:en: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get certificate %s distinguished name: %s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Misslyckades att hämta certifikatet %s för kännetecknande namn: %s"
 
-#, fuzzy
 msgid "Failed to get checkpoint count"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Misslyckades att få kontrollpunktsantal"
 
-#, fuzzy
 msgid "Failed to get client socket PID"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att klientuttags-PID"
 
-#, fuzzy
 msgid "Failed to get client socket identity"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att få klientuttagsidentitet"
 
 msgid "Failed to get disk information"
 msgstr "Misslyckades att få diskinformation"
 
-#, fuzzy
 msgid "Failed to get domain autostart state"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "Misslyckades att få tillståndet för domänautostart"
 
-#, fuzzy
 msgid "Failed to get domain description xml"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att få domänbeskrivnings-xml"
 
-#, fuzzy
 msgid "Failed to get domain persistence info"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "misslyckades att få varaktighetsinformation för domänen"
 
-#, fuzzy
 msgid "Failed to get domain state"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "Misslyckades att få domäntillstånd"
 
 msgid "Failed to get domain's UUID"
 msgstr "Misslyckades att få domänens UUID"
 
 #, c-format
 msgid "Failed to get host number for iSCSI session with path '%s'"
-msgstr ""
+msgstr "Misslyckades att få värdnummer för iSCSI-sessionen med sökväg ”%s”"
 
 msgid "Failed to get interface information"
 msgstr "misslyckades att få gränssnittsinformation"
