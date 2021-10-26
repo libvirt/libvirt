@@ -571,6 +571,7 @@ qemuStateInitialize(bool privileged,
     size_t i;
     const char *defsecmodel = NULL;
     g_autofree virSecurityManager **sec_managers = NULL;
+    g_autoptr(virIdentity) identity = virIdentityGetCurrent();
 
     qemu_driver = g_new0(virQEMUDriver, 1);
 
@@ -915,7 +916,7 @@ qemuStateInitialize(bool privileged,
      * events that will be dispatched to the worker pool */
     qemu_driver->workerPool = virThreadPoolNewFull(0, 1, 0, qemuProcessEventHandler,
                                                    "qemu-event",
-                                                   NULL,
+                                                   identity,
                                                    qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
