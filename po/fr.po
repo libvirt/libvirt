@@ -19,13 +19,14 @@
 # Julien Humbert <julroy67@gmail.com>, 2020.
 # Daniel P. Berrange <berrange@redhat.com>, 2020.
 # Côme Borsoi <fedora@borsoi.fr>, 2020.
+# Franck Ridel <fridel@protonmail.com>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-09-24 14:41+0000\n"
-"PO-Revision-Date: 2020-07-24 13:01+0000\n"
-"Last-Translator: Daniel P. Berrange <berrange@redhat.com>\n"
+"PO-Revision-Date: 2021-10-22 21:05+0000\n"
+"Last-Translator: Franck Ridel <fridel@protonmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fr/>\n"
 "Language: fr\n"
@@ -33,7 +34,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
-"X-Generator: Weblate 4.1.1\n"
+"X-Generator: Weblate 4.8\n"
 
 msgid ""
 "\n"
@@ -2322,7 +2323,7 @@ msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr ""
-"Impossible d’ajouter le concentrateur USB : USB désactivé sur ce domaine"
+"Impossible d’ajouter le concentrateur USB : L'USB désactivé sur ce domaine"
 
 msgid "Can't add USB input device. USB bus is disabled"
 msgstr ""
@@ -2330,7 +2331,8 @@ msgstr ""
 
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
-"Impossible d’ajouter un autre contrôleur USB : USB désactivé pour ce domaine"
+"Impossible d’ajouter un autre contrôleur USB : L'USB est  désactivé pour ce "
+"domaine"
 
 msgid "Can't add host USB device: USB is disabled in this host"
 msgstr ""
