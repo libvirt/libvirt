@@ -16601,7 +16601,7 @@ virDomainMemoryFindInactiveByDef(virDomainDef *def,
 
 /**
  * virDomainMemoryFindByDeviceInfo:
- * @def: domain defintion
+ * @def: domain definition
  * @info: device info to match
  * @pos: store position within array
  *

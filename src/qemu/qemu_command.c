@@ -694,7 +694,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
  * @virtio: the returned video device is a 'virtio' device
  * @virtioBusSuffix: the returned device needs to get the bus-suffix
  *
- * Returns the model fo the device for @video and @qemuCaps. @virtio and
+ * Returns the model of the device for @video and @qemuCaps. @virtio and
  * @virtioBusSuffix are filled with the corresponding flags.
  */
 static const char *
@@ -1106,7 +1106,7 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
 
     /* We temporarily cast the const away here, but that's safe to do
      * because the called function simply sets the correct member of
-     * device to devdata based on devtype. Futher uses of device will
+     * device to devdata based on devtype. Further uses of device will
      * not touch its contents */
     virDomainDeviceSetData((virDomainDeviceDef *) &device, (void *) devdata);
 

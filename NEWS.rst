@@ -64,7 +64,7 @@ v7.9.0 (unreleased)
 
     Libvirt started using JSON directly with the ``-device`` commandline
     parameter as it's considered the preferred stable syntax for further QEMU
-    releases. If any problems with the conversion are encoutered please
+    releases. If any problems with the conversion are encountered please
     report them as soon as possible.
 
 * **Bug fixes**
