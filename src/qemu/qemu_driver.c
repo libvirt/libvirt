@@ -914,7 +914,9 @@ qemuStateInitialize(bool privileged,
      * running domains since there might occur some QEMU monitor
      * events that will be dispatched to the worker pool */
     qemu_driver->workerPool = virThreadPoolNewFull(0, 1, 0, qemuProcessEventHandler,
-                                                   "qemu-event", qemu_driver);
+                                                   "qemu-event",
+                                                   NULL,
+                                                   qemu_driver);
     if (!qemu_driver->workerPool)
         goto error;
 

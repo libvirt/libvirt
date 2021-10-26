@@ -22,17 +22,19 @@
 #pragma once
 
 #include "internal.h"
+#include "viridentity.h"
 
 typedef struct _virThreadPool virThreadPool;
 
 typedef void (*virThreadPoolJobFunc)(void *jobdata, void *opaque);
 
 virThreadPool *virThreadPoolNewFull(size_t minWorkers,
-                                      size_t maxWorkers,
-                                      size_t prioWorkers,
-                                      virThreadPoolJobFunc func,
-                                      const char *name,
-                                      void *opaque) ATTRIBUTE_NONNULL(4);
+                                    size_t maxWorkers,
+                                    size_t prioWorkers,
+                                    virThreadPoolJobFunc func,
+                                    const char *name,
+                                    virIdentity *identity,
+                                    void *opaque) ATTRIBUTE_NONNULL(4);
 
 size_t virThreadPoolGetMinWorkers(virThreadPool *pool);
 size_t virThreadPoolGetMaxWorkers(virThreadPool *pool);

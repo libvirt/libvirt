@@ -378,6 +378,7 @@ virNetServer *virNetServerNew(const char *name,
                                               priority_workers,
                                               virNetServerHandleJob,
                                               "rpc-worker",
+                                              NULL,
                                               srv)))
         goto error;
 

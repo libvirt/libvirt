@@ -1333,6 +1333,7 @@ virNWFilterDHCPSnoopThread(void *req0)
         worker = virThreadPoolNewFull(1, 1, 0,
                                       virNWFilterDHCPDecodeWorker,
                                       "dhcp-decode",
+                                      NULL,
                                       req);
     }
 

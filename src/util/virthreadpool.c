@@ -55,6 +55,8 @@ struct _virThreadPool {
     virThreadPoolJobList jobList;
     size_t jobQueueDepth;
 
+    virIdentity *identity;
+
     virMutex mutex;
     virCond cond;
     virCond quit_cond;
@@ -98,6 +100,9 @@ static void virThreadPoolWorker(void *opaque)
     VIR_FREE(data);
 
     virMutexLock(&pool->mutex);
+
+    if (pool->identity)
+        virIdentitySetCurrent(pool->identity);
 
     while (1) {
         /* In order to support async worker termination, we need ensure that
@@ -219,6 +224,7 @@ virThreadPoolNewFull(size_t minWorkers,
                      size_t prioWorkers,
                      virThreadPoolJobFunc func,
                      const char *name,
+                     virIdentity *identity,
                      void *opaque)
 {
     virThreadPool *pool;
@@ -233,6 +239,9 @@ virThreadPoolNewFull(size_t minWorkers,
     pool->jobFunc = func;
     pool->jobName = name;
     pool->jobOpaque = opaque;
+
+    if (identity)
+        pool->identity = g_object_ref(identity);
 
     if (virMutexInit(&pool->mutex) < 0)
         goto error;
@@ -299,6 +308,9 @@ void virThreadPoolFree(virThreadPool *pool)
 
     virMutexLock(&pool->mutex);
     virThreadPoolDrainLocked(pool);
+
+    if (pool->identity)
+        g_object_unref(pool->identity);
 
     g_free(pool->workers);
     virMutexUnlock(&pool->mutex);
