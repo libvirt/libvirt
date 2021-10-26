@@ -3592,28 +3592,21 @@ qemuBlockExportAddNBD(virDomainObj *vm,
                       const char *bitmap)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) nbdprops = NULL;
+    const char *bitmaps[2] = { bitmap, NULL };
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_EXPORT_ADD)) {
-            g_autoptr(virJSONValue) nbdprops = NULL;
-            const char *bitmaps[2] = { bitmap, NULL };
-
-            if (!(nbdprops = qemuBlockExportGetNBDProps(src->nodeformat,
-                                                        exportname,
-                                                        writable,
-                                                        bitmaps)))
-                return -1;
-
-            return qemuMonitorBlockExportAdd(priv->mon, &nbdprops);
-        } else {
-            return qemuMonitorNBDServerAdd(priv->mon, src->nodeformat,
-                                           exportname, writable, bitmap);
-        }
-    } else {
-        /* older qemu versions didn't support configuring the exportname and
-         * took the 'drivealias' as the export name */
+    /* older qemu versions didn't support configuring the exportname and
+     * took the 'drivealias' as the export name */
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return qemuMonitorNBDServerAdd(priv->mon, drivealias, NULL, writable, NULL);
-    }
 
-    return 0;
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_EXPORT_ADD))
+        return qemuMonitorNBDServerAdd(priv->mon, src->nodeformat,
+                                       exportname, writable, bitmap);
+
+    if (!(nbdprops = qemuBlockExportGetNBDProps(src->nodeformat, exportname,
+                                                writable, bitmaps)))
+        return -1;
+
+    return qemuMonitorBlockExportAdd(priv->mon, &nbdprops);
 }
