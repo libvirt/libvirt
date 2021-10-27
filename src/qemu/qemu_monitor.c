@@ -769,10 +769,6 @@ qemuMonitorOpen(virDomainObj *vm,
 
     timeout += QEMU_DEFAULT_MONITOR_WAIT;
 
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted until the monitor gets its own reference. */
-    virObjectRef(vm);
-
     if (config->type != VIR_DOMAIN_CHR_TYPE_UNIX) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to handle monitor type: %s"),
@@ -798,7 +794,6 @@ qemuMonitorOpen(virDomainObj *vm,
  cleanup:
     if (!ret)
         VIR_FORCE_CLOSE(fd);
-    virObjectUnref(vm);
     return ret;
 }
 
