@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-10-01 15:05+0000\n"
+"PO-Revision-Date: 2021-10-27 15:13+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -434,6 +434,21 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"syntax: %s [OPTIONS] [HVTYPE]\n"
+"\n"
+" Hypervisor types:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Options:\n"
+"   -h, --help     Display command line help\n"
+"   -v, --version  Display command version\n"
+"   -q, --quiet    Don't display progress information\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
@@ -1654,20 +1669,20 @@ msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "<snapshot> (복구) 요소는 현재 'rdb' 디스크에서만 지원됩니다"
 
 msgid "<system_field> evaluation has failed"
-msgstr ""
+msgstr "<system_field> 평가가 실패했습니다"
 
 msgid "<system_field> value evaluation has failed"
-msgstr ""
+msgstr "<system_field> 가치 평가가 실패했습니다"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%s'"
 msgstr "<uuid>가 비밀 정보 파일 이름 '%s'와 일치하지 않습니다"
 
 msgid "<vendor_field> evaluation has failed"
-msgstr ""
+msgstr "<vendor_field> 평가가 실패했습니다"
 
 msgid "<vendor_field> value evaluation has failed"
-msgstr ""
+msgstr "<vendor_field> 가치 평가가 실패했습니다"
 
 #, c-format
 msgid ""
@@ -3423,17 +3438,17 @@ msgid "Cannot unshare uninitialized CURL handle"
 msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 
 msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr ""
+msgstr "핵심용어 읽기-전용을 최신화 할 수 없습니다: RO 부분은 초기화 되지 않았습니다."
 
 msgid ""
 "Cannot update the read-write keyword: read-write section not initialized."
-msgstr ""
+msgstr "핵심용어 읽기-쓰기를 최신화 할 수 없습니다: 읽기-쓰기 부분은 초기화 되지 않았습니다."
 
 msgid "Cannot update the resource: a NULL keyword pointer has been provided."
-msgstr ""
+msgstr "자원을 최신화 할 수 없습니다: NULL 핵심용어 포인터가 제공되었습니다."
 
 msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
+msgstr "자원을 최신화 할 수 없습니다: NULL 자원 포인터가 제공되었습니다."
 
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
@@ -3642,7 +3657,7 @@ msgstr "점검점 %s 도메인에 대한 관계가 일관되지 않습니다"
 
 #. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
-msgstr ""
+msgstr "체크썸 유효성이 실패하였습니다"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4148,7 +4163,7 @@ msgstr "Msvm_디스크드라이브 객체를 찾을 수 없습니다"
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr ""
+msgstr "장치를 위해 필요한 색인 '%u'를 갖는(주소 '%s'에서 ) PCI 제어기를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4623,7 +4638,7 @@ msgstr "TPM 장치의 취소 경로 %s를 열 수 없습니다"
 
 #, c-format
 msgid "Could not parse %s VPD resource fields"
-msgstr ""
+msgstr "%s VPD 자원 부분을 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Could not parse 'bonding/arp_interval' '%s' for '%s'"
@@ -4681,7 +4696,7 @@ msgid "Could not parse VPS ID %s"
 msgstr "VPS ID %s를 구문분석 할 수 없음"
 
 msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
+msgstr "자원 부분 자료를 구문 분석 할 수 없습니다 - VPD는 잘못된 형식입니다"
 
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
@@ -4745,13 +4760,13 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "컨테이너 %d에 대해 config에서 'VE_PRIVATE'를 읽을 수 없음"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
+msgstr "<name> 요소에서 장치 이름을 읽을 수 없습니다"
 
 msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
+msgstr "자원의 일부를 읽을 수 없습니다 - VPD는 잘못된 형식입니다"
 
 msgid "Could not read a resource field header - VPD has invalid format"
-msgstr ""
+msgstr "자원 부분 헤더를 읽을 수 없습니다 - VPS는 잘못된 형식입니다"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -4852,6 +4867,8 @@ msgid ""
 "Could not run '%s' to create config files. exitstatus: %d;\n"
 "Error: %s"
 msgstr ""
+"'%s'를 실행 할 수 없으며 config 파일을 생성합니다. exitstatus: %d;\n"
+"오류: %s"
 
 #, c-format
 msgid "Could not run '%s'. exitstatus: %d; Check error log '%s' for details."
@@ -4955,7 +4972,7 @@ msgstr "키코드를 번역 할 수 없습니다"
 
 #, c-format
 msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
+msgstr "VPD 자원 핵심용어를 최신화 할 수 없습니다: %s"
 
 msgid "Could not verify disk address"
 msgstr "디스크 주소를 확인할 수 없습니다"
@@ -5272,7 +5289,7 @@ msgstr "장치 %s가 분리됨\n"
 
 #, c-format
 msgid "Device %s does not have a VPD"
-msgstr ""
+msgstr "장치 %s는 VPD를 가지고 있지 않습니다"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -5334,7 +5351,7 @@ msgstr "장치 별명이 색인 '%d'인 '%s' 제어기에 대한 설정이 없�
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr ""
+msgstr "장치 별칭은 장치를 위해 필요한 색인 '%u'를(주소 '%s'에서) 갖는 PCI제어기를 위해 설정되지 않았습니다"
 
 msgid "Device attached successfully\n"
 msgstr "장치가 성공적으로 부착되었습니다\n"
@@ -7661,7 +7678,7 @@ msgstr "'%s' 열기 실패"
 
 #, c-format
 msgid "Failed to open a VPD file '%s'"
-msgstr ""
+msgstr "VPD 파일 '%s'를 열 수 없습니다"
 
 #, c-format
 msgid "Failed to open config space file '%s'"
@@ -29464,7 +29481,7 @@ msgid "match mode %s not supported"
 msgstr "일치 모드 %s가 지원되지 않습니다"
 
 msgid "matching filesystem not found"
-msgstr ""
+msgstr "일치하는 파일 시스템을 찾지 못했습니다"
 
 msgid "matching input device not found"
 msgstr "일치하는 입력 장치를 찾을 수 없습니다"
@@ -29580,7 +29597,7 @@ msgstr "메모리(램-중단), 디스크(디스크-중단), 하이브리드 (하
 
 #, c-format
 msgid "memory '%s' not found"
-msgstr ""
+msgstr "메모리 '%s'를 찾지 못했습니다"
 
 #, c-format
 msgid "memory access mode '%s' not supported without guest numa node"
@@ -29590,7 +29607,7 @@ msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "메모리 속성: [file=]name[,snapshot=type]"
 
 msgid "memory device alias"
-msgstr ""
+msgstr "메모리 장치 별칭"
 
 msgid "memory device alias is not assigned"
 msgstr "메모리 장치 별칭이 할당되지 않았습니다"
@@ -29613,7 +29630,7 @@ msgid "memory device slot '%u' is already being used by another memory device"
 msgstr "메모리 장치 슬롯 '%u'는 이미 다른 메모리 장치에서 사용 중입니다"
 
 msgid "memory device target node"
-msgstr ""
+msgstr "메모리 장치 대상 노드"
 
 msgid "memory device total size exceeds hotplug space"
 msgstr "메모리 장치의 총 크기가 핫플러그 공간을 초과합니다"
@@ -29642,7 +29659,7 @@ msgstr ""
 "습니다"
 
 msgid "memory not found"
-msgstr ""
+msgstr "메모리를 찾지 못했습니다"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
