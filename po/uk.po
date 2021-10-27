@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-09-29 08:05+0000\n"
+"PO-Revision-Date: 2021-10-27 15:13+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -445,6 +445,21 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"синтаксис: %s [ПАРАМЕТРИ] [ТИП_Г_В]\n"
+"\n"
+" Типи гіпервізорів:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Параметри:\n"
+"   -h, --help     Показати довідку щодо командного рядка\n"
+"   -v, --version  Показати версію програми\n"
+"   -q, --quiet    Не показувати дані щодо поступу\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
@@ -1712,20 +1727,20 @@ msgstr ""
 "«rbd»"
 
 msgid "<system_field> evaluation has failed"
-msgstr ""
+msgstr "Помилка під час обчислення <system_field>"
 
 msgid "<system_field> value evaluation has failed"
-msgstr ""
+msgstr "Помилка під час обчислення значення <system_field>"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%s'"
 msgstr "<uuid> не відповідає назві файла ключів «%s»"
 
 msgid "<vendor_field> evaluation has failed"
-msgstr ""
+msgstr "Помилка під час обчислення <vendor_field>"
 
 msgid "<vendor_field> value evaluation has failed"
-msgstr ""
+msgstr "Помилка під час обчислення значення <vendor_field>"
 
 #, c-format
 msgid ""
@@ -3571,16 +3586,21 @@ msgstr ""
 
 msgid "Cannot update the read-only keyword: RO section not initialized."
 msgstr ""
+"Неможливо оновити придатне лише до читання ключове слово: придатний лише до "
+"читання розділ не ініціалізовано."
 
 msgid ""
 "Cannot update the read-write keyword: read-write section not initialized."
 msgstr ""
+"Неможливо оновити придатне до читання і запису ключове слово: придатний до "
+"читання і запису розділ не ініціалізовано."
 
 msgid "Cannot update the resource: a NULL keyword pointer has been provided."
 msgstr ""
+"Не вдалося оновити ресурс: було надано порожній вказівник на ключове слово."
 
 msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
+msgstr "Не вдалося оновити ресурс: було надано порожній вказівник на ресурс."
 
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
@@ -3818,7 +3838,7 @@ msgstr "Некоректний взаємозв'язок між контроль
 
 #. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
-msgstr ""
+msgstr "Не пройдено перевірку контрольної суми"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4354,6 +4374,8 @@ msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
 msgstr ""
+"Не вдалося знайти контролер PCI з індексом %u. Цей контролер потрібен для "
+"роботи з пристроєм за адресою «%s»"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4842,7 +4864,7 @@ msgstr "Не вдалося відкрити шлях скасовування �
 
 #, c-format
 msgid "Could not parse %s VPD resource fields"
-msgstr ""
+msgstr "Не вдалося обробити поля ресурсів VPD %s"
 
 #, c-format
 msgid "Could not parse 'bonding/arp_interval' '%s' for '%s'"
@@ -4901,6 +4923,7 @@ msgstr "Помилка при розборі VPS ID %s"
 
 msgid "Could not parse a resource field data - VPD has invalid format"
 msgstr ""
+"Не вдалося обробити дані поля ресурсу — VPD записано у некоректному форматі"
 
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
@@ -4965,13 +4988,16 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Помилка при читанні VE_PRIVATE з параметрів для контейнера %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
+msgstr "Не вдалося прочитати назву пристрою з елемента <name>"
 
 msgid "Could not read a part of a resource - VPD has invalid format"
 msgstr ""
+"Не вдалося прочитати частину ресурсу — VPD записано у некоректному форматі"
 
 msgid "Could not read a resource field header - VPD has invalid format"
 msgstr ""
+"Не вдалося прочитати заголовок поля ресурсу — VPD записано у некоректному "
+"форматі"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -5072,6 +5098,9 @@ msgid ""
 "Could not run '%s' to create config files. exitstatus: %d;\n"
 "Error: %s"
 msgstr ""
+"Не вдалося запустити «%s» для створення файлів налаштувань. Стан виходу: %d;"
+"\n"
+"Помилка: %s"
 
 #, c-format
 msgid "Could not run '%s'. exitstatus: %d; Check error log '%s' for details."
@@ -5178,7 +5207,7 @@ msgstr "Не вдалося транслювати код клавіші"
 
 #, c-format
 msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
+msgstr "Не вдалося оновити ключове слово ресурсу VPD: %s"
 
 msgid "Could not verify disk address"
 msgstr "Не вдалося перевірити адресу диска"
@@ -5511,7 +5540,7 @@ msgstr "Пристрій %s від'єднано\n"
 
 #, c-format
 msgid "Device %s does not have a VPD"
-msgstr ""
+msgstr "Пристрій %s не має VPD"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -5579,6 +5608,8 @@ msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
 msgstr ""
+"Не встановлено альтернативну назву (псевдонім) для контролера PCI з індексом "
+"%u. Встановлення цієї назви необхідне для роботи з пристроєм за адресою «%s»"
 
 msgid "Device attached successfully\n"
 msgstr "Пристрій успішно під'єднано\n"
@@ -7962,7 +7993,7 @@ msgstr "Не вдалося відкрити «%s»"
 
 #, c-format
 msgid "Failed to open a VPD file '%s'"
-msgstr ""
+msgstr "Не вдалося відкрити файл VPD «%s»"
 
 #, c-format
 msgid "Failed to open config space file '%s'"
@@ -8137,7 +8168,7 @@ msgstr "Не вдалось розібрати вивід vzlist"
 
 #, c-format
 msgid "Failed to parse wwn '%s' as number"
-msgstr ""
+msgstr "Не вдалося обробити «%s» wwn як число"
 
 #, c-format
 msgid "Failed to pin vcpu '%d' with libxenlight"
@@ -8941,7 +8972,7 @@ msgid "Field name too long"
 msgstr "Назва поля є занадто довгою"
 
 msgid "Field value contains invalid characters"
-msgstr ""
+msgstr "Значення поля містить некоректні символи"
 
 #, c-format
 msgid "File %s contains no keys"
@@ -10986,7 +11017,7 @@ msgstr ""
 "Ідентифікатор ітератора перевищує максимальне значення ідентифікатора %u"
 
 msgid "JSON array -> commandline conversion function not provided"
-msgstr ""
+msgstr "Не надано функції перетворення масив JSON -> командний рядок"
 
 #, c-format
 msgid "JSON backing volume definition '%s' lacks 'file' object"
@@ -13659,7 +13690,7 @@ msgid "PASS"
 msgstr "ПРОЙДЕНО"
 
 msgid "PCI VPD reporting not available on this platform"
-msgstr ""
+msgstr "Звітування VPD PCI є недоступним на цій платформі"
 
 #, c-format
 msgid ""
@@ -15638,6 +15669,7 @@ msgstr "Біти типів статистики 0x%x не підтримуют�
 #, c-format
 msgid "Stats types bits 0x%x are not supported by this daemon or QEMU"
 msgstr ""
+"Біти типів статистики 0x%x не підтримуються цією фоновою службою або QEMU"
 
 msgid "Status is unknown"
 msgstr "Невідомий стан"
@@ -16166,6 +16198,7 @@ msgstr ""
 #, c-format
 msgid "Target device page_per_vq option '%s' does not match source '%s'"
 msgstr ""
+"Параметр page_per_vq пристрою призначення, «%s», не відповідає джерелу, «%s»"
 
 msgid "Target device virtio options don't match the source"
 msgstr "Параметри пристрою virtio призначення не відповідають джерелу"
@@ -16551,6 +16584,8 @@ msgid ""
 "Target memory device block size '%llu' doesn't match source memory device "
 "block size '%llu'"
 msgstr ""
+"Розмір блоку пристрою пам'яті призначення, «%llu», не відповідає розмір "
+"блоку пристрою пам'яті джерела «%llu»"
 
 #, c-format
 msgid "Target memory device model '%s' doesn't match source model '%s'"
@@ -16562,6 +16597,8 @@ msgid ""
 "Target memory device requested size '%llu' doesn't match source memory "
 "device requested size '%llu'"
 msgstr ""
+"Запитаний об'єм пристрою пам'яті призначення, «%llu», не відповідає "
+"запитаному об'єму пристрою пам'яті джерела «%llu»"
 
 #, c-format
 msgid ""
@@ -16979,11 +17016,11 @@ msgstr ""
 "контролерів ich9-intel-hda"
 
 msgid "The keyword is not comprised only of uppercase ASCII letters or digits"
-msgstr ""
+msgstr "Ключове слово не складається лише з великих літер ASCII та цифр"
 
 #, c-format
 msgid "The keyword length is not 2 bytes: %s"
-msgstr ""
+msgstr "Довжина ключового слова не дорівнює 2 байти: %s"
 
 msgid "The machine has no snapshot and it should have it"
 msgstr "Машина не має знімків, хоча повинна була б мати"
@@ -17000,7 +17037,7 @@ msgstr ""
 
 #, c-format
 msgid "The provided value contains invalid characters: %s"
-msgstr ""
+msgstr "Надане значення містить некоректні символи: %s"
 
 msgid "The read only disk has no parent"
 msgstr "Придатний лише для читання диск не має батьківського"
@@ -17029,7 +17066,7 @@ msgstr ""
 "У допоміжній програмі slirp не передбачено підтримки перенесення систем"
 
 msgid "The string resource has invalid characters in its value"
-msgstr ""
+msgstr "Рядковий ресурс містить некоректні символи у своєму значенні"
 
 #, c-format
 msgid "The vbox driver does not support %s SCSI controller model"
@@ -17516,6 +17553,8 @@ msgstr ""
 #, c-format
 msgid "USB controller model '%s' not supported in this QEMU binary"
 msgstr ""
+"Підтримки моделі контролера USB «%s» у цьому виконуваному файлі QEMU не "
+"передбачено"
 
 #, c-format
 msgid "USB controller model type 'qusb1' or 'qusb2' is not supported in %s"
@@ -17828,7 +17867,7 @@ msgstr "Не вдалося рекурсивно завершити роботу
 
 #, c-format
 msgid "Unable to close the VPD file, fd: %d"
-msgstr ""
+msgstr "Не вдалося закрити файл VPD, дескриптор файла: %d"
 
 #, c-format
 msgid "Unable to close the new medium, rc=%08x"
@@ -19642,10 +19681,10 @@ msgid "Unexpected QEMU monitor still active during domain deletion"
 msgstr "Неочікуваний монітор QEMU продовжує працювати під час вилучення домену"
 
 msgid "Unexpected RV keyword in the read-write section."
-msgstr ""
+msgstr "Неочікуване ключове слово RV у розділі читання-запису."
 
 msgid "Unexpected RW keyword in the read-only section."
-msgstr ""
+msgstr "Неочікуване ключове слово RW у розділі лише для читання."
 
 #, c-format
 msgid "Unexpected SCSI controller model %d"
@@ -19697,7 +19736,7 @@ msgstr ""
 "Неочікуваний потік обробки подій продовжує працювати під час вилучення домену"
 
 msgid "Unexpected field value format encountered."
-msgstr ""
+msgstr "Виявлено неочікуване форматування значення поля."
 
 #, c-format
 msgid "Unexpected filesystem type %s"
@@ -20281,7 +20320,7 @@ msgstr "Непідтримувана схема URI, «%s»"
 
 #, c-format
 msgid "Unsupported VPD field access type specified %s"
-msgstr ""
+msgstr "Вказано непідтримуваний тип доступу до поля VPD, %s"
 
 #, c-format
 msgid "Unsupported action: %s\n"
@@ -20532,7 +20571,7 @@ msgid "Update the media"
 msgstr "Оновити носій даних"
 
 msgid "Update values of a memory device of a domain"
-msgstr ""
+msgstr "Оновити значення пристрою пам'яті домену"
 
 msgid "Updated"
 msgstr "Оновлено"
@@ -20746,13 +20785,13 @@ msgid "VNC supports connected='keep' only"
 msgstr "У VNC передбачено підтримку лише connected='keep'"
 
 msgid "VPD fields access type parsing has failed"
-msgstr ""
+msgstr "Помилка під час спроби обробки типу доступу до полів VPD"
 
 msgid "VPD-R does not contain the mandatory RV field"
-msgstr ""
+msgstr "VPD-R не містить обов'язкового поля RV"
 
 msgid "VPD-W does not contain the mandatory RW field"
-msgstr ""
+msgstr "VPD-W не містить обов'язкового поля RW"
 
 #, c-format
 msgid "Value '%s' is not representable as %s"
@@ -21224,7 +21263,7 @@ msgstr "джерело адреси: lease, agent або arp"
 
 #, c-format
 msgid "address type drive is not supported for bus '%s'"
-msgstr ""
+msgstr "підтримки типу адреси drive для каналу «%s» не передбачено"
 
 #, c-format
 msgid "address type='%s' not supported in hostdev interfaces"
@@ -21369,7 +21408,7 @@ msgstr ""
 
 #, c-format
 msgid "argument key '%s' is too short or malformed"
-msgstr ""
+msgstr "ключ аргументу «%s» є занадто коротким або має помилкове форматування"
 
 #, c-format
 msgid "argument key '%s' must not be negative"
@@ -21826,11 +21865,11 @@ msgid "block resize is not supported for vhostuser disk"
 msgstr "для диска vhostuser не передбачено підтримки зміни розмірів блоків"
 
 msgid "block size must be a power of two"
-msgstr ""
+msgstr "розмір блоку має бути степенем двійки"
 
 #, c-format
 msgid "block size too small, must be at least %lluKiB"
-msgstr ""
+msgstr "розмір блоку є надто малим, має бути принаймні %lluКіБ"
 
 msgid "block stats are not supported for vhostuser disk"
 msgstr "для дисків vhostuser не передбачено підтримки статистики блоків"
@@ -22963,61 +23002,61 @@ msgid "cannot modify field '%s' of the disk"
 msgstr "не вдалося внести зміни до поля «%s» диска"
 
 msgid "cannot modify memory UUID"
-msgstr ""
+msgstr "неможливо змінити UUID пам'яті"
 
 #, c-format
 msgid "cannot modify memory access from '%s' to '%s'"
-msgstr ""
+msgstr "неможливо змінити доступ до пам'яті з «%s» на «%s»"
 
 #, c-format
 msgid "cannot modify memory align size from '%llu' to '%llu'"
-msgstr ""
+msgstr "неможливо змінити розмір вирівнювання пам'яті з «%llu» на «%llu»"
 
 #, c-format
 msgid "cannot modify memory block size from '%llu' to '%llu'"
-msgstr ""
+msgstr "неможливо змінити розмір блоку пам'яті з «%llu» на «%llu»"
 
 #, c-format
 msgid "cannot modify memory discard from '%s' to '%s'"
-msgstr ""
+msgstr "неможливо змінити відкидання пам'яті з «%s» на «%s»"
 
 #, c-format
 msgid "cannot modify memory label size from '%llu' to '%llu'"
-msgstr ""
+msgstr "неможливо змінити розмір мітки пам'яті з «%llu» на «%llu»"
 
 #, c-format
 msgid "cannot modify memory model from '%s' to '%s'"
-msgstr ""
+msgstr "неможливо змінити модель пам'яті з «%s» на «%s»"
 
 #, c-format
 msgid "cannot modify memory of model '%s'"
-msgstr ""
+msgstr "неможливо змінити пам'ять моделі «%s»"
 
 #, c-format
 msgid "cannot modify memory pagesize from '%llu' to '%llu'"
-msgstr ""
+msgstr "неможливо змінити розмір сторінки пам'яті з «%llu» на «%llu»"
 
 #, c-format
 msgid "cannot modify memory path from '%s' to '%s'"
-msgstr ""
+msgstr "неможливо змінити шлях пам'яті з «%s» на «%s»"
 
 msgid "cannot modify memory pmem flag"
-msgstr ""
+msgstr "неможливо змінити прапорець pmem пам'яті"
 
 #, c-format
 msgid "cannot modify memory pmem from '%d' to '%d'"
-msgstr ""
+msgstr "неможливо змінити прапорець pmem пам'яті з «%d» на «%d»"
 
 #, c-format
 msgid "cannot modify memory size from '%llu' to '%llu'"
-msgstr ""
+msgstr "неможливо змінити розмір пам'яті з «%llu» на «%llu»"
 
 msgid "cannot modify memory source nodes"
-msgstr ""
+msgstr "неможливо змінити вузли джерела пам'яті"
 
 #, c-format
 msgid "cannot modify memory targetNode from '%d' to '%d'"
-msgstr ""
+msgstr "неможливо змінити прапорець targetNode пам'яті з «%d» на «%d»"
 
 msgid "cannot modify network device address type"
 msgstr "не можна змінювати тип адреси мережевого пристрою"
@@ -24050,6 +24089,7 @@ msgstr "для команди «%s» потрібно вказати парам�
 #, c-format
 msgid "command alias '%s' is pointing to a non-existent command '%s'"
 msgstr ""
+"альтернативна назва команди, «%s», вказує на команду, якої не існує, «%s»"
 
 #, c-format
 msgid "command alias '%s' is pointing to another command alias '%s'"
@@ -26353,6 +26393,9 @@ msgid ""
 "alias: %s\n"
 "size: %llu\n"
 msgstr ""
+"подія «memory-device-size-change» для домену «%s»:\n"
+"інша назва: %s\n"
+"розмір: %llu\n"
 
 #, c-format
 msgid ""
@@ -26900,10 +26943,10 @@ msgid "failed to encrypt the data: '%s'"
 msgstr "не вдалося зашифрувати дані: «%s»"
 
 msgid "failed to evaluate <system_field> elements"
-msgstr ""
+msgstr "не вдалося обчислити елементи <system_field>"
 
 msgid "failed to evaluate <vendor_field> elements"
-msgstr ""
+msgstr "не вдалося обчислити елементи <vendor_field>"
 
 #, c-format
 msgid "failed to execute command '%s': %s"
@@ -27752,7 +27795,7 @@ msgstr "не вдалося витерти образ RBD %s"
 
 #, c-format
 msgid "failed to wrap arguments '%s' into a QMP command wrapper"
-msgstr ""
+msgstr "не вдалося огорнути аргументи «%s» у обгортку команд QMP"
 
 msgid "failed to write configuration file"
 msgstr "помилка запису файла налаштувань"
@@ -30082,7 +30125,7 @@ msgstr ""
 "лише у пам'яті"
 
 msgid "keep nvram file"
-msgstr ""
+msgstr "зберегти файл nvram"
 
 msgid "keep the backing chain relatively referenced"
 msgstr "підтримувати відносні посилання у ланцюжку резервування"
@@ -30152,9 +30195,11 @@ msgstr "помилка під час виклику бібліотеки: %s"
 
 msgid "librbd encryption engine only supports luks/luks2 formats"
 msgstr ""
+"у рушії шифрування librbd передбачено підтримку лише форматів luks/luks2"
 
 msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки шифрування librbd"
 
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
@@ -30645,7 +30690,7 @@ msgstr ""
 "цикл до завершення часу очікування або переривання, а не одноразове виконання"
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
-msgstr ""
+msgstr "у поточній версії рушія шифрування QEMU не передбачено підтримки luks2"
 
 msgid "lxc state driver is not active"
 msgstr "драйвер стану lxc не активний"
@@ -30905,7 +30950,7 @@ msgstr ""
 "даних немає"
 
 msgid "malformed/missing size in virtio memory info"
-msgstr ""
+msgstr "помилкове форматування розміру у даних щодо пам'яті virtio"
 
 msgid "malformed/missing slot in dimm memory info"
 msgstr "помилкове форматування слоту у даних щодо dimm або даних немає"
@@ -30932,7 +30977,7 @@ msgid "match mode %s not supported"
 msgstr "підтримки режиму відповідності %s не передбачено"
 
 msgid "matching filesystem not found"
-msgstr ""
+msgstr "не знайдено відповідної файлової системи"
 
 msgid "matching input device not found"
 msgstr "відповідного пристрою введення не знайдено"
@@ -31060,7 +31105,7 @@ msgstr ""
 
 #, c-format
 msgid "memory '%s' not found"
-msgstr ""
+msgstr "пам'яті «%s» не знайдено"
 
 #, c-format
 msgid "memory access mode '%s' not supported without guest numa node"
@@ -31072,7 +31117,7 @@ msgid "memory attributes: [file=]name[,snapshot=type]"
 msgstr "атрибути пам'яті: [file=]назва[,snapshot=тип]"
 
 msgid "memory device alias"
-msgstr ""
+msgstr "альтернативна назва пристрою пам'яті"
 
 msgid "memory device alias is not assigned"
 msgstr "альтернативну назву пристрою пам'яті не призначено"
@@ -31097,7 +31142,7 @@ msgstr ""
 "слот пристрою пам'яті «%u» вже використовується іншим пристроєм пам'яті"
 
 msgid "memory device target node"
-msgstr ""
+msgstr "вузол призначення пристрою пам'яті"
 
 msgid "memory device total size exceeds hotplug space"
 msgstr ""
@@ -31130,7 +31175,7 @@ msgstr ""
 "інтерактивного долучення пам'яті за допомогою <maxMemory>"
 
 msgid "memory not found"
-msgstr ""
+msgstr "пам'яті не знайдено"
 
 #, c-format
 msgid "memory peek request too large for remote protocol, %zi > %d"
@@ -32453,6 +32498,8 @@ msgstr "знайдено декілька відповідних інтерфе�
 
 msgid "multiple memory devices found, use --alias or --node to select one"
 msgstr ""
+"виявлено декілька пристроїв пам'яті, скористайтеся --alias або --node, щоб "
+"вибрати потрібний"
 
 msgid "multiple stream callbacks not supported"
 msgstr "підтримки кратних зворотних викликів у потоках не передбачено"
@@ -32846,6 +32893,8 @@ msgstr "новий стан пристрою"
 
 msgid "new value of <requested/> size, as scaled integer (default KiB)"
 msgstr ""
+"нове значення розміру <requested/> у форматі масштабованого цілого значення ("
+"типова одиниця — КіБ)"
 
 msgid "new xml too large to fit in file"
 msgstr "нові дані xml є занадто великими для зберігання у файлі"
@@ -32968,7 +33017,7 @@ msgid "no USB vendor ID supplied for '%s'"
 msgstr "не вказаний ID виробника USB для «%s»"
 
 msgid "no VPD <fields> elements with an access type attribute found"
-msgstr ""
+msgstr "не знайдено елементів <fields> VPD із атрибутом типу доступу"
 
 #, c-format
 msgid "no WWNN supplied for '%s', and auto-generation failed"
@@ -33175,7 +33224,7 @@ msgid "no medium attachments"
 msgstr "немає долучень носіїв даних"
 
 msgid "no memory device found"
-msgstr ""
+msgstr "не знайдено пристроїв пам'яті"
 
 msgid "no model provided for USB controller"
 msgstr "не передбачено моделі для контролера USB"
@@ -33696,7 +33745,7 @@ msgstr "для пристрою pc-dimm передбачено підтримк�
 
 #, c-format
 msgid "only 'pci' addresses are supported for the %s device"
-msgstr ""
+msgstr "для пристрою virtio-pmem передбачено підтримку лише пристрою %s"
 
 msgid "only 'pci' addresses are supported for the shared memory device"
 msgstr "для пристрою спільної пам'яті передбачено підтримку лише адрес «pci»"
@@ -33887,7 +33936,7 @@ msgid "only two source elements are allowed for character device"
 msgstr "для символьного пристрою дозволено лише два елементи «source»"
 
 msgid "only virtiofs filesystems can be hotplugged"
-msgstr ""
+msgstr "з'єднання «угарячу» можливе лише для файлових систем virtiofs"
 
 msgid "open an editor to modify the description"
 msgstr "відкрити редактор для внесення змін у опис"
@@ -34077,7 +34126,7 @@ msgid "page size (in kibibytes)"
 msgstr "розмір сторінки (у кібібайтах)"
 
 msgid "page_per_vq option is only supported for virtio devices"
-msgstr ""
+msgstr "підтримку параметра page_per_vq передбачено лише для пристроїв virtio"
 
 msgid "panic is supported only with ISA address type"
 msgstr "підтримку panic передбачено лише з типом адрес ISA"
@@ -34635,7 +34684,7 @@ msgid "print the raw data returned by libvirt"
 msgstr "вивести необроблені дані, які повернуто libvirt"
 
 msgid "print updated memory device XML instead of executing the change"
-msgstr ""
+msgstr "вивести оновлений XML пристрою пам'яті, замість внесення змін"
 
 msgid "prints by percentage during 1 second."
 msgstr "показати у відсотках протягом 1 секунди."
@@ -34926,7 +34975,7 @@ msgid "query-named-block-nodes entry was not in expected format"
 msgstr "запис query-named-block-nodes має неочікуване форматування"
 
 msgid "query-rx-filter return data missing array element"
-msgstr ""
+msgstr "у повернутих query-rx-filter даних немає елемента масиву"
 
 msgid "query-sev-capabilities reply was missing 'cbitpos' field"
 msgstr "у відповіді query-sev-capabilities не виявлено поля «cbitpos»"
@@ -35197,7 +35246,7 @@ msgid "remove keys from the authorized keys file"
 msgstr "вилучити ключі з файла уповноважених ключів"
 
 msgid "remove nvram file"
-msgstr ""
+msgstr "вилучити файл nvram"
 
 msgid "remove the metadata corresponding to an uri"
 msgstr "вилучити метадані, що відповідають адресі"
@@ -35308,10 +35357,10 @@ msgstr ""
 "бажана кількість процесорів перевищує максимальну підтримувану (%d > %d)"
 
 msgid "requested size must be an integer multiple of block size"
-msgstr ""
+msgstr "запитаний розмір має бути цілим числом, яке кратне розміру блоку"
 
 msgid "requested size must be smaller than or equal to @size"
-msgstr ""
+msgstr "запитаний розмір має бути меншим або рівним @size"
 
 msgid "requested size of the cache (in bytes) used for compression"
 msgstr "бажаний розмір кешу стискання (у байтах)"
@@ -35878,6 +35927,8 @@ msgid ""
 "setting the '%s' property on a '%s' device is not supported by this QEMU "
 "binary"
 msgstr ""
+"підтримки встановлення властивості «%s» на пристрої «%s» не передбачено у "
+"цьому виконуваному файлі QEMU"
 
 msgid "setting the panic device address is not supported for model 'hyperv'"
 msgstr ""
@@ -38221,7 +38272,7 @@ msgstr ""
 "%1$s>, мало бути <%2$s>"
 
 msgid "unexpected encryption engine"
-msgstr ""
+msgstr "неочікуваний рушій шифрування"
 
 msgid "unexpected encryption format"
 msgstr "неочікуваний формат шифрування"
@@ -38628,7 +38679,7 @@ msgid "unknown backup mode '%s'"
 msgstr "невідомий режим резервного копіювання «%s»"
 
 msgid "unknown base name while formatting virtio device"
-msgstr ""
+msgstr "невідома базова назва під час форматування пристрою virtio"
 
 #, c-format
 msgid "unknown block IO status: %s"
@@ -39574,7 +39625,7 @@ msgstr ""
 "процесора основної системи"
 
 msgid "update memory device of a domain"
-msgstr ""
+msgstr "оновити пристрій пам'яті домену"
 
 msgid "update parts of an existing network's configuration"
 msgstr "оновити частини вже створених налаштувань мережі"
@@ -39596,6 +39647,8 @@ msgstr "використання:"
 #, c-format
 msgid "usb controller type '%s' doesn't support 'ports' with this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU тип контролера USB «%s» не передбачає "
+"підтримки «ports»"
 
 msgid "usb device not found"
 msgstr "не знайдено пристрою usb"
@@ -40183,10 +40236,10 @@ msgstr ""
 "передбачено"
 
 msgid "virtio-mem device is missing <requested/>"
-msgstr ""
+msgstr "У записі пристрою virtio-mem пропущено <requested/>"
 
 msgid "virtio-mem isn't supported by this QEMU binary"
-msgstr ""
+msgstr "підтримки virtio-mem не передбачено у цьому виконуваному файлі QEMU"
 
 msgid "virtio-net failover (teaming) is not supported with this QEMU binary"
 msgstr ""
