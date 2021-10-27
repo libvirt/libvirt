@@ -60,17 +60,6 @@ VIR_LOG_INIT("qemu.qemu_agent");
  */
 #define QEMU_AGENT_MAX_RESPONSE (10 * 1024 * 1024)
 
-/* When you are the first to uncomment this,
- * don't forget to uncomment the corresponding
- * part in qemuAgentIOProcessEvent as well.
- *
-static struct {
-    const char *type;
-    void (*handler)(qemuAgent *agent, virJSONValue *data);
-} eventHandlers[] = {
-};
-*/
-
 typedef struct _qemuAgentMessage qemuAgentMessage;
 struct _qemuAgentMessage {
     char *txBuffer;
@@ -237,17 +226,6 @@ qemuAgentIOProcessEvent(qemuAgent *agent,
         return -1;
     }
 
-/*
-    for (i = 0; i < G_N_ELEMENTS(eventHandlers); i++) {
-        if (STREQ(eventHandlers[i].type, type)) {
-            virJSONValue *data = virJSONValueObjectGet(obj, "data");
-            VIR_DEBUG("handle %s handler=%p data=%p", type,
-                      eventHandlers[i].handler, data);
-            (eventHandlers[i].handler)(agent, data);
-            break;
-        }
-    }
-*/
     return 0;
 }
 
