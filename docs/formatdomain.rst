@@ -1842,6 +1842,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
        <hidden state='on'/>
        <hint-dedicated state='on'/>
        <poll-control state='on'/>
+       <pv-ipi state='off'/>
      </kvm>
      <xen>
        <e820_host state='on'/>
@@ -1930,6 +1931,7 @@ are:
    hidden         Hide the KVM hypervisor from standard MSR based discovery                    on, off :since:`1.2.8 (QEMU 2.1.0)`
    hint-dedicated Allows a guest to enable optimizations when running on dedicated vCPUs       on, off :since:`5.7.0 (QEMU 2.12.0)`
    poll-control   Decrease IO completion latency by introducing a grace period of busy waiting on, off :since:`6.10.0 (QEMU 4.2)`
+   pv-ipi         Paravirtualized send IPIs                                                    on, off :since:`7.10.0 (QEMU 3.1)`
    ============== ============================================================================ ======= ============================
 
 ``xen``

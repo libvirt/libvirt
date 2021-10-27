@@ -7177,6 +7177,11 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="pv-ipi">
+            <ref name="featurestate"/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

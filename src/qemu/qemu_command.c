@@ -6848,6 +6848,11 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                     virBufferAddLit(&buf, ",kvm-poll-control=on");
                 break;
 
+            case VIR_DOMAIN_KVM_PVIPI:
+                if (def->kvm_features[i] == VIR_TRISTATE_SWITCH_OFF)
+                    virBufferAddLit(&buf, ",kvm-pv-ipi=off");
+                break;
+
             case VIR_DOMAIN_KVM_LAST:
                 break;
             }

@@ -204,6 +204,7 @@ VIR_ENUM_IMPL(virDomainKVM,
               "hidden",
               "hint-dedicated",
               "poll-control",
+              "pv-ipi",
 );
 
 VIR_ENUM_IMPL(virDomainXen,
@@ -21789,6 +21790,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             case VIR_DOMAIN_KVM_HIDDEN:
             case VIR_DOMAIN_KVM_DEDICATED:
             case VIR_DOMAIN_KVM_POLLCONTROL:
+            case VIR_DOMAIN_KVM_PVIPI:
                 if (src->kvm_features[i] != dst->kvm_features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of KVM feature '%s' differs: "
@@ -27821,6 +27823,7 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 case VIR_DOMAIN_KVM_HIDDEN:
                 case VIR_DOMAIN_KVM_DEDICATED:
                 case VIR_DOMAIN_KVM_POLLCONTROL:
+                case VIR_DOMAIN_KVM_PVIPI:
                     if (def->kvm_features[j])
                         virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
                                           virDomainKVMTypeToString(j),
