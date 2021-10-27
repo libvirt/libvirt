@@ -28,8 +28,6 @@ typedef struct _qemuAgent qemuAgent;
 
 typedef struct _qemuAgentCallbacks qemuAgentCallbacks;
 struct _qemuAgentCallbacks {
-    void (*destroy)(qemuAgent *mon,
-                    virDomainObj *vm);
     void (*eofNotify)(qemuAgent *mon,
                       virDomainObj *vm);
     void (*errorNotify)(qemuAgent *mon,

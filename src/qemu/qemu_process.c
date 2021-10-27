@@ -193,17 +193,8 @@ qemuProcessHandleAgentError(qemuAgent *agent G_GNUC_UNUSED,
     virObjectUnlock(vm);
 }
 
-static void qemuProcessHandleAgentDestroy(qemuAgent *agent,
-                                          virDomainObj *vm)
-{
-    VIR_DEBUG("Received destroy agent=%p vm=%p", agent, vm);
-
-    virObjectUnref(vm);
-}
-
 
 static qemuAgentCallbacks agentCallbacks = {
-    .destroy = qemuProcessHandleAgentDestroy,
     .eofNotify = qemuProcessHandleAgentEOF,
     .errorNotify = qemuProcessHandleAgentError,
 };
