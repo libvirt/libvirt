@@ -234,18 +234,11 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
         goto cleanup;
     }
 
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted while the agent is active */
-    virObjectRef(vm);
-
     agent = qemuAgentOpen(vm,
                           config->source,
                           virEventThreadGetContext(priv->eventThread),
                           &agentCallbacks,
                           virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_VSERPORT_CHANGE));
-
-    if (agent == NULL)
-        virObjectUnref(vm);
 
     if (!virDomainObjIsActive(vm)) {
         qemuAgentClose(agent);

@@ -160,9 +160,11 @@ qemuAgentEscapeNonPrintable(const char *text)
 static void qemuAgentDispose(void *obj)
 {
     qemuAgent *agent = obj;
+
     VIR_DEBUG("agent=%p", agent);
-    if (agent->cb && agent->cb->destroy)
-        (agent->cb->destroy)(agent, agent->vm);
+
+    if (agent->vm)
+        virObjectUnref(agent->vm);
     virCondDestroy(&agent->notify);
     g_free(agent->buffer);
     g_main_context_unref(agent->context);
@@ -671,7 +673,7 @@ qemuAgentOpen(virDomainObj *vm,
         virObjectUnref(agent);
         return NULL;
     }
-    agent->vm = vm;
+    agent->vm = virObjectRef(vm);
     agent->cb = cb;
     agent->singleSync = singleSync;
 
@@ -707,12 +709,6 @@ qemuAgentOpen(virDomainObj *vm,
     return agent;
 
  cleanup:
-    /* We don't want the 'destroy' callback invoked during
-     * cleanup from construction failure, because that can
-     * give a double-unref on virDomainObj *in the caller,
-     * so kill the callbacks now.
-     */
-    agent->cb = NULL;
     qemuAgentClose(agent);
     return NULL;
 }
