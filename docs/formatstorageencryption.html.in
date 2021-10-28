@@ -30,8 +30,9 @@
       <code>qemu</code> and <code>librbd</code>.
       Both <code>qemu</code> and <code>librbd</code> require using the qemu
       driver.
-      The <code>librbd</code> engine requires qemu version >= 6.1.0,
-      and is only applicable for RBD network disks.
+      The <code>librbd</code> engine requires qemu version >= 6.1.0, both
+      ceph cluster and librbd1 >= 16.1.0, and is only applicable for RBD
+      network disks.
       If the engine tag is not specified, the <code>qemu</code> engine will be
       used by default (assuming the qemu driver is used).
       Note that <code>librbd</code> engine is currently only supported by the
