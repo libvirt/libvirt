@@ -58,6 +58,12 @@ v7.9.0 (unreleased)
     called "vpd" is introduced holding string resources and keyword resources
     found in PCI VPD.
 
+  * qemu: Support page_per_vq for driver element
+
+    This optional virtio attribute ``page_per_vq`` controls the layout of the
+    notification capabilities exposed to the guest. It is recommended for the
+    vDPA devices.
+
 * **Improvements**
 
   * Use of JSON syntax with ``-device`` with upcoming QEMU-6.2
