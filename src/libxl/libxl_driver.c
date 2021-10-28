@@ -389,7 +389,7 @@ libxlReconnectDomain(virDomainObj *vm,
     int rc;
     libxl_dominfo d_info;
     int len;
-    uint8_t *data = NULL;
+    g_autofree uint8_t *data = NULL;
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     int ret = -1;
