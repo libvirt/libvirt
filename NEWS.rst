@@ -64,6 +64,11 @@ v7.9.0 (unreleased)
     notification capabilities exposed to the guest. It is recommended for the
     vDPA devices.
 
+  * qemu: Support librbd encryption
+
+    Add an encryption engine ``librbd``. It will provides the image-level
+    encryption of librbd. It requires QEMU >= 6.1.0 and librbd >= 16.1.0.
+
 * **Improvements**
 
   * Use of JSON syntax with ``-device`` with upcoming QEMU-6.2
