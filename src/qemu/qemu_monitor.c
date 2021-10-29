@@ -2222,20 +2222,6 @@ qemuMonitorSetBalloon(qemuMonitor *mon,
 }
 
 
-/*
- * Returns: 0 if CPU modification was successful or -1 on failure
- */
-int
-qemuMonitorSetCPU(qemuMonitor *mon, int cpu, bool online)
-{
-    VIR_DEBUG("cpu=%d online=%d", cpu, online);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONSetCPU(mon, cpu, online);
-}
-
-
 int
 qemuMonitorEjectMedia(qemuMonitor *mon,
                       const char *dev_name,

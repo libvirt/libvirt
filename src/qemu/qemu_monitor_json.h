@@ -104,7 +104,6 @@ int qemuMonitorJSONExpirePassword(qemuMonitor *mon,
                                   const char *expire_time);
 int qemuMonitorJSONSetBalloon(qemuMonitor *mon,
                               unsigned long long newmem);
-int qemuMonitorJSONSetCPU(qemuMonitor *mon, int cpu, bool online);
 
 int qemuMonitorJSONEjectMedia(qemuMonitor *mon,
                               const char *dev_name,

@@ -2898,31 +2898,6 @@ qemuMonitorJSONSetBalloon(qemuMonitor *mon,
 }
 
 
-int qemuMonitorJSONSetCPU(qemuMonitor *mon,
-                          int cpu, bool online)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    if (online) {
-        cmd = qemuMonitorJSONMakeCommand("cpu-add",
-                                         "i:id", cpu,
-                                         NULL);
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("vCPU unplug is not supported by this QEMU"));
-        return -1;
-    }
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    return qemuMonitorJSONCheckError(cmd, reply);
-}
-
-
 /**
  * Run QMP command to eject a media from ejectable device.
  *

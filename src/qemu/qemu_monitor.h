@@ -794,8 +794,6 @@ int qemuMonitorExpirePassword(qemuMonitor *mon,
                               const char *expire_time);
 int qemuMonitorSetBalloon(qemuMonitor *mon,
                           unsigned long long newmem);
-int qemuMonitorSetCPU(qemuMonitor *mon, int cpu, bool online);
-
 
 /* XXX should we pass the virDomainDiskDef *instead
  * and hide dev_name details inside monitor. Reconsider
