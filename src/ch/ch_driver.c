@@ -47,11 +47,6 @@
 
 VIR_LOG_INIT("ch.ch_driver");
 
-static int chStateInitialize(bool privileged,
-                             const char *root,
-                             virStateInhibitCallback callback,
-                             void *opaque);
-static int chStateCleanup(void);
 virCHDriver *ch_driver = NULL;
 
 static virDomainObj *
