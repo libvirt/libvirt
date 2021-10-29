@@ -537,7 +537,6 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
 {
     int fd = -1;
     size_t dataLen = 0;
-    int ret = 0;
 
     g_autoptr(virPCIVPDResource) res = NULL;
     /* Note: Custom fields are supposed to be freed by the resource cleanup code. */
@@ -558,7 +557,7 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
     if (!res) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "The resource pointer is NULL after parsing which is unexpected");
-        return ret;
+        return -1;
     }
 
     if (!res->ro) {
@@ -596,7 +595,7 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
         return -1;
 
     custom = NULL;
-    return ret;
+    return 0;
 }
 
 static int
