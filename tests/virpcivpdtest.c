@@ -598,6 +598,107 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
 }
 
 static int
+testVirPCIVPDParseZeroLengthRW(const void *opaque G_GNUC_UNUSED)
+{
+    int fd = -1;
+    size_t dataLen = 0;
+
+    g_autoptr(virPCIVPDResource) res = NULL;
+    virPCIVPDResourceCustom *custom = NULL;
+
+    /* The RW field has a zero length  which means there is no more RW space left. */
+    const uint8_t fullVPDExample[] = {
+        VPD_STRING_RESOURCE_EXAMPLE_HEADER, VPD_STRING_RESOURCE_EXAMPLE_DATA,
+        VPD_R_FIELDS_EXAMPLE_HEADER, VPD_R_FIELDS_EXAMPLE_DATA,
+        PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_WRITE_LARGE_RESOURCE_FLAG, 0x08, 0x00,
+        'V', 'Z', 0x02, '4', '2',
+        'R', 'W', 0x00,
+        PCI_VPD_RESOURCE_END_VAL
+    };
+
+    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    res = virPCIVPDParse(fd);
+    VIR_FORCE_CLOSE(fd);
+
+    if (!res) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "The resource pointer is NULL after parsing which is unexpected");
+        return -1;
+    }
+
+    if (!res->ro) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                "Read-only keywords are missing from the VPD resource.");
+        return -1;
+    } else if (!res->rw) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                "Read-write keywords are missing from the VPD resource.");
+        return -1;
+    }
+
+    if (testVirPCIVPDValidateExampleReadOnlyFields(res))
+        return -1;
+
+    custom = g_ptr_array_index(res->rw->vendor_specific, 0);
+    if (custom->idx != 'Z' || STRNEQ_NULLABLE(custom->value, "42"))
+        return -1;
+
+    custom = NULL;
+    return 0;
+}
+
+static int
+testVirPCIVPDParseNoRW(const void *opaque G_GNUC_UNUSED)
+{
+    int fd = -1;
+    size_t dataLen = 0;
+
+    g_autoptr(virPCIVPDResource) res = NULL;
+    virPCIVPDResourceCustom *custom = NULL;
+
+    /* The RW field has a zero length  which means there is no more RW space left. */
+    const uint8_t fullVPDExample[] = {
+        VPD_STRING_RESOURCE_EXAMPLE_HEADER, VPD_STRING_RESOURCE_EXAMPLE_DATA,
+        VPD_R_FIELDS_EXAMPLE_HEADER, VPD_R_FIELDS_EXAMPLE_DATA,
+        PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_WRITE_LARGE_RESOURCE_FLAG, 0x05, 0x00,
+        'V', 'Z', 0x02, '4', '2',
+        PCI_VPD_RESOURCE_END_VAL
+    };
+
+    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    res = virPCIVPDParse(fd);
+    VIR_FORCE_CLOSE(fd);
+
+    if (!res) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "The resource pointer is NULL after parsing which is unexpected");
+        return -1;
+    }
+
+    if (!res->ro) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                "Read-only keywords are missing from the VPD resource.");
+        return -1;
+    } else if (!res->rw) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                "Read-write keywords are missing from the VPD resource.");
+        return -1;
+    }
+
+    if (testVirPCIVPDValidateExampleReadOnlyFields(res))
+        return -1;
+
+    custom = g_ptr_array_index(res->rw->vendor_specific, 0);
+    if (custom->idx != 'Z' || STRNEQ_NULLABLE(custom->value, "42"))
+        return -1;
+
+    custom = NULL;
+    return 0;
+}
+
+static int
 testVirPCIVPDParseFullVPDSkipInvalidKeywords(const void *opaque G_GNUC_UNUSED)
 {
     int fd = -1;
@@ -717,6 +818,33 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
     'R', 'V', 0x02, 0x8A, 0x00, \
     PCI_VPD_RESOURCE_END_VAL
 
+/* The SN field has a length field that goes past the resource boundaries. */
+# define VPD_INVALID_SN_FIELD_LENGTH \
+    VPD_STRING_RESOURCE_EXAMPLE_HEADER, \
+    't', 'e', 's', 't', 'n', 'a', 'm', 'e', \
+    PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG, 0x0A, 0x00, \
+    'S', 'N', 0x42, 0x04, 0x02, \
+    'R', 'V', 0x02, 0xE8, 0x00, \
+    PCI_VPD_RESOURCE_END_VAL
+
+/* The RV field is not the last one in VPD-R while the checksum is valid. */
+# define VPD_INVALID_RV_NOT_LAST \
+    VPD_STRING_RESOURCE_EXAMPLE_HEADER, \
+    't', 'e', 's', 't', 'n', 'a', 'm', 'e', \
+    PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG, 0x0A, 0x00, \
+    'R', 'V', 0x02, 0xD1, 0x00, \
+    'S', 'N', 0x02, 0x04, 0x02, \
+    PCI_VPD_RESOURCE_END_VAL
+
+# define VPD_INVALID_RW_NOT_LAST \
+    VPD_STRING_RESOURCE_EXAMPLE_HEADER, VPD_STRING_RESOURCE_EXAMPLE_DATA, \
+    VPD_R_FIELDS_EXAMPLE_HEADER, VPD_R_FIELDS_EXAMPLE_DATA, \
+    PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_WRITE_LARGE_RESOURCE_FLAG, 0x08, 0x00, \
+    'R', 'W', 0x00, \
+    'V', 'Z', 0x02, '4', '2', \
+    PCI_VPD_RESOURCE_END_VAL
+
+
 # define TEST_INVALID_VPD(invalidVPD) \
     do { \
         g_autoptr(virPCIVPDResource) res = NULL; \
@@ -741,6 +869,9 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
     TEST_INVALID_VPD(VPD_R_UNEXPECTED_RW_IN_VPD_R_KEY);
     TEST_INVALID_VPD(VPD_R_INVALID_FIELD_VALUE);
     TEST_INVALID_VPD(VPD_INVALID_STRING_RESOURCE_VALUE);
+    TEST_INVALID_VPD(VPD_INVALID_SN_FIELD_LENGTH);
+    TEST_INVALID_VPD(VPD_INVALID_RV_NOT_LAST);
+    TEST_INVALID_VPD(VPD_INVALID_RW_NOT_LAST);
 
     return 0;
 }
@@ -766,6 +897,12 @@ mymain(void)
     if (virTestRun("Reading VPD bytes ", testVirPCIVPDReadVPDBytes, NULL) < 0)
         ret = -1;
     if (virTestRun("Parsing VPD string resources ", testVirPCIVPDParseVPDStringResource, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Parsing a VPD resource with a zero-length RW ",
+                   testVirPCIVPDParseZeroLengthRW, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Parsing a VPD resource without an RW ",
+                   testVirPCIVPDParseNoRW, NULL) < 0)
         ret = -1;
     if (virTestRun("Parsing a VPD resource with an invalid keyword ",
                    testVirPCIVPDParseFullVPDSkipInvalidKeywords, NULL) < 0)
