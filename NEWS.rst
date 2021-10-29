@@ -86,6 +86,21 @@ v7.9.0 (unreleased)
     qemu-5.2.0, regardless of qemu version and failed in qemu-5.1.0. This
     release fixes the bug.
 
+ * Don't enter endless loop when unable to accept new clients
+
+   If libvirtd (or any other daemon) hit the ulimit for maximum number of open
+   files but there are still client connections pending then libvirtd (or
+   corresponding split daemon) would enter an endless loop from which it would
+   never recover. This behaviour is now fixed.
+
+ * qemu: Run secondary driver hooks in split daemon mode
+
+   Because of a bug in implementation it may happen that hooks from secondary
+   drivers were not called in all cases, for instance a network hook wasn't
+   called upon removal of interface after domain shut off itself. With this
+   release the bug is fixed.
+
+
 v7.8.0 (2021-10-01)
 ===================
 
