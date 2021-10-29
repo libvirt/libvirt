@@ -113,6 +113,7 @@
 #include "virdomaincheckpointobjlist.h"
 #include "virsocket.h"
 #include "virutil.h"
+#include "backup_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -18451,6 +18452,66 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
         if (!visitBacking)
             break;
+    }
+
+    /* in blockdev mode where we can properly and uniquely identify images we
+     * can also report stats for the mirror target or the scratch image or target
+     * of a backup operation */
+    if (visitBacking && blockdev) {
+        qemuDomainObjPrivate *priv = dom->privateData;
+
+        if (disk->mirror &&
+            disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
+            if (qemuDomainGetStatsBlockExportHeader(disk, disk->mirror, *recordnr, params) < 0)
+                return -1;
+
+            if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
+                                           disk->mirror->nodeformat,
+                                           disk->mirror,
+                                           *recordnr,
+                                           stats) < 0)
+                return -1;
+
+            if (qemuDomainGetStatsBlockExportBackendStorage(disk->mirror->nodestorage,
+                                                            stats, *recordnr,
+                                                            params) < 0)
+                return -1;
+
+            (*recordnr)++;
+        }
+
+        if (priv->backup) {
+            size_t i;
+
+            for (i = 0; i < priv->backup->ndisks; i++) {
+                virDomainBackupDiskDef *backupdisk = priv->backup->disks + i;
+
+                if (STRNEQ(disk->dst, priv->backup->disks[i].name))
+                    continue;
+
+                if (backupdisk->store) {
+                    if (qemuDomainGetStatsBlockExportHeader(disk, backupdisk->store,
+                                                            *recordnr, params) < 0)
+                        return -1;
+
+                    if (qemuDomainGetStatsOneBlock(driver, cfg, dom, params,
+                                                   backupdisk->store->nodeformat,
+                                                   backupdisk->store,
+                                                   *recordnr,
+                                                   stats) < 0)
+                        return -1;
+
+                    if (qemuDomainGetStatsBlockExportBackendStorage(backupdisk->store->nodestorage,
+                                                                    stats, *recordnr,
+                                                                    params) < 0)
+                        return -1;
+
+                    (*recordnr)++;
+                }
+
+                break;
+            }
+        }
     }
 
     return 0;
