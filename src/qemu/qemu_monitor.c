@@ -1349,6 +1349,18 @@ qemuMonitorEmitDeviceDeleted(qemuMonitor *mon,
 
 
 void
+qemuMonitorEmitDeviceUnplugErr(qemuMonitor *mon,
+                               const char *devPath,
+                               const char *devAlias)
+{
+    VIR_DEBUG("mon=%p", mon);
+
+    QEMU_MONITOR_CALLBACK(mon, domainDeviceUnplugError, mon->vm,
+                          devPath, devAlias);
+}
+
+
+void
 qemuMonitorEmitNicRxFilterChanged(qemuMonitor *mon,
                                   const char *devAlias)
 {

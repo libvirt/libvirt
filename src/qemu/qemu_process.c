@@ -1322,6 +1322,42 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
 }
 
 
+static void
+qemuProcessHandleDeviceUnplugErr(qemuMonitor *mon G_GNUC_UNUSED,
+                                 virDomainObj *vm,
+                                 const char *devPath,
+                                 const char *devAlias,
+                                 void *opaque)
+{
+    virQEMUDriver *driver = opaque;
+    virObjectEvent *event = NULL;
+
+    virObjectLock(vm);
+
+    VIR_DEBUG("Device %s QOM path %s failed to be removed from domain %p %s",
+              devAlias, devPath, vm, vm->def->name);
+
+    /*
+     * DEVICE_UNPLUG_GUEST_ERROR will always contain the QOM path
+     * but QEMU will not guarantee that devAlias will be provided.
+     *
+     * However, given that all Libvirt devices have a devAlias, we
+     * can ignore the case where QEMU emitted this event without it.
+     */
+    if (!devAlias)
+        goto cleanup;
+
+    qemuDomainSignalDeviceRemoval(vm, devAlias,
+                                  QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_GUEST_REJECTED);
+
+    event = virDomainEventDeviceRemovalFailedNewFromObj(vm, devAlias);
+
+ cleanup:
+    virObjectUnlock(vm);
+    virObjectEventStateQueue(driver->domainEventState, event);
+}
+
+
 /**
  *
  * Meaning of fields reported by the event according to the ACPI standard:
@@ -1891,6 +1927,7 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainGuestCrashloaded = qemuProcessHandleGuestCrashloaded,
     .domainMemoryFailure = qemuProcessHandleMemoryFailure,
     .domainMemoryDeviceSizeChange = qemuProcessHandleMemoryDeviceSizeChange,
+    .domainDeviceUnplugError = qemuProcessHandleDeviceUnplugErr,
 };
 
 static void

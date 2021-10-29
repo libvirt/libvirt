@@ -113,6 +113,7 @@ static void qemuMonitorJSONHandlePRManagerStatusChanged(qemuMonitor *mon, virJSO
 static void qemuMonitorJSONHandleRdmaGidStatusChanged(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleMemoryFailure(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleMemoryDeviceSizeChange(qemuMonitor *mon, virJSONValue *data);
+static void qemuMonitorJSONHandleDeviceUnplugErr(qemuMonitor *mon, virJSONValue *data);
 
 typedef struct {
     const char *type;
@@ -129,6 +130,7 @@ static qemuEventHandler eventHandlers[] = {
     { "BLOCK_WRITE_THRESHOLD", qemuMonitorJSONHandleBlockThreshold, },
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
+    { "DEVICE_UNPLUG_GUEST_ERROR", qemuMonitorJSONHandleDeviceUnplugErr, },
     { "DUMP_COMPLETED", qemuMonitorJSONHandleDumpCompleted, },
     { "GUEST_CRASHLOADED", qemuMonitorJSONHandleGuestCrashloaded, },
     { "GUEST_PANICKED", qemuMonitorJSONHandleGuestPanic, },
@@ -1108,6 +1110,23 @@ qemuMonitorJSONHandleDeviceDeleted(qemuMonitor *mon, virJSONValue *data)
     }
 
     qemuMonitorEmitDeviceDeleted(mon, device);
+}
+
+
+static void
+qemuMonitorJSONHandleDeviceUnplugErr(qemuMonitor *mon, virJSONValue *data)
+{
+    const char *device;
+    const char *path;
+
+    if (!(path = virJSONValueObjectGetString(data, "path"))) {
+        VIR_DEBUG("missing path in device unplug guest error event");
+        return;
+    }
+
+    device = virJSONValueObjectGetString(data, "device");
+
+    qemuMonitorEmitDeviceUnplugErr(mon, path, device);
 }
 
 
