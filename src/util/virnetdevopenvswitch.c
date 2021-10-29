@@ -759,7 +759,7 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
         }
         virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
         if (virCommandRun(cmd, NULL) < 0) {
-            if (*queue_uuid) {
+            if (queue_uuid && *queue_uuid) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to set queue configuration on port %s"), ifname);
             } else {
