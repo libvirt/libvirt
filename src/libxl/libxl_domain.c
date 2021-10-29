@@ -616,12 +616,6 @@ static void
 libxlDomainHandleDeath(libxlDriverPrivate *driver, virDomainObj *vm)
 {
     virObjectEvent *dom_event = NULL;
-    libxlDomainObjPrivate *priv = vm->privateData;
-
-    if (priv->ignoreDeathEvent) {
-        priv->ignoreDeathEvent = false;
-        return;
-    }
 
     if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
         return;
@@ -671,7 +665,6 @@ libxlDomainEventHandler(void *data, libxl_event *event)
     }
 
     if (event->type == LIBXL_EVENT_TYPE_DOMAIN_SHUTDOWN) {
-        libxlDomainObjPrivate *priv = vm->privateData;
         struct libxlShutdownThreadInfo *shutdown_info = NULL;
         virThread thread;
         g_autofree char *name = NULL;
@@ -688,12 +681,9 @@ libxlDomainEventHandler(void *data, libxl_event *event)
         name = g_strdup_printf("ev-%d", event->domid);
         /*
          * Cleanup will be handled by the shutdown thread.
-         * Ignore the forthcoming death event from libxl
          */
-        priv->ignoreDeathEvent = true;
         if (virThreadCreateFull(&thread, false, libxlDomainShutdownThread,
                                 name, false, shutdown_info) < 0) {
-             priv->ignoreDeathEvent = false;
             /*
              * Not much we can do on error here except log it.
              */
@@ -859,18 +849,17 @@ libxlDomainDestroyInternal(libxlDriverPrivate *driver,
     libxlDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
 
-    /* Ignore next LIBXL_EVENT_TYPE_DOMAIN_DEATH as the caller will handle
-     * domain death appropriately already (having more info, like the reason).
-     */
-    priv->ignoreDeathEvent = true;
+    if (priv->deathW) {
+        libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
+        priv->deathW = NULL;
+    }
+
     /* Unlock virDomainObj during destroy, which can take considerable
      * time on large memory domains.
      */
     virObjectUnlock(vm);
     ret = libxl_domain_destroy(cfg->ctx, vm->def->id, NULL);
     virObjectLock(vm);
-    if (ret)
-        priv->ignoreDeathEvent = false;
 
     return ret;
 }
@@ -920,8 +909,6 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
         libxl_evdisable_domain_death(cfg->ctx, priv->deathW);
         priv->deathW = NULL;
     }
-
-    priv->ignoreDeathEvent = false;
 
     if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
