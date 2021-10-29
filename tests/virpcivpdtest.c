@@ -322,8 +322,10 @@ testPCIVPDIsValidTextValue(const void *data G_GNUC_UNUSED)
         {"under_score_example", true},
         {"", true},
         {";", true},
-        {"\\42", false},
-        {"/42", false},
+        {"\\42", true},
+        {"N/A", true},
+        /* The first and last code points are outside ASCII (multi-byte in UTF-8). */
+        {"гbl🐧", false},
     };
     for (i = 0; i < sizeof(textValueCases) / sizeof(textValueCases[0]); ++i) {
         if (virPCIVPDResourceIsValidTextValue(textValueCases[i].keyword) !=
@@ -742,6 +744,113 @@ testVirPCIVPDParseFullVPDSkipInvalidKeywords(const void *opaque G_GNUC_UNUSED)
 }
 
 static int
+testVirPCIVPDParseFullVPDSkipInvalidValues(const void *opaque G_GNUC_UNUSED)
+{
+    int fd = -1;
+    size_t dataLen = 0;
+    size_t i = 0;
+    virPCIVPDResourceCustom *custom = NULL;
+
+    g_autoptr(virPCIVPDResource) res = NULL;
+
+    /* This example is based on real-world hardware which was programmed by the vendor with
+     * invalid field values in both the RO section and RW section. The RO section contains
+     * fields that are not valid per the spec but accepted by Libvirt as printable ASCII
+     * characters. The RW field has a 0 length which means there is no more space in the
+     * RW section. */
+    const uint8_t fullVPDExample[] = {
+        0x82, 0x23, 0x00, 0x48, 0x50, 0x20, 0x45, 0x74, 0x68, 0x65, 0x72, 0x6e, 0x65, 0x74,
+        0x20, 0x31, 0x47, 0x62, 0x20, 0x32, 0x2d, 0x70, 0x6f, 0x72, 0x74, 0x20, 0x33, 0x36,
+        0x31, 0x69, 0x20, 0x41, 0x64, 0x61, 0x70, 0x74, 0x65, 0x72, 0x90, 0x42, 0x00, 0x50,
+        0x4e, 0x03, 0x4e, 0x2f, 0x41, 0x45, 0x43, 0x03, 0x4e, 0x2f, 0x41, 0x53, 0x4e, 0x03,
+        0x4e, 0x2f, 0x41, 0x56, 0x30, 0x29, 0x34, 0x57, 0x2f, 0x31, 0x57, 0x20, 0x50, 0x43,
+        0x49, 0x65, 0x47, 0x32, 0x78, 0x34, 0x20, 0x32, 0x70, 0x20, 0x31, 0x47, 0x62, 0x45,
+        0x20, 0x52, 0x4a, 0x34, 0x35, 0x20, 0x49, 0x6e, 0x74, 0x65, 0x6c, 0x20, 0x69, 0x33,
+        0x35, 0x30, 0x20, 0x20, 0x20, 0x52, 0x56, 0x01, 0x63, 0x91, 0x47, 0x00, 0x56, 0x31,
+        0x06, 0x35, 0x2e, 0x37, 0x2e, 0x30, 0x36, 0x56, 0x33, 0x06, 0x32, 0x2e, 0x38, 0x2e,
+        0x32, 0x30, 0x56, 0x36, 0x06, 0x31, 0x2e, 0x35, 0x2e, 0x33, 0x35, 0x59, 0x41, 0x03,
+        0x4e, 0x2f, 0x41, 0x59, 0x42, 0x10, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x59, 0x43, 0x0D, 0xff, 0xff, 0xff,
+        0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 'R', 'W', 0x00, 0x78,
+    };
+
+    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    res = virPCIVPDParse(fd);
+    VIR_FORCE_CLOSE(fd);
+
+    if (!res) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "The resource pointer is NULL after parsing which is unexpected.");
+        return -1;
+    }
+    /* Some values in the read-write section are invalid but parsing should succeed
+     * considering the parser is implemented to be graceful about invalid keywords and
+     * values. */
+    if (!res->ro) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "The RO section consisting of only invalid fields got parsed successfully");
+        return -1;
+    }
+    if (!res->rw) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Could not successfully parse an RW section with some invalid fields");
+        return -1;
+    }
+
+    if (!STREQ_NULLABLE(res->ro->change_level, "N/A")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Could not parse a change level field with acceptable contents");
+        return -1;
+    }
+    if (!STREQ_NULLABLE(res->ro->part_number, "N/A")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Could not parse a part number field with acceptable contents");
+        return -1;
+    }
+    if (!STREQ_NULLABLE(res->ro->serial_number, "N/A")) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Could not parse a serial number with acceptable contents");
+        return -1;
+    }
+    if (!STREQ_NULLABLE(res->rw->asset_tag, "N/A")) {
+        /* The asset tag has an invalid value in this case so it should be NULL. */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Could not parse an asset tag with acceptable contents");
+        return -1;
+    }
+    if (res->rw->vendor_specific->len != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "The number of parsed vendor fields is not equal to the expected number.");
+        return -1;
+    }
+    if (res->rw->system_specific->len > 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Successfully parsed some systems-specific fields while none are valid");
+        return -1;
+    }
+    for (i = 0; i < res->rw->vendor_specific->len; ++i) {
+        custom = ((virPCIVPDResourceCustom*)g_ptr_array_index(res->rw->vendor_specific, i));
+        if (custom->idx == '1') {
+            if (STRNEQ(custom->value, "5.7.06")) {
+                return -1;
+            }
+        } else if (custom->idx == '3') {
+            if (STRNEQ(custom->value, "2.8.20")) {
+                return -1;
+            }
+        } else if (custom->idx == '6') {
+            if (STRNEQ(custom->value, "1.5.35")) {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
 {
     int fd = -1;
@@ -802,14 +911,6 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
     'R', 'V', 0x02, 0x81, 0x00, \
     PCI_VPD_RESOURCE_END_VAL
 
-# define VPD_R_INVALID_FIELD_VALUE \
-    VPD_STRING_RESOURCE_EXAMPLE_HEADER, \
-    VPD_STRING_RESOURCE_EXAMPLE_DATA, \
-    PCI_VPD_LARGE_RESOURCE_FLAG | PCI_VPD_READ_ONLY_LARGE_RESOURCE_FLAG, 0x0A, 0x00, \
-    'S', 'N', 0x02, 0x04, 0x02, \
-    'R', 'V', 0x02, 0x28, 0x00, \
-    PCI_VPD_RESOURCE_END_VAL
-
 # define VPD_INVALID_STRING_RESOURCE_VALUE \
     VPD_STRING_RESOURCE_EXAMPLE_HEADER, \
     't', 0x03, 's', 't', 'n', 'a', 'm', 'e', \
@@ -867,7 +968,6 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
     TEST_INVALID_VPD(VPD_R_INVALID_RV);
     TEST_INVALID_VPD(VPD_R_INVALID_RV_ZERO_LENGTH);
     TEST_INVALID_VPD(VPD_R_UNEXPECTED_RW_IN_VPD_R_KEY);
-    TEST_INVALID_VPD(VPD_R_INVALID_FIELD_VALUE);
     TEST_INVALID_VPD(VPD_INVALID_STRING_RESOURCE_VALUE);
     TEST_INVALID_VPD(VPD_INVALID_SN_FIELD_LENGTH);
     TEST_INVALID_VPD(VPD_INVALID_RV_NOT_LAST);
@@ -903,6 +1003,9 @@ mymain(void)
         ret = -1;
     if (virTestRun("Parsing a VPD resource without an RW ",
                    testVirPCIVPDParseNoRW, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Parsing a VPD resource with an invalid values ",
+                   testVirPCIVPDParseFullVPDSkipInvalidValues, NULL) < 0)
         ret = -1;
     if (virTestRun("Parsing a VPD resource with an invalid keyword ",
                    testVirPCIVPDParseFullVPDSkipInvalidKeywords, NULL) < 0)

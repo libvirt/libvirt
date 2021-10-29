@@ -161,8 +161,6 @@ virPCIVPDResourceGetFieldValueFormat(const char *keyword)
     return format;
 }
 
-#define ACCEPTED_CHARS "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 -_,.:;="
-
 /**
  * virPCIVPDResourceIsValidTextValue:
  * @value: A NULL-terminated string to assess.
@@ -175,6 +173,7 @@ virPCIVPDResourceGetFieldValueFormat(const char *keyword)
 bool
 virPCIVPDResourceIsValidTextValue(const char *value)
 {
+    size_t i = 0;
     /*
      * The PCI(e) specs mention alphanumeric characters when talking about text fields
      * and the string resource but also include spaces and dashes in the provided example.
@@ -191,10 +190,12 @@ virPCIVPDResourceIsValidTextValue(const char *value)
     if (STREQ(value, ""))
         return true;
 
-    if (strspn(value, ACCEPTED_CHARS) != strlen(value)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("The provided value contains invalid characters: %s"), value);
-        return false;
+    while (i < strlen(value)) {
+        if (!g_ascii_isprint(value[i])) {
+            VIR_DEBUG("The provided value contains non-ASCII printable characters: %s", value);
+            return false;
+        }
+        ++i;
     }
     return true;
 }
@@ -544,9 +545,12 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
              */
             fieldValue = g_strstrip(g_strndup((char *)buf, fieldDataLen));
             if (!virPCIVPDResourceIsValidTextValue(fieldValue)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Field value contains invalid characters"));
-                return false;
+                /* Skip fields with invalid values - this is safe assuming field length is
+                 * correctly specified. */
+                VIR_DEBUG("A value for field %s contains invalid characters", fieldKeyword);
+                g_free(g_steal_pointer(&fieldKeyword));
+                g_free(g_steal_pointer(&fieldValue));
+                continue;
             }
         } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
             if (*csum) {
