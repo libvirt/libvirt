@@ -129,9 +129,10 @@
     <h3><a id="StorageEncryptionLuks2">"luks2" format</a></h3>
     <p>
       The <code>luks2</code> format is currently supported only by the
-      <code>librbd</code> engine, and can only be applied to RBD network disks.
+      <code>librbd</code> engine, and can only be applied to RBD network disks
+      (RBD images).
       Since the <code>librbd</code> engine is currently not supported by the
-      storage driver, you cannot use it to control such disks. However,
+      libvirt storage driver, you cannot use it to control such disks. However,
       pre-formatted RBD luks2 disks can be loaded to a qemu VM using the qemu
       VM driver.
       A single
