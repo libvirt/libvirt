@@ -111,48 +111,45 @@ testQemuAgentFSFreeze(const void *data)
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
     const char *mountpoints[] = {"/fs1", "/fs2", "/fs3", "/fs4", "/fs5"};
-    int ret = -1;
+    int rc;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-freeze-list",
                                "{ \"return\" : 5 }") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-freeze",
                                "{ \"return\" : 7 }") < 0)
-        goto cleanup;
+        return -1;
 
-    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test),
-                                 mountpoints, 5)) < 0)
-        goto cleanup;
+    if ((rc = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test),
+                                mountpoints, 5)) < 0)
+        return -1;
 
-    if (ret != 5) {
+    if (rc != 5) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "expected 5 frozen filesystems, got %d", ret);
-        goto cleanup;
+                       "expected 5 frozen filesystems, got %d", rc);
+        return -1;
     }
 
-    if ((ret = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0)) < 0)
-        goto cleanup;
+    if ((rc = qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0)) < 0)
+        return -1;
 
-    if (ret != 7) {
+    if (rc != 7) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "expected 7 frozen filesystems, got %d", ret);
-        goto cleanup;
+                       "expected 7 frozen filesystems, got %d", rc);
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -161,47 +158,44 @@ testQemuAgentFSThaw(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    int ret = -1;
+    int rc;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-thaw",
                                "{ \"return\" : 5 }") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-fsfreeze-thaw",
                                "{ \"return\" : 7 }") < 0)
-        goto cleanup;
+        return -1;
 
-    if ((ret = qemuAgentFSThaw(qemuMonitorTestGetAgent(test))) < 0)
-        goto cleanup;
+    if ((rc = qemuAgentFSThaw(qemuMonitorTestGetAgent(test))) < 0)
+        return -1;
 
-    if (ret != 5) {
+    if (rc != 5) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "expected 5 thawed filesystems, got %d", ret);
-        goto cleanup;
+                       "expected 5 thawed filesystems, got %d", rc);
+        return -1;
     }
 
-    if ((ret = qemuAgentFSThaw(qemuMonitorTestGetAgent(test))) < 0)
-        goto cleanup;
+    if ((rc = qemuAgentFSThaw(qemuMonitorTestGetAgent(test))) < 0)
+        return -1;
 
-    if (ret != 7) {
+    if (rc != 7) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "expected 7 thawed filesystems, got %d", ret);
-        goto cleanup;
+                       "expected 7 thawed filesystems, got %d", rc);
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -210,27 +204,23 @@ testQemuAgentFSTrim(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    int ret = -1;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItemParams(test, "guest-fstrim",
                                      "{ \"return\" : {} }",
                                      "minimum", "1337",
                                      NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentFSTrim(qemuMonitorTestGetAgent(test), 1337) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -239,7 +229,6 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOption *xmlopt,
                              qemuMonitorTest **test,
                              virDomainDef **def)
 {
-    int ret = -1;
     g_autofree char *domain_filename = NULL;
     g_autoptr(qemuMonitorTest) ret_test = NULL;
     g_autoptr(virDomainDef) ret_def = NULL;
@@ -254,10 +243,10 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOption *xmlopt,
 
     if (!(ret_def = virDomainDefParseFile(domain_filename, xmlopt,
                                           NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(ret_test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(ret_test, "guest-get-fsinfo",
                                "{\"return\": ["
@@ -293,14 +282,11 @@ testQemuAgentGetFSInfoCommon(virDomainXMLOption *xmlopt,
                                "  {\"name\": \"sdb1\","
                                "   \"mountpoint\": \"/mnt/disk\","
                                "   \"disk\": [], \"type\": \"xfs\"}]}") < 0)
-                               goto cleanup;
+                               return -1;
 
     *test = g_steal_pointer(&ret_test);
     *def = g_steal_pointer(&ret_def);
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -408,43 +394,39 @@ testQemuAgentSuspend(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    int ret = -1;
     size_t i;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-suspend-ram",
                                "{ \"return\" : {} }") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-suspend-disk",
                                "{ \"return\" : {} }") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-suspend-hybrid",
                                "{ \"return\" : {} }") < 0)
-        goto cleanup;
+        return -1;
 
     /* try the commands - fail if ordering changes */
     for (i = 0; i < VIR_NODE_SUSPEND_TARGET_LAST; i++) {
         if (qemuAgentSuspend(qemuMonitorTestGetAgent(test), i) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -506,13 +488,12 @@ testQemuAgentShutdown(const void *data)
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
     struct qemuAgentShutdownTestData priv;
-    int ret = -1;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "halt";
@@ -520,14 +501,14 @@ testQemuAgentShutdown(const void *data)
     if (qemuMonitorTestAddHandler(test, "guest-shutdown",
                                   qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_HALT) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     priv.event = QEMU_AGENT_EVENT_SHUTDOWN;
     priv.mode = "powerdown";
@@ -535,14 +516,14 @@ testQemuAgentShutdown(const void *data)
     if (qemuMonitorTestAddHandler(test, "guest-shutdown",
                                   qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_POWERDOWN) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     priv.event = QEMU_AGENT_EVENT_RESET;
     priv.mode = "reboot";
@@ -551,17 +532,17 @@ testQemuAgentShutdown(const void *data)
                                   "guest-shutdown",
                                   qemuAgentShutdownTestMonitorHandler,
                                   &priv, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_REBOOT) < 0)
-        goto cleanup;
+        return -1;
 
     /* check negative response, so that we can verify that the agent breaks
      * out from sleep */
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-shutdown",
                                "{\"error\":"
@@ -571,19 +552,16 @@ testQemuAgentShutdown(const void *data)
                                "     \"data\":{\"name\":\"guest-shutdown\"}"
                                "    }"
                                "}") < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentShutdown(qemuMonitorTestGetAgent(test),
                           QEMU_AGENT_SHUTDOWN_REBOOT) != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent shutdown command should have failed");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -626,75 +604,71 @@ testQemuAgentCPU(const void *data)
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
     g_autofree qemuAgentCPUInfo *cpuinfo = NULL;
     int nvcpus;
-    int ret = -1;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "guest-get-vcpus",
                                testQemuAgentCPUResponse) < 0)
-        goto cleanup;
+        return -1;
 
     /* get cpus */
     if ((nvcpus = qemuAgentGetVCPUs(qemuMonitorTestGetAgent(test),
                                     &cpuinfo)) < 0)
-        goto cleanup;
+        return -1;
 
     if (nvcpus != 4) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "Expected '4' cpus, got '%d'", nvcpus);
-        goto cleanup;
+        return -1;
     }
 
     /* try to unplug one */
     if (qemuAgentUpdateCPUInfo(2, cpuinfo, nvcpus) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
                                      "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments1,
                                      NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) < 0)
-        goto cleanup;
+        return -1;
 
     /* try to hotplug two, second one will fail */
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
                                      "{ \"return\" : 1 }",
                                      "vcpus", testQemuAgentCPUArguments2,
                                      NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItemParams(test, "guest-set-vcpus",
                                      "{ \"error\" : \"random error\" }",
                                      "vcpus", testQemuAgentCPUArguments3,
                                      NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentUpdateCPUInfo(4, cpuinfo, nvcpus) < 0)
-        goto cleanup;
+        return -1;
 
     /* this should fail */
     if (qemuAgentSetVCPUs(qemuMonitorTestGetAgent(test), cpuinfo, nvcpus) != -1)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -706,37 +680,33 @@ testQemuAgentArbitraryCommand(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    int ret = -1;
     g_autofree char *reply = NULL;
 
     if (!test)
         return -1;
 
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddItem(test, "ble",
                                testQemuAgentArbitraryCommandResponse) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentArbitraryCommand(qemuMonitorTestGetAgent(test),
                                   "{\"execute\":\"ble\"}",
                                   &reply,
                                   VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK) < 0)
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(reply, testQemuAgentArbitraryCommandResponse)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "invalid processing of guest agent reply: "
                        "got '%s' expected '%s'",
                        reply, testQemuAgentArbitraryCommandResponse);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -755,36 +725,33 @@ testQemuAgentTimeout(const void *data)
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
     g_autofree char *reply = NULL;
-    int ret = -1;
 
     if (!test)
         return -1;
 
-    if (virTestGetExpensive() == 0) {
-        ret = EXIT_AM_SKIP;
-        goto cleanup;
-    }
+    if (virTestGetExpensive() == 0)
+        return EXIT_AM_SKIP;
 
     if (qemuMonitorTestAddHandler(test, NULL,
                                   qemuAgentTimeoutTestMonitorHandler,
                                   NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentFSFreeze(qemuMonitorTestGetAgent(test), NULL, 0) != -1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent command should have failed");
-        goto cleanup;
+        return -1;
     }
 
     /* test timeout */
     if (qemuMonitorTestAddAgentSyncResponse(test) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorTestAddHandler(test,
                                   NULL,
                                   qemuAgentTimeoutTestMonitorHandler,
                                   NULL, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentArbitraryCommand(qemuMonitorTestGetAgent(test),
                                   "{\"execute\":\"ble\"}",
@@ -792,13 +759,10 @@ testQemuAgentTimeout(const void *data)
                                   1) != -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        "agent command didn't time out");
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static const char testQemuAgentGetInterfacesResponse[] =

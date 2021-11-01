@@ -1014,7 +1014,7 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
     if (!(test->tmpdir = g_mkdtemp(tmpdir_template))) {
         virReportSystemError(errno, "%s",
                              "Failed to create temporary directory");
-        goto error;
+        return NULL;
     }
 
     tmpdir_template = NULL;
@@ -1026,14 +1026,14 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
     } else {
         test->vm = virDomainObjNew(xmlopt);
         if (!test->vm)
-            goto error;
+            return NULL;
         if (!(test->vm->def = virDomainDefNew(xmlopt)))
-            goto error;
+            return NULL;
     }
 
     if (virNetSocketNewListenUNIX(path, 0700, geteuid(), getegid(),
                                   &test->server) < 0)
-        goto error;
+        return NULL;
 
     memset(src, 0, sizeof(*src));
     src->type = VIR_DOMAIN_CHR_TYPE_UNIX;
@@ -1042,13 +1042,9 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
     path = NULL;
 
     if (virNetSocketListen(test->server, 1) < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&test);
-
- error:
-    return NULL;
-
 }
 
 
@@ -1200,12 +1196,12 @@ qemuMonitorTestNewFromFile(const char *fileName,
 
             if (test) {
                 if (qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
-                    goto error;
+                    return NULL;
             } else {
                 /* Create new mocked monitor with our greeting */
                 if (!(test = qemuMonitorTestNew(xmlopt, NULL, NULL,
                                                 singleReply, NULL)))
-                    goto error;
+                    return NULL;
             }
 
             if (!eof) {
@@ -1220,12 +1216,9 @@ qemuMonitorTestNewFromFile(const char *fileName,
     }
 
     if (test && qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&test);
-
- error:
-    return NULL;
 }
 
 
@@ -1344,7 +1337,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
         if (response) {
             if (qemuMonitorTestFullAddItem(ret, fileName, command,
                                            response, commandln) < 0)
-                goto error;
+                return NULL;
             command = NULL;
             response = NULL;
         }
@@ -1364,18 +1357,15 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
         if (!response) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "missing response for command "
                            "on line '%zu' in '%s'", commandln, fileName);
-            goto error;
+            return NULL;
         }
 
         if (qemuMonitorTestFullAddItem(ret, fileName, command,
                                        response, commandln) < 0)
-            goto error;
+            return NULL;
     }
 
     return g_steal_pointer(&ret);
-
- error:
-    return NULL;
 }
 
 

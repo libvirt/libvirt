@@ -100,7 +100,6 @@ qemuMigParamsTestXML(const void *opaque)
     g_autoptr(virJSONValue) params = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
-    int ret = -1;
 
     replyFile = g_strdup_printf("%s/qemumigparamsdata/%s.reply",
                                 abs_srcdir, data->name);
@@ -108,27 +107,24 @@ qemuMigParamsTestXML(const void *opaque)
                               abs_srcdir, data->name);
 
     if (!(mon = qemuMonitorTestNewFromFile(replyFile, data->xmlopt, true)))
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetMigrationParams(qemuMonitorTestGetMonitor(mon),
                                       &params) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(migParams = qemuMigrationParamsFromJSON(params)))
-        goto cleanup;
+        return -1;
 
     qemuMigParamsTestFormatXML(&buf, migParams);
 
     if (!(actualXML = virBufferContentAndReset(&buf)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actualXML, xmlFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -144,7 +140,6 @@ qemuMigParamsTestJSON(const void *opaque)
     g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualJSON = NULL;
     g_auto(virBuffer) debug = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     replyFile = g_strdup_printf("%s/qemumigparamsdata/%s.reply",
                                 abs_srcdir, data->name);
@@ -152,18 +147,18 @@ qemuMigParamsTestJSON(const void *opaque)
                                abs_srcdir, data->name);
 
     if (!(mon = qemuMonitorTestNewFromFile(replyFile, data->xmlopt, true)))
-        goto cleanup;
+        return -1;
 
     if (qemuMonitorGetMigrationParams(qemuMonitorTestGetMonitor(mon),
                                       &paramsIn) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(migParams = qemuMigrationParamsFromJSON(paramsIn)))
-        goto cleanup;
+        return -1;
 
     if (!(paramsOut = qemuMigrationParamsToJSON(migParams)) ||
         !(actualJSON = virJSONValueToString(paramsOut, true)))
-        goto cleanup;
+        return -1;
 
     if (testQEMUSchemaValidateCommand("migrate-set-parameters",
                                       paramsOut,
@@ -174,16 +169,13 @@ qemuMigParamsTestJSON(const void *opaque)
                                       &debug) < 0) {
         VIR_TEST_VERBOSE("failed to validate migration params '%s' against QMP schema: %s",
                          actualJSON, virBufferCurrentContent(&debug));
-        goto cleanup;
+        return -1;
     }
 
     if (virTestCompareToFile(actualJSON, jsonFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

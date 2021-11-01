@@ -68,7 +68,6 @@ testQemuDataReset(testQemuData *data)
 static int
 testQemuCaps(const void *opaque)
 {
-    int ret = -1;
     testQemuData *data = (void *) opaque;
     g_autofree char *repliesFile = NULL;
     g_autofree char *capsFile = NULL;
@@ -88,10 +87,10 @@ testQemuCaps(const void *opaque)
 
     if (!(mon = qemuMonitorTestNewFromFileFull(repliesFile, &data->driver, NULL,
                                                NULL)))
-        goto cleanup;
+        return -1;
 
     if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
-        goto cleanup;
+        return -1;
 
     binary = g_strdup_printf("/usr/bin/qemu-system-%s",
                              data->archName);
@@ -99,17 +98,17 @@ testQemuCaps(const void *opaque)
     if (!(capsActual = virQEMUCapsNewBinary(binary)) ||
         virQEMUCapsInitQMPMonitor(capsActual,
                                   qemuMonitorTestGetMonitor(mon)) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsGet(capsActual, QEMU_CAPS_KVM)) {
         qemuMonitorResetCommandID(qemuMonitorTestGetMonitor(mon));
 
         if (qemuProcessQMPInitMonitor(qemuMonitorTestGetMonitor(mon)) < 0)
-            goto cleanup;
+            return -1;
 
         if (virQEMUCapsInitQMPMonitorTCG(capsActual,
                                          qemuMonitorTestGetMonitor(mon)) < 0)
-            goto cleanup;
+            return -1;
 
         /* calculate fake microcode version based on filename for a reproducible
          * number for testing which does not change with the contents */
@@ -125,14 +124,12 @@ testQemuCaps(const void *opaque)
     }
 
     if (!(actual = virQEMUCapsFormatCache(capsActual)))
-        goto cleanup;
+        return -1;
 
     if (virTestCompareToFile(actual, capsFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
