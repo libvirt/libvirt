@@ -642,7 +642,7 @@ virNetDevOpenvswitchFindUUID(const char *table,
  * However other_config in ovs qos is in bit.
  * ingress_policing_rate in ovs interface is in kbit.
  */
-#define VIR_NETDEV_TX_TO_OVS 8192
+#define VIR_NETDEV_TX_TO_OVS 8000
 #define VIR_NETDEV_RX_TO_OVS 8
 
 /**

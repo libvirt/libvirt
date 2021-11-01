@@ -274,10 +274,10 @@ mymain(void)
                  OVS_VSCTL " --timeout=5 set port tap-fake qos=@qos1"
                            " 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
                            " 'external-ids:ifname=\"tap-fake\"'"
-                           " -- --id=@qos1 create qos type=linux-htb other_config:min-rate=163840000"
+                           " -- --id=@qos1 create qos type=linux-htb other_config:min-rate=160000000"
                            " queues:0=@queue0 'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
                            " 'external-ids:ifname=\"tap-fake\"'"
-                           " -- --id=@queue0 create queue other_config:min-rate=163840000 "
+                           " -- --id=@queue0 create queue other_config:min-rate=160000000 "
                            "'external-ids:vm-id=\"66616b65-7575-6964-0000-000000000000\"'"
                            " 'external-ids:ifname=\"tap-fake\"'\n"
                  OVS_VSCTL " --timeout=5 set Interface tap-fake ingress_policing_rate=0 ingress_policing_burst=0\n"));
