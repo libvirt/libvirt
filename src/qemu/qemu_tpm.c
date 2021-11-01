@@ -423,6 +423,42 @@ qemuTPMCreateConfigFiles(const char *swtpm_setup)
 
 
 /*
+ * Add encryption parameters to swtpm_setup command line.
+ *
+ * @cmd: virCommand to add options to
+ * @swtpm_setup: swtpm_setup tool path
+ * @secretuuid: The secret's uuid; may be NULL
+ */
+static int
+qemuTPMVirCommandAddEncryption(virCommand *cmd,
+                               const char *swtpm_setup,
+                               const unsigned char *secretuuid)
+{
+    int pwdfile_fd;
+
+    if (!secretuuid)
+        return 0;
+
+    if (!virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
+            _("%s does not support passing a passphrase using a file "
+              "descriptor"), swtpm_setup);
+        return -1;
+    }
+
+    if ((pwdfile_fd = qemuTPMSetupEncryption(secretuuid, cmd)) < 0)
+        return -1;
+
+    virCommandAddArg(cmd, "--pwdfile-fd");
+    virCommandAddArgFormat(cmd, "%d", pwdfile_fd);
+    virCommandAddArgList(cmd, "--cipher", "aes-256-cbc", NULL);
+    virCommandPassFD(cmd, pwdfile_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+
+    return 0;
+}
+
+
+/*
  * qemuTPMEmulatorRunSetup
  *
  * @storagepath: path to the directory for TPM state
@@ -458,7 +494,6 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autofree char *vmid = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
-    VIR_AUTOCLOSE pwdfile_fd = -1;
 
     if (!swtpm_setup)
         return -1;
@@ -495,23 +530,8 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
         break;
     }
 
-    if (secretuuid) {
-        if (!virTPMSwtpmSetupCapsGet(
-                VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD)) {
-            virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED,
-                _("%s does not support passing a passphrase using a file "
-                  "descriptor"), swtpm_setup);
-            return -1;
-        }
-        if ((pwdfile_fd = qemuTPMSetupEncryption(secretuuid, cmd)) < 0)
-            return -1;
-
-        virCommandAddArg(cmd, "--pwdfile-fd");
-        virCommandAddArgFormat(cmd, "%d", pwdfile_fd);
-        virCommandAddArgList(cmd, "--cipher", "aes-256-cbc", NULL);
-        virCommandPassFD(cmd, pwdfile_fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        pwdfile_fd = -1;
-    }
+    if (qemuTPMVirCommandAddEncryption(cmd, swtpm_setup, secretuuid) < 0)
+        return -1;
 
     if (!incomingMigration) {
         virCommandAddArgList(cmd,
