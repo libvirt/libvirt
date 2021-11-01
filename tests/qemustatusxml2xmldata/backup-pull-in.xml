@@ -257,7 +257,14 @@
       <server transport='tcp' tls='yes' name='localhost' port='10809'/>
       <disks>
         <disk name='vda' backup='yes' state='running' type='file' index='123'>
-          <scratch file='/path/to/file/'/>
+          <scratch file='/path/to/file/'>
+            <privateData>
+              <nodenames>
+                <nodename type='storage' name='libvirt-1337-storage'/>
+                <nodename type='format' name='libvirt-1337-format'/>
+              </nodenames>
+            </privateData>
+          </scratch>
         </disk>
       </disks>
       <privateData>
