@@ -2430,12 +2430,15 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
 
 
 virJSONValue *
-qemuMonitorJSONQueryBlockstats(qemuMonitor *mon)
+qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
+                               bool queryNodes)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats", NULL)))
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-blockstats",
+                                           "B:query-nodes", queryNodes,
+                                           NULL)))
         return NULL;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
@@ -2457,7 +2460,7 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
     size_t i;
     g_autoptr(virJSONValue) devices = NULL;
 
-    if (!(devices = qemuMonitorJSONQueryBlockstats(mon)))
+    if (!(devices = qemuMonitorJSONQueryBlockstats(mon, true)))
         return -1;
 
     for (i = 0; i < virJSONValueArraySize(devices); i++) {
@@ -2471,15 +2474,10 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
             return -1;
         }
 
-        if (!(dev_name = virJSONValueObjectGetString(dev, "device"))) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("blockstats device entry was not "
-                             "in expected format"));
-            return -1;
+        if ((dev_name = virJSONValueObjectGetString(dev, "device"))) {
+            if (*dev_name == '\0')
+                dev_name = NULL;
         }
-
-        if (*dev_name == '\0')
-            dev_name = NULL;
 
         rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash);
 

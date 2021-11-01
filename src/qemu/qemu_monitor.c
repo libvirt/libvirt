@@ -2038,14 +2038,14 @@ qemuMonitorGetBlockInfo(qemuMonitor *mon)
  * qemuMonitorQueryBlockstats:
  * @mon: monitor object
  *
- * Returns data from a call to 'query-blockstats'.
+ * Returns data from a call to 'query-blockstats' without using 'query-nodes'
  */
 virJSONValue *
 qemuMonitorQueryBlockstats(qemuMonitor *mon)
 {
     QEMU_CHECK_MONITOR_NULL(mon);
 
-    return qemuMonitorJSONQueryBlockstats(mon);
+    return qemuMonitorJSONQueryBlockstats(mon, false);
 }
 
 
