@@ -1548,7 +1548,7 @@ _vrdeServerGetPorts(struct _vboxDriver *data, IVRDEServer *VRDEServer,
     PRUnichar *VRDEPortsValue = NULL;
     PRInt32 port = -1;
     ssize_t nmatches = 0;
-    char **matches = NULL;
+    g_auto(GStrv) matches = NULL;
     char *portUtf8 = NULL;
 
     /* get active (effective) port - available only when VM is running and has
@@ -1596,7 +1596,6 @@ _vrdeServerGetPorts(struct _vboxDriver *data, IVRDEServer *VRDEServer,
     }
 
  cleanup:
-    g_strfreev(matches);
     VBOX_UTF8_FREE(portUtf8);
     VBOX_UTF16_FREE(VRDEPortsValue);
     VBOX_UTF16_FREE(VRDEPortsKey);

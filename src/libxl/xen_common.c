@@ -1045,7 +1045,7 @@ xenParseVifBridge(virDomainNetDef *net, const char *bridge)
         /* 'bridge' string contains a bridge name and one or more vlan trunks */
         size_t i;
         size_t nvlans = 0;
-        char **vlanstr_list = g_strsplit(bridge, ":", 0);
+        g_auto(GStrv) vlanstr_list = g_strsplit(bridge, ":", 0);
 
         if (!vlanstr_list)
             return -1;
@@ -1058,15 +1058,13 @@ xenParseVifBridge(virDomainNetDef *net, const char *bridge)
         net->vlan.tag = g_new0(unsigned int, nvlans);
 
         for (i = 1; i <= nvlans; i++) {
-            if (virStrToLong_ui(vlanstr_list[i], NULL, 10, &tag) < 0) {
-                g_strfreev(vlanstr_list);
+            if (virStrToLong_ui(vlanstr_list[i], NULL, 10, &tag) < 0)
                 return -1;
-            }
+
             net->vlan.tag[i - 1] = tag;
         }
         net->vlan.nTags = nvlans;
         net->vlan.trunk = true;
-        g_strfreev(vlanstr_list);
 
         net->virtPortProfile = g_new0(virNetDevVPortProfile, 1);
         net->virtPortProfile->virtPortType = VIR_NETDEV_VPORT_PROFILE_OPENVSWITCH;
@@ -1201,19 +1199,16 @@ xenParseVif(char *entry, const char *vif_typename)
             goto cleanup;
     }
     if (ip) {
-        char **ip_list = g_strsplit(ip, " ", 0);
+        g_auto(GStrv) ip_list = g_strsplit(ip, " ", 0);
         size_t i;
 
         if (!ip_list)
             goto cleanup;
 
         for (i = 0; ip_list[i]; i++) {
-            if (virDomainNetAppendIPAddress(net, ip_list[i], 0, 0) < 0) {
-                g_strfreev(ip_list);
+            if (virDomainNetAppendIPAddress(net, ip_list[i], 0, 0) < 0)
                 goto cleanup;
-            }
         }
-        g_strfreev(ip_list);
     }
 
     if (script && script[0])
@@ -1579,7 +1574,7 @@ char *
 xenMakeIPList(virNetDevIPInfo *guestIP)
 {
     size_t i;
-    char **address_array;
+    g_auto(GStrv) address_array = NULL;
     char *ret = NULL;
 
     address_array = g_new0(char *, guestIP->nips + 1);
@@ -1592,7 +1587,6 @@ xenMakeIPList(virNetDevIPInfo *guestIP)
     ret = g_strjoinv(" ", address_array);
 
  cleanup:
-    g_strfreev(address_array);
     return ret;
 }
 

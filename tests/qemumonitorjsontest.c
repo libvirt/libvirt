@@ -1003,7 +1003,7 @@ testQemuMonitorJSONGetDeviceAliases(const void *opaque)
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
     int ret = -1;
-    char **aliases = NULL;
+    g_auto(GStrv) aliases = NULL;
     const char **alias;
     const char *expected[] = {
         "virtio-disk25", "video0", "serial0", "ide0-0-0", "usb", NULL };
@@ -1053,7 +1053,6 @@ testQemuMonitorJSONGetDeviceAliases(const void *opaque)
     }
 
  cleanup:
-    g_strfreev(aliases);
     return ret;
 }
 

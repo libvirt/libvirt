@@ -1887,8 +1887,7 @@ int
 libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
                              unsigned long long *maxmem)
 {
-    char **cmd_tokens = NULL;
-    char **mem_tokens = NULL;
+    g_auto(GStrv) cmd_tokens = NULL;
     size_t i;
     size_t j;
     libxl_physinfo physinfo;
@@ -1899,6 +1898,8 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
         goto physmem;
 
     for (i = 0; cmd_tokens[i] != NULL; i++) {
+        g_auto(GStrv) mem_tokens = NULL;
+
         if (!STRPREFIX(cmd_tokens[i], "dom0_mem="))
             continue;
 
@@ -1934,8 +1935,6 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
                 goto cleanup;
             }
         }
-        g_strfreev(mem_tokens);
-        mem_tokens = NULL;
     }
 
  physmem:
@@ -1950,8 +1949,6 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
     ret = 0;
 
  cleanup:
-    g_strfreev(cmd_tokens);
-    g_strfreev(mem_tokens);
     return ret;
 }
 

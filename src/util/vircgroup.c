@@ -851,7 +851,7 @@ virCgroupAddThread(virCgroup *group,
 static int
 virCgroupSetPartitionSuffix(const char *path, char **res)
 {
-    char **tokens;
+    g_auto(GStrv) tokens = NULL;
     size_t i;
     int ret = -1;
 
@@ -887,7 +887,6 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
     ret = 0;
 
  cleanup:
-    g_strfreev(tokens);
     return ret;
 }
 

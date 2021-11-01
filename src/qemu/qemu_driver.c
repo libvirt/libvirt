@@ -1330,7 +1330,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
 {
     g_autofree char *proc = NULL;
     g_autofree char *data = NULL;
-    char **lines = NULL;
+    g_auto(GStrv) lines = NULL;
     size_t i;
     int ret = -1;
     double val;
@@ -1393,7 +1393,6 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
     ret = 0;
 
  cleanup:
-    g_strfreev(lines);
     return ret;
 }
 
@@ -12518,7 +12517,7 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
     bool migratable;
     virCPUDef *cpu = NULL;
     char *cpustr = NULL;
-    char **features = NULL;
+    g_auto(GStrv) features = NULL;
 
     virCheckFlags(VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES |
                   VIR_CONNECT_BASELINE_CPU_MIGRATABLE, NULL);
@@ -12592,7 +12591,6 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
  cleanup:
     virCPUDefListFree(cpus);
     virCPUDefFree(cpu);
-    g_strfreev(features);
 
     return cpustr;
 }

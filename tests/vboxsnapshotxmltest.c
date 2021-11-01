@@ -19,7 +19,7 @@ static char *
 testFilterXML(char *xml)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char **xmlLines = NULL;
+    g_auto(GStrv) xmlLines = NULL;
     char **xmlLine;
     char *ret = NULL;
 
@@ -39,7 +39,6 @@ testFilterXML(char *xml)
     ret = virBufferContentAndReset(&buf);
 
  cleanup:
-   g_strfreev(xmlLines);
    return ret;
 }
 

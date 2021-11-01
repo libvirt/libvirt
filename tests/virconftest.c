@@ -372,7 +372,7 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
 
     int ret = -1;
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
-    char **str = NULL;
+    g_auto(GStrv) str = NULL;
 
     if (!conf)
         return -1;
@@ -423,7 +423,6 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
 
     ret = 0;
  cleanup:
-    g_strfreev(str);
     return ret;
 }
 

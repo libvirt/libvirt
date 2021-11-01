@@ -510,7 +510,7 @@ extern int pivot_root(const char * new_root, const char * put_old);
 static int lxcContainerUnmountSubtree(const char *prefix,
                                       bool isOldRootFS)
 {
-    char **mounts = NULL;
+    g_auto(GStrv) mounts = NULL;
     size_t nmounts = 0;
     size_t i;
     int saveErrno;
@@ -555,8 +555,6 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     ret = 0;
 
  cleanup:
-    g_strfreev(mounts);
-
     return ret;
 }
 

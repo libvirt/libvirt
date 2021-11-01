@@ -65,7 +65,7 @@ struct testFileGetMountSubtreeData {
 static int testFileGetMountSubtree(const void *opaque)
 {
     int ret = -1;
-    char **gotmounts = NULL;
+    g_auto(GStrv) gotmounts = NULL;
     size_t gotnmounts = 0;
     const struct testFileGetMountSubtreeData *data = opaque;
 
@@ -88,7 +88,6 @@ static int testFileGetMountSubtree(const void *opaque)
                               data->mounts, data->nmounts);
 
  cleanup:
-    g_strfreev(gotmounts);
     return ret;
 }
 #endif /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */

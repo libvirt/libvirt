@@ -264,7 +264,7 @@ virCgroupV2ParseControllersFile(virCgroup *group,
     int rc;
     g_autofree char *contStr = NULL;
     g_autofree char *contFile = NULL;
-    char **contList = NULL;
+    g_auto(GStrv) contList = NULL;
     char **tmp;
 
     if (parent) {
@@ -299,8 +299,6 @@ virCgroupV2ParseControllersFile(virCgroup *group,
 
         tmp++;
     }
-
-    g_strfreev(contList);
 
     return 0;
 }

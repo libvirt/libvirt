@@ -705,7 +705,7 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 {
     char *buf = NULL;
     int ret = -1;
-    char **matches = NULL;
+    g_auto(GStrv) matches = NULL;
     virURI *uri = NULL;
 
     fs->type = VIR_DOMAIN_FS_TYPE_FILE;
@@ -767,7 +767,6 @@ prlsdkGetFSInfo(PRL_HANDLE prldisk,
 
  cleanup:
     VIR_FREE(buf);
-    g_strfreev(matches);
     return ret;
 }
 

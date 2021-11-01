@@ -127,7 +127,7 @@ static int
 testStringSearch(const void *opaque)
 {
     const struct stringSearchData *data = opaque;
-    char **matches = NULL;
+    g_auto(GStrv) matches = NULL;
     ssize_t nmatches;
     int ret = -1;
 
@@ -174,7 +174,6 @@ testStringSearch(const void *opaque)
     ret = 0;
 
  cleanup:
-    g_strfreev(matches);
     return ret;
 }
 

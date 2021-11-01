@@ -4549,16 +4549,16 @@ vboxSnapshotRedefine(virDomainPtr dom,
     char *currentSnapshotXmlFilePath = NULL;
     PRUnichar *machineNameUtf16 = NULL;
     char *machineName = NULL;
-    char **realReadWriteDisksPath = NULL;
+    g_auto(GStrv) realReadWriteDisksPath = NULL;
     int realReadWriteDisksPathSize = 0;
-    char **realReadOnlyDisksPath = NULL;
+    g_auto(GStrv) realReadOnlyDisksPath = NULL;
     int realReadOnlyDisksPathSize = 0;
     virVBoxSnapshotConfSnapshot *newSnapshotPtr = NULL;
     unsigned char snapshotUuid[VIR_UUID_BUFLEN];
     virVBoxSnapshotConfHardDisk **hardDiskToOpen = NULL;
     size_t hardDiskToOpenSize = 0;
     virVBoxSnapshotConfHardDisk *newHardDisk = NULL;
-    char **searchResultTab = NULL;
+    g_auto(GStrv) searchResultTab = NULL;
     ssize_t resultSize = 0;
     int it = 0;
     int jt = 0;
@@ -5361,9 +5361,6 @@ vboxSnapshotRedefine(virDomainPtr dom,
     VIR_FREE(currentSnapshotXmlFilePath);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF8_FREE(machineName);
-    g_strfreev(realReadOnlyDisksPath);
-    g_strfreev(realReadWriteDisksPath);
-    g_strfreev(searchResultTab);
     virVboxSnapshotConfHardDiskFree(newHardDisk);
     VIR_FREE(hardDiskToOpen);
     VIR_FREE(newSnapshotPtr);
@@ -6782,7 +6779,7 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     char *settingsFilepath = NULL;
     virVBoxSnapshotConfMachine *snapshotMachineDesc = NULL;
     int isCurrent = -1;
-    char **searchResultTab = NULL;
+    g_auto(GStrv) searchResultTab = NULL;
     ssize_t resultSize = 0;
     int it = 0;
     PRUnichar *machineNameUtf16 = NULL;
@@ -7185,7 +7182,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     VBOX_RELEASE(machine);
     VBOX_UTF16_FREE(settingsFilePathUtf16);
     VBOX_UTF8_FREE(settingsFilepath);
-    g_strfreev(searchResultTab);
     VIR_FREE(snapshotMachineDesc);
     VBOX_UTF16_FREE(machineNameUtf16);
     VBOX_UTF8_FREE(machineName);

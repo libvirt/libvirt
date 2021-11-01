@@ -1059,7 +1059,7 @@ static char **
 vshExtractCPUDefXMLs(vshControl *ctl,
                      const char *xmlFile)
 {
-    char **cpus = NULL;
+    g_auto(GStrv) cpus = NULL;
     g_autofree char *buffer = NULL;
     g_autofree char *xmlStr = NULL;
     g_autoptr(xmlDoc) xml = NULL;
@@ -1123,10 +1123,9 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     }
 
  cleanup:
-    return cpus;
+    return g_steal_pointer(&cpus);
 
  error:
-    g_strfreev(cpus);
     goto cleanup;
 }
 
@@ -1163,7 +1162,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     const char *from = NULL;
     bool ret = false;
     int result;
-    char **cpus = NULL;
+    g_auto(GStrv) cpus = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -1207,8 +1206,6 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     ret = true;
 
  cleanup:
-    g_strfreev(cpus);
-
     return ret;
 }
 
@@ -1585,7 +1582,7 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     const char *machine = NULL;
     bool ret = false;
     int result;
-    char **cpus = NULL;
+    g_auto(GStrv) cpus = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -1640,7 +1637,6 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     ret = true;
 
  cleanup:
-    g_strfreev(cpus);
     return ret;
 }
 
@@ -1699,7 +1695,7 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
     const char *machine = NULL;
     bool ret = false;
     g_autofree char *result = NULL;
-    char **list = NULL;
+    g_auto(GStrv) list = NULL;
     unsigned int flags = 0;
     virshControl *priv = ctl->privData;
 
@@ -1729,7 +1725,6 @@ cmdHypervisorCPUBaseline(vshControl *ctl,
         ret = true;
     }
 
-    g_strfreev(list);
     return ret;
 }
 

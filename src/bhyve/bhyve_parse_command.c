@@ -127,7 +127,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     const char *start;
     const char *next;
     char *line;
-    char **lines = NULL;
+    g_auto(GStrv) lines = NULL;
     size_t i;
     size_t line_count = 0;
     size_t lines_alloc = 0;
@@ -168,7 +168,7 @@ bhyveCommandLineToArgv(const char *nativeConfig,
 
     for (i = 0; i < line_count; i++) {
         size_t j;
-        char **arglist = NULL;
+        g_auto(GStrv) arglist = NULL;
         size_t args_count = 0;
         size_t args_alloc = 0;
 
@@ -223,23 +223,17 @@ bhyveCommandLineToArgv(const char *nativeConfig,
             if (!bhyve_argc)
                 goto error;
             for (j = 0; j < args_count; j++)
-                _bhyve_argv[j] = arglist[j];
+                _bhyve_argv[j] = g_steal_pointer(&arglist[j]);
             _bhyve_argv[j] = NULL;
             *bhyve_argc = args_count-1;
-            VIR_FREE(arglist);
         } else if (!_loader_argv) {
             VIR_REALLOC_N(_loader_argv, args_count + 1);
             if (!loader_argc)
                 goto error;
             for (j = 0; j < args_count; j++)
-                _loader_argv[j] = arglist[j];
+                _loader_argv[j] = g_steal_pointer(&arglist[j]);
             _loader_argv[j] = NULL;
             *loader_argc = args_count-1;
-            VIR_FREE(arglist);
-        } else {
-            /* To prevent a use-after-free here, only free the argument list
-             * when it is definitely not going to be used */
-            g_strfreev(arglist);
         }
     }
 
@@ -247,13 +241,11 @@ bhyveCommandLineToArgv(const char *nativeConfig,
     if (!(*bhyve_argv = _bhyve_argv))
         goto error;
 
-    g_strfreev(lines);
     return 0;
 
  error:
     VIR_FREE(_loader_argv);
     VIR_FREE(_bhyve_argv);
-    g_strfreev(lines);
     return -1;
 }
 
@@ -944,9 +936,9 @@ bhyveParseCommandLineString(const char* nativeConfig,
 {
     virDomainDef *def = NULL;
     int bhyve_argc = 0;
-    char **bhyve_argv = NULL;
+    g_auto(GStrv) bhyve_argv = NULL;
     int loader_argc = 0;
-    char **loader_argv = NULL;
+    g_auto(GStrv) loader_argv = NULL;
 
     if (!(def = virDomainDefNew(xmlopt)))
         goto cleanup;
@@ -982,8 +974,6 @@ bhyveParseCommandLineString(const char* nativeConfig,
     }
 
  cleanup:
-    g_strfreev(loader_argv);
-    g_strfreev(bhyve_argv);
     return def;
  error:
     virDomainDefFree(def);

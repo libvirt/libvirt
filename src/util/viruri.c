@@ -349,7 +349,7 @@ int
 virURIResolveAlias(virConf *conf, const char *alias, char **uri)
 {
     int ret = -1;
-    char **aliases = NULL;
+    g_auto(GStrv) aliases = NULL;
 
     *uri = NULL;
 
@@ -358,7 +358,6 @@ virURIResolveAlias(virConf *conf, const char *alias, char **uri)
 
     if (aliases && *aliases) {
         ret = virURIFindAliasMatch(aliases, alias, uri);
-        g_strfreev(aliases);
     } else {
         ret = 0;
     }

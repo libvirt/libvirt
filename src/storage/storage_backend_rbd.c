@@ -659,7 +659,7 @@ virStorageBackendRBDRefreshPool(virStoragePoolObj *pool)
     virStorageBackendRBDState *ptr = NULL;
     struct rados_cluster_stat_t clusterstat;
     struct rados_pool_stat_t poolstat;
-    char **names = NULL;
+    g_auto(GStrv) names = NULL;
     size_t i;
 
     if (!(ptr = virStorageBackendRBDNewState(pool)))
@@ -724,7 +724,6 @@ virStorageBackendRBDRefreshPool(virStoragePoolObj *pool)
     ret = 0;
 
  cleanup:
-    g_strfreev(names);
     virStorageBackendRBDFreeState(&ptr);
     return ret;
 }

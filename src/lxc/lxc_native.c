@@ -107,8 +107,8 @@ static char ** lxcStringSplit(const char *string)
     g_autofree char *tmp = NULL;
     size_t i;
     size_t ntokens = 0;
-    char **parts;
-    char **result = NULL;
+    g_auto(GStrv) parts = NULL;
+    g_auto(GStrv) result = NULL;
 
     tmp = g_strdup(string);
 
@@ -132,12 +132,9 @@ static char ** lxcStringSplit(const char *string)
         result[ntokens - 2] = g_strdup(parts[i]);
     }
 
-    g_strfreev(parts);
-    return result;
+    return g_steal_pointer(&result);
 
  error:
-    g_strfreev(parts);
-    g_strfreev(result);
     return NULL;
 }
 
@@ -145,7 +142,7 @@ static lxcFstab *
 lxcParseFstabLine(char *fstabLine)
 {
     lxcFstab *fstab = NULL;
-    char **parts;
+    g_auto(GStrv) parts = NULL;
 
     if (!fstabLine)
         return NULL;
@@ -162,13 +159,10 @@ lxcParseFstabLine(char *fstabLine)
     fstab->type = g_strdup(parts[2]);
     fstab->options = g_strdup(parts[3]);
 
-    g_strfreev(parts);
-
     return fstab;
 
  error:
     lxcFstabFree(fstab);
-    g_strfreev(parts);
     return NULL;
 }
 
@@ -252,7 +246,7 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
 {
     const char *src = NULL;
     g_autofree char *dst = NULL;
-    char **options = g_strsplit(fstab->options, ",", 0);
+    g_auto(GStrv) options = g_strsplit(fstab->options, ",", 0);
     bool readonly;
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
     unsigned long long usage = 0;
@@ -307,7 +301,6 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
     ret = 1;
 
  cleanup:
-    g_strfreev(options);
     return ret;
 }
 
@@ -967,7 +960,7 @@ lxcSetCpusetTune(virDomainDef *def, virConf *properties)
 static int
 lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
 {
-    char **parts = NULL;
+    g_auto(GStrv) parts = NULL;
     virBlkioDevice *device = NULL;
     virDomainDef *def = data;
     size_t i = 0;
@@ -1044,7 +1037,6 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
     ret = 0;
 
  cleanup:
-    g_strfreev(parts);
     return ret;
 }
 
@@ -1072,7 +1064,7 @@ static void
 lxcSetCapDrop(virDomainDef *def, virConf *properties)
 {
     g_autofree char *value = NULL;
-    char **toDrop = NULL;
+    g_auto(GStrv) toDrop = NULL;
     const char *capString;
     size_t i;
 
@@ -1087,8 +1079,6 @@ lxcSetCapDrop(virDomainDef *def, virConf *properties)
     }
 
     def->features[VIR_DOMAIN_FEATURE_CAPABILITIES] = VIR_DOMAIN_CAPABILITIES_POLICY_ALLOW;
-
-    g_strfreev(toDrop);
 }
 
 virDomainDef *

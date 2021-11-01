@@ -3365,7 +3365,8 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     int stdin_fileno = STDIN_FILENO;
     const char *arg = "";
     const vshCmdOpt *opt = NULL;
-    char **matches = NULL, **iter;
+    g_auto(GStrv) matches = NULL;
+    char **iter;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "string", &arg) <= 0)
@@ -3406,7 +3407,6 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
 
     ret = true;
  cleanup:
-    g_strfreev(matches);
     return ret;
 }
 

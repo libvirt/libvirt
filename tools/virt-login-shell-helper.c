@@ -47,7 +47,8 @@ static int virLoginShellAllowedUser(virConf *conf,
     int ret = -1;
     size_t i;
     char *gname = NULL;
-    char **users = NULL, **entries;
+    g_auto(GStrv) users = NULL;
+    char **entries;
 
     if (virConfGetValueStringList(conf, "allowed_users", false, &users) < 0)
         goto cleanup;
@@ -84,7 +85,6 @@ static int virLoginShellAllowedUser(virConf *conf,
                          name, conf_file);
  cleanup:
     VIR_FREE(gname);
-    g_strfreev(users);
     return ret;
 }
 
@@ -157,7 +157,7 @@ main(int argc, char **argv)
     uid_t uid;
     gid_t gid;
     char *name = NULL;
-    char **shargv = NULL;
+    g_auto(GStrv) shargv = NULL;
     size_t shargvlen = 0;
     char *shcmd = NULL;
     virSecurityModelPtr secmodel = NULL;
@@ -403,7 +403,6 @@ main(int argc, char **argv)
         virDomainFree(dom);
     if (conn)
         virConnectClose(conn);
-    g_strfreev(shargv);
     VIR_FREE(shcmd);
     VIR_FREE(term);
     VIR_FREE(name);

@@ -833,12 +833,11 @@ virBhyveProcessBuildDestroyCmd(struct _bhyveConn *driver G_GNUC_UNUSED,
 static void
 virAppendBootloaderArgs(virCommand *cmd, virDomainDef *def)
 {
-    char **blargs;
+    g_auto(GStrv) blargs = NULL;
 
     /* XXX: Handle quoted? */
     blargs = g_strsplit(def->os.bootloaderArgs, " ", 0);
     virCommandAddArgSet(cmd, (const char * const *)blargs);
-    g_strfreev(blargs);
 }
 
 static virCommand *

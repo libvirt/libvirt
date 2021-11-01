@@ -59,7 +59,7 @@ int
 virFirmwareParse(const char *str, virFirmware *firmware)
 {
     int ret = -1;
-    char **token;
+    g_auto(GStrv) token = NULL;
 
     if (!(token = g_strsplit(str, ":", 0)))
         goto cleanup;
@@ -84,7 +84,6 @@ virFirmwareParse(const char *str, virFirmware *firmware)
 
     ret = 0;
  cleanup:
-    g_strfreev(token);
     return ret;
 }
 
@@ -95,7 +94,7 @@ virFirmwareParseList(const char *list,
                      size_t *nfirmwares)
 {
     int ret = -1;
-    char **token;
+    g_auto(GStrv) token = NULL;
     size_t i, j;
 
     if (!(token = g_strsplit(list, ":", 0)))
@@ -126,6 +125,5 @@ virFirmwareParseList(const char *list,
 
     ret = 0;
  cleanup:
-    g_strfreev(token);
     return ret;
 }
