@@ -12396,7 +12396,7 @@ static int
 qemuConnectStealCPUModelFromInfo(virCPUDef *dst,
                                  qemuMonitorCPUModelInfo **src)
 {
-    qemuMonitorCPUModelInfo *info;
+    g_autoptr(qemuMonitorCPUModelInfo) info = NULL;
     size_t i;
     int ret = -1;
 
@@ -12419,7 +12419,6 @@ qemuConnectStealCPUModelFromInfo(virCPUDef *dst,
     ret = 0;
 
  cleanup:
-    qemuMonitorCPUModelInfoFree(info);
     return ret;
 }
 

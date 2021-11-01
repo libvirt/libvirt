@@ -2838,7 +2838,7 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
     g_autoptr(qemuMonitorTest) test = NULL;
     g_autoptr(virCPUDef) cpu_a = virCPUDefNew();
     g_autoptr(virCPUDef) cpu_b = virCPUDefNew();
-    qemuMonitorCPUModelInfo *baseline = NULL;
+    g_autoptr(qemuMonitorCPUModelInfo) baseline = NULL;
     int ret = -1;
 
     if (!(test = qemuMonitorTestNewSchema(data->xmlopt, data->schema)))
@@ -2897,7 +2897,6 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
     ret = 0;
 
  cleanup:
-    qemuMonitorCPUModelInfoFree(baseline);
     return ret;
 }
 
