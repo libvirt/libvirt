@@ -114,7 +114,7 @@ testCompareBackupXML(const void *opaque)
         return -1;
     }
 
-    if (virDomainBackupDefFormat(&buf, backup, data->internal) < 0) {
+    if (virDomainBackupDefFormat(&buf, backup, data->internal, NULL) < 0) {
         VIR_TEST_VERBOSE("failed to format backup def '%s'", file_in);
         return -1;
     }

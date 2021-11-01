@@ -318,7 +318,8 @@ static int
 virDomainBackupDiskDefFormat(virBuffer *buf,
                              virDomainBackupDiskDef *disk,
                              bool push,
-                             bool internal)
+                             bool internal,
+                             virDomainXMLOption *xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -358,7 +359,7 @@ virDomainBackupDiskDefFormat(virBuffer *buf,
 
         if (virDomainDiskSourceFormat(&childBuf, disk->store, sourcename,
                                       0, false, storageSourceFormatFlags,
-                                      false, false, NULL) < 0)
+                                      false, false, xmlopt) < 0)
             return -1;
     }
 
@@ -390,7 +391,8 @@ virDomainBackupDefFormatPrivate(virBuffer *buf,
 int
 virDomainBackupDefFormat(virBuffer *buf,
                          virDomainBackupDef *def,
-                         bool internal)
+                         bool internal,
+                         virDomainXMLOption *xmlopt)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
@@ -418,7 +420,7 @@ virDomainBackupDefFormat(virBuffer *buf,
     for (i = 0; i < def->ndisks; i++) {
         if (virDomainBackupDiskDefFormat(&disksChildBuf, &def->disks[i],
                                          def->type == VIR_DOMAIN_BACKUP_TYPE_PUSH,
-                                         internal) < 0)
+                                         internal, xmlopt) < 0)
             return -1;
     }
 

@@ -2152,7 +2152,7 @@ qemuDomainObjPrivateXMLFormatBackups(virBuffer *buf,
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (priv->backup &&
-        virDomainBackupDefFormat(&childBuf, priv->backup, true) < 0)
+        virDomainBackupDefFormat(&childBuf, priv->backup, true, priv->driver->xmlopt) < 0)
         return -1;
 
     virXMLFormatElement(buf, "backups", &attrBuf, &childBuf);

@@ -123,7 +123,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainBackupDef, virDomainBackupDefFree);
 int
 virDomainBackupDefFormat(virBuffer *buf,
                          virDomainBackupDef *def,
-                         bool internal);
+                         bool internal,
+                         virDomainXMLOption *xmlopt);
 int
 virDomainBackupAlignDisks(virDomainBackupDef *backup,
                           virDomainDef *dom,

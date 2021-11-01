@@ -954,6 +954,8 @@ char *
 qemuBackupGetXMLDesc(virDomainObj *vm,
                      unsigned int flags)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainBackupDef *backup;
 
@@ -962,7 +964,7 @@ qemuBackupGetXMLDesc(virDomainObj *vm,
     if (!(backup = qemuDomainGetBackup(vm)))
         return NULL;
 
-    if (virDomainBackupDefFormat(&buf, backup, false) < 0)
+    if (virDomainBackupDefFormat(&buf, backup, false, priv->driver->xmlopt) < 0)
         return NULL;
 
     return virBufferContentAndReset(&buf);
