@@ -1371,12 +1371,12 @@ testQemuAgentOSInfo(const void *data)
     VALIDATE_PARAM("os.kernel-release", "7601");
     VALIDATE_PARAM("os.kernel-version", "6.1");
     VALIDATE_PARAM("os.machine", "x86_64");
-    virTypedParamsFree(params, nparams);
 
     ret = 0;
 
  cleanup:
     qemuMonitorTestFree(test);
+    virTypedParamsFree(params, nparams);
     return ret;
 }
 
@@ -1394,6 +1394,8 @@ testQemuAgentTimezone(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     qemuMonitorTest *test = qemuMonitorTestNewAgent(xmlopt);
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
     int ret = -1;
 
     if (!test)
@@ -1401,8 +1403,6 @@ testQemuAgentTimezone(const void *data)
 
 #define VALIDATE_TIMEZONE(response_, expected_name_, expected_offset_) \
     do { \
-        virTypedParameterPtr params_ = NULL; \
-        int nparams_ = 0; \
         int maxparams_ = 0; \
         const char *name_ = NULL; \
         int offset_; \
@@ -1411,15 +1411,18 @@ testQemuAgentTimezone(const void *data)
         if (qemuMonitorTestAddItem(test, "guest-get-timezone", \
                                    response_) < 0) \
             goto cleanup; \
+        virTypedParamsFree(params, nparams); \
+        params = NULL; \
+        nparams = 0; \
         if (qemuAgentGetTimezone(qemuMonitorTestGetAgent(test), \
-                                 &params_, &nparams_, &maxparams_, true) < 0) \
+                                 &params, &nparams, &maxparams_, true) < 0) \
             goto cleanup; \
-        if (nparams_ != 2) { \
+        if (nparams != 2) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, \
-                           "Expected 2 params, got %d", nparams_); \
+                           "Expected 2 params, got %d", nparams); \
             goto cleanup; \
         } \
-        if (virTypedParamsGetString(params_, nparams_, \
+        if (virTypedParamsGetString(params, nparams, \
                                     "timezone.name", &name_) < 0) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", \
                            "tiemzone.name"); \
@@ -1430,7 +1433,7 @@ testQemuAgentTimezone(const void *data)
                            "Expected name '%s', got '%s'", expected_name_, name_); \
             goto cleanup; \
         } \
-        if (virTypedParamsGetInt(params_, nparams_, \
+        if (virTypedParamsGetInt(params, nparams, \
                                  "timezone.offset", &offset_) < 0) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "missing param '%s'", \
                            "tiemzone.offset"); \
@@ -1442,7 +1445,6 @@ testQemuAgentTimezone(const void *data)
                            expected_offset_); \
             goto cleanup; \
         } \
-        virTypedParamsFree(params_, nparams_); \
     } while (0)
 
     VALIDATE_TIMEZONE(testQemuAgentTimezoneResponse1, "IST", 19800);
@@ -1454,6 +1456,7 @@ testQemuAgentTimezone(const void *data)
 
  cleanup:
     qemuMonitorTestFree(test);
+    virTypedParamsFree(params, nparams);
     return ret;
 }
 static int
