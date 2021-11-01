@@ -997,8 +997,8 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
                          virDomainChrSourceDef *src)
 {
     g_autoptr(qemuMonitorTest) test = NULL;
-    char *path = NULL;
-    char *tmpdir_template = NULL;
+    g_autofree char *path = NULL;
+    g_autofree char *tmpdir_template = NULL;
 
     test = g_new0(qemuMonitorTest, 1);
 
@@ -1047,8 +1047,6 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
     return g_steal_pointer(&test);
 
  error:
-    VIR_FREE(path);
-    VIR_FREE(tmpdir_template);
     return NULL;
 
 }

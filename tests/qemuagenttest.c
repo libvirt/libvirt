@@ -624,7 +624,7 @@ testQemuAgentCPU(const void *data)
 {
     virDomainXMLOption *xmlopt = (virDomainXMLOption *)data;
     g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewAgent(xmlopt);
-    qemuAgentCPUInfo *cpuinfo = NULL;
+    g_autofree qemuAgentCPUInfo *cpuinfo = NULL;
     int nvcpus;
     int ret = -1;
 
@@ -694,7 +694,6 @@ testQemuAgentCPU(const void *data)
     ret = 0;
 
  cleanup:
-    VIR_FREE(cpuinfo);
     return ret;
 }
 

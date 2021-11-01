@@ -247,7 +247,7 @@ testQemuMonitorJSONGetVersion(const void *opaque)
     int major;
     int minor;
     int micro;
-    char *package = NULL;
+    g_autofree char *package = NULL;
     g_autoptr(qemuMonitorTest) test = NULL;
 
     if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
@@ -337,7 +337,6 @@ testQemuMonitorJSONGetVersion(const void *opaque)
     ret = 0;
 
  cleanup:
-    VIR_FREE(package);
     return ret;
 }
 
