@@ -996,7 +996,7 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
                          virDomainObj *vm,
                          virDomainChrSourceDef *src)
 {
-    qemuMonitorTest *test = NULL;
+    g_autoptr(qemuMonitorTest) test = NULL;
     char *path = NULL;
     char *tmpdir_template = NULL;
 
@@ -1044,12 +1044,11 @@ qemuMonitorCommonTestNew(virDomainXMLOption *xmlopt,
     if (virNetSocketListen(test->server, 1) < 0)
         goto error;
 
-    return test;
+    return g_steal_pointer(&test);
 
  error:
     VIR_FREE(path);
     VIR_FREE(tmpdir_template);
-    qemuMonitorTestFree(test);
     return NULL;
 
 }
@@ -1116,7 +1115,7 @@ qemuMonitorTestNew(virDomainXMLOption *xmlopt,
                    const char *greeting,
                    GHashTable *schema)
 {
-    qemuMonitorTest *test = NULL;
+    g_autoptr(qemuMonitorTest) test = NULL;
     virDomainChrSourceDef src;
 
     memset(&src, 0, sizeof(src));
@@ -1150,11 +1149,10 @@ qemuMonitorTestNew(virDomainXMLOption *xmlopt,
 
     virDomainChrSourceDefClear(&src);
 
-    return test;
+    return g_steal_pointer(&test);
 
  error:
     virDomainChrSourceDefClear(&src);
-    qemuMonitorTestFree(test);
     return NULL;
 }
 
@@ -1177,7 +1175,7 @@ qemuMonitorTestNewFromFile(const char *fileName,
                            virDomainXMLOption *xmlopt,
                            bool simple)
 {
-    qemuMonitorTest *test = NULL;
+    g_autoptr(qemuMonitorTest) test = NULL;
     g_autofree char *json = NULL;
     char *tmp;
     char *singleReply;
@@ -1226,10 +1224,9 @@ qemuMonitorTestNewFromFile(const char *fileName,
     if (test && qemuMonitorTestAddItem(test, NULL, singleReply) < 0)
         goto error;
 
-    return test;
+    return g_steal_pointer(&test);
 
  error:
-    qemuMonitorTestFree(test);
     return NULL;
 }
 
@@ -1311,7 +1308,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
                                virDomainObj *vm,
                                GHashTable *qmpschema)
 {
-    qemuMonitorTest *ret = NULL;
+    g_autoptr(qemuMonitorTest) ret = NULL;
     g_autofree char *jsonstr = NULL;
     char *tmp;
     size_t line = 0;
@@ -1377,10 +1374,9 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
             goto error;
     }
 
-    return ret;
+    return g_steal_pointer(&ret);
 
  error:
-    qemuMonitorTestFree(ret);
     return NULL;
 }
 
@@ -1388,7 +1384,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
 qemuMonitorTest *
 qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt)
 {
-    qemuMonitorTest *test = NULL;
+    g_autoptr(qemuMonitorTest) test = NULL;
     virDomainChrSourceDef src;
 
     memset(&src, 0, sizeof(src));
@@ -1413,11 +1409,10 @@ qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt)
 
     virDomainChrSourceDefClear(&src);
 
-    return test;
+    return g_steal_pointer(&test);
 
  error:
     virDomainChrSourceDefClear(&src);
-    qemuMonitorTestFree(test);
     return NULL;
 }
 

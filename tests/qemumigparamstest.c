@@ -96,7 +96,7 @@ qemuMigParamsTestXML(const void *opaque)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *replyFile = NULL;
     g_autofree char *xmlFile = NULL;
-    qemuMonitorTest *mon = NULL;
+    g_autoptr(qemuMonitorTest) mon = NULL;
     g_autoptr(virJSONValue) params = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
     g_autofree char *actualXML = NULL;
@@ -128,7 +128,6 @@ qemuMigParamsTestXML(const void *opaque)
     ret = 0;
 
  cleanup:
-    qemuMonitorTestFree(mon);
     return ret;
 }
 
@@ -139,7 +138,7 @@ qemuMigParamsTestJSON(const void *opaque)
     const qemuMigParamsData *data = opaque;
     g_autofree char *replyFile = NULL;
     g_autofree char *jsonFile = NULL;
-    qemuMonitorTest *mon = NULL;
+    g_autoptr(qemuMonitorTest) mon = NULL;
     g_autoptr(virJSONValue) paramsIn = NULL;
     g_autoptr(virJSONValue) paramsOut = NULL;
     g_autoptr(qemuMigrationParams) migParams = NULL;
@@ -184,7 +183,6 @@ qemuMigParamsTestJSON(const void *opaque)
     ret = 0;
 
  cleanup:
-    qemuMonitorTestFree(mon);
     return ret;
 }
 

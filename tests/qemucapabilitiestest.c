@@ -72,7 +72,7 @@ testQemuCaps(const void *opaque)
     testQemuData *data = (void *) opaque;
     g_autofree char *repliesFile = NULL;
     g_autofree char *capsFile = NULL;
-    qemuMonitorTest *mon = NULL;
+    g_autoptr(qemuMonitorTest) mon = NULL;
     g_autoptr(virQEMUCaps) capsActual = NULL;
     g_autofree char *binary = NULL;
     g_autofree char *actual = NULL;
@@ -132,7 +132,6 @@ testQemuCaps(const void *opaque)
 
     ret = 0;
  cleanup:
-    qemuMonitorTestFree(mon);
     return ret;
 }
 

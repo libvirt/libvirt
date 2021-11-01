@@ -650,9 +650,13 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
 
 {
     struct qemuMonitorJSONTestAttachChardevData data = {0};
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewSchema(xmlopt, schema);
     g_autofree char *jsonreply = NULL;
     g_autofree char *fulllabel = NULL;
     int ret = -1;
+
+    if (!test)
+        goto cleanup;
 
     if (!reply)
         reply = "";
@@ -661,17 +665,16 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
 
     fulllabel = g_strdup_printf("qemuMonitorJSONTestAttachChardev(%s)", label);
 
+    qemuMonitorTestAllowUnusedCommands(test);
+
+    if (qemuMonitorTestAddItemExpect(test, "chardev-add",
+                                     expectargs, true, jsonreply) < 0)
+        goto cleanup;
+
     data.chr = chr;
     data.fail = fail;
     data.expectPty = expectPty;
-    if (!(data.test = qemuMonitorTestNewSchema(xmlopt, schema)))
-        goto cleanup;
-
-    qemuMonitorTestAllowUnusedCommands(data.test);
-
-    if (qemuMonitorTestAddItemExpect(data.test, "chardev-add",
-                                     expectargs, true, jsonreply) < 0)
-        goto cleanup;
+    data.test = test;
 
     if (virTestRun(fulllabel, &testQemuMonitorJSONAttachChardev, &data) < 0)
         goto cleanup;
@@ -679,7 +682,6 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
     ret = 0;
 
  cleanup:
-    qemuMonitorTestFree(data.test);
     return ret;
 }
 
@@ -2655,7 +2657,7 @@ static int
 testQueryJobs(const void *opaque)
 {
     const struct testQueryJobsData *data = opaque;
-    qemuMonitorTest *test = qemuMonitorTestNewSimple(data->xmlopt);
+    g_autoptr(qemuMonitorTest) test = qemuMonitorTestNewSimple(data->xmlopt);
     g_autofree char *filenameJSON = NULL;
     g_autofree char *fileJSON = NULL;
     g_autofree char *filenameResult = NULL;
@@ -2700,7 +2702,6 @@ testQueryJobs(const void *opaque)
     for (i = 0; i < njobs; i++)
         qemuMonitorJobInfoFree(jobs[i]);
     VIR_FREE(jobs);
-    qemuMonitorTestFree(test);
     return ret;
 }
 
