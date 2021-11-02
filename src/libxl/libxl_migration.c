@@ -548,13 +548,12 @@ libxlDomainMigrationDstPrepareTunnel3(virConnectPtr dconn,
                                        &mig, &xmlout, &taint_hook) < 0)
         goto error;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, *def,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
-    *def = NULL;
 
     /*
      * Unless an error is encountered in this function, the job will
@@ -658,13 +657,12 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
                                        &mig, &xmlout, &taint_hook) < 0)
         goto error;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, *def,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto error;
-    *def = NULL;
 
     /*
      * Unless an error is encountered in this function, the job will

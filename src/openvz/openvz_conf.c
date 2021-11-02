@@ -527,7 +527,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
             flags |= VIR_DOMAIN_OBJ_LIST_ADD_LIVE;
 
         if (!(dom = virDomainObjListAdd(driver->domains,
-                                        def,
+                                        &def,
                                         driver->xmlopt,
                                         flags,
                                         NULL)))
@@ -547,7 +547,6 @@ int openvzLoadDomains(struct openvz_driver *driver)
 
         virDomainObjEndAPI(&dom);
         dom = NULL;
-        def = NULL;
     }
 
     virCommandFree(cmd);

@@ -40,7 +40,7 @@ enum {
     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE = (1 << 1),
 };
 virDomainObj *virDomainObjListAdd(virDomainObjList *doms,
-                                  virDomainDef *def,
+                                  virDomainDef **def,
                                   virDomainXMLOption *xmlopt,
                                   unsigned int flags,
                                   virDomainDef **oldDef);

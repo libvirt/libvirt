@@ -435,12 +435,11 @@ lxcDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
         goto cleanup;
     }
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    0, &oldDef)))
         goto cleanup;
 
-    def = NULL;
     vm->persistent = 1;
 
     if (virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
@@ -1118,13 +1117,12 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     }
 
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    def = NULL;
 
     if (virLXCDomainObjBeginJob(driver, vm, LXC_JOB_MODIFY) < 0) {
         if (!vm->persistent)
@@ -1917,8 +1915,7 @@ lxcDomainSetSchedulerParametersFlags(virDomainPtr dom,
         if (rc < 0)
             goto endjob;
 
-        virDomainObjAssignDef(vm, persistentDefCopy, false, NULL);
-        persistentDefCopy = NULL;
+        virDomainObjAssignDef(vm, &persistentDefCopy, false, NULL);
     }
 
     ret = 0;
@@ -4368,10 +4365,8 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
-        if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false, NULL);
-            vmdef = NULL;
-        }
+        if (!ret)
+            virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
  endjob:
@@ -4444,8 +4439,7 @@ static int lxcDomainUpdateDeviceFlags(virDomainPtr dom,
     if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
         goto endjob;
 
-    virDomainObjAssignDef(vm, vmdef, false, NULL);
-    vmdef = NULL;
+    virDomainObjAssignDef(vm, &vmdef, false, NULL);
     ret = 0;
 
  endjob:
@@ -4537,10 +4531,8 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
-        if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false, NULL);
-            vmdef = NULL;
-        }
+        if (!ret)
+            virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
  endjob:

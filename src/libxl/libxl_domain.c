@@ -1482,8 +1482,7 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
             goto cleanup;
         }
 
-        virDomainObjAssignDef(vm, def, true, NULL);
-        def = NULL;
+        virDomainObjAssignDef(vm, &def, true, NULL);
 
         if (unlink(managed_save_path) < 0)
             VIR_WARN("Failed to remove the managed state %s",

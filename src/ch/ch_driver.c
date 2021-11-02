@@ -237,14 +237,12 @@ chDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   vmdef,
+                                   &vmdef,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                        VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-
-    vmdef = NULL;
 
     if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
         goto cleanup;
@@ -323,12 +321,11 @@ chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (virDomainDefineXMLFlagsEnsureACL(conn, vmdef) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, vmdef,
+    if (!(vm = virDomainObjListAdd(driver->domains, &vmdef,
                                    driver->xmlopt,
                                    0, NULL)))
         goto cleanup;
 
-    vmdef = NULL;
     vm->persistent = 1;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);

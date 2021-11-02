@@ -3388,7 +3388,7 @@ virDomainNetDefNew(virDomainXMLOption *xmlopt);
 virDomainDef *virDomainDefNew(virDomainXMLOption *xmlopt);
 
 void virDomainObjAssignDef(virDomainObj *domain,
-                           virDomainDef *def,
+                           virDomainDef **def,
                            bool live,
                            virDomainDef **oldDef);
 int virDomainObjSetDefTransient(virDomainXMLOption *xmlopt,

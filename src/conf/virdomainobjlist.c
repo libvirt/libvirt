@@ -257,13 +257,17 @@ virDomainObjListAddObjLocked(virDomainObjList *doms,
  * the @def being added is assumed to represent a
  * live config, not a future inactive config
  *
+ * Upon successful return the virDomain object is the owner of
+ * @def and callers should use @vm->def if they need to access
+ * the definition as @def is set to NULL.
+ *
  * The returned @vm from this function will be locked and ref
  * counted. The caller is expected to use virDomainObjEndAPI
  * when it completes usage.
  */
 static virDomainObj *
 virDomainObjListAddLocked(virDomainObjList *doms,
-                          virDomainDef *def,
+                          virDomainDef **def,
                           virDomainXMLOption *xmlopt,
                           unsigned int flags,
                           virDomainDef **oldDef)
@@ -275,13 +279,13 @@ virDomainObjListAddLocked(virDomainObjList *doms,
         *oldDef = NULL;
 
     /* See if a VM with matching UUID already exists */
-    if ((vm = virDomainObjListFindByUUIDLocked(doms, def->uuid))) {
+    if ((vm = virDomainObjListFindByUUIDLocked(doms, (*def)->uuid))) {
         if (vm->removing) {
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' is already being removed"),
                            vm->def->name);
             goto error;
-        } else if (STRNEQ(vm->def->name, def->name)) {
+        } else if (STRNEQ(vm->def->name, (*def)->name)) {
             /* UUID matches, but if names don't match, refuse it */
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
@@ -312,20 +316,20 @@ virDomainObjListAddLocked(virDomainObjList *doms,
                               oldDef);
     } else {
         /* UUID does not match, but if a name matches, refuse it */
-        if ((vm = virDomainObjListFindByNameLocked(doms, def->name))) {
+        if ((vm = virDomainObjListFindByNameLocked(doms, (*def)->name))) {
             virUUIDFormat(vm->def->uuid, uuidstr);
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("domain '%s' already exists with uuid %s"),
-                           def->name, uuidstr);
+                           (*def)->name, uuidstr);
             goto error;
         }
 
         if (!(vm = virDomainObjNew(xmlopt)))
             goto error;
-        vm->def = def;
+        vm->def = g_steal_pointer(def);
 
         if (virDomainObjListAddObjLocked(doms, vm) < 0) {
-            vm->def = NULL;
+            *def = g_steal_pointer(&vm->def);
             goto error;
         }
     }
@@ -340,7 +344,7 @@ virDomainObjListAddLocked(virDomainObjList *doms,
 
 virDomainObj *
 virDomainObjListAdd(virDomainObjList *doms,
-                    virDomainDef *def,
+                    virDomainDef **def,
                     virDomainXMLOption *xmlopt,
                     unsigned int flags,
                     virDomainDef **oldDef)
@@ -498,7 +502,7 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
         goto error;
 
-    if (!(dom = virDomainObjListAddLocked(doms, def, xmlopt, 0, &oldDef)))
+    if (!(dom = virDomainObjListAddLocked(doms, &def, xmlopt, 0, &oldDef)))
         goto error;
 
     dom->autostart = autostart;

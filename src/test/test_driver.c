@@ -1043,7 +1043,7 @@ testParseDomains(testDriver *privconn,
 
         if (testDomainGenerateIfnames(def) < 0 ||
             !(obj = virDomainObjListAdd(privconn->domains,
-                                        def,
+                                        &def,
                                         privconn->xmlopt,
                                         0, NULL))) {
             virDomainDefFree(def);
@@ -1053,7 +1053,7 @@ testParseDomains(testDriver *privconn,
         if (testParseDomainSnapshots(privconn, obj, file, ctxt) < 0)
             goto error;
 
-        nsdata = def->namespaceData;
+        nsdata = obj->def->namespaceData;
         obj->persistent = !nsdata->transient;
         obj->hasManagedSave = nsdata->hasManagedSave;
 
@@ -1768,13 +1768,12 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    def,
+                                    &def,
                                     privconn->xmlopt,
                                     VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                     NULL)))
         goto cleanup;
-    def = NULL;
 
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         if (!dom->persistent)
@@ -2517,13 +2516,12 @@ testDomainRestoreFlags(virConnectPtr conn,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    def,
+                                    &def,
                                     privconn->xmlopt,
                                     VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                     VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                     NULL)))
         goto cleanup;
-    def = NULL;
 
     if (testDomainStartState(privconn, dom, VIR_DOMAIN_RUNNING_RESTORED) < 0) {
         if (!dom->persistent)
@@ -4208,12 +4206,11 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
     if (testDomainGenerateIfnames(def) < 0)
         goto cleanup;
     if (!(dom = virDomainObjListAdd(privconn->domains,
-                                    def,
+                                    &def,
                                     privconn->xmlopt,
                                     0,
                                     &oldDef)))
         goto cleanup;
-    def = NULL;
     dom->persistent = 1;
 
     event = virDomainEventLifecycleNewFromObj(dom,
@@ -9065,7 +9062,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             virObjectEventStateQueue(privconn->eventState, event);
         }
 
-        virDomainObjAssignDef(vm, config, false, NULL);
+        virDomainObjAssignDef(vm, &config, false, NULL);
         if (testDomainStartState(privconn, vm,
                             VIR_DOMAIN_RUNNING_FROM_SNAPSHOT) < 0)
             goto cleanup;
@@ -9086,7 +9083,7 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         }
     } else {
         /* Transitions 1, 4, 7 */
-        virDomainObjAssignDef(vm, config, false, NULL);
+        virDomainObjAssignDef(vm, &config, false, NULL);
 
         if (virDomainObjIsActive(vm)) {
             /* Transitions 4, 7 */

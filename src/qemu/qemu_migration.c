@@ -2878,13 +2878,12 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
                                          QEMU_MIGRATION_COOKIE_BLOCK_DIRTY_BITMAPS)))
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, *def,
+    if (!(vm = virDomainObjListAdd(driver->domains, def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    *def = NULL;
 
     priv = vm->privateData;
     jobPriv = priv->job.privateData;

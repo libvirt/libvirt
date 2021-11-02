@@ -1984,13 +1984,11 @@ qemuSnapshotRevert(virDomainObj *vm,
         }
 
         if (inactiveConfig) {
-            virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
-            inactiveConfig = NULL;
+            virDomainObjAssignDef(vm, &inactiveConfig, false, NULL);
             defined = true;
         }
 
-        virDomainObjAssignDef(vm, config, true, NULL);
-        config = NULL;
+        virDomainObjAssignDef(vm, &config, true, NULL);
 
         /* No cookie means libvirt which saved the domain was too old to
          * mess up the CPU definitions.
@@ -2065,8 +2063,7 @@ qemuSnapshotRevert(virDomainObj *vm,
         }
 
         if (inactiveConfig) {
-            virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
-            inactiveConfig = NULL;
+            virDomainObjAssignDef(vm, &inactiveConfig, false, NULL);
             defined = true;
         }
 

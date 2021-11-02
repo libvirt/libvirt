@@ -438,7 +438,7 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   vmdef,
+                                   &vmdef,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
@@ -447,9 +447,8 @@ vmwareDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     pDomain = vm->privateData;
     pDomain->vmxPath = g_strdup(vmxPath);
 
-    vmwareDomainConfigDisplay(pDomain, vmdef);
+    vmwareDomainConfigDisplay(pDomain, vm->def);
 
-    vmdef = NULL;
     vm->persistent = 1;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, -1);
@@ -689,7 +688,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
 
     /* assign def */
     if (!(vm = virDomainObjListAdd(driver->domains,
-                                   vmdef,
+                                   &vmdef,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
@@ -699,8 +698,7 @@ vmwareDomainCreateXML(virConnectPtr conn, const char *xml,
     pDomain = vm->privateData;
     pDomain->vmxPath = g_strdup(vmxPath);
 
-    vmwareDomainConfigDisplay(pDomain, vmdef);
-    vmdef = NULL;
+    vmwareDomainConfigDisplay(pDomain, vm->def);
 
     if (vmwareStartVM(driver, vm) < 0) {
         if (!vm->persistent)

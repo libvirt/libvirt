@@ -3865,7 +3865,7 @@ virDomainDefNew(virDomainXMLOption *xmlopt)
 
 
 void virDomainObjAssignDef(virDomainObj *domain,
-                           virDomainDef *def,
+                           virDomainDef **def,
                            bool live,
                            virDomainDef **oldDef)
 {
@@ -3876,7 +3876,7 @@ void virDomainObjAssignDef(virDomainObj *domain,
             *oldDef = domain->newDef;
         else
             virDomainDefFree(domain->newDef);
-        domain->newDef = def;
+        domain->newDef = g_steal_pointer(def);
     } else {
         if (live) {
             /* save current configuration to be restored on domain shutdown */
@@ -3884,13 +3884,13 @@ void virDomainObjAssignDef(virDomainObj *domain,
                 domain->newDef = domain->def;
             else
                 virDomainDefFree(domain->def);
-            domain->def = def;
+            domain->def = g_steal_pointer(def);
         } else {
             if (oldDef)
                 *oldDef = domain->def;
             else
                 virDomainDefFree(domain->def);
-            domain->def = def;
+            domain->def = g_steal_pointer(def);
         }
     }
 }

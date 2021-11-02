@@ -1726,13 +1726,12 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     if (virDomainCreateXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    def = NULL;
 
     if (qemuProcessBeginJob(driver, vm, VIR_DOMAIN_JOB_OPERATION_START,
                             flags) < 0) {
@@ -5944,13 +5943,12 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         def = tmp;
     }
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    VIR_DOMAIN_OBJ_LIST_ADD_LIVE |
                                    VIR_DOMAIN_OBJ_LIST_ADD_CHECK_LIVE,
                                    NULL)))
         goto cleanup;
-    def = NULL;
 
     if (flags & VIR_DOMAIN_SAVE_RUNNING)
         data->header.was_running = 1;
@@ -6231,8 +6229,7 @@ qemuDomainObjRestore(virConnectPtr conn,
         goto cleanup;
     }
 
-    virDomainObjAssignDef(vm, def, true, NULL);
-    def = NULL;
+    virDomainObjAssignDef(vm, &def, true, NULL);
 
     ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path,
                                start_paused, asyncJob);
@@ -6601,11 +6598,10 @@ qemuDomainDefineXMLFlags(virConnectPtr conn,
     if (virDomainDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(vm = virDomainObjListAdd(driver->domains, def,
+    if (!(vm = virDomainObjListAdd(driver->domains, &def,
                                    driver->xmlopt,
                                    0, &oldDef)))
         goto cleanup;
-    def = NULL;
 
     if (!oldDef && qemuDomainNamePathsCleanup(cfg, vm->def->name, false) < 0)
         goto cleanup;
@@ -7925,8 +7921,7 @@ qemuDomainAttachDeviceLiveAndConfig(virDomainObj *vm,
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
             return -1;
 
-        virDomainObjAssignDef(vm, vmdef, false, NULL);
-        vmdef = NULL;
+        virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
     return 0;
@@ -8062,10 +8057,8 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     /* Finally, if no error until here, we can save config. */
     if (flags & VIR_DOMAIN_AFFECT_CONFIG) {
         ret = virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir);
-        if (!ret) {
-            virDomainObjAssignDef(vm, vmdef, false, NULL);
-            vmdef = NULL;
-        }
+        if (!ret)
+            virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
  endjob:
@@ -8149,8 +8142,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
             goto cleanup;
 
-        virDomainObjAssignDef(vm, vmdef, false, NULL);
-        vmdef = NULL;
+        virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
     ret = 0;
@@ -8219,8 +8211,7 @@ qemuDomainDetachDeviceAliasLiveAndConfig(virQEMUDriver *driver,
     if (vmdef) {
         if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0)
             return -1;
-        virDomainObjAssignDef(vm, vmdef, false, NULL);
-        vmdef = NULL;
+        virDomainObjAssignDef(vm, &vmdef, false, NULL);
     }
 
     return 0;
@@ -9607,8 +9598,7 @@ qemuDomainSetSchedulerParametersFlags(virDomainPtr dom,
         if (rc < 0)
             goto endjob;
 
-        virDomainObjAssignDef(vm, persistentDefCopy, false, NULL);
-        persistentDefCopy = NULL;
+        virDomainObjAssignDef(vm, &persistentDefCopy, false, NULL);
     }
 
     ret = 0;
