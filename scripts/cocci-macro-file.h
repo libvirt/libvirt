@@ -34,6 +34,6 @@
 
 #define g_autoptr(x) x##_autoptr
 #define g_autofree
-#define g_auto
+#define g_auto(x) x
 
 #define BAD_CAST
