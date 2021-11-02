@@ -359,6 +359,7 @@ virDomainDeviceDefParse;
 virDomainDeviceFindSCSIController;
 virDomainDeviceGetInfo;
 virDomainDeviceInfoIterate;
+virDomainDeviceInfoIterateFlags;
 virDomainDeviceSetData;
 virDomainDeviceTypeToString;
 virDomainDiskBackingStoreFormat;
