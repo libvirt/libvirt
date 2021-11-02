@@ -940,19 +940,20 @@ static int
 virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource *res, bool readOnly)
 {
     int nfields = -1;
-    g_autofree char *index = NULL, *value = NULL, *keyword = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
-    xmlNodePtr orignode = NULL;
     size_t i = 0;
 
-    orignode = ctxt->node;
     if ((nfields = virXPathNodeSet("./vendor_field[@index]", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                 _("failed to evaluate <vendor_field> elements"));
-        ctxt->node = orignode;
         return -1;
     }
     for (i = 0; i < nfields; i++) {
+        g_autofree char *value = NULL;
+        g_autofree char *index = NULL;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt)
+        g_autofree char *keyword = NULL;
+
         ctxt->node = nodes[i];
         if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -966,21 +967,21 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
         }
         keyword = g_strdup_printf("V%c", index[0]);
         virPCIVPDResourceUpdateKeyword(res, readOnly, keyword, value);
-        g_free(g_steal_pointer(&index));
-        g_free(g_steal_pointer(&keyword));
-        g_free(g_steal_pointer(&value));
     }
-    g_free(g_steal_pointer(&nodes));
-    ctxt->node = orignode;
+    VIR_FREE(nodes);
 
     if (!readOnly) {
         if ((nfields = virXPathNodeSet("./system_field[@index]", ctxt, &nodes)) < 0) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                     _("failed to evaluate <system_field> elements"));
-            ctxt->node = orignode;
             return -1;
         }
         for (i = 0; i < nfields; i++) {
+            g_autofree char *value = NULL;
+            g_autofree char *index = NULL;
+            g_autofree char *keyword = NULL;
+            VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
             ctxt->node = nodes[i];
             if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -994,11 +995,7 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
             }
             keyword = g_strdup_printf("Y%c", index[0]);
             virPCIVPDResourceUpdateKeyword(res, readOnly, keyword, value);
-            g_free(g_steal_pointer(&index));
-            g_free(g_steal_pointer(&keyword));
-            g_free(g_steal_pointer(&value));
         }
-        ctxt->node = orignode;
     }
 
     return 0;
@@ -1009,8 +1006,6 @@ virNodeDeviceCapVPDParseReadOnlyFields(xmlXPathContextPtr ctxt, virPCIVPDResourc
 {
     const char *keywords[] = {"change_level", "manufacture_id",
                               "serial_number", "part_number", NULL};
-    g_autofree char *expression = NULL;
-    g_autofree char *result = NULL;
     size_t i = 0;
 
     if (res == NULL)
@@ -1019,11 +1014,10 @@ virNodeDeviceCapVPDParseReadOnlyFields(xmlXPathContextPtr ctxt, virPCIVPDResourc
     res->ro = virPCIVPDResourceRONew();
 
     while (keywords[i]) {
-        expression = g_strdup_printf("string(./%s)", keywords[i]);
-        result = virXPathString(expression, ctxt);
+        g_autofree char *expression = g_strdup_printf("string(./%s)", keywords[i]);
+        g_autofree char *result = virXPathString(expression, ctxt);
+
         virPCIVPDResourceUpdateKeyword(res, true, keywords[i], result);
-        g_free(g_steal_pointer(&expression));
-        g_free(g_steal_pointer(&result));
         ++i;
     }
     if (virNodeDeviceCapVPDParseCustomFields(ctxt, res, true) < 0)
@@ -1047,38 +1041,34 @@ virNodeDeviceCapVPDParseReadWriteFields(xmlXPathContextPtr ctxt, virPCIVPDResour
 static int
 virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
 {
-    xmlNodePtr orignode = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
     int nfields = -1;
-    g_autofree char *access = NULL;
     size_t i = 0;
     g_autoptr(virPCIVPDResource) newres = g_new0(virPCIVPDResource, 1);
 
     if (res == NULL)
         return -1;
 
-    orignode = ctxt->node;
-
     if (!(newres->name = virXPathString("string(./name)", ctxt))) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                 _("Could not read a device name from the <name> element"));
-        ctxt->node = orignode;
         return -1;
     }
 
     if ((nfields = virXPathNodeSet("./fields[@access]", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                 _("no VPD <fields> elements with an access type attribute found"));
-        ctxt->node = orignode;
         return -1;
     }
 
     for (i = 0; i < nfields; i++) {
+        g_autofree char *access = NULL;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
         ctxt->node = nodes[i];
         if (!(access = virXPathString("string(./@access[1])", ctxt))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                     _("VPD fields access type parsing has failed"));
-            ctxt->node = orignode;
             return -1;
         }
 
@@ -1099,9 +1089,7 @@ virNodeDeviceCapVPDParseXML(xmlXPathContextPtr ctxt, virPCIVPDResource **res)
                            access);
             return -1;
         }
-        g_free(g_steal_pointer(&access));
     }
-    ctxt->node = orignode;
 
     /* Replace the existing VPD representation if there is one already. */
     if (*res != NULL)
