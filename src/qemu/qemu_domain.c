@@ -11455,3 +11455,120 @@ qemuDomainGetVHostUserFSSocketPath(qemuDomainObjPrivate *priv,
 
     return virFileBuildPath(priv->libDir, fs->info.alias, "-fs.sock");
 }
+
+
+/**
+ * qemuDomainDeviceBackendChardevForeachOne:
+ * @dev: device definition
+ * @cb: callback
+ * @opaque: data for @cb
+ *
+ * Calls @cb with the char device backend data if @dev is a device which has a
+ * chardev backend.
+ */
+int
+qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
+                                         qemuDomainDeviceBackendChardevForeachCallback cb,
+                                         void *opaque)
+{
+    switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_NET:
+        if (virDomainNetGetActualType(dev->data.net) != VIR_DOMAIN_NET_TYPE_VHOSTUSER)
+            return 0;
+
+        return cb(dev, dev->data.net->data.vhostuser, opaque);
+
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        return cb(dev, dev->data.redirdev->source, opaque);
+
+    case VIR_DOMAIN_DEVICE_SHMEM:
+        if (!dev->data.shmem->server.enabled)
+            return 0;
+
+        return cb(dev, dev->data.shmem->server.chr, opaque);
+
+    case VIR_DOMAIN_DEVICE_CHR:
+        return cb(dev, dev->data.chr->source, opaque);
+
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+        if (dev->data.smartcard->type != VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
+            return 0;
+
+        return cb(dev, dev->data.smartcard->data.passthru, opaque);
+
+    case VIR_DOMAIN_DEVICE_RNG:
+        if (dev->data.rng->backend != VIR_DOMAIN_RNG_BACKEND_EGD)
+            return 0;
+
+        return cb(dev, dev->data.rng->source.chardev, opaque);
+
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        /* no chardev backend */
+        break;
+    }
+
+    return 0;
+}
+
+struct qemuDomainDeviceBackendChardevIterData {
+    qemuDomainDeviceBackendChardevForeachCallback cb;
+    void *cbdata;
+};
+
+
+static int
+qemuDomainDeviceBackendChardevIter(virDomainDef *def G_GNUC_UNUSED,
+                                   virDomainDeviceDef *dev,
+                                   virDomainDeviceInfo *info G_GNUC_UNUSED,
+                                   void *opaque)
+{
+    struct qemuDomainDeviceBackendChardevIterData *data = opaque;
+
+    return qemuDomainDeviceBackendChardevForeachOne(dev, data->cb, data->cbdata);
+}
+
+
+/**
+ * qemuDomainDeviceBackendChardevForeach:a
+ * @def: domain definition
+ * @cb: callback
+ * @opqaue: data for @cb
+ *
+ * Same as qemuDomainDeviceBackendChardevForeachOne called for every device in
+ * @def.
+ */
+int
+qemuDomainDeviceBackendChardevForeach(virDomainDef *def,
+                                      qemuDomainDeviceBackendChardevForeachCallback cb,
+                                      void *opaque)
+{
+    struct qemuDomainDeviceBackendChardevIterData data = {
+        .cb = cb,
+        .cbdata = opaque,
+    };
+
+    return virDomainDeviceInfoIterateFlags(def,
+                                           qemuDomainDeviceBackendChardevIter,
+                                           DOMAIN_DEVICE_ITERATE_MISSING_INFO,
+                                           &data);
+}

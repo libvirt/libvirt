@@ -1032,3 +1032,15 @@ qemuDomainNamePathsCleanup(virQEMUDriverConfig *cfg,
 char *
 qemuDomainGetVHostUserFSSocketPath(qemuDomainObjPrivate *priv,
                                    const virDomainFSDef *fs);
+
+typedef int (*qemuDomainDeviceBackendChardevForeachCallback)(virDomainDeviceDef *dev,
+                                                             virDomainChrSourceDef *charsrc,
+                                                             void *opaque);
+int
+qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
+                                         qemuDomainDeviceBackendChardevForeachCallback cb,
+                                         void *opaque);
+int
+qemuDomainDeviceBackendChardevForeach(virDomainDef *def,
+                                      qemuDomainDeviceBackendChardevForeachCallback cb,
+                                      void *opaque);
