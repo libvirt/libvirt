@@ -178,7 +178,8 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
 static int
 testPCIVPDResourceCustomCompareIndex(const void *data G_GNUC_UNUSED)
 {
-    g_autoptr(virPCIVPDResourceCustom) a = NULL, b = NULL;
+    g_autoptr(virPCIVPDResourceCustom) a = NULL;
+    g_autoptr(virPCIVPDResourceCustom) b = NULL;
 
     /* Both are NULL */
     if (!virPCIVPDResourceCustomCompareIndex(a, b))
