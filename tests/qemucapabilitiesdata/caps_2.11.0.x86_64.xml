@@ -107,7 +107,6 @@
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
   <flag name='qxl.max_outputs'/>
-  <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='intel-iommu'/>
   <flag name='virtio-pci-disable-legacy'/>

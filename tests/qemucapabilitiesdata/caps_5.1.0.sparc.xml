@@ -31,7 +31,6 @@
   <flag name='vserport-change-event'/>
   <flag name='spice-gl'/>
   <flag name='chardev-logfile'/>
-  <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='gluster.debug_level'/>

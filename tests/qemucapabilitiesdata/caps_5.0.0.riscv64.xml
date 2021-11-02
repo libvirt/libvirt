@@ -85,7 +85,6 @@
   <flag name='chardev-logfile'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='spice-unix'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>

@@ -382,7 +382,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "qxl-vga.max_outputs", /* X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS */
 
               /* 225 */
-              "spice-unix", /* QEMU_CAPS_SPICE_UNIX */
+              "spice-unix", /* X_QEMU_CAPS_SPICE_UNIX */
               "drive-detect-zeroes", /* QEMU_CAPS_DRIVE_DETECT_ZEROES */
               "tls-creds-x509", /* X_QEMU_CAPS_OBJECT_TLS_CREDS_X509 */
               "display", /* X_QEMU_CAPS_DISPLAY */
@@ -3196,7 +3196,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
-    { "spice", "unix", QEMU_CAPS_SPICE_UNIX },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
     { "vnc", "audiodev", QEMU_CAPS_AUDIODEV },
