@@ -59,7 +59,7 @@ virInterfaceObjListClone(virInterfaceObjList *interfaces);
 
 virInterfaceObj *
 virInterfaceObjListAssignDef(virInterfaceObjList *interfaces,
-                             virInterfaceDef *def);
+                             virInterfaceDef **def);
 
 void
 virInterfaceObjListRemove(virInterfaceObjList *interfaces,
