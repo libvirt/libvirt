@@ -1,0 +1,38 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-f14 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-f14/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-f14/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-f14/.config \
+/usr/bin/qemu-system-i386 \
+-name guest=f14,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-f14/master-key.aes"}' \
+-machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-cpu core2duo,ds=on,acpi=on,ss=on,ht=on,tm=on,pbe=on,ds-cpl=on,vmx=on,est=on,tm2=on,cx16=on,xtpr=on,lahf-lm=on \
+-m 1024 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \
+-overcommit mem-lock=off \
+-smp 2,sockets=1,dies=1,cores=2,threads=1 \
+-uuid 553effab-b5e1-2d80-dfe3-da4344826c43 \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-boot menu=on,strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
+-netdev tap,fd=3,id=hostnet0 \
+-device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"52:54:00:71:70:89","bus":"pci.0","addr":"0x7"}' \
+-device '{"driver":"usb-tablet","id":"input0","bus":"usb.0","port":"1"}' \
+-audiodev id=audio1,driver=spice \
+-spice port=5900,addr=127.0.0.1,seamless-migration=on \
+-device '{"driver":"VGA","id":"video0","vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"AC97","id":"sound0","audiodev":"audio1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x5"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

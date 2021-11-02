@@ -1496,60 +1496,25 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-sdl-egl-headless");
     DO_TEST("graphics-sdl-fullscreen",
             QEMU_CAPS_DEVICE_CIRRUS_VGA, QEMU_CAPS_SDL);
-    DO_TEST("graphics-spice",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-no-args",
-            QEMU_CAPS_SPICE, QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("graphics-spice");
+    DO_TEST_CAPS_LATEST("graphics-spice-no-args");
     driver.config->spiceSASL = 1;
     driver.config->spiceSASLdir = g_strdup("/root/.sasl2");
-    DO_TEST("graphics-spice-sasl",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL);
+    DO_TEST_CAPS_LATEST("graphics-spice-sasl");
     VIR_FREE(driver.config->spiceSASLdir);
     driver.config->spiceSASL = 0;
-    DO_TEST("graphics-spice-agentmouse",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-spice-compression",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-timeout",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_DEVICE_VGA);
-    DO_TEST("graphics-spice-qxl-vga",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-usb-redir",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_USB_HUB,
-            QEMU_CAPS_ICH9_USB_EHCI1,
-            QEMU_CAPS_USB_REDIR,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-spice-agent-file-xfer",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL);
-    DO_TEST("graphics-spice-socket",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("graphics-spice-auto-socket",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("graphics-spice-agentmouse");
+    DO_TEST_CAPS_LATEST("graphics-spice-compression");
+    DO_TEST_CAPS_LATEST("graphics-spice-timeout");
+    DO_TEST_CAPS_LATEST("graphics-spice-qxl-vga");
+    DO_TEST_CAPS_LATEST("graphics-spice-usb-redir");
+    DO_TEST_CAPS_LATEST("graphics-spice-agent-file-xfer");
+    DO_TEST_CAPS_LATEST("graphics-spice-socket");
+    DO_TEST_CAPS_LATEST("graphics-spice-auto-socket");
     driver.config->spiceAutoUnixSocket = true;
-    DO_TEST("graphics-spice-auto-socket-cfg",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("graphics-spice-auto-socket-cfg");
     driver.config->spiceAutoUnixSocket = false;
-    DO_TEST("graphics-spice-egl-headless",
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_EGL_HEADLESS);
+    DO_TEST_CAPS_LATEST("graphics-spice-egl-headless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("graphics-spice-invalid-egl-headless");
     DO_TEST_CAPS_LATEST("graphics-spice-gl-auto-rendernode");
 
