@@ -3845,7 +3845,7 @@ virDomainDefNew(virDomainXMLOption *xmlopt)
     ret = g_new0(virDomainDef, 1);
 
     if (!(ret->numa = virDomainNumaNew()))
-        goto error;
+        return NULL;
 
     ret->mem.hard_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
     ret->mem.soft_limit = VIR_DOMAIN_MEMORY_PARAM_UNLIMITED;
@@ -3857,8 +3857,6 @@ virDomainDefNew(virDomainXMLOption *xmlopt)
         ret->scsiBusMaxUnit = SCSI_NARROW_BUS_MAX_CONT_UNIT;
 
     return g_steal_pointer(&ret);
- error:
-    return NULL;
 }
 
 

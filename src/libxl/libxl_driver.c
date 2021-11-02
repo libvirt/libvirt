@@ -5824,7 +5824,7 @@ libxlDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
 
     virCheckFlags(LIBXL_MIGRATION_FLAGS, -1);
     if (virTypedParamsValidate(params, nparams, LIBXL_MIGRATION_PARAMETERS) < 0)
-        goto error;
+        return -1;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_XML,
@@ -5836,22 +5836,19 @@ libxlDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
                                 VIR_MIGRATE_PARAM_URI,
                                 &uri_in) < 0)
 
-        goto error;
+        return -1;
 
     if (!(def = libxlDomainMigrationDstPrepareDef(driver, dom_xml, dname)))
-        goto error;
+        return -1;
 
     if (virDomainMigratePrepareTunnel3ParamsEnsureACL(dconn, def) < 0)
-        goto error;
+        return -1;
 
     if (libxlDomainMigrationDstPrepareTunnel3(dconn, st, &def, cookiein,
                                               cookieinlen, flags) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int
@@ -5890,22 +5887,19 @@ libxlDomainMigratePrepare3Params(virConnectPtr dconn,
                                 VIR_MIGRATE_PARAM_URI,
                                 &uri_in) < 0)
 
-        goto error;
+        return -1;
 
     if (!(def = libxlDomainMigrationDstPrepareDef(driver, dom_xml, dname)))
-        goto error;
+        return -1;
 
     if (virDomainMigratePrepare3ParamsEnsureACL(dconn, def) < 0)
-        goto error;
+        return -1;
 
     if (libxlDomainMigrationDstPrepare(dconn, &def, uri_in, uri_out,
                                        cookiein, cookieinlen, flags) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int

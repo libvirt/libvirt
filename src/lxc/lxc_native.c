@@ -1094,12 +1094,12 @@ lxcParseConfigString(const char *config,
         return NULL;
 
     if (!(vmdef = virDomainDefNew(xmlopt)))
-        goto error;
+        return NULL;
 
     if (virUUIDGenerate(vmdef->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to generate uuid"));
-        goto error;
+        return NULL;
     }
 
     vmdef->id = -1;
@@ -1113,10 +1113,10 @@ lxcParseConfigString(const char *config,
     /* Value not handled by the LXC driver, setting to
      * minimum required to make XML parsing pass */
     if (virDomainDefSetVcpusMax(vmdef, 1, xmlopt) < 0)
-        goto error;
+        return NULL;
 
     if (virDomainDefSetVcpus(vmdef, 1) < 0)
-        goto error;
+        return NULL;
 
     vmdef->nfss = 0;
     vmdef->os.type = VIR_DOMAIN_OSTYPE_EXE;
@@ -1139,7 +1139,7 @@ lxcParseConfigString(const char *config,
 
         /* Check for pre LXC 3.0 legacy key */
         if (virConfGetValueString(properties, "lxc.utsname", &value) <= 0)
-            goto error;
+            return NULL;
     }
 
     vmdef->name = g_strdup(value);
@@ -1148,7 +1148,7 @@ lxcParseConfigString(const char *config,
         vmdef->name = g_strdup("unnamed");
 
     if (lxcSetRootfs(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* LXC 3.0 uses "lxc.mount.fstab", while legacy used just "lxc.mount".
      * In either case, generate the error to use "lxc.mount.entry" instead */
@@ -1157,50 +1157,47 @@ lxcParseConfigString(const char *config,
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("lxc.mount.fstab or lxc.mount found, use "
                          "lxc.mount.entry lines instead"));
-        goto error;
+        return NULL;
     }
 
     /* Loop over lxc.mount.entry to add filesystem devices for them */
     if (virConfWalk(properties, lxcFstabWalkCallback, vmdef) < 0)
-        goto error;
+        return NULL;
 
     /* Network configuration */
     if (lxcConvertNetworkSettings(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* Consoles */
     if (lxcCreateConsoles(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.idmap or legacy lxc.id_map */
     if (virConfWalk(properties, lxcIdmapWalkCallback, vmdef) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.cgroup.memory.* */
     if (lxcSetMemTune(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.cgroup.cpu.* */
     if (lxcSetCpuTune(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.cgroup.cpuset.* */
     if (lxcSetCpusetTune(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.cgroup.blkio.* */
     if (lxcSetBlkioTune(vmdef, properties) < 0)
-        goto error;
+        return NULL;
 
     /* lxc.cap.drop */
     lxcSetCapDrop(vmdef, properties);
 
     if (virDomainDefPostParse(vmdef, VIR_DOMAIN_DEF_PARSE_ABI_UPDATE,
                               xmlopt, NULL) < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&vmdef);
-
- error:
-    return NULL;
 }

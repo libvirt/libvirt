@@ -489,21 +489,21 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
     g_autoptr(virDomainDef) oldDef = NULL;
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
-        goto error;
+        return NULL;
     if (!(def = virDomainDefParseFile(configFile, xmlopt, NULL,
                                       VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                       VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE |
                                       VIR_DOMAIN_DEF_PARSE_ALLOW_POST_PARSE_FAIL)))
-        goto error;
+        return NULL;
 
     if ((autostartLink = virDomainConfigFile(autostartDir, name)) == NULL)
-        goto error;
+        return NULL;
 
     if ((autostart = virFileLinkPointsTo(autostartLink, configFile)) < 0)
-        goto error;
+        return NULL;
 
     if (!(dom = virDomainObjListAddLocked(doms, &def, xmlopt, 0, &oldDef)))
-        goto error;
+        return NULL;
 
     dom->autostart = autostart;
 
@@ -511,9 +511,6 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
         (*notify)(dom, oldDef == NULL, opaque);
 
     return dom;
-
- error:
-    return NULL;
 }
 
 

@@ -941,14 +941,14 @@ bhyveParseCommandLineString(const char* nativeConfig,
     g_auto(GStrv) loader_argv = NULL;
 
     if (!(def = virDomainDefNew(xmlopt)))
-        goto cleanup;
+        return NULL;
 
     /* Initialize defaults. */
     def->virtType = VIR_DOMAIN_VIRT_BHYVE;
     if (virUUIDGenerate(def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to generate uuid"));
-        goto cleanup;
+        return NULL;
     }
     def->id = -1;
     def->clock.offset = VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME;
@@ -958,21 +958,18 @@ bhyveParseCommandLineString(const char* nativeConfig,
                                &bhyve_argc, &bhyve_argv)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to convert the command string to argv-lists"));
-        goto error;
+        return NULL;
     }
 
     if (bhyveParseBhyveCommandLine(def, xmlopt, caps, bhyve_argc, bhyve_argv))
-        goto error;
+        return NULL;
     if (loader_argv && STREQ(loader_argv[0], "/usr/sbin/bhyveload")) {
         if (bhyveParseBhyveLoadCommandLine(def, loader_argc, loader_argv))
-            goto error;
+            return NULL;
     } else if (loader_argv) {
         if (bhyveParseCustomLoaderCommandLine(def, loader_argc, loader_argv))
-            goto error;
+            return NULL;
     }
 
- cleanup:
     return g_steal_pointer(&def);
- error:
-    goto cleanup;
 }

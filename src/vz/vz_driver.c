@@ -2964,12 +2964,11 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     const char *dname = NULL;
     const char *dom_xml = NULL;
     g_autoptr(virDomainDef) def = NULL;
-    int ret = -1;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, -1);
 
     if (virTypedParamsValidate(params, nparams, VZ_MIGRATION_PARAMETERS) < 0)
-        goto cleanup;
+        return -1;
 
     if (virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_URI, &miguri) < 0 ||
@@ -2977,12 +2976,12 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
                                 VIR_MIGRATE_PARAM_DEST_XML, &dom_xml) < 0 ||
         virTypedParamsGetString(params, nparams,
                                 VIR_MIGRATE_PARAM_DEST_NAME, &dname) < 0)
-        goto cleanup;
+        return -1;
 
     /* We must set uri_out if miguri is not set. This is direct
      * managed migration requirement */
     if (!miguri && !(*uri_out = vzMigrationCreateURI()))
-        goto cleanup;
+        return -1;
 
     /* domain uuid and domain name are for backward compat */
     if (vzBakeCookie(privconn->driver, NULL,
@@ -2990,12 +2989,12 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
                      VZ_MIGRATION_COOKIE_SESSION_UUID
                      | VZ_MIGRATION_COOKIE_DOMAIN_UUID
                      | VZ_MIGRATION_COOKIE_DOMAIN_NAME) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(def = virDomainDefParseString(dom_xml, driver->xmlopt,
                                         NULL,
                                         VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto cleanup;
+        return -1;
 
     if (dname) {
         VIR_FREE(def->name);
@@ -3003,12 +3002,9 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     }
 
     if (virDomainMigratePrepare3ParamsEnsureACL(conn, def) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

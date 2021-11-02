@@ -2552,7 +2552,6 @@ testDomainSaveImageDefineXML(virConnectPtr conn,
                              const char *dxml,
                              unsigned int flags)
 {
-    int ret = -1;
     int fd = -1;
     g_autoptr(virDomainDef) def = NULL;
     g_autoptr(virDomainDef) newdef = NULL;
@@ -2562,20 +2561,17 @@ testDomainSaveImageDefineXML(virConnectPtr conn,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
     if ((fd = testDomainSaveImageOpen(privconn, path, &def)) < 0)
-        goto cleanup;
+        return -1;
     VIR_FORCE_CLOSE(fd);
 
     if ((newdef = virDomainDefParseString(dxml, privconn->xmlopt, NULL,
                                           VIR_DOMAIN_DEF_PARSE_INACTIVE)) == NULL)
-        goto cleanup;
+        return -1;
 
     if (!testDomainSaveImageWrite(privconn, path, newdef))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

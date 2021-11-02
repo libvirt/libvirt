@@ -718,19 +718,18 @@ qemuSaveImageUpdateDef(virQEMUDriver *driver,
                        virDomainDef *def,
                        const char *newxml)
 {
-    virDomainDef *ret = NULL;
     g_autoptr(virDomainDef) newdef_migr = NULL;
     g_autoptr(virDomainDef) newdef = NULL;
 
     if (!(newdef = virDomainDefParseString(newxml, driver->xmlopt, NULL,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto cleanup;
+        return NULL;
 
     if (!(newdef_migr = qemuDomainDefCopy(driver, NULL,
                                           newdef,
                                           QEMU_DOMAIN_FORMAT_LIVE_FLAGS |
                                           VIR_DOMAIN_XML_MIGRATABLE)))
-        goto cleanup;
+        return NULL;
 
     if (!virDomainDefCheckABIStability(def, newdef_migr, driver->xmlopt)) {
         virErrorPtr save_err;
@@ -745,16 +744,13 @@ qemuSaveImageUpdateDef(virQEMUDriver *driver,
          * fails. Snapshots created prior to v1.1.3 have this issue. */
         if (!virDomainDefCheckABIStability(def, newdef, driver->xmlopt)) {
             virErrorRestore(&save_err);
-            goto cleanup;
+            return NULL;
         }
         virFreeError(save_err);
 
         /* use the user provided XML */
-        ret = g_steal_pointer(&newdef);
-    } else {
-        ret = g_steal_pointer(&newdef_migr);
+        return g_steal_pointer(&newdef);
     }
 
- cleanup:
-    return ret;
+    return g_steal_pointer(&newdef_migr);
 }

@@ -1502,20 +1502,16 @@ libxlDomainDefCheckABIStability(libxlDriverPrivate *driver,
                                 virDomainDef *src,
                                 virDomainDef *dst)
 {
-    bool ret = false;
     g_autoptr(virDomainDef) migratableDefSrc = NULL;
     g_autoptr(virDomainDef) migratableDefDst = NULL;
 
     if (!(migratableDefSrc = virDomainDefCopy(src, driver->xmlopt, NULL, true)) ||
         !(migratableDefDst = virDomainDefCopy(dst, driver->xmlopt, NULL, true)))
-        goto cleanup;
+        return false;
 
-    ret = virDomainDefCheckABIStability(migratableDefSrc,
-                                        migratableDefDst,
-                                        driver->xmlopt);
-
- cleanup:
-    return ret;
+    return virDomainDefCheckABIStability(migratableDefSrc,
+                                         migratableDefDst,
+                                         driver->xmlopt);
 }
 
 

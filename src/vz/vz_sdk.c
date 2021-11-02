@@ -1789,10 +1789,10 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     char uuidstr[VIR_UUID_STRING_BRACED_BUFLEN];
 
     if (!(def = virDomainDefNew(driver->xmlopt)))
-        goto error;
+        return NULL;
 
     if (!(def->name = prlsdkGetStringParamVar(PrlVmCfg_GetName, sdkdom)))
-        goto error;
+        return NULL;
 
     pret = prlsdkGetStringParamBuf(PrlVmCfg_GetUuid,
                                    sdkdom, uuidstr, sizeof(uuidstr));
@@ -1801,7 +1801,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     if (prlsdkUUIDParse(uuidstr, def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Domain UUID is malformed or empty"));
-        goto error;
+        return NULL;
     }
 
     def->virtType = VIR_DOMAIN_VIRT_VZ;
@@ -1818,24 +1818,24 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     def->mem.cur_balloon = ram << 10;
 
     if (prlsdkConvertCpuInfo(sdkdom, def, driver->xmlopt) < 0)
-        goto error;
+        return NULL;
 
     if (prlsdkConvertCpuMode(sdkdom, def) < 0)
-        goto error;
+        return NULL;
 
     if (prlsdkConvertDomainType(sdkdom, def) < 0)
-        goto error;
+        return NULL;
 
     if (prlsdkAddVNCInfo(sdkdom, def) < 0)
-        goto error;
+        return NULL;
 
     /* depends on prlsdkAddVNCInfo */
     if (prlsdkAddDomainHardware(driver, sdkdom, def, driver->xmlopt) < 0)
-        goto error;
+        return NULL;
 
     /* depends on prlsdkAddDomainHardware */
     if (!IS_CT(def) && prlsdkConvertBootOrderVm(sdkdom, def) < 0)
-        goto error;
+        return NULL;
 
     pret = PrlVmCfg_GetEnvId(sdkdom, &envId);
     prlsdkCheckRetGoto(pret, error);
@@ -1846,14 +1846,14 @@ prlsdkLoadDomain(struct _vzDriver *driver,
         autostart != PAO_VM_START_MANUAL) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Unknown autostart mode: %X"), autostart);
-        goto error;
+        return NULL;
     }
 
     if (prlsdkGetDomainState(dom, sdkdom, &domainState) < 0)
-        goto error;
+        return NULL;
 
     if (!IS_CT(def) && virDomainDefAddImplicitDevices(def, driver->xmlopt) < 0)
-        goto error;
+        return NULL;
 
     if (def->ngraphics > 0) {
         int bus = IS_CT(def) ? VIR_DOMAIN_INPUT_BUS_PARALLELS :
@@ -1862,12 +1862,12 @@ prlsdkLoadDomain(struct _vzDriver *driver,
         if (virDomainDefMaybeAddInput(def,
                                       VIR_DOMAIN_INPUT_TYPE_MOUSE,
                                       bus) < 0)
-            goto error;
+            return NULL;
 
         if (virDomainDefMaybeAddInput(def,
                                       VIR_DOMAIN_INPUT_TYPE_KBD,
                                       bus) < 0)
-            goto error;
+            return NULL;
     }
 
     if (!dom) {
@@ -1875,7 +1875,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
 
         job = PrlVm_SubscribeToPerfStats(sdkdom, NULL);
         if (PRL_FAILED(waitJob(job)))
-            goto error;
+            return NULL;
 
         virObjectLock(driver);
         if (!(olddom = virDomainObjListFindByUUID(driver->domains, def->uuid)))
@@ -1885,7 +1885,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
         if (olddom) {
             return olddom;
         } else if (!dom) {
-            goto error;
+            return NULL;
         }
 
         pdom = dom->privateData;
@@ -1911,9 +1911,6 @@ prlsdkLoadDomain(struct _vzDriver *driver,
         dom->autostart = 0;
 
     return dom;
-
- error:
-    return NULL;
 }
 
 int
