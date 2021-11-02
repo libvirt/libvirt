@@ -1437,6 +1437,8 @@ main(int argc, char **argv)
     int rc = -1;
     char *profile = NULL;
     char *include_file = NULL;
+    off_t size;
+    bool purged = 0;
 
     if (virGettextInitialize() < 0 ||
         virErrorInitialize() < 0) {
@@ -1484,6 +1486,22 @@ main(int argc, char **argv)
         if (ctl->cmd == 'c' && virFileExists(profile))
             vah_error(ctl, 1, _("profile exists"));
 
+        /*
+         * Rare cases can leave corrupted empty files behind breaking
+         * the guest. An empty file is never correct as virt-aa-helper
+         * would at least add the basic rules, therefore clean this up
+         * for a proper refresh.
+         */
+        if (virFileExists(profile)) {
+                size = virFileLength(profile, -1);
+                if (size == 0) {
+                        vah_warning(_("Profile of 0 size detected, will attempt to remove it"));
+                        if ((rc = parserRemove(ctl->uuid) != 0))
+                                vah_error(ctl, 1, _("could not remove profile"));
+                        unlink(profile);
+                        purged = true;
+                }
+        }
         if (ctl->append && ctl->newfile) {
             if (vah_add_file(&buf, ctl->newfile, "rwk") != 0)
                 goto cleanup;
@@ -1523,7 +1541,7 @@ main(int argc, char **argv)
 
 
         /* create the profile from TEMPLATE */
-        if (ctl->cmd == 'c') {
+        if (ctl->cmd == 'c' || purged) {
             char *tmp = NULL;
             tmp = g_strdup_printf("  #include <libvirt/%s.files>\n", ctl->uuid);
 
