@@ -3064,7 +3064,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (shmem->server.enabled) {
-        if (qemuHotplugChardevAttach(priv->mon, charAlias, &shmem->server.chr) < 0)
+        if (qemuHotplugChardevAttach(priv->mon, charAlias, shmem->server.chr) < 0)
             goto exit_monitor;
     } else {
         if (qemuMonitorAddObject(priv->mon, &props, &memAlias) < 0)

@@ -1997,7 +1997,7 @@ struct _virDomainShmemDef {
     virDomainShmemRole role;
     struct {
         bool enabled;
-        virDomainChrSourceDef chr;
+        virDomainChrSourceDef *chr;
     } server;
     struct {
         bool enabled;

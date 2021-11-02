@@ -9368,7 +9368,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
     if (shmem->server.enabled) {
         chardev = qemuBuildChrChardevStr(logManager, secManager,
                                         cmd, cfg, def,
-                                        &shmem->server.chr,
+                                        shmem->server.chr,
                                         shmem->info.alias, qemuCaps,
                                         cdevflags);
         if (!chardev)

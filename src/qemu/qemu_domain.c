@@ -9964,11 +9964,11 @@ void
 qemuDomainPrepareShmemChardev(virDomainShmemDef *shmem)
 {
     if (!shmem->server.enabled ||
-        shmem->server.chr.data.nix.path)
+        shmem->server.chr->data.nix.path)
         return;
 
-    shmem->server.chr.data.nix.path = g_strdup_printf("/var/lib/libvirt/shmem-%s-sock",
-                                                      shmem->name);
+    shmem->server.chr->data.nix.path = g_strdup_printf("/var/lib/libvirt/shmem-%s-sock",
+                                                       shmem->name);
 }
 
 

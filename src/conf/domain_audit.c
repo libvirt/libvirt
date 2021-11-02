@@ -898,7 +898,7 @@ virDomainAuditShmem(virDomainObj *vm,
 {
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     char *vmname = virAuditEncode("vm", vm->def->name);
-    const char *srcpath = virDomainChrSourceDefGetPath(&def->server.chr);
+    const char *srcpath = virDomainChrSourceDefGetPath(def->server.chr);
     const char *virt = virDomainAuditGetVirtType(vm->def);
     char *shmpath = NULL;
 

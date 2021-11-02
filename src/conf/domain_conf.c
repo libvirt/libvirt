@@ -3069,7 +3069,7 @@ void virDomainShmemDefFree(virDomainShmemDef *def)
         return;
 
     virDomainDeviceInfoClear(&def->info);
-    virDomainChrSourceDefClear(&def->server.chr);
+    virObjectUnref(def->server.chr);
     g_free(def->name);
     g_free(def);
 }
@@ -13665,11 +13665,14 @@ virDomainShmemDefParseXML(virDomainXMLOption *xmlopt,
     if ((server = virXPathNode("./server[1]", ctxt))) {
         g_autofree char *tmp = NULL;
 
+        if (!(def->server.chr = virDomainChrSourceDefNew(xmlopt)))
+            return NULL;
+
         def->server.enabled = true;
-        def->server.chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-        def->server.chr.data.nix.listen = false;
+        def->server.chr->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        def->server.chr->data.nix.listen = false;
         if ((tmp = virXMLPropString(server, "path")))
-            def->server.chr.data.nix.path = virFileSanitizePath(tmp);
+            def->server.chr->data.nix.path = virFileSanitizePath(tmp);
     }
 
     if ((msi = virXPathNode("./msi[1]", ctxt))) {
@@ -16814,8 +16817,8 @@ virDomainShmemDefEquals(virDomainShmemDef *src,
         return false;
 
     if (src->server.enabled) {
-        if (STRNEQ_NULLABLE(src->server.chr.data.nix.path,
-                            dst->server.chr.data.nix.path))
+        if (STRNEQ_NULLABLE(src->server.chr->data.nix.path,
+                            dst->server.chr->data.nix.path))
             return false;
     }
 
@@ -25868,7 +25871,7 @@ virDomainShmemDefFormat(virBuffer *buf,
 
     if (def->server.enabled) {
         virBufferAddLit(buf, "<server");
-        virBufferEscapeString(buf, " path='%s'", def->server.chr.data.nix.path);
+        virBufferEscapeString(buf, " path='%s'", def->server.chr->data.nix.path);
         virBufferAddLit(buf, "/>\n");
     }
 

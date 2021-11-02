@@ -1172,8 +1172,8 @@ get_files(vahControl * ctl)
          * When the server path is enabled, use it - otherwise fallback to
          * model dependent defaults. */
         if (shmem->server.enabled &&
-            shmem->server.chr.data.nix.path) {
-                if (vah_add_file(&buf, shmem->server.chr.data.nix.path,
+            shmem->server.chr->data.nix.path) {
+                if (vah_add_file(&buf, shmem->server.chr->data.nix.path,
                         "rw") != 0)
                     goto cleanup;
         } else {
