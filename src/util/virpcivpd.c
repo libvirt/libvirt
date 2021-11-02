@@ -456,10 +456,6 @@ bool
 virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t resDataLen,
                                      bool readOnly, uint8_t *csum, virPCIVPDResource *res)
 {
-    g_autofree char *fieldKeyword = NULL;
-    g_autofree char *fieldValue = NULL;
-    virPCIVPDResourceFieldValueFormat fieldFormat = VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST;
-
     /* A buffer of up to one resource record field size (plus a zero byte) is needed. */
     g_autofree uint8_t *buf = g_malloc0(PCI_VPD_MAX_FIELD_SIZE + 1);
     uint16_t fieldDataLen = 0, bytesToRead = 0;
@@ -473,6 +469,10 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
      * just occupy 3 header bytes. In the in case of the RW field this may mean that
      * no more space is left in the section. */
     while (fieldPos + 3 <= resPos + resDataLen) {
+        virPCIVPDResourceFieldValueFormat fieldFormat = VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST;
+        g_autofree char *fieldKeyword = NULL;
+        g_autofree char *fieldValue = NULL;
+
         /* Keyword resources consist of keywords (2 ASCII bytes per the spec) and 1-byte length. */
         if (virPCIVPDReadVPDBytes(vpdFileFd, buf, 3, fieldPos, csum) != 3) {
             /* Invalid field encountered which means the resource itself is invalid too. Report
@@ -548,8 +548,6 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 /* Skip fields with invalid values - this is safe assuming field length is
                  * correctly specified. */
                 VIR_DEBUG("A value for field %s contains invalid characters", fieldKeyword);
-                g_free(g_steal_pointer(&fieldKeyword));
-                g_free(g_steal_pointer(&fieldValue));
                 continue;
             }
         } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RESVD) {
@@ -559,19 +557,13 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                 return false;
             }
             hasChecksum = true;
-            g_free(g_steal_pointer(&fieldKeyword));
-            g_free(g_steal_pointer(&fieldValue));
             break;
         } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_RDWR) {
             /* Skip the read-write space since it is used for indication only. */
             hasRW = true;
-            g_free(g_steal_pointer(&fieldKeyword));
-            g_free(g_steal_pointer(&fieldValue));
             break;
         } else if (fieldFormat == VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST) {
             /* Skip unknown fields */
-            g_free(g_steal_pointer(&fieldKeyword));
-            g_free(g_steal_pointer(&fieldValue));
             continue;
         } else {
             fieldValue = g_malloc(fieldDataLen);
@@ -591,9 +583,6 @@ virPCIVPDParseVPDLargeResourceFields(int vpdFileFd, uint16_t resPos, uint16_t re
                            _("Could not update the VPD resource keyword: %s"), fieldKeyword);
             return false;
         }
-        /* No longer need those since copies were made during the keyword update. */
-        g_free(g_steal_pointer(&fieldKeyword));
-        g_free(g_steal_pointer(&fieldValue));
     }
 
     /* May have exited the loop prematurely in case RV or RW were encountered and
