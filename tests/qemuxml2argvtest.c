@@ -3178,19 +3178,7 @@ mymain(void)
                  ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE,
                  ARG_END);
 
-    DO_TEST("name-escape",
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_SPICE_UNIX,
-            QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_VIRGL,
-            QEMU_CAPS_SPICE_GL,
-            QEMU_CAPS_SPICE_RENDERNODE,
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_CHARDEV_FILE_APPEND,
-            QEMU_CAPS_CCID_EMULATED,
-            QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_VER("name-escape", "2.11.0");
 
     DO_TEST_NOCAPS("master-key");
     DO_TEST("usb-long-port-path",

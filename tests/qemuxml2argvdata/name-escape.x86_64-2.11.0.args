@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=spice \
 -name guest=foo=1,,bar=2,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-foo=1,,bar=2/master-key.aes \
--machine pc,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.11,accel=tcg,usb=off,dump-guest-core=off \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
@@ -24,11 +24,11 @@ QEMU_AUDIO_DRV=spice \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
--usb \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -drive file=/dev/HostVG/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,cache=none,throttling.bps-total=5000,throttling.iops-total=6000,throttling.bps-total-max=10000,throttling.iops-total-max=11000,throttling.group=libvirt_iotune_group1,,foo \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
+-device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1,write-cache=on \
 -device ccid-card-emulated,backend=certificates,cert1=cert1,,foo,cert2=cert2,cert3=cert3,db=/etc/pki/nssdb,,foo,id=smartcard0,bus=ccid0.0 \
 -chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
 -device isa-serial,chardev=charserial0,id=serial0 \
@@ -42,4 +42,5 @@ QEMU_AUDIO_DRV=spice \
 -drive file.driver=iscsi,file.portal=example.foo.org:3260,file.target=iqn.1992-01.com.example:my,,storage,file.lun=1,file.transport=tcp,if=none,format=raw,id=drive-hostdev0 \
 -device scsi-generic,drive=drive-hostdev0,id=hostdev0,bus=scsi0.0,channel=0,scsi-id=0,lun=4 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
