@@ -380,7 +380,7 @@ libxlCapsInitGuests(libxl_ctx *ctx, virCaps *caps)
      * we "own" the buffer.  Parse out the features from each token.
      */
     for (str = ver_info->capabilities, nr_guest_archs = 0;
-         nr_guest_archs < sizeof(guest_archs) / sizeof(guest_archs[0])
+         nr_guest_archs < G_N_ELEMENTS(guest_archs)
                  && (token = strtok_r(str, " ", &saveptr)) != NULL;
          str = NULL) {
         if (g_regex_match(regex, token, 0, &info)) {

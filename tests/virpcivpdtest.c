@@ -76,9 +76,9 @@ testPCIVPDResourceBasic(const void *data G_GNUC_UNUSED)
         {.keyword = "CP", .value = "42", .actual = NULL},
         {.keyword = "EX", .value = "42", .actual = NULL},
     };
-    size_t numROCases = sizeof(readOnlyCases) / sizeof(TestPCIVPDKeywordValue);
-    size_t numRWCases = sizeof(readWriteCases) / sizeof(TestPCIVPDKeywordValue);
-    size_t numUnsupportedCases = sizeof(unsupportedFieldCases) / sizeof(TestPCIVPDKeywordValue);
+    size_t numROCases = G_N_ELEMENTS(readOnlyCases);
+    size_t numRWCases = G_N_ELEMENTS(readWriteCases);
+    size_t numUnsupportedCases = G_N_ELEMENTS(unsupportedFieldCases);
     g_autoptr(virPCIVPDResource) res = g_new0(virPCIVPDResource, 1);
     virPCIVPDResourceCustom *custom = NULL;
 
@@ -328,7 +328,7 @@ testPCIVPDIsValidTextValue(const void *data G_GNUC_UNUSED)
         /* The first and last code points are outside ASCII (multi-byte in UTF-8). */
         {"гbl🐧", false},
     };
-    for (i = 0; i < sizeof(textValueCases) / sizeof(textValueCases[0]); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(textValueCases); ++i) {
         if (virPCIVPDResourceIsValidTextValue(textValueCases[i].keyword) !=
             textValueCases[i].expected)
             return -1;
@@ -385,7 +385,7 @@ testPCIVPDGetFieldValueFormat(const void *data G_GNUC_UNUSED)
         /* Many letters. */
         {"EXAMPLE", VIR_PCI_VPD_RESOURCE_FIELD_VALUE_FORMAT_LAST},
     };
-    for (i = 0; i < sizeof(valueFormatCases) / sizeof(valueFormatCases[0]); ++i) {
+    for (i = 0; i < G_N_ELEMENTS(valueFormatCases); ++i) {
         if (virPCIVPDResourceGetFieldValueFormat(valueFormatCases[i].keyword) !=
             valueFormatCases[i].expected)
             return -1;
@@ -442,7 +442,7 @@ testVirPCIVPDReadVPDBytes(const void *opaque G_GNUC_UNUSED)
         VPD_R_FIELDS_EXAMPLE_HEADER, VPD_R_FIELDS_EXAMPLE_DATA,
         PCI_VPD_RESOURCE_END_VAL
     };
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t) - 2;
+    dataLen = G_N_ELEMENTS(fullVPDExample) - 2;
     buf = g_malloc0(dataLen);
 
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
@@ -480,7 +480,7 @@ testVirPCIVPDParseVPDStringResource(const void *opaque G_GNUC_UNUSED)
         VPD_STRING_RESOURCE_EXAMPLE_DATA
     };
 
-    dataLen = sizeof(stringResExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(stringResExample);
     fd = virCreateAnonymousFile(stringResExample, dataLen);
     result = virPCIVPDParseVPDLargeResourceString(fd, 0, dataLen, &csum, res);
     VIR_FORCE_CLOSE(fd);
@@ -550,7 +550,7 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
         PCI_VPD_RESOURCE_END_VAL
     };
 
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(fullVPDExample);
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
@@ -618,7 +618,7 @@ testVirPCIVPDParseZeroLengthRW(const void *opaque G_GNUC_UNUSED)
         PCI_VPD_RESOURCE_END_VAL
     };
 
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(fullVPDExample);
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
@@ -668,7 +668,7 @@ testVirPCIVPDParseNoRW(const void *opaque G_GNUC_UNUSED)
         PCI_VPD_RESOURCE_END_VAL
     };
 
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(fullVPDExample);
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
@@ -721,7 +721,7 @@ testVirPCIVPDParseFullVPDSkipInvalidKeywords(const void *opaque G_GNUC_UNUSED)
         PCI_VPD_RESOURCE_END_VAL
     };
 
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(fullVPDExample);
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
@@ -774,7 +774,7 @@ testVirPCIVPDParseFullVPDSkipInvalidValues(const void *opaque G_GNUC_UNUSED)
         0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 'R', 'W', 0x00, 0x78,
     };
 
-    dataLen = sizeof(fullVPDExample) / sizeof(uint8_t);
+    dataLen = G_N_ELEMENTS(fullVPDExample);
     fd = virCreateAnonymousFile(fullVPDExample, dataLen);
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
@@ -950,7 +950,7 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
     do { \
         g_autoptr(virPCIVPDResource) res = NULL; \
         const uint8_t testCase[] = { invalidVPD }; \
-        dataLen = sizeof(testCase) / sizeof(uint8_t); \
+        dataLen = G_N_ELEMENTS(testCase); \
         fd = virCreateAnonymousFile(testCase, dataLen); \
         if ((res = virPCIVPDParse(fd))) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \

@@ -965,7 +965,7 @@ init_env(void)
     };
     struct pciVPD exampleVPD = {
         .data = fullVPDExampleData,
-        .vpd_len = sizeof(fullVPDExampleData) / sizeof(fullVPDExampleData[0]),
+        .vpd_len = G_N_ELEMENTS(fullVPDExampleData),
     };
 
     if (!(fakerootdir = getenv("LIBVIRT_FAKE_ROOT_DIR")))
