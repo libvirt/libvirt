@@ -836,8 +836,8 @@ endforeach
 # Use this knowledge to detect the version that we know doesn't work
 # for building libvirt and reject it
 rst2html5_version = run_command(rst2html5_prog, '--version')
-rst2html5_version = rst2html5_version.stdout().split('(')
-if rst2html5_version[0] != 'rst2html5 '
+rst2html5_version = rst2html5_version.stdout().split(' ')
+if rst2html5_version[1] != '(Docutils'
   error('Please uninstall the rst2html5 package and install the docutils package')
 endif
 
