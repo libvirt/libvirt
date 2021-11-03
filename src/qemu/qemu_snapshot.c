@@ -1554,6 +1554,82 @@ qemuSnapshotCreateXMLParse(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotCreateXMLValidateDef(virDomainObj *vm,
+                                 virDomainSnapshotDef *def,
+                                 unsigned int flags)
+{
+    bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
+    virDomainSnapshotState state;
+
+    /* reject snapshot names containing slashes or starting with dot as
+     * snapshot definitions are saved in files named by the snapshot name */
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        if (strchr(def->parent.name, '/')) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("invalid snapshot name '%s': "
+                             "name can't contain '/'"),
+                           def->parent.name);
+            return -1;
+        }
+
+        if (def->parent.name[0] == '.') {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("invalid snapshot name '%s': "
+                             "name can't start with '.'"),
+                           def->parent.name);
+            return -1;
+        }
+    }
+
+    /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
+        (!virDomainObjIsActive(vm) ||
+         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("live snapshot creation is supported only "
+                         "during full system snapshots"));
+        return -1;
+    }
+
+    /* allow snapshots only in certain states */
+    state = redefine ? def->state : vm->state.state;
+    switch (state) {
+        /* valid states */
+    case VIR_DOMAIN_SNAPSHOT_RUNNING:
+    case VIR_DOMAIN_SNAPSHOT_PAUSED:
+    case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
+    case VIR_DOMAIN_SNAPSHOT_SHUTOFF:
+    case VIR_DOMAIN_SNAPSHOT_CRASHED:
+        break;
+
+    case VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT:
+        if (!redefine) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
+                           virDomainSnapshotStateTypeToString(state));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_SNAPSHOT_PMSUSPENDED:
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("qemu doesn't support taking snapshots of "
+                         "PMSUSPENDED guests"));
+        return -1;
+
+        /* invalid states */
+    case VIR_DOMAIN_SNAPSHOT_NOSTATE:
+    case VIR_DOMAIN_SNAPSHOT_BLOCKED: /* invalid state, unused in qemu */
+    case VIR_DOMAIN_SNAPSHOT_LAST:
+        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
+                       virDomainSnapshotStateTypeToString(state));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1571,7 +1647,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     bool align_match = true;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
-    virDomainSnapshotState state;
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE |
@@ -1608,69 +1683,8 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     if (!(def = qemuSnapshotCreateXMLParse(vm, driver, xmlDesc, flags)))
         return NULL;
 
-    /* reject snapshot names containing slashes or starting with dot as
-     * snapshot definitions are saved in files named by the snapshot name */
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if (strchr(def->parent.name, '/')) {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("invalid snapshot name '%s': "
-                             "name can't contain '/'"),
-                           def->parent.name);
-            return NULL;
-        }
-
-        if (def->parent.name[0] == '.') {
-            virReportError(VIR_ERR_XML_DETAIL,
-                           _("invalid snapshot name '%s': "
-                             "name can't start with '.'"),
-                           def->parent.name);
-            return NULL;
-        }
-    }
-
-    /* reject the VIR_DOMAIN_SNAPSHOT_CREATE_LIVE flag where not supported */
-    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE &&
-        (!virDomainObjIsActive(vm) ||
-         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("live snapshot creation is supported only "
-                         "during full system snapshots"));
+    if (qemuSnapshotCreateXMLValidateDef(vm, def, flags) < 0)
         return NULL;
-    }
-
-    /* allow snapshots only in certain states */
-    state = redefine ? def->state : vm->state.state;
-    switch (state) {
-        /* valid states */
-    case VIR_DOMAIN_SNAPSHOT_RUNNING:
-    case VIR_DOMAIN_SNAPSHOT_PAUSED:
-    case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
-    case VIR_DOMAIN_SNAPSHOT_SHUTOFF:
-    case VIR_DOMAIN_SNAPSHOT_CRASHED:
-        break;
-
-    case VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT:
-        if (!redefine) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
-                           virDomainSnapshotStateTypeToString(state));
-            return NULL;
-        }
-        break;
-
-    case VIR_DOMAIN_SNAPSHOT_PMSUSPENDED:
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("qemu doesn't support taking snapshots of "
-                         "PMSUSPENDED guests"));
-        return NULL;
-
-        /* invalid states */
-    case VIR_DOMAIN_SNAPSHOT_NOSTATE:
-    case VIR_DOMAIN_SNAPSHOT_BLOCKED: /* invalid state, unused in qemu */
-    case VIR_DOMAIN_SNAPSHOT_LAST:
-        virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
-                       virDomainSnapshotStateTypeToString(state));
-        return NULL;
-    }
 
     /* We are going to modify the domain below. Internal snapshots would use
      * a regular job, so we need to set the job mask to disallow query as
