@@ -5659,8 +5659,7 @@ qemuBuildRNGBackendChrdevStr(virLogManager *logManager,
                              const virDomainDef *def,
                              virDomainRNGDef *rng,
                              virQEMUCaps *qemuCaps,
-                             char **chr,
-                             bool chardevStdioLogd G_GNUC_UNUSED)
+                             char **chr)
 {
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
@@ -5771,8 +5770,7 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
                         virCommand *cmd,
                         virQEMUDriverConfig *cfg,
                         const virDomainDef *def,
-                        virQEMUCaps *qemuCaps,
-                        bool chardevStdioLogd)
+                        virQEMUCaps *qemuCaps)
 {
     size_t i;
 
@@ -5790,8 +5788,7 @@ qemuBuildRNGCommandLine(virLogManager *logManager,
 
         /* possibly add character device for backend */
         if (qemuBuildRNGBackendChrdevStr(logManager, secManager, cmd, cfg, def,
-                                         rng, qemuCaps, &chardev,
-                                         chardevStdioLogd) < 0)
+                                         rng, qemuCaps, &chardev) < 0)
             return -1;
 
         if (chardev)
@@ -9035,8 +9032,7 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
                               virCommand *cmd,
                               virQEMUDriverConfig *cfg,
                               const virDomainDef *def,
-                              virQEMUCaps *qemuCaps,
-                              bool chardevStdioLogd G_GNUC_UNUSED)
+                              virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
     virDomainSmartcardDef *smartcard;
@@ -9236,8 +9232,7 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
                           virQEMUDriverConfig *cfg,
                           virDomainDef *def,
                           virDomainShmemDef *shmem,
-                          virQEMUCaps *qemuCaps,
-                          bool chardevStdioLogd G_GNUC_UNUSED)
+                          virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) memProps = NULL;
     g_autoptr(virJSONValue) devProps = NULL;
@@ -9406,8 +9401,7 @@ qemuBuildSerialCommandLine(virLogManager *logManager,
                            virCommand *cmd,
                            virQEMUDriverConfig *cfg,
                            const virDomainDef *def,
-                           virQEMUCaps *qemuCaps,
-                           bool chardevStdioLogd G_GNUC_UNUSED)
+                           virQEMUCaps *qemuCaps)
 {
     size_t i;
     bool havespice = false;
@@ -9467,8 +9461,7 @@ qemuBuildParallelsCommandLine(virLogManager *logManager,
                               virCommand *cmd,
                               virQEMUDriverConfig *cfg,
                               const virDomainDef *def,
-                              virQEMUCaps *qemuCaps,
-                              bool chardevStdioLogd G_GNUC_UNUSED)
+                              virQEMUCaps *qemuCaps)
 {
     size_t i;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
@@ -9501,8 +9494,7 @@ qemuBuildChannelsCommandLine(virLogManager *logManager,
                              virCommand *cmd,
                              virQEMUDriverConfig *cfg,
                              const virDomainDef *def,
-                             virQEMUCaps *qemuCaps,
-                             bool chardevStdioLogd G_GNUC_UNUSED)
+                             virQEMUCaps *qemuCaps)
 {
     size_t i;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
@@ -9553,8 +9545,7 @@ qemuBuildConsoleCommandLine(virLogManager *logManager,
                             virCommand *cmd,
                             virQEMUDriverConfig *cfg,
                             const virDomainDef *def,
-                            virQEMUCaps *qemuCaps,
-                            bool chardevStdioLogd G_GNUC_UNUSED)
+                            virQEMUCaps *qemuCaps)
 {
     size_t i;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
@@ -9686,8 +9677,7 @@ qemuBuildRedirdevCommandLine(virLogManager *logManager,
                              virCommand *cmd,
                              virQEMUDriverConfig *cfg,
                              const virDomainDef *def,
-                             virQEMUCaps *qemuCaps,
-                             bool chardevStdioLogd G_GNUC_UNUSED)
+                             virQEMUCaps *qemuCaps)
 {
     size_t i;
     unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
@@ -10566,7 +10556,6 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
-    bool chardevStdioLogd = priv->chardevStdioLogd;
 
     VIR_DEBUG("driver=%p def=%p mon=%p "
               "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d flags=0x%x",
@@ -10715,24 +10704,19 @@ qemuBuildCommandLine(virQEMUDriver *driver,
                                 nnicindexes, nicindexes) < 0)
         return NULL;
 
-    if (qemuBuildSmartcardCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                      chardevStdioLogd) < 0)
+    if (qemuBuildSmartcardCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildSerialCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                   chardevStdioLogd) < 0)
+    if (qemuBuildSerialCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildParallelsCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                      chardevStdioLogd) < 0)
+    if (qemuBuildParallelsCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildChannelsCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                     chardevStdioLogd) < 0)
+    if (qemuBuildChannelsCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildConsoleCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                    chardevStdioLogd) < 0)
+    if (qemuBuildConsoleCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildTPMsCommandLine(cmd, def, qemuCaps) < 0)
@@ -10756,8 +10740,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildWatchdogCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildRedirdevCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                     chardevStdioLogd) < 0)
+    if (qemuBuildRedirdevCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildHostdevCommandLine(cmd, def, qemuCaps) < 0)
@@ -10769,8 +10752,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildMemballoonCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildRNGCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps,
-                                chardevStdioLogd) < 0)
+    if (qemuBuildRNGCommandLine(logManager, secManager, cmd, cfg, def, qemuCaps) < 0)
         return NULL;
 
     if (qemuBuildNVRAMCommandLine(cmd, def) < 0)
@@ -10805,8 +10787,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 
     for (i = 0; i < def->nshmems; i++) {
         if (qemuBuildShmemCommandLine(logManager, secManager, cmd, cfg,
-                                      def, def->shmems[i], qemuCaps,
-                                      chardevStdioLogd) < 0)
+                                      def, def->shmems[i], qemuCaps) < 0)
             return NULL;
     }
 
