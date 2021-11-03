@@ -5038,8 +5038,6 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev)
 
 enum {
     QEMU_BUILD_CHARDEV_TCP_NOWAIT = (1 << 0),
-    QEMU_BUILD_CHARDEV_FILE_LOGD  = (1 << 1),
-    QEMU_BUILD_CHARDEV_UNIX_FD_PASS = (1 << 2),
 };
 
 /* This function outputs a -chardev command line option which describes only the
@@ -5527,10 +5525,7 @@ qemuBuildMonitorCommandLine(virLogManager *logManager,
                             qemuDomainObjPrivate *priv)
 {
     g_autofree char *chrdev = NULL;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (priv->chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     if (!priv->monConfig)
         return 0;
@@ -5665,15 +5660,11 @@ qemuBuildRNGBackendChrdevStr(virLogManager *logManager,
                              virDomainRNGDef *rng,
                              virQEMUCaps *qemuCaps,
                              char **chr,
-                             bool chardevStdioLogd)
+                             bool chardevStdioLogd G_GNUC_UNUSED)
 {
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     *chr = NULL;
-
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
@@ -9045,7 +9036,7 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
                               virQEMUDriverConfig *cfg,
                               const virDomainDef *def,
                               virQEMUCaps *qemuCaps,
-                              bool chardevStdioLogd)
+                              bool chardevStdioLogd G_GNUC_UNUSED)
 {
     g_autoptr(virJSONValue) props = NULL;
     virDomainSmartcardDef *smartcard;
@@ -9086,12 +9077,9 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH: {
-        unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT | QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
+        unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
         g_autofree char *chardevstr = NULL;
         g_autofree char *chardevalias = g_strdup_printf("char%s", smartcard->info.alias);
-
-        if (chardevStdioLogd)
-            cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
 
         if (!(chardevstr = qemuBuildChrChardevStr(logManager, secManager,
                                                   cmd, cfg, def,
@@ -9249,15 +9237,12 @@ qemuBuildShmemCommandLine(virLogManager *logManager,
                           virDomainDef *def,
                           virDomainShmemDef *shmem,
                           virQEMUCaps *qemuCaps,
-                          bool chardevStdioLogd)
+                          bool chardevStdioLogd G_GNUC_UNUSED)
 {
     g_autoptr(virJSONValue) memProps = NULL;
     g_autoptr(virJSONValue) devProps = NULL;
     g_autofree char *chardev = NULL;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     if (shmem->size) {
         /*
@@ -9422,14 +9407,11 @@ qemuBuildSerialCommandLine(virLogManager *logManager,
                            virQEMUDriverConfig *cfg,
                            const virDomainDef *def,
                            virQEMUCaps *qemuCaps,
-                           bool chardevStdioLogd)
+                           bool chardevStdioLogd G_GNUC_UNUSED)
 {
     size_t i;
     bool havespice = false;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     if (def->nserials) {
         for (i = 0; i < def->ngraphics && !havespice; i++) {
@@ -9486,13 +9468,10 @@ qemuBuildParallelsCommandLine(virLogManager *logManager,
                               virQEMUDriverConfig *cfg,
                               const virDomainDef *def,
                               virQEMUCaps *qemuCaps,
-                              bool chardevStdioLogd)
+                              bool chardevStdioLogd G_GNUC_UNUSED)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     for (i = 0; i < def->nparallels; i++) {
         virDomainChrDef *parallel = def->parallels[i];
@@ -9523,13 +9502,10 @@ qemuBuildChannelsCommandLine(virLogManager *logManager,
                              virQEMUDriverConfig *cfg,
                              const virDomainDef *def,
                              virQEMUCaps *qemuCaps,
-                             bool chardevStdioLogd)
+                             bool chardevStdioLogd G_GNUC_UNUSED)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDef *channel = def->channels[i];
@@ -9578,13 +9554,10 @@ qemuBuildConsoleCommandLine(virLogManager *logManager,
                             virQEMUDriverConfig *cfg,
                             const virDomainDef *def,
                             virQEMUCaps *qemuCaps,
-                            bool chardevStdioLogd)
+                            bool chardevStdioLogd G_GNUC_UNUSED)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     /* Explicit console devices */
     for (i = 0; i < def->nconsoles; i++) {
@@ -9714,13 +9687,10 @@ qemuBuildRedirdevCommandLine(virLogManager *logManager,
                              virQEMUDriverConfig *cfg,
                              const virDomainDef *def,
                              virQEMUCaps *qemuCaps,
-                             bool chardevStdioLogd)
+                             bool chardevStdioLogd G_GNUC_UNUSED)
 {
     size_t i;
-    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT |
-        QEMU_BUILD_CHARDEV_UNIX_FD_PASS;
-    if (chardevStdioLogd)
-        cdevflags |= QEMU_BUILD_CHARDEV_FILE_LOGD;
+    unsigned int cdevflags = QEMU_BUILD_CHARDEV_TCP_NOWAIT;
 
     for (i = 0; i < def->nredirdevs; i++) {
         virDomainRedirdevDef *redirdev = def->redirdevs[i];
