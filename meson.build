@@ -1975,24 +1975,8 @@ if conf.has('WITH_LIBVIRTD')
   endif
 
   if not get_option('storage_zfs').disabled()
-    foreach name : [ 'zfs', 'zpool' ]
-      set_variable(
-        '@0@_prog'.format(name),
-        find_program(name, required: false, dirs: libvirt_sbin_path)
-      )
-    endforeach
-
     use_storage = true
     conf.set('WITH_STORAGE_ZFS', 1)
-    foreach name : [ 'zfs', 'zpool' ]
-      prog_var = get_variable('@0@_prog'.format(name))
-      if prog_var.found()
-        prog_path = prog_var.path()
-      else
-        prog_path = name
-      endif
-      conf.set_quoted(name.to_upper(), prog_path)
-    endforeach
   endif
 endif
 

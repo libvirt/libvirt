@@ -33,6 +33,9 @@
 
 VIR_LOG_INIT("storage.storage_backend_zfs");
 
+#define ZFS "zfs"
+#define ZPOOL "zpool"
+
 /*
  * Some common flags of zfs and zpool commands we use:
  * -H -- don't print headers and separate fields by tab
