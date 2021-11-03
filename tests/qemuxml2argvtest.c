@@ -527,8 +527,6 @@ testCompareXMLToArgvValidateSchemaCommand(GStrv args,
             }
 
             if (*curargs != '{') {
-                VIR_TEST_DEBUG("skipping validation of '%s': argument is not JSON",
-                               command->name);
                 arg++;
                 break;
             }
