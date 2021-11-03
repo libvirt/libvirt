@@ -5083,7 +5083,7 @@ nodedev-start
 
 ::
 
-   nodedev-start network
+   nodedev-start device
 
 Start a (previously defined) inactive device.
 
