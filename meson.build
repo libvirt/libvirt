@@ -1978,7 +1978,7 @@ if conf.has('WITH_LIBVIRTD')
     foreach name : [ 'zfs', 'zpool' ]
       set_variable(
         '@0@_prog'.format(name),
-        find_program(name, required: get_option('storage_zfs'), dirs: libvirt_sbin_path)
+        find_program(name, required: false, dirs: libvirt_sbin_path)
       )
     endforeach
 
