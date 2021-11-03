@@ -1864,6 +1864,9 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <cfpc value='workaround'/>
      <sbbc value='workaround'/>
      <ibs value='fixed-na'/>
+     <tcg>
+       <tb-cache unit='MiB'>128</tb-cache>
+     </tcg>
    </features>
    ...
 
@@ -2065,6 +2068,14 @@ are:
    ``fixed-na (fixed in           hardware - no longer applicable)``. If the
    attribute is not defined, the hypervisor default will be used. :since:`Since
    6.3.0` (QEMU/KVM only)
+``tcg``
+   Various features to change the behavior of the TCG accelerator.
+
+   =========== ============================================== =================================================== ==============
+   Feature     Description                                    Value                                               Since
+   =========== ============================================== =================================================== ==============
+   tb-cache    The size of translation block cache size       an integer                                          :since:`8.0.0`
+   =========== ============================================== =================================================== ==============
 
 :anchor:`<a id="elementsTime"/>`
 

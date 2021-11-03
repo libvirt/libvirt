@@ -294,6 +294,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             }
             break;
 
+        case VIR_DOMAIN_FEATURE_TCG:
         case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:

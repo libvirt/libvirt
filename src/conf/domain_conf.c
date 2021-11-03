@@ -172,6 +172,7 @@ VIR_ENUM_IMPL(virDomainFeature,
               "cfpc",
               "sbbc",
               "ibs",
+              "tcg",
 );
 
 VIR_ENUM_IMPL(virDomainCapabilitiesPolicy,
@@ -3713,6 +3714,7 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def->description);
     g_free(def->title);
     g_free(def->hyperv_vendor_id);
+    g_free(def->tcg_features);
 
     virBlkioDeviceArrayClear(def->blkio.devices,
                              def->blkio.ndevices);
@@ -17649,6 +17651,30 @@ virDomainFeaturesCapabilitiesDefParse(virDomainDef *def,
 
 
 static int
+virDomainFeaturesTCGDefParse(virDomainDef *def,
+                             xmlXPathContextPtr ctxt,
+                             xmlNodePtr node)
+{
+    g_autofree virDomainFeatureTCG *tcg = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    tcg = g_new0(virDomainFeatureTCG, 1);
+    ctxt->node = node;
+
+    if (virDomainParseMemory("./tb-cache", "./tb-cache/@unit",
+                             ctxt, &tcg->tb_cache, false, false) < 0)
+        return -1;
+
+    if (tcg->tb_cache == 0)
+        return 0;
+
+    def->features[VIR_DOMAIN_FEATURE_TCG] = VIR_TRISTATE_SWITCH_ON;
+    def->tcg_features = g_steal_pointer(&tcg);
+    return 0;
+}
+
+
+static int
 virDomainFeaturesDefParse(virDomainDef *def,
                           xmlXPathContextPtr ctxt)
 {
@@ -17855,6 +17881,11 @@ virDomainFeaturesDefParse(virDomainDef *def,
             def->features[val] = state;
             break;
         }
+
+        case VIR_DOMAIN_FEATURE_TCG:
+            if (virDomainFeaturesTCGDefParse(def, ctxt, nodes[i]) < 0)
+                return -1;
+            break;
 
         case VIR_DOMAIN_FEATURE_LAST:
             break;
@@ -21656,8 +21687,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             break;
 
         case VIR_DOMAIN_FEATURE_MSRS:
-            break;
-
+        case VIR_DOMAIN_FEATURE_TCG:
         case VIR_DOMAIN_FEATURE_LAST:
             break;
         }
@@ -27644,6 +27674,26 @@ virDomainDefFormatBlkiotune(virBuffer *buf,
 }
 
 
+static void
+virDomainFeatureTCGFormat(virBuffer *buf,
+                          const virDomainDef *def)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!def->tcg_features ||
+        def->features[VIR_DOMAIN_FEATURE_TCG] != VIR_TRISTATE_SWITCH_ON)
+        return;
+
+    if (def->tcg_features->tb_cache > 0) {
+        virBufferAsprintf(&childBuf,
+                          "<tb-cache unit='KiB'>%lld</tb-cache>\n",
+                          def->tcg_features->tb_cache);
+    }
+
+    virXMLFormatElement(buf, "tcg", NULL, &childBuf);
+}
+
+
 static int
 virDomainDefFormatFeatures(virBuffer *buf,
                            virDomainDef *def)
@@ -27962,6 +28012,10 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
             virBufferAsprintf(&childBuf, "<ibs value='%s'/>\n",
                               virDomainIBSTypeToString(def->features[i]));
+            break;
+
+        case VIR_DOMAIN_FEATURE_TCG:
+            virDomainFeatureTCGFormat(&childBuf, def);
             break;
 
         case VIR_DOMAIN_FEATURE_LAST:

@@ -2054,6 +2054,7 @@ typedef enum {
     VIR_DOMAIN_FEATURE_CFPC,
     VIR_DOMAIN_FEATURE_SBBC,
     VIR_DOMAIN_FEATURE_IBS,
+    VIR_DOMAIN_FEATURE_TCG,
 
     VIR_DOMAIN_FEATURE_LAST
 } virDomainFeature;
@@ -2261,6 +2262,11 @@ typedef enum {
 } virDomainIBS;
 
 VIR_ENUM_DECL(virDomainIBS);
+
+typedef struct _virDomainFeatureTCG virDomainFeatureTCG;
+struct _virDomainFeatureTCG {
+    unsigned long long tb_cache; /* Stored in KiB */
+};
 
 /* Operating system configuration data & machine / arch */
 struct _virDomainOSEnv {
@@ -2824,6 +2830,7 @@ struct _virDomainDef {
     unsigned long long hpt_maxpagesize; /* Stored in KiB */
     char *hyperv_vendor_id;
     virTristateSwitch apic_eoi;
+    virDomainFeatureTCG *tcg_features;
 
     bool tseg_specified;
     unsigned long long tseg_size;

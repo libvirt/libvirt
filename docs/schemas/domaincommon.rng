@@ -6092,7 +6092,7 @@
     </element>
   </define>
   <!--
-      A set of optional features: PAE, APIC, ACPI, GIC,
+      A set of optional features: PAE, APIC, ACPI, GIC, TCG,
       HyperV Enlightenment, KVM features, paravirtual spinlocks and HAP support
     -->
   <define name="features">
@@ -6231,6 +6231,9 @@
           </optional>
           <optional>
             <ref name="ibs"/>
+          </optional>
+          <optional>
+            <ref name="tcgfeatures"/>
           </optional>
         </interleave>
       </element>
@@ -6517,6 +6520,16 @@
           <value>fixed-na</value>
         </choice>
       </attribute>
+    </element>
+  </define>
+
+  <define name="tcgfeatures">
+    <element name="tcg">
+      <optional>
+        <element name="tb-cache">
+          <ref name="scaledInteger"/>
+        </element>
+      </optional>
     </element>
   </define>
 
