@@ -1462,6 +1462,7 @@ virCPUDataAddFeature;
 virCPUDataCheckFeature;
 virCPUDataFormat;
 virCPUDataFree;
+virCPUDataGetHost;
 virCPUDataIsIdentical;
 virCPUDataNew;
 virCPUDataNewCopy;

@@ -1191,6 +1191,25 @@ virCPUDataIsIdentical(const virCPUData *a,
 
 
 /**
+ * virCPUDataGetHost:
+ *
+ */
+virCPUData*
+virCPUDataGetHost(void)
+{
+    struct cpuArchDriver *driver;
+
+    if (!(driver = cpuGetSubDriver(virArchFromHost())))
+        return NULL;
+
+    if (!driver->dataGetHost)
+        return NULL;
+
+    return driver->dataGetHost();
+}
+
+
+/**
  * virCPUArchIsSupported:
  *
  * @arch: CPU architecture
