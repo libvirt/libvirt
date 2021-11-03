@@ -565,6 +565,96 @@ qemuTPMEmulatorRunSetup(const char *storagepath,
 }
 
 
+static char *
+qemuTPMPcrBankBitmapToStr(unsigned int pcrBanks)
+{
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    const char *comma = "";
+    size_t i;
+
+    for (i = VIR_DOMAIN_TPM_PCR_BANK_SHA1; i < VIR_DOMAIN_TPM_PCR_BANK_LAST; i++) {
+        if (pcrBanks & (1 << i)) {
+            virBufferAsprintf(&buf, "%s%s",
+                              comma, virDomainTPMPcrBankTypeToString(i));
+            comma = ",";
+        }
+    }
+    return virBufferContentAndReset(&buf);
+}
+
+
+/*
+ * qemuTPMEmulatorReconfigure
+ *
+ *
+ * @storagepath: path to the directory for TPM state
+ * @swtpm_user: The userid to switch to when setting up the TPM;
+ *              typically this should be the uid of 'tss' or 'root'
+ * @swtpm_group: The group id to switch to
+ * @activePcrBanks: The string describing the active PCR banks
+ * @logfile: The file to write the log into; it must be writable
+ *           for the user given by userid or 'tss'
+ * @tpmversion: The version of the TPM, either a TPM 1.2 or TPM 2
+ * @secretuuid: The secret's UUID needed for state encryption
+ *
+ * Reconfigure the active PCR banks of a TPM 2.
+ */
+static int
+qemuTPMEmulatorReconfigure(const char *storagepath,
+                           uid_t swtpm_user,
+                           gid_t swtpm_group,
+                           unsigned int activePcrBanks,
+                           const char *logfile,
+                           const virDomainTPMVersion tpmversion,
+                           const unsigned char *secretuuid)
+{
+    g_autoptr(virCommand) cmd = NULL;
+    int exitstatus;
+    g_autofree char *activePcrBanksStr;
+    g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
+    VIR_AUTOCLOSE pwdfile_fd = -1;
+
+    if (!swtpm_setup)
+        return -1;
+
+    if (tpmversion != VIR_DOMAIN_TPM_VERSION_2_0 ||
+        (activePcrBanksStr = qemuTPMPcrBankBitmapToStr(activePcrBanks)) == NULL ||
+        !virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_RECONFIGURE_PCR_BANKS))
+        return 0;
+
+    cmd = virCommandNew(swtpm_setup);
+    if (!cmd)
+        return -1;
+
+    virCommandSetUID(cmd, swtpm_user);
+    virCommandSetGID(cmd, swtpm_group);
+
+    virCommandAddArgList(cmd, "--tpm2", NULL);
+
+    if (qemuTPMVirCommandAddEncryption(cmd, swtpm_setup, secretuuid) < 0)
+        return -1;
+
+    virCommandAddArgList(cmd,
+                         "--tpm-state", storagepath,
+                         "--logfile", logfile,
+                         "--pcr-banks", activePcrBanksStr,
+                         "--reconfigure",
+                         NULL);
+
+    virCommandClearCaps(cmd);
+
+    if (virCommandRun(cmd, &exitstatus) < 0 || exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not run '%s --reconfigure'. exitstatus: %d; "
+                         "Check error log '%s' for details."),
+                          swtpm_setup, exitstatus, logfile);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * qemuTPMEmulatorBuildCommand:
  *
@@ -617,6 +707,14 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                                 privileged, swtpm_user, swtpm_group,
                                 tpm->data.emulator.logfile, tpm->version,
                                 secretuuid, incomingMigration) < 0)
+        goto error;
+
+    if (!incomingMigration &&
+        qemuTPMEmulatorReconfigure(tpm->data.emulator.storagepath,
+                                   swtpm_user, swtpm_group,
+                                   tpm->data.emulator.activePcrBanks,
+                                   tpm->data.emulator.logfile, tpm->version,
+                                   secretuuid) < 0)
         goto error;
 
     unlink(tpm->data.emulator.source.data.nix.path);

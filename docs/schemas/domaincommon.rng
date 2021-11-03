@@ -5323,6 +5323,7 @@
              <value>emulator</value>
           </attribute>
           <ref name="tpm-backend-emulator-encryption"/>
+          <ref name="tpm-backend-emulator-active-pcr-banks"/>
           <optional>
             <attribute name="persistent_state">
               <choice>
@@ -5362,6 +5363,35 @@
         <attribute name="secret">
           <ref name="UUID"/>
         </attribute>
+      </element>
+    </optional>
+  </define>
+
+  <define name="tpm-backend-emulator-active-pcr-banks">
+    <optional>
+      <element name="active_pcr_banks">
+        <interleave>
+          <optional>
+            <element name="sha1">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha256">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha384">
+              <empty/>
+            </element>
+          </optional>
+          <optional>
+            <element name="sha512">
+              <empty/>
+            </element>
+          </optional>
+        </interleave>
       </element>
     </optional>
   </define>

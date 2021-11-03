@@ -28,7 +28,12 @@
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
     <tpm model='tpm-tis'>
-      <backend type='emulator' version='2.0'/>
+      <backend type='emulator' version='2.0'>
+        <active_pcr_banks>
+          <sha256/>
+          <sha512/>
+        </active_pcr_banks>
+      </backend>
     </tpm>
     <audio id='1' type='none'/>
     <memballoon model='virtio'>

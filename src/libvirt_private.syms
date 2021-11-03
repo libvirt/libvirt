@@ -667,6 +667,8 @@ virDomainTPMBackendTypeToString;
 virDomainTPMDefFree;
 virDomainTPMModelTypeFromString;
 virDomainTPMModelTypeToString;
+virDomainTPMPcrBankTypeFromString;
+virDomainTPMPcrBankTypeToString;
 virDomainUSBDeviceDefForeach;
 virDomainVideoDefaultRAM;
 virDomainVideoDefClear;

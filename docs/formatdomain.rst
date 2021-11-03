@@ -7539,6 +7539,9 @@ Example: usage of the TPM Emulator
        <tpm model='tpm-tis'>
          <backend type='emulator' version='2.0'>
            <encryption secret='6dd3e4a5-1d76-44ce-961f-f119f5aad935'/>
+           <active_pcr_banks>
+               <sha256/>
+           </active_pcr_banks>
          </backend>
        </tpm>
      </devices>
@@ -7597,6 +7600,15 @@ Example: usage of the TPM Emulator
    option can be used for preserving TPM state. By default the value is ``no``.
    This attribute only works with the ``emulator`` backend. The accepted values
    are ``yes`` and ``no``. :since:`Since 7.0.0`
+
+``active_pcr_banks``
+   The ``active_pcr_banks`` node is used to define which of the PCR banks
+   of a TPM 2.0 to activate. Valid names are for example sha1, sha256, sha384,
+   and sha512. If this node is provided, the set of PCR banks are activated
+   before every start of a VM and this step is logged in the swtpm's log.
+   This attribute requires that swtpm_setup v0.7 or later is installed
+   and may not have any effect otherwise. The selection of PCR banks only works
+   with the ``emulator`` backend. since:`Since 7.10.0`
 
 ``encryption``
    The ``encryption`` element allows the state of a TPM emulator to be

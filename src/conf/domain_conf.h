@@ -1363,6 +1363,15 @@ typedef enum {
     VIR_DOMAIN_TPM_VERSION_LAST
 } virDomainTPMVersion;
 
+typedef enum {
+    VIR_DOMAIN_TPM_PCR_BANK_SHA1,
+    VIR_DOMAIN_TPM_PCR_BANK_SHA256,
+    VIR_DOMAIN_TPM_PCR_BANK_SHA384,
+    VIR_DOMAIN_TPM_PCR_BANK_SHA512,
+
+    VIR_DOMAIN_TPM_PCR_BANK_LAST
+} virDomainPcrBank;
+
 #define VIR_DOMAIN_TPM_DEFAULT_DEVICE "/dev/tpm0"
 
 struct _virDomainTPMDef {
@@ -1381,6 +1390,7 @@ struct _virDomainTPMDef {
             unsigned char secretuuid[VIR_UUID_BUFLEN];
             bool hassecretuuid;
             bool persistent_state;
+            unsigned int activePcrBanks;
         } emulator;
     } data;
 };
@@ -3941,6 +3951,7 @@ VIR_ENUM_DECL(virDomainRNGBackend);
 VIR_ENUM_DECL(virDomainTPMModel);
 VIR_ENUM_DECL(virDomainTPMBackend);
 VIR_ENUM_DECL(virDomainTPMVersion);
+VIR_ENUM_DECL(virDomainTPMPcrBank);
 VIR_ENUM_DECL(virDomainMemoryModel);
 VIR_ENUM_DECL(virDomainMemoryBackingModel);
 VIR_ENUM_DECL(virDomainMemorySource);

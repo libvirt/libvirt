@@ -1258,6 +1258,14 @@ VIR_ENUM_IMPL(virDomainTPMVersion,
               "2.0",
 );
 
+VIR_ENUM_IMPL(virDomainTPMPcrBank,
+              VIR_DOMAIN_TPM_PCR_BANK_LAST,
+              "sha1",
+              "sha256",
+              "sha384",
+              "sha512",
+);
+
 VIR_ENUM_IMPL(virDomainIOMMUModel,
               VIR_DOMAIN_IOMMU_MODEL_LAST,
               "intel",
@@ -11735,6 +11743,10 @@ virDomainSmartcardDefParseXML(virDomainXMLOption *xmlopt,
  * <tpm model='tpm-tis'>
  *   <backend type='emulator' version='2.0'>
  *     <encryption secret='32ee7e76-2178-47a1-ab7b-269e6e348015'/>
+ *     <active_pcr_banks>
+ *       <sha256/>
+ *       <sha384/>
+ *     </active_pcr_banks>
  *   </backend>
  * </tpm>
  *
@@ -11753,6 +11765,8 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     virDomainTPMDef *def;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int nbackends;
+    int nnodes;
+    size_t i;
     g_autofree char *path = NULL;
     g_autofree char *model = NULL;
     g_autofree char *backend = NULL;
@@ -11760,6 +11774,8 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *secretuuid = NULL;
     g_autofree char *persistent_state = NULL;
     g_autofree xmlNodePtr *backends = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    int bank;
 
     def = g_new0(virDomainTPMDef, 1);
 
@@ -11839,6 +11855,19 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Invalid persistent_state value, either 'yes' or 'no'"));
                 goto error;
+            }
+        }
+        if (def->version == VIR_DOMAIN_TPM_VERSION_2_0) {
+            if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
+                break;
+            for (i = 0; i < nnodes; i++) {
+                if ((bank = virDomainTPMPcrBankTypeFromString((const char *)nodes[i]->name)) < 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("Unsupported PCR banks '%s'"),
+                                   nodes[i]->name);
+                    goto error;
+                }
+                def->data.emulator.activePcrBanks |= (1 << bank);
             }
         }
         break;
@@ -25440,10 +25469,27 @@ virDomainTPMDefFormat(virBuffer *buf,
             virBufferAsprintf(buf, "<encryption secret='%s'/>\n",
                 virUUIDFormat(def->data.emulator.secretuuid, uuidstr));
             virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</backend>\n");
-        } else {
-            virBufferAddLit(buf, "/>\n");
         }
+        if (def->data.emulator.activePcrBanks) {
+            size_t i;
+            virBufferAddLit(buf, ">\n");
+            virBufferAdjustIndent(buf, 2);
+            virBufferAddLit(buf, "<active_pcr_banks>\n");
+            virBufferAdjustIndent(buf, 2);
+            for (i = VIR_DOMAIN_TPM_PCR_BANK_SHA1; i < VIR_DOMAIN_TPM_PCR_BANK_LAST; i++) {
+                if ((def->data.emulator.activePcrBanks & (1 << i)))
+                    virBufferAsprintf(buf, "<%s/>\n",
+                                      virDomainTPMPcrBankTypeToString(i));
+            }
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</active_pcr_banks>\n");
+            virBufferAdjustIndent(buf, -2);
+        }
+        if (def->data.emulator.hassecretuuid ||
+            def->data.emulator.activePcrBanks)
+            virBufferAddLit(buf, "</backend>\n");
+        else
+            virBufferAddLit(buf, "/>\n");
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
