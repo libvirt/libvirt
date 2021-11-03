@@ -10882,7 +10882,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     for (i = 0; i < def->nshmems; i++) {
         if (qemuBuildShmemCommandLine(logManager, secManager, cmd, cfg,
                                       def, def->shmems[i], qemuCaps,
-                                      chardevStdioLogd))
+                                      chardevStdioLogd) < 0)
             return NULL;
     }
 
