@@ -5051,7 +5051,7 @@ qemuBuildChrChardevStr(virLogManager *logManager G_GNUC_UNUSED,
                        const virDomainChrSourceDef *dev,
                        const char *alias,
                        virQEMUCaps *qemuCaps,
-                       unsigned int cdevflags)
+                       unsigned int cdevflags G_GNUC_UNUSED)
 {
     qemuDomainChrSourcePrivate *chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -5148,7 +5148,7 @@ qemuBuildChrChardevStr(virLogManager *logManager G_GNUC_UNUSED,
 
         if (dev->data.tcp.listen) {
             virBufferAddLit(&buf, ",server=on");
-            if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+            if (!chrSourcePriv->wait)
                 virBufferAddLit(&buf, ",wait=off");
         }
 
@@ -5199,7 +5199,7 @@ qemuBuildChrChardevStr(virLogManager *logManager G_GNUC_UNUSED,
         }
         if (dev->data.nix.listen) {
             virBufferAddLit(&buf, ",server=on");
-            if (cdevflags & QEMU_BUILD_CHARDEV_TCP_NOWAIT)
+            if (!chrSourcePriv->wait)
                 virBufferAddLit(&buf, ",wait=off");
         }
 

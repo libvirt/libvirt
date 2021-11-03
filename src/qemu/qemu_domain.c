@@ -9735,6 +9735,7 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
                                   void *opaque)
 {
     struct qemuDomainPrepareChardevSourceData *data = opaque;
+    qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(charsrc);
 
     switch ((virDomainDeviceType) dev->type) {
 
@@ -9750,8 +9751,13 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
         }
         break;
 
-    case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_NET:
+        /* when starting a fresh VM, vhost-user network sockets wait for connection */
+        if (!data->hotplug)
+            charpriv->wait = true;
+        break;
+
+    case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_SHMEM:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:

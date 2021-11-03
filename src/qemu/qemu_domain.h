@@ -344,6 +344,7 @@ struct _qemuDomainChrSourcePrivate {
 
     int fd; /* file descriptor of the chardev source */
     int logfd; /* file descriptor of the logging source */
+    bool wait; /* wait for incomming connections on chardev */
 };
 
 
@@ -866,6 +867,7 @@ int qemuDomainPrepareChannel(virDomainChrDef *chr,
 
 struct qemuDomainPrepareChardevSourceData {
     virQEMUDriverConfig *cfg;
+    bool hotplug;
 };
 
 int

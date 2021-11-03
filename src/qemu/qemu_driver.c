@@ -6777,7 +6777,8 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
     int ret = -1;
     const char *alias = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    struct qemuDomainPrepareChardevSourceData chardevBackendData = { .cfg = cfg };
+    struct qemuDomainPrepareChardevSourceData chardevBackendData = { .cfg = cfg,
+                                                                     .hotplug = true };
 
     if (qemuDomainDeviceBackendChardevForeachOne(dev,
                                                  qemuDomainPrepareChardevSourceOne,
