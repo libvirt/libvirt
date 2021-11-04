@@ -92,7 +92,7 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddress *devAddr, void *opa
         if (helperData->usesVFIO &&
             STREQ_NULLABLE(actual_drvname, helperData->driverName) &&
             STREQ_NULLABLE(actual_domname, helperData->domainName))
-            goto iommu_owner;
+            return 0;
 
         if (actual_drvname && actual_domname)
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -106,7 +106,7 @@ static int virHostdevIsPCINodeDeviceUsed(virPCIDeviceAddress *devAddr, void *opa
                            virPCIDeviceGetName(actual));
         return -1;
     }
- iommu_owner:
+
     return 0;
 }
 

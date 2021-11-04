@@ -858,13 +858,13 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
         absFile = testBuildFilename(file, relFile);
 
         if (!(doc = virXMLParse(absFile, NULL, type, NULL, false)))
-            goto error;
+            return NULL;
 
         ret = xmlCopyNode(xmlDocGetRootElement(doc), 1);
         if (!ret) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to copy XML node"));
-            goto error;
+            return NULL;
         }
         xmlReplaceNode(node, ret);
         xmlFreeNode(node);
@@ -872,7 +872,6 @@ testParseXMLDocFromFile(xmlNodePtr node, const char *file, const char *type)
         ret = node;
     }
 
- error:
     return ret;
 }
 

@@ -1577,12 +1577,12 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
 
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!vm->persistent && (flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("cannot halt after transient domain snapshot"));
-        goto cleanup;
+        return NULL;
     }
     if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) ||
         !virDomainObjIsActive(vm))
@@ -1593,7 +1593,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 
     if (!(def = virDomainSnapshotDefParseString(xmlDesc, driver->xmlopt,
                                                 priv->qemuCaps, NULL, parse_flags)))
-        goto cleanup;
+        return NULL;
 
     /* reject snapshot names containing slashes or starting with dot as
      * snapshot definitions are saved in files named by the snapshot name */
@@ -1603,7 +1603,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                            _("invalid snapshot name '%s': "
                              "name can't contain '/'"),
                            def->parent.name);
-            goto cleanup;
+            return NULL;
         }
 
         if (def->parent.name[0] == '.') {
@@ -1611,7 +1611,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                            _("invalid snapshot name '%s': "
                              "name can't start with '.'"),
                            def->parent.name);
-            goto cleanup;
+            return NULL;
         }
     }
 
@@ -1622,7 +1622,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("live snapshot creation is supported only "
                          "during full system snapshots"));
-        goto cleanup;
+        return NULL;
     }
 
     /* allow snapshots only in certain states */
@@ -1640,7 +1640,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         if (!redefine) {
             virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
                            virDomainSnapshotStateTypeToString(state));
-            goto cleanup;
+            return NULL;
         }
         break;
 
@@ -1648,7 +1648,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("qemu doesn't support taking snapshots of "
                          "PMSUSPENDED guests"));
-        goto cleanup;
+        return NULL;
 
         /* invalid states */
     case VIR_DOMAIN_SNAPSHOT_NOSTATE:
@@ -1656,7 +1656,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     case VIR_DOMAIN_SNAPSHOT_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid domain state %s"),
                        virDomainSnapshotStateTypeToString(state));
-        goto cleanup;
+        return NULL;
     }
 
     /* We are going to modify the domain below. Internal snapshots would use
@@ -1665,7 +1665,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
      * job mask appropriately. */
     if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SNAPSHOT,
                                    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT, flags) < 0)
-        goto cleanup;
+        return NULL;
 
     qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
 
@@ -1801,7 +1801,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 
     qemuDomainObjEndAsyncJob(driver, vm);
 
- cleanup:
     return snapshot;
 }
 

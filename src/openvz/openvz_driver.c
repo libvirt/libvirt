@@ -799,7 +799,7 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
         if (openvzDomainSetNetwork(conn, def->name, def->nets[i], &buf) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not configure network"));
-            goto exit;
+            return -1;
         }
     }
 
@@ -817,9 +817,6 @@ openvzDomainSetNetworkConfig(virConnectPtr conn,
     }
 
     return 0;
-
- exit:
-    return -1;
 }
 
 

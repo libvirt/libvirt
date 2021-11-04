@@ -902,7 +902,7 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivate *driver,
     tc->dataFD[0] = -1;
     tc->dataFD[1] = -1;
     if (virPipe(tc->dataFD) < 0)
-        goto out;
+        return -1;
 
     arg = &tc->tmThread;
     /* Read from pipe */
@@ -915,7 +915,7 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivate *driver,
                             name, false, arg) < 0) {
         virReportError(errno, "%s",
                        _("Unable to create tunnel migration thread"));
-        goto out;
+        return -1;
     }
 
     virObjectUnlock(vm);
@@ -923,7 +923,6 @@ libxlMigrationSrcStartTunnel(libxlDriverPrivate *driver,
     ret = libxlDoMigrateSrcSend(driver, vm, flags, tc->dataFD[1]);
     virObjectLock(vm);
 
- out:
     /* libxlMigrationSrcStopTunnel will be called in libxlDoMigrateSrcP2P
      * to free all resources for us.
      */

@@ -61,9 +61,8 @@ virSaveCookieParse(xmlXPathContextPtr ctxt,
 
     *obj = NULL;
 
-    if (!(ctxt->node = virXPathNode("./cookie", ctxt))) {
+    if (!(ctxt->node = virXPathNode("./cookie", ctxt)))
         return 0;
-    }
 
     return virSaveCookieParseNode(ctxt, obj, saveCookie);
 }

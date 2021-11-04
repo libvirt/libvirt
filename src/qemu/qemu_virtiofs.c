@@ -182,7 +182,6 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     pid_t pid = (pid_t) -1;
     VIR_AUTOCLOSE fd = -1;
     VIR_AUTOCLOSE logfd = -1;
-    int ret = -1;
     int rc;
 
     if (!virFileExists(fs->src->path)) {
@@ -193,12 +192,12 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     }
 
     if (!(pidfile = qemuVirtioFSCreatePidFilename(vm, fs->info.alias)))
-        goto cleanup;
+        goto error;
 
     socket_path = qemuDomainGetVHostUserFSSocketPath(vm->privateData, fs);
 
     if ((fd = qemuVirtioFSOpenChardev(driver, vm, socket_path)) < 0)
-        goto cleanup;
+        goto error;
 
     logpath = qemuVirtioFSCreateLogFilename(cfg, vm->def, fs->info.alias);
 
@@ -206,7 +205,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
         g_autoptr(virLogManager) logManager = virLogManagerNew(driver->privileged);
 
         if (!logManager)
-            goto cleanup;
+            goto error;
 
         if ((logfd = virLogManagerDomainOpenLogFile(logManager,
                                                     "qemu",
@@ -215,12 +214,12 @@ qemuVirtioFSStart(virQEMUDriver *driver,
                                                     logpath,
                                                     0,
                                                     NULL, NULL)) < 0)
-            goto cleanup;
+            goto error;
     } else {
         if ((logfd = open(logpath, O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0) {
             virReportSystemError(errno, _("failed to create logfile %s"),
                                  logpath);
-            goto cleanup;
+            goto error;
         }
         if (virSetCloseExec(logfd) < 0) {
             virReportSystemError(errno, _("failed to set close-on-exec flag on %s"),
@@ -230,7 +229,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     }
 
     if (!(cmd = qemuVirtioFSBuildCommandLine(cfg, fs, &fd)))
-        goto cleanup;
+        goto error;
 
     /* so far only running as root is supported */
     virCommandSetUID(cmd, 0);
@@ -243,7 +242,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     virCommandDaemonize(cmd);
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "virtiofsd") < 0)
-        goto cleanup;
+        goto error;
 
     rc = virCommandRun(cmd, NULL);
 
@@ -267,10 +266,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
         goto error;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 
  error:
     if (pid != -1)
@@ -279,7 +275,7 @@ qemuVirtioFSStart(virQEMUDriver *driver,
         unlink(pidfile);
     if (socket_path)
         unlink(socket_path);
-    goto cleanup;
+    return -1;
 }
 
 

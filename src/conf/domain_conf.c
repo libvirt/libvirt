@@ -18866,7 +18866,7 @@ virDomainDefParseIDs(virDomainDef *def,
     /* Extract domain name */
     if (!(def->name = virXPathString("string(./name[1])", ctxt))) {
         virReportError(VIR_ERR_NO_NAME, NULL);
-        goto error;
+        return -1;
     }
 
     /* Extract domain uuid. If both uuid and sysinfo/system/entry/uuid
@@ -18877,50 +18877,47 @@ virDomainDefParseIDs(virDomainDef *def,
         if (virUUIDGenerate(def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Failed to generate UUID"));
-            goto error;
+            return -1;
         }
         *uuid_generated = true;
     } else {
         if (virUUIDParse(tmp, def->uuid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("malformed uuid element"));
-            goto error;
+            return -1;
         }
         VIR_FREE(tmp);
     }
 
     /* Extract domain genid - a genid can either be provided or generated */
     if ((n = virXPathNodeSet("./genid", ctxt, &nodes)) < 0)
-        goto error;
+        return -1;
 
     if (n > 0) {
         if (n != 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("element 'genid' can only appear once"));
-            goto error;
+            return -1;
         }
         def->genidRequested = true;
         if (!(tmp = virXPathString("string(./genid)", ctxt))) {
             if (virUUIDGenerate(def->genid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to generate genid"));
-                goto error;
+                return -1;
             }
             def->genidGenerated = true;
         } else {
             if (virUUIDParse(tmp, def->genid) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("malformed genid element"));
-                goto error;
+                return -1;
             }
             VIR_FREE(tmp);
         }
     }
     VIR_FREE(nodes);
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -19009,20 +19006,20 @@ virDomainDefParseMemory(virDomainDef *def,
     /* Extract domain memory */
     if (virDomainParseMemory("./memory[1]", NULL, ctxt,
                              &def->mem.total_memory, false, true) < 0)
-        goto error;
+        return -1;
 
     if (virDomainParseMemory("./currentMemory[1]", NULL, ctxt,
                              &def->mem.cur_balloon, false, true) < 0)
-        goto error;
+        return -1;
 
     if (virDomainParseMemory("./maxMemory[1]", NULL, ctxt,
                              &def->mem.max_memory, false, false) < 0)
-        goto error;
+        return -1;
 
     if (virXPathUInt("string(./maxMemory[1]/@slots)", ctxt, &def->mem.memory_slots) == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("Failed to parse memory slot count"));
-        goto error;
+        return -1;
     }
 
     /* and info about it */
@@ -19030,7 +19027,7 @@ virDomainDefParseMemory(virDomainDef *def,
         (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Invalid memory core dump attribute value '%s'"), tmp);
-        goto error;
+        return -1;
     }
     VIR_FREE(tmp);
 
@@ -19039,7 +19036,7 @@ virDomainDefParseMemory(virDomainDef *def,
         if ((def->mem.source = virDomainMemorySourceTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/source/type '%s'"), tmp);
-            goto error;
+            return -1;
         }
         VIR_FREE(tmp);
     }
@@ -19049,7 +19046,7 @@ virDomainDefParseMemory(virDomainDef *def,
         if ((def->mem.access = virDomainMemoryAccessTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/access/mode '%s'"), tmp);
-            goto error;
+            return -1;
         }
         VIR_FREE(tmp);
     }
@@ -19059,7 +19056,7 @@ virDomainDefParseMemory(virDomainDef *def,
         if ((def->mem.allocation = virDomainMemoryAllocationTypeFromString(tmp)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memoryBacking/allocation/mode '%s'"), tmp);
-            goto error;
+            return -1;
         }
         VIR_FREE(tmp);
     }
@@ -19069,7 +19066,7 @@ virDomainDefParseMemory(virDomainDef *def,
         if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot extract hugepages nodes"));
-            goto error;
+            return -1;
         }
 
         if (n) {
@@ -19078,7 +19075,7 @@ virDomainDefParseMemory(virDomainDef *def,
             for (i = 0; i < n; i++) {
                 if (virDomainHugepagesParseXML(nodes[i], ctxt,
                                                &def->mem.hugepages[i]) < 0)
-                    goto error;
+                    return -1;
                 def->mem.nhugepages++;
             }
 
@@ -19100,9 +19097,6 @@ virDomainDefParseMemory(virDomainDef *def,
         def->mem.discard = VIR_TRISTATE_BOOL_YES;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -19453,43 +19447,40 @@ virDomainDefLifecycleParse(virDomainDef *def,
                                      &def->onReboot,
                                      VIR_DOMAIN_LIFECYCLE_ACTION_RESTART,
                                      virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
+        return -1;
 
     if (virDomainEventActionParseXML(ctxt, "on_poweroff",
                                      "string(./on_poweroff[1])",
                                      &def->onPoweroff,
                                      VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
                                      virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
+        return -1;
 
     if (virDomainEventActionParseXML(ctxt, "on_crash",
                                      "string(./on_crash[1])",
                                      &def->onCrash,
                                      VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY,
                                      virDomainLifecycleActionTypeFromString) < 0)
-        goto error;
+        return -1;
 
     if (virDomainEventActionParseXML(ctxt, "on_lockfailure",
                                      "string(./on_lockfailure[1])",
                                      &def->onLockFailure,
                                      VIR_DOMAIN_LOCK_FAILURE_DEFAULT,
                                      virDomainLockFailureTypeFromString) < 0)
-        goto error;
+        return -1;
 
     if (virDomainPMStateParseXML(ctxt,
                                  "string(./pm/suspend-to-mem/@enabled)",
                                  &def->pm.s3) < 0)
-        goto error;
+        return -1;
 
     if (virDomainPMStateParseXML(ctxt,
                                  "string(./pm/suspend-to-disk/@enabled)",
                                  &def->pm.s4) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -19506,7 +19497,7 @@ virDomainDefClockParse(virDomainDef *def,
         (def->clock.offset = virDomainClockOffsetTypeFromString(tmp)) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unknown clock offset '%s'"), tmp);
-        goto error;
+        return -1;
     }
     VIR_FREE(tmp);
 
@@ -19523,7 +19514,7 @@ virDomainDefClockParse(virDomainDef *def,
                     virReportError(VIR_ERR_XML_ERROR,
                                    _("unknown clock adjustment '%s'"),
                                    tmp);
-                    goto error;
+                    return -1;
                 }
                 switch (def->clock.offset) {
                 case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
@@ -19553,7 +19544,7 @@ virDomainDefClockParse(virDomainDef *def,
             if ((def->clock.data.variable.basis = virDomainClockBasisTypeFromString(tmp)) < 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unknown clock basis '%s'"), tmp);
-                goto error;
+                return -1;
             }
             VIR_FREE(tmp);
         } else {
@@ -19566,13 +19557,13 @@ virDomainDefClockParse(virDomainDef *def,
         if (!def->clock.data.timezone) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing 'timezone' attribute for clock with offset='timezone'"));
-            goto error;
+            return -1;
         }
         break;
     }
 
     if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
-        goto error;
+        return -1;
 
     if (n)
         def->clock.timers = g_new0(virDomainTimerDef *, n);
@@ -19581,16 +19572,13 @@ virDomainDefClockParse(virDomainDef *def,
         virDomainTimerDef *timer = virDomainTimerDefParseXML(nodes[i], ctxt);
 
         if (!timer)
-            goto error;
+            return -1;
 
         def->clock.timers[def->clock.ntimers++] = timer;
     }
     VIR_FREE(nodes);
 
     return 0;
-
- error:
-    return -1;
 }
 
 static int

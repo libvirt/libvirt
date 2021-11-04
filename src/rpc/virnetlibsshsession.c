@@ -453,7 +453,6 @@ virNetLibsshImportPrivkey(virNetLibsshSession *sess,
                           virNetLibsshAuthMethod *priv,
                           ssh_key *ret_key)
 {
-    int err;
     int ret;
     ssh_key key;
 
@@ -470,8 +469,7 @@ virNetLibsshImportPrivkey(virNetLibsshSession *sess,
         virReportError(VIR_ERR_AUTH_FAILED,
                        _("error while reading private key '%s'"),
                        priv->filename);
-        err = SSH_AUTH_ERROR;
-        goto error;
+        return SSH_AUTH_ERROR;
     } else if (ret == SSH_ERROR) {
         if (virGetLastErrorCode() == VIR_ERR_OK) {
             virReportError(VIR_ERR_AUTH_FAILED,
@@ -479,15 +477,11 @@ virNetLibsshImportPrivkey(virNetLibsshSession *sess,
                              "passphrase?"),
                            priv->filename);
         }
-        err = SSH_AUTH_ERROR;
-        goto error;
+        return SSH_AUTH_ERROR;
     }
 
     *ret_key = key;
     return SSH_AUTH_SUCCESS;
-
- error:
-    return err;
 }
 
 

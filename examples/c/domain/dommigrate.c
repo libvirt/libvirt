@@ -42,7 +42,7 @@ main(int argc, char *argv[])
 
     if (argc < 4) {
         usage(argv[0]);
-        goto out;
+        return EXIT_FAILURE;
     }
 
     src_uri = argv[1];
@@ -54,7 +54,7 @@ main(int argc, char *argv[])
     if (!conn) {
         fprintf(stderr, "No connection to the source hypervisor: %s.\n",
                 virGetLastErrorMessage());
-        goto out;
+        return EXIT_FAILURE;
     }
 
     printf("Attempting to retrieve domain %s...\n", domname);
@@ -79,7 +79,5 @@ main(int argc, char *argv[])
     if (dom != NULL)
         virDomainFree(dom);
     virConnectClose(conn);
-
- out:
     return ret;
 }

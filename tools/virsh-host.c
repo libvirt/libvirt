@@ -1070,7 +1070,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     int n;
 
     if (virFileReadAll(xmlFile, VSH_MAX_XML_FILE, &buffer) < 0)
-        goto error;
+        return NULL;
 
     /* Strip possible XML declaration */
     if (STRPREFIX(buffer, "<?xml") && (doc = strstr(buffer, "?>")))
@@ -1081,7 +1081,7 @@ vshExtractCPUDefXMLs(vshControl *ctl,
     xmlStr = g_strdup_printf("<container>%s</container>", doc);
 
     if (!(xml = virXMLParseStringCtxt(xmlStr, xmlFile, &ctxt)))
-        goto error;
+        return NULL;
 
     n = virXPathNodeSet("/container/cpu|"
                         "/container/domain/cpu|"
@@ -1090,13 +1090,13 @@ vshExtractCPUDefXMLs(vshControl *ctl,
                             "mode[@name='host-model' and @supported='yes']",
                         ctxt, &nodes);
     if (n < 0)
-        goto error;
+        return NULL;
 
     if (n == 0) {
         vshError(ctl, _("File '%s' does not contain any <cpu> element or "
                         "valid domain XML, host capabilities XML, or "
                         "domain capabilities XML"), xmlFile);
-        goto error;
+        return NULL;
     }
 
     cpus = g_new0(char *, n + 1);
@@ -1111,22 +1111,18 @@ vshExtractCPUDefXMLs(vshControl *ctl,
                     vshError(ctl,
                              _("Cannot extract CPU definition from domain "
                                "capabilities XML"));
-                    goto error;
+                    return NULL;
                 }
             }
         }
 
         if (!(cpus[i] = virXMLNodeToString(xml, nodes[i]))) {
             vshSaveLibvirtError();
-            goto error;
+            return NULL;
         }
     }
 
- cleanup:
     return g_steal_pointer(&cpus);
-
- error:
-    goto cleanup;
 }
 
 

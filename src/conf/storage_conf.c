@@ -692,7 +692,6 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
                         const char *permxpath)
 {
     long long val;
-    int ret = -1;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     xmlNodePtr node;
     g_autofree char *mode = NULL;
@@ -715,7 +714,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
         if (virStrToLong_i(mode, NULL, 8, &tmp) < 0 || (tmp & ~0777)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("malformed octal mode"));
-            goto error;
+            return -1;
         }
         perms->mode = tmp;
     } else {
@@ -731,7 +730,7 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
              val != -1)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("malformed owner element"));
-            goto error;
+            return -1;
         }
 
         perms->uid = val;
@@ -746,17 +745,14 @@ virStorageDefParsePerms(xmlXPathContextPtr ctxt,
              val != -1)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("malformed group element"));
-            goto error;
+            return -1;
         }
         perms->gid = val;
     }
 
     /* NB, we're ignoring missing labels here - they'll simply inherit */
     perms->label = virXPathString("string(./label)", ctxt);
-
-    ret = 0;
- error:
-    return ret;
+    return 0;
 }
 
 

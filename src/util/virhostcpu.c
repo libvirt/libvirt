@@ -90,7 +90,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
     g_autofree long *cpu_times = NULL;
     struct clockinfo clkinfo;
     size_t i, j, cpu_times_size, clkinfo_size;
-    int cpu_times_num, offset, hz, stathz, ret = -1;
+    int cpu_times_num, offset, hz, stathz;
     struct field_cpu_map {
         const char *field;
         int idx[CPUSTATES];
@@ -151,7 +151,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
         virReportSystemError(errno,
                              _("sysctl failed for '%s'"),
                              sysctl_name);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 0; cpu_map[i].field != NULL; i++) {
@@ -161,7 +161,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Field '%s' too long for destination"),
                            cpu_map[i].field);
-            goto cleanup;
+            return -1;
         }
 
         param->value = 0;
@@ -169,10 +169,7 @@ virHostCPUGetStatsFreeBSD(int cpuNum,
             param->value += cpu_times[offset + cpu_map[i].idx[j]] * TICK_TO_NSEC;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 #endif /* __FreeBSD__ */

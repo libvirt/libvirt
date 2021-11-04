@@ -926,7 +926,6 @@ virCgroupV1SetOwner(virCgroup *cgroup,
                     gid_t gid,
                     int controllers)
 {
-    int ret = -1;
     size_t i;
     int direrr;
 
@@ -945,7 +944,7 @@ virCgroupV1SetOwner(virCgroup *cgroup,
                                cgroup->legacy[i].placement);
 
         if (virDirOpen(&dh, base) < 0)
-            goto cleanup;
+            return -1;
 
         while ((direrr = virDirRead(dh, &de, base)) > 0) {
             g_autofree char *entry = NULL;
@@ -956,24 +955,21 @@ virCgroupV1SetOwner(virCgroup *cgroup,
                 virReportSystemError(errno,
                                      _("cannot chown '%s' to (%u, %u)"),
                                      entry, uid, gid);
-                goto cleanup;
+                return -1;
             }
         }
         if (direrr < 0)
-            goto cleanup;
+            return -1;
 
         if (chown(base, uid, gid) < 0) {
             virReportSystemError(errno,
                                  _("cannot chown '%s' to (%u, %u)"),
                                  base, uid, gid);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1599,7 +1595,6 @@ virCgroupV1GetMemoryStat(virCgroup *group,
                          unsigned long long *inactiveFile,
                          unsigned long long *unevictable)
 {
-    int ret = -1;
     g_autofree char *stat = NULL;
     char *line = NULL;
     unsigned long long cacheVal = 0;
@@ -1629,12 +1624,12 @@ virCgroupV1GetMemoryStat(virCgroup *group,
         if (!valueStr) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Cannot parse 'memory.stat' cgroup file."));
-            goto cleanup;
+            return -1;
         }
         *valueStr = '\0';
 
         if (virStrToLong_ull(valueStr + 1, NULL, 10, &value) < 0)
-            goto cleanup;
+            return -1;
 
         if (STREQ(line, "cache"))
             cacheVal = value >> 10;
@@ -1662,10 +1657,7 @@ virCgroupV1GetMemoryStat(virCgroup *group,
     *inactiveFile = inactiveFileVal;
     *unevictable = unevictableVal;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

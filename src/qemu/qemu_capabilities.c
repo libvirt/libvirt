@@ -5618,14 +5618,11 @@ virQEMUCapsCacheNew(const char *libDir,
         priv->kernelVersion = g_strdup_printf("%s %s", uts.release, uts.version);
 
     priv->cpuData = virCPUDataGetHost();
-
- cleanup:
     return cache;
 
  error:
     virObjectUnref(cache);
-    cache = NULL;
-    goto cleanup;
+    return NULL;
 }
 
 

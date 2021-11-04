@@ -91,7 +91,6 @@ static int
 virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
                                     uint32_t *host)
 {
-    int ret = -1;
     g_autoptr(DIR) sysdir = NULL;
     struct dirent *dirent = NULL;
     int direrr;
@@ -101,17 +100,16 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
     virWaitForDevices();
 
     if (virDirOpen(&sysdir, sysfs_path) < 0)
-        goto cleanup;
+        return -1;
 
     while ((direrr = virDirRead(sysdir, &dirent, sysfs_path)) > 0) {
         if (STRPREFIX(dirent->d_name, "target")) {
             if (sscanf(dirent->d_name, "target%u:", host) == 1) {
-                ret = 0;
-                goto cleanup;
+                return 0;
             } else {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Failed to parse target '%s'"), dirent->d_name);
-                goto cleanup;
+                return -1;
             }
         }
     }
@@ -120,11 +118,10 @@ virStorageBackendISCSIGetHostNumber(const char *sysfs_path,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to get host number for iSCSI session "
                          "with path '%s'"), sysfs_path);
-        goto cleanup;
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return -1;
 }
 
 static int

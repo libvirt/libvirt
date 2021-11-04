@@ -141,7 +141,6 @@ static bool
 cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNodeDevice) dev = NULL;
-    bool ret = false;
     const char *device_value = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
@@ -149,18 +148,16 @@ cmdNodeDeviceDestroy(vshControl *ctl, const vshCmd *cmd)
 
     dev = vshFindNodeDevice(ctl, device_value);
     if (!dev)
-        goto cleanup;
+        return false;
 
     if (virNodeDeviceDestroy(dev) == 0) {
         vshPrintExtra(ctl, _("Destroyed node device '%s'\n"), device_value);
     } else {
         vshError(ctl, _("Failed to destroy node device '%s'"), device_value);
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 struct virshNodeList {
@@ -578,7 +575,6 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshNodeDevice) device = NULL;
     g_autofree char *xml = NULL;
     const char *device_value = NULL;
-    bool ret = false;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
          return false;
@@ -586,16 +582,13 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     device = vshFindNodeDevice(ctl, device_value);
 
     if (!device)
-        goto cleanup;
+        return false;
 
     if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
-        goto cleanup;
+        return false;
 
     vshPrint(ctl, "%s\n", xml);
-
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1013,7 +1006,6 @@ static bool
 cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
 {
     g_autoptr(virshNodeDevice) dev = NULL;
-    bool ret = false;
     const char *device_value = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
@@ -1022,17 +1014,15 @@ cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     dev = vshFindNodeDevice(ctl, device_value);
 
     if (!dev)
-        goto cleanup;
+        return false;
 
     if (virNodeDeviceUndefine(dev, 0) < 0) {
         vshError(ctl, _("Failed to undefine node device '%s'"), device_value);
-        goto cleanup;
+        return false;
     }
 
     vshPrintExtra(ctl, _("Undefined node device '%s'\n"), device_value);
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -1163,7 +1153,6 @@ static bool
 cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNodeDevice) dev = NULL;
-    bool ret = false;
     const char *name = NULL;
     int autostart;
 
@@ -1172,7 +1161,8 @@ cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
 
     dev = vshFindNodeDevice(ctl, name);
 
-    if (!dev) goto cleanup;
+    if (!dev)
+        return false;
 
     autostart = !vshCommandOptBool(cmd, "disable");
 
@@ -1181,7 +1171,7 @@ cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("failed to mark device %s as autostarted"), name);
         else
             vshError(ctl, _("failed to unmark device %s as autostarted"), name);
-        goto cleanup;
+        return false;
     }
 
     if (autostart)
@@ -1189,9 +1179,7 @@ cmdNodeDeviceAutostart(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrintExtra(ctl, _("Device %s unmarked as autostarted\n"), name);
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 
@@ -1224,7 +1212,6 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNodeDevice) device = NULL;
     const char *device_value = NULL;
-    bool ret = false;
     int autostart;
     const char *parent = NULL;
 
@@ -1234,7 +1221,7 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
     device = vshFindNodeDevice(ctl, device_value);
 
     if (!device)
-        goto cleanup;
+        return false;
 
     parent = virNodeDeviceGetParent(device);
     vshPrint(ctl, "%-15s %s\n", _("Name:"), virNodeDeviceGetName(device));
@@ -1248,9 +1235,7 @@ cmdNodeDeviceInfo(vshControl *ctl, const vshCmd *cmd)
     else
         vshPrint(ctl, "%-15s %s\n", _("Autostart:"), autostart ? _("yes") : _("no"));
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 

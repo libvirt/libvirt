@@ -76,10 +76,10 @@ mymain(void)
     int ret = 0;
 
     if ((caps = virTestGenericCapsInit()) == NULL)
-        goto cleanup;
+        return EXIT_FAILURE;
 
     if (!(xmlopt = virTestGenericDomainXMLConfInit()))
-        goto cleanup;
+        return EXIT_FAILURE;
 
 #define DO_TEST_GET_FS(fspath, expect) \
     do { \
@@ -100,7 +100,6 @@ mymain(void)
     virObjectUnref(caps);
     virObjectUnref(xmlopt);
 
- cleanup:
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 

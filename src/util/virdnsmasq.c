@@ -172,10 +172,8 @@ addnhostsWrite(const char *path,
 
     if (!(f = fopen(tmp, "w"))) {
         istmp = false;
-        if (!(f = fopen(path, "w"))) {
-            rc = -errno;
-            goto cleanup;
-        }
+        if (!(f = fopen(path, "w")))
+            return -errno;
     }
 
     for (i = 0; i < nhosts; i++) {
@@ -186,7 +184,7 @@ addnhostsWrite(const char *path,
             if (istmp)
                 unlink(tmp);
 
-            goto cleanup;
+            return rc;
         }
 
         for (j = 0; j < hosts[i].nhostnames; j++) {
@@ -197,7 +195,7 @@ addnhostsWrite(const char *path,
                 if (istmp)
                     unlink(tmp);
 
-                goto cleanup;
+                return rc;
             }
         }
 
@@ -208,23 +206,20 @@ addnhostsWrite(const char *path,
             if (istmp)
                 unlink(tmp);
 
-            goto cleanup;
+            return rc;
         }
     }
 
-    if (VIR_FCLOSE(f) == EOF) {
-        rc = -errno;
-        goto cleanup;
-    }
+    if (VIR_FCLOSE(f) == EOF)
+        return -errno;
 
     if (istmp && rename(tmp, path) < 0) {
         rc = -errno;
         unlink(tmp);
-        goto cleanup;
+        return rc;
     }
 
- cleanup:
-    return rc;
+    return 0;
 }
 
 static int
@@ -369,10 +364,8 @@ hostsfileWrite(const char *path,
 
     if (!(f = fopen(tmp, "w"))) {
         istmp = false;
-        if (!(f = fopen(path, "w"))) {
-            rc = -errno;
-            goto cleanup;
-        }
+        if (!(f = fopen(path, "w")))
+            return -errno;
     }
 
     for (i = 0; i < nhosts; i++) {
@@ -383,23 +376,20 @@ hostsfileWrite(const char *path,
             if (istmp)
                 unlink(tmp);
 
-            goto cleanup;
+            return rc;
         }
     }
 
-    if (VIR_FCLOSE(f) == EOF) {
-        rc = -errno;
-        goto cleanup;
-    }
+    if (VIR_FCLOSE(f) == EOF)
+        return -errno;
 
     if (istmp && rename(tmp, path) < 0) {
         rc = -errno;
         unlink(tmp);
-        goto cleanup;
+        return rc;
     }
 
- cleanup:
-    return rc;
+    return 0;
 }
 
 static int

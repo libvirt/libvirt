@@ -2077,16 +2077,16 @@ qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
     }
 
     if (!balloonpath)
-        goto cleanup;
+        return got;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("qom-get",
                                            "s:path", balloonpath,
                                            "s:property", "guest-stats",
                                            NULL)))
-        goto cleanup;
+        return got;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        goto cleanup;
+        return got;
 
     if ((data = virJSONValueObjectGetObject(reply, "error"))) {
         const char *klass = virJSONValueObjectGetString(data, "class");
@@ -2096,18 +2096,18 @@ qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
             STREQ_NULLABLE(desc, "guest hasn't updated any stats yet")) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                            _("the guest hasn't updated any stats yet"));
-            goto cleanup;
+            return got;
         }
     }
 
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
-        goto cleanup;
+        return got;
 
     data = virJSONValueObjectGetObject(reply, "return");
 
     if (!(statsdata = virJSONValueObjectGet(data, "stats"))) {
         VIR_DEBUG("data does not include 'stats'");
-        goto cleanup;
+        return got;
     }
 
     GET_BALLOON_STATS(statsdata, "stat-swap-in",
@@ -2133,9 +2133,7 @@ qemuMonitorJSONGetMemoryStats(qemuMonitor *mon,
     GET_BALLOON_STATS(statsdata, "stat-htlb-pgfail",
                       VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL, 1);
 
-    ret = got;
- cleanup:
-    return ret;
+    return got;
 }
 #undef GET_BALLOON_STATS
 

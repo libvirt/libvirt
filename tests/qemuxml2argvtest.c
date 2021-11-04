@@ -141,20 +141,15 @@ fakeStorageVolLookupByName(virStoragePoolPtr pool,
         return NULL;
     }
 
-    if (!strchr(name, '+'))
-        goto fallback;
-
     if (!(volinfo = g_strsplit(name, "+", 2)))
         return NULL;
 
-    if (!volinfo[1])
-        goto fallback;
+    if (!volinfo[1]) {
+        return virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
+    }
 
     return virGetStorageVol(pool->conn, pool->name, volinfo[1], volinfo[0],
                            NULL, NULL);
-
- fallback:
-    return virGetStorageVol(pool->conn, pool->name, name, "block", NULL, NULL);
 }
 
 static int

@@ -1607,7 +1607,6 @@ xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
     int format = virDomainDiskGetFormat(disk);
     const char *driver = virDomainDiskGetDriver(disk);
     g_autofree char *target = NULL;
-    int ret = -1;
 
     /* format */
     virBufferAddLit(&buf, "format=");
@@ -1646,7 +1645,7 @@ xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
     if (disk->transient) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("transient disks not supported yet"));
-        goto cleanup;
+        return -1;
     }
 
     /* backendtype */
@@ -1673,7 +1672,7 @@ xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
      * it must come last.
      */
     if (xenFormatXLDiskSrc(disk->src, &target) < 0)
-        goto cleanup;
+        return -1;
 
     if (target)
         virBufferAsprintf(&buf, ",target=%s", target);
@@ -1689,10 +1688,8 @@ xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
         tmp->next = val;
     else
         list->list = val;
-    ret = 0;
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -4453,7 +4453,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &to) < 0)
-        goto cleanup;
+        return false;
 
     if (vshCommandOptBool(cmd, "verbose"))
         verbose = true;
@@ -4462,7 +4462,7 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
                         true,
                         doSave,
                         &data) < 0)
-        goto cleanup;
+        return false;
 
     virshWatchJob(ctl, dom, verbose, eventLoop,
                   &data.ret, 0, NULL, NULL, _("Save"));
@@ -4472,7 +4472,6 @@ cmdSave(vshControl *ctl, const vshCmd *cmd)
     if (!data.ret)
         vshPrintExtra(ctl, _("\nDomain '%s' saved to %s\n"), name, to);
 
- cleanup:
     return !data.ret;
 }
 
@@ -4770,7 +4769,7 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
                         true,
                         doManagedsave,
                         &data) < 0)
-        goto cleanup;
+        return false;
 
     virshWatchJob(ctl, dom, verbose, eventLoop,
                   &data.ret, 0, NULL, NULL, _("Managedsave"));
@@ -4780,7 +4779,6 @@ cmdManagedSave(vshControl *ctl, const vshCmd *cmd)
     if (!data.ret)
         vshPrintExtra(ctl, _("\nDomain '%s' state saved by libvirt\n"), name);
 
- cleanup:
     return !data.ret;
 }
 
