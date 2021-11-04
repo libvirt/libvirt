@@ -106,13 +106,6 @@ qemuBuildNicDevProps(virDomainDef *def,
 char *qemuDeviceDriveHostAlias(virDomainDiskDef *disk);
 bool qemuDiskBusIsSD(int bus);
 
-qemuBlockStorageSourceAttachData *
-qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk,
-                                         virQEMUCaps *qemuCaps);
-
-qemuBlockStorageSourceAttachData *
-qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk);
-
 int
 qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
                                           qemuBlockStorageSourceAttachData *data);

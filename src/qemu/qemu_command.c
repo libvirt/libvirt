@@ -11104,7 +11104,7 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
  * Prepare qemuBlockStorageSourceAttachData *for use with the old approach
  * using -drive/drive_add. See qemuBlockStorageSourceAttachPrepareBlockdev.
  */
-qemuBlockStorageSourceAttachData *
+static qemuBlockStorageSourceAttachData *
 qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk,
                                          virQEMUCaps *qemuCaps)
 {
@@ -11127,7 +11127,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk,
  * Prepare qemuBlockStorageSourceAttachData *for vhost-user disk
  * to be used with -chardev.
  */
-qemuBlockStorageSourceAttachData *
+static qemuBlockStorageSourceAttachData *
 qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
