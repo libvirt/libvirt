@@ -1954,6 +1954,7 @@ virCapabilitiesHostNUMAInitReal(virCapsHostNUMA *caps)
             if (ncpus == -2)
                 continue;
 
+            ncpus = 0;
             goto cleanup;
         }
 
