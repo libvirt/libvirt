@@ -1655,7 +1655,6 @@ qemuBlockStorageSourceAttachDataFree(qemuBlockStorageSourceAttachData *data)
     g_free(data->driveCmd);
     g_free(data->driveAlias);
     g_free(data->chardevAlias);
-    g_free(data->chardevCmd);
     g_free(data);
 }
 

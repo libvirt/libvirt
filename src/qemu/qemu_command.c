@@ -2591,8 +2591,10 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
     if (data->driveCmd)
         virCommandAddArgList(cmd, "-drive", data->driveCmd, NULL);
 
-    if (data->chardevCmd)
-        virCommandAddArgList(cmd, "-chardev", data->chardevCmd, NULL);
+    if (data->chardevDef) {
+        if (qemuBuildChardevCommand(cmd, data->chardevDef, data->chardevAlias, qemuCaps) < 0)
+            return -1;
+    }
 
     if (data->storageProps) {
         if (!(tmp = virJSONValueToString(data->storageProps, false)))
@@ -10959,23 +10961,11 @@ static qemuBlockStorageSourceAttachData *
 qemuBuildStorageSourceAttachPrepareChardev(virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
-    g_auto(virBuffer) chardev = VIR_BUFFER_INITIALIZER;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
     data->chardevDef = disk->src->vhostuser;
     data->chardevAlias = qemuDomainGetVhostUserChrAlias(disk->info.alias);
-
-    virBufferAddLit(&chardev, "socket");
-    virBufferAsprintf(&chardev, ",id=%s", data->chardevAlias);
-    virBufferAddLit(&chardev, ",path=");
-    virQEMUBuildBufferEscapeComma(&chardev, disk->src->vhostuser->data.nix.path);
-
-    qemuBuildChrChardevReconnectStr(&chardev,
-                                    &disk->src->vhostuser->data.nix.reconnect);
-
-    if (!(data->chardevCmd = virBufferContentAndReset(&chardev)))
-        return NULL;
 
     return g_steal_pointer(&data);
 }

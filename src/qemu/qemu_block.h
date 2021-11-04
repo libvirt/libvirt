@@ -99,7 +99,6 @@ struct qemuBlockStorageSourceAttachData {
 
     virDomainChrSourceDef *chardevDef;
     char *chardevAlias;
-    char *chardevCmd;
     bool chardevAdded;
 
     virJSONValue *authsecretProps;
