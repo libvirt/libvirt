@@ -4336,13 +4336,15 @@ qemuBuildInputEvdevProps(virDomainInputDef *dev)
                                      NULL) < 0)
         return NULL;
 
-    if (dev->source.grab == VIR_DOMAIN_INPUT_SOURCE_GRAB_ALL)
-        virJSONValueObjectAdd(props, "b:grab_all", true, NULL);
+    if (dev->source.grab == VIR_DOMAIN_INPUT_SOURCE_GRAB_ALL &&
+        virJSONValueObjectAdd(props, "b:grab_all", true, NULL) < 0)
+        return NULL;
 
-    if (dev->source.grabToggle != VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_DEFAULT)
+    if (dev->source.grabToggle != VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_DEFAULT &&
         virJSONValueObjectAdd(props, "s:grab-toggle",
                               virDomainInputSourceGrabToggleTypeToString(dev->source.grabToggle),
-                              NULL);
+                              NULL) < 0)
+        return NULL;
 
     return g_steal_pointer(&props);
 }
