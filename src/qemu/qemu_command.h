@@ -44,8 +44,6 @@ VIR_ENUM_DECL(qemuVideo);
 VIR_ENUM_DECL(qemuSoundCodec);
 
 virCommand *qemuBuildCommandLine(virQEMUDriver *driver,
-                                   virLogManager *logManager,
-                                   virSecurityManager *secManager,
                                    virDomainObj *vm,
                                    const char *migrateURI,
                                    virDomainMomentObj *snapshot,
