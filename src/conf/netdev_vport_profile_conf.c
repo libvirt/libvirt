@@ -29,14 +29,14 @@
 virNetDevVPortProfile *
 virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
 {
-    char *virtPortType;
-    char *virtPortManagerID = NULL;
-    char *virtPortTypeID = NULL;
-    char *virtPortTypeIDVersion = NULL;
-    char *virtPortInstanceID = NULL;
-    char *virtPortProfileID = NULL;
-    char *virtPortInterfaceID = NULL;
-    virNetDevVPortProfile *virtPort = NULL;
+    g_autofree char *virtPortType = NULL;
+    g_autofree char *virtPortManagerID = NULL;
+    g_autofree char *virtPortTypeID = NULL;
+    g_autofree char *virtPortTypeIDVersion = NULL;
+    g_autofree char *virtPortInstanceID = NULL;
+    g_autofree char *virtPortProfileID = NULL;
+    g_autofree char *virtPortInterfaceID = NULL;
+    g_autofree virNetDevVPortProfile *virtPort = NULL;
     xmlNodePtr cur = node->children;
 
     virtPort = g_new0(virNetDevVPortProfile, 1);
@@ -178,20 +178,10 @@ virNetDevVPortProfileParse(xmlNodePtr node, unsigned int flags)
     if (virNetDevVPortProfileCheckNoExtras(virtPort) < 0)
         goto error;
 
- cleanup:
-    VIR_FREE(virtPortManagerID);
-    VIR_FREE(virtPortTypeID);
-    VIR_FREE(virtPortTypeIDVersion);
-    VIR_FREE(virtPortInstanceID);
-    VIR_FREE(virtPortProfileID);
-    VIR_FREE(virtPortType);
-    VIR_FREE(virtPortInterfaceID);
-
-    return virtPort;
+    return g_steal_pointer(&virtPort);
 
  error:
-    VIR_FREE(virtPort);
-    goto cleanup;
+    return NULL;
 }
 
 
