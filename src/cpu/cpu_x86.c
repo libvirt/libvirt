@@ -20,6 +20,9 @@
 
 #include <config.h>
 
+#if WITH_LINUX_KVM_H
+# include <linux/kvm.h>
+#endif
 
 #include "virlog.h"
 #include "viralloc.h"
@@ -3408,6 +3411,38 @@ virCPUx86DataIsIdentical(const virCPUData *a,
     return VIR_CPU_COMPARE_IDENTICAL;
 }
 
+#if WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+    (defined(__i386__) || defined(__x86_64__)) && \
+    (defined(__linux__) || defined(__FreeBSD__))
+static virCPUData *
+virCPUx86DataGetHost(void)
+{
+    size_t i;
+    virCPUData *cpuid;
+    g_autofree struct kvm_cpuid2 *kvm_cpuid = NULL;
+
+    if ((kvm_cpuid = virHostCPUGetCPUID()) == NULL)
+        return NULL;
+
+    cpuid = virCPUDataNew(virArchFromHost());
+    cpuid->data.x86.len = kvm_cpuid->nent;
+    cpuid->data.x86.items = g_new0(virCPUx86DataItem, kvm_cpuid->nent);
+
+    for (i = 0; i < kvm_cpuid->nent; ++i) {
+        virCPUx86DataItem *item = &cpuid->data.x86.items[i];
+        item->type = VIR_CPU_X86_DATA_CPUID;
+        item->data.cpuid.eax_in = kvm_cpuid->entries[i].function;
+        item->data.cpuid.ecx_in = kvm_cpuid->entries[i].index;
+        item->data.cpuid.eax = kvm_cpuid->entries[i].eax;
+        item->data.cpuid.ebx = kvm_cpuid->entries[i].ebx;
+        item->data.cpuid.ecx = kvm_cpuid->entries[i].ecx;
+        item->data.cpuid.edx = kvm_cpuid->entries[i].edx;
+    }
+
+    return cpuid;
+}
+#endif
+
 static bool
 virCPUx86FeatureIsMSR(const char *name)
 {
@@ -3493,4 +3528,9 @@ struct cpuArchDriver cpuDriverX86 = {
     .validateFeatures = virCPUx86ValidateFeatures,
     .dataAddFeature = virCPUx86DataAddFeature,
     .dataIsIdentical = virCPUx86DataIsIdentical,
+#if WITH_LINUX_KVM_H && defined(KVM_GET_MSRS) && \
+    (defined(__i386__) || defined(__x86_64__)) && \
+    (defined(__linux__) || defined(__FreeBSD__))
+    .dataGetHost = virCPUx86DataGetHost,
+#endif
 };
