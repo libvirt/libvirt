@@ -9513,35 +9513,7 @@ qemuBuildConsoleCommandLine(virCommand *cmd,
 
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
-            if (!(devstr = qemuBuildChrChardevStr(cmd,
-                                                  cfg,
-                                                  console->source,
-                                                  console->info.alias,
-                                                  qemuCaps)))
-                return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
-                return -1;
-            break;
-
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLPLM:
-            if (!(devstr = qemuBuildChrChardevStr(cmd,
-                                                  cfg,
-                                                  console->source,
-                                                  console->info.alias,
-                                                  qemuCaps)))
-                return -1;
-            virCommandAddArg(cmd, "-chardev");
-            virCommandAddArg(cmd, devstr);
-            VIR_FREE(devstr);
-
-            if (qemuBuildChrDeviceCommandLine(cmd, def, console, qemuCaps) < 0)
-                return -1;
-            break;
-
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_VIRTIO:
             if (!(devstr = qemuBuildChrChardevStr(cmd,
                                                   cfg,
