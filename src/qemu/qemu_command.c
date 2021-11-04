@@ -7200,6 +7200,12 @@ qemuBuildAccelCommandLine(virCommand *cmd,
     switch ((virDomainVirtType)def->virtType) {
     case VIR_DOMAIN_VIRT_QEMU:
         virBufferAddLit(&buf, "tcg");
+
+        if (def->features[VIR_DOMAIN_FEATURE_TCG] == VIR_TRISTATE_SWITCH_ON &&
+            def->tcg_features->tb_cache > 0) {
+            virBufferAsprintf(&buf, ",tb-size=%llu",
+                              def->tcg_features->tb_cache >> 10);
+        }
         break;
 
     case VIR_DOMAIN_VIRT_KVM:
