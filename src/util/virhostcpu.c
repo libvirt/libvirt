@@ -1336,6 +1336,41 @@ virHostCPUGetMSR(unsigned long index,
 }
 
 
+struct kvm_cpuid2 *
+virHostCPUGetCPUID(void)
+{
+    size_t i;
+    VIR_AUTOCLOSE fd = open(KVM_DEVICE, O_RDONLY);
+
+    if (fd < 0) {
+        virReportSystemError(errno, _("Unable to open %s"), KVM_DEVICE);
+        return NULL;
+    }
+
+    for (i = 1; i < INT32_MAX; i *= 2) {
+        g_autofree struct kvm_cpuid2 *kvm_cpuid = NULL;
+        kvm_cpuid = g_malloc0(sizeof(struct kvm_cpuid2) +
+                              sizeof(struct kvm_cpuid_entry2) * i);
+        kvm_cpuid->nent = i;
+
+        if (ioctl(fd, KVM_GET_SUPPORTED_CPUID, kvm_cpuid) == 0) {
+            /* filter out local apic id */
+            for (i = 0; i < kvm_cpuid->nent; ++i) {
+                struct kvm_cpuid_entry2 *entry = &kvm_cpuid->entries[i];
+                if (entry->function == 0x01 && entry->index == 0x00)
+                    entry->ebx &= 0x00ffffff;
+                if (entry->function == 0x0b)
+                    entry->edx &= 0xffffff00;
+            }
+
+            return g_steal_pointer(&kvm_cpuid);
+        }
+    }
+
+    virReportSystemError(errno, "%s", _("Cannot read host CPUID"));
+    return NULL;
+}
+
 /*
  * This function should only be called when the host CPU supports invariant TSC
  * (invtsc CPUID feature).
@@ -1390,6 +1425,14 @@ virHostCPUGetTscInfo(void)
 }
 
 #else
+
+struct kvm_cpuid2 *
+virHostCPUGetCPUID(void)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Reading CPUID is not supported on this platform"));
+    return NULL;
+}
 
 int
 virHostCPUGetMSR(unsigned long index G_GNUC_UNUSED,

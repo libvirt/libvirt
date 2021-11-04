@@ -80,6 +80,8 @@ virHostCPUGetMicrocodeVersion(virArch hostArch) G_GNUC_NO_INLINE;
 int virHostCPUGetMSR(unsigned long index,
                      uint64_t *msr);
 
+struct kvm_cpuid2 *virHostCPUGetCPUID(void);
+
 virHostCPUTscInfo *virHostCPUGetTscInfo(void);
 
 int virHostCPUGetSignature(char **signature);

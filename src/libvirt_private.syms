@@ -2398,6 +2398,7 @@ virHookPresent;
 # util/virhostcpu.h
 virHostCPUGetAvailableCPUsBitmap;
 virHostCPUGetCount;
+virHostCPUGetCPUID;
 virHostCPUGetHaltPollTime;
 virHostCPUGetInfo;
 virHostCPUGetKVMMaxVCPUs;
