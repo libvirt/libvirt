@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=guest,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
--machine q35,accel=tcg,usb=off,dump-guest-core=off \
+-machine q35,usb=off,dump-guest-core=off \
+-accel tcg \
 -cpu Haswell \
 -m 1024 \
 -realtime mlock=off \

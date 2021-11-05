@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine pseries,accel=tcg,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-accel tcg \
 -cpu POWER9 \
 -m 256 \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":268435456}' \

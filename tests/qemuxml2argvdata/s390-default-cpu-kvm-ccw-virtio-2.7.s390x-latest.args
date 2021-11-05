@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -name guest=test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-test/master-key.aes"}' \
--machine s390-ccw-virtio-2.7,accel=kvm,usb=off,dump-guest-core=off,memory-backend=s390.ram \
+-machine s390-ccw-virtio-2.7,usb=off,dump-guest-core=off,memory-backend=s390.ram \
+-accel kvm \
 -cpu host \
 -m 256 \
 -object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":268435456}' \

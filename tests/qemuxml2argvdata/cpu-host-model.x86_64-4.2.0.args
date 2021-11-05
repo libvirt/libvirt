@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-q35-4.2,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc-q35-4.2,usb=off,dump-guest-core=off \
+-accel kvm \
 -cpu Skylake-Client-IBRS,ss=on,vmx=on,hypervisor=on,tsc-adjust=on,clflushopt=on,umip=on,md-clear=on,stibp=on,arch-capabilities=on,ssbd=on,xsaves=on,pdpe1gb=on,skip-l1dfl-vmentry=on,pschange-mc-no=on \
 -m 214 \
 -overcommit mem-lock=off \

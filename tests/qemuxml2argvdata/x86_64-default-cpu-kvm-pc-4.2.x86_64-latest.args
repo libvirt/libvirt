@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -name guest=guest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-guest/master-key.aes"}' \
--machine pc-i440fx-4.2,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc-i440fx-4.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
 -cpu qemu64 \
 -m 4096 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":4294967296}' \

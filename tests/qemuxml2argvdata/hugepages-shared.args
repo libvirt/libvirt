@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 4096 \
 -realtime mlock=off \
 -smp 4,sockets=4,cores=1,threads=1 \

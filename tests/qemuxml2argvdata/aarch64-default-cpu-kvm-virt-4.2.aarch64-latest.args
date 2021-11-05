@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -name guest=guest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-guest/master-key.aes"}' \
--machine virt-4.2,accel=kvm,usb=off,dump-guest-core=off,gic-version=3,memory-backend=mach-virt.ram \
+-machine virt-4.2,usb=off,dump-guest-core=off,gic-version=3,memory-backend=mach-virt.ram \
+-accel kvm \
 -m 4096 \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":4294967296}' \
 -overcommit mem-lock=off \

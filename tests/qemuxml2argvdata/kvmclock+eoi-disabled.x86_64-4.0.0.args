@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-4.0,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-4.0,usb=off,dump-guest-core=off \
+-accel tcg \
 -cpu qemu32,kvmclock=off,kvm-pv-eoi=off \
 -m 214 \
 -overcommit mem-lock=off \

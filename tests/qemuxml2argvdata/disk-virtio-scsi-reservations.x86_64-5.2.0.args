@@ -11,7 +11,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -object pr-manager-helper,id=pr-helper0,path=/tmp/lib/domain--1-QEMUGuest1/pr-helper0.sock \
--machine pc-i440fx-5.2,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc-i440fx-5.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel tcg \
 -cpu qemu64 \
 -m 214 \
 -object memory-backend-ram,id=pc.ram,size=224395264 \

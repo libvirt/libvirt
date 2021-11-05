@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-p/.config \
 -name guest=default-video-type-ppc64-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-default-video-type-p/master-key.aes"}' \
--machine pseries,accel=kvm,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-machine pseries,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-accel kvm \
 -cpu host \
 -m 1024 \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":1073741824}' \

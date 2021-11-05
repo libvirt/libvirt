@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-5.2,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc-i440fx-5.2,usb=off,dump-guest-core=off \
+-accel kvm \
 -cpu qemu64 \
 -m size=2095104k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \

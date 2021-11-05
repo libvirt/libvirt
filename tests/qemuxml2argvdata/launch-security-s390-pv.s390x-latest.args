@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine s390-ccw-virtio,accel=kvm,usb=off,dump-guest-core=off,confidential-guest-support=lsec0,memory-backend=s390.ram \
+-machine s390-ccw-virtio,usb=off,dump-guest-core=off,confidential-guest-support=lsec0,memory-backend=s390.ram \
+-accel kvm \
 -cpu gen15a-base,aen=on,cmmnt=on,vxpdeh=on,aefsi=on,diag318=on,csske=on,mepoch=on,msa9=on,msa8=on,msa7=on,msa6=on,msa5=on,msa4=on,msa3=on,msa2=on,msa1=on,sthyi=on,edat=on,ri=on,deflate=on,edat2=on,etoken=on,vx=on,ipter=on,mepochptff=on,ap=on,vxeh=on,vxpd=on,esop=on,msa9_pckmo=on,vxeh2=on,esort=on,apqi=on,apft=on,els=on,iep=on,apqci=on,cte=on,ais=on,bpb=on,gs=on,ppa15=on,zpci=on,sea_esop2=on,te=on,cmm=on \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"s390.ram","size":224395264}' \

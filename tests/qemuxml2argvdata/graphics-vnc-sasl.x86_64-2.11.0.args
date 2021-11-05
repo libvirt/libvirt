@@ -12,7 +12,8 @@ SASL_CONF_PATH=/root/.sasl2 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-2.11,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.11,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

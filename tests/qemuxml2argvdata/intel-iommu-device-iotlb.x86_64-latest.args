@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
--machine q35,accel=kvm,usb=off,dump-guest-core=off,kernel_irqchip=split,memory-backend=pc.ram \
+-machine q35,usb=off,dump-guest-core=off,kernel_irqchip=split,memory-backend=pc.ram \
+-accel kvm \
 -cpu qemu64 \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \

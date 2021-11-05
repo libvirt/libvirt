@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-i440fx-4.0,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-4.0,usb=off,dump-guest-core=off \
+-accel tcg \
 -cpu EPYC,acpi=on,ss=on,monitor=on,hypervisor=on,erms=on,mpx=on,pcommit=on,clwb=on,pku=on,la57=on,3dnowext=on,3dnow=on,npt=on,vme=off,fma=off,avx=off,f16c=off,rdrand=off,avx2=off,rdseed=off,sha-ni=off,xsavec=off,fxsr-opt=off,misalignsse=off,3dnowprefetch=off,osvw=off,topoext=off,nrip-save=off \
 -m 214 \
 -overcommit mem-lock=off \

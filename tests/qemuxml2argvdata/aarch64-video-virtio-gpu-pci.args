@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=aarch64-vgpu,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-aarch64-vgpu/master-key.aes \
--machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2 \
+-machine virt,usb=off,dump-guest-core=off,gic-version=2 \
+-accel tcg \
 -cpu cortex-a57 \
 -m 1024 \
 -realtime mlock=off \

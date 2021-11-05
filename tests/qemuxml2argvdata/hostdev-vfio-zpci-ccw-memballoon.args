@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=KVMGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-KVMGuest1/master-key.aes \
--machine s390-ccw-virtio,accel=kvm,usb=off,dump-guest-core=off \
+-machine s390-ccw-virtio,usb=off,dump-guest-core=off \
+-accel kvm \
 -m 214 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

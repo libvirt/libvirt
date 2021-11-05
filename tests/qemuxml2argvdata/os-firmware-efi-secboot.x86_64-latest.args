@@ -14,7 +14,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 -blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/qemu/nvram/fedora_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
--machine pc-q35-4.0,accel=kvm,usb=off,smm=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,memory-backend=pc.ram \
+-machine pc-q35-4.0,usb=off,smm=on,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format,memory-backend=pc.ram \
+-accel kvm \
 -cpu qemu64 \
 -global driver=cfi.pflash01,property=secure,value=on \
 -m 8 \

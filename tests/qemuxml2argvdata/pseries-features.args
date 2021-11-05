@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=guest,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
--machine pseries,accel=tcg,usb=off,dump-guest-core=off,resize-hpt=required,cap-hpt-max-page-size=1048576k,cap-htm=on,cap-nested-hv=off,cap-ccf-assist=on,cap-cfpc=fixed,cap-sbbc=broken,cap-ibs=fixed-ccd \
+-machine pseries,usb=off,dump-guest-core=off,resize-hpt=required,cap-hpt-max-page-size=1048576k,cap-htm=on,cap-nested-hv=off,cap-ccf-assist=on,cap-cfpc=fixed,cap-sbbc=broken,cap-ibs=fixed-ccd \
+-accel tcg \
 -m 512 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.config \
 -name guest=pcie-expander-bus-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-pcie-expander-bus-te/master-key.aes"}' \
--machine virt,accel=tcg,usb=off,dump-guest-core=off,gic-version=2,memory-backend=mach-virt.ram \
+-machine virt,usb=off,dump-guest-core=off,gic-version=2,memory-backend=mach-virt.ram \
+-accel tcg \
 -cpu cortex-a15 \
 -m 2048 \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":2147483648}' \

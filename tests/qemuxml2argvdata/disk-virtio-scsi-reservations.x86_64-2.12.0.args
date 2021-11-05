@@ -12,7 +12,8 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -object pr-manager-helper,id=pr-helper0,path=/tmp/lib/domain--1-QEMUGuest1/pr-helper0.sock \
--machine pc-i440fx-2.12,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.12,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 214 \
 -realtime mlock=off \
 -smp 8,sockets=8,cores=1,threads=1 \

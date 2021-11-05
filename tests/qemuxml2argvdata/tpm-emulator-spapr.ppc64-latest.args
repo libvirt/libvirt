@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -name guest=TPM-VM,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-TPM-VM/master-key.aes"}' \
--machine pseries-5.0,accel=tcg,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-machine pseries-5.0,usb=off,dump-guest-core=off,memory-backend=ppc_spapr.ram \
+-accel tcg \
 -cpu POWER9 \
 -m 2048 \
 -object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":2147483648}' \

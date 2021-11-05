@@ -11,7 +11,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -enable-fips \
--machine pc-i440fx-5.1,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-5.1,usb=off,dump-guest-core=off \
+-accel tcg \
 -cpu qemu64 \
 -m 214 \
 -overcommit mem-lock=off \

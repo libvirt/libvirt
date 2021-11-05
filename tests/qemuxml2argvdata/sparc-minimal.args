@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=redhat62sparc,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-redhat62sparc/master-key.aes \
--machine SS-5,accel=tcg,usb=off,dump-guest-core=off \
+-machine SS-5,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 500 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

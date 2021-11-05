@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -name guest=guest,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-guest/master-key.aes"}' \
--machine pc,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc,usb=off,dump-guest-core=off \
+-accel kvm \
 -cpu qemu64 \
 -m 14336 \
 -overcommit mem-lock=off \

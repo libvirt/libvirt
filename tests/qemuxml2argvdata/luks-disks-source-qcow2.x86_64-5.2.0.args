@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-encryptdisk/.config \
 -name guest=encryptdisk,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-encryptdisk/master-key.aes \
--machine pc-i440fx-5.2,accel=tcg,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc-i440fx-5.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel tcg \
 -cpu qemu64 \
 -m 1024 \
 -object memory-backend-ram,id=pc.ram,size=1073741824 \

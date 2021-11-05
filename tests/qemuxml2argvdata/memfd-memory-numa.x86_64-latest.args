@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -name guest=instance-00000092,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-instance-00000092/master-key.aes"}' \
--machine pc-i440fx-2.3,accel=kvm,usb=off,dump-guest-core=off,nvdimm=on \
+-machine pc-i440fx-2.3,usb=off,dump-guest-core=off,nvdimm=on \
+-accel kvm \
 -cpu qemu64 \
 -m size=14680064k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \

@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-a/.config \
 -name guest=default-video-type-aarch64-test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-default-video-type-a/master-key.aes"}' \
--machine virt,accel=kvm,usb=off,dump-guest-core=off,gic-version=3,memory-backend=mach-virt.ram \
+-machine virt,usb=off,dump-guest-core=off,gic-version=3,memory-backend=mach-virt.ram \
+-accel kvm \
 -m 1024 \
 -object '{"qom-type":"memory-backend-ram","id":"mach-virt.ram","size":1073741824}' \
 -overcommit mem-lock=off \

@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
 -name guest=fedora,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-fedora/master-key.aes"}' \
--machine pc-q35-4.0,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc-q35-4.0,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
 -cpu qemu64 \
 -bios /usr/share/seabios/bios-256k.bin \
 -m 8 \

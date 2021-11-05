@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=armtest,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-armtest/master-key.aes \
--machine vexpress-a9,accel=tcg,usb=off,dump-guest-core=off \
+-machine vexpress-a9,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 1024 \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -name guest=test,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-test/master-key.aes"}' \
--machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
 -cpu Icelake-Server,intel-pt=off \
 -m 214 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \

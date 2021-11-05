@@ -10,7 +10,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-f14/.config \
 -name guest=f14,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-f14/master-key.aes"}' \
--machine pc,accel=kvm,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
 -cpu core2duo,ds=on,acpi=on,ss=on,ht=on,tm=on,pbe=on,ds-cpl=on,vmx=on,est=on,tm2=on,cx16=on,xtpr=on,lahf-lm=on \
 -m 1024 \
 -object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":1073741824}' \

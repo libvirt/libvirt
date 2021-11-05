@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pc-q35-2.12,accel=kvm,usb=off,dump-guest-core=off \
+-machine pc-q35-2.12,usb=off,dump-guest-core=off \
+-accel kvm \
 -cpu Haswell-noTSX,vme=on,ss=on,f16c=on,rdrand=on,hypervisor=on,arat=on,tsc-adjust=on,xsaveopt=on,pdpe1gb=on,abm=on \
 -m 214 \
 -realtime mlock=off \

@@ -11,7 +11,8 @@ QEMU_AUDIO_DRV=none \
 -name guest=fedora,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-fedora/master-key.aes \
--machine pc-i440fx-2.3,accel=tcg,usb=off,dump-guest-core=off \
+-machine pc-i440fx-2.3,usb=off,dump-guest-core=off \
+-accel tcg \
 -m 1024 \
 -realtime mlock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
