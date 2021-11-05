@@ -4939,49 +4939,12 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildVhostUserChardevStr(const char *alias,
-                             int *fd,
-                             virCommand *cmd)
-{
-    g_autofree char *chardev_alias = qemuDomainGetVhostUserChrAlias(alias);
-    char *chardev = NULL;
-
-    if (*fd == -1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Attempt to pass closed vhostuser FD"));
-        return NULL;
-    }
-
-    chardev = g_strdup_printf("socket,id=%s,fd=%d", chardev_alias, *fd);
-
-    virCommandPassFD(cmd, *fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-    *fd = -1;
-
-    return chardev;
-}
-
-
 static int
 qemuBuildVideoCommandLine(virCommand *cmd,
                           const virDomainDef *def,
-                          virQEMUCaps *qemuCaps)
+                          qemuDomainObjPrivate *priv)
 {
     size_t i;
-
-    for (i = 0; i < def->nvideos; i++) {
-        g_autofree char *chardev = NULL;
-        virDomainVideoDef *video = def->videos[i];
-
-        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
-            if (!(chardev = qemuBuildVhostUserChardevStr(video->info.alias,
-                                &QEMU_DOMAIN_VIDEO_PRIVATE(video)->vhost_user_fd,
-                                cmd)))
-                return -1;
-
-            virCommandAddArgList(cmd, "-chardev", chardev, NULL);
-        }
-    }
 
     for (i = 0; i < def->nvideos; i++) {
         virDomainVideoDef *video = def->videos[i];
@@ -4989,10 +4952,24 @@ qemuBuildVideoCommandLine(virCommand *cmd,
         if (video->type == VIR_DOMAIN_VIDEO_TYPE_NONE)
             continue;
 
-        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, qemuCaps) < 0)
+        if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
+            qemuDomainVideoPrivate *videopriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
+            g_autoptr(virDomainChrSourceDef) chrsrc = virDomainChrSourceDefNew(priv->driver->xmlopt);
+            g_autofree char *chrAlias = qemuDomainGetVhostUserChrAlias(video->info.alias);
+            qemuDomainChrSourcePrivate *chrsrcpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chrsrc);
+
+            chrsrc->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+            chrsrcpriv->fd = videopriv->vhost_user_fd;
+            videopriv->vhost_user_fd = -1;
+
+            if (qemuBuildChardevCommand(cmd, chrsrc, chrAlias, priv->qemuCaps) < 0)
+                return -1;
+        }
+
+        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, priv->qemuCaps) < 0)
             return -1;
 
-        if (qemuBuildDeviceVideoCmd(cmd, def, video, qemuCaps) < 0)
+        if (qemuBuildDeviceVideoCmd(cmd, def, video, priv->qemuCaps) < 0)
             return -1;
     }
 
@@ -10646,7 +10623,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildVideoCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildVideoCommandLine(cmd, def, priv) < 0)
         return NULL;
 
     if (qemuBuildSoundCommandLine(cmd, def, qemuCaps) < 0)
