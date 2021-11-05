@@ -2741,22 +2741,6 @@ qemuBuildDisksCommandLine(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildVHostUserFsChardevStr(const virDomainFSDef *fs,
-                               const char *chardev_alias,
-                               qemuDomainObjPrivate *priv)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *socket_path = qemuDomainGetVHostUserFSSocketPath(priv, fs);
-
-    virBufferAddLit(&buf, "socket");
-    virBufferAsprintf(&buf, ",id=%s", chardev_alias);
-    virBufferAddLit(&buf, ",path=");
-    virQEMUBuildBufferEscapeComma(&buf, socket_path);
-    return virBufferContentAndReset(&buf);
-}
-
-
 virJSONValue *
 qemuBuildVHostUserFsDevProps(virDomainFSDef *fs,
                              const virDomainDef *def,
@@ -2790,15 +2774,18 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
                                 const virDomainDef *def,
                                 qemuDomainObjPrivate *priv)
 {
-    g_autofree char *chardev_alias = NULL;
-    g_autofree char *chrdevstr = NULL;
+    g_autofree char *chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
     g_autoptr(virJSONValue) devprops = NULL;
+    g_autoptr(virDomainChrSourceDef) chrsrc = virDomainChrSourceDefNew(priv->driver->xmlopt);
 
-    chardev_alias = qemuDomainGetVhostUserChrAlias(fs->info.alias);
-    chrdevstr = qemuBuildVHostUserFsChardevStr(fs, chardev_alias, priv);
+    if (!chrsrc)
+        return -1;
 
-    virCommandAddArg(cmd, "-chardev");
-    virCommandAddArg(cmd, chrdevstr);
+    chrsrc->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    chrsrc->data.nix.path = qemuDomainGetVHostUserFSSocketPath(priv, fs);
+
+    if (qemuBuildChardevCommand(cmd, chrsrc, chardev_alias, priv->qemuCaps) < 0)
+        return -1;
 
     if (qemuCommandAddExtDevice(cmd, &fs->info, priv->qemuCaps) < 0)
         return -1;
