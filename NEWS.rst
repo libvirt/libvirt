@@ -30,6 +30,13 @@ v7.10.0 (unreleased)
     Libvirt is now able to report interface information from the guest's
     perspective (using guest agent).
 
+  * Minimum SSF setting
+
+    The libvirtd.conf option tcp_min_ssf can be used to override the minimum
+    permitted security strength factor for non-TLS remote connections.
+    The current hardcoded minimum is 56 (single-DES) and will be raised to 112
+    in the future. Setting a minimum lower than 112 is not supported.
+
 * **Bug fixes**
 
 
