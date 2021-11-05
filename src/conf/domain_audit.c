@@ -536,7 +536,7 @@ virDomainAuditTPM(virDomainObj *vm, virDomainTPMDef *tpm,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        path = tpm->data.passthrough.source.data.file.path;
+        path = tpm->data.passthrough.source->data.file.path;
         if (!(device = virAuditEncode("device", VIR_AUDIT_STR(path)))) {
             VIR_WARN("OOM while encoding audit message");
             goto cleanup;
@@ -547,7 +547,7 @@ virDomainAuditTPM(virDomainObj *vm, virDomainTPMDef *tpm,
                   virt, reason, vmname, uuidstr, device);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        path = tpm->data.emulator.source.data.nix.path;
+        path = tpm->data.emulator.source->data.nix.path;
         if (!(device = virAuditEncode("device", VIR_AUDIT_STR(path)))) {
             VIR_WARN("OOM while encoding audit message");
             goto cleanup;

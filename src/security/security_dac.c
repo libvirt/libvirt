@@ -1686,12 +1686,12 @@ virSecurityDACSetTPMFileLabel(virSecurityManager *mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         ret = virSecurityDACSetChardevLabelHelper(mgr, def,
-                                                  &tpm->data.passthrough.source,
+                                                  tpm->data.passthrough.source,
                                                   false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         ret = virSecurityDACSetChardevLabelHelper(mgr, def,
-                                                  &tpm->data.emulator.source,
+                                                  tpm->data.emulator.source,
                                                   false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -1712,7 +1712,7 @@ virSecurityDACRestoreTPMFileLabel(virSecurityManager *mgr,
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         ret = virSecurityDACRestoreChardevLabelHelper(mgr, def,
-                                                      &tpm->data.passthrough.source,
+                                                      tpm->data.passthrough.source,
                                                       false, false);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:

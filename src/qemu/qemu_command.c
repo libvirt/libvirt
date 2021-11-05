@@ -9947,7 +9947,7 @@ qemuBuildTPMBackendStr(virCommand *cmd,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        tpmdev = tpm->data.passthrough.source.data.file.path;
+        tpmdev = tpm->data.passthrough.source->data.file.path;
         if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
             return NULL;
 
@@ -9972,7 +9972,7 @@ qemuBuildTPMBackendStr(virCommand *cmd,
         virBufferAddLit(&buf, ",chardev=chrtpm");
 
         *chardev = g_strdup_printf("socket,id=chrtpm,path=%s",
-                                   tpm->data.emulator.source.data.nix.path);
+                                   tpm->data.emulator.source->data.nix.path);
 
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
@@ -10041,7 +10041,7 @@ qemuBuildTPMProxyCommandLine(virCommand *cmd,
     if (virJSONValueObjectAdd(&props,
                               "s:driver", virDomainTPMModelTypeToString(tpm->model),
                               "s:id", tpm->info.alias,
-                              "s:host-path", tpm->data.passthrough.source.data.file.path,
+                              "s:host-path", tpm->data.passthrough.source->data.file.path,
                               NULL) < 0)
         return -1;
 

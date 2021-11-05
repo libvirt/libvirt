@@ -3211,10 +3211,10 @@ void virDomainTPMDefFree(virDomainTPMDef *def)
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        virDomainChrSourceDefClear(&def->data.passthrough.source);
+        virObjectUnref(def->data.passthrough.source);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        virDomainChrSourceDefClear(&def->data.emulator.source);
+        virObjectUnref(def->data.emulator.source);
         g_free(def->data.emulator.storagepath);
         g_free(def->data.emulator.logfile);
         break;
@@ -11831,13 +11831,17 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+        if (!(def->data.passthrough.source = virDomainChrSourceDefNew(xmlopt)))
+            goto error;
         path = virXPathString("string(./backend/device/@path)", ctxt);
         if (!path)
             path = g_strdup(VIR_DOMAIN_TPM_DEFAULT_DEVICE);
-        def->data.passthrough.source.data.file.path = g_steal_pointer(&path);
-        def->data.passthrough.source.type = VIR_DOMAIN_CHR_TYPE_DEV;
+        def->data.passthrough.source->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        def->data.passthrough.source->data.file.path = g_steal_pointer(&path);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (!(def->data.emulator.source = virDomainChrSourceDefNew(xmlopt)))
+            goto error;
         secretuuid = virXPathString("string(./backend/encryption/@secret)", ctxt);
         if (secretuuid) {
             if (virUUIDParse(secretuuid, def->data.emulator.secretuuid) < 0) {
@@ -25456,7 +25460,7 @@ virDomainTPMDefFormat(virBuffer *buf,
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         virBufferEscapeString(buf, "<device path='%s'/>\n",
-                              def->data.passthrough.source.data.file.path);
+                              def->data.passthrough.source->data.file.path);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</backend>\n");
         break;

@@ -1381,10 +1381,10 @@ struct _virDomainTPMDef {
     int version; /* virDomainTPMVersion */
     union {
         struct {
-            virDomainChrSourceDef source;
+            virDomainChrSourceDef *source;
         } passthrough;
         struct {
-            virDomainChrSourceDef source;
+            virDomainChrSourceDef *source;
             char *storagepath;
             char *logfile;
             unsigned char secretuuid[VIR_UUID_BUFLEN];

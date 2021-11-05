@@ -332,11 +332,11 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
         return -1;
 
     /* create the socket filename */
-    if (!tpm->data.emulator.source.data.nix.path &&
-        !(tpm->data.emulator.source.data.nix.path =
+    if (!tpm->data.emulator.source->data.nix.path &&
+        !(tpm->data.emulator.source->data.nix.path =
           qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
         return -1;
-    tpm->data.emulator.source.type = VIR_DOMAIN_CHR_TYPE_UNIX;
+    tpm->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
 
     return 0;
 }
@@ -716,7 +716,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                                    secretuuid) < 0)
         goto error;
 
-    unlink(tpm->data.emulator.source.data.nix.path);
+    unlink(tpm->data.emulator.source->data.nix.path);
 
     cmd = virCommandNew(swtpm);
     if (!cmd)
@@ -726,7 +726,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
     virCommandAddArgList(cmd, "socket", "--daemon", "--ctrl", NULL);
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
-                           tpm->data.emulator.source.data.nix.path);
+                           tpm->data.emulator.source->data.nix.path);
 
     virCommandAddArg(cmd, "--tpmstate");
     virCommandAddArgFormat(cmd, "dir=%s,mode=0600",

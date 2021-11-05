@@ -422,7 +422,7 @@ qemuDomainSetupTPM(virDomainTPMDef *dev,
 {
     switch (dev->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        *paths = g_slist_prepend(*paths, g_strdup(dev->data.passthrough.source.data.file.path));
+        *paths = g_slist_prepend(*paths, g_strdup(dev->data.passthrough.source->data.file.path));
         break;
 
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
