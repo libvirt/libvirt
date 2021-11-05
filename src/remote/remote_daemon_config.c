@@ -231,6 +231,8 @@ daemonConfigLoadOptions(struct daemonConfig *data,
                         const char *filename,
                         virConf *conf)
 {
+    int rc G_GNUC_UNUSED;
+
 #ifdef WITH_IP
     if (virConfGetValueBool(conf, "listen_tcp", &data->listen_tcp) < 0)
         return -1;
@@ -303,10 +305,9 @@ daemonConfigLoadOptions(struct daemonConfig *data,
     if (virConfGetValueString(conf, "tls_priority", &data->tls_priority) < 0)
         return -1;
 
-    if (virConfGetValueUInt(conf, "tcp_min_ssf", &data->tcp_min_ssf) < 0)
+    if ((rc = virConfGetValueUInt(conf, "tcp_min_ssf", &data->tcp_min_ssf)) < 0) {
         return -1;
-
-    if (data->tcp_min_ssf < SSF_WARNING_LEVEL) {
+    } else if (rc > 0 && data->tcp_min_ssf < SSF_WARNING_LEVEL) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("minimum SSF levels lower than %d are not supported"),
                        SSF_WARNING_LEVEL);
