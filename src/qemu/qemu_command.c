@@ -1322,16 +1322,12 @@ static int
 qemuBuildChardevCommand(virCommand *cmd,
                         virQEMUDriverConfig *cfg,
                         const virDomainChrSourceDef *dev,
-                        const char *alias,
+                        const char *charAlias,
                         virQEMUCaps *qemuCaps)
 {
     qemuDomainChrSourcePrivate *chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool telnet;
-    g_autofree char *charAlias = NULL;
-
-    if (!(charAlias = qemuAliasChardevFromDevAlias(alias)))
-        return -1;
 
     switch ((virDomainChrType) dev->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -1348,7 +1344,7 @@ qemuBuildChardevCommand(virCommand *cmd,
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
         virBufferAsprintf(&buf, "%s,id=%s,path=",
-                          STRPREFIX(alias, "parallel") ? "parport" : "tty",
+                          STRPREFIX(charAlias, "charparallel") ? "parport" : "tty",
                           charAlias);
         virQEMUBuildBufferEscapeComma(&buf, dev->data.file.path);
         break;
@@ -5519,7 +5515,7 @@ qemuBuildMonitorCommandLine(virCommand *cmd,
     if (qemuBuildChardevCommand(cmd,
                                 cfg,
                                 priv->monConfig,
-                                "monitor",
+                                "charmonitor",
                                 priv->qemuCaps) < 0)
         return -1;
 
@@ -5642,6 +5638,8 @@ qemuBuildRNGBackendChrdev(virCommand *cmd,
                           virDomainRNGDef *rng,
                           virQEMUCaps *qemuCaps)
 {
+    g_autofree char *charAlias = qemuAliasChardevFromDevAlias(rng->info.alias);
+
     switch ((virDomainRNGBackend) rng->backend) {
     case VIR_DOMAIN_RNG_BACKEND_RANDOM:
     case VIR_DOMAIN_RNG_BACKEND_BUILTIN:
@@ -5653,7 +5651,7 @@ qemuBuildRNGBackendChrdev(virCommand *cmd,
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     rng->source.chardev,
-                                    rng->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
         break;
@@ -8589,13 +8587,14 @@ qemuInterfaceVhostuserConnect(virQEMUDriver *driver,
                               virQEMUCaps *qemuCaps)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autofree char *charAlias = qemuAliasChardevFromDevAlias(net->info.alias);
 
     switch ((virDomainChrType)net->data.vhostuser->type) {
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     net->data.vhostuser,
-                                    net->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
         break;
@@ -9029,18 +9028,18 @@ qemuBuildSmartcardCommandLine(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH: {
-        g_autofree char *chardevalias = g_strdup_printf("char%s", smartcard->info.alias);
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(smartcard->info.alias);
 
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     smartcard->data.passthru,
-                                    smartcard->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
 
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", "ccid-card-passthru",
-                                  "s:chardev", chardevalias,
+                                  "s:chardev", charAlias,
                                   NULL) < 0)
             return -1;
     }
@@ -9243,10 +9242,12 @@ qemuBuildShmemCommandLine(virCommand *cmd,
         return -1;
 
     if (shmem->server.enabled) {
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(shmem->info.alias);
+
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     shmem->server.chr,
-                                    shmem->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
     }
@@ -9357,6 +9358,7 @@ qemuBuildSerialCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->nserials; i++) {
         virDomainChrDef *serial = def->serials[i];
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(serial->info.alias);
 
         if (serial->source->type == VIR_DOMAIN_CHR_TYPE_SPICEPORT && !havespice)
             continue;
@@ -9364,7 +9366,7 @@ qemuBuildSerialCommandLine(virCommand *cmd,
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     serial->source,
-                                    serial->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
 
@@ -9403,11 +9405,12 @@ qemuBuildParallelsCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->nparallels; i++) {
         virDomainChrDef *parallel = def->parallels[i];
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(parallel->info.alias);
 
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     parallel->source,
-                                    parallel->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
 
@@ -9431,11 +9434,12 @@ qemuBuildChannelsCommandLine(virCommand *cmd,
     for (i = 0; i < def->nchannels; i++) {
         virDomainChrDef *channel = def->channels[i];
         g_autoptr(virJSONValue) netdevprops = NULL;
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(channel->info.alias);
 
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     channel->source,
-                                    channel->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
 
@@ -9475,6 +9479,7 @@ qemuBuildConsoleCommandLine(virCommand *cmd,
     /* Explicit console devices */
     for (i = 0; i < def->nconsoles; i++) {
         virDomainChrDef *console = def->consoles[i];
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(console->info.alias);
 
         switch (console->targetType) {
         case VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SCLP:
@@ -9483,7 +9488,7 @@ qemuBuildConsoleCommandLine(virCommand *cmd,
             if (qemuBuildChardevCommand(cmd,
                                         cfg,
                                         console->source,
-                                        console->info.alias,
+                                        charAlias,
                                         qemuCaps) < 0)
                 return -1;
 
@@ -9572,11 +9577,12 @@ qemuBuildRedirdevCommandLine(virCommand *cmd,
     for (i = 0; i < def->nredirdevs; i++) {
         virDomainRedirdevDef *redirdev = def->redirdevs[i];
         g_autoptr(virJSONValue) devprops = NULL;
+        g_autofree char *charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias);
 
         if (qemuBuildChardevCommand(cmd,
                                     cfg,
                                     redirdev->source,
-                                    redirdev->info.alias,
+                                    charAlias,
                                     qemuCaps) < 0)
             return -1;
 
