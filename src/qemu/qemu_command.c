@@ -9734,8 +9734,7 @@ static char *
 qemuBuildTPMBackendStr(virCommand *cmd,
                        virDomainTPMDef *tpm,
                        int *tpmfd,
-                       int *cancelfd,
-                       char **chardev)
+                       int *cancelfd)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_autofree char *cancel_path = NULL;
@@ -9774,10 +9773,6 @@ qemuBuildTPMBackendStr(virCommand *cmd,
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
         virBufferAddLit(&buf, ",chardev=chrtpm");
-
-        *chardev = g_strdup_printf("socket,id=chrtpm,path=%s",
-                                   tpm->data.emulator.source->data.nix.path);
-
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         return NULL;
@@ -9793,22 +9788,20 @@ qemuBuildTPMCommandLine(virCommand *cmd,
                         virDomainTPMDef *tpm,
                         virQEMUCaps *qemuCaps)
 {
-    char *optstr;
-    g_autofree char *chardev = NULL;
+    g_autofree char *tpmdevstr = NULL;
     int tpmfd = -1;
     int cancelfd = -1;
     char *fdset;
 
-    if (!(optstr = qemuBuildTPMBackendStr(cmd, tpm,
-                                          &tpmfd, &cancelfd,
-                                          &chardev)))
+    if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
+        if (qemuBuildChardevCommand(cmd, tpm->data.emulator.source, "chrtpm", qemuCaps) < 0)
+            return -1;
+    }
+
+    if (!(tpmdevstr = qemuBuildTPMBackendStr(cmd, tpm, &tpmfd, &cancelfd)))
         return -1;
 
-    virCommandAddArgList(cmd, "-tpmdev", optstr, NULL);
-    VIR_FREE(optstr);
-
-    if (chardev)
-        virCommandAddArgList(cmd, "-chardev", chardev, NULL);
+    virCommandAddArgList(cmd, "-tpmdev", tpmdevstr, NULL);
 
     if (tpmfd >= 0) {
         fdset = qemuVirCommandGetFDSet(cmd, tpmfd);
