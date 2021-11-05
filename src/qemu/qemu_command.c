@@ -7066,15 +7066,8 @@ qemuBuildMachineCommandLine(virCommand *cmd,
     case VIR_DOMAIN_VIRT_BHYVE:
     case VIR_DOMAIN_VIRT_VZ:
     case VIR_DOMAIN_VIRT_NONE:
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("the QEMU binary does not support %s"),
-                       virDomainVirtTypeToString(def->virtType));
-        return -1;
-
     case VIR_DOMAIN_VIRT_LAST:
-    default:
-        virReportEnumRangeError(virDomainVirtType, def->virtType);
-        return -1;
+        break;
     }
 
     /* To avoid the collision of creating USB controllers when calling
