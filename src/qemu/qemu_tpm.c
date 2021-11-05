@@ -610,9 +610,8 @@ qemuTPMEmulatorReconfigure(const char *storagepath,
 {
     g_autoptr(virCommand) cmd = NULL;
     int exitstatus;
-    g_autofree char *activePcrBanksStr;
+    g_autofree char *activePcrBanksStr = NULL;
     g_autofree char *swtpm_setup = virTPMGetSwtpmSetup();
-    VIR_AUTOCLOSE pwdfile_fd = -1;
 
     if (!swtpm_setup)
         return -1;
