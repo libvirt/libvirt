@@ -1024,13 +1024,12 @@ cmdNodeDeviceUndefine(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
     if (!dev)
         goto cleanup;
 
-    if (virNodeDeviceUndefine(dev, 0) == 0) {
-        vshPrintExtra(ctl, _("Undefined node device '%s'\n"), device_value);
-    } else {
+    if (virNodeDeviceUndefine(dev, 0) < 0) {
         vshError(ctl, _("Failed to undefine node device '%s'"), device_value);
         goto cleanup;
     }
 
+    vshPrintExtra(ctl, _("Undefined node device '%s'\n"), device_value);
     ret = true;
  cleanup:
     return ret;

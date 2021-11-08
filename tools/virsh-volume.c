@@ -411,14 +411,14 @@ cmdVolCreate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if ((vol = virStorageVolCreateXML(pool, buffer, flags))) {
-        vshPrintExtra(ctl, _("Vol %s created from %s\n"),
-                      virStorageVolGetName(vol), from);
-        ret = true;
-    } else {
+    if (!(vol = virStorageVolCreateXML(pool, buffer, flags))) {
         vshError(ctl, _("Failed to create vol from %s"), from);
+        goto cleanup;
     }
 
+    vshPrintExtra(ctl, _("Vol %s created from %s\n"),
+                  virStorageVolGetName(vol), from);
+    ret = true;
  cleanup:
     return ret;
 }
@@ -489,14 +489,13 @@ cmdVolCreateFrom(vshControl *ctl, const vshCmd *cmd)
 
     newvol = virStorageVolCreateXMLFrom(pool, buffer, inputvol, flags);
 
-    if (newvol != NULL) {
-        vshPrintExtra(ctl, _("Vol %s created from input vol %s\n"),
-                      virStorageVolGetName(newvol), virStorageVolGetName(inputvol));
-    } else {
+    if (!newvol) {
         vshError(ctl, _("Failed to create vol from %s"), from);
         goto cleanup;
     }
 
+    vshPrintExtra(ctl, _("Vol %s created from input vol %s\n"),
+                  virStorageVolGetName(newvol), virStorageVolGetName(inputvol));
     ret = true;
  cleanup:
     return ret;
@@ -1147,20 +1146,19 @@ cmdVolResize(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
     }
 
-    if (virStorageVolResize(vol, capacity, flags) == 0) {
-        vshPrintExtra(ctl,
-                      delta ? _("Size of volume '%s' successfully changed by %s\n")
-                      : _("Size of volume '%s' successfully changed to %s\n"),
-                      virStorageVolGetName(vol), capacityStr);
-        ret = true;
-    } else {
+    if (virStorageVolResize(vol, capacity, flags) < 0) {
         vshError(ctl,
                  delta ? _("Failed to change size of volume '%s' by %s")
                  : _("Failed to change size of volume '%s' to %s"),
                  virStorageVolGetName(vol), capacityStr);
-        ret = false;
+        goto cleanup;
     }
 
+    vshPrintExtra(ctl,
+                  delta ? _("Size of volume '%s' successfully changed by %s\n")
+                  : _("Size of volume '%s' successfully changed to %s\n"),
+                  virStorageVolGetName(vol), capacityStr);
+    ret = true;
  cleanup:
     return ret;
 }
