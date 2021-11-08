@@ -1134,10 +1134,10 @@ qemuAgentMakeCommand(const char *cmdname,
 
     va_end(args);
 
-    if (virJSONValueObjectCreate(&obj,
-                                 "s:execute", cmdname,
-                                 "A:arguments", &jargs,
-                                 NULL) < 0)
+    if (virJSONValueObjectAdd(&obj,
+                              "s:execute", cmdname,
+                              "A:arguments", &jargs,
+                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&obj);
