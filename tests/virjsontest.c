@@ -391,10 +391,10 @@ testJSONEscapeObj(const void *data G_GNUC_UNUSED)
     g_autofree char *result = NULL;
     const char *parsednestedstr;
 
-    if (virJSONValueObjectCreate(&nestjson,
-                                 "s:stringkey", "stringvalue",
-                                 "i:numberkey", 1234,
-                                 "b:booleankey", false, NULL) < 0) {
+    if (virJSONValueObjectAdd(&nestjson,
+                              "s:stringkey", "stringvalue",
+                              "i:numberkey", 1234,
+                              "b:booleankey", false, NULL) < 0) {
         VIR_TEST_VERBOSE("failed to create nested json object");
         return -1;
     }
@@ -404,7 +404,7 @@ testJSONEscapeObj(const void *data G_GNUC_UNUSED)
         return -1;
     }
 
-    if (virJSONValueObjectCreate(&json, "s:test", neststr, NULL) < 0) {
+    if (virJSONValueObjectAdd(&json, "s:test", neststr, NULL) < 0) {
         VIR_TEST_VERBOSE("Failed to create json object");
         return -1;
     }
@@ -446,8 +446,8 @@ testJSONObjectFormatSteal(const void *opaque G_GNUC_UNUSED)
         VIR_TEST_VERBOSE("Failed to create json object");
     }
 
-    if (virJSONValueObjectCreate(&t1, "a:t", &a1, "s:f", NULL, NULL) != -1) {
-        VIR_TEST_VERBOSE("virJSONValueObjectCreate(t1) should have failed");
+    if (virJSONValueObjectAdd(&t1, "a:t", &a1, "s:f", NULL, NULL) != -1) {
+        VIR_TEST_VERBOSE("virJSONValueObjectAdd(t1) should have failed");
         return -1;
     }
 
@@ -456,8 +456,8 @@ testJSONObjectFormatSteal(const void *opaque G_GNUC_UNUSED)
         return -1;
     }
 
-    if (virJSONValueObjectCreate(&t2, "s:f", NULL, "a:t", &a1, NULL) != -1) {
-        VIR_TEST_VERBOSE("virJSONValueObjectCreate(t2) should have failed");
+    if (virJSONValueObjectAdd(&t2, "s:f", NULL, "a:t", &a1, NULL) != -1) {
+        VIR_TEST_VERBOSE("virJSONValueObjectAdd(t2) should have failed");
         return -1;
     }
 
