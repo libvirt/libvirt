@@ -86,8 +86,9 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
                                    virConnectObjectEventGenericCallback cb,
                                    void *cbopaque)
 {
-    virNetworkPtr net = virGetNetwork(conn, event->meta.name, event->meta.uuid);
-    if (!net)
+    g_autoptr(virNetwork) net = NULL;
+
+    if (!(net = virGetNetwork(conn, event->meta.name, event->meta.uuid)))
         return;
 
     switch ((virNetworkEventID)event->eventID) {
@@ -100,16 +101,13 @@ virNetworkEventDispatchDefaultFunc(virConnectPtr conn,
                                                           networkLifecycleEvent->type,
                                                           networkLifecycleEvent->detail,
                                                           cbopaque);
-            goto cleanup;
+            return;
         }
 
     case VIR_NETWORK_EVENT_ID_LAST:
         break;
     }
     VIR_WARN("Unexpected event ID %d", event->eventID);
-
- cleanup:
-    virObjectUnref(net);
 }
 
 
