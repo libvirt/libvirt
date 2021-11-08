@@ -2880,10 +2880,10 @@ qemuMonitorCreateObjectProps(virJSONValue **propsret,
     int rc;
     va_list args;
 
-    if (virJSONValueObjectCreate(&props,
-                                 "s:qom-type", type,
-                                 "s:id", alias,
-                                 NULL) < 0)
+    if (virJSONValueObjectAdd(&props,
+                              "s:qom-type", type,
+                              "s:id", alias,
+                              NULL) < 0)
         return -1;
 
 
@@ -2961,11 +2961,11 @@ qemuMonitorAddObject(qemuMonitor *mon,
             *props = NULL;
         }
 
-        if (virJSONValueObjectCreate(&pr,
-                                     "s:qom-type", type,
-                                     "s:id", id,
-                                     "A:props", props,
-                                     NULL) < 0)
+        if (virJSONValueObjectAdd(&pr,
+                                  "s:qom-type", type,
+                                  "s:id", id,
+                                  "A:props", props,
+                                  NULL) < 0)
             return -1;
     }
 
