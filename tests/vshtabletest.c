@@ -45,7 +45,8 @@ static int
 testVshTableHeader(const void *opaque G_GNUC_UNUSED)
 {
     int ret = 0;
-    char *act = NULL;
+    g_autofree char *act = NULL;
+    g_autofree char *act2 = NULL;
     const char *exp =
         " 1   fedora28   running\n"
         " 2   rhel7.5    running\n";
@@ -58,7 +59,7 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
     g_autoptr(vshTable) table = vshTableNew("Id", "Name", "State",
                                     NULL); //to ask about return
     if (!table)
-        goto cleanup;
+        return -1;
 
     vshTableRowAppend(table, "1", "fedora28", "running", NULL);
     vshTableRowAppend(table, "2", "rhel7.5", "running",
@@ -68,13 +69,10 @@ testVshTableHeader(const void *opaque G_GNUC_UNUSED)
     if (virTestCompareToString(exp, act) < 0)
         ret = -1;
 
-    VIR_FREE(act);
-    act = vshTablePrintToString(table, true);
-    if (virTestCompareToString(exp2, act) < 0)
+    act2 = vshTablePrintToString(table, true);
+    if (virTestCompareToString(exp2, act2) < 0)
         ret = -1;
 
- cleanup:
-    VIR_FREE(act);
     return ret;
 }
 
