@@ -790,10 +790,10 @@ qemuMigrationCapsToJSON(virBitmap *caps,
         if (!virBitmapIsBitSet(caps, bit))
             continue;
 
-        if (virJSONValueObjectCreate(&cap,
-                                     "s:capability", qemuMigrationCapabilityTypeToString(bit),
-                                     "b:state", virBitmapIsBitSet(states, bit),
-                                     NULL) < 0)
+        if (virJSONValueObjectAdd(&cap,
+                                  "s:capability", qemuMigrationCapabilityTypeToString(bit),
+                                  "b:state", virBitmapIsBitSet(states, bit),
+                                  NULL) < 0)
             return NULL;
 
         if (virJSONValueArrayAppend(json, &cap) < 0)
