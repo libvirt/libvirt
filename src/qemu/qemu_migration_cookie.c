@@ -1623,16 +1623,17 @@ qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
                 bitmapname = bitmap->bitmapname;
 
             if (bitmap->persistent == VIR_TRISTATE_BOOL_YES) {
-                if (virJSONValueObjectCreate(&transform,
-                                             "b:persistent", true, NULL) < 0)
+                if (virJSONValueObjectAdd(&transform,
+                                          "b:persistent", true,
+                                          NULL) < 0)
                     return -1;
             }
 
-            if (virJSONValueObjectCreate(&jsonbitmap,
-                                         "s:name", bitmapname,
-                                         "s:alias", bitmap->alias,
-                                         "A:transform", &transform,
-                                         NULL) < 0)
+            if (virJSONValueObjectAdd(&jsonbitmap,
+                                      "s:name", bitmapname,
+                                      "s:alias", bitmap->alias,
+                                      "A:transform", &transform,
+                                      NULL) < 0)
                 return -1;
 
             if (virJSONValueArrayAppend(jsonbitmaps, &jsonbitmap) < 0)
@@ -1644,11 +1645,11 @@ qemuMigrationCookieBlockDirtyBitmapsToParams(GSList *disks,
         if (!hasBitmaps)
             continue;
 
-        if (virJSONValueObjectCreate(&jsondisk,
-                                     "s:node-name", disk->nodename,
-                                     "s:alias", disk->target,
-                                     "a:bitmaps", &jsonbitmaps,
-                                     NULL) < 0)
+        if (virJSONValueObjectAdd(&jsondisk,
+                                  "s:node-name", disk->nodename,
+                                  "s:alias", disk->target,
+                                  "a:bitmaps", &jsonbitmaps,
+                                  NULL) < 0)
             return -1;
 
         if (virJSONValueArrayAppend(map, &jsondisk) < 0)
