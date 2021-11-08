@@ -157,7 +157,7 @@ virDomainCapsCPUModelsNew(size_t nmodels)
 virDomainCapsCPUModels *
 virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old)
 {
-    virDomainCapsCPUModels *cpuModels;
+    g_autoptr(virDomainCapsCPUModels) cpuModels = NULL;
     size_t i;
 
     if (!(cpuModels = virDomainCapsCPUModelsNew(old->nmodels)))
@@ -169,14 +169,10 @@ virDomainCapsCPUModelsCopy(virDomainCapsCPUModels *old)
                                       old->models[i].usable,
                                       old->models[i].blockers,
                                       old->models[i].deprecated) < 0)
-            goto error;
+            return NULL;
     }
 
-    return cpuModels;
-
- error:
-    virObjectUnref(cpuModels);
-    return NULL;
+    return g_steal_pointer(&cpuModels);
 }
 
 
