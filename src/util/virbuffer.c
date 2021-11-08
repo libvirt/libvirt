@@ -185,13 +185,11 @@ virBufferAddBuffer(virBuffer *buf, virBuffer *toadd)
     if (!toadd || !toadd->str)
         return;
 
-    if (!buf)
-        goto cleanup;
+    if (buf) {
+        virBufferInitialize(buf);
+        g_string_append_len(buf->str, toadd->str->str, toadd->str->len);
+    }
 
-    virBufferInitialize(buf);
-    g_string_append_len(buf->str, toadd->str->str, toadd->str->len);
-
- cleanup:
     virBufferFreeAndReset(toadd);
 }
 
