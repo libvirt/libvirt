@@ -98,7 +98,7 @@ testBackingXMLjsonXML(const void *args)
         }
     }
 
-    if (virJSONValueObjectCreate(&wrapper, "a:file", &backendprops, NULL) < 0)
+    if (virJSONValueObjectAdd(&wrapper, "a:file", &backendprops, NULL) < 0)
         return -1;
 
     if (!(propsstr = virJSONValueToString(wrapper, false)))
