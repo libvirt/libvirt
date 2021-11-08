@@ -511,9 +511,9 @@ qemuMonitorJSONTransactionAdd(virJSONValue *actions,
 
     va_end(args);
 
-    if (virJSONValueObjectCreate(&entry,
-                                 "s:type", cmdname,
-                                 "A:data", &data, NULL) < 0)
+    if (virJSONValueObjectAdd(&entry,
+                              "s:type", cmdname,
+                              "A:data", &data, NULL) < 0)
         return -1;
 
     if (virJSONValueArrayAppend(actions, &entry) < 0)
@@ -538,9 +538,9 @@ qemuMonitorJSONMakeCommandInternal(const char *cmdname,
 {
     virJSONValue *ret = NULL;
 
-    ignore_value(virJSONValueObjectCreate(&ret,
-                                          "s:execute", cmdname,
-                                          "A:arguments", arguments, NULL));
+    ignore_value(virJSONValueObjectAdd(&ret,
+                                       "s:execute", cmdname,
+                                       "A:arguments", arguments, NULL));
 
     return ret;
 }
@@ -3608,7 +3608,7 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
     g_autoptr(virJSONValue) reply = NULL;
     g_autoptr(virJSONValue) cmd = NULL;
 
-    if (virJSONValueObjectCreate(&args, "S:opaque", opaque, NULL) < 0)
+    if (virJSONValueObjectAdd(&args, "S:opaque", opaque, NULL) < 0)
         return -1;
 
     if (fdset >= 0 &&
@@ -6418,12 +6418,16 @@ qemuMonitorJSONBuildInetSocketAddress(const char *host,
     g_autoptr(virJSONValue) addr = NULL;
     g_autoptr(virJSONValue) data = NULL;
 
-    if (virJSONValueObjectCreate(&data, "s:host", host,
-                                        "s:port", port, NULL) < 0)
+    if (virJSONValueObjectAdd(&data,
+                              "s:host", host,
+                              "s:port", port,
+                              NULL) < 0)
         return NULL;
 
-    if (virJSONValueObjectCreate(&addr, "s:type", "inet",
-                                        "a:data", &data, NULL) < 0)
+    if (virJSONValueObjectAdd(&addr,
+                              "s:type", "inet",
+                              "a:data", &data,
+                              NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&addr);
@@ -6435,11 +6439,12 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
     g_autoptr(virJSONValue) addr = NULL;
     g_autoptr(virJSONValue) data = NULL;
 
-    if (virJSONValueObjectCreate(&data, "s:path", path, NULL) < 0)
+    if (virJSONValueObjectAdd(&data, "s:path", path, NULL) < 0)
         return NULL;
 
-    if (virJSONValueObjectCreate(&addr, "s:type", "unix",
-                                        "a:data", &data, NULL) < 0)
+    if (virJSONValueObjectAdd(&addr,
+                              "s:type", "unix",
+                              "a:data", &data, NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&addr);
@@ -8340,10 +8345,10 @@ qemuMonitorJSONTransactionBitmapMergeSourceAddBitmap(virJSONValue *sources,
 {
     g_autoptr(virJSONValue) sourceobj = NULL;
 
-    if (virJSONValueObjectCreate(&sourceobj,
-                                 "s:node", sourcenode,
-                                 "s:name", sourcebitmap,
-                                 NULL) < 0)
+    if (virJSONValueObjectAdd(&sourceobj,
+                              "s:node", sourcenode,
+                              "s:name", sourcebitmap,
+                              NULL) < 0)
         return -1;
 
     if (virJSONValueArrayAppend(sources, &sourceobj) < 0)
