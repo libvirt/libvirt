@@ -87,8 +87,22 @@ virCHDomainObjBeginJob(virDomainObj *obj, enum virCHDomainJob job)
     while (priv->job.active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
                   virCHDomainJobTypeToString(job));
-        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
-            goto error;
+        if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0) {
+            VIR_WARN("Cannot start job (%s) for domain %s;"
+                     " current job is (%s) owned by (%d)",
+                     virCHDomainJobTypeToString(job),
+                     obj->def->name,
+                     virCHDomainJobTypeToString(priv->job.active),
+                     priv->job.owner);
+
+            if (errno == ETIMEDOUT)
+                virReportError(VIR_ERR_OPERATION_TIMEOUT,
+                               "%s", _("cannot acquire state change lock"));
+            else
+                virReportSystemError(errno,
+                                     "%s", _("cannot acquire job mutex"));
+            return -1;
+        }
     }
 
     virCHDomainObjResetJob(priv);
@@ -98,22 +112,6 @@ virCHDomainObjBeginJob(virDomainObj *obj, enum virCHDomainJob job)
     priv->job.owner = virThreadSelfID();
 
     return 0;
-
- error:
-    VIR_WARN("Cannot start job (%s) for domain %s;"
-             " current job is (%s) owned by (%d)",
-             virCHDomainJobTypeToString(job),
-             obj->def->name,
-             virCHDomainJobTypeToString(priv->job.active),
-             priv->job.owner);
-
-    if (errno == ETIMEDOUT)
-        virReportError(VIR_ERR_OPERATION_TIMEOUT,
-                       "%s", _("cannot acquire state change lock"));
-    else
-        virReportSystemError(errno,
-                             "%s", _("cannot acquire job mutex"));
-    return -1;
 }
 
 /*
