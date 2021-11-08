@@ -26,11 +26,10 @@
 #include <libvirt/virterror.h>
 
 
-static int
-usage(char *prgn, int ret)
+static void
+usage(char *prgn)
 {
     printf("Usage: %s <src uri> <dst uri> <domain name>\n", prgn);
-    return ret;
 }
 
 int
@@ -42,7 +41,7 @@ main(int argc, char *argv[])
     virDomainPtr dom = NULL;
 
     if (argc < 4) {
-        ret = usage(argv[0], 1);
+        usage(argv[0]);
         goto out;
     }
 
