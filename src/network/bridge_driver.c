@@ -259,20 +259,6 @@ static int
 networkShutdownNetwork(virNetworkDriverState *driver,
                        virNetworkObj *obj);
 
-static int
-networkStartNetworkVirtual(virNetworkDriverState *driver,
-                           virNetworkObj *obj);
-
-static int
-networkShutdownNetworkVirtual(virNetworkDriverState *driver,
-                              virNetworkObj *obj);
-
-static int
-networkStartNetworkExternal(virNetworkObj *obj);
-
-static int
-networkShutdownNetworkExternal(virNetworkObj *obj);
-
 static void
 networkReloadFirewallRules(virNetworkDriverState *driver,
                            bool startup,
