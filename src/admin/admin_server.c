@@ -47,12 +47,12 @@ adminConnectListServers(virNetDaemon *dmn,
     virCheckFlags(0, -1);
 
     if ((ret = virNetDaemonGetServers(dmn, &srvs)) < 0)
-        goto cleanup;
+        return ret;
 
     if (servers) {
         *servers = g_steal_pointer(&srvs);
     }
- cleanup:
+
     if (ret > 0)
         virObjectListFreeCount(srvs, ret);
     return ret;
