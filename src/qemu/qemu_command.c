@@ -10535,11 +10535,14 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
                                      virDomainDef *def,
                                      virQEMUCaps *qemuCaps)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autofree char *propsstr = NULL;
     qemuDomainXmlNsDef *nsdata = def->namespaceData;
     qemuCommnadDeprecationBehavior behavior = QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE;
     const char *behaviorStr = cfg->deprecationBehavior;
     int tmp;
+    const char *deprecatedOutput = NULL;
+    const char *deprecatedInput = NULL;
 
     if (nsdata && nsdata->deprecationBehavior)
         behaviorStr = nsdata->deprecationBehavior;
@@ -10562,30 +10565,35 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
         return;
     }
 
-    /* all active options hide output fields from qemu */
-    virBufferAddLit(&buf, "deprecated-output=hide,");
-
     switch (behavior) {
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_OMIT:
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_NONE:
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_LAST:
     default:
-        /* output field hiding is default for all cases */
+        deprecatedOutput = "hide";
         break;
 
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_REJECT:
-        virBufferAddLit(&buf, "deprecated-input=reject,");
+        deprecatedOutput = "hide";
+        deprecatedInput = "reject";
         break;
 
     case QEMU_COMMAND_DEPRECATION_BEHAVIOR_CRASH:
-        virBufferAddLit(&buf, "deprecated-input=crash,");
+        deprecatedOutput = "hide";
+        deprecatedInput = "crash";
         break;
     }
 
-    virBufferTrim(&buf, ",");
+    if (virJSONValueObjectAdd(&props,
+                              "S:deprecated-output", deprecatedOutput,
+                              "S:deprecated-input", deprecatedInput,
+                              NULL) < 0)
+        return;
 
-    virCommandAddArg(cmd, "-compat");
-    virCommandAddArgBuffer(cmd, &buf);
+    if (!(propsstr = virJSONValueToString(props, false)))
+        return;
+
+    virCommandAddArgList(cmd, "-compat", propsstr, NULL);
 }
 
 
