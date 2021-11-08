@@ -2501,7 +2501,6 @@ iptablesRemoveTcpInput;
 iptablesRemoveTcpOutput;
 iptablesRemoveUdpInput;
 iptablesRemoveUdpOutput;
-iptablesSetDeletePrivate;
 iptablesSetupPrivateChains;
 
 

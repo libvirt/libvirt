@@ -37,7 +37,7 @@ VIR_LOG_INIT("network.bridge_driver_linux");
 
 static virOnceControl createdOnce;
 static bool chainInitDone; /* true iff networkSetupPrivateChains was ever called */
-static bool createdChains; /* true iff networkSetupPrivateChains created chains during most recent call */
+
 static virErrorPtr errInitV4;
 static virErrorPtr errInitV6;
 
@@ -50,7 +50,6 @@ static void networkSetupPrivateChains(void)
 
     VIR_DEBUG("Setting up global firewall chains");
 
-    createdChains = false;
     virFreeError(errInitV4);
     errInitV4 = NULL;
     virFreeError(errInitV6);
@@ -63,12 +62,10 @@ static void networkSetupPrivateChains(void)
         errInitV4 = virSaveLastError();
         virResetLastError();
     } else {
-        if (rc) {
+        if (rc)
             VIR_DEBUG("Created global IPv4 chains");
-            createdChains = true;
-        } else {
+        else
             VIR_DEBUG("Global IPv4 chains already exist");
-        }
     }
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV6);
@@ -78,12 +75,10 @@ static void networkSetupPrivateChains(void)
         errInitV6 = virSaveLastError();
         virResetLastError();
     } else {
-        if (rc) {
+        if (rc)
             VIR_DEBUG("Created global IPv6 chains");
-            createdChains = true;
-        } else {
+        else
             VIR_DEBUG("Global IPv6 chains already exist");
-        }
     }
 
     chainInitDone = true;
@@ -145,7 +140,7 @@ networkHasRunningNetworksWithFW(virNetworkDriverState *driver)
 
 void
 networkPreReloadFirewallRules(virNetworkDriverState *driver,
-                              bool startup,
+                              bool startup G_GNUC_UNUSED,
                               bool force)
 {
     /*
@@ -183,31 +178,13 @@ networkPreReloadFirewallRules(virNetworkDriverState *driver,
         }
 
         ignore_value(virOnce(&createdOnce, networkSetupPrivateChains));
-
-        /*
-         * If this is initial startup, and we just created the
-         * top level private chains we either
-         *
-         *   - upgraded from old libvirt
-         *   - freshly booted from clean state
-         *
-         * In the first case we must delete the old rules from
-         * the built-in chains, instead of our new private chains.
-         * In the second case it doesn't matter, since no existing
-         * rules will be present. Thus we can safely just tell it
-         * to always delete from the builin chain
-         */
-        if (startup && createdChains) {
-            VIR_DEBUG("Requesting cleanup of legacy firewall rules");
-            iptablesSetDeletePrivate(false);
-        }
     }
 }
 
 
 void networkPostReloadFirewallRules(bool startup G_GNUC_UNUSED)
 {
-    iptablesSetDeletePrivate(true);
+
 }
 
 

@@ -25,8 +25,6 @@
 
 int              iptablesSetupPrivateChains      (virFirewallLayer layer);
 
-void             iptablesSetDeletePrivate        (bool pvt);
-
 void             iptablesAddTcpInput             (virFirewall *fw,
                                                   virFirewallLayer layer,
                                                   const char *iface,
