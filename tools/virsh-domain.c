@@ -9623,10 +9623,10 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
         }
     }
 
-    if (virJSONValueObjectCreate(&command,
-                                 "s:execute", commandname,
-                                 "A:arguments", &arguments,
-                                 NULL) < 0)
+    if (virJSONValueObjectAdd(&command,
+                              "s:execute", commandname,
+                              "A:arguments", &arguments,
+                              NULL) < 0)
         return NULL;
 
     return virJSONValueToString(command, false);
