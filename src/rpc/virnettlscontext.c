@@ -980,11 +980,9 @@ static int virNetTLSContextValidCertificate(virNetTLSContext *ctxt,
     const gnutls_datum_t *certs;
     unsigned int nCerts;
     size_t i;
-    char dname[256];
+    size_t dnamesize = 256;
+    g_autofree char *dname = g_new0(char, dnamesize);
     char *dnameptr = dname;
-    size_t dnamesize = sizeof(dname);
-
-    memset(dname, 0, dnamesize);
 
     if ((ret = gnutls_certificate_verify_peers2(sess->session, &status)) < 0) {
         virReportError(VIR_ERR_SYSTEM_ERROR,
@@ -1050,17 +1048,23 @@ static int virNetTLSContextValidCertificate(virNetTLSContext *ctxt,
 
         if (i == 0) {
             ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
+            if (ret == GNUTLS_E_SHORT_MEMORY_BUFFER) {
+                VIR_DEBUG("Reallocating dname to fit %zu bytes", dnamesize);
+                dname = g_realloc(dname, dnamesize);
+                dnameptr = dname;
+                ret = gnutls_x509_crt_get_dn(cert, dname, &dnamesize);
+            }
             if (ret != 0) {
                 virReportError(VIR_ERR_SYSTEM_ERROR,
                                _("Failed to get certificate %s distinguished name: %s"),
                                "[session]", gnutls_strerror(ret));
                 goto authfail;
             }
-            sess->x509dname = g_strdup(dname);
-            VIR_DEBUG("Peer DN is %s", dname);
+            sess->x509dname = g_steal_pointer(&dname);
+            VIR_DEBUG("Peer DN is %s", dnameptr);
 
-            if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname, dname,
-                                            ctxt->x509dnACL) < 0) {
+            if (virNetTLSContextCheckCertDN(cert, "[session]", sess->hostname,
+                                            dnameptr, ctxt->x509dnACL) < 0) {
                 gnutls_x509_crt_deinit(cert);
                 goto authdeny;
             }
