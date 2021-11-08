@@ -348,13 +348,13 @@ virJSONValueObjectAddVArgs(virJSONValue *obj,
 
 
 int
-virJSONValueObjectAdd(virJSONValue *obj, ...)
+virJSONValueObjectAdd(virJSONValue **objptr, ...)
 {
     va_list args;
     int ret;
 
-    va_start(args, obj);
-    ret = virJSONValueObjectAddVArgs(obj, args);
+    va_start(args, objptr);
+    ret = virJSONValueObjectAddVArgs(*objptr, args);
     va_end(args);
 
     return ret;

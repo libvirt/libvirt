@@ -636,7 +636,7 @@ qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
 
     if (!onlytarget &&
         src->debug &&
-        virJSONValueObjectAdd(props, "u:debug", src->debugLevel, NULL) < 0)
+        virJSONValueObjectAdd(&props, "u:debug", src->debugLevel, NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
@@ -700,11 +700,11 @@ qemuBlockStorageSourceGetNFSProps(virStorageSource *src)
         return NULL;
 
     if (src->nfs_uid != -1 &&
-        virJSONValueObjectAdd(ret, "i:user", src->nfs_uid, NULL) < 0)
+        virJSONValueObjectAdd(&ret, "i:user", src->nfs_uid, NULL) < 0)
         return NULL;
 
     if (src->nfs_gid != -1 &&
-        virJSONValueObjectAdd(ret, "i:group", src->nfs_gid, NULL) < 0)
+        virJSONValueObjectAdd(&ret, "i:group", src->nfs_gid, NULL) < 0)
         return NULL;
 
     return ret;
@@ -1060,7 +1060,7 @@ qemuBlockStorageSourceGetVvfatProps(virStorageSource *src,
         return NULL;
 
     if (!onlytarget &&
-        virJSONValueObjectAdd(ret, "b:rw", !src->readonly, NULL) < 0)
+        virJSONValueObjectAdd(&ret, "b:rw", !src->readonly, NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&ret);
@@ -1270,21 +1270,21 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
 
     if (!onlytarget) {
         if (qemuBlockNodeNameValidate(src->nodestorage) < 0 ||
-            virJSONValueObjectAdd(fileprops, "S:node-name", src->nodestorage, NULL) < 0)
+            virJSONValueObjectAdd(&fileprops, "S:node-name", src->nodestorage, NULL) < 0)
             return NULL;
 
         if (!legacy) {
             if (qemuBlockStorageSourceGetBlockdevGetCacheProps(src, fileprops) < 0)
                 return NULL;
 
-            if (virJSONValueObjectAdd(fileprops,
+            if (virJSONValueObjectAdd(&fileprops,
                                       "T:read-only", ro,
                                       "T:auto-read-only", aro,
                                       NULL) < 0)
                 return NULL;
 
             if (!(flags & QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP) &&
-                virJSONValueObjectAdd(fileprops,
+                virJSONValueObjectAdd(&fileprops,
                                       "s:discard", "unmap",
                                       NULL) < 0)
                 return NULL;
@@ -1307,7 +1307,7 @@ qemuBlockStorageSourceGetFormatLUKSProps(virStorageSource *src,
         return -1;
     }
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:driver", "luks",
                               "s:key-secret", srcPriv->encinfo->alias,
                               NULL) < 0)
@@ -1321,14 +1321,14 @@ static int
 qemuBlockStorageSourceGetFormatRawProps(virStorageSource *src,
                                         virJSONValue *props)
 {
-    if (virJSONValueObjectAdd(props, "s:driver", "raw", NULL) < 0)
+    if (virJSONValueObjectAdd(&props, "s:driver", "raw", NULL) < 0)
         return -1;
 
     /* Currently only storage slices are supported. We'll have to calculate
      * the union of the slices here if we don't want to be adding needless
      * 'raw' nodes. */
     if (src->sliceStorage &&
-        virJSONValueObjectAdd(props,
+        virJSONValueObjectAdd(&props,
                               "U:offset", src->sliceStorage->offset,
                               "U:size", src->sliceStorage->size,
                               NULL) < 0)
@@ -1392,7 +1392,7 @@ qemuBlockStorageSourceGetFormatQcowGenericProps(virStorageSource *src,
     if (qemuBlockStorageSourceGetCryptoProps(src, &encprops) < 0)
         return -1;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:driver", format,
                               "A:encrypt", &encprops, NULL) < 0)
         return -1;
@@ -1426,7 +1426,7 @@ qemuBlockStorageSourceGetFormatQcow2Props(virStorageSource *src,
      * https://git.qemu.org/?p=qemu.git;a=blob;f=docs/qcow2-cache.txt
      */
     if (src->metadataCacheMaxSize > 0) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "U:cache-size", src->metadataCacheMaxSize,
                                   NULL) < 0)
             return -1;
@@ -1545,7 +1545,7 @@ qemuBlockStorageSourceGetBlockdevFormatProps(virStorageSource *src)
     }
 
     if (driver &&
-        virJSONValueObjectAdd(props, "s:driver", driver, NULL) < 0)
+        virJSONValueObjectAdd(&props, "s:driver", driver, NULL) < 0)
         return NULL;
 
     return g_steal_pointer(&props);
@@ -2311,7 +2311,7 @@ qemuBlockStorageSourceCreateAddBacking(virStorageSource *backing,
     if (!(backingFileStr = qemuBlockGetBackingStoreString(backing, false)))
         return -1;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "S:backing-file", backingFileStr,
                               "S:backing-fmt", backingFormatStr,
                               NULL) < 0)
@@ -2370,7 +2370,7 @@ qemuBlockStorageSourceCreateGetEncryptionLUKS(virStorageSource *src,
                                         src->encryption->encinfo.cipher_size);
         }
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "S:cipher-alg", cipheralg,
                                   "S:cipher-mode", src->encryption->encinfo.cipher_mode,
                                   "S:hash-alg", src->encryption->encinfo.cipher_hash,
@@ -2394,7 +2394,7 @@ qemuBlockStorageSourceCreateGetFormatPropsLUKS(virStorageSource *src,
     if (qemuBlockStorageSourceCreateGetEncryptionLUKS(src, &luksprops) < 0)
         return -1;
 
-    if (virJSONValueObjectAdd(luksprops,
+    if (virJSONValueObjectAdd(&luksprops,
                               "s:driver", "luks",
                               "s:file", src->nodestorage,
                               "U:size", src->capacity,
@@ -2424,10 +2424,10 @@ qemuBlockStorageSourceCreateAddEncryptionQcow(virStorageSource *src,
     if (qemuBlockStorageSourceCreateGetEncryptionLUKS(src, &encryptProps) < 0)
         return -1;
 
-    if (virJSONValueObjectAdd(encryptProps, "s:format", "luks", NULL) < 0)
+    if (virJSONValueObjectAdd(&encryptProps, "s:format", "luks", NULL) < 0)
         return -1;
 
-    if (virJSONValueObjectAdd(props, "a:encrypt", &encryptProps, NULL) < 0)
+    if (virJSONValueObjectAdd(&props, "a:encrypt", &encryptProps, NULL) < 0)
         return -1;
 
     return 0;

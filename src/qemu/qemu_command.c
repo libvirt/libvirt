@@ -449,7 +449,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
 
         bus = g_strdup_printf("%s.%u", controllerAlias, info->addr.drive.bus);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:bus", bus,
                                   "u:unit", info->addr.drive.unit,
                                   NULL) < 0)
@@ -473,7 +473,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
 
         bus = g_strdup_printf("%s.%u", controllerAlias, info->addr.drive.unit);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:bus", bus,
                                   NULL) < 0)
             return -1;
@@ -481,7 +481,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
         break;
 
     case VIR_DOMAIN_DISK_BUS_FDC:
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "u:unit", info->addr.drive.unit,
                                   NULL) < 0)
             return -1;
@@ -503,7 +503,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_AM53C974:
             bus = g_strdup_printf("%s.%u", controller->info.alias, info->addr.drive.bus);
 
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "s:bus", bus,
                                       "u:scsi-id", info->addr.drive.unit,
                                       NULL) < 0)
@@ -522,7 +522,7 @@ qemuBuildDeviceAddresDriveProps(virJSONValue *props,
         case VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL:
             bus = g_strdup_printf("%s.0", controller->info.alias);
 
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "s:bus", bus,
                                       "u:channel", info->addr.drive.bus,
                                       "u:scsi-id", info->addr.drive.target,
@@ -578,7 +578,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
         else
             pciaddr = g_strdup_printf("0x%x", info->addr.pci.slot);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:bus", bus,
                                   "T:multifunction", info->addr.pci.multi,
                                   "s:addr", pciaddr,
@@ -604,7 +604,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 
         virDomainUSBAddressPortFormatBuf(&port, info->addr.usb.port);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:bus", bus,
                                   "S:port", virBufferCurrentContent(&port),
                                   NULL) < 0)
@@ -615,7 +615,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
         if (info->addr.spaprvio.has_reg) {
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "P:reg", info->addr.spaprvio.reg,
                                       NULL) < 0)
                 return -1;
@@ -628,14 +628,14 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
                                                  info->addr.ccw.ssid,
                                                  info->addr.ccw.devno);
 
-        if (virJSONValueObjectAdd(props, "s:devno", devno, NULL) < 0)
+        if (virJSONValueObjectAdd(&props, "s:devno", devno, NULL) < 0)
             return -1;
 
         return 0;
     }
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "u:iobase", info->addr.isa.iobase,
                                   "p:irq", info->addr.isa.irq,
                                   NULL) < 0)
@@ -644,7 +644,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
         return 0;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "u:slot", info->addr.dimm.slot,
                                   "P:addr", info->addr.dimm.base,
                                   NULL) < 0)
@@ -666,7 +666,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
 
         bus = g_strdup_printf("%s.%d", contAlias, info->addr.vioserial.bus);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:bus", bus,
                                   "i:nr", info->addr.vioserial.port,
                                   NULL) < 0)
@@ -1122,7 +1122,7 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
         return NULL;
 
     if (virtioOptions) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "T:iommu_platform", virtioOptions->iommu,
                                   "T:ats", virtioOptions->ats,
                                   "T:packed", virtioOptions->packed,
@@ -1165,7 +1165,7 @@ qemuBuildRomProps(virJSONValue *props,
         }
     }
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "k:rombar", rombar,
                               "S:romfile", romfile,
                               NULL) < 0)
@@ -1975,7 +1975,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_DISK, disk, qemuCaps)))
             return NULL;
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "S:iothread", iothread,
                                   "T:ioeventfd", disk->ioeventfd,
                                   "T:event_idx", disk->event_idx,
@@ -2088,7 +2088,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
         qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "S:device_id", scsiVPDDeviceId,
                               "T:share-rw", shareRW,
                               "S:drive", drive,
@@ -2480,7 +2480,7 @@ qemuBuildVHostUserFsDevProps(virDomainFSDef *fs,
     if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_FS, fs, priv->qemuCaps)))
         return NULL;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", fs->info.alias,
                               "s:chardev", chardev_alias,
                               "P:queue-size", fs->queue_size,
@@ -2585,7 +2585,7 @@ qemuBuildFSDevCmd(virCommand *cmd,
     if (!(devprops = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_FS, fs, qemuCaps)))
         return -1;
 
-    if (virJSONValueObjectAdd(devprops,
+    if (virJSONValueObjectAdd(&devprops,
                               "s:id", fs->info.alias,
                               "s:fsdev", fsdev,
                               "s:mount_tag", fs->dst,
@@ -2776,13 +2776,13 @@ qemuBuildUSBControllerDevProps(const virDomainDef *domainDef,
 
         masterbus = g_strdup_printf("%s.0", alias);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:masterbus", masterbus,
                                   "i:firstport", def->info.master.usb.startport,
                                   NULL) < 0)
             return NULL;
     } else {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:id", def->info.alias,
                                   NULL) < 0)
             return NULL;
@@ -2811,7 +2811,7 @@ qemuBuildControllerSCSIDevProps(virDomainControllerDef *def,
         if (def->iothread > 0)
             iothread = g_strdup_printf("iothread%u", def->iothread);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "S:iothread", iothread,
                                   "s:id", def->info.alias,
                                   "p:num_queues", def->queues,
@@ -2915,7 +2915,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
             return -1;
 
         if (pciopts->numaNode != -1 &&
-            virJSONValueObjectAdd(props, "i:numa_node", pciopts->numaNode, NULL) < 0)
+            virJSONValueObjectAdd(&props, "i:numa_node", pciopts->numaNode, NULL) < 0)
             return -1;
 
         break;
@@ -2952,7 +2952,7 @@ qemuBuildControllerPCIDevProps(virDomainControllerDef *def,
             return -1;
 
         if (pciopts->numaNode != -1 &&
-            virJSONValueObjectAdd(props, "i:numa_node", pciopts->numaNode, NULL) < 0)
+            virJSONValueObjectAdd(&props, "i:numa_node", pciopts->numaNode, NULL) < 0)
             return -1;
 
         break;
@@ -3015,7 +3015,7 @@ qemuBuildControllerDevProps(const virDomainDef *domainDef,
                                               qemuCaps)))
             return -1;
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:id", def->info.alias,
                                   "k:max_ports", def->opts.vioserial.ports,
                                   "k:vectors", def->opts.vioserial.vectors,
@@ -3305,10 +3305,10 @@ qemuBuildMemoryBackendPropsShare(virJSONValue *props,
 {
     switch (memAccess) {
     case VIR_DOMAIN_MEMORY_ACCESS_SHARED:
-        return virJSONValueObjectAdd(props, "b:share", true, NULL);
+        return virJSONValueObjectAdd(&props, "b:share", true, NULL);
 
     case VIR_DOMAIN_MEMORY_ACCESS_PRIVATE:
-        return virJSONValueObjectAdd(props, "b:share", false, NULL);
+        return virJSONValueObjectAdd(&props, "b:share", false, NULL);
 
     case VIR_DOMAIN_MEMORY_ACCESS_DEFAULT:
     case VIR_DOMAIN_MEMORY_ACCESS_LAST:
@@ -3498,8 +3498,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         backendType = "memory-backend-memfd";
 
         if (useHugepage) {
-            if (virJSONValueObjectAdd(props, "b:hugetlb", useHugepage, NULL) < 0 ||
-                virJSONValueObjectAdd(props, "U:hugetlbsize", pagesize << 10, NULL) < 0) {
+            if (virJSONValueObjectAdd(&props, "b:hugetlb", useHugepage, NULL) < 0 ||
+                virJSONValueObjectAdd(&props, "U:hugetlbsize", pagesize << 10, NULL) < 0) {
                 return -1;
             }
 
@@ -3533,7 +3533,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                 return -1;
         }
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "s:mem-path", memPath,
                                   NULL) < 0)
             return -1;
@@ -3546,7 +3546,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                 return -1;
             }
 
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "B:discard-data", true,
                                       NULL) < 0)
                 return -1;
@@ -3574,7 +3574,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
      */
     if (disableCanonicalPath &&
         virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID) &&
-        virJSONValueObjectAdd(props, "b:x-use-canonical-path-for-ramblock-id", false, NULL) < 0)
+        virJSONValueObjectAdd(&props, "b:x-use-canonical-path-for-ramblock-id", false, NULL) < 0)
         return -1;
 
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
@@ -3591,11 +3591,11 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
             return -1;
     } else {
         if (!priv->memPrealloc &&
-            virJSONValueObjectAdd(props, "B:prealloc", prealloc, NULL) < 0)
+            virJSONValueObjectAdd(&props, "B:prealloc", prealloc, NULL) < 0)
             return -1;
     }
 
-    if (virJSONValueObjectAdd(props, "U:size", mem->size * 1024, NULL) < 0)
+    if (virJSONValueObjectAdd(&props, "U:size", mem->size * 1024, NULL) < 0)
         return -1;
 
     if (mem->alignsize) {
@@ -3605,7 +3605,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                              "with this QEMU binary"));
             return -1;
         }
-        if (virJSONValueObjectAdd(props, "U:align", mem->alignsize * 1024, NULL) < 0)
+        if (virJSONValueObjectAdd(&props, "U:align", mem->alignsize * 1024, NULL) < 0)
             return -1;
     }
 
@@ -3616,7 +3616,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
                              "with this QEMU binary"));
             return -1;
         }
-        if (virJSONValueObjectAdd(props, "b:pmem", true, NULL) < 0)
+        if (virJSONValueObjectAdd(&props, "b:pmem", true, NULL) < 0)
             return -1;
     }
 
@@ -3635,7 +3635,7 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
         if (!virNumaNodesetIsAvailable(nodemask))
             return -1;
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "m:host-nodes", nodemask,
                                   "S:policy", qemuNumaPolicyTypeToString(mode),
                                   NULL) < 0)
@@ -3884,7 +3884,7 @@ qemuBuildNicDevProps(virDomainDef *def,
         if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_NET, net, qemuCaps)))
             return NULL;
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "S:tx", tx,
                                   "T:ioeventfd", net->driver.virtio.ioeventfd,
                                   "T:event_idx", net->driver.virtio.event_idx,
@@ -3917,7 +3917,7 @@ qemuBuildNicDevProps(virDomainDef *def,
 
     virMacAddrFormat(&net->mac, macaddr);
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:netdev", netdev,
                               "s:id", net->info.alias,
                               "s:mac", macaddr,
@@ -3973,7 +3973,7 @@ qemuBuildHostNetStr(virDomainNetDef *net,
         /* for one tapfd 'fd=' shall be used,
          * for more than one 'fds=' is the right choice */
         if (tapfdSize == 1) {
-            if (virJSONValueObjectAdd(netprops, "s:fd", tapfd[0], NULL) < 0)
+            if (virJSONValueObjectAdd(&netprops, "s:fd", tapfd[0], NULL) < 0)
                 return NULL;
         } else {
             g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
@@ -3983,7 +3983,7 @@ qemuBuildHostNetStr(virDomainNetDef *net,
 
             virBufferTrim(&fdsbuf, ":");
 
-            if (virJSONValueObjectAdd(netprops,
+            if (virJSONValueObjectAdd(&netprops,
                                       "s:fds", virBufferCurrentContent(&fdsbuf),
                                       NULL) < 0)
                 return NULL;
@@ -4102,7 +4102,7 @@ qemuBuildHostNetStr(virDomainNetDef *net,
                 return NULL;
 
             if (vhostfdSize == 1) {
-                if (virJSONValueObjectAdd(netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
+                if (virJSONValueObjectAdd(&netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
                     return NULL;
             } else {
                 g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
@@ -4112,7 +4112,7 @@ qemuBuildHostNetStr(virDomainNetDef *net,
 
                 virBufferTrim(&fdsbuf, ":");
 
-                if (virJSONValueObjectAdd(netprops,
+                if (virJSONValueObjectAdd(&netprops,
                                           "s:vhostfds", virBufferCurrentContent(&fdsbuf),
                                           NULL) < 0)
                     return NULL;
@@ -4202,7 +4202,7 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
                                           def->memballoon, qemuCaps)))
         return -1;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", def->memballoon->info.alias,
                               "T:deflate-on-oom", def->memballoon->autodeflate,
                               "T:free-page-reporting", def->memballoon->free_page_reporting,
@@ -4281,7 +4281,7 @@ qemuBuildInputVirtioDevProps(const virDomainDef *def,
     if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_INPUT, dev, qemuCaps)))
         return NULL;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", dev->info.alias,
                               "S:evdev", evdev,
                               NULL) < 0)
@@ -4338,11 +4338,11 @@ qemuBuildInputEvdevProps(virDomainInputDef *dev)
         return NULL;
 
     if (dev->source.grab == VIR_DOMAIN_INPUT_SOURCE_GRAB_ALL &&
-        virJSONValueObjectAdd(props, "b:grab_all", true, NULL) < 0)
+        virJSONValueObjectAdd(&props, "b:grab_all", true, NULL) < 0)
         return NULL;
 
     if (dev->source.grabToggle != VIR_DOMAIN_INPUT_SOURCE_GRAB_TOGGLE_DEFAULT &&
-        virJSONValueObjectAdd(props, "s:grab-toggle",
+        virJSONValueObjectAdd(&props, "s:grab-toggle",
                               virDomainInputSourceGrabToggleTypeToString(dev->source.grabToggle),
                               NULL) < 0)
         return NULL;
@@ -4580,35 +4580,35 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
         }
     }
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", video->info.alias,
                               "T:virgl", virgl,
                               NULL) < 0)
         return -1;
 
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_QXL) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:ram_size", video->ram * 1024,
                                   "p:vram_size", video->vram * 1024,
                                   NULL) < 0)
             return -1;
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VRAM64)) {
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "u:vram64_size_mb", video->vram64 / 1024,
                                       NULL) < 0)
                 return -1;
         }
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_VGAMEM)) {
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "u:vgamem_mb", video->vgamem / 1024,
                                       NULL) < 0)
                 return -1;
         }
 
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS)) {
-            if (virJSONValueObjectAdd(props,
+            if (virJSONValueObjectAdd(&props,
                                       "p:max_outputs", video->heads,
                                       NULL) < 0)
                 return -1;
@@ -4616,7 +4616,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
     } else if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
         g_autofree char *alias = qemuDomainGetVhostUserChrAlias(video->info.alias);
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:max_outputs", video->heads,
                                   "s:chardev", alias,
                                   NULL) < 0)
@@ -4627,7 +4627,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
         if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS))
             heads = video->heads;
 
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:max_outputs", heads,
                                   NULL) < 0)
             return -1;
@@ -4635,19 +4635,19 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_VGA_VGAMEM)) ||
                (video->type == VIR_DOMAIN_VIDEO_TYPE_VMVGA &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_VMWARE_SVGA_VGAMEM))) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:vgamem_mb", video->vram / 1024,
                                   NULL) < 0)
             return -1;
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_BOCHS) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:vgamem", video->vram * 1024,
                                   NULL) < 0)
             return -1;
     }
 
     if (video->res) {
-        if (virJSONValueObjectAdd(props,
+        if (virJSONValueObjectAdd(&props,
                                   "p:xres", video->res->x,
                                   "p:yres", video->res->y,
                                   NULL) < 0)
@@ -4900,7 +4900,7 @@ qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
     if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_HOSTDEV, dev, qemuCaps)))
         return NULL;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:wwpn", hostsrc->wwpn,
                               "s:vhostfd", vhostfdName,
                               "s:id", dev->info->alias,
@@ -5664,7 +5664,7 @@ qemuBuildVirtioSerialPortDevProps(const virDomainDef *def,
             targetname = "com.redhat.spice.0";
     }
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:chardev", chardev,
                               "s:id", dev->info.alias,
                               "S:name", targetname,
@@ -5811,7 +5811,7 @@ qemuBuildRNGDevProps(const virDomainDef *def,
             period = 1000;
     }
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:rng", rng,
                               "s:id", dev->info.alias,
                               "p:max-bytes", dev->rate,
@@ -9150,7 +9150,7 @@ qemuBuildSmartcardCommandLine(virLogManager *logManager,
 
     bus = g_strdup_printf("%s.0", contAlias);
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", smartcard->info.alias,
                               "s:bus", bus,
                               NULL) < 0)
@@ -10166,7 +10166,7 @@ qemuBuildPanicCommandLine(virCommand *cmd,
             /* pvpanic uses 'ioport' instead of 'iobase' so
              * qemuBuildDeviceAddressProps can't be used */
             if (def->panics[i]->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA) {
-                if (virJSONValueObjectAdd(props,
+                if (virJSONValueObjectAdd(&props,
                                           "u:ioport", def->panics[i]->info.addr.isa.iobase,
                                           NULL) < 0)
                     return -1;
@@ -10472,7 +10472,7 @@ qemuBuildVsockDevProps(virDomainDef *def,
     if (!(props = qemuBuildVirtioDevProps(VIR_DOMAIN_DEVICE_VSOCK, vsock, qemuCaps)))
         return NULL;
 
-    if (virJSONValueObjectAdd(props,
+    if (virJSONValueObjectAdd(&props,
                               "s:id", vsock->info.alias,
                               "u:guest-cid", vsock->guest_cid,
                               "s:vhostfd", vhostfd,

@@ -3612,7 +3612,7 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
         return -1;
 
     if (fdset >= 0 &&
-        virJSONValueObjectAdd(args, "j:fdset-id", fdset, NULL) < 0) {
+        virJSONValueObjectAdd(&args, "j:fdset-id", fdset, NULL) < 0) {
         return -1;
     }
 
@@ -6636,7 +6636,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
         backend_type = "file";
         if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
             return NULL;
-        if (virJSONValueObjectAdd(data,
+        if (virJSONValueObjectAdd(&data,
                                   "T:append", chr->data.file.append,
                                   NULL) < 0)
             return NULL;
@@ -6748,7 +6748,7 @@ qemuMonitorJSONAttachCharDevCommand(const char *chrID,
     }
 
     if (chr->logfile &&
-        virJSONValueObjectAdd(data,
+        virJSONValueObjectAdd(&data,
                               "s:logfile", chr->logfile,
                               "T:logappend", chr->logappend,
                               NULL) < 0)
