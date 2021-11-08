@@ -135,25 +135,17 @@ fillQemuCaps(virDomainCaps *domCaps,
 static int
 fillXenCaps(virDomainCaps *domCaps)
 {
-    virFirmware **firmwares;
-    int ret = -1;
-
-    firmwares = g_new0(virFirmware *, 2);
-
-    firmwares[0] = g_new0(virFirmware, 1);
-    firmwares[1] = g_new0(virFirmware, 1);
+    g_autoptr(virFirmware) fw_hvmloader = g_new0(virFirmware, 1);
+    g_autoptr(virFirmware) fw_ovmf = g_new0(virFirmware, 1);
+    virFirmware *firmwares[] = { fw_hvmloader, fw_ovmf };
 
     firmwares[0]->name = g_strdup("/usr/lib/xen/boot/hvmloader");
     firmwares[1]->name = g_strdup("/usr/lib/xen/boot/ovmf.bin");
 
     if (libxlMakeDomainCapabilities(domCaps, firmwares, 2) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virFirmwareFreeList(firmwares, 2);
-    return ret;
+    return 0;
 }
 #endif /* WITH_LIBXL */
 
