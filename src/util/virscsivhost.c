@@ -90,15 +90,10 @@ virSCSIVHostOpenVhostSCSI(int *vhostfd)
 
     if (*vhostfd < 0) {
         virReportSystemError(errno, _("Failed to open %s"), VHOST_SCSI_DEVICE);
-        goto error;
+        return -1;
     }
 
     return 0;
-
- error:
-    VIR_FORCE_CLOSE(*vhostfd);
-
-    return -1;
 }
 
 
