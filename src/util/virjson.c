@@ -155,10 +155,14 @@ int
 virJSONValueObjectAddVArgs(virJSONValue **objptr,
                            va_list args)
 {
+    g_autoptr(virJSONValue) newobj = NULL;
     virJSONValue *obj = *objptr;
     char type;
     char *key;
     int rc;
+
+    if (obj == NULL)
+        newobj = obj = virJSONValueNewObject();
 
     while ((key = va_arg(args, char *)) != NULL) {
 
@@ -344,6 +348,9 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
     if (virJSONValueObjectKeysNumber(obj) == 0)
         return 0;
 
+    if (newobj)
+        *objptr = g_steal_pointer(&newobj);
+
     return 1;
 }
 
@@ -366,17 +373,9 @@ int
 virJSONValueObjectCreateVArgs(virJSONValue **obj,
                               va_list args)
 {
-    int ret;
+    *obj = NULL;
 
-    *obj = virJSONValueNewObject();
-
-    /* free the object on error, or if no value objects were added */
-    if ((ret = virJSONValueObjectAddVArgs(obj, args)) <= 0) {
-        virJSONValueFree(*obj);
-        *obj = NULL;
-    }
-
-    return ret;
+    return virJSONValueObjectAddVArgs(obj, args);
 }
 
 
