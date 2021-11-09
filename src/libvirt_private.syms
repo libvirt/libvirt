@@ -2561,8 +2561,6 @@ virJSONValueObjectAppendNumberUint;
 virJSONValueObjectAppendNumberUlong;
 virJSONValueObjectAppendString;
 virJSONValueObjectAppendStringPrintf;
-virJSONValueObjectCreate;
-virJSONValueObjectCreateVArgs;
 virJSONValueObjectDeflatten;
 virJSONValueObjectForeachKeyValue;
 virJSONValueObjectGet;

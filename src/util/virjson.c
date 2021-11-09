@@ -369,30 +369,6 @@ virJSONValueObjectAdd(virJSONValue **objptr, ...)
 }
 
 
-int
-virJSONValueObjectCreateVArgs(virJSONValue **obj,
-                              va_list args)
-{
-    *obj = NULL;
-
-    return virJSONValueObjectAddVArgs(obj, args);
-}
-
-
-int
-virJSONValueObjectCreate(virJSONValue **obj, ...)
-{
-    va_list args;
-    int ret;
-
-    va_start(args, obj);
-    ret = virJSONValueObjectCreateVArgs(obj, args);
-    va_end(args);
-
-    return ret;
-}
-
-
 void
 virJSONValueFree(virJSONValue *value)
 {
