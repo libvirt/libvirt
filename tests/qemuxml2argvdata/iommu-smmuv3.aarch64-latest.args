@@ -26,6 +26,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

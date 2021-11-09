@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
 -chardev socket,id=chrtpm,path=/dev/test \
 -device '{"driver":"tpm-tis","tpmdev":"tpm-tpm0","id":"tpm0"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

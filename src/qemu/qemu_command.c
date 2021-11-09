@@ -7827,167 +7827,178 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
     return 0;
 }
 
-static void
-qemuBuildAudioCommonArg(virBuffer *buf,
-                        const char *prefix,
-                        virDomainAudioIOCommon *def)
+
+static int
+qemuBuildAudioCommonProps(virDomainAudioIOCommon *def,
+                          virJSONValue **props)
 {
-    if (def->mixingEngine)
-        virBufferAsprintf(buf, ",%s.mixing-engine=%s", prefix,
-                          virTristateSwitchTypeToString(def->mixingEngine));
-    if (def->fixedSettings)
-        virBufferAsprintf(buf, ",%s.fixed-settings=%s", prefix,
-                          virTristateSwitchTypeToString(def->fixedSettings));
+    unsigned int frequency = 0;
+    unsigned int channels = 0;
+    const char *format = NULL;
 
-    if (def->voices)
-        virBufferAsprintf(buf, ",%s.voices=%u", prefix, def->voices);
-    if (def->bufferLength)
-        virBufferAsprintf(buf, ",%s.buffer-length=%u", prefix, def->bufferLength);
-
-    if (def->fixedSettings) {
-        if (def->frequency)
-            virBufferAsprintf(buf, ",%s.frequency=%u", prefix, def->frequency);
-        if (def->channels)
-            virBufferAsprintf(buf, ",%s.channels=%u", prefix, def->channels);
-        if (def->format)
-            virBufferAsprintf(buf, ",%s.format=%s", prefix,
-                              virDomainAudioFormatTypeToString(def->format));
+    if (def->fixedSettings == VIR_TRISTATE_BOOL_YES) {
+        frequency = def->frequency;
+        channels = def->channels;
+        if (def->format != VIR_DOMAIN_AUDIO_FORMAT_DEFAULT)
+            format = virDomainAudioFormatTypeToString(def->format);
     }
+
+    return virJSONValueObjectAdd(props,
+                                 "T:mixing-engine", def->mixingEngine,
+                                 "T:fixed-settings", def->fixedSettings,
+                                 "p:voices", def->voices,
+                                 "p:buffer-length", def->bufferLength,
+                                 "p:frequency", frequency,
+                                 "p:channels", channels,
+                                 "S:format", format,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioALSAArg(virBuffer *buf,
-                      const char *prefix,
-                      virDomainAudioIOALSA *def)
+
+static int
+qemuBuildAudioALSAProps(virDomainAudioIOALSA *def,
+                        virJSONValue **props)
 {
-    if (def->dev)
-        virBufferAsprintf(buf, ",%s.dev=%s", prefix, def->dev);
+    return virJSONValueObjectAdd(props,
+                                 "S:dev", def->dev,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioCoreAudioArg(virBuffer *buf,
-                           const char *prefix,
-                           virDomainAudioIOCoreAudio *def)
+
+static int
+qemuBuildAudioCoreAudioProps(virDomainAudioIOCoreAudio *def,
+                             virJSONValue **props)
 {
-    if (def->bufferCount)
-        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
+    return virJSONValueObjectAdd(props,
+                                 "p:buffer-count", def->bufferCount,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioJackArg(virBuffer *buf,
-                      const char *prefix,
-                      virDomainAudioIOJack *def)
+
+static int
+qemuBuildAudioJackProps(virDomainAudioIOJack *def,
+                        virJSONValue **props)
 {
-    if (def->serverName)
-        virBufferAsprintf(buf, ",%s.server-name=%s", prefix, def->serverName);
-    if (def->clientName)
-        virBufferAsprintf(buf, ",%s.client-name=%s", prefix, def->clientName);
-    if (def->connectPorts)
-        virBufferAsprintf(buf, ",%s.connect-ports=%s", prefix, def->connectPorts);
-    if (def->exactName)
-        virBufferAsprintf(buf, ",%s.exact-name=%s", prefix,
-                          virTristateSwitchTypeToString(def->exactName));
+    return virJSONValueObjectAdd(props,
+                                 "S:server-name", def->serverName,
+                                 "S:client-name", def->clientName,
+                                 "S:connect-ports", def->connectPorts,
+                                 "T:exact-name", def->exactName,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioOSSArg(virBuffer *buf,
-                     const char *prefix,
-                     virDomainAudioIOOSS *def)
+
+static int
+qemuBuildAudioOSSProps(virDomainAudioIOOSS *def,
+                       virJSONValue **props)
 {
-    if (def->dev)
-        virBufferAsprintf(buf, ",%s.dev=%s", prefix, def->dev);
-    if (def->bufferCount)
-        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
-    if (def->tryPoll)
-        virBufferAsprintf(buf, ",%s.try-poll=%s", prefix,
-                          virTristateSwitchTypeToString(def->tryPoll));
+    return virJSONValueObjectAdd(props,
+                                 "S:dev", def->dev,
+                                 "p:buffer-count", def->bufferCount,
+                                 "T:try-poll", def->tryPoll,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioPulseAudioArg(virBuffer *buf,
-                            const char *prefix,
-                            virDomainAudioIOPulseAudio *def)
+
+static int
+qemuBuildAudioPulseAudioProps(virDomainAudioIOPulseAudio *def,
+                              virJSONValue **props)
 {
-    if (def->name)
-        virBufferAsprintf(buf, ",%s.name=%s", prefix, def->name);
-    if (def->streamName)
-        virBufferAsprintf(buf, ",%s.stream-name=%s", prefix, def->streamName);
-    if (def->latency)
-        virBufferAsprintf(buf, ",%s.latency=%u", prefix, def->latency);
+    return virJSONValueObjectAdd(props,
+                                 "S:name", def->name,
+                                 "S:stream-name", def->streamName,
+                                 "p:latency", def->latency,
+                                 NULL);
 }
 
-static void
-qemuBuildAudioSDLArg(virBuffer *buf,
-                     const char *prefix,
-                     virDomainAudioIOSDL *def)
+
+static int
+qemuBuildAudioSDLProps(virDomainAudioIOSDL *def,
+                       virJSONValue **props)
 {
-    if (def->bufferCount)
-        virBufferAsprintf(buf, ",%s.buffer-count=%u", prefix, def->bufferCount);
+    return virJSONValueObjectAdd(props,
+                                 "p:buffer-count", def->bufferCount,
+                                 NULL);
 }
+
 
 static int
 qemuBuildAudioCommandLineArg(virCommand *cmd,
                              virDomainAudioDef *def)
 {
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    g_autoptr(virJSONValue) props = NULL;
+    g_autoptr(virJSONValue) in = NULL;
+    g_autoptr(virJSONValue) out = NULL;
+    g_autofree char *propsstr = NULL;
+    g_autofree char *alias = g_strdup_printf("audio%d", def->id);
 
-    virCommandAddArg(cmd, "-audiodev");
+    if (virJSONValueObjectAdd(&props,
+                              "s:id", alias,
+                              "s:driver", qemuAudioDriverTypeToString(def->type),
+                              "p:timer-period", def->timerPeriod,
+                              NULL) < 0)
+        return -1;
 
-    virBufferAsprintf(&buf, "id=audio%d,driver=%s",
-                      def->id,
-                      qemuAudioDriverTypeToString(def->type));
-
-    if (def->timerPeriod)
-        virBufferAsprintf(&buf, ",timer-period=%u",
-                          def->timerPeriod);
-
-    qemuBuildAudioCommonArg(&buf, "in", &def->input);
-    qemuBuildAudioCommonArg(&buf, "out", &def->output);
+    if (qemuBuildAudioCommonProps(&def->input, &in) < 0 ||
+        qemuBuildAudioCommonProps(&def->output, &out) < 0)
+        return -1;
 
     switch (def->type) {
     case VIR_DOMAIN_AUDIO_TYPE_NONE:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_ALSA:
-        qemuBuildAudioALSAArg(&buf, "in", &def->backend.alsa.input);
-        qemuBuildAudioALSAArg(&buf, "out", &def->backend.alsa.output);
+        if (qemuBuildAudioALSAProps(&def->backend.alsa.input, &in) < 0 ||
+            qemuBuildAudioALSAProps(&def->backend.alsa.output, &out) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
-        qemuBuildAudioCoreAudioArg(&buf, "in", &def->backend.coreaudio.input);
-        qemuBuildAudioCoreAudioArg(&buf, "out", &def->backend.coreaudio.output);
+        if (qemuBuildAudioCoreAudioProps(&def->backend.coreaudio.input, &in) < 0 ||
+            qemuBuildAudioCoreAudioProps(&def->backend.coreaudio.output, &out) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_JACK:
-        qemuBuildAudioJackArg(&buf, "in", &def->backend.jack.input);
-        qemuBuildAudioJackArg(&buf, "out", &def->backend.jack.output);
+        if (qemuBuildAudioJackProps(&def->backend.jack.input, &in) < 0 ||
+            qemuBuildAudioJackProps(&def->backend.jack.output, &out) < 0)
+            return -1;
         break;
 
-    case VIR_DOMAIN_AUDIO_TYPE_OSS:
-        qemuBuildAudioOSSArg(&buf, "in", &def->backend.oss.input);
-        qemuBuildAudioOSSArg(&buf, "out", &def->backend.oss.output);
+    case VIR_DOMAIN_AUDIO_TYPE_OSS: {
+        g_autoptr(virJSONValue) dspPolicy = NULL;
 
-        if (def->backend.oss.tryMMap)
-            virBufferAsprintf(&buf, ",try-mmap=%s",
-                              virTristateSwitchTypeToString(def->backend.oss.tryMMap));
-        if (def->backend.oss.exclusive)
-            virBufferAsprintf(&buf, ",exclusive=%s",
-                              virTristateSwitchTypeToString(def->backend.oss.exclusive));
         if (def->backend.oss.dspPolicySet)
-            virBufferAsprintf(&buf, ",dsp-policy=%d", def->backend.oss.dspPolicy);
+            dspPolicy = virJSONValueNewNumberInt(def->backend.oss.dspPolicy);
+
+        if (qemuBuildAudioOSSProps(&def->backend.oss.input, &in) < 0 ||
+            qemuBuildAudioOSSProps(&def->backend.oss.output, &out) < 0)
+            return -1;
+
+        if (virJSONValueObjectAdd(&props,
+                                  "T:try-mmap", def->backend.oss.tryMMap,
+                                  "T:exclusive", def->backend.oss.exclusive,
+                                  "A:dsp-policy", &dspPolicy,
+                                  NULL) < 0)
+            return -1;
         break;
+    }
 
     case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
-        qemuBuildAudioPulseAudioArg(&buf, "in", &def->backend.pulseaudio.input);
-        qemuBuildAudioPulseAudioArg(&buf, "out", &def->backend.pulseaudio.output);
+        if (qemuBuildAudioPulseAudioProps(&def->backend.pulseaudio.input, &in) < 0 ||
+            qemuBuildAudioPulseAudioProps(&def->backend.pulseaudio.output, &out) < 0)
+            return -1;
 
-        if (def->backend.pulseaudio.serverName)
-            virBufferAsprintf(&buf, ",server=%s", def->backend.pulseaudio.serverName);
+        if (virJSONValueObjectAdd(&props,
+                                  "S:server", def->backend.pulseaudio.serverName,
+                                  NULL) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_SDL:
-        qemuBuildAudioSDLArg(&buf, "in", &def->backend.sdl.input);
-        qemuBuildAudioSDLArg(&buf, "out", &def->backend.sdl.output);
+        if (qemuBuildAudioSDLProps(&def->backend.sdl.input, &in) < 0 ||
+            qemuBuildAudioSDLProps(&def->backend.sdl.output, &out) < 0)
+            return -1;
 
         if (def->backend.sdl.driver) {
             /*
@@ -8007,8 +8018,10 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
-        if (def->backend.file.path)
-            virBufferEscapeString(&buf, ",path=%s", def->backend.file.path);
+        if (virJSONValueObjectAdd(&props,
+                                  "S:path", def->backend.file.path,
+                                  NULL) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -8017,7 +8030,16 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
         return -1;
     }
 
-    virCommandAddArgBuffer(cmd, &buf);
+    if (virJSONValueObjectAdd(&props,
+                              "A:in", &in,
+                              "A:out", &out,
+                              NULL) < 0)
+        return -1;
+
+    if (!(propsstr = virJSONValueToString(props, false)))
+        return -1;
+
+    virCommandAddArgList(cmd, "-audiodev", propsstr, NULL);
     return 0;
 }
 

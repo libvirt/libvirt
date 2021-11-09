@@ -34,6 +34,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -blockdev '{"driver":"file","filename":"/var/images/image3","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
 -device virtio-blk-ccw,devno=fe.0.0002,drive=libvirt-1-format,id=virtio-disk2,write-cache=on,werror=report,rerror=ignore \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

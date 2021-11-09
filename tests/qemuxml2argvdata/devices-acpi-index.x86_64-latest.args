@@ -38,7 +38,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr-br/.config \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x7","acpi-index":200}' \
 -netdev user,id=hostnet2 \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet2","id":"net2","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x8","acpi-index":300}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2","acpi-index":1729}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \

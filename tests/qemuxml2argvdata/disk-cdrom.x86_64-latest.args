@@ -35,6 +35,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"ide-cd","bus":"ide.0","unit":1,"drive":"libvirt-3-format","id":"ide0-0-1"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"id":"ide0-1-0","write-cache":"on"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":1,"id":"ide0-1-1"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

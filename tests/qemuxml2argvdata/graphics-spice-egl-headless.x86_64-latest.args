@@ -26,7 +26,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--audiodev id=audio1,driver=spice \
+-audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5903,addr=127.0.0.1,seamless-migration=on \
 -display egl-headless,rendernode=/dev/dri/foo \
 -device '{"driver":"qxl-vga","id":"video0","ram_size":67108864,"vram_size":33554432,"vram64_size_mb":0,"vgamem_mb":8,"max_outputs":1,"bus":"pci.0","addr":"0x2"}' \

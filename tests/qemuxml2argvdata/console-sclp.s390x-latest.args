@@ -30,7 +30,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charconsole0 \
 -device sclpconsole,chardev=charconsole0,id=console0 \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

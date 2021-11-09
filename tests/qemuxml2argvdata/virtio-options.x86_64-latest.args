@@ -42,7 +42,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-keyboard-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input1","bus":"pci.0","addr":"0x10"}' \
 -device '{"driver":"virtio-tablet-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input2","bus":"pci.0","addr":"0x11"}' \
 -device '{"driver":"virtio-input-host-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"input3","evdev":"/dev/input/event1234","bus":"pci.0","addr":"0x12"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -chardev socket,id=chr-vu-video0,fd=1729 \
 -device '{"driver":"vhost-user-vga","id":"video0","max_outputs":1,"chardev":"chr-vu-video0","bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"virtio-balloon-pci","iommu_platform":true,"ats":true,"packed":true,"page-per-vq":true,"id":"balloon0","bus":"pci.0","addr":"0xc"}' \

@@ -32,6 +32,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-9p-pci","id":"fs1","fsdev":"fsdev-fs1","mount_tag":"/import/from/host2","bus":"pci.0","addr":"0x3"}' \
 -fsdev handle,writeout=immediate,id=fsdev-fs2,path=/export/to/guest3 \
 -device '{"driver":"virtio-9p-pci","id":"fs2","fsdev":"fsdev-fs2","mount_tag":"/import/from/host3","bus":"pci.0","addr":"0x4"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

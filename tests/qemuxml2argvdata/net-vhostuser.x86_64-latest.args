@@ -35,6 +35,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"52:54:00:ee:96:6c","bus":"pci.0","addr":"0x3"}' \
 -netdev socket,listen=:2015,id=hostnet2 \
 -device '{"driver":"rtl8139","netdev":"hostnet2","id":"net2","mac":"52:54:00:95:db:c0","bus":"pci.0","addr":"0x4"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

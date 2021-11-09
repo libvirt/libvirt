@@ -38,6 +38,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
 -chardev socket,id=chrtpm,path=/dev/test \
 -device '{"driver":"tpm-spapr","tpmdev":"tpm-tpm0","id":"tpm0","reg":20480}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -global spapr-nvram.reg=0x4000 \
 -msg timestamp=on

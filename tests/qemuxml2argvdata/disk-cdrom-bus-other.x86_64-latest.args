@@ -31,6 +31,6 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw","file":"libvirt-2-storage"}' \
 -device '{"driver":"usb-storage","bus":"usb.0","port":"1","drive":"libvirt-2-format","id":"usb-disk0","removable":false}' \
 -device '{"driver":"usb-storage","bus":"usb.0","port":"2","id":"usb-disk1","removable":false}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

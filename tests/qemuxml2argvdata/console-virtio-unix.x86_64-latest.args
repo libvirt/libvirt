@@ -32,7 +32,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtconsole","chardev":"charconsole0","id":"console0"}' \
 -chardev socket,id=charconsole1,path=/tmp/connect.socket \
 -device '{"driver":"virtconsole","chardev":"charconsole1","id":"console1"}' \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

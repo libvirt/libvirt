@@ -31,7 +31,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
--audiodev id=audio1,driver=none \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0002 \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/hwrng"}' \
 -device virtio-rng-ccw,rng=objrng0,id=rng0,devno=fe.0.0003 \
