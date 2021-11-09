@@ -1616,7 +1616,7 @@ static virJSONValue *
 qemuDiskSourceGetProps(virStorageSource *src)
 {
     g_autoptr(virJSONValue) props = NULL;
-    virJSONValue *ret;
+    virJSONValue *ret = NULL;
 
     if (!(props = qemuBlockStorageSourceGetBackendProps(src,
                                                         QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_LEGACY)))
