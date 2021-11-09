@@ -3631,7 +3631,8 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     /* If mode is "restrictive", we should only use cgroups setting allowed memory
      * nodes, and skip passing the host-nodes and policy parameters to QEMU command
      * line which means we will use system default memory policy. */
-    if (nodemask && mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
+    if (!systemMemory && nodemask &&
+        mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
         if (!virNumaNodesetIsAvailable(nodemask))
             return -1;
         if (virJSONValueObjectAdd(props,
