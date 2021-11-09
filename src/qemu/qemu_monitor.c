@@ -2889,7 +2889,7 @@ qemuMonitorCreateObjectProps(virJSONValue **propsret,
 
     va_start(args, alias);
 
-    rc = virJSONValueObjectAddVArgs(props, args);
+    rc = virJSONValueObjectAddVArgs(&props, args);
 
     va_end(args);
 

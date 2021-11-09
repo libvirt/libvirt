@@ -50,7 +50,7 @@ int virJSONValueObjectCreateVArgs(virJSONValue **obj, va_list args)
     ATTRIBUTE_NONNULL(1);
 int virJSONValueObjectAdd(virJSONValue **obj, ...)
     ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
-int virJSONValueObjectAddVArgs(virJSONValue *obj, va_list args)
+int virJSONValueObjectAddVArgs(virJSONValue **objptr, va_list args)
     ATTRIBUTE_NONNULL(1);
 
 

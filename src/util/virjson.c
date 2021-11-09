@@ -103,7 +103,7 @@ virJSONValueGetType(const virJSONValue *value)
 
 /**
  * virJSONValueObjectAddVArgs:
- * @obj: JSON object to add the values to
+ * @objptr: pointer to a pointer to a JSON object to add the values to
  * @args: a key-value argument pairs, terminated by NULL
  *
  * Adds the key-value pairs supplied as variable argument list to @obj.
@@ -152,9 +152,10 @@ virJSONValueGetType(const virJSONValue *value)
  * in case of no error but nothing was filled.
  */
 int
-virJSONValueObjectAddVArgs(virJSONValue *obj,
+virJSONValueObjectAddVArgs(virJSONValue **objptr,
                            va_list args)
 {
+    virJSONValue *obj = *objptr;
     char type;
     char *key;
     int rc;
@@ -354,7 +355,7 @@ virJSONValueObjectAdd(virJSONValue **objptr, ...)
     int ret;
 
     va_start(args, objptr);
-    ret = virJSONValueObjectAddVArgs(*objptr, args);
+    ret = virJSONValueObjectAddVArgs(objptr, args);
     va_end(args);
 
     return ret;
@@ -370,7 +371,7 @@ virJSONValueObjectCreateVArgs(virJSONValue **obj,
     *obj = virJSONValueNewObject();
 
     /* free the object on error, or if no value objects were added */
-    if ((ret = virJSONValueObjectAddVArgs(*obj, args)) <= 0) {
+    if ((ret = virJSONValueObjectAddVArgs(obj, args)) <= 0) {
         virJSONValueFree(*obj);
         *obj = NULL;
     }
