@@ -5102,6 +5102,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
 
 /**
+
  * VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR:
  *
  * Macro represents the API major version of the SEV host,
@@ -5133,10 +5134,45 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY "sev-policy"
 
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER:
+ *
+ * A macro used to represent the SEV launch secret header. The secret header
+ * is a base64-encoded VIR_TYPED_PARAM_STRING containing artifacts needed by
+ * the SEV firmware to recover the plain text of the launch secret. See
+ * section "6.6 LAUNCH_SECRET" in the SEV API specification for a detailed
+ * description of the secret header.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER "sev-secret-header"
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET:
+ *
+ * A macro used to represent the SEV launch secret. The secret is a
+ * base64-encoded VIR_TYPED_PARAM_STRING containing an encrypted launch
+ * secret. The secret is created by the domain owner after the SEV launch
+ * measurement is retrieved and verified.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET "sev-secret"
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS:
+ *
+ * A macro used to represent the physical address within the guest's memory
+ * where the secret will be set, as VIR_TYPED_PARAM_ULLONG. If not specified,
+ * the address will be determined by the hypervisor.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS "sev-secret-set-address"
+
 int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
                                    virTypedParameterPtr *params,
                                    int *nparams,
                                    unsigned int flags);
+
+int virDomainSetLaunchSecurityState(virDomainPtr domain,
+                                    virTypedParameterPtr params,
+                                    int nparams,
+                                    unsigned int flags);
 
 typedef enum {
     VIR_DOMAIN_GUEST_INFO_USERS = (1 << 0), /* return active users */

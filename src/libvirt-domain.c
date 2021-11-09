@@ -12852,6 +12852,68 @@ int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
 
 
 /**
+ * virDomainSetLaunchSecurityState:
+ * @domain: a domain object
+ * @params: pointer to launch security parameter objects
+ * @nparams: number of launch security parameters
+ * @flags: currently used, set to 0.
+ *
+ * Set a launch security secret in the guest's memory. The guest must be
+ * in a paused state, e.g. in state VIR_DOMIAN_PAUSED as reported by
+ * virDomainGetState. On success, the guest can be transitioned to a
+ * running state. On failure, the guest should be destroyed.
+ *
+ * A basic guest attestation process can be achieved by:
+ * - Start a secure guest in the paused state by passing VIR_DOMAIN_START_PAUSED
+ *   to one of the virDomainCreate APIs
+ * - Retrieve the guest launch measurement with virDomainGetLaunchSecurityInfo
+ * - Verify launch measurement and generate a secret for the guest
+ * - Set the secret in the guest's memory with virDomainSetLaunchSecurityState
+ * - Start running the guest with virDomainResume
+ *
+ * See VIR_DOMAIN_LAUNCH_SECURITY_* for a detailed description of accepted
+ * launch security parameters.
+ *
+ * Returns -1 in case of failure, 0 in case of success.
+ */
+int virDomainSetLaunchSecurityState(virDomainPtr domain,
+                                    virTypedParameterPtr params,
+                                    int nparams,
+                                    unsigned int flags)
+{
+    virConnectPtr conn = domain->conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d flags=0x%x",
+                     params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    virCheckNonNullArgGoto(params, error);
+    virCheckPositiveArgGoto(nparams, error);
+    virCheckReadOnlyGoto(domain->conn->flags, error);
+
+    if (virTypedParameterValidateSet(conn, params, nparams) < 0)
+        goto error;
+
+    if (conn->driver->domainSetLaunchSecurityState) {
+        int ret;
+        ret = conn->driver->domainSetLaunchSecurityState(domain, params,
+                                                         nparams, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
+
+/**
  * virDomainAgentSetResponseTimeout:
  * @domain: a domain object
  * @timeout: timeout in seconds

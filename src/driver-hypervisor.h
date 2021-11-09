@@ -1333,6 +1333,12 @@ typedef int
                                         int *nparams,
                                         unsigned int flags);
 
+typedef int
+(*virDrvDomainSetLaunchSecurityState)(virDomainPtr domain,
+                                      virTypedParameterPtr params,
+                                      int nparams,
+                                      unsigned int flags);
+
 typedef virDomainCheckpointPtr
 (*virDrvDomainCheckpointCreateXML)(virDomainPtr domain,
                                    const char *xmlDesc,
@@ -1661,6 +1667,7 @@ struct _virHypervisorDriver {
     virDrvConnectBaselineHypervisorCPU connectBaselineHypervisorCPU;
     virDrvNodeGetSEVInfo nodeGetSEVInfo;
     virDrvDomainGetLaunchSecurityInfo domainGetLaunchSecurityInfo;
+    virDrvDomainSetLaunchSecurityState domainSetLaunchSecurityState;
     virDrvDomainCheckpointCreateXML domainCheckpointCreateXML;
     virDrvDomainCheckpointGetXMLDesc domainCheckpointGetXMLDesc;
     virDrvDomainListAllCheckpoints domainListAllCheckpoints;
