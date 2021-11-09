@@ -1127,7 +1127,7 @@ qemuAgentMakeCommand(const char *cmdname,
 
     va_start(args, cmdname);
 
-    if (virJSONValueObjectCreateVArgs(&jargs, args) < 0) {
+    if (virJSONValueObjectAddVArgs(&jargs, args) < 0) {
         va_end(args);
         return NULL;
     }

@@ -504,7 +504,7 @@ qemuMonitorJSONTransactionAdd(virJSONValue *actions,
 
     va_start(args, cmdname);
 
-    if (virJSONValueObjectCreateVArgs(&data, args) < 0) {
+    if (virJSONValueObjectAddVArgs(&data, args) < 0) {
         va_end(args);
         return -1;
     }
@@ -556,7 +556,7 @@ qemuMonitorJSONMakeCommand(const char *cmdname,
 
     va_start(args, cmdname);
 
-    if (virJSONValueObjectCreateVArgs(&jargs, args) < 0)
+    if (virJSONValueObjectAddVArgs(&jargs, args) < 0)
         goto cleanup;
 
     obj = qemuMonitorJSONMakeCommandInternal(cmdname, &jargs);
