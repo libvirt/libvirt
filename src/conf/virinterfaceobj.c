@@ -462,8 +462,7 @@ virInterfaceObjListRemove(virInterfaceObjList *interfaces,
     virObjectRWLockWrite(interfaces);
     virObjectLock(obj);
     virHashRemoveEntry(interfaces->objsName, obj->def->name);
-    virObjectUnlock(obj);
-    virObjectUnref(obj);
+    virInterfaceObjEndAPI(&obj);
     virObjectRWUnlock(interfaces);
 }
 
