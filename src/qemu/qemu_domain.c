@@ -3507,55 +3507,15 @@ qemuDomainDefSuggestDefaultAudioBackend(virQEMUDriver *driver,
 }
 
 static int
-qemuDomainDefClearDefaultAudioBackend(virQEMUDriver *driver,
-                                      virDomainDef *def)
-{
-    bool addAudio;
-    int audioBackend;
-    int audioSDLDriver;
-    virDomainAudioDef *audio;
-
-    if (def->naudios != 1) {
-        return 0;
-    }
-
-    if (qemuDomainDefSuggestDefaultAudioBackend(driver,
-                                                def,
-                                                &addAudio,
-                                                &audioBackend,
-                                                &audioSDLDriver) < 0)
-        return -1;
-
-    if (!addAudio)
-        return 0;
-
-    audio = def->audios[0];
-    if (audio->type != audioBackend)
-        return 0;
-
-    if (audio->type == VIR_DOMAIN_AUDIO_TYPE_SDL &&
-        audio->backend.sdl.driver != audioSDLDriver)
-        return 0;
-
-    virDomainAudioDefFree(audio);
-    g_free(def->audios);
-    def->naudios = 0;
-    def->audios = NULL;
-
-    return 0;
-}
-
-static int
-qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
-                                    virDomainDef *def)
+qemuDomainDefCreateDefaultAudioBackend(virQEMUDriver *driver,
+                                       virDomainDef *def,
+                                       virDomainAudioDef **audioout)
 {
     bool addAudio;
     int audioBackend;
     int audioSDLDriver;
 
-    if (def->naudios > 0) {
-        return 0;
-    }
+    *audioout = NULL;
 
     if (qemuDomainDefSuggestDefaultAudioBackend(driver,
                                                 def,
@@ -3570,12 +3530,60 @@ qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
         audio->type = audioBackend;
         audio->id = 1;
 
+        if (audioBackend == VIR_DOMAIN_AUDIO_TYPE_SDL)
+            audio->backend.sdl.driver = audioSDLDriver;
+
+        *audioout = audio;
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDefClearDefaultAudioBackend(virQEMUDriver *driver,
+                                      virDomainDef *def)
+{
+    virDomainAudioDef *audio = NULL;
+
+    if (def->naudios != 1) {
+        return 0;
+    }
+
+    if (qemuDomainDefCreateDefaultAudioBackend(driver, def, &audio) < 0)
+        return -1;
+
+    if (!audio)
+        return 0;
+
+    if (virDomainAudioIsEqual(def->audios[0], audio)) {
+        virDomainAudioDefFree(def->audios[0]);
+        g_free(def->audios);
+        def->naudios = 0;
+        def->audios = NULL;
+    }
+    virDomainAudioDefFree(audio);
+
+    return 0;
+}
+
+static int
+qemuDomainDefAddDefaultAudioBackend(virQEMUDriver *driver,
+                                    virDomainDef *def)
+{
+    virDomainAudioDef *audio;
+
+    if (def->naudios > 0) {
+        return 0;
+    }
+
+    if (qemuDomainDefCreateDefaultAudioBackend(driver, def, &audio) < 0)
+        return -1;
+
+    if (audio) {
         def->naudios = 1;
         def->audios = g_new0(virDomainAudioDef *, def->naudios);
         def->audios[0] = audio;
-
-        if (audioBackend == VIR_DOMAIN_AUDIO_TYPE_SDL)
-            audio->backend.sdl.driver = audioSDLDriver;
     }
 
     return 0;
