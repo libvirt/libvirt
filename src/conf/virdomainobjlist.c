@@ -119,11 +119,8 @@ virDomainObjListFindByID(virDomainObjList *doms,
     virObjectRWUnlock(doms);
     if (obj) {
         virObjectLock(obj);
-        if (obj->removing) {
-            virObjectUnlock(obj);
-            virObjectUnref(obj);
-            obj = NULL;
-        }
+        if (obj->removing)
+            virDomainObjEndAPI(&obj);
     }
 
     return obj;
@@ -165,11 +162,8 @@ virDomainObjListFindByUUID(virDomainObjList *doms,
     obj = virDomainObjListFindByUUIDLocked(doms, uuid);
     virObjectRWUnlock(doms);
 
-    if (obj && obj->removing) {
-        virObjectUnlock(obj);
-        virObjectUnref(obj);
-        obj = NULL;
-    }
+    if (obj && obj->removing)
+        virDomainObjEndAPI(&obj);
 
     return obj;
 }
@@ -208,11 +202,8 @@ virDomainObjListFindByName(virDomainObjList *doms,
     obj = virDomainObjListFindByNameLocked(doms, name);
     virObjectRWUnlock(doms);
 
-    if (obj && obj->removing) {
-        virObjectUnlock(obj);
-        virObjectUnref(obj);
-        obj = NULL;
-    }
+    if (obj && obj->removing)
+        virDomainObjEndAPI(&obj);
 
     return obj;
 }
@@ -953,8 +944,7 @@ virDomainObjListFilter(virDomainObj ***list,
         if (vm->removing ||
             (filter && !filter(conn, vm->def)) ||
             !virDomainObjMatchFilter(vm, flags)) {
-            virObjectUnlock(vm);
-            virObjectUnref(vm);
+            virDomainObjEndAPI(&vm);
             VIR_DELETE_ELEMENT(*list, i, *nvms);
             continue;
         }

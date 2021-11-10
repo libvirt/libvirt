@@ -461,8 +461,7 @@ libxlReconnectDomain(virDomainObj *vm,
 
  cleanup:
     libxl_dominfo_dispose(&d_info);
-    virObjectUnlock(vm);
-    virObjectUnref(vm);
+    virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
     return ret;
 
