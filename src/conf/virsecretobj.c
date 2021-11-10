@@ -301,8 +301,7 @@ virSecretObjListRemove(virSecretObjList *secrets,
     virObjectRWLockWrite(secrets);
     virObjectLock(obj);
     virHashRemoveEntry(secrets->objs, uuidstr);
-    virObjectUnlock(obj);
-    virObjectUnref(obj);
+    virSecretObjEndAPI(&obj);
     virObjectRWUnlock(secrets);
 }
 
