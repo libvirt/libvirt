@@ -114,11 +114,8 @@ virNWFilterBindingObjListFindByPortDev(virNWFilterBindingObjList *bindings,
     obj = virNWFilterBindingObjListFindByPortDevLocked(bindings, name);
     virObjectRWUnlock(bindings);
 
-    if (obj && virNWFilterBindingObjGetRemoving(obj)) {
-        virObjectUnlock(obj);
-        virObjectUnref(obj);
-        obj = NULL;
-    }
+    if (obj && virNWFilterBindingObjGetRemoving(obj))
+        virNWFilterBindingObjEndAPI(&obj);
 
     return obj;
 }
@@ -407,8 +404,7 @@ virNWFilterBindingObjListFilter(virNWFilterBindingObj ***list,
          */
         if (virNWFilterBindingObjGetRemoving(binding) ||
             (filter && !filter(conn, def))) {
-            virObjectUnlock(binding);
-            virObjectUnref(binding);
+            virNWFilterBindingObjEndAPI(&binding);
             VIR_DELETE_ELEMENT(*list, i, *nbindings);
             continue;
         }
