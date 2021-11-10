@@ -1907,13 +1907,14 @@ qemuSnapshotRevert(virDomainObj *vm,
         goto endjob;
     }
 
+    if (!snap->def->dom) {
+        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+                       _("snapshot '%s' lacks domain '%s' rollback info"),
+                       snap->def->name, vm->def->name);
+        goto endjob;
+    }
+
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (!snap->def->dom) {
-            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
-                           _("snapshot '%s' lacks domain '%s' rollback info"),
-                           snap->def->name, vm->def->name);
-            goto endjob;
-        }
         if (virDomainObjIsActive(vm) &&
             !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
               snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) &&
@@ -1934,16 +1935,14 @@ qemuSnapshotRevert(virDomainObj *vm,
         }
     }
 
-    if (snap->def->dom) {
-        config = virDomainDefCopy(snap->def->dom,
-                                  driver->xmlopt, priv->qemuCaps, true);
-        if (!config)
-            goto endjob;
+    config = virDomainDefCopy(snap->def->dom,
+                              driver->xmlopt, priv->qemuCaps, true);
+    if (!config)
+        goto endjob;
 
-        if (STRNEQ(config->name, vm->def->name)) {
-            VIR_FREE(config->name);
-            config->name = g_strdup(vm->def->name);
-        }
+    if (STRNEQ(config->name, vm->def->name)) {
+        VIR_FREE(config->name);
+        config->name = g_strdup(vm->def->name);
     }
 
     if (snap->def->inactiveDom) {
@@ -1991,61 +1990,59 @@ qemuSnapshotRevert(virDomainObj *vm,
             /* Transitions 5, 6, 8, 9 */
             /* Check for ABI compatibility. We need to do this check against
              * the migratable XML or it will always fail otherwise */
-            if (config) {
-                bool compatible;
+            bool compatible;
 
-                /* Replace the CPU in config and put the original one in priv
-                 * once we're done. When we have the updated CPU def in the
-                 * cookie, we don't want to replace the CPU in migratable def
-                 * when doing ABI checks to make sure the current CPU exactly
-                 * matches the one used at the time the snapshot was taken.
-                 */
-                if (cookie && cookie->cpu && config->cpu) {
-                    origCPU = config->cpu;
-                    if (!(config->cpu = virCPUDefCopy(cookie->cpu)))
-                        goto endjob;
+            /* Replace the CPU in config and put the original one in priv
+             * once we're done. When we have the updated CPU def in the
+             * cookie, we don't want to replace the CPU in migratable def
+             * when doing ABI checks to make sure the current CPU exactly
+             * matches the one used at the time the snapshot was taken.
+             */
+            if (cookie && cookie->cpu && config->cpu) {
+                origCPU = config->cpu;
+                if (!(config->cpu = virCPUDefCopy(cookie->cpu)))
+                    goto endjob;
 
-                    compatible = qemuDomainDefCheckABIStability(driver,
-                                                                priv->qemuCaps,
-                                                                vm->def,
-                                                                config);
-                } else {
-                    compatible = qemuDomainCheckABIStability(driver, vm, config);
+                compatible = qemuDomainDefCheckABIStability(driver,
+                                                            priv->qemuCaps,
+                                                            vm->def,
+                                                            config);
+            } else {
+                compatible = qemuDomainCheckABIStability(driver, vm, config);
+            }
+
+            /* If using VM GenID, there is no way currently to change
+             * the genid for the running guest, so set an error,
+             * mark as incompatible, and don't allow change of genid
+             * if the revert force flag would start the guest again. */
+            if (compatible && config->genidRequested) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("domain genid update requires restart"));
+                compatible = false;
+                start_flags &= ~VIR_QEMU_PROCESS_START_GEN_VMID;
+            }
+
+            if (!compatible) {
+                virErrorPtr err = virGetLastError();
+
+                if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
+                    /* Re-spawn error using correct category. */
+                    if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
+                        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
+                                       err->str2);
+                    goto endjob;
                 }
-
-                /* If using VM GenID, there is no way currently to change
-                 * the genid for the running guest, so set an error,
-                 * mark as incompatible, and don't allow change of genid
-                 * if the revert force flag would start the guest again. */
-                if (compatible && config->genidRequested) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("domain genid update requires restart"));
-                    compatible = false;
-                    start_flags &= ~VIR_QEMU_PROCESS_START_GEN_VMID;
-                }
-
-                if (!compatible) {
-                    virErrorPtr err = virGetLastError();
-
-                    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-                        /* Re-spawn error using correct category. */
-                        if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
-                            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
-                                           err->str2);
-                        goto endjob;
-                    }
-                    virResetError(err);
-                    qemuProcessStop(driver, vm,
-                                    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                                    QEMU_ASYNC_JOB_START, 0);
-                    virDomainAuditStop(vm, "from-snapshot");
-                    detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
-                    event = virDomainEventLifecycleNewFromObj(vm,
-                                                     VIR_DOMAIN_EVENT_STOPPED,
-                                                     detail);
-                    virObjectEventStateQueue(driver->domainEventState, event);
-                    goto load;
-                }
+                virResetError(err);
+                qemuProcessStop(driver, vm,
+                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                                QEMU_ASYNC_JOB_START, 0);
+                virDomainAuditStop(vm, "from-snapshot");
+                detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
+                event = virDomainEventLifecycleNewFromObj(vm,
+                                                 VIR_DOMAIN_EVENT_STOPPED,
+                                                 detail);
+                virObjectEventStateQueue(driver->domainEventState, event);
+                goto load;
             }
 
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -2072,10 +2069,9 @@ qemuSnapshotRevert(virDomainObj *vm,
                  * failed loadvm attempt? */
                 goto endjob;
             }
-            if (config) {
-                virCPUDefFree(priv->origCPU);
-                priv->origCPU = g_steal_pointer(&origCPU);
-            }
+
+            virCPUDefFree(priv->origCPU);
+            priv->origCPU = g_steal_pointer(&origCPU);
 
             if (cookie && !cookie->slirpHelper)
                 priv->disableSlirp = true;
@@ -2096,10 +2092,8 @@ qemuSnapshotRevert(virDomainObj *vm,
                 defined = true;
             }
 
-            if (config) {
-                virDomainObjAssignDef(vm, config, true, NULL);
-                config = NULL;
-            }
+            virDomainObjAssignDef(vm, config, true, NULL);
+            config = NULL;
 
             /* No cookie means libvirt which saved the domain was too old to
              * mess up the CPU definitions.
