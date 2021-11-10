@@ -4016,6 +4016,9 @@ bool
 virDomainSoundModelSupportsCodecs(virDomainSoundDef *def);
 bool
 virDomainAudioIOCommonIsSet(virDomainAudioIOCommon *common);
+bool
+virDomainAudioIsEqual(virDomainAudioDef *this,
+                      virDomainAudioDef *that);
 
 const char *virDomainChrSourceDefGetPath(virDomainChrSourceDef *chr);
 

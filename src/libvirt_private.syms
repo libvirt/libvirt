@@ -231,6 +231,7 @@ virDomainAudioDefFree;
 virDomainAudioFormatTypeFromString;
 virDomainAudioFormatTypeToString;
 virDomainAudioIOCommonIsSet;
+virDomainAudioIsEqual;
 virDomainAudioSDLDriverTypeFromString;
 virDomainAudioSDLDriverTypeToString;
 virDomainAudioTypeTypeFromString;

@@ -29828,6 +29828,150 @@ virDomainAudioIOCommonIsSet(virDomainAudioIOCommon *common)
         common->bufferLength;
 }
 
+
+static bool
+virDomainAudioIOCommonIsEqual(virDomainAudioIOCommon *this,
+                              virDomainAudioIOCommon *that)
+{
+    return this->mixingEngine == that->mixingEngine &&
+        this->fixedSettings == that->fixedSettings &&
+        this->frequency == that->frequency &&
+        this->channels == that->channels &&
+        this->voices == that->voices &&
+        this->format == that->format &&
+        this->bufferLength == that->bufferLength;
+}
+
+static bool
+virDomainAudioIOALSAIsEqual(virDomainAudioIOALSA *this,
+                            virDomainAudioIOALSA *that)
+{
+    return STREQ_NULLABLE(this->dev, that->dev);
+}
+
+static bool
+virDomainAudioIOCoreAudioIsEqual(virDomainAudioIOCoreAudio *this,
+                                 virDomainAudioIOCoreAudio *that)
+{
+    return this->bufferCount == that->bufferCount;
+}
+
+static bool
+virDomainAudioIOJackIsEqual(virDomainAudioIOJack *this,
+                            virDomainAudioIOJack *that)
+{
+    return STREQ_NULLABLE(this->serverName, that->serverName) &&
+         STREQ_NULLABLE(this->clientName, that->clientName) &&
+         STREQ_NULLABLE(this->connectPorts, that->connectPorts) &&
+        this->exactName == that->exactName;
+}
+
+static bool
+virDomainAudioIOOSSIsEqual(virDomainAudioIOOSS *this,
+                           virDomainAudioIOOSS *that)
+{
+    return STREQ_NULLABLE(this->dev, that->dev) &&
+        this->bufferCount == that->bufferCount &&
+        this->tryPoll == that->tryPoll;
+}
+
+static bool
+virDomainAudioIOPulseAudioIsEqual(virDomainAudioIOPulseAudio *this,
+                                  virDomainAudioIOPulseAudio *that)
+{
+        return STREQ_NULLABLE(this->name, that->name) &&
+            STREQ_NULLABLE(this->streamName, that->streamName) &&
+            this->latency == that->latency;
+}
+
+static bool
+virDomainAudioIOSDLIsEqual(virDomainAudioIOSDL *this,
+                           virDomainAudioIOSDL *that)
+{
+    return this->bufferCount == that->bufferCount;
+}
+
+
+static bool
+virDomainAudioBackendIsEqual(virDomainAudioDef *this,
+                             virDomainAudioDef *that)
+{
+    if (this->type != that->type)
+        return false;
+
+    switch (this->type) {
+    case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        return true;
+
+    case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        return virDomainAudioIOALSAIsEqual(&this->backend.alsa.input,
+                                           &that->backend.alsa.input) &&
+            virDomainAudioIOALSAIsEqual(&this->backend.alsa.output,
+                                        &that->backend.alsa.output);
+
+    case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        return virDomainAudioIOCoreAudioIsEqual(&this->backend.coreaudio.input,
+                                                &that->backend.coreaudio.input) &&
+            virDomainAudioIOCoreAudioIsEqual(&this->backend.coreaudio.output,
+                                             &that->backend.coreaudio.output);
+
+    case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        return virDomainAudioIOJackIsEqual(&this->backend.jack.input,
+                                           &that->backend.jack.input) &&
+            virDomainAudioIOJackIsEqual(&this->backend.jack.output,
+                                        &that->backend.jack.output);
+
+    case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        return virDomainAudioIOOSSIsEqual(&this->backend.oss.input,
+                                          &that->backend.oss.input) &&
+            virDomainAudioIOOSSIsEqual(&this->backend.oss.output,
+                                       &that->backend.oss.output) &&
+            this->backend.oss.tryMMap == that->backend.oss.tryMMap &&
+            this->backend.oss.exclusive == that->backend.oss.exclusive &&
+            this->backend.oss.dspPolicySet == that->backend.oss.dspPolicySet &&
+            this->backend.oss.dspPolicy == that->backend.oss.dspPolicy;
+
+    case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+        return virDomainAudioIOPulseAudioIsEqual(&this->backend.pulseaudio.input,
+                                                 &that->backend.pulseaudio.input) &&
+            virDomainAudioIOPulseAudioIsEqual(&this->backend.pulseaudio.output,
+                                              &that->backend.pulseaudio.output) &&
+            STREQ_NULLABLE(this->backend.pulseaudio.serverName,
+                           that->backend.pulseaudio.serverName);
+
+    case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        return virDomainAudioIOSDLIsEqual(&this->backend.sdl.input,
+                                          &that->backend.sdl.input) &&
+            virDomainAudioIOSDLIsEqual(&this->backend.sdl.output,
+                                       &that->backend.sdl.output) &&
+            this->backend.sdl.driver == that->backend.sdl.driver;
+
+    case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        return true;
+
+    case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        return STREQ_NULLABLE(this->backend.file.path, that->backend.file.path);
+
+    case VIR_DOMAIN_AUDIO_TYPE_LAST:
+    default:
+        return false;
+    }
+}
+
+
+bool
+virDomainAudioIsEqual(virDomainAudioDef *this,
+                      virDomainAudioDef *that)
+{
+    return this->type == that->type &&
+        this->id == that->id &&
+        this->timerPeriod == that->timerPeriod &&
+        virDomainAudioIOCommonIsEqual(&this->input, &that->input) &&
+        virDomainAudioIOCommonIsEqual(&this->output, &that->output) &&
+        virDomainAudioBackendIsEqual(this, that);
+}
+
+
 char *
 virDomainObjGetMetadata(virDomainObj *vm,
                         int type,
