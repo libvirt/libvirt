@@ -18830,6 +18830,10 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         unsigned int privflags = 0;
         unsigned int requestedStats = stats;
         unsigned int domflags = 0;
+        int rc;
+
+        if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
+            domflags |= QEMU_DOMAIN_STATS_BACKING;
 
         virObjectLock(vm);
 
@@ -18854,23 +18858,17 @@ qemuConnectGetAllDomainStats(virConnectPtr conn,
         }
         /* else: without a job it's still possible to gather some data */
 
-        if (flags & VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING)
-            domflags |= QEMU_DOMAIN_STATS_BACKING;
-        if (qemuDomainGetStats(conn, vm, requestedStats, &tmp, domflags) < 0) {
-            if (HAVE_JOB(domflags) && vm)
-                qemuDomainObjEndJob(driver, vm);
-
-            virObjectUnlock(vm);
-            goto cleanup;
-        }
-
-        if (tmp)
-            tmpstats[nstats++] = tmp;
+        rc = qemuDomainGetStats(conn, vm, requestedStats, &tmp, domflags);
 
         if (HAVE_JOB(domflags))
             qemuDomainObjEndJob(driver, vm);
 
         virObjectUnlock(vm);
+
+        if (rc < 0)
+            goto cleanup;
+
+        tmpstats[nstats++] = tmp;
     }
 
     *retStats = g_steal_pointer(&tmpstats);
