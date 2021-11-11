@@ -18513,16 +18513,12 @@ qemuDomainGetStatsIOThread(virQEMUDriver *driver,
                            virTypedParamList *params,
                            unsigned int privflags)
 {
-    qemuDomainObjPrivate *priv = dom->privateData;
     size_t i;
     qemuMonitorIOThreadInfo **iothreads = NULL;
     int niothreads = 0;
     int ret = -1;
 
     if (!HAVE_JOB(privflags) || !virDomainObjIsActive(dom))
-        return 0;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD))
         return 0;
 
     if (qemuDomainGetIOThreadsMon(driver, dom, &iothreads, &niothreads) < 0)
@@ -18665,6 +18661,12 @@ struct qemuDomainGetStatsWorker {
     virQEMUCapsFlags *requiredCaps;
 };
 
+
+static virQEMUCapsFlags queryIOThreadRequired[] = {
+    QEMU_CAPS_OBJECT_IOTHREAD,
+    QEMU_CAPS_LAST
+};
+
 static virQEMUCapsFlags queryDirtyRateRequired[] = {
     QEMU_CAPS_QUERY_DIRTY_RATE,
     QEMU_CAPS_LAST
@@ -18678,7 +18680,7 @@ static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
     { qemuDomainGetStatsInterface, VIR_DOMAIN_STATS_INTERFACE, false, NULL },
     { qemuDomainGetStatsBlock, VIR_DOMAIN_STATS_BLOCK, true, NULL },
     { qemuDomainGetStatsPerf, VIR_DOMAIN_STATS_PERF, false, NULL },
-    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, NULL },
+    { qemuDomainGetStatsIOThread, VIR_DOMAIN_STATS_IOTHREAD, true, queryIOThreadRequired },
     { qemuDomainGetStatsMemory, VIR_DOMAIN_STATS_MEMORY, false, NULL },
     { qemuDomainGetStatsDirtyRate, VIR_DOMAIN_STATS_DIRTYRATE, true, queryDirtyRateRequired },
     { NULL, 0, false, NULL }
