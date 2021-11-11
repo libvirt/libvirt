@@ -9082,34 +9082,17 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                       VIR_DOMAIN_EVENT_STOPPED,
                                                       VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
             virObjectEventStateQueue(privconn->eventState, event);
-            goto load;
-
-            if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-                /* Transitions 5, 6 */
-                was_running = true;
-                virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                                     VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-                /* Create an event now in case the restore fails, so
-                 * that user will be alerted that they are now paused.
-                 * If restore later succeeds, we might replace this. */
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_SUSPENDED,
-                                VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
-            }
-            virDomainObjAssignDef(vm, config, false, NULL);
-
-        } else {
-            /* Transitions 2, 3 */
-        load:
-            was_stopped = true;
-            virDomainObjAssignDef(vm, config, false, NULL);
-            if (testDomainStartState(privconn, vm,
-                                VIR_DOMAIN_RUNNING_FROM_SNAPSHOT) < 0)
-                goto cleanup;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_STARTED,
-                                VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
         }
+
+        was_stopped = true;
+
+        virDomainObjAssignDef(vm, config, false, NULL);
+        if (testDomainStartState(privconn, vm,
+                            VIR_DOMAIN_RUNNING_FROM_SNAPSHOT) < 0)
+            goto cleanup;
+        event = virDomainEventLifecycleNewFromObj(vm,
+                            VIR_DOMAIN_EVENT_STARTED,
+                            VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
 
         /* Touch up domain state.  */
         if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
