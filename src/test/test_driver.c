@@ -9042,13 +9042,14 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
+    if (!snap->def->dom) {
+        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+                       _("snapshot '%s' lacks domain '%s' rollback info"),
+                       snap->def->name, vm->def->name);
+        goto cleanup;
+    }
+
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (!snap->def->dom) {
-            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
-                           _("snapshot '%s' lacks domain '%s' rollback info"),
-                           snap->def->name, vm->def->name);
-            goto cleanup;
-        }
         if (virDomainObjIsActive(vm) &&
             !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
               snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) &&
