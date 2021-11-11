@@ -9076,28 +9076,13 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
         if (virDomainObjIsActive(vm)) {
             /* Transitions 5, 6, 8, 9 */
-            /* Check for ABI compatibility.  */
-            if (!virDomainDefCheckABIStability(vm->def, config,
-                                               privconn->xmlopt)) {
-                virErrorPtr err = virGetLastError();
-
-                if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-                    /* Re-spawn error using correct category. */
-                    if (err->code == VIR_ERR_CONFIG_UNSUPPORTED)
-                        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
-                                       err->str2);
-                    goto cleanup;
-                }
-
-                virResetError(err);
-                testDomainShutdownState(snapshot->domain, vm,
-                                        VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-                event = virDomainEventLifecycleNewFromObj(vm,
-                            VIR_DOMAIN_EVENT_STOPPED,
-                            VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-                virObjectEventStateQueue(privconn->eventState, event);
-                goto load;
-            }
+            testDomainShutdownState(snapshot->domain, vm,
+                                    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_STOPPED,
+                                                      VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
+            virObjectEventStateQueue(privconn->eventState, event);
+            goto load;
 
             if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
                 /* Transitions 5, 6 */
