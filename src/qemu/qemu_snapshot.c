@@ -1760,9 +1760,9 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         if (!(snap_params = qemuMigrationParamsNew()))
             goto cleanup;
 
-        if ((ret = qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
-                                       data, compressor, snap_params, 0,
-                                       VIR_ASYNC_JOB_SNAPSHOT)) < 0)
+        if (qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
+                                data, compressor, snap_params, 0,
+                                VIR_ASYNC_JOB_SNAPSHOT) < 0)
             goto cleanup;
 
         /* the memory image was created, remove it on errors */
@@ -1779,9 +1779,9 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         qemuSnapshotCreateActiveExternalDisksManual(vm, snap, VIR_ASYNC_JOB_SNAPSHOT) < 0)
         goto cleanup;
 
-    if ((ret = qemuSnapshotCreateActiveExternalDisks(vm, snap,
-                                                     blockNamedNodeData, flags,
-                                                     VIR_ASYNC_JOB_SNAPSHOT)) < 0)
+    if (qemuSnapshotCreateActiveExternalDisks(vm, snap,
+                                              blockNamedNodeData, flags,
+                                              VIR_ASYNC_JOB_SNAPSHOT) < 0)
         goto cleanup;
 
     /* the snapshot is complete now */
