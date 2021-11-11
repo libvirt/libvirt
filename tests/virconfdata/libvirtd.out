@@ -149,6 +149,10 @@ tls_no_verify_certificate = 1
 #
 # Any * matches any number of consecutive spaces, like a simplified glob(7).
 #
+# The format of the DN for a particular certificate can be queried
+# using:
+#
+#    virt-pki-query-dn clientcert.pem
 #
 # NB If this is an empty list, no client can connect, so comment out
 # entirely rather than using empty list to disable these checks

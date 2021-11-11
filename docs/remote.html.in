@@ -259,6 +259,10 @@ Blank lines and comments beginning with <code>#</code> are ignored.
   Note also that GnuTLS returns DNs without spaces
   after commas between the fields (and this is what we check against),
   but the <code>openssl x509</code> tool shows spaces.
+  </p>
+  To make it easy to see the order of the fields in the DN a helper executable
+  <code>virt-pki-query-dn</code> is provided for this particular use case.
+          <p>
 </p>
         </td>
       </tr>
