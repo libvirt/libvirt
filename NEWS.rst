@@ -17,6 +17,12 @@ v7.10.0 (unreleased)
 
 * **New features**
 
+  * Added virt-pki-query-dn binary
+
+    This binary helps users figure out the format of Distinguished Name
+    from a certificate file the way that libvirt expects it in
+    tls_allowed_dn_list option of libvirtd.conf configuration file
+
 * **Improvements**
 
   * qemu: Report guest interface information in ``virDomainGetGuestInfo``
