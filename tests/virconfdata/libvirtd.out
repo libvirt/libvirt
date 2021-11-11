@@ -142,7 +142,7 @@ crl_file = "/etc/pki/CA/crl.pem"
 # Default is to always verify. Uncommenting this will disable
 # verification.
 tls_no_verify_certificate = 1
-# An access control list of allowed x509  Distinguished Names
+# An access control list of allowed x509 Distinguished Names
 # This list may contain wildcards such as
 #
 #    "C=GB,ST=London,L=London,O=Red Hat,CN=*"
