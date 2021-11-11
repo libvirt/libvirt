@@ -249,8 +249,8 @@ Blank lines and comments beginning with <code>#</code> are ignored.
   </p>
           <p>
   This list may contain wildcards such as <code>"C=GB,ST=London,L=London,O=Libvirt Project,CN=*"</code>
-  See the POSIX <code>fnmatch</code> function for the format
-  of the wildcards.
+  Any * matches in the string matches any number of consecutive characters,
+  like a simplified <code>glob(7)</code>.
   </p>
           <p>
   Note that if this is an empty list, <i>no client can connect</i>.
