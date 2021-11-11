@@ -1665,6 +1665,12 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     virQEMUSaveData *data = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
 
+    if (memory) {
+        /* When doing a snapshot with memory check if migration is possible */
+        if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
+            return -1;
+    }
+
     /* If quiesce was requested, then issue a freeze command, and a
      * counterpart thaw command when it is actually sent to agent.
      * The command will fail if the guest is paused or the guest agent
@@ -1726,10 +1732,6 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     /* do the memory snapshot if necessary */
     if (memory) {
         g_autoptr(qemuMigrationParams) snap_params = NULL;
-
-        /* check if migration is possible */
-        if (!qemuMigrationSrcIsAllowed(vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
-            goto cleanup;
 
         qemuDomainJobSetStatsType(vm->job->current,
                                   QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
