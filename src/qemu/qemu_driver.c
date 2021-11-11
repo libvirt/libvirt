@@ -18667,7 +18667,7 @@ struct qemuDomainGetStatsWorker {
 
 static virQEMUCapsFlags queryDirtyRateRequired[] = {
     QEMU_CAPS_QUERY_DIRTY_RATE,
-    QEMU_CAPS_LAST,
+    QEMU_CAPS_LAST
 };
 
 static struct qemuDomainGetStatsWorker qemuDomainGetStatsWorkers[] = {
