@@ -376,6 +376,7 @@
 @SRCDIR@tools/virt-host-validate-qemu.c
 @SRCDIR@tools/virt-host-validate.c
 @SRCDIR@tools/virt-login-shell-helper.c
+@SRCDIR@tools/virt-pki-query-dn.c
 @SRCDIR@tools/vsh-table.c
 @SRCDIR@tools/vsh.c
 @SRCDIR@tools/vsh.h

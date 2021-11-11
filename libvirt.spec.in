@@ -1983,6 +1983,7 @@ exit 0
 %{_mandir}/man1/virt-pki-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
+%{_bindir}/virt-pki-query-dn
 %{_bindir}/virt-pki-validate
 
 %{_datadir}/bash-completion/completions/virsh

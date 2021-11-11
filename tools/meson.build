@@ -257,6 +257,33 @@ configure_file(
   install_mode: 'rwxrwxr-x',
 )
 
+executable(
+  'virt-pki-query-dn',
+  [
+    'virt-pki-query-dn.c',
+  ],
+  dependencies: [
+    glib_dep,
+    gnutls_dep,
+  ],
+  include_directories: [
+    libvirt_inc,
+    src_inc_dir,
+    top_inc_dir,
+    util_inc_dir,
+  ],
+  link_args: (
+    libvirt_relro
+    + libvirt_no_indirect
+    + libvirt_no_undefined
+  ),
+  link_with: [
+    libvirt_lib
+  ],
+  install: true,
+  install_dir: bindir,
+)
+
 if conf.has('WITH_SANLOCK')
   configure_file(
     input: 'virt-sanlock-cleanup.in',
