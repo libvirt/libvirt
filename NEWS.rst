@@ -30,6 +30,11 @@ v7.10.0 (unreleased)
     Libvirt is now able to report interface information from the guest's
     perspective (using guest agent).
 
+  * qemu: detect guest side errors during device removal
+
+    Libvirt is now able to detect guest side errors during device removal by
+    using the DEVICE_UNPLUG_GUEST_ERROR event, available in QEMU 6.2.0.
+
   * Minimum SSF setting
 
     The libvirtd.conf option tcp_min_ssf can be used to override the minimum
