@@ -21,7 +21,7 @@ _@command@_complete()
     # See what URI is user trying to connect to and if they are
     # connecting RO. Honour that.
     while [ $c -le $COMP_CWORD ]; do
-        word="${COMP_WORDS[c]}"
+        local word="${COMP_WORDS[c]}"
         case "$word" in
             -r|--readonly) RO=1 ;;
             -c|--connect) c=$((++c)); URI=${COMP_WORDS[c]} ;;
@@ -56,7 +56,8 @@ _@command@_complete()
     # the name of the command whose arguments are being
     # completed.
     # Therefore, we might just run $1.
-    IFS=$'\n' A=($($1 ${CMDLINE[@]} complete -- "${INPUT[@]}" 2>/dev/null))
+    local IFS=$'\n'
+    A=($($1 ${CMDLINE[@]} complete -- "${INPUT[@]}" 2>/dev/null))
 
     COMPREPLY=($(compgen -W "${A[*]%--}" -- ${cur}))
     __ltrim_colon_completions "$cur"
