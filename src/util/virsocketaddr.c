@@ -512,6 +512,50 @@ virSocketAddrFormatFull(const virSocketAddr *addr,
 
 
 /*
+ * virSocketAddrFormatWithPrefix:
+ * @addr: an initialized virSocketAddr *
+ * @prefix: an IP network prefix (0-32 if IPv4, 0-128 if IPv6)
+ * @masked: true to mask off the host bits of the address
+ *
+ * Returns a string representation of the IP network described by
+ * @netaddr/@prefix. If @masked is true, the address is masked to
+ * remove the host bits according to prefix. So, for example, sending
+ * f(1.2.3.4, 24, true) would return "1.2.3.0/24", but f(1.2.3.4, 24,
+ * false) would return "1.2.3.4/24".
+ *
+ * returns false on failure (and logs an error message)
+ */
+char *
+virSocketAddrFormatWithPrefix(virSocketAddr *addr,
+                              unsigned int prefix,
+                              bool masked)
+{
+    virSocketAddr network;
+    g_autofree char *netstr = NULL;
+
+    if (!(VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET) ||
+          VIR_SOCKET_ADDR_IS_FAMILY(addr, AF_INET6))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Only IPv4 or IPv6 addresses can be used with a prefix"));
+        return NULL;
+    }
+
+    if (masked && virSocketAddrMaskByPrefix(addr, prefix, &network) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Failure to mask address"));
+        return NULL;
+    }
+
+    netstr = virSocketAddrFormat(&network);
+
+    if (!netstr)
+        return NULL;
+
+    return g_strdup_printf("%s/%d", netstr, prefix);
+}
+
+
+/*
  * virSocketAddrSetPort:
  * @addr: an initialized virSocketAddr *
  * @port: the port number to set

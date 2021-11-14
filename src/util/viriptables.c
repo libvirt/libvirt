@@ -353,37 +353,6 @@ iptablesRemoveUdpOutput(virFirewall *fw,
 }
 
 
-static char *iptablesFormatNetwork(virSocketAddr *netaddr,
-                                   unsigned int prefix)
-{
-    virSocketAddr network;
-    g_autofree char *netstr = NULL;
-    char *ret;
-
-    if (!(VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET) ||
-          VIR_SOCKET_ADDR_IS_FAMILY(netaddr, AF_INET6))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Only IPv4 or IPv6 addresses can be used with iptables"));
-        return NULL;
-    }
-
-    if (virSocketAddrMaskByPrefix(netaddr, prefix, &network) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failure to mask address"));
-        return NULL;
-    }
-
-    netstr = virSocketAddrFormat(&network);
-
-    if (!netstr)
-        return NULL;
-
-    ret = g_strdup_printf("%s/%d", netstr, prefix);
-
-    return ret;
-}
-
-
 /* Allow all traffic coming from the bridge, with a valid network address
  * to proceed to WAN
  */
@@ -399,7 +368,7 @@ iptablesForwardAllowOut(virFirewall *fw,
     virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
         return -1;
 
     if (physdev && physdev[0])
@@ -487,7 +456,7 @@ iptablesForwardAllowRelatedIn(virFirewall *fw,
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
     g_autofree char *networkstr = NULL;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
         return -1;
 
     if (physdev && physdev[0])
@@ -577,7 +546,7 @@ iptablesForwardAllowIn(virFirewall *fw,
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
     g_autofree char *networkstr = NULL;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
         return -1;
 
     if (physdev && physdev[0])
@@ -829,7 +798,7 @@ iptablesForwardMasquerade(virFirewall *fw,
     virFirewallLayer layer = af == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
         return -1;
 
     if (VIR_SOCKET_ADDR_IS_FAMILY(&addr->start, af)) {
@@ -972,7 +941,7 @@ iptablesForwardDontMasquerade(virFirewall *fw,
     virFirewallLayer layer = VIR_SOCKET_ADDR_FAMILY(netaddr) == AF_INET ?
         VIR_FIREWALL_LAYER_IPV4 : VIR_FIREWALL_LAYER_IPV6;
 
-    if (!(networkstr = iptablesFormatNetwork(netaddr, prefix)))
+    if (!(networkstr = virSocketAddrFormatWithPrefix(netaddr, prefix, true)))
         return -1;
 
     if (physdev && physdev[0])

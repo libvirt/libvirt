@@ -3269,6 +3269,7 @@ virSocketAddrCheckNetmask;
 virSocketAddrEqual;
 virSocketAddrFormat;
 virSocketAddrFormatFull;
+virSocketAddrFormatWithPrefix;
 virSocketAddrGetIPPrefix;
 virSocketAddrGetNumNetmaskBits;
 virSocketAddrGetPath;
