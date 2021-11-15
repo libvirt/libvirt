@@ -9048,18 +9048,6 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
         goto cleanup;
     }
 
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (virDomainObjIsActive(vm) &&
-            !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-              snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) &&
-            (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
-            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
-                           _("must respawn guest to start inactive snapshot"));
-            goto cleanup;
-        }
-    }
-
     virDomainSnapshotSetCurrent(vm->snapshots, NULL);
 
     config = virDomainDefCopy(snap->def->dom,
