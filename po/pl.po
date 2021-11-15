@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-10-27 14:47+0000\n"
+"PO-Revision-Date: 2021-11-06 14:17+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/pl/>\n"
@@ -2669,7 +2669,7 @@ msgstr ""
 
 #, c-format
 msgid "Cannot create socket directory '%s'"
-msgstr ""
+msgstr "Nie można utworzyć katalogu gniazda „%s”"
 
 #, fuzzy, c-format
 msgid "Cannot create user runtime directory '%s'"
@@ -3754,6 +3754,8 @@ msgstr ""
 
 msgid "Configure a node device to be automatically started at boot."
 msgstr ""
+"Konfiguruje urządzenie węzła tak, aby było automatycznie startowane po "
+"uruchomieniu."
 
 msgid "Configure a pool to be automatically started at boot."
 msgstr ""
@@ -7793,7 +7795,7 @@ msgstr "Otwarcie „%s” się nie powiodło"
 
 #, c-format
 msgid "Failed to open a VPD file '%s'"
-msgstr ""
+msgstr "Otwarcie pliku VPD „%s” się nie powiodło"
 
 #, c-format
 msgid "Failed to open config space file '%s'"
@@ -14357,7 +14359,7 @@ msgid "Returns basic information about the network"
 msgstr "Zwraca podstawowe informacje o węźle."
 
 msgid "Returns basic information about the node device"
-msgstr ""
+msgstr "Zwraca podstawowe informacje o urządzeniu węzła"
 
 msgid "Returns basic information about the node."
 msgstr "Zwraca podstawowe informacje o węźle."
@@ -14554,7 +14556,7 @@ msgstr "Kontrolery muszą używać typu adresu „ccid”"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..%u] range"
-msgstr ""
+msgstr "Indeks jednostki SCSI %d jest spoza zakresu [0..6,8..%u]"
 
 #, c-format
 msgid "SCSI unit index %d out of [0..6,8..15] range"
@@ -19500,7 +19502,7 @@ msgstr "Nieznany producent procesora %s"
 
 #, c-format
 msgid "Unknown Command '%i'"
-msgstr ""
+msgstr "Nieznane polecenie „%i”"
 
 msgid "Unknown Error"
 msgstr "Nieznany błąd"
@@ -20045,7 +20047,7 @@ msgid "Unsupported device-mapper version. Expected %d got %d"
 msgstr ""
 
 msgid "Unsupported disk address type"
-msgstr ""
+msgstr "Nieobsługiwany typ adresu dysku"
 
 #, c-format
 msgid "Unsupported disk address type '%s'"
@@ -20063,7 +20065,7 @@ msgid "Unsupported disk device type '%s'"
 msgstr "Nieobsługiwany typ urządzenia dysku „%s”"
 
 msgid "Unsupported disk type"
-msgstr ""
+msgstr "Nieobsługiwany typ dysku"
 
 #, fuzzy, c-format
 msgid "Unsupported disk type %d"
@@ -23069,7 +23071,7 @@ msgid "cannot set CPU affinity on process %d"
 msgstr "nie można ustawić pokrewieństwa procesora procesu %d"
 
 msgid "cannot set autostart for transient device"
-msgstr ""
+msgstr "nie można ustawić automatycznego uruchamiania urządzenia przejściowego"
 
 msgid "cannot set autostart for transient domain"
 msgstr "nie można ustawić automatycznego uruchamiania domeny przejściowej"
@@ -26844,6 +26846,7 @@ msgstr "uzyskanie interfejsu „%s” się nie powiodło"
 #, c-format
 msgid "failed to mark device %s as autostarted"
 msgstr ""
+"oznaczenie urządzenia %s jako automatycznie uruchamianego się nie powiodło"
 
 #, c-format
 msgid "failed to mark network %s as autostarted"
@@ -27345,6 +27348,7 @@ msgstr "Usunięcie określenia interfejsu %s się nie powiodło"
 #, c-format
 msgid "failed to unmark device %s as autostarted"
 msgstr ""
+"odznaczenie urządzenia %s jako automatycznie uruchamianego się nie powiodło"
 
 #, c-format
 msgid "failed to unmark network %s as autostarted"
@@ -39496,7 +39500,7 @@ msgid "vhost_user type support UNIX socket in this CH"
 msgstr ""
 
 msgid "vhostuser disk is not supported with this QEMU binary"
-msgstr ""
+msgstr "vhostuser jest nieobsługiwane przez ten plik binarny QEMU"
 
 msgid "vhostuser disk supports only virtio bus"
 msgstr ""
