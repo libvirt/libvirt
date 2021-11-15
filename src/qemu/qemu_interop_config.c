@@ -80,7 +80,7 @@ qemuBuildFileList(GHashTable *files, const char *dir)
     return 0;
 }
 
-#define QEMU_SYSTEM_LOCATION PREFIX "/share/qemu"
+#define QEMU_SYSTEM_LOCATION DATADIR "/qemu"
 #define QEMU_ETC_LOCATION SYSCONFDIR "/qemu"
 
 int
