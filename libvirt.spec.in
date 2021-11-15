@@ -190,6 +190,10 @@
 %define qemu_user  qemu
 %define qemu_group  qemu
 
+# Locations for QEMU data
+%define qemu_moddir %{_libdir}/qemu
+%define qemu_datadir %{_datadir}/qemu
+
 
 # RHEL releases provide stable tool chains and so it is safe to turn
 # compiler warning into errors without being worried about frequent
@@ -1160,6 +1164,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            %{arg_packager_version} \
            -Dqemu_user=%{qemu_user} \
            -Dqemu_group=%{qemu_group} \
+           -Dqemu_moddir=%{qemu_moddir} \
+           -Dqemu_datadir=%{qemu_datadir} \
            -Dtls_priority=%{tls_priority} \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
