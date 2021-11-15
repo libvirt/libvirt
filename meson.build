@@ -1685,6 +1685,12 @@ if not get_option('driver_qemu').disabled()
     endif
     conf.set_quoted('QEMU_MODDIR', qemu_moddir)
 
+    qemu_datadir = get_option('qemu_datadir')
+    if qemu_datadir == ''
+      qemu_datadir = datadir / 'qemu'
+    endif
+    conf.set_quoted('QEMU_DATADIR', qemu_datadir)
+
     if host_machine.system() in [ 'freebsd', 'darwin' ]
       default_qemu_user = 'root'
       default_qemu_group = 'wheel'

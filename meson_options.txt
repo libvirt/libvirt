@@ -62,6 +62,7 @@ option('driver_qemu', type: 'feature', value: 'auto', description: 'QEMU/KVM dri
 option('qemu_user', type: 'string', value: '', description: 'username to run QEMU system instance as')
 option('qemu_group', type: 'string', value: '', description: 'groupname to run QEMU system instance as')
 option('qemu_moddir', type: 'string', value: '', description: 'set the directory where QEMU modules are located')
+option('qemu_datadir', type: 'string', value: '', description: 'set the directory where QEMU shared data is located')
 option('driver_remote', type: 'feature', value: 'auto', description: 'remote driver')
 option('remote_default_mode', type: 'combo', choices: ['legacy', 'direct'], value: 'direct', description: 'remote driver default mode')
 option('driver_secrets', type: 'feature', value: 'auto', description: 'local secrets management driver')

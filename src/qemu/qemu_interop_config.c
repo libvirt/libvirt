@@ -80,7 +80,6 @@ qemuBuildFileList(GHashTable *files, const char *dir)
     return 0;
 }
 
-#define QEMU_DATADIR DATADIR "/qemu"
 #define QEMU_CONFDIR SYSCONFDIR "/qemu"
 
 int
