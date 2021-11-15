@@ -64,7 +64,6 @@ testFirewallSingleGroup(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -87,19 +86,17 @@ testFirewallSingleGroup(const void *opaque G_GNUC_UNUSED)
                        "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -108,7 +105,6 @@ testFirewallRemoveRule(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -137,19 +133,17 @@ testFirewallRemoveRule(const void *opaque G_GNUC_UNUSED)
     virFirewallRuleAddArgList(fw, fwrule, "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -158,7 +152,6 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -194,19 +187,17 @@ testFirewallManyGroups(const void *opaque G_GNUC_UNUSED)
 
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static void
@@ -236,7 +227,6 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -272,19 +262,17 @@ testFirewallIgnoreFailGroup(const void *opaque G_GNUC_UNUSED)
 
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -293,7 +281,6 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -328,19 +315,17 @@ testFirewallIgnoreFailRule(const void *opaque G_GNUC_UNUSED)
 
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -349,7 +334,6 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -377,7 +361,7 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
-        goto cleanup;
+        return -1;
     }
 
     actual = virBufferCurrentContent(&cmdbuf);
@@ -385,12 +369,10 @@ testFirewallNoRollback(const void *opaque G_GNUC_UNUSED)
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -398,7 +380,6 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -446,7 +427,7 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
-        goto cleanup;
+        return -1;
     }
 
     actual = virBufferCurrentContent(&cmdbuf);
@@ -454,12 +435,10 @@ testFirewallSingleRollback(const void *opaque G_GNUC_UNUSED)
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -467,7 +446,6 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -518,7 +496,7 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
-        goto cleanup;
+        return -1;
     }
 
     actual = virBufferCurrentContent(&cmdbuf);
@@ -526,12 +504,10 @@ testFirewallManyRollback(const void *opaque G_GNUC_UNUSED)
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -539,7 +515,6 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -620,7 +595,7 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
 
     if (virFirewallApply(fw) == 0) {
         fprintf(stderr, "Firewall apply unexpectedly worked\n");
-        goto cleanup;
+        return -1;
     }
 
     actual = virBufferCurrentContent(&cmdbuf);
@@ -628,12 +603,10 @@ testFirewallChainedRollback(const void *opaque G_GNUC_UNUSED)
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -720,7 +693,6 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
 {
     g_auto(virBuffer) cmdbuf = VIR_BUFFER_INITIALIZER;
     g_autoptr(virFirewall) fw = virFirewallNew();
-    int ret = -1;
     const char *actual = NULL;
     const char *expected =
         IPTABLES " -w -A INPUT --source 192.168.122.1 --jump ACCEPT\n"
@@ -783,24 +755,22 @@ testFirewallQuery(const void *opaque G_GNUC_UNUSED)
                        "--jump", "REJECT", NULL);
 
     if (virFirewallApply(fw) < 0)
-        goto cleanup;
+        return -1;
 
     actual = virBufferCurrentContent(&cmdbuf);
 
     if (expectedLineError) {
         fprintf(stderr, "Got some unexpected query data\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(expected, actual)) {
         fprintf(stderr, "Unexpected command execution\n");
         virTestDifference(stderr, expected, actual);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
