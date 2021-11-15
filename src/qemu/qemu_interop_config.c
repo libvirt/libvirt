@@ -80,8 +80,8 @@ qemuBuildFileList(GHashTable *files, const char *dir)
     return 0;
 }
 
-#define QEMU_SYSTEM_LOCATION DATADIR "/qemu"
-#define QEMU_ETC_LOCATION SYSCONFDIR "/qemu"
+#define QEMU_DATADIR DATADIR "/qemu"
+#define QEMU_CONFDIR SYSCONFDIR "/qemu"
 
 int
 qemuInteropFetchConfigs(const char *name,
@@ -91,8 +91,8 @@ qemuInteropFetchConfigs(const char *name,
     g_autoptr(GHashTable) files = virHashNew(g_free);
     g_autofree char *homeConfig = NULL;
     g_autofree char *xdgConfig = NULL;
-    g_autofree char *sysLocation = virFileBuildPath(QEMU_SYSTEM_LOCATION, name, NULL);
-    g_autofree char *etcLocation = virFileBuildPath(QEMU_ETC_LOCATION, name, NULL);
+    g_autofree char *dataLocation = virFileBuildPath(QEMU_DATADIR, name, NULL);
+    g_autofree char *confLocation = virFileBuildPath(QEMU_CONFDIR, name, NULL);
     g_autofree virHashKeyValuePair *pairs = NULL;
     size_t npairs;
     virHashKeyValuePair *tmp = NULL;
@@ -117,10 +117,10 @@ qemuInteropFetchConfigs(const char *name,
         homeConfig = g_strdup_printf("%s/qemu/%s", xdgConfig, name);
     }
 
-    if (qemuBuildFileList(files, sysLocation) < 0)
+    if (qemuBuildFileList(files, dataLocation) < 0)
         return -1;
 
-    if (qemuBuildFileList(files, etcLocation) < 0)
+    if (qemuBuildFileList(files, confLocation) < 0)
         return -1;
 
     if (homeConfig &&
