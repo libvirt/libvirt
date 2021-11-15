@@ -187,6 +187,12 @@ mymain(void)
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
+/* NB: virgdbus must be mocked because this test calls
+ * networkAddFirewallRules(), which will always call
+ * virFirewallDIsRegistered(), which calls
+ * virGDBusIsServiceRegistered().
+ */
+
 VIR_TEST_MAIN_PRELOAD(mymain, VIR_TEST_MOCK("virgdbus"),
                       VIR_TEST_MOCK("virfirewall"))
 
