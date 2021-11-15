@@ -1851,7 +1851,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     virDomainDef *config = NULL;
     virDomainDef *inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    bool was_stopped = false;
     qemuDomainSaveCookie *cookie;
     virCPUDef *origCPU = NULL;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
@@ -1864,15 +1863,14 @@ qemuSnapshotRevert(virDomainObj *vm,
     /* We have the following transitions, which create the following events:
      * 1. inactive -> inactive: none
      * 2. inactive -> running:  EVENT_STARTED
-     * 3. inactive -> paused:   EVENT_STARTED, EVENT_PAUSED
+     * 3. inactive -> paused:   EVENT_STARTED, EVENT_SUSPENDED
      * 4. running  -> inactive: EVENT_STOPPED
-     * 5. running  -> running:  none
-     * 6. running  -> paused:   EVENT_PAUSED
+     * 5. running  -> running:  EVENT_STOPPED, EVENT_STARTED
+     * 6. running  -> paused:   EVENT_STOPPED, EVENT_STARTED, EVENT_SUSPENDED
      * 7. paused   -> inactive: EVENT_STOPPED
-     * 8. paused   -> running:  EVENT_RESUMED
-     * 9. paused   -> paused:   none
-     * Also, several transitions occur even if we fail partway through,
-     * and use of FORCE can cause multiple transitions.
+     * 8. paused   -> running:  EVENT_STOPPED, EVENT_STARTED
+     * 9. paused   -> paused:   EVENT_STOPPED, EVENT_STARTED, EVENT_SUSPENDED
+     * Also, several transitions occur even if we fail partway through.
      */
 
     if (qemuDomainHasBlockjob(vm, false)) {
@@ -1994,8 +1992,6 @@ qemuSnapshotRevert(virDomainObj *vm,
             virObjectEventStateQueue(driver->domainEventState, event);
         }
 
-        was_stopped = true;
-
         if (inactiveConfig) {
             virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
             inactiveConfig = NULL;
@@ -2032,13 +2028,10 @@ qemuSnapshotRevert(virDomainObj *vm,
             /* Transitions 3, 6, 9 */
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                                  VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-            if (was_stopped) {
-                /* Transition 3, use event as-is and add event2 */
-                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event2 = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED,
-                                                  detail);
-            } /* else transition 6 and 9 use event as-is */
+            detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+            event2 = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_SUSPENDED,
+                                              detail);
         } else {
             /* Transitions 2, 5, 8 */
             if (!virDomainObjIsActive(vm)) {
@@ -2051,15 +2044,6 @@ qemuSnapshotRevert(virDomainObj *vm,
                                       QEMU_ASYNC_JOB_START);
             if (rc < 0)
                 goto endjob;
-            virObjectUnref(event);
-            event = NULL;
-            if (was_stopped) {
-                /* Transition 2 */
-                detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                                 VIR_DOMAIN_EVENT_STARTED,
-                                                 detail);
-            }
         }
         break;
 
