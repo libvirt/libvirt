@@ -1913,15 +1913,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     }
 
     if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (virDomainObjIsActive(vm) &&
-            !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-              snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) &&
-            (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                      VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
-            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
-                           _("must respawn qemu to start inactive snapshot"));
-            goto endjob;
-        }
         if (vm->hasManagedSave &&
             !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
               snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
