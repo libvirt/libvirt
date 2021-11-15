@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-11-02 23:05+0000\n"
+"PO-Revision-Date: 2021-11-05 16:05+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -8827,7 +8827,7 @@ msgid "Forcefully stop a given network."
 msgstr "주어진 네트워크를 강제로 중지합니다."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
-msgstr "지정된 풀을 강제로 중지합니다. 풀의 원시 데이터는 그대로 유지됩니다"
+msgstr "지정된 풀을 강제로 중지합니다. 풀에서 단순 자료는 그대로 유지됩니다"
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
@@ -12843,7 +12843,7 @@ msgid "Only ide and scsi disk support wwn"
 msgstr "오직 ide 및 scsi 디스크만 wwn를 지원합니다"
 
 msgid "Only luks encryption is supported for raw files"
-msgstr "원시 파일 (raw file)에는 오직 luks 암호화만 지원됩니다"
+msgstr "luks 암호화만 단순 파일을 지원합니다"
 
 msgid "Only mac option can be specified for virt-net"
 msgstr "virt-net에는 mac 옵션만 지정할 수 있습니다"
@@ -13015,7 +13015,7 @@ msgid "Option argument is empty"
 msgstr "옵션 인수가 비어 있습니다"
 
 msgid "Optional flags or --rawstats are not supported by the daemon"
-msgstr "선택적 플래그 또는 --rawstats는 그 데몬에서 지원되지 않습니다"
+msgstr "선택적인 플래그 또는 --rawstats는 데몬에 의해 지원되지 않습니다"
 
 #. Macros to help dealing with mutually exclusive options.
 #. VSH_EXCLUSIVE_OPTIONS_EXPR:
@@ -13753,7 +13753,7 @@ msgid "Rate string '%s' has too many fields"
 msgstr "비율 문자열 '%s'에 필드가 너무 많습니다"
 
 msgid "Raw I/O is not supported on this platform"
-msgstr "원시 I/O는 이 플랫폼에서 지원되지 않습니다"
+msgstr "단순 I/O는 이와 같은 기술환경에서 지원되지 않습니다"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
@@ -20585,7 +20585,7 @@ msgid "backing storage not supported for directories volumes"
 msgstr "디렉토리 볼륨에 지원되지 않는 백업 스토리지"
 
 msgid "backing storage not supported for raw volumes"
-msgstr "원시 볼륨에 지원되지 않는 백업 스토리지"
+msgstr "단순 볼륨에 지원되지 않는 백업 저장소"
 
 #, c-format
 msgid "backing store for %s is self-referential or too deeply nested"
@@ -22359,7 +22359,7 @@ msgid "cannot set autostart for transient network"
 msgstr "임시 네트워크에 대해 autostart를 설정할 수 없음"
 
 msgid "cannot set backing store for raw volume"
-msgstr "원시 볼륨에 대한 백업 저장소를 설정할 수 없습니다"
+msgstr "단순 볼륨을 위한 백업 저장소를 설정 할 수 없습니다"
 
 msgid "cannot set common audio backend settings"
 msgstr "일반적인 오디오 백엔드 설정을 지정할 수 없습니다"
@@ -23615,7 +23615,7 @@ msgid "creation of images with slice type='storage' is not supported"
 msgstr "슬라이스 유형='storage'인 이미지 생성은 지원되지 않습니다"
 
 msgid "creation of non-raw file images is not supported without qemu-img."
-msgstr "qemu-img가 없이 단순 파일이 아닌 이미지의 생성은 지원되지 않습니다."
+msgstr "단순-파일이 아닌 이미지의 생성은 qemu-img가 없이 지원되지 않습니다."
 
 msgid "creation of pid file requires daemonized command"
 msgstr "pid 파일 생성에는 데몬화된 명령이 필요합니다"
@@ -24173,7 +24173,7 @@ msgid "disk device 'lun' doesn't support storage slice"
 msgstr "디스크 장치 'lun'은(는) 스토리지 슬라이스를 지원하지 않습니다"
 
 msgid "disk device 'lun' must use 'raw' format"
-msgstr "디스크 장치 'lun'은(는) '원시' 형식을 사용해야 합니다"
+msgstr "디스크 장치 'lun'은 '단순' 형식을 사용해야 합니다"
 
 #, c-format
 msgid "disk device type '%s' cannot be detached"
@@ -29266,7 +29266,7 @@ msgid "make the copy share a backing chain"
 msgstr "사본이 백킹 체인을 공유하도록 하십시오"
 
 msgid "malformed 'offset' property of 'raw' driver"
-msgstr "'원시' 드라이버의 잘못된 '오프셋' 속성"
+msgstr "'단순' 드라이버의 잘못된 '오프셋' 속성"
 
 msgid "malformed 'prefix' field"
 msgstr "잘못된 '접두사' 필드"
@@ -29276,7 +29276,7 @@ msgid "malformed 'readahead' field in backing store definition '%s'"
 msgstr "백업 저장소 정의 '%s'의 형식이 잘못된 '미리 읽기' 필드"
 
 msgid "malformed 'size' property of 'raw' driver"
-msgstr "'원시' 드라이버의 잘못된 '크기' 속성"
+msgstr "'단순' 드라이버의 잘못된 '크기' 속성"
 
 #, c-format
 msgid "malformed 'sslverify' field in backing store definition '%s'"
@@ -29712,7 +29712,7 @@ msgid "metadata preallocation is not supported for block volumes"
 msgstr "블록 볼륨에는 메타데이터 사전 할당이 지원되지 않습니다"
 
 msgid "metadata preallocation is not supported for raw volumes"
-msgstr "원시 볼륨에는 메타데이터 사전 할당이 지원되지 않습니다"
+msgstr "메타자료 사전 할당은 단순 볼륨을 위해 지원되지 않습니다"
 
 msgid "metadata preallocation only available with qcow2"
 msgstr "qcow2에서만 사용할 수 있는 메타데이터 사전 할당"
@@ -32111,7 +32111,7 @@ msgid "only JSON objects can be top level"
 msgstr "JSON 객체만 최상위 레벨이 될 수 있습니다"
 
 msgid "only RAW volumes are supported by this storage pool"
-msgstr "이 스토리지 풀은 RAW 볼륨만 지원합니다"
+msgstr "이 저장소 풀에 의해 RAW 볼륨만 지원됩니다"
 
 msgid "only S390 guests support panic device of model 's390'"
 msgstr "S390 게스트만 모델 '390'의 패닉 장치를 지원합니다"
@@ -32629,7 +32629,7 @@ msgstr "vhostuser 디스크에는 엿보기가 지원되지 않습니다"
 
 #, c-format
 msgid "peeking is only supported for disk with 'raw' format not '%s'"
-msgstr "엿보기는 '%s'가 아닌 '원시' 형식의 디스크에만 지원됩니다"
+msgstr "엿보기는 '%s'가 아닌 '단순' 형식의 디스크에만 지원됩니다"
 
 msgid "peer-2-peer migration"
 msgstr "장치간 이전"
@@ -32880,10 +32880,10 @@ msgid "preallocate is not supported on this platform"
 msgstr "이 플랫폼에서는 사전 할당이 지원되지 않습니다"
 
 msgid "preallocate is only supported for an unencrypted raw volume"
-msgstr "사전 할당은 암호화되지 않은 원시 볼륨에 대해서만 지원됩니다"
+msgstr "사전 할당은 암호화되지 않은 단순 볼륨만 지원됩니다"
 
 msgid "preallocate is only supported for raw type volume"
-msgstr "사전할당은 원시 유형 볼륨에 대해서만 지원됩니다"
+msgstr "사전할당은 단순 유형 볼륨만 지원됩니다"
 
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "메타 데이터를 사전 할당 (전체 할당 대신 qcow2에 대해)"
@@ -32961,7 +32961,7 @@ msgid "print the hypervisor sysinfo"
 msgstr "하이퍼바이저 시스템 정보 인쇄"
 
 msgid "print the raw data returned by libvirt"
-msgstr "libvirt에서 반환된 원시 데이터를 인쇄합니다"
+msgstr "libvirt에서 반환된 단순 자료를 인쇄합니다"
 
 msgid "print updated memory device XML instead of executing the change"
 msgstr "변경을 실행하는 대신에 최신화된 메모리 장치 XML을 출력합니다"
@@ -33310,7 +33310,7 @@ msgid "range %s - %s start larger than end"
 msgstr "범위 %s - %s가 끝보다 크게 시작합니다"
 
 msgid "rawio can be used only with device='lun'"
-msgstr "rawio는 device='lun'에서만 사용할 수 있습니다"
+msgstr "rawio는 device='lun'에서만 사용 될 수 있습니다"
 
 msgid "rawio is only supported for scsi host device"
 msgstr "rawio는 scsi 호스트 장치만 지원됩니다"
@@ -34158,7 +34158,7 @@ msgstr ""
 
 #, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
-msgstr "디스크 '%s'를 원시 파일로 단순 복사할 수 없습니다"
+msgstr "디스크 '%s'를 단순 파일로 얕은 복사를 할 수 없습니다"
 
 msgid "shareable is not supported with vhostuser disk"
 msgstr "공유 가능은 vhostuser 디스크에서 지원되지 않습니다"
@@ -35946,7 +35946,7 @@ msgid "unable to lock %s for metadata change"
 msgstr "메타데이터 변경을 위해 %s를 잠글 수 없습니다"
 
 msgid "unable to make terminal raw: console isn't a tty"
-msgstr "터미널을 원시로 만들 수 없음: 콘솔이 tty가 아닙니다"
+msgstr "터미널을 단순하게 만들 수 없음: 콘솔이 tty가 아닙니다"
 
 #, c-format
 msgid "unable to open %s"
