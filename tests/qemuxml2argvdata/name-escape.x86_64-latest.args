@@ -1,0 +1,51 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-foo=1,bar=2 \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-foo=1,bar=2/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-foo=1,bar=2/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-foo=1,bar=2/.config \
+/usr/bin/qemu-system-i386 \
+-name guest=foo=1,,bar=2,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-foo=1,bar=2/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel tcg \
+-cpu qemu64 \
+-m 214 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"usb-ccid","id":"ccid0","bus":"usb.0","port":"1"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1,"write-cache":"on"}' \
+-device '{"driver":"ccid-card-emulated","backend":"certificates","cert1":"cert1,foo","cert2":"cert2","cert3":"cert3","db":"/etc/pki/nssdb,foo","id":"smartcard0","bus":"ccid0.0"}' \
+-chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0"}' \
+-add-fd set=0,fd=1750 \
+-chardev file,id=charserial1,path=/dev/fdset/0,append=on \
+-device '{"driver":"isa-serial","chardev":"charserial1","id":"serial1"}' \
+-chardev pipe,id=charchannel0,path=/tmp/guestfwd,,foo \
+-netdev user,guestfwd=tcp:10.0.2.1:4600-chardev:charchannel0,id=channel0 \
+-audiodev '{"id":"audio1","driver":"spice"}' \
+-vnc vnc=unix:/tmp/lib/domain--1-foo=1,,bar=2/vnc.sock,audiodev=audio1 \
+-spice unix,addr=/tmp/lib/domain--1-foo=1,,bar=2/spice.sock,gl=on,rendernode=/dev/dri/foo,,bar,seamless-migration=on \
+-device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
+-blockdev '{"driver":"iscsi","portal":"example.foo.org:3260","target":"iqn.1992-01.com.example:my,storage","lun":1,"transport":"tcp","node-name":"libvirt-2-backend","read-only":false}' \
+-device '{"driver":"scsi-generic","drive":"libvirt-2-backend","id":"hostdev0","bus":"scsi0.0","channel":0,"scsi-id":0,"lun":4}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

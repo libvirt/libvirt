@@ -3280,6 +3280,7 @@ mymain(void)
                  ARG_END);
 
     DO_TEST_CAPS_VER("name-escape", "2.11.0");
+    DO_TEST_CAPS_LATEST("name-escape");
 
     DO_TEST_NOCAPS("master-key");
     DO_TEST("usb-long-port-path",
