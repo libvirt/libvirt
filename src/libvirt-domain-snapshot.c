@@ -960,6 +960,10 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
  * implies the intent to roll back state, no additional confirmation is
  * normally required for these lossy effects.
  *
+ * Since libvirt 7.10.0 the VM process is always restarted so the following
+ * paragraph is no longer valid. If the snapshot metadata lacks the full
+ * VM XML it's no longer possible to revert to such snapshot.
+ *
  * However, there are two particular situations where reverting will
  * be refused by default, and where @flags must include
  * VIR_DOMAIN_SNAPSHOT_REVERT_FORCE to acknowledge the risks.  1) Any
