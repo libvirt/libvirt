@@ -1681,7 +1681,7 @@ if not get_option('driver_qemu').disabled()
 
     qemu_moddir = get_option('qemu_moddir')
     if qemu_moddir == ''
-      qemu_moddir = '/usr' / libdir / 'qemu'
+      qemu_moddir = libdir / 'qemu'
     endif
     conf.set_quoted('QEMU_MODDIR', qemu_moddir)
 
