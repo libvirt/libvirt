@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-10-24 18:05+0000\n"
+"PO-Revision-Date: 2021-11-15 20:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.9\n"
 
 msgid ""
 "\n"
@@ -440,6 +440,21 @@ msgid ""
 "   -q, --quiet    Don't display progress information\n"
 "\n"
 msgstr ""
+"\n"
+"syntax: %s [FLAGGOR] [HVTYP]\n"
+"\n"
+" Hypervisor-typer:\n"
+"\n"
+"   - qemu\n"
+"   - lxc\n"
+"   - bhyve\n"
+"   - ch\n"
+"\n"
+" Flaggor:\n"
+"   -h, --help     Visa kommandoradshjälp\n"
+"   -v, --version  Visa kommandoversion\n"
+"   -q, --quiet    Visa inte förloppsinformation\n"
+"\n"
 
 #, c-format
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
@@ -1663,20 +1678,20 @@ msgid "<snapshot> element is currently supported only with 'rbd' disks"
 msgstr "elementet <snapshot> stödjs för närvarande bara med ”rbd”-diskar"
 
 msgid "<system_field> evaluation has failed"
-msgstr ""
+msgstr "<system_field>-beräkning misslyckades"
 
 msgid "<system_field> value evaluation has failed"
-msgstr ""
+msgstr "<system_field>-värdesberäkning misslyckades"
 
 #, c-format
 msgid "<uuid> does not match secret file name '%s'"
 msgstr "<uuid> stämmer inte med ett hemlighetsfilnamn ”%s”"
 
 msgid "<vendor_field> evaluation has failed"
-msgstr ""
+msgstr "<vendor_field>-beräkning misslyckades"
 
 msgid "<vendor_field> value evaluation has failed"
-msgstr ""
+msgstr "<vendor_field>-värdesberäkning misslyckades"
 
 #, c-format
 msgid ""
@@ -3449,16 +3464,21 @@ msgstr "Det går inte att sluta dela ett oinitierat CURL-handtag"
 
 msgid "Cannot update the read-only keyword: RO section not initialized."
 msgstr ""
+"Det går inte att uppdatera det endast läsbara nyckalordet: RO-avsnittet är "
+"inte initierat."
 
 msgid ""
 "Cannot update the read-write keyword: read-write section not initialized."
 msgstr ""
+"Det går inte att uppdatera det endast läsbara nyckelordet: läs-skriv-"
+"avsnittet är inte initierat."
 
 msgid "Cannot update the resource: a NULL keyword pointer has been provided."
 msgstr ""
+"Det går inte att uppdatera resursen: en NULL-nyckelordspekare har givits."
 
 msgid "Cannot update the resource: a NULL resource pointer has been provided."
-msgstr ""
+msgstr "Det går inte att uppdatera resursen: en NULL-resurspekare har givits."
 
 #, c-format
 msgid "Cannot use direct socket mode for %s transport"
@@ -3677,7 +3697,7 @@ msgstr "Kontrollpunkter har inkonsekventa relationer för domänen %s"
 
 #. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
-msgstr ""
+msgstr "Kontrollsummevalideringen misslyckades"
 
 #, c-format
 msgid "Child process (%lld) unexpected %s"
@@ -4197,6 +4217,8 @@ msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
 msgstr ""
+"Kunde inte hitta PCI-styrenheten med index ”%u” som krävs för enheten på "
+"adressen ”%s”"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4680,7 +4702,7 @@ msgstr "Kunde inte öppna TPM-enhetens annuleringssökväg %s"
 
 #, c-format
 msgid "Could not parse %s VPD resource fields"
-msgstr ""
+msgstr "Kunde inte tolka %s-VPD-resursfält"
 
 #, c-format
 msgid "Could not parse 'bonding/arp_interval' '%s' for '%s'"
@@ -4738,7 +4760,7 @@ msgid "Could not parse VPS ID %s"
 msgstr "Kunde inte tolka VPS ID %s"
 
 msgid "Could not parse a resource field data - VPD has invalid format"
-msgstr ""
+msgstr "Kunde inte tolka data i ett resursfält – VPD har felaktigt format"
 
 #, c-format
 msgid "Could not parse barrier and limit of '%s' from config for container %d"
@@ -4803,13 +4825,13 @@ msgid "Could not read 'VE_PRIVATE' from config for container %d"
 msgstr "Kunde inte läsa ”VE_PRIVATE” från konfigurationen för behållare %d"
 
 msgid "Could not read a device name from the <name> element"
-msgstr ""
+msgstr "Kunde inte läsa ett enhetsnamn från elementet <name>"
 
 msgid "Could not read a part of a resource - VPD has invalid format"
-msgstr ""
+msgstr "Kunde inte läsa en del av resursen – VPD har felaktigt format"
 
 msgid "Could not read a resource field header - VPD has invalid format"
-msgstr ""
+msgstr "Kunde inte läsa huvudet i ett resursfält – VPD har felaktigt format"
 
 #, c-format
 msgid "Could not read config for container %d"
@@ -4910,6 +4932,8 @@ msgid ""
 "Could not run '%s' to create config files. exitstatus: %d;\n"
 "Error: %s"
 msgstr ""
+"Kunde inte köra ”%s” för att skapa konfigurationsfiler. slutstatus%d;\n"
+"Fel: %s"
 
 #, c-format
 msgid "Could not run '%s'. exitstatus: %d; Check error log '%s' for details."
@@ -5013,7 +5037,7 @@ msgstr "Kunde inte översätta nyckelkoden"
 
 #, c-format
 msgid "Could not update the VPD resource keyword: %s"
-msgstr ""
+msgstr "Kunde inte uppdatera VPD-resursnyckelordet: %s"
 
 msgid "Could not verify disk address"
 msgstr "Kunde inte verifiera diskadressen"
@@ -5339,7 +5363,7 @@ msgstr "Enheten %s frånkopplad\n"
 
 #, c-format
 msgid "Device %s does not have a VPD"
-msgstr ""
+msgstr "Enheten %s har inte någon VPD"
 
 #, c-format
 msgid "Device %s is already in use"
@@ -5402,6 +5426,8 @@ msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
 msgstr ""
+"Enhetesalias sattes inte för PCI-styrenheten med index ”%u” som krävs för "
+"enheten på adressen ”%s”"
 
 msgid "Device attached successfully\n"
 msgstr "Enheten anslöts framgångsrikt\n"
@@ -7365,174 +7391,149 @@ msgstr "misslyckades att få gränssnittsinformation"
 msgid "Failed to get interface stats %s %s"
 msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get leases info for %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades att hämta hyresinformation för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get memory statistics for domain %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades att hämta minnesstatistik för domänen %s"
 
-#, fuzzy
 msgid "Failed to get network autostart state"
-msgstr "Misslyckades att markera nätverk %s som autostartat"
+msgstr "Misslyckades att få tillståndet för nätverksautostart"
 
-#, fuzzy
 msgid "Failed to get network persistence info"
-msgstr "misslyckades att hämta nätverk '%s'"
+msgstr "Misslyckades att hämta information om nätverkvaraktighet"
 
 msgid "Failed to get network's UUID"
 msgstr "Misslyckades att få nätverkets UUID"
 
-#, fuzzy
 msgid "Failed to get node physical info from libxenlight"
-msgstr "misslyckades att få nodinformation"
+msgstr "Misslyckades att få fysisk nodinformation från libxenlight"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get option '%s': %s"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "Misslyckades att hämta alternativet '%s': %s"
 
-#, fuzzy
 msgid "Failed to get pool autostart state"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades att få tillståndet för pool-autostart"
 
-#, fuzzy
 msgid "Failed to get pool persistence info"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades att få varaktighetsinformation för poolen"
 
 #, c-format
 msgid "Failed to get scheduler id for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Misslyckades att få schemaläggar-id för domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to get scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
+"Misslyckades att få schemaläggar-parametrar för domän ”%d” med libxenlight"
 
-#, fuzzy
 msgid "Failed to get snapshot count"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades hämta antal ögonblicksbilder"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to get storage controller name, rc=%08x"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "Misslyckades att få tag i lagringsstyrenhetsnamn, rc=%08x"
 
-#, fuzzy
 msgid "Failed to get the number of active networks"
-msgstr "Misslyckades att lista inaktiva nätverk"
+msgstr "Misslyckades att hämta antalet aktiva nätverk"
 
-#, fuzzy
 msgid "Failed to get the number of active pools "
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att hämta antalet aktiva pooler "
 
-#, fuzzy
 msgid "Failed to get the number of inactive networks"
-msgstr "Misslyckades att lista inaktiva nätverk"
+msgstr "Misslyckades med att hämta antalet inaktiva nätverk"
 
-#, fuzzy
 msgid "Failed to get the number of inactive pools"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades med att hämta antalet inaktiva pooler"
 
 #, c-format
 msgid "Failed to get udev device for syspath '%s'"
-msgstr ""
+msgstr "Misslyckades med att hämta udev-enheten för syspath ”%s”"
 
-#, fuzzy
 msgid "Failed to get uuid of secret"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att hämta uuid för en hemlighet"
 
-#, fuzzy
 msgid "Failed to get valid client socket identity"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Misslyckades med att få en giltig klientuttagsidentitet"
 
-#, fuzzy
 msgid "Failed to get valid client socket identity groups"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Misslyckades med att få giltig identitetsgrupper för klientuttag"
 
-#, fuzzy
 msgid "Failed to get version info from libxenlight"
-msgstr "Misslyckades att få diskinformation"
+msgstr "Misslyckades med att få versionsinformation från libxenlight"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to init transport: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att initiera transporten: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize TLS session: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att initiera TLS-sessionen: %s"
 
-#, fuzzy
 msgid "Failed to initialize a valid firewall backend"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera en giltig brandväggsbakände"
 
-#, fuzzy
 msgid "Failed to initialize cgroup backend."
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera cgroup-bakänden."
 
 msgid "Failed to initialize host cpu features"
-msgstr ""
+msgstr "Misslyckades med att initiera värd-cpu-funktioner"
 
-#, fuzzy
 msgid "Failed to initialize libpciaccess"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera libpciaccess"
 
-#, fuzzy
 msgid "Failed to initialize libssh session"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera en libssh-session"
 
-#, fuzzy
 msgid "Failed to initialize libssh2 agent handle"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera ett libssh2-agenthandtag"
 
-#, fuzzy
 msgid "Failed to initialize libssh2 known hosts table"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera libssh2:s tabell över kända värdar"
 
-#, fuzzy
 msgid "Failed to initialize libssh2 session"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera en libssh2-session"
 
-#, fuzzy
 msgid "Failed to initialize libvirt"
-msgstr "Misslyckades att initiera felhantering för libvirt"
+msgstr "Misslyckades med att initiera libvirt"
 
 #, c-format
 msgid "Failed to initialize libvirt error handling"
 msgstr "Misslyckades att initiera felhantering för libvirt"
 
-#, fuzzy
 msgid "Failed to initialize mutex"
-msgstr "kan inte initiera mutex"
+msgstr "Misslyckades med att initiera mutex"
 
-#, fuzzy
 msgid "Failed to initialize security drivers"
-msgstr "Kan inte initiera certifikat"
+msgstr "Misslyckades med att initiera drivrutiner"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to initialize storage pool '%s': %s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Misslyckades med att initiera lagringspoolen ”%s”: %s"
 
-#, fuzzy
 msgid "Failed to inquire lock"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att fråga om låset"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to inquire lock: %s"
-msgstr "Misslyckades att hitta nätverket: %s"
+msgstr "Misslyckades med att fråga om låset: %s"
 
 #, c-format
 msgid "Failed to kill process %lld"
-msgstr ""
+msgstr "Misslyckades med att döda process %lld"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to kill process %lld: %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades med att döda process %lld: %s"
 
 msgid "Failed to list active domains"
 msgstr "Misslyckades att lista aktiva domäner"
 
-#, fuzzy
 msgid "Failed to list active interfaces"
-msgstr "Misslyckades att lista aktiva nätverk"
+msgstr "Misslyckades med att lista aktiva gränssnitt"
 
 msgid "Failed to list active networks"
 msgstr "Misslyckades att lista aktiva nätverk"
@@ -7541,16 +7542,14 @@ msgid "Failed to list active pools"
 msgstr "Misslyckades att lista aktiva pooler"
 
 #. there was an error during the first or second call
-#, fuzzy
 msgid "Failed to list domains"
-msgstr "Misslyckades att lista aktiva domäner"
+msgstr "Misslyckades med att lista domäner"
 
 msgid "Failed to list inactive domains"
 msgstr "Misslyckades att lista inaktiva domäner"
 
-#, fuzzy
 msgid "Failed to list inactive interfaces"
-msgstr "Misslyckades att lista inaktiva nätverk"
+msgstr "Misslyckades med att lista inaktiva gränssnitt"
 
 msgid "Failed to list inactive networks"
 msgstr "Misslyckades att lista inaktiva nätverk"
@@ -7559,84 +7558,73 @@ msgid "Failed to list inactive pools"
 msgstr "Misslyckades att lista inaktiva pooler"
 
 #. there was an error during the first or second call
-#, fuzzy
 msgid "Failed to list interfaces"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att lista gränssnitt"
 
 #. there was an error during the call
-#, fuzzy
 msgid "Failed to list network filter bindings"
-msgstr "Misslyckades att lista inaktiva domäner"
+msgstr "Misslyckades med att lista nätverksfilterbindningar"
 
 #. there was an error during the call
-#, fuzzy
 msgid "Failed to list network filters"
-msgstr "Misslyckades att starta nätverk %s"
+msgstr "Misslyckades med att lista nätverksfilter"
 
 #. there was an error during the first or second call
-#, fuzzy
 msgid "Failed to list networks"
-msgstr "Misslyckades att lista aktiva nätverk"
+msgstr "Misslyckades med att lista nätverk"
 
 #. there was an error during the call
-#, fuzzy
 msgid "Failed to list node devices"
-msgstr "Misslyckades att lista inaktiva domäner"
+msgstr "Misslyckades med att lista nodenheter"
 
 #. there was an error during the call
-#, fuzzy
 msgid "Failed to list node secrets"
-msgstr "Misslyckades att lista inaktiva nätverk"
+msgstr "Misslyckades med att lista nodhemligheter"
 
-#, fuzzy, sh-format
+#, sh-format
 msgid "Failed to list persistent guests on $uri"
-msgstr "Misslyckades att lista inaktiva nätverk"
+msgstr "Misslyckades med att lista beständiga gäster på $uri"
 
 #. there was an error during the first or second call
-#, fuzzy
 msgid "Failed to list pools"
-msgstr "Misslyckades att lista aktiva domäner"
+msgstr "Misslyckades med att lista pooler"
 
-#, fuzzy
 msgid "Failed to list secrets"
-msgstr "Misslyckades att lista aktiva nätverk"
+msgstr "Misslyckades med att lista hemligheter"
 
-#, fuzzy
 msgid "Failed to list ssh agent identities"
-msgstr "Misslyckades att lista aktiva nätverk"
+msgstr "Misslyckades med att lista agentidentiteter"
 
-#, fuzzy
 msgid "Failed to list storage volumes"
-msgstr "Misslyckades att lista aktiva domäner"
+msgstr "Misslyckades med att lista lagringsvolymer"
 
-#, fuzzy
 msgid "Failed to list transient guests"
-msgstr "Misslyckades att lista aktiva nätverk"
+msgstr "Misslyckades med att lista tillfälliga gäster"
 
 #, c-format
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Misslyckades med att lista vcpu:er för domän ”%d” med libxenlight"
 
 #. there was an error during the call
-#, fuzzy
 msgid "Failed to list volumes"
-msgstr "Misslyckades att lista aktiva domäner"
+msgstr "Misslyckades med att lista volymer"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load PCI stub module %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att ladda PCI-stubbmodulen %s"
 
 #, c-format
 msgid "Failed to load PCI stub module %s: administratively prohibited"
 msgstr ""
+"Misslyckades med att lista PCI-stubbmodulen %s: administrativt förhindrat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load config for binding '%s'"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Misslyckades med att ladda konfigurationen för bindningen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load config for domain '%s'"
-msgstr "misslyckades att hämta domän '%s'"
+msgstr "Misslyckades med att ladda konfigurationen för domänen ”%s”"
 
 #, c-format
 msgid "Failed to load module '%s': %s"
