@@ -450,9 +450,9 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
-        VIR_FREE(vm->def->tpms[i]->data.emulator.source->data.file.path);
-        vm->def->tpms[i]->data.emulator.source->data.file.path = g_strdup("/dev/test");
-        vm->def->tpms[i]->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_FILE;
+        VIR_FREE(vm->def->tpms[i]->data.emulator.source->data.nix.path);
+        vm->def->tpms[i]->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        vm->def->tpms[i]->data.emulator.source->data.nix.path = g_strdup("/dev/test");
     }
 
     for (i = 0; i < vm->def->nvideos; i++) {
