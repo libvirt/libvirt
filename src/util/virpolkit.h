@@ -37,3 +37,4 @@ typedef struct _virPolkitAgent virPolkitAgent;
 
 void virPolkitAgentDestroy(virPolkitAgent *cmd);
 virPolkitAgent *virPolkitAgentCreate(void);
+bool virPolkitAgentAvailable(void);

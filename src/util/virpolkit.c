@@ -20,6 +20,7 @@
  */
 
 #include <config.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "virpolkit.h"
@@ -217,6 +218,42 @@ virPolkitAgentCreate(void)
 }
 
 
+/*
+ * virPolkitAgentAvailable
+ *
+ * This function does some preliminary checking that the pkttyagent does not
+ * fail starting so that it can be started without waiting for first failed
+ * connection with VIR_ERR_AUTH_UNAVAILABLE.
+ */
+bool
+virPolkitAgentAvailable(void)
+{
+    const char *termid = ctermid(NULL);
+    VIR_AUTOCLOSE fd = -1;
+
+    if (!virFileIsExecutable(PKTTYAGENT))
+        return false;
+
+    if (!termid)
+        return false;
+
+    /*
+     *The pkttyagent needs to open the controlling terminal.
+     *
+     * Just in case we are running without a ctty make sure this open() does not
+     * change that.
+     *
+     * We could check if our session has a controlling terminal available
+     * instead, but it would require parsing `/proc/self/stat` on Linux, which
+     * is not portable and moreover requires way more work than just open().
+     */
+    fd = open(termid, O_RDWR | O_NOCTTY);
+    if (fd < 0)
+        return false;
+
+    return true;
+}
+
 #else /* ! WITH_POLKIT */
 
 int virPolkitCheckAuth(const char *actionid G_GNUC_UNUSED,
@@ -247,4 +284,11 @@ virPolkitAgentCreate(void)
                    _("polkit text authentication agent unavailable"));
     return NULL;
 }
+
+bool
+virPolkitAgentAvailable(void)
+{
+    return false;
+}
+
 #endif /* WITH_POLKIT */
