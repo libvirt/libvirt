@@ -129,6 +129,10 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
         keepalive_forced = true;
     }
 
+    if (virPolkitAgentAvailable() &&
+        !(pkagent = virPolkitAgentCreate()))
+        virResetLastError();
+
     do {
         virErrorPtr err;
 
@@ -140,6 +144,10 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
             goto cleanup;
 
         err = virGetLastError();
+        /*
+         * If polkit agent failed starting the first time, then retry once more
+         * now when we know it really is needed.
+         */
         if (!pkagent &&
             err && err->domain == VIR_FROM_POLKIT &&
             err->code == VIR_ERR_AUTH_UNAVAILABLE) {
