@@ -119,7 +119,10 @@ virDomainDeviceInfoAddressIsEqual(const virDomainDeviceInfo *a,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
-        if (memcmp(&a->addr.drive, &b->addr.drive, sizeof(a->addr.drive)))
+        if (a->addr.drive.controller != b->addr.drive.controller ||
+            a->addr.drive.unit != b->addr.drive.unit ||
+            a->addr.drive.bus != b->addr.drive.bus ||
+            a->addr.drive.target != b->addr.drive.target)
             return false;
         break;
 
