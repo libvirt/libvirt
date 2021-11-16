@@ -1192,7 +1192,6 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.a
 rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
 %endif
 
-install -d -m 0755 $RPM_BUILD_ROOT%{_datadir}/lib/libvirt/dnsmasq/
 # We don't want to install /etc/libvirt/qemu/networks in the main %%files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
