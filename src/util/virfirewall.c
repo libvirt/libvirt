@@ -653,31 +653,8 @@ virFirewallApplyRule(virFirewall *firewall,
     if (rule->ignoreErrors)
         ignoreErrors = rule->ignoreErrors;
 
-    switch (currentBackend) {
-    case VIR_FIREWALL_BACKEND_DIRECT:
-        if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
-            return -1;
-        break;
-    case VIR_FIREWALL_BACKEND_FIREWALLD:
-        /* Since we are using raw iptables rules, there is no
-         * advantage to going through firewalld, so instead just add
-         * them directly rather that via dbus calls to firewalld. This
-         * has the useful side effect of eliminating extra unwanted
-         * warning messages in the system logs when trying to delete
-         * rules that don't exist (which is something that happens
-         * often when libvirtd is started, and *always* when firewalld
-         * is restarted)
-         */
-        if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
-            return -1;
-        break;
-
-    case VIR_FIREWALL_BACKEND_AUTOMATIC:
-    case VIR_FIREWALL_BACKEND_LAST:
-    default:
-        virReportEnumRangeError(virFirewallBackend, currentBackend);
+    if (virFirewallApplyRuleDirect(rule, ignoreErrors, &output) < 0)
         return -1;
-    }
 
     if (rule->queryCB && output) {
         if (!(lines = g_strsplit(output, "\n", -1)))
