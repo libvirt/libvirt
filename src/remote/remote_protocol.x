@@ -272,6 +272,9 @@ const REMOTE_NODE_SEV_INFO_MAX = 64;
 /* Upper limit on number of launch security information entries */
 const REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX = 64;
 
+/* Upper limit on number of launch security state entries */
+const REMOTE_DOMAIN_LAUNCH_SECURITY_STATE_PARAMS_MAX = 64;
+
 /* Upper limit on number of parameters describing a guest */
 const REMOTE_DOMAIN_GUEST_INFO_PARAMS_MAX = 2048;
 
@@ -3642,6 +3645,12 @@ struct remote_domain_get_launch_security_info_ret {
     remote_typed_param params<REMOTE_DOMAIN_LAUNCH_SECURITY_INFO_PARAMS_MAX>;
 };
 
+struct remote_domain_set_launch_security_state_args {
+    remote_nonnull_domain dom;
+    remote_typed_param params<REMOTE_DOMAIN_LAUNCH_SECURITY_STATE_PARAMS_MAX>;
+    unsigned int flags;
+};
+
 /* nwfilter binding */
 
 struct remote_nwfilter_binding_lookup_by_port_dev_args {
@@ -6905,5 +6914,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: none
      */
-    REMOTE_PROC_DOMAIN_EVENT_MEMORY_DEVICE_SIZE_CHANGE = 438
+    REMOTE_PROC_DOMAIN_EVENT_MEMORY_DEVICE_SIZE_CHANGE = 438,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_SET_LAUNCH_SECURITY_STATE = 439
 };
