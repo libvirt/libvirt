@@ -168,7 +168,7 @@ virPolkitAgentDestroy(virPolkitAgent *agent)
  *
  * Allocate and setup a polkit agent
  *
- * Returns a virCommand *on success and NULL on failure
+ * Returns newly allocated virPolkitAgent * on success and NULL on failure
  */
 virPolkitAgent *
 virPolkitAgentCreate(void)
