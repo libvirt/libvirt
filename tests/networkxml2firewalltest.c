@@ -31,9 +31,7 @@
 # include "network/bridge_driver_platform.h"
 # include "virbuffer.h"
 # include "virmock.h"
-
-# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-# include "virfirewallpriv.h"
+# include "virfirewall.h"
 
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
@@ -166,10 +164,6 @@ mymain(void)
                        testCompareXMLToIPTablesHelper, &info) < 0) \
             ret = -1; \
     } while (0)
-
-    if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
-        return EXIT_FAILURE;
-    }
 
     basefile = g_strdup_printf("%s/networkxml2firewalldata/base.args", abs_srcdir);
 

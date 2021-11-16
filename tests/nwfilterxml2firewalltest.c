@@ -26,9 +26,7 @@
 # include "testutils.h"
 # include "nwfilter/nwfilter_ebiptables_driver.h"
 # include "virbuffer.h"
-
-# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-# include "virfirewallpriv.h"
+# include "virfirewall.h"
 
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
@@ -422,10 +420,6 @@ mymain(void)
                        testCompareXMLToIPTablesHelper, &info) < 0) \
             ret = -1; \
     } while (0)
-
-    if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
-        return EXIT_FAILURE;
-    }
 
     DO_TEST("ah");
     DO_TEST("ah-ipv6");

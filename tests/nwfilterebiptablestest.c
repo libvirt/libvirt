@@ -26,9 +26,6 @@
 #include "virbuffer.h"
 #include "virfirewall.h"
 
-#define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-#include "virfirewallpriv.h"
-
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 
@@ -459,10 +456,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-
-    if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0) {
-        return EXIT_FAILURE;
-    }
 
     if (virTestRun("ebiptablesAllTeardown",
                    testNWFilterEBIPTablesAllTeardown,

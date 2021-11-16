@@ -25,10 +25,10 @@
 # include <gio/gio.h>
 
 # include "virbuffer.h"
+# include "virfirewall.h"
+
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
-# define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-# include "virfirewallpriv.h"
 # define LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW
 # include "virfirewalldpriv.h"
 # include "virmock.h"
@@ -778,9 +778,6 @@ static int
 mymain(void)
 {
     int ret = 0;
-
-    if (virFirewallSetBackend(VIR_FIREWALL_BACKEND_DIRECT) < 0)
-        return EXIT_FAILURE;
 
 # define RUN_TEST(name, method) \
     do { \

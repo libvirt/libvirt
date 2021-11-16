@@ -22,8 +22,7 @@
 
 #include <stdarg.h>
 
-#define LIBVIRT_VIRFIREWALLPRIV_H_ALLOW
-#include "virfirewallpriv.h"
+#include "virfirewall.h"
 #include "virfirewalld.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -81,61 +80,16 @@ struct _virFirewall {
     size_t currentGroup;
 };
 
-static virFirewallBackend currentBackend = VIR_FIREWALL_BACKEND_AUTOMATIC;
 static virMutex ruleLock = VIR_MUTEX_INITIALIZER;
-
-static int
-virFirewallValidateBackend(virFirewallBackend backend);
 
 static int
 virFirewallOnceInit(void)
 {
-    return virFirewallValidateBackend(currentBackend);
+    return 0;
 }
 
 VIR_ONCE_GLOBAL_INIT(virFirewall);
 
-static int
-virFirewallValidateBackend(virFirewallBackend backend)
-{
-    if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
-        backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-        int rv = virFirewallDIsRegistered();
-
-        VIR_DEBUG("Firewalld is registered ? %d", rv);
-
-        if (rv == -1)
-            return -1;
-
-        if (rv == -2) {
-            if (backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("firewalld backend requested, but service is not running"));
-                return -1;
-            } else {
-                VIR_DEBUG("firewalld service not running, using direct backend");
-                backend = VIR_FIREWALL_BACKEND_DIRECT;
-            }
-        } else {
-            VIR_DEBUG("firewalld service running, using firewalld backend");
-            backend = VIR_FIREWALL_BACKEND_FIREWALLD;
-        }
-    }
-
-    currentBackend = backend;
-    return 0;
-}
-
-int
-virFirewallSetBackend(virFirewallBackend backend)
-{
-    currentBackend = backend;
-
-    if (virFirewallInitialize() < 0)
-        return -1;
-
-    return virFirewallValidateBackend(backend);
-}
 
 static virFirewallGroup *
 virFirewallGroupNew(void)
