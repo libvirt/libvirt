@@ -68,20 +68,20 @@
         <tr>
           <td>Go</td>
           <td>
-            <a href="https://libvirt.org/libvirt-go">libvirt</a>
+            <a href="https://libvirt.org/go/libvirt">libvirt</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/libvirt-go">gitlab</a>
+            <a href="https://gitlab.com/libvirt/libvirt-go-module">gitlab</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/libvirt-go/-/issues">issues</a>
+            <a href="https://gitlab.com/libvirt/libvirt-go-module/-/issues">issues</a>
           </td>
           <td class="gitmirror">
-            <a href="https://libvirt.org/git/?p=libvirt-go.git;a=summary">libvirt</a>
-            <a href="https://github.com/libvirt/libvirt-go">github</a>
+            <a href="https://libvirt.org/git/?p=libvirt-go-module.git;a=summary">libvirt</a>
+            <a href="https://github.com/libvirt/libvirt-go-module">github</a>
           </td>
           <td>
-            <a href="https://pkg.go.dev/libvirt.org/libvirt-go">api ref</a>
+            <a href="https://pkg.go.dev/libvirt.org/go/libvirt">api ref</a>
           </td>
         </tr>
         <tr>
@@ -232,20 +232,20 @@
         <tr>
           <td>Go XML</td>
           <td>
-            <a href="https://libvirt.org/libvirt-go-xml">libvirt</a>
+            <a href="https://libvirt.org/go/libvirtxml">libvirt</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/libvirt-go-xml">gitlab</a>
+            <a href="https://gitlab.com/libvirt/libvirt-go-xml-module">gitlab</a>
           </td>
           <td>
-            <a href="https://gitlab.com/libvirt/libvirt-go-xml/-/issues">issues</a>
+            <a href="https://gitlab.com/libvirt/libvirt-go-xml-module/-/issues">issues</a>
           </td>
           <td class="gitmirror">
-            <a href="https://libvirt.org/git/?p=libvirt-go-xml.git;a=summary">libvirt</a>
-            <a href="https://github.com/libvirt/libvirt-go-xml">github</a>
+            <a href="https://libvirt.org/git/?p=libvirt-go-xml-module.git;a=summary">libvirt</a>
+            <a href="https://github.com/libvirt/libvirt-go-xml-module">github</a>
           </td>
           <td>
-            <a href="https://pkg.go.dev/libvirt.org/libvirt-go-xml">api ref</a>
+            <a href="https://pkg.go.dev/libvirt.org/go/libvirtxml">api ref</a>
           </td>
         </tr>
         <tr>
