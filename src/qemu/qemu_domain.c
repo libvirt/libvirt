@@ -10651,6 +10651,9 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
 
+    if (src->encryption && src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT)
+        src->encryption->engine = VIR_STORAGE_ENCRYPTION_ENGINE_QEMU;
+
     if (qemuDomainValidateStorageSource(src, priv->qemuCaps, false) < 0)
         return -1;
 
