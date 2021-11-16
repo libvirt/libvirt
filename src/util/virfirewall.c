@@ -98,23 +98,6 @@ VIR_ONCE_GLOBAL_INIT(virFirewall);
 static int
 virFirewallValidateBackend(virFirewallBackend backend)
 {
-    const char *commands[] = {
-        IPTABLES, IP6TABLES, EBTABLES
-    };
-    size_t i;
-
-    for (i = 0; i < G_N_ELEMENTS(commands); i++) {
-        g_autofree char *path = virFindFileInPath(commands[i]);
-
-        if (!path) {
-            virReportSystemError(errno,
-                                 _("%s not available, firewall backend will not function"),
-                                 commands[i]);
-            return -1;
-        }
-    }
-    VIR_DEBUG("found iptables/ip6tables/ebtables");
-
     if (backend == VIR_FIREWALL_BACKEND_AUTOMATIC ||
         backend == VIR_FIREWALL_BACKEND_FIREWALLD) {
         int rv = virFirewallDIsRegistered();
@@ -694,14 +677,6 @@ virFirewallApply(virFirewall *firewall)
 
     virMutexLock(&ruleLock);
 
-    if (currentBackend == VIR_FIREWALL_BACKEND_AUTOMATIC) {
-        /* a specific backend should have been set when the firewall
-         * object was created. If not, it means none was found.
-         */
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to initialize a valid firewall backend"));
-        goto cleanup;
-    }
     if (!firewall || firewall->err) {
         int err = EINVAL;
 
