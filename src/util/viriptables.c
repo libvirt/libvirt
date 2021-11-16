@@ -138,10 +138,10 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
     };
     size_t i;
 
-    /* When the backend is firewalld, we need to make sure that
+    /* When firewalld.service is active, we need to make sure that
      * firewalld has been fully started and completed its
-     * initialization, otherwise firewalld might delete our rules soon
-     * after we add them!
+     * initialization, otherwise it might delete our rules soon after
+     * we add them!
      */
     virFirewallBackendSynchronize();
 
