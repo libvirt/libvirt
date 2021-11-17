@@ -82,15 +82,6 @@ struct _virFirewall {
 
 static virMutex ruleLock = VIR_MUTEX_INITIALIZER;
 
-static int
-virFirewallOnceInit(void)
-{
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(virFirewall);
-
-
 static virFirewallGroup *
 virFirewallGroupNew(void)
 {
@@ -110,12 +101,7 @@ virFirewallGroupNew(void)
  */
 virFirewall *virFirewallNew(void)
 {
-    virFirewall *firewall;
-
-    if (virFirewallInitialize() < 0)
-        return NULL;
-
-    firewall = g_new0(virFirewall, 1);
+    virFirewall *firewall = g_new0(virFirewall, 1);
 
     return firewall;
 }
