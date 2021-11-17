@@ -476,6 +476,12 @@ qemuMonitorJSONGetVersion(qemuMonitor *mon,
                           char **package)
     ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
+int qemuMonitorJSONSetLaunchSecurityState(qemuMonitor *mon,
+                                          const char *secrethdr,
+                                          const char *secret,
+                                          unsigned long long setaddr,
+                                          bool hasSetaddr);
+
 int
 qemuMonitorJSONGetMachines(qemuMonitor *mon,
                            qemuMonitorMachineInfo ***machines)

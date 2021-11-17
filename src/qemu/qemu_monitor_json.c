@@ -8266,6 +8266,51 @@ qemuMonitorJSONGetSEVInfo(qemuMonitor *mon,
 }
 
 
+/**
+ * Set a launch secret in guest memory
+ *
+ * Example JSON:
+ *
+ * { "execute" : "sev-inject-launch-secret",
+ *   "data": { "packet-header": "str", "secret": "str", "gpa": "uint64" } }
+ *
+ * The guest physical address (gpa) parameter is optional
+ */
+int
+qemuMonitorJSONSetLaunchSecurityState(qemuMonitor *mon,
+                                      const char *secrethdr,
+                                      const char *secret,
+                                      unsigned long long setaddr,
+                                      bool hasSetaddr)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (hasSetaddr) {
+        cmd = qemuMonitorJSONMakeCommand("sev-inject-launch-secret",
+                                         "s:packet-header", secrethdr,
+                                         "s:secret", secret,
+                                         "U:gpa", setaddr,
+                                         NULL);
+    } else {
+        cmd = qemuMonitorJSONMakeCommand("sev-inject-launch-secret",
+                                         "s:packet-header", secrethdr,
+                                         "s:secret", secret,
+                                         NULL);
+    }
+    if (cmd == NULL)
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Example return data
  *

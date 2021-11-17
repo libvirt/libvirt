@@ -1457,6 +1457,13 @@ qemuMonitorGetSEVInfo(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
+int
+qemuMonitorSetLaunchSecurityState(qemuMonitor *mon,
+                                  const char *secrethdr,
+                                  const char *secret,
+                                  unsigned long long setaddr,
+                                  bool hasSetaddr);
+
 typedef struct _qemuMonitorPRManagerInfo qemuMonitorPRManagerInfo;
 struct _qemuMonitorPRManagerInfo {
     bool connected;

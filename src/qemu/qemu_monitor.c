@@ -4380,6 +4380,20 @@ qemuMonitorGetSEVInfo(qemuMonitor *mon,
 
 
 int
+qemuMonitorSetLaunchSecurityState(qemuMonitor *mon,
+                                  const char *secrethdr,
+                                  const char *secret,
+                                  unsigned long long setaddr,
+                                  bool hasSetaddr)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONSetLaunchSecurityState(mon, secrethdr, secret,
+                                                 setaddr, hasSetaddr);
+}
+
+
+int
 qemuMonitorGetPRManagerInfo(qemuMonitor *mon,
                             GHashTable **retinfo)
 {

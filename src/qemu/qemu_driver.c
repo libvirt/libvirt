@@ -20083,6 +20083,105 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
     return ret;
 }
 
+
+static int
+qemuDomainSetLaunchSecurityState(virDomainPtr domain,
+                                 virTypedParameterPtr params,
+                                 int nparams,
+                                 unsigned int flags)
+{
+    virQEMUDriver *driver = domain->conn->privateData;
+    virDomainObj *vm;
+    int ret = -1;
+    int rc;
+    size_t i;
+    g_autoptr(virQEMUCaps) qemucaps = NULL;
+    g_autofree char *secrethdr = NULL;
+    g_autofree char *secret = NULL;
+    unsigned long long setaddr = 0;
+    bool hasSetaddr = false;
+    int state;
+
+    virCheckFlags(0, -1);
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS,
+                               VIR_TYPED_PARAM_ULLONG,
+                               NULL) < 0)
+        return -1;
+
+    if (!(vm = qemuDomainObjFromDomain(domain)))
+        goto cleanup;
+
+    if (virDomainSetLaunchSecurityStateEnsureACL(domain->conn, vm->def) < 0)
+        goto cleanup;
+
+    /* Currently only SEV is supported */
+    if (!vm->def->sec ||
+        vm->def->sec->sectype != VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("setting a launch secret is only supported in SEV-enabled domains"));
+        goto cleanup;
+    }
+
+    if (!(qemucaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
+                                                   NULL, NULL, NULL, NULL,
+                                                   NULL, NULL, NULL)))
+        goto cleanup;
+
+    if (!virQEMUCapsGet(qemucaps, QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("QEMU does not support setting a launch secret"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++) {
+        virTypedParameterPtr param = &params[i];
+
+        if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER)) {
+            secrethdr = g_strdup(param->value.s);
+        } else if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET)) {
+            secret = g_strdup(param->value.s);
+        } else if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS)) {
+            setaddr =  param->value.ul;
+            hasSetaddr = true;
+        }
+    }
+
+    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto endjob;
+
+    state = virDomainObjGetState(vm, NULL);
+    if (state != VIR_DOMAIN_PAUSED) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("domain must be in a paused state"));
+        goto endjob;
+    }
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorSetLaunchSecurityState(QEMU_DOMAIN_PRIVATE(vm)->mon,
+                                           secrethdr, secret, setaddr, hasSetaddr);
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
+        goto endjob;
+
+    ret = 0;
+
+ endjob:
+    qemuDomainObjEndJob(driver, vm);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static const unsigned int qemuDomainGetGuestInfoSupportedTypes =
     VIR_DOMAIN_GUEST_INFO_USERS |
     VIR_DOMAIN_GUEST_INFO_OS |
@@ -20956,6 +21055,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainAuthorizedSSHKeysSet = qemuDomainAuthorizedSSHKeysSet, /* 6.10.0 */
     .domainGetMessages = qemuDomainGetMessages, /* 7.1.0 */
     .domainStartDirtyRateCalc = qemuDomainStartDirtyRateCalc, /* 7.2.0 */
+    .domainSetLaunchSecurityState = qemuDomainSetLaunchSecurityState, /* 8.0.0 */
 };
 
 
