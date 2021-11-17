@@ -611,49 +611,6 @@ virFirewallApplyRuleFirewallD(virFirewallRule *rule,
 }
 
 
-void
-virFirewallBackendSynchronize(void)
-{
-    const char *arg = "-V";
-    g_autofree char *output = NULL;
-    int firewallDRegistered = virFirewallDIsRegistered();
-
-    /*
-     * virFirewallBackendSynchronize() should be called after
-     * receiving an ownership-change event or reload event for
-     * firewalld from dbus, prior to performing any operations on the
-     * default table "filter".
-     *
-     * Our iptables filter rules are added to (private chains within)
-     * the default table named "filter", which is flushed by firewalld
-     * any time it is restarted or reloads its rules. libvirt watches
-     * for notifications that firewalld has been restarted / its rules
-     * reloaded, and then reloads the libvirt rules. But it's possible
-     * for libvirt to be notified that firewalld has restarted prior
-     * to firewalld completing initialization, and when that race
-     * happens, firewalld can potentially flush out rules that libvirt
-     * has just added!
-     *
-     * To prevent this, we send a simple command ("iptables -V") via
-     * firewalld's passthrough iptables API, and wait until it's
-     * finished before sending our own directly-executed iptables
-     * commands. This assures that firewalld has fully initialized and
-     * caught up with its internal queue of iptables commands, and
-     * won't stomp all over the new rules we subsequently add.
-     *
-     */
-
-    VIR_DEBUG("Firewalld is registered ? %d", firewallDRegistered);
-
-    if (firewallDRegistered < 0)
-        return; /* firewalld (or dbus?) not functional, don't sync */
-
-    ignore_value(virFirewallDApplyRule(VIR_FIREWALL_LAYER_IPV4,
-                                       (char **)&arg, 1, true, &output));
-    VIR_DEBUG("Result of 'iptables -V' via firewalld: %s", NULLSTR(output));
-}
-
-
 static int
 virFirewallApplyRule(virFirewall *firewall,
                      virFirewallRule *rule,

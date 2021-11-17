@@ -28,6 +28,7 @@
 
 #include "internal.h"
 #include "viriptables.h"
+#include "virfirewalld.h"
 #include "vircommand.h"
 #include "viralloc.h"
 #include "virerror.h"
@@ -143,7 +144,7 @@ iptablesSetupPrivateChains(virFirewallLayer layer)
      * initialization, otherwise it might delete our rules soon after
      * we add them!
      */
-    virFirewallBackendSynchronize();
+    virFirewallDSynchronize();
 
     virFirewallStartTransaction(fw, 0);
 

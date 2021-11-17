@@ -109,6 +109,4 @@ void virFirewallStartRollback(virFirewall *firewall,
 
 int virFirewallApply(virFirewall *firewall);
 
-void virFirewallBackendSynchronize(void);
-
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virFirewall, virFirewallFree);

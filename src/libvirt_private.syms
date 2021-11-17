@@ -2308,7 +2308,6 @@ virFileCacheSetPriv;
 # util/virfirewall.h
 virFirewallAddRuleFull;
 virFirewallApply;
-virFirewallBackendSynchronize;
 virFirewallFree;
 virFirewallNew;
 virFirewallRemoveRule;
@@ -2329,6 +2328,7 @@ virFirewallDGetVersion;
 virFirewallDGetZones;
 virFirewallDInterfaceSetZone;
 virFirewallDIsRegistered;
+virFirewallDSynchronize;
 virFirewallDZoneExists;
 
 
