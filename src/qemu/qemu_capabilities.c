@@ -4281,17 +4281,15 @@ virQEMUCapsLoadCache(virArch hostArch,
                      bool skipInvalidation)
 {
     g_autoptr(xmlDoc) doc = NULL;
-    int ret = -1;
     g_autoptr(xmlXPathContext) ctxt = NULL;
-    char *str = NULL;
     long long int l;
     unsigned long lu;
 
     if (!(doc = virXMLParseFile(filename)))
-        goto cleanup;
+        return -1;
 
     if (!(ctxt = virXMLXPathContextNew(doc)))
-        goto cleanup;
+        return -1;
 
     ctxt->node = xmlDocGetRootElement(doc);
 
@@ -4300,13 +4298,13 @@ virQEMUCapsLoadCache(virArch hostArch,
                        _("unexpected root element <%s>, "
                          "expecting <qemuCaps>"),
                        ctxt->node->name);
-        goto cleanup;
+        return -1;
     }
 
     if (virXPathLongLong("string(./selfctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing selfctime in QEMU capabilities XML"));
-        goto cleanup;
+        return -1;
     }
     qemuCaps->libvirtCtime = (time_t)l;
 
@@ -4324,17 +4322,16 @@ virQEMUCapsLoadCache(virArch hostArch,
                   (long long)virGetSelfLastChanged(),
                   (unsigned long)qemuCaps->libvirtVersion,
                   (unsigned long)LIBVIR_VERSION_NUMBER);
-        ret = 1;
-        goto cleanup;
+        return 1;
     }
 
     if (virQEMUCapsValidateEmulator(qemuCaps, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virXPathLongLong("string(./qemuctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing qemuctime in QEMU capabilities XML"));
-        goto cleanup;
+        return -1;
     }
     qemuCaps->ctime = (time_t)l;
 
@@ -4342,25 +4339,25 @@ virQEMUCapsLoadCache(virArch hostArch,
         qemuCaps->modDirMtime = (time_t)l;
 
     if (virQEMUCapsParseFlags(qemuCaps, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virXPathUInt("string(./version)", ctxt, &qemuCaps->version) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing version in QEMU capabilities cache"));
-        goto cleanup;
+        return -1;
     }
 
     if (virXPathUInt("string(./kvmVersion)", ctxt, &qemuCaps->kvmVersion) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing version in QEMU capabilities cache"));
-        goto cleanup;
+        return -1;
     }
 
     if (virXPathUInt("string(./microcodeVersion)", ctxt,
                      &qemuCaps->microcodeVersion) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing microcode version in QEMU capabilities cache"));
-        goto cleanup;
+        return -1;
     }
 
     qemuCaps->hostCPUSignature = virXPathString("string(./hostCPUSignature)", ctxt);
@@ -4374,27 +4371,27 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (virXPathBoolean("boolean(./kernelVersion)", ctxt) > 0) {
         qemuCaps->kernelVersion = virXPathString("string(./kernelVersion)", ctxt);
         if (!qemuCaps->kernelVersion)
-            goto cleanup;
+            return -1;
     }
 
     if (virQEMUCapsValidateArch(qemuCaps, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virXPathBoolean("boolean(./cpudata)", ctxt) > 0) {
         qemuCaps->cpuData = virCPUDataParseNode(virXPathNode("./cpudata", ctxt));
         if (!qemuCaps->cpuData)
-            goto cleanup;
+            return -1;
     }
 
     if (virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_KVM) < 0 ||
         virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsParseGIC(qemuCaps, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsParseSEVInfo(qemuCaps, ctxt) < 0)
-        goto cleanup;
+        return -1;
 
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
     virQEMUCapsInitHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
@@ -4408,10 +4405,7 @@ virQEMUCapsLoadCache(virArch hostArch,
     if (skipInvalidation)
         qemuCaps->invalidation = false;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(str);
-    return ret;
+    return 0;
 }
 
 
