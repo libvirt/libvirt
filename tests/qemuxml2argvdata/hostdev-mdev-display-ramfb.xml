@@ -25,6 +25,11 @@
         <address uuid='53764d0e-85a0-42b4-af5c-2046b460b1dc'/>
       </source>
     </hostdev>
+    <hostdev mode='subsystem' type='mdev' model='vfio-pci' display='on' ramfb='off'>
+      <source>
+        <address uuid='53764d0e-85a0-42b4-af5c-2046b460b1dd'/>
+      </source>
+    </hostdev>
     <video>
       <model type='qxl' heads='1'/>
     </video>

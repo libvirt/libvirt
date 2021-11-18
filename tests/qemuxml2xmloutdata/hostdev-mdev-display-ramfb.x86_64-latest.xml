@@ -40,6 +40,12 @@
       </source>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </hostdev>
+    <hostdev mode='subsystem' type='mdev' managed='no' model='vfio-pci' display='on' ramfb='off'>
+      <source>
+        <address uuid='53764d0e-85a0-42b4-af5c-2046b460b1dd'/>
+      </source>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x0'/>
+    </hostdev>
     <memballoon model='none'/>
   </devices>
 </domain>
