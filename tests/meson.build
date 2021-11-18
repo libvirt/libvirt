@@ -347,6 +347,7 @@ if host_machine.system() == 'linux'
     { 'name': 'scsihosttest' },
     { 'name': 'vircaps2xmltest', 'link_whole': [ test_file_wrapper_lib ] },
     { 'name': 'virnetdevbandwidthtest' },
+    { 'name': 'virprocessstattest', 'link_whole': [ test_file_wrapper_lib ] },
     { 'name': 'virresctrltest', 'link_whole': [ test_file_wrapper_lib ] },
     { 'name': 'virscsitest' },
     { 'name': 'virusbtest' },

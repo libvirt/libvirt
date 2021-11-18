@@ -1721,3 +1721,80 @@ virProcessSetScheduler(pid_t pid G_GNUC_UNUSED,
 }
 
 #endif /* !WITH_SCHED_SETSCHEDULER */
+
+/*
+ * Get all stat fields for a process based on pid and tid:
+ * - pid == 0 && tid == 0 => /proc/self/stat
+ * - pid != 0 && tid == 0 => /proc/<pid>/stat
+ * - pid == 0 && tid != 0 => /proc/self/task/<tid>/stat
+ * - pid != 0 && tid != 0 => /proc/<pid>/task/<tid>/stat
+ * and return them as array of strings.
+ */
+GStrv
+virProcessGetStat(pid_t pid,
+                  pid_t tid)
+{
+    int len = 10 * 1024;  /* 10kB ought to be enough for everyone */
+    g_autofree char *buf = NULL;
+    g_autofree char *path = NULL;
+    GStrv rest = NULL;
+    GStrv ret = NULL;
+    char *comm = NULL;
+    char *rparen = NULL;
+    size_t nrest = 0;
+
+    if (pid) {
+        if (tid)
+            path = g_strdup_printf("/proc/%d/task/%d/stat", (int)pid, (int)tid);
+        else
+            path = g_strdup_printf("/proc/%d/stat", (int)pid);
+    } else {
+        if (tid)
+            path = g_strdup_printf("/proc/self/task/%d/stat", (int)tid);
+        else
+            path = g_strdup("/proc/self/stat");
+    }
+
+    len = virFileReadAllQuiet(path, len, &buf);
+    if (len < 0)
+        return NULL;
+
+    /* eliminate trailing spaces */
+    while (len > 0 && g_ascii_isspace(buf[--len]))
+           buf[len] = '\0';
+
+    /* Find end of the first field */
+    if (!(comm = strchr(buf, ' ')))
+        return NULL;
+    *comm = '\0';
+
+    /* Check start of the second field (filename of the executable, in
+     * parentheses) */
+    comm++;
+    if (*comm != '(')
+        return NULL;
+    comm++;
+
+    /* Check end of the second field (last closing parenthesis) */
+    rparen = strrchr(comm, ')');
+    if (!rparen)
+        return NULL;
+    *rparen = '\0';
+
+    /* We need to check that the next char is not '\0', but why not just opt in
+     * for the safer way of checking whether it is ' ' (space) instead */
+    if (rparen[1] != ' ')
+        return NULL;
+
+    rest = g_strsplit(rparen + 2, " ", 0);
+    nrest = g_strv_length(rest);
+    ret = g_new0(char *, nrest + 3);
+    ret[0] = g_strdup(buf);
+    ret[1] = g_strdup(comm);
+    memcpy(ret + 2, rest, nrest * sizeof(char *));
+
+    /* Do not use g_strfreev() as individual elements they were moved to @ret. */
+    VIR_FREE(rest);
+
+    return ret;
+}
