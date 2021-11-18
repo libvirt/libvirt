@@ -9257,9 +9257,8 @@ qemuProcessQMPInitMonitor(qemuMonitor *mon)
 static int
 qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 {
-    virDomainXMLOption *xmlopt = NULL;
+    g_autoptr(virDomainXMLOption) xmlopt = NULL;
     virDomainChrSourceDef monConfig;
-    int ret = -1;
 
     VIR_DEBUG("proc=%p, emulator=%s, proc->pid=%lld",
               proc, proc->binary, (long long)proc->pid);
@@ -9271,25 +9270,21 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
     if (!(xmlopt = virDomainXMLOptionNew(NULL, NULL, NULL, NULL, NULL)) ||
         !(proc->vm = virDomainObjNew(xmlopt)) ||
         !(proc->vm->def = virDomainDefNew(xmlopt)))
-        goto cleanup;
+        return -1;
 
     proc->vm->pid = proc->pid;
 
     if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true, 0,
                                       virEventThreadGetContext(proc->eventThread),
                                       &callbacks, NULL)))
-        goto cleanup;
+        return -1;
 
     virObjectLock(proc->mon);
 
     if (qemuProcessQMPInitMonitor(proc->mon) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virObjectUnref(xmlopt);
-    return ret;
+    return 0;
 }
 
 
