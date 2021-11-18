@@ -3214,6 +3214,7 @@ struct _virDomainXMLOption {
     /* Snapshot postparse callbacks */
     virDomainMomentPostParseCallback momentPostParse;
 };
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainXMLOption, virObjectUnref);
 
 struct virDomainDefPostParseDeviceIteratorData {
     virDomainXMLOption *xmlopt;
