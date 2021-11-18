@@ -1863,25 +1863,22 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
                                char **tlsAlias,
                                const char **secAlias)
 {
-    int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainChrSourcePrivate *chrSourcePriv;
     qemuDomainSecretInfo *secinfo = NULL;
-    virJSONValue *tlsProps = NULL;
-    virJSONValue *secProps = NULL;
+    g_autoptr(virJSONValue) tlsProps = NULL;
+    g_autoptr(virJSONValue) secProps = NULL;
 
     /* NB: This may alter haveTLS based on cfg */
     qemuDomainPrepareChardevSourceTLS(dev, cfg);
 
     if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
-        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES) {
-        ret = 0;
-        goto cleanup;
-    }
+        dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES)
+        return 0;
 
     if (qemuDomainSecretChardevPrepare(cfg, priv, devAlias, dev) < 0)
-        goto cleanup;
+        return -1;
 
     if ((chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(dev)))
         secinfo = chrSourcePriv->secinfo;
@@ -1890,27 +1887,22 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
         *secAlias = secinfo->alias;
 
     if (!(*tlsAlias = qemuAliasTLSObjFromSrcAlias(charAlias)))
-        goto cleanup;
+        return -1;
 
     if (qemuDomainGetTLSObjects(secinfo,
                                 cfg->chardevTLSx509certdir,
                                 dev->data.tcp.listen,
                                 cfg->chardevTLSx509verify,
                                 *tlsAlias, &tlsProps, &secProps) < 0)
-        goto cleanup;
+        return -1;
+
     dev->data.tcp.tlscreds = true;
 
     if (qemuDomainAddTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
                                 &secProps, &tlsProps) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(tlsProps);
-    virJSONValueFree(secProps);
-
-    return ret;
+    return 0;
 }
 
 
