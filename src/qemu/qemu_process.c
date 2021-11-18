@@ -6494,6 +6494,24 @@ qemuProcessUpdateSEVInfo(virDomainObj *vm)
 }
 
 
+/* qemuProcessPrepareChardevSource:
+ * @def: live domain definition
+ * @cfg: driver configuration
+ *
+ * Iterate through all devices that use virDomainChrSourceDef as backend.
+ */
+static int
+qemuProcessPrepareChardevSource(virDomainDef *def,
+                                virQEMUDriverConfig *cfg)
+{
+    struct qemuDomainPrepareChardevSourceData data = { .cfg = cfg };
+
+    return qemuDomainDeviceBackendChardevForeach(def,
+                                                 qemuDomainPrepareChardevSourceOne,
+                                                 &data);
+}
+
+
 /**
  * qemuProcessPrepareDomain:
  * @driver: qemu driver
@@ -6582,8 +6600,9 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
     if (qemuProcessPrepareDomainHostdevs(vm, priv) < 0)
         return -1;
 
-    VIR_DEBUG("Prepare chardev source backends for TLS");
-    qemuDomainPrepareChardevSource(vm->def, cfg);
+    VIR_DEBUG("Prepare chardev source backends");
+    if (qemuProcessPrepareChardevSource(vm->def, cfg) < 0)
+        return -1;
 
     VIR_DEBUG("Prepare device secrets");
     if (qemuDomainSecretPrepare(driver, vm) < 0)

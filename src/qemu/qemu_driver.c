@@ -6776,6 +6776,13 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
 {
     int ret = -1;
     const char *alias = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    struct qemuDomainPrepareChardevSourceData chardevBackendData = { .cfg = cfg };
+
+    if (qemuDomainDeviceBackendChardevForeachOne(dev,
+                                                 qemuDomainPrepareChardevSourceOne,
+                                                 &chardevBackendData) < 0)
+        return -1;
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:

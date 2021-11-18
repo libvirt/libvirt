@@ -1852,9 +1852,6 @@ qemuDomainAddChardevTLSObjects(virQEMUDriver *driver,
     g_autoptr(virJSONValue) tlsProps = NULL;
     g_autoptr(virJSONValue) secProps = NULL;
 
-    /* NB: This may alter haveTLS based on cfg */
-    qemuDomainPrepareChardevSourceTLS(dev, cfg);
-
     if (dev->type != VIR_DOMAIN_CHR_TYPE_TCP ||
         dev->data.tcp.haveTLS != VIR_TRISTATE_BOOL_YES)
         return 0;

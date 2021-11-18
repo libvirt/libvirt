@@ -864,13 +864,14 @@ int qemuDomainPrepareChannel(virDomainChrDef *chr,
                              const char *domainChannelTargetDir)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-void qemuDomainPrepareChardevSourceTLS(virDomainChrSourceDef *source,
-                                       virQEMUDriverConfig *cfg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+struct qemuDomainPrepareChardevSourceData {
+    virQEMUDriverConfig *cfg;
+};
 
-void qemuDomainPrepareChardevSource(virDomainDef *def,
-                                    virQEMUDriverConfig *cfg)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
+int
+qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
+                                  virDomainChrSourceDef *charsrc,
+                                  void *opaque);
 
 void  qemuDomainPrepareShmemChardev(virDomainShmemDef *shmem)
     ATTRIBUTE_NONNULL(1);

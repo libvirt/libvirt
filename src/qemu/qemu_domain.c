@@ -9720,66 +9720,63 @@ qemuDomainPrepareChannel(virDomainChrDef *channel,
 }
 
 
-/* qemuDomainPrepareChardevSourceTLS:
- * @source: pointer to host interface data for char devices
- * @cfg: driver configuration
+/* qemuDomainPrepareChardevSourceOne:
+ * @dev: device definition
+ * @charsrc: chardev source definition
+ * @opaque: pointer to struct qemuDomainPrepareChardevSourceData
  *
- * Updates host interface TLS encryption setting based on qemu.conf
- * for char devices.  This will be presented as "tls='yes|no'" in
- * live XML of a guest.
+ * Updates the config of a chardev source based on the qemu driver configuration.
+ * Note that this is meant to be called via
+ * qemuDomainDeviceBackendChardevForeach(One).
  */
-void
-qemuDomainPrepareChardevSourceTLS(virDomainChrSourceDef *source,
-                                  virQEMUDriverConfig *cfg)
+int
+qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
+                                  virDomainChrSourceDef *charsrc,
+                                  void *opaque)
 {
-    if (source->type == VIR_DOMAIN_CHR_TYPE_TCP) {
-        if (source->data.tcp.haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
-            if (cfg->chardevTLS)
-                source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_YES;
-            else
-                source->data.tcp.haveTLS = VIR_TRISTATE_BOOL_NO;
-            source->data.tcp.tlsFromConfig = true;
+    struct qemuDomainPrepareChardevSourceData *data = opaque;
+
+    switch ((virDomainDeviceType) dev->type) {
+
+    case VIR_DOMAIN_DEVICE_CHR:
+    case VIR_DOMAIN_DEVICE_RNG:
+    case VIR_DOMAIN_DEVICE_SMARTCARD:
+    case VIR_DOMAIN_DEVICE_REDIRDEV:
+        if (charsrc->type == VIR_DOMAIN_CHR_TYPE_TCP) {
+            if (charsrc->data.tcp.haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
+                charsrc->data.tcp.haveTLS = virTristateBoolFromBool(data->cfg->chardevTLS);
+                charsrc->data.tcp.tlsFromConfig = true;
+            }
         }
+        break;
+
+    case VIR_DOMAIN_DEVICE_DISK:
+    case VIR_DOMAIN_DEVICE_NET:
+    case VIR_DOMAIN_DEVICE_SHMEM:
+    case VIR_DOMAIN_DEVICE_LEASE:
+    case VIR_DOMAIN_DEVICE_FS:
+    case VIR_DOMAIN_DEVICE_INPUT:
+    case VIR_DOMAIN_DEVICE_SOUND:
+    case VIR_DOMAIN_DEVICE_VIDEO:
+    case VIR_DOMAIN_DEVICE_HOSTDEV:
+    case VIR_DOMAIN_DEVICE_WATCHDOG:
+    case VIR_DOMAIN_DEVICE_CONTROLLER:
+    case VIR_DOMAIN_DEVICE_GRAPHICS:
+    case VIR_DOMAIN_DEVICE_HUB:
+    case VIR_DOMAIN_DEVICE_NONE:
+    case VIR_DOMAIN_DEVICE_MEMBALLOON:
+    case VIR_DOMAIN_DEVICE_NVRAM:
+    case VIR_DOMAIN_DEVICE_TPM:
+    case VIR_DOMAIN_DEVICE_PANIC:
+    case VIR_DOMAIN_DEVICE_LAST:
+    case VIR_DOMAIN_DEVICE_MEMORY:
+    case VIR_DOMAIN_DEVICE_IOMMU:
+    case VIR_DOMAIN_DEVICE_VSOCK:
+    case VIR_DOMAIN_DEVICE_AUDIO:
+        break;
     }
-}
 
-
-/* qemuDomainPrepareChardevSource:
- * @def: live domain definition
- * @cfg: driver configuration
- *
- * Iterate through all devices that use virDomainChrSourceDef *as host
- * interface part.
- */
-void
-qemuDomainPrepareChardevSource(virDomainDef *def,
-                               virQEMUDriverConfig *cfg)
-{
-    size_t i;
-
-    for (i = 0; i < def->nserials; i++)
-        qemuDomainPrepareChardevSourceTLS(def->serials[i]->source, cfg);
-
-    for (i = 0; i < def->nparallels; i++)
-        qemuDomainPrepareChardevSourceTLS(def->parallels[i]->source, cfg);
-
-    for (i = 0; i < def->nchannels; i++)
-        qemuDomainPrepareChardevSourceTLS(def->channels[i]->source, cfg);
-
-    for (i = 0; i < def->nconsoles; i++)
-        qemuDomainPrepareChardevSourceTLS(def->consoles[i]->source, cfg);
-
-    for (i = 0; i < def->nrngs; i++)
-        if (def->rngs[i]->backend == VIR_DOMAIN_RNG_BACKEND_EGD)
-            qemuDomainPrepareChardevSourceTLS(def->rngs[i]->source.chardev, cfg);
-
-    for (i = 0; i < def->nsmartcards; i++)
-        if (def->smartcards[i]->type == VIR_DOMAIN_SMARTCARD_TYPE_PASSTHROUGH)
-            qemuDomainPrepareChardevSourceTLS(def->smartcards[i]->data.passthru,
-                                              cfg);
-
-    for (i = 0; i < def->nredirdevs; i++)
-        qemuDomainPrepareChardevSourceTLS(def->redirdevs[i]->source, cfg);
+    return 0;
 }
 
 
