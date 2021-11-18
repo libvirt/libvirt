@@ -4136,6 +4136,82 @@ virQEMUCapsParseFlags(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 }
 
 
+static int
+virQEMUCapsParseGIC(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *nodes = NULL;
+    size_t i;
+    int n;
+
+    if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse qemu capabilities gic"));
+        return -1;
+    }
+
+    if (n > 0) {
+        unsigned int uintValue;
+        bool boolValue;
+
+        qemuCaps->ngicCapabilities = n;
+        qemuCaps->gicCapabilities = g_new0(virGICCapability, n);
+
+        for (i = 0; i < n; i++) {
+            virGICCapability *cap = &qemuCaps->gicCapabilities[i];
+            g_autofree char *version = NULL;
+            g_autofree char *kernel = NULL;
+            g_autofree char *emulated = NULL;
+
+            if (!(version = virXMLPropString(nodes[i], "version"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing GIC version "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            if (virStrToLong_ui(version, NULL, 10, &uintValue) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed GIC version "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            cap->version = uintValue;
+
+            if (!(kernel = virXMLPropString(nodes[i], "kernel"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing in-kernel GIC information "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            if (!(boolValue = STREQ(kernel, "yes")) && STRNEQ(kernel, "no")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed in-kernel GIC information "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            if (boolValue)
+                cap->implementation |= VIR_GIC_IMPLEMENTATION_KERNEL;
+
+            if (!(emulated = virXMLPropString(nodes[i], "emulated"))) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("missing emulated GIC information "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            if (!(boolValue = STREQ(emulated, "yes")) && STRNEQ(emulated, "no")) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("malformed emulated GIC information "
+                                 "in QEMU capabilities cache"));
+                return -1;
+            }
+            if (boolValue)
+                cap->implementation |= VIR_GIC_IMPLEMENTATION_EMULATED;
+        }
+    }
+
+    return 0;
+}
+
+
 /*
  * Parsing a doc that looks like
  *
@@ -4164,8 +4240,6 @@ virQEMUCapsLoadCache(virArch hostArch,
 {
     g_autoptr(xmlDoc) doc = NULL;
     int ret = -1;
-    size_t i;
-    int n;
     xmlNodePtr *nodes = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     char *str = NULL;
@@ -4293,70 +4367,8 @@ virQEMUCapsLoadCache(virArch hostArch,
         virQEMUCapsLoadAccel(qemuCaps, ctxt, VIR_DOMAIN_VIRT_QEMU) < 0)
         goto cleanup;
 
-    if ((n = virXPathNodeSet("./gic", ctxt, &nodes)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("failed to parse qemu capabilities gic"));
+    if (virQEMUCapsParseGIC(qemuCaps, ctxt) < 0)
         goto cleanup;
-    }
-    if (n > 0) {
-        unsigned int uintValue;
-        bool boolValue;
-
-        qemuCaps->ngicCapabilities = n;
-        qemuCaps->gicCapabilities = g_new0(virGICCapability, n);
-
-        for (i = 0; i < n; i++) {
-            virGICCapability *cap = &qemuCaps->gicCapabilities[i];
-
-            if (!(str = virXMLPropString(nodes[i], "version"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing GIC version "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            if (virStrToLong_ui(str, NULL, 10, &uintValue) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed GIC version "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            cap->version = uintValue;
-            VIR_FREE(str);
-
-            if (!(str = virXMLPropString(nodes[i], "kernel"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing in-kernel GIC information "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            if (!(boolValue = STREQ(str, "yes")) && STRNEQ(str, "no")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed in-kernel GIC information "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            if (boolValue)
-                cap->implementation |= VIR_GIC_IMPLEMENTATION_KERNEL;
-            VIR_FREE(str);
-
-            if (!(str = virXMLPropString(nodes[i], "emulated"))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("missing emulated GIC information "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            if (!(boolValue = STREQ(str, "yes")) && STRNEQ(str, "no")) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("malformed emulated GIC information "
-                                 "in QEMU capabilities cache"));
-                goto cleanup;
-            }
-            if (boolValue)
-                cap->implementation |= VIR_GIC_IMPLEMENTATION_EMULATED;
-            VIR_FREE(str);
-        }
-    }
-    VIR_FREE(nodes);
 
     if (virQEMUCapsParseSEVInfo(qemuCaps, ctxt) < 0)
         goto cleanup;
