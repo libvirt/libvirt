@@ -28,6 +28,7 @@
 #include "util/virfile.h"
 #include "util/virhash.h"
 #include "util/virstring.h"
+#include "util/virthread.h"
 #include "util/virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
@@ -43,6 +44,7 @@ struct xentoollog_logger_libvirt {
 
     /* map storing the opened fds: "domid" -> FILE* */
     GHashTable *files;
+    virMutex tableLock;
     FILE *defaultLogFile;
 };
 
@@ -85,7 +87,9 @@ libvirt_vmessage(xentoollog_logger *logger_in,
         start = start + 9;
         *end = '\0';
 
+        virMutexLock(&lg->tableLock);
         domainLogFile = virHashLookup(lg->files, start);
+        virMutexUnlock(&lg->tableLock);
         if (domainLogFile)
             logFile = domainLogFile;
 
@@ -155,6 +159,11 @@ libxlLoggerNew(const char *logDir, virLogPriority minLevel)
     if ((logger.defaultLogFile = fopen(path, "a")) == NULL)
         return NULL;
 
+    if (virMutexInit(&logger.tableLock) < 0) {
+        VIR_FORCE_FCLOSE(logger.defaultLogFile);
+        return NULL;
+    }
+
     logger.files = virHashNew(libxlLoggerFileFree);
 
     return XTL_NEW_LOGGER(libvirt, logger);
@@ -167,6 +176,7 @@ libxlLoggerFree(libxlLogger *logger)
     if (logger->defaultLogFile)
         VIR_FORCE_FCLOSE(logger->defaultLogFile);
     g_clear_pointer(&logger->files, g_hash_table_unref);
+    virMutexDestroy(&logger->tableLock);
     xtl_logger_destroy(xtl_logger);
 }
 
@@ -188,7 +198,9 @@ libxlLoggerOpenFile(libxlLogger *logger,
                  path, g_strerror(errno));
         return;
     }
+    virMutexLock(&logger->tableLock);
     ignore_value(virHashAddEntry(logger->files, domidstr, logFile));
+    virMutexUnlock(&logger->tableLock);
 
     /* domain_config is non NULL only when starting a new domain */
     if (domain_config) {
@@ -203,5 +215,7 @@ libxlLoggerCloseFile(libxlLogger *logger, int id)
     g_autofree char *domidstr = NULL;
     domidstr = g_strdup_printf("%d", id);
 
+    virMutexLock(&logger->tableLock);
     ignore_value(virHashRemoveEntry(logger->files, domidstr));
+    virMutexUnlock(&logger->tableLock);
 }
