@@ -2184,7 +2184,6 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     virDomainDef *vmdef = vm->def;
     g_autoptr(virJSONValue) devprops = NULL;
     g_autoptr(virJSONValue) netdevprops = NULL;
-    virDomainChrSourceDef *dev = chr->source;
     g_autofree char *charAlias = NULL;
     bool chardevAttached = false;
     bool teardowncgroup = false;
@@ -2233,7 +2232,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuDomainChrPreInsert(vmdef, chr) < 0)
         goto cleanup;
 
-    if (qemuDomainAddChardevTLSObjects(driver, vm, dev,
+    if (qemuDomainAddChardevTLSObjects(driver, vm, chr->source,
                                        chr->info.alias, charAlias,
                                        &tlsAlias, &secAlias) < 0)
         goto audit;
