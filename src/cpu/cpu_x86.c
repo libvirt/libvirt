@@ -1833,7 +1833,6 @@ virCPUx86DataParse(xmlNodePtr node)
 static virCPUCompareResult
 x86Compute(virCPUDef *host,
            virCPUDef *cpu,
-           virCPUData **guest,
            char **message)
 {
     virCPUx86Map *map = NULL;
@@ -1844,11 +1843,8 @@ x86Compute(virCPUDef *host,
     g_autoptr(virCPUx86Model) cpu_disable = NULL;
     g_autoptr(virCPUx86Model) cpu_forbid = NULL;
     g_autoptr(virCPUx86Model) diff = NULL;
-    g_autoptr(virCPUx86Model) guest_model = NULL;
-    g_autoptr(virCPUData) guestData = NULL;
     virCPUCompareResult ret;
     virCPUx86CompareResult result;
-    virArch arch;
     size_t i;
 
     if (cpu->arch != VIR_ARCH_NONE) {
@@ -1870,9 +1866,6 @@ x86Compute(virCPUDef *host,
             }
             return VIR_CPU_COMPARE_INCOMPATIBLE;
         }
-        arch = cpu->arch;
-    } else {
-        arch = host->arch;
     }
 
     if (cpu->vendor &&
@@ -1939,37 +1932,6 @@ x86Compute(virCPUDef *host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    if (guest) {
-        guest_model = x86ModelCopy(host_model);
-
-        if (cpu->vendor && host_model->vendor &&
-            virCPUx86DataAddItem(&guest_model->data,
-                                 &host_model->vendor->data) < 0)
-            return VIR_CPU_COMPARE_ERROR;
-
-        if (host_model->signatures && host_model->signatures->count > 0) {
-            virCPUx86Signature *sig = &host_model->signatures->items[0];
-            if (x86DataAddSignature(&guest_model->data,
-                                    virCPUx86SignatureToCPUID(sig)) < 0)
-                return VIR_CPU_COMPARE_ERROR;
-        }
-
-        if (cpu->type == VIR_CPU_TYPE_GUEST
-            && cpu->match == VIR_CPU_MATCH_EXACT)
-            x86DataSubtract(&guest_model->data, &diff->data);
-
-        if (x86DataAdd(&guest_model->data, &cpu_force->data))
-            return VIR_CPU_COMPARE_ERROR;
-
-        x86DataSubtract(&guest_model->data, &cpu_disable->data);
-
-        if (!(guestData = virCPUDataNew(arch)))
-            return VIR_CPU_COMPARE_ERROR;
-        x86DataCopy(&guestData->data.x86, &guest_model->data);
-
-        *guest = g_steal_pointer(&guestData);
-    }
-
     return ret;
 }
 #undef virX86CpuIncompatible
@@ -1994,7 +1956,7 @@ virCPUx86Compare(virCPUDef *host,
         return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
-    ret = x86Compute(host, cpu, NULL, &message);
+    ret = x86Compute(host, cpu, &message);
 
     if (ret == VIR_CPU_COMPARE_INCOMPATIBLE && failIncompatible) {
         if (message)
