@@ -4240,7 +4240,6 @@ virQEMUCapsLoadCache(virArch hostArch,
 {
     g_autoptr(xmlDoc) doc = NULL;
     int ret = -1;
-    xmlNodePtr *nodes = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     char *str = NULL;
     long long int l;
@@ -4388,7 +4387,6 @@ virQEMUCapsLoadCache(virArch hostArch,
     ret = 0;
  cleanup:
     VIR_FREE(str);
-    VIR_FREE(nodes);
     return ret;
 }
 
