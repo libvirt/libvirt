@@ -3034,8 +3034,7 @@ qemuAssignMemoryDeviceSlot(virDomainMemoryDef *mem,
 
 
 int
-qemuDomainAssignMemoryDeviceSlot(virQEMUDriver *driver,
-                                 virDomainObj *vm,
+qemuDomainAssignMemoryDeviceSlot(virDomainObj *vm,
                                  virDomainMemoryDef *mem)
 {
     g_autoptr(virBitmap) slotmap = NULL;
@@ -3052,7 +3051,7 @@ qemuDomainAssignMemoryDeviceSlot(virQEMUDriver *driver,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
-        return qemuDomainEnsurePCIAddress(vm, &dev, driver);
+        return qemuDomainEnsurePCIAddress(vm, &dev);
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -3232,8 +3231,7 @@ qemuDomainAssignAddresses(virDomainDef *def,
  */
 int
 qemuDomainEnsurePCIAddress(virDomainObj *obj,
-                           virDomainDeviceDef *dev,
-                           virQEMUDriver *driver)
+                           virDomainDeviceDef *dev)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
     virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
@@ -3241,7 +3239,7 @@ qemuDomainEnsurePCIAddress(virDomainObj *obj,
     if (!info)
         return 0;
 
-    qemuDomainFillDevicePCIConnectFlags(obj->def, dev, priv->qemuCaps, driver);
+    qemuDomainFillDevicePCIConnectFlags(obj->def, dev, priv->qemuCaps, priv->driver);
 
     qemuDomainFillDevicePCIExtensionFlags(dev, info, priv->qemuCaps);
 
@@ -3272,7 +3270,6 @@ qemuDomainEnsureVirtioAddress(bool *releaseAddr,
     virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainCCWAddressSet *ccwaddrs = NULL;
-    virQEMUDriver *driver = priv->driver;
     int ret = -1;
 
     if (!info->type) {
@@ -3289,7 +3286,7 @@ qemuDomainEnsureVirtioAddress(bool *releaseAddr,
             goto cleanup;
     } else if (!info->type ||
                info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, dev, driver) < 0)
+        if (qemuDomainEnsurePCIAddress(vm, dev) < 0)
             goto cleanup;
         *releaseAddr = true;
     }

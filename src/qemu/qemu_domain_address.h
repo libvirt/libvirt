@@ -45,9 +45,8 @@ int qemuDomainAssignAddresses(virDomainDef *def,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuDomainEnsurePCIAddress(virDomainObj *obj,
-                               virDomainDeviceDef *dev,
-                               virQEMUDriver *driver)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
+                               virDomainDeviceDef *dev)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void qemuDomainFillDeviceIsolationGroup(virDomainDef *def,
                                        virDomainDeviceDef *dev)
@@ -56,8 +55,7 @@ void qemuDomainFillDeviceIsolationGroup(virDomainDef *def,
 void qemuDomainReleaseDeviceAddress(virDomainObj *vm,
                                     virDomainDeviceInfo *info);
 
-int qemuDomainAssignMemoryDeviceSlot(virQEMUDriver *driver,
-                                     virDomainObj *vm,
+int qemuDomainAssignMemoryDeviceSlot(virDomainObj *vm,
                                      virDomainMemoryDef *mem);
 
 void qemuDomainReleaseMemoryDeviceSlot(virDomainObj *vm,

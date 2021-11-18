@@ -1254,7 +1254,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         if (virDomainCCWAddressAssign(&net->info, ccwaddrs,
                                       !net->info.addr.ccw.assigned) < 0)
             goto cleanup;
-    } else if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0) {
+    } else if (qemuDomainEnsurePCIAddress(vm, &dev) < 0) {
         goto cleanup;
     }
 
@@ -1706,7 +1706,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         /* Isolation groups are only relevant for pSeries guests */
         qemuDomainFillDeviceIsolationGroup(vm->def, &dev);
 
-    if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+    if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
         goto error;
     releaseaddr = true;
 
@@ -2131,8 +2131,7 @@ qemuDomainChrRemove(virDomainDef *vmdef,
  */
 static int
 qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
-                                    virDomainChrDef *chr,
-                                    virQEMUDriver *driver)
+                                    virDomainChrDef *chr)
 {
     virDomainDef *def = vm->def;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2146,7 +2145,7 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
             return -1;
         return 1;
 
@@ -2204,7 +2203,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
-    if ((rc = qemuDomainAttachChrDeviceAssignAddr(vm, chr, driver)) < 0)
+    if ((rc = qemuDomainAttachChrDeviceAssignAddr(vm, chr)) < 0)
         goto cleanup;
     if (rc == 1)
         need_release = true;
@@ -2442,7 +2441,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     if (qemuDomainDefValidateMemoryHotplug(vm->def, mem) < 0)
         goto cleanup;
 
-    if (qemuDomainAssignMemoryDeviceSlot(driver, vm, mem) < 0)
+    if (qemuDomainAssignMemoryDeviceSlot(vm, mem) < 0)
         goto cleanup;
     releaseaddr = true;
 
@@ -2777,7 +2776,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
 
     if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
         hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
             goto cleanup;
     } else if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
         if (!(ccwaddrs = virDomainCCWAddressSetCreateFromDomain(vm->def)))
@@ -2870,7 +2869,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
 
     switch (hostdev->source.subsys.u.mdev.model) {
     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
             return -1;
         break;
     case VIR_MDEV_MODEL_TYPE_VFIO_CCW: {
@@ -3039,7 +3038,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
 
     if ((shmem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE ||
          shmem->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) &&
-        (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0))
+        (qemuDomainEnsurePCIAddress(vm, &dev) < 0))
         return -1;
 
     if (!(devProps = qemuBuildShmemDevProps(vm->def, shmem)))
@@ -3136,7 +3135,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
         return -1;
 
     if (watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
-        if (qemuDomainEnsurePCIAddress(vm, &dev, driver) < 0)
+        if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
             goto cleanup;
         releaseAddress = true;
     } else {
