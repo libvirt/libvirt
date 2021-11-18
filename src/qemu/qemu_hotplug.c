@@ -2125,13 +2125,12 @@ qemuDomainChrRemove(virDomainDef *vmdef,
     return ret;
 }
 
-/* Returns  1 if the address will need to be released later,
- *         -1 on error
- *          0 otherwise
- */
+
+
 static int
 qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
-                                    virDomainChrDef *chr)
+                                    virDomainChrDef *chr,
+                                    bool *need_release)
 {
     virDomainDef *def = vm->def;
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -2147,13 +2146,16 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI) {
         if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
             return -1;
-        return 1;
 
+        *need_release = true;
+        return 0;
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
                chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB) {
         if (virDomainUSBAddressEnsure(priv->usbaddrs, &chr->info) < 0)
             return -1;
-        return 1;
+
+        *need_release = true;
+        return 0;
 
     } else if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL &&
                chr->targetType == VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_VIRTIO) {
@@ -2176,7 +2178,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virDomainChrDef *chr)
 {
-    int ret = -1, rc;
+    int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     virErrorPtr orig_err;
     virDomainDef *vmdef = vm->def;
@@ -2203,10 +2205,8 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuAssignDeviceChrAlias(vmdef, chr, -1) < 0)
         goto cleanup;
 
-    if ((rc = qemuDomainAttachChrDeviceAssignAddr(vm, chr)) < 0)
+    if (qemuDomainAttachChrDeviceAssignAddr(vm, chr, &need_release) < 0)
         goto cleanup;
-    if (rc == 1)
-        need_release = true;
 
     if (qemuDomainNamespaceSetupChardev(vm, chr, &teardowndevice) < 0)
         goto cleanup;
