@@ -4212,6 +4212,28 @@ virQEMUCapsParseGIC(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 }
 
 
+static int
+virQEMUCapsValidateEmulator(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
+{
+    g_autofree char *str = NULL;
+
+    if (!(str = virXPathString("string(./emulator)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing emulator in QEMU capabilities cache"));
+        return -1;
+    }
+
+    if (STRNEQ(str, qemuCaps->binary)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Expected caps for '%s' but saw '%s'"),
+                       qemuCaps->binary, str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * Parsing a doc that looks like
  *
@@ -4286,18 +4308,9 @@ virQEMUCapsLoadCache(virArch hostArch,
         goto cleanup;
     }
 
-    if (!(str = virXPathString("string(./emulator)", ctxt))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing emulator in QEMU capabilities cache"));
+    if (virQEMUCapsValidateEmulator(qemuCaps, ctxt) < 0)
         goto cleanup;
-    }
-    if (STRNEQ(str, qemuCaps->binary)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Expected caps for '%s' but saw '%s'"),
-                       qemuCaps->binary, str);
-        goto cleanup;
-    }
-    VIR_FREE(str);
+
     if (virXPathLongLong("string(./qemuctime)", ctxt, &l) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("missing qemuctime in QEMU capabilities XML"));
