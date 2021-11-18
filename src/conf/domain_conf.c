@@ -15770,8 +15770,8 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
                                             &net->info.addr.ccw))
             continue;
 
-        if (net->info.alias &&
-            STRNEQ_NULLABLE(def->nets[i]->info.alias, net->info.alias)) {
+        if (net->info.alias && def->nets[i]->info.alias &&
+            STRNEQ(def->nets[i]->info.alias, net->info.alias)) {
             continue;
         }
 
