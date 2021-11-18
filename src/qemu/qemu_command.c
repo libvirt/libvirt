@@ -5331,6 +5331,8 @@ qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
     g_autoptr(virJSONValue) props = NULL;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
     g_autofree char *mdevPath = NULL;
+    /* 'ramfb' property must be omitted unless it's to be enabled */
+    bool ramfb = mdevsrc->ramfb == VIR_TRISTATE_SWITCH_ON;
 
     mdevPath = virMediatedDeviceGetSysfsPath(mdevsrc->uuidstr);
 
@@ -5339,7 +5341,7 @@ qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
                               "s:id", dev->info->alias,
                               "s:sysfsdev", mdevPath,
                               "S:display", qemuOnOffAuto(mdevsrc->display),
-                              "T:ramfb", mdevsrc->ramfb,
+                              "B:ramfb", ramfb,
                               "p:bootindex", dev->info->bootIndex,
                               NULL) < 0)
         return NULL;
