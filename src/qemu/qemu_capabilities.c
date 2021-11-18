@@ -4234,6 +4234,26 @@ virQEMUCapsValidateEmulator(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
 }
 
 
+static int
+virQEMUCapsValidateArch(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
+{
+    g_autofree char *str = NULL;
+
+    if (!(str = virXPathString("string(./arch)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("missing arch in QEMU capabilities cache"));
+        return -1;
+    }
+    if (!(qemuCaps->arch = virArchFromString(str))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("unknown arch %s in QEMU capabilities cache"), str);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 /*
  * Parsing a doc that looks like
  *
@@ -4357,17 +4377,8 @@ virQEMUCapsLoadCache(virArch hostArch,
             goto cleanup;
     }
 
-    if (!(str = virXPathString("string(./arch)", ctxt))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("missing arch in QEMU capabilities cache"));
+    if (virQEMUCapsValidateArch(qemuCaps, ctxt) < 0)
         goto cleanup;
-    }
-    if (!(qemuCaps->arch = virArchFromString(str))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unknown arch %s in QEMU capabilities cache"), str);
-        goto cleanup;
-    }
-    VIR_FREE(str);
 
     if (virXPathBoolean("boolean(./cpudata)", ctxt) > 0) {
         qemuCaps->cpuData = virCPUDataParseNode(virXPathNode("./cpudata", ctxt));
