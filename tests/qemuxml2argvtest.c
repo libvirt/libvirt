@@ -1423,32 +1423,6 @@ mymain(void)
             QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_VFIO_PCI);
 
-    DO_TEST("serial-file-log",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    driver.config->spiceTLS = 1;
-    DO_TEST("serial-spiceport",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_SPICE,
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    driver.config->spiceTLS = 0;
-
-    DO_TEST("console-compat",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("console-compat-auto",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-
-    DO_TEST("serial-vc-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-pty-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-dev-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-dev-chardev-iobase",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-file-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-unix-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-file-log");
     driver.config->spiceTLS = 1;
     DO_TEST_CAPS_LATEST("serial-spiceport");
@@ -1464,45 +1438,25 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-dev-chardev-iobase");
     DO_TEST_CAPS_LATEST("serial-file-chardev");
     DO_TEST_CAPS_LATEST("serial-unix-chardev");
-    DO_TEST("serial-tcp-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-udp-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("serial-tcp-telnet-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-unix-chardev");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("serial-unix-missing-source");
     DO_TEST_CAPS_LATEST("serial-tcp-chardev");
     DO_TEST_CAPS_LATEST("serial-udp-chardev");
     DO_TEST_CAPS_LATEST("serial-tcp-telnet-chardev");
     driver.config->chardevTLS = 1;
-    DO_TEST("serial-tcp-tlsx509-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev");
     driver.config->chardevTLSx509verify = 1;
-    DO_TEST("serial-tcp-tlsx509-chardev-verify",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-verify");
     driver.config->chardevTLSx509verify = 0;
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-chardev-notls");
     driver.config->chardevTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
-    DO_TEST("serial-tcp-tlsx509-secret-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-tcp-tlsx509-secret-chardev");
     VIR_FREE(driver.config->chardevTLSx509secretUUID);
     driver.config->chardevTLS = 0;
-    DO_TEST("serial-many-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST_NOCAPS("parallel-tcp-chardev");
-    DO_TEST_NOCAPS("parallel-parport-chardev");
     DO_TEST_CAPS_LATEST("serial-many-chardev");
     DO_TEST_CAPS_LATEST("parallel-tcp-chardev");
     DO_TEST_CAPS_LATEST("parallel-parport-chardev");
     DO_TEST_CAPS_LATEST("parallel-unix-chardev");
-    DO_TEST("console-compat-chardev",
-            QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST("pci-serial-dev-chardev",
-            QEMU_CAPS_DEVICE_PCI_SERIAL);
     DO_TEST_CAPS_LATEST("console-compat-chardev");
     DO_TEST_CAPS_LATEST("pci-serial-dev-chardev");
 
