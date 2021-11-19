@@ -4681,7 +4681,7 @@ virQEMUCapsKVMSupportsSecureGuestAMD(void)
     if (virFileReadValueString(&modValue, "/sys/module/kvm_amd/parameters/sev") < 0)
         return false;
 
-    if (modValue[0] != '1')
+    if (modValue[0] != '1' && modValue[0] != 'Y' && modValue[0] != 'y')
         return false;
 
     if (virFileExists(QEMU_DEV_SEV))
