@@ -180,8 +180,11 @@ virPolkitAgentCreate(void)
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
-    if (!isatty(STDIN_FILENO))
+    if (!isatty(STDIN_FILENO)) {
+        virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
+                       _("Cannot start polkit text agent without a tty"));
         goto error;
+    }
 
     if (virPipe(pipe_fd) < 0)
         goto error;
@@ -205,8 +208,11 @@ virPolkitAgentCreate(void)
     pollfd.fd = pipe_fd[0];
     pollfd.events = POLLHUP;
 
-    if (poll(&pollfd, 1, -1) < 0)
+    if (poll(&pollfd, 1, -1) < 0) {
+        virReportSystemError(errno, "%s",
+                             _("error in poll call"));
         goto error;
+    }
 
     return agent;
 
