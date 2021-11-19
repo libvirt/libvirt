@@ -53,7 +53,7 @@ void virAppendElement(void *ptrptr,
                       void *newelem,
                       bool clearOriginal,
                       bool inPlace)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
 int virDeleteElementsN(void *ptrptr, size_t size, size_t at, size_t *countptr,
                        size_t toremove, bool inPlace)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);

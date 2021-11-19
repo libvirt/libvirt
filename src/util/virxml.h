@@ -109,14 +109,14 @@ virXMLPropTristateBool(xmlNodePtr node,
                        const char *name,
                        virXMLPropFlags flags,
                        virTristateBool *result)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
 virXMLPropTristateSwitch(xmlNodePtr node,
                          const char *name,
                          virXMLPropFlags flags,
                          virTristateSwitch *result)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(3);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
 virXMLPropInt(xmlNodePtr node,
@@ -125,7 +125,7 @@ virXMLPropInt(xmlNodePtr node,
               virXMLPropFlags flags,
               int *result,
               int defaultResult)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int
 virXMLPropUInt(xmlNodePtr node,
@@ -133,7 +133,7 @@ virXMLPropUInt(xmlNodePtr node,
                int base,
                virXMLPropFlags flags,
                unsigned int *result)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int
 virXMLPropULongLong(xmlNodePtr node,
@@ -141,7 +141,7 @@ virXMLPropULongLong(xmlNodePtr node,
                     int base,
                     virXMLPropFlags flags,
                     unsigned long long *result)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 int
 virXMLPropEnum(xmlNodePtr node,
@@ -149,8 +149,8 @@ virXMLPropEnum(xmlNodePtr node,
                int (*strToInt)(const char*),
                virXMLPropFlags flags,
                unsigned int *result)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(5);
 
 int
 virXMLPropEnumDefault(xmlNodePtr node,
@@ -159,8 +159,8 @@ virXMLPropEnumDefault(xmlNodePtr node,
                       virXMLPropFlags flags,
                       unsigned int *result,
                       unsigned int defaultResult)
-    ATTRIBUTE_NONNULL(0) ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
-    ATTRIBUTE_NONNULL(4);
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(5);
 
 
 /* Internal function; prefer the macros below.  */
