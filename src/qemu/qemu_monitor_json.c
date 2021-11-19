@@ -6612,9 +6612,9 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
 {
     g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) backend = virJSONValueNewObject();
-    g_autoptr(virJSONValue) data = virJSONValueNewObject();
+    g_autoptr(virJSONValue) backendData = virJSONValueNewObject();
     g_autoptr(virJSONValue) addr = NULL;
-    const char *backend_type = NULL;
+    const char *backendType = NULL;
     const char *host;
     const char *port;
     g_autofree char *tlsalias = NULL;
@@ -6622,72 +6622,72 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
 
     switch ((virDomainChrType)chr->type) {
     case VIR_DOMAIN_CHR_TYPE_NULL:
-        backend_type = "null";
+        backendType = "null";
         break;
 
     case VIR_DOMAIN_CHR_TYPE_VC:
-        backend_type = "vc";
+        backendType = "vc";
         break;
 
     case VIR_DOMAIN_CHR_TYPE_PTY:
-        backend_type = "pty";
+        backendType = "pty";
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        backend_type = "file";
-        if (virJSONValueObjectAppendString(data, "out", chr->data.file.path) < 0)
+        backendType = "file";
+        if (virJSONValueObjectAppendString(backendData, "out", chr->data.file.path) < 0)
             return NULL;
-        if (virJSONValueObjectAdd(&data,
+        if (virJSONValueObjectAdd(&backendData,
                                   "T:append", chr->data.file.append,
                                   NULL) < 0)
             return NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
-        backend_type = STRPREFIX(chrID, "parallel") ? "parallel" : "serial";
-        if (virJSONValueObjectAppendString(data, "device",
+        backendType = STRPREFIX(chrID, "parallel") ? "parallel" : "serial";
+        if (virJSONValueObjectAppendString(backendData, "device",
                                            chr->data.file.path) < 0)
             return NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_TCP:
-        backend_type = "socket";
+        backendType = "socket";
         addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.tcp.host,
                                                      chr->data.tcp.service);
         if (!addr ||
-            virJSONValueObjectAppend(data, "addr", &addr) < 0)
+            virJSONValueObjectAppend(backendData, "addr", &addr) < 0)
             return NULL;
 
         telnet = chr->data.tcp.protocol == VIR_DOMAIN_CHR_TCP_PROTOCOL_TELNET;
 
         if (chr->data.tcp.listen &&
-            virJSONValueObjectAppendBoolean(data, "wait", false) < 0)
+            virJSONValueObjectAppendBoolean(backendData, "wait", false) < 0)
             return NULL;
 
-        if (virJSONValueObjectAppendBoolean(data, "telnet", telnet) < 0 ||
-            virJSONValueObjectAppendBoolean(data, "server", chr->data.tcp.listen) < 0)
+        if (virJSONValueObjectAppendBoolean(backendData, "telnet", telnet) < 0 ||
+            virJSONValueObjectAppendBoolean(backendData, "server", chr->data.tcp.listen) < 0)
             return NULL;
         if (chr->data.tcp.tlscreds) {
             if (!(tlsalias = qemuAliasTLSObjFromSrcAlias(chrID)))
                 return NULL;
 
-            if (virJSONValueObjectAppendString(data, "tls-creds", tlsalias) < 0)
+            if (virJSONValueObjectAppendString(backendData, "tls-creds", tlsalias) < 0)
                 return NULL;
         }
 
-        if (qemuMonitorJSONBuildChrChardevReconnect(data, &chr->data.tcp.reconnect) < 0)
+        if (qemuMonitorJSONBuildChrChardevReconnect(backendData, &chr->data.tcp.reconnect) < 0)
             return NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UDP:
-        backend_type = "udp";
+        backendType = "udp";
         host = chr->data.udp.connectHost;
         if (!host)
             host = "";
         addr = qemuMonitorJSONBuildInetSocketAddress(host,
                                                      chr->data.udp.connectService);
         if (!addr ||
-            virJSONValueObjectAppend(data, "remote", &addr) < 0)
+            virJSONValueObjectAppend(backendData, "remote", &addr) < 0)
             return NULL;
 
         host = chr->data.udp.bindHost;
@@ -6699,34 +6699,34 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                 port = "";
             addr = qemuMonitorJSONBuildInetSocketAddress(host, port);
             if (!addr ||
-                virJSONValueObjectAppend(data, "local", &addr) < 0)
+                virJSONValueObjectAppend(backendData, "local", &addr) < 0)
                 return NULL;
         }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        backend_type = "socket";
+        backendType = "socket";
         addr = qemuMonitorJSONBuildUnixSocketAddress(chr->data.nix.path);
 
         if (!addr ||
-            virJSONValueObjectAppend(data, "addr", &addr) < 0)
+            virJSONValueObjectAppend(backendData, "addr", &addr) < 0)
             return NULL;
 
         if (chr->data.nix.listen &&
-            virJSONValueObjectAppendBoolean(data, "wait", false) < 0)
+            virJSONValueObjectAppendBoolean(backendData, "wait", false) < 0)
             return NULL;
 
-        if (virJSONValueObjectAppendBoolean(data, "server", chr->data.nix.listen) < 0)
+        if (virJSONValueObjectAppendBoolean(backendData, "server", chr->data.nix.listen) < 0)
             return NULL;
 
-        if (qemuMonitorJSONBuildChrChardevReconnect(data, &chr->data.nix.reconnect) < 0)
+        if (qemuMonitorJSONBuildChrChardevReconnect(backendData, &chr->data.nix.reconnect) < 0)
             return NULL;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-        backend_type = "spicevmc";
+        backendType = "spicevmc";
 
-        if (virJSONValueObjectAppendString(data, "type",
+        if (virJSONValueObjectAppendString(backendData, "type",
                                            virDomainChrSpicevmcTypeToString(chr->data.spicevmc)) < 0)
             return NULL;
         break;
@@ -6747,14 +6747,14 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
     }
 
     if (chr->logfile &&
-        virJSONValueObjectAdd(&data,
+        virJSONValueObjectAdd(&backendData,
                               "s:logfile", chr->logfile,
                               "T:logappend", chr->logappend,
                               NULL) < 0)
         return NULL;
 
-    if (virJSONValueObjectAppendString(backend, "type", backend_type) < 0 ||
-        virJSONValueObjectAppend(backend, "data", &data) < 0)
+    if (virJSONValueObjectAppendString(backend, "type", backendType) < 0 ||
+        virJSONValueObjectAppend(backend, "data", &backendData) < 0)
         return NULL;
 
     if (virJSONValueObjectAdd(&props,
