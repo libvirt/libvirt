@@ -6600,10 +6600,22 @@ static int
 qemuMonitorJSONBuildChrChardevReconnect(virJSONValue *object,
                                         const virDomainChrSourceReconnectDef *def)
 {
-    if (def->enabled != VIR_TRISTATE_BOOL_YES)
+    int timeout = 0;
+
+    switch (def->enabled) {
+    case VIR_TRISTATE_BOOL_ABSENT:
+    case VIR_TRISTATE_BOOL_LAST:
         return 0;
 
-    return virJSONValueObjectAppendNumberUint(object, "reconnect", def->timeout);
+    case VIR_TRISTATE_BOOL_YES:
+        timeout = def->timeout;
+        break;
+
+    case VIR_TRISTATE_BOOL_NO:
+        break;
+    }
+
+    return virJSONValueObjectAppendNumberUint(object, "reconnect", timeout);
 }
 
 static virJSONValue *
