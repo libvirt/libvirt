@@ -180,9 +180,9 @@ virPolkitAgentCreate(void)
     int outfd = STDOUT_FILENO;
     int errfd = STDERR_FILENO;
 
-    if (!isatty(STDIN_FILENO)) {
+    if (!virPolkitAgentAvailable()) {
         virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                       _("Cannot start polkit text agent without a tty"));
+                       _("polkit text authentication agent unavailable"));
         goto error;
     }
 
