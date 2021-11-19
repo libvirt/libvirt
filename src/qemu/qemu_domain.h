@@ -345,6 +345,11 @@ struct _qemuDomainChrSourcePrivate {
     int fd; /* file descriptor of the chardev source */
     int logfd; /* file descriptor of the logging source */
     bool wait; /* wait for incomming connections on chardev */
+
+    char *fdset; /* fdset path corresponding to the passed filedescriptor */
+    char *logFdset; /* fdset path corresponding to the passed filedescriptor for logfile */
+    int passedFD; /* filedescriptor number when fdset passing it directly */
+    char *tlsCredsAlias; /* alias of the x509 tls credentials object */
 };
 
 
