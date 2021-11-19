@@ -1399,36 +1399,18 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
 
 static int
 qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
-                   pid_t pid, int tid)
+                   pid_t pid, pid_t tid)
 {
-    g_autofree char *proc = NULL;
-    FILE *pidinfo;
+    g_auto(GStrv) proc_stat = virProcessGetStat(pid, tid);
     unsigned long long usertime = 0, systime = 0;
     long rss = 0;
     int cpu = 0;
 
-    /* In general, we cannot assume pid_t fits in int; but /proc parsing
-     * is specific to Linux where int works fine.  */
-    if (tid)
-        proc = g_strdup_printf("/proc/%d/task/%d/stat", (int)pid, tid);
-    else
-        proc = g_strdup_printf("/proc/%d/stat", (int)pid);
-    if (!proc)
-        return -1;
-
-    pidinfo = fopen(proc, "r");
-
-    /* See 'man proc' for information about what all these fields are. We're
-     * only interested in a very few of them */
-    if (!pidinfo ||
-        fscanf(pidinfo,
-               /* pid -> stime */
-               "%*d (%*[^)]) %*c %*d %*d %*d %*d %*d %*u %*u %*u %*u %*u %llu %llu"
-               /* cutime -> endcode */
-               "%*d %*d %*d %*d %*d %*d %*u %*u %ld %*u %*u %*u"
-               /* startstack -> processor */
-               "%*u %*u %*u %*u %*u %*u %*u %*u %*u %*u %*d %d",
-               &usertime, &systime, &rss, &cpu) != 4) {
+    if (!proc_stat ||
+        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_UTIME], NULL, 10, &usertime) < 0 ||
+        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &systime) < 0 ||
+        virStrToLong_l(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
+        virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0) {
         VIR_WARN("cannot parse process status data");
     }
 
@@ -1449,8 +1431,6 @@ qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
 
     VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
               (int)pid, tid, usertime, systime, cpu, rss);
-
-    VIR_FORCE_FCLOSE(pidinfo);
 
     return 0;
 }

@@ -1153,56 +1153,22 @@ virProcessSetMaxCoreSize(pid_t pid G_GNUC_UNUSED,
 int virProcessGetStartTime(pid_t pid,
                            unsigned long long *timestamp)
 {
-    char *tmp;
-    int len;
-    g_autofree char *filename = NULL;
-    g_autofree char *buf = NULL;
-    g_auto(GStrv) tokens = NULL;
+    g_auto(GStrv) proc_stat = virProcessGetStat(pid, 0);
+    const char *starttime_str = NULL;
 
-    filename = g_strdup_printf("/proc/%llu/stat", (long long)pid);
-
-    if ((len = virFileReadAll(filename, 1024, &buf)) < 0)
-        return -1;
-
-    /* start time is the token at index 19 after the '(process name)' entry - since only this
-     * field can contain the ')' character, search backwards for this to avoid malicious
-     * processes trying to fool us
-     */
-
-    if (!(tmp = strrchr(buf, ')'))) {
+    if (!proc_stat || g_strv_length(proc_stat) < 22) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find start time in %s"),
-                       filename);
-        return -1;
-    }
-    tmp += 2; /* skip ') ' */
-    if ((tmp - buf) >= len) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find start time in %s"),
-                       filename);
+                       _("Cannot find start time for pid %d"), (int)pid);
         return -1;
     }
 
-    tokens = g_strsplit(tmp, " ", 0);
-
-    if (!tokens ||
-        g_strv_length(tokens) < 20) {
+    starttime_str = proc_stat[VIR_PROCESS_STAT_STARTTIME];
+    if (virStrToLong_ull(starttime_str, NULL, 10, timestamp) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot find start time in %s"),
-                       filename);
+                       _("Cannot parse start time %s for pid %d"),
+                       starttime_str, (int)pid);
         return -1;
     }
-
-    if (virStrToLong_ull(tokens[19],
-                         NULL,
-                         10,
-                         timestamp) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse start time %s in %s"),
-                       tokens[19], filename);
-        return -1;
-    }
-
     return 0;
 }
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
