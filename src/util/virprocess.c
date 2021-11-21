@@ -35,7 +35,7 @@
 # include <sys/time.h>
 # include <sys/resource.h>
 #endif
-#if WITH_SCHED_SETSCHEDULER
+#if WITH_SCHED_H
 # include <sched.h>
 #endif
 
@@ -480,7 +480,7 @@ int virProcessKillPainfully(pid_t pid, bool force)
     return virProcessKillPainfullyDelay(pid, force, 0, false);
 }
 
-#if WITH_SCHED_GETAFFINITY
+#if WITH_DECL_CPU_SET_T
 
 int virProcessSetAffinity(pid_t pid, virBitmap *map, bool quiet)
 {
@@ -626,7 +626,7 @@ virProcessGetAffinity(pid_t pid)
     return ret;
 }
 
-#else /* WITH_SCHED_GETAFFINITY */
+#else /* WITH_DECL_CPU_SET_T */
 
 int virProcessSetAffinity(pid_t pid G_GNUC_UNUSED,
                           virBitmap *map G_GNUC_UNUSED,
@@ -646,7 +646,7 @@ virProcessGetAffinity(pid_t pid G_GNUC_UNUSED)
                          _("Process CPU affinity is not supported on this platform"));
     return NULL;
 }
-#endif /* WITH_SCHED_GETAFFINITY */
+#endif /* WITH_DECL_CPU_SET_T */
 
 
 int virProcessGetPids(pid_t pid, size_t *npids, pid_t **pids)
