@@ -51,21 +51,6 @@ VIR_ENUM_IMPL(libxlDomainJob,
               "modify",
 );
 
-static virClass *libxlDomainObjPrivateClass;
-
-static void
-libxlDomainObjPrivateDispose(void *obj);
-
-static int
-libxlDomainObjPrivateOnceInit(void)
-{
-    if (!VIR_CLASS_NEW(libxlDomainObjPrivate, virClassForObjectLockable()))
-        return -1;
-
-    return 0;
-}
-
-VIR_ONCE_GLOBAL_INIT(libxlDomainObjPrivate);
 
 static int
 libxlDomainObjInitJob(libxlDomainObjPrivate *priv)
@@ -206,33 +191,20 @@ libxlDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
 {
     libxlDomainObjPrivate *priv;
 
-    if (libxlDomainObjPrivateInitialize() < 0)
-        return NULL;
-
-    if (!(priv = virObjectLockableNew(libxlDomainObjPrivateClass)))
-        return NULL;
+    priv = g_new0(libxlDomainObjPrivate, 1);
 
     if (!(priv->devs = virChrdevAlloc())) {
-        virObjectUnref(priv);
+        g_free(priv);
         return NULL;
     }
 
     if (libxlDomainObjInitJob(priv) < 0) {
         virChrdevFree(priv->devs);
-        virObjectUnref(priv);
+        g_free(priv);
         return NULL;
     }
 
     return priv;
-}
-
-static void
-libxlDomainObjPrivateDispose(void *obj)
-{
-    libxlDomainObjPrivate *priv = obj;
-
-    libxlDomainObjFreeJob(priv);
-    virChrdevFree(priv->devs);
 }
 
 static void
@@ -241,7 +213,9 @@ libxlDomainObjPrivateFree(void *data)
     libxlDomainObjPrivate *priv = data;
 
     g_free(priv->lockState);
-    virObjectUnref(priv);
+    libxlDomainObjFreeJob(priv);
+    virChrdevFree(priv->devs);
+    g_free(priv);
 }
 
 static int

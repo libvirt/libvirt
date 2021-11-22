@@ -51,8 +51,6 @@ struct libxlDomainJobObj {
 
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
 struct _libxlDomainObjPrivate {
-    virObjectLockable parent;
-
     /* console */
     virChrdevs *devs;
     libxl_evgen_domain_death *deathW;
