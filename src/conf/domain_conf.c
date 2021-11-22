@@ -7871,9 +7871,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        seclabel->label = virXPathStringLimit("string(./label[1])",
-                                              VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (!seclabel->label) {
+        seclabel->label = virXPathString("string(./label[1])", ctxt);
+        if (!seclabel->label ||
+            strlen(seclabel->label) >= VIR_SECURITY_LABEL_BUFLEN - 1) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security label is missing"));
             return NULL;
@@ -7884,9 +7884,10 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     if (seclabel->relabel &&
         (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        seclabel->imagelabel = virXPathStringLimit("string(./imagelabel[1])",
-                                                   VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (!seclabel->imagelabel) {
+        seclabel->imagelabel = virXPathString("string(./imagelabel[1])", ctxt);
+
+        if (!seclabel->imagelabel ||
+            strlen(seclabel->imagelabel) >= VIR_SECURITY_LABEL_BUFLEN - 1) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security imagelabel is missing"));
             return NULL;
@@ -7895,8 +7896,11 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 
     /* Only parse baselabel for dynamic label type */
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        seclabel->baselabel = virXPathStringLimit("string(./baselabel[1])",
-                                                  VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        seclabel->baselabel = virXPathString("string(./baselabel[1])", ctxt);
+
+        if (seclabel->baselabel &&
+            strlen(seclabel->baselabel) >= VIR_SECURITY_LABEL_BUFLEN - 1)
+            g_clear_pointer(&seclabel->baselabel, g_free);
     }
 
     return g_steal_pointer(&seclabel);
