@@ -7874,36 +7874,32 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        p = virXPathStringLimit("string(./label[1])",
-                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL) {
+        seclabel->label = virXPathStringLimit("string(./label[1])",
+                                              VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        if (!seclabel->label) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security label is missing"));
             goto error;
         }
-
-        seclabel->label = g_steal_pointer(&p);
     }
 
     /* Only parse imagelabel, if requested live XML with relabeling */
     if (seclabel->relabel &&
         (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
-        p = virXPathStringLimit("string(./imagelabel[1])",
-                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        if (p == NULL) {
+        seclabel->imagelabel = virXPathStringLimit("string(./imagelabel[1])",
+                                                   VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
+        if (!seclabel->imagelabel) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security imagelabel is missing"));
             goto error;
         }
-        seclabel->imagelabel = g_steal_pointer(&p);
     }
 
     /* Only parse baselabel for dynamic label type */
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        p = virXPathStringLimit("string(./baselabel[1])",
-                                VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        seclabel->baselabel = g_steal_pointer(&p);
+        seclabel->baselabel = virXPathStringLimit("string(./baselabel[1])",
+                                                  VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     }
 
     return seclabel;
