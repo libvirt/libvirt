@@ -7800,15 +7800,15 @@ static virSecurityLabelDef *
 virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
-    char *p;
+    g_autofree char *model = NULL;
+    g_autofree char *relabel = NULL;
     virSecurityLabelDef *seclabel = NULL;
 
-    p = virXMLPropStringLimit(ctxt->node, "model",
-                              VIR_SECURITY_MODEL_BUFLEN - 1);
+    model = virXMLPropStringLimit(ctxt->node, "model",
+                                  VIR_SECURITY_MODEL_BUFLEN - 1);
 
-    if (!(seclabel = virSecurityLabelDefNew(p)))
+    if (!(seclabel = virSecurityLabelDefNew(model)))
         goto error;
-    VIR_FREE(p);
 
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
@@ -7823,16 +7823,13 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
         seclabel->relabel = false;
 
-    VIR_FREE(p);
-    p = virXMLPropString(ctxt->node, "relabel");
-    if (p) {
-        if (virStringParseYesNo(p, &seclabel->relabel) < 0) {
+    if ((relabel = virXMLPropString(ctxt->node, "relabel"))) {
+        if (virStringParseYesNo(relabel, &seclabel->relabel) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid security relabel value %s"), p);
+                           _("invalid security relabel value '%s'"), relabel);
             goto error;
         }
     }
-    VIR_FREE(p);
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         !seclabel->relabel) {
@@ -7905,7 +7902,6 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     return seclabel;
 
  error:
-    VIR_FREE(p);
     virSecurityLabelDefFree(seclabel);
     return NULL;
 }
