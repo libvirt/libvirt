@@ -7804,8 +7804,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree char *relabel = NULL;
     g_autoptr(virSecurityLabelDef) seclabel = NULL;
 
-    model = virXMLPropStringLimit(ctxt->node, "model",
-                                  VIR_SECURITY_MODEL_BUFLEN - 1);
+    if ((model = virXMLPropString(ctxt->node, "model")) &&
+        strlen(model) >= VIR_SECURITY_MODEL_BUFLEN - 1)
+        g_clear_pointer(&model, g_free);
 
     if (!(seclabel = virSecurityLabelDefNew(model)))
         return NULL;
