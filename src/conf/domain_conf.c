@@ -7802,7 +7802,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
 {
     g_autofree char *model = NULL;
     g_autofree char *relabel = NULL;
-    virSecurityLabelDef *seclabel = NULL;
+    g_autoptr(virSecurityLabelDef) seclabel = NULL;
 
     model = virXMLPropStringLimit(ctxt->node, "model",
                                   VIR_SECURITY_MODEL_BUFLEN - 1);
@@ -7862,7 +7862,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
             /* combination of relabel='yes' and type='static'
              * is checked a few lines above. */
         }
-        return seclabel;
+        return g_steal_pointer(&seclabel);
     }
 
     /* Only parse label, if using static labels, or
@@ -7899,10 +7899,9 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                                                   VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
     }
 
-    return seclabel;
+    return g_steal_pointer(&seclabel);
 
  error:
-    virSecurityLabelDefFree(seclabel);
     return NULL;
 }
 
