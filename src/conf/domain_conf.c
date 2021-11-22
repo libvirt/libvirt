@@ -7808,7 +7808,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                                   VIR_SECURITY_MODEL_BUFLEN - 1);
 
     if (!(seclabel = virSecurityLabelDefNew(model)))
-        goto error;
+        return NULL;
 
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
@@ -7817,7 +7817,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                        virDomainSeclabelTypeFromString,
                        VIR_XML_PROP_NONZERO,
                        &seclabel->type) < 0)
-        goto error;
+        return NULL;
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
@@ -7827,7 +7827,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         if (virStringParseYesNo(relabel, &seclabel->relabel) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("invalid security relabel value '%s'"), relabel);
-            goto error;
+            return NULL;
         }
     }
 
@@ -7835,13 +7835,13 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         !seclabel->relabel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("dynamic label type must use resource relabeling"));
-        goto error;
+        return NULL;
     }
     if (seclabel->type == VIR_DOMAIN_SECLABEL_NONE &&
         seclabel->relabel) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        "%s", _("resource relabeling is not compatible with 'none' label type"));
-        goto error;
+        return NULL;
     }
 
     /* For the model 'none' none of the following labels is going to be
@@ -7857,7 +7857,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("unsupported type='%s' to model 'none'"),
                                virDomainSeclabelTypeToString(seclabel->type));
-                goto error;
+                return NULL;
             }
             /* combination of relabel='yes' and type='static'
              * is checked a few lines above. */
@@ -7876,7 +7876,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         if (!seclabel->label) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security label is missing"));
-            goto error;
+            return NULL;
         }
     }
 
@@ -7889,7 +7889,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         if (!seclabel->imagelabel) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security imagelabel is missing"));
-            goto error;
+            return NULL;
         }
     }
 
@@ -7900,9 +7900,6 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     return g_steal_pointer(&seclabel);
-
- error:
-    return NULL;
 }
 
 static int
