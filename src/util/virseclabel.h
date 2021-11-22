@@ -37,7 +37,7 @@ struct _virSecurityLabelDef {
     char *label;        /* security label string */
     char *imagelabel;   /* security image label string */
     char *baselabel;    /* base name of label string */
-    int type;           /* virDomainSeclabelType */
+    virDomainSeclabelType type; /* virDomainSeclabelType */
     bool relabel;       /* true (default) for allowing relabels */
     bool implicit;      /* true if seclabel is auto-added */
 };

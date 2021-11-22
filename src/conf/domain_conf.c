@@ -7813,15 +7813,11 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     /* set default value */
     seclabel->type = VIR_DOMAIN_SECLABEL_DYNAMIC;
 
-    p = virXMLPropString(ctxt->node, "type");
-    if (p) {
-        seclabel->type = virDomainSeclabelTypeFromString(p);
-        if (seclabel->type <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("invalid security type '%s'"), p);
-            goto error;
-        }
-    }
+    if (virXMLPropEnum(ctxt->node, "type",
+                       virDomainSeclabelTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &seclabel->type) < 0)
+        goto error;
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_STATIC ||
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)

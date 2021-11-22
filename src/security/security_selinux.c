@@ -899,7 +899,8 @@ virSecuritySELinuxGenLabel(virSecurityManager *mgr,
         mcs = g_strdup(sens);
 
         break;
-
+    case VIR_DOMAIN_SECLABEL_DEFAULT:
+    case VIR_DOMAIN_SECLABEL_LAST:
     default:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unexpected security label type '%s'"),
