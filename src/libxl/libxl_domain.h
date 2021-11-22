@@ -27,11 +27,6 @@
 #include "virchrdev.h"
 #include "virenum.h"
 
-#define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
-#define DEFAULT_JOB_MASK \
-    (JOB_MASK(LIBXL_JOB_DESTROY) | \
-     JOB_MASK(LIBXL_JOB_ABORT))
-
 /* Only 1 job is allowed at any time
  * A job includes *all* libxl.so api, even those just querying
  * information, not merely actions */
