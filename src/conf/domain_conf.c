@@ -8065,9 +8065,10 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
             ignore_value(virStringParseYesNo(labelskip, &seclabels[i]->labelskip));
 
         ctxt->node = list[i];
-        label = virXPathStringLimit("string(./label)",
-                                    VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        seclabels[i]->label = g_steal_pointer(&label);
+        label = virXPathString("string(./label)", ctxt);
+
+        if (label && strlen(label) < VIR_SECURITY_LABEL_BUFLEN)
+            seclabels[i]->label = g_steal_pointer(&label);
 
         if (seclabels[i]->label && !seclabels[i]->relabel) {
             virReportError(VIR_ERR_XML_ERROR,
