@@ -89,45 +89,6 @@ virXPathString(const char *xpath,
 }
 
 
-static char *
-virXMLStringLimitInternal(char *value,
-                          size_t maxlen,
-                          const char *name)
-{
-    if (value != NULL && strlen(value) >= maxlen) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("'%s' value longer than '%zu' bytes"),
-                       name, maxlen);
-        VIR_FREE(value);
-        return NULL;
-    }
-
-    return value;
-}
-
-
-/**
- * virXPathStringLimit:
- * @xpath: the XPath string to evaluate
- * @maxlen: maximum length permitted string
- * @ctxt: an XPath context
- *
- * Wrapper for virXPathString, which validates the length of the returned
- * string.
- *
- * Returns a new string which must be deallocated by the caller or NULL if
- * the evaluation failed.
- */
-char *
-virXPathStringLimit(const char *xpath,
-                    size_t maxlen,
-                    xmlXPathContextPtr ctxt)
-{
-    char *tmp = virXPathString(xpath, ctxt);
-
-    return virXMLStringLimitInternal(tmp, maxlen, xpath);
-}
-
 /**
  * virXPathNumber:
  * @xpath: the XPath string to evaluate
@@ -489,29 +450,6 @@ virXMLPropString(xmlNodePtr node,
                  const char *name)
 {
     return (char *)xmlGetProp(node, BAD_CAST name);
-}
-
-
-/**
- * virXMLPropStringLimit:
- * @node: XML dom node pointer
- * @name: Name of the property (attribute) to get
- * @maxlen: maximum permitted length of the string
- *
- * Wrapper for virXMLPropString, which validates the length of the returned
- * string.
- *
- * Returns a new string which must be deallocated by the caller or NULL if
- * the evaluation failed.
- */
-char *
-virXMLPropStringLimit(xmlNodePtr node,
-                      const char *name,
-                      size_t maxlen)
-{
-    char *tmp = (char *)xmlGetProp(node, BAD_CAST name);
-
-    return virXMLStringLimitInternal(tmp, maxlen, name);
 }
 
 

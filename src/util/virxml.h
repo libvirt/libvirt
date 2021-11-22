@@ -47,10 +47,6 @@ virXPathBoolean(const char *xpath,
 char *
 virXPathString(const char *xpath,
                xmlXPathContextPtr ctxt);
-char *
-virXPathStringLimit(const char *xpath,
-                    size_t maxlen,
-                    xmlXPathContextPtr ctxt);
 int
 virXPathNumber(const char *xpath,
                xmlXPathContextPtr ctxt,
@@ -97,10 +93,6 @@ virXPathNodeSet(const char *xpath,
 char *
 virXMLPropString(xmlNodePtr node,
                  const char *name);
-char *
-virXMLPropStringLimit(xmlNodePtr node,
-                      const char *name,
-                      size_t maxlen);
 char *
 virXMLNodeContentString(xmlNodePtr node);
 
