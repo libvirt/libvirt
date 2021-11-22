@@ -1476,7 +1476,7 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
 
 static int
 qemuBuildChardevCommand(virCommand *cmd,
-                        virQEMUDriverConfig *cfg,
+                        virQEMUDriverConfig *cfg G_GNUC_UNUSED,
                         const virDomainChrSourceDef *dev,
                         const char *charAlias,
                         virQEMUCaps *qemuCaps)
@@ -1506,9 +1506,9 @@ qemuBuildChardevCommand(virCommand *cmd,
             if (!(objalias = qemuAliasTLSObjFromSrcAlias(charAlias)))
                 return -1;
 
-            if (qemuBuildTLSx509CommandLine(cmd, cfg->chardevTLSx509certdir,
+            if (qemuBuildTLSx509CommandLine(cmd, chrSourcePriv->tlsCertPath,
                                             dev->data.tcp.listen,
-                                            cfg->chardevTLSx509verify,
+                                            chrSourcePriv->tlsVerify,
                                             tlsCertEncSecAlias,
                                             objalias, qemuCaps) < 0) {
                 return -1;

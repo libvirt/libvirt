@@ -867,6 +867,8 @@ qemuDomainChrSourcePrivateDispose(void *obj)
     VIR_FORCE_CLOSE(priv->fd);
     VIR_FORCE_CLOSE(priv->logfd);
 
+    g_free(priv->tlsCertPath);
+
     g_free(priv->fdset);
     g_free(priv->logFdset);
     g_free(priv->tlsCredsAlias);
@@ -9753,6 +9755,11 @@ qemuDomainPrepareChardevSourceOne(virDomainDeviceDef *dev,
             if (charsrc->data.tcp.haveTLS == VIR_TRISTATE_BOOL_ABSENT) {
                 charsrc->data.tcp.haveTLS = virTristateBoolFromBool(data->cfg->chardevTLS);
                 charsrc->data.tcp.tlsFromConfig = true;
+            }
+
+            if (charsrc->data.tcp.haveTLS == VIR_TRISTATE_BOOL_YES) {
+                charpriv->tlsCertPath = g_strdup(data->cfg->chardevTLSx509certdir);
+                charpriv->tlsVerify = data->cfg->chardevTLSx509verify;
             }
         }
         break;
