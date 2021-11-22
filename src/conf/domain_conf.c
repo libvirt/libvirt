@@ -8014,7 +8014,6 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
     size_t nseclabels = 0;
     int n;
     size_t i, j;
-    char *model, *relabel, *label, *labelskip;
     g_autofree xmlNodePtr *list = NULL;
 
     if ((n = virXPathNodeSet("./seclabel", ctxt, &list)) < 0)
@@ -8028,6 +8027,11 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
         seclabels[i] = g_new0(virSecurityDeviceLabelDef, 1);
 
     for (i = 0; i < n; i++) {
+        g_autofree char *model = NULL;
+        g_autofree char *relabel = NULL;
+        g_autofree char *label = NULL;
+        g_autofree char *labelskip = NULL;
+
         /* get model associated to this override */
         model = virXMLPropString(list[i], "model");
         if (model) {
@@ -8039,7 +8043,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
                     goto error;
                 }
             }
-            seclabels[i]->model = model;
+            seclabels[i]->model = g_steal_pointer(&model);
         }
 
         relabel = virXMLPropString(list[i], "relabel");
@@ -8048,10 +8052,8 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
                 virReportError(VIR_ERR_XML_ERROR,
                                _("invalid security relabel value %s"),
                                relabel);
-                VIR_FREE(relabel);
                 goto error;
             }
-            VIR_FREE(relabel);
         } else {
             seclabels[i]->relabel = true;
         }
@@ -8061,14 +8063,13 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
         seclabels[i]->labelskip = false;
         if (labelskip && !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
             ignore_value(virStringParseYesNo(labelskip, &seclabels[i]->labelskip));
-        VIR_FREE(labelskip);
 
         ctxt->node = list[i];
         label = virXPathStringLimit("string(./label)",
                                     VIR_SECURITY_LABEL_BUFLEN-1, ctxt);
-        seclabels[i]->label = label;
+        seclabels[i]->label = g_steal_pointer(&label);
 
-        if (label && !seclabels[i]->relabel) {
+        if (seclabels[i]->label && !seclabels[i]->relabel) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("Cannot specify a label if relabelling is "
                              "turned off. model=%s"),
