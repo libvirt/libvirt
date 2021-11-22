@@ -955,7 +955,8 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
         g_autofree char *keyword = NULL;
 
         ctxt->node = nodes[i];
-        if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
+        if (!(index = virXPathString("string(./@index[1])", ctxt)) ||
+            strlen(index) > 1) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                     _("<vendor_field> evaluation has failed"));
             continue;
@@ -983,7 +984,8 @@ virNodeDeviceCapVPDParseCustomFields(xmlXPathContextPtr ctxt, virPCIVPDResource 
             VIR_XPATH_NODE_AUTORESTORE(ctxt);
 
             ctxt->node = nodes[i];
-            if (!(index = virXPathStringLimit("string(./@index[1])", 2, ctxt))) {
+            if (!(index = virXPathString("string(./@index[1])", ctxt)) ||
+                strlen(index) > 1) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                         _("<system_field> evaluation has failed"));
                 continue;
