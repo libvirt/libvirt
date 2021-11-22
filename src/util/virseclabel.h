@@ -63,4 +63,7 @@ virSecurityDeviceLabelDefCopy(const virSecurityDeviceLabelDef *src)
     ATTRIBUTE_NONNULL(1);
 
 void virSecurityLabelDefFree(virSecurityLabelDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecurityLabelDef, virSecurityLabelDefFree);
+
 void virSecurityDeviceLabelDefFree(virSecurityDeviceLabelDef *def);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virSecurityDeviceLabelDef, virSecurityDeviceLabelDefFree);
