@@ -342,6 +342,20 @@ s390x-debian-sid-container:
     NAME: debian-sid-cross-s390x
 
 
+mingw32-fedora-35-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: fedora-35-cross-mingw32
+
+
+mingw64-fedora-35-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: fedora-35-cross-mingw64
+
+
 mingw32-fedora-rawhide-container:
   extends: .container_job
   allow_failure: true
@@ -609,6 +623,16 @@ s390x-debian-sid:
     CROSS: s390x
 
 
+mingw64-fedora-35:
+  extends: .cross_build_job
+  needs:
+    - mingw64-fedora-35-container
+  allow_failure: false
+  variables:
+    NAME: fedora-35
+    CROSS: mingw64
+
+
 mingw32-fedora-rawhide:
   extends: .cross_build_job
   needs:
@@ -617,16 +641,6 @@ mingw32-fedora-rawhide:
   variables:
     NAME: fedora-rawhide
     CROSS: mingw32
-
-
-mingw64-fedora-rawhide:
-  extends: .cross_build_job
-  needs:
-    - mingw64-fedora-rawhide-container
-  allow_failure: true
-  variables:
-    NAME: fedora-rawhide
-    CROSS: mingw64
 
 
 # Native cirrus build jobs

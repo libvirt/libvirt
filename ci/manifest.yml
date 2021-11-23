@@ -127,7 +127,15 @@ targets:
 
   fedora-34: x86_64
 
-  fedora-35: x86_64
+  fedora-35:
+    jobs:
+      - arch: x86_64
+
+      - arch: mingw32
+        allow-failure: true
+        builds: false
+
+      - arch: mingw64
 
   fedora-rawhide:
     jobs:
@@ -146,6 +154,7 @@ targets:
 
       - arch: mingw64
         allow-failure: true
+        builds: false
 
   freebsd-12: x86_64
 
