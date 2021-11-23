@@ -88,8 +88,6 @@ virCHMonitorBuildCPUJson(virJSONValue *content, virDomainDef *vmdef)
 static int
 virCHMonitorBuildPTYJson(virJSONValue *content, virDomainDef *vmdef)
 {
-    virJSONValue *ptys = virJSONValueNewObject();
-
     if (vmdef->nconsoles) {
         g_autoptr(virJSONValue) pty = virJSONValueNewObject();
         if (virJSONValueObjectAppendString(pty, "mode", "Pty") < 0)
@@ -100,7 +98,7 @@ virCHMonitorBuildPTYJson(virJSONValue *content, virDomainDef *vmdef)
 
     if (vmdef->nserials) {
         g_autoptr(virJSONValue) pty = virJSONValueNewObject();
-        if (virJSONValueObjectAppendString(ptys, "mode", "Pty") < 0)
+        if (virJSONValueObjectAppendString(pty, "mode", "Pty") < 0)
             return -1;
         if (virJSONValueObjectAppend(content, "serial", &pty) < 0)
             return -1;
