@@ -228,10 +228,10 @@ secretDefineXML(virConnectPtr conn,
     if (virSecretDefineXMLEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(obj = virSecretObjListAdd(driver->secrets, def,
+    if (!(obj = virSecretObjListAdd(driver->secrets, &def,
                                     driver->configDir, &backup)))
         goto cleanup;
-    objDef = g_steal_pointer(&def);
+    objDef = virSecretObjGetDef(obj);
 
     if (!objDef->isephemeral) {
         if (backup && backup->isephemeral) {

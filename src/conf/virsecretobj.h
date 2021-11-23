@@ -50,7 +50,7 @@ virSecretObjListRemove(virSecretObjList *secrets,
 
 virSecretObj *
 virSecretObjListAdd(virSecretObjList *secrets,
-                    virSecretDef *newdef,
+                    virSecretDef **newdef,
                     const char *configDir,
                     virSecretDef **oldDef);
 

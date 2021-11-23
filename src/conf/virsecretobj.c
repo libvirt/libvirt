@@ -313,13 +313,16 @@ virSecretObjListRemove(virSecretObjList *secrets,
  * @configDir: directory to place secret config files
  * @oldDef: Former secret def (e.g. a reload path perhaps)
  *
- * Add the new @newdef to the secret obj table hash
+ * Add the new @newdef to the secret obj table hash. Upon
+ * successful the virSecret object is the owner of @newdef and
+ * callers should use virSecretObjGetDef() if they need to access
+ * the definition as @newdef is set to NULL.
  *
  * Returns: locked and ref'd secret or NULL if failure to add
  */
 virSecretObj *
 virSecretObjListAdd(virSecretObjList *secrets,
-                    virSecretDef *newdef,
+                    virSecretDef **newdef,
                     const char *configDir,
                     virSecretDef **oldDef)
 {
@@ -333,14 +336,14 @@ virSecretObjListAdd(virSecretObjList *secrets,
     if (oldDef)
         *oldDef = NULL;
 
-    virUUIDFormat(newdef->uuid, uuidstr);
+    virUUIDFormat((*newdef)->uuid, uuidstr);
 
     /* Is there a secret already matching this UUID */
     if ((obj = virSecretObjListFindByUUIDLocked(secrets, uuidstr))) {
         virObjectLock(obj);
         objdef = obj->def;
 
-        if (STRNEQ_NULLABLE(objdef->usage_id, newdef->usage_id)) {
+        if (STRNEQ_NULLABLE(objdef->usage_id, (*newdef)->usage_id)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s is already defined for "
                              "use with %s"),
@@ -348,7 +351,7 @@ virSecretObjListAdd(virSecretObjList *secrets,
             goto cleanup;
         }
 
-        if (objdef->isprivate && !newdef->isprivate) {
+        if (objdef->isprivate && !(*newdef)->isprivate) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cannot change private flag on existing secret"));
             goto cleanup;
@@ -358,20 +361,20 @@ virSecretObjListAdd(virSecretObjList *secrets,
             *oldDef = objdef;
         else
             virSecretDefFree(objdef);
-        obj->def = newdef;
+        obj->def = g_steal_pointer(newdef);
     } else {
         /* No existing secret with same UUID,
          * try look for matching usage instead */
         if ((obj = virSecretObjListFindByUsageLocked(secrets,
-                                                     newdef->usage_type,
-                                                     newdef->usage_id))) {
+                                                     (*newdef)->usage_type,
+                                                     (*newdef)->usage_id))) {
             virObjectLock(obj);
             objdef = obj->def;
             virUUIDFormat(objdef->uuid, uuidstr);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("a secret with UUID %s already defined for "
                              "use with %s"),
-                           uuidstr, newdef->usage_id);
+                           uuidstr, (*newdef)->usage_id);
             goto cleanup;
         }
 
@@ -388,7 +391,7 @@ virSecretObjListAdd(virSecretObjList *secrets,
         if (virHashAddEntry(secrets->objs, uuidstr, obj) < 0)
             goto cleanup;
 
-        obj->def = newdef;
+        obj->def = g_steal_pointer(newdef);
         virObjectRef(obj);
     }
 
@@ -874,9 +877,8 @@ virSecretLoad(virSecretObjList *secrets,
     if (virSecretLoadValidateUUID(def, file) < 0)
         goto cleanup;
 
-    if (!(obj = virSecretObjListAdd(secrets, def, configDir, NULL)))
+    if (!(obj = virSecretObjListAdd(secrets, &def, configDir, NULL)))
         goto cleanup;
-    def = NULL;
 
     if (virSecretLoadValue(obj) < 0) {
         virSecretObjListRemove(secrets, obj);
