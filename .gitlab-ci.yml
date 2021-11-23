@@ -24,6 +24,7 @@ include: '/ci/gitlab.yml'
     key: "$CI_JOB_NAME"
   before_script:
     - *script_variables
+    - cat /packages.txt
   script:
     - meson setup build --werror $MESON_ARGS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson dist -C build --no-tests
@@ -43,6 +44,7 @@ include: '/ci/gitlab.yml'
     key: "$CI_JOB_NAME"
   before_script:
     - *script_variables
+    - cat /packages.txt
   script:
     - meson setup build --werror $MESON_OPTS || (cat build/meson-logs/meson-log.txt && exit 1)
     - meson compile -C build
