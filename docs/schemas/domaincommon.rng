@@ -7225,6 +7225,16 @@
             <ref name="featurestate"/>
           </element>
         </optional>
+        <optional>
+          <element name="dirty-ring">
+            <ref name="featurestate"/>
+            <optional>
+              <attribute name="size">
+                <data type="unsignedInt"/>
+              </attribute>
+            </optional>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

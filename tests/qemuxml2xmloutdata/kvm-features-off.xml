@@ -15,6 +15,7 @@
       <hint-dedicated state='off'/>
       <poll-control state='off'/>
       <pv-ipi state='off'/>
+      <dirty-ring state='off'/>
     </kvm>
   </features>
   <cpu mode='host-passthrough' check='none' migratable='off'/>
