@@ -1036,8 +1036,7 @@ int qemuDomainObjBeginJob(virQEMUDriver *driver,
                                       QEMU_AGENT_JOB_NONE,
                                       QEMU_ASYNC_JOB_NONE, false) < 0)
         return -1;
-    else
-        return 0;
+    return 0;
 }
 
 /**

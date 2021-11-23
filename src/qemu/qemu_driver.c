@@ -1812,7 +1812,8 @@ static int qemuDomainSuspend(virDomainPtr dom)
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is pmsuspended"));
         goto endjob;
-    } else if (state != VIR_DOMAIN_PAUSED) {
+    }
+    if (state != VIR_DOMAIN_PAUSED) {
         if (qemuProcessStopCPUs(driver, vm, reason, QEMU_ASYNC_JOB_NONE) < 0)
             goto endjob;
     }
@@ -1854,13 +1855,15 @@ static int qemuDomainResume(virDomainPtr dom)
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is pmsuspended"));
         goto endjob;
-    } else if (state == VIR_DOMAIN_RUNNING) {
+    }
+    if (state == VIR_DOMAIN_RUNNING) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain is already running"));
         goto endjob;
-    } else if ((state == VIR_DOMAIN_CRASHED &&
-                reason == VIR_DOMAIN_CRASHED_PANICKED) ||
-               state == VIR_DOMAIN_PAUSED) {
+    }
+    if ((state == VIR_DOMAIN_CRASHED &&
+         reason == VIR_DOMAIN_CRASHED_PANICKED) ||
+        state == VIR_DOMAIN_PAUSED) {
         if (qemuProcessStartCPUs(driver, vm,
                                  VIR_DOMAIN_RUNNING_UNPAUSED,
                                  QEMU_ASYNC_JOB_NONE) < 0) {
@@ -16330,9 +16333,9 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
         *nparams = maxparams;
         ret = 0;
         goto endjob;
-    } else if (*nparams < maxparams) {
-        maxparams = *nparams;
     }
+    if (*nparams < maxparams)
+        maxparams = *nparams;
 
     *nparams = 0;
 
@@ -20400,29 +20403,26 @@ qemuDomainGetGuestInfo(virDomainPtr dom,
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_FILESYSTEM) {
         rc = qemuAgentGetFSInfo(agent, &agentfsinfo, report_unsupported);
-        if (rc == -1) {
+        if (rc == -1)
             goto exitagent;
-        } else if (rc >= 0) {
+        if (rc >= 0)
             nfs = rc;
-        }
     }
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_DISKS) {
         rc = qemuAgentGetDisks(agent, &agentdiskinfo, report_unsupported);
-        if (rc == -1) {
+        if (rc == -1)
             goto exitagent;
-        } else if (rc >= 0) {
+        if (rc >= 0)
             ndisks = rc;
-        }
     }
 
     if (supportedTypes & VIR_DOMAIN_GUEST_INFO_INTERFACES) {
         rc = qemuAgentGetInterfaces(agent, &ifaces, report_unsupported);
-        if (rc == -1) {
+        if (rc == -1)
             goto exitagent;
-        } else if (rc >= 0) {
+        if (rc >= 0)
             nifaces = rc;
-        }
     }
 
     qemuDomainObjExitAgent(vm, agent);

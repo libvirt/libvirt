@@ -987,8 +987,7 @@ qemuAgentCommandName(virJSONValue *cmd)
     const char *name = virJSONValueObjectGetString(cmd, "execute");
     if (name)
         return name;
-    else
-        return "<unknown>";
+    return "<unknown>";
 }
 
 static int
@@ -1027,7 +1026,8 @@ qemuAgentCheckError(virJSONValue *cmd,
                        qemuAgentStringifyError(error));
 
         return -1;
-    } else if (!virJSONValueObjectHasKey(reply, "return")) {
+    }
+    if (!virJSONValueObjectHasKey(reply, "return")) {
         g_autofree char *cmdstr = virJSONValueToString(cmd, false);
         g_autofree char *replystr = virJSONValueToString(reply, false);
 

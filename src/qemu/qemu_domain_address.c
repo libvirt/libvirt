@@ -58,13 +58,13 @@ qemuDomainGetSCSIControllerModel(const virDomainDef *def,
 
     if (qemuDomainIsPSeries(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_IBMVSCSI;
-    else if (ARCH_IS_S390(def->os.arch))
+    if (ARCH_IS_S390(def->os.arch))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_LSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_LSILOGIC;
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_SCSI))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_SCSI;
-    else if (qemuDomainHasBuiltinESP(def))
+    if (qemuDomainHasBuiltinESP(def))
         return VIR_DOMAIN_CONTROLLER_MODEL_SCSI_NCR53C90;
 
     virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1589,9 +1589,8 @@ qemuDomainCollectPCIAddress(virDomainDef *def G_GNUC_UNUSED,
                                _("Bus 0 must be PCI for integrated PIIX3 "
                                  "USB or IDE controllers"));
                 return -1;
-            } else {
-                return 0;
             }
+            return 0;
         }
     }
 

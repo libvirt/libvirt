@@ -773,9 +773,9 @@ const char *virQEMUCapsArchToString(virArch arch)
 {
     if (arch == VIR_ARCH_I686)
         return "i386";
-    else if (arch == VIR_ARCH_ARMV6L || arch == VIR_ARCH_ARMV7L)
+    if (arch == VIR_ARCH_ARMV6L || arch == VIR_ARCH_ARMV7L)
         return "arm";
-    else if (arch == VIR_ARCH_OR32)
+    if (arch == VIR_ARCH_OR32)
         return "or32";
 
     return virArchToString(arch);

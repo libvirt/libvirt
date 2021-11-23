@@ -605,9 +605,8 @@ qemuSetupBlkioCgroup(virDomainObj *vm)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Block I/O tuning is not available on this host"));
             return -1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     return virDomainCgroupSetupBlkio(priv->cgroup, vm->def->blkio);
@@ -626,9 +625,8 @@ qemuSetupMemoryCgroup(virDomainObj *vm)
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Memory cgroup is not available on this host"));
             return -1;
-        } else {
-            return 0;
         }
+        return 0;
     }
 
     return virDomainCgroupSetupMemtune(priv->cgroup, vm->def->mem);
@@ -888,9 +886,8 @@ qemuSetupCpuCgroup(virDomainObj *vm)
            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                           _("CPU tuning is not available on this host"));
            return -1;
-       } else {
-           return 0;
        }
+       return 0;
     }
 
     if (vm->def->cputune.sharesSpecified) {

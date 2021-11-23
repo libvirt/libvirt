@@ -137,7 +137,8 @@ qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
              */
             controller->info.alias = g_strdup("pci");
             return 0;
-        } else if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
+        }
+        if (controller->model == VIR_DOMAIN_CONTROLLER_MODEL_PCIE_ROOT) {
             /* The pcie-root controller on Q35 machinetypes uses a
              * different naming convention ("pcie.0"), because it is
              * hardcoded that way in qemu.
@@ -151,7 +152,8 @@ qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
          */
         controller->info.alias = g_strdup_printf("pci.%d", controller->idx);
         return 0;
-    } else if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE) {
+    }
+    if (controller->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE) {
         /* for any machine based on e.g. I440FX or G3Beige, the
          * first (and currently only) IDE controller is an integrated
          * controller hardcoded with id "ide"
@@ -815,8 +817,7 @@ qemuAliasForSecret(const char *parentalias,
 {
     if (obj)
         return g_strdup_printf("%s-%s-secret0", parentalias, obj);
-    else
-        return g_strdup_printf("%s-secret0", parentalias);
+    return g_strdup_printf("%s-secret0", parentalias);
 }
 
 /* qemuAliasTLSObjFromSrcAlias

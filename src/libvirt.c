@@ -663,7 +663,8 @@ virStateInitialize(bool privileged,
                           virStateDriverTab[i]->name,
                           virGetLastErrorMessage());
                 return -1;
-            } else if (ret == VIR_DRV_STATE_INIT_SKIPPED && mandatory) {
+            }
+            if (ret == VIR_DRV_STATE_INIT_SKIPPED && mandatory) {
                 VIR_ERROR(_("Initialization of mandatory %s state driver skipped"),
                           virStateDriverTab[i]->name);
                 return -1;
