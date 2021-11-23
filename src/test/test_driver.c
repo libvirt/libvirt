@@ -9144,6 +9144,9 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             virObjectUnref(event);
             event = NULL;
 
+            virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
+
             if (was_stopped) {
                 /* Transition 2 */
                 event = virDomainEventLifecycleNewFromObj(vm,

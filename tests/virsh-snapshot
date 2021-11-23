@@ -137,25 +137,25 @@ Domain snapshot s1 deleted
  Name   Creation Time               State
 ---------------------------------------------
  s3     TIMESTAMP   running
- s7     TIMESTAMP   paused
+ s7     TIMESTAMP   running
 
  Name   Creation Time               State
 ---------------------------------------------
  s2     TIMESTAMP   running
- s4     TIMESTAMP   paused
- s5     TIMESTAMP   paused
- s8     TIMESTAMP   paused
+ s4     TIMESTAMP   running
+ s5     TIMESTAMP   running
+ s8     TIMESTAMP   running
 
  Name   Creation Time               State     Parent
 ------------------------------------------------------
  s3     TIMESTAMP   running
- s6     TIMESTAMP   paused    s3
- s7     TIMESTAMP   paused
+ s6     TIMESTAMP   running   s3
+ s7     TIMESTAMP   running
 
  Name   Creation Time               State
 ---------------------------------------------
  s2     TIMESTAMP   running
- s6     TIMESTAMP   paused
+ s6     TIMESTAMP   running
 
 s2
 s4
