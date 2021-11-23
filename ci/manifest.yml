@@ -125,9 +125,9 @@ targets:
       - arch: s390x
         allow-failure: true
 
-  fedora-33: x86_64
-
   fedora-34: x86_64
+
+  fedora-35: x86_64
 
   fedora-rawhide:
     jobs:
