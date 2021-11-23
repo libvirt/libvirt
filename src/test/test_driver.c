@@ -9013,15 +9013,14 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     /* We have the following transitions, which create the following events:
      * 1. inactive -> inactive: none
      * 2. inactive -> running:  EVENT_STARTED
-     * 3. inactive -> paused:   EVENT_STARTED, EVENT_PAUSED
+     * 3. inactive -> paused:   EVENT_STARTED, EVENT_SUSPENDED
      * 4. running  -> inactive: EVENT_STOPPED
-     * 5. running  -> running:  none
-     * 6. running  -> paused:   EVENT_PAUSED
+     * 5. running  -> running:  EVENT_STOPPED, EVENT_STARTED
+     * 6. running  -> paused:   EVENT_STOPPED, EVENT_STARTED, EVENT_SUSPENDED
      * 7. paused   -> inactive: EVENT_STOPPED
-     * 8. paused   -> running:  EVENT_RESUMED
-     * 9. paused   -> paused:   none
-     * Also, several transitions occur even if we fail partway through,
-     * and use of FORCE can cause multiple transitions.
+     * 8. paused   -> running:  EVENT_STOPPED, EVENT_STARTED
+     * 9. paused   -> paused:   EVENT_STOPPED, EVENT_STARTED, EVENT_SUSPENDED
+     * Also, several transitions occur even if we fail partway through.
      */
 
     if (!(vm = testDomObjFromSnapshot(snapshot)))
@@ -9071,8 +9070,6 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     if (snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
         snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
         /* Transitions 2, 3, 5, 6, 8, 9 */
-        bool was_running = false;
-        bool was_stopped = false;
 
         if (virDomainObjIsActive(vm)) {
             /* Transitions 5, 6, 8, 9 */
@@ -9083,8 +9080,6 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                                                       VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
             virObjectEventStateQueue(privconn->eventState, event);
         }
-
-        was_stopped = true;
 
         virDomainObjAssignDef(vm, config, false, NULL);
         if (testDomainStartState(privconn, vm,
@@ -9101,31 +9096,9 @@ testDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
             /* Transitions 3, 6, 9 */
             virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                                  VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-            if (was_stopped) {
-                /* Transition 3, use event as-is and add event2 */
-                event2 = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_SUSPENDED,
-                                VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
-            } /* else transition 6 and 9 use event as-is */
-        } else {
-            /* Transitions 2, 5, 8 */
-            virObjectUnref(event);
-            event = NULL;
-
-            virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
-                                 VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-
-            if (was_stopped) {
-                /* Transition 2 */
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_STARTED,
-                                VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT);
-            } else if (was_running) {
-                /* Transition 8 */
-                event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_RESUMED,
-                                VIR_DOMAIN_EVENT_RESUMED);
-            }
+            event2 = virDomainEventLifecycleNewFromObj(vm,
+                            VIR_DOMAIN_EVENT_SUSPENDED,
+                            VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT);
         }
     } else {
         /* Transitions 1, 4, 7 */
