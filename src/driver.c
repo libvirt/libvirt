@@ -52,7 +52,6 @@ virDriverLoadModule(const char *name,
                     bool required)
 {
     g_autofree char *modfile = NULL;
-    int ret;
 
     VIR_DEBUG("Module load %s", name);
 
@@ -64,8 +63,7 @@ virDriverLoadModule(const char *name,
                                             "LIBVIRT_DRIVER_DIR")))
         return -1;
 
-    ret = virModuleLoad(modfile, regfunc, required);
-    return ret;
+    return virModuleLoad(modfile, regfunc, required);
 }
 
 

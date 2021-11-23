@@ -2465,7 +2465,6 @@ static int
 qemuDomainAddressFindNewTargetIndex(virDomainDef *def)
 {
     int targetIndex;
-    int ret = -1;
 
     /* Try all indexes between 1 and 31 - QEMU only supports 32
      * PHBs, and 0 is reserved for the default, implicit one */
@@ -2490,13 +2489,11 @@ qemuDomainAddressFindNewTargetIndex(virDomainDef *def)
 
         /* If no existing PCI controller uses this index, great,
          * it means it's free and we can return it to the caller */
-        if (!found) {
-            ret = targetIndex;
-            break;
-        }
+        if (!found)
+            return targetIndex;
     }
 
-    return ret;
+    return -1;
 }
 
 

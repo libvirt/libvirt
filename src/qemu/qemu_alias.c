@@ -744,16 +744,13 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
 char *
 qemuAliasDiskDriveFromDisk(const virDomainDiskDef *disk)
 {
-    char *ret;
-
     if (!disk->info.alias) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("disk does not have an alias"));
         return NULL;
     }
 
-    ret = g_strdup_printf("%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
-    return ret;
+    return g_strdup_printf("%s%s", QEMU_DRIVE_HOST_PREFIX, disk->info.alias);
 }
 
 
@@ -780,18 +777,15 @@ qemuAliasDiskDriveSkipPrefix(const char *dev_name)
 char *
 qemuAliasFromHostdev(const virDomainHostdevDef *hostdev)
 {
-    char *ret;
-
     if (!hostdev->info->alias) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("hostdev does not have an alias"));
         return NULL;
     }
 
-    ret = g_strdup_printf("%s-%s",
-                          virDomainDeviceAddressTypeToString(hostdev->info->type),
-                          hostdev->info->alias);
-    return ret;
+    return g_strdup_printf("%s-%s",
+                           virDomainDeviceAddressTypeToString(hostdev->info->type),
+                           hostdev->info->alias);
 }
 
 

@@ -1332,7 +1332,6 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
     g_autofree char *data = NULL;
     g_auto(GStrv) lines = NULL;
     size_t i;
-    int ret = -1;
     double val;
 
     *cpuWait = 0;
@@ -1344,21 +1343,19 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
     else
         proc = g_strdup_printf("/proc/%d/sched", (int)pid);
     if (!proc)
-        goto cleanup;
-    ret = -1;
+        return -1;
 
     /* The file is not guaranteed to exist (needs CONFIG_SCHED_DEBUG) */
     if (access(proc, R_OK) < 0) {
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     if (virFileReadAll(proc, (1<<16), &data) < 0)
-        goto cleanup;
+        return -1;
 
     lines = g_strsplit(data, "\n", 0);
     if (!lines)
-        goto cleanup;
+        return -1;
 
     for (i = 0; lines[i] != NULL; i++) {
         const char *line = lines[i];
@@ -1372,7 +1369,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Missing separator in sched info '%s'"),
                                lines[i]);
-                goto cleanup;
+                return -1;
             }
             line++;
             while (*line == ' ')
@@ -1382,7 +1379,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Unable to parse sched info value '%s'"),
                                line);
-                goto cleanup;
+                return -1;
             }
 
             *cpuWait = (unsigned long long)(val * 1000000);
@@ -1390,10 +1387,7 @@ qemuGetSchedInfo(unsigned long long *cpuWait,
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -3158,7 +3152,6 @@ doCoreDump(virQEMUDriver *driver,
 {
     int fd = -1;
     int ret = -1;
-    int rc = -1;
     virFileWrapperFd *wrapperFd = NULL;
     int directFlag = 0;
     bool needUnlink = false;
@@ -3204,8 +3197,9 @@ doCoreDump(virQEMUDriver *driver,
         if (STREQ(memory_dump_format, "elf"))
             memory_dump_format = NULL;
 
-        rc = qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP,
-                          memory_dump_format);
+        if (qemuDumpToFd(driver, vm, fd, QEMU_ASYNC_JOB_DUMP,
+                         memory_dump_format) < 0)
+            goto cleanup;
     } else {
         if (dumpformat != VIR_DOMAIN_CORE_DUMP_FORMAT_RAW) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -3217,12 +3211,10 @@ doCoreDump(virQEMUDriver *driver,
         if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        rc = qemuMigrationSrcToFile(driver, vm, fd, compressor,
-                                    QEMU_ASYNC_JOB_DUMP);
+        if (qemuMigrationSrcToFile(driver, vm, fd, compressor,
+                                   QEMU_ASYNC_JOB_DUMP) < 0)
+            goto cleanup;
     }
-
-    if (rc < 0)
-        goto cleanup;
 
     if (VIR_CLOSE(fd) < 0) {
         virReportSystemError(errno,
@@ -7205,14 +7197,12 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainDeviceDef oldDev = { .type = dev->type };
-    int ret = -1;
     int idx;
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         qemuDomainObjCheckDiskTaint(driver, vm, dev->data.disk, NULL);
-        ret = qemuDomainChangeDiskLive(vm, dev, driver, force);
-        break;
+        return qemuDomainChangeDiskLive(vm, dev, driver, force);
 
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         if ((idx = qemuDomainFindGraphicsIndex(vm->def, dev->data.graphics)) >= 0) {
@@ -7223,8 +7213,7 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
                 return -1;
         }
 
-        ret = qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
-        break;
+        return qemuDomainChangeGraphics(driver, vm, dev->data.graphics);
 
     case VIR_DOMAIN_DEVICE_NET:
         if ((idx = virDomainNetFindIdx(vm->def, dev->data.net)) >= 0) {
@@ -7235,12 +7224,10 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
                 return -1;
         }
 
-        ret = qemuDomainChangeNet(driver, vm, dev);
-        break;
+        return qemuDomainChangeNet(driver, vm, dev);
 
     case VIR_DOMAIN_DEVICE_MEMORY:
-        ret = qemuDomainChangeMemoryLive(driver, vm, dev);
-        break;
+        return qemuDomainChangeMemoryLive(driver, vm, dev);
 
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -7268,10 +7255,10 @@ qemuDomainUpdateDeviceLive(virDomainObj *vm,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("live update of device '%s' is not supported"),
                        virDomainDeviceTypeToString(dev->type));
-        break;
+        return -1;
     }
 
-    return ret;
+    return -1;
 }
 
 
@@ -9661,13 +9648,11 @@ qemuGetVcpusBWLive(virDomainObj *vm,
 {
     g_autoptr(virCgroup) cgroup_vcpu = NULL;
     qemuDomainObjPrivate *priv = NULL;
-    int rc;
 
     priv = vm->privateData;
     if (!qemuDomainHasVcpuPids(vm)) {
         /* We do not create sub dir for each vcpu */
-        rc = qemuGetVcpuBWLive(priv->cgroup, period, quota);
-        if (rc < 0)
+        if (qemuGetVcpuBWLive(priv->cgroup, period, quota) < 0)
             return -1;
 
         if (*quota > 0)
@@ -9680,8 +9665,7 @@ qemuGetVcpusBWLive(virDomainObj *vm,
                            false, &cgroup_vcpu) < 0)
         return -1;
 
-    rc = qemuGetVcpuBWLive(cgroup_vcpu, period, quota);
-    if (rc < 0)
+    if (qemuGetVcpuBWLive(cgroup_vcpu, period, quota) < 0)
         return -1;
 
     return 0;
@@ -9711,12 +9695,11 @@ qemuGetIOThreadsBWLive(virDomainObj *vm,
 {
     g_autoptr(virCgroup) cgroup_iothread = NULL;
     qemuDomainObjPrivate *priv = NULL;
-    int rc;
 
     priv = vm->privateData;
     if (!vm->def->niothreadids) {
         /* We do not create sub dir for each iothread */
-        if ((rc = qemuGetVcpuBWLive(priv->cgroup, period, quota)) < 0)
+        if (qemuGetVcpuBWLive(priv->cgroup, period, quota) < 0)
             return -1;
 
         return 0;
@@ -9728,8 +9711,7 @@ qemuGetIOThreadsBWLive(virDomainObj *vm,
                            false, &cgroup_iothread) < 0)
         return -1;
 
-    rc = qemuGetVcpuBWLive(cgroup_iothread, period, quota);
-    if (rc < 0)
+    if (qemuGetVcpuBWLive(cgroup_iothread, period, quota) < 0)
         return -1;
 
     return 0;

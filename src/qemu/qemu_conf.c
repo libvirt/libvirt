@@ -1915,16 +1915,13 @@ qemuGetBaseHugepagePath(virQEMUDriver *driver,
                         virHugeTLBFS *hugepage)
 {
     const char *root = driver->embeddedRoot;
-    char *ret;
 
     if (root && !STRPREFIX(hugepage->mnt_dir, root)) {
         g_autofree char * hash = virDomainDriverGenerateRootHash("qemu", root);
-        ret = g_strdup_printf("%s/libvirt/%s", hugepage->mnt_dir, hash);
-    } else {
-        ret = g_strdup_printf("%s/libvirt/qemu", hugepage->mnt_dir);
+        return g_strdup_printf("%s/libvirt/%s", hugepage->mnt_dir, hash);
     }
 
-    return ret;
+    return g_strdup_printf("%s/libvirt/qemu", hugepage->mnt_dir);
 }
 
 
@@ -1935,11 +1932,11 @@ qemuGetDomainHugepagePath(virQEMUDriver *driver,
 {
     g_autofree char *base = qemuGetBaseHugepagePath(driver, hugepage);
     g_autofree char *domPath = virDomainDefGetShortName(def);
-    char *ret = NULL;
 
-    if (base && domPath)
-        ret = g_strdup_printf("%s/%s", base, domPath);
-    return ret;
+    if (!base || !domPath)
+        return NULL;
+
+    return g_strdup_printf("%s/%s", base, domPath);
 }
 
 

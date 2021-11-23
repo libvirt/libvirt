@@ -176,7 +176,6 @@ qemuAgentOpenUnix(const char *socketpath)
 {
     struct sockaddr_un addr;
     int agentfd;
-    int ret = -1;
 
     if ((agentfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
         virReportSystemError(errno,
@@ -199,8 +198,7 @@ qemuAgentOpenUnix(const char *socketpath)
         goto error;
     }
 
-    ret = connect(agentfd, (struct sockaddr *)&addr, sizeof(addr));
-    if (ret < 0) {
+    if (connect(agentfd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
         virReportSystemError(errno, "%s",
                              _("failed to connect to agent socket"));
         goto error;

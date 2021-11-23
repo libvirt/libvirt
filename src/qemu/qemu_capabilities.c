@@ -3070,7 +3070,6 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
     g_auto(GStrv) list = NULL;
     size_t i;
     size_t n;
-    int ret = -1;
 
     *features = NULL;
     modelInfo = virQEMUCapsGetCPUModelInfo(qemuCaps, virtType);
@@ -3091,12 +3090,10 @@ virQEMUCapsGetCPUFeatures(virQEMUCaps *qemuCaps,
     }
 
     *features = g_steal_pointer(&list);
-    if (migratable && !modelInfo->migratability)
-        ret = 1;
-    else
-        ret = 0;
 
-    return ret;
+    if (migratable && !modelInfo->migratability)
+        return 1;
+    return 0;
 }
 
 
@@ -5237,15 +5234,13 @@ virQEMUCapsProbeQMPSchemaCapabilities(virQEMUCaps *qemuCaps,
 virDomainVirtType
 virQEMUCapsGetVirtType(virQEMUCaps *qemuCaps)
 {
-    virDomainVirtType type;
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_KVM))
-        type = VIR_DOMAIN_VIRT_KVM;
-    else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TCG))
-        type = VIR_DOMAIN_VIRT_QEMU;
-    else
-        type = VIR_DOMAIN_VIRT_NONE;
+        return VIR_DOMAIN_VIRT_KVM;
 
-    return type;
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_TCG))
+        return VIR_DOMAIN_VIRT_QEMU;
+
+    return VIR_DOMAIN_VIRT_NONE;
 }
 
 int
