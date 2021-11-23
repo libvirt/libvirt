@@ -7293,6 +7293,10 @@ no vm state leaves the domain in an inactive state.  Passing either the
 transient domains cannot be inactive, it is required to use one of these
 flags when reverting to a disk snapshot of a transient domain.
 
+Since libvirt 7.10.0 the VM process is always restarted so the following
+paragraph is no longer valid. If the snapshot metadata lacks the full
+VM XML it's no longer possible to revert to such snapshot.
+
 There are a number of cases where a snapshot revert involves extra risk, which
 requires the use of *--force* to proceed:
 
