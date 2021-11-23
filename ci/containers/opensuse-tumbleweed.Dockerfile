@@ -6,7 +6,7 @@
 
 FROM registry.opensuse.org/opensuse/tumbleweed:latest
 
-RUN zypper update -y && \
+RUN zypper dist-upgrade -y && \
     zypper install -y \
            audit-devel \
            augeas \

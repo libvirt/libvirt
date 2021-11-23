@@ -63,6 +63,7 @@ RUN dnf update -y && \
         libxslt \
         lvm2 \
         make \
+        meson \
         netcf-devel \
         nfs-utils \
         ninja-build \
@@ -76,9 +77,6 @@ RUN dnf update -y && \
         python3 \
         python3-docutils \
         python3-flake8 \
-        python3-pip \
-        python3-setuptools \
-        python3-wheel \
         qemu-img \
         radvd \
         readline-devel \
@@ -98,9 +96,6 @@ RUN dnf update -y && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/cc && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/clang && \
     ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/gcc
-
-RUN pip3 install \
-         meson==0.56.0
 
 ENV LANG "en_US.UTF-8"
 ENV MAKE "/usr/bin/make"
