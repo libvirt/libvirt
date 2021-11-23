@@ -28,7 +28,7 @@
 int virHostValidateCh(void)
 {
     int ret = 0;
-    virBitmap *flags;
+    g_autoptr(virBitmap) flags = NULL;
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
     virArch arch = virArchFromHost();
