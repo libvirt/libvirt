@@ -127,6 +127,12 @@
         <value>handle</value>
       </enum>
     </filesystem>
+    <tpm supported='yes'>
+      <enum name='model'>
+        <value>spapr-tpm-proxy</value>
+      </enum>
+      <enum name='backendModel'/>
+    </tpm>
   </devices>
   <features>
     <gic supported='no'/>

@@ -183,6 +183,14 @@
         <value>handle</value>
       </enum>
     </filesystem>
+    <tpm supported='yes'>
+      <enum name='model'>
+        <value>tpm-tis</value>
+      </enum>
+      <enum name='backendModel'>
+        <value>passthrough</value>
+      </enum>
+    </tpm>
   </devices>
   <features>
     <gic supported='no'/>

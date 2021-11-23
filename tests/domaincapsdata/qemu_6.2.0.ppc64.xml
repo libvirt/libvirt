@@ -126,6 +126,15 @@
         <value>virtiofs</value>
       </enum>
     </filesystem>
+    <tpm supported='yes'>
+      <enum name='model'>
+        <value>tpm-spapr</value>
+        <value>spapr-tpm-proxy</value>
+      </enum>
+      <enum name='backendModel'>
+        <value>passthrough</value>
+      </enum>
+    </tpm>
   </devices>
   <features>
     <gic supported='no'/>

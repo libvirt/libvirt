@@ -49,6 +49,7 @@
 #include "qemu_process.h"
 #include "qemu_firmware.h"
 #include "virutil.h"
+#include "virtpm.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -6201,6 +6202,37 @@ virQEMUCapsFillDomainDeviceFSCaps(virQEMUCaps *qemuCaps,
 }
 
 
+void
+virQEMUCapsFillDomainDeviceTPMCaps(virQEMUCaps *qemuCaps,
+                                   virDomainCapsDeviceTPM *tpm)
+{
+    tpm->supported = VIR_TRISTATE_BOOL_YES;
+    tpm->model.report = true;
+    tpm->backendModel.report = true;
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_TIS))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->model, VIR_DOMAIN_TPM_MODEL_TIS);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_CRB))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->model, VIR_DOMAIN_TPM_MODEL_CRB);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_SPAPR))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->model, VIR_DOMAIN_TPM_MODEL_SPAPR);
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->model, VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY);
+
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendModel, VIR_DOMAIN_TPM_TYPE_PASSTHROUGH);
+    if (virTPMHasSwtpm() &&
+        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
+        VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendModel, VIR_DOMAIN_TPM_TYPE_EMULATOR);
+
+    /*
+     * Need at least one frontend if it is to be usable by applications
+     */
+    if (!tpm->model.values)
+        tpm->supported = VIR_TRISTATE_BOOL_NO;
+}
+
+
 /**
  * virQEMUCapsSupportsGICVersion:
  * @qemuCaps: QEMU capabilities
@@ -6345,6 +6377,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virDomainCapsDeviceVideo *video = &domCaps->video;
     virDomainCapsDeviceRNG *rng = &domCaps->rng;
     virDomainCapsDeviceFilesystem *filesystem = &domCaps->filesystem;
+    virDomainCapsDeviceTPM *tpm = &domCaps->tpm;
     virDomainCapsMemoryBacking *memoryBacking = &domCaps->memoryBacking;
 
     virQEMUCapsFillDomainFeaturesFromQEMUCaps(qemuCaps, domCaps);
@@ -6376,6 +6409,7 @@ virQEMUCapsFillDomainCaps(virQEMUCaps *qemuCaps,
     virQEMUCapsFillDomainDeviceHostdevCaps(qemuCaps, hostdev);
     virQEMUCapsFillDomainDeviceRNGCaps(qemuCaps, rng);
     virQEMUCapsFillDomainDeviceFSCaps(qemuCaps, filesystem);
+    virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, tpm);
     virQEMUCapsFillDomainFeatureGICCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureSEVCaps(qemuCaps, domCaps);
     virQEMUCapsFillDomainFeatureS390PVCaps(qemuCaps, domCaps);

@@ -126,6 +126,7 @@
         <value>handle</value>
       </enum>
     </filesystem>
+    <tpm supported='no'/>
   </devices>
   <features>
     <gic supported='no'/>
