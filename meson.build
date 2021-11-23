@@ -709,7 +709,7 @@ if (cc.has_header_symbol('net/if_bridgevar.h', 'BRDGSFD', prefix: brd_required_h
 endif
 
 # Check for BSD CPU affinity availability
-if cc.has_header_symbol('sys/cpuset.h', 'cpuset_getaffinity')
+if cc.has_header_symbol('sys/cpuset.h', 'cpuset_getaffinity', prefix: '#include <sys/param.h>')
   conf.set('WITH_BSD_CPU_AFFINITY', 1)
 endif
 
