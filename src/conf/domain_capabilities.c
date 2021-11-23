@@ -534,6 +534,19 @@ virDomainCapsDeviceRNGFormat(virBuffer *buf,
 
 
 static void
+virDomainCapsDeviceTPMFormat(virBuffer *buf,
+                             const virDomainCapsDeviceTPM *tpm)
+{
+    FORMAT_PROLOGUE(tpm);
+
+    ENUM_PROCESS(tpm, model, virDomainTPMModelTypeToString);
+    ENUM_PROCESS(tpm, backendModel, virDomainTPMBackendTypeToString);
+
+    FORMAT_EPILOGUE(tpm);
+}
+
+
+static void
 virDomainCapsDeviceFilesystemFormat(virBuffer *buf,
                                     const virDomainCapsDeviceFilesystem *filesystem)
 {
@@ -652,6 +665,7 @@ virDomainCapsFormat(const virDomainCaps *caps)
     virDomainCapsDeviceHostdevFormat(&buf, &caps->hostdev);
     virDomainCapsDeviceRNGFormat(&buf, &caps->rng);
     virDomainCapsDeviceFilesystemFormat(&buf, &caps->filesystem);
+    virDomainCapsDeviceTPMFormat(&buf, &caps->tpm);
 
     virBufferAdjustIndent(&buf, -2);
     virBufferAddLit(&buf, "</devices>\n");
