@@ -202,6 +202,7 @@
       </enum>
       <enum name='backendModel'>
         <value>passthrough</value>
+        <value>emulator</value>
       </enum>
     </tpm>
   </devices>
