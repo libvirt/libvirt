@@ -12,7 +12,7 @@ QEMU_AUDIO_DRV=none \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
--accel kvm \
+-accel kvm,dirty-ring-size=4096 \
 -cpu host,kvm=off,kvm-hint-dedicated=on,kvm-poll-control=on \
 -m 214 \
 -realtime mlock=off \
