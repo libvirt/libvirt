@@ -203,7 +203,7 @@ typedef enum {
 
 virStoragePoolObj *
 virStoragePoolObjListAdd(virStoragePoolObjList *pools,
-                         virStoragePoolDef *def,
+                         virStoragePoolDef **def,
                          unsigned int flags);
 
 int

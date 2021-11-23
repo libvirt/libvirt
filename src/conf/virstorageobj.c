@@ -1513,20 +1513,20 @@ virStoragePoolObjSourceFindDuplicate(virStoragePoolObjList *pools,
 
 static void
 virStoragePoolObjAssignDef(virStoragePoolObj *obj,
-                           virStoragePoolDef *def,
+                           virStoragePoolDef **def,
                            unsigned int flags)
 {
     if (virStoragePoolObjIsActive(obj) ||
         virStoragePoolObjIsStarting(obj)) {
         virStoragePoolDefFree(obj->newDef);
-        obj->newDef = def;
+        obj->newDef = g_steal_pointer(def);
     } else {
         if (!obj->newDef &&
             flags & VIR_STORAGE_POOL_OBJ_LIST_ADD_LIVE)
             obj->newDef = g_steal_pointer(&obj->def);
 
         virStoragePoolDefFree(obj->def);
-        obj->def = def;
+        obj->def = g_steal_pointer(def);
     }
 }
 
@@ -1548,11 +1548,16 @@ virStoragePoolObjAssignDef(virStoragePoolObj *obj,
  * If VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE is set in @flags
  * then this will fail if the pool exists and is active.
  *
+ * Upon successful return the virStoragePool object is the owner
+ * of @def and callers should use virStoragePoolObjGetDef() or
+ * virStoragePoolObjGetNewDef() if they need to access the
+ * definition as @def is set to NULL.
+ *
  * Returns locked and reffed object pointer or NULL on error
  */
 virStoragePoolObj *
 virStoragePoolObjListAdd(virStoragePoolObjList *pools,
-                         virStoragePoolDef *def,
+                         virStoragePoolDef **def,
                          unsigned int flags)
 {
     virStoragePoolObj *obj = NULL;
@@ -1561,10 +1566,10 @@ virStoragePoolObjListAdd(virStoragePoolObjList *pools,
 
     virObjectRWLockWrite(pools);
 
-    if (virStoragePoolObjSourceFindDuplicate(pools, def) < 0)
+    if (virStoragePoolObjSourceFindDuplicate(pools, *def) < 0)
         goto error;
 
-    rc = virStoragePoolObjIsDuplicate(pools, def,
+    rc = virStoragePoolObjIsDuplicate(pools, *def,
                                       !!(flags & VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE),
                                       &obj);
 
@@ -1579,17 +1584,17 @@ virStoragePoolObjListAdd(virStoragePoolObjList *pools,
     if (!(obj = virStoragePoolObjNew()))
         goto error;
 
-    virUUIDFormat(def->uuid, uuidstr);
+    virUUIDFormat((*def)->uuid, uuidstr);
     if (virHashAddEntry(pools->objs, uuidstr, obj) < 0)
         goto error;
     virObjectRef(obj);
 
-    if (virHashAddEntry(pools->objsName, def->name, obj) < 0) {
+    if (virHashAddEntry(pools->objsName, (*def)->name, obj) < 0) {
         virHashRemoveEntry(pools->objs, uuidstr);
         goto error;
     }
     virObjectRef(obj);
-    obj->def = def;
+    obj->def = g_steal_pointer(def);
     virObjectRWUnlock(pools);
     return obj;
 
@@ -1620,9 +1625,8 @@ virStoragePoolObjLoad(virStoragePoolObjList *pools,
         return NULL;
     }
 
-    if (!(obj = virStoragePoolObjListAdd(pools, def, 0)))
+    if (!(obj = virStoragePoolObjListAdd(pools, &def, 0)))
         return NULL;
-    def = NULL;
 
     VIR_FREE(obj->configFile);  /* for driver reload */
     obj->configFile = g_strdup(path);
@@ -1673,10 +1677,9 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
     }
 
     /* create the object */
-    if (!(obj = virStoragePoolObjListAdd(pools, def,
+    if (!(obj = virStoragePoolObjListAdd(pools, &def,
                                          VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
         return NULL;
-    def = NULL;
 
     /* XXX: future handling of some additional useful status data,
      * for now, if a status file for a pool exists, the pool will be marked

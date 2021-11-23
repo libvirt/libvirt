@@ -1226,7 +1226,7 @@ testParseStorage(testDriver *privconn,
         if (!def)
             return -1;
 
-        if (!(obj = virStoragePoolObjListAdd(privconn->pools, def, 0))) {
+        if (!(obj = virStoragePoolObjListAdd(privconn->pools, &def, 0))) {
             virStoragePoolDefFree(def);
             return -1;
         }
@@ -6675,10 +6675,9 @@ testStoragePoolCreateXML(virConnectPtr conn,
     if (!(newDef = virStoragePoolDefParseString(xml, 0)))
         goto cleanup;
 
-    if (!(obj = virStoragePoolObjListAdd(privconn->pools, newDef,
+    if (!(obj = virStoragePoolObjListAdd(privconn->pools, &newDef,
                                          VIR_STORAGE_POOL_OBJ_LIST_ADD_CHECK_LIVE)))
         goto cleanup;
-    newDef = NULL;
     def = virStoragePoolObjGetDef(obj);
 
     if (def->source.adapter.type == VIR_STORAGE_ADAPTER_TYPE_FC_HOST) {
@@ -6742,9 +6741,8 @@ testStoragePoolDefineXML(virConnectPtr conn,
     newDef->allocation = defaultPoolAlloc;
     newDef->available = defaultPoolCap - defaultPoolAlloc;
 
-    if (!(obj = virStoragePoolObjListAdd(privconn->pools, newDef, 0)))
+    if (!(obj = virStoragePoolObjListAdd(privconn->pools, &newDef, 0)))
         goto cleanup;
-    newDef = NULL;
     def = virStoragePoolObjGetDef(obj);
 
     event = virStoragePoolEventLifecycleNew(def->name, def->uuid,
