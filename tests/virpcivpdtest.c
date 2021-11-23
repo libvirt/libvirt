@@ -445,7 +445,8 @@ testVirPCIVPDReadVPDBytes(const void *opaque G_GNUC_UNUSED)
     dataLen = G_N_ELEMENTS(fullVPDExample) - 2;
     buf = g_malloc0(dataLen);
 
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
 
     readBytes = virPCIVPDReadVPDBytes(fd, buf, dataLen, 0, &csum);
 
@@ -481,7 +482,9 @@ testVirPCIVPDParseVPDStringResource(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(stringResExample);
-    fd = virCreateAnonymousFile(stringResExample, dataLen);
+    if ((fd = virCreateAnonymousFile(stringResExample, dataLen)) < 0)
+        return -1;
+
     result = virPCIVPDParseVPDLargeResourceString(fd, 0, dataLen, &csum, res);
     VIR_FORCE_CLOSE(fd);
 
@@ -551,7 +554,9 @@ testVirPCIVPDParseFullVPD(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(fullVPDExample);
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
+
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
 
@@ -619,7 +624,9 @@ testVirPCIVPDParseZeroLengthRW(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(fullVPDExample);
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
+
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
 
@@ -669,7 +676,9 @@ testVirPCIVPDParseNoRW(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(fullVPDExample);
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
+
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
 
@@ -722,7 +731,9 @@ testVirPCIVPDParseFullVPDSkipInvalidKeywords(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(fullVPDExample);
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
+
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
 
@@ -775,7 +786,9 @@ testVirPCIVPDParseFullVPDSkipInvalidValues(const void *opaque G_GNUC_UNUSED)
     };
 
     dataLen = G_N_ELEMENTS(fullVPDExample);
-    fd = virCreateAnonymousFile(fullVPDExample, dataLen);
+    if ((fd = virCreateAnonymousFile(fullVPDExample, dataLen)) < 0)
+        return -1;
+
     res = virPCIVPDParse(fd);
     VIR_FORCE_CLOSE(fd);
 
@@ -951,7 +964,8 @@ testVirPCIVPDParseFullVPDInvalid(const void *opaque G_GNUC_UNUSED)
         g_autoptr(virPCIVPDResource) res = NULL; \
         const uint8_t testCase[] = { invalidVPD }; \
         dataLen = G_N_ELEMENTS(testCase); \
-        fd = virCreateAnonymousFile(testCase, dataLen); \
+        if ((fd = virCreateAnonymousFile(testCase, dataLen)) < 0) \
+            return -1; \
         if ((res = virPCIVPDParse(fd))) { \
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s", \
                     "Successfully parsed an invalid VPD - this is not expected"); \
