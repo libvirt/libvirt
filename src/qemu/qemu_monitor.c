@@ -3016,17 +3016,6 @@ qemuMonitorCreateSnapshot(qemuMonitor *mon, const char *name)
     return qemuMonitorTextCreateSnapshot(mon, name);
 }
 
-int
-qemuMonitorLoadSnapshot(qemuMonitor *mon, const char *name)
-{
-    VIR_DEBUG("name=%s", name);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* there won't ever be a direct QMP replacement for this function */
-    return qemuMonitorTextLoadSnapshot(mon, name);
-}
-
 
 int
 qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name)

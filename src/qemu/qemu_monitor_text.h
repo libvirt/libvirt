@@ -32,5 +32,4 @@ int qemuMonitorTextDriveDel(qemuMonitor *mon,
                              const char *drivestr);
 
 int qemuMonitorTextCreateSnapshot(qemuMonitor *mon, const char *name);
-int qemuMonitorTextLoadSnapshot(qemuMonitor *mon, const char *name);
 int qemuMonitorTextDeleteSnapshot(qemuMonitor *mon, const char *name);

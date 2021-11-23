@@ -1057,7 +1057,6 @@ int qemuMonitorDriveDel(qemuMonitor *mon,
                         const char *drivestr);
 
 int qemuMonitorCreateSnapshot(qemuMonitor *mon, const char *name);
-int qemuMonitorLoadSnapshot(qemuMonitor *mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name);
 
 int qemuMonitorTransaction(qemuMonitor *mon, virJSONValue **actions)

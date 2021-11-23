@@ -144,42 +144,6 @@ qemuMonitorTextCreateSnapshot(qemuMonitor *mon,
     return 0;
 }
 
-int qemuMonitorTextLoadSnapshot(qemuMonitor *mon, const char *name)
-{
-    g_autofree char *cmd = NULL;
-    g_autofree char *reply = NULL;
-
-    cmd = g_strdup_printf("loadvm \"%s\"", name);
-
-    if (qemuMonitorJSONHumanCommand(mon, cmd, &reply))
-        return -1;
-
-    if (strstr(reply, "No block device supports snapshots")) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("this domain does not have a device to load snapshots"));
-        return -1;
-    } else if (strstr(reply, "Could not find snapshot")) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("the snapshot '%s' does not exist, and was not loaded"),
-                       name);
-        return -1;
-    } else if (strstr(reply, "Snapshots not supported on device")) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       _("Failed to load snapshot: %s"), reply);
-        return -1;
-    } else if (strstr(reply, "Could not open VM state file") ||
-               strstr(reply, "Error: ") ||
-               (strstr(reply, "Error") &&
-                (strstr(reply, "while loading VM state") ||
-                 strstr(reply, "while activating snapshot on")))) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to load snapshot: %s"), reply);
-        return -1;
-    }
-
-    return 0;
-}
-
 int qemuMonitorTextDeleteSnapshot(qemuMonitor *mon, const char *name)
 {
     g_autofree char *cmd = NULL;
