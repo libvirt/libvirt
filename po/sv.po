@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-11-15 20:16+0000\n"
+"PO-Revision-Date: 2021-11-22 12:07+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -7634,11 +7634,11 @@ msgid "Failed to load nbd module"
 msgstr "Misslyckades med att ladda modulen nbd"
 
 msgid "Failed to load nbd module: administratively prohibited"
-msgstr ""
+msgstr "Misslyckades med att lista nbd-modulen: administrativt förhindrat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to load plugin %s: %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att ladda insticksmodulen %s: %s"
 
 #, c-format
 msgid "Failed to load snapshot: %s"
@@ -7646,35 +7646,35 @@ msgstr "Misslyckades att ladda ögonblicksbilden: %s"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
-msgstr ""
+msgstr "Misslyckades att lokalisera föräldraenheten med ID ”%s”"
 
 #, c-format
 msgid "Failed to lock system token '%s'"
-msgstr ""
+msgstr "Misslyckades med att låsa systempoletten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to login: %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att logga in: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to logout: %s"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Misslyckades med att logga ut: %s"
 
-#, fuzzy
 msgid "Failed to make auth credentials"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att skapa autentiseringskreditiv"
 
 #, c-format
 msgid "Failed to make device %s"
 msgstr "Misslyckades att skapa enheten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to make directory %s readonly"
-msgstr "Misslyckades att markera nätverk %s som autostartat"
+msgstr "Misslyckades med att skapa katalogen %s endast läsbar"
 
 #, c-format
 msgid "Failed to make dnsmasq (PID: %d) reload config files."
 msgstr ""
+"Misslyckades med att få dnsmasq (PID: %d) att läsa om konfigurationsfilerna."
 
 #, fuzzy
 msgid "Failed to make domain persistent after migration"
@@ -17024,13 +17024,13 @@ msgstr ""
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "kan inte skapa körkatalogen %s: %s"
+msgstr "Kan inte skap RNG-tolk för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Kan inte skapa RNG-valideringskontext %s"
 
 #, fuzzy
 msgid "Unable to create TAP devices on this platform"
@@ -17143,15 +17143,14 @@ msgstr ""
 msgid "Unable to decode header until len is received"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to decode message header"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte avkoda meddelandehuvudet"
 
 msgid "Unable to decode message length"
-msgstr ""
+msgstr "Kan inte avkoda meddelandelängden"
 
 msgid "Unable to decode message payload"
-msgstr ""
+msgstr "Kan inte avkoda meddelandelasten"
 
 msgid "Unable to decode number of FDs"
 msgstr ""
@@ -17246,16 +17245,14 @@ msgstr ""
 msgid "Unable to enable/disable perf events"
 msgstr ""
 
-#, fuzzy
 msgid "Unable to encode message header"
-msgstr "Kan inte få fjärruttagets namn"
+msgstr "Kan inte koda meddelandehuvudet"
 
 msgid "Unable to encode message length"
-msgstr ""
+msgstr "Kan inte koda meddelandelängden"
 
-#, fuzzy
 msgid "Unable to encode message payload"
-msgstr "kan inte ta fram nodegenskaper"
+msgstr "Kan inte koda meddelandelasten"
 
 msgid "Unable to encode number of FDs"
 msgstr ""
@@ -17896,9 +17893,9 @@ msgstr "Kan inte ladda certfikat"
 msgid "Unable to obtain information about pid: %d"
 msgstr "Returnerar grundinformation om noden."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Kan inte öppna %s"
 
 #, c-format
 msgid "Unable to open %s (%d)"
@@ -18166,7 +18163,7 @@ msgid "Unable to query tap interface name"
 msgstr "Kan inte få fjärruttagets namn"
 
 msgid "Unable to re-encode message length"
-msgstr ""
+msgstr "Kan inte koda om meddelandelängden"
 
 #, fuzzy, c-format
 msgid "Unable to read %s"
