@@ -782,6 +782,10 @@ virExec(virCommand *cmd)
         }
 
         if (pid > 0) {
+            /* At this point it's us and the child that holds the write end of
+             * the pipe open. Close the write end of the pipe, so that the pipe
+             * is fully closed if child dies prematurely. */
+            VIR_FORCE_CLOSE(pipesync[1]);
             /* The parent expect us to have written the pid file before
              * exiting. Wait here for the child to write it and signal us. */
             if (cmd->pidfile &&
