@@ -107,7 +107,7 @@ static virBitmap *swtpm_setup_caps;
 static char *swtpm_ioctl_path;
 static struct stat swtpm_ioctl_stat;
 
-typedef int (*TypeFromStringFn)(const char *);
+typedef int (*virTPMBinaryCapsParse)(const char *);
 
 char *
 virTPMGetSwtpm(void)
@@ -171,7 +171,7 @@ virTPMGetSwtpmIoctl(void)
  */
 static virBitmap *
 virTPMExecGetCaps(virCommand *cmd,
-                  TypeFromStringFn typeFromStringFn)
+                  virTPMBinaryCapsParse capsParse)
 {
     int exitstatus;
     virBitmap *bitmap;
@@ -214,7 +214,7 @@ virTPMExecGetCaps(virCommand *cmd,
         str = virJSONValueGetString(item);
         if (!str)
             goto error_bad_json;
-        typ = typeFromStringFn(str);
+        typ = capsParse(str);
         if (typ < 0)
             continue;
 
@@ -231,8 +231,8 @@ virTPMExecGetCaps(virCommand *cmd,
 }
 
 static virBitmap *
-virTPMGetCaps(TypeFromStringFn typeFromStringFn,
-                  const char *exec, const char *param1)
+virTPMGetCaps(virTPMBinaryCapsParse capsParse,
+              const char *exec, const char *param1)
 {
     g_autoptr(virCommand) cmd = NULL;
 
@@ -244,7 +244,7 @@ virTPMGetCaps(TypeFromStringFn typeFromStringFn,
     virCommandAddArg(cmd, "--print-capabilities");
     virCommandClearCaps(cmd);
 
-    return virTPMExecGetCaps(cmd, typeFromStringFn);
+    return virTPMExecGetCaps(cmd, capsParse);
 }
 
 /*
@@ -263,7 +263,7 @@ virTPMEmulatorInit(void)
         struct stat *stat;
         const char *parm;
         virBitmap **caps;
-        TypeFromStringFn typeFromStringFn;
+        virTPMBinaryCapsParse capsParse;
     } prgs[] = {
         {
             .name = "swtpm",
@@ -271,14 +271,14 @@ virTPMEmulatorInit(void)
             .stat = &swtpm_stat,
             .parm = "socket",
             .caps = &swtpm_caps,
-            .typeFromStringFn = virTPMSwtpmFeatureTypeFromString,
+            .capsParse = virTPMSwtpmFeatureTypeFromString,
         },
         {
             .name = "swtpm_setup",
             .path = &swtpm_setup_path,
             .stat = &swtpm_setup_stat,
             .caps = &swtpm_setup_caps,
-            .typeFromStringFn = virTPMSwtpmSetupFeatureTypeFromString,
+            .capsParse = virTPMSwtpmSetupFeatureTypeFromString,
         },
         {
             .name = "swtpm_ioctl",
@@ -329,7 +329,7 @@ virTPMEmulatorInit(void)
             *prgs[i].path = g_steal_pointer(&path);
 
             if (prgs[i].caps) {
-                *prgs[i].caps = virTPMGetCaps(prgs[i].typeFromStringFn,
+                *prgs[i].caps = virTPMGetCaps(prgs[i].capsParse,
                                               *prgs[i].path, prgs[i].parm);
                 if (!*prgs[i].caps)
                     goto cleanup;
