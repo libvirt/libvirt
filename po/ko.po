@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-10-26 08:13+0000\n"
-"PO-Revision-Date: 2021-11-05 16:05+0000\n"
+"PO-Revision-Date: 2021-11-24 06:43+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.9\n"
 
 msgid ""
 "\n"
@@ -6183,7 +6183,7 @@ msgid "Expected downtime:"
 msgstr "예상 중단시간:"
 
 msgid "Expected exactly 1 host for the storage pool"
-msgstr "스토리지 풀에 대해 정확히 1개의 호스트가 필요합니다"
+msgstr "저장소 풀에 대해 정확히 1개의 호스트가 필요합니다"
 
 #, c-format
 msgid "Expecting %d FD names but got %u"
@@ -6551,7 +6551,7 @@ msgstr "VM '%s'의 autostart 실패: %s"
 
 #, c-format
 msgid "Failed to autostart storage pool '%s': %s"
-msgstr "스토리지 풀 '%s' 자동 시작 실패: %s"
+msgstr "저장소 풀 '%s' 자동 시작 실패: %s"
 
 msgid "Failed to balloon domain0 memory"
 msgstr "도메인 %s를 재시작하기 실패"
@@ -8023,7 +8023,7 @@ msgstr "도메인 '%s'에 대한 관리되는 저장 이미지를 제거하지 �
 
 #, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
-msgstr "스토리지 볼륨 '%s'(%s)을(를) 제거하지 못했습니다"
+msgstr "저장소 볼륨 '%s'(%s)을 제거하지 못했습니다"
 
 #, c-format
 msgid "Failed to reportluns: %s"
@@ -8070,7 +8070,7 @@ msgstr "VM을 재시작 하는데 실패하였습니다 '%s': %s"
 
 #, c-format
 msgid "Failed to restart storage pool '%s': %s"
-msgstr "스토리지 풀 '%s'을(를) 다시 시작하지 못했습니다. %s"
+msgstr "저장소 풀 '%s'을 다시 시작하지 못했습니다. %s"
 
 #, c-format
 msgid "Failed to restore PCI config space for %s"
@@ -10710,7 +10710,7 @@ msgid "List event types, or wait for secret events to occur"
 msgstr "이벤트 유형을 나열하거나 비밀 이벤트가 발생할 때까지 기다립니다"
 
 msgid "List event types, or wait for storage pool events to occur"
-msgstr "이벤트 유형을 나열하거나 스토리지 풀 이벤트가 발생할 때까지 대기합니다"
+msgstr "이벤트 유형을 나열하거나 저장소 풀 이벤트가 발생 할 때까지 대기합니다"
 
 msgid "List snapshots for a domain"
 msgstr "도메인의 스냅샷 목록"
@@ -12670,7 +12670,7 @@ msgstr ""
 "해)"
 
 msgid "Not enough space left in storage pool"
-msgstr "스토리지 풀에 남은 공간이 부족합니다"
+msgstr "저장소 풀에 남은 공간이 부족합니다"
 
 #, c-format
 msgid "Not reattaching active device %s"
@@ -13918,9 +13918,8 @@ msgid ""
 "by an active guest.\n"
 "See blockresize for live resizing."
 msgstr ""
-"스토리지 볼륨의 크기를 조정합니다. 이는 활성 게스트가 사용하지 않는 스토리지 "
-"볼륨에 대해서만 안전합니다.\n"
-"실시간 크기 조정은 blockresize를 참조하세요."
+"저장소 볼륨의 크기를 조정합니다. 이는 활성 게스트가 사용하지 않는 저장소 볼륨에 대해서만 안전합니다.\n"
+"실시간 크기 조정은 블록크기를 참조하세요."
 
 msgid "Resolved device mapper name too long"
 msgstr "해결된 장치 매퍼 이름이 너무 깁니다"
@@ -14958,7 +14957,7 @@ msgid "Stopped"
 msgstr "정지됨"
 
 msgid "Storage Pool Events"
-msgstr "스토리지 풀 이벤트"
+msgstr "저장소 풀 이벤트"
 
 #, c-format
 msgid "Storage pool '%s' for volume '%s' not found."
@@ -14983,11 +14982,11 @@ msgid "Storage pool not found: %s"
 msgstr "저장소 풀을 찾을 수 없음: %s"
 
 msgid "Storage pool probe failed"
-msgstr "스토리지 풀 프로브 실패"
+msgstr "저장소 풀 프로브 실패"
 
 #, c-format
 msgid "Storage pool probe failed: %s"
-msgstr "스토리지 풀 프로브 실패: %s"
+msgstr "저장소 풀 프로브 실패: %s"
 
 #, c-format
 msgid "Storage pool state file '%s' does not match pool name '%s'"
@@ -15013,7 +15012,7 @@ msgstr ""
 "오.\n"
 
 msgid "Storage volume deletion is supported only on stopped domains"
-msgstr "스토리지 볼륨 삭제는 중지된 도메인에서만 지원됩니다"
+msgstr "저장소 볼륨 삭제는 중지된 도메인에서만 지원됩니다"
 
 msgid "Storage volume not found"
 msgstr "저장소 볼륨을 찾을 수 없음"
@@ -20178,26 +20177,26 @@ msgstr ""
 "되었습니다"
 
 msgid "adapter name to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 어댑터 이름"
+msgstr "기본 저장소에 사용할 어댑터 이름"
 
 msgid ""
 "adapter parent scsi_hostN fabric_wwn to be used for underlying vHBA storage"
-msgstr "기본 vHBA 스토리지에 사용할 어댑터 상위 scsi_hostN fabric_wwn"
+msgstr "기본 vHBA 저장소에 사용할 어댑터 상위 scsi_hostN fabric_wwn"
 
 msgid "adapter parent scsi_hostN to be used for underlying vHBA storage"
-msgstr "기본 vHBA 스토리지에 사용할 어댑터 상위 scsi_hostN"
+msgstr "기본 vHBA 저장소에 사용 할 어댑터 상위 scsi_hostN"
 
 msgid "adapter parent scsi_hostN wwnn to be used for underlying vHBA storage"
-msgstr "기본 vHBA 스토리지에 사용할 어댑터 상위 scsi_hostN wwnn"
+msgstr "기본 vHBA 저장소에 사용 할 어댑터 상위 scsi_hostN wwnn"
 
 msgid "adapter parent scsi_hostN wwpn to be used for underlying vHBA storage"
-msgstr "기본 vHBA 스토리지에 사용할 어댑터 상위 scsi_hostN wwpn"
+msgstr "기본 vHBA 저장소에 사용 할 어댑터 상위 scsi_hostN wwpn"
 
 msgid "adapter wwnn to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 어댑터 wwnn"
+msgstr "기본 저장소에 사용 할 어댑터 wwnn"
 
 msgid "adapter wwpn to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 어댑터 wwpn"
+msgstr "기본 저장소에 사용 할 어댑터 wwpn"
 
 msgid "add a column showing parent checkpoint"
 msgstr "상위 점검지점을 보여주는데 열 추가"
@@ -20496,16 +20495,16 @@ msgid "auth is not supported with vhostuser disk"
 msgstr "vhostuser 디스크에서는 인증이 지원되지 않습니다"
 
 msgid "auth secret UUID to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 인증 비밀 UUID"
+msgstr "기본 저장소에 사용 할 인증 비밀 UUID"
 
 msgid "auth secret usage to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 인증 비밀 사용"
+msgstr "기본 저장소에 사용 할 인증 비밀 사용"
 
 msgid "auth type to be used for underlying storage"
 msgstr "기본 저장소에 사용할 인증 유형"
 
 msgid "auth username to be used for underlying storage"
-msgstr "기본 스토리지에 사용할 인증 사용자 이름"
+msgstr "기본 저장소에 사용 할 인증 사용자 이름"
 
 msgid "authentication cancelled"
 msgstr "인증이 취소되었습니다"
@@ -20582,7 +20581,7 @@ msgstr ""
 "디스크 '%s'에 대해 깊이가 200개를 초과하는 백킹 체인은 지원되지 않습니다"
 
 msgid "backing storage not supported for directories volumes"
-msgstr "디렉토리 볼륨에 지원되지 않는 백업 스토리지"
+msgstr "디렉토리 볼륨에 지원되지 않는 백업 저장소"
 
 msgid "backing storage not supported for raw volumes"
 msgstr "단순 볼륨에 지원되지 않는 백업 저장소"
@@ -21081,8 +21080,7 @@ msgid "can't parse cputune shares value"
 msgstr "cputune 공유 값을 구문 분석 할 수 없음"
 
 msgid "can't pivot a shared disk to a storage volume not supporting sharing"
-msgstr ""
-"공유 디스크를 공유를 지원하지 않는 스토리지 볼륨으로 피벗할 수 없습니다"
+msgstr "공유 디스크를 공유를 지원하지 않는 저장소 볼륨으로 피벗 할 수 없습니다"
 
 msgid "can't reopen image with unknown presence of backing store"
 msgstr "알 수 없는 백업 저장소가 있는 이미지를 다시 열 수 없습니다"
@@ -22143,7 +22141,7 @@ msgstr "비활성화된 도메인의 vcpu를 고정할 수 없음"
 
 #, c-format
 msgid "cannot precreate storage for disk type '%s'"
-msgstr "디스크 유형 '%s'에 대한 스토리지를 미리 생성할 수 없습니다"
+msgstr "디스크 유형 '%s'에 대한 저장소를 미리 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot probe backing volume format: %s"
@@ -22752,8 +22750,7 @@ msgstr "체크포인트 '%s'에 상위 항목이 없습니다"
 
 #, c-format
 msgid "checkpoint for disk %s unsupported for storage type %s"
-msgstr ""
-"디스크 %s에 대한 체크포인트가 스토리지 유형 %s에 대해 지원되지 않습니다"
+msgstr "디스크 %s에 대한 점검 부분이 저장소 유형 %s에 대해 지원되지 않습니다"
 
 msgid "checkpoint inconsistent"
 msgstr "체크포인트 불일치"
@@ -23811,14 +23808,12 @@ msgstr "스냅샷과 그 안에있는 모든 정보 삭제"
 
 msgid ""
 "delete snapshots associated with volume (must be supported by storage driver)"
-msgstr "볼륨과 연결된 스냅샷 삭제(스토리지 드라이버에서 지원해야 함)"
+msgstr "볼륨과 연결된 스냅샷 삭제(저장소 드라이버에서 지원해야 함)"
 
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
-msgstr ""
-"볼륨과 연결된 스냅샷 삭제, --remove-all-storage 필요(스토리지 드라이버에서 지"
-"원해야 함)"
+msgstr "볼륨과 연결된 스냅샷 삭제, --remove-all-storage 필요(저장소 드라이버에서 지원해야 함)"
 
 msgid "delete the specified network port"
 msgstr "지정된 네트워크 포트를 삭제하세요"
@@ -24170,7 +24165,7 @@ msgid "disk device 'lun' doesn't support encryption"
 msgstr "디스크 장치 'lun'이(가) 암호화를 지원하지 않습니다"
 
 msgid "disk device 'lun' doesn't support storage slice"
-msgstr "디스크 장치 'lun'은(는) 스토리지 슬라이스를 지원하지 않습니다"
+msgstr "디스크 장치 'lun'는 저장소 슬라이스를 지원하지 않습니다"
 
 msgid "disk device 'lun' must use 'raw' format"
 msgstr "디스크 장치 'lun'은 '단순' 형식을 사용해야 합니다"
@@ -24256,7 +24251,7 @@ msgid "disk source can be changed only in removable drives"
 msgstr "디스크 소스는 이동식 드라이브에서만 변경할 수 있습니다"
 
 msgid "disk source mode is only valid when storage pool is of iscsi type"
-msgstr "디스크 소스 모드는 스토리지 풀이 iscsi 유형인 경우에만 유효합니다"
+msgstr "디스크 원천 방식는 저장소 풀이 iscsi 유형인 경우에만 유효합니다"
 
 msgid "disk source path is missing"
 msgstr "디스크 원본 경로가 빠졌습니다"
@@ -25214,7 +25209,7 @@ msgid "exit status %d"
 msgstr "종료 상태 %d"
 
 msgid "expected exactly 1 device for the storage pool"
-msgstr "스토리지 풀에 대해 정확히 1개의 장치가 필요합니다"
+msgstr "저장소 풀에 대해 정확히 1개의 장치가 필요합니다"
 
 msgid "expected exactly 1 host for the storage pool"
 msgstr "저장소 풀을 위해 정확히 1개의 호스트가 예상됩니다"
@@ -25864,7 +25859,7 @@ msgid "failed to get status of interface %s: %s%s%s"
 msgstr "인터페이스 %s의 상태를 얻는데 실패: %s%s%s"
 
 msgid "failed to get storage pool capabilities"
-msgstr "스토리지 풀 기능을 가져오지 못했습니다"
+msgstr "저장소 풀 기능을 가져오지 못했습니다"
 
 #, c-format
 msgid "failed to get stripe count of RBD image %s"
@@ -26720,7 +26715,7 @@ msgid "filter by snapshots taken while inactive"
 msgstr "비활성 상태에서 찍은 스냅샷으로 필터링"
 
 msgid "filter by storage pool name or uuid"
-msgstr "스토리지 풀 이름 또는 uuid로 필터링"
+msgstr "저장소 풀 이름 또는 uuid로 필터링"
 
 msgid "filter creation API error"
 msgstr "필터 생성 API 오류"
@@ -27559,7 +27554,7 @@ msgid "initialize"
 msgstr "초기화합니다"
 
 msgid "initiator iqn for underlying storage"
-msgstr "기본 스토리지에 대한 이니시에이터 iqn"
+msgstr "기본 저장소에 대한 이니시에이터 iqn"
 
 msgid "inject"
 msgstr "주입하다"
@@ -27796,7 +27791,7 @@ msgstr "현재 NULL로 내부 구문 분석이 요청되었습니다"
 
 #, c-format
 msgid "internal snapshot for disk %s unsupported for storage type %s"
-msgstr "디스크 %s의 내부 스냅샷은 스토리지 유형 %s에 대해 지원되지 않습니다"
+msgstr "디스크 %s의 내부 스냅샷은 저장소 유형 %s에 대해 지원되지 않습니다"
 
 msgid "internal snapshot of a running VM must include the memory state"
 msgstr "실행 중인 VM의 내부 스냅샷에는 메모리 상태가 포함되어야 합니다"
@@ -29861,7 +29856,7 @@ msgstr "복사 작업에서만 지원되는 유형 없는 미러"
 
 #, c-format
 msgid "mishandled storage format '%s'"
-msgstr "잘못 처리된 스토리지 형식 '%s'"
+msgstr "잘못 처리된 저장소 형식 '%s'"
 
 #, c-format
 msgid ""
@@ -30429,10 +30424,10 @@ msgid "missing or invalid vlan tag id attribute"
 msgstr "누락되거나 또는 잘못된 vlan 태그 id 속성"
 
 msgid "missing or malformed 'device' field of 'nvme' storage"
-msgstr "'nvme' 스토리지의 '장치' 필드가 없거나 형식이 잘못되었습니다"
+msgstr "'nvme' 저장소의 '장치' 필드가 없거나 형식이 잘못되었습니다"
 
 msgid "missing or malformed 'namespace' field of 'nvme' storage"
-msgstr "'nvme' 스토리지의 '네임스페이스' 필드가 없거나 형식이 잘못되었습니다"
+msgstr "'nvme' 저장소의 '이름공간' 부부이 없거나 형식이 잘못되었습니다"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 SEV cbitpos 정보"
@@ -30590,11 +30585,11 @@ msgstr "기존 스냅샷에서 상태가 누락되어 있음"
 
 #, c-format
 msgid "missing storage backend for '%s' storage"
-msgstr "'%s' 스토리지에 대한 스토리지 백엔드 누락"
+msgstr "'%s' 저장소에 대한 저장소 백엔드 누락"
 
 #, c-format
 msgid "missing storage backend for network files using %s protocol"
-msgstr "%s 프로토콜을 사용하는 네트워크 파일에 대한 스토리지 백엔드가 없습니다"
+msgstr "%s 통신규약을 사용하는 네트워크 파일에 대한 저장소 백엔드가 없습니다"
 
 #, c-format
 msgid "missing storage capability type for '%s'"
@@ -30622,10 +30617,10 @@ msgid "missing storage pool target path"
 msgstr "저장 풀(pool) 타겟 경로가 빠짐"
 
 msgid "missing storage source format"
-msgstr "누락된 스토리지 소스 형식"
+msgstr "누락된 저장소 원천 형식"
 
 msgid "missing storage source type"
-msgstr "누락된 스토리지 소스 유형"
+msgstr "누락된 저장소 원천 유형"
 
 msgid "missing supported dump formats"
 msgstr "지원되는 덤프 형식 누락"
@@ -31721,15 +31716,15 @@ msgstr "대상 경로 '%s' (%s)와 일치하는 저장소 풀이 없습니다"
 
 #, c-format
 msgid "no storage pool with matching uuid '%s'"
-msgstr "일치하는 uuid '%s' 스토리지 풀이 없습니다"
+msgstr "일치하는 uuid '%s' 저장소 풀이 없습니다"
 
 #, c-format
 msgid "no storage pool with matching uuid '%s' (%s)"
-msgstr "일치하는 uuid '%s'(%s) 스토리지 풀이 없습니다"
+msgstr "일치하는 uuid '%s'(%s) 저장소 풀이 없습니다"
 
 #, c-format
 msgid "no storage pools were found on host '%s'"
-msgstr "호스트 '%s'에서 스토리지 풀을 찾을 수 없습니다"
+msgstr "호스트 '%s'에서 저장소 풀을 찾을 수 없습니다"
 
 #, c-format
 msgid "no storage vol with matching key %s"
@@ -32416,7 +32411,7 @@ msgid "p2p migration is not supported by the source host"
 msgstr "p2p 이전은 소스 호스트에서 지원되지 않습니다"
 
 msgid "packed driver option is only supported for virtio devices"
-msgstr "패키지 드라이버 옵션은 virtio 장치에만 지원됩니다"
+msgstr "꾸러미 드라이버 옵션은 virtio 장치에만 지원됩니다"
 
 #, c-format
 msgid "packet %d bytes received from server too large, want %d"
@@ -33269,7 +33264,7 @@ msgid "query-version reply was missing 'minor' version"
 msgstr "쿼리 버전 응답에 '부(minor)' 버전이 누락되었습니다"
 
 msgid "query-version reply was missing 'package' version"
-msgstr "쿼리 버전 응답에 '패키지' 버전이 누락되었습니다"
+msgstr "쿼리 버전 응답에 '꾸러미' 버전이 누락되었습니다"
 
 msgid "query-version reply was missing 'qemu' data"
 msgstr "쿼리 버전 응답에 'qemu' 데이터가 누락되었습니다"
@@ -33455,7 +33450,7 @@ msgid "removable is only valid for usb disks"
 msgstr "이동식 USB 디스크에만 유효합니다"
 
 msgid "remove all associated storage volumes (use with caution)"
-msgstr "연결된 모든 스토리지 볼륨 제거(주의해서 사용)"
+msgstr "연결된 모든 저장소 볼륨 제거(주의해서 사용)"
 
 msgid "remove all domain checkpoint metadata (vm must be inactive)"
 msgstr "모든 도메인 체크포인트 메타데이터 제거(vm은 비활성화되어야 함)"
@@ -33466,9 +33461,7 @@ msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되�
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
-msgstr ""
-"연결된 스토리지 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist "
-"참조)"
+msgstr "연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist 참조)"
 
 msgid "remove domain managed state file"
 msgstr "도메인 관리 상태 파일 제거"
@@ -34540,13 +34533,12 @@ msgid "stopped, with saved guests"
 msgstr "중지됨, 저장된 참석자 포함"
 
 msgid "storage file backend not initialized"
-msgstr "스토리지 파일 백엔드가 초기화되지 않았습니다"
+msgstr "저장소 파일 백엔드가 초기화되지 않았습니다"
 
 #, c-format
 msgid ""
 "storage file reading is not supported for storage type %s (protocol: %s)"
-msgstr ""
-"스토리지 유형 %s(프로토콜: %s)에 대해 스토리지 파일 읽기가 지원되지 않습니다"
+msgstr "저장소 유형 %s(통신규약: %s)에 대해 저장소 파일 읽기가 지원되지 않습니다"
 
 #, c-format
 msgid "storage format '%s' does not support backing store"
@@ -34562,11 +34554,11 @@ msgstr ""
 
 #, c-format
 msgid "storage pool '%s' containing volume '%s' is not active"
-msgstr "볼륨 '%s'를 포함하는 스토리지 풀 '%s'가 활성 상태가 아닙니다"
+msgstr "볼륨 '%s'를 포함하는 저장소 풀 '%s'가 활성 상태가 아닙니다"
 
 #, c-format
 msgid "storage pool '%s' in %s must match connection"
-msgstr "%s의 스토리지 풀 '%s'는 연결과 일치해야 합니다"
+msgstr "%s의 저장소 풀 '%s'는 연결과 일치해야 합니다"
 
 #, c-format
 msgid "storage pool '%s' is active"
@@ -34582,17 +34574,17 @@ msgstr "저장소 풀 '%s'가 이미 동작중이 아닙니다"
 
 #, c-format
 msgid "storage pool '%s' is starting up"
-msgstr "스토리지 풀 '%s'를 시작하는 중입니다"
+msgstr "저장소 풀 '%s'를 시작하는 중입니다"
 
 #, c-format
 msgid "storage pool '%s' is still active"
 msgstr "저장소 풀 '%s'가 아직 동작 중입니다"
 
 msgid "storage pool capabilities"
-msgstr "스토리지 풀 기능"
+msgstr "저장소 풀 기능"
 
 msgid "storage pool does not support changing of volume capacity"
-msgstr "스토리지 풀은 볼륨 용량 변경을 지원하지 않습니다"
+msgstr "저장소 풀은 볼륨 용량 변경을 지원하지 않습니다"
 
 msgid "storage pool does not support encrypted volumes"
 msgstr "저장소 풀이 암호화된 볼륨을 지원하지 않음"
@@ -34607,17 +34599,17 @@ msgid "storage pool does not support volume creation from an existing volume"
 msgstr "저장소 풀이 기존 볼륨에서 새 볼륨을 만드는 것을 지원하지 않습니다"
 
 msgid "storage pool doesn't support volume download"
-msgstr "스토리지 풀은 볼륨 다운로드를 지원하지 않습니다"
+msgstr "저장소 풀은 볼륨 내려받기를 지원하지 않습니다"
 
 msgid "storage pool doesn't support volume upload"
-msgstr "스토리지 풀은 볼륨 업로드를 지원하지 않습니다"
+msgstr "저장소 풀은 볼륨 적재를 지원하지 않습니다"
 
 msgid "storage pool doesn't support volume wiping"
 msgstr "저장소 풀은 볼륨 완전 삭제를 지원하지 않습니다"
 
 #, c-format
 msgid "storage pool event callback %d not registered"
-msgstr "스토리지 풀 이벤트 콜백 %d가 등록되지 않았습니다"
+msgstr "저장소 풀 이벤트 콜백 %d가 등록되지 않았습니다"
 
 msgid "storage pool information"
 msgstr "저장소 풀 정보"
@@ -34629,7 +34621,7 @@ msgid "storage pool missing auth type"
 msgstr "저장소 풀에 type 속성이 누락되어 있습니다"
 
 msgid "storage pool only supports LUKS encrypted volumes"
-msgstr "스토리지 풀은 LUKS 암호화 볼륨만 지원합니다"
+msgstr "저장소 풀은 LUKS 암호화 볼륨만 지원합니다"
 
 #, c-format
 msgid "storage pool protocol ver '%s' is malformed"
@@ -34637,20 +34629,20 @@ msgstr "저장소 풀 통신규약 버전 '%s'가 잘못된 형식입니다"
 
 #, c-format
 msgid "storage pool protocol ver unsupported for pool type '%s'"
-msgstr "풀 유형 '%s'에 대해 스토리지 풀 프로토콜 버전이 지원되지 않습니다"
+msgstr "풀 유형 '%s'에 대해 저장소 풀 통신규약 버전이 지원되지 않습니다"
 
 msgid "storage slice is not supported by this QEMU binary"
-msgstr "이 QEMU 바이너리는 스토리지 슬라이스를 지원하지 않습니다"
+msgstr "이 QEMU 바이너리는 저장소 슬라이스를 지원하지 않습니다"
 
 #, c-format
 msgid "storage source pool '%s' volume '%s' is not translated"
-msgstr "스토리지 소스 풀 '%s' 볼륨 '%s'가 변환되지 않았습니다"
+msgstr "저장소 원천 풀 '%s' 볼륨 '%s'가 변환되지 않았습니다"
 
 msgid "storage state driver is not active"
 msgstr "저장소 상태 드라이버가 실행 중이 아닙니다"
 
 msgid "storage type 'dir' requires use of storage format 'fat'"
-msgstr "스토리지 유형 'dir'에는 스토리지 형식 'fat'를 사용해야 합니다"
+msgstr "저장소 유형 'dir'에는 저장소 형식 'fat'를 사용해야 합니다"
 
 msgid "storage vol already exists"
 msgstr "저장소 볼륨이 이미 존재합니다"
@@ -34660,7 +34652,7 @@ msgstr "저장소 볼륨 정보"
 
 #, c-format
 msgid "storage volume %s exists already"
-msgstr "스토리지 볼륨 %s가 이미 있습니다"
+msgstr "저장소 볼륨 %s가 이미 있습니다"
 
 #, c-format
 msgid "storage volume name '%s' already in use."
@@ -35158,7 +35150,7 @@ msgid "this qemu version does not support specific vCPU hotplug"
 msgstr "이 qemu 버전은 특정 vCPU 핫플러그를 지원하지 않습니다"
 
 msgid "this storage volume exists already"
-msgstr "이 스토리지 볼륨이 이미 있습니다"
+msgstr "이 저장소 볼륨이 이미 있습니다"
 
 msgid "this version of libxenlight does not support backend domain name"
 msgstr "이 버전의 libxenlight는 백엔드 도메인 이름을 지원하지 않습니다"
@@ -36584,11 +36576,11 @@ msgstr "예기치 못한 소스 모드 %d"
 
 #, c-format
 msgid "unexpected storage mode for '%s'"
-msgstr "'%s'에 대한 예기치 않은 스토리지 모드"
+msgstr "'%s'에 대한 예기치 않은 저장소 방식"
 
 #, c-format
 msgid "unexpected storage volume type '%s' for storage pool type '%s'"
-msgstr "스토리지 풀 유형 '%s'에 대한 예기치 않은 스토리지 볼륨 유형 '%s'"
+msgstr "저장소 풀 유형 '%s'에 대한 예기치 않은 저장소 볼륨 유형 '%s'"
 
 msgid "unexpected stream hole"
 msgstr "예상치 못한 스트림 구멍"
@@ -36968,7 +36960,7 @@ msgstr "알려지지 않은 입력 모형: '%s'"
 
 #, c-format
 msgid "unknown inputvol storage vol type %d"
-msgstr "알 수 없는 입력볼륨 스토리지 볼륨 유형 %d"
+msgstr "알 수 없는 입력볼륨 저장소 볼륨 유형 %d"
 
 #, c-format
 msgid "unknown interface event_idx mode '%s'"
@@ -37170,7 +37162,7 @@ msgstr "알려지지 않은 저장 풀(pool) 유형 %s"
 
 #, c-format
 msgid "unknown storage pool volume refresh allocation type %s"
-msgstr "알 수 없는 스토리지 풀 볼륨 새로 고침 할당 유형 %s"
+msgstr "알 수 없는 저장소 풀 볼륨 새로 고침 할당 유형 %s"
 
 #, c-format
 msgid "unknown storage source format '%s'"
@@ -37606,7 +37598,7 @@ msgstr "지원되지 않는 입력 장치 구성"
 
 #, c-format
 msgid "unsupported input storage vol type %d"
-msgstr "지원되지 않는 입력 스토리지 볼륨 유형 %d"
+msgstr "지원되지 않는 입력 저장소 볼륨 유형 %d"
 
 #, c-format
 msgid "unsupported interface type %s"
@@ -37691,7 +37683,7 @@ msgstr "지원되지 않는 상태 값"
 
 #, c-format
 msgid "unsupported storage pool event ID %d"
-msgstr "지원되지 않는 스토리지 풀 이벤트 ID %d"
+msgstr "지원되지 않는 저장소 풀 이벤트 ID %d"
 
 #, c-format
 msgid "unsupported timer type (name) '%s'"
@@ -38494,7 +38486,7 @@ msgid "volume capacity required for this pool"
 msgstr "이 풀에 필요한 볼륨 용량"
 
 msgid "volume capacity required for this storage pool"
-msgstr "이 스토리지 풀에 필요한 볼륨 용량"
+msgstr "이 저장소 풀에 필요한 볼륨 용량"
 
 #, c-format
 msgid "volume encryption unsupported with format %s"
