@@ -869,8 +869,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
-    if (qemuAssignDeviceControllerAlias(vm->def, controller) < 0)
-        goto cleanup;
+    qemuAssignDeviceControllerAlias(vm->def, controller);
 
     if (qemuBuildControllerDevProps(vm->def, controller, priv->qemuCaps, &devprops) < 0)
         goto cleanup;
@@ -1221,8 +1220,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     actualType = virDomainNetGetActualType(net);
 
-    if (qemuAssignDeviceNetAlias(vm->def, net, -1) < 0)
-        goto cleanup;
+    qemuAssignDeviceNetAlias(vm->def, net, -1);
 
     if (actualType == VIR_DOMAIN_NET_TYPE_HOSTDEV) {
         /* This is really a "smart hostdev", so it should be attached
@@ -1699,8 +1697,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     if (backend != VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO)
         teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &info->alias, -1) < 0)
-        goto error;
+    qemuAssignDeviceHostdevAlias(vm->def, &info->alias, -1);
 
     if (qemuDomainIsPSeries(vm->def))
         /* Isolation groups are only relevant for pSeries guests */
@@ -1960,8 +1957,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
     const char *secAlias = NULL;
     virErrorPtr orig_err;
 
-    if (qemuAssignDeviceRedirdevAlias(def, redirdev, -1) < 0)
-        return -1;
+    qemuAssignDeviceRedirdevAlias(def, redirdev, -1);
 
     if (!(charAlias = qemuAliasChardevFromDevAlias(redirdev->info.alias)))
         return -1;
@@ -2310,8 +2306,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     virJSONValue *props = NULL;
     int ret = -1;
 
-    if (qemuAssignDeviceRNGAlias(vm->def, rng) < 0)
-        goto cleanup;
+    qemuAssignDeviceRNGAlias(vm->def, rng);
 
     /* preallocate space for the device definition */
     VIR_REALLOC_N(vm->def->rngs, vm->def->nrngs + 1);
@@ -2587,8 +2582,8 @@ qemuDomainAttachHostUSBDevice(virQEMUDriver *driver,
         goto cleanup;
     teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-        goto cleanup;
+    qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
+
     if (!(devprops = qemuBuildUSBHostdevDevProps(vm->def, hostdev, priv->qemuCaps)))
         goto cleanup;
 
@@ -2667,8 +2662,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
         goto cleanup;
     teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-        goto cleanup;
+    qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
     if (qemuDomainPrepareHostdev(hostdev, priv) < 0)
         goto cleanup;
@@ -2786,8 +2780,7 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
     }
     releaseaddr = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-        goto cleanup;
+    qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
     if (!(devprops = qemuBuildSCSIVHostHostdevDevProps(vm->def,
                                                        hostdev,
@@ -2899,8 +2892,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
         goto cleanup;
     teardownlabel = true;
 
-    if (qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1) < 0)
-        goto cleanup;
+    qemuAssignDeviceHostdevAlias(vm->def, &hostdev->info->alias, -1);
 
     if (!(devprops = qemuBuildHostdevMediatedDevProps(vm->def, hostdev)))
         goto cleanup;
@@ -3028,8 +3020,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuAssignDeviceShmemAlias(vm->def, shmem, -1) < 0)
-        return -1;
+    qemuAssignDeviceShmemAlias(vm->def, shmem, -1);
 
     qemuDomainPrepareShmemChardev(shmem);
 
@@ -3438,8 +3429,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
-    if (qemuAssignDeviceFSAlias(vm->def, fs) < 0)
-        goto cleanup;
+    qemuAssignDeviceFSAlias(vm->def, fs);
 
     chardev = virDomainChrSourceDefNew(priv->driver->xmlopt);
     chardev->type = VIR_DOMAIN_CHR_TYPE_UNIX;
