@@ -301,7 +301,7 @@ virTPMEmulatorInit(void)
                 findit = true;
 
             if (!findit &&
-                &statbuf.st_mtime != &prgs[i].stat->st_mtime)
+                statbuf.st_mtime != prgs[i].stat->st_mtime)
                 findit = true;
         }
 
