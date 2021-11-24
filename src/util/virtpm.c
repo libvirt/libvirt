@@ -100,11 +100,11 @@ static char *swtpm_path;
 static struct stat swtpm_stat;
 static virBitmap *swtpm_caps;
 
-static char *swtpm_setup;
+static char *swtpm_setup_path;
 static struct stat swtpm_setup_stat;
 static virBitmap *swtpm_setup_caps;
 
-static char *swtpm_ioctl;
+static char *swtpm_ioctl_path;
 static struct stat swtpm_ioctl_stat;
 
 typedef int (*TypeFromStringFn)(const char *);
@@ -129,11 +129,11 @@ virTPMGetSwtpmSetup(void)
 {
     char *s;
 
-    if (!swtpm_setup && virTPMEmulatorInit() < 0)
+    if (!swtpm_setup_path && virTPMEmulatorInit() < 0)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpm_setup);
+    s = g_strdup(swtpm_setup_path);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;
@@ -144,11 +144,11 @@ virTPMGetSwtpmIoctl(void)
 {
     char *s;
 
-    if (!swtpm_ioctl && virTPMEmulatorInit() < 0)
+    if (!swtpm_ioctl_path && virTPMEmulatorInit() < 0)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpm_ioctl);
+    s = g_strdup(swtpm_ioctl_path);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;
@@ -275,14 +275,14 @@ virTPMEmulatorInit(void)
         },
         {
             .name = "swtpm_setup",
-            .path = &swtpm_setup,
+            .path = &swtpm_setup_path,
             .stat = &swtpm_setup_stat,
             .caps = &swtpm_setup_caps,
             .typeFromStringFn = virTPMSwtpmSetupFeatureTypeFromString,
         },
         {
             .name = "swtpm_ioctl",
-            .path = &swtpm_ioctl,
+            .path = &swtpm_ioctl_path,
             .stat = &swtpm_ioctl_stat,
         }
     };
