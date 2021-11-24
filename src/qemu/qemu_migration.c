@@ -529,7 +529,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
     return ret;
 
  exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     goto cleanup;
 }
 
@@ -4368,7 +4368,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
             qemuDomainObjEnterMonitorAsync(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT) == 0) {
             qemuMonitorMigrateCancel(priv->mon);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
         }
 
         /* cancel any outstanding NBD jobs */
@@ -4389,7 +4389,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     goto cleanup;
 
  exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     goto error;
 }
 
@@ -5970,11 +5970,11 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         if (virSetCloseExec(pipeFD[1]) < 0) {
             virReportSystemError(errno, "%s",
                                  _("Unable to set cloexec flag"));
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
         if (virCommandRunAsync(compressor, NULL) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
         rc = qemuMonitorMigrateToFd(priv->mon,
@@ -5997,7 +5997,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
             if (virDomainObjIsActive(vm) &&
                 qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
                 qemuMonitorMigrateCancel(priv->mon);
-                ignore_value(qemuDomainObjExitMonitor(driver, vm));
+                qemuDomainObjExitMonitor(driver, vm);
             }
         }
         goto cleanup;
@@ -6024,7 +6024,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
         } else {
             if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
                 qemuMonitorSetMigrationSpeed(priv->mon, saveMigBandwidth);
-                ignore_value(qemuDomainObjExitMonitor(driver, vm));
+                qemuDomainObjExitMonitor(driver, vm);
             }
         }
         priv->migMaxBandwidth = saveMigBandwidth;

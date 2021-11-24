@@ -3123,7 +3123,7 @@ qemuDumpToFd(virQEMUDriver *driver,
                            _("unsupported dumpformat '%s' "
                              "for this QEMU binary"),
                            dumpformat);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             return -1;
         }
     }
@@ -3422,7 +3422,7 @@ qemuDomainScreenshot(virDomainPtr dom,
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorScreendump(priv->mon, videoAlias, screen, tmp) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         goto endjob;
     }
     qemuDomainObjExitMonitor(driver, vm);
@@ -5305,7 +5305,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
             if (qemuMonitorDelObject(priv->mon, alias, true) < 0)
                 VIR_WARN("deletion of iothread object %d of domain %s failed when cleanup",
                          iothread_id, vm->def->name);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
         }
     }
 
@@ -5320,7 +5320,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     return ret;
 
  exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     goto cleanup;
 }
 
@@ -5408,7 +5408,7 @@ qemuDomainHotplugDelIOThread(virQEMUDriver *driver,
     return ret;
 
  exit_monitor:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     goto cleanup;
 }
 
@@ -9910,7 +9910,7 @@ qemuDomainBlockResize(virDomainPtr dom,
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorBlockResize(priv->mon, device, nodename, size) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         goto endjob;
     }
     qemuDomainObjExitMonitor(driver, vm);
@@ -10799,12 +10799,12 @@ qemuDomainMemoryPeek(virDomainPtr dom,
     qemuDomainObjEnterMonitor(driver, vm);
     if (flags == VIR_MEMORY_VIRTUAL) {
         if (qemuMonitorSaveVirtualMemory(priv->mon, offset, size, tmp) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             goto endjob;
         }
     } else {
         if (qemuMonitorSavePhysicalMemory(priv->mon, offset, size, tmp) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             goto endjob;
         }
     }
@@ -15187,7 +15187,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                 qemuBlockStorageSourceChainDetach(priv->mon, data);
             if (crdata)
                 qemuBlockStorageSourceAttachRollback(priv->mon, crdata->srcdata[0]);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
         }
         if (need_revoke)
             qemuDomainStorageSourceChainAccessRevoke(driver, vm, mirror);

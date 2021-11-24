@@ -3195,7 +3195,7 @@ qemuProcessUpdateVideoRamSize(virQEMUDriver *driver,
     return ret;
 
  error:
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     return -1;
 }
 

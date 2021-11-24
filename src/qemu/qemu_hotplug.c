@@ -1440,7 +1440,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         if (qemuMonitorAddFileHandleToSet(priv->mon, vdpafd, -1,
                                           net->data.vdpa.devicepath,
                                           &fdinfo) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             goto cleanup;
         }
         vdpafdName = g_strdup_printf("/dev/fdset/%d", fdinfo.fdset);
@@ -1450,13 +1450,13 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                            tapfdName, tapfdSize,
                                            vhostfdName, vhostfdSize,
                                            slirpfdName, vdpafdName))) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         goto cleanup;
     }
 
     if (actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER) {
         if (qemuHotplugChardevAttach(priv->mon, charDevAlias, net->data.vhostuser) < 0) {
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
             virDomainAuditNet(vm, NULL, net, "attach", false);
             goto cleanup;
         }
@@ -1467,7 +1467,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                              tapfd, tapfdName, tapfdSize,
                              vhostfd, vhostfdName, vhostfdSize,
                              slirpfd, slirpfdName) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
     }
@@ -1486,14 +1486,14 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     if (qemuDomainAttachExtensionDevice(priv->mon, &net->info) < 0) {
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
     }
 
     if (qemuMonitorAddDeviceProps(priv->mon, &nicprops) < 0) {
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &net->info));
-        ignore_value(qemuDomainObjExitMonitor(driver, vm));
+        qemuDomainObjExitMonitor(driver, vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
     }
@@ -1508,7 +1508,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
             qemuDomainObjEnterMonitor(driver, vm);
 
             if (qemuMonitorSetLink(priv->mon, net->info.alias, VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) < 0) {
-                ignore_value(qemuDomainObjExitMonitor(driver, vm));
+                qemuDomainObjExitMonitor(driver, vm);
                 virDomainAuditNet(vm, NULL, net, "attach", false);
                 goto try_remove;
             }
@@ -1607,7 +1607,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
         VIR_WARN("Failed to remove network backend for netdev %s",
                  netdev_name);
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&originalError);
     goto cleanup;
 }
@@ -1766,7 +1766,7 @@ qemuDomainDelTLSObjects(virQEMUDriver *driver,
     if (secAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, secAlias, false));
 
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
 
  cleanup:
     virErrorRestore(&orig_err);
@@ -1803,7 +1803,7 @@ qemuDomainAddTLSObjects(virQEMUDriver *driver,
 
  error:
     virErrorPreserveLast(&orig_err);
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
     qemuDomainDelTLSObjects(driver, vm, asyncJob, secAlias, NULL);
 
@@ -1985,7 +1985,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
     /* detach associated chardev on error */
     if (chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
                             secAlias, tlsAlias);
@@ -2260,7 +2260,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     /* detach associated chardev on error */
     if (chardevAttached)
         qemuMonitorDetachCharDev(priv->mon, charAlias);
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
 
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
@@ -2684,7 +2684,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
  exit_monitor:
     virErrorPreserveLast(&orig_err);
     qemuBlockStorageSourceAttachRollback(priv->mon, data);
-    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
 
     virDomainAuditHostdev(vm, hostdev, "attach", false);

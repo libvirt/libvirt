@@ -2906,7 +2906,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
         qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) == 0) {
 
         qemuBlockStorageSourceAttachRollback(priv->mon, data);
-        ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
+        qemuDomainObjExitMonitor(priv->driver, vm);
     }
 
     return ret;

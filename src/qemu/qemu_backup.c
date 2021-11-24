@@ -132,7 +132,7 @@ qemuBackupDiskDataCleanupOne(virDomainObj *vm,
         if (dd->added) {
             qemuDomainObjEnterMonitor(priv->driver, vm);
             qemuBlockStorageSourceAttachRollback(priv->mon, dd->crdata->srcdata[0]);
-            ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
+            qemuDomainObjExitMonitor(priv->driver, vm);
         }
 
         if (dd->created) {
@@ -935,7 +935,7 @@ qemuBackupBegin(virDomainObj *vm,
             ignore_value(qemuMonitorDelObject(priv->mon, tlsAlias, false));
         if (tlsSecretAlias)
             ignore_value(qemuMonitorDelObject(priv->mon, tlsSecretAlias, false));
-        ignore_value(qemuDomainObjExitMonitor(priv->driver, vm));
+        qemuDomainObjExitMonitor(priv->driver, vm);
     }
 
     if (ret < 0 && !job_started && priv->backup)

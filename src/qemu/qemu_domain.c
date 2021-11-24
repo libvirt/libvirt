@@ -6968,7 +6968,7 @@ qemuDomainSnapshotDiscard(virQEMUDriver *driver,
             qemuDomainObjEnterMonitor(driver, vm);
             /* we continue on even in the face of error */
             qemuMonitorDeleteSnapshot(priv->mon, snap->def->name);
-            ignore_value(qemuDomainObjExitMonitor(driver, vm));
+            qemuDomainObjExitMonitor(driver, vm);
         }
     }
 

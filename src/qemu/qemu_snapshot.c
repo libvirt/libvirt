@@ -883,7 +883,7 @@ qemuSnapshotDiskCleanup(qemuSnapshotDiskData *data,
 
                     qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm),
                                                          data[i].crdata->srcdata[0]);
-                    ignore_value(qemuDomainObjExitMonitor(driver, vm));
+                    qemuDomainObjExitMonitor(driver, vm);
                 }
             }
 
