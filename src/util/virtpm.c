@@ -137,15 +137,17 @@ static int virTPMEmulatorInit(void);
 static char *
 virTPMBinaryGetPath(virTPMBinary binary)
 {
-    char *s;
-
-    if (!swtpmBinaries[binary].path && virTPMEmulatorInit() < 0)
-        return NULL;
+    char *s = NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpmBinaries[binary].path);
-    virMutexUnlock(&swtpm_tools_lock);
 
+    if (virTPMEmulatorInit() < 0)
+        goto cleanup;
+
+    s = g_strdup(swtpmBinaries[binary].path);
+
+ cleanup:
+    virMutexUnlock(&swtpm_tools_lock);
     return s;
 }
 
@@ -269,10 +271,7 @@ virTPMGetCaps(virTPMBinaryCapsParse capsParse,
 static int
 virTPMEmulatorInit(void)
 {
-    int ret = -1;
     size_t i;
-
-    virMutexLock(&swtpm_tools_lock);
 
     for (i = 0; i < VIR_TPM_BINARY_LAST; i++) {
         g_autofree char *path = NULL;
@@ -297,18 +296,18 @@ virTPMEmulatorInit(void)
                 virReportSystemError(ENOENT,
                                      _("Unable to find '%s' binary in $PATH"),
                                      virTPMBinaryTypeToString(i));
-                goto cleanup;
+                return -1;
             }
             if (!virFileIsExecutable(path)) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("%s is not an executable"),
                                path);
-                goto cleanup;
+                return -1;
             }
             if (stat(path, &swtpmBinaries[i].stat) < 0) {
                 virReportSystemError(errno,
                                      _("Could not stat %s"), path);
-                goto cleanup;
+                return -1;
             }
             swtpmBinaries[i].path = g_steal_pointer(&path);
 
@@ -317,26 +316,29 @@ virTPMEmulatorInit(void)
                                                       swtpmBinaries[i].path,
                                                       swtpmBinaries[i].parm);
                 if (!swtpmBinaries[i].caps)
-                    goto cleanup;
+                    return -1;
             }
         }
     }
 
-    ret = 0;
-
- cleanup:
-    virMutexUnlock(&swtpm_tools_lock);
-
-    return ret;
+    return 0;
 }
 
 static bool
 virTPMBinaryGetCaps(virTPMBinary binary,
                     unsigned int cap)
 {
+    bool ret = false;
+
+    virMutexLock(&swtpm_tools_lock);
+
     if (virTPMEmulatorInit() < 0)
-        return false;
-    return virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
+        goto cleanup;
+    ret = virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
+
+ cleanup:
+    virMutexUnlock(&swtpm_tools_lock);
+    return ret;
 }
 
 bool
