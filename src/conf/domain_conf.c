@@ -7801,7 +7801,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
                             unsigned int flags)
 {
     g_autofree char *model = NULL;
-    g_autofree char *relabel = NULL;
+    virTristateBool relabel = VIR_TRISTATE_BOOL_ABSENT;
     g_autoptr(virSecurityLabelDef) seclabel = NULL;
 
     if ((model = virXMLPropString(ctxt->node, "model")) &&
@@ -7824,13 +7824,10 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
         seclabel->relabel = false;
 
-    if ((relabel = virXMLPropString(ctxt->node, "relabel"))) {
-        if (virStringParseYesNo(relabel, &seclabel->relabel) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid security relabel value '%s'"), relabel);
-            return NULL;
-        }
-    }
+    if (virXMLPropTristateBool(ctxt->node, "relabel", VIR_XML_PROP_NONZERO, &relabel) < 0)
+        return NULL;
+
+    virTristateBoolToBool(relabel, &seclabel->relabel);
 
     if (seclabel->type == VIR_DOMAIN_SECLABEL_DYNAMIC &&
         !seclabel->relabel) {
@@ -8029,9 +8026,8 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
 
     for (i = 0; i < n; i++) {
         g_autofree char *model = NULL;
-        g_autofree char *relabel = NULL;
         g_autofree char *label = NULL;
-        g_autofree char *labelskip = NULL;
+        virTristateBool t;
 
         /* get model associated to this override */
         model = virXMLPropString(list[i], "model");
@@ -8047,23 +8043,20 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
             seclabels[i]->model = g_steal_pointer(&model);
         }
 
-        relabel = virXMLPropString(list[i], "relabel");
-        if (relabel != NULL) {
-            if (virStringParseYesNo(relabel, &seclabels[i]->relabel) < 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("invalid security relabel value %s"),
-                               relabel);
-                goto error;
-            }
-        } else {
-            seclabels[i]->relabel = true;
-        }
+        if (virXMLPropTristateBool(list[i], "relabel", VIR_XML_PROP_NONZERO, &t) < 0)
+            goto error;
+
+        seclabels[i]->relabel = true;
+        virTristateBoolToBool(t, &seclabels[i]->relabel);
 
         /* labelskip is only parsed on live images */
-        labelskip = virXMLPropString(list[i], "labelskip");
         seclabels[i]->labelskip = false;
-        if (labelskip && !(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE))
-            ignore_value(virStringParseYesNo(labelskip, &seclabels[i]->labelskip));
+        if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
+            if (virXMLPropTristateBool(list[i], "labelskip", VIR_XML_PROP_NONZERO, &t) < 0)
+                goto error;
+
+            virTristateBoolToBool(t, &seclabels[i]->labelskip);
+        }
 
         ctxt->node = list[i];
         label = virXPathString("string(./label)", ctxt);
