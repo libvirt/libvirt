@@ -5857,9 +5857,14 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriver *driver,
     return 0;
 }
 
-static void ATTRIBUTE_NONNULL(1)
-qemuDomainObjExitMonitorInternal(virQEMUDriver *driver,
-                                 virDomainObj *obj)
+/* obj must NOT be locked before calling
+ *
+ * Should be paired with an earlier qemuDomainObjEnterMonitor() call
+ *
+ */
+void
+qemuDomainObjExitMonitor(virQEMUDriver *driver,
+                         virDomainObj *obj)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
     bool hasRefs;
@@ -5888,16 +5893,6 @@ void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
 {
     ignore_value(qemuDomainObjEnterMonitorInternal(driver, obj,
                                                    QEMU_ASYNC_JOB_NONE));
-}
-
-/* obj must NOT be locked before calling
- *
- * Should be paired with an earlier qemuDomainObjEnterMonitor() call
- */
-void qemuDomainObjExitMonitor(virQEMUDriver *driver,
-                              virDomainObj *obj)
-{
-    qemuDomainObjExitMonitorInternal(driver, obj);
 }
 
 /*
