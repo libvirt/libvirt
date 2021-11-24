@@ -130,18 +130,18 @@ def change_unit(name, action):
 
 try_stop_units = []
 if is_systemd_host():
-    name = os.path.basename(prog)
-
     maybe_stopped_units = []
-    if is_modular_daemon(name):
-        # Only need to stop libvirtd or this specific modular unit
-        maybe_stopped_units += daemon_units("libvirtd")
-        maybe_stopped_units += daemon_units(name)
-    elif is_monolithic_daemon(name):
-        # Need to stop libvirtd and/or all modular units
-        maybe_stopped_units += daemon_units("libvirtd")
-        for entry in modular_daemons:
-            maybe_stopped_units += daemon_units(entry)
+    for arg in sys.argv:
+        name = os.path.basename(arg)
+        if is_modular_daemon(name):
+            # Only need to stop libvirtd or this specific modular unit
+            maybe_stopped_units += daemon_units("libvirtd")
+            maybe_stopped_units += daemon_units(name)
+        elif is_monolithic_daemon(name):
+            # Need to stop libvirtd and/or all modular units
+            maybe_stopped_units += daemon_units("libvirtd")
+            for entry in modular_daemons:
+                maybe_stopped_units += daemon_units(entry)
 
     for unit in maybe_stopped_units:
         if is_unit_active(unit):
