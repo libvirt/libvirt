@@ -132,6 +132,8 @@ static virTPMBinaryInfo swtpmBinaries[VIR_TPM_BINARY_LAST] = {
     },
 };
 
+static int virTPMEmulatorInit(void);
+
 static char *
 virTPMBinaryGetPath(virTPMBinary binary)
 {
@@ -264,7 +266,7 @@ virTPMGetCaps(virTPMBinaryCapsParse capsParse,
  * Initialize the Emulator functions by searching for necessary
  * executables that we will use to start and setup the swtpm
  */
-int
+static int
 virTPMEmulatorInit(void)
 {
     int ret = -1;

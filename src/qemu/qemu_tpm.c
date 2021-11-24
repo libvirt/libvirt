@@ -295,9 +295,6 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
                            uid_t qemu_user,
                            const char *shortName)
 {
-    if (virTPMEmulatorInit() < 0)
-        return -1;
-
     /* create log dir ... allow 'tss' user to cd into it */
     if (g_mkdir_with_parents(logDir, 0711) < 0)
         return -1;
@@ -802,9 +799,6 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     g_autofree char *swtpm_ioctl = virTPMGetSwtpmIoctl();
 
     if (!swtpm_ioctl)
-        return;
-
-    if (virTPMEmulatorInit() < 0)
         return;
 
     if (!(pathname = qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))

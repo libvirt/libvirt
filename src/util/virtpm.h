@@ -25,7 +25,6 @@ char *virTPMCreateCancelPath(const char *devpath) G_GNUC_NO_INLINE;
 char *virTPMGetSwtpm(void);
 char *virTPMGetSwtpmSetup(void);
 char *virTPMGetSwtpmIoctl(void);
-int virTPMEmulatorInit(void);
 
 bool virTPMSwtpmCapsGet(unsigned int cap);
 bool virTPMSwtpmSetupCapsGet(unsigned int cap);
