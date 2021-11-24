@@ -2446,6 +2446,30 @@ qemuMonitorJSONGetOneBlockStatsInfo(virJSONValue *dev,
 }
 
 
+static int
+qemuMonitorJSONGetOneBlockStatsNodeInfo(virJSONValue *dev,
+                                        GHashTable *hash)
+{
+    qemuBlockStats *bstats = NULL;
+    int nstats = 0;
+    const char *nodename = NULL;
+
+    if (!(nodename = virJSONValueObjectGetString(dev, "node-name")))
+        return 0;
+
+    /* we already have the stats */
+    if (g_hash_table_contains(hash, nodename))
+        return 0;
+
+    if (!(bstats = qemuMonitorJSONBlockStatsCollectData(dev, &nstats)))
+        return -1;
+
+    g_hash_table_insert(hash, g_strdup(nodename), bstats);
+
+    return nstats;
+}
+
+
 virJSONValue *
 qemuMonitorJSONQueryBlockstats(qemuMonitor *mon,
                                bool queryNodes)
@@ -2475,13 +2499,14 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
     int nstats = 0;
     int rc;
     size_t i;
-    g_autoptr(virJSONValue) devices = NULL;
+    g_autoptr(virJSONValue) blockstatsDevices = NULL;
+    g_autoptr(virJSONValue) blockstatsNodes = NULL;
 
-    if (!(devices = qemuMonitorJSONQueryBlockstats(mon, true)))
+    if (!(blockstatsDevices = qemuMonitorJSONQueryBlockstats(mon, false)))
         return -1;
 
-    for (i = 0; i < virJSONValueArraySize(devices); i++) {
-        virJSONValue *dev = virJSONValueArrayGet(devices, i);
+    for (i = 0; i < virJSONValueArraySize(blockstatsDevices); i++) {
+        virJSONValue *dev = virJSONValueArrayGet(blockstatsDevices, i);
         const char *dev_name;
 
         if (!dev || virJSONValueGetType(dev) != VIR_JSON_TYPE_OBJECT) {
@@ -2499,6 +2524,25 @@ qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
         rc = qemuMonitorJSONGetOneBlockStatsInfo(dev, dev_name, 0, hash);
 
         if (rc < 0)
+            return -1;
+
+        if (rc > nstats)
+            nstats = rc;
+    }
+
+    if (!(blockstatsNodes = qemuMonitorJSONQueryBlockstats(mon, true)))
+        return -1;
+
+    for (i = 0; i < virJSONValueArraySize(blockstatsNodes); i++) {
+        virJSONValue *dev = virJSONValueArrayGet(blockstatsNodes, i);
+
+        if (!dev || virJSONValueGetType(dev) != VIR_JSON_TYPE_OBJECT) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("blockstats device entry was not in expected format"));
+            return -1;
+        }
+
+        if ((rc = qemuMonitorJSONGetOneBlockStatsNodeInfo(dev, hash)) < 0)
             return -1;
 
         if (rc > nstats)

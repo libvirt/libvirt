@@ -1615,6 +1615,8 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 
     if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
         return -1;
+    if (qemuMonitorTestAddItem(test, "query-blockstats", reply) < 0)
+        return -1;
 
 #define CHECK0FULL(var, value, varformat, valformat) \
     if (stats->var != value) { \
