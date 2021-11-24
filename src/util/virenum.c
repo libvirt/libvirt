@@ -47,6 +47,33 @@ virTristateBoolFromBool(bool val)
 }
 
 
+/**
+ * virTristateBoolToBool:
+ * @t: a virTristateBool value
+ * @b: pointer to a boolean to be updated according to the value of @t
+ *
+ * The value pointed to by @b is updated if the tristate value @t is not absent.
+ */
+void
+virTristateBoolToBool(virTristateBool t,
+                      bool *b)
+{
+    switch (t) {
+    case VIR_TRISTATE_BOOL_YES:
+        *b = true;
+        break;
+
+    case VIR_TRISTATE_BOOL_NO:
+        *b = false;
+        break;
+
+    case VIR_TRISTATE_BOOL_ABSENT:
+    case VIR_TRISTATE_BOOL_LAST:
+        break;
+    }
+}
+
+
 virTristateSwitch
 virTristateSwitchFromBool(bool val)
 {
@@ -54,6 +81,33 @@ virTristateSwitchFromBool(bool val)
         return VIR_TRISTATE_SWITCH_ON;
     else
         return VIR_TRISTATE_SWITCH_OFF;
+}
+
+
+/**
+ * virTristateSwitchToBool:
+ * @t: a virTristateSwitch value
+ * @b: pointer to a boolean to be updated according to the value of @t
+ *
+ * The value pointed to by @b is updated if the tristate value @t is not absent.
+ */
+void
+virTristateSwitchToBool(virTristateSwitch t,
+                        bool *b)
+{
+    switch (t) {
+    case VIR_TRISTATE_SWITCH_ON:
+        *b = true;
+        break;
+
+    case VIR_TRISTATE_SWITCH_OFF:
+        *b = false;
+        break;
+
+    case VIR_TRISTATE_SWITCH_ABSENT:
+    case VIR_TRISTATE_SWITCH_LAST:
+        break;
+    }
 }
 
 

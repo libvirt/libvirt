@@ -68,7 +68,9 @@ VIR_ENUM_DECL(virTristateBool);
 VIR_ENUM_DECL(virTristateSwitch);
 
 virTristateBool virTristateBoolFromBool(bool val);
+void virTristateBoolToBool(virTristateBool t, bool *b);
 virTristateSwitch virTristateSwitchFromBool(bool val);
+void virTristateSwitchToBool(virTristateSwitch t, bool *b);
 
 /* the two enums must be in sync to be able to use helpers interchangeably in
  * some special cases */

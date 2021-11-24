@@ -2148,9 +2148,11 @@ ebtablesRemoveForwardAllowIn;
 virEnumFromString;
 virEnumToString;
 virTristateBoolFromBool;
+virTristateBoolToBool;
 virTristateBoolTypeFromString;
 virTristateBoolTypeToString;
 virTristateSwitchFromBool;
+virTristateSwitchToBool;
 virTristateSwitchTypeFromString;
 virTristateSwitchTypeToString;
 
