@@ -16220,15 +16220,13 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
          * once new media is inserted */
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) ||
             !virStorageSourceIsEmpty(disk->src)) {
+            int rc = 0;
 
             qemuDomainObjEnterMonitor(driver, vm);
-            ret = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid,
-                                                &info);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                ret = -1;
-            if (ret < 0)
+            rc = qemuMonitorSetBlockIoThrottle(priv->mon, drivealias, qdevid, &info);
+
+            if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
                 goto endjob;
-            ret = -1;
         }
 
         virDomainDiskSetBlockIOTune(disk, &info);
@@ -16340,6 +16338,8 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
     *nparams = 0;
 
     if (def) {
+        int rc = 0;
+
         if (!(disk = qemuDomainDiskByName(def, path)))
             goto endjob;
 
@@ -16354,10 +16354,9 @@ qemuDomainGetBlockIoTune(virDomainPtr dom,
                 goto endjob;
         }
         qemuDomainObjEnterMonitor(driver, vm);
-        ret = qemuMonitorGetBlockIoThrottle(priv->mon, drivealias, qdevid, &reply);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto endjob;
-        if (ret < 0)
+        rc = qemuMonitorGetBlockIoThrottle(priv->mon, drivealias, qdevid, &reply);
+
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
             goto endjob;
     }
 
@@ -17368,10 +17367,8 @@ qemuDomainSetTime(virDomainPtr dom,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_RTC_RESET_REINJECTION)) {
         qemuDomainObjEnterMonitor(driver, vm);
         rv = qemuMonitorRTCResetReinjection(priv->mon);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto endjob;
 
-        if (rv < 0)
+        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
             goto endjob;
     }
 
