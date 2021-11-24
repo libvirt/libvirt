@@ -170,11 +170,6 @@ To acquire the QEMU monitor lock
     - Acquires the virDomainObj *lock
 
   These functions must not be used by an asynchronous job.
-  Note that the virDomainObj is unlocked during the time in
-  monitor and it can be changed, e.g. if QEMU dies, qemuProcessStop
-  may free the live domain definition and put the persistent
-  definition back in vm->def. The callers should check the return
-  value of ExitMonitor to see if the domain is still alive.
 
 
 To acquire the QEMU monitor lock as part of an asynchronous job

@@ -487,8 +487,8 @@ qemuMonitor *qemuDomainGetMonitor(virDomainObj *vm)
 void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
                                virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int qemuDomainObjExitMonitor(virQEMUDriver *driver,
-                             virDomainObj *obj)
+void qemuDomainObjExitMonitor(virQEMUDriver *driver,
+                              virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
                                    virDomainObj *obj,
