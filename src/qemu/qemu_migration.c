@@ -515,8 +515,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
 
         if (qemuBlockExportAddNBD(vm, diskAlias, disk->src, diskAlias, true, NULL) < 0)
             goto exit_monitor;
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            goto cleanup;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     if (server.transport == VIR_STORAGE_NET_HOST_TRANS_TCP)
@@ -551,8 +550,7 @@ qemuMigrationDstStopNBDServer(virQEMUDriver *driver,
 
     if (qemuMonitorNBDServerStop(priv->mon) < 0)
         VIR_WARN("Unable to stop NBD server");
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virPortAllocatorRelease(priv->nbdPort);
     priv->nbdPort = 0;
@@ -873,8 +871,7 @@ qemuMigrationSrcCancelRemoveTempBitmaps(virDomainObj *vm,
         if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
             return -1;
         qemuMonitorBitmapRemove(priv->mon, t->nodename, t->bitmapname);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     return 0;
@@ -2039,8 +2036,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
         ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
                                           port, tlsPort, tlsSubject);
         jobPriv->spiceMigration = !ret;
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            ret = -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
  cleanup:
@@ -3811,8 +3807,7 @@ qemuMigrationSrcContinue(virQEMUDriver *driver,
 
     ret = qemuMonitorMigrateContinue(priv->mon, status);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }
@@ -3835,8 +3830,7 @@ qemuMigrationSetDBusVMState(virQEMUDriver *driver,
 
         rv = qemuMonitorSetDBusVMStateIdList(priv->mon, priv->dbusVMStateIds);
 
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            rv = -1;
+        qemuDomainObjExitMonitor(driver, vm);
 
         return rv;
     } else {
@@ -5932,8 +5926,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
             qemuMonitorSetMigrationSpeed(priv->mon,
                                          QEMU_DOMAIN_MIG_BANDWIDTH_MAX);
             priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                return -1;
+            qemuDomainObjExitMonitor(driver, vm);
         }
     }
 
@@ -5984,8 +5977,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
             VIR_CLOSE(pipeFD[1]) < 0)
             VIR_WARN("failed to close intermediate pipe");
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
     if (rc < 0)
         goto cleanup;
 
@@ -6057,8 +6049,7 @@ qemuMigrationSrcCancel(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     ignore_value(qemuMonitorMigrateCancel(priv->mon));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];

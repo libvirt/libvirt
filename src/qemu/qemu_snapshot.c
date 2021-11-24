@@ -330,8 +330,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     }
 
     ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    qemuDomainObjExitMonitor(driver, vm);
     if (ret < 0)
         goto cleanup;
 
@@ -1289,8 +1288,7 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
 
     rc = qemuMonitorTransaction(priv->mon, &snapctxt->actions);
 
-    if (qemuDomainObjExitMonitor(driver, snapctxt->vm) < 0)
-        rc = -1;
+    qemuDomainObjExitMonitor(driver, snapctxt->vm);
 
     for (i = 0; i < snapctxt->ndd; i++) {
         qemuSnapshotDiskData *dd = snapctxt->dd + i;

@@ -8181,8 +8181,7 @@ qemuDomainUpdateDeviceList(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
     rc = qemuMonitorGetDeviceAliases(priv->mon, &aliases);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
     if (rc < 0)
         return -1;
 
@@ -8210,10 +8209,7 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
 
     rc = qemuMonitorGetMemoryDeviceInfo(priv->mon, &meminfo);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        virHashFree(meminfo);
-        return -1;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0)
         return -1;
@@ -9480,8 +9476,7 @@ qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
     rc = qemuMonitorGetCPUInfo(qemuDomainGetMonitor(vm), &info, maxvcpus,
                                hotplug, fast);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0)
         goto cleanup;
@@ -10054,8 +10049,7 @@ qemuDomainCheckMonitor(virQEMUDriver *driver,
 
     ret = qemuMonitorCheck(priv->mon);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }

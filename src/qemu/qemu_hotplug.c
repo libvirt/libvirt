@@ -109,10 +109,7 @@ qemuDomainDeleteDevice(virDomainObj *vm,
 
     rc = qemuMonitorDelDevice(priv->mon, alias);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        /* Domain is no longer running. No cleanup needed. */
-        return -1;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0) {
         /* Deleting device failed. Let's check if DEVICE_DELETED
@@ -272,8 +269,7 @@ qemuDomainChangeMediaLegacy(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     /* If the tray is present wait for it to open. */
     if (!force && diskPriv->tray) {
@@ -305,8 +301,7 @@ qemuDomainChangeMediaLegacy(virQEMUDriver *driver,
                                     driveAlias,
                                     sourcestr,
                                     format);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     if (rc < 0)
@@ -354,8 +349,7 @@ qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
     if (ret == 0)
         priv->dbusVMState = true;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }
@@ -391,8 +385,7 @@ qemuHotplugRemoveDBusVMState(virQEMUDriver *driver,
     if (ret == 0)
         priv->dbusVMState = false;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }
@@ -479,8 +472,7 @@ qemuHotplugRemoveManagedPR(virQEMUDriver *driver,
         goto cleanup;
     ignore_value(qemuMonitorDelObject(priv->mon, qemuDomainGetManagedPRAlias(),
                                       false));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     qemuProcessKillManagedPRDaemon(vm);
 
@@ -757,8 +749,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -2;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0)
         goto rollback;
@@ -808,8 +799,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
             VIR_WARN("failed to set blkdeviotune for '%s' of '%s'", disk->dst, vm->def->name);
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -2;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rc < 0)
         goto rollback;
@@ -825,8 +815,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
 
     qemuBlockStorageSourceChainDetach(priv->mon, data);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -2;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return -1;
 }
@@ -890,11 +879,7 @@ int qemuDomainAttachControllerDevice(virQEMUDriver *driver,
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &controller->info));
 
  exit_monitor:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        ret = -1;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (ret == 0)
         virDomainControllerInsertPreAlloced(vm->def, controller);
@@ -1484,8 +1469,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
     netdevPlugged = true;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     for (i = 0; i < tapfdSize; i++)
         VIR_FORCE_CLOSE(tapfd[i]);
@@ -1509,8 +1493,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
     }
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     /* set link state */
     if (net->linkstate == VIR_DOMAIN_NET_INTERFACE_LINK_STATE_DOWN) {
@@ -1526,8 +1509,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                 goto try_remove;
             }
 
-            if (qemuDomainObjExitMonitor(driver, vm) < 0)
-                goto cleanup;
+            qemuDomainObjExitMonitor(driver, vm);
         }
         /* link set to down */
     }
@@ -1725,8 +1707,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
 
  exit_monitor:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto error;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
@@ -1937,8 +1918,7 @@ qemuDomainDelChardevTLSObjects(virQEMUDriver *driver,
     if (secAlias)
         ignore_value(qemuMonitorDelObject(priv->mon, secAlias, false));
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return 0;
 }
@@ -1985,8 +1965,7 @@ int qemuDomainAttachRedirdevDevice(virQEMUDriver *driver,
     if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto audit;
+    qemuDomainObjExitMonitor(driver, vm);
 
     def->redirdevs[def->nredirdevs++] = redirdev;
     ret = 0;
@@ -2251,8 +2230,7 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
             goto exit_monitor;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto audit;
+    qemuDomainObjExitMonitor(driver, vm);
 
     qemuDomainChrInsertPreAlloced(vmdef, chr);
     ret = 0;
@@ -2358,10 +2336,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     VIR_APPEND_ELEMENT_INPLACE(vm->def->rngs, vm->def->nrngs, rng);
 
@@ -2388,8 +2363,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
         ignore_value(qemuMonitorDelObject(priv->mon, objAlias, false));
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD && chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        releaseaddr = false;
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
 
     qemuDomainDelTLSObjects(driver, vm, QEMU_ASYNC_JOB_NONE,
@@ -2482,11 +2456,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        /* we shouldn't touch mem now, as the def might be freed */
-        mem = NULL;
-        goto audit;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     event = virDomainEventDeviceAddedNewFromObj(vm, objalias);
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -2526,8 +2496,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     virErrorPreserveLast(&orig_err);
     if (objAdded)
         ignore_value(qemuMonitorDelObject(priv->mon, objalias, false));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        mem = NULL;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (objAdded && mem)
         ignore_value(qemuProcessDestroyMemoryBackingPath(driver, vm, mem));
@@ -2592,10 +2561,7 @@ qemuDomainAttachHostUSBDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorAddDeviceProps(priv->mon, &devprops);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
         goto cleanup;
@@ -2688,8 +2654,7 @@ qemuDomainAttachHostSCSIDevice(virQEMUDriver *driver,
     if (qemuMonitorAddDeviceProps(priv->mon, &devprops) < 0)
         goto exit_monitor;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditHostdev(vm, hostdev, "attach", true);
 
@@ -2906,10 +2871,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorAddDeviceProps(priv->mon, &devprops);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
@@ -3063,10 +3025,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        release_address = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     /* Doing a copy here just so the pointer doesn't get nullified
      * because we need it in the audit function */
@@ -3095,8 +3054,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
             ignore_value(qemuMonitorDelObject(priv->mon, memAlias, false));
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        release_address = false;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virErrorRestore(&orig_err);
 
@@ -3195,10 +3153,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
     if (rv >= 0)
         rv = qemuMonitorAddDeviceProps(priv->mon, &props);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseAddress = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rv < 0)
         goto cleanup;
@@ -3285,10 +3240,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     VIR_APPEND_ELEMENT_COPY_INPLACE(vm->def->inputs, vm->def->ninputs, input);
 
@@ -3314,10 +3266,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     return ret;
 
  exit_monitor:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
     goto audit;
 }
 
@@ -3374,10 +3323,7 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     if ((ret = qemuMonitorAddDeviceProps(priv->mon, &devprops)) < 0)
         goto exit_monitor;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     vm->def->vsock = g_steal_pointer(&vsock);
 
@@ -3398,8 +3344,7 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
         ignore_value(qemuMonitorCloseFileHandle(priv->mon, fdname));
     if (removeextension)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, &vsock->info));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        releaseaddr = false;
+    qemuDomainObjExitMonitor(driver, vm);
     goto cleanup;
 }
 
@@ -3467,10 +3412,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
         goto exit_monitor;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0) {
-        releaseaddr = false;
-        goto cleanup;
-    }
+    qemuDomainObjExitMonitor(driver, vm);
 
     VIR_APPEND_ELEMENT_COPY(vm->def->fss, vm->def->nfss, fs);
 
@@ -3494,8 +3436,7 @@ qemuDomainAttachFSDevice(virQEMUDriver *driver,
     virErrorPreserveLast(&origErr);
     if (chardevAdded)
         ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        releaseaddr = false;
+    qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&origErr);
     goto audit;
 }
@@ -3664,8 +3605,7 @@ int qemuDomainChangeNetLinkState(virQEMUDriver *driver,
     dev->linkstate = linkstate;
 
  cleanup:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }
@@ -4259,8 +4199,7 @@ qemuDomainChangeGraphicsPasswords(virQEMUDriver *driver,
     ret = qemuMonitorExpirePassword(priv->mon, type, expire);
 
  end_job:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        ret = -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return ret;
 }
@@ -4539,8 +4478,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     if (diskBackend)
         qemuBlockStorageSourceChainDetach(priv->mon, diskBackend);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        goto cleanup;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditDisk(vm, disk->src, NULL, "detach", true);
 
@@ -4616,8 +4554,7 @@ qemuDomainRemoveMemoryDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorDelObject(priv->mon, backendAlias, true);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        rc = -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditMemory(vm, oldmem, newmem, "update", rc == 0);
     if (rc < 0)
@@ -4716,8 +4653,7 @@ qemuDomainRemoveHostDevice(virQEMUDriver *driver,
 
         qemuDomainObjEnterMonitor(driver, vm);
         qemuBlockStorageSourceAttachRollback(priv->mon, detachscsi);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     if (hostdev->parentnet) {
@@ -4834,8 +4770,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     if (qemuMonitorRemoveNetdev(priv->mon, hostnet_name) < 0) {
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
         virDomainAuditNet(vm, net, NULL, "detach", false);
         return -1;
     }
@@ -4881,8 +4816,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
     }
 
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp)
         qemuSlirpStop(QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp, vm, driver, net);
@@ -4956,8 +4890,7 @@ qemuDomainRemoveChrDevice(virQEMUDriver *driver,
     if (monitor) {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorDetachCharDev(priv->mon, charAlias);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     if (rc == 0 &&
@@ -5023,8 +4956,7 @@ qemuDomainRemoveRNGDevice(virQEMUDriver *driver,
         qemuMonitorDetachCharDev(priv->mon, charAlias) < 0)
         rc = -1;
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (rng->backend == VIR_DOMAIN_RNG_BACKEND_EGD &&
         rc == 0 &&
@@ -5078,8 +5010,7 @@ qemuDomainRemoveShmemDevice(virQEMUDriver *driver,
     else
         rc = qemuMonitorDelObject(priv->mon, memAlias, true);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditShmem(vm, shmem, "detach", rc == 0);
 
@@ -5173,8 +5104,7 @@ qemuDomainRemoveRedirdevDevice(virQEMUDriver *driver,
      */
     ignore_value(qemuMonitorDetachCharDev(priv->mon, charAlias));
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     if (qemuDomainDelChardevTLSObjects(driver, vm, dev->source, charAlias) < 0)
         return -1;
@@ -5211,8 +5141,7 @@ qemuDomainRemoveFSDevice(virQEMUDriver *driver,
         if (qemuMonitorDetachCharDev(priv->mon, charAlias) < 0)
             rc = -1;
 
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            return -1;
+        qemuDomainObjExitMonitor(driver, vm);
     }
 
     virDomainAuditFS(vm, fs, NULL, "detach", rc == 0);
@@ -5953,8 +5882,7 @@ qemuDomainDetachDeviceChr(virQEMUDriver *driver,
         int rc;
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorRemoveNetdev(priv->mon, tmpChr->info.alias);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0)
-            rc = -1;
+        qemuDomainObjExitMonitor(driver, vm);
 
         if (rc < 0)
             goto cleanup;
@@ -6490,8 +6418,7 @@ qemuDomainHotplugAddVcpu(virQEMUDriver *driver,
 
     rc = qemuMonitorAddDeviceProps(qemuDomainGetMonitor(vm), &vcpuprops);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     virDomainAuditVcpu(vm, oldvcpus, oldvcpus + nvcpus, "update", rc == 0);
 
@@ -6987,8 +6914,7 @@ qemuDomainChangeMemoryRequestedSize(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorChangeMemoryRequestedSize(priv->mon, alias, requestedsize);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
     return rc;
 }

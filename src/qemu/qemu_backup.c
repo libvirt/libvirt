@@ -677,8 +677,7 @@ qemuBackupJobCancelBlockjobs(virDomainObj *vm,
 
         rc = qemuMonitorBlockJobCancel(priv->mon, job->name, true);
 
-        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
-            return;
+        qemuDomainObjExitMonitor(priv->driver, vm);
 
         if (rc == 0) {
             backupdisk->state = VIR_DOMAIN_BACKUP_DISK_STATE_CANCELLING;
@@ -910,8 +909,7 @@ qemuBackupBegin(virDomainObj *vm,
         /* note that if the export fails we've already created the checkpoint
          * and we will not delete it */
         rc = qemuBackupBeginPullExportDisks(vm, dd, ndd);
-        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
-            goto endjob;
+        qemuDomainObjExitMonitor(priv->driver, vm);
 
         if (rc < 0) {
             qemuBackupJobCancelBlockjobs(vm, priv->backup, false, QEMU_ASYNC_JOB_BACKUP);
@@ -1003,8 +1001,7 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
             ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsAlias, false));
         if (backup->tlsSecretAlias)
             ignore_value(qemuMonitorDelObject(priv->mon, backup->tlsSecretAlias, false));
-        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0)
-            return;
+        qemuDomainObjExitMonitor(priv->driver, vm);
 
         /* update the final statistics with the current job's data */
         backup->pull_tmp_used += cur;

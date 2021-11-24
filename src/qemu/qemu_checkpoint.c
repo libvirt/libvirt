@@ -237,8 +237,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(priv->mon, &actions);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0)
-        return -1;
+    qemuDomainObjExitMonitor(driver, vm);
 
  relabel:
     for (next = relabelimages; next; next = next->next) {
