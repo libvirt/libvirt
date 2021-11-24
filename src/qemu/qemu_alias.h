@@ -65,13 +65,13 @@ int qemuAssignDeviceShmemAlias(virDomainDef *def,
                                virDomainShmemDef *shmem,
                                int idx);
 
-int qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog);
+void qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog);
 
-int qemuAssignDeviceInputAlias(virDomainDef *def,
-                               virDomainInputDef *input,
-                               int idx);
+void qemuAssignDeviceInputAlias(virDomainDef *def,
+                                virDomainInputDef *input,
+                                int idx);
 
-int qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock);
+void qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock);
 
 int qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps);
 

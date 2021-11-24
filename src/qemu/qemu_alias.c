@@ -359,75 +359,57 @@ qemuAssignDeviceFSAlias(virDomainDef *def,
 }
 
 
-static int
+static void
 qemuAssignDeviceSoundAlias(virDomainSoundDef *sound,
                            int idx)
 {
-    if (sound->info.alias)
-        return 0;
-
-    sound->info.alias = g_strdup_printf("sound%d", idx);
-    return 0;
+    if (!sound->info.alias)
+        sound->info.alias = g_strdup_printf("sound%d", idx);
 }
 
 
-static int
+static void
 qemuAssignDeviceVideoAlias(virDomainVideoDef *video,
                            int idx)
 {
-    if (video->info.alias)
-        return 0;
-
-    video->info.alias = g_strdup_printf("video%d", idx);
-    return 0;
+    if (!video->info.alias)
+        video->info.alias = g_strdup_printf("video%d", idx);
 }
 
 
-static int
+static void
 qemuAssignDeviceHubAlias(virDomainHubDef *hub,
                          int idx)
 {
-    if (hub->info.alias)
-        return 0;
-
-    hub->info.alias = g_strdup_printf("hub%d", idx);
-    return 0;
+    if (!hub->info.alias)
+        hub->info.alias = g_strdup_printf("hub%d", idx);
 }
 
 
-static int
+static void
 qemuAssignDeviceSmartcardAlias(virDomainSmartcardDef *smartcard,
                                int idx)
 {
-    if (smartcard->info.alias)
-        return 0;
-
-    smartcard->info.alias = g_strdup_printf("smartcard%d", idx);
-    return 0;
+    if (!smartcard->info.alias)
+        smartcard->info.alias = g_strdup_printf("smartcard%d", idx);
 }
 
 
-static int
+static void
 qemuAssignDeviceMemballoonAlias(virDomainMemballoonDef *memballoon,
                                 int idx)
 {
-    if (memballoon->info.alias)
-        return 0;
-
-    memballoon->info.alias = g_strdup_printf("balloon%d", idx);
-    return 0;
+    if (!memballoon->info.alias)
+        memballoon->info.alias = g_strdup_printf("balloon%d", idx);
 }
 
 
-static int
+static void
 qemuAssignDeviceTPMAlias(virDomainTPMDef *tpm,
                          int idx)
 {
-    if (tpm->info.alias)
-        return 0;
-
-    tpm->info.alias = g_strdup_printf("tpm%d", idx);
-    return 0;
+    if (!tpm->info.alias)
+        tpm->info.alias = g_strdup_printf("tpm%d", idx);
 }
 
 
@@ -583,26 +565,23 @@ qemuAssignDeviceShmemAlias(virDomainDef *def,
 }
 
 
-int
+void
 qemuAssignDeviceWatchdogAlias(virDomainWatchdogDef *watchdog)
 {
     /* Currently, there's just one watchdog per domain */
 
-    if (watchdog->info.alias)
-        return 0;
-
-    watchdog->info.alias = g_strdup("watchdog0");
-
-    return 0;
+    if (!watchdog->info.alias)
+        watchdog->info.alias = g_strdup("watchdog0");
 }
 
-int
+
+void
 qemuAssignDeviceInputAlias(virDomainDef *def,
                            virDomainInputDef *input,
                            int idx)
 {
     if (input->info.alias)
-        return 0;
+        return;
 
     if (idx == -1) {
         int thisidx;
@@ -615,19 +594,14 @@ qemuAssignDeviceInputAlias(virDomainDef *def,
     }
 
     input->info.alias = g_strdup_printf("input%d", idx);
-
-    return 0;
 }
 
 
-int
+void
 qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock)
 {
-    if (vsock->info.alias)
-        return 0;
-    vsock->info.alias = g_strdup("vsock0");
-
-    return 0;
+    if (!vsock->info.alias)
+        vsock->info.alias = g_strdup("vsock0");
 }
 
 
@@ -650,8 +624,7 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nsounds; i++) {
-        if (qemuAssignDeviceSoundAlias(def->sounds[i], i) < 0)
-            return -1;
+        qemuAssignDeviceSoundAlias(def->sounds[i], i);
     }
     for (i = 0; i < def->nhostdevs; i++) {
         /* we can't start assigning at 0, since netdevs may have used
@@ -667,16 +640,14 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nvideos; i++) {
-        if (qemuAssignDeviceVideoAlias(def->videos[i], i) < 0)
-            return -1;
+        qemuAssignDeviceVideoAlias(def->videos[i], i);
     }
     for (i = 0; i < def->ncontrollers; i++) {
         if (qemuAssignDeviceControllerAlias(def, def->controllers[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->ninputs; i++) {
-        if (qemuAssignDeviceInputAlias(def, def->inputs[i], i) < 0)
-            return -1;
+        qemuAssignDeviceInputAlias(def, def->inputs[i], i);
     }
     for (i = 0; i < def->nparallels; i++) {
         if (qemuAssignDeviceChrAlias(def, def->parallels[i], i) < 0)
@@ -695,41 +666,35 @@ qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps)
             return -1;
     }
     for (i = 0; i < def->nhubs; i++) {
-        if (qemuAssignDeviceHubAlias(def->hubs[i], i) < 0)
-            return -1;
+        qemuAssignDeviceHubAlias(def->hubs[i], i);
     }
     for (i = 0; i < def->nshmems; i++) {
         if (qemuAssignDeviceShmemAlias(def, def->shmems[i], i) < 0)
             return -1;
     }
     for (i = 0; i < def->nsmartcards; i++) {
-        if (qemuAssignDeviceSmartcardAlias(def->smartcards[i], i) < 0)
-            return -1;
+        qemuAssignDeviceSmartcardAlias(def->smartcards[i], i);
     }
     if (def->watchdog) {
-        if (qemuAssignDeviceWatchdogAlias(def->watchdog) < 0)
-            return -1;
+        qemuAssignDeviceWatchdogAlias(def->watchdog);
     }
     if (def->memballoon &&
         def->memballoon->model != VIR_DOMAIN_MEMBALLOON_MODEL_NONE) {
-        if (qemuAssignDeviceMemballoonAlias(def->memballoon, 0) < 0)
-            return -1;
+        qemuAssignDeviceMemballoonAlias(def->memballoon, 0);
     }
     for (i = 0; i < def->nrngs; i++) {
         if (qemuAssignDeviceRNGAlias(def, def->rngs[i]) < 0)
             return -1;
     }
     for (i = 0; i < def->ntpms; i++) {
-        if (qemuAssignDeviceTPMAlias(def->tpms[i], i) < 0)
-            return -1;
+        qemuAssignDeviceTPMAlias(def->tpms[i], i);
     }
     for (i = 0; i < def->nmems; i++) {
         if (qemuAssignDeviceMemoryAlias(def, def->mems[i], false) < 0)
             return -1;
     }
     if (def->vsock) {
-        if (qemuAssignDeviceVsockAlias(def->vsock) < 0)
-            return -1;
+        qemuAssignDeviceVsockAlias(def->vsock);
     }
 
     return 0;

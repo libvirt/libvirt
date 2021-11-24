@@ -3130,8 +3130,7 @@ qemuDomainAttachWatchdog(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuAssignDeviceWatchdogAlias(watchdog) < 0)
-        return -1;
+    qemuAssignDeviceWatchdogAlias(watchdog);
 
     if (watchdog->model == VIR_DOMAIN_WATCHDOG_MODEL_I6300ESB) {
         if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
@@ -3239,8 +3238,7 @@ qemuDomainAttachInputDevice(virQEMUDriver *driver,
     bool teardownlabel = false;
     bool teardowncgroup = false;
 
-    if (qemuAssignDeviceInputAlias(vm->def, input, -1) < 0)
-        return -1;
+    qemuAssignDeviceInputAlias(vm->def, input, -1);
 
     switch ((virDomainInputBus) input->bus) {
     case VIR_DOMAIN_INPUT_BUS_USB:
@@ -3359,8 +3357,7 @@ qemuDomainAttachVsockDevice(virQEMUDriver *driver,
     if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
         return -1;
 
-    if (qemuAssignDeviceVsockAlias(vsock) < 0)
-        goto cleanup;
+    qemuAssignDeviceVsockAlias(vsock);
 
     if (qemuProcessOpenVhostVsock(vsock) < 0)
         goto cleanup;
