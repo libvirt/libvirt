@@ -109,49 +109,37 @@ static struct stat swtpm_ioctl_stat;
 
 typedef int (*virTPMBinaryCapsParse)(const char *);
 
-char *
-virTPMGetSwtpm(void)
+static char *
+virTPMBinaryGetPath(char **path_var)
 {
     char *s;
 
-    if (!swtpm_path && virTPMEmulatorInit() < 0)
+    if (!*path_var && virTPMEmulatorInit() < 0)
         return NULL;
 
     virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpm_path);
+    s = g_strdup(*path_var);
     virMutexUnlock(&swtpm_tools_lock);
 
     return s;
+}
+
+char *
+virTPMGetSwtpm(void)
+{
+    return virTPMBinaryGetPath(&swtpm_path);
 }
 
 char *
 virTPMGetSwtpmSetup(void)
 {
-    char *s;
-
-    if (!swtpm_setup_path && virTPMEmulatorInit() < 0)
-        return NULL;
-
-    virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpm_setup_path);
-    virMutexUnlock(&swtpm_tools_lock);
-
-    return s;
+    return virTPMBinaryGetPath(&swtpm_setup_path);
 }
 
 char *
 virTPMGetSwtpmIoctl(void)
 {
-    char *s;
-
-    if (!swtpm_ioctl_path && virTPMEmulatorInit() < 0)
-        return NULL;
-
-    virMutexLock(&swtpm_tools_lock);
-    s = g_strdup(swtpm_ioctl_path);
-    virMutexUnlock(&swtpm_tools_lock);
-
-    return s;
+    return virTPMBinaryGetPath(&swtpm_ioctl_path);
 }
 
 /* virTPMExecGetCaps
@@ -345,18 +333,23 @@ virTPMEmulatorInit(void)
     return ret;
 }
 
-bool
-virTPMSwtpmCapsGet(unsigned int cap)
+static bool
+virTPMBinaryGetCaps(virBitmap **caps_var,
+                    unsigned int cap)
 {
     if (virTPMEmulatorInit() < 0)
         return false;
-    return virBitmapIsBitSet(swtpm_caps, cap);
+    return virBitmapIsBitSet(*caps_var, cap);
+}
+
+bool
+virTPMSwtpmCapsGet(unsigned int cap)
+{
+    return virTPMBinaryGetCaps(&swtpm_caps, cap);
 }
 
 bool
 virTPMSwtpmSetupCapsGet(unsigned int cap)
 {
-    if (virTPMEmulatorInit() < 0)
-        return false;
-    return virBitmapIsBitSet(swtpm_setup_caps, cap);
+    return virTPMBinaryGetCaps(&swtpm_setup_caps, cap);
 }
