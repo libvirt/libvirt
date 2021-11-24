@@ -310,14 +310,8 @@ virTPMEmulatorInit(void)
                 return -1;
             }
             swtpmBinaries[i].path = g_steal_pointer(&path);
-
-            if (swtpmBinaries[i].capsParse) {
-                swtpmBinaries[i].caps = virTPMGetCaps(swtpmBinaries[i].capsParse,
-                                                      swtpmBinaries[i].path,
-                                                      swtpmBinaries[i].parm);
-                if (!swtpmBinaries[i].caps)
-                    return -1;
-            }
+            virBitmapFree(swtpmBinaries[i].caps);
+            swtpmBinaries[i].caps = NULL;
         }
     }
 
@@ -334,7 +328,16 @@ virTPMBinaryGetCaps(virTPMBinary binary,
 
     if (virTPMEmulatorInit() < 0)
         goto cleanup;
-    ret = virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
+
+    if (!swtpmBinaries[binary].caps &&
+        swtpmBinaries[binary].capsParse) {
+        swtpmBinaries[binary].caps = virTPMGetCaps(
+            swtpmBinaries[binary].capsParse,
+            swtpmBinaries[binary].path,
+            swtpmBinaries[binary].parm);
+    }
+    if (swtpmBinaries[binary].caps)
+        ret = virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
 
  cleanup:
     virMutexUnlock(&swtpm_tools_lock);
