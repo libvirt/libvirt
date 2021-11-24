@@ -132,7 +132,7 @@ static virTPMBinaryInfo swtpmBinaries[VIR_TPM_BINARY_LAST] = {
     },
 };
 
-static int virTPMEmulatorInit(void);
+static int virTPMEmulatorInit(bool quiet);
 
 static char *
 virTPMBinaryGetPath(virTPMBinary binary)
@@ -141,7 +141,7 @@ virTPMBinaryGetPath(virTPMBinary binary)
 
     virMutexLock(&swtpm_tools_lock);
 
-    if (virTPMEmulatorInit() < 0)
+    if (virTPMEmulatorInit(false) < 0)
         goto cleanup;
 
     s = g_strdup(swtpmBinaries[binary].path);
@@ -167,6 +167,24 @@ char *
 virTPMGetSwtpmIoctl(void)
 {
     return virTPMBinaryGetPath(VIR_TPM_BINARY_SWTPM_IOCTL);
+}
+
+bool virTPMHasSwtpm(void)
+{
+    bool ret = false;
+
+    virMutexLock(&swtpm_tools_lock);
+
+    if (virTPMEmulatorInit(true) < 0)
+        goto cleanup;
+
+    ret = swtpmBinaries[VIR_TPM_BINARY_SWTPM].path != NULL &&
+        swtpmBinaries[VIR_TPM_BINARY_SWTPM_SETUP].path != NULL &&
+        swtpmBinaries[VIR_TPM_BINARY_SWTPM_IOCTL].path != NULL;
+
+ cleanup:
+    virMutexUnlock(&swtpm_tools_lock);
+    return ret;
 }
 
 /* virTPMExecGetCaps
@@ -269,7 +287,7 @@ virTPMGetCaps(virTPMBinaryCapsParse capsParse,
  * executables that we will use to start and setup the swtpm
  */
 static int
-virTPMEmulatorInit(void)
+virTPMEmulatorInit(bool quiet)
 {
     size_t i;
 
@@ -293,20 +311,23 @@ virTPMEmulatorInit(void)
 
             path = virFindFileInPath(virTPMBinaryTypeToString(i));
             if (!path) {
-                virReportSystemError(ENOENT,
-                                     _("Unable to find '%s' binary in $PATH"),
-                                     virTPMBinaryTypeToString(i));
+                if (!quiet)
+                    virReportSystemError(ENOENT,
+                                         _("Unable to find '%s' binary in $PATH"),
+                                         virTPMBinaryTypeToString(i));
                 return -1;
             }
             if (!virFileIsExecutable(path)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("%s is not an executable"),
-                               path);
+                if (!quiet)
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("%s is not an executable"),
+                                   path);
                 return -1;
             }
             if (stat(path, &swtpmBinaries[i].stat) < 0) {
-                virReportSystemError(errno,
-                                     _("Could not stat %s"), path);
+                if (!quiet)
+                    virReportSystemError(errno,
+                                         _("Could not stat %s"), path);
                 return -1;
             }
             swtpmBinaries[i].path = g_steal_pointer(&path);
@@ -326,7 +347,7 @@ virTPMBinaryGetCaps(virTPMBinary binary,
 
     virMutexLock(&swtpm_tools_lock);
 
-    if (virTPMEmulatorInit() < 0)
+    if (virTPMEmulatorInit(false) < 0)
         goto cleanup;
 
     if (!swtpmBinaries[binary].caps &&

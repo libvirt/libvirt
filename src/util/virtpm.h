@@ -26,6 +26,8 @@ char *virTPMGetSwtpm(void);
 char *virTPMGetSwtpmSetup(void);
 char *virTPMGetSwtpmIoctl(void);
 
+bool virTPMHasSwtpm(void);
+
 bool virTPMSwtpmCapsGet(unsigned int cap);
 bool virTPMSwtpmSetupCapsGet(unsigned int cap);
 
