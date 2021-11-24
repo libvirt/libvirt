@@ -2391,7 +2391,8 @@ static int qemuDomainSetMemoryFlags(virDomainPtr dom, unsigned long newmem,
             priv = vm->privateData;
             qemuDomainObjEnterMonitor(driver, vm);
             r = qemuMonitorSetBalloon(priv->mon, newmem);
-            if (qemuDomainObjExitMonitor(driver, vm) < 0 || r < 0)
+            qemuDomainObjExitMonitor(driver, vm);
+            if (r < 0)
                 goto endjob;
 
             /* Lack of balloon support is a fatal error */
@@ -3129,7 +3130,8 @@ qemuDumpToFd(virQEMUDriver *driver,
 
     ret = qemuMonitorDumpToFd(priv->mon, fd, dumpformat, detach);
 
-    if ((qemuDomainObjExitMonitor(driver, vm) < 0) || ret < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (ret < 0)
         return -1;
 
     if (detach)
@@ -10004,7 +10006,9 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
             rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats);
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || nstats < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (nstats < 0 || rc < 0)
         goto cleanup;
 
     *retstats = g_new0(qemuBlockStats, 1);
@@ -12576,7 +12580,8 @@ qemuDomainGetJobInfoDumpStats(virQEMUDriver *driver,
 
     rc = qemuMonitorQueryDump(priv->mon, &stats);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     jobInfo->stats.dump = stats;
@@ -12912,7 +12917,8 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorSetMigrationDowntime(priv->mon, downtime);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             goto endjob;
     }
 
@@ -13027,7 +13033,8 @@ qemuDomainMigrateGetCompressionCache(virDomainPtr dom,
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorGetMigrationCacheSize(priv->mon, cacheSize);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             goto endjob;
     }
 
@@ -13092,7 +13099,8 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorSetMigrationCacheSize(priv->mon, cacheSize);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             goto endjob;
     }
 
@@ -13180,7 +13188,8 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             goto endjob;
     }
 
@@ -14666,7 +14675,9 @@ qemuDomainGetBlockJobInfo(virDomainPtr dom,
 
     qemuDomainObjEnterMonitor(driver, vm);
     blockjobstats = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockjobstats)
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (!blockjobstats)
         goto endjob;
 
     rawInfo = g_hash_table_lookup(blockjobstats, job->name);
@@ -15590,10 +15601,10 @@ qemuDomainBlockCommit(virDomainPtr dom,
                                      topPath, nodetop, basePath, nodebase,
                                      backingPath, speed);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0) {
-        ret = -1;
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (ret < 0)
         goto endjob;
-    }
 
     if (mirror) {
         disk->mirror = g_steal_pointer(&mirror);
@@ -16613,8 +16624,8 @@ qemuDomainProbeQMPCurrentMachine(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rv = qemuMonitorGetCurrentMachineInfo(priv->mon, &info);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 ||
-        rv < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rv < 0)
         return -1;
 
     *wakeupSupported = info.wakeupSuspendSupport;
@@ -19687,7 +19698,8 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorSetBlockThreshold(priv->mon, nodename, threshold);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto endjob;
 
     /* we need to remember whether the threshold was registered with an explicit
@@ -19802,7 +19814,8 @@ qemuDomainModifyLifecycleActionLive(virDomainObj *vm,
                               QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
                               QEMU_MONITOR_ACTION_PANIC_KEEP);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     return 0;

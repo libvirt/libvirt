@@ -750,7 +750,8 @@ qemuMigrationSrcNBDCopyCancelOne(virQEMUDriver *driver,
      * consistency on the destination so that we can force cancel the mirror */
     rv = qemuMonitorBlockJobCancel(priv->mon, job->name, abortMigration);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rv < 0)
         return -1;
 
     return 0;
@@ -963,7 +964,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
     if (mon_ret != 0)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (mon_ret < 0)
         return -1;
 
     diskPriv->migrSource = g_steal_pointer(&copysrc);
@@ -1004,7 +1006,8 @@ qemuMigrationSrcNBDStorageCopyDriveMirror(virQEMUDriver *driver,
                                      diskAlias, nbd_dest, "raw",
                                      mirror_speed, 0, 0, mirror_shallow, true);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || mon_ret < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (mon_ret < 0)
         return -1;
 
     return 0;
@@ -1673,7 +1676,8 @@ qemuMigrationAnyFetchStats(virQEMUDriver *driver,
 
     rv = qemuMonitorGetMigrationStats(priv->mon, &stats, error);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rv < 0)
         return -1;
 
     jobInfo->stats.mig = stats;
@@ -2140,7 +2144,8 @@ qemuMigrationDstRun(virQEMUDriver *driver,
     rv = qemuMonitorMigrateIncoming(priv->mon, uri);
 
  exit_monitor:
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rv < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rv < 0)
         return -1;
 
     if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN) {
@@ -3930,7 +3935,8 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmapsMerge(virDomainObj *vm,
 
     rc = qemuMonitorTransaction(priv->mon, &actions);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     jobPriv->migTempBitmaps = g_steal_pointer(&tmpbitmaps);
@@ -4240,7 +4246,8 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         break;
     }
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto error;
 
     /* From this point onwards we *must* call cancel to abort the
@@ -6247,7 +6254,8 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
 
     blockinfo = qemuMonitorGetAllBlockJobInfo(priv->mon, false);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockinfo)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (!blockinfo)
         return -1;
 
     memset(stats, 0, sizeof(*stats));

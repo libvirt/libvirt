@@ -1032,7 +1032,8 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
         rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
                                                dd->crdata->srcdata[0]);
 
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             return -1;
     } else {
         if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,

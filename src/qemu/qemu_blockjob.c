@@ -507,7 +507,8 @@ qemuBlockJobRefreshJobs(virQEMUDriver *driver,
 
     rc = qemuMonitorGetJobInfo(priv->mon, &jobinfo, &njobinfo);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto cleanup;
 
     for (i = 0; i < njobinfo; i++) {

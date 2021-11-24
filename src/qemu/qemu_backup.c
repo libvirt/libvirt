@@ -474,7 +474,8 @@ qemuBackupDiskPrepareOneStorage(virDomainObj *vm,
 
         rc = qemuBlockStorageSourceAttachApply(priv->mon, dd->crdata->srcdata[0]);
 
-        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(priv->driver, vm);
+        if (rc < 0)
             return -1;
     }
 
@@ -888,7 +889,8 @@ qemuBackupBegin(virDomainObj *vm,
     if (rc == 0)
         rc = qemuMonitorTransaction(priv->mon, &actions);
 
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(priv->driver, vm);
+    if (rc < 0)
         goto endjob;
 
     job_started = true;
@@ -1158,7 +1160,8 @@ qemuBackupGetJobInfoStats(virQEMUDriver *driver,
 
     rc = qemuMonitorGetJobInfo(priv->mon, &blockjobs, &nblockjobs);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto cleanup;
 
     /* count in completed jobs */

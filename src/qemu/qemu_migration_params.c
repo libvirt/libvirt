@@ -1079,7 +1079,8 @@ qemuMigrationParamsFetch(virQEMUDriver *driver,
 
     rc = qemuMonitorGetMigrationParams(priv->mon, &jsonParams);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     if (!(*migParams = qemuMigrationParamsFromJSON(jsonParams)))
@@ -1379,7 +1380,8 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
 
     rc = qemuMonitorGetMigrationCapabilities(priv->mon, &caps);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     if (!caps)

@@ -280,7 +280,8 @@ qemuDomainChangeMediaLegacy(virQEMUDriver *driver,
         /* re-issue ejection command to pop out the media */
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorEjectMedia(priv->mon, driveAlias, false);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             return -1;
 
     } else  {
@@ -432,7 +433,8 @@ qemuHotplugAttachManagedPR(virQEMUDriver *driver,
 
     rc = qemuMonitorAddObject(priv->mon, &props, NULL);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto cleanup;
 
     ret = 0;
@@ -529,7 +531,8 @@ qemuDomainChangeMediaBlockdev(virQEMUDriver *driver,
     if (diskPriv->tray && disk->tray_status != VIR_DOMAIN_DISK_TRAY_OPEN) {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorBlockdevTrayOpen(priv->mon, diskPriv->qomName, force);
-        if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(driver, vm);
+        if (rc < 0)
             return -1;
 
         if (!force && qemuHotplugWaitForTrayEject(vm, disk) < 0)
@@ -567,7 +570,8 @@ qemuDomainChangeMediaBlockdev(virQEMUDriver *driver,
     if (rc < 0 && newbackend)
         qemuBlockStorageSourceChainDetach(priv->mon, newbackend);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     return 0;
@@ -2779,7 +2783,8 @@ qemuDomainAttachSCSIVHostDevice(virQEMUDriver *driver,
         ignore_value(qemuMonitorCloseFileHandle(priv->mon, vhostfdName));
     if (removeextension)
         ignore_value(qemuDomainDetachExtensionDevice(priv->mon, hostdev->info));
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || ret < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (ret < 0)
         goto audit;
 
     vm->def->hostdevs[vm->def->nhostdevs++] = hostdev;

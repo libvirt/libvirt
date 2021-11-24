@@ -524,7 +524,8 @@ qemuCheckpointCreate(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0) {
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0) {
         qemuCheckpointRollbackMetadata(vm, chk);
         return NULL;
     }
@@ -734,7 +735,8 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     if (rc == 0)
         rc = qemuMonitorTransaction(priv->mon, &mergeactions);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto endjob;
 
     /* now do a final refresh */
@@ -746,7 +748,8 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
 
     rc = qemuMonitorTransaction(priv->mon, &cleanupactions);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         goto endjob;
 
     /* update disks */

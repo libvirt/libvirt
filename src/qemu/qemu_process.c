@@ -2372,7 +2372,8 @@ qemuProcessRefreshBalloonState(virQEMUDriver *driver,
         return -1;
 
     rc = qemuMonitorGetBalloonInfo(qemuDomainGetMonitor(vm), &balloon);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     /* We want the balloon size stored in domain definition to
@@ -4457,7 +4458,8 @@ qemuProcessFetchCPUDefinitions(virQEMUDriver *driver,
 
     rc = virQEMUCapsFetchCPUModels(priv->mon, vm->def->os.arch, &models);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     *cpuModels = g_steal_pointer(&models);
@@ -7127,7 +7129,8 @@ qemuProcessSetupDisksTransientHotplug(virDomainObj *vm,
 
         rc = qemuMonitorSystemReset(priv->mon);
 
-        if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+        qemuDomainObjExitMonitor(priv->driver, vm);
+        if (rc < 0)
             return -1;
     }
 
@@ -7178,7 +7181,8 @@ qemuProcessSetupLifecycleActions(virDomainObj *vm,
                               QEMU_MONITOR_ACTION_WATCHDOG_KEEP,
                               QEMU_MONITOR_ACTION_PANIC_KEEP);
 
-    if (qemuDomainObjExitMonitor(priv->driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(priv->driver, vm);
+    if (rc < 0)
         return -1;
 
     return 0;
@@ -8390,7 +8394,8 @@ qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
 
     rc = qemuMonitorGetCPUMigratable(priv->mon, &migratable);
 
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || rc < 0)
+    qemuDomainObjExitMonitor(driver, vm);
+    if (rc < 0)
         return -1;
 
     if (rc == 1)
@@ -8547,7 +8552,9 @@ qemuProcessRefreshLegacyBlockjobs(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !blockJobs)
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (!blockJobs)
         goto cleanup;
 
     if (virHashForEach(blockJobs, qemuProcessRefreshLegacyBlockjob, vm) < 0)

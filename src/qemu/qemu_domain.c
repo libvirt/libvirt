@@ -9628,7 +9628,9 @@ qemuDomainRefreshVcpuHalted(virQEMUDriver *driver,
                           QEMU_CAPS_QUERY_CPUS_FAST);
     haltedmap = qemuMonitorGetCpuHalted(qemuDomainGetMonitor(vm), maxvcpus,
                                         fast);
-    if (qemuDomainObjExitMonitor(driver, vm) < 0 || !haltedmap)
+    qemuDomainObjExitMonitor(driver, vm);
+
+    if (!haltedmap)
         return -1;
 
     for (i = 0; i < maxvcpus; i++) {
