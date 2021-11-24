@@ -1813,7 +1813,8 @@ qemuDomainAddTLSObjects(virQEMUDriver *driver,
         qemuMonitorAddObject(priv->mon, tlsProps, NULL) < 0)
         goto error;
 
-    return qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(driver, vm);
+    return 0;
 
  error:
     virErrorPreserveLast(&orig_err);
