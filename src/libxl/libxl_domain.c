@@ -678,7 +678,7 @@ libxlDomainEventHandler(void *data, libxl_event *event)
         shutdown_info->driver = driver;
         shutdown_info->vm = vm;
         shutdown_info->event = (libxl_event *)event;
-        name = g_strdup_printf("ev-%d", event->domid);
+        name = g_strdup_printf("shutdown-event-%d", event->domid);
         /*
          * Cleanup will be handled by the shutdown thread.
          */
