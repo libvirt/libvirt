@@ -260,6 +260,7 @@ mymain(void)
     DO_TEST_NOCAPS("hyperv");
     DO_TEST_NOCAPS("hyperv-off");
     DO_TEST_NOCAPS("hyperv-panic");
+    DO_TEST_NOCAPS("hyperv-passthrough");
     DO_TEST_NOCAPS("hyperv-stimer-direct");
 
     DO_TEST_NOCAPS("kvm-features");

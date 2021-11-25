@@ -1304,6 +1304,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("hyperv-off");
     DO_TEST_CAPS_VER("hyperv-panic", "4.0.0");
     DO_TEST_CAPS_LATEST("hyperv-panic");
+    DO_TEST_CAPS_VER("hyperv-passthrough", "6.1.0");
+    DO_TEST_CAPS_LATEST("hyperv-passthrough");
     DO_TEST_CAPS_LATEST("hyperv-stimer-direct");
 
     DO_TEST_NOCAPS("kvm-features");
