@@ -1,1 +1,1 @@
-internal error: loadparm 'LOADPARM1' exceeds 8 characters
+internal error: loadparm value 'LOADPARM1' must be between 1 and 8 characters

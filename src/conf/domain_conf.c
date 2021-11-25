@@ -6300,15 +6300,10 @@ virDomainDeviceLoadparmIsValid(const char *loadparm)
 {
     size_t i;
 
-    if (virStringIsEmpty(loadparm)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("loadparm cannot be an empty string"));
-        return false;
-    }
-
-    if (strlen(loadparm) > 8) {
+    if (virStringIsEmpty(loadparm) || !STRLIM(loadparm, 8)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("loadparm '%s' exceeds 8 characters"), loadparm);
+                       _("loadparm value '%s' must be between 1 and 8 characters"),
+                       loadparm);
         return false;
     }
 
