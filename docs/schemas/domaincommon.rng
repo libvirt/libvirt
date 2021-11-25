@@ -7101,6 +7101,9 @@
   <define name="hyperv">
     <element name="hyperv">
       <choice>
+        <attribute name="mode">
+          <value>passthrough</value>
+        </attribute>
         <group>
           <optional>
             <attribute name="mode">
