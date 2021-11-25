@@ -1756,6 +1756,81 @@ qemuSnapshotRedefine(virDomainObj *vm,
 }
 
 
+static virDomainSnapshotPtr
+qemuSnapshotCreate(virDomainObj *vm,
+                   virDomainPtr domain,
+                   virDomainSnapshotDef *def,
+                   virQEMUDriver *driver,
+                   virQEMUDriverConfig *cfg,
+                   unsigned int flags)
+{
+
+    virDomainMomentObj *snap = NULL;
+    virDomainMomentObj *current = NULL;
+    virDomainSnapshotPtr ret = NULL;
+
+    if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
+        return NULL;
+
+    if (qemuSnapshotPrepare(vm, def, &flags) < 0)
+        return NULL;
+
+    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+        return NULL;
+
+    virObjectRef(def);
+
+    current = virDomainSnapshotGetCurrent(vm->snapshots);
+    if (current) {
+        snap->def->parent_name = g_strdup(current->def->name);
+    }
+
+    /* actually do the snapshot */
+    if (virDomainObjIsActive(vm)) {
+        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
+            virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+            /* external full system or disk snapshot */
+            if (qemuSnapshotCreateActiveExternal(driver, vm, snap, cfg, flags) < 0)
+                goto error;
+        } else {
+            /* internal full system */
+            if (qemuSnapshotCreateActiveInternal(driver, vm, snap, flags) < 0)
+                goto error;
+        }
+    } else {
+        /* inactive; qemuSnapshotPrepare guaranteed that we
+         * aren't mixing internal and external, and altered flags to
+         * contain DISK_ONLY if there is an external disk.  */
+        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
+            bool reuse = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
+
+            if (qemuSnapshotCreateInactiveExternal(driver, vm, snap, reuse) < 0)
+                goto error;
+        } else {
+            if (qemuSnapshotCreateInactiveInternal(driver, vm, snap) < 0)
+                goto error;
+        }
+    }
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+        qemuSnapshotSetCurrent(vm, snap);
+
+        if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0)
+            goto error;
+    }
+
+    ret = virGetDomainSnapshot(domain, snap->def->name);
+    if (!ret)
+        goto error;
+
+    return ret;
+
+ error:
+    virDomainSnapshotObjListRemove(vm->snapshots, snap);
+    return NULL;
+}
+
+
 virDomainSnapshotPtr
 qemuSnapshotCreateXML(virDomainPtr domain,
                       virDomainObj *vm,
@@ -1763,7 +1838,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                       unsigned int flags)
 {
     virQEMUDriver *driver = domain->conn->privateData;
-    virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1814,80 +1888,9 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 
     if (redefine) {
         snapshot = qemuSnapshotRedefine(vm, domain, def, driver, cfg, flags);
-        goto endjob;
     } else {
-        virDomainMomentObj *current = NULL;
-
-        if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
-            goto endjob;
-
-        if (qemuSnapshotPrepare(vm, def, &flags) < 0)
-            goto endjob;
-
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-            goto endjob;
-
-        def = NULL;
-
-        current = virDomainSnapshotGetCurrent(vm->snapshots);
-        if (current) {
-            snap->def->parent_name = g_strdup(current->def->name);
-        }
+        snapshot = qemuSnapshotCreate(vm, domain, def, driver, cfg, flags);
     }
-
-    /* actually do the snapshot */
-    if (virDomainObjIsActive(vm)) {
-        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
-            virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            /* external full system or disk snapshot */
-            if (qemuSnapshotCreateActiveExternal(driver, vm, snap, cfg, flags) < 0)
-                goto endjob;
-        } else {
-            /* internal full system */
-            if (qemuSnapshotCreateActiveInternal(driver, vm, snap, flags) < 0)
-                goto endjob;
-        }
-    } else {
-        /* inactive; qemuSnapshotPrepare guaranteed that we
-         * aren't mixing internal and external, and altered flags to
-         * contain DISK_ONLY if there is an external disk.  */
-        if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
-            bool reuse = !!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT);
-
-            if (qemuSnapshotCreateInactiveExternal(driver, vm, snap, reuse) < 0)
-                goto endjob;
-        } else {
-            if (qemuSnapshotCreateInactiveInternal(driver, vm, snap) < 0)
-                goto endjob;
-        }
-    }
-
-    /* If we fail after this point, there's not a whole lot we can
-     * do; we've successfully taken the snapshot, and we are now running
-     * on it, so we have to go forward the best we can
-     */
-    if (!(snapshot = virGetDomainSnapshot(domain, snap->def->name)))
-        goto endjob;
-
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
-        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT))
-            qemuSnapshotSetCurrent(vm, snap);
-
-        if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0) {
-            /* if writing of metadata fails, error out rather than trying
-             * to silently carry on without completing the snapshot */
-            virObjectUnref(snapshot);
-            snapshot = NULL;
-            goto endjob;
-        }
-
-        snap = NULL;
-    }
-
- endjob:
-
-    if (snap)
-        virDomainSnapshotObjListRemove(vm->snapshots, snap);
 
     qemuDomainObjEndAsyncJob(driver, vm);
 
