@@ -1967,13 +1967,13 @@ qemuSnapshotRevert(virDomainObj *vm,
     if (qemuDomainHasBlockjob(vm, false)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("domain has active block job"));
-        goto cleanup;
+        return -1;
     }
 
     if (qemuProcessBeginJob(driver, vm,
                             VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT,
                             flags) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))
         goto endjob;
@@ -2210,7 +2210,6 @@ qemuSnapshotRevert(virDomainObj *vm,
  endjob:
     qemuProcessEndJob(driver, vm);
 
- cleanup:
     if (ret == 0) {
         qemuSnapshotSetCurrent(vm, snap);
         if (qemuDomainSnapshotWriteMetadata(vm, snap,
