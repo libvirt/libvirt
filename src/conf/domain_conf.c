@@ -137,6 +137,12 @@ VIR_ENUM_IMPL(virDomainOS,
               "xenpvh",
 );
 
+VIR_ENUM_IMPL(virDomainHyperVMode,
+              VIR_DOMAIN_HYPERV_MODE_LAST,
+              "none",
+              "custom",
+);
+
 VIR_ENUM_IMPL(virDomainBoot,
               VIR_DOMAIN_BOOT_LAST,
               "fd",

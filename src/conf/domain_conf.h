@@ -155,6 +155,13 @@ typedef enum {
 } virDomainOSType;
 VIR_ENUM_DECL(virDomainOS);
 
+typedef enum {
+    VIR_DOMAIN_HYPERV_MODE_NONE = 0,
+    VIR_DOMAIN_HYPERV_MODE_CUSTOM,
+
+    VIR_DOMAIN_HYPERV_MODE_LAST
+} virDomainHyperVMode;
+VIR_ENUM_DECL(virDomainHyperVMode);
 
 struct _virDomainHostdevOrigStates {
     union {
