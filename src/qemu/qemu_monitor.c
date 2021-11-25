@@ -942,8 +942,8 @@ qemuMonitorSend(qemuMonitor *mon,
         return -1;
     }
     if (mon->goteof) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("End of file from qemu monitor"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("End of file from qemu monitor vm=%p name=%s", vm, vm->def->name));
         return -1;
     }
 
