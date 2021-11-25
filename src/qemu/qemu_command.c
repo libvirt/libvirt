@@ -1147,6 +1147,12 @@ qemuBuildRomProps(virJSONValue *props,
         !info->romfile)
         return 0;
 
+    if (info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("ROM tuning is only supported for PCI devices"));
+        return -1;
+    }
+
     if (info->romenabled == VIR_TRISTATE_BOOL_NO) {
         romfile = "";
     } else {
