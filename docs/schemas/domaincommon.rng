@@ -7102,6 +7102,11 @@
     <element name="hyperv">
       <choice>
         <group>
+          <optional>
+            <attribute name="mode">
+              <value>custom</value>
+            </attribute>
+          </optional>
           <interleave>
             <optional>
               <element name="relaxed">
