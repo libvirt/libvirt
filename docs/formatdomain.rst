@@ -1928,6 +1928,9 @@ are:
    ``custom``
       Set exactly the specified features.
 
+   ``passthrough``
+      Enable all features currently supported by the hypervisor.
+
    The ``mode`` attribute can be omitted and will default to ``custom``.
 
 ``pvspinlock``
