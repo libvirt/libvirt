@@ -1940,8 +1940,8 @@ qemuSnapshotRevert(virDomainObj *vm,
     int detail;
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
-    virDomainDef *config = NULL;
-    virDomainDef *inactiveConfig = NULL;
+    g_autoptr(virDomainDef) config = NULL;
+    g_autoptr(virDomainDef) inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainSaveCookie *cookie;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
@@ -2233,8 +2233,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     }
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectEventStateQueue(driver->domainEventState, event2);
-    virDomainDefFree(config);
-    virDomainDefFree(inactiveConfig);
 
     return ret;
 }
