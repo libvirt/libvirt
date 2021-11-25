@@ -7791,7 +7791,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
     g_autoptr(virSecurityLabelDef) seclabel = NULL;
 
     if ((model = virXMLPropString(ctxt->node, "model")) &&
-        strlen(model) >= VIR_SECURITY_MODEL_BUFLEN - 1)
+        !STRLIM(model, VIR_SECURITY_MODEL_BUFLEN - 1))
         g_clear_pointer(&model, g_free);
 
     if (!(seclabel = virSecurityLabelDefNew(model)))
@@ -7856,8 +7856,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE) &&
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         seclabel->label = virXPathString("string(./label[1])", ctxt);
-        if (!seclabel->label ||
-            strlen(seclabel->label) >= VIR_SECURITY_LABEL_BUFLEN - 1) {
+        if (!seclabel->label || !STRLIM(seclabel->label, VIR_SECURITY_LABEL_BUFLEN - 1)) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security label is missing"));
             return NULL;
@@ -7870,8 +7869,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
          seclabel->type != VIR_DOMAIN_SECLABEL_NONE)) {
         seclabel->imagelabel = virXPathString("string(./imagelabel[1])", ctxt);
 
-        if (!seclabel->imagelabel ||
-            strlen(seclabel->imagelabel) >= VIR_SECURITY_LABEL_BUFLEN - 1) {
+        if (!seclabel->imagelabel || !STRLIM(seclabel->imagelabel, VIR_SECURITY_LABEL_BUFLEN - 1)) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("security imagelabel is missing"));
             return NULL;
@@ -7883,7 +7881,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->baselabel = virXPathString("string(./baselabel[1])", ctxt);
 
         if (seclabel->baselabel &&
-            strlen(seclabel->baselabel) >= VIR_SECURITY_LABEL_BUFLEN - 1)
+            !STRLIM(seclabel->baselabel, VIR_SECURITY_LABEL_BUFLEN - 1))
             g_clear_pointer(&seclabel->baselabel, g_free);
     }
 
@@ -8047,7 +8045,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
         ctxt->node = list[i];
         label = virXPathString("string(./label)", ctxt);
 
-        if (label && strlen(label) < VIR_SECURITY_LABEL_BUFLEN)
+        if (label && STRLIM(label, VIR_SECURITY_LABEL_BUFLEN - 1))
             seclabels[i]->label = g_steal_pointer(&label);
 
         if (seclabels[i]->label && !seclabels[i]->relabel) {
@@ -17508,7 +17506,7 @@ virDomainFeaturesHyperVDefParse(virDomainDef *def,
                 return -1;
             }
 
-            if (strlen(def->hyperv_vendor_id) > VIR_DOMAIN_HYPERV_VENDOR_ID_MAX) {
+            if (!STRLIM(def->hyperv_vendor_id, VIR_DOMAIN_HYPERV_VENDOR_ID_MAX)) {
                 virReportError(VIR_ERR_XML_ERROR,
                                _("HyperV vendor_id value must not be more than %d characters."),
                                VIR_DOMAIN_HYPERV_VENDOR_ID_MAX);
