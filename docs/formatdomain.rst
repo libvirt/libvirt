@@ -1820,7 +1820,7 @@ Hypervisors may allow certain CPU / machine features to be toggled on/off.
      <apic/>
      <hap/>
      <privnet/>
-     <hyperv>
+     <hyperv mode='custom'>
        <relaxed state='on'/>
        <vapic state='on'/>
        <spinlocks state='on' retries='4096'/>
@@ -1921,6 +1921,14 @@ are:
    ipi             Enable PV IPI support                                                  on, off                                      :since:`4.10.0 (QEMU 3.1)`
    evmcs           Enable Enlightened VMCS                                                on, off                                      :since:`4.10.0 (QEMU 3.1)`
    =============== ====================================================================== ============================================ =======================================================
+
+   :since:`Since 8.0.0` , the hypervisor can be configured further by setting
+   the ``mode`` attribute to one of the following values:
+
+   ``custom``
+      Set exactly the specified features.
+
+   The ``mode`` attribute can be omitted and will default to ``custom``.
 
 ``pvspinlock``
    Notify the guest that the host supports paravirtual spinlocks for example by
