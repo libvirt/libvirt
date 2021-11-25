@@ -42,7 +42,24 @@ v7.10.0 (unreleased)
     The current hardcoded minimum is 56 (single-DES) and will be raised to 112
     in the future. Setting a minimum lower than 112 is not supported.
 
+  * qemu: Report stats also for block copy destination and backup job scratch
+    images
+
+    The statistics are available via the bulk domain stats API.
+
 * **Bug fixes**
+
+  * qemu: Don't format 'ramfb' attribute when disabled
+
+    Fix a regression caused by the conversion to JSON -device arguments where
+    'ramfb' would be put on the commandline of 'vfio-pci' which doesn't have it,
+    thus breaking VMs with a mediated host device.
+
+  * qemu: Fix block copy and backup to encrypted storage
+
+    An oversight in last release lead to a spurious error being reported when
+    encrypted storage was requested for disk images which are not directly
+    backing the disk, which is now fixed.
 
 
 v7.9.0 (2021-11-01)
