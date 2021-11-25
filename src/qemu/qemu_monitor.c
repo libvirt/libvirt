@@ -1,5 +1,5 @@
 /*
- * qemu_monitor.c: interaction with QEMU monitor console
+ * qemu_monitor.c: interaction with QEMU monitor console - Test
  *
  * Copyright (C) 2006-2015 Red Hat, Inc.
  * Copyright (C) 2006 Daniel P. Berrange
