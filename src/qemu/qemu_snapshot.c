@@ -2087,7 +2087,7 @@ qemuSnapshotRevert(virDomainObj *vm,
          */
         if (cookie &&
             qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
-            goto cleanup;
+            goto endjob;
 
         rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                               cookie ? cookie->cpu : NULL,
