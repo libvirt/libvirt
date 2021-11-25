@@ -530,13 +530,14 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
     qemuMonitor *mon = opaque;
     bool error = false;
     bool hangup = false;
+    virDomainObj *vm = mon->vm;
 
     virObjectRef(mon);
 
     /* lock access to the monitor and protect fd */
     virObjectLock(mon);
 #if DEBUG_IO
-    VIR_DEBUG("Monitor %p I/O on socket %p cond %d", mon, socket, cond);
+    VIR_DEBUG("Monitor %p I/O on socket %p cond %d vm=%p name=%s", mon, socket, cond, vm, vm->def->name);
 #endif
     if (mon->fd == -1 || !mon->watch) {
         virObjectUnlock(mon);
@@ -583,8 +584,9 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
         if (!error && !mon->goteof &&
             cond & G_IO_ERR) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid file descriptor while waiting for monitor"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid file descriptor while waiting for monitor on vm=%p name=%s"),
+                           vm, vm->def->name);
             mon->goteof = true;
         }
     }
@@ -609,13 +611,14 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
             virResetLastError();
         } else {
             if (virGetLastErrorCode() == VIR_ERR_OK && !mon->goteof)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Error while processing monitor IO"));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Error while processing monitor IO vm=%p name=%s"),
+                               vm, vm->def->name);
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
 
-        VIR_DEBUG("Error on monitor %s", NULLSTR(mon->lastError.message));
+        VIR_DEBUG("Error on monitor %s vm=%p name=%s", NULLSTR(mon->lastError.message), vm, vm->def->name);
         /* If IO process resulted in an error & we have a message,
          * then wakeup that waiter */
         if (mon->msg && !mon->msg->finished) {
@@ -631,22 +634,20 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
      * will try to acquire the virDomainObj *mutex next */
     if (mon->goteof) {
         qemuMonitorEofNotifyCallback eofNotify = mon->cb->eofNotify;
-        virDomainObj *vm = mon->vm;
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        VIR_DEBUG("Triggering EOF callback");
+        VIR_DEBUG("Triggering EOF callback vm=%p name=%s", vm, vm->def->name);
         (eofNotify)(mon, vm, mon->callbackOpaque);
         virObjectUnref(mon);
     } else if (error) {
         qemuMonitorErrorNotifyCallback errorNotify = mon->cb->errorNotify;
-        virDomainObj *vm = mon->vm;
 
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        VIR_DEBUG("Triggering error callback");
+        VIR_DEBUG("Triggering error callback vm=%p name=%s", vm, vm->def->name);
         (errorNotify)(mon, vm, mon->callbackOpaque);
         virObjectUnref(mon);
     } else {
