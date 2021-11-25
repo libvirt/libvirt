@@ -6713,6 +6713,22 @@ qemuBuildCpuCommandLine(virCommand *cmd,
     }
 
     if (def->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_NONE) {
+        switch ((virDomainHyperVMode) def->features[VIR_DOMAIN_FEATURE_HYPERV]) {
+        case VIR_DOMAIN_HYPERV_MODE_CUSTOM:
+            break;
+
+        case VIR_DOMAIN_HYPERV_MODE_PASSTHROUGH:
+            virBufferAsprintf(&buf, ",hv-%s=on", "passthrough");
+            break;
+
+        case VIR_DOMAIN_HYPERV_MODE_NONE:
+        case VIR_DOMAIN_HYPERV_MODE_LAST:
+        default:
+            virReportEnumRangeError(virDomainHyperVMode,
+                                    def->features[VIR_DOMAIN_FEATURE_HYPERV]);
+            return -1;
+        }
+
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:

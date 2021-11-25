@@ -141,6 +141,7 @@ VIR_ENUM_IMPL(virDomainHyperVMode,
               VIR_DOMAIN_HYPERV_MODE_LAST,
               "none",
               "custom",
+              "passthrough",
 );
 
 VIR_ENUM_IMPL(virDomainBoot,
