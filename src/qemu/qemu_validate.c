@@ -273,7 +273,7 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_HYPERV:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ABSENT &&
+            if (def->features[i] != VIR_DOMAIN_HYPERV_MODE_NONE &&
                 !ARCH_IS_X86(def->os.arch) && !qemuDomainIsARMVirt(def)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Hyperv features are not supported for "

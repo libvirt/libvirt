@@ -17428,7 +17428,14 @@ static int
 virDomainFeaturesHyperVDefParse(virDomainDef *def,
                                 xmlNodePtr node)
 {
-    def->features[VIR_DOMAIN_FEATURE_HYPERV] = VIR_TRISTATE_SWITCH_ON;
+    virDomainHyperVMode mode;
+
+    if (virXMLPropEnumDefault(node, "mode", virDomainHyperVModeTypeFromString,
+                              VIR_XML_PROP_NONZERO, &mode,
+                              VIR_DOMAIN_HYPERV_MODE_CUSTOM) < 0)
+        return -1;
+
+    def->features[VIR_DOMAIN_FEATURE_HYPERV] = mode;
 
     node = xmlFirstElementChild(node);
     while (node != NULL) {
@@ -21726,7 +21733,7 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
     }
 
     /* hyperv */
-    if (src->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+    if (src->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_NONE) {
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:

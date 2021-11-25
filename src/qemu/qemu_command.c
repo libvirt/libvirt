@@ -6712,7 +6712,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
                           VIR_TRISTATE_SWITCH_ON ? "on" : "off");
     }
 
-    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] == VIR_TRISTATE_SWITCH_ON) {
+    if (def->features[VIR_DOMAIN_FEATURE_HYPERV] != VIR_DOMAIN_HYPERV_MODE_NONE) {
         for (i = 0; i < VIR_DOMAIN_HYPERV_LAST; i++) {
             switch ((virDomainHyperv) i) {
             case VIR_DOMAIN_HYPERV_RELAXED:
