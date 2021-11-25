@@ -1702,7 +1702,6 @@ qemuSnapshotCreateXML(virDomainPtr domain,
     virQEMUDriver *driver = domain->conn->privateData;
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr snapshot = NULL;
-    virDomainMomentObj *current = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -1766,6 +1765,8 @@ qemuSnapshotCreateXML(virDomainPtr domain,
                 goto endjob;
         }
     } else {
+        virDomainMomentObj *current = NULL;
+
         if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
             goto endjob;
 
@@ -1776,12 +1777,11 @@ qemuSnapshotCreateXML(virDomainPtr domain,
             goto endjob;
 
         def = NULL;
-    }
 
-    current = virDomainSnapshotGetCurrent(vm->snapshots);
-    if (current) {
-        if (!redefine)
+        current = virDomainSnapshotGetCurrent(vm->snapshots);
+        if (current) {
             snap->def->parent_name = g_strdup(current->def->name);
+        }
     }
 
     /* actually do the snapshot */
