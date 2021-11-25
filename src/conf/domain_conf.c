@@ -27839,10 +27839,11 @@ virDomainDefFormatFeatures(virBuffer *buf,
             break;
 
         case VIR_DOMAIN_FEATURE_HYPERV:
-            if (def->features[i] != VIR_TRISTATE_SWITCH_ON)
+            if (def->features[i] == VIR_DOMAIN_HYPERV_MODE_NONE)
                 break;
 
-            virBufferAddLit(&childBuf, "<hyperv>\n");
+            virBufferAsprintf(&childBuf, "<hyperv mode='%s'>\n",
+                              virDomainHyperVModeTypeToString(def->features[i]));
             virBufferAdjustIndent(&childBuf, 2);
             for (j = 0; j < VIR_DOMAIN_HYPERV_LAST; j++) {
                 if (def->hyperv_features[j] == VIR_TRISTATE_SWITCH_ABSENT)

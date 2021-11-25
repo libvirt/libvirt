@@ -10,7 +10,7 @@
   </os>
   <features>
     <acpi/>
-    <hyperv>
+    <hyperv mode='custom'>
       <vpindex state='on'/>
       <synic state='on'/>
       <stimer state='on'>

@@ -10,7 +10,7 @@
   </os>
   <features>
     <acpi/>
-    <hyperv>
+    <hyperv mode='custom'>
       <relaxed state='off'/>
       <vapic state='off'/>
       <spinlocks state='off'/>
