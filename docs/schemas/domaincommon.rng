@@ -7100,90 +7100,94 @@
   <!-- Optional HyperV Enlightenment features -->
   <define name="hyperv">
     <element name="hyperv">
-      <interleave>
-        <optional>
-          <element name="relaxed">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="vapic">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="spinlocks">
-            <ref name="featurestate"/>
+      <choice>
+        <group>
+          <interleave>
             <optional>
-              <attribute name="retries">
-                <data type="unsignedInt"/>
-              </attribute>
+              <element name="relaxed">
+                <ref name="featurestate"/>
+              </element>
             </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="vpindex">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="runtime">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="synic">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="stimer">
-            <ref name="stimer"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reset">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="vendor_id">
-            <ref name="featurestate"/>
             <optional>
-              <attribute name="value">
-                <data type="string">
-                  <param name="pattern">[^,]{0,12}</param>
-                </data>
-              </attribute>
+              <element name="vapic">
+                <ref name="featurestate"/>
+              </element>
             </optional>
-          </element>
-        </optional>
-        <optional>
-          <element name="frequencies">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="reenlightenment">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="tlbflush">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="ipi">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-        <optional>
-          <element name="evmcs">
-            <ref name="featurestate"/>
-          </element>
-        </optional>
-      </interleave>
+            <optional>
+              <element name="spinlocks">
+                <ref name="featurestate"/>
+                <optional>
+                  <attribute name="retries">
+                    <data type="unsignedInt"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="vpindex">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="runtime">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="synic">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="stimer">
+                <ref name="stimer"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="reset">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="vendor_id">
+                <ref name="featurestate"/>
+                <optional>
+                  <attribute name="value">
+                    <data type="string">
+                      <param name="pattern">[^,]{0,12}</param>
+                    </data>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+            <optional>
+              <element name="frequencies">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="reenlightenment">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="tlbflush">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="ipi">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="evmcs">
+                <ref name="featurestate"/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+      </choice>
     </element>
   </define>
 
