@@ -6298,8 +6298,6 @@ virDomainObjCheckActive(virDomainObj *dom)
 static bool
 virDomainDeviceLoadparmIsValid(const char *loadparm)
 {
-    size_t i;
-
     if (virStringIsEmpty(loadparm) || !STRLIM(loadparm, 8)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("loadparm value '%s' must be between 1 and 8 characters"),
@@ -6307,18 +6305,11 @@ virDomainDeviceLoadparmIsValid(const char *loadparm)
         return false;
     }
 
-    for (i = 0; i < strlen(loadparm); i++) {
-        uint8_t c = loadparm[i];
-
-        if (('A' <= c && c <= 'Z') || ('0' <= c && c <= '9') ||
-            (c == '.') || (c == ' ')) {
-            continue;
-        } else {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid loadparm char '%c', expecting chars"
-                             " in set of [a-zA-Z0-9.] and blank spaces"), c);
-            return false;
-        }
+    if (strspn(loadparm, "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789. ") != strlen(loadparm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and blank spaces"),
+                       loadparm);
+        return false;
     }
 
     return true;
