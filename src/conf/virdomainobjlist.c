@@ -423,7 +423,7 @@ virDomainObjListRename(virDomainObjList *doms,
                        void *opaque)
 {
     int ret = -1;
-    char *old_name = NULL;
+    g_autofree char *old_name = NULL;
     int rc;
 
     if (STREQ(dom->def->name, new_name)) {
@@ -468,7 +468,6 @@ virDomainObjListRename(virDomainObjList *doms,
     ret = 0;
  cleanup:
     virObjectRWUnlock(doms);
-    VIR_FREE(old_name);
     return ret;
 }
 
@@ -482,7 +481,8 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
 {
-    char *configFile = NULL, *autostartLink = NULL;
+    g_autofree char *configFile = NULL;
+    g_autofree char *autostartLink = NULL;
     virDomainDef *def = NULL;
     virDomainObj *dom;
     int autostart;
@@ -511,13 +511,9 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
         (*notify)(dom, oldDef == NULL, opaque);
 
     virDomainDefFree(oldDef);
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
     return dom;
 
  error:
-    VIR_FREE(configFile);
-    VIR_FREE(autostartLink);
     virDomainDefFree(def);
     return NULL;
 }
@@ -531,7 +527,7 @@ virDomainObjListLoadStatus(virDomainObjList *doms,
                            virDomainLoadConfigNotify notify,
                            void *opaque)
 {
-    char *statusFile = NULL;
+    g_autofree char *statusFile = NULL;
     virDomainObj *obj = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
@@ -561,12 +557,10 @@ virDomainObjListLoadStatus(virDomainObjList *doms,
     if (notify)
         (*notify)(obj, 1, opaque);
 
-    VIR_FREE(statusFile);
     return obj;
 
  error:
     virDomainObjEndAPI(&obj);
-    VIR_FREE(statusFile);
     return NULL;
 }
 
