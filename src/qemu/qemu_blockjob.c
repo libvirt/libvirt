@@ -667,14 +667,23 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObj *vm,
     g_autoptr(virStorageSource) copy = NULL;
     virStorageSource *n;
 
-    if (!vm->newDef)
+    if (!vm->newDef) {
+        VIR_DEBUG("not updating disk '%s' in persistent definition: no persistent definition",
+                  disk->dst);
         return;
+    }
 
-    if (!(persistDisk = virDomainDiskByTarget(vm->newDef, disk->dst)))
+    if (!(persistDisk = virDomainDiskByTarget(vm->newDef, disk->dst))) {
+        VIR_DEBUG("not updating disk '%s' in persistent definition: disk not present",
+                  disk->dst);
         return;
+    }
 
-    if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src))
+    if (!virStorageSourceIsSameLocation(disk->src, persistDisk->src)) {
+        VIR_DEBUG("not updating disk '%s' in persistent definition: disk source doesn't match",
+                  disk->dst);
         return;
+    }
 
     if (!(copy = virStorageSourceCopy(newsrc, true)) ||
         virStorageSourceInitChainElement(copy, persistDisk->src, true) < 0) {
