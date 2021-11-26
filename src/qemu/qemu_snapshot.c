@@ -1897,6 +1897,49 @@ qemuSnapshotCreateXML(virDomainPtr domain,
 }
 
 
+static int
+qemuSnapshotRevertValidate(virDomainObj *vm,
+                           virDomainMomentObj *snap,
+                           virDomainSnapshotDef *snapdef,
+                           unsigned int flags)
+{
+    if (!vm->persistent &&
+        snapdef->state != VIR_DOMAIN_SNAPSHOT_RUNNING &&
+        snapdef->state != VIR_DOMAIN_SNAPSHOT_PAUSED &&
+        (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) == 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("transient domain needs to request run or pause to revert to inactive snapshot"));
+        return -1;
+    }
+
+    if (virDomainSnapshotIsExternal(snap)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("revert to external snapshot not supported yet"));
+        return -1;
+    }
+
+    if (!snap->def->dom) {
+        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
+                       _("snapshot '%s' lacks domain '%s' rollback info"),
+                       snap->def->name, vm->def->name);
+        return -1;
+    }
+
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
+        if (vm->hasManagedSave &&
+            !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+              snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
+            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
+                           _("snapshot without memory state, removal of existing managed saved state strongly recommended to avoid corruption"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotRevertInactive(virQEMUDriver *driver,
@@ -1979,41 +2022,8 @@ qemuSnapshotRevert(virDomainObj *vm,
         goto endjob;
     snapdef = virDomainSnapshotObjGetDef(snap);
 
-    if (!vm->persistent &&
-        snapdef->state != VIR_DOMAIN_SNAPSHOT_RUNNING &&
-        snapdef->state != VIR_DOMAIN_SNAPSHOT_PAUSED &&
-        (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) == 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("transient domain needs to request run or pause "
-                         "to revert to inactive snapshot"));
+    if (qemuSnapshotRevertValidate(vm, snap, snapdef, flags) < 0)
         goto endjob;
-    }
-
-    if (virDomainSnapshotIsExternal(snap)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("revert to external snapshot not supported yet"));
-        goto endjob;
-    }
-
-    if (!snap->def->dom) {
-        virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY,
-                       _("snapshot '%s' lacks domain '%s' rollback info"),
-                       snap->def->name, vm->def->name);
-        goto endjob;
-    }
-
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_FORCE)) {
-        if (vm->hasManagedSave &&
-            !(snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-              snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED)) {
-            virReportError(VIR_ERR_SNAPSHOT_REVERT_RISKY, "%s",
-                           _("snapshot without memory state, removal of "
-                             "existing managed saved state strongly "
-                             "recommended to avoid corruption"));
-            goto endjob;
-        }
-    }
 
     config = virDomainDefCopy(snap->def->dom,
                               driver->xmlopt, priv->qemuCaps, true);
