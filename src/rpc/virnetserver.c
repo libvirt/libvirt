@@ -380,6 +380,7 @@ virNetServerNew(const char *name,
                 void *clientPrivOpaque)
 {
     g_autoptr(virNetServer) srv = NULL;
+    g_autofree char *jobName = g_strdup_printf("rpc-%s", name);
 
     if (virNetServerInitialize() < 0)
         return NULL;
@@ -390,7 +391,7 @@ virNetServerNew(const char *name,
     if (!(srv->workers = virThreadPoolNewFull(min_workers, max_workers,
                                               priority_workers,
                                               virNetServerHandleJob,
-                                              "rpc-worker",
+                                              jobName,
                                               NULL,
                                               srv)))
         return NULL;
