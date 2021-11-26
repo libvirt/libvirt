@@ -1940,6 +1940,63 @@ qemuSnapshotRevertValidate(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotRevertPrep(virDomainMomentObj *snap,
+                       virDomainSnapshotDef *snapdef,
+                       virQEMUDriver *driver,
+                       virDomainObj *vm,
+                       virDomainDef **retConfig,
+                       virDomainDef **retInactiveConfig)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virDomainDef) config = NULL;
+    g_autoptr(virDomainDef) inactiveConfig = NULL;
+
+    config = virDomainDefCopy(snap->def->dom,
+                              driver->xmlopt, priv->qemuCaps, true);
+    if (!config)
+        return -1;
+
+    if (STRNEQ(config->name, vm->def->name)) {
+        VIR_FREE(config->name);
+        config->name = g_strdup(vm->def->name);
+    }
+
+    if (snap->def->inactiveDom) {
+        inactiveConfig = virDomainDefCopy(snap->def->inactiveDom,
+                                          driver->xmlopt, priv->qemuCaps, true);
+        if (!inactiveConfig)
+            return -1;
+
+        if (STRNEQ(inactiveConfig->name, vm->def->name)) {
+            VIR_FREE(inactiveConfig->name);
+            inactiveConfig->name = g_strdup(vm->def->name);
+        }
+    } else {
+        /* Inactive domain definition is missing:
+         * - either this is an old active snapshot and we need to copy the
+         *   active definition as an inactive one
+         * - or this is an inactive snapshot which means config contains the
+         *   inactive definition.
+         */
+        if (snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
+            snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
+            inactiveConfig = virDomainDefCopy(snap->def->dom,
+                                              driver->xmlopt, priv->qemuCaps, true);
+            if (!inactiveConfig)
+                return -1;
+        } else {
+            inactiveConfig = g_steal_pointer(&config);
+        }
+    }
+
+    *retConfig = g_steal_pointer(&config);
+    *retInactiveConfig = g_steal_pointer(&inactiveConfig);
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotRevertInactive(virQEMUDriver *driver,
@@ -1981,7 +2038,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     virObjectEvent *event = NULL;
     virObjectEvent *event2 = NULL;
     int detail;
-    qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
     g_autoptr(virDomainDef) config = NULL;
     g_autoptr(virDomainDef) inactiveConfig = NULL;
@@ -2025,42 +2081,9 @@ qemuSnapshotRevert(virDomainObj *vm,
     if (qemuSnapshotRevertValidate(vm, snap, snapdef, flags) < 0)
         goto endjob;
 
-    config = virDomainDefCopy(snap->def->dom,
-                              driver->xmlopt, priv->qemuCaps, true);
-    if (!config)
+    if (qemuSnapshotRevertPrep(snap, snapdef, driver, vm,
+                               &config, &inactiveConfig) < 0) {
         goto endjob;
-
-    if (STRNEQ(config->name, vm->def->name)) {
-        VIR_FREE(config->name);
-        config->name = g_strdup(vm->def->name);
-    }
-
-    if (snap->def->inactiveDom) {
-        inactiveConfig = virDomainDefCopy(snap->def->inactiveDom,
-                                          driver->xmlopt, priv->qemuCaps, true);
-        if (!inactiveConfig)
-            goto endjob;
-
-        if (STRNEQ(inactiveConfig->name, vm->def->name)) {
-            VIR_FREE(inactiveConfig->name);
-            inactiveConfig->name = g_strdup(vm->def->name);
-        }
-    } else {
-        /* Inactive domain definition is missing:
-         * - either this is an old active snapshot and we need to copy the
-         *   active definition as an inactive one
-         * - or this is an inactive snapshot which means config contains the
-         *   inactive definition.
-         */
-        if (snapdef->state == VIR_DOMAIN_SNAPSHOT_RUNNING ||
-            snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED) {
-            inactiveConfig = virDomainDefCopy(snap->def->dom,
-                                              driver->xmlopt, priv->qemuCaps, true);
-            if (!inactiveConfig)
-                goto endjob;
-        } else {
-            inactiveConfig = g_steal_pointer(&config);
-        }
     }
 
     cookie = (qemuDomainSaveCookie *) snapdef->cookie;
