@@ -28,8 +28,10 @@
 #include "virjson.h"
 
 typedef struct _virNetServer virNetServer;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetServer, virObjectUnref);
 
 typedef struct _virNetServerClient virNetServerClient;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetServerClient, virObjectUnref);
 
 /* This function owns the "msg" pointer it is passed and
  * must arrange for virNetMessageFree to be called on it

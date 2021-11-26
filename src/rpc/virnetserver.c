@@ -342,7 +342,7 @@ virNetServerDispatchNewClient(virNetServerService *svc,
                               void *opaque)
 {
     virNetServer *srv = opaque;
-    virNetServerClient *client;
+    g_autoptr(virNetServerClient) client = NULL;
 
     if (!(client = virNetServerClientNew(virNetServerNextClientID(srv),
                                          clientsock,
@@ -358,10 +358,8 @@ virNetServerDispatchNewClient(virNetServerService *svc,
 
     if (virNetServerAddClient(srv, client) < 0) {
         virNetServerClientClose(client);
-        virObjectUnref(client);
         return -1;
     }
-    virObjectUnref(client);
     return 0;
 }
 
@@ -381,7 +379,7 @@ virNetServerNew(const char *name,
                 virFreeCallback clientPrivFree,
                 void *clientPrivOpaque)
 {
-    virNetServer *srv;
+    g_autoptr(virNetServer) srv = NULL;
 
     if (virNetServerInitialize() < 0)
         return NULL;
@@ -395,7 +393,7 @@ virNetServerNew(const char *name,
                                               "rpc-worker",
                                               NULL,
                                               srv)))
-        goto error;
+        return NULL;
 
     srv->name = g_strdup(name);
 
@@ -409,10 +407,7 @@ virNetServerNew(const char *name,
     srv->clientPrivFree = clientPrivFree;
     srv->clientPrivOpaque = clientPrivOpaque;
 
-    return srv;
- error:
-    virObjectUnref(srv);
-    return NULL;
+    return g_steal_pointer(&srv);
 }
 
 
@@ -425,7 +420,7 @@ virNetServerNewPostExecRestart(virJSONValue *object,
                                virFreeCallback clientPrivFree,
                                void *clientPrivOpaque)
 {
-    virNetServer *srv = NULL;
+    g_autoptr(virNetServer) srv = NULL;
     virJSONValue *clients;
     virJSONValue *services;
     size_t i;
@@ -441,29 +436,29 @@ virNetServerNewPostExecRestart(virJSONValue *object,
     if (virJSONValueObjectGetNumberUint(object, "min_workers", &min_workers) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing min_workers data in JSON document"));
-        goto error;
+        return NULL;
     }
     if (virJSONValueObjectGetNumberUint(object, "max_workers", &max_workers) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing max_workers data in JSON document"));
-        goto error;
+        return NULL;
     }
     if (virJSONValueObjectGetNumberUint(object, "priority_workers", &priority_workers) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing priority_workers data in JSON document"));
-        goto error;
+        return NULL;
     }
     if (virJSONValueObjectGetNumberUint(object, "max_clients", &max_clients) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing max_clients data in JSON document"));
-        goto error;
+        return NULL;
     }
     if (virJSONValueObjectHasKey(object, "max_anonymous_clients")) {
         if (virJSONValueObjectGetNumberUint(object, "max_anonymous_clients",
                                             &max_anonymous_clients) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Malformed max_anonymous_clients data in JSON document"));
-            goto error;
+            return NULL;
         }
     } else {
         max_anonymous_clients = max_clients;
@@ -471,12 +466,12 @@ virNetServerNewPostExecRestart(virJSONValue *object,
     if (virJSONValueObjectGetNumberUint(object, "keepaliveInterval", &keepaliveInterval) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing keepaliveInterval data in JSON document"));
-        goto error;
+        return NULL;
     }
     if (virJSONValueObjectGetNumberUint(object, "keepaliveCount", &keepaliveCount) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing keepaliveCount data in JSON document"));
-        goto error;
+        return NULL;
     }
 
     if (virJSONValueObjectGetNumberUlong(object, "next_client_id",
@@ -492,18 +487,18 @@ virNetServerNewPostExecRestart(virJSONValue *object,
                                 keepaliveInterval, keepaliveCount,
                                 clientPrivNew, clientPrivPreExecRestart,
                                 clientPrivFree, clientPrivOpaque)))
-        goto error;
+        return NULL;
 
     if (!(services = virJSONValueObjectGet(object, "services"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing services data in JSON document"));
-        goto error;
+        return NULL;
     }
 
     if (!virJSONValueIsArray(services)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed services array"));
-        goto error;
+        return NULL;
     }
 
     for (i = 0; i < virJSONValueArraySize(services); i++) {
@@ -512,15 +507,15 @@ virNetServerNewPostExecRestart(virJSONValue *object,
         if (!child) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing service data in JSON document"));
-            goto error;
+            return NULL;
         }
 
         if (!(service = virNetServerServiceNewPostExecRestart(child)))
-            goto error;
+            return NULL;
 
         if (virNetServerAddService(srv, service) < 0) {
             virObjectUnref(service);
-            goto error;
+            return NULL;
         }
     }
 
@@ -528,22 +523,22 @@ virNetServerNewPostExecRestart(virJSONValue *object,
     if (!(clients = virJSONValueObjectGet(object, "clients"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing clients data in JSON document"));
-        goto error;
+        return NULL;
     }
 
     if (!virJSONValueIsArray(clients)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Malformed clients array"));
-        goto error;
+        return NULL;
     }
 
     for (i = 0; i < virJSONValueArraySize(clients); i++) {
-        virNetServerClient *client;
+        g_autoptr(virNetServerClient) client = NULL;
         virJSONValue *child = virJSONValueArrayGet(clients, i);
         if (!child) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Missing client data in JSON document"));
-            goto error;
+            return NULL;
         }
 
         if (!(client = virNetServerClientNewPostExecRestart(srv,
@@ -552,20 +547,13 @@ virNetServerNewPostExecRestart(virJSONValue *object,
                                                             clientPrivPreExecRestart,
                                                             clientPrivFree,
                                                             clientPrivOpaque)))
-            goto error;
+            return NULL;
 
-        if (virNetServerAddClient(srv, client) < 0) {
-            virObjectUnref(client);
-            goto error;
-        }
-        virObjectUnref(client);
+        if (virNetServerAddClient(srv, client) < 0)
+            return NULL;
     }
 
-    return srv;
-
- error:
-    virObjectUnref(srv);
-    return NULL;
+    return g_steal_pointer(&srv);
 }
 
 
