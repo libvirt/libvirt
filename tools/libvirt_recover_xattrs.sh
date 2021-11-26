@@ -106,9 +106,9 @@ fix_xattrs() {
 
 shift $((OPTIND - 1))
 if [ $# -gt 0 ]; then
-    while [ $# -gt 0 ]; do
-        fix_xattrs "$1"
-        shift $((OPTIND - 1))
+    for arg in "$@"
+    do
+        fix_xattrs "$arg"
     done
 else
     if [ ${UNSAFE} -eq 1 ]; then
