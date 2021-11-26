@@ -82,7 +82,8 @@ static void virNetServerUpdateServicesLocked(virNetServer *srv,
 static inline size_t virNetServerTrackPendingAuthLocked(virNetServer *srv);
 static inline size_t virNetServerTrackCompletedAuthLocked(virNetServer *srv);
 
-static int virNetServerOnceInit(void)
+static int
+virNetServerOnceInit(void)
 {
     if (!VIR_CLASS_NEW(virNetServer, virClassForObjectLockable()))
         return -1;
@@ -92,7 +93,9 @@ static int virNetServerOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virNetServer);
 
-unsigned long long virNetServerNextClientID(virNetServer *srv)
+
+unsigned long long
+virNetServerNextClientID(virNetServer *srv)
 {
     unsigned long long val;
 
@@ -103,10 +106,12 @@ unsigned long long virNetServerNextClientID(virNetServer *srv)
     return val;
 }
 
-static int virNetServerProcessMsg(virNetServer *srv,
-                                  virNetServerClient *client,
-                                  virNetServerProgram *prog,
-                                  virNetMessage *msg)
+
+static int
+virNetServerProcessMsg(virNetServer *srv,
+                       virNetServerClient *client,
+                       virNetServerProgram *prog,
+                       virNetMessage *msg)
 {
     if (!prog) {
         /* Only send back an error for type == CALL. Other
@@ -141,7 +146,10 @@ static int virNetServerProcessMsg(virNetServer *srv,
     return 0;
 }
 
-static void virNetServerHandleJob(void *jobOpaque, void *opaque)
+
+static void
+virNetServerHandleJob(void *jobOpaque,
+                      void *opaque)
 {
     virNetServer *srv = opaque;
     virNetServerJob *job = jobOpaque;
@@ -165,6 +173,7 @@ static void virNetServerHandleJob(void *jobOpaque, void *opaque)
     VIR_FREE(job);
 }
 
+
 /**
  * virNetServerGetProgramLocked:
  * @srv: server (must be locked by the caller)
@@ -185,6 +194,7 @@ virNetServerGetProgramLocked(virNetServer *srv,
     }
     return NULL;
 }
+
 
 static void
 virNetServerDispatchNewMessage(virNetServerClient *client,
@@ -289,8 +299,10 @@ virNetServerCheckLimits(virNetServer *srv)
     }
 }
 
-int virNetServerAddClient(virNetServer *srv,
-                          virNetServerClient *client)
+
+int
+virNetServerAddClient(virNetServer *srv,
+                      virNetServerClient *client)
 {
     virObjectLock(srv);
 
@@ -323,9 +335,11 @@ int virNetServerAddClient(virNetServer *srv,
     return -1;
 }
 
-static int virNetServerDispatchNewClient(virNetServerService *svc,
-                                         virNetSocket *clientsock,
-                                         void *opaque)
+
+static int
+virNetServerDispatchNewClient(virNetServerService *svc,
+                              virNetSocket *clientsock,
+                              void *opaque)
 {
     virNetServer *srv = opaque;
     virNetServerClient *client;
@@ -352,19 +366,20 @@ static int virNetServerDispatchNewClient(virNetServerService *svc,
 }
 
 
-virNetServer *virNetServerNew(const char *name,
-                                unsigned long long next_client_id,
-                                size_t min_workers,
-                                size_t max_workers,
-                                size_t priority_workers,
-                                size_t max_clients,
-                                size_t max_anonymous_clients,
-                                int keepaliveInterval,
-                                unsigned int keepaliveCount,
-                                virNetServerClientPrivNew clientPrivNew,
-                                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
-                                virFreeCallback clientPrivFree,
-                                void *clientPrivOpaque)
+virNetServer *
+virNetServerNew(const char *name,
+                unsigned long long next_client_id,
+                size_t min_workers,
+                size_t max_workers,
+                size_t priority_workers,
+                size_t max_clients,
+                size_t max_anonymous_clients,
+                int keepaliveInterval,
+                unsigned int keepaliveCount,
+                virNetServerClientPrivNew clientPrivNew,
+                virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
+                virFreeCallback clientPrivFree,
+                void *clientPrivOpaque)
 {
     virNetServer *srv;
 
@@ -401,13 +416,14 @@ virNetServer *virNetServerNew(const char *name,
 }
 
 
-virNetServer *virNetServerNewPostExecRestart(virJSONValue *object,
-                                               const char *name,
-                                               virNetServerClientPrivNew clientPrivNew,
-                                               virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
-                                               virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
-                                               virFreeCallback clientPrivFree,
-                                               void *clientPrivOpaque)
+virNetServer *
+virNetServerNewPostExecRestart(virJSONValue *object,
+                               const char *name,
+                               virNetServerClientPrivNew clientPrivNew,
+                               virNetServerClientPrivNewPostExecRestart clientPrivNewPostExecRestart,
+                               virNetServerClientPrivPreExecRestart clientPrivPreExecRestart,
+                               virFreeCallback clientPrivFree,
+                               void *clientPrivOpaque)
 {
     virNetServer *srv = NULL;
     virJSONValue *clients;
@@ -553,7 +569,8 @@ virNetServer *virNetServerNewPostExecRestart(virJSONValue *object,
 }
 
 
-virJSONValue *virNetServerPreExecRestart(virNetServer *srv)
+virJSONValue *
+virNetServerPreExecRestart(virNetServer *srv)
 {
     g_autoptr(virJSONValue) object = virJSONValueNewObject();
     g_autoptr(virJSONValue) clients = virJSONValueNewArray();
@@ -621,9 +638,9 @@ virJSONValue *virNetServerPreExecRestart(virNetServer *srv)
 }
 
 
-
-int virNetServerAddService(virNetServer *srv,
-                           virNetServerService *svc)
+int
+virNetServerAddService(virNetServer *srv,
+                       virNetServerService *svc)
 {
     virObjectLock(srv);
 
@@ -687,17 +704,18 @@ virNetServerAddServiceActivation(virNetServer *srv,
 }
 
 
-int virNetServerAddServiceTCP(virNetServer *srv,
-                              virSystemdActivation *act,
-                              const char *actname,
-                              const char *nodename,
-                              const char *service,
-                              int family,
-                              int auth,
-                              virNetTLSContext *tls,
-                              bool readonly,
-                              size_t max_queued_clients,
-                              size_t nrequests_client_max)
+int
+virNetServerAddServiceTCP(virNetServer *srv,
+                          virSystemdActivation *act,
+                          const char *actname,
+                          const char *nodename,
+                          const char *service,
+                          int family,
+                          int auth,
+                          virNetTLSContext *tls,
+                          bool readonly,
+                          size_t max_queued_clients,
+                          size_t nrequests_client_max)
 {
     virNetServerService *svc = NULL;
     int ret;
@@ -735,17 +753,18 @@ int virNetServerAddServiceTCP(virNetServer *srv,
 }
 
 
-int virNetServerAddServiceUNIX(virNetServer *srv,
-                               virSystemdActivation *act,
-                               const char *actname,
-                               const char *path,
-                               mode_t mask,
-                               gid_t grp,
-                               int auth,
-                               virNetTLSContext *tls,
-                               bool readonly,
-                               size_t max_queued_clients,
-                               size_t nrequests_client_max)
+int
+virNetServerAddServiceUNIX(virNetServer *srv,
+                           virSystemdActivation *act,
+                           const char *actname,
+                           const char *path,
+                           mode_t mask,
+                           gid_t grp,
+                           int auth,
+                           virNetTLSContext *tls,
+                           bool readonly,
+                           size_t max_queued_clients,
+                           size_t nrequests_client_max)
 {
     virNetServerService *svc = NULL;
     int ret;
@@ -783,8 +802,9 @@ int virNetServerAddServiceUNIX(virNetServer *srv,
 }
 
 
-int virNetServerAddProgram(virNetServer *srv,
-                           virNetServerProgram *prog)
+int
+virNetServerAddProgram(virNetServer *srv,
+                       virNetServerProgram *prog)
 {
     virObjectLock(srv);
 
@@ -795,8 +815,10 @@ int virNetServerAddProgram(virNetServer *srv,
     return 0;
 }
 
-int virNetServerSetTLSContext(virNetServer *srv,
-                              virNetTLSContext *tls)
+
+int
+virNetServerSetTLSContext(virNetServer *srv,
+                          virNetTLSContext *tls)
 {
     srv->tls = virObjectRef(tls);
     return 0;
@@ -856,15 +878,18 @@ virNetServerUpdateServicesLocked(virNetServer *srv,
 }
 
 
-void virNetServerUpdateServices(virNetServer *srv,
-                                bool enabled)
+void
+virNetServerUpdateServices(virNetServer *srv,
+                           bool enabled)
 {
     virObjectLock(srv);
     virNetServerUpdateServicesLocked(srv, enabled);
     virObjectUnlock(srv);
 }
 
-void virNetServerDispose(void *obj)
+
+void
+virNetServerDispose(void *obj)
 {
     virNetServer *srv = obj;
     size_t i;
@@ -886,7 +911,9 @@ void virNetServerDispose(void *obj)
     g_free(srv->clients);
 }
 
-void virNetServerClose(virNetServer *srv)
+
+void
+virNetServerClose(virNetServer *srv)
 {
     size_t i;
 
@@ -906,17 +933,20 @@ void virNetServerClose(virNetServer *srv)
     virObjectUnlock(srv);
 }
 
+
 void
 virNetServerShutdownWait(virNetServer *srv)
 {
     virThreadPoolDrain(srv->workers);
 }
 
+
 static inline size_t
 virNetServerTrackPendingAuthLocked(virNetServer *srv)
 {
     return ++srv->nclients_unauth;
 }
+
 
 static inline size_t
 virNetServerTrackCompletedAuthLocked(virNetServer *srv)
@@ -936,6 +966,7 @@ virNetServerHasClients(virNetServer *srv)
 
     return ret;
 }
+
 
 void
 virNetServerProcessClients(virNetServer *srv)
@@ -974,11 +1005,13 @@ virNetServerProcessClients(virNetServer *srv)
     virObjectUnlock(srv);
 }
 
+
 const char *
 virNetServerGetName(virNetServer *srv)
 {
     return srv->name;
 }
+
 
 int
 virNetServerGetThreadPoolParameters(virNetServer *srv,
@@ -1002,6 +1035,7 @@ virNetServerGetThreadPoolParameters(virNetServer *srv,
     return 0;
 }
 
+
 int
 virNetServerSetThreadPoolParameters(virNetServer *srv,
                                     long long int minWorkers,
@@ -1018,6 +1052,7 @@ virNetServerSetThreadPoolParameters(virNetServer *srv,
     return ret;
 }
 
+
 size_t
 virNetServerGetMaxClients(virNetServer *srv)
 {
@@ -1029,6 +1064,7 @@ virNetServerGetMaxClients(virNetServer *srv)
 
     return ret;
 }
+
 
 size_t
 virNetServerGetCurrentClients(virNetServer *srv)
@@ -1042,6 +1078,7 @@ virNetServerGetCurrentClients(virNetServer *srv)
     return ret;
 }
 
+
 size_t
 virNetServerGetMaxUnauthClients(virNetServer *srv)
 {
@@ -1053,6 +1090,7 @@ virNetServerGetMaxUnauthClients(virNetServer *srv)
 
     return ret;
 }
+
 
 size_t
 virNetServerGetCurrentUnauthClients(virNetServer *srv)
@@ -1067,8 +1105,9 @@ virNetServerGetCurrentUnauthClients(virNetServer *srv)
 }
 
 
-bool virNetServerNeedsAuth(virNetServer *srv,
-                           int auth)
+bool
+virNetServerNeedsAuth(virNetServer *srv,
+                      int auth)
 {
     bool ret = false;
     size_t i;
@@ -1082,6 +1121,7 @@ bool virNetServerNeedsAuth(virNetServer *srv,
 
     return ret;
 }
+
 
 int
 virNetServerGetClients(virNetServer *srv,
@@ -1105,6 +1145,7 @@ virNetServerGetClients(virNetServer *srv,
     return nclients;
 }
 
+
 virNetServerClient *
 virNetServerGetClient(virNetServer *srv,
                       unsigned long long id)
@@ -1127,6 +1168,7 @@ virNetServerGetClient(virNetServer *srv,
                        _("No client with matching ID '%llu'"), id);
     return ret;
 }
+
 
 int
 virNetServerSetClientLimits(virNetServer *srv,
@@ -1164,6 +1206,7 @@ virNetServerSetClientLimits(virNetServer *srv,
     return ret;
 }
 
+
 static virNetTLSContext *
 virNetServerGetTLSContext(virNetServer *srv)
 {
@@ -1181,6 +1224,7 @@ virNetServerGetTLSContext(virNetServer *srv)
 
     return ctxt;
 }
+
 
 int
 virNetServerUpdateTlsFiles(virNetServer *srv)
