@@ -920,6 +920,13 @@ virStorageSourceIsSameLocation(virStorageSource *a,
         virStorageSourceIsEmpty(b))
         return true;
 
+    /* for disk type=volume we must check just pool/volume names as they might
+     * not yet be resolved if e.g. we are comparing against the persistent def */
+    if (a->type == VIR_STORAGE_TYPE_VOLUME && b->type == VIR_STORAGE_TYPE_VOLUME) {
+        return STREQ(a->srcpool->pool, b->srcpool->pool) &&
+               STREQ(a->srcpool->volume, b->srcpool->volume);
+    }
+
     if (virStorageSourceGetActualType(a) != virStorageSourceGetActualType(b))
         return false;
 
