@@ -240,10 +240,10 @@
   <flag name='device.json'/>
   <flag name='query-dirty-rate'/>
   <flag name='rbd-encryption'/>
-  <version>6001050</version>
+  <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
-  <package>v6.1.0-1735-gc52d69e7db</package>
+  <package>v6.2.0</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -635,7 +635,6 @@
     <blocker name='movdiri'/>
     <blocker name='movdir64b'/>
     <blocker name='spec-ctrl'/>
-    <blocker name='core-capability'/>
   </cpu>
   <cpu type='kvm' name='Snowridge-v3' typename='Snowridge-v3-x86_64-cpu' usable='no'>
     <blocker name='erms'/>
@@ -2008,7 +2007,6 @@
     <blocker name='movdir64b'/>
     <blocker name='spec-ctrl'/>
     <blocker name='arch-capabilities'/>
-    <blocker name='core-capability'/>
     <blocker name='ssbd'/>
     <blocker name='3dnowprefetch'/>
     <blocker name='xsavec'/>
