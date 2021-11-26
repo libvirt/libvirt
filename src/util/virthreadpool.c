@@ -50,7 +50,7 @@ struct _virThreadPool {
     bool quit;
 
     virThreadPoolJobFunc jobFunc;
-    const char *jobName;
+    char *jobName;
     void *jobOpaque;
     virThreadPoolJobList jobList;
     size_t jobQueueDepth;
@@ -237,7 +237,7 @@ virThreadPoolNewFull(size_t minWorkers,
     pool->jobList.tail = pool->jobList.head = NULL;
 
     pool->jobFunc = func;
-    pool->jobName = name;
+    pool->jobName = g_strdup(name);
     pool->jobOpaque = opaque;
 
     if (identity)
@@ -312,6 +312,7 @@ void virThreadPoolFree(virThreadPool *pool)
     if (pool->identity)
         g_object_unref(pool->identity);
 
+    g_free(pool->jobName);
     g_free(pool->workers);
     virMutexUnlock(&pool->mutex);
     virMutexDestroy(&pool->mutex);
