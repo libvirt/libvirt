@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-10-26 08:13+0000\n"
+"POT-Creation-Date: 2021-11-25 08:59+0000\n"
 "PO-Revision-Date: 2021-11-06 14:17+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -41,7 +41,6 @@ msgstr ""
 "\n"
 "  (należy podać help <grupa>, aby uzyskać szczegóły o poleceniach w grupie)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -341,7 +340,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    Limit przepustowości: %llu B/s (%-.3lf %s/s)"
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NAZWA\n"
 
@@ -580,16 +578,6 @@ msgstr "SATA jest nieobsługiwana przez ten plik binarny QEMU"
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, fuzzy, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "brak właściwości „type” w %s"
@@ -673,6 +661,10 @@ msgstr ""
 msgid ""
 "%s: Error converting address '%s' with prefix %u to network-address in route "
 "definition"
+msgstr ""
+
+#, c-format
+msgid "%s: File '%s' is too large\n"
 msgstr ""
 
 #, c-format
@@ -1057,10 +1049,6 @@ msgstr ""
 msgid "'%s' starting from %llu has only %zd bytes available"
 msgstr ""
 
-#, c-format
-msgid "'%s' value longer than '%zu' bytes"
-msgstr ""
-
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
@@ -1347,7 +1335,6 @@ msgstr "nieprawidłowe określenie maszyny wirtualnej"
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1415,7 +1402,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "nieprawidłowe określenie maszyny wirtualnej"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1603,6 +1589,9 @@ msgstr "wywołanie zwrotne zdarzenia jest już śledzone"
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
+msgstr ""
+
+msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -2330,14 +2319,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Wywołanie do %s dla nieoczekiwanego typu „%s”"
 
-#. nothing
 #, fuzzy, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Wywołanie do %s dla nieoczekiwanego typu „%s”"
@@ -2818,9 +2803,9 @@ msgstr "nie można odnaleźć statystyk dla urządzenia „%s”"
 msgid "Cannot find security driver '%s'"
 msgstr "nie można odnaleźć nowo utworzonego woluminu „%s”"
 
-#, fuzzy, c-format
-msgid "Cannot find start time in %s"
-msgstr "nie można odnaleźć urządzenia znakowego %s"
+#, c-format
+msgid "Cannot find start time for pid %d"
+msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Nie można odnaleźć odpowiedniego modelu procesora dla podanych danych"
@@ -3126,9 +3111,9 @@ msgstr "Nie można przetworzyć adresu gniazda „%s”: %s"
 msgid "Cannot parse socket service '%s': %s"
 msgstr "Nie można przetworzyć adresu gniazda „%s”: %s"
 
-#, fuzzy, c-format
-msgid "Cannot parse start time %s in %s"
-msgstr "Nie można przetworzyć adresu gniazda „%s”: %s"
+#, c-format
+msgid "Cannot parse start time %s for pid %d"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3167,6 +3152,9 @@ msgstr "nie można odczytać „%s”"
 
 msgid "Cannot read cputime for domain"
 msgstr "Nie można odczytać czasu procesora dla domeny"
+
+msgid "Cannot read host CPUID"
+msgstr ""
 
 #, fuzzy
 msgid "Cannot recv data"
@@ -3554,7 +3542,6 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr ""
 
-#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -3609,9 +3596,9 @@ msgstr "virGetUserID jest niedostępne"
 
 msgid ""
 "Client's Distinguished Name is not on the list of allowed clients "
-"(tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view "
-"the Distinguished Name field in the client certificate, or run this daemon "
-"with --verbose option."
+"(tls_allowed_dn_list).  Use 'virt-pki-query-dn clientcert.pem' to view the "
+"Distinguished Name field in the client certificate, or run this daemon with "
+"--verbose option."
 msgstr ""
 
 msgid "Client's username is not on the list of allowed clients"
@@ -4802,7 +4789,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Nie można pobrać informacji o puli"
 
@@ -4821,6 +4807,12 @@ msgstr ""
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
 msgstr "Nie można przywrócić do migawki „%s”: %s"
+
+#, c-format
+msgid ""
+"Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
+"details."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -5695,7 +5687,6 @@ msgstr ""
 "Domena ma %d interfejsy. Proszę sprawdzić, który odłączyć za pomocą opcji --"
 "mac"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5901,6 +5892,10 @@ msgstr "Nie można przetworzyć indeksu kontrolera %s"
 
 #, c-format
 msgid "Duplicate USB hub on bus %u port %s"
+msgstr ""
+
+#, c-format
+msgid "Duplicate block info for '%s'"
 msgstr ""
 
 #, c-format
@@ -6940,21 +6935,14 @@ msgstr "Utworzenie %s się nie powiodło"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Utworzenie domeny z %s się nie powiodło"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Utworzenie domeny z %s się nie powiodło"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Utworzenie domeny z %s się nie powiodło"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Utworzenie puli z %s się nie powiodło"
@@ -7347,6 +7335,10 @@ msgstr "Uzyskanie informacji o interfejsie się nie powiodło"
 msgid "Failed to get disk information"
 msgstr "Uzyskanie informacji o dysku się nie powiodło"
 
+#, c-format
+msgid "Failed to get distinguished name: %s\n"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to get domain autostart state"
 msgstr "Zapisanie stanu domeny %s się nie powiodło"
@@ -7556,7 +7548,6 @@ msgstr "Wyświetlenie listy aktywnych sieci się nie powiodło"
 msgid "Failed to list active pools"
 msgstr "Wyświetlenie listy aktywnych pul się nie powiodło"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Wyświetlenie listy aktywnych domen się nie powiodło"
@@ -7573,30 +7564,24 @@ msgstr "Wyświetlenie listy nieaktywnych sieci się nie powiodło"
 msgid "Failed to list inactive pools"
 msgstr "Wyświetlenie listy nieaktywnych pul się nie powiodło"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Wyświetlenie listy aktywnych interfejsów się nie powiodło"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Wyświetlenie listy filtrów sieciowych się nie powiodło"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Wyświetlenie listy filtrów sieciowych się nie powiodło"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Wyświetlenie listy filtrów sieciowych się nie powiodło"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Wyświetlenie listy urządzeń węzłów się nie powiodło"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Wyświetlenie listy sekretów się nie powiodło"
@@ -7605,7 +7590,6 @@ msgstr "Wyświetlenie listy sekretów się nie powiodło"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Wyświetlenie listy sekretów się nie powiodło"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Wyświetlenie listy aktywnych pul się nie powiodło"
@@ -7629,7 +7613,6 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 "Wyłączenie domeny „%d” za pomocą biblioteki libxenlight się nie powiodło"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Wyświetlenie listy woluminów pamięci masowej się nie powiodło"
@@ -7665,10 +7648,6 @@ msgstr ""
 msgid "Failed to load plugin %s: %s"
 msgstr ""
 "Usunięcie dowiązania automatycznego uruchomienia „%s” się nie powiodło: %s"
-
-#, fuzzy, c-format
-msgid "Failed to load snapshot: %s"
-msgstr "Wykonanie migawki się nie powiodło: %s"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
@@ -8246,9 +8225,6 @@ msgstr ""
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Wznowienie gościa %s po niepowodzeniu się nie powiodło"
@@ -8810,9 +8786,6 @@ msgstr "Przekonwertowanie „%s” na liczbę całkowitą się nie powiodło"
 msgid "Field name too long"
 msgstr "parametr profileid jest za długi"
 
-msgid "Field value contains invalid characters"
-msgstr ""
-
 #, c-format
 msgid "File %s contains no keys"
 msgstr ""
@@ -8923,63 +8896,10 @@ msgstr ""
 "Pierwszy dysk twardy oparty na plikach nie ma źródła, nie można odgadnąć "
 "przechowalni danych i ścieżki do pliku VMX"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, fuzzy, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "Opcja --%s jest wymagana przez opcję --%s"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "Opcje --%s i --%s wzajemnie się wykluczają"
@@ -9403,10 +9323,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Hostname of '%s' is unset"
 msgstr "wykonanie stat na „%s” się nie powiodło"
-
-#, fuzzy, c-format
-msgid "Hotplug unsupported for char device type '%d'"
-msgstr "Nieobsługiwany typ urządzenia znakowego „%s”"
 
 #, fuzzy, c-format
 msgid "Hotplug unsupported for char device type '%s'"
@@ -9965,15 +9881,6 @@ msgstr ""
 msgid "Invalid address."
 msgstr "nieprawidłowy adres MAC"
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "nieprawidłowy parametr"
 
@@ -10112,7 +10019,7 @@ msgid "Invalid cpuNum in %s"
 msgstr "nieprawidłowy UUID %s"
 
 #, c-format
-msgid "Invalid cpuid[%zu] in %s feature"
+msgid "Invalid cpuid[%zu]"
 msgstr ""
 
 #, fuzzy, c-format
@@ -10404,7 +10311,7 @@ msgid "Invalid monitor cache level '%d'"
 msgstr "Nieprawidłowa etykieta bezpieczeństwa „%s”"
 
 #, c-format
-msgid "Invalid msr[%zu] in %s feature"
+msgid "Invalid msr[%zu]"
 msgstr ""
 
 #, fuzzy, c-format
@@ -11644,10 +11551,6 @@ msgstr ""
 msgid "Missing clients data in JSON document"
 msgstr ""
 
-#, c-format
-msgid "Missing cpuid or msr element in feature %s"
-msgstr ""
-
 msgid "Missing defaultLockspace data from JSON file"
 msgstr ""
 
@@ -12268,12 +12171,6 @@ msgstr "SATA jest nieobsługiwana przez ten plik binarny QEMU"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Nazwa"
 
@@ -13314,20 +13211,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "Opcja --%s jest wymagana przez opcję --%s"
@@ -13347,20 +13230,6 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Opcje --%s i --%s wzajemnie się wykluczają"
@@ -13610,7 +13479,6 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
-#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Nie podano żadnego parametru QEMU w wierszu poleceń"
@@ -13897,6 +13765,9 @@ msgstr ""
 msgid "Processor mask of target NUMA node %zu doesn't match source"
 msgstr ""
 
+msgid "Profile of 0 size detected, will attempt to remove it"
+msgstr ""
+
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
 msgstr ""
@@ -14100,6 +13971,9 @@ msgstr "Pokrewieństwo procesora procesu jest nieobsługiwane na tej platformie"
 
 msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
+msgstr ""
+
+msgid "Reading CPUID is not supported on this platform"
 msgstr ""
 
 #, fuzzy
@@ -14477,7 +14351,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "Inne zadania są oczekujące dla tej domeny"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -15011,9 +14884,6 @@ msgstr "Czas procesora:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "grafika spice jest nieobsługiwana przez to QEMU"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 #, fuzzy
 msgid "Shared memory:\n"
 msgstr "Użyta pamięć:"
@@ -15098,7 +14968,6 @@ msgstr "SATA jest nieobsługiwana przez ten plik binarny QEMU"
 msgid "Snapshot"
 msgstr "Lista migawek"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, fuzzy, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Konfiguracja XML domeny %s nie została zmieniona.\n"
@@ -15587,7 +15456,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
-#. title
 msgid "Target"
 msgstr ""
 
@@ -16503,10 +16371,6 @@ msgid ""
 "number of clients waiting for authentication"
 msgstr ""
 
-#, c-format
-msgid "The provided value contains invalid characters: %s"
-msgstr ""
-
 msgid "The read only disk has no parent"
 msgstr ""
 
@@ -16874,11 +16738,9 @@ msgstr ""
 msgid "Try again?"
 msgstr "Spróbować ponownie?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -18162,6 +18024,10 @@ msgstr "Nie można zainicjować warstwy audytu"
 msgid "Unable to initialize certificate"
 msgstr "Nie można zainicjować certyfikatu"
 
+#, c-format
+msgid "Unable to initialize certificate: %s\n"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "nie można zainicjować zmiennej warunkowej"
@@ -18234,6 +18100,10 @@ msgstr "Nie można otworzyć gniazda uniksowego"
 
 msgid "Unable to load certificate"
 msgstr "Nie można wczytać certyfikatu"
+
+#, c-format
+msgid "Unable to load certificate, make sure it is in PEM format: %s\n"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to lock '%s'"
@@ -19645,7 +19515,6 @@ msgstr "Nieznany typ modelu „%s”"
 msgid "Unknown error"
 msgstr "Nieznany błąd"
 
-#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "Nieznany błąd"
@@ -19915,6 +19784,10 @@ msgid "Unsupported OS type: %s"
 msgstr "Nieobsługiwany typ magistrali „%s”"
 
 msgid "Unsupported PCI Express root controller"
+msgstr ""
+
+#, c-format
+msgid "Unsupported PCR banks '%s'"
 msgstr ""
 
 #, c-format
@@ -20237,6 +20110,23 @@ msgstr ""
 msgid "Usage:"
 msgstr "Użycie"
 
+#, c-format
+msgid ""
+"Usage:\n"
+"  %s FILE\n"
+"  %s { -v | -h }\n"
+"\n"
+"Extract Distinguished Name from a PEM certificate.\n"
+"The output is meant to be used in the tls_allowed_dn_list\n"
+"configuration option in the libvirtd.conf file.\n"
+"\n"
+"  FILE            certificate file to extract the DN from\n"
+"\n"
+"options:\n"
+"  -h | --help     display this help and exit\n"
+"  -v | --version  output version information and exit\n"
+msgstr ""
+
 #, sh-format
 msgid ""
 "Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
@@ -20401,12 +20291,6 @@ msgstr ""
 msgid "VPD fields access type parsing has failed"
 msgstr ""
 
-msgid "VPD-R does not contain the mandatory RV field"
-msgstr ""
-
-msgid "VPD-W does not contain the mandatory RW field"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Value '%s' is not representable as %s"
 msgstr "Wartość „%s” jest poza zakresem %s"
@@ -20434,12 +20318,10 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr "grafika spice jest nieobsługiwana przez to QEMU"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "Narzędzie wiersza poleceń virsh biblioteki libvirt %s\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "Narzędzie wiersza poleceń virsh biblioteki libvirt %s\n"
@@ -20924,11 +20806,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "przydzielony bufor netlink jest za mały"
 
@@ -22690,7 +22567,6 @@ msgstr "nie można otworzyć ścieżki „%s”"
 msgid "cannot open path '%s' in '%s'"
 msgstr "nie można otworzyć ścieżki „%s”"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "nie można otworzyć woluminu „%s”"
@@ -23521,7 +23397,6 @@ msgstr "nazwa klona"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "utworzenie katalogu „%s” przez potomka się nie powiodło"
@@ -24155,6 +24030,9 @@ msgstr "nie można odczytać pliku XML"
 msgid "could not receive data from domain '%s'"
 msgstr ""
 
+msgid "could not remove profile"
+msgstr ""
+
 #, c-format
 msgid "could not remove profile for '%s'"
 msgstr "nie można usunąć profilu dla „%s”"
@@ -24296,6 +24174,9 @@ msgstr "pokrewieństwo procesora jest nieobsługiwane"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "nparams jest za duże"
+
+msgid "cpu hotplug is not supported"
+msgstr ""
 
 msgid "cpu parameter is missing a model name"
 msgstr ""
@@ -25276,9 +25157,6 @@ msgstr "zdarzenie domeny %d nie zostało zarejestrowane"
 msgid "domain event callback %d not registered"
 msgstr "zdarzenie domeny %d nie zostało zarejestrowane"
 
-msgid "domain genid update requires restart"
-msgstr ""
-
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr ""
 
@@ -25966,7 +25844,7 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'metadata-change' for domain '%s': %s %s\n"
+msgid "event 'metadata-change' for domain '%s': type %s, uri %s\n"
 msgstr ""
 
 #, c-format
@@ -26960,10 +26838,6 @@ msgid "failed to parse configuration file %s"
 msgstr "przetworzenie pliku konfiguracji %s się nie powiodło"
 
 #, fuzzy, c-format
-msgid "failed to parse cpuid[%zu]"
-msgstr "Przetworzenie trybu „%s” się nie powiodło"
-
-#, fuzzy, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "Przetworzenie nazwy katalogu „%s” się nie powiodło"
 
@@ -26978,10 +26852,6 @@ msgstr "Przetworzenie nazwy katalogu „%s” się nie powiodło"
 #, fuzzy
 msgid "failed to parse json"
 msgstr "wznowienie domeny się nie powiodło"
-
-#, fuzzy, c-format
-msgid "failed to parse msr[%zu]"
-msgstr "Przetworzenie trybu „%s” się nie powiodło"
 
 #, fuzzy, c-format
 msgid "failed to parse multicast address from '%s'"
@@ -27495,9 +27365,6 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "wartość konfiguracji %s jest błędnie sformatowana"
@@ -28107,7 +27974,6 @@ msgstr "Migawka domeny %s została utworzona"
 msgid "handler failed to wait on condition"
 msgstr "oczekiwanie na warunek się nie powiodło"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -28668,25 +28534,6 @@ msgstr "nazwa interfejsu"
 msgid "interface name %s does not fit into buffer "
 msgstr "nazwa interfejsu %s nie mieści się w buforze "
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "nazwa interfejsu lub adres MAC"
 
@@ -29409,9 +29256,9 @@ msgstr "nieprawidłowy UUID %s"
 msgid "invalid security relabel value %s"
 msgstr "Nieprawidłowa etykieta bezpieczeństwa %s"
 
-#, fuzzy, c-format
-msgid "invalid security type '%s'"
-msgstr "Nieprawidłowa etykieta bezpieczeństwa „%s”"
+#, c-format
+msgid "invalid security relabel value '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "invalid server address"
@@ -30951,6 +30798,10 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+#, c-format
+msgid "minimum SSF levels lower than %d are not supported"
+msgstr ""
+
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
@@ -31977,15 +31828,6 @@ msgstr ""
 msgid "monitor failure"
 msgstr "brak ścieżki do monitora"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "monitor nie może być PUSTY"
 
@@ -32093,12 +31935,6 @@ msgstr ""
 msgid "multiple stream callbacks not supported"
 msgstr "wiele wywołań zwrotnych strumienia jest nieobsługiwanych"
 
-msgid "must respawn guest to start inactive snapshot"
-msgstr ""
-
-msgid "must respawn qemu to start inactive snapshot"
-msgstr ""
-
 msgid "mutex initialization failed"
 msgstr "zainicjowanie muteksu się nie powiodło"
 
@@ -32193,7 +32029,6 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "wynegocjowane SSF %d nie było wystarczająco silne"
@@ -34861,6 +34696,9 @@ msgstr "informacje o filtrze sieciowym w XML"
 msgid "report hostname"
 msgstr "uzyskanie nazwy gospodarza się nie powiodło"
 
+msgid "report interface information"
+msgstr ""
+
 msgid "report only stats that are accessible instantly"
 msgstr ""
 
@@ -36285,10 +36123,6 @@ msgstr "Procesor opisany w %s nie jest zgodny z procesorem gospodarza\n"
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "the QEMU binary does not support %s"
-msgstr "ten plik binarny QEMU nie ma obsługi trybu gospodarza smartcard"
-
 #, fuzzy
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "magistrala Xena nie obsługuje urządzenia wejściowego %s"
@@ -36365,10 +36199,6 @@ msgstr ""
 
 msgid "the signal number or name"
 msgstr ""
-
-#, c-format
-msgid "the snapshot '%s' does not exist, and was not loaded"
-msgstr "migawka „%s” nie istnieje i nie została wczytana"
 
 msgid "the state to restore"
 msgstr "stan do przywrócenia"
@@ -36463,9 +36293,6 @@ msgstr "Urządzenie dysku „%s” nie obsługuje migawek"
 
 msgid "this domain does not have a device to delete snapshots"
 msgstr "ta domena nie ma urządzenia do usuwania migawek"
-
-msgid "this domain does not have a device to load snapshots"
-msgstr "ta domena nie ma urządzenia do wczytywania migawek"
 
 msgid "this domain does not have a device to take snapshots"
 msgstr "ta domena nie ma urządzenia do wykonywania migawek"
@@ -37181,7 +37008,6 @@ msgstr "nie można otworzyć strumienia"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, fuzzy, c-format
 msgid "unable to fsync %s"
 msgstr "nie można zamknąć %s"
@@ -38029,12 +37855,6 @@ msgstr "nieznany typ parametru: %d"
 msgid "unix"
 msgstr ""
 
-#, fuzzy
-msgid "unix socket for spice graphics are not supported with this QEMU"
-msgstr "grafika spice jest nieobsługiwana przez to QEMU"
-
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "nieznane"
 
@@ -38918,28 +38738,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "nieobsługiwane flagi (0x%x)"
@@ -39250,10 +39048,6 @@ msgstr ""
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr ""
 "długość mapy buforów wirtualnych procesorów przekracza maksimum: %d > %d"
-
-#, fuzzy
-msgid "vCPU unplug is not supported by this QEMU"
-msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, c-format
 msgid "vCPUs count must be a multiple of the vCPU hotplug granularity (%u)"
@@ -40147,6 +39941,52 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <ciąg>}…"
+
+#, fuzzy
+#~ msgid "Cannot find start time in %s"
+#~ msgstr "nie można odnaleźć urządzenia znakowego %s"
+
+#, fuzzy
+#~ msgid "Cannot parse start time %s in %s"
+#~ msgstr "Nie można przetworzyć adresu gniazda „%s”: %s"
+
+#, fuzzy
+#~ msgid "Failed to load snapshot: %s"
+#~ msgstr "Wykonanie migawki się nie powiodło: %s"
+
+#, fuzzy
+#~ msgid "Hotplug unsupported for char device type '%d'"
+#~ msgstr "Nieobsługiwany typ urządzenia znakowego „%s”"
+
+#, fuzzy
+#~ msgid "failed to parse cpuid[%zu]"
+#~ msgstr "Przetworzenie trybu „%s” się nie powiodło"
+
+#, fuzzy
+#~ msgid "failed to parse msr[%zu]"
+#~ msgstr "Przetworzenie trybu „%s” się nie powiodło"
+
+#, fuzzy
+#~ msgid "invalid security type '%s'"
+#~ msgstr "Nieprawidłowa etykieta bezpieczeństwa „%s”"
+
+#, fuzzy
+#~ msgid "the QEMU binary does not support %s"
+#~ msgstr "ten plik binarny QEMU nie ma obsługi trybu gospodarza smartcard"
+
+#~ msgid "the snapshot '%s' does not exist, and was not loaded"
+#~ msgstr "migawka „%s” nie istnieje i nie została wczytana"
+
+#~ msgid "this domain does not have a device to load snapshots"
+#~ msgstr "ta domena nie ma urządzenia do wczytywania migawek"
+
+#, fuzzy
+#~ msgid "unix socket for spice graphics are not supported with this QEMU"
+#~ msgstr "grafika spice jest nieobsługiwana przez to QEMU"
+
+#, fuzzy
+#~ msgid "vCPU unplug is not supported by this QEMU"
+#~ msgstr "vhost-net jest nieobsługiwane przez ten plik binarny QEMU"
 
 #, fuzzy
 #~ msgid "I/O APIC tuning is not supported by this QEMU binary"

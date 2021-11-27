@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-10-26 08:13+0000\n"
+"POT-Creation-Date: 2021-11-25 08:59+0000\n"
 "PO-Revision-Date: 2015-02-23 06:48+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
@@ -44,7 +44,6 @@ msgstr ""
 "\n"
 "  (グループにあるコマンドの詳細は help <group> を指定します)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -345,7 +344,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  名前\n"
 
@@ -589,16 +587,6 @@ msgstr "%s はこの QEMU ライブラリーにおいてサポートされてい
 msgid "%s object has invalid dynamic type"
 msgstr "%s オブジェクトが無効な動的形式を持ちます"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s オブジェクトは必要な '%s' プロパティがありません"
@@ -689,6 +677,10 @@ msgstr ""
 msgid ""
 "%s: Error converting address '%s' with prefix %u to network-address in route "
 "definition"
+msgstr ""
+
+#, c-format
+msgid "%s: File '%s' is too large\n"
 msgstr ""
 
 #, fuzzy, c-format
@@ -1102,10 +1094,6 @@ msgstr ""
 msgid "'%s' starting from %llu has only %zd bytes available"
 msgstr ""
 
-#, c-format
-msgid "'%s' value longer than '%zu' bytes"
-msgstr ""
-
 #, fuzzy
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
@@ -1406,7 +1394,6 @@ msgstr "(インターフェース定義)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(metadata_xml)"
 
@@ -1469,7 +1456,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(ボリューム定義)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1671,6 +1657,9 @@ msgstr "他のコールバックが要求されました"
 
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
+msgstr ""
+
+msgid "A field data length violates the resource length boundary."
 msgstr ""
 
 #, fuzzy
@@ -2412,14 +2401,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s への呼び出しに対して予期しない形式 '%s' がありました"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s を予期しない形式 '%s' に呼び出しています、'%s' が期待されます"
@@ -2896,8 +2881,8 @@ msgid "Cannot find security driver '%s'"
 msgstr "セキュリティドライバー '%s' を見つけられません"
 
 #, c-format
-msgid "Cannot find start time in %s"
-msgstr "%s に開始時間を見つけられません"
+msgid "Cannot find start time for pid %d"
+msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "与えられたデータ向けの適切な CPU モデルを見つけられません"
@@ -3206,8 +3191,8 @@ msgid "Cannot parse socket service '%s': %s"
 msgstr "socket address '%s': %s を構文解析できません"
 
 #, c-format
-msgid "Cannot parse start time %s in %s"
-msgstr "開始時間 %s (%s) を構文解析できません"
+msgid "Cannot parse start time %s for pid %d"
+msgstr ""
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3246,6 +3231,9 @@ msgstr "%s '%s' を読み込めません"
 
 msgid "Cannot read cputime for domain"
 msgstr "ドメインの CPU 時間を読み込めません"
+
+msgid "Cannot read host CPUID"
+msgstr ""
 
 msgid "Cannot recv data"
 msgstr "データを受信できません"
@@ -3632,7 +3620,6 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "ドメイン %s のスナップショットが一貫性のある関係にありません"
 
-#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -3686,14 +3673,10 @@ msgstr "クライアントソケット識別子が利用可能ではありませ
 
 msgid ""
 "Client's Distinguished Name is not on the list of allowed clients "
-"(tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view "
-"the Distinguished Name field in the client certificate, or run this daemon "
-"with --verbose option."
+"(tls_allowed_dn_list).  Use 'virt-pki-query-dn clientcert.pem' to view the "
+"Distinguished Name field in the client certificate, or run this daemon with "
+"--verbose option."
 msgstr ""
-"クライアントの識別名が許可クライアント (tls_allowed_dn_list) の一覧にありませ"
-"ん。クライアント証明書にある識別名の項目を表示するには 'certtool -i --infile "
-"clientcert.pem' を使用してください。または、このデーモンを --verbose オプショ"
-"ンとともに実行してください。"
 
 msgid "Client's username is not on the list of allowed clients"
 msgstr "クライアントのユーザー名が許可済みクライアントの一覧にありません"
@@ -4866,7 +4849,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "プール情報を取得できませんでした"
 
@@ -4885,6 +4867,12 @@ msgstr ""
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
 msgstr "スナップショット '%s' に復元できませんでした: %s"
+
+#, c-format
+msgid ""
+"Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
+"details."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -5752,7 +5740,6 @@ msgstr ""
 "ドメインが %d インターフェースを持ちます。--mac を用いて切断するものを指定し"
 "てください"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5959,6 +5946,10 @@ msgstr "複数の '%s' コントローラーがインデックス '%d' を持ち
 
 #, c-format
 msgid "Duplicate USB hub on bus %u port %s"
+msgstr ""
+
+#, c-format
+msgid "Duplicate block info for '%s'"
 msgstr ""
 
 #, c-format
@@ -6989,21 +6980,14 @@ msgstr "%s の作成に失敗しました"
 msgid "Failed to create thread for receiving migration data"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ホストを一時停止するためのスレッドの作成に失敗しました"
@@ -7386,6 +7370,10 @@ msgstr "クライアントソケット識別子の取得に失敗しました"
 msgid "Failed to get disk information"
 msgstr "ディスク情報の取得に失敗しました"
 
+#, c-format
+msgid "Failed to get distinguished name: %s\n"
+msgstr ""
+
 msgid "Failed to get domain autostart state"
 msgstr "ドメインの自動起動状態の取得に失敗しました"
 
@@ -7569,7 +7557,6 @@ msgstr "動作中のネットワークの一覧表示に失敗しました"
 msgid "Failed to list active pools"
 msgstr "動作中のプールの一覧表示に失敗しました"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ドメインの一覧表示に失敗しました"
 
@@ -7585,28 +7572,22 @@ msgstr "停止状態のネットワークの一覧表示に失敗しました"
 msgid "Failed to list inactive pools"
 msgstr "停止状態のプールの一覧表示に失敗しました"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "インターフェースの一覧表示に失敗しました"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "ネットワークフィルターの一覧表示に失敗しました"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "ネットワークフィルターの一覧表示に失敗しました"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "ネットワークの一覧表示に失敗しました"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "ノードデバイスの一覧表示に失敗しました"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "ノードのシークレットの一覧表示に失敗しました"
 
@@ -7614,7 +7595,6 @@ msgstr "ノードのシークレットの一覧表示に失敗しました"
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri にある永続的なゲストの一覧表示に失敗しました"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "プールの一覧表示に失敗しました"
 
@@ -7635,7 +7615,6 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight を用いたドメイン '%d' の仮想 CPU 数の一覧表示に失敗しました"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "ボリュームの一覧表示に失敗しました"
 
@@ -7669,10 +7648,6 @@ msgstr ""
 #, c-format
 msgid "Failed to load plugin %s: %s"
 msgstr "プラグイン %s のロードに失敗しました: %s"
-
-#, fuzzy, c-format
-msgid "Failed to load snapshot: %s"
-msgstr "スナップショットの取得に失敗しました: %s"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
@@ -8230,9 +8205,6 @@ msgstr "libxenlight を用いたドメイン '%d' の再開に失敗しました
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "失敗後にゲスト %s の再開に失敗しました"
@@ -8770,9 +8742,6 @@ msgstr "フィールド名 '%s' が長すぎます"
 msgid "Field name too long"
 msgstr "フィールド名 '%s' が長すぎます"
 
-msgid "Field value contains invalid characters"
-msgstr ""
-
 #, c-format
 msgid "File %s contains no keys"
 msgstr ""
@@ -8880,63 +8849,10 @@ msgstr ""
 "最初のファイルベースのハードディスクはソースがありません、VMX ファイルのデー"
 "タストアおよびパスを推論できません。"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "オプション --%s と --%s は相互排他です"
@@ -9360,10 +9276,6 @@ msgstr "ホスト鍵検証のためにホスト名が必要です"
 #, c-format
 msgid "Hostname of '%s' is unset"
 msgstr "'%s' のホスト名が設定解除されます"
-
-#, fuzzy, c-format
-msgid "Hotplug unsupported for char device type '%d'"
-msgstr "サポートされないキャラクターデバイス形式 '%s' です"
 
 #, fuzzy, c-format
 msgid "Hotplug unsupported for char device type '%s'"
@@ -9931,15 +9843,6 @@ msgstr ""
 msgid "Invalid address."
 msgstr "不正なアドレスです。"
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "不正な引数"
 
@@ -10078,8 +9981,8 @@ msgid "Invalid cpuNum in %s"
 msgstr "%s に無効な cpuNum があります"
 
 #, c-format
-msgid "Invalid cpuid[%zu] in %s feature"
-msgstr "無効な cpuid[%zu] が %s 機能にあります"
+msgid "Invalid cpuid[%zu]"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid cpulist '%s'"
@@ -10366,9 +10269,9 @@ msgstr "無効なモード: %s"
 msgid "Invalid monitor cache level '%d'"
 msgstr "無効な統計情報収集間隔 '%d'"
 
-#, fuzzy, c-format
-msgid "Invalid msr[%zu] in %s feature"
-msgstr "無効な cpuid[%zu] が %s 機能にあります"
+#, c-format
+msgid "Invalid msr[%zu]"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid mtu size '%s' in network '%s'"
@@ -11625,10 +11528,6 @@ msgstr "JSON ドキュメントに client データがありません"
 msgid "Missing clients data in JSON document"
 msgstr "JSON ドキュメントに clients データがありません"
 
-#, fuzzy, c-format
-msgid "Missing cpuid or msr element in feature %s"
-msgstr "マイグレーションのデータに uuid 要素がありません"
-
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON ファイルに defaultLockspace データがありません"
 
@@ -12259,12 +12158,6 @@ msgstr "SATA はこの QEMU バイナリーでサポートされません"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "名前"
 
@@ -13335,20 +13228,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13368,20 +13247,6 @@ msgstr "オプション引数が空です"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "オプション --%s と --%s は相互排他です"
@@ -13631,7 +13496,6 @@ msgstr "構文解析された JSON 応答 '%s' はオブジェクトではあり
 msgid "Partition path '%s' must start with '/'"
 msgstr "パーティションのパス '%s' は '/' から始まらなければいけません"
 
-#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "QEMU コマンドライン引数が指定されていません"
@@ -13922,6 +13786,9 @@ msgstr "いくつかのプロセスが die を拒否しました"
 msgid "Processor mask of target NUMA node %zu doesn't match source"
 msgstr "ターゲットの CPU モード %s がソースの %s と一致しません"
 
+msgid "Profile of 0 size detected, will attempt to remove it"
+msgstr ""
+
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
 msgstr ""
@@ -14143,6 +14010,9 @@ msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr ""
 "読み/書き、排他アクセス、ディスクが存在しますが、リースが指定されていません"
+
+msgid "Reading CPUID is not supported on this platform"
+msgstr ""
 
 #, fuzzy
 msgid "Reading MSRs is not supported on this platform"
@@ -14516,7 +14386,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "このドメインに対して S4 状態が無効化されています"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -15066,9 +14935,6 @@ msgstr "CPU 時間:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "spice グラフィックはこの QEMU でサポートされません"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "共有メモリー:\n"
 
@@ -15148,7 +15014,6 @@ msgstr "SATA はこの QEMU バイナリーでサポートされません"
 msgid "Snapshot"
 msgstr "スナップショットを一覧表示します。"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "スナップショット %s の XML 設定は変更されませんでした。\n"
@@ -15642,7 +15507,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s は空白ではいけません"
 
-#. title
 msgid "Target"
 msgstr "ターゲット"
 
@@ -16575,10 +16439,6 @@ msgid ""
 "number of clients waiting for authentication"
 msgstr ""
 
-#, c-format
-msgid "The provided value contains invalid characters: %s"
-msgstr ""
-
 #, fuzzy
 msgid "The read only disk has no parent"
 msgstr "スナップショット '%s' の親がありません"
@@ -16951,11 +16811,9 @@ msgstr "エラー状態にあるソケットに書き込みを試行します"
 msgid "Try again?"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "まだ使用中の MultiCURL オブジェクトを開放しようとしています"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "まだ使用中の SharedCURL オブジェクトを解放しようとしています"
 
@@ -18188,6 +18046,10 @@ msgstr "監査レイヤーの初期化に失敗しました"
 msgid "Unable to initialize certificate"
 msgstr "証明書が初期化できません"
 
+#, c-format
+msgid "Unable to initialize certificate: %s\n"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to initialize condition variable"
 msgstr "条件変数を初期化出来ません"
@@ -18256,6 +18118,10 @@ msgstr "ソケットにおいてリッスンできません"
 
 msgid "Unable to load certificate"
 msgstr "証明書が読み込めません"
+
+#, c-format
+msgid "Unable to load certificate, make sure it is in PEM format: %s\n"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "Unable to lock '%s'"
@@ -19622,7 +19488,6 @@ msgstr "不明な転送形式 %d がネットワーク '%s' にあります"
 msgid "Unknown error"
 msgstr "不明なエラー"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "不明なエラー値"
 
@@ -19894,6 +19759,10 @@ msgstr "サポートされない OS の種類: %s"
 #, fuzzy
 msgid "Unsupported PCI Express root controller"
 msgstr "サポートされないコントローラーモデル: %s"
+
+#, c-format
+msgid "Unsupported PCR banks '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported SCSI controller address type '%d'"
@@ -20216,6 +20085,23 @@ msgstr ""
 msgid "Usage:"
 msgstr "使用法"
 
+#, c-format
+msgid ""
+"Usage:\n"
+"  %s FILE\n"
+"  %s { -v | -h }\n"
+"\n"
+"Extract Distinguished Name from a PEM certificate.\n"
+"The output is meant to be used in the tls_allowed_dn_list\n"
+"configuration option in the libvirtd.conf file.\n"
+"\n"
+"  FILE            certificate file to extract the DN from\n"
+"\n"
+"options:\n"
+"  -h | --help     display this help and exit\n"
+"  -v | --version  output version information and exit\n"
+msgstr ""
+
 #, sh-format
 msgid ""
 "Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
@@ -20385,12 +20271,6 @@ msgstr "VNC は connected='keep' のみがサポートされます"
 msgid "VPD fields access type parsing has failed"
 msgstr ""
 
-msgid "VPD-R does not contain the mandatory RV field"
-msgstr ""
-
-msgid "VPD-W does not contain the mandatory RW field"
-msgstr ""
-
 #, c-format
 msgid "Value '%s' is not representable as %s"
 msgstr "値 '%s' は %s として表現できません"
@@ -20418,12 +20298,10 @@ msgstr "メッセージ"
 msgid "Video adapters are not supported int containers."
 msgstr "spice グラフィックはこの QEMU でサポートされません"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt の virsh コマンドラインツール %s\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt の virsh コマンドラインツール %s\n"
@@ -20908,11 +20786,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "スパースにせず、新しい容量を割り当てる"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "割り当てられたネットワークリンクバッファーが小さすぎます"
 
@@ -22674,7 +22547,6 @@ msgstr "パス '%s' を開けません"
 msgid "cannot open path '%s' in '%s'"
 msgstr "パス '%s' を開けません"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "ボリューム '%s' を開けません"
@@ -23496,7 +23368,6 @@ msgstr "クローンの名前"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "子がディレクトリー '%s' の作成に失敗しました"
@@ -24124,6 +23995,9 @@ msgstr "XML ファイルを読み込めませんでした"
 msgid "could not receive data from domain '%s'"
 msgstr ""
 
+msgid "could not remove profile"
+msgstr ""
+
 #, c-format
 msgid "could not remove profile for '%s'"
 msgstr "'%s' のプロファイルを削除できませんでした"
@@ -24281,6 +24155,9 @@ msgstr "cpu アフィニティはサポートされていません"
 #, fuzzy
 msgid "cpu count too large"
 msgstr "ncpus が大きすぎます"
+
+msgid "cpu hotplug is not supported"
+msgstr ""
 
 msgid "cpu parameter is missing a model name"
 msgstr ""
@@ -25266,9 +25143,6 @@ msgstr "ドメインイベント %d が登録されていません"
 msgid "domain event callback %d not registered"
 msgstr "ドメインイベント %d が登録されていません"
 
-msgid "domain genid update requires restart"
-msgstr ""
-
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr ""
 
@@ -25950,7 +25824,7 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "event 'metadata-change' for domain '%s': %s %s\n"
+msgid "event 'metadata-change' for domain '%s': type %s, uri %s\n"
 msgstr ""
 
 #, c-format
@@ -26946,10 +26820,6 @@ msgstr "設定ファイルの解析に失敗しました"
 msgid "failed to parse configuration file %s"
 msgstr "設定ファイル %s の解析に失敗しました"
 
-#, c-format
-msgid "failed to parse cpuid[%zu]"
-msgstr "cpuid[%zu] の構文解析に失敗しました"
-
 #, fuzzy, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "デバイスリンク '%s' の解決に失敗しました"
@@ -26965,10 +26835,6 @@ msgstr "ユーザー '%s' の構文解析に失敗しました"
 #, fuzzy
 msgid "failed to parse json"
 msgstr "%s の構文解析に失敗しました"
-
-#, fuzzy, c-format
-msgid "failed to parse msr[%zu]"
-msgstr "cpuid[%zu] の構文解析に失敗しました"
 
 #, fuzzy, c-format
 msgid "failed to parse multicast address from '%s'"
@@ -27466,9 +27332,6 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "設定値 %s は不正な形式です"
@@ -28080,7 +27943,6 @@ msgstr "スナップショット作成後、ドメインの停止"
 msgid "handler failed to wait on condition"
 msgstr "条件の待機に失敗しました"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ハッシュ検索の結果が NULL ポインターでした"
 
@@ -28639,25 +28501,6 @@ msgstr "インターフェース名"
 msgid "interface name %s does not fit into buffer "
 msgstr "インターフェース名 %s がバッファーの中に収まりません"
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "インターフェイス名または MAC アドレス"
 
@@ -29386,9 +29229,9 @@ msgstr "無効なシークレット形式 '%s'"
 msgid "invalid security relabel value %s"
 msgstr "無効なセキュリティ relabel 値 %s です"
 
-#, fuzzy, c-format
-msgid "invalid security type '%s'"
-msgstr "無効なシークレット形式 '%s'"
+#, c-format
+msgid "invalid security relabel value '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "invalid server address"
@@ -30868,6 +30711,10 @@ msgstr ""
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr ""
 
+#, c-format
+msgid "minimum SSF levels lower than %d are not supported"
+msgstr ""
+
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr ""
 
@@ -31891,15 +31738,6 @@ msgstr "説明の代わりにタイトルを変更または取得します"
 msgid "monitor failure"
 msgstr "モニターパスがありません"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "モニターが NULL ではいけません"
 
@@ -32011,15 +31849,6 @@ msgstr ""
 msgid "multiple stream callbacks not supported"
 msgstr "複数ストリームのコールバックはサポートされません"
 
-#, fuzzy
-msgid "must respawn guest to start inactive snapshot"
-msgstr ""
-"停止状態のスナップショットを開始するには QEMU を respawn する必要があります"
-
-msgid "must respawn qemu to start inactive snapshot"
-msgstr ""
-"停止状態のスナップショットを開始するには QEMU を respawn する必要があります"
-
 msgid "mutex initialization failed"
 msgstr "ミューテックスの初期化に失敗しました"
 
@@ -32115,7 +31944,6 @@ msgstr "rawio ケイパビリティの要求"
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ネゴシエート済みの SSF %d の強度が十分ではありません"
@@ -34820,6 +34648,9 @@ msgstr "XML 形式のネットワークフィルター情報"
 msgid "report hostname"
 msgstr "ホスト名の取得に失敗しました"
 
+msgid "report interface information"
+msgstr ""
+
 msgid "report only stats that are accessible instantly"
 msgstr ""
 
@@ -36239,10 +36070,6 @@ msgstr "%s に記述されている CPU はホスト CPU と互換性があり�
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC アドレス '%s' が複数のインターフェースに一致しました"
 
-#, c-format
-msgid "the QEMU binary does not support %s"
-msgstr "この QEMU バイナリーが %s をサポートしません"
-
 #, fuzzy
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "この QEMU バイナリーが %s をサポートしません"
@@ -36321,10 +36148,6 @@ msgstr "maxcells > REMOTE_NODE_MAX_CELLS"
 
 msgid "the signal number or name"
 msgstr "シグナルの番号または名前"
-
-#, c-format
-msgid "the snapshot '%s' does not exist, and was not loaded"
-msgstr "スナップショット '%s' が存在しません、読み込まれませんでした"
 
 msgid "the state to restore"
 msgstr "復元する状態"
@@ -36435,9 +36258,6 @@ msgstr "このディスクは更新をサポートしません"
 
 msgid "this domain does not have a device to delete snapshots"
 msgstr "このドメインはスナップショットを削除するデバイスがありません"
-
-msgid "this domain does not have a device to load snapshots"
-msgstr "このドメインはスナップショットを読み込むためのデバイスがありません"
 
 msgid "this domain does not have a device to take snapshots"
 msgstr "このドメインはスナップショットを取得するデバイスがありません"
@@ -37170,7 +36990,6 @@ msgstr "ミューテックスを初期化できません"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s を fsync できません"
@@ -38003,12 +37822,6 @@ msgstr "実装されていないパラメーター形式 %d"
 msgid "unix"
 msgstr ""
 
-#, fuzzy
-msgid "unix socket for spice graphics are not supported with this QEMU"
-msgstr "spice グラフィックはこの QEMU でサポートされません"
-
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "不明"
 
@@ -38891,28 +38704,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "フラグ (0x%lx) はファンクション %s においてサポートされません"
@@ -39220,10 +39011,6 @@ msgstr ""
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU マップバッファ長は最大限を越えています: %d > %d"
-
-#, fuzzy
-msgid "vCPU unplug is not supported by this QEMU"
-msgstr "unpriv_sgio がこのカーネルによりサポートされません"
 
 #, c-format
 msgid "vCPUs count must be a multiple of the vCPU hotplug granularity (%u)"
@@ -40134,6 +39921,81 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot find start time in %s"
+#~ msgstr "%s に開始時間を見つけられません"
+
+#~ msgid "Cannot parse start time %s in %s"
+#~ msgstr "開始時間 %s (%s) を構文解析できません"
+
+#~ msgid ""
+#~ "Client's Distinguished Name is not on the list of allowed clients "
+#~ "(tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view "
+#~ "the Distinguished Name field in the client certificate, or run this "
+#~ "daemon with --verbose option."
+#~ msgstr ""
+#~ "クライアントの識別名が許可クライアント (tls_allowed_dn_list) の一覧にあり"
+#~ "ません。クライアント証明書にある識別名の項目を表示するには 'certtool -i --"
+#~ "infile clientcert.pem' を使用してください。または、このデーモンを --"
+#~ "verbose オプションとともに実行してください。"
+
+#, fuzzy
+#~ msgid "Failed to load snapshot: %s"
+#~ msgstr "スナップショットの取得に失敗しました: %s"
+
+#, fuzzy
+#~ msgid "Hotplug unsupported for char device type '%d'"
+#~ msgstr "サポートされないキャラクターデバイス形式 '%s' です"
+
+#~ msgid "Invalid cpuid[%zu] in %s feature"
+#~ msgstr "無効な cpuid[%zu] が %s 機能にあります"
+
+#, fuzzy
+#~ msgid "Invalid msr[%zu] in %s feature"
+#~ msgstr "無効な cpuid[%zu] が %s 機能にあります"
+
+#, fuzzy
+#~ msgid "Missing cpuid or msr element in feature %s"
+#~ msgstr "マイグレーションのデータに uuid 要素がありません"
+
+#~ msgid "failed to parse cpuid[%zu]"
+#~ msgstr "cpuid[%zu] の構文解析に失敗しました"
+
+#, fuzzy
+#~ msgid "failed to parse msr[%zu]"
+#~ msgstr "cpuid[%zu] の構文解析に失敗しました"
+
+#, fuzzy
+#~ msgid "invalid security type '%s'"
+#~ msgstr "無効なシークレット形式 '%s'"
+
+#, fuzzy
+#~ msgid "must respawn guest to start inactive snapshot"
+#~ msgstr ""
+#~ "停止状態のスナップショットを開始するには QEMU を respawn する必要がありま"
+#~ "す"
+
+#~ msgid "must respawn qemu to start inactive snapshot"
+#~ msgstr ""
+#~ "停止状態のスナップショットを開始するには QEMU を respawn する必要がありま"
+#~ "す"
+
+#~ msgid "the QEMU binary does not support %s"
+#~ msgstr "この QEMU バイナリーが %s をサポートしません"
+
+#~ msgid "the snapshot '%s' does not exist, and was not loaded"
+#~ msgstr "スナップショット '%s' が存在しません、読み込まれませんでした"
+
+#~ msgid "this domain does not have a device to load snapshots"
+#~ msgstr "このドメインはスナップショットを読み込むためのデバイスがありません"
+
+#, fuzzy
+#~ msgid "unix socket for spice graphics are not supported with this QEMU"
+#~ msgstr "spice グラフィックはこの QEMU でサポートされません"
+
+#, fuzzy
+#~ msgid "vCPU unplug is not supported by this QEMU"
+#~ msgstr "unpriv_sgio がこのカーネルによりサポートされません"
 
 #, fuzzy
 #~ msgid "I/O APIC tuning is not supported by this QEMU binary"

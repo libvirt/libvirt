@@ -13,7 +13,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-10-26 08:13+0000\n"
+"POT-Creation-Date: 2021-11-25 08:59+0000\n"
 "PO-Revision-Date: 2021-11-24 06:43+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -41,7 +41,6 @@ msgstr ""
 "\n"
 "  (그룹에서 명령에 대한 상세한 정보를 위해 도움 <group>을 지정합니다)\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -454,7 +453,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    대역폭 제한: %llu 바이트/초 (%-.3lf %s/s)"
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  이름\n"
 
@@ -698,16 +696,6 @@ msgstr "%s은 QEMU 바이너리에서 지원되지 않음"
 msgid "%s object has invalid dynamic type"
 msgstr "%s 개체에 잘못된 동적 유형이 있습니다"
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s 개체가 필요한 '%s' 속성에 누락되어 있습니다"
@@ -799,6 +787,10 @@ msgid ""
 msgstr ""
 "%s: 주소 '%s' 변환 중에 오류가 발생하였습니다 (경로 정의에서 접두사 %u를 네트"
 "워크-주소로)"
+
+#, c-format
+msgid "%s: File '%s' is too large\n"
+msgstr ""
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
@@ -1189,10 +1181,6 @@ msgstr "'%s' 스케쥴러 비트맵 '%s'는 비었습니다"
 msgid "'%s' starting from %llu has only %zd bytes available"
 msgstr "'%s' 시작은(%llu에서) 사용 가능한 %zd 바이트만을 가지고 있습니다"
 
-#, c-format
-msgid "'%s' value longer than '%zu' bytes"
-msgstr "'%s' 값은 '%zu' 바이트 보다 깁니다"
-
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
@@ -1471,7 +1459,6 @@ msgstr "(인터페이스 정의)"
 msgid "(libxl_migration_cookie)"
 msgstr "(libxl_migration_cookie)"
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr "(메타자료_xml)"
 
@@ -1529,7 +1516,6 @@ msgstr "(qemu_migration_cookie)"
 msgid "(volume_definition)"
 msgstr "(볼륨 정의)"
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1748,6 +1734,9 @@ msgstr "다른 콜백이 요청되었습니다"
 #, c-format
 msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "영역정의는 한개이상의 이름이 %s인 글자 노드를 가질수 없습니다"
+
+msgid "A field data length violates the resource length boundary."
+msgstr ""
 
 msgid "A interface driver is already registered"
 msgstr "이미 접속장비 드라이버가 등록되어있습니다"
@@ -2488,14 +2477,10 @@ msgstr ""
 "'domstats --dirtyrate' 를 호출함으로써 계산된 Dirty Rate 정보를 확인하실 수 "
 "있습니다."
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "예기치 않은 유형 '%s'에 대해 %s에 호출"
 
-#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "예기치 않은 유형 '%s'에 대한 %s에 호출합니다, '%s'가 예상됩니다"
@@ -2957,8 +2942,8 @@ msgid "Cannot find security driver '%s'"
 msgstr "보안 드라이버 '%s'를 찾을 수 없음"
 
 #, c-format
-msgid "Cannot find start time in %s"
-msgstr "%s에서 시작 시간을 찾을 수 없음"
+msgid "Cannot find start time for pid %d"
+msgstr ""
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "주어진 데이터에 들어맞는 CPU 모델을 찾을 수 없음"
@@ -3233,8 +3218,8 @@ msgid "Cannot parse socket service '%s': %s"
 msgstr "소켓 서비스 '%s':%s를 구문 분석 할 수 없습니다"
 
 #, c-format
-msgid "Cannot parse start time %s in %s"
-msgstr "%s에서 시작 시간 %s을 구문 분석 할 수 없습니다"
+msgid "Cannot parse start time %s for pid %d"
+msgstr ""
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3277,6 +3262,9 @@ msgstr "%s '%s'을 읽을 수 없음"
 
 msgid "Cannot read cputime for domain"
 msgstr "도메인에 대한 cputime을 읽을 수 없음"
+
+msgid "Cannot read host CPUID"
+msgstr ""
 
 msgid "Cannot recv data"
 msgstr "데이터를 수신할 수 없습니다"
@@ -3438,11 +3426,14 @@ msgid "Cannot unshare uninitialized CURL handle"
 msgstr "초기화하지 않은 CURL 핸들을 공유 해제할 수 없습니다"
 
 msgid "Cannot update the read-only keyword: RO section not initialized."
-msgstr "핵심용어 읽기-전용을 최신화 할 수 없습니다: RO 부분은 초기화 되지 않았습니다."
+msgstr ""
+"핵심용어 읽기-전용을 최신화 할 수 없습니다: RO 부분은 초기화 되지 않았습니다."
 
 msgid ""
 "Cannot update the read-write keyword: read-write section not initialized."
-msgstr "핵심용어 읽기-쓰기를 최신화 할 수 없습니다: 읽기-쓰기 부분은 초기화 되지 않았습니다."
+msgstr ""
+"핵심용어 읽기-쓰기를 최신화 할 수 없습니다: 읽기-쓰기 부분은 초기화 되지 않았"
+"습니다."
 
 msgid "Cannot update the resource: a NULL keyword pointer has been provided."
 msgstr "자원을 최신화 할 수 없습니다: NULL 핵심용어 포인터가 제공되었습니다."
@@ -3655,7 +3646,6 @@ msgstr "체크포인트 목록"
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "점검점 %s 도메인에 대한 관계가 일관되지 않습니다"
 
-#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr "체크썸 유효성이 실패하였습니다"
 
@@ -3708,13 +3698,10 @@ msgstr "클라이언트 소켓 식별을 사용 할 수 없습니다"
 
 msgid ""
 "Client's Distinguished Name is not on the list of allowed clients "
-"(tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view "
-"the Distinguished Name field in the client certificate, or run this daemon "
-"with --verbose option."
+"(tls_allowed_dn_list).  Use 'virt-pki-query-dn clientcert.pem' to view the "
+"Distinguished Name field in the client certificate, or run this daemon with "
+"--verbose option."
 msgstr ""
-"클라이언트의 고유 이름이 허용된 클라이언트 목록(tls_allowed_dn_list)에 없습니"
-"다. 'certtool -i --infile clientcert.pem'을 사용하여 클라이언트 인증서의 고"
-"유 이름 필드를 보거나 --verbose 옵션과 함께 이 데몬을 실행하십시오."
 
 msgid "Client's username is not on the list of allowed clients"
 msgstr "클라이언트의 사용자 이름이 허용된 클라이언트 목록에 없습니다"
@@ -4163,7 +4150,9 @@ msgstr "Msvm_디스크드라이브 객체를 찾을 수 없습니다"
 msgid ""
 "Could not find PCI controller with index '%u' required for device at address "
 "'%s'"
-msgstr "장치를 위해 필요한 색인 '%u'를 갖는(주소 '%s'에서 ) PCI 제어기를 찾을 수 없습니다"
+msgstr ""
+"장치를 위해 필요한 색인 '%u'를 갖는(주소 '%s'에서 ) PCI 제어기를 찾을 수 없습"
+"니다"
 
 #, c-format
 msgid "Could not find PhysicalNic with key '%s'"
@@ -4842,7 +4831,6 @@ msgstr "NIC 설정을 검색할 수 없습니다"
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr "기본 Msvm_DiskDrive 개체를 검색할 수 없습니다"
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "풀 정보를 검색할 수 없음"
 
@@ -4861,6 +4849,12 @@ msgstr "가상 스위치를 검색할 수 없습니다"
 #, c-format
 msgid "Could not revert to snapshot '%s': %s"
 msgstr "스냅샷 '%s'을 되돌릴 수 없습니다: %s"
+
+#, c-format
+msgid ""
+"Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
+"details."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -5351,7 +5345,9 @@ msgstr "장치 별명이 색인 '%d'인 '%s' 제어기에 대한 설정이 없�
 msgid ""
 "Device alias was not set for PCI controller with index '%u' required for "
 "device at address '%s'"
-msgstr "장치 별칭은 장치를 위해 필요한 색인 '%u'를(주소 '%s'에서) 갖는 PCI제어기를 위해 설정되지 않았습니다"
+msgstr ""
+"장치 별칭은 장치를 위해 필요한 색인 '%u'를(주소 '%s'에서) 갖는 PCI제어기를 위"
+"해 설정되지 않았습니다"
 
 msgid "Device attached successfully\n"
 msgstr "장치가 성공적으로 부착되었습니다\n"
@@ -5706,7 +5702,6 @@ msgstr ""
 "도메인에 %d개의 인터페이스가 있습니다. --mac을 사용하여 분리할 것을 지정하십"
 "시오"
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5899,6 +5894,10 @@ msgstr "색인 %u인 중복 USB 제어기"
 #, c-format
 msgid "Duplicate USB hub on bus %u port %s"
 msgstr "버스 %u 포트 %s에 USB 허브를 복제하십시오"
+
+#, c-format
+msgid "Duplicate block info for '%s'"
+msgstr ""
 
 #, c-format
 msgid "Duplicate cache type in resctrl for level %u"
@@ -6888,19 +6887,12 @@ msgstr "스레드 생성 실패"
 msgid "Failed to create thread for receiving migration data"
 msgstr "이전 자료를 수신하기 위하여 쓰레드 생성하는데 실패했습니다"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle daemon restart"
 msgstr "데몬 재시작을 처리할 스레드를 생성하지 못했습니다"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "도메인 종료를 처리할 스레드를 생성하지 못했습니다"
 
-#. Not much else can be done
 msgid "Failed to create thread to handle pool refresh"
 msgstr "풀 새로 고침을 처리할 스레드를 생성하지 못했습니다"
 
@@ -7274,6 +7266,10 @@ msgstr "클라이언트 소켓 ID를 가져오지 못했습니다"
 msgid "Failed to get disk information"
 msgstr "디스크 정보 보기 실패"
 
+#, c-format
+msgid "Failed to get distinguished name: %s\n"
+msgstr ""
+
 msgid "Failed to get domain autostart state"
 msgstr "도메인 자동 시작 상태를 가져오지 못했습니다"
 
@@ -7452,7 +7448,6 @@ msgstr "활성화 네트워크 보들기 실패"
 msgid "Failed to list active pools"
 msgstr "활성화 풀 목록 얻기 실패"
 
-#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "도메인 목록을 나열하는데 실패"
 
@@ -7468,27 +7463,21 @@ msgstr "비활성화 네트워크 보기 실패"
 msgid "Failed to list inactive pools"
 msgstr "비활성화 풀 목록 얻기 실패"
 
-#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "인터페이스를 나열하지 못했습니다"
 
-#. there was an error during the call
 msgid "Failed to list network filter bindings"
 msgstr "네트워크 필터 바인딩을 목록화 하는데 실패"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "네트워크 필터를 목록화 하는데 실패"
 
-#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "네트워크 목록 나열 실패"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "노드 장치 목록 얻기 실패"
 
-#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "노드 비밀 목록화에 실패함"
 
@@ -7496,7 +7485,6 @@ msgstr "노드 비밀 목록화에 실패함"
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri에 영구 게스트 목록화 하는데 실패"
 
-#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "풀 목록화에 실패"
 
@@ -7516,7 +7504,6 @@ msgstr "임시 게스트 목록 나열 실패"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight를 사용하여 도메인 '%d'에 대한 vcpus를 나열하지 못했습니다"
 
-#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "볼륨 목록화에 실패"
 
@@ -7549,10 +7536,6 @@ msgstr "PCI 스텁 모듈 %s를 로드하지 못했습니다: 관리상 금지�
 #, c-format
 msgid "Failed to load plugin %s: %s"
 msgstr "플로그인 %s을 불러오는데 실패했습니다: %s"
-
-#, c-format
-msgid "Failed to load snapshot: %s"
-msgstr "스냅샷: %s 적재하는데 실패"
 
 #, c-format
 msgid "Failed to locate parent device with ID '%s'"
@@ -8099,9 +8082,6 @@ msgstr "libxenlight와 함께 도메인 `%d`를 재시작 하는데 실패"
 msgid "Failed to resume domain '%s'"
 msgstr "도메인 '%s'를 재개하지 못했습니다"
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "실패 후 게스트 %s를 재개하는 데 실패"
@@ -8626,9 +8606,6 @@ msgstr "이름 '%s'가 너무 깁니다"
 msgid "Field name too long"
 msgstr "필드 이름이 너무 깁니다"
 
-msgid "Field value contains invalid characters"
-msgstr "필드 값에 유효지 않은 문자가 포함되어 있습니다"
-
 #, c-format
 msgid "File %s contains no keys"
 msgstr "파일 %s에 아무런 키가 없습니다"
@@ -8735,63 +8712,10 @@ msgstr ""
 "첫 번째 파일 기반 하드 디스크에는 소스가 없습니다, VMX 파일의 데이터 저장소 "
 "및 경로를 추론할 수 없습니다"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr "플래그 '%s'에는 플래그 '%s'가 필요합니다"
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "플래그 '%s' 및 '%s'는 상호 배타적입니다"
@@ -9197,10 +9121,6 @@ msgstr "호스트이름은 호스트 키 확인을 위해 필요합니다"
 #, c-format
 msgid "Hostname of '%s' is unset"
 msgstr "'%s'의 호스트이름은 설정되지 않았습니다"
-
-#, c-format
-msgid "Hotplug unsupported for char device type '%d'"
-msgstr "문자 장치 유형 '%d'에 미지원 하는 핫플러그"
 
 #, c-format
 msgid "Hotplug unsupported for char device type '%s'"
@@ -9740,15 +9660,6 @@ msgstr "버스 유형이 '%s'인 디스크 '%s'의 주소 유형 '%s'가 잘못�
 msgid "Invalid address."
 msgstr "잘못된 주소."
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "잘못된 인수"
 
@@ -9897,8 +9808,8 @@ msgid "Invalid cpuNum in %s"
 msgstr "%s의 잘못된 CPU 번호"
 
 #, c-format
-msgid "Invalid cpuid[%zu] in %s feature"
-msgstr "잘못된 cpuid[%zu] (%s 기능에서)"
+msgid "Invalid cpuid[%zu]"
+msgstr ""
 
 #, c-format
 msgid "Invalid cpulist '%s'"
@@ -10191,8 +10102,8 @@ msgid "Invalid monitor cache level '%d'"
 msgstr "잘못된 모니터 캐쉬 수준 '%d'"
 
 #, c-format
-msgid "Invalid msr[%zu] in %s feature"
-msgstr "잘못된 msr[%zu] (%s 기능에서)"
+msgid "Invalid msr[%zu]"
+msgstr ""
 
 #, c-format
 msgid "Invalid mtu size '%s' in network '%s'"
@@ -11379,10 +11290,6 @@ msgstr "JSON 문서에 클라이언트 자료가 누락되어 있습니다"
 msgid "Missing clients data in JSON document"
 msgstr "JSON 문서에서 클라이언트 자료가 누락되어 있습니다"
 
-#, c-format
-msgid "Missing cpuid or msr element in feature %s"
-msgstr "기능 %s에서 cpuid 또는 msr 요소가 누락됨"
-
 msgid "Missing defaultLockspace data from JSON file"
 msgstr "JSON 파일에서 defaultLockspace 자료가 누락"
 
@@ -11984,12 +11891,6 @@ msgstr "NVMe 디스크는 이 QEMU 바이너리에서 지원되지 않습니다"
 msgid "NVMe namespace can't be zero"
 msgstr "NVMe 네임스페이스는 0일 수 없습니다"
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "이름"
 
@@ -12984,20 +12885,6 @@ msgstr ""
 "옵션 '%s'는 인덱스 '%d', 모델 '%s' 및 modelName '%s'가 있는 PCI 컨트롤러에 대"
 "해 유효하지 않습니다"
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "--%s 옵션은 --%s 옵션에 필요합니다"
@@ -13017,20 +12904,6 @@ msgstr "옵션 인수가 비어 있습니다"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr "선택적인 플래그 또는 --rawstats는 데몬에 의해 지원되지 않습니다"
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "옵션 --%s 및 --%s는 상호 배타적입니다"
@@ -13273,7 +13146,6 @@ msgstr "구문 분석된 JSON 응답 '%s'는 개체가 아닙니다"
 msgid "Partition path '%s' must start with '/'"
 msgstr "파티션 경로 '%s'은 '/'로 시작해야 합니다"
 
-#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "명령줄 인수로 비밀 값을 전달하는 것은 안전하지 않습니다!"
 
@@ -13546,6 +13418,9 @@ msgstr "프로세스 %d가 종료를 거부했습니다"
 msgid "Processor mask of target NUMA node %zu doesn't match source"
 msgstr "대상 NUMA 노드 %zu의 프로세서 매스크는 소스와 일치하지 않음"
 
+msgid "Profile of 0 size detected, will attempt to remove it"
+msgstr ""
+
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
 msgstr ""
@@ -13759,6 +13634,9 @@ msgid ""
 "Read/write, exclusive access, disks were present, but no leases specified"
 msgstr "읽기/쓰기, 독점 액세스, 디스크가 있지만 임대가 지정되지 않았습니다"
 
+msgid "Reading CPUID is not supported on this platform"
+msgstr ""
+
 msgid "Reading MSRs is not supported on this platform"
 msgstr "이 플랫폼에서는 MSR 읽기가 지원되지 않습니다"
 
@@ -13918,7 +13796,8 @@ msgid ""
 "by an active guest.\n"
 "See blockresize for live resizing."
 msgstr ""
-"저장소 볼륨의 크기를 조정합니다. 이는 활성 게스트가 사용하지 않는 저장소 볼륨에 대해서만 안전합니다.\n"
+"저장소 볼륨의 크기를 조정합니다. 이는 활성 게스트가 사용하지 않는 저장소 볼륨"
+"에 대해서만 안전합니다.\n"
 "실시간 크기 조정은 블록크기를 참조하세요."
 
 msgid "Resolved device mapper name too long"
@@ -14123,7 +14002,6 @@ msgstr "이 QEMU 바이너리에서는 S390 PV 실행 보안이 지원되지 않
 msgid "S4 state is disabled for this domain"
 msgstr "이 도메인에 대해 S4 상태가 비활성화되었습니다"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr "SASL 클라이언트 ID '%s'는 ACL에서 허용되지 않습니다"
@@ -14636,9 +14514,6 @@ msgstr "설치 시간:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "공유된 메모리 대응하기는 이 QEMU에서 지원되지 않습니다"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 msgid "Shared memory:\n"
 msgstr "공유된 메모리:\n"
 
@@ -14714,7 +14589,6 @@ msgstr "이 스트림에서는 건너뛰기가 지원되지 않습니다"
 msgid "Snapshot"
 msgstr "스냅샷"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "도메인 %s XML 설정이 변경되지 않았습니다.\n"
@@ -15186,7 +15060,6 @@ msgstr "TPM 모델 '%s'는 x86 및 aarch64 게스트에만 사용할 수 있습�
 msgid "Table row cannot be empty"
 msgstr "테이블 행은 비워 둘 수 없습니다"
 
-#. title
 msgid "Target"
 msgstr "대상"
 
@@ -15718,7 +15591,9 @@ msgstr ""
 msgid ""
 "Target memory device block size '%llu' doesn't match source memory device "
 "block size '%llu'"
-msgstr "대상 메모리 장치 블록 크기 '%llu'는 원천 메모리 장치 블록 크기 '%llu'와 일치하지 않습니다"
+msgstr ""
+"대상 메모리 장치 블록 크기 '%llu'는 원천 메모리 장치 블록 크기 '%llu'와 일치"
+"하지 않습니다"
 
 #, c-format
 msgid "Target memory device model '%s' doesn't match source model '%s'"
@@ -15729,7 +15604,9 @@ msgstr ""
 msgid ""
 "Target memory device requested size '%llu' doesn't match source memory "
 "device requested size '%llu'"
-msgstr "크기 '%llu'로 요청된 대상 메모리 크기 '%llu'로 요청된 원천 메모리 장치와 일치하지 않습니다"
+msgstr ""
+"크기 '%llu'로 요청된 대상 메모리 크기 '%llu'로 요청된 원천 메모리 장치와 일치"
+"하지 않습니다"
 
 #, c-format
 msgid ""
@@ -16124,10 +16001,6 @@ msgid ""
 msgstr ""
 "전체 최대 클라이언트 수는 인증을 기다리는 최대 클라이언트 수보다 커야 합니다"
 
-#, c-format
-msgid "The provided value contains invalid characters: %s"
-msgstr "제공된 값은 잘못된 문자를 포함합니다: %s"
-
 msgid "The read only disk has no parent"
 msgstr "읽기 전용 디스크에는 상위 항목이 없습니다"
 
@@ -16485,11 +16358,9 @@ msgstr "오류 상태에서 소켓을 쓰려고 했습니다"
 msgid "Try again?"
 msgstr "다시 시도?"
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "아직 사용 중인 MultiCURL 개체를 해제하려 합니다"
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "아직 사용 중인 SharedCURL 개체를 해제하려 합니다"
 
@@ -17654,6 +17525,10 @@ msgstr "감사 계층을 초기화 할 수 없습니다"
 msgid "Unable to initialize certificate"
 msgstr "인증서를 초기화할 수 없음"
 
+#, c-format
+msgid "Unable to initialize certificate: %s\n"
+msgstr ""
+
 msgid "Unable to initialize condition variable"
 msgstr "상태 변수를 초기화 할 수 없습니다"
 
@@ -17717,6 +17592,10 @@ msgstr "UNIX 소켓 경로 '%s'를 수신 할 수 없습니다"
 
 msgid "Unable to load certificate"
 msgstr "인증서를 불러올 수 없음"
+
+#, c-format
+msgid "Unable to load certificate, make sure it is in PEM format: %s\n"
+msgstr ""
 
 #, c-format
 msgid "Unable to lock '%s'"
@@ -19035,7 +18914,6 @@ msgstr "네트워크에서 알지 못하는 활성화된 유형 %d"
 msgid "Unknown error"
 msgstr "알 수 없는 오류"
 
-#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "알 수 없는 오류 값"
 
@@ -19303,6 +19181,10 @@ msgstr "지원되지 않는 OS 유형: %s"
 
 msgid "Unsupported PCI Express root controller"
 msgstr "지원되지 않는 PCI Express 루트 컨트롤러"
+
+#, c-format
+msgid "Unsupported PCR banks '%s'"
+msgstr ""
 
 #, c-format
 msgid "Unsupported SCSI controller address type '%d'"
@@ -19620,6 +19502,23 @@ msgstr ""
 msgid "Usage:"
 msgstr "사용법:"
 
+#, c-format
+msgid ""
+"Usage:\n"
+"  %s FILE\n"
+"  %s { -v | -h }\n"
+"\n"
+"Extract Distinguished Name from a PEM certificate.\n"
+"The output is meant to be used in the tls_allowed_dn_list\n"
+"configuration option in the libvirtd.conf file.\n"
+"\n"
+"  FILE            certificate file to extract the DN from\n"
+"\n"
+"options:\n"
+"  -h | --help     display this help and exit\n"
+"  -v | --version  output version information and exit\n"
+msgstr ""
+
 #, sh-format
 msgid ""
 "Usage: $program_name {start|stop|status|restart|condrestart|try-restart|"
@@ -19785,12 +19684,6 @@ msgstr "VNC는 connected='keep'만을 지원합니다"
 msgid "VPD fields access type parsing has failed"
 msgstr "VPD 입력부분 접근 유형 구문분석에 실패했습니다"
 
-msgid "VPD-R does not contain the mandatory RV field"
-msgstr "VPD-R은 메모리 RV 입력부분을 포함하지 않습니다"
-
-msgid "VPD-W does not contain the mandatory RW field"
-msgstr "VPD-W는 필수 RW 입력부분에 포함되지 않습니다"
-
 #, c-format
 msgid "Value '%s' is not representable as %s"
 msgstr "값 '%s'는 %s로서 나타 낼 수 없습니다"
@@ -19816,12 +19709,10 @@ msgstr "장황한 메시지"
 msgid "Video adapters are not supported int containers."
 msgstr "비디오 어댑터는 내부 컨테이너를 지원하지 않습니다."
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s의 Virsh 명령줄 도구\n"
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s의 Virt-admin 명령줄 도구\n"
@@ -20282,11 +20173,6 @@ msgstr "모든 vcpus에는 순서가 설정되거나 설정되지 않아야 합�
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "새 용량을 희소하게 두지 않고 할당합니다"
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr "할당된 넷링크 버퍼가 너무 작습니다"
 
@@ -21982,7 +21868,6 @@ msgstr "'%s' 경로를 열 수 없음"
 msgid "cannot open path '%s' in '%s'"
 msgstr "'%s'에서 경로 '%s'을 열 수 없습니다"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "볼륨 '%s'를 열 수 없음"
@@ -22769,7 +22654,6 @@ msgstr "체크포인트 이름"
 msgid "child didn't write error (status=%d)"
 msgstr "자식이 오류를 쓰지 않았습니다(상태=%d)"
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
@@ -23379,6 +23263,9 @@ msgstr "xml 파일을 읽을 수 없습니다"
 msgid "could not receive data from domain '%s'"
 msgstr "도메인 '%s'에서 데이터를 받을 수 없습니다"
 
+msgid "could not remove profile"
+msgstr ""
+
 #, c-format
 msgid "could not remove profile for '%s'"
 msgstr "'%s'에 대한 프로파일을 삭제할 수 없음"
@@ -23528,6 +23415,9 @@ msgstr "cpu 친밀도(affinity)가 지원되지 않습니다"
 
 msgid "cpu count too large"
 msgstr "CPU 수가 너무 큽니다"
+
+msgid "cpu hotplug is not supported"
+msgstr ""
 
 msgid "cpu parameter is missing a model name"
 msgstr "cpu 매개변수에 모델 이름이 누락되었습니다"
@@ -23813,7 +23703,9 @@ msgstr "볼륨과 연결된 스냅샷 삭제(저장소 드라이버에서 지원
 msgid ""
 "delete snapshots associated with volume(s), requires --remove-all-storage "
 "(must be supported by storage driver)"
-msgstr "볼륨과 연결된 스냅샷 삭제, --remove-all-storage 필요(저장소 드라이버에서 지원해야 함)"
+msgstr ""
+"볼륨과 연결된 스냅샷 삭제, --remove-all-storage 필요(저장소 드라이버에서 지원"
+"해야 함)"
 
 msgid "delete the specified network port"
 msgstr "지정된 네트워크 포트를 삭제하세요"
@@ -24462,9 +24354,6 @@ msgstr "도메인 사건 %d가 등록되지 않았습니다"
 #, c-format
 msgid "domain event callback %d not registered"
 msgstr "도메인 이벤트 콜백 %d이(가) 등록되지 않았습니다"
-
-msgid "domain genid update requires restart"
-msgstr "도메인 genid 업데이트를 다시 시작해야 합니다"
 
 msgid "domain has 'invtsc' CPU feature but TSC frequency is not specified"
 msgstr "도메인에 'invtsc' CPU 기능이 있지만 TSC 주파수가 지정되지 않았습니다"
@@ -25126,8 +25015,8 @@ msgstr ""
 "작업: %s\n"
 
 #, c-format
-msgid "event 'metadata-change' for domain '%s': %s %s\n"
-msgstr "도메인 '%s'에 대한 '메타데이터 변경' 이벤트: %s %s\n"
+msgid "event 'metadata-change' for domain '%s': type %s, uri %s\n"
+msgstr ""
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%s': iteration: '%d'\n"
@@ -26078,10 +25967,6 @@ msgid "failed to parse configuration file %s"
 msgstr "%s 설정 파일 구문 분석 실패"
 
 #, c-format
-msgid "failed to parse cpuid[%zu]"
-msgstr "cpuid[%zu]를 구문 분석하지 못했습니다"
-
-#, c-format
 msgid "failed to parse device weight: '%s'"
 msgstr "장치 무게를 구문 분석하지 못했습니다: '%s'"
 
@@ -26095,10 +25980,6 @@ msgstr "정수 구문 분석 실패: '%s'"
 
 msgid "failed to parse json"
 msgstr "json 구문 분석에 실패"
-
-#, c-format
-msgid "failed to parse msr[%zu]"
-msgstr "msr[%zu]을(를) 구문 분석하지 못했습니다"
 
 #, c-format
 msgid "failed to parse multicast address from '%s'"
@@ -26575,9 +26456,6 @@ msgstr "데몬에서 현재 정의된 로깅 필터 세트를 가져오거나 �
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr "데몬에서 현재 정의된 로깅 출력 세트를 가져오거나 설정합니다"
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, c-format
 msgid "field '%s' is malformed"
 msgstr "필드 '%s'의 형식이 잘못되었습니다"
@@ -27167,7 +27045,6 @@ msgstr "스냅샷 생성 후 도메인 중지"
 msgid "handler failed to wait on condition"
 msgstr "핸들러가 조건을 기다리지 못했습니다"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "해시 조회 결과 NULL 포인터를 반환했습니다"
 
@@ -27717,25 +27594,6 @@ msgstr "인터페이스 이름"
 msgid "interface name %s does not fit into buffer "
 msgstr "인터페이스 이름 %s이 버퍼에 맞지 않음 "
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "인터페이스 이름 또는 MAC 주소"
 
@@ -28448,8 +28306,8 @@ msgid "invalid security relabel value %s"
 msgstr "잘못된 보안 레이블 값 %s"
 
 #, c-format
-msgid "invalid security type '%s'"
-msgstr "잘못된 보안 유형 '%s'"
+msgid "invalid security relabel value '%s'"
+msgstr ""
 
 msgid "invalid server address"
 msgstr "잘못된 서버 주소"
@@ -29842,6 +29700,10 @@ msgstr "이전_호스트는 로컬 장비의 주소가 아니어야 합니다: %
 msgid "minWorkers cannot be larger than maxWorkers"
 msgstr "minWorkers는 maxWorkers보다 클 수 없습니다"
 
+#, c-format
+msgid "minimum SSF levels lower than %d are not supported"
+msgstr ""
+
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr "NVDIMM의 최소 대상 크기는 256MB에 레이블 크기를 더한 크기여야 합니다"
 
@@ -30785,15 +30647,6 @@ msgstr "설명 대신 제목 수정/가져오기"
 msgid "monitor failure"
 msgstr "모니터 실패"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "모니터는 NULL이 아니어야 합니다"
 
@@ -30896,16 +30749,12 @@ msgid "multiple matching interfaces found: %s"
 msgstr "일치하는 인터페이스를 여러개 찾음: %s"
 
 msgid "multiple memory devices found, use --alias or --node to select one"
-msgstr "다수의 메모리 장치를 찾았으며, --alias 또는 --node를 사용하여 하나를 선택합니다"
+msgstr ""
+"다수의 메모리 장치를 찾았으며, --alias 또는 --node를 사용하여 하나를 선택합니"
+"다"
 
 msgid "multiple stream callbacks not supported"
 msgstr "다중 스트림 콜백이 지원되지 않음"
-
-msgid "must respawn guest to start inactive snapshot"
-msgstr "비활성 스냅샷을 시작하려면 게스트를 다시 생성해야 합니다"
-
-msgid "must respawn qemu to start inactive snapshot"
-msgstr "비활성 스냅샷을 시작하려면 qemu를 다시 생성해야 합니다"
 
 msgid "mutex initialization failed"
 msgstr "뮤텍스 초기화에 실패함"
@@ -31001,7 +30850,6 @@ msgstr "rawio 기능이 필요합니다"
 msgid "negative size requires --shrink"
 msgstr "음수 크기에는 --shrink가 필요합니다"
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "협상된 SSF %d가 충분히 강력하지 않습니다"
@@ -33461,7 +33309,9 @@ msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되�
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
-msgstr "연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist 참조)"
+msgstr ""
+"연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist 참"
+"조)"
 
 msgid "remove domain managed state file"
 msgstr "도메인 관리 상태 파일 제거"
@@ -33552,6 +33402,9 @@ msgstr "파일 시스템 정보 보고"
 
 msgid "report hostname"
 msgstr "호스트 이름 보고"
+
+msgid "report interface information"
+msgstr ""
 
 msgid "report only stats that are accessible instantly"
 msgstr "즉시 액세스할 수 있는 통계만 보고"
@@ -34111,7 +33964,8 @@ msgstr "패스스루 입력 장치에 대해서만 지원되는 소스 evdev 경
 msgid ""
 "setting the '%s' property on a '%s' device is not supported by this QEMU "
 "binary"
-msgstr "'%s' 속성 설정은 ('%s' 장치에서) 이 QEMU 바이너리에서 지원되지 않습니다"
+msgstr ""
+"'%s' 속성 설정은 ('%s' 장치에서) 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "setting the panic device address is not supported for model 'hyperv'"
 msgstr "패닉 장치 주소 설정은 'hyperv' 모델에 대해 지원되지 않습니다"
@@ -34538,7 +34392,8 @@ msgstr "저장소 파일 백엔드가 초기화되지 않았습니다"
 #, c-format
 msgid ""
 "storage file reading is not supported for storage type %s (protocol: %s)"
-msgstr "저장소 유형 %s(통신규약: %s)에 대해 저장소 파일 읽기가 지원되지 않습니다"
+msgstr ""
+"저장소 유형 %s(통신규약: %s)에 대해 저장소 파일 읽기가 지원되지 않습니다"
 
 #, c-format
 msgid "storage format '%s' does not support backing store"
@@ -34908,10 +34763,6 @@ msgstr "CPU는 호스트 CPU: %s와 호환되지 않습니다"
 msgid "the MAC address '%s' matches multiple interfaces"
 msgstr "MAC 주소 '%s'가 여러 연결장치와 일치합니다"
 
-#, c-format
-msgid "the QEMU binary does not support %s"
-msgstr "QEMU 바이너리는 %s을 지원하지 않음"
-
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "QEMU 바이너리는 ISA 패닉 장치를 지원하지 않습니다"
 
@@ -34984,10 +34835,6 @@ msgstr "결과가 REMOTE_NODE_MAX_CELLS에 맞지 않습니다"
 
 msgid "the signal number or name"
 msgstr "신호 번호 또는 이름"
-
-#, c-format
-msgid "the snapshot '%s' does not exist, and was not loaded"
-msgstr "스냅샷 '%s'가 존재하지 않으며 로드되지 않았습니다"
 
 msgid "the state to restore"
 msgstr "복구 상태"
@@ -35090,9 +34937,6 @@ msgstr "이 디스크는 업데이트를 지원하지 않음"
 
 msgid "this domain does not have a device to delete snapshots"
 msgstr "이 도메인에는 스냅샷을 삭제할 수 있는 장치가 없음"
-
-msgid "this domain does not have a device to load snapshots"
-msgstr "이 도메인에는 스냅샷을 불러올 수 있는 장치가 없음"
 
 msgid "this domain does not have a device to take snapshots"
 msgstr "이 도메인은 스냅샷을 찍을 수 있는 장치를 가지고 있지 않습니다"
@@ -35851,7 +35695,6 @@ msgstr "qemu-img를 찾을 수 없습니다"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr "요청된 유효한 VMware 백엔드 '%s'를 찾을 수 없습니다"
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "fsync %s로 할 수 없음"
@@ -36661,11 +36504,6 @@ msgstr "구현되지 않은 매개변수 유형 %d"
 msgid "unix"
 msgstr "유닉스"
 
-msgid "unix socket for spice graphics are not supported with this QEMU"
-msgstr "이 QEMU에서는 스파이스 그래픽용 유닉스 소켓이 지원되지 않습니다"
-
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "알 수 없음"
 
@@ -37540,28 +37378,6 @@ msgstr "지원되지 않는 파일 시스템 드라이버 '%s'"
 msgid "unsupported filesystem type '%s'"
 msgstr "지원되지 않는 파일 시스템 유형 '%s'"
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "지원되지 않는 플래그 (0x%lx) (기능 %s에서)"
@@ -37741,7 +37557,8 @@ msgstr "사용법:"
 
 #, c-format
 msgid "usb controller type '%s' doesn't support 'ports' with this QEMU binary"
-msgstr "usb 제어기 유형 '%s'는 이 QEMU 바이너리와 함께 'ports'를 지원하지 않습니다"
+msgstr ""
+"usb 제어기 유형 '%s'는 이 QEMU 바이너리와 함께 'ports'를 지원하지 않습니다"
 
 msgid "usb device not found"
 msgstr "usb 장치를 찾을 수 없음"
@@ -37863,9 +37680,6 @@ msgstr ""
 #, c-format
 msgid "vCPU map buffer length exceeds maximum: %d > %d"
 msgstr "vCPU 맵 버퍼 길이가 최대 길이를 초과: %d > %d"
-
-msgid "vCPU unplug is not supported by this QEMU"
-msgstr "이 QEMU는 vCPU 분리를 지원하지 않습니다"
 
 #, c-format
 msgid "vCPUs count must be a multiple of the vCPU hotplug granularity (%u)"
@@ -38746,6 +38560,88 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'%s' value longer than '%zu' bytes"
+#~ msgstr "'%s' 값은 '%zu' 바이트 보다 깁니다"
+
+#~ msgid "Cannot find start time in %s"
+#~ msgstr "%s에서 시작 시간을 찾을 수 없음"
+
+#~ msgid "Cannot parse start time %s in %s"
+#~ msgstr "%s에서 시작 시간 %s을 구문 분석 할 수 없습니다"
+
+#~ msgid ""
+#~ "Client's Distinguished Name is not on the list of allowed clients "
+#~ "(tls_allowed_dn_list).  Use 'certtool -i --infile clientcert.pem' to view "
+#~ "the Distinguished Name field in the client certificate, or run this "
+#~ "daemon with --verbose option."
+#~ msgstr ""
+#~ "클라이언트의 고유 이름이 허용된 클라이언트 목록(tls_allowed_dn_list)에 없"
+#~ "습니다. 'certtool -i --infile clientcert.pem'을 사용하여 클라이언트 인증서"
+#~ "의 고유 이름 필드를 보거나 --verbose 옵션과 함께 이 데몬을 실행하십시오."
+
+#~ msgid "Failed to load snapshot: %s"
+#~ msgstr "스냅샷: %s 적재하는데 실패"
+
+#~ msgid "Field value contains invalid characters"
+#~ msgstr "필드 값에 유효지 않은 문자가 포함되어 있습니다"
+
+#~ msgid "Hotplug unsupported for char device type '%d'"
+#~ msgstr "문자 장치 유형 '%d'에 미지원 하는 핫플러그"
+
+#~ msgid "Invalid cpuid[%zu] in %s feature"
+#~ msgstr "잘못된 cpuid[%zu] (%s 기능에서)"
+
+#~ msgid "Invalid msr[%zu] in %s feature"
+#~ msgstr "잘못된 msr[%zu] (%s 기능에서)"
+
+#~ msgid "Missing cpuid or msr element in feature %s"
+#~ msgstr "기능 %s에서 cpuid 또는 msr 요소가 누락됨"
+
+#~ msgid "The provided value contains invalid characters: %s"
+#~ msgstr "제공된 값은 잘못된 문자를 포함합니다: %s"
+
+#~ msgid "VPD-R does not contain the mandatory RV field"
+#~ msgstr "VPD-R은 메모리 RV 입력부분을 포함하지 않습니다"
+
+#~ msgid "VPD-W does not contain the mandatory RW field"
+#~ msgstr "VPD-W는 필수 RW 입력부분에 포함되지 않습니다"
+
+#~ msgid "domain genid update requires restart"
+#~ msgstr "도메인 genid 업데이트를 다시 시작해야 합니다"
+
+#~ msgid "event 'metadata-change' for domain '%s': %s %s\n"
+#~ msgstr "도메인 '%s'에 대한 '메타데이터 변경' 이벤트: %s %s\n"
+
+#~ msgid "failed to parse cpuid[%zu]"
+#~ msgstr "cpuid[%zu]를 구문 분석하지 못했습니다"
+
+#~ msgid "failed to parse msr[%zu]"
+#~ msgstr "msr[%zu]을(를) 구문 분석하지 못했습니다"
+
+#~ msgid "invalid security type '%s'"
+#~ msgstr "잘못된 보안 유형 '%s'"
+
+#~ msgid "must respawn guest to start inactive snapshot"
+#~ msgstr "비활성 스냅샷을 시작하려면 게스트를 다시 생성해야 합니다"
+
+#~ msgid "must respawn qemu to start inactive snapshot"
+#~ msgstr "비활성 스냅샷을 시작하려면 qemu를 다시 생성해야 합니다"
+
+#~ msgid "the QEMU binary does not support %s"
+#~ msgstr "QEMU 바이너리는 %s을 지원하지 않음"
+
+#~ msgid "the snapshot '%s' does not exist, and was not loaded"
+#~ msgstr "스냅샷 '%s'가 존재하지 않으며 로드되지 않았습니다"
+
+#~ msgid "this domain does not have a device to load snapshots"
+#~ msgstr "이 도메인에는 스냅샷을 불러올 수 있는 장치가 없음"
+
+#~ msgid "unix socket for spice graphics are not supported with this QEMU"
+#~ msgstr "이 QEMU에서는 스파이스 그래픽용 유닉스 소켓이 지원되지 않습니다"
+
+#~ msgid "vCPU unplug is not supported by this QEMU"
+#~ msgstr "이 QEMU는 vCPU 분리를 지원하지 않습니다"
 
 #~ msgid ""
 #~ "\n"
