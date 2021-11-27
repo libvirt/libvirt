@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-11-25 08:59+0000\n"
-"PO-Revision-Date: 2021-11-24 06:43+0000\n"
+"PO-Revision-Date: 2021-11-27 15:16+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9\n"
+"X-Generator: Weblate 4.9.1\n"
 
 msgid ""
 "\n"
@@ -790,7 +790,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: File '%s' is too large\n"
-msgstr ""
+msgstr "%s: 파일 '%s'가 너무 큽니다\n"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
@@ -1736,7 +1736,7 @@ msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "영역정의는 한개이상의 이름이 %s인 글자 노드를 가질수 없습니다"
 
 msgid "A field data length violates the resource length boundary."
-msgstr ""
+msgstr "필드 자료 길이가 자원 범위 경계를 위반합니다."
 
 msgid "A interface driver is already registered"
 msgstr "이미 접속장비 드라이버가 등록되어있습니다"
@@ -2943,7 +2943,7 @@ msgstr "보안 드라이버 '%s'를 찾을 수 없음"
 
 #, c-format
 msgid "Cannot find start time for pid %d"
-msgstr ""
+msgstr "pid %d를 위한 시작 시간을 찾을 수 없습니다"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "주어진 데이터에 들어맞는 CPU 모델을 찾을 수 없음"
@@ -3219,7 +3219,7 @@ msgstr "소켓 서비스 '%s':%s를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse start time %s for pid %d"
-msgstr ""
+msgstr "pid %s를 위한 시작 시간 %s를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3264,7 +3264,7 @@ msgid "Cannot read cputime for domain"
 msgstr "도메인에 대한 cputime을 읽을 수 없음"
 
 msgid "Cannot read host CPUID"
-msgstr ""
+msgstr "호스트 CPUID를 읽을 수 없습니다"
 
 msgid "Cannot recv data"
 msgstr "데이터를 수신할 수 없습니다"
@@ -3702,6 +3702,9 @@ msgid ""
 "Distinguished Name field in the client certificate, or run this daemon with "
 "--verbose option."
 msgstr ""
+"클라이언트의 고유 이름이 허용된 클라이언트 목록(tls_allowed_dn_list)에 없습니다.  'virt-pki-query-dn "
+"clientcert.pem'을 사용하여 클라이언트 인증서에서 고유 이름 부분을 보거나, 또는 --verbose 옵션과 함께 해당 데몬을 "
+"실행하세요.."
 
 msgid "Client's username is not on the list of allowed clients"
 msgstr "클라이언트의 사용자 이름이 허용된 클라이언트 목록에 없습니다"
@@ -4854,7 +4857,7 @@ msgstr "스냅샷 '%s'을 되돌릴 수 없습니다: %s"
 msgid ""
 "Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
 "details."
-msgstr ""
+msgstr "'%s --reconfigure'를 동작 할 수 없습니다. 종료상태: %d; 자세히 알기 위해 오류 기록 '%s'를 점검하세요."
 
 #, c-format
 msgid ""
@@ -5897,7 +5900,7 @@ msgstr "버스 %u 포트 %s에 USB 허브를 복제하십시오"
 
 #, c-format
 msgid "Duplicate block info for '%s'"
-msgstr ""
+msgstr "'%s'를 위한 블록 정보를 복제합니다"
 
 #, c-format
 msgid "Duplicate cache type in resctrl for level %u"
@@ -7268,7 +7271,7 @@ msgstr "디스크 정보 보기 실패"
 
 #, c-format
 msgid "Failed to get distinguished name: %s\n"
-msgstr ""
+msgstr "고유 이름을 가져오는데 실패함: %s\n"
 
 msgid "Failed to get domain autostart state"
 msgstr "도메인 자동 시작 상태를 가져오지 못했습니다"
@@ -9809,7 +9812,7 @@ msgstr "%s의 잘못된 CPU 번호"
 
 #, c-format
 msgid "Invalid cpuid[%zu]"
-msgstr ""
+msgstr "잘못된 cpuid[%zu]"
 
 #, c-format
 msgid "Invalid cpulist '%s'"
@@ -10103,7 +10106,7 @@ msgstr "잘못된 모니터 캐쉬 수준 '%d'"
 
 #, c-format
 msgid "Invalid msr[%zu]"
-msgstr ""
+msgstr "잘못된 msr[%zu]"
 
 #, c-format
 msgid "Invalid mtu size '%s' in network '%s'"
@@ -13419,7 +13422,7 @@ msgid "Processor mask of target NUMA node %zu doesn't match source"
 msgstr "대상 NUMA 노드 %zu의 프로세서 매스크는 소스와 일치하지 않음"
 
 msgid "Profile of 0 size detected, will attempt to remove it"
-msgstr ""
+msgstr "0 크기의 프로파일이 감지되었으며, 이를 제거하려 합니다"
 
 msgid ""
 "Property 'guest-stats-polling-interval' not found on memory balloon driver."
@@ -13635,7 +13638,7 @@ msgid ""
 msgstr "읽기/쓰기, 독점 액세스, 디스크가 있지만 임대가 지정되지 않았습니다"
 
 msgid "Reading CPUID is not supported on this platform"
-msgstr ""
+msgstr "CPUID 읽기는 이와 같은 기술환경에서 지원되지 않습니다"
 
 msgid "Reading MSRs is not supported on this platform"
 msgstr "이 플랫폼에서는 MSR 읽기가 지원되지 않습니다"
@@ -17527,7 +17530,7 @@ msgstr "인증서를 초기화할 수 없음"
 
 #, c-format
 msgid "Unable to initialize certificate: %s\n"
-msgstr ""
+msgstr "인증서를 초기화 할 수 없음: %s\n"
 
 msgid "Unable to initialize condition variable"
 msgstr "상태 변수를 초기화 할 수 없습니다"
@@ -17595,7 +17598,7 @@ msgstr "인증서를 불러올 수 없음"
 
 #, c-format
 msgid "Unable to load certificate, make sure it is in PEM format: %s\n"
-msgstr ""
+msgstr "인증서를 적재 할 수 없으며, PEM 형식에서 이를 확인합니다: %s\n"
 
 #, c-format
 msgid "Unable to lock '%s'"
@@ -19184,7 +19187,7 @@ msgstr "지원되지 않는 PCI Express 루트 컨트롤러"
 
 #, c-format
 msgid "Unsupported PCR banks '%s'"
-msgstr ""
+msgstr "지원되지 않는 PCR 뱅크 '%s'"
 
 #, c-format
 msgid "Unsupported SCSI controller address type '%d'"
@@ -19518,6 +19521,19 @@ msgid ""
 "  -h | --help     display this help and exit\n"
 "  -v | --version  output version information and exit\n"
 msgstr ""
+"사용법:\n"
+"  %s FILE\n"
+"  %s { -v | -h }\n"
+"\n"
+"Extract Distinguished Name from a PEM certificate.\n"
+"The output is meant to be used in the tls_allowed_dn_list\n"
+"configuration option in the libvirtd.conf file.\n"
+"\n"
+"  FILE            certificate file to extract the DN from\n"
+"\n"
+"options:\n"
+"  -h | --help     display this help and exit\n"
+"  -v | --version  output version information and exit\n"
 
 #, sh-format
 msgid ""
@@ -23264,7 +23280,7 @@ msgid "could not receive data from domain '%s'"
 msgstr "도메인 '%s'에서 데이터를 받을 수 없습니다"
 
 msgid "could not remove profile"
-msgstr ""
+msgstr "프로파일을 제거 할 수 없습니다"
 
 #, c-format
 msgid "could not remove profile for '%s'"
@@ -23417,7 +23433,7 @@ msgid "cpu count too large"
 msgstr "CPU 수가 너무 큽니다"
 
 msgid "cpu hotplug is not supported"
-msgstr ""
+msgstr "cpu 핫플러그는 지원되지 않습니다"
 
 msgid "cpu parameter is missing a model name"
 msgstr "cpu 매개변수에 모델 이름이 누락되었습니다"
@@ -25016,7 +25032,7 @@ msgstr ""
 
 #, c-format
 msgid "event 'metadata-change' for domain '%s': type %s, uri %s\n"
-msgstr ""
+msgstr "도메인 '%s'를 위한 사건 '메타자료-변경': 유형 %s, uri %s\n"
 
 #, c-format
 msgid "event 'migration-iteration' for domain '%s': iteration: '%d'\n"
@@ -28307,7 +28323,7 @@ msgstr "잘못된 보안 레이블 값 %s"
 
 #, c-format
 msgid "invalid security relabel value '%s'"
-msgstr ""
+msgstr "잘못된 보안 이름 재지정 값 '%s'"
 
 msgid "invalid server address"
 msgstr "잘못된 서버 주소"
@@ -29702,7 +29718,7 @@ msgstr "minWorkers는 maxWorkers보다 클 수 없습니다"
 
 #, c-format
 msgid "minimum SSF levels lower than %d are not supported"
-msgstr ""
+msgstr "%d보다 낮은 최소 SSF 레벨을 지원되지 않습니다"
 
 msgid "minimum target size for the NVDIMM must be 256MB plus the label size"
 msgstr "NVDIMM의 최소 대상 크기는 256MB에 레이블 크기를 더한 크기여야 합니다"
@@ -33404,7 +33420,7 @@ msgid "report hostname"
 msgstr "호스트 이름 보고"
 
 msgid "report interface information"
-msgstr ""
+msgstr "연결장치 정보 보고"
 
 msgid "report only stats that are accessible instantly"
 msgstr "즉시 액세스할 수 있는 통계만 보고"
