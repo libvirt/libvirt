@@ -195,8 +195,6 @@ dissect_xdr_bytes(tvbuff_t *tvb, proto_tree *tree, XDR *xdrs, int hf,
         const char *s = tvb_bytes_to_str(wmem_packet_scope(), tvb, start, len);
 
         proto_tree_add_bytes_format_value(tree, hf, tvb, start, len, NULL, "%s", s);
-        /* Seems I can't call xdr_free() for this case.
-           It will raises SEGV by referencing out of bounds call stack */
         free(val);
         return TRUE;
     } else {
