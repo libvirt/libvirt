@@ -1858,7 +1858,7 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     IMachine *machine = NULL;
     IBIOSSettings *bios = NULL;
     vboxIID mchiid;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     nsresult rc;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainPtr ret = NULL;
@@ -1979,8 +1979,6 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
     /* if machine wasn't even created, cleanup is trivial */
     if (!machine) {
         vboxIIDUnalloc(&mchiid);
-        virDomainDefFree(def);
-
         return ret;
     }
 
@@ -2013,7 +2011,6 @@ vboxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
 
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&mchiid);
-    virDomainDefFree(def);
 
     return ret;
 }
@@ -3964,7 +3961,7 @@ vboxDumpParallel(virDomainDef *def, struct _vboxDriver *data, IMachine *machine,
 static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
 {
     struct _vboxDriver *data = dom->conn->privateData;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     IMachine *machine = NULL;
     vboxIID iid;
     PRBool accessible = PR_FALSE;
@@ -4115,7 +4112,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
  cleanup:
     VBOX_RELEASE(machine);
     vboxIIDUnalloc(&iid);
-    virDomainDefFree(def);
     return ret;
 }
 
@@ -4226,7 +4222,7 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
     IMachine *machine = NULL;
     vboxIID iid;
     PRUint32 state;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainDeviceDef *dev = NULL;
     nsresult rc;
     int ret = -1;
@@ -4305,7 +4301,6 @@ static int vboxDomainAttachDeviceImpl(virDomainPtr dom,
 
  cleanup:
     vboxIIDUnalloc(&iid);
-    virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
     return ret;
 }
@@ -4345,7 +4340,7 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
     IMachine *machine = NULL;
     vboxIID iid;
     PRUint32 state;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainDeviceDef *dev = NULL;
     nsresult rc;
     int ret = -1;
@@ -4422,7 +4417,6 @@ static int vboxDomainDetachDevice(virDomainPtr dom, const char *xml)
 
  cleanup:
     vboxIIDUnalloc(&iid);
-    virDomainDefFree(def);
     virDomainDeviceDefFree(dev);
     return ret;
 }

@@ -504,8 +504,8 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
 {
     struct _bhyveConn *privconn = conn->privateData;
     virDomainPtr dom = NULL;
-    virDomainDef *def = NULL;
-    virDomainDef *oldDef = NULL;
+    g_autoptr(virDomainDef) def = NULL;
+    g_autoptr(virDomainDef) oldDef = NULL;
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     virCaps *caps = NULL;
@@ -555,8 +555,6 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
 
  cleanup:
     virObjectUnref(caps);
-    virDomainDefFree(def);
-    virDomainDefFree(oldDef);
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(privconn->domainEventState, event);
 
@@ -679,7 +677,7 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     struct _bhyveConn *privconn = conn->privateData;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virCommand *cmd = NULL;
     virCommand *loadcmd = NULL;
     char *ret = NULL;
@@ -736,7 +734,6 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
  cleanup:
     virCommandFree(loadcmd);
     virCommandFree(cmd);
-    virDomainDefFree(def);
     return ret;
 }
 
@@ -890,7 +887,7 @@ bhyveDomainCreateXML(virConnectPtr conn,
 {
     struct _bhyveConn *privconn = conn->privateData;
     virDomainPtr dom = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     unsigned int start_flags = 0;
@@ -936,7 +933,6 @@ bhyveDomainCreateXML(virConnectPtr conn,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    virDomainDefFree(def);
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(privconn->domainEventState, event);
 
@@ -1570,7 +1566,7 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
                                 unsigned int flags)
 {
     char *xml = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     struct _bhyveConn *privconn = conn->privateData;
     unsigned bhyveCaps = bhyveDriverGetBhyveCaps(privconn);
 
@@ -1593,7 +1589,6 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     xml = virDomainDefFormat(def, privconn->xmlopt, 0);
 
  cleanup:
-    virDomainDefFree(def);
     return xml;
 }
 

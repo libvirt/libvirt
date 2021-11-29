@@ -2535,7 +2535,7 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     g_autofree char *vmx = NULL;
     virVMXContext ctx;
     esxVMX_Data data;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     char *xml = NULL;
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
@@ -2607,7 +2607,6 @@ esxDomainGetXMLDesc(virDomainPtr domain, unsigned int flags)
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&virtualMachine);
     g_free(data.datastorePathWithoutFileName);
-    virDomainDefFree(def);
 
     return xml;
 }
@@ -2622,7 +2621,7 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
     esxPrivate *priv = conn->privateData;
     virVMXContext ctx;
     esxVMX_Data data;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     char *xml = NULL;
 
     virCheckFlags(0, NULL);
@@ -2651,8 +2650,6 @@ esxConnectDomainXMLFromNative(virConnectPtr conn, const char *nativeFormat,
         xml = virDomainDefFormat(def, priv->xmlopt,
                                  VIR_DOMAIN_DEF_FORMAT_INACTIVE);
 
-    virDomainDefFree(def);
-
     return xml;
 }
 
@@ -2667,7 +2664,7 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     int virtualHW_version;
     virVMXContext ctx;
     esxVMX_Data data;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     char *vmx = NULL;
 
     virCheckFlags(0, NULL);
@@ -2703,8 +2700,6 @@ esxConnectDomainXMLToNative(virConnectPtr conn, const char *nativeFormat,
     ctx.moref = NULL;
 
     vmx = virVMXFormatConfig(&ctx, priv->xmlopt, def, virtualHW_version);
-
-    virDomainDefFree(def);
 
     return vmx;
 }
@@ -2866,7 +2861,7 @@ static virDomainPtr
 esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     esxPrivate *priv = conn->privateData;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autofree char *vmx = NULL;
     size_t i;
     virDomainDiskDef *disk = NULL;
@@ -3065,7 +3060,6 @@ esxDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     /* FIXME: Add proper rollback in case of an error */
 
  cleanup:
-    virDomainDefFree(def);
     esxVI_ObjectContent_Free(&virtualMachine);
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&hostSystem);

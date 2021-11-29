@@ -1777,7 +1777,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
                  PRL_HANDLE sdkdom,
                  virDomainObj *dom)
 {
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     struct vzDomObj *pdom = NULL;
     VIRTUAL_MACHINE_STATE domainState;
 
@@ -1883,7 +1883,6 @@ prlsdkLoadDomain(struct _vzDriver *driver,
         virObjectUnlock(driver);
 
         if (olddom) {
-            virDomainDefFree(def);
             return olddom;
         } else if (!dom) {
             goto error;
@@ -1898,7 +1897,7 @@ prlsdkLoadDomain(struct _vzDriver *driver,
          * we can't use virDomainObjAssignDef, because it checks
          * for state and domain name */
         virDomainDefFree(dom->def);
-        dom->def = def;
+        dom->def = g_steal_pointer(&def);
     }
 
     pdom = dom->privateData;
@@ -1914,7 +1913,6 @@ prlsdkLoadDomain(struct _vzDriver *driver,
     return dom;
 
  error:
-    virDomainDefFree(def);
     return NULL;
 }
 

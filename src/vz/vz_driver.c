@@ -788,7 +788,7 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     struct _vzConn *privconn = conn->privateData;
     virDomainPtr retdom = NULL;
-    virDomainDef *def;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
     struct _vzDriver *driver = privconn->driver;
@@ -872,7 +872,6 @@ vzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     if (job)
         vzDomainObjEndJob(dom);
     virDomainObjEndAPI(&dom);
-    virDomainDefFree(def);
     return retdom;
 }
 
@@ -2964,7 +2963,7 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     const char *miguri = NULL;
     const char *dname = NULL;
     const char *dom_xml = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     int ret = -1;
 
     virCheckFlags(VZ_MIGRATION_FLAGS, -1);
@@ -3009,7 +3008,6 @@ vzDomainMigratePrepare3Params(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virDomainDefFree(def);
     return ret;
 }
 

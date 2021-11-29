@@ -1382,7 +1382,7 @@ virVMXParseConfig(virVMXContext *ctx,
     g_autoptr(virConf) conf = NULL;
     char *encoding = NULL;
     char *utf8;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     long long config_version = 0;
     long long virtualHW_version = 0;
     long long memsize = 0;
@@ -1982,11 +1982,6 @@ virVMXParseConfig(virVMXContext *ctx,
     success = true;
 
  cleanup:
-    if (! success) {
-        virDomainDefFree(def);
-        def = NULL;
-    }
-
     VIR_FREE(encoding);
     VIR_FREE(sched_cpu_affinity);
     VIR_FREE(sched_cpu_shares);
@@ -1994,7 +1989,10 @@ virVMXParseConfig(virVMXContext *ctx,
     virCPUDefFree(cpu);
     VIR_FREE(firmware);
 
-    return def;
+    if (!success)
+        return NULL;
+
+    return g_steal_pointer(&def);
 }
 
 

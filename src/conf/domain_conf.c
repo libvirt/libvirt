@@ -3840,7 +3840,7 @@ virDomainObjNew(virDomainXMLOption *xmlopt)
 virDomainDef *
 virDomainDefNew(virDomainXMLOption *xmlopt)
 {
-    virDomainDef *ret;
+    g_autoptr(virDomainDef) ret = NULL;
 
     ret = g_new0(virDomainDef, 1);
 
@@ -3856,10 +3856,8 @@ virDomainDefNew(virDomainXMLOption *xmlopt)
     else
         ret->scsiBusMaxUnit = SCSI_NARROW_BUS_MAX_CONT_UNIT;
 
-    return ret;
-
+    return g_steal_pointer(&ret);
  error:
-    virDomainDefFree(ret);
     return NULL;
 }
 

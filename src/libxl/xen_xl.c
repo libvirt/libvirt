@@ -1115,7 +1115,7 @@ xenParseXL(virConf *conf,
            virCaps *caps,
            virDomainXMLOption *xmlopt)
 {
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
 
     if (!(def = virDomainDefNew(xmlopt)))
         return NULL;
@@ -1165,10 +1165,9 @@ xenParseXL(virConf *conf,
                               xmlopt, NULL) < 0)
         goto cleanup;
 
-    return def;
+    return g_steal_pointer(&def);
 
  cleanup:
-    virDomainDefFree(def);
     return NULL;
 }
 

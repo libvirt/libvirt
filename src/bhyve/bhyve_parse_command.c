@@ -934,7 +934,7 @@ bhyveParseCommandLineString(const char* nativeConfig,
                             unsigned caps,
                             virDomainXMLOption *xmlopt)
 {
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     int bhyve_argc = 0;
     g_auto(GStrv) bhyve_argv = NULL;
     int loader_argc = 0;
@@ -948,8 +948,6 @@ bhyveParseCommandLineString(const char* nativeConfig,
     if (virUUIDGenerate(def->uuid) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to generate uuid"));
-        virDomainDefFree(def);
-        def = NULL;
         goto cleanup;
     }
     def->id = -1;
@@ -974,9 +972,7 @@ bhyveParseCommandLineString(const char* nativeConfig,
     }
 
  cleanup:
-    return def;
+    return g_steal_pointer(&def);
  error:
-    virDomainDefFree(def);
-    def = NULL;
     goto cleanup;
 }

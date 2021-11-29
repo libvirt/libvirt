@@ -64,7 +64,7 @@ testBuildDomainDef(bool dynamic,
                    const char *label,
                    const char *baselabel)
 {
-    virDomainDef *def;
+    g_autoptr(virDomainDef) def = NULL;
     virSecurityLabelDef *secdef = NULL;
 
     if (!(def = virDomainDefNew(NULL)))
@@ -86,10 +86,9 @@ testBuildDomainDef(bool dynamic,
 
     def->seclabels[0] = secdef;
     def->nseclabels++;
-    return def;
+    return g_steal_pointer(&def);
 
  error:
-    virDomainDefFree(def);
     virSecurityLabelDefFree(secdef);
     return NULL;
 }
@@ -211,7 +210,7 @@ testSELinuxGenLabel(const void *opaque)
 {
     const struct testSELinuxGenLabelData *data = opaque;
     int ret = -1;
-    virDomainDef *def;
+    g_autoptr(virDomainDef) def = NULL;
     context_t con = NULL;
     context_t imgcon = NULL;
 
@@ -255,7 +254,6 @@ testSELinuxGenLabel(const void *opaque)
  cleanup:
     context_free(con);
     context_free(imgcon);
-    virDomainDefFree(def);
     return ret;
 }
 

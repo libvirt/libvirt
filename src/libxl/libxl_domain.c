@@ -761,7 +761,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
                          libxlSavefileHeader *ret_hdr)
 {
     int fd;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     libxlSavefileHeader hdr;
     g_autofree char *xml = NULL;
 
@@ -813,7 +813,6 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
     return fd;
 
  error:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
@@ -1440,7 +1439,7 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
 {
     g_autofree char *managed_save_path = NULL;
     int restore_fd = -1;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     libxlSavefileHeader hdr;
     uint32_t restore_ver = LIBXL_SAVE_VERSION;
     int ret = -1;
@@ -1483,7 +1482,6 @@ libxlDomainStartNew(libxlDriverPrivate *driver,
     ret = libxlDomainStart(driver, vm, start_paused, restore_fd, restore_ver);
 
  cleanup:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(restore_fd);
     return ret;
 }
@@ -1504,9 +1502,9 @@ libxlDomainDefCheckABIStability(libxlDriverPrivate *driver,
                                 virDomainDef *src,
                                 virDomainDef *dst)
 {
-    virDomainDef *migratableDefSrc = NULL;
-    virDomainDef *migratableDefDst = NULL;
     bool ret = false;
+    g_autoptr(virDomainDef) migratableDefSrc = NULL;
+    g_autoptr(virDomainDef) migratableDefDst = NULL;
 
     if (!(migratableDefSrc = virDomainDefCopy(src, driver->xmlopt, NULL, true)) ||
         !(migratableDefDst = virDomainDefCopy(dst, driver->xmlopt, NULL, true)))
@@ -1517,8 +1515,6 @@ libxlDomainDefCheckABIStability(libxlDriverPrivate *driver,
                                         driver->xmlopt);
 
  cleanup:
-    virDomainDefFree(migratableDefSrc);
-    virDomainDefFree(migratableDefDst);
     return ret;
 }
 

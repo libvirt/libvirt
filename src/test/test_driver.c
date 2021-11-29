@@ -1029,7 +1029,7 @@ testParseDomains(testDriver *privconn,
         return -1;
 
     for (i = 0; i < num; i++) {
-        virDomainDef *def;
+        g_autoptr(virDomainDef) def = NULL;
         testDomainNamespaceDef *nsdata;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file, "domain");
         if (!node)
@@ -1046,7 +1046,6 @@ testParseDomains(testDriver *privconn,
                                         &def,
                                         privconn->xmlopt,
                                         0, NULL))) {
-            virDomainDefFree(def);
             goto error;
         }
 
@@ -1750,7 +1749,7 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
 {
     testDriver *privconn = conn->privateData;
     virDomainPtr ret = NULL;
-    virDomainDef *def;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *dom = NULL;
     virObjectEvent *event = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -1790,7 +1789,6 @@ testDomainCreateXML(virConnectPtr conn, const char *xml,
  cleanup:
     virDomainObjEndAPI(&dom);
     virObjectEventStateQueue(privconn->eventState, event);
-    virDomainDefFree(def);
     virObjectUnlock(privconn);
     return ret;
 }
@@ -2388,7 +2386,7 @@ testDomainSaveImageOpen(testDriver *driver,
     char magic[15];
     int fd = -1;
     int len;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     g_autofree char *xml = NULL;
 
     if ((fd = open(path, O_RDONLY)) < 0) {
@@ -2436,7 +2434,6 @@ testDomainSaveImageOpen(testDriver *driver,
     return fd;
 
  error:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return -1;
 }
@@ -2498,7 +2495,7 @@ testDomainRestoreFlags(virConnectPtr conn,
 {
     testDriver *privconn = conn->privateData;
     int fd = -1;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *dom = NULL;
     virObjectEvent *event = NULL;
     int ret = -1;
@@ -2535,7 +2532,6 @@ testDomainRestoreFlags(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     virDomainObjEndAPI(&dom);
     virObjectEventStateQueue(privconn->eventState, event);
@@ -2558,8 +2554,8 @@ testDomainSaveImageDefineXML(virConnectPtr conn,
 {
     int ret = -1;
     int fd = -1;
-    virDomainDef *def = NULL;
-    virDomainDef *newdef = NULL;
+    g_autoptr(virDomainDef) def = NULL;
+    g_autoptr(virDomainDef) newdef = NULL;
     testDriver *privconn = conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_SAVE_RUNNING |
@@ -2579,8 +2575,6 @@ testDomainSaveImageDefineXML(virConnectPtr conn,
     ret = 0;
 
  cleanup:
-    virDomainDefFree(def);
-    virDomainDefFree(newdef);
     return ret;
 }
 
@@ -2592,7 +2586,7 @@ testDomainSaveImageGetXMLDesc(virConnectPtr conn,
 {
     int fd = -1;
     char *ret = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     testDriver *privconn = conn->privateData;
 
     virCheckFlags(VIR_DOMAIN_SAVE_IMAGE_XML_SECURE, NULL);
@@ -2604,7 +2598,6 @@ testDomainSaveImageGetXMLDesc(virConnectPtr conn,
                              VIR_DOMAIN_DEF_FORMAT_SECURE);
 
  cleanup:
-    virDomainDefFree(def);
     VIR_FORCE_CLOSE(fd);
     return ret;
 }
@@ -4185,10 +4178,10 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
 {
     testDriver *privconn = conn->privateData;
     virDomainPtr ret = NULL;
-    virDomainDef *def;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *dom = NULL;
     virObjectEvent *event = NULL;
-    virDomainDef *oldDef = NULL;
+    g_autoptr(virDomainDef) oldDef = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
@@ -4222,8 +4215,6 @@ static virDomainPtr testDomainDefineXMLFlags(virConnectPtr conn,
     ret = virGetDomain(conn, dom->def->name, dom->def->uuid, dom->def->id);
 
  cleanup:
-    virDomainDefFree(def);
-    virDomainDefFree(oldDef);
     virDomainObjEndAPI(&dom);
     virObjectEventStateQueue(privconn->eventState, event);
     return ret;

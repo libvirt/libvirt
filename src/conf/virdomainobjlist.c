@@ -483,10 +483,10 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
 {
     g_autofree char *configFile = NULL;
     g_autofree char *autostartLink = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *dom;
     int autostart;
-    virDomainDef *oldDef = NULL;
+    g_autoptr(virDomainDef) oldDef = NULL;
 
     if ((configFile = virDomainConfigFile(configDir, name)) == NULL)
         goto error;
@@ -510,11 +510,9 @@ virDomainObjListLoadConfig(virDomainObjList *doms,
     if (notify)
         (*notify)(dom, oldDef == NULL, opaque);
 
-    virDomainDefFree(oldDef);
     return dom;
 
  error:
-    virDomainDefFree(def);
     return NULL;
 }
 

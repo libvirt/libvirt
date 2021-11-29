@@ -824,7 +824,7 @@ static virDomainPtr
 openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     struct openvz_driver *driver =  conn->privateData;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -895,7 +895,6 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, -1);
 
  cleanup:
-    virDomainDefFree(vmdef);
     virDomainObjEndAPI(&vm);
     openvzDriverUnlock(driver);
     return dom;
@@ -913,7 +912,7 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 {
     g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "start", NULL);
     struct openvz_driver *driver =  conn->privateData;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -983,7 +982,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    virDomainDefFree(vmdef);
     virDomainObjEndAPI(&vm);
     openvzDriverUnlock(driver);
     return dom;
@@ -2063,7 +2061,7 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     struct openvz_driver *driver = dconn->privateData;
     const char *dom_xml = NULL;
     const char *uri_in = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     virDomainObj *vm = NULL;
     g_autofree char *my_hostname = NULL;
     const char *hostname = NULL;
@@ -2138,7 +2136,6 @@ openvzDomainMigratePrepare3Params(virConnectPtr dconn,
     goto done;
 
  error:
-    virDomainDefFree(def);
     if (vm)
         virDomainObjListRemove(driver->domains, vm);
 

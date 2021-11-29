@@ -1086,7 +1086,7 @@ lxcParseConfigString(const char *config,
                      virCaps *caps G_GNUC_UNUSED,
                      virDomainXMLOption *xmlopt)
 {
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     g_autoptr(virConf) properties = NULL;
     g_autofree char *value = NULL;
 
@@ -1199,9 +1199,8 @@ lxcParseConfigString(const char *config,
                               xmlopt, NULL) < 0)
         goto error;
 
-    return vmdef;
+    return g_steal_pointer(&vmdef);
 
  error:
-    virDomainDefFree(vmdef);
     return NULL;
 }

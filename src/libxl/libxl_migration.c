@@ -379,7 +379,7 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
     libxlDriverPrivate *driver = conn->privateData;
     libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
     libxlMigrationCookie *mig = NULL;
-    virDomainDef *tmpdef = NULL;
+    g_autoptr(virDomainDef) tmpdef = NULL;
     virDomainDef *def;
     char *xml = NULL;
 
@@ -426,7 +426,6 @@ libxlDomainMigrationSrcBegin(virConnectPtr conn,
 
  cleanup:
     libxlMigrationCookieFree(mig);
-    virDomainDefFree(tmpdef);
     virObjectUnref(cfg);
     return xml;
 }

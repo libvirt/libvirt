@@ -446,7 +446,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
     char *status;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObj *dom = NULL;
-    virDomainDef *def = NULL;
+    g_autoptr(virDomainDef) def = NULL;
     char *temp = NULL;
     char *outbuf = NULL;
     char *line;
@@ -559,7 +559,6 @@ int openvzLoadDomains(struct openvz_driver *driver)
     virCommandFree(cmd);
     VIR_FREE(temp);
     VIR_FREE(outbuf);
-    virDomainDefFree(def);
     return -1;
 }
 

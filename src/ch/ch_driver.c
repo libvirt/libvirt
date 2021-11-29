@@ -218,7 +218,7 @@ chDomainCreateXML(virConnectPtr conn,
                   unsigned int flags)
 {
     virCHDriver *driver = conn->privateData;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -258,7 +258,6 @@ chDomainCreateXML(virConnectPtr conn,
     if (vm && !dom) {
         virDomainObjListRemove(driver->domains, vm);
     }
-    virDomainDefFree(vmdef);
     virDomainObjEndAPI(&vm);
     chDriverUnlock(driver);
     return dom;
@@ -301,7 +300,7 @@ static virDomainPtr
 chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
 {
     virCHDriver *driver = conn->privateData;
-    virDomainDef *vmdef = NULL;
+    g_autoptr(virDomainDef) vmdef = NULL;
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
@@ -331,7 +330,6 @@ chDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    virDomainDefFree(vmdef);
     virDomainObjEndAPI(&vm);
     return dom;
 }

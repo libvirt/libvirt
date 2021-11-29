@@ -719,8 +719,8 @@ qemuSaveImageUpdateDef(virQEMUDriver *driver,
                        const char *newxml)
 {
     virDomainDef *ret = NULL;
-    virDomainDef *newdef_migr = NULL;
-    virDomainDef *newdef = NULL;
+    g_autoptr(virDomainDef) newdef_migr = NULL;
+    g_autoptr(virDomainDef) newdef = NULL;
 
     if (!(newdef = virDomainDefParseString(newxml, driver->xmlopt, NULL,
                                            VIR_DOMAIN_DEF_PARSE_INACTIVE)))
@@ -756,8 +756,5 @@ qemuSaveImageUpdateDef(virQEMUDriver *driver,
     }
 
  cleanup:
-    virDomainDefFree(newdef);
-    virDomainDefFree(newdef_migr);
-
     return ret;
 }
