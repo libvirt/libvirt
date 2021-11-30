@@ -3440,13 +3440,15 @@ int qemuMonitorJSONMigrate(qemuMonitor *mon,
                            unsigned int flags,
                            const char *uri)
 {
-    g_autoptr(virJSONValue) cmd =
-      qemuMonitorJSONMakeCommand("migrate",
-                                 "b:detach", flags & QEMU_MONITOR_MIGRATE_BACKGROUND ? 1 : 0,
-                                 "b:blk", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK ? 1 : 0,
-                                 "b:inc", flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC ? 1 : 0,
-                                 "s:uri", uri,
-                                 NULL);
+    bool detach = !!(flags & QEMU_MONITOR_MIGRATE_BACKGROUND);
+    bool blk = !!(flags & QEMU_MONITOR_MIGRATE_NON_SHARED_DISK);
+    bool inc = !!(flags & QEMU_MONITOR_MIGRATE_NON_SHARED_INC);
+    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("migrate",
+                                                             "b:detach", detach,
+                                                             "b:blk", blk,
+                                                             "b:inc", inc,
+                                                             "s:uri", uri,
+                                                             NULL);
     g_autoptr(virJSONValue) reply = NULL;
 
     if (!cmd)
