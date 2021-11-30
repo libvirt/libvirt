@@ -493,8 +493,7 @@ virNWFilterDoInstantiate(virNWFilterTechDriver *techdriver,
     virNWFilterVarValue *lv;
     const char *learning;
     bool reportIP = false;
-
-    GHashTable *missing_vars = virHashNew(virNWFilterVarValueHashFree);
+    g_autoptr(GHashTable) missing_vars = virHashNew(virNWFilterVarValueHashFree);
 
     memset(&inst, 0, sizeof(inst));
 
@@ -593,7 +592,6 @@ virNWFilterDoInstantiate(virNWFilterTechDriver *techdriver,
 
  error:
     virNWFilterInstReset(&inst);
-    virHashFree(missing_vars);
 
     return rc;
 
