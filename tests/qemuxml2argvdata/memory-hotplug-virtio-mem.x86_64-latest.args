@@ -21,7 +21,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"memory-backend-ram","id":"memvirtiomem0","reserve":false,"size":1073741824}' \
 -device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":536870912,"memdev":"memvirtiomem0","id":"virtiomem0","bus":"pci.0","addr":"0x2"}' \
 -object '{"qom-type":"memory-backend-file","id":"memvirtiomem1","mem-path":"/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1","reserve":false,"size":2147483648,"host-nodes":[1,2,3],"policy":"bind"}' \
--device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","id":"virtiomem1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"virtio-mem-pci","node":0,"block-size":2097152,"requested-size":1073741824,"memdev":"memvirtiomem1","prealloc":true,"id":"virtiomem1","bus":"pci.0","addr":"0x3"}' \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
 -no-user-config \

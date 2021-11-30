@@ -3692,10 +3692,14 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
         prealloc = true;
     }
 
-    *pagesizeRet = pagesize;
-    *needHugepageRet = needHugepage;
-    *useHugepageRet = useHugepage;
-    *preallocRet = prealloc;
+    if (pagesizeRet)
+        *pagesizeRet = pagesize;
+    if (needHugepageRet)
+        *needHugepageRet = needHugepage;
+    if (useHugepageRet)
+        *useHugepageRet = useHugepage;
+    if (preallocRet)
+        *preallocRet = prealloc;
 
     return 0;
 }
@@ -3871,14 +3875,18 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         return -1;
 
     if (mem->model == VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM) {
-        /* Explicitly disable prealloc for virtio-mem as it's not supported
-         * currently. Warn users if their config would result in prealloc. */
-        if (priv->memPrealloc || prealloc) {
-            VIR_WARN("Memory preallocation is unsupported for virtio-mem memory devices");
+        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC)) {
+            /* Explicitly disable prealloc for virtio-mem if it isn't supported.
+             * Warn users if their config would result in prealloc. */
+            if (priv->memPrealloc || prealloc) {
+                VIR_WARN("Memory preallocation is unsupported for virtio-mem memory devices");
+            }
+
+            if (priv->memPrealloc &&
+                virJSONValueObjectAppendBoolean(props, "prealloc", 0) < 0)
+                return -1;
         }
-        if (priv->memPrealloc &&
-            virJSONValueObjectAppendBoolean(props, "prealloc", 0) < 0)
-            return -1;
+
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MEMORY_BACKEND_RESERVE) &&
             virJSONValueObjectAppendBoolean(props, "reserve", 0) < 0)
             return -1;
@@ -4031,7 +4039,9 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 
 
 virJSONValue *
-qemuBuildMemoryDeviceProps(const virDomainDef *def,
+qemuBuildMemoryDeviceProps(virQEMUDriverConfig *cfg,
+                           qemuDomainObjPrivate *priv,
+                           const virDomainDef *def,
                            const virDomainMemoryDef *mem)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -4039,6 +4049,7 @@ qemuBuildMemoryDeviceProps(const virDomainDef *def,
     g_autofree char *uuidstr = NULL;
     virTristateBool unarmed = VIR_TRISTATE_BOOL_ABSENT;
     g_autofree char *memdev = NULL;
+    bool prealloc = false;
 
     if (!mem->info.alias) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -4062,6 +4073,10 @@ qemuBuildMemoryDeviceProps(const virDomainDef *def,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         device = "virtio-mem-pci";
+
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC) &&
+            qemuBuildMemoryGetPagesize(cfg, def, mem, NULL, NULL, NULL, &prealloc) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_MEMORY_MODEL_NONE:
@@ -4089,6 +4104,7 @@ qemuBuildMemoryDeviceProps(const virDomainDef *def,
                               "S:uuid", uuidstr,
                               "T:unarmed", unarmed,
                               "s:memdev", memdev,
+                              "B:prealloc", prealloc,
                               "s:id", mem->info.alias,
                               NULL) < 0)
         return NULL;
@@ -7792,7 +7808,7 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
         if (qemuBuildMemoryDimmBackendStr(cmd, def->mems[i], def, cfg, priv) < 0)
             return -1;
 
-        if (!(props = qemuBuildMemoryDeviceProps(def, def->mems[i])))
+        if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
             return -1;
 
         if (qemuBuildDeviceCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
