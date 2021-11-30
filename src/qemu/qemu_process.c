@@ -8534,24 +8534,19 @@ static int
 qemuProcessRefreshLegacyBlockjobs(virQEMUDriver *driver,
                                   virDomainObj *vm)
 {
-    GHashTable *blockJobs = NULL;
-    int ret = -1;
+    g_autoptr(GHashTable) blockJobs = NULL;
 
     qemuDomainObjEnterMonitor(driver, vm);
     blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
     qemuDomainObjExitMonitor(driver, vm);
 
     if (!blockJobs)
-        goto cleanup;
+        return -1;
 
     if (virHashForEach(blockJobs, qemuProcessRefreshLegacyBlockjob, vm) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virHashFree(blockJobs);
-    return ret;
+    return 0;
 }
 
 
