@@ -2291,25 +2291,22 @@ qemuRefreshPRManagerState(virQEMUDriver *driver,
                           virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    GHashTable *info = NULL;
-    int ret = -1;
+    g_autoptr(GHashTable) info = NULL;
+    int rc;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_PR_MANAGER_HELPER) ||
         !qemuDomainDefHasManagedPR(vm))
         return 0;
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorGetPRManagerInfo(priv->mon, &info);
+    rc = qemuMonitorGetPRManagerInfo(priv->mon, &info);
     qemuDomainObjExitMonitor(driver, vm);
 
-    if (ret < 0)
-        goto cleanup;
+    if (rc < 0)
+        return -1;
 
-    ret = qemuProcessRefreshPRManagerState(vm, info);
 
- cleanup:
-    virHashFree(info);
-    return ret;
+    return qemuProcessRefreshPRManagerState(vm, info);
 }
 
 
