@@ -771,12 +771,6 @@ qemuDomainNestedJobAllowed(qemuDomainJobObj *jobs, qemuDomainJob newJob)
            (jobs->mask & JOB_MASK(newJob)) != 0;
 }
 
-bool
-qemuDomainJobAllowed(qemuDomainJobObj *jobs, qemuDomainJob newJob)
-{
-    return !jobs->active && qemuDomainNestedJobAllowed(jobs, newJob);
-}
-
 static bool
 qemuDomainObjCanSetJob(qemuDomainJobObj *job,
                        qemuDomainJob newJob,

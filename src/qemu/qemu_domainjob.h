@@ -277,8 +277,6 @@ int
 qemuDomainObjInitJob(qemuDomainJobObj *job,
                      qemuDomainObjPrivateJobCallbacks *cb);
 
-bool qemuDomainJobAllowed(qemuDomainJobObj *jobs, qemuDomainJob newJob);
-
 int
 qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
                                  virDomainObj *vm);
