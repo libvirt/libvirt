@@ -10221,7 +10221,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr tmpNode;
-    GHashTable *filterparams = NULL;
+    g_autoptr(GHashTable) filterparams = NULL;
     virDomainActualNetDef *actual = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     virDomainChrSourceReconnectDef reconnect = {0};
@@ -10408,7 +10408,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     if ((filterref_node = virXPathNode("./filterref", ctxt))) {
         filter = virXMLPropString(filterref_node, "filter");
-        virHashFree(filterparams);
         filterparams = virNWFilterParseParamAttributes(filterref_node);
     }
 
@@ -10937,7 +10936,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
  cleanup:
     virDomainActualNetDefFree(actual);
-    virHashFree(filterparams);
     return def;
 
  error:
