@@ -648,7 +648,8 @@ qemuMonitorTestProcessCommandVerbatim(qemuMonitorTest *test,
         ret = qemuMonitorTestAddResponse(test, data->response);
     } else {
         if (data->cmderr) {
-            qemuMonitorTestError("%s: %s", data->cmderr, cmdstr);
+            qemuMonitorTestError("%s: %s expected %s",
+                                 data->cmderr, cmdstr, data->command_name);
         } else {
             qemuMonitorTestErrorInvalidCommand(data->command_name, cmdstr);
         }
