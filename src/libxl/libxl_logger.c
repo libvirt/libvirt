@@ -149,14 +149,13 @@ libxlLoggerNew(const char *logDir, virLogPriority minLevel)
         break;
     }
     logger.logDir = logDir;
-    logger.files = virHashNew(libxlLoggerFileFree);
 
     path = g_strdup_printf("%s/libxl-driver.log", logDir);
 
-    if ((logger.defaultLogFile = fopen(path, "a")) == NULL) {
-        virHashFree(logger.files);
+    if ((logger.defaultLogFile = fopen(path, "a")) == NULL)
         return NULL;
-    }
+
+    logger.files = virHashNew(libxlLoggerFileFree);
 
     return XTL_NEW_LOGGER(libvirt, logger);
 }
