@@ -227,7 +227,7 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDef *inc,
                                 GHashTable *vars,
                                 virNWFilterInst *inst)
 {
-    GHashTable *tmpvars = NULL;
+    g_autoptr(GHashTable) tmpvars = NULL;
     int ret = -1;
     g_autofree char *xml = NULL;
 
@@ -248,7 +248,6 @@ virNWFilterIncludeDefToRuleInst(virNWFilterIncludeDef *inc,
  cleanup:
     if (ret < 0)
         virNWFilterInstReset(inst);
-    virHashFree(tmpvars);
     return ret;
 }
 
