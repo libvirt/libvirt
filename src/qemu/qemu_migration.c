@@ -6235,7 +6235,7 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
     size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
     bool nbd = false;
-    GHashTable *blockinfo = NULL;
+    g_autoptr(GHashTable) blockinfo = NULL;
     qemuDomainMirrorStats *stats = &jobInfo->mirrorStats;
 
     for (i = 0; i < vm->def->ndisks; i++) {
@@ -6273,6 +6273,5 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
         stats->total += data->end;
     }
 
-    virHashFree(blockinfo);
     return 0;
 }
