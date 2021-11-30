@@ -16,14 +16,6 @@ typedef struct _virHashAtomic virHashAtomic;
  */
 
 /**
- * virHashDataFree:
- * @payload:  the data in the hash
- *
- * Callback to free data from a hash.
- */
-typedef void (*virHashDataFree) (void *payload);
-
-/**
  * virHashIterator:
  * @payload: the data in the hash
  * @name: the hash key
@@ -50,8 +42,8 @@ typedef int (*virHashSearcher) (const void *payload, const char *name,
 /*
  * Constructor and destructor.
  */
-GHashTable *virHashNew(virHashDataFree dataFree) G_GNUC_WARN_UNUSED_RESULT;
-virHashAtomic *virHashAtomicNew(virHashDataFree dataFree);
+GHashTable *virHashNew(GDestroyNotify dataFree) G_GNUC_WARN_UNUSED_RESULT;
+virHashAtomic *virHashAtomicNew(GDestroyNotify dataFree);
 ssize_t virHashSize(GHashTable *table);
 
 /*

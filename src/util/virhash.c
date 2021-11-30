@@ -83,7 +83,7 @@ virHashTableStringKey(const void *vkey)
  * Returns the newly created object.
  */
 GHashTable *
-virHashNew(virHashDataFree dataFree)
+virHashNew(GDestroyNotify dataFree)
 {
     ignore_value(virHashTableSeedInitialize());
 
@@ -92,7 +92,7 @@ virHashNew(virHashDataFree dataFree)
 
 
 virHashAtomic *
-virHashAtomicNew(virHashDataFree dataFree)
+virHashAtomicNew(GDestroyNotify dataFree)
 {
     virHashAtomic *hash;
 

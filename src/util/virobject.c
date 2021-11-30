@@ -604,8 +604,8 @@ void virObjectFreeCallback(void *opaque)
  * @name: ignored, name of the hash key being deleted
  *
  * Provides identical functionality to virObjectUnref,
- * but with the signature matching the virHashDataFree
- * typedef.
+ * but with the signature matching the GDestroyNotify
+ * typedef used with hash tables.
  */
 void
 virObjectFreeHashData(void *opaque)

@@ -2830,7 +2830,7 @@ qemuMonitorJSONBlockGetNamedNodeDataJSON(virJSONValue *nodes)
 {
     g_autoptr(GHashTable) ret = NULL;
 
-    ret = virHashNew((virHashDataFree) qemuMonitorJSONBlockNamedNodeDataFree);
+    ret = virHashNew((GDestroyNotify) qemuMonitorJSONBlockNamedNodeDataFree);
 
     if (virJSONValueArrayForeachSteal(nodes,
                                       qemuMonitorJSONBlockGetNamedNodeDataWorker,
