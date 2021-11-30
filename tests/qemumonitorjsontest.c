@@ -2890,6 +2890,8 @@ mymain(void)
     int ret = 0;
     virQEMUDriver driver;
     testQemuMonitorJSONSimpleFuncData simpleFunc;
+    g_autoptr(GHashTable) qapischema_x86_64 = NULL;
+    g_autoptr(GHashTable) qapischema_s390x = NULL;
     struct testQAPISchemaData qapiData;
     g_autoptr(virJSONValue) metaschema = NULL;
     g_autofree char *metaschemastr = NULL;
@@ -2899,11 +2901,13 @@ mymain(void)
 
     virEventRegisterDefaultImpl();
 
-    if (!(qapiData.schema = testQEMUSchemaLoadLatest("x86_64"))) {
-        VIR_TEST_VERBOSE("failed to load qapi schema");
+    if (!(qapischema_x86_64 = testQEMUSchemaLoadLatest("x86_64"))) {
+        VIR_TEST_VERBOSE("failed to load x86_64 qapi schema");
         ret = -1;
         goto cleanup;
     }
+
+    qapiData.schema = qapischema_x86_64;
 
 #define DO_TEST(name) \
     do { \
@@ -3171,18 +3175,18 @@ mymain(void)
 
 #undef DO_TEST_QUERY_JOBS
 
-    virHashFree(qapiData.schema);
-    if (!(qapiData.schema = testQEMUSchemaLoadLatest("s390x"))) {
+    if (!(qapischema_s390x = testQEMUSchemaLoadLatest("s390x"))) {
         VIR_TEST_VERBOSE("failed to load qapi schema for s390x");
         ret = -1;
         goto cleanup;
     }
 
+    qapiData.schema = qapischema_s390x;
+
     DO_TEST(qemuMonitorJSONGetCPUModelComparison);
     DO_TEST(qemuMonitorJSONGetCPUModelBaseline);
 
  cleanup:
-    virHashFree(qapiData.schema);
     qemuTestDriverFree(&driver);
     return (ret == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
 }
