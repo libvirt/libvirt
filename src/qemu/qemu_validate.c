@@ -295,6 +295,22 @@ qemuValidateDomainDefFeatures(const virDomainDef *def,
             break;
 
         case VIR_DOMAIN_FEATURE_TCG:
+            if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
+                if (def->virtType != VIR_DOMAIN_VIRT_QEMU) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                                   _("TCG features are incompatible with domain type '%s'"),
+                                   virDomainVirtTypeToString(def->virtType));
+                    return -1;
+                }
+
+                if ((def->tcg_features->tb_cache & 0x3ff) != 0) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("tb-cache size must be an integer multiple of MiB"));
+                    return -1;
+                }
+            }
+            break;
+
         case VIR_DOMAIN_FEATURE_SMM:
         case VIR_DOMAIN_FEATURE_KVM:
         case VIR_DOMAIN_FEATURE_XEN:
