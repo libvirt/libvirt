@@ -2395,7 +2395,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
                           qemuDomainLogContext *logCtxt)
 {
     int ret = -1;
-    GHashTable *info = NULL;
+    g_autoptr(GHashTable) info = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     bool retry = true;
 
@@ -2427,8 +2427,6 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
     }
 
  cleanup:
-    virHashFree(info);
-
     if (logCtxt && kill(vm->pid, 0) == -1 && errno == ESRCH) {
         qemuProcessReportLogError(logCtxt,
                                   _("process exited while connecting to monitor"));
