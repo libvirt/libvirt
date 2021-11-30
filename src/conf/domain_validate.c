@@ -1360,28 +1360,23 @@ static int
 virDomainDeviceValidateAliasImpl(const virDomainDef *def,
                                  virDomainDeviceDef *dev)
 {
-    GHashTable *aliases = NULL;
+    g_autoptr(GHashTable) aliases = NULL;
     virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
-    int ret = -1;
 
     if (!info || !info->alias)
         return 0;
 
     if (virDomainDefValidateAliases(def, &aliases) < 0)
-        goto cleanup;
+        return -1;
 
     if (virHashLookup(aliases, info->alias)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("non unique alias detected: %s"),
                        info->alias);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-
-    virHashFree(aliases);
-    return ret;
+    return 0;
 }
 
 
