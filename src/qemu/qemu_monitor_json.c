@@ -4305,16 +4305,21 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                               unsigned long long speed,
                               unsigned int granularity,
                               unsigned long long buf_size,
-                              bool shallow)
+                              bool shallow,
+                              bool syncWrite)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
     virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
     const char *syncmode = "full";
+    const char *copymode = NULL;
 
     if (shallow)
         syncmode = "top";
+
+    if (syncWrite)
+        copymode = "write-blocking";
 
     if (persistjob) {
         autofinalize = VIR_TRISTATE_BOOL_YES;
@@ -4329,6 +4334,7 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                                      "z:granularity", granularity,
                                      "P:buf-size", buf_size,
                                      "s:sync", syncmode,
+                                     "S:copy-mode", copymode,
                                      "T:auto-finalize", autofinalize,
                                      "T:auto-dismiss", autodismiss,
                                      NULL);

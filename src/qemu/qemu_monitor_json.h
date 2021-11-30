@@ -266,7 +266,8 @@ int qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                                   unsigned long long speed,
                                   unsigned int granularity,
                                   unsigned long long buf_size,
-                                  bool shallow)
+                                  bool shallow,
+                                  bool syncWrite)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 int qemuMonitorJSONDrivePivot(qemuMonitor *mon,
                               const char *jobname)

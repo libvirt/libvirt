@@ -959,7 +959,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
     if (mon_ret == 0)
         mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), jobname, persistjob,
                                             sourcename, copysrc->nodeformat,
-                                            mirror_speed, 0, 0, mirror_shallow);
+                                            mirror_speed, 0, 0, mirror_shallow,
+                                            false);
 
     if (mon_ret != 0)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);

@@ -15149,7 +15149,8 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
                                         qemuDomainDiskGetTopNodename(disk),
                                         mirror->nodeformat, bandwidth,
-                                        granularity, buf_size, mirror_shallow);
+                                        granularity, buf_size, mirror_shallow,
+                                        false);
     } else {
         /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
          * by the user */
