@@ -8310,8 +8310,7 @@ qemuProcessRefreshDisks(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    GHashTable *table = NULL;
-    int ret = -1;
+    g_autoptr(GHashTable) table = NULL;
     size_t i;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
@@ -8320,7 +8319,7 @@ qemuProcessRefreshDisks(virQEMUDriver *driver,
     }
 
     if (!table)
-        goto cleanup;
+        return -1;
 
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
@@ -8351,11 +8350,7 @@ qemuProcessRefreshDisks(virQEMUDriver *driver,
         diskpriv->tray = info->tray;
     }
 
-    ret = 0;
-
- cleanup:
-    virHashFree(table);
-    return ret;
+    return 0;
 }
 
 
