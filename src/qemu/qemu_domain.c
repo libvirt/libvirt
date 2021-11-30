@@ -8187,7 +8187,7 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
                                  int asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    GHashTable *meminfo = NULL;
+    g_autoptr(GHashTable) meminfo = NULL;
     int rc;
     size_t i;
 
@@ -8233,7 +8233,6 @@ qemuDomainUpdateMemoryDeviceInfo(virQEMUDriver *driver,
         }
     }
 
-    virHashFree(meminfo);
     return 0;
 }
 
