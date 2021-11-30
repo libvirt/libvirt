@@ -637,6 +637,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 420 */
     QEMU_CAPS_DEVICE_JSON, /* -device accepts JSON (and works with hot-unplug) */
     QEMU_CAPS_HVF, /* Whether Hypervisor.framework is available */
+    QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC, /* -device virtio-mem-pci.prealloc= */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

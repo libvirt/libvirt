@@ -662,6 +662,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 420 */
               "device.json+hotplug", /* QEMU_CAPS_DEVICE_JSON */
               "hvf", /* QEMU_CAPS_HVF */
+              "virtio-mem-pci.prealloc", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC */
     );
 
 
@@ -1577,6 +1578,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVhostUserFS[] = 
     { "bootindex", QEMU_CAPS_VHOST_USER_FS_BOOTINDEX, NULL },
 };
 
+static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioMemPCI[] = {
+    { "prealloc", QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC, NULL },
+};
+
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "block-commit/arg-type/*top",  QEMU_CAPS_ACTIVE_COMMIT },
@@ -1738,6 +1743,9 @@ static virQEMUCapsDeviceTypeProps virQEMUCapsDeviceProps[] = {
     { "vhost-user-fs-device", virQEMUCapsDevicePropsVhostUserFS,
       G_N_ELEMENTS(virQEMUCapsDevicePropsVhostUserFS),
       QEMU_CAPS_DEVICE_VHOST_USER_FS },
+    { "virtio-mem-pci", virQEMUCapsDevicePropsVirtioMemPCI,
+      G_N_ELEMENTS(virQEMUCapsDevicePropsVirtioMemPCI),
+      QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] = {
