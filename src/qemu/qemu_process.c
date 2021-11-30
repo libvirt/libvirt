@@ -2243,24 +2243,21 @@ qemuRefreshVirtioChannelState(virQEMUDriver *driver,
                               qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    GHashTable *info = NULL;
-    int ret = -1;
+    g_autoptr(GHashTable) info = NULL;
+    int rc;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = qemuMonitorGetChardevInfo(priv->mon, &info);
+    rc = qemuMonitorGetChardevInfo(priv->mon, &info);
     qemuDomainObjExitMonitor(driver, vm);
 
-    if (ret < 0)
-        goto cleanup;
+    if (rc < 0)
+        return -1;
 
     qemuProcessRefreshChannelVirtioState(driver, vm, info, false);
-    ret = 0;
 
- cleanup:
-    virHashFree(info);
-    return ret;
+    return 0;
 }
 
 
