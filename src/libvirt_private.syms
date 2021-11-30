@@ -2375,7 +2375,6 @@ virHashEqual;
 virHashForEach;
 virHashForEachSafe;
 virHashForEachSorted;
-virHashFree;
 virHashGetItems;
 virHashHasEntry;
 virHashLookup;

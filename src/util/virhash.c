@@ -117,25 +117,6 @@ virHashAtomicDispose(void *obj)
 
 
 /**
- * virHashFree:
- * @table: the hash table
- *
- * Free the hash @table and its contents. The userdata is
- * deallocated with function provided at creation time.
- *
- * Deprecated: consider using g_hash_table_unref instead
- */
-void
-virHashFree(GHashTable *table)
-{
-    if (table == NULL)
-        return;
-
-    g_hash_table_unref(table);
-}
-
-
-/**
  * virHashAddEntry:
  * @table: the hash table
  * @name: the name of the userdata

@@ -52,7 +52,6 @@ typedef int (*virHashSearcher) (const void *payload, const char *name,
  */
 GHashTable *virHashNew(virHashDataFree dataFree) G_GNUC_WARN_UNUSED_RESULT;
 virHashAtomic *virHashAtomicNew(virHashDataFree dataFree);
-void virHashFree(GHashTable *table);
 ssize_t virHashSize(GHashTable *table);
 
 /*
