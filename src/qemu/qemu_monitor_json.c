@@ -3590,17 +3590,20 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitor *mon,
                                     int tlsPort,
                                     const char *tlsSubject)
 {
-    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("client_migrate_info",
-                                                             "s:protocol",
-                                                             (type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE ? "spice" : "vnc"),
-                                                             "s:hostname", hostname,
-                                                             "i:port", port,
-                                                             "i:tls-port", tlsPort,
-                                                             "S:cert-subject", tlsSubject,
-                                                             NULL);
+    const char *protocol = "vnc";
+    g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
-    if (!cmd)
+    if (type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
+        protocol = "spice";
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("client_migrate_info",
+                                           "s:protocol", protocol,
+                                           "s:hostname", hostname,
+                                           "i:port", port,
+                                           "i:tls-port", tlsPort,
+                                           "S:cert-subject", tlsSubject,
+                                           NULL)))
         return -1;
 
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
