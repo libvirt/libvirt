@@ -4262,6 +4262,14 @@ qemuMonitorJSONDriveMirror(qemuMonitor *mon,
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
+    const char *syncmode = "full";
+    const char *mode = "absolute-paths";
+
+    if (shallow)
+        syncmode = "top";
+
+    if (reuse)
+        mode = "existing";
 
     cmd = qemuMonitorJSONMakeCommand("drive-mirror",
                                      "s:device", device,
@@ -4269,8 +4277,8 @@ qemuMonitorJSONDriveMirror(qemuMonitor *mon,
                                      "Y:speed", speed,
                                      "z:granularity", granularity,
                                      "P:buf-size", buf_size,
-                                     "s:sync", shallow ? "top" : "full",
-                                     "s:mode", reuse ? "existing" : "absolute-paths",
+                                     "s:sync", syncmode,
+                                     "s:mode", mode,
                                      "S:format", format,
                                      NULL);
     if (!cmd)
@@ -4298,6 +4306,10 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
     g_autoptr(virJSONValue) reply = NULL;
     virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
     virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
+    const char *syncmode = "full";
+
+    if (shallow)
+        syncmode = "top";
 
     if (persistjob) {
         autofinalize = VIR_TRISTATE_BOOL_YES;
@@ -4311,7 +4323,7 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                                      "Y:speed", speed,
                                      "z:granularity", granularity,
                                      "P:buf-size", buf_size,
-                                     "s:sync", shallow ? "top" : "full",
+                                     "s:sync", syncmode,
                                      "T:auto-finalize", autofinalize,
                                      "T:auto-dismiss", autodismiss,
                                      NULL);
