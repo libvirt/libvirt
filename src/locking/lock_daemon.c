@@ -89,7 +89,7 @@ virLockDaemonFree(virLockDaemon *lockd)
 
     g_mutex_clear(&lockd->lock);
     virObjectUnref(lockd->dmn);
-    virHashFree(lockd->lockspaces);
+    g_clear_pointer(&lockd->lockspaces, g_hash_table_unref);
     virLockSpaceFree(lockd->defaultLockspace);
 
     g_free(lockd);

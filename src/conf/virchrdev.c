@@ -295,7 +295,7 @@ void virChrdevFree(virChrdevs *devs)
 
     virMutexLock(&devs->lock);
     virHashForEachSafe(devs->hash, virChrdevFreeClearCallbacks, NULL);
-    virHashFree(devs->hash);
+    g_clear_pointer(&devs->hash, g_hash_table_unref);
     virMutexUnlock(&devs->lock);
     virMutexDestroy(&devs->lock);
 

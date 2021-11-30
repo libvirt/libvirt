@@ -85,8 +85,8 @@ static void virDomainObjListDispose(void *obj)
 {
     virDomainObjList *doms = obj;
 
-    virHashFree(doms->objs);
-    virHashFree(doms->objsName);
+    g_clear_pointer(&doms->objs, g_hash_table_unref);
+    g_clear_pointer(&doms->objsName, g_hash_table_unref);
 }
 
 

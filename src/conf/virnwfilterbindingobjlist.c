@@ -77,7 +77,7 @@ virNWFilterBindingObjListDispose(void *obj)
 {
     virNWFilterBindingObjList *bindings = obj;
 
-    virHashFree(bindings->objs);
+    g_clear_pointer(&bindings->objs, g_hash_table_unref);
 }
 
 

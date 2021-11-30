@@ -692,7 +692,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManager *mgr)
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
-    virHashFree(data->mcs);
+    g_clear_pointer(&data->mcs, g_hash_table_unref);
     return -1;
 }
 
@@ -764,7 +764,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManager *mgr)
     VIR_FREE(data->alt_domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
-    virHashFree(data->mcs);
+    g_clear_pointer(&data->mcs, g_hash_table_unref);
     return -1;
 }
 
@@ -1030,7 +1030,7 @@ virSecuritySELinuxDriverClose(virSecurityManager *mgr)
     if (data->label_handle)
         selabel_close(data->label_handle);
 
-    virHashFree(data->mcs);
+    g_clear_pointer(&data->mcs, g_hash_table_unref);
 
     VIR_FREE(data->domain_context);
     VIR_FREE(data->alt_domain_context);

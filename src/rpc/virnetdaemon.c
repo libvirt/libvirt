@@ -110,7 +110,7 @@ virNetDaemonDispose(void *obj)
     VIR_FORCE_CLOSE(dmn->autoShutdownInhibitFd);
     g_free(dmn->stateStopThread);
 
-    virHashFree(dmn->servers);
+    g_clear_pointer(&dmn->servers, g_hash_table_unref);
 
     virJSONValueFree(dmn->srvObject);
 }

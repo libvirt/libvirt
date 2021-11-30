@@ -453,7 +453,7 @@ virNodeDeviceObjListDispose(void *obj)
 {
     virNodeDeviceObjList *devs = obj;
 
-    virHashFree(devs->objs);
+    g_clear_pointer(&devs->objs, g_hash_table_unref);
 }
 
 

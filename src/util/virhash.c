@@ -112,7 +112,7 @@ virHashAtomicDispose(void *obj)
 {
     virHashAtomic *hash = obj;
 
-    virHashFree(hash->hash);
+    g_clear_pointer(&hash->hash, g_hash_table_unref);
 }
 
 

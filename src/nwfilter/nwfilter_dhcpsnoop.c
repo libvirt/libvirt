@@ -2080,13 +2080,13 @@ virNWFilterDHCPSnoopShutdown(void)
     virNWFilterSnoopLock();
 
     virNWFilterSnoopLeaseFileClose();
-    virHashFree(virNWFilterSnoopState.ifnameToKey);
-    virHashFree(virNWFilterSnoopState.snoopReqs);
+    g_clear_pointer(&virNWFilterSnoopState.ifnameToKey, g_hash_table_unref);
+    g_clear_pointer(&virNWFilterSnoopState.snoopReqs, g_hash_table_unref);
 
     virNWFilterSnoopUnlock();
 
     virNWFilterSnoopActiveLock();
-    virHashFree(virNWFilterSnoopState.active);
+    g_clear_pointer(&virNWFilterSnoopState.active, g_hash_table_unref);
     virNWFilterSnoopActiveUnlock();
 }
 

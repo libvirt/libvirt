@@ -166,7 +166,7 @@ virNWFilterRuleInstFree(virNWFilterRuleInst *inst)
     if (!inst)
         return;
 
-    virHashFree(inst->vars);
+    g_clear_pointer(&inst->vars, g_hash_table_unref);
     g_free(inst);
 }
 

@@ -2640,7 +2640,7 @@ virDomainNetDefFree(virDomainNetDef *def)
     virDomainDeviceInfoClear(&def->info);
 
     g_free(def->filter);
-    virHashFree(def->filterparams);
+    g_clear_pointer(&def->filterparams, g_hash_table_unref);
 
     virNetDevBandwidthFree(def->bandwidth);
     virNetDevVlanClear(&def->vlan);

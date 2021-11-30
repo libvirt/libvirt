@@ -357,7 +357,7 @@ hypervAddEmbeddedParam(hypervInvokeParamsList *params,
 void
 hypervFreeEmbeddedParam(GHashTable *p)
 {
-    virHashFree(p);
+    g_clear_pointer(&p, g_hash_table_unref);
 }
 
 

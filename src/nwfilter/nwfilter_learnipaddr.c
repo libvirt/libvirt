@@ -805,9 +805,6 @@ virNWFilterLearnShutdown(void)
 
     virNWFilterLearnThreadsTerminate(false);
 
-    virHashFree(pendingLearnReq);
-    pendingLearnReq = NULL;
-
-    virHashFree(ifaceLockMap);
-    ifaceLockMap = NULL;
+    g_clear_pointer(&pendingLearnReq, g_hash_table_unref);
+    g_clear_pointer(&ifaceLockMap, g_hash_table_unref);
 }

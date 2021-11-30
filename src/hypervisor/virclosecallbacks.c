@@ -78,7 +78,7 @@ virCloseCallbacksDispose(void *obj)
 {
     virCloseCallbacks *closeCallbacks = obj;
 
-    virHashFree(closeCallbacks->list);
+    g_clear_pointer(&closeCallbacks->list, g_hash_table_unref);
 }
 
 int

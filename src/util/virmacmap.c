@@ -62,7 +62,7 @@ virMacMapDispose(void *obj)
     while (g_hash_table_iter_next(&htitr, NULL, &value))
         g_slist_free_full(value, g_free);
 
-    virHashFree(mgr->macs);
+    g_clear_pointer(&mgr->macs, g_hash_table_unref);
 }
 
 

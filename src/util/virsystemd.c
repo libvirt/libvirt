@@ -1108,7 +1108,7 @@ virSystemdActivationFree(virSystemdActivation *act)
     if (!act)
         return;
 
-    virHashFree(act->fds);
+    g_clear_pointer(&act->fds, g_hash_table_unref);
 
     g_free(act);
 }

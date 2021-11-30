@@ -345,7 +345,7 @@ virInterfaceObjListDispose(void *obj)
 {
     virInterfaceObjList *interfaces = obj;
 
-    virHashFree(interfaces->objsName);
+    g_clear_pointer(&interfaces->objsName, g_hash_table_unref);
 }
 
 

@@ -1377,7 +1377,7 @@ void virDomainCCWAddressSetFree(virDomainCCWAddressSet *addrs)
     if (!addrs)
         return;
 
-    virHashFree(addrs->defined);
+    g_clear_pointer(&addrs->defined, g_hash_table_unref);
     g_free(addrs);
 }
 

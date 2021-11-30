@@ -1701,7 +1701,7 @@ qemuDomainObjPrivateFree(void *data)
     g_clear_pointer(&priv->migSecinfo, qemuDomainSecretInfoFree);
     qemuDomainMasterKeyFree(priv);
 
-    virHashFree(priv->blockjobs);
+    g_clear_pointer(&priv->blockjobs, g_hash_table_unref);
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->eventThread) {

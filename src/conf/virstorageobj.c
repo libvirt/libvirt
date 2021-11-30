@@ -183,9 +183,9 @@ virStorageVolObjListDispose(void *opaque)
 {
     virStorageVolObjList *vols = opaque;
 
-    virHashFree(vols->objsKey);
-    virHashFree(vols->objsName);
-    virHashFree(vols->objsPath);
+    g_clear_pointer(&vols->objsKey, g_hash_table_unref);
+    g_clear_pointer(&vols->objsName, g_hash_table_unref);
+    g_clear_pointer(&vols->objsPath, g_hash_table_unref);
 }
 
 
@@ -382,8 +382,8 @@ virStoragePoolObjListDispose(void *opaque)
 {
     virStoragePoolObjList *pools = opaque;
 
-    virHashFree(pools->objs);
-    virHashFree(pools->objsName);
+    g_clear_pointer(&pools->objs, g_hash_table_unref);
+    g_clear_pointer(&pools->objsName, g_hash_table_unref);
 }
 
 

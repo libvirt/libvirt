@@ -477,7 +477,7 @@ void virLockSpaceFree(virLockSpace *lockspace)
     if (!lockspace)
         return;
 
-    virHashFree(lockspace->resources);
+    g_clear_pointer(&lockspace->resources, g_hash_table_unref);
     g_free(lockspace->dir);
     virMutexDestroy(&lockspace->lock);
     g_free(lockspace);

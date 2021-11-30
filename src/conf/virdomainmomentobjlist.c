@@ -282,7 +282,7 @@ virDomainMomentObjListFree(virDomainMomentObjList *moments)
 {
     if (!moments)
         return;
-    virHashFree(moments->objs);
+    g_clear_pointer(&moments->objs, g_hash_table_unref);
     g_free(moments);
 }
 

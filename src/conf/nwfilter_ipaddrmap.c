@@ -156,6 +156,5 @@ virNWFilterIPAddrMapInit(void)
 void
 virNWFilterIPAddrMapShutdown(void)
 {
-    virHashFree(ipAddressMap);
-    ipAddressMap = NULL;
+    g_clear_pointer(&ipAddressMap, g_hash_table_unref);
 }

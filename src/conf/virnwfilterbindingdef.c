@@ -40,7 +40,7 @@ virNWFilterBindingDefFree(virNWFilterBindingDef *def)
     g_free(def->portdevname);
     g_free(def->linkdevname);
     g_free(def->filter);
-    virHashFree(def->filterparams);
+    g_clear_pointer(&def->filterparams, g_hash_table_unref);
 
     g_free(def);
 }

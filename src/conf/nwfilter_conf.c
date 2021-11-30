@@ -323,7 +323,7 @@ virNWFilterIncludeDefFree(virNWFilterIncludeDef *inc)
 {
     if (!inc)
         return;
-    virHashFree(inc->params);
+    g_clear_pointer(&inc->params, g_hash_table_unref);
     g_free(inc->filterref);
     g_free(inc);
 }

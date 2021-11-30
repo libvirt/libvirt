@@ -502,10 +502,9 @@ void freePaths(void)
     virMutexLock(&m);
     init_hash();
 
-    virHashFree(selinux_paths);
-    virHashFree(chown_paths);
-    virHashFree(xattr_paths);
-    selinux_paths = chown_paths = xattr_paths = NULL;
+    g_clear_pointer(&selinux_paths, g_hash_table_unref);
+    g_clear_pointer(&chown_paths, g_hash_table_unref);
+    g_clear_pointer(&xattr_paths, g_hash_table_unref);
     virMutexUnlock(&m);
 }
 

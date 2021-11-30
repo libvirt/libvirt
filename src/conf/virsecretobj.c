@@ -149,7 +149,7 @@ virSecretObjListDispose(void *obj)
 {
     virSecretObjList *secrets = obj;
 
-    virHashFree(secrets->objs);
+    g_clear_pointer(&secrets->objs, g_hash_table_unref);
 }
 
 

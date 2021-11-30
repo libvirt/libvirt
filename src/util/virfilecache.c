@@ -77,7 +77,7 @@ virFileCacheDispose(void *obj)
     g_free(cache->dir);
     g_free(cache->suffix);
 
-    virHashFree(cache->table);
+    g_clear_pointer(&cache->table, g_hash_table_unref);
 
     virFileCachePrivFree(cache);
 }
