@@ -979,7 +979,8 @@ virNWFilterBuildAll(virNWFilterDriverState *driver,
     VIR_DEBUG("Build all filters newFilters=%d", newFilters);
 
     if (newFilters) {
-        data.skipInterfaces = virHashNew(NULL);
+        g_autoptr(GHashTable) skipInterfaces = virHashNew(NULL);
+        data.skipInterfaces = skipInterfaces;
 
         data.step = STEP_APPLY_NEW;
         if (virNWFilterBindingObjListForEach(driver->bindings,
@@ -998,8 +999,6 @@ virNWFilterBuildAll(virNWFilterDriverState *driver,
                                              virNWFilterBuildIter,
                                              &data);
         }
-
-        virHashFree(data.skipInterfaces);
     } else {
         data.step = STEP_APPLY_CURRENT;
         if (virNWFilterBindingObjListForEach(driver->bindings,
