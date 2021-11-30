@@ -16423,7 +16423,7 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
     qemuDomainObjPrivate *priv;
-    GHashTable *table = NULL;
+    g_autoptr(GHashTable) table = NULL;
     bool blockdev = false;
     int ret = -1;
     size_t i;
@@ -16484,7 +16484,6 @@ qemuDomainGetDiskErrors(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virHashFree(table);
     if (ret < 0) {
         for (i = 0; i < n; i++)
             VIR_FREE(errors[i].disk);
