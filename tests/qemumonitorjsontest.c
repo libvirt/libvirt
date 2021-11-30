@@ -2490,24 +2490,23 @@ testBlockNodeNameDetect(const void *opaque)
     g_autofree char *actual = NULL;
     g_autoptr(virJSONValue) namedNodesJson = NULL;
     g_autoptr(virJSONValue) blockstatsJson = NULL;
-    GHashTable *nodedata = NULL;
+    g_autoptr(GHashTable) nodedata = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    int ret = -1;
 
     resultFile = g_strdup_printf("%s/%s%s.result", abs_srcdir, pathprefix,
                                  testname);
 
     if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, testname,
                                                "-named-nodes.json", NULL)))
-        goto cleanup;
+        return -1;
 
     if (!(blockstatsJson = virTestLoadFileJSON(pathprefix, testname,
                                                "-blockstats.json", NULL)))
-        goto cleanup;
+        return -1;
 
     if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson,
                                                       blockstatsJson)))
-        goto cleanup;
+        return -1;
 
     virHashForEachSorted(nodedata, testBlockNodeNameDetectFormat, &buf);
 
@@ -2516,14 +2515,9 @@ testBlockNodeNameDetect(const void *opaque)
     actual = virBufferContentAndReset(&buf);
 
     if (virTestCompareToFile(actual, resultFile) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virHashFree(nodedata);
-
-    return ret;
+    return 0;
 }
 
 
