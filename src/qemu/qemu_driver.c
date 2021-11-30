@@ -9963,24 +9963,23 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     virDomainDiskDef *disk = NULL;
-    GHashTable *blockstats = NULL;
+    g_autoptr(GHashTable) blockstats = NULL;
     qemuBlockStats *stats;
     size_t i;
     int nstats;
     int rc = 0;
     const char *entryname = NULL;
-    int ret = -1;
 
     if (*path) {
         if (!(disk = virDomainDiskByName(vm->def, path, false))) {
             virReportError(VIR_ERR_INVALID_ARG, _("invalid path: %s"), path);
-            goto cleanup;
+            return -1;
         }
 
         if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("block stats are not supported for vhostuser disk"));
-            goto cleanup;
+            return -1;
         }
 
         if (blockdev && QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
@@ -9989,7 +9988,7 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
             if (!disk->info.alias) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("missing disk device alias name for %s"), disk->dst);
-                goto cleanup;
+                return -1;
             }
 
             entryname = disk->info.alias;
@@ -10009,7 +10008,7 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
     qemuDomainObjExitMonitor(driver, vm);
 
     if (nstats < 0 || rc < 0)
-        goto cleanup;
+        return -1;
 
     *retstats = g_new0(qemuBlockStats, 1);
 
@@ -10017,7 +10016,7 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
         if (!(stats = virHashLookup(blockstats, entryname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot find statistics for device '%s'"), entryname);
-            goto cleanup;
+            return -1;
         }
 
         **retstats = *stats;
@@ -10053,18 +10052,14 @@ qemuDomainBlocksStatsGather(virQEMUDriver *driver,
             if (!(stats = virHashLookup(blockstats, entryname))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("cannot find statistics for device '%s'"), entryname);
-                goto cleanup;
+                return -1;
             }
 
             qemuDomainBlockStatsGatherTotals(stats, *retstats);
         }
     }
 
-    ret = nstats;
-
- cleanup:
-    virHashFree(blockstats);
-    return ret;
+    return nstats;
 }
 
 
