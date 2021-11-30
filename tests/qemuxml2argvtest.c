@@ -823,7 +823,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
-    g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) virHashFree);
+    g_autoptr(GHashTable) qapiSchemaCache = virHashNew((GDestroyNotify) g_hash_table_unref);
     g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,
