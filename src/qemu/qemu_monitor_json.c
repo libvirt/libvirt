@@ -574,7 +574,7 @@ static void qemuMonitorJSONHandleShutdown(qemuMonitor *mon, virJSONValue *data)
     virTristateBool guest_initiated = VIR_TRISTATE_BOOL_ABSENT;
 
     if (data && virJSONValueObjectGetBoolean(data, "guest", &guest) == 0)
-        guest_initiated = guest ? VIR_TRISTATE_BOOL_YES : VIR_TRISTATE_BOOL_NO;
+        guest_initiated = virTristateBoolFromBool(guest);
 
     qemuMonitorEmitShutdown(mon, guest_initiated);
 }
