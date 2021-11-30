@@ -350,7 +350,7 @@ static int testCompareXMLToArgvFiles(const char *xml,
 {
     g_autofree char *actualargv = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    GHashTable *vars = virHashNew(virNWFilterVarValueHashFree);
+    g_autoptr(GHashTable) vars = virHashNew(virNWFilterVarValueHashFree);
     virNWFilterInst inst;
     int ret = -1;
     g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
@@ -381,7 +381,6 @@ static int testCompareXMLToArgvFiles(const char *xml,
 
  cleanup:
     virNWFilterInstReset(&inst);
-    virHashFree(vars);
     return ret;
 }
 
