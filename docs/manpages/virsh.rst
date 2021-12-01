@@ -3180,7 +3180,7 @@ migrate
       [--postcopy-bandwidth bandwidth]
       [--parallel [--parallel-connections connections]]
       [--bandwidth bandwidth] [--tls-destination hostname]
-      [--disks-uri URI]
+      [--disks-uri URI] [--copy-storage-synchronous-writes]
 
 Migrate domain to another host.  Add *--live* for live migration; <--p2p>
 for peer-2-peer migration; *--direct* for direct migration; or *--tunnelled*
@@ -3202,6 +3202,10 @@ images on source host to the images found at the same place on the destination
 host. By default only non-shared non-readonly images are transferred. Use
 *--migrate-disks* to explicitly specify a list of disk targets to
 transfer via the comma separated ``disk-list`` argument.
+With *--copy-storage-synchronous-writes* flag used the disk data migration will
+synchronously handle guest disk writes to both the original soure and the
+destination to ensure that the disk migration converges at the price of possibly
+decreased burst performance.
 
 *--change-protection* enforces that no incompatible configuration changes will
 be made to the domain while the migration is underway; this flag is implicitly

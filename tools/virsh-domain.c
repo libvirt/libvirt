@@ -10543,6 +10543,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("migration with non-shared storage with incremental copy (same base image shared between source and destination)")
     },
+    {.name = "copy-storage-synchronous-writes",
+     .type = VSH_OT_BOOL,
+     .help = N_("force guest disk writes to be synchronously written to the destination to improve storage migration convergence")
+    },
     {.name = "change-protection",
      .type = VSH_OT_BOOL,
      .help = N_("prevent any configuration changes to domain until migration ends")
@@ -10948,6 +10952,15 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "copy-storage-inc"))
         flags |= VIR_MIGRATE_NON_SHARED_INC;
+
+    if (vshCommandOptBool(cmd, "copy-storage-synchronous-writes")) {
+        if (!(flags & VIR_MIGRATE_NON_SHARED_DISK) &&
+            !(flags & VIR_MIGRATE_NON_SHARED_INC)) {
+            vshError(ctl, "'--copy-storage-synchronous-writes' requires one of '--copy-storage-all', 'copy-storage-inc'");
+            goto out;
+        }
+        flags |= VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES;
+    }
 
     if (vshCommandOptBool(cmd, "change-protection"))
         flags |= VIR_MIGRATE_CHANGE_PROTECTION;

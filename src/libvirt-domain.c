@@ -3567,6 +3567,10 @@ virDomainMigrate(virDomainPtr domain,
                              VIR_MIGRATE_PARALLEL,
                              error);
 
+    VIR_REQUIRE_FLAG_GOTO(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
+                          VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                          error);
+
     if (flags & VIR_MIGRATE_OFFLINE) {
         rc = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
                                       VIR_DRV_FEATURE_MIGRATION_OFFLINE);
@@ -3759,6 +3763,10 @@ virDomainMigrate2(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_GOTO(VIR_MIGRATE_TUNNELLED,
                              VIR_MIGRATE_PARALLEL,
                              error);
+
+    VIR_REQUIRE_FLAG_GOTO(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
+                          VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                          error);
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         rc = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,
@@ -3966,6 +3974,14 @@ virDomainMigrate3(virDomainPtr domain,
                              VIR_MIGRATE_NON_SHARED_INC,
                              error);
 
+    VIR_REQUIRE_FLAG_GOTO(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
+                          VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                          error);
+
+    VIR_REQUIRE_FLAG_GOTO(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
+                          VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                          error);
+
     if (flags & VIR_MIGRATE_PEER2PEER) {
         virReportInvalidArg(flags, "%s",
                             _("use virDomainMigrateToURI3 for peer-to-peer "
@@ -4136,6 +4152,10 @@ int virDomainMigrateUnmanagedCheckCompat(virDomainPtr domain,
     VIR_EXCLUSIVE_FLAGS_RET(VIR_MIGRATE_NON_SHARED_DISK,
                             VIR_MIGRATE_NON_SHARED_INC,
                             -1);
+
+    VIR_REQUIRE_FLAG_RET(VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES,
+                         VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC,
+                         -1);
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         rc = VIR_DRV_SUPPORTS_FEATURE(domain->conn->driver, domain->conn,

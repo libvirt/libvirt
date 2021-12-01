@@ -850,6 +850,16 @@ typedef enum {
      */
     VIR_MIGRATE_PARALLEL = (1 << 17),
 
+     /* Force the guest writes which happen when copying disk images for
+      * non-shared storage migration to be synchronously written to the
+      * destination. This ensures the storage migration converges for VMs
+      * doing heavy I/O on fast local storage and slow mirror.
+      *
+      * Requires one of VIR_MIGRATE_NON_SHARED_DISK, VIR_MIGRATE_NON_SHARED_INC
+      * to be present as well.
+      */
+    VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES = (1 << 18),
+
 } virDomainMigrateFlags;
 
 
