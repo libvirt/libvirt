@@ -2956,10 +2956,9 @@ qemuMonitorAddObject(qemuMonitor *mon,
         ignore_value(virJSONValueObjectRemoveKey(*props, "qom-type", &typeobj));
         ignore_value(virJSONValueObjectRemoveKey(*props, "id", &idobj));
 
-        if (!virJSONValueObjectGetKey(*props, 0)) {
-            virJSONValueFree(*props);
-            *props = NULL;
-        }
+        /* avoid empty 'props' member */
+        if (!virJSONValueObjectGetKey(*props, 0))
+            g_clear_pointer(props, virJSONValueFree);
 
         if (virJSONValueObjectAdd(&pr,
                                   "s:qom-type", type,
