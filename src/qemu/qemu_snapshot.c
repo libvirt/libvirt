@@ -2131,6 +2131,7 @@ qemuSnapshotRevert(virDomainObj *vm,
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_STARTED,
                                          detail);
+        virObjectEventStateQueue(driver->domainEventState, event);
         if (rc < 0)
             goto endjob;
 
@@ -2145,6 +2146,7 @@ qemuSnapshotRevert(virDomainObj *vm,
             event2 = virDomainEventLifecycleNewFromObj(vm,
                                               VIR_DOMAIN_EVENT_SUSPENDED,
                                               detail);
+            virObjectEventStateQueue(driver->domainEventState, event2);
         } else {
             /* Transitions 2, 5, 8 */
             if (!virDomainObjIsActive(vm)) {
@@ -2178,6 +2180,7 @@ qemuSnapshotRevert(virDomainObj *vm,
             event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STOPPED,
                                              detail);
+            virObjectEventStateQueue(driver->domainEventState, event);
         }
 
         if (qemuSnapshotRevertInactive(driver, vm, snap) < 0) {
@@ -2197,7 +2200,6 @@ qemuSnapshotRevert(virDomainObj *vm,
 
             start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
-            virObjectEventStateQueue(driver->domainEventState, event);
             rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
                                   QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
                                   VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
@@ -2211,11 +2213,13 @@ qemuSnapshotRevert(virDomainObj *vm,
             event = virDomainEventLifecycleNewFromObj(vm,
                                              VIR_DOMAIN_EVENT_STARTED,
                                              detail);
+            virObjectEventStateQueue(driver->domainEventState, event);
             if (paused) {
                 detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
                 event2 = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   detail);
+                virObjectEventStateQueue(driver->domainEventState, event2);
             }
         }
         break;
@@ -2261,8 +2265,6 @@ qemuSnapshotRevert(virDomainObj *vm,
                                               VIR_DOMAIN_EVENT_DEFINED,
                                               detail));
     }
-    virObjectEventStateQueue(driver->domainEventState, event);
-    virObjectEventStateQueue(driver->domainEventState, event2);
 
     return ret;
 }
