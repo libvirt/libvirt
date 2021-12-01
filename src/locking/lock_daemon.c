@@ -608,59 +608,57 @@ virLockDaemonPostExecRestart(const char *state_file,
 {
     const char *gotmagic;
     g_autofree char *wantmagic = NULL;
-    int ret = -1;
     g_autofree char *state = NULL;
     g_autoptr(virJSONValue) object = NULL;
+    int rc;
 
     VIR_DEBUG("Running post-restart exec");
 
     if (!virFileExists(state_file)) {
         VIR_DEBUG("No restart state file %s present",
                   state_file);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
-    if (virFileReadAll(state_file,
-                       1024 * 1024 * 10, /* 10 MB */
-                       &state) < 0)
-        goto cleanup;
+    rc = virFileReadAll(state_file,
+                        1024 * 1024 * 10, /* 10 MB */
+                        &state);
+
+    unlink(state_file);
+
+    if (rc < 0)
+        return -1;
 
     VIR_DEBUG("Loading state %s", state);
 
     if (!(object = virJSONValueFromString(state)))
-        goto cleanup;
+        return -1;
 
     gotmagic = virJSONValueObjectGetString(object, "magic");
     if (!gotmagic) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing magic data in JSON document"));
-        goto cleanup;
+        return -1;
     }
 
     if (!(wantmagic = virLockDaemonGetExecRestartMagic()))
-        goto cleanup;
+        return -1;
 
     if (STRNEQ(gotmagic, wantmagic)) {
         VIR_WARN("Found restart exec file with old magic %s vs wanted %s",
                  gotmagic, wantmagic);
-        ret = 0;
-        goto cleanup;
+        return 0;
     }
 
     /* Re-claim PID file now as we will not be daemonizing */
     if (pid_file &&
         (*pid_file_fd = virPidFileAcquirePath(pid_file, false, getpid())) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(lockDaemon = virLockDaemonNewPostExecRestart(object, privileged)))
-        goto cleanup;
+        return -1;
 
-    ret = 1;
-
- cleanup:
-    unlink(state_file);
-    return ret;
+    return 1;
 }
 
 
