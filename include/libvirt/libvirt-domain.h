@@ -710,7 +710,7 @@ typedef enum {
      * faster then it can be transferred. The domain can be manually paused
      * anytime during migration using virDomainSuspend.
      */
-    VIR_MIGRATE_LIVE              = (1 << 0),
+    VIR_MIGRATE_LIVE = (1 << 0),
 
     /* Tell the source libvirtd to connect directly to the destination host.
      * Without this flag the client (e.g., virsh) connects to both hosts and
@@ -718,7 +718,7 @@ typedef enum {
      * libvirtd controls the migration by calling the destination daemon
      * directly.
      */
-    VIR_MIGRATE_PEER2PEER         = (1 << 1),
+    VIR_MIGRATE_PEER2PEER = (1 << 1),
 
     /* Tunnel migration data over libvirtd connection. Without this flag the
      * source hypervisor sends migration data directly to the destination
@@ -728,25 +728,25 @@ typedef enum {
      * Note the less-common spelling that we're stuck with:
      * VIR_MIGRATE_TUNNELLED should be VIR_MIGRATE_TUNNELED.
      */
-    VIR_MIGRATE_TUNNELLED         = (1 << 2),
+    VIR_MIGRATE_TUNNELLED = (1 << 2),
 
     /* Define the domain as persistent on the destination host after successful
      * migration. If the domain was persistent on the source host and
      * VIR_MIGRATE_UNDEFINE_SOURCE is not used, it will end up persistent on
      * both hosts.
      */
-    VIR_MIGRATE_PERSIST_DEST      = (1 << 3),
+    VIR_MIGRATE_PERSIST_DEST = (1 << 3),
 
     /* Undefine the domain on the source host once migration successfully
      * finishes.
      */
-    VIR_MIGRATE_UNDEFINE_SOURCE   = (1 << 4),
+    VIR_MIGRATE_UNDEFINE_SOURCE = (1 << 4),
 
     /* Leave the domain suspended on the destination host. virDomainResume (on
      * the virDomainPtr returned by the migration API) has to be called
      * explicitly to resume domain's virtual CPUs.
      */
-    VIR_MIGRATE_PAUSED            = (1 << 5),
+    VIR_MIGRATE_PAUSED = (1 << 5),
 
     /* Migrate full disk images in addition to domain's memory. By default
      * only non-shared non-readonly disk images are transferred. The
@@ -755,7 +755,7 @@ typedef enum {
      *
      * This flag and VIR_MIGRATE_NON_SHARED_INC are mutually exclusive.
      */
-    VIR_MIGRATE_NON_SHARED_DISK   = (1 << 6),
+    VIR_MIGRATE_NON_SHARED_DISK = (1 << 6),
 
     /* Migrate disk images in addition to domain's memory. This is similar to
      * VIR_MIGRATE_NON_SHARED_DISK, but only the top level of each disk's
@@ -765,7 +765,7 @@ typedef enum {
      *
      * This flag and VIR_MIGRATE_NON_SHARED_DISK are mutually exclusive.
      */
-    VIR_MIGRATE_NON_SHARED_INC    = (1 << 7),
+    VIR_MIGRATE_NON_SHARED_INC = (1 << 7),
 
     /* Protect against domain configuration changes during the migration
      * process. This flag is used automatically when both sides support it.
@@ -782,7 +782,7 @@ typedef enum {
      * is unsafe unless the disk images are stored on coherent clustered
      * filesystem, such as GFS2 or GPFS.
      */
-    VIR_MIGRATE_UNSAFE            = (1 << 9),
+    VIR_MIGRATE_UNSAFE = (1 << 9),
 
     /* Migrate a domain definition without starting the domain on the
      * destination and without stopping it on the source host. Offline
@@ -791,19 +791,19 @@ typedef enum {
      * Offline migration may not copy disk storage or any other file based
      * storage (such as UEFI variables).
      */
-    VIR_MIGRATE_OFFLINE           = (1 << 10),
+    VIR_MIGRATE_OFFLINE = (1 << 10),
 
     /* Compress migration data. The compression methods can be specified using
      * VIR_MIGRATE_PARAM_COMPRESSION. A hypervisor default method will be used
      * if this parameter is omitted. Individual compression methods can be
      * tuned via their specific VIR_MIGRATE_PARAM_COMPRESSION_* parameters.
      */
-    VIR_MIGRATE_COMPRESSED        = (1 << 11),
+    VIR_MIGRATE_COMPRESSED = (1 << 11),
 
     /* Cancel migration if a soft error (such as I/O error) happens during
      * migration.
      */
-    VIR_MIGRATE_ABORT_ON_ERROR    = (1 << 12),
+    VIR_MIGRATE_ABORT_ON_ERROR = (1 << 12),
 
     /* Enable algorithms that ensure a live migration will eventually converge.
      * This usually means the domain will be slowed down to make sure it does
@@ -811,7 +811,7 @@ typedef enum {
      * memory to the destination host. VIR_MIGRATE_PARAM_AUTO_CONVERGE_*
      * parameters can be used to tune the algorithm.
      */
-    VIR_MIGRATE_AUTO_CONVERGE     = (1 << 13),
+    VIR_MIGRATE_AUTO_CONVERGE = (1 << 13),
 
     /* This flag can be used with RDMA migration (i.e., when
      * VIR_MIGRATE_PARAM_URI starts with "rdma://") to tell the hypervisor
@@ -828,27 +828,27 @@ typedef enum {
      * domain and the host itself since the host's kernel may run out of
      * memory.
      */
-    VIR_MIGRATE_RDMA_PIN_ALL      = (1 << 14),
+    VIR_MIGRATE_RDMA_PIN_ALL = (1 << 14),
 
     /* Setting the VIR_MIGRATE_POSTCOPY flag tells libvirt to enable post-copy
      * migration. However, the migration will start normally and
      * virDomainMigrateStartPostCopy needs to be called to switch it into the
      * post-copy mode. See virDomainMigrateStartPostCopy for more details.
      */
-    VIR_MIGRATE_POSTCOPY          = (1 << 15),
+    VIR_MIGRATE_POSTCOPY = (1 << 15),
 
     /* Setting the VIR_MIGRATE_TLS flag will cause the migration to attempt
      * to use the TLS environment configured by the hypervisor in order to
      * perform the migration. If incorrectly configured on either source or
      * destination, the migration will fail.
      */
-    VIR_MIGRATE_TLS               = (1 << 16),
+    VIR_MIGRATE_TLS = (1 << 16),
 
     /* Send memory pages to the destination host through several network
      * connections. See VIR_MIGRATE_PARAM_PARALLEL_* parameters for
      * configuring the parallel migration.
      */
-    VIR_MIGRATE_PARALLEL          = (1 << 17),
+    VIR_MIGRATE_PARALLEL = (1 << 17),
 
 } virDomainMigrateFlags;
 
