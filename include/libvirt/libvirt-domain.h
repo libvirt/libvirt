@@ -2590,13 +2590,14 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * Flags available for virDomainBlockCopy().
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_COPY_SHALLOW   = 1 << 0, /* Limit copy to top of source
-                                                 backing chain */
-    VIR_DOMAIN_BLOCK_COPY_REUSE_EXT = 1 << 1, /* Reuse existing external
-                                                 file for a copy */
-    VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB = 1 << 2, /* Don't force usage of
-                                                     recoverable job for the
-                                                     copy operation */
+    /* Limit copy to top of source backing chain */
+    VIR_DOMAIN_BLOCK_COPY_SHALLOW   = 1 << 0,
+
+    /* Reuse existing external file for a copy */
+    VIR_DOMAIN_BLOCK_COPY_REUSE_EXT = 1 << 1,
+
+    /* Don't force usage of recoverable job for the copy operation */
+    VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB = 1 << 2,
 } virDomainBlockCopyFlags;
 
 /**
