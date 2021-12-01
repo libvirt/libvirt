@@ -2153,6 +2153,84 @@ qemuSnapshotInternalRevertInactive(virQEMUDriver *driver,
 }
 
 
+static int
+qemuSnapshotRevertInactive(virDomainObj *vm,
+                           virDomainSnapshotPtr snapshot,
+                           virDomainMomentObj *snap,
+                           virQEMUDriver *driver,
+                           virQEMUDriverConfig *cfg,
+                           virDomainDef **inactiveConfig,
+                           unsigned int start_flags,
+                           unsigned int flags)
+{
+    virObjectEvent *event = NULL;
+    virObjectEvent *event2 = NULL;
+    int detail;
+    bool defined = false;
+    int rc;
+
+    /* Transitions 1, 4, 7 */
+    /* Newer qemu -loadvm refuses to revert to the state of a snapshot
+     * created by qemu-img snapshot -c.  If the domain is running, we
+     * must take it offline; then do the revert using qemu-img.
+     */
+
+    if (virDomainObjIsActive(vm)) {
+        /* Transitions 4, 7 */
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                        QEMU_ASYNC_JOB_START, 0);
+        virDomainAuditStop(vm, "from-snapshot");
+        detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STOPPED,
+                                         detail);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
+        qemuDomainRemoveInactive(driver, vm);
+        return -1;
+    }
+
+    if (*inactiveConfig) {
+        virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
+        return -1;
+    }
+
+    if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
+                 VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
+        /* Flush first event, now do transition 2 or 3 */
+        bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
+
+        start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
+
+        rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
+                              QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
+                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                              start_flags);
+        virDomainAuditStart(vm, "from-snapshot", rc >= 0);
+        if (rc < 0) {
+            qemuDomainRemoveInactive(driver, vm);
+            return -1;
+        }
+        detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                         VIR_DOMAIN_EVENT_STARTED,
+                                         detail);
+        virObjectEventStateQueue(driver->domainEventState, event);
+        if (paused) {
+            detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+            event2 = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_SUSPENDED,
+                                              detail);
+            virObjectEventStateQueue(driver->domainEventState, event2);
+        }
+    }
+
+    return qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
+}
+
+
 int
 qemuSnapshotRevert(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
@@ -2162,15 +2240,10 @@ qemuSnapshotRevert(virDomainObj *vm,
     int ret = -1;
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotDef *snapdef;
-    virObjectEvent *event = NULL;
-    virObjectEvent *event2 = NULL;
-    int detail;
-    int rc;
     g_autoptr(virDomainDef) config = NULL;
     g_autoptr(virDomainDef) inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
-    bool defined = false;
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
@@ -2224,64 +2297,11 @@ qemuSnapshotRevert(virDomainObj *vm,
     case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
     case VIR_DOMAIN_SNAPSHOT_SHUTOFF:
     case VIR_DOMAIN_SNAPSHOT_CRASHED:
-        /* Transitions 1, 4, 7 */
-        /* Newer qemu -loadvm refuses to revert to the state of a snapshot
-         * created by qemu-img snapshot -c.  If the domain is running, we
-         * must take it offline; then do the revert using qemu-img.
-         */
-
-        if (virDomainObjIsActive(vm)) {
-            /* Transitions 4, 7 */
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                            QEMU_ASYNC_JOB_START, 0);
-            virDomainAuditStop(vm, "from-snapshot");
-            detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_STOPPED,
-                                             detail);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
-
-        if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
-            qemuDomainRemoveInactive(driver, vm);
-            goto endjob;
-        }
-
-        if (inactiveConfig) {
-            virDomainObjAssignDef(vm, &inactiveConfig, false, NULL);
-            defined = true;
-        }
-
-        if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
-                     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED)) {
-            /* Flush first event, now do transition 2 or 3 */
-            bool paused = (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED) != 0;
-
-            start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
-
-            rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                                  QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
-                                  VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                                  start_flags);
-            virDomainAuditStart(vm, "from-snapshot", rc >= 0);
-            if (rc < 0) {
-                qemuDomainRemoveInactive(driver, vm);
-                goto endjob;
-            }
-            detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_STARTED,
-                                             detail);
-            virObjectEventStateQueue(driver->domainEventState, event);
-            if (paused) {
-                detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-                event2 = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED,
-                                                  detail);
-                virObjectEventStateQueue(driver->domainEventState, event2);
-            }
-        }
-        break;
+        ret = qemuSnapshotRevertInactive(vm, snapshot, snap,
+                                         driver, cfg,
+                                         &inactiveConfig,
+                                         start_flags, flags);
+        goto endjob;
 
     case VIR_DOMAIN_SNAPSHOT_PMSUSPENDED:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
@@ -2300,8 +2320,6 @@ qemuSnapshotRevert(virDomainObj *vm,
                        virDomainSnapshotStateTypeToString(snapdef->state));
         goto endjob;
     }
-
-    ret = qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
 
  endjob:
     qemuProcessEndJob(driver, vm);
