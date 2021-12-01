@@ -234,8 +234,7 @@ qemuAgentIOProcessLine(qemuAgent *agent,
                        const char *line,
                        qemuAgentMessage *msg)
 {
-    virJSONValue *obj = NULL;
-    int ret = -1;
+    g_autoptr(virJSONValue) obj = NULL;
 
     VIR_DEBUG("Line [%s]", line);
 
@@ -247,19 +246,19 @@ qemuAgentIOProcessLine(qemuAgent *agent,
             return 0;
         }
 
-        goto cleanup;
+        return -1;
     }
 
     if (virJSONValueGetType(obj) != VIR_JSON_TYPE_OBJECT) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Parsed JSON reply '%s' isn't an object"), line);
-        goto cleanup;
+        return -1;
     }
 
     if (virJSONValueObjectHasKey(obj, "QMP") == 1) {
-        ret = 0;
+        return 0;
     } else if (virJSONValueObjectHasKey(obj, "event") == 1) {
-        ret = qemuAgentIOProcessEvent(agent, obj);
+        return qemuAgentIOProcessEvent(agent, obj);
     } else if (virJSONValueObjectHasKey(obj, "error") == 1 ||
                virJSONValueObjectHasKey(obj, "return") == 1) {
         if (msg) {
@@ -268,8 +267,7 @@ qemuAgentIOProcessLine(qemuAgent *agent,
 
                 if (virJSONValueObjectGetNumberUlong(obj, "return", &id) < 0) {
                     VIR_DEBUG("Ignoring delayed reply on sync");
-                    ret = 0;
-                    goto cleanup;
+                    return 0;
                 }
 
                 VIR_DEBUG("Guest returned ID: %llu", id);
@@ -277,8 +275,7 @@ qemuAgentIOProcessLine(qemuAgent *agent,
                 if (msg->id != id) {
                     VIR_DEBUG("Guest agent returned ID: %llu instead of %llu",
                               id, msg->id);
-                    ret = 0;
-                    goto cleanup;
+                    return 0;
                 }
             }
             msg->rxObject = g_steal_pointer(&obj);
@@ -287,15 +284,13 @@ qemuAgentIOProcessLine(qemuAgent *agent,
             /* we are out of sync */
             VIR_DEBUG("Ignoring delayed reply");
         }
-        ret = 0;
-    } else {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unknown JSON reply '%s'"), line);
+
+        return 0;
     }
 
- cleanup:
-    virJSONValueFree(obj);
-    return ret;
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unknown JSON reply '%s'"), line);
+    return -1;
 }
 
 static int qemuAgentIOProcessData(qemuAgent *agent,
