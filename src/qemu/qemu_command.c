@@ -4003,7 +4003,7 @@ qemuBuildMemoryDimmBackendStr(virCommand *cmd,
 
 virJSONValue *
 qemuBuildMemoryDeviceProps(const virDomainDef *def,
-                           virDomainMemoryDef *mem)
+                           const virDomainMemoryDef *mem)
 {
     g_autoptr(virJSONValue) props = NULL;
     const char *device = NULL;

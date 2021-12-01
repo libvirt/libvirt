@@ -154,7 +154,7 @@ int qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
 virJSONValue *
 qemuBuildMemoryDeviceProps(const virDomainDef *def,
-                           virDomainMemoryDef *mem);
+                           const virDomainMemoryDef *mem);
 
 /* Current, best practice */
 virJSONValue *
