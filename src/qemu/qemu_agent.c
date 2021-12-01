@@ -1206,8 +1206,8 @@ int qemuAgentShutdown(qemuAgent *agent,
                       qemuAgentShutdownMode mode)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuAgentMakeCommand("guest-shutdown",
                                "s:mode", qemuAgentShutdownModeTypeToString(mode),
@@ -1222,8 +1222,6 @@ int qemuAgentShutdown(qemuAgent *agent,
     ret = qemuAgentCommand(agent, cmd, &reply,
                            VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN);
 
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1245,12 +1243,11 @@ int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
                       unsigned int nmountpoints)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *arg = NULL;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (mountpoints && nmountpoints) {
-        arg = qemuAgentMakeStringsArray(mountpoints, nmountpoints);
+        g_autoptr(virJSONValue) arg = qemuAgentMakeStringsArray(mountpoints, nmountpoints);
         if (!arg)
             return -1;
 
@@ -1272,9 +1269,6 @@ int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
     }
 
  cleanup:
-    virJSONValueFree(arg);
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1292,10 +1286,8 @@ int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
 int qemuAgentFSThaw(qemuAgent *agent)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
-
-    cmd = qemuAgentMakeCommand("guest-fsfreeze-thaw", NULL);
+    g_autoptr(virJSONValue) cmd = qemuAgentMakeCommand("guest-fsfreeze-thaw", NULL);
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (!cmd)
         return -1;
@@ -1309,8 +1301,6 @@ int qemuAgentFSThaw(qemuAgent *agent)
     }
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1328,8 +1318,8 @@ qemuAgentSuspend(qemuAgent *agent,
                  unsigned int target)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuAgentMakeCommand(qemuAgentSuspendModeTypeToString(target),
                                NULL);
@@ -1339,8 +1329,6 @@ qemuAgentSuspend(qemuAgent *agent,
     agent->await_event = QEMU_AGENT_EVENT_SUSPEND;
     ret = qemuAgentCommand(agent, cmd, &reply, agent->timeout);
 
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1351,8 +1339,8 @@ qemuAgentArbitraryCommand(qemuAgent *agent,
                           int timeout)
 {
     int ret = -1;
-    virJSONValue *cmd = NULL;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     *result = NULL;
     if (timeout < VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN) {
@@ -1374,8 +1362,6 @@ qemuAgentArbitraryCommand(qemuAgent *agent,
 
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1384,8 +1370,8 @@ qemuAgentFSTrim(qemuAgent *agent,
                 unsigned long long minimum)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuAgentMakeCommand("guest-fstrim",
                                "U:minimum", minimum,
@@ -1395,8 +1381,6 @@ qemuAgentFSTrim(qemuAgent *agent,
 
     ret = qemuAgentCommand(agent, cmd, &reply, agent->timeout);
 
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1406,8 +1390,8 @@ qemuAgentGetVCPUs(qemuAgent *agent,
 {
     int ret = -1;
     size_t i;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
     virJSONValue *data = NULL;
     size_t ndata;
 
@@ -1461,8 +1445,6 @@ qemuAgentGetVCPUs(qemuAgent *agent,
     ret = ndata;
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1696,8 +1678,8 @@ qemuAgentGetTime(qemuAgent *agent,
 {
     int ret = -1;
     unsigned long long json_time;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuAgentMakeCommand("guest-get-time",
                                NULL);
@@ -1720,8 +1702,6 @@ qemuAgentGetTime(qemuAgent *agent,
     ret = 0;
 
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
@@ -1738,8 +1718,8 @@ qemuAgentSetTime(qemuAgent *agent,
                 bool rtcSync)
 {
     int ret = -1;
-    virJSONValue *cmd;
-    virJSONValue *reply = NULL;
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
 
     if (rtcSync) {
         cmd = qemuAgentMakeCommand("guest-set-time", NULL);
@@ -1774,8 +1754,6 @@ qemuAgentSetTime(qemuAgent *agent,
 
     ret = 0;
  cleanup:
-    virJSONValueFree(cmd);
-    virJSONValueFree(reply);
     return ret;
 }
 
