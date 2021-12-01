@@ -1997,6 +1997,40 @@ qemuSnapshotRevertPrep(virDomainMomentObj *snap,
 }
 
 
+static int
+qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
+                                virDomainMomentObj *snap,
+                                virQEMUDriver *driver,
+                                virQEMUDriverConfig *cfg,
+                                bool defined)
+{
+    qemuSnapshotSetCurrent(vm, snap);
+    if (qemuDomainSnapshotWriteMetadata(vm, snap,
+                                        driver->xmlopt,
+                                        cfg->snapshotDir) < 0) {
+        virDomainSnapshotSetCurrent(vm->snapshots, NULL);
+        return -1;
+    }
+
+    if (defined && vm->persistent) {
+        int detail;
+        virObjectEvent *event = NULL;
+        virDomainDef *saveDef = vm->newDef ? vm->newDef : vm->def;
+
+        if (virDomainDefSave(saveDef, driver->xmlopt, cfg->configDir) < 0)
+            return -1;
+
+        detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_DEFINED,
+                                                  detail);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    return 0;
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotRevertInactive(virQEMUDriver *driver,
@@ -2247,28 +2281,8 @@ qemuSnapshotRevert(virDomainObj *vm,
  endjob:
     qemuProcessEndJob(driver, vm);
 
-    if (ret == 0) {
-        qemuSnapshotSetCurrent(vm, snap);
-        if (qemuDomainSnapshotWriteMetadata(vm, snap,
-                                            driver->xmlopt,
-                                            cfg->snapshotDir) < 0) {
-            virDomainSnapshotSetCurrent(vm->snapshots, NULL);
-            ret = -1;
-        }
-    }
-    if (ret == 0 && defined && vm->persistent) {
-        virDomainDef *saveDef = vm->newDef ? vm->newDef : vm->def;
-
-        ret = virDomainDefSave(saveDef, driver->xmlopt, cfg->configDir);
-
-        if (ret == 0) {
-            detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                             VIR_DOMAIN_EVENT_DEFINED,
-                                             detail);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
-    }
+    if (ret == 0)
+        ret = qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
 
     return ret;
 }
