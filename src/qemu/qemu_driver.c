@@ -5233,7 +5233,7 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     int new_niothreads = 0;
     qemuMonitorIOThreadInfo **new_iothreads = NULL;
     virDomainIOThreadIDDef *iothrid;
-    virJSONValue *props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     bool threadAdded = false;
     bool objectAdded = false;
 
@@ -5316,7 +5316,6 @@ qemuDomainHotplugAddIOThread(virQEMUDriver *driver,
     }
     virDomainAuditIOThread(vm, orig_niothreads, new_niothreads,
                            "update", ret == 0);
-    virJSONValueFree(props);
     return ret;
 
  exit_monitor:
