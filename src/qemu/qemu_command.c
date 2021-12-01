@@ -3610,12 +3610,14 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
                            const virDomainMemoryDef *mem,
                            unsigned long long *pagesizeRet,
                            bool *needHugepageRet,
-                           bool *useHugepageRet)
+                           bool *useHugepageRet,
+                           bool *preallocRet)
 {
     const long system_page_size = virGetSystemPageSizeKB();
     unsigned long long pagesize = mem->pagesize;
     bool needHugepage = !!pagesize;
     bool useHugepage = !!pagesize;
+    bool prealloc = false;
 
     if (pagesize == 0) {
         virDomainHugePage *master_hugepage = NULL;
@@ -3676,9 +3678,24 @@ qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
             return -1;
     }
 
+    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        prealloc = true;
+
+    /* If the NVDIMM is a real device then there's nothing to prealloc.
+     * If anything, we would be only wearing off the device.
+     * Similarly, virtio-pmem-pci doesn't need prealloc either. */
+    if (mem->nvdimmPath) {
+        if (!mem->nvdimmPmem &&
+            mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
+            prealloc = true;
+    } else if (useHugepage) {
+        prealloc = true;
+    }
+
     *pagesizeRet = pagesize;
     *needHugepageRet = needHugepage;
     *useHugepageRet = useHugepage;
+    *preallocRet = prealloc;
 
     return 0;
 }
@@ -3768,15 +3785,12 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     if (discard == VIR_TRISTATE_BOOL_ABSENT)
         discard = def->mem.discard;
 
-    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
-        prealloc = true;
-
     if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
         virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
         mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
     if (qemuBuildMemoryGetPagesize(cfg, def, mem, &pagesize,
-                                   &needHugepage, &useHugepage) < 0)
+                                   &needHugepage, &useHugepage, &prealloc) < 0)
         return -1;
 
     props = virJSONValueNewObject();
@@ -3785,13 +3799,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         def->mem.source == VIR_DOMAIN_MEMORY_SOURCE_MEMFD) {
         backendType = "memory-backend-memfd";
 
-        if (useHugepage) {
-            if (virJSONValueObjectAdd(&props, "b:hugetlb", useHugepage, NULL) < 0 ||
-                virJSONValueObjectAdd(&props, "U:hugetlbsize", pagesize << 10, NULL) < 0) {
-                return -1;
-            }
-
-            prealloc = true;
+        if (useHugepage &&
+            (virJSONValueObjectAdd(&props, "b:hugetlb", useHugepage, NULL) < 0 ||
+             virJSONValueObjectAdd(&props, "U:hugetlbsize", pagesize << 10, NULL) < 0)) {
+            return -1;
         }
 
         if (qemuBuildMemoryBackendPropsShare(props, memAccess) < 0)
@@ -3805,15 +3816,9 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
 
         if (mem->nvdimmPath) {
             memPath = g_strdup(mem->nvdimmPath);
-            /* If the NVDIMM is a real device then there's nothing to prealloc.
-             * If anything, we would be only wearing off the device.
-             * Similarly, virtio-pmem-pci doesn't need prealloc either. */
-            if (!mem->nvdimmPmem && mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
-                prealloc = true;
         } else if (useHugepage) {
             if (qemuGetDomainHupageMemPath(priv->driver, def, pagesize, &memPath) < 0)
                 return -1;
-            prealloc = true;
         } else {
             /* We can have both pagesize and mem source. If that's the case,
              * prefer hugepages as those are more specific. */
