@@ -2126,9 +2126,9 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
 /* The domain is expected to be locked and inactive. */
 static int
-qemuSnapshotRevertInactive(virQEMUDriver *driver,
-                           virDomainObj *vm,
-                           virDomainMomentObj *snap)
+qemuSnapshotInternalRevertInactive(virQEMUDriver *driver,
+                                   virDomainObj *vm,
+                                   virDomainMomentObj *snap)
 {
     size_t i;
 
@@ -2242,7 +2242,7 @@ qemuSnapshotRevert(virDomainObj *vm,
             virObjectEventStateQueue(driver->domainEventState, event);
         }
 
-        if (qemuSnapshotRevertInactive(driver, vm, snap) < 0) {
+        if (qemuSnapshotInternalRevertInactive(driver, vm, snap) < 0) {
             qemuDomainRemoveInactive(driver, vm);
             goto endjob;
         }
