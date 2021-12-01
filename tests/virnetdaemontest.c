@@ -273,8 +273,8 @@ static int testExecRestart(const void *opaque)
     g_autofree char *outfile = NULL;
     g_autofree char *injsonstr = NULL;
     g_autofree char *outjsonstr = NULL;
-    virJSONValue *injson = NULL;
-    virJSONValue *outjson = NULL;
+    g_autoptr(virJSONValue) injson = NULL;
+    g_autoptr(virJSONValue) outjson = NULL;
     int fdclient[2] = { -1, -1 }, fdserver[2] = { -1, -1 };
 
     if (socketpair(PF_UNIX, SOCK_STREAM, 0, fdclient) < 0) {
@@ -351,8 +351,6 @@ static int testExecRestart(const void *opaque)
             VIR_TEST_DEBUG("Test should have failed");
             ret = -1;
     }
-    virJSONValueFree(injson);
-    virJSONValueFree(outjson);
     virObjectUnref(dmn);
     VIR_FORCE_CLOSE(fdserver[0]);
     VIR_FORCE_CLOSE(fdserver[1]);
