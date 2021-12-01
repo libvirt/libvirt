@@ -14901,12 +14901,14 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     virStorageSource *n;
     virStorageSource *mirrorBacking = NULL;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
+    bool syncWrites = !!(flags & VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES);
     int rc = 0;
 
     /* Preliminaries: find the disk we are editing, sanity checks */
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
                   VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
-                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
+                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB |
+                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES, -1);
 
     if (virStorageSourceIsRelative(mirror)) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
@@ -14943,6 +14945,12 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
         virDomainDiskDefSourceLUNValidate(mirror) < 0)
         goto endjob;
+
+    if (syncWrites && !blockdev) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"));
+        goto endjob;
+    }
 
     if (!(flags & VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB) &&
         vm->persistent) {
@@ -15150,7 +15158,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                                         qemuDomainDiskGetTopNodename(disk),
                                         mirror->nodeformat, bandwidth,
                                         granularity, buf_size, mirror_shallow,
-                                        false);
+                                        syncWrites);
     } else {
         /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
          * by the user */
@@ -15285,7 +15293,9 @@ qemuDomainBlockCopy(virDomainPtr dom, const char *disk, const char *destxml,
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COPY_SHALLOW |
                   VIR_DOMAIN_BLOCK_COPY_REUSE_EXT |
-                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB, -1);
+                  VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB |
+                  VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES, -1);
+
     if (virTypedParamsValidate(params, nparams,
                                VIR_DOMAIN_BLOCK_COPY_BANDWIDTH,
                                VIR_TYPED_PARAM_ULLONG,
