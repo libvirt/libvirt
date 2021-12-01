@@ -549,41 +549,21 @@ virLockDaemonClientPreExecRestart(virNetServerClient *client G_GNUC_UNUSED,
                                   void *opaque)
 {
     virLockDaemonClient *priv = opaque;
-    virJSONValue *object = virJSONValueNewObject();
+    virJSONValue *object = NULL;
     char uuidstr[VIR_UUID_STRING_BUFLEN];
 
-    if (virJSONValueObjectAppendBoolean(object, "restricted", priv->restricted) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set restricted data in JSON document"));
-        goto error;
-    }
-    if (virJSONValueObjectAppendNumberUint(object, "ownerPid", priv->ownerPid) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set ownerPid data in JSON document"));
-        goto error;
-    }
-    if (virJSONValueObjectAppendNumberUint(object, "ownerId", priv->ownerId) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set ownerId data in JSON document"));
-        goto error;
-    }
-    if (virJSONValueObjectAppendString(object, "ownerName", priv->ownerName) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set ownerName data in JSON document"));
-        goto error;
-    }
     virUUIDFormat(priv->ownerUUID, uuidstr);
-    if (virJSONValueObjectAppendString(object, "ownerUUID", uuidstr) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot set ownerUUID data in JSON document"));
-        goto error;
-    }
+
+    if (virJSONValueObjectAdd(&object,
+                              "b:restricted", priv->restricted,
+                              "u:ownerPid", priv->ownerPid,
+                              "u:ownerId", priv->ownerId,
+                              "s:ownerName", priv->ownerName,
+                              "s:ownerUUID", uuidstr,
+                              NULL) < 0)
+        return NULL;
 
     return object;
-
- error:
-    virJSONValueFree(object);
-    return NULL;
 }
 
 
