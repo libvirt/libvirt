@@ -7964,16 +7964,15 @@ qemuMonitorJSONSetWatchdogAction(qemuMonitor *mon,
 int
 qemuMonitorJSONBlockdevCreate(qemuMonitor *mon,
                               const char *jobname,
-                              virJSONValue *props)
+                              virJSONValue **props)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
     cmd = qemuMonitorJSONMakeCommand("blockdev-create",
                                      "s:job-id", jobname,
-                                     "a:options", &props,
+                                     "a:options", props,
                                      NULL);
-    virJSONValueFree(props);
     if (!cmd)
         return -1;
 

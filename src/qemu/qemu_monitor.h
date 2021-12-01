@@ -1416,7 +1416,7 @@ int qemuMonitorSetWatchdogAction(qemuMonitor *mon,
 
 int qemuMonitorBlockdevCreate(qemuMonitor *mon,
                               const char *jobname,
-                              virJSONValue *props);
+                              virJSONValue **props);
 
 int qemuMonitorBlockdevAdd(qemuMonitor *mon,
                            virJSONValue **props);

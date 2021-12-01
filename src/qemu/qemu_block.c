@@ -2710,8 +2710,7 @@ qemuBlockStorageSourceCreateGeneric(virDomainObj *vm,
     if (qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    rc = qemuMonitorBlockdevCreate(priv->mon, job->name, props);
-    props = NULL;
+    rc = qemuMonitorBlockdevCreate(priv->mon, job->name, &props);
 
     qemuDomainObjExitMonitor(priv->driver, vm);
     if (rc < 0)
