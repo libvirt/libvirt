@@ -2256,14 +2256,18 @@ qemuSnapshotRevert(virDomainObj *vm,
             ret = -1;
         }
     }
-    if (ret == 0 && defined && vm->persistent &&
-        !(ret = virDomainDefSave(vm->newDef ? vm->newDef : vm->def,
-                                 driver->xmlopt, cfg->configDir))) {
-        detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
-        virObjectEventStateQueue(driver->domainEventState,
-            virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_DEFINED,
-                                              detail));
+    if (ret == 0 && defined && vm->persistent) {
+        virDomainDef *saveDef = vm->newDef ? vm->newDef : vm->def;
+
+        ret = virDomainDefSave(saveDef, driver->xmlopt, cfg->configDir);
+
+        if (ret == 0) {
+            detail = VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT;
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                             VIR_DOMAIN_EVENT_DEFINED,
+                                             detail);
+            virObjectEventStateQueue(driver->domainEventState, event);
+        }
     }
 
     return ret;
