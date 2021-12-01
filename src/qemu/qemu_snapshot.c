@@ -2031,6 +2031,99 @@ qemuSnapshotRevertWriteMetadata(virDomainObj *vm,
 }
 
 
+static int
+qemuSnapshotRevertActive(virDomainObj *vm,
+                         virDomainSnapshotPtr snapshot,
+                         virDomainMomentObj *snap,
+                         virDomainSnapshotDef *snapdef,
+                         virQEMUDriver *driver,
+                         virQEMUDriverConfig *cfg,
+                         virDomainDef **config,
+                         virDomainDef **inactiveConfig,
+                         unsigned int start_flags,
+                         unsigned int flags)
+{
+    virObjectEvent *event = NULL;
+    virObjectEvent *event2 = NULL;
+    int detail;
+    bool defined = false;
+    qemuDomainSaveCookie *cookie = (qemuDomainSaveCookie *) snapdef->cookie;
+    int rc;
+
+    start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
+
+    /* Transitions 2, 3, 5, 6, 8, 9 */
+    if (virDomainObjIsActive(vm)) {
+        /* Transitions 5, 6, 8, 9 */
+        qemuProcessStop(driver, vm,
+                        VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
+                        QEMU_ASYNC_JOB_START, 0);
+        virDomainAuditStop(vm, "from-snapshot");
+        detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_STOPPED,
+                                                  detail);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    if (*inactiveConfig) {
+        virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
+        defined = true;
+    }
+
+    virDomainObjAssignDef(vm, config, true, NULL);
+
+    /* No cookie means libvirt which saved the domain was too old to
+     * mess up the CPU definitions.
+     */
+    if (cookie &&
+        qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
+        return -1;
+
+    rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
+                          cookie ? cookie->cpu : NULL,
+                          QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
+                          VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
+                          start_flags);
+    virDomainAuditStart(vm, "from-snapshot", rc >= 0);
+    detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                     VIR_DOMAIN_EVENT_STARTED,
+                                     detail);
+    virObjectEventStateQueue(driver->domainEventState, event);
+    if (rc < 0)
+        return -1;
+
+    /* Touch up domain state.  */
+    if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
+        (snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED ||
+         (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
+        /* Transitions 3, 6, 9 */
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
+                             VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
+        detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
+        event2 = virDomainEventLifecycleNewFromObj(vm,
+                                          VIR_DOMAIN_EVENT_SUSPENDED,
+                                          detail);
+        virObjectEventStateQueue(driver->domainEventState, event2);
+    } else {
+        /* Transitions 2, 5, 8 */
+        if (!virDomainObjIsActive(vm)) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("guest unexpectedly quit"));
+            return -1;
+        }
+        rc = qemuProcessStartCPUs(driver, vm,
+                                  VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
+                                  QEMU_ASYNC_JOB_START);
+        if (rc < 0)
+            return -1;
+    }
+
+    return qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
+}
+
+
 /* The domain is expected to be locked and inactive. */
 static int
 qemuSnapshotRevertInactive(virQEMUDriver *driver,
@@ -2076,7 +2169,6 @@ qemuSnapshotRevert(virDomainObj *vm,
     g_autoptr(virDomainDef) config = NULL;
     g_autoptr(virDomainDef) inactiveConfig = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    qemuDomainSaveCookie *cookie;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_GEN_VMID;
     bool defined = false;
 
@@ -2120,81 +2212,14 @@ qemuSnapshotRevert(virDomainObj *vm,
         goto endjob;
     }
 
-    cookie = (qemuDomainSaveCookie *) snapdef->cookie;
-
     switch ((virDomainSnapshotState) snapdef->state) {
     case VIR_DOMAIN_SNAPSHOT_RUNNING:
     case VIR_DOMAIN_SNAPSHOT_PAUSED:
-        start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
-
-        /* Transitions 2, 3, 5, 6, 8, 9 */
-        if (virDomainObjIsActive(vm)) {
-            /* Transitions 5, 6, 8, 9 */
-            qemuProcessStop(driver, vm,
-                            VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                            QEMU_ASYNC_JOB_START, 0);
-            virDomainAuditStop(vm, "from-snapshot");
-            detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                                      VIR_DOMAIN_EVENT_STOPPED,
-                                                      detail);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        }
-
-        if (inactiveConfig) {
-            virDomainObjAssignDef(vm, &inactiveConfig, false, NULL);
-            defined = true;
-        }
-
-        virDomainObjAssignDef(vm, &config, true, NULL);
-
-        /* No cookie means libvirt which saved the domain was too old to
-         * mess up the CPU definitions.
-         */
-        if (cookie &&
-            qemuDomainFixupCPUs(vm, &cookie->cpu) < 0)
-            goto endjob;
-
-        rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
-                              cookie ? cookie->cpu : NULL,
-                              QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
-                              VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
-                              start_flags);
-        virDomainAuditStart(vm, "from-snapshot", rc >= 0);
-        detail = VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT;
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         detail);
-        virObjectEventStateQueue(driver->domainEventState, event);
-        if (rc < 0)
-            goto endjob;
-
-        /* Touch up domain state.  */
-        if (!(flags & VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING) &&
-            (snapdef->state == VIR_DOMAIN_SNAPSHOT_PAUSED ||
-             (flags & VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED))) {
-            /* Transitions 3, 6, 9 */
-            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
-                                 VIR_DOMAIN_PAUSED_FROM_SNAPSHOT);
-            detail = VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT;
-            event2 = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_SUSPENDED,
-                                              detail);
-            virObjectEventStateQueue(driver->domainEventState, event2);
-        } else {
-            /* Transitions 2, 5, 8 */
-            if (!virDomainObjIsActive(vm)) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("guest unexpectedly quit"));
-                goto endjob;
-            }
-            rc = qemuProcessStartCPUs(driver, vm,
-                                      VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
-                                      QEMU_ASYNC_JOB_START);
-            if (rc < 0)
-                goto endjob;
-        }
-        break;
+        ret = qemuSnapshotRevertActive(vm, snapshot, snap, snapdef,
+                                       driver, cfg,
+                                       &config, &inactiveConfig,
+                                       start_flags, flags);
+        goto endjob;
 
     case VIR_DOMAIN_SNAPSHOT_SHUTDOWN:
     case VIR_DOMAIN_SNAPSHOT_SHUTOFF:
