@@ -1205,7 +1205,6 @@ VIR_ENUM_IMPL(qemuAgentShutdownMode,
 int qemuAgentShutdown(qemuAgent *agent,
                       qemuAgentShutdownMode mode)
 {
-    int ret = -1;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1219,10 +1218,9 @@ int qemuAgentShutdown(qemuAgent *agent,
         agent->await_event = QEMU_AGENT_EVENT_RESET;
     else
         agent->await_event = QEMU_AGENT_EVENT_SHUTDOWN;
-    ret = qemuAgentCommand(agent, cmd, &reply,
-                           VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN);
 
-    return ret;
+    return qemuAgentCommand(agent, cmd, &reply,
+                            VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN);
 }
 
 /*
@@ -1242,7 +1240,7 @@ int qemuAgentShutdown(qemuAgent *agent,
 int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
                       unsigned int nmountpoints)
 {
-    int ret = -1;
+    int nfrozen = 0;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1258,18 +1256,18 @@ int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
     }
 
     if (!cmd)
-        goto cleanup;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+    if (virJSONValueObjectGetNumberInt(reply, "return", &nfrozen) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed return value"));
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return nfrozen;
 }
 
 /*
@@ -1285,7 +1283,7 @@ int qemuAgentFSFreeze(qemuAgent *agent, const char **mountpoints,
  */
 int qemuAgentFSThaw(qemuAgent *agent)
 {
-    int ret = -1;
+    int nthawed = 0;
     g_autoptr(virJSONValue) cmd = qemuAgentMakeCommand("guest-fsfreeze-thaw", NULL);
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1293,15 +1291,15 @@ int qemuAgentFSThaw(qemuAgent *agent)
         return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
-    if (virJSONValueObjectGetNumberInt(reply, "return", &ret) < 0) {
+    if (virJSONValueObjectGetNumberInt(reply, "return", &nthawed) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed return value"));
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return nthawed;
 }
 
 VIR_ENUM_DECL(qemuAgentSuspendMode);
@@ -1317,7 +1315,6 @@ int
 qemuAgentSuspend(qemuAgent *agent,
                  unsigned int target)
 {
-    int ret = -1;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1327,9 +1324,8 @@ qemuAgentSuspend(qemuAgent *agent,
         return -1;
 
     agent->await_event = QEMU_AGENT_EVENT_SUSPEND;
-    ret = qemuAgentCommand(agent, cmd, &reply, agent->timeout);
 
-    return ret;
+    return qemuAgentCommand(agent, cmd, &reply, agent->timeout);
 }
 
 int
@@ -1338,7 +1334,7 @@ qemuAgentArbitraryCommand(qemuAgent *agent,
                           char **result,
                           int timeout)
 {
-    int ret = -1;
+    int rc;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1348,28 +1344,25 @@ qemuAgentArbitraryCommand(qemuAgent *agent,
                        _("guest agent timeout '%d' is "
                          "less than the minimum '%d'"),
                        timeout, VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN);
-        goto cleanup;
+        return -1;
     }
 
     if (!(cmd = virJSONValueFromString(cmd_str)))
-        goto cleanup;
+        return -1;
 
-    if ((ret = qemuAgentCommand(agent, cmd, &reply, timeout)) < 0)
-        goto cleanup;
+    if ((rc = qemuAgentCommand(agent, cmd, &reply, timeout)) < 0)
+        return rc;
 
     if (!(*result = virJSONValueToString(reply, false)))
-        ret = -1;
+        return -1;
 
-
- cleanup:
-    return ret;
+    return rc;
 }
 
 int
 qemuAgentFSTrim(qemuAgent *agent,
                 unsigned long long minimum)
 {
-    int ret = -1;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1377,18 +1370,15 @@ qemuAgentFSTrim(qemuAgent *agent,
                                "U:minimum", minimum,
                                NULL);
     if (!cmd)
-        return ret;
+        return -1;
 
-    ret = qemuAgentCommand(agent, cmd, &reply, agent->timeout);
-
-    return ret;
+    return qemuAgentCommand(agent, cmd, &reply, agent->timeout);
 }
 
 int
 qemuAgentGetVCPUs(qemuAgent *agent,
                   qemuAgentCPUInfo **info)
 {
-    int ret = -1;
     size_t i;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -1399,12 +1389,12 @@ qemuAgentGetVCPUs(qemuAgent *agent,
         return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
     if (!(data = virJSONValueObjectGetArray(reply, "return"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest-get-vcpus reply was missing return data"));
-        goto cleanup;
+        return -1;
     }
 
     ndata = virJSONValueArraySize(data);
@@ -1419,33 +1409,30 @@ qemuAgentGetVCPUs(qemuAgent *agent,
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("array element missing in guest-get-vcpus return "
                              "value"));
-            goto cleanup;
+            return -1;
         }
 
         if (virJSONValueObjectGetNumberUint(entry, "logical-id", &in->id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'logical-id' missing in reply of guest-get-vcpus"));
-            goto cleanup;
+            return -1;
         }
 
         if (virJSONValueObjectGetBoolean(entry, "online", &in->online) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'online' missing in reply of guest-get-vcpus"));
-            goto cleanup;
+            return -1;
         }
 
         if (virJSONValueObjectGetBoolean(entry, "can-offline",
                                          &in->offlinable) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("'can-offline' missing in reply of guest-get-vcpus"));
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = ndata;
-
- cleanup:
-    return ret;
+    return ndata;
 }
 
 
@@ -1676,7 +1663,6 @@ qemuAgentGetTime(qemuAgent *agent,
                  long long *seconds,
                  unsigned int *nseconds)
 {
-    int ret = -1;
     unsigned long long json_time;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -1684,25 +1670,22 @@ qemuAgentGetTime(qemuAgent *agent,
     cmd = qemuAgentMakeCommand("guest-get-time",
                                NULL);
     if (!cmd)
-        return ret;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
     if (virJSONValueObjectGetNumberUlong(reply, "return", &json_time) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("malformed return value"));
-        goto cleanup;
+        return -1;
     }
 
     /* guest agent returns time in nanoseconds,
      * we need it in seconds here */
     *seconds = json_time / 1000000000LL;
     *nseconds = json_time % 1000000000LL;
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1717,7 +1700,6 @@ qemuAgentSetTime(qemuAgent *agent,
                 unsigned int nseconds,
                 bool rtcSync)
 {
-    int ret = -1;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
 
@@ -1736,7 +1718,7 @@ qemuAgentSetTime(qemuAgent *agent,
             virReportError(VIR_ERR_INVALID_ARG,
                            _("Time '%lld' is too big for guest agent"),
                            seconds);
-            return ret;
+            return -1;
         }
 
         json_time = seconds * 1000000000LL;
@@ -1747,14 +1729,12 @@ qemuAgentSetTime(qemuAgent *agent,
     }
 
     if (!cmd)
-        return ret;
+        return -1;
 
     if (qemuAgentCommand(agent, cmd, &reply, agent->timeout) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 void
