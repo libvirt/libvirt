@@ -1218,7 +1218,7 @@ blockcopy
       [--shallow] [--reuse-external] [bandwidth]
       [--wait [--async] [--verbose]] [{--pivot | --finish}]
       [--timeout seconds] [granularity] [buf-size] [--bytes]
-      [--transient-job]
+      [--transient-job] [--synchronous-writes]
 
 Copy a disk backing image chain to a destination.  Either *dest* as
 the destination file name, or *--xml* with the name of an XML file containing
@@ -1277,6 +1277,11 @@ may allow faster completion (the default value is usually correct).
 be recovered if the VM crashes or is turned off before the job completes. This
 flag removes the restriction of copy jobs to transient domains if that
 restriction is applied by the hypervisor.
+
+If *--synchronous-writes* is specified the block job will wait for guest writes
+to be propagated both to the original image and to the destination of the copy
+so that it's guaranteed that the job converges if the destination storage is
+slower. This may impact performance of writes while the blockjob is running.
 
 
 blockjob

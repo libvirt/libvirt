@@ -2598,6 +2598,10 @@ typedef enum {
 
     /* Don't force usage of recoverable job for the copy operation */
     VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB = 1 << 2,
+
+    /* Force the copy job to synchronously propagate guest writes into
+     * the destination image, so that the copy is guaranteed to converge */
+    VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES = 1 << 3,
 } virDomainBlockCopyFlags;
 
 /**

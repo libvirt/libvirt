@@ -10509,6 +10509,12 @@ virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * remove the restriction of copy jobs to transient domains. Note that this flag
  * is automatically implied if the VM is transient at the time it's started.
  *
+ * If @flags contains VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES the job will wait
+ * for guest writes to be propagated both to the original image and to the
+ * destination of the copy so that it's guaranteed that the job converges if
+ * the destination storage is slower. This may impact performance of writes
+ * while the blockjob is running.
+ *
  * The @disk parameter is either an unambiguous source name of the
  * block device (the <source file='...'/> sub-element, such as
  * "/path/to/image"), or the device target shorthand (the

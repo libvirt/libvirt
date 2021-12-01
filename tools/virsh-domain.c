@@ -2284,6 +2284,10 @@ static const vshCmdOptDef opts_blockcopy[] = {
      .type = VSH_OT_BOOL,
      .help = N_("the copy job is not persisted if VM is turned off")
     },
+    {.name = "synchronous-writes",
+     .type = VSH_OT_BOOL,
+     .help = N_("the copy job forces guest writes to be synchronously written to the destination")
+    },
     {.name = NULL}
 };
 
@@ -2306,6 +2310,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     bool async = vshCommandOptBool(cmd, "async");
     bool bytes = vshCommandOptBool(cmd, "bytes");
     bool transientjob = vshCommandOptBool(cmd, "transient-job");
+    bool syncWrites = vshCommandOptBool(cmd, "synchronous-writes");
     int timeout = 0;
     const char *path = NULL;
     int abort_flags = 0;
@@ -2337,6 +2342,8 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT;
     if (transientjob)
         flags |= VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB;
+    if (syncWrites)
+        flags |= VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES;
     if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
         return false;
 
@@ -2386,7 +2393,7 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
     }
 
     if (granularity || buf_size || (format && STRNEQ(format, "raw")) || xml ||
-        transientjob) {
+        transientjob || syncWrites) {
         /* New API */
         if (bandwidth || granularity || buf_size) {
             params = g_new0(virTypedParameter, 3);
