@@ -2276,13 +2276,10 @@ qemuSnapshotRevert(virDomainObj *vm,
         goto endjob;
     }
 
-    ret = 0;
+    ret = qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
 
  endjob:
     qemuProcessEndJob(driver, vm);
-
-    if (ret == 0)
-        ret = qemuSnapshotRevertWriteMetadata(vm, snap, driver, cfg, defined);
 
     return ret;
 }
