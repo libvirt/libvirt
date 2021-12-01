@@ -121,14 +121,12 @@ virCHProcessUpdateConsole(virDomainObj *vm,
 static int
 virCHProcessUpdateInfo(virDomainObj *vm)
 {
-    virJSONValue *info;
+    g_autoptr(virJSONValue) info = NULL;
     virCHDomainObjPrivate *priv = vm->privateData;
     if (virCHMonitorGetInfo(priv->monitor, &info) < 0)
         return -1;
 
     virCHProcessUpdateConsole(vm, info);
-
-    virJSONValueFree(info);
 
     return 0;
 }
