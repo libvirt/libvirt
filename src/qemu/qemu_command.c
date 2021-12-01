@@ -3604,103 +3604,24 @@ qemuBuildMemoryGetDefaultPagesize(virQEMUDriverConfig *cfg,
 }
 
 
-/**
- * qemuBuildMemoryBackendProps:
- * @backendProps: [out] constructed object
- * @alias: alias of the device
- * @cfg: qemu driver config object
- * @priv: pointer to domain private object
- * @def: domain definition object
- * @mem: memory definition object
- * @force: forcibly use one of the backends
- *
- * Creates a configuration object that represents memory backend of given guest
- * NUMA node (domain @def and @mem). Use @priv->autoNodeset to fine tune the
- * placement of the memory on the host NUMA nodes.
- *
- * By default, if no memory-backend-* object is necessary to fulfil the guest
- * configuration value of 1 is returned. This behaviour can be suppressed by
- * setting @force to true in which case 0 would be returned.
- *
- * Then, if one of the three memory-backend-* should be used, the @priv->qemuCaps
- * is consulted to check if qemu does support it.
- *
- * Returns: 0 on success,
- *          1 on success and if there's no need to use memory-backend-*
- *         -1 on error.
- */
-int
-qemuBuildMemoryBackendProps(virJSONValue **backendProps,
-                            const char *alias,
-                            virQEMUDriverConfig *cfg,
-                            qemuDomainObjPrivate *priv,
-                            const virDomainDef *def,
-                            const virDomainMemoryDef *mem,
-                            bool force,
-                            bool systemMemory)
+static int
+qemuBuildMemoryGetPagesize(virQEMUDriverConfig *cfg,
+                           const virDomainDef *def,
+                           const virDomainMemoryDef *mem,
+                           unsigned long long *pagesizeRet,
+                           bool *needHugepageRet,
+                           bool *useHugepageRet)
 {
-    const char *backendType = "memory-backend-file";
-    virDomainNumatuneMemMode mode;
     const long system_page_size = virGetSystemPageSizeKB();
-    virDomainMemoryAccess memAccess = mem->access;
-    size_t i;
-    g_autofree char *memPath = NULL;
-    bool prealloc = false;
-    virBitmap *nodemask = NULL;
-    int rc;
-    g_autoptr(virJSONValue) props = NULL;
-    bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, mem->targetNode);
     unsigned long long pagesize = mem->pagesize;
     bool needHugepage = !!pagesize;
     bool useHugepage = !!pagesize;
-    int discard = mem->discard;
-    bool disableCanonicalPath = false;
-
-    /* Disabling canonical path is required for migration compatibility of
-     * system memory objects, see below */
-
-    /* The difference between @needHugepage and @useHugepage is that the latter
-     * is true whenever huge page is defined for the current memory cell.
-     * Either directly, or transitively via global domain huge pages. The
-     * former is true whenever "memory-backend-file" must be used to satisfy
-     * @useHugepage. */
-
-    *backendProps = NULL;
-
-    if (mem->targetNode >= 0) {
-        /* memory devices could provide a invalid guest node */
-        if (mem->targetNode >= virDomainNumaGetNodeCount(def->numa)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("can't add memory backend for guest node '%d' as "
-                             "the guest has only '%zu' NUMA nodes configured"),
-                           mem->targetNode, virDomainNumaGetNodeCount(def->numa));
-            return -1;
-        }
-
-        if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
-            memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
-
-        if (discard == VIR_TRISTATE_BOOL_ABSENT)
-            discard = virDomainNumaGetNodeDiscard(def->numa, mem->targetNode);
-    }
-
-    if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
-        memAccess = def->mem.access;
-
-    if (discard == VIR_TRISTATE_BOOL_ABSENT)
-        discard = def->mem.discard;
-
-    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
-        prealloc = true;
-
-    if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
-        virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
-        mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
 
     if (pagesize == 0) {
         virDomainHugePage *master_hugepage = NULL;
         virDomainHugePage *hugepage = NULL;
         bool thisHugepage = false;
+        size_t i;
 
         /* Find the huge page size we want to use */
         for (i = 0; i < def->mem.nhugepages; i++) {
@@ -3754,6 +3675,109 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
         if (qemuBuildMemoryGetDefaultPagesize(cfg, &pagesize) < 0)
             return -1;
     }
+
+    *pagesizeRet = pagesize;
+    *needHugepageRet = needHugepage;
+    *useHugepageRet = useHugepage;
+
+    return 0;
+}
+
+
+/**
+ * qemuBuildMemoryBackendProps:
+ * @backendProps: [out] constructed object
+ * @alias: alias of the device
+ * @cfg: qemu driver config object
+ * @priv: pointer to domain private object
+ * @def: domain definition object
+ * @mem: memory definition object
+ * @force: forcibly use one of the backends
+ *
+ * Creates a configuration object that represents memory backend of given guest
+ * NUMA node (domain @def and @mem). Use @priv->autoNodeset to fine tune the
+ * placement of the memory on the host NUMA nodes.
+ *
+ * By default, if no memory-backend-* object is necessary to fulfil the guest
+ * configuration value of 1 is returned. This behaviour can be suppressed by
+ * setting @force to true in which case 0 would be returned.
+ *
+ * Then, if one of the three memory-backend-* should be used, the @priv->qemuCaps
+ * is consulted to check if qemu does support it.
+ *
+ * Returns: 0 on success,
+ *          1 on success and if there's no need to use memory-backend-*
+ *         -1 on error.
+ */
+int
+qemuBuildMemoryBackendProps(virJSONValue **backendProps,
+                            const char *alias,
+                            virQEMUDriverConfig *cfg,
+                            qemuDomainObjPrivate *priv,
+                            const virDomainDef *def,
+                            const virDomainMemoryDef *mem,
+                            bool force,
+                            bool systemMemory)
+{
+    const char *backendType = "memory-backend-file";
+    virDomainNumatuneMemMode mode;
+    virDomainMemoryAccess memAccess = mem->access;
+    g_autofree char *memPath = NULL;
+    bool prealloc = false;
+    virBitmap *nodemask = NULL;
+    int rc;
+    g_autoptr(virJSONValue) props = NULL;
+    bool nodeSpecified = virDomainNumatuneNodeSpecified(def->numa, mem->targetNode);
+    unsigned long long pagesize = 0;
+    bool needHugepage = false;
+    bool useHugepage = false;
+    int discard = mem->discard;
+    bool disableCanonicalPath = false;
+
+    /* Disabling canonical path is required for migration compatibility of
+     * system memory objects, see below */
+
+    /* The difference between @needHugepage and @useHugepage is that the latter
+     * is true whenever huge page is defined for the current memory cell.
+     * Either directly, or transitively via global domain huge pages. The
+     * former is true whenever "memory-backend-file" must be used to satisfy
+     * @useHugepage. */
+
+    *backendProps = NULL;
+
+    if (mem->targetNode >= 0) {
+        /* memory devices could provide a invalid guest node */
+        if (mem->targetNode >= virDomainNumaGetNodeCount(def->numa)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("can't add memory backend for guest node '%d' as "
+                             "the guest has only '%zu' NUMA nodes configured"),
+                           mem->targetNode, virDomainNumaGetNodeCount(def->numa));
+            return -1;
+        }
+
+        if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+            memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
+
+        if (discard == VIR_TRISTATE_BOOL_ABSENT)
+            discard = virDomainNumaGetNodeDiscard(def->numa, mem->targetNode);
+    }
+
+    if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
+        memAccess = def->mem.access;
+
+    if (discard == VIR_TRISTATE_BOOL_ABSENT)
+        discard = def->mem.discard;
+
+    if (def->mem.allocation == VIR_DOMAIN_MEMORY_ALLOCATION_IMMEDIATE)
+        prealloc = true;
+
+    if (virDomainNumatuneGetMode(def->numa, mem->targetNode, &mode) < 0 &&
+        virDomainNumatuneGetMode(def->numa, -1, &mode) < 0)
+        mode = VIR_DOMAIN_NUMATUNE_MEM_STRICT;
+
+    if (qemuBuildMemoryGetPagesize(cfg, def, mem, &pagesize,
+                                   &needHugepage, &useHugepage) < 0)
+        return -1;
 
     props = virJSONValueNewObject();
 
