@@ -411,7 +411,7 @@ qemuHotplugAttachManagedPR(virQEMUDriver *driver,
                            qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virJSONValue *props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     bool daemonStarted = false;
     int ret = -1;
     int rc;
@@ -442,7 +442,6 @@ qemuHotplugAttachManagedPR(virQEMUDriver *driver,
  cleanup:
     if (ret < 0 && daemonStarted)
         qemuProcessKillManagedPRDaemon(vm);
-    virJSONValueFree(props);
     return ret;
 }
 
@@ -2286,7 +2285,7 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
     bool teardowncgroup = false;
     bool teardowndevice = false;
     bool chardevAdded = false;
-    virJSONValue *props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     int ret = -1;
 
     qemuAssignDeviceRNGAlias(vm->def, rng);
@@ -2349,7 +2348,6 @@ qemuDomainAttachRNGDevice(virQEMUDriver *driver,
  audit:
     virDomainAuditRNG(vm, NULL, rng, "attach", ret == 0);
  cleanup:
-    virJSONValueFree(props);
     if (ret < 0) {
         if (releaseaddr)
             qemuDomainReleaseDeviceAddress(vm, &rng->info);
@@ -2403,7 +2401,7 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
     bool teardownlabel = false;
     bool teardowncgroup = false;
     bool teardowndevice = false;
-    virJSONValue *props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     virObjectEvent *event;
     int id;
     int ret = -1;
@@ -2492,7 +2490,6 @@ qemuDomainAttachMemory(virQEMUDriver *driver,
             qemuDomainReleaseMemoryDeviceSlot(vm, mem);
     }
 
-    virJSONValueFree(props);
     virDomainMemoryDefFree(mem);
     return ret;
 
@@ -2970,7 +2967,7 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
     bool release_backing = false;
     bool release_address = true;
     virErrorPtr orig_err = NULL;
-    virJSONValue *props = NULL;
+    g_autoptr(virJSONValue) props = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_SHMEM, { .shmem = shmem } };
 
@@ -3045,8 +3042,6 @@ qemuDomainAttachShmemDevice(virQEMUDriver *driver,
  cleanup:
     if (release_address)
         qemuDomainReleaseDeviceAddress(vm, &shmem->info);
-
-    virJSONValueFree(props);
 
     return ret;
 
