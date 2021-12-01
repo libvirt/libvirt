@@ -3733,7 +3733,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
         ignore_value(virTimeMillisNow(&now));
 
         /* Restore the config of the async job which is not persisted */
-        priv->jobs_queued++;
+        priv->job.jobsQueued++;
         priv->job.asyncJob = QEMU_ASYNC_JOB_BACKUP;
         priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
         priv->job.asyncStarted = now;
