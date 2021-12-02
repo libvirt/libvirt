@@ -894,8 +894,10 @@ static void virLXCControllerClientCloseHook(virNetServerClient *client)
     virLXCController *ctrl = virNetServerClientGetPrivateData(client);
 
     VIR_DEBUG("Client %p has closed", client);
-    if (ctrl->client == client)
+    if (ctrl->client == client) {
         ctrl->client = NULL;
+        VIR_DEBUG("Client has gone away");
+    }
     if (ctrl->inShutdown) {
         VIR_DEBUG("Arm timer to quit event loop");
         virEventUpdateTimeout(ctrl->timerShutdown, 0);
@@ -1006,8 +1008,11 @@ static int lxcControllerClearCapabilities(void)
 static bool wantReboot;
 static virMutex lock = VIR_MUTEX_INITIALIZER;
 
+static int
+virLXCControllerEventSendExit(virLXCController *ctrl,
+                              int exitstatus);
 
-static void virLXCControllerSignalChildIO(virNetDaemon *dmn,
+static void virLXCControllerSignalChildIO(virNetDaemon *dmn G_GNUC_UNUSED,
                                           siginfo_t *info G_GNUC_UNUSED,
                                           void *opaque)
 {
@@ -1018,7 +1023,6 @@ static void virLXCControllerSignalChildIO(virNetDaemon *dmn,
     ret = waitpid(-1, &status, WNOHANG);
     VIR_DEBUG("Got sig child %d vs %lld", ret, (long long)ctrl->initpid);
     if (ret == ctrl->initpid) {
-        virNetDaemonQuit(dmn);
         virMutexLock(&lock);
         if (WIFSIGNALED(status) &&
             WTERMSIG(status) == SIGHUP) {
@@ -1026,6 +1030,7 @@ static void virLXCControllerSignalChildIO(virNetDaemon *dmn,
             wantReboot = true;
         }
         virMutexUnlock(&lock);
+        virLXCControllerEventSendExit(ctrl, wantReboot ? 1 : 0);
     }
 }
 
@@ -2276,9 +2281,10 @@ virLXCControllerEventSendExit(virLXCController *ctrl,
         VIR_DEBUG("Waiting for client to complete dispatch");
         ctrl->inShutdown = true;
         virNetServerClientDelayedClose(ctrl->client);
-        virNetDaemonRun(ctrl->daemon);
+    } else {
+        VIR_DEBUG("Arm timer to quit event loop");
+        virEventUpdateTimeout(ctrl->timerShutdown, 0);
     }
-    VIR_DEBUG("Client has gone away");
     return 0;
 }
 
@@ -2429,8 +2435,6 @@ virLXCControllerRun(virLXCController *ctrl)
     virGDBusCloseSystemBus();
 
     rc = virLXCControllerMain(ctrl);
-
-    virLXCControllerEventSendExit(ctrl, rc);
 
  cleanup:
     VIR_FORCE_CLOSE(control[0]);
