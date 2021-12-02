@@ -3187,9 +3187,12 @@ for peer-2-peer migration; *--direct* for direct migration; or *--tunnelled*
 for tunnelled migration.  *--offline* migrates domain definition without
 starting the domain on destination and without stopping it on source host.
 Offline migration may be used with inactive domains and it must be used with
-*--persistent* option.  *--persistent* leaves the domain persistent on
-destination host, *--undefinesource* undefines the domain on the source host,
-and *--suspend* leaves the domain paused on the destination host.
+*--persistent* option.
+
+*--persistent* leaves the domain persistent on destination host,
+*--undefinesource* undefines the domain on the source host, and *--suspend*
+leaves the domain paused on the destination host.
+
 *--copy-storage-all* indicates migration with non-shared storage with full
 disk copy, *--copy-storage-inc* indicates migration with non-shared storage
 with incremental copy (same base image shared between source and destination).
@@ -3198,15 +3201,20 @@ In both cases the disk images have to exist on destination host, the
 images on source host to the images found at the same place on the destination
 host. By default only non-shared non-readonly images are transferred. Use
 *--migrate-disks* to explicitly specify a list of disk targets to
-transfer via the comma separated ``disk-list`` argument. *--change-protection*
-enforces that no incompatible configuration changes will be made to the domain
-while the migration is underway; this flag is implicitly enabled when supported
-by the hypervisor, but can be explicitly used to reject the migration if the
-hypervisor lacks change protection support.  *--verbose* displays the progress
-of migration.  *--abort-on-error* cancels
-the migration if a soft error (for example I/O error) happens during the
-migration. *--postcopy* enables post-copy logic in migration, but does not
-actually start post-copy, i.e., migration is started in pre-copy mode.
+transfer via the comma separated ``disk-list`` argument.
+
+*--change-protection* enforces that no incompatible configuration changes will
+be made to the domain while the migration is underway; this flag is implicitly
+enabled when supported by the hypervisor, but can be explicitly used to reject
+the migration if the hypervisor lacks change protection support.
+
+*--verbose* displays the progress of migration.
+
+*--abort-on-error* cancels the migration if a soft error (for example I/O error)
+happens during the migration.
+
+*--postcopy* enables post-copy logic in migration, but does not actually start
+post-copy, i.e., migration is started in pre-copy mode.
 Once migration is running, the user may switch to post-copy using the
 ``migrate-postcopy`` command sent from another virsh instance or use
 *--postcopy-after-precopy* along with *--postcopy* to let libvirt
