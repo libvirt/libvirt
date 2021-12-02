@@ -170,6 +170,14 @@ if conf.has('WITH_QEMU')
     'file': files('virtqemud.sysconf'),
   }
 
+  if conf.has('WITH_SYSCTL')
+    install_data(
+      'postcopy-migration.sysctl',
+      install_dir: prefix / 'lib' / 'sysctl.d',
+      rename: [ '60-qemu-postcopy-migration.conf' ],
+    )
+  endif
+
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'qemu',
     runstatedir / 'libvirt' / 'qemu',
