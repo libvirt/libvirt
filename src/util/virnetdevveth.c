@@ -38,10 +38,19 @@ VIR_LOG_INIT("util.netdevveth");
 static int
 virNetDevVethCreateInternal(const char *veth1, const char *veth2)
 {
-    int status;     /* Just ignore it */
+    int error = 0;
     virNetlinkNewLinkData data = { .veth_peer = veth2 };
 
-    return virNetlinkNewLink(veth1, "veth", &data, &status);
+    if (virNetlinkNewLink(veth1, "veth", &data, &error) < 0) {
+        if (error != 0) {
+            virReportSystemError(-error,
+                                 _("unable to create %s <-> %s veth pair"),
+                                 veth1, veth2);
+        }
+        return -1;
+    }
+
+    return 0;
 }
 
 static int
