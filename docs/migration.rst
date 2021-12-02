@@ -446,6 +446,38 @@ SELinux rules and settings of your system.
 
 Supported by QEMU driver
 
+
+Migration of VMs using non-shared images for disks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Libvirt by default expects that the disk images which are not explicitly network
+accessed are shared between the hosts by means of a network filesystem or remote
+block storage.
+
+By default it's expected that they are in the same location, but this can be
+modified by providing an updated domain XML with appropriate paths to the images
+using ``--xml`` argument for ``virsh migrate``.
+
+In case when one or more of the images are residing on local storage libvirt
+can migrate them as part of the migration flow. This is enabled using
+``--copy-storage-all`` flag for ``virsh migrate``. Additionally
+``--migrate-disks`` parameter allows control which disks need to actually be
+migrated. Without the flag all read-write disks are migrated.
+
+On the destination the images must be either pre-created by the user having
+correct format and size or alternatively if the target path resides within a
+libvirt storage pool they will be automatically created.
+
+In case when the user wishes to migrate only the topmost image from a backing
+chain of images for each disks ``--copy-storage-inc`` can be used instead. User
+must pre-create the images unconditionally.
+
+In order to ensure that the migration of disks will not be overwhelmed by a
+guest doing a lot of I/O to a local fast storage the
+``--copy-storage-synchronous-writes`` flag ensures that newly written data is
+synchronously written to the destination. This may harm I/O performance during
+the migration.
+
 .. |Migration native path| image:: migration-native.png
    :class: diagram
 .. |Migration tunnel path| image:: migration-tunnel.png
