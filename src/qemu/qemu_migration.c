@@ -931,7 +931,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
                                        const char *socket,
                                        unsigned long long mirror_speed,
                                        unsigned int mirror_shallow,
-                                       const char *tlsAlias)
+                                       const char *tlsAlias,
+                                       bool syncWrites)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
@@ -960,7 +961,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
         mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), jobname, persistjob,
                                             sourcename, copysrc->nodeformat,
                                             mirror_speed, 0, 0, mirror_shallow,
-                                            false);
+                                            syncWrites);
 
     if (mon_ret != 0)
         qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm), data);
@@ -1034,6 +1035,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
     const char *jobname = NULL;
     const char *sourcename = NULL;
     bool persistjob = false;
+    bool syncWrites = !!(flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES);
     int rc;
     int ret = -1;
 
@@ -1063,7 +1065,8 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
                                                     host, port, socket,
                                                     mirror_speed,
                                                     mirror_shallow,
-                                                    tlsAlias);
+                                                    tlsAlias,
+                                                    syncWrites);
     } else {
         rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
                                                        host, port, socket,
@@ -2364,6 +2367,13 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
     }
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
+        if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
+            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"));
+            return NULL;
+        }
+
         if (flags & VIR_MIGRATE_TUNNELLED) {
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
                 virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
