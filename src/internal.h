@@ -374,7 +374,7 @@
  */
 #define VIR_REQUIRE_FLAG_RET(FLAG1, FLAG2, RET) \
     do { \
-        if ((flags & FLAG1) && !(flags & FLAG2)) { \
+        if ((flags & (FLAG1)) && !(flags & (FLAG2))) { \
             virReportInvalidArg(ctl, \
                                 _("Flag '%s' is required by flag '%s'"), \
                                 #FLAG2, #FLAG1); \
@@ -396,7 +396,7 @@
  */
 #define VIR_REQUIRE_FLAG_GOTO(FLAG1, FLAG2, LABEL) \
     do { \
-        if ((flags & FLAG1) && !(flags & FLAG2)) { \
+        if ((flags & (FLAG1)) && !(flags & (FLAG2))) { \
             virReportInvalidArg(ctl, \
                                 _("Flag '%s' is required by flag '%s'"), \
                                 #FLAG2, #FLAG1); \
