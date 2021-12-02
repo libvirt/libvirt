@@ -1297,18 +1297,12 @@ int
 virNetDevGetPhysicalFunction(const char *ifname, char **pfname)
 {
     g_autofree char *physfn_sysfs_path = NULL;
-    g_autofree char *vfPhysPortID = NULL;
-
-    if (virNetDevGetPhysPortID(ifname, &vfPhysPortID) < 0)
-        return -1;
 
     if (virNetDevSysfsDeviceFile(&physfn_sysfs_path, ifname, "physfn") < 0)
         return -1;
 
-    if (virPCIGetNetName(physfn_sysfs_path, 0,
-                         vfPhysPortID, pfname) < 0) {
+    if (virPCIGetNetName(physfn_sysfs_path, 0, ifname, pfname) < 0)
         return -1;
-    }
 
     return 0;
 }
@@ -1336,14 +1330,6 @@ virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
 {
     g_autofree char *virtfnName = NULL;
     g_autofree char *virtfnSysfsPath = NULL;
-    g_autofree char *pfPhysPortID = NULL;
-
-    /* a VF may have multiple "ports", each one having its own netdev,
-     * and each netdev having a different phys_port_id. Be sure we get
-     * the VF netdev with a phys_port_id matchine that of pfname
-     */
-    if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
-        return -1;
 
     virtfnName = g_strdup_printf("virtfn%d", vf);
 
@@ -1360,7 +1346,7 @@ virNetDevPFGetVF(const char *pfname, int vf, char **vfname)
      * isn't bound to a netdev driver, it won't have a netdev name,
      * and vfname will be NULL).
      */
-    return virPCIGetNetName(virtfnSysfsPath, 0, pfPhysPortID, vfname);
+    return virPCIGetNetName(virtfnSysfsPath, 0, pfname, vfname);
 }
 
 

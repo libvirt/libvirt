@@ -2390,15 +2390,10 @@ virPCIGetVirtualFunctionsFull(const char *sysfs_path,
             return -1;
         }
 
-        if (pfNetDevName) {
-            g_autofree char *pfPhysPortID = NULL;
-
-            if (virNetDevGetPhysPortID(pfNetDevName, &pfPhysPortID) < 0 ||
-                virPCIGetNetName(device_link, 0, pfPhysPortID, &fnc.ifname) < 0) {
-
-                g_free(fnc.addr);
-                return -1;
-            }
+        if (pfNetDevName &&
+            virPCIGetNetName(device_link, 0, pfNetDevName, &fnc.ifname) < 0) {
+            g_free(fnc.addr);
+            return -1;
         }
 
         VIR_APPEND_ELEMENT(list->functions, list->nfunctions, fnc);
@@ -2474,8 +2469,20 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *addr,
  * @device_link_sysfs_path: sysfs path to the PCI device
  * @idx: used to choose which netdev when there are several
  *       (ignored if physPortID is set or physPortName is available)
- * @physPortID: match this string in the netdev's phys_port_id
- *       (or NULL to ignore and use phys_port_name or idx instead)
+
+ * @physPortNetDevName: if non-null, attempt to learn the phys_port_id
+ *                      of the netdev interface named
+ *                      @physPortNetDevName, and find a netdev for
+ *                      this PCI device that has the same
+ *                      phys_port_id. if @physPortNetDevName is NULL,
+ *                      or has no phys_port_id, then use
+ *                      phys_port_name or idx to determine which
+ *                      netdev to return. (NB: as of today, only mlx
+ *                      drivers/cards can have multiple phys_ports for
+ *                      a single PCI device; on all other devices
+ *                      there is only a single choice of netdev, and
+ *                      phys_port_id, phys_port_name, and idx are
+ *                      unavailable/unused)
  * @netname: used to return the name of the netdev
  *       (set to NULL (but returns success) if there is no netdev)
  *
@@ -2484,9 +2491,10 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *addr,
 int
 virPCIGetNetName(const char *device_link_sysfs_path,
                  size_t idx,
-                 const char *physPortID,
+                 const char *physPortNetDevName,
                  char **netname)
 {
+    g_autofree char *physPortID = NULL;
     g_autofree char *pcidev_sysfs_net_path = NULL;
     g_autofree char *firstEntryName = NULL;
     g_autoptr(DIR) dir = NULL;
@@ -2494,6 +2502,11 @@ virPCIGetNetName(const char *device_link_sysfs_path,
     size_t i = 0;
 
     *netname = NULL;
+
+    if (physPortNetDevName &&
+        virNetDevGetPhysPortID(physPortNetDevName, &physPortID) < 0) {
+        return -1;
+    }
 
     virBuildPath(&pcidev_sysfs_net_path, device_link_sysfs_path, "net");
 
@@ -2585,7 +2598,6 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
     g_autofree virPCIDeviceAddress *pf_config_address = NULL;
     g_autofree char *pf_sysfs_device_path = NULL;
     g_autofree char *vfname = NULL;
-    g_autofree char *vfPhysPortID = NULL;
 
     if (virPCIGetPhysicalFunction(vf_sysfs_device_path, &pf_config_address) < 0)
         return -1;
@@ -2614,17 +2626,11 @@ virPCIGetVirtualFunctionInfo(const char *vf_sysfs_device_path,
         if (virPCIGetNetName(vf_sysfs_device_path, 0, NULL, &vfname) < 0)
             return -1;
 
-        if (vfname) {
-            if (virNetDevGetPhysPortID(vfname, &vfPhysPortID) < 0)
-                return -1;
-        }
         pfNetDevIdx = 0;
     }
 
-    if (virPCIGetNetName(pf_sysfs_device_path,
-                         pfNetDevIdx, vfPhysPortID, pfname) < 0) {
+    if (virPCIGetNetName(pf_sysfs_device_path, pfNetDevIdx, vfname, pfname) < 0)
         return -1;
-    }
 
     if (!*pfname) {
         /* this shouldn't be possible. A VF can't exist unless its
@@ -2751,7 +2757,7 @@ virPCIDeviceAddressGetSysfsFile(virPCIDeviceAddress *dev G_GNUC_UNUSED,
 int
 virPCIGetNetName(const char *device_link_sysfs_path G_GNUC_UNUSED,
                  size_t idx G_GNUC_UNUSED,
-                 const char *physPortID G_GNUC_UNUSED,
+                 const char *physPortNetDevName G_GNUC_UNUSED,
                  char **netname G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
