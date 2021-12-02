@@ -1223,15 +1223,11 @@ virNetDevGetVirtualFunctions(const char *pfname,
                              virPCIVirtualFunctionList **vfs)
 {
     g_autofree char *pf_sysfs_device_link = NULL;
-    g_autofree char *pfPhysPortID = NULL;
-
-    if (virNetDevGetPhysPortID(pfname, &pfPhysPortID) < 0)
-        return -1;
 
     if (virNetDevSysfsFile(&pf_sysfs_device_link, pfname, "device") < 0)
         return -1;
 
-    if (virPCIGetVirtualFunctionsFull(pf_sysfs_device_link, vfs, pfPhysPortID) < 0)
+    if (virPCIGetVirtualFunctionsFull(pf_sysfs_device_link, vfs, pfname) < 0)
         return -1;
 
     return 0;

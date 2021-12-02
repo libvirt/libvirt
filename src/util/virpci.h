@@ -230,7 +230,7 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virPCIVirtualFunctionList, virPCIVirtualFunctionLi
 
 int virPCIGetVirtualFunctionsFull(const char *sysfs_path,
                                   virPCIVirtualFunctionList **vfs,
-                                  const char *pfPhysPortID);
+                                  const char *pfNetDevName);
 int virPCIGetVirtualFunctions(const char *sysfs_path,
                               virPCIVirtualFunctionList **vfs);
 

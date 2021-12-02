@@ -2340,8 +2340,8 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
  * virPCIGetVirtualFunctionsFull:
  * @sysfs_path: path to physical function sysfs entry
  * @vfs: filled with the virtual function data
- * @pfPhysPortID: Optional physical port id. If provided the network interface
- *                name of the VFs is queried too.
+ * @pfNetDevName: Optional netdev name of this PF. If provided, the netdev
+ *                names of the VFs are queried too.
  *
  *
  * Returns virtual functions of a physical function.
@@ -2349,7 +2349,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path,
 int
 virPCIGetVirtualFunctionsFull(const char *sysfs_path,
                               virPCIVirtualFunctionList **vfs,
-                              const char *pfPhysPortID)
+                              const char *pfNetDevName)
 {
     g_autofree char *totalvfs_file = NULL;
     g_autofree char *totalvfs_str = NULL;
@@ -2390,8 +2390,12 @@ virPCIGetVirtualFunctionsFull(const char *sysfs_path,
             return -1;
         }
 
-        if (pfPhysPortID) {
-            if (virPCIGetNetName(device_link, 0, pfPhysPortID, &fnc.ifname) < 0) {
+        if (pfNetDevName) {
+            g_autofree char *pfPhysPortID = NULL;
+
+            if (virNetDevGetPhysPortID(pfNetDevName, &pfPhysPortID) < 0 ||
+                virPCIGetNetName(device_link, 0, pfPhysPortID, &fnc.ifname) < 0) {
+
                 g_free(fnc.addr);
                 return -1;
             }
@@ -2712,7 +2716,7 @@ virPCIGetPhysicalFunction(const char *vf_sysfs_path G_GNUC_UNUSED,
 int
 virPCIGetVirtualFunctionsFull(const char *sysfs_path G_GNUC_UNUSED,
                               virPCIVirtualFunctionList **vfs G_GNUC_UNUSED,
-                              const char *pfPhysPortID G_GNUC_UNUSED)
+                              const char *pfNetDevName G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _(unsupported));
     return -1;
