@@ -17,6 +17,18 @@ v8.0.0 (unreleased)
 
 * **New features**
 
+  * qemu: Synchronous write mode for disk copy operations
+
+    The ``blockdev-mirror`` block job supports a mode where writes from the VM
+    are synchronously propagated to the destination of the copy. This ensures
+    that the job will converge under heavy I/O.
+
+    Implement the mode for the copy blockjob as
+    ``VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES`` flag exposed via
+    ``virsh blockcopy --synchronous-writes`` and for non-shared storage migration
+    as ``VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES`` exposed via
+    ``virsh migrate --copy-storage-synchronous-writes``.
+
 * **Improvements**
 
 * **Bug fixes**
