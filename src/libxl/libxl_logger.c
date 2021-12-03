@@ -53,7 +53,6 @@ libxlLoggerFileFree(void *payload)
 {
     FILE *file = payload;
     VIR_FORCE_FCLOSE(file);
-    file = NULL;
 }
 
 G_GNUC_PRINTF(5, 0) static void
