@@ -847,6 +847,60 @@ static int qemuAgentSend(qemuAgent *agent,
 
 
 /**
+ * qemuAgentGuestSyncSend:
+ * @agent: agent object
+ * @timeout: timeout for the command
+ * @first: true when this is the first invocation to drain possible leftovers
+ *         from the pipe
+ *
+ * Sends a sync request to the guest agent.
+ * Returns: -1 on error
+ *           0 on successful send, but when no reply was received
+ *           1 when a reply was received
+ */
+static int
+qemuAgentGuestSyncSend(qemuAgent *agent,
+                       int timeout,
+                       bool first)
+{
+    g_autofree char *txMsg = NULL;
+    g_autoptr(virJSONValue) rxObj = NULL;
+    unsigned long long id;
+    qemuAgentMessage sync_msg;
+    int rc;
+
+    memset(&sync_msg, 0, sizeof(sync_msg));
+
+    if (virTimeMillisNow(&id) < 0)
+        return -1;
+
+    txMsg = g_strdup_printf("{\"execute\":\"guest-sync\", "
+                             "\"arguments\":{\"id\":%llu}}\n", id);
+
+    sync_msg.txBuffer = txMsg;
+    sync_msg.txLength = strlen(txMsg);
+    sync_msg.sync = true;
+    sync_msg.id = id;
+    sync_msg.first = first;
+
+    VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
+
+    rc = qemuAgentSend(agent, &sync_msg, timeout);
+    rxObj = g_steal_pointer(&sync_msg.rxObject);
+
+    VIR_DEBUG("qemuAgentSend returned: %d", rc);
+
+    if (rc < 0)
+        return -1;
+
+    if (rxObj)
+        return 1;
+
+    return 0;
+}
+
+
+/**
  * qemuAgentGuestSync:
  * @agent: agent object
  *
@@ -860,11 +914,8 @@ static int qemuAgentSend(qemuAgent *agent,
 static int
 qemuAgentGuestSync(qemuAgent *agent)
 {
-    int ret = -1;
-    int send_ret;
-    unsigned long long id;
-    qemuAgentMessage sync_msg;
     int timeout = VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT;
+    int rc;
 
     if (agent->singleSync && agent->inSync)
         return 0;
@@ -874,55 +925,29 @@ qemuAgentGuestSync(qemuAgent *agent)
     if ((agent->timeout >= 0) && (agent->timeout < QEMU_AGENT_WAIT_TIME))
         timeout = agent->timeout;
 
-    memset(&sync_msg, 0, sizeof(sync_msg));
-    /* set only on first sync */
-    sync_msg.first = true;
-
- retry:
-    if (virTimeMillisNow(&id) < 0)
+    if ((rc = qemuAgentGuestSyncSend(agent, timeout, true)) < 0)
         return -1;
 
-    sync_msg.txBuffer = g_strdup_printf("{\"execute\":\"guest-sync\", "
-                                        "\"arguments\":{\"id\":%llu}}\n", id);
+    /* successfully sync'd */
+    if (rc == 1)
+        return 0;
 
-    sync_msg.txLength = strlen(sync_msg.txBuffer);
-    sync_msg.sync = true;
-    sync_msg.id = id;
+    /* send another sync */
+    if ((rc = qemuAgentGuestSyncSend(agent, timeout, false)) < 0)
+        return -1;
 
-    VIR_DEBUG("Sending guest-sync command with ID: %llu", id);
+    /* successfully sync'd */
+    if (rc == 1)
+        return 0;
 
-    send_ret = qemuAgentSend(agent, &sync_msg, timeout);
+    if (agent->running)
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing agent reply object"));
+    else
+        virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
+                       _("Guest agent disappeared while executing command"));
 
-    VIR_DEBUG("qemuAgentSend returned: %d", send_ret);
-
-    if (send_ret < 0)
-        goto cleanup;
-
-    if (!sync_msg.rxObject) {
-        if (sync_msg.first) {
-            VIR_FREE(sync_msg.txBuffer);
-            memset(&sync_msg, 0, sizeof(sync_msg));
-            goto retry;
-        } else {
-            if (agent->running)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Missing agent reply object"));
-            else
-                virReportError(VIR_ERR_AGENT_UNRESPONSIVE, "%s",
-                               _("Guest agent disappeared while executing command"));
-            goto cleanup;
-        }
-    }
-
-    if (agent->singleSync)
-        agent->inSync = true;
-
-    ret = 0;
-
- cleanup:
-    virJSONValueFree(sync_msg.rxObject);
-    VIR_FREE(sync_msg.txBuffer);
-    return ret;
+    return -1;
 }
 
 static const char *
