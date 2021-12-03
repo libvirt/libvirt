@@ -5469,29 +5469,16 @@ qemuMonitorJSONParseCPUModel(const char *cpu_name,
 }
 
 
-int
-qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
-                                    qemuMonitorCPUModelExpansionType type,
-                                    virCPUDef *cpu,
-                                    bool migratable,
-                                    bool fail_no_props,
-                                    qemuMonitorCPUModelInfo **model_info)
+static int
+qemuMonitorJSONQueryCPUModelExpansionOne(qemuMonitor *mon,
+                                         qemuMonitorCPUModelExpansionType type,
+                                         virJSONValue **model,
+                                         virJSONValue **data)
 {
-    g_autoptr(virJSONValue) model = NULL;
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    virJSONValue *data;
-    virJSONValue *cpu_model;
-    virJSONValue *cpu_props = NULL;
-    const char *cpu_name = "";
     const char *typeStr = "";
 
-    *model_info = NULL;
-
-    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable)))
-        return -1;
-
- retry:
     switch (type) {
     case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC:
     case QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL:
@@ -5502,10 +5489,9 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
         typeStr = "full";
         break;
     }
-
     if (!(cmd = qemuMonitorJSONMakeCommand("query-cpu-model-expansion",
                                            "s:type", typeStr,
-                                           "a:model", &model,
+                                           "a:model", model,
                                            NULL)))
         return -1;
 
@@ -5522,7 +5508,35 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
     if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
         return -1;
 
-    data = virJSONValueObjectGetObject(reply, "return");
+    *data = virJSONValueObjectStealObject(reply, "return");
+
+    return 1;
+}
+
+
+int
+qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
+                                    qemuMonitorCPUModelExpansionType type,
+                                    virCPUDef *cpu,
+                                    bool migratable,
+                                    bool fail_no_props,
+                                    qemuMonitorCPUModelInfo **model_info)
+{
+    g_autoptr(virJSONValue) model = NULL;
+    g_autoptr(virJSONValue) data = NULL;
+    g_autoptr(virJSONValue) fullData = NULL;
+    virJSONValue *cpu_model;
+    virJSONValue *cpu_props = NULL;
+    const char *cpu_name = "";
+    int rc;
+
+    *model_info = NULL;
+
+    if (!(model = qemuMonitorJSONMakeCPUModel(cpu, migratable)))
+        return -1;
+
+    if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &model, &data)) <= 0)
+        return rc;
 
     if (qemuMonitorJSONParseCPUModelData(data, "query-cpu-model-expansion",
                                          fail_no_props, &cpu_model, &cpu_props,
@@ -5530,16 +5544,22 @@ qemuMonitorJSONGetCPUModelExpansion(qemuMonitor *mon,
         return -1;
 
     /* QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL requests "full" expansion
-     * on the result of the initial "static" expansion.
-     */
+     * on the result of the initial "static" expansion. */
     if (type == QEMU_MONITOR_CPU_MODEL_EXPANSION_STATIC_FULL) {
-        if (!(model = virJSONValueCopy(cpu_model)))
+        g_autoptr(virJSONValue) fullModel = virJSONValueCopy(cpu_model);
+
+        if (!fullModel)
             return -1;
 
-        virJSONValueFree(cmd);
-        virJSONValueFree(reply);
         type = QEMU_MONITOR_CPU_MODEL_EXPANSION_FULL;
-        goto retry;
+
+        if ((rc = qemuMonitorJSONQueryCPUModelExpansionOne(mon, type, &fullModel, &fullData)) <= 0)
+            return rc;
+
+        if (qemuMonitorJSONParseCPUModelData(fullData, "query-cpu-model-expansion",
+                                             fail_no_props, &cpu_model, &cpu_props,
+                                             &cpu_name) < 0)
+            return -1;
     }
 
     return qemuMonitorJSONParseCPUModel(cpu_name, cpu_props, model_info);
