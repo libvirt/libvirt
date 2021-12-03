@@ -435,10 +435,10 @@ virLogDaemonPostExecRestart(const char *state_file,
                             virLogDaemonConfig *config)
 {
     const char *gotmagic;
-    char *wantmagic = NULL;
+    g_autofree char *wantmagic = NULL;
     int ret = -1;
-    char *state = NULL;
-    virJSONValue *object = NULL;
+    g_autofree char *state = NULL;
+    g_autoptr(virJSONValue) object = NULL;
 
     VIR_DEBUG("Running post-restart exec");
 
@@ -490,9 +490,6 @@ virLogDaemonPostExecRestart(const char *state_file,
 
  cleanup:
     unlink(state_file);
-    VIR_FREE(wantmagic);
-    VIR_FREE(state);
-    virJSONValueFree(object);
     return ret;
 }
 
