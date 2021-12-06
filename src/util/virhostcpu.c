@@ -300,10 +300,10 @@ virHostCPUParseNode(const char *node,
     int processors = 0;
     g_autoptr(DIR) cpudir = NULL;
     struct dirent *cpudirent = NULL;
-    virBitmap *node_cpus_map = NULL;
-    virBitmap *sockets_map = NULL;
+    g_autoptr(virBitmap) sockets_map = virBitmapNew(0);
     virBitmap **cores_maps = NULL;
     int npresent_cpus = virBitmapSize(present_cpus_map);
+    g_autoptr(virBitmap) node_cpus_map = virBitmapNew(npresent_cpus);
     unsigned int sock_max = 0;
     unsigned int sock;
     unsigned int core;
@@ -318,12 +318,6 @@ virHostCPUParseNode(const char *node,
 
     if (virDirOpen(&cpudir, node) < 0)
         goto cleanup;
-
-    /* Keep track of the CPUs that belong to the current node */
-    node_cpus_map = virBitmapNew(npresent_cpus);
-
-    /* enumerate sockets in the node */
-    sockets_map = virBitmapNew(0);
 
     while ((direrr = virDirRead(cpudir, &cpudirent, node)) > 0) {
         if (sscanf(cpudirent->d_name, "cpu%u", &cpu) != 1)
@@ -437,8 +431,6 @@ virHostCPUParseNode(const char *node,
         for (i = 0; i < sock_max; i++)
             virBitmapFree(cores_maps[i]);
     VIR_FREE(cores_maps);
-    virBitmapFree(sockets_map);
-    virBitmapFree(node_cpus_map);
 
     return ret;
 }
