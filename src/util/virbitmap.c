@@ -364,9 +364,8 @@ virBitmapFormat(virBitmap *bitmap)
 
 
 /**
- * virBitmapParseSeparator:
+ * virBitmapParseInternal:
  * @str: points to a string representing a human-readable bitmap
- * @terminator: character separating the bitmap to parse
  * @bitmap: a bitmap created from @str
  * @bitmapSize: the upper limit of num of bits in created bitmap
  *
@@ -377,19 +376,12 @@ virBitmapFormat(virBitmap *bitmap)
  * to set, and ^N, which means to unset the bit, and N-M for ranges of bits
  * to set.
  *
- * To allow parsing of bitmaps within larger strings it is possible to set
- * a termination character in the argument @terminator. When the character
- * in @terminator is encountered in @str, the parsing of the bitmap stops.
- * Pass 0 as @terminator if it is not needed. Whitespace characters may not
- * be used as terminators.
- *
  * Returns 0 on success, or -1 in case of error.
  */
 static int
-virBitmapParseSeparator(const char *str,
-                        char terminator,
-                        virBitmap **bitmap,
-                        size_t bitmapSize)
+virBitmapParseInternal(const char *str,
+                       virBitmap **bitmap,
+                       size_t bitmapSize)
 {
     bool neg = false;
     const char *cur = str;
@@ -407,7 +399,7 @@ virBitmapParseSeparator(const char *str,
     if (*cur == '\0')
         goto error;
 
-    while (*cur != 0 && *cur != terminator) {
+    while (*cur != 0) {
         /*
          * 3 constructs are allowed:
          *     - N   : a single CPU number
@@ -431,7 +423,7 @@ virBitmapParseSeparator(const char *str,
 
         virSkipSpaces(&cur);
 
-        if (*cur == ',' || *cur == 0 || *cur == terminator) {
+        if (*cur == ',' || *cur == 0) {
             if (neg) {
                 if (virBitmapClearBit(*bitmap, start) < 0)
                     goto error;
@@ -465,7 +457,7 @@ virBitmapParseSeparator(const char *str,
             cur++;
             virSkipSpaces(&cur);
             neg = false;
-        } else if (*cur == 0 || *cur == terminator) {
+        } else if (*cur == 0) {
             break;
         } else {
             goto error;
@@ -503,7 +495,7 @@ virBitmapParse(const char *str,
                virBitmap **bitmap,
                size_t bitmapSize)
 {
-    return virBitmapParseSeparator(str, '\0', bitmap, bitmapSize);
+    return virBitmapParseInternal(str, bitmap, bitmapSize);
 }
 
 
