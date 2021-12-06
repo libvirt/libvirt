@@ -63,29 +63,23 @@ virNumaIsAvailable(void)
 int
 virNumaGetMaxNode(void)
 {
-    int ret = -1;
-    virBitmap *map = NULL;
+    g_autoptr(virBitmap) map = NULL;
 
     if (virFileReadValueBitmap(&map, "%s/node/online", SYSFS_SYSTEM_PATH) < 0)
         return -1;
 
-    ret = virBitmapLastSetBit(map);
-    virBitmapFree(map);
-    return ret;
+    return virBitmapLastSetBit(map);
 }
 
 bool
 virNumaNodeIsAvailable(int node)
 {
-    bool ret = false;
-    virBitmap *map = NULL;
+    g_autoptr(virBitmap) map = NULL;
 
     if (virFileReadValueBitmap(&map, "%s/node/online", SYSFS_SYSTEM_PATH) < 0)
         return false;
 
-    ret = virBitmapIsBitSet(map, node);
-    virBitmapFree(map);
-    return ret;
+    return virBitmapIsBitSet(map, node);
 }
 
 int
