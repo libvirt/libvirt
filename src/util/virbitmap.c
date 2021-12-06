@@ -366,8 +366,7 @@ virBitmapFormat(virBitmap *bitmap)
 /**
  * virBitmapParseInternal:
  * @str: points to a string representing a human-readable bitmap
- * @bitmap: a bitmap created from @str
- * @bitmapSize: the upper limit of num of bits in created bitmap
+ * @bitmap: a bitmap populated from @str
  *
  * This function is the counterpart of virBitmapFormat. This function creates
  * a bitmap, in which bits are set according to the content of @str.
@@ -380,16 +379,13 @@ virBitmapFormat(virBitmap *bitmap)
  */
 static int
 virBitmapParseInternal(const char *str,
-                       virBitmap **bitmap,
-                       size_t bitmapSize)
+                       virBitmap *bitmap)
 {
     bool neg = false;
     const char *cur = str;
     char *tmp;
     size_t i;
     int start, last;
-
-    *bitmap = virBitmapNew(bitmapSize);
 
     if (!str)
         goto error;
@@ -425,10 +421,10 @@ virBitmapParseInternal(const char *str,
 
         if (*cur == ',' || *cur == 0) {
             if (neg) {
-                if (virBitmapClearBit(*bitmap, start) < 0)
+                if (virBitmapClearBit(bitmap, start) < 0)
                     goto error;
             } else {
-                if (virBitmapSetBit(*bitmap, start) < 0)
+                if (virBitmapSetBit(bitmap, start) < 0)
                     goto error;
             }
         } else if (*cur == '-') {
@@ -446,7 +442,7 @@ virBitmapParseInternal(const char *str,
             cur = tmp;
 
             for (i = start; i <= last; i++) {
-                if (virBitmapSetBit(*bitmap, i) < 0)
+                if (virBitmapSetBit(bitmap, i) < 0)
                     goto error;
             }
 
@@ -469,8 +465,6 @@ virBitmapParseInternal(const char *str,
  error:
     virReportError(VIR_ERR_INVALID_ARG,
                    _("Failed to parse bitmap '%s'"), str);
-    virBitmapFree(*bitmap);
-    *bitmap = NULL;
     return -1;
 }
 
@@ -495,7 +489,14 @@ virBitmapParse(const char *str,
                virBitmap **bitmap,
                size_t bitmapSize)
 {
-    return virBitmapParseInternal(str, bitmap, bitmapSize);
+    g_autoptr(virBitmap) tmp = virBitmapNew(bitmapSize);
+
+    if (virBitmapParseInternal(str, tmp) < 0)
+        return -1;
+
+    *bitmap = g_steal_pointer(&tmp);
+
+    return 0;
 }
 
 
