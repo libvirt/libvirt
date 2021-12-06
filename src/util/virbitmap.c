@@ -128,10 +128,8 @@ virBitmapSetBit(virBitmap *bitmap,
  *
  * Resizes the bitmap so that bit @b will fit into it. This shall be called only
  * if @b would not fit into the map.
- *
- * Returns 0 on success, -1 on error.
  */
-static int
+static void
 virBitmapExpand(virBitmap *map,
                 size_t b)
 {
@@ -145,8 +143,6 @@ virBitmapExpand(virBitmap *map,
 
     map->nbits = b + 1;
     map->map_len = new_len;
-
-    return 0;
 }
 
 
@@ -164,8 +160,8 @@ int
 virBitmapSetBitExpand(virBitmap *bitmap,
                       size_t b)
 {
-    if (bitmap->nbits <= b && virBitmapExpand(bitmap, b) < 0)
-        return -1;
+    if (bitmap->nbits <= b)
+        virBitmapExpand(bitmap, b);
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= VIR_BITMAP_BIT(b);
     return 0;
@@ -208,8 +204,7 @@ virBitmapClearBitExpand(virBitmap *bitmap,
                         size_t b)
 {
     if (bitmap->nbits <= b) {
-        if (virBitmapExpand(bitmap, b) < 0)
-            return -1;
+        virBitmapExpand(bitmap, b);
     } else {
         bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
     }
@@ -1178,10 +1173,8 @@ virBitmapUnion(virBitmap *a,
 {
     size_t i;
 
-    if (a->nbits < b->nbits &&
-        virBitmapExpand(a, b->nbits - 1) < 0) {
-        return -1;
-    }
+    if (a->nbits < b->nbits)
+        virBitmapExpand(a, b->nbits - 1);
 
     for (i = 0; i < b->map_len; i++)
         a->map[i] |= b->map[i];
