@@ -336,8 +336,7 @@ virHostCPUParseNode(const char *node,
         if (virHostCPUGetSocket(cpu, &sock) < 0)
             goto cleanup;
 
-        if (virBitmapSetBitExpand(sockets_map, sock) < 0)
-            goto cleanup;
+        virBitmapSetBitExpand(sockets_map, sock);
 
         if (sock > sock_max)
             sock_max = sock;
@@ -396,8 +395,7 @@ virHostCPUParseNode(const char *node,
                 goto cleanup;
         }
 
-        if (virBitmapSetBitExpand(cores_maps[sock], core) < 0)
-            goto cleanup;
+        virBitmapSetBitExpand(cores_maps[sock], core);
 
         if (!(siblings = virHostCPUCountThreadSiblings(cpu)))
             goto cleanup;

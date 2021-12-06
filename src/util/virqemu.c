@@ -70,8 +70,7 @@ virQEMUBuildCommandLineJSONArrayBitmap(const char *key,
         if (virJSONValueGetNumberUlong(member, &value) < 0)
             return -1;
 
-        if (virBitmapSetBitExpand(bitmap, value) < 0)
-            return -1;
+        virBitmapSetBitExpand(bitmap, value);
     }
 
     while ((pos = virBitmapNextSetBit(bitmap, pos)) > -1) {

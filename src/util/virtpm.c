@@ -251,8 +251,7 @@ virTPMExecGetCaps(virCommand *cmd,
         if (typ < 0)
             continue;
 
-        if (virBitmapSetBitExpand(bitmap, typ) < 0)
-            return bitmap;
+        virBitmapSetBitExpand(bitmap, typ);
     }
 
     return bitmap;

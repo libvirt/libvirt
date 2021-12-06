@@ -558,8 +558,7 @@ test12a(const void *opaque G_GNUC_UNUSED)
     if (checkBitmap(map, "", 0) < 0)
         return -1;
 
-    if (virBitmapSetBitExpand(map, 128) < 0)
-        return -1;
+    virBitmapSetBitExpand(map, 128);
 
     if (checkBitmap(map, "128", 129) < 0)
         return -1;
@@ -692,8 +691,8 @@ test16(const void *opaque G_GNUC_UNUSED)
         return -1;
     }
 
-    ignore_value(virBitmapSetBitExpand(map, 2));
-    ignore_value(virBitmapSetBitExpand(map, 11));
+    virBitmapSetBitExpand(map, 2);
+    virBitmapSetBitExpand(map, 11);
 
     if (!(res_set = virBitmapToString(map)) ||
         STRNEQ_NULLABLE(res_set, "804")) {

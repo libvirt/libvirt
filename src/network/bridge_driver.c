@@ -4966,8 +4966,7 @@ networkNextClassID(virNetworkObj *obj)
     if ((ret = virBitmapNextClearBit(classIdMap, -1)) < 0)
         ret = virBitmapSize(classIdMap);
 
-    if (virBitmapSetBitExpand(classIdMap, ret) < 0)
-        return -1;
+    virBitmapSetBitExpand(classIdMap, ret);
 
     return ret;
 }

@@ -44,8 +44,8 @@ void virBitmapFree(virBitmap *bitmap);
 int virBitmapSetBit(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virBitmapSetBitExpand(virBitmap *bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+void virBitmapSetBitExpand(virBitmap *bitmap, size_t b)
+    ATTRIBUTE_NONNULL(1);
 
 
 /*

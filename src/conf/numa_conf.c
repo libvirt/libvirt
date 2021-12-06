@@ -1149,8 +1149,7 @@ virDomainNumaDefValidate(const virDomainNuma *def)
                 return -1;
             }
 
-            if (virBitmapSetBitExpand(levelsSeen, cache->level))
-                return -1;
+            virBitmapSetBitExpand(levelsSeen, cache->level);
         }
     }
 

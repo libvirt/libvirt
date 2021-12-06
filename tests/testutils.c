@@ -173,7 +173,7 @@ virTestRun(const char *title,
     }
 
     if (ret != 0 && ret != EXIT_AM_SKIP)
-        ignore_value(virBitmapSetBitExpand(failedTests, testCounter));
+        virBitmapSetBitExpand(failedTests, testCounter);
 
     g_unsetenv("VIR_TEST_MOCK_TESTNAME");
     return ret;

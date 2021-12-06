@@ -153,10 +153,8 @@ virBitmapExpand(virBitmap *map,
  *
  * Set bit position @b in @bitmap. Expands the bitmap as necessary so that @b is
  * included in the map.
- *
- * Returns 0 on if bit is successfully set, -1 on error.
  */
-int
+void
 virBitmapSetBitExpand(virBitmap *bitmap,
                       size_t b)
 {
@@ -164,7 +162,6 @@ virBitmapSetBitExpand(virBitmap *bitmap,
         virBitmapExpand(bitmap, b);
 
     bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] |= VIR_BITMAP_BIT(b);
-    return 0;
 }
 
 
@@ -571,8 +568,7 @@ virBitmapParseUnlimited(const char *str)
             if (neg) {
                 virBitmapClearBitExpand(bitmap, start);
             } else {
-                if (virBitmapSetBitExpand(bitmap, start) < 0)
-                    goto error;
+                virBitmapSetBitExpand(bitmap, start);
             }
         } else if (*cur == '-') {
             if (neg)
@@ -588,10 +584,8 @@ virBitmapParseUnlimited(const char *str)
 
             cur = tmp;
 
-            for (i = start; i <= last; i++) {
-                if (virBitmapSetBitExpand(bitmap, i) < 0)
-                    goto error;
-            }
+            for (i = start; i <= last; i++)
+                virBitmapSetBitExpand(bitmap, i);
 
             virSkipSpaces(&cur);
         }
