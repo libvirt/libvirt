@@ -54,8 +54,8 @@ int virBitmapSetBitExpand(virBitmap *bitmap, size_t b)
 int virBitmapClearBit(virBitmap *bitmap, size_t b)
     ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
 
-int virBitmapClearBitExpand(virBitmap *bitmap, size_t b)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
+void virBitmapClearBitExpand(virBitmap *bitmap, size_t b)
+    ATTRIBUTE_NONNULL(1);
 
 /*
  * Get bit @b in @bitmap. Returns false if b is out of range.

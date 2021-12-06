@@ -564,8 +564,7 @@ test12a(const void *opaque G_GNUC_UNUSED)
     if (checkBitmap(map, "128", 129) < 0)
         return -1;
 
-    if (virBitmapClearBitExpand(map, 150) < 0)
-        return -1;
+    virBitmapClearBitExpand(map, 150);
 
     if (checkBitmap(map, "128", 151) < 0)
         return -1;

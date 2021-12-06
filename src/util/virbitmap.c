@@ -196,10 +196,8 @@ virBitmapClearBit(virBitmap *bitmap,
  *
  * Clear bit position @b in @bitmap. Expands the bitmap as necessary so that
  * @b is included in the map.
- *
- * Returns 0 on if bit is successfully cleared, -1 on error.
  */
-int
+void
 virBitmapClearBitExpand(virBitmap *bitmap,
                         size_t b)
 {
@@ -208,8 +206,6 @@ virBitmapClearBitExpand(virBitmap *bitmap,
     } else {
         bitmap->map[VIR_BITMAP_UNIT_OFFSET(b)] &= ~VIR_BITMAP_BIT(b);
     }
-
-    return 0;
 }
 
 
@@ -573,8 +569,7 @@ virBitmapParseUnlimited(const char *str)
 
         if (*cur == ',' || *cur == 0) {
             if (neg) {
-                if (virBitmapClearBitExpand(bitmap, start) < 0)
-                    goto error;
+                virBitmapClearBitExpand(bitmap, start);
             } else {
                 if (virBitmapSetBitExpand(bitmap, start) < 0)
                     goto error;
