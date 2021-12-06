@@ -367,6 +367,7 @@ virBitmapFormat(virBitmap *bitmap)
  * virBitmapParseInternal:
  * @str: points to a string representing a human-readable bitmap
  * @bitmap: a bitmap populated from @str
+ * @limited: Don't use self-expanding APIs, report error if bit exceeds bitmap size
  *
  * This function is the counterpart of virBitmapFormat. This function creates
  * a bitmap, in which bits are set according to the content of @str.
@@ -379,7 +380,8 @@ virBitmapFormat(virBitmap *bitmap)
  */
 static int
 virBitmapParseInternal(const char *str,
-                       virBitmap *bitmap)
+                       virBitmap *bitmap,
+                       bool limited)
 {
     bool neg = false;
     const char *cur = str;
@@ -421,11 +423,19 @@ virBitmapParseInternal(const char *str,
 
         if (*cur == ',' || *cur == 0) {
             if (neg) {
-                if (virBitmapClearBit(bitmap, start) < 0)
-                    goto error;
+                if (limited) {
+                    if (virBitmapClearBit(bitmap, start) < 0)
+                        goto error;
+                } else {
+                    virBitmapClearBitExpand(bitmap, start);
+                }
             } else {
-                if (virBitmapSetBit(bitmap, start) < 0)
-                    goto error;
+                if (limited) {
+                    if (virBitmapSetBit(bitmap, start) < 0)
+                        goto error;
+                } else {
+                    virBitmapSetBitExpand(bitmap, start);
+                }
             }
         } else if (*cur == '-') {
             if (neg)
@@ -442,8 +452,12 @@ virBitmapParseInternal(const char *str,
             cur = tmp;
 
             for (i = start; i <= last; i++) {
-                if (virBitmapSetBit(bitmap, i) < 0)
-                    goto error;
+                if (limited) {
+                    if (virBitmapSetBit(bitmap, i) < 0)
+                        goto error;
+                } else {
+                    virBitmapSetBitExpand(bitmap, i);
+                }
             }
 
             virSkipSpaces(&cur);
@@ -491,7 +505,7 @@ virBitmapParse(const char *str,
 {
     g_autoptr(virBitmap) tmp = virBitmapNew(bitmapSize);
 
-    if (virBitmapParseInternal(str, tmp) < 0)
+    if (virBitmapParseInternal(str, tmp, true) < 0)
         return -1;
 
     *bitmap = g_steal_pointer(&tmp);
@@ -518,89 +532,12 @@ virBitmapParse(const char *str,
 virBitmap *
 virBitmapParseUnlimited(const char *str)
 {
-    virBitmap *bitmap = virBitmapNew(0);
-    bool neg = false;
-    const char *cur = str;
-    char *tmp;
-    size_t i;
-    int start, last;
+    g_autoptr(virBitmap) tmp = virBitmapNew(0);
 
-    if (!str)
-        goto error;
+    if (virBitmapParseInternal(str, tmp, false) < 0)
+        return NULL;
 
-    virSkipSpaces(&cur);
-
-    if (*cur == '\0')
-        goto error;
-
-    while (*cur != 0) {
-        /*
-         * 3 constructs are allowed:
-         *     - N   : a single CPU number
-         *     - N-M : a range of CPU numbers with N < M
-         *     - ^N  : remove a single CPU number from the current set
-         */
-        if (*cur == '^') {
-            cur++;
-            neg = true;
-        }
-
-        if (!g_ascii_isdigit(*cur))
-            goto error;
-
-        if (virStrToLong_i(cur, &tmp, 10, &start) < 0)
-            goto error;
-        if (start < 0)
-            goto error;
-
-        cur = tmp;
-
-        virSkipSpaces(&cur);
-
-        if (*cur == ',' || *cur == 0) {
-            if (neg) {
-                virBitmapClearBitExpand(bitmap, start);
-            } else {
-                virBitmapSetBitExpand(bitmap, start);
-            }
-        } else if (*cur == '-') {
-            if (neg)
-                goto error;
-
-            cur++;
-            virSkipSpaces(&cur);
-
-            if (virStrToLong_i(cur, &tmp, 10, &last) < 0)
-                goto error;
-            if (last < start)
-                goto error;
-
-            cur = tmp;
-
-            for (i = start; i <= last; i++)
-                virBitmapSetBitExpand(bitmap, i);
-
-            virSkipSpaces(&cur);
-        }
-
-        if (*cur == ',') {
-            cur++;
-            virSkipSpaces(&cur);
-            neg = false;
-        } else if (*cur == 0) {
-            break;
-        } else {
-            goto error;
-        }
-    }
-
-    return bitmap;
-
- error:
-    virReportError(VIR_ERR_INVALID_ARG,
-                   _("Failed to parse bitmap '%s'"), NULLSTR(str));
-    virBitmapFree(bitmap);
-    return NULL;
+    return g_steal_pointer(&tmp);
 }
 
 
