@@ -497,7 +497,7 @@ test10(const void *opaque G_GNUC_UNUSED)
     g_autoptr(virBitmap) b3 = NULL;
     g_autoptr(virBitmap) b4 = NULL;
 
-    if (virBitmapParseSeparator("0-3,5-8,11-15f16", 'f', &b1, 20) < 0 ||
+    if (virBitmapParse("0-3,5-8,11-15", &b1, 20) < 0 ||
         virBitmapParse("4,9,10,16-19", &b2, 20) < 0 ||
         virBitmapParse("15", &b3, 20) < 0 ||
         virBitmapParse("0,^0", &b4, 20) < 0)

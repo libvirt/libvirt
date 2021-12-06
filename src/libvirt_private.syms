@@ -1851,7 +1851,6 @@ virBitmapNextClearBit;
 virBitmapNextSetBit;
 virBitmapOverlaps;
 virBitmapParse;
-virBitmapParseSeparator;
 virBitmapParseUnlimited;
 virBitmapSetAll;
 virBitmapSetBit;

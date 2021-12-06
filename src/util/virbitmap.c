@@ -397,7 +397,7 @@ virBitmapFormat(virBitmap *bitmap)
  *
  * Returns 0 on success, or -1 in case of error.
  */
-int
+static int
 virBitmapParseSeparator(const char *str,
                         char terminator,
                         virBitmap **bitmap,
