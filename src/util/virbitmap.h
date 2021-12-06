@@ -133,8 +133,8 @@ bool virBitmapOverlaps(virBitmap *b1,
 void virBitmapIntersect(virBitmap *a, virBitmap *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virBitmapUnion(virBitmap *a,
-                   const virBitmap *b)
+void virBitmapUnion(virBitmap *a,
+                    const virBitmap *b)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 void virBitmapSubtract(virBitmap *a, virBitmap *b)

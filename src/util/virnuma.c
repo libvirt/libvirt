@@ -333,8 +333,7 @@ virNumaNodesetToCPUset(virBitmap *nodeset,
             return -1;
         }
 
-        if (virBitmapUnion(allNodesCPUs, nodeCPUs) < 0)
-            return -1;
+        virBitmapUnion(allNodesCPUs, nodeCPUs);
     }
 
     *cpuset = g_steal_pointer(&allNodesCPUs);

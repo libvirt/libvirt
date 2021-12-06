@@ -665,8 +665,7 @@ test15(const void *opaque)
         return -1;
     }
 
-    if (virBitmapUnion(amap, bmap) < 0)
-        return -1;
+    virBitmapUnion(amap, bmap);
 
     if (!virBitmapEqual(amap, resmap)) {
         fprintf(stderr,

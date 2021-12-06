@@ -1164,10 +1164,8 @@ virBitmapIntersect(virBitmap *a,
  * @b: other bitmap
  *
  * Performs union of two bitmaps: a = union(a, b)
- *
- * Returns 0 on success, <0 on failure.
  */
-int
+void
 virBitmapUnion(virBitmap *a,
                const virBitmap *b)
 {
@@ -1178,8 +1176,6 @@ virBitmapUnion(virBitmap *a,
 
     for (i = 0; i < b->map_len; i++)
         a->map[i] |= b->map[i];
-
-    return 0;
 }
 
 
