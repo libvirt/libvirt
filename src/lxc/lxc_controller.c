@@ -808,7 +808,6 @@ static int virLXCControllerGetNumadAdvice(virLXCController *ctrl,
 static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
 {
     g_autoptr(virBitmap) auto_nodeset = NULL;
-    int ret = -1;
     virBitmap *nodeset = NULL;
     virDomainNumatuneMemMode mode;
 
@@ -824,21 +823,19 @@ static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
             VIR_DEBUG("Setting up process resource limits");
 
             if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
-                goto cleanup;
+                return -1;
 
             nodeset = virDomainNumatuneGetNodeset(ctrl->def->numa, auto_nodeset, -1);
 
             if (virNumaSetupMemoryPolicy(mode, nodeset) < 0)
-                goto cleanup;
+                return -1;
         }
     }
 
     if (virLXCControllerSetupCpuAffinity(ctrl) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -849,14 +846,13 @@ static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
 static int virLXCControllerSetupCgroupLimits(virLXCController *ctrl)
 {
     g_autoptr(virBitmap) auto_nodeset = NULL;
-    int ret = -1;
     virBitmap *nodeset = NULL;
     size_t i;
 
     VIR_DEBUG("Setting up cgroup resource limits");
 
     if (virLXCControllerGetNumadAdvice(ctrl, &auto_nodeset) < 0)
-        goto cleanup;
+        return -1;
 
     nodeset = virDomainNumatuneGetNodeset(ctrl->def->numa, auto_nodeset, -1);
 
@@ -864,23 +860,21 @@ static int virLXCControllerSetupCgroupLimits(virLXCController *ctrl)
                                             ctrl->initpid,
                                             ctrl->nnicindexes,
                                             ctrl->nicindexes)))
-        goto cleanup;
+        return -1;
 
     if (virCgroupAddMachineProcess(ctrl->cgroup, getpid()) < 0)
-        goto cleanup;
+        return -1;
 
     /* Add all qemu-nbd tasks to the cgroup */
     for (i = 0; i < ctrl->nnbdpids; i++) {
         if (virCgroupAddMachineProcess(ctrl->cgroup, ctrl->nbdpids[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (virLXCCgroupSetup(ctrl->def, ctrl->cgroup, nodeset) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
