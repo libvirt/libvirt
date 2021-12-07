@@ -2347,7 +2347,6 @@ virCgroupGetPercpuStats(virCgroup *group,
                         unsigned int ncpus,
                         virBitmap *guestvcpus)
 {
-    int ret = -1;
     size_t i;
     int need_cpus, total_cpus;
     char *pos;
@@ -2356,7 +2355,7 @@ virCgroupGetPercpuStats(virCgroup *group,
     virTypedParameterPtr ent;
     int param_idx;
     unsigned long long cpu_time;
-    virBitmap *cpumap = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
 
     /* return the number of supported params */
     if (nparams == 0 && ncpus != 0) {
@@ -2373,21 +2372,19 @@ virCgroupGetPercpuStats(virCgroup *group,
     total_cpus = virBitmapSize(cpumap);
 
     /* return total number of cpus */
-    if (ncpus == 0) {
-        ret = total_cpus;
-        goto cleanup;
-    }
+    if (ncpus == 0)
+        return total_cpus;
 
     if (start_cpu >= total_cpus) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("start_cpu %d larger than maximum of %d"),
                        start_cpu, total_cpus - 1);
-        goto cleanup;
+        return -1;
     }
 
     /* we get percpu cputime accounting info. */
     if (virCgroupGetCpuacctPercpuUsage(group, &buf))
-        goto cleanup;
+        return -1;
     pos = buf;
 
     /* return percpu cputime in index 0 */
@@ -2402,14 +2399,14 @@ virCgroupGetPercpuStats(virCgroup *group,
         } else if (virStrToLong_ull(pos, &pos, 10, &cpu_time) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("cpuacct parse error"));
-            goto cleanup;
+            return -1;
         }
         if (i < start_cpu)
             continue;
         ent = &params[(i - start_cpu) * nparams + param_idx];
         if (virTypedParameterAssign(ent, VIR_DOMAIN_CPU_STATS_CPUTIME,
                                     VIR_TYPED_PARAM_ULLONG, cpu_time) < 0)
-            goto cleanup;
+            return -1;
     }
 
     /* return percpu vcputime in index 1 */
@@ -2419,7 +2416,7 @@ virCgroupGetPercpuStats(virCgroup *group,
         sum_cpu_time = g_new0(unsigned long long, need_cpus);
         if (virCgroupGetPercpuVcpuSum(group, guestvcpus, sum_cpu_time,
                                       need_cpus, cpumap) < 0)
-            goto cleanup;
+            return -1;
 
         for (i = start_cpu; i < need_cpus; i++) {
             int idx = (i - start_cpu) * nparams + param_idx;
@@ -2427,17 +2424,13 @@ virCgroupGetPercpuStats(virCgroup *group,
                                         VIR_DOMAIN_CPU_STATS_VCPUTIME,
                                         VIR_TYPED_PARAM_ULLONG,
                                         sum_cpu_time[i]) < 0)
-                goto cleanup;
+                return -1;
         }
 
         param_idx++;
     }
 
-    ret = param_idx;
-
- cleanup:
-    virBitmapFree(cpumap);
-    return ret;
+    return param_idx;
 }
 
 
