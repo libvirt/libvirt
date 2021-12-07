@@ -6473,7 +6473,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
                                     unsigned int nvcpus,
                                     bool *enable)
 {
-    virBitmap *ret = NULL;
+    g_autoptr(virBitmap) ret = NULL;
     virDomainVcpuDef *vcpu;
     qemuDomainVcpuPrivate *vcpupriv;
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
@@ -6501,7 +6501,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("target vm vcpu granularity does not allow the "
                                  "desired vcpu count"));
-                goto error;
+                return NULL;
             }
 
             ignore_value(virBitmapSetBit(ret, i));
@@ -6528,7 +6528,7 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("target vm vcpu granularity does not allow the "
                                  "desired vcpu count"));
-                goto error;
+                return NULL;
             }
 
             ignore_value(virBitmapSetBit(ret, i));
@@ -6539,14 +6539,10 @@ qemuDomainSelectHotplugVcpuEntities(virDomainDef *def,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("failed to find appropriate hotpluggable vcpus to "
                          "reach the desired target vcpu count"));
-        goto error;
+        return NULL;
     }
 
-    return ret;
-
- error:
-    virBitmapFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
