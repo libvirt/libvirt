@@ -2826,7 +2826,7 @@ testDomainPinEmulator(virDomainPtr dom,
 {
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
-    virBitmap *pcpumap = NULL;
+    g_autoptr(virBitmap) pcpumap = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
@@ -2848,11 +2848,10 @@ testDomainPinEmulator(virDomainPtr dom,
     }
 
     virBitmapFree(def->cputune.emulatorpin);
-    def->cputune.emulatorpin = virBitmapNewCopy(pcpumap);
+    def->cputune.emulatorpin = g_steal_pointer(&pcpumap);
 
     ret = 0;
  cleanup:
-    virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -2868,7 +2867,7 @@ testDomainGetEmulatorPinInfo(virDomainPtr dom,
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     virBitmap *cpumask = NULL;
-    virBitmap *bitmap = NULL;
+    g_autoptr(virBitmap) bitmap = NULL;
     int hostcpus;
     int ret = -1;
 
@@ -2898,7 +2897,6 @@ testDomainGetEmulatorPinInfo(virDomainPtr dom,
     ret = 1;
  cleanup:
     virDomainObjEndAPI(&vm);
-    virBitmapFree(bitmap);
     return ret;
 }
 
@@ -3049,7 +3047,7 @@ static int testDomainGetVcpus(virDomainPtr domain,
     int hostcpus;
     int ret = -1;
     unsigned long long statbase;
-    virBitmap *allcpumap = NULL;
+    g_autoptr(virBitmap) allcpumap = NULL;
 
     if (!(privdom = testDomObjFromDomain(domain)))
         return -1;
@@ -3102,7 +3100,6 @@ static int testDomainGetVcpus(virDomainPtr domain,
 
     ret = maxinfo;
  cleanup:
-    virBitmapFree(allcpumap);
     virDomainObjEndAPI(&privdom);
     return ret;
 }
@@ -3523,7 +3520,7 @@ testDomainSetNumaParameters(virDomainPtr dom,
 {
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
-    virBitmap *nodeset = NULL;
+    g_autoptr(virBitmap) nodeset = NULL;
     virDomainNumatuneMemMode config_mode;
     bool live;
     size_t i;
@@ -3590,7 +3587,6 @@ testDomainSetNumaParameters(virDomainPtr dom,
 
     ret = 0;
  cleanup:
-    virBitmapFree(nodeset);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -9669,7 +9665,7 @@ testDomainPinIOThread(virDomainPtr dom,
     virDomainObj *vm;
     virDomainDef *def;
     virDomainIOThreadIDDef *iothrid;
-    virBitmap *cpumask = NULL;
+    g_autoptr(virBitmap) cpumask = NULL;
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG, -1);
@@ -9702,7 +9698,6 @@ testDomainPinIOThread(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    virBitmapFree(cpumask);
     virDomainObjEndAPI(&vm);
     return ret;
 }
