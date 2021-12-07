@@ -5954,8 +5954,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDef *def)
     unsigned int maxvcpus = virDomainDefGetVcpusMax(def);
     size_t i = 0;
     size_t j;
-    virBitmap *ordermap = virBitmapNew(maxvcpus + 1);
-    int ret = -1;
+    g_autoptr(virBitmap) ordermap = virBitmapNew(maxvcpus + 1);
 
     /* validate:
      * - all hotpluggable entities to be hotplugged have the correct data
@@ -5974,14 +5973,14 @@ qemuProcessValidateHotpluggableVcpus(virDomainDef *def)
             if (virBitmapIsBitSet(ordermap, vcpu->order)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("duplicate vcpu order '%u'"), vcpu->order);
-                goto cleanup;
+                return -1;
             }
 
             if (virBitmapSetBit(ordermap, vcpu->order)) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("vcpu order '%u' exceeds vcpu count"),
                                vcpu->order);
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -5993,7 +5992,7 @@ qemuProcessValidateHotpluggableVcpus(virDomainDef *def)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("vcpus '%zu' and '%zu' are in the same hotplug "
                                  "group but differ in configuration"), i, j);
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -6003,15 +6002,12 @@ qemuProcessValidateHotpluggableVcpus(virDomainDef *def)
                 !vcpupriv->type) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("vcpu '%zu' is missing hotplug data"), i);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = 0;
- cleanup:
-    virBitmapFree(ordermap);
-    return ret;
+    return 0;
 }
 
 
