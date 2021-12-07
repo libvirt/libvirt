@@ -2416,7 +2416,7 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
     libxlDriverPrivate *driver = dom->conn->privateData;
     libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
     virDomainDef *targetDef = NULL;
-    virBitmap *pcpumap = NULL;
+    g_autoptr(virBitmap) pcpumap = NULL;
     virDomainVcpuDef *vcpuinfo;
     virDomainObj *vm;
     int ret = -1;
@@ -2477,7 +2477,6 @@ libxlDomainPinVcpuFlags(virDomainPtr dom, unsigned int vcpu,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virBitmapFree(pcpumap);
     virObjectUnref(cfg);
     return ret;
 }
@@ -4808,7 +4807,7 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     libxlDriverConfig *cfg = libxlDriverConfigGet(driver);
     virDomainObj *vm;
     libxl_bitmap nodemap;
-    virBitmap *nodes = NULL;
+    g_autoptr(virBitmap) nodes = NULL;
     int rc, ret = -1;
     size_t i, j;
 
@@ -4907,7 +4906,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
     ret = 0;
 
  cleanup:
-    virBitmapFree(nodes);
     libxl_bitmap_dispose(&nodemap);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
