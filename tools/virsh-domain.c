@@ -6983,7 +6983,7 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
                   const char *cpulist, int maxcpu)
 {
     unsigned char *cpumap = NULL;
-    virBitmap *map = NULL;
+    g_autoptr(virBitmap) map = NULL;
 
     if (cpulist[0] == 'r') {
         map = virBitmapNew(maxcpu);
@@ -6994,21 +6994,19 @@ virshParseCPUList(vshControl *ctl, int *cpumaplen,
         if (virBitmapParse(cpulist, &map, 1024) < 0 ||
             virBitmapIsAllClear(map)) {
             vshError(ctl, _("Invalid cpulist '%s'"), cpulist);
-            goto cleanup;
+            return NULL;
         }
         lastcpu = virBitmapLastSetBit(map);
         if (lastcpu >= maxcpu) {
             vshError(ctl, _("CPU %d in cpulist '%s' exceed the maxcpu %d"),
                      lastcpu, cpulist, maxcpu);
-            goto cleanup;
+            return NULL;
         }
     }
 
     if (virBitmapToData(map, &cpumap, cpumaplen) < 0)
-        goto cleanup;
+        return NULL;
 
- cleanup:
-    virBitmapFree(map);
     return cpumap;
 }
 
