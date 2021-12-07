@@ -6665,16 +6665,15 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
                            bool hotpluggable)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virBitmap *vcpumap = NULL;
+    g_autoptr(virBitmap) vcpumap = NULL;
     bool enable;
-    int ret = -1;
 
     if (def && nvcpus > virDomainDefGetVcpusMax(def)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("requested vcpus is greater than max allowable"
                          " vcpus for the live domain: %u > %u"),
                        nvcpus, virDomainDefGetVcpusMax(def));
-        goto cleanup;
+        return -1;
     }
 
     if (persistentDef && nvcpus > virDomainDefGetVcpusMax(persistentDef)) {
@@ -6682,30 +6681,26 @@ qemuDomainSetVcpusInternal(virQEMUDriver *driver,
                        _("requested vcpus is greater than max allowable"
                          " vcpus for the persistent domain: %u > %u"),
                        nvcpus, virDomainDefGetVcpusMax(persistentDef));
-        goto cleanup;
+        return -1;
     }
 
     if (def) {
         if (!(vcpumap = qemuDomainSelectHotplugVcpuEntities(vm->def, nvcpus,
                                                             &enable)))
-            goto cleanup;
+            return -1;
 
         if (qemuDomainSetVcpusLive(driver, cfg, vm, vcpumap, enable) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (persistentDef) {
         qemuDomainSetVcpusConfig(persistentDef, nvcpus, hotpluggable);
 
         if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(vcpumap);
-    return ret;
+    return 0;
 }
 
 
