@@ -271,17 +271,12 @@ virHostCPUGetSiblingsList(unsigned int cpu)
 static unsigned long
 virHostCPUCountThreadSiblings(unsigned int cpu)
 {
-    virBitmap *siblings_map;
-    unsigned long ret = 0;
+    g_autoptr(virBitmap) siblings_map = NULL;
 
     if (!(siblings_map = virHostCPUGetSiblingsList(cpu)))
-        goto cleanup;
+        return 0;
 
-    ret = virBitmapCountBits(siblings_map);
-
- cleanup:
-    virBitmapFree(siblings_map);
-    return ret;
+    return virBitmapCountBits(siblings_map);
 }
 
 /* parses a node entry, returning number of processors in the node and
