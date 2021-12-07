@@ -104,10 +104,8 @@ virCapabilitiesClearHostNUMACellCPUTopology(virCapsHostNUMACellCPU *cpus,
     if (!cpus)
         return;
 
-    for (i = 0; i < ncpus; i++) {
-        virBitmapFree(cpus[i].siblings);
-        cpus[i].siblings = NULL;
-    }
+    for (i = 0; i < ncpus; i++)
+        g_clear_pointer(&cpus[i].siblings, virBitmapFree);
 }
 
 static void
@@ -1416,20 +1414,18 @@ virBitmap *
 virCapabilitiesHostNUMAGetCpus(virCapsHostNUMA *caps,
                                virBitmap *nodemask)
 {
-    virBitmap *ret = NULL;
+    g_autoptr(virBitmap) ret = NULL;
     unsigned int maxcpu = virCapabilitiesHostNUMAGetMaxcpu(caps);
     ssize_t node = -1;
 
     ret = virBitmapNew(maxcpu + 1);
 
     while ((node = virBitmapNextSetBit(nodemask, node)) >= 0) {
-        if (virCapabilitiesHostNUMAGetCellCpus(caps, node, ret) < 0) {
-            virBitmapFree(ret);
+        if (virCapabilitiesHostNUMAGetCellCpus(caps, node, ret) < 0)
             return NULL;
-        }
     }
 
-    return ret;
+    return g_steal_pointer(&ret);
 }
 
 
