@@ -17977,34 +17977,30 @@ virDomainSchedulerParse(xmlNodePtr node,
                         virProcessSchedPolicy *policy,
                         int *priority)
 {
-    virBitmap *ret = NULL;
+    g_autoptr(virBitmap) ret = NULL;
     g_autofree char *tmp = NULL;
 
     if (!(tmp = virXMLPropString(node, attributeName))) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Missing attribute '%s' in element '%s'"),
                        attributeName, elementName);
-        goto error;
+        return NULL;
     }
 
     if (virBitmapParse(tmp, &ret, VIR_DOMAIN_CPUMASK_LEN) < 0)
-        goto error;
+        return NULL;
 
     if (virBitmapIsAllClear(ret)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("'%s' scheduler bitmap '%s' is empty"),
                        attributeName, tmp);
-        goto error;
+        return NULL;
     }
 
     if (virDomainSchedulerParseCommonAttrs(node, policy, priority) < 0)
-        goto error;
+        return NULL;
 
-    return ret;
-
- error:
-    virBitmapFree(ret);
-    return NULL;
+    return g_steal_pointer(&ret);
 }
 
 
