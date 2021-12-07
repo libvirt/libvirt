@@ -4879,7 +4879,6 @@ libxlDomainGetNumaParameters(virDomainPtr dom,
 
             /* First, we convert libxl_bitmap into virBitmap. After that,
              * we format virBitmap as a string that can be returned. */
-            virBitmapClearAll(nodes);
             libxl_for_each_set_bit(j, nodemap) {
                 if (virBitmapSetBit(nodes, j)) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
