@@ -1474,13 +1474,12 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
 
         if (cpumaps) {
             unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, ncpuinfo);
-            virBitmap *map = NULL;
+            g_autoptr(virBitmap) map = NULL;
 
             if (!(map = virProcessGetAffinity(vcpupid)))
                 return -1;
 
             virBitmapToDataBuf(map, cpumap, maplen);
-            virBitmapFree(map);
         }
 
         if (cpuwait) {
@@ -4495,7 +4494,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
                       virQEMUDriver *driver,
                       virBitmap *cpumap)
 {
-    virBitmap *tmpmap = NULL;
+    g_autoptr(virBitmap) tmpmap = NULL;
     virDomainVcpuDef *vcpuinfo;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCgroup) cgroup_vcpu = NULL;
@@ -4541,8 +4540,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
     }
 
     virBitmapFree(vcpuinfo->cpumask);
-    vcpuinfo->cpumask = tmpmap;
-    tmpmap = NULL;
+    vcpuinfo->cpumask = g_steal_pointer(&tmpmap);
 
     qemuDomainSaveStatus(vm);
 
@@ -4560,7 +4558,6 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
     ret = 0;
 
  cleanup:
-    virBitmapFree(tmpmap);
     virObjectEventStateQueue(driver->domainEventState, event);
     return ret;
 }
@@ -4578,7 +4575,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
     virDomainDef *def;
     virDomainDef *persistentDef;
     int ret = -1;
-    virBitmap *pcpumap = NULL;
+    g_autoptr(virBitmap) pcpumap = NULL;
     virDomainVcpuDef *vcpuinfo = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
@@ -4622,8 +4619,7 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
     if (persistentDef) {
         virBitmapFree(vcpuinfo->cpumask);
-        vcpuinfo->cpumask = pcpumap;
-        pcpumap = NULL;
+        vcpuinfo->cpumask = g_steal_pointer(&pcpumap);
 
         ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
         goto endjob;
@@ -4636,7 +4632,6 @@ qemuDomainPinVcpuFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virBitmapFree(pcpumap);
     return ret;
 }
 
@@ -4702,7 +4697,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
     virDomainDef *persistentDef;
     int ret = -1;
     qemuDomainObjPrivate *priv;
-    virBitmap *pcpumap = NULL;
+    g_autoptr(virBitmap) pcpumap = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     virObjectEvent *event = NULL;
     g_autofree char *str = NULL;
@@ -4785,7 +4780,6 @@ qemuDomainPinEmulator(virDomainPtr dom,
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
-    virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -5011,7 +5005,7 @@ qemuDomainGetIOThreadsLive(virQEMUDriver *driver,
     info_ret = g_new0(virDomainIOThreadInfoPtr, niothreads);
 
     for (i = 0; i < niothreads; i++) {
-        virBitmap *map = NULL;
+        g_autoptr(virBitmap) map = NULL;
 
         info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
         info_ret[i]->iothread_id = iothreads[i]->iothread_id;
@@ -5019,12 +5013,8 @@ qemuDomainGetIOThreadsLive(virQEMUDriver *driver,
         if (!(map = virProcessGetAffinity(iothreads[i]->thread_id)))
             goto endjob;
 
-        if (virBitmapToData(map, &info_ret[i]->cpumap,
-                            &info_ret[i]->cpumaplen) < 0) {
-            virBitmapFree(map);
+        if (virBitmapToData(map, &info_ret[i]->cpumap, &info_ret[i]->cpumaplen) < 0)
             goto endjob;
-        }
-        virBitmapFree(map);
     }
 
     *info = g_steal_pointer(&info_ret);
@@ -5094,7 +5084,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
     virDomainObj *vm;
     virDomainDef *def;
     virDomainDef *persistentDef;
-    virBitmap *pcpumap = NULL;
+    g_autoptr(virBitmap) pcpumap = NULL;
     qemuDomainObjPrivate *priv;
     g_autoptr(virCgroup) cgroup_iothread = NULL;
     virObjectEvent *event = NULL;
@@ -5208,7 +5198,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
  cleanup:
     virObjectEventStateQueue(driver->domainEventState, event);
-    virBitmapFree(pcpumap);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -8840,7 +8829,7 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     int ret = -1;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     qemuDomainObjPrivate *priv;
-    virBitmap *nodeset = NULL;
+    g_autoptr(virBitmap) nodeset = NULL;
     virDomainNumatuneMemMode config_mode;
     int mode = -1;
 
@@ -8947,7 +8936,6 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    virBitmapFree(nodeset);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -16573,7 +16561,7 @@ qemuDomainGetCPUStats(virDomainPtr domain,
     virDomainObj *vm = NULL;
     int ret = -1;
     qemuDomainObjPrivate *priv;
-    virBitmap *guestvcpus = NULL;
+    g_autoptr(virBitmap) guestvcpus = NULL;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
@@ -16605,7 +16593,6 @@ qemuDomainGetCPUStats(virDomainPtr domain,
         ret = virCgroupGetPercpuStats(priv->cgroup, params, nparams,
                                       start_cpu, ncpus, guestvcpus);
  cleanup:
-    virBitmapFree(guestvcpus);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -19379,9 +19366,9 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     virTypedParameterPtr par = NULL;
     int npar = 0;
     int maxpar = 0;
-    virBitmap *vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
-    virBitmap *online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
-    virBitmap *offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
+    g_autoptr(virBitmap) vcpus = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
+    g_autoptr(virBitmap) online = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
+    g_autoptr(virBitmap) offlinable = virBitmapNew(QEMU_GUEST_VCPU_MAX_ID);
     g_autofree char *tmp = NULL;
     size_t i;
     int ret = -1;
@@ -19418,9 +19405,6 @@ qemuDomainGetGuestVcpusParams(virTypedParameterPtr *params,
     ret = 0;
 
  cleanup:
-    virBitmapFree(vcpus);
-    virBitmapFree(online);
-    virBitmapFree(offlinable);
     virTypedParamsFree(par, npar);
     return ret;
 }
@@ -19483,7 +19467,7 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm = NULL;
-    virBitmap *map = NULL;
+    g_autoptr(virBitmap) map = NULL;
     qemuAgentCPUInfo *info = NULL;
     qemuAgent *agent;
     int ninfo = 0;
@@ -19556,7 +19540,6 @@ qemuDomainSetGuestVcpus(virDomainPtr dom,
 
  cleanup:
     VIR_FREE(info);
-    virBitmapFree(map);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -19572,7 +19555,7 @@ qemuDomainSetVcpu(virDomainPtr dom,
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     virDomainDef *persistentDef = NULL;
-    virBitmap *map = NULL;
+    g_autoptr(virBitmap) map = NULL;
     ssize_t lastvcpu;
     int ret = -1;
 
@@ -19629,7 +19612,6 @@ qemuDomainSetVcpu(virDomainPtr dom,
     qemuDomainObjEndJob(driver, vm);
 
  cleanup:
-    virBitmapFree(map);
     virDomainObjEndAPI(&vm);
     return ret;
 }
