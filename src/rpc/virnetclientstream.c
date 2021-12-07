@@ -801,3 +801,67 @@ bool virNetClientStreamEOF(virNetClientStream *st)
 {
     return st->incomingEOF;
 }
+
+
+int virNetClientStreamInData(virNetClientStream *st,
+                             int *inData,
+                             long long *length)
+{
+    int ret = -1;
+    bool msgPopped = false;
+    virNetMessage *msg = NULL;
+
+    virObjectLock(st);
+
+    if (!st->allowSkip) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("Holes are not supported with this stream"));
+        goto cleanup;
+    }
+
+    if (virNetClientStreamCheckState(st) < 0)
+        goto cleanup;
+
+    msg = st->rx;
+
+    if (!msg) {
+        /* No incoming message. This means that the stream is at its end. In
+         * this case, virStreamInData() should set both inData and length to
+         * zero and return success. If there is a trailing hole though (there
+         * shouldn't be), signal that to the caller. */
+        *inData = 0;
+        *length = st->holeLength;
+        st->holeLength = 0;
+    } else if (msg->header.type == VIR_NET_STREAM) {
+        *inData = 1;
+        *length = msg->bufferLength - msg->bufferOffset;
+    } else if (msg->header.type == VIR_NET_STREAM_HOLE) {
+        *inData = 0;
+
+        if (st->holeLength == 0) {
+            if (virNetClientStreamHandleHole(NULL, st) < 0)
+                goto cleanup;
+
+            /* virNetClientStreamHandleHole() called above did pop the message from
+             * the queue (and freed it). Instead of trying to push it back let's
+             * just signal to the caller what we did. */
+            msgPopped = true;
+        }
+
+        *length = st->holeLength;
+        st->holeLength = 0;
+    } else {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Invalid message prog=%d type=%d serial=%u proc=%d"),
+                       msg->header.prog,
+                       msg->header.type,
+                       msg->header.serial,
+                       msg->header.proc);
+        goto cleanup;
+    }
+
+    ret = msgPopped ? 1 : 0;
+ cleanup:
+    virObjectUnlock(st);
+    return ret;
+}

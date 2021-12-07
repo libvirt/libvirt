@@ -90,3 +90,7 @@ int virNetClientStreamEventRemoveCallback(virNetClientStream *st);
 
 bool virNetClientStreamEOF(virNetClientStream *st)
     ATTRIBUTE_NONNULL(1);
+
+int virNetClientStreamInData(virNetClientStream *st,
+                             int *inData,
+                             long long *length);
