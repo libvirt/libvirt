@@ -2865,9 +2865,7 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
         disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("native I/O needs either no disk cache "
-                         "or directsync cache mode, QEMU will fallback "
-                         "to aio=threads"));
+                       _("io='native' needs either no disk cache or directsync cache mode"));
         return -1;
     }
 
