@@ -29,7 +29,7 @@
 
 int virHostValidateQEMU(void)
 {
-    virBitmap *flags;
+    g_autoptr(virBitmap) flags = NULL;
     int ret = 0;
     bool hasHwVirt = false;
     bool hasVirtFlag = false;
@@ -97,8 +97,6 @@ int virHostValidateQEMU(void)
         else
             virHostMsgPass();
     }
-
-    virBitmapFree(flags);
 
     if (virHostValidateDeviceExists("QEMU", "/dev/vhost-net",
                                     VIR_HOST_VALIDATE_WARN,
