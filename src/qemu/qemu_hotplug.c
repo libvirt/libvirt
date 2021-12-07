@@ -6845,19 +6845,18 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
                           bool state)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    virBitmap *livevcpus = NULL;
-    int ret = -1;
+    g_autoptr(virBitmap) livevcpus = NULL;
 
     if (def) {
         if (!qemuDomainSupportsNewVcpuHotplug(vm)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("this qemu version does not support specific "
                              "vCPU hotplug"));
-            goto cleanup;
+            return -1;
         }
 
         if (!(livevcpus = qemuDomainFilterHotplugVcpuEntities(def, map, state)))
-            goto cleanup;
+            return -1;
 
         /* Make sure that only one hotpluggable entity is selected.
          * qemuDomainSetVcpusLive allows setting more at once but error
@@ -6866,31 +6865,27 @@ qemuDomainSetVcpuInternal(virQEMUDriver *driver,
         if (virBitmapCountBits(livevcpus) != 1) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("only one hotpluggable entity can be selected"));
-            goto cleanup;
+            return -1;
         }
     }
 
     if (persistentDef) {
         if (qemuDomainVcpuValidateConfig(persistentDef, map) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (livevcpus &&
         qemuDomainSetVcpusLive(driver, cfg, vm, livevcpus, state) < 0)
-        goto cleanup;
+        return -1;
 
     if (persistentDef) {
         qemuDomainSetVcpuConfig(persistentDef, map, state);
 
         if (virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(livevcpus);
-    return ret;
+    return 0;
 }
 
 
