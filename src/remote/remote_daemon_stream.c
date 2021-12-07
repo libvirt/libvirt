@@ -894,9 +894,11 @@ daemonStreamHandleRead(virNetServerClient *client,
 
                 msg = NULL;
 
-                /* We have successfully sent stream skip to the other side.
-                 * To keep streams in sync seek locally too. */
-                virStreamSendHole(stream->st, length, 0);
+                /* We have successfully sent stream skip to the other side. To
+                 * keep streams in sync seek locally too (rv == 0), unless it's
+                 * already done (rv == 1). */
+                if (rv == 0)
+                    virStreamSendHole(stream->st, length, 0);
                 /* We're done with this call */
                 goto done;
             }
