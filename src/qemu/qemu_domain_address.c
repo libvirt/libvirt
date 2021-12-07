@@ -3086,8 +3086,7 @@ qemuDomainReleaseMemoryDeviceSlot(virDomainObj *vm,
 static int
 qemuDomainAssignMemorySlots(virDomainDef *def)
 {
-    virBitmap *slotmap = NULL;
-    int ret = -1;
+    g_autoptr(virBitmap) slotmap = NULL;
     size_t i;
 
     if (!virDomainDefHasMemoryHotplug(def))
@@ -3103,7 +3102,7 @@ qemuDomainAssignMemorySlots(virDomainDef *def)
         case VIR_DOMAIN_MEMORY_MODEL_DIMM:
         case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
             if (qemuAssignMemoryDeviceSlot(def->mems[i], slotmap) < 0)
-                goto cleanup;
+                return -1;
             break;
 
         case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM:
@@ -3116,12 +3115,7 @@ qemuDomainAssignMemorySlots(virDomainDef *def)
         }
     }
 
-    ret = 0;
-
- cleanup:
-    virBitmapFree(slotmap);
-    return ret;
-
+    return 0;
 }
 
 
