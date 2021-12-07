@@ -450,31 +450,25 @@ virHostCPUParseNode(const char *node,
 static bool
 virHostCPUHasValidSubcoreConfiguration(int threads_per_subcore)
 {
-    virBitmap *online_cpus = NULL;
+    g_autoptr(virBitmap) online_cpus = NULL;
     int cpu = -1;
-    bool ret = false;
 
     /* No point in checking if subcores are not in use */
     if (threads_per_subcore <= 0)
-        goto cleanup;
+        return false;
 
     if (!(online_cpus = virHostCPUGetOnlineBitmap()))
-        goto cleanup;
+        return false;
 
     while ((cpu = virBitmapNextSetBit(online_cpus, cpu)) >= 0) {
 
         /* A single online secondary thread is enough to
          * make the configuration invalid */
         if (cpu % threads_per_subcore != 0)
-            goto cleanup;
+            return false;
     }
 
-    ret = true;
-
- cleanup:
-    virBitmapFree(online_cpus);
-
-    return ret;
+    return true;
 }
 
 
