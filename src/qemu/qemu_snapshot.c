@@ -181,23 +181,21 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
     size_t i;
     virDomainSnapshotDiskDef *snapdisk;
     virDomainDiskDef *defdisk;
-    virCommand *cmd = NULL;
     const char *qemuImgPath;
-    virBitmap *created = NULL;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
+    g_autoptr(virBitmap) created = virBitmapNew(snapdef->ndisks);
 
     if (!(qemuImgPath = qemuFindQemuImgBinary(driver)))
         goto cleanup;
-
-    created = virBitmapNew(snapdef->ndisks);
 
     /* If reuse is true, then qemuSnapshotPrepare already
      * ensured that the new files exist, and it was up to the user to
      * create them correctly.  */
     for (i = 0; i < snapdef->ndisks && !reuse; i++) {
+        g_autoptr(virCommand) cmd = NULL;
         snapdisk = &(snapdef->disks[i]);
         defdisk = vm->def->disks[i];
         if (snapdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL)
@@ -234,9 +232,6 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
 
         if (virCommandRun(cmd, NULL) < 0)
             goto cleanup;
-
-        virCommandFree(cmd);
-        cmd = NULL;
     }
 
     /* update disk definitions */
@@ -272,8 +267,6 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
-
     /* unlink images if creation has failed */
     if (ret < 0 && created) {
         ssize_t bit = -1;
@@ -284,7 +277,6 @@ qemuSnapshotCreateInactiveExternal(virQEMUDriver *driver,
                          snapdisk->src->path);
         }
     }
-    virBitmapFree(created);
 
     return ret;
 }
