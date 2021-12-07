@@ -33,28 +33,21 @@ static int
 test_virCapabilitiesGetCpusForNodemask(const void *data G_GNUC_UNUSED)
 {
     const char *nodestr = "3,4,5,6";
-    virBitmap *nodemask = NULL;
-    virBitmap *cpumap = NULL;
+    g_autoptr(virBitmap) nodemask = NULL;
+    g_autoptr(virBitmap) cpumap = NULL;
     g_autoptr(virCapsHostNUMA) caps = NULL;
     int mask_size = 8;
-    int ret = -1;
 
     if (!(caps = virTestCapsBuildNUMATopology(3)))
-        goto error;
+        return -1;
 
     if (virBitmapParse(nodestr, &nodemask, mask_size) < 0)
-        goto error;
+        return -1;
 
     if (!(cpumap = virCapabilitiesHostNUMAGetCpus(caps, nodemask)))
-        goto error;
+        return -1;
 
-    ret = 0;
-
- error:
-    virBitmapFree(nodemask);
-    virBitmapFree(cpumap);
-    return ret;
-
+    return 0;
 }
 
 
