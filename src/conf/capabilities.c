@@ -2155,11 +2155,9 @@ int
 virCapabilitiesInitCaches(virCaps *caps)
 {
     size_t i = 0;
-    virBitmap *cpus = NULL;
+    g_autoptr(virBitmap) cpus = NULL;
     ssize_t pos = -1;
     int ret = -1;
-    char *path = NULL;
-    char *type = NULL;
     struct dirent *ent = NULL;
     virCapsHostCacheBank *bank = NULL;
     const virResctrlMonitorType montype = VIR_RESCTRL_MONITOR_TYPE_CACHE;
@@ -2180,9 +2178,7 @@ virCapabilitiesInitCaches(virCaps *caps)
     while ((pos = virBitmapNextSetBit(cpus, pos)) >= 0) {
         int rv = -1;
         g_autoptr(DIR) dirp = NULL;
-
-        VIR_FREE(path);
-        path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
+        g_autofree char *path = g_strdup_printf("%s/cpu/cpu%zd/cache/", SYSFS_SYSTEM_PATH, pos);
 
         rv = virDirOpenIfExists(&dirp, path);
         if (rv < 0)
@@ -2192,6 +2188,7 @@ virCapabilitiesInitCaches(virCaps *caps)
             continue;
 
         while ((rv = virDirRead(dirp, &ent, path)) > 0) {
+            g_autofree char *type = NULL;
             int kernel_type;
             unsigned int level;
 
@@ -2242,7 +2239,6 @@ virCapabilitiesInitCaches(virCaps *caps)
             }
 
             bank->type = kernel_type;
-            VIR_FREE(type);
 
             for (i = 0; i < caps->host.cache.nbanks; i++) {
                 if (virCapsHostCacheBankEquals(bank, caps->host.cache.banks[i]))
@@ -2284,10 +2280,7 @@ virCapabilitiesInitCaches(virCaps *caps)
 
     ret = 0;
  cleanup:
-    VIR_FREE(type);
-    VIR_FREE(path);
     virCapsHostCacheBankFree(bank);
-    virBitmapFree(cpus);
     return ret;
 }
 
