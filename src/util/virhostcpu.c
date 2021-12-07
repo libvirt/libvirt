@@ -582,8 +582,8 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
                                unsigned int *cores,
                                unsigned int *threads)
 {
-    virBitmap *present_cpus_map = NULL;
-    virBitmap *online_cpus_map = NULL;
+    g_autoptr(virBitmap) present_cpus_map = NULL;
+    g_autoptr(virBitmap) online_cpus_map = NULL;
     g_autoptr(DIR) nodedir = NULL;
     struct dirent *nodedirent = NULL;
     int nodecpus, nodecores, nodesockets, nodethreads, offline = 0;
@@ -745,8 +745,6 @@ virHostCPUGetInfoPopulateLinux(FILE *cpuinfo,
     ret = 0;
 
  cleanup:
-    virBitmapFree(present_cpus_map);
-    virBitmapFree(online_cpus_map);
     VIR_FREE(sysfs_nodedir);
     VIR_FREE(sysfs_cpudir);
     return ret;
