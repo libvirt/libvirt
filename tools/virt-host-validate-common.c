@@ -330,7 +330,7 @@ int virHostValidateCGroupControllers(const char *hvname G_GNUC_UNUSED,
 int virHostValidateIOMMU(const char *hvname,
                          virHostValidateLevel level)
 {
-    virBitmap *flags;
+    g_autoptr(virBitmap) flags = NULL;
     struct stat sb;
     const char *bootarg = NULL;
     bool isAMD = false, isIntel = false;
@@ -346,8 +346,6 @@ int virHostValidateIOMMU(const char *hvname,
         isIntel = true;
     else if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SVM))
         isAMD = true;
-
-    virBitmapFree(flags);
 
     if (isIntel) {
         if (access("/sys/firmware/acpi/tables/DMAR", F_OK) == 0) {
@@ -445,7 +443,7 @@ bool virHostKernelModuleIsLoaded(const char *module)
 int virHostValidateSecureGuests(const char *hvname,
                                 virHostValidateLevel level)
 {
-    virBitmap *flags;
+    g_autoptr(virBitmap) flags = NULL;
     bool hasFac158 = false;
     bool hasAMDSev = false;
     virArch arch = virArchFromHost();
@@ -459,8 +457,6 @@ int virHostValidateSecureGuests(const char *hvname,
         hasFac158 = true;
     else if (flags && virBitmapIsBitSet(flags, VIR_HOST_VALIDATE_CPU_FLAG_SEV))
         hasAMDSev = true;
-
-    virBitmapFree(flags);
 
     virHostMsgCheck(hvname, "%s", _("for secure guest support"));
     if (ARCH_IS_S390(arch)) {
