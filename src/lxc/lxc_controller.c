@@ -731,7 +731,7 @@ static int virLXCControllerSetupLoopDevices(virLXCController *ctrl)
 static int virLXCControllerSetupCpuAffinity(virLXCController *ctrl)
 {
     int hostcpus, maxcpu = CPU_SETSIZE;
-    virBitmap *cpumap;
+    g_autoptr(virBitmap) cpumap = NULL;
     virBitmap *cpumapToSet;
 
     VIR_DEBUG("Setting CPU affinity");
@@ -761,11 +761,8 @@ static int virLXCControllerSetupCpuAffinity(virLXCController *ctrl)
      * so use '0' to indicate our own process ID. No threads are
      * running at this point
      */
-    if (virProcessSetAffinity(0 /* Self */, cpumapToSet, false) < 0) {
-        virBitmapFree(cpumap);
+    if (virProcessSetAffinity(0 /* Self */, cpumapToSet, false) < 0)
         return -1;
-    }
-    virBitmapFree(cpumap);
 
     return 0;
 }
@@ -810,7 +807,7 @@ static int virLXCControllerGetNumadAdvice(virLXCController *ctrl,
  */
 static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
 {
-    virBitmap *auto_nodeset = NULL;
+    g_autoptr(virBitmap) auto_nodeset = NULL;
     int ret = -1;
     virBitmap *nodeset = NULL;
     virDomainNumatuneMemMode mode;
@@ -841,7 +838,6 @@ static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
 
     ret = 0;
  cleanup:
-    virBitmapFree(auto_nodeset);
     return ret;
 }
 
@@ -852,7 +848,7 @@ static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
  */
 static int virLXCControllerSetupCgroupLimits(virLXCController *ctrl)
 {
-    virBitmap *auto_nodeset = NULL;
+    g_autoptr(virBitmap) auto_nodeset = NULL;
     int ret = -1;
     virBitmap *nodeset = NULL;
     size_t i;
@@ -884,7 +880,6 @@ static int virLXCControllerSetupCgroupLimits(virLXCController *ctrl)
 
     ret = 0;
  cleanup:
-    virBitmapFree(auto_nodeset);
     return ret;
 }
 
