@@ -2861,12 +2861,28 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         }
     }
 
-    if (disk->iomode == VIR_DOMAIN_DISK_IO_NATIVE &&
-        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
-        disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("io='native' needs either no disk cache or directsync cache mode"));
-        return -1;
+    switch (disk->iomode) {
+    case VIR_DOMAIN_DISK_IO_NATIVE:
+        if (disk->cachemode != VIR_DOMAIN_DISK_CACHE_DIRECTSYNC &&
+            disk->cachemode != VIR_DOMAIN_DISK_CACHE_DISABLE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("io='native' needs either no disk cache or directsync cache mode"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_IO_URING:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AIO_IO_URING)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("io uring is not supported by this QEMU binary"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DISK_IO_THREADS:
+    case VIR_DOMAIN_DISK_IO_DEFAULT:
+    case VIR_DOMAIN_DISK_IO_LAST:
+        break;
     }
 
     if (disk->serial &&
@@ -2890,14 +2906,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("detect_zeroes is not supported by this QEMU binary"));
         return -1;
-    }
-
-    if (disk->iomode == VIR_DOMAIN_DISK_IO_URING) {
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_AIO_IO_URING)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("io uring is not supported by this QEMU binary"));
-            return -1;
-        }
     }
 
     if (disk->serial &&
