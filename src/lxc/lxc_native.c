@@ -926,32 +926,28 @@ lxcSetCpuTune(virDomainDef *def, virConf *properties)
 static int
 lxcSetCpusetTune(virDomainDef *def, virConf *properties)
 {
-    g_autofree char *value = NULL;
-    virBitmap *nodeset = NULL;
+    g_autofree char *cpus = NULL;
+    g_autofree char *mems = NULL;
+    g_autoptr(virBitmap) nodeset = NULL;
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpuset.cpus",
-                              &value) > 0) {
-        if (virBitmapParse(value, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                              &cpus) > 0) {
+        if (virBitmapParse(cpus, &def->cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         def->placement_mode = VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC;
-        g_free(value);
-        value = NULL;
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpuset.mems",
-                              &value) > 0) {
-        if (virBitmapParse(value, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                              &mems) > 0) {
+        if (virBitmapParse(mems, &nodeset, VIR_DOMAIN_CPUMASK_LEN) < 0)
             return -1;
         if (virDomainNumatuneSet(def->numa,
                                  def->placement_mode ==
                                  VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
                                  VIR_DOMAIN_NUMATUNE_PLACEMENT_STATIC,
                                  VIR_DOMAIN_NUMATUNE_MEM_STRICT,
-                                 nodeset) < 0) {
-            virBitmapFree(nodeset);
+                                 nodeset) < 0)
             return -1;
-        }
-        virBitmapFree(nodeset);
     }
 
     return 0;
