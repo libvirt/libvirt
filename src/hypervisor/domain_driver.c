@@ -592,8 +592,6 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
                                   unsigned int bitmap_size)
 {
     virDomainIOThreadInfoPtr *info_ret = NULL;
-    virBitmap *bitmap = NULL;
-    virBitmap *cpumask = NULL;
     size_t i;
     int ret = -1;
 
@@ -603,6 +601,8 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
     info_ret = g_new0(virDomainIOThreadInfoPtr, targetDef->niothreadids);
 
     for (i = 0; i < targetDef->niothreadids; i++) {
+        g_autoptr(virBitmap) bitmap = NULL;
+        virBitmap *cpumask = NULL;
         info_ret[i] = g_new0(virDomainIOThreadInfo, 1);
 
         /* IOThread ID's are taken from the iothreadids list */
@@ -627,8 +627,6 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
         if (virBitmapToData(cpumask, &info_ret[i]->cpumap,
                             &info_ret[i]->cpumaplen) < 0)
             goto cleanup;
-        virBitmapFree(bitmap);
-        bitmap = NULL;
     }
 
     *info = g_steal_pointer(&info_ret);
@@ -640,7 +638,6 @@ virDomainDriverGetIOThreadsConfig(virDomainDef *targetDef,
             virDomainIOThreadInfoFree(info_ret[i]);
         VIR_FREE(info_ret);
     }
-    virBitmapFree(bitmap);
 
     return ret;
 }
