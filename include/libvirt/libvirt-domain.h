@@ -5101,6 +5101,38 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
 
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR:
+ *
+ * Macro represents the API major version of the SEV host,
+ * as VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR "sev-api-major"
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR:
+ *
+ * Macro represents the API minor version of the SEV guest,
+ * as VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR "sev-api-minor"
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID:
+ *
+ * Macro represents the build ID of the SEV host,
+ * as VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID "sev-build-id"
+
+/**
+ * VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY:
+ *
+ * Macro represents the policy of the SEV guest,
+ * as VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY "sev-policy"
+
 int virDomainGetLaunchSecurityInfo(virDomainPtr domain,
                                    virTypedParameterPtr *params,
                                    int *nparams,
