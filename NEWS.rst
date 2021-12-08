@@ -190,6 +190,7 @@ v7.8.0 (2021-10-01)
     active. This information can also be retrieved with the new virsh command
     ``nodedev-info``.
 
+
 v7.7.0 (2021-09-01)
 ===================
 
