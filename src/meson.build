@@ -517,48 +517,48 @@ libvirt_lxc_lib = shared_library(
 
 
 # libvirt-admin.so
-
-libvirt_admin_lib = shared_library(
-  'virt-admin',
-  [
-    admin_sources,
-    admin_client_generated,
-    admin_driver_generated,
-    datatypes_sources,
-    dtrace_gen_objects,
-  ],
-  dependencies: [
-    capng_dep,
-    devmapper_dep,
-    gnutls_dep,
-    libssh2_dep,
-    libssh_dep,
-    sasl_dep,
-    src_dep,
-    rpc_dep,
-    xdr_dep,
-    yajl_dep,
-  ],
-  include_directories: [
-    admin_inc_dir,
-    remote_inc_dir,
-  ],
-  link_args: [
-    libvirt_admin_syms_flags,
-    libvirt_nodelete,
-  ],
-  link_with: [
-    libvirt_lib,
-  ],
-  link_depends: [
-    libvirt_admin_syms_file,
-  ],
-  install: true,
-  install_rpath: libvirt_rpath,
-  version: libvirt_lib_version,
-  soversion: libvirt_so_version,
-)
-
+if conf.has('WITH_REMOTE')
+  libvirt_admin_lib = shared_library(
+    'virt-admin',
+    [
+      admin_sources,
+      admin_client_generated,
+      admin_driver_generated,
+      datatypes_sources,
+      dtrace_gen_objects,
+    ],
+    dependencies: [
+      capng_dep,
+      devmapper_dep,
+      gnutls_dep,
+      libssh2_dep,
+      libssh_dep,
+      sasl_dep,
+      src_dep,
+      rpc_dep,
+      xdr_dep,
+      yajl_dep,
+    ],
+    include_directories: [
+      admin_inc_dir,
+      remote_inc_dir,
+    ],
+    link_args: [
+      libvirt_admin_syms_flags,
+      libvirt_nodelete,
+    ],
+    link_with: [
+      libvirt_lib,
+    ],
+    link_depends: [
+      libvirt_admin_syms_file,
+    ],
+    install: true,
+    install_rpath: libvirt_rpath,
+    version: libvirt_lib_version,
+    soversion: libvirt_so_version,
+  )
+endif
 
 # build libvirt shared modules
 
@@ -919,12 +919,14 @@ if host_machine.system() == 'linux'
     env: runutf8,
   )
 
-  test(
-    'check-admin-symfile',
-    python3_prog,
-    args: [ check_symfile_prog.path(), libvirt_admin_syms, libvirt_admin_lib ],
-    env: runutf8,
-  )
+  if conf.has('WITH_REMOTE')
+    test(
+      'check-admin-symfile',
+      python3_prog,
+      args: [ check_symfile_prog.path(), libvirt_admin_syms, libvirt_admin_lib ],
+      env: runutf8,
+    )
+  endif
 endif
 
 test(

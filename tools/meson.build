@@ -206,27 +206,29 @@ executable(
   install_rpath: libvirt_rpath,
 )
 
-executable(
-  'virt-admin',
-  [
-    'virt-admin.c',
-    'virt-admin-completer.c',
-  ],
-  dependencies: [
-    tools_dep,
-    readline_dep,
-  ],
-  link_args: [
-    coverage_flags,
-  ],
-  link_with: [
-    libvirt_admin_lib,
-    libvirt_shell_lib,
-  ],
-  install: true,
-  install_dir: bindir,
-  install_rpath: libvirt_rpath,
-)
+if conf.has('WITH_REMOTE')
+  executable(
+    'virt-admin',
+    [
+      'virt-admin.c',
+      'virt-admin-completer.c',
+    ],
+    dependencies: [
+      tools_dep,
+      readline_dep,
+    ],
+    link_args: [
+      coverage_flags,
+    ],
+    link_with: [
+      libvirt_admin_lib,
+      libvirt_shell_lib,
+    ],
+    install: true,
+    install_dir: bindir,
+    install_rpath: libvirt_rpath,
+  )
+endif
 
 tools_conf = configuration_data()
 tools_conf.set('PACKAGE', meson.project_name())

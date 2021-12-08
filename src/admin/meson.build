@@ -91,24 +91,26 @@ libvirt_admin_syms_flags = '@0@@1@'.format(
   libvirt_admin_syms_file.full_path(),
 )
 
-admin_driver_lib = static_library(
-  'virt_admin_driver',
-  [
-    admin_driver_sources,
-    admin_driver_generated,
-  ],
-  dependencies: [
-    rpc_dep,
-    sasl_dep,
-    src_dep,
-    xdr_dep,
-  ],
-)
+if conf.has('WITH_REMOTE')
+  admin_driver_lib = static_library(
+    'virt_admin_driver',
+    [
+      admin_driver_sources,
+      admin_driver_generated,
+    ],
+    dependencies: [
+      rpc_dep,
+      sasl_dep,
+      src_dep,
+      xdr_dep,
+    ],
+  )
 
-check_protocols += {
-  'name': 'admin_protocol',
-  'lib': admin_driver_lib,
-}
+  check_protocols += {
+    'name': 'admin_protocol',
+    'lib': admin_driver_lib,
+  }
+endif
 
 virt_conf_files += files('libvirt-admin.conf')
 
