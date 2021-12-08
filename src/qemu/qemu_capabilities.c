@@ -4943,8 +4943,8 @@ virQEMUCapsIsValid(void *data,
             return false;
         }
 
-        if (virCPUDataIsIdentical(priv->cpuData, qemuCaps->cpuData) !=
-            VIR_CPU_COMPARE_IDENTICAL) {
+        if (priv->cpuData &&
+            virCPUDataIsIdentical(priv->cpuData, qemuCaps->cpuData) != VIR_CPU_COMPARE_IDENTICAL) {
             VIR_DEBUG("Outdated capabilities for '%s': host cpuid changed",
                       qemuCaps->binary);
             return false;
