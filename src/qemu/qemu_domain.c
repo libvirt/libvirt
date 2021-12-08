@@ -11530,6 +11530,19 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
 
         return cb(dev, dev->data.rng->source.chardev, opaque);
 
+    case VIR_DOMAIN_DEVICE_TPM:
+        switch ((virDomainTPMBackendType) dev->data.tpm->type) {
+        case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+            return cb(dev, dev->data.tpm->data.passthrough.source, opaque);
+
+        case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+            return cb(dev, dev->data.tpm->data.emulator.source, opaque);
+
+        case VIR_DOMAIN_TPM_TYPE_LAST:
+            return 0;
+        }
+        return 0;
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -11543,7 +11556,6 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_LAST:
     case VIR_DOMAIN_DEVICE_MEMORY:

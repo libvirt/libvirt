@@ -394,6 +394,10 @@ testPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
              * vhost-sockets for network devices */
             return 0;
         }
+
+        /* TPMs FD passing setup is special and handled separately */
+        if (dev->type == VIR_DOMAIN_DEVICE_TPM)
+            return 0;
     }
 
     switch ((virDomainChrType) chardev->type) {
