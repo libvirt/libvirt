@@ -32,20 +32,25 @@ log_daemon_sources = files(
   'log_handler.c',
 )
 
-log_driver_lib = static_library(
-  'virt_log_driver',
-  [
-    log_driver_sources,
-    log_protocol_generated,
-  ],
-  dependencies: [
-    rpc_dep,
-    src_dep,
-    xdr_dep,
-  ],
-)
+if conf.has('WITH_REMOTE')
+  log_driver_lib = static_library(
+    'virt_log_driver',
+    [
+      log_driver_sources,
+      log_protocol_generated,
+    ],
+    dependencies: [
+      rpc_dep,
+      src_dep,
+      xdr_dep,
+    ],
+  )
 
-libvirt_libs += log_driver_lib
+  libvirt_libs += log_driver_lib
+  used_sym_files += 'libvirt_logging.syms'
+else
+  sym_files += 'libvirt_logging.syms'
+endif
 
 if conf.has('WITH_LIBVIRTD')
   log_daemon_generated = custom_target(

@@ -1667,15 +1667,6 @@ virLockManagerPluginUsesState;
 virLockManagerRelease;
 
 
-# logging/log_manager.h
-virLogManagerDomainAppendMessage;
-virLogManagerDomainGetLogFilePosition;
-virLogManagerDomainOpenLogFile;
-virLogManagerDomainReadLogFile;
-virLogManagerFree;
-virLogManagerNew;
-
-
 # security/security_driver.h
 virSecurityDriverLookup;
 

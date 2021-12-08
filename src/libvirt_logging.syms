@@ -1,0 +1,18 @@
+#
+# Domain logging specific symbols
+#
+
+
+# logging/log_manager.h
+virLogManagerDomainAppendMessage;
+virLogManagerDomainGetLogFilePosition;
+virLogManagerDomainOpenLogFile;
+virLogManagerDomainReadLogFile;
+virLogManagerFree;
+virLogManagerNew;
+
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:
