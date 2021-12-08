@@ -47,6 +47,11 @@ typedef enum {
     QEMU_MIGRATION_PARAM_TYPE_STRING,
 } qemuMigrationParamType;
 
+typedef enum {
+    QEMU_MIGRATION_FLAG_REQUIRED,
+    QEMU_MIGRATION_FLAG_FORBIDDEN,
+} qemuMigrationFlagMatch;
+
 typedef struct _qemuMigrationParamValue qemuMigrationParamValue;
 struct _qemuMigrationParamValue {
     bool set;
@@ -119,6 +124,7 @@ struct _qemuMigrationParamsAlwaysOnItem {
 
 typedef struct _qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMapItem;
 struct _qemuMigrationParamsFlagMapItem {
+    qemuMigrationFlagMatch match;
     virDomainMigrateFlags flag;
     qemuMigrationCapability cap;
     int party; /* bit-wise OR of qemuMigrationParty */
@@ -146,19 +152,23 @@ static const qemuMigrationParamsAlwaysOnItem qemuMigrationParamsAlwaysOn[] = {
 
 /* Translation from virDomainMigrateFlags to qemuMigrationCapability. */
 static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
-    {VIR_MIGRATE_RDMA_PIN_ALL,
+    {QEMU_MIGRATION_FLAG_REQUIRED,
+     VIR_MIGRATE_RDMA_PIN_ALL,
      QEMU_MIGRATION_CAP_RDMA_PIN_ALL,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
-    {VIR_MIGRATE_AUTO_CONVERGE,
+    {QEMU_MIGRATION_FLAG_REQUIRED,
+     VIR_MIGRATE_AUTO_CONVERGE,
      QEMU_MIGRATION_CAP_AUTO_CONVERGE,
      QEMU_MIGRATION_SOURCE},
 
-    {VIR_MIGRATE_POSTCOPY,
+    {QEMU_MIGRATION_FLAG_REQUIRED,
+     VIR_MIGRATE_POSTCOPY,
      QEMU_MIGRATION_CAP_POSTCOPY,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 
-    {VIR_MIGRATE_PARALLEL,
+    {QEMU_MIGRATION_FLAG_REQUIRED,
+     VIR_MIGRATE_PARALLEL,
      QEMU_MIGRATION_CAP_MULTIFD,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
@@ -553,13 +563,16 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         return NULL;
 
     for (i = 0; i < G_N_ELEMENTS(qemuMigrationParamsFlagMap); i++) {
-        qemuMigrationCapability cap = qemuMigrationParamsFlagMap[i].cap;
+        const qemuMigrationParamsFlagMapItem *item = &qemuMigrationParamsFlagMap[i];
+        int match = 0;
 
-        if (qemuMigrationParamsFlagMap[i].party & party &&
-            flags & qemuMigrationParamsFlagMap[i].flag) {
+        if (item->match == QEMU_MIGRATION_FLAG_REQUIRED)
+            match = item->flag;
+
+        if (item->party & party && (flags & item->flag) == match) {
             VIR_DEBUG("Enabling migration capability '%s'",
-                      qemuMigrationCapabilityTypeToString(cap));
-            ignore_value(virBitmapSetBit(migParams->caps, cap));
+                      qemuMigrationCapabilityTypeToString(item->cap));
+            ignore_value(virBitmapSetBit(migParams->caps, item->cap));
         }
     }
 
