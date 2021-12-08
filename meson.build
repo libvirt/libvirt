@@ -883,32 +883,27 @@ endforeach
 
 # early checks where lot of other packages depend on the result
 
-# On MinGW portablexdr provides XDR functions, on linux they are
-# provided by libtirpc and on FreeBSD/macOS there is no need to
-# use extra library as it's provided by libc directly.
-if host_machine.system() == 'windows'
-  xdr_dep = cc.find_library('portablexdr', required: false)
-elif host_machine.system() == 'linux'
-  xdr_dep = dependency('libtirpc', required: false)
-elif host_machine.system() in [ 'freebsd', 'darwin' ]
-  xdr_dep = cc.find_library('c', required: false)
+if not get_option('driver_remote').disabled()
+  # On MinGW portablexdr provides XDR functions, on linux they are
+  # provided by libtirpc and on FreeBSD/macOS there is no need to
+  # use extra library as it's provided by libc directly.
+  if host_machine.system() == 'windows'
+    xdr_dep = cc.find_library('portablexdr', required: get_option('driver_remote'))
+  elif host_machine.system() == 'linux'
+    xdr_dep = dependency('libtirpc', required: get_option('driver_remote'))
+  elif host_machine.system() in [ 'freebsd', 'darwin' ]
+    xdr_dep = cc.find_library('c', required: get_option('driver_remote'))
+  else
+    xdr_dep = dependency('', required: false)
+  endif
+
+  if xdr_dep.found()
+    conf.set('WITH_REMOTE', 1)
+  elif get_option('driver_remote').enabled()
+    error('XDR is required for remote driver')
+  endif
 else
   xdr_dep = dependency('', required: false)
-endif
-
-if not get_option('driver_remote').disabled()
-  use_remote = true
-
-  if not xdr_dep.found()
-    use_remote = false
-    if get_option('driver_remote').enabled()
-      error('XDR is required for remote driver')
-    endif
-  endif
-
-  if use_remote
-    conf.set('WITH_REMOTE', 1)
-  endif
 endif
 
 
