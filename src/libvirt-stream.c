@@ -23,11 +23,15 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "rpc/virnetprotocol.h"
 
 VIR_LOG_INIT("libvirt.stream");
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS
+
+/* To avoid dragging in RPC code (which may be not compiled in),
+ * redefine this constant. Its value can't ever change, so we're
+ * safe to do so. */
+#define VIR_NET_MESSAGE_LEGACY_PAYLOAD_MAX 262120
 
 
 /**
