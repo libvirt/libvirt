@@ -6882,6 +6882,10 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     /* this function is also called for the monitor backend which doesn't have
      * a 'dev' */
     if (dev) {
+        /* vhost-user disk doesn't use FD passing */
+        if (dev->type == VIR_DOMAIN_DEVICE_DISK)
+            return 0;
+
         if (dev->type == VIR_DOMAIN_DEVICE_NET) {
             /* due to a historical bug in qemu we don't use FD passtrhough for
              * vhost-sockets for network devices */

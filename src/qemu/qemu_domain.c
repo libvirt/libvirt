@@ -11494,6 +11494,12 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
                                          void *opaque)
 {
     switch ((virDomainDeviceType) dev->type) {
+    case VIR_DOMAIN_DEVICE_DISK:
+        if (virStorageSourceGetActualType(dev->data.disk->src) != VIR_STORAGE_TYPE_VHOST_USER)
+            return 0;
+
+        return cb(dev, dev->data.disk->src->vhostuser, opaque);
+
     case VIR_DOMAIN_DEVICE_NET:
         if (virDomainNetGetActualType(dev->data.net) != VIR_DOMAIN_NET_TYPE_VHOSTUSER)
             return 0;
@@ -11524,7 +11530,6 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
 
         return cb(dev, dev->data.rng->source.chardev, opaque);
 
-    case VIR_DOMAIN_DEVICE_DISK:
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_FS:
     case VIR_DOMAIN_DEVICE_INPUT:
