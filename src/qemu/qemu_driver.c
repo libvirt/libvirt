@@ -19960,14 +19960,19 @@ qemuNodeGetSEVInfo(virConnectPtr conn,
 
 
 static int
-qemuDomainGetSEVMeasurement(virQEMUDriver *driver,
-                            virDomainObj *vm,
-                            virTypedParameterPtr *params,
-                            int *nparams,
-                            unsigned int flags)
+qemuDomainGetSEVInfo(virQEMUDriver *driver,
+                     virDomainObj *vm,
+                     virTypedParameterPtr *params,
+                     int *nparams,
+                     unsigned int flags)
 {
     int ret = -1;
+    int rv;
     g_autofree char *tmp = NULL;
+    unsigned int apiMajor = 0;
+    unsigned int apiMinor = 0;
+    unsigned int buildID = 0;
+    unsigned int policy = 0;
     int maxpar = 0;
 
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
@@ -19984,14 +19989,38 @@ qemuDomainGetSEVMeasurement(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
     tmp = qemuMonitorGetSEVMeasurement(QEMU_DOMAIN_PRIVATE(vm)->mon);
 
+
+    if (!tmp) {
+        qemuDomainObjExitMonitor(driver, vm);
+        goto endjob;
+    }
+
+    rv = qemuMonitorGetSEVInfo(QEMU_DOMAIN_PRIVATE(vm)->mon,
+                               &apiMajor, &apiMinor, &buildID, &policy);
     qemuDomainObjExitMonitor(driver, vm);
 
-    if (!tmp)
+    if (rv < 0)
         goto endjob;
 
     if (virTypedParamsAddString(params, nparams, &maxpar,
                                 VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT,
                                 tmp) < 0)
+        goto endjob;
+    if (virTypedParamsAddUInt(params, nparams, &maxpar,
+                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR,
+                              apiMajor) < 0)
+        goto endjob;
+    if (virTypedParamsAddUInt(params, nparams, &maxpar,
+                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR,
+                              apiMinor) < 0)
+        goto endjob;
+    if (virTypedParamsAddUInt(params, nparams, &maxpar,
+                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID,
+                              buildID) < 0)
+        goto endjob;
+    if (virTypedParamsAddUInt(params, nparams, &maxpar,
+                              VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY,
+                              policy) < 0)
         goto endjob;
 
     ret = 0;
@@ -20020,7 +20049,7 @@ qemuDomainGetLaunchSecurityInfo(virDomainPtr domain,
 
     if (vm->def->sec &&
         vm->def->sec->sectype == VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
-        if (qemuDomainGetSEVMeasurement(driver, vm, params, nparams, flags) < 0)
+        if (qemuDomainGetSEVInfo(driver, vm, params, nparams, flags) < 0)
             goto cleanup;
     }
 
