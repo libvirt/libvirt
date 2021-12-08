@@ -479,6 +479,20 @@ Returns memory stats of the node.
 If *cell* is specified, this will print the specified cell statistics only.
 
 
+nodesevinfo
+-----------
+
+**Syntax:**
+
+::
+
+   nodesevinfo
+
+Reports information about the AMD SEV launch security features for
+the node, if any. Some of this information is also reported in the
+domain capabilities XML document.
+
+
 nodesuspend
 -----------
 

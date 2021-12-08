@@ -889,6 +889,45 @@ cmdNodeMemStats(vshControl *ctl, const vshCmd *cmd)
 }
 
 /*
+ * "nodesevinfo" command
+ */
+static const vshCmdInfo info_nodesevinfo[] = {
+    {.name = "help",
+     .data = N_("node SEV information")
+    },
+    {.name = "desc",
+     .data = N_("Returns basic SEV information about the node.")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdNodeSEVInfo(vshControl *ctl, const vshCmd *cmd G_GNUC_UNUSED)
+{
+    virshControl *priv = ctl->privData;
+    size_t i;
+    int nparams = 0;
+    virTypedParameterPtr params = NULL;
+    bool ret = false;
+
+    if (virNodeGetSEVInfo(priv->conn, &params, &nparams, 0) != 0) {
+        vshError(ctl, "%s", _("Unable to get host SEV information"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++) {
+        g_autofree char *str = vshGetTypedParamValue(ctl, &params[i]);
+        vshPrint(ctl, "%-18s: %s\n", params[i].field, str);
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+}
+
+/*
  * "nodesuspend" command
  */
 
@@ -1826,6 +1865,12 @@ const vshCmdDef hostAndHypervisorCmds[] = {
      .handler = cmdNodeMemStats,
      .opts = opts_node_memstats,
      .info = info_nodememstats,
+     .flags = 0
+    },
+    {.name = "nodesevinfo",
+     .handler = cmdNodeSEVInfo,
+     .opts = NULL,
+     .info = info_nodesevinfo,
      .flags = 0
     },
     {.name = "nodesuspend",
