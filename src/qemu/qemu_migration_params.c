@@ -95,6 +95,7 @@ VIR_ENUM_IMPL(qemuMigrationCapability,
               "late-block-activate",
               "multifd",
               "dirty-bitmaps",
+              "return-path",
 );
 
 
@@ -170,6 +171,11 @@ static const qemuMigrationParamsFlagMapItem qemuMigrationParamsFlagMap[] = {
     {QEMU_MIGRATION_FLAG_REQUIRED,
      VIR_MIGRATE_PARALLEL,
      QEMU_MIGRATION_CAP_MULTIFD,
+     QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
+
+    {QEMU_MIGRATION_FLAG_FORBIDDEN,
+     VIR_MIGRATE_TUNNELLED,
+     QEMU_MIGRATION_CAP_RETURN_PATH,
      QEMU_MIGRATION_SOURCE | QEMU_MIGRATION_DESTINATION},
 };
 
