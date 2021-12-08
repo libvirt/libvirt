@@ -460,6 +460,15 @@ char *
 qemuMonitorJSONGetSEVMeasurement(qemuMonitor *mon);
 
 int
+qemuMonitorJSONGetSEVInfo(qemuMonitor *mon,
+                          unsigned int *apiMajor,
+                          unsigned int *apiMinor,
+                          unsigned int *buildID,
+                          unsigned int *policy)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+
+int
 qemuMonitorJSONGetVersion(qemuMonitor *mon,
                           int *major,
                           int *minor,

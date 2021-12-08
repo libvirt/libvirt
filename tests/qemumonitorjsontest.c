@@ -2885,6 +2885,48 @@ testQemuMonitorJSONqemuMonitorJSONGetCPUModelBaseline(const void *opaque)
 
 
 static int
+testQemuMonitorJSONGetSEVInfo(const void *opaque)
+{
+    const testGenericData *data = opaque;
+    virDomainXMLOption *xmlopt = data->xmlopt;
+    g_autoptr(qemuMonitorTest) test = NULL;
+    unsigned int apiMajor = 0;
+    unsigned int apiMinor = 0;
+    unsigned int buildID = 0;
+    unsigned int policy = 0;
+
+    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
+        return -1;
+
+    if (qemuMonitorTestAddItem(test, "query-sev",
+                               "{"
+                               "    \"return\": {"
+                               "        \"enabled\": false,"
+                               "        \"api-minor\": 8,"
+                               "        \"handle\": 0,"
+                               "        \"state\": \"uninit\","
+                               "        \"api-major\": 1,"
+                               "        \"build-id\": 834,"
+                               "        \"policy\": 3"
+                               "    },"
+                               "    \"id\": \"libvirt-15\""
+                               "}") < 0)
+        return -1;
+
+    if (qemuMonitorGetSEVInfo(qemuMonitorTestGetMonitor(test),
+                              &apiMajor, &apiMinor, &buildID, &policy) < 0)
+        return -1;
+
+    if (apiMajor != 1 || apiMinor != 8 || buildID != 834 || policy != 3) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       "Unexpected SEV info values");
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -2979,6 +3021,7 @@ mymain(void)
     DO_TEST(CPU);
     DO_TEST(GetNonExistingCPUData);
     DO_TEST(GetIOThreads);
+    DO_TEST(GetSEVInfo);
     DO_TEST(Transaction);
     DO_TEST(BlockExportAdd);
     DO_TEST(BlockdevReopen);

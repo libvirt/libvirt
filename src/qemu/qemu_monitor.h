@@ -1445,6 +1445,15 @@ int qemuMonitorBlockdevMediumInsert(qemuMonitor *mon,
 char *
 qemuMonitorGetSEVMeasurement(qemuMonitor *mon);
 
+int
+qemuMonitorGetSEVInfo(qemuMonitor *mon,
+                      unsigned int *apiMajor,
+                      unsigned int *apiMinor,
+                      unsigned int *buildID,
+                      unsigned int *policy)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
+    ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
+
 typedef struct _qemuMonitorPRManagerInfo qemuMonitorPRManagerInfo;
 struct _qemuMonitorPRManagerInfo {
     bool connected;

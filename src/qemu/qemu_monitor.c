@@ -4367,6 +4367,19 @@ qemuMonitorGetSEVMeasurement(qemuMonitor *mon)
 
 
 int
+qemuMonitorGetSEVInfo(qemuMonitor *mon,
+                      unsigned int *apiMajor,
+                      unsigned int *apiMinor,
+                      unsigned int *buildID,
+                      unsigned int *policy)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetSEVInfo(mon, apiMajor, apiMinor, buildID, policy);
+}
+
+
+int
 qemuMonitorGetPRManagerInfo(qemuMonitor *mon,
                             GHashTable **retinfo)
 {

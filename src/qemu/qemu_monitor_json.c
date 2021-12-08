@@ -8216,6 +8216,52 @@ qemuMonitorJSONGetSEVMeasurement(qemuMonitor *mon)
 }
 
 
+/**
+ * Retrive info about the SEV setup, returning those fields that
+ * are required to do a launch attestation, as per
+ *
+ * HMAC(0x04 || API_MAJOR || API_MINOR || BUILD || GCTX.POLICY || GCTX.LD || MNONCE; GCTX.TIK)
+ *
+ * specified in section 6.5.1 of AMD Secure Encrypted
+ * Virtualization API.
+ *
+ *  { "execute": "query-sev" }
+ *  { "return": { "enabled": true, "api-major" : 0, "api-minor" : 0,
+ *                "build-id" : 0, "policy" : 0, "state" : "running",
+ *                "handle" : 1 } }
+ */
+int
+qemuMonitorJSONGetSEVInfo(qemuMonitor *mon,
+                          unsigned int *apiMajor,
+                          unsigned int *apiMinor,
+                          unsigned int *buildID,
+                          unsigned int *policy)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-sev", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (virJSONValueObjectGetNumberUint(data, "api-major", apiMajor) < 0 ||
+        virJSONValueObjectGetNumberUint(data, "api-minor", apiMinor) < 0 ||
+        virJSONValueObjectGetNumberUint(data, "build-id", buildID) < 0 ||
+        virJSONValueObjectGetNumberUint(data, "policy", policy) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /*
  * Example return data
  *
