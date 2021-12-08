@@ -1,10 +1,30 @@
 genprotocol_prog = find_program('genprotocol.pl')
 gendispatch_prog = find_program('gendispatch.pl')
 
-rpc_sources = [
-  'virnetmessage.c',
+socket_sources = [
   'virnettlscontext.c',
   'virnetsocket.c',
+]
+
+virt_socket_lib = static_library(
+  'virt_socket',
+  [
+    socket_sources,
+  ],
+  dependencies: [
+    gnutls_dep,
+    src_dep,
+  ],
+)
+
+libvirt_libs += [
+  virt_socket_lib
+]
+
+used_sym_files += 'libvirt_socket.syms'
+
+rpc_sources = [
+  'virnetmessage.c',
   'virkeepalive.c',
 ]
 

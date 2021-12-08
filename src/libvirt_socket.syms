@@ -1,0 +1,65 @@
+#
+# TLS and socket specific symbols
+#
+
+# rpc/virnetsocket.h
+virNetSocketAccept;
+virNetSocketAddIOCallback;
+virNetSocketCheckProtocols;
+virNetSocketClose;
+virNetSocketDupFD;
+virNetSocketGetFD;
+virNetSocketGetPath;
+virNetSocketGetPort;
+virNetSocketGetSELinuxContext;
+virNetSocketGetUNIXIdentity;
+virNetSocketHasCachedData;
+virNetSocketHasPassFD;
+virNetSocketHasPendingData;
+virNetSocketIsLocal;
+virNetSocketListen;
+virNetSocketLocalAddrStringSASL;
+virNetSocketNewConnectCommand;
+virNetSocketNewConnectExternal;
+virNetSocketNewConnectLibSSH2;
+virNetSocketNewConnectSockFD;
+virNetSocketNewConnectSSH;
+virNetSocketNewConnectTCP;
+virNetSocketNewConnectUNIX;
+virNetSocketNewListenFD;
+virNetSocketNewListenTCP;
+virNetSocketNewListenUNIX;
+virNetSocketNewPostExecRestart;
+virNetSocketPreExecRestart;
+virNetSocketRead;
+virNetSocketRecvFD;
+virNetSocketRemoteAddrStringSASL;
+virNetSocketRemoteAddrStringURI;
+virNetSocketRemoveIOCallback;
+virNetSocketSendFD;
+virNetSocketSetBlocking;
+virNetSocketSetTLSSession;
+virNetSocketUpdateIOCallback;
+virNetSocketWrite;
+
+
+# rpc/virnettlscontext.h
+virNetTLSContextCheckCertificate;
+virNetTLSContextNewClient;
+virNetTLSContextNewClientPath;
+virNetTLSContextNewServer;
+virNetTLSContextNewServerPath;
+virNetTLSInit;
+virNetTLSSessionGetHandshakeStatus;
+virNetTLSSessionGetKeySize;
+virNetTLSSessionGetX509DName;
+virNetTLSSessionHandshake;
+virNetTLSSessionNew;
+virNetTLSSessionRead;
+virNetTLSSessionSetIOCallbacks;
+virNetTLSSessionWrite;
+
+# Let emacs know we want case-insensitive sorting
+# Local Variables:
+# sort-fold-case: t
+# End:
