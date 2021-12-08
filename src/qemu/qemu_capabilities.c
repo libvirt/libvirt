@@ -1897,6 +1897,8 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
 
     tmp->cbitpos = src->cbitpos;
     tmp->reduced_phys_bits = src->reduced_phys_bits;
+    tmp->max_guests = src->max_guests;
+    tmp->max_es_guests = src->max_es_guests;
 
     *dst = g_steal_pointer(&tmp);
     return 0;
@@ -3286,6 +3288,31 @@ virQEMUCapsProbeQMPGICCapabilities(virQEMUCaps *qemuCaps,
 }
 
 
+static void
+virQEMUCapsGetSEVMaxGuests(virSEVCapability *caps)
+{
+    /*
+     * From Secure Encrypted Virtualization API v0.24, section 6.19.1
+     *
+     * If the guest is SEV-ES enabled, then the ASID must be at least
+     * 1h and at most (MIN_SEV_ASID-1). If the guest is not SEV-ES
+     * enabled, then the ASID must be at least MIN_SEV_ASID and at
+     * most the maximum SEV ASID available. The MIN_SEV_ASID value
+     * is discovered by CPUID Fn8000_001F[EDX]. The maximum SEV ASID
+     * available is discovered by CPUID Fn8000_001F[ECX].
+     */
+    uint32_t min_asid, max_asid;
+    virHostCPUX86GetCPUID(0x8000001F, 0, NULL, NULL,
+                          &max_asid, &min_asid);
+
+    if (max_asid != 0 && min_asid != 0) {
+        caps->max_guests = max_asid - min_asid + 1;
+        caps->max_es_guests = min_asid - 1;
+    } else {
+        caps->max_guests = caps->max_es_guests = 0;
+    }
+}
+
 static int
 virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
                                    qemuMonitor *mon)
@@ -3304,6 +3331,8 @@ virQEMUCapsProbeQMPSEVCapabilities(virQEMUCaps *qemuCaps,
         virQEMUCapsClear(qemuCaps, QEMU_CAPS_SEV_GUEST);
         return 0;
     }
+
+    virQEMUCapsGetSEVMaxGuests(caps);
 
     virSEVCapabilitiesFree(qemuCaps->sevCapabilities);
     qemuCaps->sevCapabilities = caps;
@@ -4083,6 +4112,14 @@ virQEMUCapsParseSEVInfo(virQEMUCaps *qemuCaps, xmlXPathContextPtr ctxt)
                          "in QEMU capabilities cache"));
         return -1;
     }
+
+
+    /* We probe this every time because the values
+     * can change on every reboot via firmware
+     * config tunables. It is cheap to query so
+     * lack of caching is a non-issue
+     */
+    virQEMUCapsGetSEVMaxGuests(sev);
 
     qemuCaps->sevCapabilities = g_steal_pointer(&sev);
     return 0;
@@ -6344,6 +6381,8 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCaps *qemuCaps,
     domCaps->sev->cert_chain = g_strdup(cap->cert_chain);
     domCaps->sev->cbitpos = cap->cbitpos;
     domCaps->sev->reduced_phys_bits = cap->reduced_phys_bits;
+    domCaps->sev->max_guests = cap->max_guests;
+    domCaps->sev->max_es_guests = cap->max_es_guests;
 }
 
 

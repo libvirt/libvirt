@@ -143,6 +143,29 @@ virCapabilitiesHostNUMANewHost(void)
     return virTestCapsBuildNUMATopology(3);
 }
 
+void
+virHostCPUX86GetCPUID(uint32_t leaf,
+                      uint32_t extended,
+                      uint32_t *eax,
+                      uint32_t *ebx,
+                      uint32_t *ecx,
+                      uint32_t *edx)
+{
+    if (eax)
+        *eax = 0;
+    if (ebx)
+        *ebx = 0;
+    if (ecx)
+        *ecx = 0;
+    if (edx)
+        *edx = 0;
+    if (leaf == 0x8000001F && extended == 0) {
+        if (ecx)
+            *ecx = 509;
+        if (edx)
+            *edx = 451;
+    }
+}
 
 static int
 testQemuAddGuest(virCaps *caps,
