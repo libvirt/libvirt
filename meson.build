@@ -1311,6 +1311,16 @@ endif
 wireshark_version = '2.6.0'
 wireshark_dep = dependency('wireshark', version: '>=' + wireshark_version, required: get_option('wireshark_dissector'))
 if wireshark_dep.found()
+  if not xdr_dep.found()
+    if get_option('wireshark_dissector').enabled()
+      error('XDR is required for wireshark plugin')
+    else
+      wireshark_dep = dependency('', required: false)
+    endif
+  endif
+endif
+
+if wireshark_dep.found()
   wireshark_plugindir = get_option('wireshark_plugindir')
   if wireshark_plugindir == ''
     wireshark_plugindir = wireshark_dep.get_pkgconfig_variable('plugindir')
