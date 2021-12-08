@@ -2057,6 +2057,23 @@ destination hosts have synchronized time (i.e., NTP daemon is running
 on both of them).
 
 
+domlaunchsecinfo
+----------------
+
+**Syntax:**
+
+::
+
+   domlaunchsecinfo domain
+
+Returns information about the launch security parameters associated
+with a running domain.
+
+The set of parameters reported will vary depending on which type of
+launch security protection is active. If none is active, no parameters
+will be reported.
+
+
 dommemstat
 ----------
 

@@ -9524,6 +9524,53 @@ cmdNumatune(vshControl * ctl, const vshCmd * cmd)
 }
 
 /*
+ * "domlaunchsecinfo" command
+ */
+static const vshCmdInfo info_domlaunchsecinfo[] = {
+    {.name = "help",
+     .data = N_("Get domain launch security info")
+    },
+    {.name = "desc",
+     .data = N_("Get the launch security parameters for a guest domain")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domlaunchsecinfo[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = NULL}
+};
+
+static bool
+cmdDomLaunchSecInfo(vshControl * ctl, const vshCmd * cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    size_t i;
+    int nparams = 0;
+    virTypedParameterPtr params = NULL;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (virDomainGetLaunchSecurityInfo(dom, &params, &nparams, 0) != 0) {
+        vshError(ctl, "%s", _("Unable to get launch security parameters"));
+        goto cleanup;
+    }
+
+    for (i = 0; i < nparams; i++) {
+        g_autofree char *str = vshGetTypedParamValue(ctl, &params[i]);
+        vshPrint(ctl, "%-15s: %s\n", params[i].field, str);
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+}
+
+/*
  * "qemu-monitor-command" command
  */
 static const vshCmdInfo info_qemu_monitor_command[] = {
@@ -14540,6 +14587,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomjobinfo,
      .opts = opts_domjobinfo,
      .info = info_domjobinfo,
+     .flags = 0
+    },
+    {.name = "domlaunchsecinfo",
+     .handler = cmdDomLaunchSecInfo,
+     .opts = opts_domlaunchsecinfo,
+     .info = info_domlaunchsecinfo,
      .flags = 0
     },
     {.name = "domname",
