@@ -1004,15 +1004,14 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 {
     virNetworkDef *def = virNetworkObjGetDef(obj);
     g_auto(virBuffer) configbuf = VIR_BUFFER_INITIALIZER;
-    int r;
     int nbleases = 0;
     size_t i;
     virNetworkDNSDef *dns = &def->dns;
     bool wantDNS = dns->enable != VIR_TRISTATE_BOOL_NO;
-    virNetworkIPDef *ipdef;
-    virNetworkIPDef *ipv4def;
-    virNetworkIPDef *ipv6def;
-    bool ipv6SLAAC;
+    virNetworkIPDef *ipdef = NULL;
+    virNetworkIPDef *ipv4def = NULL;
+    virNetworkIPDef *ipv6def = NULL;
+    bool ipv6SLAAC = false;
 
     *configstr = NULL;
 
@@ -1211,9 +1210,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     }
 
     /* Find the first dhcp for both IPv4 and IPv6 */
-    for (i = 0, ipv4def = NULL, ipv6def = NULL, ipv6SLAAC = false;
-         (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
-         i++) {
+    for (i = 0; (ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i)); i++) {
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
             if (ipdef->nranges || ipdef->nhosts) {
                 if (ipv4def) {
@@ -1255,6 +1252,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
 
     while (ipdef) {
         int prefix;
+        int r;
 
         prefix = virNetworkIPDefPrefix(ipdef);
         if (prefix < 0) {
