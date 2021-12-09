@@ -1987,6 +1987,7 @@ exit 0
 %files client
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
+%{_mandir}/man1/virt-pki-query-dn.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate

@@ -16,6 +16,7 @@ docs_man_files = [
   { 'name': 'virt-admin', 'section': '1', 'install': true },
   { 'name': 'virt-host-validate', 'section': '1', 'install': conf.has('WITH_HOST_VALIDATE') },
   { 'name': 'virt-login-shell', 'section': '1', 'install': conf.has('WITH_LOGIN_SHELL') },
+  { 'name': 'virt-pki-query-dn', 'section': '1', 'install': true },
   { 'name': 'virt-pki-validate', 'section': '1', 'install': true },
   { 'name': 'virt-qemu-run', 'section': '1', 'install': conf.has('WITH_QEMU') },
   { 'name': 'virt-ssh-helper', 'section': '1', 'install': true },
