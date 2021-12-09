@@ -772,11 +772,6 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
         bool stripmachinealiases = false;
         virQEMUCaps *cachedcaps = NULL;
 
-        if (info->args.fakeCapsUsed) {
-            fprintf(stderr, "ARG_QEMU_CAPS can not be combined with ARG_CAPS_ARCH or ARG_CAPS_VER\n");
-            return -1;
-        }
-
         info->arch = virArchFromString(info->args.capsarch);
 
         if (STREQ(info->args.capsver, "latest")) {
@@ -804,6 +799,16 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
 
         if (!(info->qemuCaps = virQEMUCapsNewCopy(cachedcaps)))
             return -1;
+
+        if (info->args.fakeCapsUsed) {
+            size_t i;
+            for (i = 0; i < QEMU_CAPS_LAST; i++) {
+                if (virQEMUCapsGet(info->args.fakeCaps, i)) {
+                    virQEMUCapsSet(info->qemuCaps, i);
+                }
+            }
+        }
+
 
         if (stripmachinealiases)
             virQEMUCapsStripMachineAliases(info->qemuCaps);
