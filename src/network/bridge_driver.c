@@ -994,6 +994,123 @@ networkDnsmasqConfLocalPTRs(virBuffer *buf,
 }
 
 
+static int
+networkDnsmasqConfDHCP(virBuffer *buf,
+                       virNetworkIPDef *ipdef,
+                       const char *bridge,
+                       int *nbleases,
+                       dnsmasqContext *dctx)
+{
+    int r;
+    int prefix;
+
+    if (!ipdef)
+        return 0;
+
+    prefix = virNetworkIPDefPrefix(ipdef);
+    if (prefix < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("bridge '%s' has an invalid prefix"),
+                       bridge);
+        return -1;
+    }
+    for (r = 0; r < ipdef->nranges; r++) {
+        int thisRange;
+        virNetworkDHCPRangeDef range = ipdef->ranges[r];
+        g_autofree char *leasetime = NULL;
+        g_autofree char *saddr = NULL;
+        g_autofree char *eaddr = NULL;
+
+        if (!(saddr = virSocketAddrFormat(&range.addr.start)) ||
+            !(eaddr = virSocketAddrFormat(&range.addr.end)))
+            return -1;
+
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
+            virBufferAsprintf(buf, "dhcp-range=%s,%s,%d",
+                              saddr, eaddr, prefix);
+        } else {
+            /* IPv4 - dnsmasq requires a netmask rather than prefix */
+            virSocketAddr netmask;
+            g_autofree char *netmaskStr = NULL;
+
+            if (virSocketAddrPrefixToNetmask(prefix, &netmask, AF_INET) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Failed to translate bridge '%s' "
+                                 "prefix %d to netmask"),
+                               bridge, prefix);
+                return -1;
+            }
+
+            if (!(netmaskStr = virSocketAddrFormat(&netmask)))
+                return -1;
+            virBufferAsprintf(buf, "dhcp-range=%s,%s,%s",
+                              saddr, eaddr, netmaskStr);
+        }
+
+        if ((leasetime = networkBuildDnsmasqLeaseTime(range.lease)))
+            virBufferAsprintf(buf, ",%s", leasetime);
+
+        virBufferAddLit(buf, "\n");
+
+        thisRange = virSocketAddrGetRange(&range.addr.start,
+                                          &range.addr.end,
+                                          &ipdef->address,
+                                          virNetworkIPDefPrefix(ipdef));
+        if (thisRange < 0)
+            return -1;
+        *nbleases += thisRange;
+    }
+
+    /*
+     * For static-only DHCP, i.e. with no range but at least one
+     * host element, we have to add a special --dhcp-range option
+     * to enable the service in dnsmasq. (this is for dhcp-hosts=
+     * support)
+     */
+    if (!ipdef->nranges && ipdef->nhosts) {
+        g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
+        if (!bridgeaddr)
+            return -1;
+        virBufferAsprintf(buf, "dhcp-range=%s,static",
+                          bridgeaddr);
+        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
+            virBufferAsprintf(buf, ",%d", prefix);
+        virBufferAddLit(buf, "\n");
+    }
+
+    if (networkBuildDnsmasqDhcpHostsList(dctx, ipdef) < 0)
+        return -1;
+
+    /* Note: the following is IPv4 only */
+    if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
+        if (ipdef->nranges || ipdef->nhosts) {
+            virBufferAddLit(buf, "dhcp-no-override\n");
+            virBufferAddLit(buf, "dhcp-authoritative\n");
+        }
+
+        if (ipdef->tftproot) {
+            virBufferAddLit(buf, "enable-tftp\n");
+            virBufferAsprintf(buf, "tftp-root=%s\n", ipdef->tftproot);
+        }
+
+        if (ipdef->bootfile) {
+            if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
+                g_autofree char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
+
+                if (!bootserver)
+                    return -1;
+                virBufferAsprintf(buf, "dhcp-boot=%s%s%s\n",
+                                  ipdef->bootfile, ",,", bootserver);
+            } else {
+                virBufferAsprintf(buf, "dhcp-boot=%s\n", ipdef->bootfile);
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 int
 networkDnsmasqConfContents(virNetworkObj *obj,
                            const char *pidfile,
@@ -1248,113 +1365,9 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                  "on the same network interface.");
     }
 
-    ipdef = ipv4def ? ipv4def : ipv6def;
-
-    while (ipdef) {
-        int prefix;
-        int r;
-
-        prefix = virNetworkIPDefPrefix(ipdef);
-        if (prefix < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("bridge '%s' has an invalid prefix"),
-                           def->bridge);
-            return -1;
-        }
-        for (r = 0; r < ipdef->nranges; r++) {
-            int thisRange;
-            virNetworkDHCPRangeDef range = ipdef->ranges[r];
-            g_autofree char *leasetime = NULL;
-            g_autofree char *saddr = NULL;
-            g_autofree char *eaddr = NULL;
-
-            if (!(saddr = virSocketAddrFormat(&range.addr.start)) ||
-                !(eaddr = virSocketAddrFormat(&range.addr.end)))
-                return -1;
-
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
-               virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%d",
-                                 saddr, eaddr, prefix);
-            } else {
-                /* IPv4 - dnsmasq requires a netmask rather than prefix */
-                virSocketAddr netmask;
-                g_autofree char *netmaskStr = NULL;
-
-                if (virSocketAddrPrefixToNetmask(prefix, &netmask, AF_INET) < 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("Failed to translate bridge '%s' "
-                                     "prefix %d to netmask"),
-                                   def->bridge, prefix);
-                    return -1;
-                }
-
-                if (!(netmaskStr = virSocketAddrFormat(&netmask)))
-                    return -1;
-                virBufferAsprintf(&configbuf, "dhcp-range=%s,%s,%s",
-                                  saddr, eaddr, netmaskStr);
-            }
-
-            if ((leasetime = networkBuildDnsmasqLeaseTime(range.lease)))
-                virBufferAsprintf(&configbuf, ",%s", leasetime);
-
-            virBufferAddLit(&configbuf, "\n");
-
-            thisRange = virSocketAddrGetRange(&range.addr.start,
-                                              &range.addr.end,
-                                              &ipdef->address,
-                                              virNetworkIPDefPrefix(ipdef));
-            if (thisRange < 0)
-                return -1;
-            nbleases += thisRange;
-        }
-
-        /*
-         * For static-only DHCP, i.e. with no range but at least one
-         * host element, we have to add a special --dhcp-range option
-         * to enable the service in dnsmasq. (this is for dhcp-hosts=
-         * support)
-         */
-        if (!ipdef->nranges && ipdef->nhosts) {
-            g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
-            if (!bridgeaddr)
-                return -1;
-            virBufferAsprintf(&configbuf, "dhcp-range=%s,static",
-                              bridgeaddr);
-            if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6))
-                virBufferAsprintf(&configbuf, ",%d", prefix);
-            virBufferAddLit(&configbuf, "\n");
-        }
-
-        if (networkBuildDnsmasqDhcpHostsList(dctx, ipdef) < 0)
-            return -1;
-
-        /* Note: the following is IPv4 only */
-        if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET)) {
-            if (ipdef->nranges || ipdef->nhosts) {
-                virBufferAddLit(&configbuf, "dhcp-no-override\n");
-                virBufferAddLit(&configbuf, "dhcp-authoritative\n");
-            }
-
-            if (ipdef->tftproot) {
-                virBufferAddLit(&configbuf, "enable-tftp\n");
-                virBufferAsprintf(&configbuf, "tftp-root=%s\n", ipdef->tftproot);
-            }
-
-            if (ipdef->bootfile) {
-                if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
-                    g_autofree char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
-
-                    if (!bootserver)
-                        return -1;
-                    virBufferAsprintf(&configbuf, "dhcp-boot=%s%s%s\n",
-                                      ipdef->bootfile, ",,", bootserver);
-                } else {
-                    virBufferAsprintf(&configbuf, "dhcp-boot=%s\n", ipdef->bootfile);
-                }
-            }
-        }
-        ipdef = (ipdef == ipv6def) ? NULL : ipv6def;
-    }
+    if (networkDnsmasqConfDHCP(&configbuf, ipv4def, def->bridge, &nbleases, dctx) < 0 ||
+        networkDnsmasqConfDHCP(&configbuf, ipv6def, def->bridge, &nbleases, dctx) < 0)
+        return -1;
 
     if (nbleases > 0)
         virBufferAsprintf(&configbuf, "dhcp-lease-max=%d\n", nbleases);
