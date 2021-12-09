@@ -1217,6 +1217,13 @@ qemuValidateDomainDef(const virDomainDef *def,
                                  "this QEMU binary"));
                 return -1;
             }
+
+            if (def->sec->data.sev.kernel_hashes != VIR_TRISTATE_BOOL_ABSENT &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_SEV_GUEST_KERNEL_HASHES)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SEV measured direct kernel boot is not supported with this QEMU binary"));
+                return -1;
+            }
             break;
         case VIR_DOMAIN_LAUNCH_SECURITY_PV:
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_CONFIDENTAL_GUEST_SUPPORT) ||

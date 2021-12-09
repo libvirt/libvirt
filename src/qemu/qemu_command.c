@@ -9918,6 +9918,7 @@ qemuBuildSEVCommandLine(virDomainObj *vm, virCommand *cmd,
                                      "u:policy", sev->policy,
                                      "S:dh-cert-file", dhpath,
                                      "S:session-file", sessionpath,
+                                     "T:kernel-hashes", sev->kernel_hashes,
                                      NULL) < 0)
         return -1;
 

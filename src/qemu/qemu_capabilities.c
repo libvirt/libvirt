@@ -1892,6 +1892,11 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
 {
     g_autoptr(virSEVCapability) tmp = NULL;
 
+    if (!src) {
+        *dst = NULL;
+        return 0;
+    }
+
     tmp = g_new0(virSEVCapability, 1);
 
     tmp->pdh = g_strdup(src->pdh);
