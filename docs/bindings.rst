@@ -10,7 +10,7 @@ other languages:
 -  **C#**: Arnaud Champion develops `C# bindings <csharp.html>`__.
 
 -  **Go**: Daniel Berrange develops `Go
-   bindings <https://pkg.go.dev/libvirt.org/libvirt-go>`__.
+   bindings <https://pkg.go.dev/libvirt.org/go/libvirt>`__.
 
 -  **Java**: Daniel Veillard develops `Java bindings <java.html>`__.
 

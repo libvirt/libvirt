@@ -83,7 +83,7 @@
         <dt><a href="bindings.html">Language bindings and API modules</a></dt>
         <dd>Bindings of the libvirt API for
           <a href="csharp.html">c#</a>,
-          <a href="https://pkg.go.dev/libvirt.org/libvirt-go">go</a>,
+          <a href="https://pkg.go.dev/libvirt.org/go/libvirt">go</a>,
           <a href="java.html">java</a>,
           <a href="https://libvirt.org/ocaml/">ocaml</a>,
           <a href="https://search.cpan.org/dist/Sys-Virt/">perl</a>,
