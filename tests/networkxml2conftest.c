@@ -168,6 +168,7 @@ mymain(void)
     DO_TEST("isolated-network", full);
     DO_TEST("netboot-network", full);
     DO_TEST("netboot-proxy-network", full);
+    DO_TEST("netboot-tftp", full);
     DO_TEST("nat-network-dns-srv-record-minimal", full);
     DO_TEST("nat-network-name-with-quotes", full);
     DO_TEST("routed-network", full);

@@ -1088,11 +1088,6 @@ networkDnsmasqConfDHCP(virBuffer *buf,
             virBufferAddLit(buf, "dhcp-authoritative\n");
         }
 
-        if (ipdef->tftproot) {
-            virBufferAddLit(buf, "enable-tftp\n");
-            virBufferAsprintf(buf, "tftp-root=%s\n", ipdef->tftproot);
-        }
-
         if (ipdef->bootfile) {
             if (VIR_SOCKET_ADDR_VALID(&ipdef->bootserver)) {
                 g_autofree char *bootserver = virSocketAddrFormat(&ipdef->bootserver);
@@ -1108,6 +1103,22 @@ networkDnsmasqConfDHCP(virBuffer *buf,
     }
 
     return 0;
+}
+
+
+static void
+networkDnsmasqConfTFTP(virBuffer *buf,
+                       virNetworkIPDef *ipdef,
+                       bool *enableTFTP)
+{
+    if (!ipdef->tftproot)
+        return;
+
+    if (!*enableTFTP) {
+        virBufferAddLit(buf, "enable-tftp\n");
+        *enableTFTP = true;
+    }
+    virBufferAsprintf(buf, "tftp-root=%s\n", ipdef->tftproot);
 }
 
 
@@ -1129,6 +1140,7 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     virNetworkIPDef *ipv4def = NULL;
     virNetworkIPDef *ipv6def = NULL;
     bool ipv6SLAAC = false;
+    bool enableTFTP = false;
 
     *configstr = NULL;
 
@@ -1339,6 +1351,8 @@ networkDnsmasqConfContents(virNetworkObj *obj,
                     ipv4def = ipdef;
                 }
             }
+
+            networkDnsmasqConfTFTP(&configbuf, ipdef, &enableTFTP);
         }
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
             if (ipdef->nranges || ipdef->nhosts) {
@@ -1500,7 +1514,7 @@ networkStartDhcpDaemon(virNetworkDriverState *driver,
     i = 0;
     while ((ipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i))) {
         i++;
-        if (ipdef->nranges || ipdef->nhosts)
+        if (ipdef->nranges || ipdef->nhosts || ipdef->tftproot)
             needDnsmasq = true;
     }
 
@@ -3255,7 +3269,7 @@ networkUpdate(virNetworkPtr net,
     for (i = 0;
          (ipdef = virNetworkDefGetIPByIndex(def, AF_INET, i));
          i++) {
-        if (ipdef->nranges || ipdef->nhosts) {
+        if (ipdef->nranges || ipdef->nhosts || ipdef->tftproot) {
             oldDhcpActive = true;
             break;
         }
@@ -3370,7 +3384,7 @@ networkUpdate(virNetworkPtr net,
 
             for (i = 0; (ipdef = virNetworkDefGetIPByIndex(def, AF_INET, i));
                  i++) {
-                if (ipdef->nranges || ipdef->nhosts) {
+                if (ipdef->nranges || ipdef->nhosts || ipdef->tftproot) {
                     newDhcpActive = true;
                     break;
                 }

@@ -1,0 +1,9 @@
+<network>
+  <name>tftp-only</name>
+  <uuid>eb486e5c-4df5-42ee-ae4a-ad8557998d00</uuid>
+  <forward mode='nat'/>
+  <bridge name='virbr0' stp='off' delay='1'/>
+  <ip address='192.168.122.1' netmask='255.255.255.0'>
+    <tftp root='/var/lib/tftproot'/>
+  </ip>
+</network>
