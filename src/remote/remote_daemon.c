@@ -626,6 +626,10 @@ static void daemonRunStateInit(void *opaque)
 
     driversInitialized = true;
 
+    virNetDaemonSetShutdownCallbacks(dmn,
+                                     virStateShutdownPrepare,
+                                     virStateShutdownWait);
+
     /* Tie the non-privileged daemons to the session/shutdown lifecycle */
     if (!virNetDaemonIsPrivileged(dmn)) {
 
@@ -1214,9 +1218,6 @@ int main(int argc, char **argv) {
 #endif
 
     /* Run event loop. */
-    virNetDaemonSetShutdownCallbacks(dmn,
-                                     virStateShutdownPrepare,
-                                     virStateShutdownWait);
     virNetDaemonRun(dmn);
 
     ret = 0;
