@@ -299,6 +299,11 @@ if conf.has('WITH_SANLOCK')
   )
 endif
 
+if conf.has('WITH_QEMU')
+  install_data('virt-qemu-sev-validate',
+               install_dir: bindir)
+endif
+
 if conf.has('WITH_LIBVIRTD')
   configure_file(
     input: 'libvirt-guests.sh.in',

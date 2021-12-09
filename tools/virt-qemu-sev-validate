@@ -1,0 +1,263 @@
+#!/usr/bin/python3
+#
+# SPDX-License-Identifier: LGPL-2.1-or-later
+#
+# Validates a guest AMD SEV launch measurement
+#
+# A general principle in writing this tool is that it must calculate the
+# expected measurement based entirely on information it receives on the CLI
+# from the guest owner.
+#
+# It cannot generally trust information obtained from the guest XML or from the
+# virtualization host OS. The main exceptions are:
+#
+#  - The guest measurement
+#
+#    This is a result of cryptographic operation using a shared secret known
+#    only to the guest owner and SEV platform, not the host OS.
+#
+#  - The guest policy
+#
+#    This is encoded in the launch session blob that is encrypted with a shared
+#    secret known only to the guest owner and SEV platform, not the host OS. It
+#    is impossible for the host OS to maliciously launch a guest with different
+#    policy and the user provided launch session blob.
+#
+#    CAVEAT: the user must ALWAYS create a launch blob with freshly generated
+#    TIK/TEK for every new VM. Re-use of the same TIK/TEK for multiple VMs
+#    is insecure.
+#
+#  - The SEV API version / build ID
+#
+#    This does not have an impact on the security of the measurement, unless
+#    the guest owner needs a guarantee that the host is not using specific
+#    firmware versions with known flaws.
+#
+
+import argparse
+from base64 import b64decode
+from hashlib import sha256
+import hmac
+import logging
+import sys
+import traceback
+
+log = logging.getLogger()
+
+
+class AttestationFailedException(Exception):
+    pass
+
+
+class UnsupportedUsageException(Exception):
+    pass
+
+
+class ConfidentialVM(object):
+
+    def __init__(self,
+                 measurement=None,
+                 api_major=None,
+                 api_minor=None,
+                 build_id=None,
+                 policy=None):
+        self.measurement = measurement
+        self.api_major = api_major
+        self.api_minor = api_minor
+        self.build_id = build_id
+        self.policy = policy
+
+        self.firmware = None
+        self.tik = None
+        self.tek = None
+
+    def load_tik_tek(self, tik_path, tek_path):
+        with open(tik_path, 'rb') as fh:
+            self.tik = fh.read()
+        log.debug("TIK(hex): %s", self.tik.hex())
+
+        if len(self.tik) != 16:
+            raise UnsupportedUsageException(
+                "Expected 16 bytes in TIK file, but got %d" % len(self.tik))
+
+        with open(tek_path, 'rb') as fh:
+            self.tek = fh.read()
+        log.debug("TEK(hex): %s", self.tek.hex())
+
+        if len(self.tek) != 16:
+            raise UnsupportedUsageException(
+                "Expected 16 bytes in TEK file, but got %d" % len(self.tek))
+
+    def load_tk(self, tk_path):
+        with open(tk_path, 'rb') as fh:
+            tk = fh.read()
+
+        if len(tk) != 32:
+            raise UnsupportedUsageException(
+                "Expected 32 bytes in TIK/TEK file, but got %d" % len(tk))
+
+        self.tek = tk[0:16]
+        self.tik = tk[16:32]
+        log.debug("TIK(hex): %s", self.tik.hex())
+        log.debug("TEK(hex): %s", self.tek.hex())
+
+    def load_firmware(self, firmware_path):
+        with open(firmware_path, 'rb') as fh:
+            self.firmware = fh.read()
+        log.debug("Firmware(sha256): %s", sha256(self.firmware).hexdigest())
+
+    # Get the full set of measured launch data for the domain
+    #
+    # The measured data that the guest is initialized with is the concatenation
+    # of the following:
+    #
+    #  - The firmware blob
+    def get_measured_data(self):
+        measured_data = self.firmware
+        log.debug("Measured-data(sha256): %s",
+                  sha256(measured_data).hexdigest())
+        return measured_data
+
+    # Get the reported and computed launch measurements for the domain
+    #
+    # AMD Secure Encrypted Virtualization API , section 6.5:
+    #
+    # measurement = HMAC(0x04 || API_MAJOR || API_MINOR || BUILD ||
+    #                    GCTX.POLICY || GCTX.LD || MNONCE; GCTX.TIK)
+    #
+    # Where GCTX.LD covers all the measured data the guest is initialized with
+    # per get_measured_data().
+    def get_measurements(self):
+        measurement = b64decode(self.measurement)
+        reported = measurement[0:32]
+        nonce = measurement[32:48]
+
+        measured_data = self.get_measured_data()
+        msg = (
+            bytes([0x4]) +
+            self.api_major.to_bytes(1, 'little') +
+            self.api_minor.to_bytes(1, 'little') +
+            self.build_id.to_bytes(1, 'little') +
+            self.policy.to_bytes(4, 'little') +
+            sha256(measured_data).digest() +
+            nonce
+        )
+        log.debug("Measured-msg(hex): %s", msg.hex())
+
+        computed = hmac.new(self.tik, msg, 'sha256').digest()
+
+        log.debug("Measurement reported(hex): %s", reported.hex())
+        log.debug("Measurement computed(hex): %s", computed.hex())
+
+        return reported, computed
+
+    def attest(self):
+        reported, computed = self.get_measurements()
+
+        if reported != computed:
+            raise AttestationFailedException(
+                "Measurement does not match, VM is not trustworthy")
+
+
+def parse_command_line():
+    parser = argparse.ArgumentParser(
+        description='Validate guest AMD SEV launch measurement')
+    parser.add_argument('--debug', '-d', action='store_true',
+                        help='Show debug information')
+    parser.add_argument('--quiet', '-q', action='store_true',
+                        help='Do not display status')
+
+    # Arguments related to the state of the launched guest
+    vmstate = parser.add_argument_group("Virtual machine launch state")
+    vmstate.add_argument('--measurement', '-m', required=True,
+                         help='Measurement for the running domain')
+    vmstate.add_argument('--api-major', type=int, required=True,
+                         help='SEV API major version for the running domain')
+    vmstate.add_argument('--api-minor', type=int, required=True,
+                         help='SEV API minor version for the running domain')
+    vmstate.add_argument('--build-id', type=int, required=True,
+                         help='SEV build ID for the running domain')
+    vmstate.add_argument('--policy', type=int, required=True,
+                         help='SEV policy for the running domain')
+
+    # Arguments related to calculation of the expected launch measurement
+    vmconfig = parser.add_argument_group("Virtual machine config")
+    vmconfig.add_argument('--firmware', '-f', required=True,
+                          help='Path to the firmware binary')
+    vmconfig.add_argument('--tik',
+                          help='TIK file for domain')
+    vmconfig.add_argument('--tek',
+                          help='TEK file for domain')
+    vmconfig.add_argument('--tk',
+                          help='TEK/TIK combined file for domain')
+
+    return parser.parse_args()
+
+
+# Sanity check the set of CLI args specified provide enough info for us to do
+# the job
+def check_usage(args):
+    if args.tk is not None:
+        if args.tik is not None or args.tek is not None:
+            raise UnsupportedUsageException(
+                "--tk is mutually exclusive with --tek/--tik")
+    else:
+        if args.tik is None or args.tek is None:
+            raise UnsupportedUsageException(
+                "Either --tk or both of --tek/--tik are required")
+
+
+def attest(args):
+    cvm = ConfidentialVM(measurement=args.measurement,
+                         api_major=args.api_major,
+                         api_minor=args.api_minor,
+                         build_id=args.build_id,
+                         policy=args.policy)
+
+    cvm.load_firmware(args.firmware)
+
+    if args.tk is not None:
+        cvm.load_tk(args.tk)
+    else:
+        cvm.load_tik_tek(args.tik, args.tek)
+
+    cvm.attest()
+
+    if not args.quiet:
+        print("OK: Looks good to me")
+
+def main():
+    args = parse_command_line()
+    if args.debug:
+        logging.basicConfig(level="DEBUG")
+        formatter = logging.Formatter("[%(levelname)s]: %(message)s")
+        handler = log.handlers[0]
+        handler.setFormatter(formatter)
+
+    try:
+        check_usage(args)
+
+        attest(args)
+
+        sys.exit(0)
+    except AttestationFailedException as e:
+        if args.debug:
+            traceback.print_tb(e.__traceback__)
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(1)
+    except UnsupportedUsageException as e:
+        if args.debug:
+            traceback.print_tb(e.__traceback__)
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(2)
+    except Exception as e:
+        if args.debug:
+            traceback.print_tb(e.__traceback__)
+        if not args.quiet:
+            print("ERROR: %s" % e, file=sys.stderr)
+        sys.exit(3)
+
+if __name__ == "__main__":
+    main()
