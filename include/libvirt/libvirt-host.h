@@ -472,6 +472,22 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  */
 # define VIR_NODE_SEV_REDUCED_PHYS_BITS "reduced-phys-bits"
 
+/**
+ * VIR_NODE_SEV_MAX_GUESTS:
+ *
+ * Macro represents the number of SEV guests that can
+ * be run on the host, as a VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_NODE_SEV_MAX_GUESTS "max-guests"
+
+/**
+ * VIR_NODE_SEV_MAX_ES_GUESTS:
+ *
+ * Macro represents the number of SEV-ES guests that can
+ * be run on the host, as a VIR_TYPED_PARAM_UINT.
+ */
+# define VIR_NODE_SEV_MAX_ES_GUESTS "max-es-guests"
+
 int virNodeGetSEVInfo (virConnectPtr conn,
                        virTypedParameterPtr *params,
                        int *nparams,
