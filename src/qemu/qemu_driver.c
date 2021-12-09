@@ -1034,9 +1034,6 @@ qemuStateStop(void)
 static int
 qemuStateShutdownPrepare(void)
 {
-    if (!qemu_driver)
-        return 0;
-
     virThreadPoolStop(qemu_driver->workerPool);
     return 0;
 }
@@ -1056,9 +1053,6 @@ qemuDomainObjStopWorkerIter(virDomainObj *vm,
 static int
 qemuStateShutdownWait(void)
 {
-    if (!qemu_driver)
-        return 0;
-
     virDomainObjListForEach(qemu_driver->domains, false,
                             qemuDomainObjStopWorkerIter, NULL);
     virThreadPoolDrain(qemu_driver->workerPool);
