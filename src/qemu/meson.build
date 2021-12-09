@@ -6,6 +6,7 @@ qemu_driver_sources = [
   'qemu_blockjob.c',
   'qemu_capabilities.c',
   'qemu_cgroup.c',
+  'qemu_chardev.c',
   'qemu_checkpoint.c',
   'qemu_command.c',
   'qemu_conf.c',
