@@ -681,6 +681,12 @@
       <dt><code>reducedPhysBits</code></dt>
       <dd>When memory encryption is enabled, we lose certain bits in physical
       address space. The number of bits we lose is hypervisor dependent.</dd>
+      <dt><code>maxGuests</code></dt>
+      <dd>The maximum number of SEV guests that can be launched on the host.
+      This value may be configurable in the firmware for some hosts.</dd>
+      <dt><code>maxESGuests</code></dt>
+      <dd>The maximum number of SEV-ES guests that can be launched on the host.
+      This value may be configurable in the firmware for some hosts.</dd>
     </dl>
 
   </body>

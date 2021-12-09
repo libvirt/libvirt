@@ -597,6 +597,10 @@ virDomainCapsFeatureSEVFormat(virBuffer *buf,
         virBufferAsprintf(buf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);
         virBufferAsprintf(buf, "<reducedPhysBits>%d</reducedPhysBits>\n",
                           sev->reduced_phys_bits);
+        virBufferAsprintf(buf, "<maxGuests>%d</maxGuests>\n",
+                          sev->max_guests);
+        virBufferAsprintf(buf, "<maxESGuests>%d</maxESGuests>\n",
+                          sev->max_es_guests);
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</sev>\n");
     }

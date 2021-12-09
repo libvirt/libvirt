@@ -323,6 +323,12 @@
         <element name="reducedPhysBits">
           <data type="unsignedInt"/>
         </element>
+        <element name="maxGuests">
+          <data type="unsignedInt"/>
+        </element>
+        <element name="maxESGuests">
+          <data type="unsignedInt"/>
+        </element>
       </optional>
     </element>
   </define>

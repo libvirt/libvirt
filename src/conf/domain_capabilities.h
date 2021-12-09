@@ -187,6 +187,8 @@ struct _virSEVCapability {
     char *cert_chain;
     unsigned int cbitpos;
     unsigned int reduced_phys_bits;
+    unsigned int max_guests;
+    unsigned int max_es_guests;
 };
 
 typedef enum {
