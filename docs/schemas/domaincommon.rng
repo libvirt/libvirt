@@ -499,6 +499,11 @@
     <attribute name="type">
       <value>sev</value>
     </attribute>
+    <optional>
+      <attribute name="kernelHashes">
+        <ref name="virYesNo"/>
+      </attribute>
+    </optional>
     <interleave>
       <optional>
         <element name="cbitpos">

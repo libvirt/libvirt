@@ -2714,6 +2714,7 @@ struct _virDomainSEVDef {
     unsigned int cbitpos;
     bool haveReducedPhysBits;
     unsigned int reduced_phys_bits;
+    virTristateBool kernel_hashes;
 };
 
 struct _virDomainSecDef {

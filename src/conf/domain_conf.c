@@ -14804,6 +14804,10 @@ virDomainSEVDefParseXML(virDomainSEVDef *def,
     unsigned long policy;
     int rc;
 
+    if (virXMLPropTristateBool(ctxt->node, "kernelHashes", VIR_XML_PROP_NONE,
+                               &def->kernel_hashes) < 0)
+        return -1;
+
     if (virXPathULongHex("string(./policy)", ctxt, &policy) < 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("failed to get launch security policy"));
@@ -27133,6 +27137,10 @@ virDomainSecDefFormat(virBuffer *buf, virDomainSecDef *sec)
     switch ((virDomainLaunchSecurity) sec->sectype) {
     case VIR_DOMAIN_LAUNCH_SECURITY_SEV: {
         virDomainSEVDef *sev = &sec->data.sev;
+
+        if (sev->kernel_hashes != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&attrBuf, " kernelHashes='%s'",
+                              virTristateBoolTypeToString(sev->kernel_hashes));
 
         if (sev->haveCbitpos)
             virBufferAsprintf(&childBuf, "<cbitpos>%d</cbitpos>\n", sev->cbitpos);

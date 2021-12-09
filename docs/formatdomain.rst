@@ -8222,7 +8222,7 @@ spec <https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf>`__
 
    <domain>
      ...
-     <launchSecurity type='sev'>
+     <launchSecurity type='sev' kernelHashes='yes'>
        <policy>0x0001</policy>
        <cbitpos>47</cbitpos>
        <reducedPhysBits>1</reducedPhysBits>
@@ -8232,6 +8232,11 @@ spec <https://support.amd.com/TechDocs/55766_SEV-KM_API_Specification.pdf>`__
      ...
    </domain>
 
+``kernelHashes``
+   The optional ``kernelHashes`` attribute indicates whether the
+   hashes of the kernel, ramdisk and command line should be included
+   in the measurement done by the firmware. This is only valid if
+   using direct kernel boot. :since:`Since 8.0.0`
 ``cbitpos``
    The required ``cbitpos`` element provides the C-bit (aka encryption bit)
    location in guest page table entry. The value of ``cbitpos`` is hypervisor
