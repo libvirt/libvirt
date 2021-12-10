@@ -164,11 +164,6 @@ virCHDomainObjPrivateFree(void *data)
     g_free(priv);
 }
 
-virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks = {
-    .alloc = virCHDomainObjPrivateAlloc,
-    .free = virCHDomainObjPrivateFree,
-};
-
 static int
 virCHDomainDefPostParseBasic(virDomainDef *def,
                              void *opaque G_GNUC_UNUSED)
@@ -184,6 +179,39 @@ virCHDomainDefPostParseBasic(virDomainDef *def,
 
     return 0;
 }
+
+static virClass *virCHDomainVcpuPrivateClass;
+
+static void
+virCHDomainVcpuPrivateDispose(void *obj G_GNUC_UNUSED)
+{
+}
+
+static int
+virCHDomainVcpuPrivateOnceInit(void)
+{
+    if (!VIR_CLASS_NEW(virCHDomainVcpuPrivate, virClassForObject()))
+        return -1;
+
+    return 0;
+}
+
+VIR_ONCE_GLOBAL_INIT(virCHDomainVcpuPrivate);
+
+static virObject *
+virCHDomainVcpuPrivateNew(void)
+{
+    virCHDomainVcpuPrivate *priv;
+
+    if (virCHDomainVcpuPrivateInitialize() < 0)
+        return NULL;
+
+    if (!(priv = virObjectNew(virCHDomainVcpuPrivateClass)))
+        return NULL;
+
+    return (virObject *) priv;
+}
+
 
 static int
 virCHDomainDefPostParse(virDomainDef *def,
@@ -202,6 +230,12 @@ virCHDomainDefPostParse(virDomainDef *def,
 
     return 0;
 }
+
+virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks = {
+    .alloc = virCHDomainObjPrivateAlloc,
+    .free = virCHDomainObjPrivateFree,
+    .vcpuNew = virCHDomainVcpuPrivateNew,
+};
 
 static int
 chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
