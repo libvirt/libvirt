@@ -671,27 +671,26 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     struct _bhyveConn *privconn = conn->privateData;
     g_autoptr(virDomainDef) def = NULL;
-    virCommand *cmd = NULL;
-    virCommand *loadcmd = NULL;
-    char *ret = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) loadcmd = NULL;
 
     virCheckFlags(0, NULL);
 
     if (virConnectDomainXMLToNativeEnsureACL(conn) < 0)
-        goto cleanup;
+        return NULL;
 
     if (STRNEQ(format, BHYVE_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("Unsupported config type %s"), format);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(def = virDomainDefParseString(xmlData, privconn->xmlopt,
                                         NULL, VIR_DOMAIN_DEF_PARSE_INACTIVE)))
-        goto cleanup;
+        return NULL;
 
     if (bhyveDomainAssignAddresses(def, NULL) < 0)
-        goto cleanup;
+        return NULL;
 
     if (def->os.bootloader == NULL &&
         def->os.loader) {
@@ -699,35 +698,30 @@ bhyveConnectDomainXMLToNative(virConnectPtr conn,
         if (!virDomainDefHasOldStyleROUEFI(def)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only read-only pflash is supported."));
-            goto cleanup;
+            return NULL;
         }
 
         if ((bhyveDriverGetBhyveCaps(privconn) & BHYVE_CAP_LPC_BOOTROM) == 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support "
                           "bootrom"));
-            goto cleanup;
+            return NULL;
         }
     } else {
         if (!(loadcmd = virBhyveProcessBuildLoadCmd(privconn, def,
                                                     "<device.map>", NULL)))
-            goto cleanup;
+            return NULL;
 
         virCommandToStringBuf(loadcmd, &buf, false, false);
         virBufferAddChar(&buf, '\n');
     }
 
     if (!(cmd = virBhyveProcessBuildBhyveCmd(privconn, def, true)))
-        goto cleanup;
+        return NULL;
 
     virCommandToStringBuf(cmd, &buf, false, false);
 
-    ret = virBufferContentAndReset(&buf);
-
- cleanup:
-    virCommandFree(loadcmd);
-    virCommandFree(cmd);
-    return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 static int
