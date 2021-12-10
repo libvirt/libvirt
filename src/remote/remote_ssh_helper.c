@@ -369,7 +369,10 @@ int main(int argc, char **argv)
     };
     unsigned int flags;
 
-    context = g_option_context_new("- libvirt socket proxy");
+    context = g_option_context_new("URI - libvirt socket proxy");
+    g_option_context_set_summary(context,
+                                 "Internal tool used to handle connections coming from remote\n"
+                                 "clients. Not intended to be called directly by the user.");
     g_option_context_add_main_entries(context, entries, PACKAGE);
     if (!g_option_context_parse(context, &argc, &argv, &error)) {
         g_printerr(_("option parsing failed: %s\n"), error->message);
@@ -379,6 +382,12 @@ int main(int argc, char **argv)
     if (version) {
         g_print("%s (%s) %s\n", argv[0], PACKAGE_NAME, PACKAGE_VERSION);
         exit(EXIT_SUCCESS);
+    }
+
+    if (argc != 2) {
+        g_autofree char *help = g_option_context_get_help(context, TRUE, NULL);
+        g_printerr("%s", help);
+        exit(EXIT_FAILURE);
     }
 
     virSetErrorFunc(NULL, NULL);
@@ -394,11 +403,6 @@ int main(int argc, char **argv)
 
     /* Initialize the log system */
     virLogSetFromEnv();
-
-    if (argc != 2) {
-        g_printerr("%s: expected a URI\n", argv[0]);
-        exit(EXIT_FAILURE);
-    }
 
     uri_str = argv[1];
     VIR_DEBUG("Using URI %s", uri_str);
