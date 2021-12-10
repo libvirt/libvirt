@@ -1431,7 +1431,6 @@ bhyveConnectCompareCPU(virConnectPtr conn,
                        unsigned int flags)
 {
     struct _bhyveConn *driver = conn->privateData;
-    int ret = VIR_CPU_COMPARE_ERROR;
     g_autoptr(virCaps) caps = NULL;
     bool failIncompatible;
     bool validateXML;
@@ -1441,30 +1440,27 @@ bhyveConnectCompareCPU(virConnectPtr conn,
                   VIR_CPU_COMPARE_ERROR);
 
     if (virConnectCompareCPUEnsureACL(conn) < 0)
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     failIncompatible = !!(flags & VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE);
     validateXML = !!(flags & VIR_CONNECT_COMPARE_CPU_VALIDATE_XML);
 
     if (!(caps = bhyveDriverGetCapabilities(driver)))
-        goto cleanup;
+        return VIR_CPU_COMPARE_ERROR;
 
     if (!caps->host.cpu ||
         !caps->host.cpu->model) {
         if (failIncompatible) {
             virReportError(VIR_ERR_CPU_INCOMPATIBLE, "%s",
                            _("cannot get host CPU capabilities"));
-        } else {
-            VIR_WARN("cannot get host CPU capabilities");
-            ret = VIR_CPU_COMPARE_INCOMPATIBLE;
+            return VIR_CPU_COMPARE_ERROR;
         }
-    } else {
-        ret = virCPUCompareXML(caps->host.arch, caps->host.cpu,
-                               xmlDesc, failIncompatible, validateXML);
+        VIR_WARN("cannot get host CPU capabilities");
+        return VIR_CPU_COMPARE_INCOMPATIBLE;
     }
 
- cleanup:
-    return ret;
+    return virCPUCompareXML(caps->host.arch, caps->host.cpu,
+                            xmlDesc, failIncompatible, validateXML);
 }
 
 static int
