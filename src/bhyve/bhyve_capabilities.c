@@ -199,24 +199,20 @@ bhyveProbeCapsDeviceHelper(unsigned int *caps,
                            const char *errormsg,
                            unsigned int flag)
 {
-    char *error;
-    virCommand *cmd = NULL;
-    int ret = -1, exit;
+    g_autofree char *error = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    int exit;
 
     cmd = virCommandNew(binary);
     virCommandAddArgList(cmd, bus, device, NULL);
     virCommandSetErrorBuffer(cmd, &error);
     if (virCommandRun(cmd, &exit) < 0)
-        goto cleanup;
+        return -1;
 
     if (strstr(error, errormsg) == NULL)
         *caps |= flag;
 
-    ret = 0;
- cleanup:
-    VIR_FREE(error);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 static int
