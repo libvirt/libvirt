@@ -116,12 +116,12 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
                          virDomainObj *vm,
                          virDomainRunningReason reason)
 {
-    char *devmap_file = NULL;
-    char *devicemap = NULL;
-    char *logfile = NULL;
-    int logfd = -1;
-    virCommand *cmd = NULL;
-    virCommand *load_cmd = NULL;
+    g_autofree char *devmap_file = NULL;
+    g_autofree char *devicemap = NULL;
+    g_autofree char *logfile = NULL;
+    VIR_AUTOCLOSE logfd = -1;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) load_cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
     int ret = -1, rc;
 
@@ -227,28 +227,21 @@ virBhyveProcessStartImpl(struct _bhyveConn *driver,
         if (rc < 0 && errno != ENOENT)
             virReportSystemError(errno, _("cannot unlink file '%s'"),
                                  devmap_file);
-        VIR_FREE(devicemap);
     }
-    VIR_FREE(devmap_file);
 
     if (ret < 0) {
         int exitstatus; /* Needed to avoid logging non-zero status */
-        virCommand *destroy_cmd;
+        g_autoptr(virCommand) destroy_cmd = NULL;
         if ((destroy_cmd = virBhyveProcessBuildDestroyCmd(driver,
                                                           vm->def)) != NULL) {
             virCommandSetOutputFD(load_cmd, &logfd);
             virCommandSetErrorFD(load_cmd, &logfd);
             ignore_value(virCommandRun(destroy_cmd, &exitstatus));
-            virCommandFree(destroy_cmd);
         }
 
         bhyveNetCleanup(vm);
     }
 
-    virCommandFree(load_cmd);
-    virCommandFree(cmd);
-    VIR_FREE(logfile);
-    VIR_FORCE_CLOSE(logfd);
     return ret;
 }
 
