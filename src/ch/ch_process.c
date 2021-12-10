@@ -147,6 +147,8 @@ int virCHProcessStart(virCHDriver *driver,
 {
     int ret = -1;
     virCHDomainObjPrivate *priv = vm->privateData;
+    g_autofree int *nicindexes = NULL;
+    size_t nnicindexes = 0;
 
     if (!priv->monitor) {
         /* And we can get the first monitor connection now too */
@@ -156,7 +158,8 @@ int virCHProcessStart(virCHDriver *driver,
             goto cleanup;
         }
 
-        if (virCHMonitorCreateVM(priv->monitor) < 0) {
+        if (virCHMonitorCreateVM(priv->monitor,
+                                 &nnicindexes, &nicindexes) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                         _("failed to create guest VM"));
             goto cleanup;
@@ -169,6 +172,7 @@ int virCHProcessStart(virCHDriver *driver,
         goto cleanup;
     }
 
+    priv->machineName = virCHDomainGetMachineName(vm);
     vm->pid = priv->monitor->pid;
     vm->def->id = vm->pid;
 
@@ -201,6 +205,7 @@ int virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
 
     vm->pid = -1;
     vm->def->id = -1;
+    g_clear_pointer(&priv->machineName, g_free);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
 

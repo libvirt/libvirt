@@ -55,10 +55,23 @@ virCHMonitor *virCHMonitorNew(virDomainObj *vm, const char *socketdir);
 void virCHMonitorClose(virCHMonitor *mon);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCHMonitor, virCHMonitorClose);
 
-int virCHMonitorCreateVM(virCHMonitor *mon);
+
+int virCHMonitorCreateVM(virCHMonitor *mon,
+                         size_t *nnicindexes,
+                         int **nicindexes);
 int virCHMonitorBootVM(virCHMonitor *mon);
 int virCHMonitorShutdownVM(virCHMonitor *mon);
 int virCHMonitorRebootVM(virCHMonitor *mon);
 int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
+
+typedef struct _virCHMonitorCPUInfo virCHMonitorCPUInfo;
+struct _virCHMonitorCPUInfo {
+    pid_t tid;
+    bool online;
+};
+void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);
+int virCHMonitorGetCPUInfo(virCHMonitor *mon,
+                           virCHMonitorCPUInfo **vcpus,
+                           size_t maxvcpus);

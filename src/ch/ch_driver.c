@@ -933,6 +933,7 @@ static int chStateInitialize(bool privileged,
         goto cleanup;
     }
 
+    ch_driver->privileged = privileged;
     ret = VIR_DRV_STATE_INIT_COMPLETE;
 
  cleanup:

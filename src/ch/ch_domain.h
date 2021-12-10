@@ -54,7 +54,9 @@ struct _virCHDomainObjPrivate {
     struct virCHDomainJobObj job;
 
     virChrdevs *chrdevs;
+    virCHDriver *driver;
     virCHMonitor *monitor;
+    char *machineName;
     virBitmap *autoCpuset;
 };
 
@@ -91,3 +93,6 @@ virCHDomainGetVcpuPid(virDomainObj *vm,
                       unsigned int vcpuid);
 bool
 virCHDomainHasVcpuPids(virDomainObj *vm);
+
+char *
+virCHDomainGetMachineName(virDomainObj *vm);

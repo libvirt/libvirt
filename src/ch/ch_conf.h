@@ -44,6 +44,8 @@ struct _virCHDriver
 {
     virMutex lock;
 
+    bool privileged;
+
     /* Require lock to get a reference on the object,
      * lockless access thereafter */
     virCaps *caps;
