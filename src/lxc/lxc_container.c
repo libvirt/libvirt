@@ -1927,7 +1927,7 @@ static int lxcContainerChild(void *data)
     int ret = -1;
     g_autofree char *ttyPath = NULL;
     virDomainFSDef *root;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int hasReboot;
     g_autofree gid_t *groups = NULL;
     int ngroups;
@@ -2075,7 +2075,6 @@ static int lxcContainerChild(void *data)
                 virGetLastErrorMessage());
     }
 
-    virCommandFree(cmd);
     return ret;
 }
 
