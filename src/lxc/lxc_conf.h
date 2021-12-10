@@ -102,6 +102,8 @@ struct _virLXCDriver {
     virCloseCallbacks *closeCallbacks;
 };
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virLXCDriverConfig, virObjectUnref);
+
 virLXCDriverConfig *virLXCDriverConfigNew(void);
 virLXCDriverConfig *virLXCDriverGetConfig(virLXCDriver *driver);
 int virLXCLoadDriverConfig(virLXCDriverConfig *cfg,
