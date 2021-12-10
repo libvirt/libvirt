@@ -1220,32 +1220,26 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
 {
     virLXCDriver *driver = conn->privateData;
     g_autoptr(virCaps) caps = NULL;
-    int ret = 0;
 
     memset(secmodel, 0, sizeof(*secmodel));
 
-    if (virNodeGetSecurityModelEnsureACL(conn) < 0) {
-        ret = -1;
-        goto cleanup;
-    }
+    if (virNodeGetSecurityModelEnsureACL(conn) < 0)
+        return -1;
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false))) {
-        ret = -1;
-        goto cleanup;
-    }
+    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+        return -1;
 
     /* we treat no driver as success, but simply return no data in *secmodel */
     if (caps->host.nsecModels == 0
         || caps->host.secModels[0].model == NULL)
-        goto cleanup;
+        return 0;
 
     if (virStrcpy(secmodel->model, caps->host.secModels[0].model,
                   VIR_SECURITY_MODEL_BUFLEN) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security model string exceeds max %d bytes"),
                        VIR_SECURITY_MODEL_BUFLEN - 1);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
     if (virStrcpy(secmodel->doi, caps->host.secModels[0].doi,
@@ -1253,12 +1247,10 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("security DOI string exceeds max %d bytes"),
                        VIR_SECURITY_DOI_BUFLEN-1);
-        ret = -1;
-        goto cleanup;
+        return -1;
     }
 
- cleanup:
-    return ret;
+    return 0;
 }
 
 
