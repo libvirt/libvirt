@@ -649,7 +649,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
      *            -S 31,uart,stdio \
      *            vm0
      */
-    virCommand *cmd = virCommandNew(BHYVE);
+    g_autoptr(virCommand) cmd = virCommandNew(BHYVE);
     size_t i;
     unsigned nusbcontrollers = 0;
     unsigned nisacontrollers = 0;
@@ -661,14 +661,14 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         if (def->cpu->dies != 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Only 1 die per socket is supported"));
-            goto error;
+            return NULL;
         }
         if (nvcpus != def->cpu->sockets * def->cpu->cores * def->cpu->threads) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Invalid CPU topology: total number of vCPUs "
                              "must equal the product of sockets, cores, "
                              "and threads"));
-            goto error;
+            return NULL;
         }
 
         if ((bhyveDriverGetBhyveCaps(driver) & BHYVE_CAP_CPUTOPOLOGY) != 0) {
@@ -681,7 +681,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support "
                              "defining CPU topology"));
-            goto error;
+            return NULL;
         }
     } else {
         virCommandAddArgFormat(cmd, "%d", nvcpus);
@@ -716,14 +716,14 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support "
                           "UTC clock"));
-            goto error;
+            return NULL;
         }
         break;
     default:
          virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                         _("unsupported clock offset '%s'"),
                         virDomainClockOffsetTypeToString(def->clock.offset));
-         goto error;
+         return NULL;
     }
 
     /* Clarification about -H and -P flags from Peter Grehan:
@@ -751,7 +751,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Installed bhyve binary does not support "
                              "UEFI loader"));
-            goto error;
+            return NULL;
         }
     }
 
@@ -759,26 +759,26 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
     for (i = 0; i < def->ncontrollers; i++) {
         if (bhyveBuildControllerArgStr(def, def->controllers[i], driver, cmd,
                                        &nusbcontrollers, &nisacontrollers) < 0)
-            goto error;
+            return NULL;
     }
     for (i = 0; i < def->nnets; i++) {
         if (bhyveBuildNetArgStr(def, def->nets[i], driver, cmd, dryRun) < 0)
-            goto error;
+            return NULL;
     }
     for (i = 0; i < def->ndisks; i++) {
         if (bhyveBuildDiskArgStr(def, def->disks[i], cmd) < 0)
-            goto error;
+            return NULL;
     }
 
     if (def->ngraphics && def->nvideos) {
         if (def->ngraphics == 1 && def->nvideos == 1) {
             if (bhyveBuildGraphicsArgStr(def, def->graphics[0], def->videos[0],
                                          driver, cmd, dryRun) < 0)
-                goto error;
+                return NULL;
         } else {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Multiple graphics devices are not supported"));
-             goto error;
+             return NULL;
         }
     }
 
@@ -786,16 +786,16 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
         if (bhyveBuildSoundArgStr(def, def->sounds[i],
                                   virDomainDefFindAudioByID(def, def->sounds[i]->audioId),
                                   driver, cmd) < 0)
-            goto error;
+            return NULL;
     }
 
     for (i = 0; i < def->nfss; i++) {
         if (bhyveBuildFSArgStr(def, def->fss[i], cmd) < 0)
-            goto error;
+            return NULL;
     }
 
     if (bhyveBuildConsoleArgStr(def, cmd) < 0)
-        goto error;
+        return NULL;
 
     if (def->namespaceData) {
         bhyveDomainCmdlineDef *bhyvecmd;
@@ -811,11 +811,7 @@ virBhyveProcessBuildBhyveCmd(struct _bhyveConn *driver, virDomainDef *def,
 
     virCommandAddArg(cmd, def->name);
 
-    return cmd;
-
- error:
-    virCommandFree(cmd);
-    return NULL;
+    return g_steal_pointer(&cmd);
 }
 
 virCommand *
