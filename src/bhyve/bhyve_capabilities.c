@@ -218,17 +218,15 @@ bhyveProbeCapsDeviceHelper(unsigned int *caps,
 static int
 bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
 {
-    char *help;
-    virCommand *cmd = NULL;
-    int ret = 0, exit;
+    g_autofree char *help = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    int exit;
 
     cmd = virCommandNew(binary);
     virCommandAddArg(cmd, "-h");
     virCommandSetErrorBuffer(cmd, &help);
-    if (virCommandRun(cmd, &exit) < 0) {
-        ret = -1;
-        goto out;
-    }
+    if (virCommandRun(cmd, &exit) < 0)
+        return -1;
 
     if (strstr(help, "-u:") != NULL)
         *caps |= BHYVE_CAP_RTC_UTC;
@@ -239,10 +237,7 @@ bhyveProbeCapsFromHelp(unsigned int *caps, char *binary)
     if (strstr(help, "-c vcpus") == NULL)
         *caps |= BHYVE_CAP_CPUTOPOLOGY;
 
- out:
-    VIR_FREE(help);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 static int
