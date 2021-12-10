@@ -1234,11 +1234,15 @@ static int lxcNodeGetSecurityModel(virConnectPtr conn,
 
     memset(secmodel, 0, sizeof(*secmodel));
 
-    if (virNodeGetSecurityModelEnsureACL(conn) < 0)
+    if (virNodeGetSecurityModelEnsureACL(conn) < 0) {
+        ret = -1;
         goto cleanup;
+    }
 
-    if (!(caps = virLXCDriverGetCapabilities(driver, false)))
+    if (!(caps = virLXCDriverGetCapabilities(driver, false))) {
+        ret = -1;
         goto cleanup;
+    }
 
     /* we treat no driver as success, but simply return no data in *secmodel */
     if (caps->host.nsecModels == 0
