@@ -89,3 +89,10 @@ int virHostCPUGetSignature(char **signature);
 int virHostCPUGetHaltPollTime(pid_t pid,
                               unsigned long long *haltPollSuccess,
                               unsigned long long *haltPollFail);
+
+void virHostCPUX86GetCPUID(uint32_t leaf,
+                           uint32_t extended,
+                           uint32_t *eax,
+                           uint32_t *ebx,
+                           uint32_t *ecx,
+                           uint32_t *edx);

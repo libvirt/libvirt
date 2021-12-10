@@ -1583,3 +1583,61 @@ virHostCPUGetHaltPollTime(pid_t pid,
 
     return 0;
 }
+
+void
+virHostCPUX86GetCPUID(uint32_t leaf G_GNUC_UNUSED,
+                      uint32_t extended G_GNUC_UNUSED,
+                      uint32_t *eax,
+                      uint32_t *ebx,
+                      uint32_t *ecx,
+                      uint32_t *edx)
+{
+#if defined(__i386__) || defined(__x86_64__)
+    uint32_t out[4];
+# if __x86_64__
+    asm("xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
+        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
+        "cpuid;"
+        : "=a" (out[0]),
+          "=b" (out[1]),
+          "=c" (out[2]),
+          "=d" (out[3])
+        : "a" (leaf),
+          "c" (extended));
+# else
+    /* we need to avoid direct use of ebx for CPUID output as it is used
+     * for global offset table on i386 with -fPIC
+     */
+    asm("push %%ebx;"
+        "xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
+        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
+        "cpuid;"
+        "mov %%ebx, %1;"
+        "pop %%ebx;"
+        : "=a" (out[0]),
+          "=r" (out[1]),
+          "=c" (out[2]),
+          "=d" (out[3])
+        : "a" (leaf),
+          "c" (extended)
+        : "cc");
+# endif
+    if (eax)
+        *eax = out[0];
+    if (ebx)
+        *ebx = out[1];
+    if (ecx)
+        *ecx = out[2];
+    if (edx)
+        *edx = out[3];
+#else
+    if (eax)
+        *eax = 0;
+    if (ebx)
+        *ebx = 0;
+    if (ecx)
+        *ecx = 0;
+    if (edx)
+        *edx = 0;
+#endif
+}

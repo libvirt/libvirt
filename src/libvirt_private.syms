@@ -2416,6 +2416,7 @@ virHostCPUGetThreadsPerSubcore;
 virHostCPUHasBitmap;
 virHostCPUReadSignature;
 virHostCPUStatsAssign;
+virHostCPUX86GetCPUID;
 
 
 # util/virhostmem.h

@@ -2377,34 +2377,12 @@ virCPUx86DataCheckFeature(const virCPUData *data,
 static inline void
 cpuidCall(virCPUx86CPUID *cpuid)
 {
-# if __x86_64__
-    asm("xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
-        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
-        "cpuid;"
-        : "=a" (cpuid->eax),
-          "=b" (cpuid->ebx),
-          "=c" (cpuid->ecx),
-          "=d" (cpuid->edx)
-        : "a" (cpuid->eax_in),
-          "c" (cpuid->ecx_in));
-# else
-    /* we need to avoid direct use of ebx for CPUID output as it is used
-     * for global offset table on i386 with -fPIC
-     */
-    asm("push %%ebx;"
-        "xor %%ebx, %%ebx;" /* clear the other registers as some cpuid */
-        "xor %%edx, %%edx;" /* functions may use them as additional arguments */
-        "cpuid;"
-        "mov %%ebx, %1;"
-        "pop %%ebx;"
-        : "=a" (cpuid->eax),
-          "=r" (cpuid->ebx),
-          "=c" (cpuid->ecx),
-          "=d" (cpuid->edx)
-        : "a" (cpuid->eax_in),
-          "c" (cpuid->ecx_in)
-        : "cc");
-# endif
+    virHostCPUX86GetCPUID(cpuid->eax_in,
+                          cpuid->ecx_in,
+                          &cpuid->eax,
+                          &cpuid->ebx,
+                          &cpuid->ecx,
+                          &cpuid->edx);
 }
 
 
