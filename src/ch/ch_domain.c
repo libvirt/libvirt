@@ -330,3 +330,29 @@ virCHDomainGetMonitor(virDomainObj *vm)
 {
     return CH_DOMAIN_PRIVATE(vm)->monitor;
 }
+
+pid_t
+virCHDomainGetVcpuPid(virDomainObj *vm,
+                      unsigned int vcpuid)
+{
+    virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+
+    return CH_DOMAIN_VCPU_PRIVATE(vcpu)->tid;
+}
+
+bool
+virCHDomainHasVcpuPids(virDomainObj *vm)
+{
+    size_t i;
+    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virDomainVcpuDef *vcpu;
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (CH_DOMAIN_VCPU_PRIVATE(vcpu)->tid > 0)
+            return true;
+    }
+
+    return false;
+}

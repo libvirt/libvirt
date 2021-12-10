@@ -941,6 +941,142 @@ static int chStateInitialize(bool privileged,
     return ret;
 }
 
+static int
+chDomainGetVcpusFlags(virDomainPtr dom,
+                      unsigned int flags)
+{
+    virDomainObj *vm;
+    virDomainDef *def;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG |
+                  VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_GUEST, -1);
+
+    if (!(vm = chDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
+        goto cleanup;
+
+    if (!(def = virDomainObjGetOneDef(vm, flags)))
+        goto cleanup;
+
+    if (flags & VIR_DOMAIN_VCPU_MAXIMUM)
+        ret = virDomainDefGetVcpusMax(def);
+    else
+        ret = virDomainDefGetVcpus(def);
+
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+static int
+chDomainGetMaxVcpus(virDomainPtr dom)
+{
+    return chDomainGetVcpusFlags(dom,
+                                 (VIR_DOMAIN_AFFECT_LIVE |
+                                  VIR_DOMAIN_VCPU_MAXIMUM));
+}
+
+static int
+chDomainHelperGetVcpus(virDomainObj *vm,
+                       virVcpuInfoPtr info,
+                       unsigned long long *cpuwait,
+                       int maxinfo,
+                       unsigned char *cpumaps,
+                       int maplen)
+{
+    size_t ncpuinfo = 0;
+    size_t i;
+
+    if (maxinfo == 0)
+        return 0;
+
+    if (!virCHDomainHasVcpuPids(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       "%s", _("cpu affinity is not supported"));
+        return -1;
+    }
+
+    if (info)
+        memset(info, 0, sizeof(*info) * maxinfo);
+
+    if (cpumaps)
+        memset(cpumaps, 0, sizeof(*cpumaps) * maxinfo);
+
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def) && ncpuinfo < maxinfo; i++) {
+        virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, i);
+        pid_t vcpupid = virCHDomainGetVcpuPid(vm, i);
+        virVcpuInfoPtr vcpuinfo = info + ncpuinfo;
+
+        if (!vcpu->online)
+            continue;
+
+        if (info) {
+            vcpuinfo->number = i;
+            vcpuinfo->state = VIR_VCPU_RUNNING;
+            if (virProcessGetStatInfo(&vcpuinfo->cpuTime,
+                                      &vcpuinfo->cpu, NULL,
+                                      vm->pid, vcpupid) < 0) {
+                virReportSystemError(errno, "%s",
+                                      _("cannot get vCPU placement & pCPU time"));
+                return -1;
+            }
+        }
+
+        if (cpumaps) {
+            unsigned char *cpumap = VIR_GET_CPUMAP(cpumaps, maplen, ncpuinfo);
+            g_autoptr(virBitmap) map = NULL;
+
+            if (!(map = virProcessGetAffinity(vcpupid)))
+                return -1;
+
+            virBitmapToDataBuf(map, cpumap, maplen);
+        }
+
+        if (cpuwait) {
+            if (virProcessGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
+                return -1;
+        }
+
+        ncpuinfo++;
+    }
+
+    return ncpuinfo;
+}
+
+static int
+chDomainGetVcpus(virDomainPtr dom,
+                 virVcpuInfoPtr info,
+                 int maxinfo,
+                 unsigned char *cpumaps,
+                 int maplen)
+{
+    virDomainObj *vm;
+    int ret = -1;
+
+    if (!(vm = chDomObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainGetVcpusEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot retrieve vcpu information for inactive domain"));
+        goto cleanup;
+    }
+
+    ret = chDomainHelperGetVcpus(vm, info, NULL, maxinfo, cpumaps, maplen);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 /* Function Tables */
 static virHypervisorDriver chHypervisorDriver = {
     .name = "CH",
@@ -977,6 +1113,9 @@ static virHypervisorDriver chHypervisorDriver = {
     .domainIsActive = chDomainIsActive,                     /* 7.5.0 */
     .domainOpenConsole = chDomainOpenConsole,               /* 7.8.0 */
     .nodeGetInfo = chNodeGetInfo,                           /* 7.5.0 */
+    .domainGetVcpus = chDomainGetVcpus,                     /* 8.0.0 */
+    .domainGetVcpusFlags = chDomainGetVcpusFlags,           /* 8.0.0 */
+    .domainGetMaxVcpus = chDomainGetMaxVcpus,               /* 8.0.0 */
 };
 
 static virConnectDriver chConnectDriver = {
