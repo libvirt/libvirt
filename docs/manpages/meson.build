@@ -19,6 +19,7 @@ docs_man_files = [
   { 'name': 'virt-pki-query-dn', 'section': '1', 'install': true },
   { 'name': 'virt-pki-validate', 'section': '1', 'install': true },
   { 'name': 'virt-qemu-run', 'section': '1', 'install': conf.has('WITH_QEMU') },
+  { 'name': 'virt-ssh-helper', 'section': '1', 'install': conf.has('WITH_LIBVIRTD') },
   { 'name': 'virt-xml-validate', 'section': '1', 'install': true },
 
   { 'name': 'libvirtd', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
