@@ -1207,7 +1207,7 @@ int virLXCProcessStart(virConnectPtr conn,
     int nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_LAST];
     virCommand *cmd = NULL;
     virLXCDomainObjPrivate *priv = vm->privateData;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virErrorPtr err = NULL;
     virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
     g_autoptr(virCgroup) selfcgroup = NULL;
@@ -1579,7 +1579,6 @@ int virLXCProcessStart(virConnectPtr conn,
     for (i = 0; i < G_N_ELEMENTS(handshakefds); i++)
         VIR_FORCE_CLOSE(handshakefds[i]);
     virObjectUnref(cfg);
-    virObjectUnref(caps);
 
     virErrorRestore(&err);
 

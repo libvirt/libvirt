@@ -187,7 +187,7 @@ static int chNodeGetInfo(virConnectPtr conn,
 static char *chConnectGetCapabilities(virConnectPtr conn)
 {
     virCHDriver *driver = conn->privateData;
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     char *xml;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
@@ -198,7 +198,6 @@ static char *chConnectGetCapabilities(virConnectPtr conn)
 
     xml = virCapabilitiesFormatXML(caps);
 
-    virObjectUnref(caps);
     return xml;
 }
 

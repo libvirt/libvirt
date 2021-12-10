@@ -140,7 +140,7 @@ static char *
 bhyveConnectGetCapabilities(virConnectPtr conn)
 {
     struct _bhyveConn *privconn = conn->privateData;
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     char *xml = NULL;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
@@ -156,7 +156,6 @@ bhyveConnectGetCapabilities(virConnectPtr conn)
         goto cleanup;
 
  cleanup:
-    virObjectUnref(caps);
     return xml;
 }
 
@@ -508,7 +507,7 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     g_autoptr(virDomainDef) oldDef = NULL;
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
@@ -554,7 +553,6 @@ bhyveDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flag
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
  cleanup:
-    virObjectUnref(caps);
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(privconn->domainEventState, event);
 
@@ -1434,7 +1432,7 @@ bhyveConnectCompareCPU(virConnectPtr conn,
 {
     struct _bhyveConn *driver = conn->privateData;
     int ret = VIR_CPU_COMPARE_ERROR;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     bool failIncompatible;
     bool validateXML;
 
@@ -1466,7 +1464,6 @@ bhyveConnectCompareCPU(virConnectPtr conn,
     }
 
  cleanup:
-    virObjectUnref(caps);
     return ret;
 }
 
