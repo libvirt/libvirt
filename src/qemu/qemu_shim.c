@@ -163,7 +163,7 @@ int main(int argc, char **argv)
 
 #define deltams() ((long long)g_get_monotonic_time() - start)
 
-    ctx = g_option_context_new("- run a standalone QEMU process");
+    ctx = g_option_context_new("GUEST-XML-FILE - run a standalone QEMU process");
     g_option_context_add_main_entries(ctx, entries, PACKAGE);
     if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
         g_printerr("%s: option parsing failed: %s\n",
