@@ -361,7 +361,6 @@ virLXCProcessSetupInterfaceDirect(virLXCDriver *driver,
                                   virDomainDef *def,
                                   virDomainNetDef *net)
 {
-    char *ret = NULL;
     char *res_ifname = NULL;
     const virNetDevBandwidth *bw;
     const virNetDevVPortProfile *prof;
@@ -407,12 +406,9 @@ virLXCProcessSetupInterfaceDirect(virLXCDriver *driver,
             cfg->stateDir,
             NULL, 0,
             macvlan_create_flags) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = res_ifname;
-
- cleanup:
-    return ret;
+    return res_ifname;
 }
 
 static const char *nsInfoLocal[VIR_LXC_DOMAIN_NAMESPACE_LAST] = {
@@ -834,7 +830,7 @@ static virLXCMonitor *virLXCProcessConnectMonitor(virLXCDriver *driver,
     g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
 
     if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
-        goto cleanup;
+        return NULL;
 
     /* Hold an extra reference because we can't allow 'vm' to be
      * deleted while the monitor is active. This will be unreffed
@@ -847,14 +843,11 @@ static virLXCMonitor *virLXCProcessConnectMonitor(virLXCDriver *driver,
         virObjectUnref(vm);
 
     if (virSecurityManagerClearSocketLabel(driver->securityManager, vm->def) < 0) {
-        if (monitor) {
+        if (monitor)
             virObjectUnref(monitor);
-            monitor = NULL;
-        }
-        goto cleanup;
+        return NULL;
     }
 
- cleanup:
     return monitor;
 }
 
@@ -1015,7 +1008,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     virCommandRequireHandshake(cmd);
 
  cleanup:
-    return cmd;
+     return cmd;
  error:
     virCommandFree(cmd);
     cmd = NULL;

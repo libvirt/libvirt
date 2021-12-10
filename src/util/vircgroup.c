@@ -853,10 +853,9 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
 {
     g_auto(GStrv) tokens = NULL;
     size_t i;
-    int ret = -1;
 
     if (!(tokens = g_strsplit(path, "/", 0)))
-        return ret;
+        return -1;
 
     for (i = 0; tokens[i] != NULL; i++) {
         /* Special case the 3 top level fixed dirs
@@ -878,16 +877,13 @@ virCgroupSetPartitionSuffix(const char *path, char **res)
         }
 
         if (virCgroupPartitionEscape(&(tokens[i])) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (!(*res = g_strjoinv("/", tokens)))
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

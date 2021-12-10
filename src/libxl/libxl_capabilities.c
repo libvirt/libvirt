@@ -645,18 +645,15 @@ libxlMakeCapabilities(libxl_ctx *ctx)
         return NULL;
 
     if (libxlCapsInitHost(ctx, caps) < 0)
-        goto error;
+        return NULL;
 
     if (libxlCapsInitNuma(ctx, caps) < 0)
-        goto error;
+        return NULL;
 
     if (libxlCapsInitGuests(ctx, caps) < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 /*

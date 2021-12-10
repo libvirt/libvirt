@@ -21,11 +21,10 @@ testFilterXML(char *xml)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     g_auto(GStrv) xmlLines = NULL;
     char **xmlLine;
-    char *ret = NULL;
 
     if (!(xmlLines = g_strsplit(xml, "\n", 0))) {
         VIR_FREE(xml);
-        goto cleanup;
+        return NULL;
     }
     VIR_FREE(xml);
 
@@ -36,10 +35,7 @@ testFilterXML(char *xml)
         virBufferStrcat(&buf, *xmlLine, "\n", NULL);
     }
 
-    ret = virBufferContentAndReset(&buf);
-
- cleanup:
-   return ret;
+    return virBufferContentAndReset(&buf);
 }
 
 static int

@@ -129,7 +129,6 @@ testStringSearch(const void *opaque)
     const struct stringSearchData *data = opaque;
     g_auto(GStrv) matches = NULL;
     ssize_t nmatches;
-    int ret = -1;
 
     nmatches = virStringSearch(data->str, data->regexp,
                                data->maxMatches, &matches);
@@ -138,7 +137,7 @@ testStringSearch(const void *opaque)
         if (nmatches != -1) {
             fprintf(stderr, "expected error on %s but got %zd matches\n",
                     data->str, nmatches);
-            goto cleanup;
+            return -1;
         }
     } else {
         size_t i;
@@ -146,35 +145,32 @@ testStringSearch(const void *opaque)
         if (nmatches < 0) {
             fprintf(stderr, "expected %zu matches on %s but got error\n",
                     data->expectNMatches, data->str);
-            goto cleanup;
+            return -1;
         }
 
         if (nmatches != data->expectNMatches) {
             fprintf(stderr, "expected %zu matches on %s but got %zd\n",
                     data->expectNMatches, data->str, nmatches);
-            goto cleanup;
+            return -1;
         }
 
         if (g_strv_length(matches) != nmatches) {
             fprintf(stderr, "expected %zu matches on %s but got %u matches\n",
                     data->expectNMatches, data->str,
                     g_strv_length(matches));
-            goto cleanup;
+            return -1;
         }
 
         for (i = 0; i < nmatches; i++) {
             if (STRNEQ(matches[i], data->expectMatches[i])) {
                 fprintf(stderr, "match %zu expected '%s' but got '%s'\n",
                         i, data->expectMatches[i], matches[i]);
-                goto cleanup;
+                return -1;
             }
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -1891,7 +1891,6 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
     size_t i;
     size_t j;
     libxl_physinfo physinfo;
-    int ret = -1;
 
     if (cfg->verInfo->commandline == NULL ||
         !(cmd_tokens = g_strsplit(cfg->verInfo->commandline, " ", 0)))
@@ -1931,8 +1930,7 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
                     }
                 }
                 *maxmem = *maxmem * multiplier;
-                ret = 0;
-                goto cleanup;
+                return 0;
             }
         }
     }
@@ -1942,14 +1940,11 @@ libxlDriverGetDom0MaxmemConf(libxlDriverConfig *cfg,
     libxl_physinfo_init(&physinfo);
     if (libxl_get_physinfo(cfg->ctx, &physinfo)) {
         VIR_WARN("libxl_get_physinfo failed");
-        goto cleanup;
+        return -1;
     }
     *maxmem = (physinfo.total_pages * cfg->verInfo->pagesize) / 1024;
     libxl_physinfo_dispose(&physinfo);
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 

@@ -1575,19 +1575,15 @@ xenMakeIPList(virNetDevIPInfo *guestIP)
 {
     size_t i;
     g_auto(GStrv) address_array = NULL;
-    char *ret = NULL;
 
     address_array = g_new0(char *, guestIP->nips + 1);
 
     for (i = 0; i < guestIP->nips; i++) {
         address_array[i] = virSocketAddrFormat(&guestIP->ips[i]->address);
         if (!address_array[i])
-            goto cleanup;
+            return NULL;
     }
-    ret = g_strjoinv(" ", address_array);
-
- cleanup:
-    return ret;
+    return g_strjoinv(" ", address_array);
 }
 
 static int

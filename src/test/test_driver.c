@@ -298,12 +298,12 @@ testBuildCapabilities(virConnectPtr conn)
     size_t i, j;
 
     if ((caps = virCapabilitiesNew(VIR_ARCH_I686, false, false)) == NULL)
-        goto error;
+        return NULL;
 
     if (virCapabilitiesAddHostFeature(caps, "pae") < 0)
-        goto error;
+        return NULL;
     if (virCapabilitiesAddHostFeature(caps, "nonpae") < 0)
-        goto error;
+        return NULL;
 
     virCapabilitiesHostInitIOMMU(caps);
 
@@ -362,9 +362,6 @@ testBuildCapabilities(virConnectPtr conn)
     caps->host.secModels[0].doi = g_strdup("");
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 

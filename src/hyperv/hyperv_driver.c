@@ -271,7 +271,7 @@ hypervCapsInit(hypervPrivate *priv)
         return NULL;
 
     if (hypervLookupHostSystemBiosUuid(priv, caps->host.host_uuid) < 0)
-        goto error;
+        return NULL;
 
     /* i686 caps */
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM, VIR_ARCH_I686,
@@ -288,9 +288,6 @@ hypervCapsInit(hypervPrivate *priv)
                                   NULL, NULL, 0, NULL);
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 

@@ -370,7 +370,6 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
         "string_list = [\"foo\", \"bar\"]\n" \
         "string = \"foo\"\n";
 
-    int ret = -1;
     g_autoptr(virConf) conf = virConfReadString(srcdata, 0);
     g_auto(GStrv) str = NULL;
 
@@ -380,50 +379,47 @@ static int testConfParseStringList(const void *opaque G_GNUC_UNUSED)
     if (virConfGetValueType(conf, "string_list") !=
         VIR_CONF_LIST) {
         fprintf(stderr, "expected a list for 'string_list'\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueStringList(conf, "string_list", false, &str) < 0)
-        goto cleanup;
+        return -1;
 
     if (!str || g_strv_length(str) != 2) {
         fprintf(stderr, "expected a 2 element list\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(str[0], "foo")) {
         fprintf(stderr, "Expected 'foo' got '%s'\n", str[0]);
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(str[1], "bar")) {
         fprintf(stderr, "Expected 'bar' got '%s'\n", str[1]);
-        goto cleanup;
+        return -1;
     }
 
 
     if (virConfGetValueStringList(conf, "string", false, &str) != -1) {
         fprintf(stderr, "Expected error for 'string'\n");
-        goto cleanup;
+        return -1;
     }
 
     if (virConfGetValueStringList(conf, "string", true, &str) < 0)
-        goto cleanup;
+        return -1;
 
     if (!str || g_strv_length(str) != 1) {
         fprintf(stderr, "expected a 1 element list\n");
-        goto cleanup;
+        return -1;
     }
 
     if (STRNEQ_NULLABLE(str[0], "foo")) {
         fprintf(stderr, "Expected 'foo' got '%s'\n", str[0]);
-        goto cleanup;
+        return -1;
     }
 
-
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 

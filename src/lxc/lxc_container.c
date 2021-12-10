@@ -515,13 +515,12 @@ static int lxcContainerUnmountSubtree(const char *prefix,
     size_t i;
     int saveErrno;
     const char *failedUmount = NULL;
-    int ret = -1;
 
     VIR_DEBUG("Unmount subtree from %s", prefix);
 
     if (virFileGetMountReverseSubtree("/proc/mounts", prefix,
                                       &mounts, &nmounts) < 0)
-        goto cleanup;
+        return -1;
     for (i = 0; i < nmounts; i++) {
         VIR_DEBUG("Umount %s", mounts[i]);
         if (umount(mounts[i]) < 0) {
@@ -540,7 +539,7 @@ static int lxcContainerUnmountSubtree(const char *prefix,
             virReportSystemError(saveErrno,
                                  _("Failed to unmount '%s' and could not detach subtree '%s'"),
                                  failedUmount, mounts[nmounts-1]);
-            goto cleanup;
+            return -1;
         }
         /* This unmounts the tmpfs on which the old root filesystem was hosted */
         if (isOldRootFS &&
@@ -548,14 +547,11 @@ static int lxcContainerUnmountSubtree(const char *prefix,
             virReportSystemError(saveErrno,
                                  _("Failed to unmount '%s' and could not unmount old root '%s'"),
                                  failedUmount, mounts[nmounts-1]);
-            goto cleanup;
+            return -1;
         }
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int lxcContainerResolveSymlinks(virDomainFSDef *fs, bool gentle)

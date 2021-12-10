@@ -119,7 +119,7 @@ static char ** lxcStringSplit(const char *string)
     }
 
     if (!(parts = g_strsplit(tmp, " ", 0)))
-        goto error;
+        return NULL;
 
     /* Append NULL element */
     VIR_EXPAND_N(result, ntokens, 1);
@@ -133,9 +133,6 @@ static char ** lxcStringSplit(const char *string)
     }
 
     return g_steal_pointer(&result);
-
- error:
-    return NULL;
 }
 
 static lxcFstab *
@@ -250,7 +247,6 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
     bool readonly;
     int type = VIR_DOMAIN_FS_TYPE_MOUNT;
     unsigned long long usage = 0;
-    int ret = -1;
 
     if (!options)
         return -1;
@@ -262,10 +258,8 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
     }
 
     /* Check that we don't add basic mounts */
-    if (lxcIsBasicMountLocation(dst)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (lxcIsBasicMountLocation(dst))
+        return 0;
 
     if (STREQ(fstab->type, "tmpfs")) {
         char *sizeStr = NULL;
@@ -275,14 +269,14 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
         for (i = 0; options[i]; i++) {
             if ((sizeStr = STRSKIP(options[i], "size="))) {
                 if (lxcConvertSize(sizeStr, &usage) < 0)
-                    goto cleanup;
+                    return -1;
                 break;
             }
         }
         if (!sizeStr) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing tmpfs size, set the size option"));
-            goto cleanup;
+            return -1;
         }
     } else {
         src = fstab->src;
@@ -296,12 +290,9 @@ lxcAddFstabLine(virDomainDef *def, lxcFstab *fstab)
     readonly = g_strv_contains((const char **)options, "ro");
 
     if (lxcAddFSDef(def, type, src, dst, readonly, usage) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 1;
-
- cleanup:
-    return ret;
+    return 1;
 }
 
 static int
@@ -961,7 +952,6 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
     virDomainDef *def = data;
     size_t i = 0;
     g_autofree char *path = NULL;
-    int ret = -1;
 
     if (!STRPREFIX(name, "lxc.cgroup.blkio.") ||
             STREQ(name, "lxc.cgroup.blkio.weight")|| !value->str)
@@ -974,7 +964,7 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("invalid %s value: '%s'"),
                        name, value->str);
-        goto cleanup;
+        return -1;
     }
 
     path = g_strdup_printf("/dev/block/%s", parts[0]);
@@ -996,44 +986,41 @@ lxcBlkioDeviceWalkCallback(const char *name, virConfValue *value, void *data)
         if (virStrToLong_ui(parts[1], NULL, 10, &device->weight) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse device weight: '%s'"), parts[1]);
-            goto cleanup;
+            return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_bps_device")) {
         if (virStrToLong_ull(parts[1], NULL, 10, &device->rbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse read_bps_device: '%s'"),
                            parts[1]);
-            goto cleanup;
+            return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_bps_device")) {
         if (virStrToLong_ull(parts[1], NULL, 10, &device->wbps) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse write_bps_device: '%s'"),
                            parts[1]);
-            goto cleanup;
+            return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.read_iops_device")) {
         if (virStrToLong_ui(parts[1], NULL, 10, &device->riops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse read_iops_device: '%s'"),
                            parts[1]);
-            goto cleanup;
+            return -1;
         }
     } else if (STREQ(name, "lxc.cgroup.blkio.throttle.write_iops_device")) {
         if (virStrToLong_ui(parts[1], NULL, 10, &device->wiops) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("failed to parse write_iops_device: '%s'"),
                            parts[1]);
-            goto cleanup;
+            return -1;
         }
     } else {
         VIR_WARN("Unhandled blkio tune config: %s", name);
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

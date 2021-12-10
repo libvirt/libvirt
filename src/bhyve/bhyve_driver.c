@@ -141,7 +141,6 @@ bhyveConnectGetCapabilities(virConnectPtr conn)
 {
     struct _bhyveConn *privconn = conn->privateData;
     g_autoptr(virCaps) caps = NULL;
-    char *xml = NULL;
 
     if (virConnectGetCapabilitiesEnsureACL(conn) < 0)
         return NULL;
@@ -149,14 +148,10 @@ bhyveConnectGetCapabilities(virConnectPtr conn)
     if (!(caps = bhyveDriverGetCapabilities(privconn))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to get Capabilities"));
-        goto cleanup;
+        return NULL;
     }
 
-    if (!(xml = virCapabilitiesFormatXML(caps)))
-        goto cleanup;
-
- cleanup:
-    return xml;
+    return virCapabilitiesFormatXML(caps);
 }
 
 static virDomainObj *
@@ -1558,7 +1553,6 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
                                 const char *nativeConfig,
                                 unsigned int flags)
 {
-    char *xml = NULL;
     g_autoptr(virDomainDef) def = NULL;
     struct _bhyveConn *privconn = conn->privateData;
     unsigned bhyveCaps = bhyveDriverGetBhyveCaps(privconn);
@@ -1571,18 +1565,15 @@ bhyveConnectDomainXMLFromNative(virConnectPtr conn,
     if (STRNEQ(nativeFormat, BHYVE_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported config type %s"), nativeFormat);
-        goto cleanup;
+        return NULL;
     }
 
     def = bhyveParseCommandLineString(nativeConfig, bhyveCaps,
                                       privconn->xmlopt);
     if (def == NULL)
-        goto cleanup;
+        return NULL;
 
-    xml = virDomainDefFormat(def, privconn->xmlopt, 0);
-
- cleanup:
-    return xml;
+    return virDomainDefFormat(def, privconn->xmlopt, 0);
 }
 
 static char *

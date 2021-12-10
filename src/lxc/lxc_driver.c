@@ -928,7 +928,6 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
                                            const char *nativeConfig,
                                            unsigned int flags)
 {
-    char *xml = NULL;
     g_autoptr(virDomainDef) def = NULL;
     virLXCDriver *driver = conn->privateData;
     g_autoptr(virCaps) caps = virLXCDriverGetCapabilities(driver, false);
@@ -936,21 +935,18 @@ static char *lxcConnectDomainXMLFromNative(virConnectPtr conn,
     virCheckFlags(0, NULL);
 
     if (virConnectDomainXMLFromNativeEnsureACL(conn) < 0)
-        goto cleanup;
+        return NULL;
 
     if (STRNEQ(nativeFormat, LXC_CONFIG_FORMAT)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported config type %s"), nativeFormat);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(def = lxcParseConfigString(nativeConfig, caps, driver->xmlopt)))
-        goto cleanup;
+        return NULL;
 
-    xml = virDomainDefFormat(def, driver->xmlopt, 0);
-
- cleanup:
-    return xml;
+    return virDomainDefFormat(def, driver->xmlopt, 0);
 }
 
 /**

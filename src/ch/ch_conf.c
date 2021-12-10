@@ -57,13 +57,13 @@ virCaps *virCHDriverCapsInit(void)
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
-        goto cleanup;
+        return NULL;
 
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto cleanup;
+        return NULL;
 
     if (virCapabilitiesInitCaches(caps) < 0)
-        goto cleanup;
+        return NULL;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_HVM,
                                     caps->host.arch, NULL, NULL, 0, NULL);
@@ -71,9 +71,6 @@ virCaps *virCHDriverCapsInit(void)
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                   NULL, NULL, 0, NULL);
     return g_steal_pointer(&caps);
-
- cleanup:
-    return NULL;
 }
 
 /**

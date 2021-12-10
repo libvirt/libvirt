@@ -58,11 +58,10 @@ virFirmwareFreeList(virFirmware **firmwares, size_t nfirmwares)
 int
 virFirmwareParse(const char *str, virFirmware *firmware)
 {
-    int ret = -1;
     g_auto(GStrv) token = NULL;
 
     if (!(token = g_strsplit(str, ":", 0)))
-        goto cleanup;
+        return -1;
 
     if (token[0]) {
         virSkipSpaces((const char **) &token[0]);
@@ -76,15 +75,13 @@ virFirmwareParse(const char *str, virFirmware *firmware)
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("Invalid nvram format: '%s'"),
                        str);
-        goto cleanup;
+        return -1;
     }
 
     firmware->name = g_strdup(token[0]);
     firmware->nvram = g_strdup(token[1]);
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -93,12 +90,11 @@ virFirmwareParseList(const char *list,
                      virFirmware ***firmwares,
                      size_t *nfirmwares)
 {
-    int ret = -1;
     g_auto(GStrv) token = NULL;
     size_t i, j;
 
     if (!(token = g_strsplit(list, ":", 0)))
-        goto cleanup;
+        return -1;
 
     for (i = 0; token[i]; i += 2) {
         if (!token[i] || !token[i + 1] ||
@@ -106,7 +102,7 @@ virFirmwareParseList(const char *list,
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Invalid --with-loader-nvram list: %s"),
                            list);
-            goto cleanup;
+            return -1;
         }
     }
 
@@ -123,7 +119,5 @@ virFirmwareParseList(const char *list,
         }
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }

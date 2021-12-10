@@ -115,32 +115,29 @@ vzBuildCapabilities(void)
         return NULL;
 
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto error;
+        return NULL;
 
     if (virCapabilitiesInitCaches(caps) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < G_N_ELEMENTS(ostypes); i++)
         for (j = 0; j < G_N_ELEMENTS(archs); j++)
             for (k = 0; k < G_N_ELEMENTS(emulators); k++)
                 if (vzCapsAddGuestDomain(caps, ostypes[i], archs[j],
                                          emulators[k], virt_types[k]) < 0)
-                    goto error;
+                    return NULL;
 
     if (virCapabilitiesGetNodeInfo(&nodeinfo))
-        goto error;
+        return NULL;
 
     if (!(caps->host.cpu = virCPUGetHost(caps->host.arch, VIR_CPU_TYPE_HOST,
                                          &nodeinfo, NULL)))
-        goto error;
+        return NULL;
 
     if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)
-        goto error;
+        return NULL;
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 static void vzDriverDispose(void * obj)

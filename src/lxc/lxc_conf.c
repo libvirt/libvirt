@@ -65,14 +65,14 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
                                    false, false)) == NULL)
-        goto error;
+        return NULL;
 
     /* Some machines have problematic NUMA topology causing
      * unexpected failures. We don't want to break the lxc
      * driver in this scenario, so log errors & carry on
      */
     if (!(caps->host.numa = virCapabilitiesHostNUMANewHost()))
-        goto error;
+        return NULL;
 
     if (virCapabilitiesInitCaches(caps) < 0)
         VIR_WARN("Failed to get host CPU cache info");
@@ -89,13 +89,13 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
     if (virGetHostUUID(caps->host.host_uuid)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("cannot get the host uuid"));
-        goto error;
+        return NULL;
     }
 
     if (!(lxc_path = virFileFindResource("libvirt_lxc",
                                          abs_top_builddir "/src",
                                          LIBEXECDIR)))
-        goto error;
+        return NULL;
 
     guest = virCapabilitiesAddGuest(caps, VIR_DOMAIN_OSTYPE_EXE,
                                     caps->host.arch, lxc_path, NULL, 0, NULL);
@@ -130,7 +130,7 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
             virCapabilitiesHostSecModelAddBaseLabel(&caps->host.secModels[0],
                                                     type,
                                                     label) < 0)
-            goto error;
+            return NULL;
 
         VIR_DEBUG("Initialized caps for security driver \"%s\" with "
                   "DOI \"%s\"", model, doi);
@@ -139,9 +139,6 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
     }
 
     return g_steal_pointer(&caps);
-
- error:
-    return NULL;
 }
 
 

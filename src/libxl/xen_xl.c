@@ -248,7 +248,6 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
     g_autofree char *cpuid_str = NULL;
     g_auto(GStrv) cpuid_pairs = NULL;
     size_t i;
-    int ret = -1;
     int policy;
 
     if (xenConfigGetString(conf, "cpuid", &cpuid_str, NULL) < 0)
@@ -267,29 +266,27 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
 
     cpuid_pairs = g_strsplit(cpuid_str, ",", 0);
     if (!cpuid_pairs)
-        goto cleanup;
+        return -1;
 
-    if (!cpuid_pairs[0]) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!cpuid_pairs[0])
+        return 0;
 
     if (STRNEQ(cpuid_pairs[0], "host")) {
         virReportError(VIR_ERR_CONF_SYNTAX,
                        _("cpuid starting with %s is not supported, only libxl format is"),
                        cpuid_pairs[0]);
-        goto cleanup;
+        return -1;
     }
 
     for (i = 1; cpuid_pairs[i]; i++) {
         g_auto(GStrv) name_and_value = g_strsplit(cpuid_pairs[i], "=", 2);
         if (!name_and_value)
-            goto cleanup;
+            return -1;
         if (!name_and_value[0] || !name_and_value[1]) {
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Invalid libxl cpuid key=value element: %s"),
                            cpuid_pairs[i]);
-            goto cleanup;
+            return -1;
         }
         if (STREQ(name_and_value[1], "1")) {
             policy = VIR_CPU_FEATURE_FORCE;
@@ -305,19 +302,16 @@ xenParseXLCPUID(virConf *conf, virDomainDef *def)
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Invalid libxl cpuid value: %s"),
                            cpuid_pairs[i]);
-            goto cleanup;
+            return -1;
         }
 
         if (virCPUDefAddFeature(def->cpu,
                                 xenTranslateCPUFeature(name_and_value[0], true),
                                 policy) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
@@ -1292,7 +1286,6 @@ xenFormatXLCPUID(virConf *conf, virDomainDef *def)
     g_auto(GStrv) cpuid_pairs = NULL;
     g_autofree char *cpuid_string = NULL;
     size_t i, j;
-    int ret = -1;
 
     if (!def->cpu)
         return 0;
@@ -1341,13 +1334,10 @@ xenFormatXLCPUID(virConf *conf, virDomainDef *def)
         cpuid_string = g_strjoinv(",", cpuid_pairs);
 
         if (xenConfigSetString(conf, "cpuid", cpuid_string) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int

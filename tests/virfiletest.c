@@ -64,7 +64,6 @@ struct testFileGetMountSubtreeData {
 
 static int testFileGetMountSubtree(const void *opaque)
 {
-    int ret = -1;
     g_auto(GStrv) gotmounts = NULL;
     size_t gotnmounts = 0;
     const struct testFileGetMountSubtreeData *data = opaque;
@@ -74,21 +73,18 @@ static int testFileGetMountSubtree(const void *opaque)
                                           data->prefix,
                                           &gotmounts,
                                           &gotnmounts) < 0)
-            goto cleanup;
+            return -1;
     } else {
         if (virFileGetMountSubtree(data->path,
                                    data->prefix,
                                    &gotmounts,
                                    &gotnmounts) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = testFileCheckMounts(data->prefix,
-                              gotmounts, gotnmounts,
-                              data->mounts, data->nmounts);
-
- cleanup:
-    return ret;
+    return testFileCheckMounts(data->prefix,
+                               gotmounts, gotnmounts,
+                               data->mounts, data->nmounts);
 }
 #endif /* ! defined WITH_MNTENT_H && defined WITH_GETMNTENT_R */
 
