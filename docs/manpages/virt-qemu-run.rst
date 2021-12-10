@@ -11,10 +11,12 @@ Run a standalone QEMU guest
 
 .. contents::
 
+
 SYNOPSIS
 ========
 
-``virt-qemu-run [OPTIONS...] [GUEST-XML]``
+``virt-qemu-run`` [*OPTION*]... *GUEST-XML-FILE*
+
 
 DESCRIPTION
 ===========
@@ -26,56 +28,61 @@ directory tree. When the guest is run with this tool it is invisible
 to libvirtd and thus also invisible to other libvirt tools such as
 virsh.
 
-The virt-qemu-run program will run the QEMU virtual machine, and then
-block until the guest OS shuts down, at which point it will exit.
+The ``virt-qemu-run`` program will run the QEMU virtual machine, and
+then block until the guest OS shuts down, at which point it will
+exit.
 
-If the virt-qemu-run program is interrupted (eg Ctrl-C) it will
-immediately terminate the virtual machine without giving the guest
-OS any opportunity to gracefully shutdown.
+If the ``virt-qemu-run`` program is interrupted (eg Ctrl-C) it will
+immediately terminate the virtual machine without giving the guest OS
+any opportunity to gracefully shutdown.
 
 **NOTE: this tool is currently considered experimental.** Its
 usage and behaviour is still subject to change in future libvirt
 releases. For further information on its usage consult the
 `QEMU driver documentation <https://libvirt.org/drvqemu.html#embedded-driver>`_.
 
+
 OPTIONS
 =======
 
-``GUEST-XML``
+*GUEST-XML-FILE*
 
 The full path to the XML file describing the guest virtual machine
 to be booted.
 
-``-h``, ``--help``
-
-Display the command line help
-
-``-v``, ``--verbose``
-
-Display verbose information about startup
-
-``-r DIR``, ``--root=DIR``
+``-r`` *DIR*, ``--root``\ =\ *DIR*
 
 Specify the root directory to use for storing state associated with
 the virtual machine. The caller is responsible for deleting this
 directory when it is no longer required.
 
 If this parameter is omitted, then a random temporary directory
-will be created, and its contents be automaticlaly deleted at
+will be created, and its contents be automatically deleted at
 VM shutdown.
 
-``-s XML-FILE,VALUE-FILE``, ``--secret=XML-FILE,VALUE-FILE``
+``-s`` *SECRET-XML-FILE*\ ,\ *SECRET-VALUE-FILE*,
+``--secret``\ =\ *SECRET-XML-FILE*\ ,\ *SECRET-VALUE-FILE*
 
-Specify a secret to be loaded into the secret driver. The ``XML-FILE``
-is a path to the XML description of the secret, whose UUID should
-match a secret referenced in the guest domain XML. The ``VALUE-FILE``
-is a path containing the raw value of the secret.
+Specify a secret to be loaded into the secret driver.
+*SECRET-XML-FILE* is a path to the XML description of the secret,
+whose UUID should match a secret referenced in the guest domain XML.
+*SECRET-VALUE-FILE* is a path containing the raw value of the secret.
+
+``-v``, ``--verbose``
+
+Display verbose information about startup.
+
+``-h``, ``--help``
+
+Display the command line help.
+
 
 EXIT STATUS
 ===========
 
 Upon successful shutdown, an exit status of 0 will be set. Upon
 failure a non-zero status will be set.
+
 
 AUTHOR
 ======
@@ -112,6 +119,7 @@ LICENSE
 This is free software; see the source for copying conditions. There
 is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
 PURPOSE
+
 
 SEE ALSO
 ========
