@@ -170,7 +170,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     size_t i;
     virLXCDomainObjPrivate *priv = vm->privateData;
     const virNetDevVPortProfile *vport = NULL;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     g_autoptr(virConnect) conn = NULL;
 
     VIR_DEBUG("Cleanup VM name=%s pid=%d reason=%d flags=0x%x",
@@ -278,8 +278,6 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 
     if (flags & VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT)
         virDomainObjRemoveTransientDef(vm);
-
-    virObjectUnref(cfg);
 }
 
 
@@ -367,7 +365,7 @@ virLXCProcessSetupInterfaceDirect(virLXCDriver *driver,
     char *res_ifname = NULL;
     const virNetDevBandwidth *bw;
     const virNetDevVPortProfile *prof;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     const char *linkdev = virDomainNetGetActualDirectDev(net);
     unsigned int macvlan_create_flags = VIR_NETDEV_MACVLAN_CREATE_IFUP;
 
@@ -414,7 +412,6 @@ virLXCProcessSetupInterfaceDirect(virLXCDriver *driver,
     ret = res_ifname;
 
  cleanup:
-    virObjectUnref(cfg);
     return ret;
 }
 
@@ -801,7 +798,7 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitor *mon G_GNUC_UNUSED,
 {
     virLXCDriver *driver = lxc_driver;
     virLXCDomainObjPrivate *priv;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     ino_t inode = 0;
 
     virObjectLock(vm);
@@ -821,7 +818,6 @@ static void virLXCProcessMonitorInitNotify(virLXCMonitor *mon G_GNUC_UNUSED,
         VIR_WARN("Cannot update XML with PID for LXC %s", vm->def->name);
 
     virObjectUnlock(vm);
-    virObjectUnref(cfg);
 }
 
 static virLXCMonitorCallbacks monitorCallbacks = {
@@ -835,7 +831,7 @@ static virLXCMonitor *virLXCProcessConnectMonitor(virLXCDriver *driver,
                                                     virDomainObj *vm)
 {
     virLXCMonitor *monitor = NULL;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
 
     if (virSecurityManagerSetSocketLabel(driver->securityManager, vm->def) < 0)
         goto cleanup;
@@ -859,7 +855,6 @@ static virLXCMonitor *virLXCProcessConnectMonitor(virLXCDriver *driver,
     }
 
  cleanup:
-    virObjectUnref(cfg);
     return monitor;
 }
 
@@ -948,7 +943,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     g_autofree char *filterstr = NULL;
     g_autofree char *outputstr = NULL;
     virCommand *cmd;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
 
     cmd = virCommandNew(vm->def->emulator);
 
@@ -1020,7 +1015,6 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     virCommandRequireHandshake(cmd);
 
  cleanup:
-    virObjectUnref(cfg);
     return cmd;
  error:
     virCommandFree(cmd);
@@ -1209,7 +1203,7 @@ int virLXCProcessStart(virConnectPtr conn,
     virLXCDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCaps) caps = NULL;
     virErrorPtr err = NULL;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     g_autoptr(virCgroup) selfcgroup = NULL;
     int status;
     g_autofree char *pidfile = NULL;
@@ -1578,7 +1572,6 @@ int virLXCProcessStart(virConnectPtr conn,
         VIR_FORCE_CLOSE(ttyFDs[i]);
     for (i = 0; i < G_N_ELEMENTS(handshakefds); i++)
         VIR_FORCE_CLOSE(handshakefds[i]);
-    virObjectUnref(cfg);
 
     virErrorRestore(&err);
 
@@ -1689,7 +1682,7 @@ virLXCProcessReconnectDomain(virDomainObj *vm,
 {
     virLXCDriver *driver = opaque;
     virLXCDomainObjPrivate *priv;
-    virLXCDriverConfig *cfg = virLXCDriverGetConfig(driver);
+    g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     int ret = -1;
 
     virObjectLock(vm);
@@ -1752,7 +1745,6 @@ virLXCProcessReconnectDomain(virDomainObj *vm,
 
     ret = 0;
  cleanup:
-    virObjectUnref(cfg);
     virObjectUnlock(vm);
     return ret;
 
