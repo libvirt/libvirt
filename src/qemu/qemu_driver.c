@@ -1317,113 +1317,6 @@ qemuGetSchedstatDelay(unsigned long long *cpudelay,
     return 0;
 }
 
-
-static int
-qemuGetSchedInfo(unsigned long long *cpuWait,
-                 pid_t pid, pid_t tid)
-{
-    g_autofree char *proc = NULL;
-    g_autofree char *data = NULL;
-    g_auto(GStrv) lines = NULL;
-    size_t i;
-    double val;
-
-    *cpuWait = 0;
-
-    /* In general, we cannot assume pid_t fits in int; but /proc parsing
-     * is specific to Linux where int works fine.  */
-    if (tid)
-        proc = g_strdup_printf("/proc/%d/task/%d/sched", (int)pid, (int)tid);
-    else
-        proc = g_strdup_printf("/proc/%d/sched", (int)pid);
-    if (!proc)
-        return -1;
-
-    /* The file is not guaranteed to exist (needs CONFIG_SCHED_DEBUG) */
-    if (access(proc, R_OK) < 0) {
-        return 0;
-    }
-
-    if (virFileReadAll(proc, (1<<16), &data) < 0)
-        return -1;
-
-    lines = g_strsplit(data, "\n", 0);
-    if (!lines)
-        return -1;
-
-    for (i = 0; lines[i] != NULL; i++) {
-        const char *line = lines[i];
-
-        /* Needs CONFIG_SCHEDSTATS. The second check
-         * is the old name the kernel used in past */
-        if (STRPREFIX(line, "se.statistics.wait_sum") ||
-            STRPREFIX(line, "se.wait_sum")) {
-            line = strchr(line, ':');
-            if (!line) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Missing separator in sched info '%s'"),
-                               lines[i]);
-                return -1;
-            }
-            line++;
-            while (*line == ' ')
-                line++;
-
-            if (virStrToDouble(line, NULL, &val) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to parse sched info value '%s'"),
-                               line);
-                return -1;
-            }
-
-            *cpuWait = (unsigned long long)(val * 1000000);
-            break;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
-qemuGetProcessInfo(unsigned long long *cpuTime, int *lastCpu, long *vm_rss,
-                   pid_t pid, pid_t tid)
-{
-    g_auto(GStrv) proc_stat = virProcessGetStat(pid, tid);
-    unsigned long long usertime = 0, systime = 0;
-    long rss = 0;
-    int cpu = 0;
-
-    if (!proc_stat ||
-        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_UTIME], NULL, 10, &usertime) < 0 ||
-        virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &systime) < 0 ||
-        virStrToLong_l(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
-        virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0) {
-        VIR_WARN("cannot parse process status data");
-    }
-
-    /* We got jiffies
-     * We want nanoseconds
-     * _SC_CLK_TCK is jiffies per second
-     * So calculate thus....
-     */
-    if (cpuTime)
-        *cpuTime = 1000ull * 1000ull * 1000ull * (usertime + systime)
-            / (unsigned long long)sysconf(_SC_CLK_TCK);
-    if (lastCpu)
-        *lastCpu = cpu;
-
-    if (vm_rss)
-        *vm_rss = rss * virGetSystemPageSizeKB();
-
-
-    VIR_DEBUG("Got status for %d/%d user=%llu sys=%llu cpu=%d rss=%ld",
-              (int)pid, tid, usertime, systime, cpu, rss);
-
-    return 0;
-}
-
-
 static int
 qemuDomainHelperGetVcpus(virDomainObj *vm,
                          virVcpuInfoPtr info,
@@ -1463,9 +1356,9 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
             vcpuinfo->number = i;
             vcpuinfo->state = VIR_VCPU_RUNNING;
 
-            if (qemuGetProcessInfo(&vcpuinfo->cpuTime,
-                                   &vcpuinfo->cpu, NULL,
-                                   vm->pid, vcpupid) < 0) {
+            if (virProcessGetStatInfo(&vcpuinfo->cpuTime,
+                                      &vcpuinfo->cpu, NULL,
+                                      vm->pid, vcpupid) < 0) {
                 virReportSystemError(errno, "%s",
                                      _("cannot get vCPU placement & pCPU time"));
                 return -1;
@@ -1483,7 +1376,7 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
         }
 
         if (cpuwait) {
-            if (qemuGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
+            if (virProcessGetSchedInfo(&(cpuwait[ncpuinfo]), vm->pid, vcpupid) < 0)
                 return -1;
         }
 
@@ -2626,7 +2519,8 @@ qemuDomainGetInfo(virDomainPtr dom,
     }
 
     if (virDomainObjIsActive(vm)) {
-        if (qemuGetProcessInfo(&(info->cpuTime), NULL, NULL, vm->pid, 0) < 0) {
+        if (virProcessGetStatInfo(&(info->cpuTime), NULL, NULL,
+                                  vm->pid, 0) < 0) {
             virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                            _("cannot read cputime for domain"));
             goto cleanup;
@@ -10635,7 +10529,7 @@ qemuDomainMemoryStatsInternal(virQEMUDriver *driver,
         ret = 0;
     }
 
-    if (qemuGetProcessInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
+    if (virProcessGetStatInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("cannot get RSS for domain"));
     } else {

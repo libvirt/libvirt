@@ -193,3 +193,12 @@ typedef enum {
 } virProcessNamespaceFlags;
 
 int virProcessNamespaceAvailable(unsigned int ns);
+
+int virProcessGetStatInfo(unsigned long long *cpuTime,
+                          int *lastCpu,
+                          long *vm_rss,
+                          pid_t pid,
+                          pid_t tid);
+int virProcessGetSchedInfo(unsigned long long *cpuWait,
+                           pid_t pid,
+                           pid_t tid);
