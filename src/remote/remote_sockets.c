@@ -69,7 +69,15 @@ remoteSplitURIScheme(virURI *uri,
                      char **driver,
                      remoteDriverTransport *transport)
 {
-    char *p = strchr(uri->scheme, '+');
+    char *p = NULL;
+
+    if (!uri->scheme) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing scheme for URI"));
+        return -1;
+    }
+
+    p = strchr(uri->scheme, '+');
 
     if (p)
         *driver = g_strndup(uri->scheme, p - uri->scheme);
