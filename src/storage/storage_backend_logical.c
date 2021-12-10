@@ -477,23 +477,23 @@ virStorageBackendLogicalGetPoolSources(virStoragePoolSourceList *sourceList)
     int vars[] = {
         2
     };
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) vgcmd = NULL;
+    g_autoptr(virCommand) pvcmd = NULL;
 
     /*
      * NOTE: ignoring errors here; this is just to "touch" any logical volumes
      * that might be hanging around, so if this fails for some reason, the
      * worst that happens is that scanning doesn't pick everything up
      */
-    cmd = virCommandNew(VGSCAN);
-    if (virCommandRun(cmd, NULL) < 0)
+    vgcmd = virCommandNew(VGSCAN);
+    if (virCommandRun(vgcmd, NULL) < 0)
         VIR_WARN("Failure when running vgscan to refresh physical volumes");
-    virCommandFree(cmd);
 
-    cmd = virCommandNewArgList(PVS,
-                               "--noheadings",
-                               "-o", "pv_name,vg_name",
-                               NULL, NULL);
-    return virCommandRunRegex(cmd, 1, regexes, vars,
+    pvcmd = virCommandNewArgList(PVS,
+                                 "--noheadings",
+                                 "-o", "pv_name,vg_name",
+                                 NULL, NULL);
+    return virCommandRunRegex(pvcmd, 1, regexes, vars,
                               virStorageBackendLogicalFindPoolSourcesFunc,
                               sourceList, "pvs", NULL);
 }
