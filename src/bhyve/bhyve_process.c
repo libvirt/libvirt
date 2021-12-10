@@ -285,7 +285,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
                     virDomainShutoffReason reason)
 {
     int ret = -1;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     bhyveDomainObjPrivate *priv = vm->privateData;
 
     if (!virDomainObjIsActive(vm)) {
@@ -335,8 +335,6 @@ virBhyveProcessStop(struct _bhyveConn *driver,
     bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_RELEASE);
 
  cleanup:
-    virCommandFree(cmd);
-
     virPidFileDelete(BHYVE_STATE_DIR, vm->def->name);
     virDomainDeleteConfig(BHYVE_STATE_DIR, NULL, vm);
 
