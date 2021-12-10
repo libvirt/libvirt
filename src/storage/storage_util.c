@@ -1116,7 +1116,7 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObj *pool,
                                          const char *inputSecretPath,
                                          virStorageVolEncryptConvertStep convertStep)
 {
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     struct _virStorageBackendQemuImgInfo info = {
         .format = vol->target.format,
         .type = NULL,
@@ -1246,11 +1246,10 @@ virStorageBackendCreateQemuImgCmdFromVol(virStoragePoolObj *pool,
     }
     VIR_FREE(info.secretAlias);
 
-    return cmd;
+    return g_steal_pointer(&cmd);
 
  error:
     VIR_FREE(info.secretAlias);
-    virCommandFree(cmd);
     return NULL;
 }
 
