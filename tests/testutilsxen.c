@@ -11,7 +11,7 @@
 static virCaps *
 testXLInitCaps(void)
 {
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest;
     virCapsGuestMachine **machines;
     int nmachines;
@@ -68,11 +68,10 @@ testXLInitCaps(void)
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_XEN,
                                   NULL, NULL, 0, NULL);
-    return caps;
+    return g_steal_pointer(&caps);
 
  cleanup:
     virCapabilitiesFreeMachines(machines, nmachines);
-    virObjectUnref(caps);
     return NULL;
 }
 

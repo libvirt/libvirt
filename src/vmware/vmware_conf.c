@@ -64,7 +64,7 @@ vmwareFreeDriver(struct vmware_driver *driver)
 virCaps *
 vmwareCapsInit(void)
 {
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest = NULL;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
@@ -106,11 +106,10 @@ vmwareCapsInit(void)
         guest = NULL;
     }
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
     virCapabilitiesFreeGuest(guest);
-    virObjectUnref(caps);
     return NULL;
 }
 

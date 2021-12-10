@@ -635,7 +635,7 @@ libxlMakeDomainDeviceHostdevCaps(virDomainCapsDeviceHostdev *dev)
 virCaps *
 libxlMakeCapabilities(libxl_ctx *ctx)
 {
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
 
 #ifdef LIBXL_HAVE_NO_SUSPEND_RESUME
     if ((caps = virCapabilitiesNew(virArchFromHost(), false, false)) == NULL)
@@ -653,10 +653,9 @@ libxlMakeCapabilities(libxl_ctx *ctx)
     if (libxlCapsInitGuests(ctx, caps) < 0)
         goto error;
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 

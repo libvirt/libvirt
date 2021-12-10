@@ -94,7 +94,7 @@ vzCapsAddGuestDomain(virCaps *caps,
 static virCaps *
 vzBuildCapabilities(void)
 {
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virNodeInfo nodeinfo;
     virDomainOSType ostypes[] = {
         VIR_DOMAIN_OSTYPE_HVM,
@@ -137,10 +137,9 @@ vzBuildCapabilities(void)
     if (virCapabilitiesAddHostMigrateTransport(caps, "vzmigr") < 0)
         goto error;
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 

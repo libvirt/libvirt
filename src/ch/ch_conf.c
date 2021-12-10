@@ -52,7 +52,7 @@ VIR_ONCE_GLOBAL_INIT(virCHConfig);
 /* Functions */
 virCaps *virCHDriverCapsInit(void)
 {
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest;
 
     if ((caps = virCapabilitiesNew(virArchFromHost(),
@@ -70,10 +70,9 @@ virCaps *virCHDriverCapsInit(void)
 
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_KVM,
                                   NULL, NULL, 0, NULL);
-    return caps;
+    return g_steal_pointer(&caps);
 
  cleanup:
-    virObjectUnref(caps);
     return NULL;
 }
 

@@ -291,7 +291,7 @@ static virCaps *
 testBuildCapabilities(virConnectPtr conn)
 {
     testDriver *privconn = conn->privateData;
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest;
     int guest_types[] = { VIR_DOMAIN_OSTYPE_HVM,
                           VIR_DOMAIN_OSTYPE_XEN };
@@ -361,10 +361,9 @@ testBuildCapabilities(virConnectPtr conn)
 
     caps->host.secModels[0].doi = g_strdup("");
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 

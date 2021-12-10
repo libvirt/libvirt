@@ -58,7 +58,7 @@ VIR_ONCE_GLOBAL_INIT(virLXCConfig);
 /* Functions */
 virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
 {
-    virCaps *caps;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest;
     virArch altArch;
     g_autofree char *lxc_path = NULL;
@@ -138,10 +138,9 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
         VIR_INFO("No driver, not initializing security driver");
     }
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 

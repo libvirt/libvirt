@@ -86,7 +86,7 @@ static virCaps *
 testGetCaps(char *capsData, const testQemuData *data)
 {
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virArch arch = virArchFromString(data->archName);
     g_autofree char *binary = NULL;
 
@@ -110,10 +110,9 @@ testGetCaps(char *capsData, const testQemuData *data)
         goto error;
     }
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 

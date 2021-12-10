@@ -262,7 +262,7 @@ hypervLookupHostSystemBiosUuid(hypervPrivate *priv, unsigned char *uuid)
 static virCaps *
 hypervCapsInit(hypervPrivate *priv)
 {
-    virCaps *caps = NULL;
+    g_autoptr(virCaps) caps = NULL;
     virCapsGuest *guest = NULL;
 
     caps = virCapabilitiesNew(VIR_ARCH_X86_64, 1, 1);
@@ -287,10 +287,9 @@ hypervCapsInit(hypervPrivate *priv)
     virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HYPERV,
                                   NULL, NULL, 0, NULL);
 
-    return caps;
+    return g_steal_pointer(&caps);
 
  error:
-    virObjectUnref(caps);
     return NULL;
 }
 
