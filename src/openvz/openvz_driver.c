@@ -118,15 +118,14 @@ openvzDomObjFromDomain(struct openvz_driver *driver,
 static virCommand *
 openvzDomainDefineCmd(virDomainDef *vmdef)
 {
-    virCommand *cmd = virCommandNewArgList(VZCTL,
-                                             "--quiet",
-                                             "create",
-                                             NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL,
+                                                     "--quiet",
+                                                     "create",
+                                                     NULL);
 
     if (vmdef == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Container is not defined"));
-        virCommandFree(cmd);
         return NULL;
     }
 
@@ -137,7 +136,7 @@ openvzDomainDefineCmd(virDomainDef *vmdef)
         virCommandAddArgList(cmd, "--ostemplate", vmdef->fss[0]->src, NULL);
     }
 
-    return cmd;
+    return g_steal_pointer(&cmd);
 }
 
 
