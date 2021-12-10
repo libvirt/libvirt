@@ -208,7 +208,8 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
     int exitstatus = -1;
     g_autofree char *iface_name = NULL;
     g_autofree char *temp_ifacename = NULL;
-    g_autoptr(virCommand) cmd = NULL;
+    g_autoptr(virCommand) newcmd = NULL;
+    g_autoptr(virCommand) updatecmd = NULL;
 
     temp_ifacename = g_strdup_printf("libvirt-iface-%08llx",
                                      (unsigned long long)virRandomBits(32));
@@ -216,35 +217,34 @@ virStorageBackendCreateIfaceIQN(const char *initiatoriqn,
     VIR_DEBUG("Attempting to create interface '%s' with IQN '%s'",
               temp_ifacename, initiatoriqn);
 
-    cmd = virCommandNewArgList(ISCSIADM,
-                               "--mode", "iface",
-                               "--interface", temp_ifacename,
-                               "--op", "new",
-                               NULL);
+    newcmd = virCommandNewArgList(ISCSIADM,
+                                  "--mode", "iface",
+                                  "--interface", temp_ifacename,
+                                  "--op", "new",
+                                  NULL);
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm
      * tools returned an exit status of > 0, even if they succeeded.
      * We will just rely on whether the interface got created
      * properly. */
-    if (virCommandRun(cmd, &exitstatus) < 0) {
+    if (virCommandRun(newcmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to run command '%s' to create new iscsi interface"),
                        ISCSIADM);
         return -1;
     }
-    virCommandFree(cmd);
 
-    cmd = virCommandNewArgList(ISCSIADM,
-                               "--mode", "iface",
-                               "--interface", temp_ifacename,
-                               "--op", "update",
-                               "--name", "iface.initiatorname",
-                               "--value",
-                               initiatoriqn,
-                               NULL);
+    updatecmd = virCommandNewArgList(ISCSIADM,
+                                     "--mode", "iface",
+                                     "--interface", temp_ifacename,
+                                     "--op", "update",
+                                     "--name", "iface.initiatorname",
+                                     "--value",
+                                     initiatoriqn,
+                                     NULL);
     /* Note that we ignore the exitstatus.  Older versions of iscsiadm tools
      * returned an exit status of > 0, even if they succeeded.  We will just
      * rely on whether iface file got updated properly. */
-    if (virCommandRun(cmd, &exitstatus) < 0) {
+    if (virCommandRun(updatecmd, &exitstatus) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Failed to run command '%s' to update iscsi interface with IQN '%s'"),
                        ISCSIADM, initiatoriqn);
