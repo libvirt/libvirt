@@ -395,12 +395,12 @@ int main(int argc, char **argv)
     /* Initialize the log system */
     virLogSetFromEnv();
 
-    if (optind != (argc - 1)) {
+    if (argc != 2) {
         g_printerr("%s: expected a URI\n", argv[0]);
         exit(EXIT_FAILURE);
     }
 
-    uri_str = argv[optind];
+    uri_str = argv[1];
     VIR_DEBUG("Using URI %s", uri_str);
 
     if (!(uri = virURIParse(uri_str))) {
