@@ -666,9 +666,9 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 static int
 dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
 {
-    int ret = -1;
     struct stat sb;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) vercmd = NULL;
+    g_autoptr(virCommand) helpcmd = NULL;
     g_autofree char *help = NULL;
     g_autofree char *version = NULL;
     g_autofree char *complete = NULL;
@@ -692,31 +692,26 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
     if (!virFileIsExecutable(caps->binaryPath)) {
         virReportSystemError(errno, _("dnsmasq binary %s is not executable"),
                              caps->binaryPath);
-        goto cleanup;
+        return -1;
     }
 
-    cmd = virCommandNewArgList(caps->binaryPath, "--version", NULL);
-    virCommandSetOutputBuffer(cmd, &version);
-    virCommandAddEnvPassCommon(cmd);
-    virCommandClearCaps(cmd);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-    virCommandFree(cmd);
+    vercmd = virCommandNewArgList(caps->binaryPath, "--version", NULL);
+    virCommandSetOutputBuffer(vercmd, &version);
+    virCommandAddEnvPassCommon(vercmd);
+    virCommandClearCaps(vercmd);
+    if (virCommandRun(vercmd, NULL) < 0)
+        return -1;
 
-    cmd = virCommandNewArgList(caps->binaryPath, "--help", NULL);
-    virCommandSetOutputBuffer(cmd, &help);
-    virCommandAddEnvPassCommon(cmd);
-    virCommandClearCaps(cmd);
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+    helpcmd = virCommandNewArgList(caps->binaryPath, "--help", NULL);
+    virCommandSetOutputBuffer(helpcmd, &help);
+    virCommandAddEnvPassCommon(helpcmd);
+    virCommandClearCaps(helpcmd);
+    if (virCommandRun(helpcmd, NULL) < 0)
+        return -1;
 
     complete = g_strdup_printf("%s\n%s", version, help);
 
-    ret = dnsmasqCapsSetFromBuffer(caps, complete);
-
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return dnsmasqCapsSetFromBuffer(caps, complete);
 }
 
 static dnsmasqCaps *
