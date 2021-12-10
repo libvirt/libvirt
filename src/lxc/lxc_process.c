@@ -935,7 +935,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     size_t i;
     g_autofree char *filterstr = NULL;
     g_autofree char *outputstr = NULL;
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
     g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
 
     cmd = virCommandNew(vm->def->emulator);
@@ -955,7 +955,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
     if (cfg->log_libvirtd) {
         if (virLogGetNbOutputs() > 0) {
             if (!(outputstr = virLogGetOutputs()))
-                goto error;
+                return NULL;
 
             virCommandAddEnvPair(cmd, "LIBVIRT_LOG_OUTPUTS", outputstr);
         }
@@ -1007,12 +1007,7 @@ virLXCProcessBuildControllerCmd(virLXCDriver *driver,
      * write the live domain status XML with the PID */
     virCommandRequireHandshake(cmd);
 
- cleanup:
-     return cmd;
- error:
-    virCommandFree(cmd);
-    cmd = NULL;
-    goto cleanup;
+    return g_steal_pointer(&cmd);
 }
 
 
