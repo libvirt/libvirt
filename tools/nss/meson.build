@@ -59,7 +59,7 @@ nss_libvirt_guest_syms = '@0@@1@'.format(
   meson.current_source_dir() / nss_guest_sym_file,
 )
 
-nss_libvirt_lib = shared_module(
+nss_libvirt_lib = shared_library(
   'nss_libvirt',
   name_prefix: nss_prefix,
   name_suffix: 'so.@0@'.format(nss_so_ver),
