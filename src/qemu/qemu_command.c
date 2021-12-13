@@ -1493,7 +1493,7 @@ qemuBuildChardevCommand(virCommand *cmd,
              * secinfo is added only to a TCP serial device during
              * qemuDomainSecretChardevPrepare. Subsequently called
              * functions can just check the config fields */
-            if (chrSourcePriv && chrSourcePriv->secinfo) {
+            if (chrSourcePriv->secinfo) {
                 if (qemuBuildObjectSecretCommandLine(cmd,
                                                      chrSourcePriv->secinfo,
                                                      qemuCaps) < 0)
