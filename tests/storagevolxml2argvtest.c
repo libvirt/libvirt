@@ -50,7 +50,6 @@ testCompareXMLToArgvFiles(bool shouldFail,
     g_autoptr(virStorageVolDef) vol = NULL;
     g_autoptr(virStorageVolDef) inputvol = NULL;
     g_autoptr(virStoragePoolDef) inputpool = NULL;
-    g_autoptr(virCommand) cmd = NULL;
 
     if (!(def = virStoragePoolDefParseFile(poolxml)))
         goto cleanup;
@@ -88,7 +87,8 @@ testCompareXMLToArgvFiles(bool shouldFail,
         convertStep = VIR_STORAGE_VOL_ENCRYPT_CREATE;
 
     do {
-        virCommandFree(cmd);
+        g_autoptr(virCommand) cmd = NULL;
+
         cmd = virStorageBackendCreateQemuImgCmdFromVol(obj, vol,
                                                        inputvol, flags,
                                                        create_tool,
