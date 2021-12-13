@@ -1187,7 +1187,7 @@ int virLXCProcessStart(virConnectPtr conn,
     char ebuf[1024];
     g_autofree char *timestamp = NULL;
     int nsInheritFDs[VIR_LXC_DOMAIN_NAMESPACE_LAST];
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     virLXCDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCaps) caps = NULL;
     virErrorPtr err = NULL;
@@ -1555,7 +1555,6 @@ int virLXCProcessStart(virConnectPtr conn,
             virLXCProcessCleanup(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED, stopFlags);
         }
     }
-    virCommandFree(cmd);
     for (i = 0; i < nttyFDs; i++)
         VIR_FORCE_CLOSE(ttyFDs[i]);
     for (i = 0; i < G_N_ELEMENTS(handshakefds); i++)
