@@ -440,10 +440,10 @@ int openvzLoadDomains(struct openvz_driver *driver)
     char uuidstr[VIR_UUID_STRING_BUFLEN];
     virDomainObj *dom = NULL;
     g_autoptr(virDomainDef) def = NULL;
-    char *temp = NULL;
-    char *outbuf = NULL;
+    g_autofree char *temp = NULL;
+    g_autofree char *outbuf = NULL;
     char *line;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     unsigned int vcpus = 0;
 
     if (openvzAssignUUIDs() < 0)
@@ -452,7 +452,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
     cmd = virCommandNewArgList(VZLIST, "-a", "-ovpsid,status", "-H", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     line = outbuf;
     while (line[0] != '\0') {
@@ -462,12 +462,12 @@ int openvzLoadDomains(struct openvz_driver *driver)
             (line = strchr(status, '\n')) == NULL) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to parse vzlist output"));
-            goto cleanup;
+            return -1;
         }
         *line++ = '\0';
 
         if (!(def = virDomainDefNew(driver->xmlopt)))
-            goto cleanup;
+            return -1;
 
         def->virtType = VIR_DOMAIN_VIRT_OPENVZ;
 
@@ -483,7 +483,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         if (ret == -1) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("UUID in config file malformed"));
-            goto cleanup;
+            return -1;
         }
 
         def->os.type = VIR_DOMAIN_OSTYPE_EXE;
@@ -494,7 +494,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not read config for container %d"),
                            veid);
-            goto cleanup;
+            return -1;
         } else if (ret > 0) {
             vcpus = strtoI(temp);
         }
@@ -503,10 +503,10 @@ int openvzLoadDomains(struct openvz_driver *driver)
             vcpus = virHostCPUGetCount();
 
         if (virDomainDefSetVcpusMax(def, vcpus, driver->xmlopt) < 0)
-            goto cleanup;
+            return -1;
 
         if (virDomainDefSetVcpus(def, vcpus) < 0)
-            goto cleanup;
+            return -1;
 
         /* XXX load rest of VM config data .... */
 
@@ -524,7 +524,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
                                         driver->xmlopt,
                                         flags,
                                         NULL)))
-            goto cleanup;
+            return -1;
 
         if (STREQ(status, "stopped")) {
             virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
@@ -542,17 +542,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         dom = NULL;
     }
 
-    virCommandFree(cmd);
-    VIR_FREE(temp);
-    VIR_FREE(outbuf);
-
     return 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(temp);
-    VIR_FREE(outbuf);
-    return -1;
 }
 
 static int
