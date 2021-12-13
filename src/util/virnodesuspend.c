@@ -102,7 +102,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
  */
 static void virNodeSuspendHelper(void *cmdString)
 {
-    virCommand *suspendCmd = virCommandNew((const char *)cmdString);
+    g_autoptr(virCommand) suspendCmd = virCommandNew((const char *)cmdString);
 
     /*
      * Delay for sometime so that the function virNodeSuspend()
@@ -111,8 +111,6 @@ static void virNodeSuspendHelper(void *cmdString)
     sleep(SUSPEND_DELAY);
     if (virCommandRun(suspendCmd, NULL) < 0)
         VIR_WARN("Failed to suspend the host");
-
-    virCommandFree(suspendCmd);
 
     /*
      * Now that we have resumed from suspend or the suspend failed,
