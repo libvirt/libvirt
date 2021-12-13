@@ -7024,6 +7024,14 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
+    /*
+     * Create all per-domain directories in order to make sure domain
+     * with any possible seclabels can access it.
+     */
+    if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
+        qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
+        return -1;
+
     if (qemuPrepareNVRAM(driver, vm) < 0)
         return -1;
 
@@ -7084,14 +7092,6 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
                              priv->pidfile);
         return -1;
     }
-
-    /*
-     * Create all per-domain directories in order to make sure domain
-     * with any possible seclabels can access it.
-     */
-    if (qemuProcessMakeDir(driver, vm, priv->libDir) < 0 ||
-        qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
-        return -1;
 
     VIR_DEBUG("Write domain masterKey");
     if (qemuDomainWriteMasterKeyFile(driver, vm) < 0)
