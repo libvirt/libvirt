@@ -66,11 +66,10 @@ strtoI(const char *str)
 static int
 openvzExtractVersionInfo(const char *cmdstr, int *retversion)
 {
-    int ret = -1;
     unsigned long version;
-    char *help = NULL;
+    g_autofree char *help = NULL;
     char *tmp;
-    virCommand *cmd = virCommandNewArgList(cmdstr, "--help", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(cmdstr, "--help", NULL);
 
     if (retversion)
         *retversion = 0;
@@ -79,27 +78,21 @@ openvzExtractVersionInfo(const char *cmdstr, int *retversion)
     virCommandSetOutputBuffer(cmd, &help);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     tmp = help;
 
     /* expected format: vzctl version <major>.<minor>.<micro> */
     if ((tmp = STRSKIP(tmp, "vzctl version ")) == NULL)
-        goto cleanup;
+        return -1;
 
     if (virParseVersionString(tmp, &version, true) < 0)
-        goto cleanup;
+        return -1;
 
     if (retversion)
         *retversion = version;
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(help);
-
-    return ret;
+    return 0;
 }
 
 int openvzExtractVersion(struct openvz_driver *driver)
