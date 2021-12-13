@@ -58,27 +58,22 @@ char*
 openvzVEGetStringParam(virDomainPtr domain, const char* param)
 {
     int len;
-    char *output = NULL;
+    g_autofree char *output = NULL;
 
-    virCommand *cmd = virCommandNewArgList(VZLIST,
-                                             "-o",
-                                             param,
-                                             domain->name,
-                                             "-H", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZLIST,
+                                                     "-o",
+                                                     param,
+                                                     domain->name,
+                                                     "-H", NULL);
 
     virCommandSetOutputBuffer(cmd, &output);
-    if (virCommandRun(cmd, NULL) < 0) {
-        VIR_FREE(output);
-        /* virCommandRun sets the virError */
-        goto cleanup;
-    }
+    if (virCommandRun(cmd, NULL) < 0)
+        return NULL;
 
     /* delete trailing newline */
     len = strlen(output);
     if (len && output[len - 1] == '\n')
         output[len - 1] = '\0';
 
- cleanup:
-    virCommandFree(cmd);
-    return output;
+    return g_steal_pointer(&output);
 }
