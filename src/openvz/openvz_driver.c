@@ -2113,8 +2113,8 @@ openvzDomainMigratePerform3Params(virDomainPtr domain,
     struct openvz_driver *driver = domain->conn->privateData;
     virDomainObj *vm = NULL;
     const char *uri_str = NULL;
-    virURI *uri = NULL;
-    virCommand *cmd = NULL;
+    g_autoptr(virURI) uri = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     int ret = -1;
 
     virCheckFlags(OPENVZ_MIGRATION_FLAGS, -1);
@@ -2146,8 +2146,6 @@ openvzDomainMigratePerform3Params(virDomainPtr domain,
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
-    virURIFree(uri);
     virDomainObjEndAPI(&vm);
     return ret;
 }
