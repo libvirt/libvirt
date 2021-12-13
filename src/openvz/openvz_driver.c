@@ -1551,28 +1551,22 @@ openvzDomainSetBarrierLimit(virDomainPtr domain,
                             unsigned long long barrier,
                             unsigned long long limit)
 {
-    int ret = -1;
-    virCommand *cmd = virCommandNewArgList(VZCTL, "--quiet", "set", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "set", NULL);
 
     /* LONG_MAX indicates unlimited so reject larger values */
     if (barrier > LONG_MAX || limit > LONG_MAX) {
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Failed to set %s for %s: value too large"), param,
                        domain->name);
-        goto cleanup;
+        return -1;
     }
 
     virCommandAddArg(cmd, domain->name);
     virCommandAddArgFormat(cmd, "--%s", param);
     virCommandAddArgFormat(cmd, "%llu:%llu", barrier, limit);
     virCommandAddArg(cmd, "--save");
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
 
-    ret = 0;
- cleanup:
-    virCommandFree(cmd);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 
