@@ -142,14 +142,12 @@ openvzDomainDefineCmd(virDomainDef *vmdef)
 
 static int openvzSetInitialConfig(virDomainDef *vmdef)
 {
-    int ret = -1;
     int vpsid;
-    virCommand *cmd = NULL;
 
     if (vmdef->nfss > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("only one filesystem supported"));
-        goto cleanup;
+        return -1;
     }
 
     if (vmdef->nfss == 1 &&
@@ -158,7 +156,7 @@ static int openvzSetInitialConfig(virDomainDef *vmdef)
     {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("filesystem is not of type 'template' or 'mount'"));
-        goto cleanup;
+        return -1;
     }
 
 
@@ -169,32 +167,27 @@ static int openvzSetInitialConfig(virDomainDef *vmdef)
         if (virStrToLong_i(vmdef->name, NULL, 10, &vpsid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not convert domain name to VEID"));
-            goto cleanup;
+            return -1;
         }
 
         if (openvzCopyDefaultConfig(vpsid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not copy default config"));
-            goto cleanup;
+            return -1;
         }
 
         if (openvzWriteVPSConfigParam(vpsid, "VE_PRIVATE", vmdef->fss[0]->src->path) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not set the source dir for the filesystem"));
-            goto cleanup;
+            return -1;
         }
     } else {
-        cmd = openvzDomainDefineCmd(vmdef);
+        g_autoptr(virCommand) cmd = openvzDomainDefineCmd(vmdef);
         if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-
-    return ret;
+    return 0;
 }
 
 
