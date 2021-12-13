@@ -1382,22 +1382,23 @@ static int openvzConnectNumOfDomains(virConnectPtr conn)
 static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
                                            char **const names, int nnames) {
     int got = 0;
-    int veid, outfd = -1, ret;
-    int rc = -1;
-    char vpsname[32];
-    char buf[32];
-    char *endptr;
-    virCommand *cmd = virCommandNewArgList(VZLIST,
-                                             "-ovpsid", "-H", "-S", NULL);
+    VIR_AUTOCLOSE outfd = -1;
+    int ret = -1;
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZLIST,
+                                                     "-ovpsid", "-H", "-S", NULL);
 
     /* the -S options lists only stopped domains */
     virCommandSetOutputFD(cmd, &outfd);
     if (virCommandRunAsync(cmd, NULL) < 0)
-        goto out;
+        goto cleanup;
 
     while (got < nnames) {
-        ret = openvz_readline(outfd, buf, 32);
-        if (!ret)
+        char vpsname[32];
+        char buf[32];
+        char *endptr;
+        int veid;
+
+        if (openvz_readline(outfd, buf, 32) == 0)
             break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1405,27 +1406,24 @@ static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
             continue;
         }
         g_snprintf(vpsname, sizeof(vpsname), "%d", veid);
-        names[got] = g_strdup(vpsname);
-        got ++;
+        names[got++] = g_strdup(vpsname);
     }
 
     if (virCommandWait(cmd, NULL) < 0)
-        goto out;
+        goto cleanup;
 
     if (VIR_CLOSE(outfd) < 0) {
         virReportSystemError(errno, "%s", _("failed to close file"));
-        goto out;
+        goto cleanup;
     }
 
-    rc = got;
- out:
-    VIR_FORCE_CLOSE(outfd);
-    virCommandFree(cmd);
-    if (rc < 0) {
+    ret = got;
+ cleanup:
+    if (ret < 0) {
         for (; got >= 0; got--)
             VIR_FREE(names[got]);
     }
-    return rc;
+    return ret;
 }
 
 static int openvzGetProcessInfo(unsigned long long *cpuTime, int vpsid)
