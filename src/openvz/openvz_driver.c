@@ -196,13 +196,12 @@ openvzSetDiskQuota(virDomainDef *vmdef,
                    virDomainFSDef *fss,
                    bool persist)
 {
-    int ret = -1;
     unsigned long long sl, hl;
-    virCommand *cmd = virCommandNewArgList(VZCTL,
-                                             "--quiet",
-                                             "set",
-                                             vmdef->name,
-                                             NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL,
+                                                     "--quiet",
+                                                     "set",
+                                                     vmdef->name,
+                                                     NULL);
     if (persist)
         virCommandAddArg(cmd, "--save");
 
@@ -220,18 +219,14 @@ openvzSetDiskQuota(virDomainDef *vmdef,
         } else if (fss->space_soft_limit) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("Can't set soft limit without hard limit"));
-            goto cleanup;
+            return -1;
         }
 
         if (virCommandRun(cmd, NULL) < 0)
-            goto cleanup;
+            return -1;
     }
 
-    ret = 0;
- cleanup:
-    virCommandFree(cmd);
-
-    return ret;
+    return 0;
 }
 
 
