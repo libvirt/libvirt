@@ -978,23 +978,18 @@ static int openvzAssignUUIDs(void)
 
 int openvzGetVEID(const char *name)
 {
-    virCommand *cmd;
-    char *outbuf;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *outbuf = NULL;
     char *temp;
     int veid;
     bool ok;
 
     cmd = virCommandNewArgList(VZLIST, name, "-ovpsid", "-H", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
-    if (virCommandRun(cmd, NULL) < 0) {
-        virCommandFree(cmd);
-        VIR_FREE(outbuf);
+    if (virCommandRun(cmd, NULL) < 0)
         return -1;
-    }
 
-    virCommandFree(cmd);
     ok = virStrToLong_i(outbuf, &temp, 10, &veid) == 0 && *temp == '\n';
-    VIR_FREE(outbuf);
 
     if (ok && veid >= 0)
         return veid;
