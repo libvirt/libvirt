@@ -242,11 +242,10 @@ vmwareParseVersionStr(int type, const char *verbuf, unsigned long *version)
 int
 vmwareExtractVersion(struct vmware_driver *driver)
 {
-    int ret = -1;
-    virCommand *cmd = NULL;
-    char * outbuf = NULL;
-    char *bin = NULL;
-    char *vmwarePath = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *bin = NULL;
+    g_autofree char *vmwarePath = NULL;
 
     vmwarePath = g_path_get_dirname(driver->vmrun);
 
@@ -266,7 +265,7 @@ vmwareExtractVersion(struct vmware_driver *driver)
         default:
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("invalid driver type for version detection"));
-            goto cleanup;
+            return -1;
     }
 
     cmd = virCommandNewArgList(bin, "-v", NULL);
@@ -274,19 +273,12 @@ vmwareExtractVersion(struct vmware_driver *driver)
     virCommandSetErrorBuffer(cmd, &outbuf);
 
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (vmwareParseVersionStr(driver->type, outbuf, &driver->version) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(outbuf);
-    VIR_FREE(bin);
-    VIR_FREE(vmwarePath);
-    return ret;
+    return 0;
 }
 
 int
