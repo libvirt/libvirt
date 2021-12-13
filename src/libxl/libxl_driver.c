@@ -6385,6 +6385,29 @@ libxlDomainGetMetadata(virDomainPtr dom,
     return ret;
 }
 
+static int
+libxlDomainGetMessages(virDomainPtr dom,
+                      char ***msgs,
+                      unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    int ret = -1;
+
+    virCheckFlags(0, -1);
+
+    if (!(vm = libxlDomObjFromDomain(dom)))
+        return -1;
+
+    if (virDomainGetMessagesEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    ret = virDomainObjGetMessages(vm, msgs, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static virHypervisorDriver libxlHypervisorDriver = {
     .name = LIBXL_DRIVER_EXTERNAL_NAME,
     .connectURIProbe = libxlConnectURIProbe,
@@ -6498,6 +6521,7 @@ static virHypervisorDriver libxlHypervisorDriver = {
     .connectBaselineCPU = libxlConnectBaselineCPU, /* 2.3.0 */
     .domainSetMetadata = libxlDomainSetMetadata, /* 5.7.0 */
     .domainGetMetadata = libxlDomainGetMetadata, /* 5.7.0 */
+    .domainGetMessages = libxlDomainGetMessages, /* 8.0.0 */
 
 };
 
