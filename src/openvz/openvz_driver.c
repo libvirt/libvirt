@@ -1697,21 +1697,20 @@ openvzDomainSetMemoryParameters(virDomainPtr domain,
 static int
 openvzGetVEStatus(virDomainObj *vm, int *status, int *reason)
 {
-    virCommand *cmd;
-    char *outbuf;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *outbuf = NULL;
     char *line;
     int state;
-    int ret = -1;
 
     cmd = virCommandNewArgList(VZLIST, vm->def->name, "-ostatus", "-H", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if ((line = strchr(outbuf, '\n')) == NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Failed to parse vzlist output"));
-        goto cleanup;
+        return -1;
     }
     *line++ = '\0';
 
@@ -1728,12 +1727,7 @@ openvzGetVEStatus(virDomainObj *vm, int *status, int *reason)
         *status = VIR_DOMAIN_SHUTOFF;
     }
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(outbuf);
-    return ret;
+    return 0;
 }
 
 static int
