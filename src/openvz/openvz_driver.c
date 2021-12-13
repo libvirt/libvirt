@@ -1515,37 +1515,33 @@ openvzDomainGetBarrierLimit(virDomainPtr domain,
                             unsigned long long *barrier,
                             unsigned long long *limit)
 {
-    int ret = -1;
-    char *endp, *output = NULL;
+    char *endp;
+    g_autofree char *output = NULL;
     const char *tmp;
-    virCommand *cmd = virCommandNewArgList(VZLIST, "--no-header", NULL);
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZLIST, "--no-header", NULL);
 
     virCommandSetOutputBuffer(cmd, &output);
     virCommandAddArgFormat(cmd, "-o%s.b,%s.l", param, param);
     virCommandAddArg(cmd, domain->name);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     tmp = output;
     virSkipSpaces(&tmp);
     if (virStrToLong_ull(tmp, &endp, 10, barrier) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Can't parse limit from vzlist output '%s'"), output);
-        goto cleanup;
+        return -1;
     }
     tmp = endp;
     virSkipSpaces(&tmp);
     if (virStrToLong_ull(tmp, &endp, 10, limit) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Can't parse barrier from vzlist output '%s'"), output);
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    VIR_FREE(output);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 
