@@ -163,14 +163,13 @@ load_profile(virSecurityManager *mgr G_GNUC_UNUSED,
              const char *fn,
              bool append)
 {
-    int rc = -1;
     bool create = true;
-    char *xml = NULL;
-    virCommand *cmd = NULL;
+    g_autofree char *xml = NULL;
+    g_autoptr(virCommand) cmd = NULL;
 
     xml = virDomainDefFormat(def, NULL, VIR_DOMAIN_DEF_FORMAT_SECURE);
     if (!xml)
-        goto cleanup;
+        return -1;
 
     if (profile_status_file(profile) >= 0)
         create = false;
@@ -191,13 +190,7 @@ load_profile(virSecurityManager *mgr G_GNUC_UNUSED,
                            virLogGetDefaultPriority());
 
     virCommandSetInputBuffer(cmd, xml);
-    rc = virCommandRun(cmd, NULL);
-
- cleanup:
-    VIR_FREE(xml);
-    virCommandFree(cmd);
-
-    return rc;
+    return virCommandRun(cmd, NULL);
 }
 
 static int
