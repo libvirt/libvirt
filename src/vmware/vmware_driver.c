@@ -284,27 +284,26 @@ vmwareConnectGetVersion(virConnectPtr conn, unsigned long *version)
 static int
 vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObj *vm)
 {
-    virCommand *cmd;
-    char *outbuf = NULL;
-    char *vmxAbsolutePath = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *outbuf = NULL;
+    g_autofree char *vmxAbsolutePath = NULL;
     char *parsedVmxPath = NULL;
     char *str;
     char *saveptr = NULL;
     bool found = false;
     int oldState = virDomainObjGetState(vm, NULL);
     int newState;
-    int ret = -1;
 
     cmd = virCommandNewArgList(driver->vmrun, "-T",
                                vmwareDriverTypeToString(driver->type),
                                "list", NULL);
     virCommandSetOutputBuffer(cmd, &outbuf);
     if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (virFileResolveAllLinks(((vmwareDomainPtr) vm->privateData)->vmxPath,
                                &vmxAbsolutePath) < 0)
-        goto cleanup;
+        return -1;
 
     for (str = outbuf; (parsedVmxPath = strtok_r(str, "\n", &saveptr)) != NULL;
          str = NULL) {
@@ -331,13 +330,7 @@ vmwareUpdateVMStatus(struct vmware_driver *driver, virDomainObj *vm)
 
     virDomainObjSetState(vm, newState, 0);
 
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(outbuf);
-    VIR_FREE(vmxAbsolutePath);
-    return ret;
+    return 0;
 }
 
 static int
