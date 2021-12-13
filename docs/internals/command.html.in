@@ -564,14 +564,12 @@ int runhook(const char *drvstr, const char *id,
             const char *opstr, const char *subopstr,
             const char *extra)
 {
-  int ret;
-  char *path;
-  virCommand *cmd;
+  g_autofree char *path = NULL;
+  g_autoptr(virCommand) cmd = NULL;
 
   virBuildPath(&amp;path, LIBVIRT_HOOK_DIR, drvstr);
 
   cmd = virCommandNew(path);
-  VIR_FREE(path);
 
   virCommandAddEnvPassCommon(cmd);
 
@@ -579,11 +577,7 @@ int runhook(const char *drvstr, const char *id,
 
   virCommandSetInputBuffer(cmd, input);
 
-  ret = virCommandRun(cmd, NULL);
-
-  virCommandFree(cmd);
-
-  return ret;
+  return virCommandRun(cmd, NULL);
 }
 </pre>
 
