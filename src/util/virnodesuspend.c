@@ -73,8 +73,7 @@ static void virNodeSuspendUnlock(void)
  */
 static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
 {
-    virCommand *setAlarmCmd;
-    int ret = -1;
+    g_autoptr(virCommand) setAlarmCmd = NULL;
 
     if (alarmTime < MIN_TIME_REQ_FOR_SUSPEND) {
         virReportError(VIR_ERR_INVALID_ARG,
@@ -86,14 +85,7 @@ static int virNodeSuspendSetNodeWakeup(unsigned long long alarmTime)
     setAlarmCmd = virCommandNewArgList("rtcwake", "-m", "no", "-s", NULL);
     virCommandAddArgFormat(setAlarmCmd, "%lld", alarmTime);
 
-    if (virCommandRun(setAlarmCmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(setAlarmCmd);
-    return ret;
+    return virCommandRun(setAlarmCmd, NULL);
 }
 
 /**
