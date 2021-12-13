@@ -6315,7 +6315,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 {
     virQEMUDriver *driver = conn->privateData;
     virDomainObj *vm = NULL;
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) cmd = NULL;
     char *ret = NULL;
     size_t i;
 
@@ -6375,7 +6375,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     ret = virCommandToString(cmd, false);
 
  cleanup:
-    virCommandFree(cmd);
     virObjectUnref(vm);
     return ret;
 }

@@ -793,7 +793,7 @@ static void
 qemuTPMEmulatorStop(const char *swtpmStateDir,
                     const char *shortName)
 {
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pathname = NULL;
     g_autofree char *errbuf = NULL;
     g_autofree char *swtpm_ioctl = virTPMGetSwtpmIoctl();
@@ -816,8 +816,6 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     virCommandSetErrorBuffer(cmd, &errbuf);
 
     ignore_value(virCommandRun(cmd, NULL));
-
-    virCommandFree(cmd);
 
     /* clean up the socket */
     unlink(pathname);

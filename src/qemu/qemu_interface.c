@@ -320,7 +320,7 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
                                  int *tapfd,
                                  unsigned int flags)
 {
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
     char *errbuf = NULL, *cmdstr = NULL;
     int pair[2] = { -1, -1 };
 
@@ -387,7 +387,6 @@ qemuCreateInBridgePortWithHelper(virQEMUDriverConfig *cfg,
  cleanup:
     VIR_FREE(cmdstr);
     VIR_FREE(errbuf);
-    virCommandFree(cmd);
     VIR_FORCE_CLOSE(pair[0]);
     return *tapfd < 0 ? -1 : 0;
 }
