@@ -118,14 +118,14 @@ vmwareLoadDomains(struct vmware_driver *driver)
 {
     virDomainObj *vm = NULL;
     char *vmxPath = NULL;
-    char *vmx = NULL;
+    g_autofree char *vmx = NULL;
     vmwareDomainPtr pDomain;
     int ret = -1;
     virVMXContext ctx;
-    char *outbuf = NULL;
+    g_autofree char *outbuf = NULL;
     char *str;
     char *saveptr = NULL;
-    virCommand *cmd;
+    g_autoptr(virCommand) cmd = NULL;
 
     ctx.parseFileName = vmwareParseVMXFileName;
     ctx.formatFileName = NULL;
@@ -178,9 +178,6 @@ vmwareLoadDomains(struct vmware_driver *driver)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(outbuf);
-    VIR_FREE(vmx);
     virObjectUnref(vm);
     return ret;
 }
