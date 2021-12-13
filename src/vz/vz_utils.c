@@ -92,7 +92,7 @@ vzDomObjFromDomain(virDomainPtr domain)
 static int
 vzDoCmdRun(char **outbuf, const char *binary, va_list list)
 {
-    virCommand *cmd = virCommandNewVAList(binary, list);
+    g_autoptr(virCommand) cmd = virCommandNewVAList(binary, list);
     int ret = -1;
 
     if (outbuf)
@@ -104,7 +104,6 @@ vzDoCmdRun(char **outbuf, const char *binary, va_list list)
     ret = 0;
 
  cleanup:
-    virCommandFree(cmd);
     if (ret && outbuf)
         VIR_FREE(*outbuf);
     return ret;
