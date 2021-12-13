@@ -1334,44 +1334,37 @@ static int openvzConnectListDomains(virConnectPtr conn G_GNUC_UNUSED,
                                     int *ids, int nids)
 {
     int got = 0;
-    int veid;
-    int outfd = -1;
-    int rc = -1;
-    int ret;
-    char buf[32];
-    char *endptr;
-    virCommand *cmd = virCommandNewArgList(VZLIST, "-ovpsid", "-H", NULL);
+    VIR_AUTOCLOSE outfd = -1;
+    g_autoptr(virCommand) cmd = virCommandNewArgList(VZLIST, "-ovpsid", "-H", NULL);
 
     virCommandSetOutputFD(cmd, &outfd);
     if (virCommandRunAsync(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     while (got < nids) {
-        ret = openvz_readline(outfd, buf, 32);
-        if (!ret)
+        char *endptr;
+        char buf[32];
+        int veid;
+
+        if (openvz_readline(outfd, buf, 32) == 0)
             break;
         if (virStrToLong_i(buf, &endptr, 10, &veid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Could not parse VPS ID %s"), buf);
             continue;
         }
-        ids[got] = veid;
-        got ++;
+        ids[got++] = veid;
     }
 
     if (virCommandWait(cmd, NULL) < 0)
-        goto cleanup;
+        return -1;
 
     if (VIR_CLOSE(outfd) < 0) {
         virReportSystemError(errno, "%s", _("failed to close file"));
-        goto cleanup;
+        return -1;
     }
 
-    rc = got;
- cleanup:
-    VIR_FORCE_CLOSE(outfd);
-    virCommandFree(cmd);
-    return rc;
+    return got;
 }
 
 static int openvzConnectNumOfDomains(virConnectPtr conn)
