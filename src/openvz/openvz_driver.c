@@ -661,13 +661,12 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
                        virDomainNetDef *net,
                        virBuffer *configBuf)
 {
-    int rc = -1;
     char macaddr[VIR_MAC_STRING_BUFLEN];
     virMacAddr host_mac;
     char host_macaddr[VIR_MAC_STRING_BUFLEN];
     struct openvz_driver *driver =  conn->privateData;
-    virCommand *cmd = NULL;
-    char *guest_ifname = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *guest_ifname = NULL;
 
     if (net == NULL)
         return 0;
@@ -703,7 +702,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             if (guest_ifname == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not generate eth name for container"));
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -714,7 +713,7 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
             if (net->ifname == NULL) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("Could not generate veth name"));
-                goto cleanup;
+                return -1;
             }
         }
 
@@ -744,23 +743,17 @@ openvzDomainSetNetwork(virConnectPtr conn, const char *vpsid,
 
         /* --ipadd ip */
         for (i = 0; i < net->guestIP.nips; i++) {
-            char *ipStr = virSocketAddrFormat(&net->guestIP.ips[i]->address);
+            g_autofree char *ipStr = virSocketAddrFormat(&net->guestIP.ips[i]->address);
             if (!ipStr)
-                goto cleanup;
+                return -1;
             virCommandAddArgList(cmd, "--ipadd", ipStr, NULL);
-            VIR_FREE(ipStr);
         }
     }
 
     /* TODO: processing NAT and physical device */
 
     virCommandAddArg(cmd, "--save");
-    rc = virCommandRun(cmd, NULL);
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(guest_ifname);
-    return rc;
+    return virCommandRun(cmd, NULL);
 }
 
 
