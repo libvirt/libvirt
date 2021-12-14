@@ -66,13 +66,6 @@ void
 virNetworkObjSetDnsmasqPid(virNetworkObj *obj,
                            pid_t dnsmasqPid);
 
-pid_t
-virNetworkObjGetRadvdPid(virNetworkObj *obj);
-
-void
-virNetworkObjSetRadvdPid(virNetworkObj *obj,
-                         pid_t radvdPid);
-
 virBitmap *
 virNetworkObjGetClassIdMap(virNetworkObj *obj);
 

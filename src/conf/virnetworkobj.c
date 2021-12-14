@@ -43,7 +43,6 @@ struct _virNetworkObj {
     virObjectLockable parent;
 
     pid_t dnsmasqPid;
-    pid_t radvdPid;
     bool active;
     bool autostart;
     bool persistent;
@@ -208,21 +207,6 @@ virNetworkObjSetDnsmasqPid(virNetworkObj *obj,
                            pid_t dnsmasqPid)
 {
     obj->dnsmasqPid = dnsmasqPid;
-}
-
-
-pid_t
-virNetworkObjGetRadvdPid(virNetworkObj *obj)
-{
-    return obj->radvdPid;
-}
-
-
-void
-virNetworkObjSetRadvdPid(virNetworkObj *obj,
-                         pid_t radvdPid)
-{
-    obj->radvdPid = radvdPid;
 }
 
 
