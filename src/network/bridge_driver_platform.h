@@ -46,7 +46,6 @@ struct _virNetworkDriverState {
     char *stateDir;
     char *pidDir;
     char *dnsmasqStateDir;
-    char *radvdStateDir;
 
     /* Require lock to get a reference on the object,
      * lockless access thereafter
