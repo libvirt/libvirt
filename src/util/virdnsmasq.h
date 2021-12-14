@@ -106,11 +106,3 @@ const char *dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps);
 unsigned long dnsmasqCapsGetVersion(dnsmasqCaps *caps);
 char *dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,
                                unsigned int nhosts);
-
-#define DNSMASQ_RA_MAJOR_REQD 2
-#define DNSMASQ_RA_MINOR_REQD 64
-
-#define DNSMASQ_RA_SUPPORT(CAPS) \
-    (dnsmasqCapsGetVersion(CAPS) >= \
-     (DNSMASQ_RA_MAJOR_REQD * 1000000) + \
-     (DNSMASQ_RA_MINOR_REQD * 1000))
