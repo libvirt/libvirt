@@ -27809,12 +27809,12 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 break;
 
             case VIR_TRISTATE_SWITCH_ON:
-               virBufferAsprintf(&childBuf, "<%s state='on'/>\n", name);
-               break;
-
             case VIR_TRISTATE_SWITCH_OFF:
-               virBufferAsprintf(&childBuf, "<%s state='off'/>\n", name);
-               break;
+                virBufferAsprintf(&tmpAttrBuf, " state='%s'",
+                                  virTristateSwitchTypeToString(def->features[i]));
+
+                virXMLFormatElement(&childBuf, name, &tmpAttrBuf, NULL);
+                break;
             }
 
             break;
@@ -27842,12 +27842,12 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
         case VIR_DOMAIN_FEATURE_APIC:
             if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
-                virBufferAddLit(&childBuf, "<apic");
                 if (def->apic_eoi) {
-                    virBufferAsprintf(&childBuf, " eoi='%s'",
+                    virBufferAsprintf(&tmpAttrBuf, " eoi='%s'",
                                       virTristateSwitchTypeToString(def->apic_eoi));
                 }
-                virBufferAddLit(&childBuf, "/>\n");
+
+                virXMLFormatElementEmpty(&childBuf, "apic", &tmpAttrBuf, NULL);
             }
             break;
 
@@ -28026,11 +28026,11 @@ virDomainDefFormatFeatures(virBuffer *buf,
 
         case VIR_DOMAIN_FEATURE_GIC:
             if (def->features[i] == VIR_TRISTATE_SWITCH_ON) {
-                virBufferAddLit(&childBuf, "<gic");
                 if (def->gic_version != VIR_GIC_VERSION_NONE)
-                    virBufferAsprintf(&childBuf, " version='%s'",
+                    virBufferAsprintf(&tmpAttrBuf, " version='%s'",
                                       virGICVersionTypeToString(def->gic_version));
-                virBufferAddLit(&childBuf, "/>\n");
+
+                virXMLFormatElementEmpty(&childBuf, "gic", &tmpAttrBuf, NULL);
             }
             break;
 
