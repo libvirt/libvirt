@@ -639,27 +639,9 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
         goto error;
     }
 
-    if (strstr(buf, "--bind-dynamic"))
-        dnsmasqCapsSet(caps, DNSMASQ_CAPS_BIND_DYNAMIC);
-
-    /* if this string is a part of the --version output, dnsmasq
-     * has been patched to use SO_BINDTODEVICE when listening,
-     * so that it will only accept requests that arrived on the
-     * listening interface(s)
-     */
-    if (strstr(buf, "--bind-interfaces with SO_BINDTODEVICE"))
-        dnsmasqCapsSet(caps, DNSMASQ_CAPS_BINDTODEVICE);
-
-    if (strstr(buf, "--ra-param"))
-        dnsmasqCapsSet(caps, DNSMASQ_CAPS_RA_PARAM);
-
-    VIR_INFO("dnsmasq version is %d.%d, --bind-dynamic is %spresent, "
-             "SO_BINDTODEVICE is %sin use, --ra-param is %spresent",
+    VIR_INFO("dnsmasq version is %d.%d",
              (int)caps->version / 1000000,
-             (int)(caps->version % 1000000) / 1000,
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC) ? "" : "NOT ",
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) ? "" : "NOT ",
-             dnsmasqCapsGet(caps, DNSMASQ_CAPS_RA_PARAM) ? "" : "NOT ");
+             (int)(caps->version % 1000000) / 1000);
     return 0;
 
  error:
