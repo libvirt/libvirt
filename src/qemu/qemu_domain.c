@@ -6324,10 +6324,8 @@ void qemuDomainObjTaint(virQEMUDriver *driver,
                         virDomainTaintFlags taint,
                         qemuDomainLogContext *logCtxt)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
     qemuDomainObjTaintMsg(driver, obj, taint, logCtxt, NULL);
-    ignore_value(virDomainObjSave(obj, driver->xmlopt, cfg->stateDir));
+    qemuDomainSaveStatus(obj);
 }
 
 void qemuDomainObjTaintMsg(virQEMUDriver *driver,
@@ -7163,20 +7161,17 @@ qemuDomainRemoveInactiveJobLocked(virQEMUDriver *driver,
 
 
 void
-qemuDomainSetFakeReboot(virQEMUDriver *driver,
+qemuDomainSetFakeReboot(virQEMUDriver *driver G_GNUC_UNUSED,
                         virDomainObj *vm,
                         bool value)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     if (priv->fakeReboot == value)
         return;
 
     priv->fakeReboot = value;
-
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("Failed to save status on vm %s", vm->def->name);
+    qemuDomainSaveStatus(vm);
 }
 
 static void

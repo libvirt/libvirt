@@ -3383,7 +3383,6 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
     virObjectEvent *event;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     qemuDomainJobInfo *jobInfo = NULL;
@@ -3473,8 +3472,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
         qemuMigrationParamsReset(driver, vm, QEMU_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, priv->job.apiFlags);
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            VIR_WARN("Failed to save status on vm %s", vm->def->name);
+        qemuDomainSaveStatus(vm);
     }
 
     return 0;
@@ -5627,7 +5625,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     int cookie_flags = 0;
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     unsigned short port;
     unsigned long long timeReceived = 0;
     virObjectEvent *event;
@@ -5834,9 +5831,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         virObjectEventStateQueue(driver->domainEventState, event);
     }
 
-    if (virDomainObjIsActive(vm) &&
-        virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("Failed to save status on vm %s", vm->def->name);
+    qemuDomainSaveStatus(vm);
 
     /* Guest is successfully running, so cancel previous auto destroy */
     qemuProcessAutoDestroyRemove(driver, vm);

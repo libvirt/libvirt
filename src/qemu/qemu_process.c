@@ -414,7 +414,6 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     qemuDomainObjPrivate *priv;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainState state;
     int reason;
 
@@ -435,8 +434,7 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     if (priv->agent)
         qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_RESET);
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("Failed to save status on vm %s", vm->def->name);
+    qemuDomainSaveStatus(vm);
 
  unlock:
     virObjectUnlock(vm);
@@ -458,7 +456,6 @@ qemuProcessFakeReboot(void *opaque)
     virDomainObj *vm = opaque;
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_BOOTED;
     int ret = -1, rc;
 
@@ -493,11 +490,7 @@ qemuProcessFakeReboot(void *opaque)
         goto endjob;
     }
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-        VIR_WARN("Unable to save status on vm %s after state change",
-                 vm->def->name);
-    }
-
+    qemuDomainSaveStatus(vm);
     ret = 0;
 
  endjob:
@@ -575,7 +568,6 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int detail = 0;
 
     VIR_DEBUG("vm=%p", vm);
@@ -622,11 +614,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
         event = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SHUTDOWN,
                                                   detail);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after state change",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     } else {
         priv->pausedShutdown = true;
     }
@@ -651,7 +639,6 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEvent *event = NULL;
     virDomainPausedReason reason;
     virDomainEventSuspendedDetailType detail;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
 
     virObjectLock(vm);
@@ -692,10 +679,7 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after state change",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     }
 
     virObjectUnlock(vm);
@@ -710,7 +694,6 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
 {
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv;
     virDomainRunningReason reason = VIR_DOMAIN_RUNNING_UNPAUSED;
     virDomainEventResumedDetailType eventDetail;
@@ -734,11 +717,7 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
         event = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_RESUMED,
                                                   eventDetail);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after state change",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     }
 
     virObjectUnlock(vm);
@@ -753,7 +732,6 @@ qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
 {
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
 
@@ -776,8 +754,7 @@ qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
         offset += vm->def->clock.data.variable.adjustment0;
         vm->def->clock.data.variable.adjustment = offset;
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-           VIR_WARN("unable to save domain status with RTC change");
+        qemuDomainSaveStatus(vm);
     }
 
     event = virDomainEventRTCChangeNewFromObj(vm, offset);
@@ -797,7 +774,6 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *watchdogEvent = NULL;
     virObjectEvent *lifecycleEvent = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
     watchdogEvent = virDomainEventWatchdogNewFromObj(vm, action);
@@ -817,10 +793,7 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after watchdog event",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     }
 
     if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
@@ -859,7 +832,6 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     const char *srcPath;
     const char *devAlias;
     virDomainDiskDef *disk;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
 
@@ -902,8 +874,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
             VIR_WARN("Unable to release lease on %s", vm->def->name);
         VIR_DEBUG("Preserving lock state '%s'", NULLSTR(priv->lockState));
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-            VIR_WARN("Unable to save status on vm %s after IO error", vm->def->name);
+        qemuDomainSaveStatus(vm);
     }
     virObjectUnlock(vm);
 
@@ -1085,7 +1056,6 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     virDomainDiskDef *disk;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
     disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, devAlias, devid);
@@ -1098,11 +1068,7 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
         else if (reason == VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE)
             disk->tray_status = VIR_DOMAIN_DISK_TRAY_CLOSED;
 
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after tray moved event",
-                     vm->def->name);
-        }
-
+        qemuDomainSaveStatus(vm);
         virDomainObjBroadcast(vm);
     }
 
@@ -1118,7 +1084,6 @@ qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     virObjectEvent *lifecycleEvent = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
     event = virDomainEventPMWakeupNewFromObj(vm);
@@ -1135,11 +1100,7 @@ qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
         lifecycleEvent = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_STARTED,
                                                   VIR_DOMAIN_EVENT_STARTED_WAKEUP);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after wakeup event",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     }
 
     virObjectUnlock(vm);
@@ -1155,7 +1116,6 @@ qemuProcessHandlePMSuspend(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     virObjectEvent *lifecycleEvent = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
     event = virDomainEventPMSuspendNewFromObj(vm);
@@ -1171,11 +1131,7 @@ qemuProcessHandlePMSuspend(qemuMonitor *mon G_GNUC_UNUSED,
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after suspend event",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
 
         if (priv->agent)
             qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SUSPEND);
@@ -1195,7 +1151,6 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
 {
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     size_t i;
 
     virObjectLock(vm);
@@ -1216,9 +1171,7 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
               vm->def->mem.cur_balloon, actual);
     vm->def->mem.cur_balloon = actual;
 
-    if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
-        VIR_WARN("unable to save domain status with balloon change");
-
+    qemuDomainSaveStatus(vm);
     virObjectUnlock(vm);
 
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -1232,7 +1185,6 @@ qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     virObjectEvent *lifecycleEvent = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
 
     virObjectLock(vm);
     event = virDomainEventPMSuspendDiskNewFromObj(vm);
@@ -1248,11 +1200,7 @@ qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
             virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED,
                                      VIR_DOMAIN_EVENT_PMSUSPENDED_DISK);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after suspend event",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
 
         if (priv->agent)
             qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SUSPEND);
@@ -1599,7 +1547,6 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
     qemuDomainObjPrivate *priv;
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int reason;
 
     virObjectLock(vm);
@@ -1629,11 +1576,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         event = virDomainEventLifecycleNewFromObj(vm,
                                                   VIR_DOMAIN_EVENT_SUSPENDED,
                                                   VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY);
-
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Unable to save status on vm %s after state change",
-                     vm->def->name);
-        }
+        qemuDomainSaveStatus(vm);
     }
 
  cleanup:

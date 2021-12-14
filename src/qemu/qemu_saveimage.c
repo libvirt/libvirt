@@ -586,7 +586,6 @@ qemuSaveImageStartVM(virConnectPtr conn,
     VIR_AUTOCLOSE intermediatefd = -1;
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *errbuf = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virQEMUSaveHeader *header = &data->header;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
     int rc = 0;
@@ -680,10 +679,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
                                "%s", _("failed to resume domain"));
             goto cleanup;
         }
-        if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
-            VIR_WARN("Failed to save status on vm %s", vm->def->name);
-            goto cleanup;
-        }
+        qemuDomainSaveStatus(vm);
     } else {
         int detail = (start_paused ? VIR_DOMAIN_EVENT_SUSPENDED_PAUSED :
                       VIR_DOMAIN_EVENT_SUSPENDED_RESTORED);
