@@ -1197,10 +1197,8 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     if (def->forward.type == VIR_NETWORK_FORWARD_NONE) {
         virBufferAddLit(&configbuf, "dhcp-option=3\n"
                         "no-resolv\n");
-        if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_RA_PARAM)) {
-            /* interface=* (any), interval=0 (default), lifetime=0 (seconds) */
-            virBufferAddLit(&configbuf, "ra-param=*,0,0\n");
-        }
+        /* interface=* (any), interval=0 (default), lifetime=0 (seconds) */
+        virBufferAddLit(&configbuf, "ra-param=*,0,0\n");
     }
 
     if (wantDNS) {
