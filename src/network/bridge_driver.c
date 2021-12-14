@@ -1486,21 +1486,18 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     if (def->mtu > 0)
         virBufferAsprintf(&configbuf, "dhcp-option=option:mtu,%d\n", def->mtu);
 
-    /* Are we doing RA instead of radvd? */
-    if (DNSMASQ_RA_SUPPORT(caps)) {
-        if (ipv6def) {
-            virBufferAddLit(&configbuf, "enable-ra\n");
-        } else {
-            for (i = 0;
-                 (ipdef = virNetworkDefGetIPByIndex(def, AF_INET6, i));
-                 i++) {
-                if (!(ipdef->nranges || ipdef->nhosts)) {
-                    g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
-                    if (!bridgeaddr)
-                        return -1;
-                    virBufferAsprintf(&configbuf,
-                                      "dhcp-range=%s,ra-only\n", bridgeaddr);
-                }
+    if (ipv6def) {
+        virBufferAddLit(&configbuf, "enable-ra\n");
+    } else {
+        for (i = 0;
+             (ipdef = virNetworkDefGetIPByIndex(def, AF_INET6, i));
+             i++) {
+            if (!(ipdef->nranges || ipdef->nhosts)) {
+                g_autofree char *bridgeaddr = virSocketAddrFormat(&ipdef->address);
+                if (!bridgeaddr)
+                    return -1;
+                virBufferAsprintf(&configbuf,
+                                  "dhcp-range=%s,ra-only\n", bridgeaddr);
             }
         }
     }
@@ -1860,84 +1857,11 @@ networkRadvdConfWrite(virNetworkDriverState *driver,
 
 
 static int
-networkStartRadvd(virNetworkDriverState *driver,
+networkStartRadvd(virNetworkDriverState *driver G_GNUC_UNUSED,
                   virNetworkObj *obj)
 {
-    virNetworkDef *def = virNetworkObjGetDef(obj);
-    g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
-    pid_t radvdPid;
-    g_autofree char *pidfile = NULL;
-    g_autofree char *radvdpidbase = NULL;
-    g_autofree char *configfile = NULL;
-    g_autoptr(virCommand) cmd = NULL;
-
     virNetworkObjSetRadvdPid(obj, -1);
 
-    /* Is dnsmasq handling RA? */
-    if (DNSMASQ_RA_SUPPORT(dnsmasq_caps))
-        return 0;
-
-    if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
-        /* no IPv6 addresses, so we don't need to run radvd */
-        return 0;
-    }
-
-    if (!virFileIsExecutable(RADVD)) {
-        virReportSystemError(errno,
-                             _("Cannot find %s - "
-                               "Possibly the package isn't installed"),
-                             RADVD);
-        return -1;
-    }
-
-    if (g_mkdir_with_parents(driver->pidDir, 0777) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create directory %s"),
-                             driver->pidDir);
-        return -1;
-    }
-
-    if (g_mkdir_with_parents(driver->radvdStateDir, 0777) < 0) {
-        virReportSystemError(errno,
-                             _("cannot create directory %s"),
-                             driver->radvdStateDir);
-        return -1;
-    }
-
-    /* construct pidfile name */
-    if (!(radvdpidbase = networkRadvdPidfileBasename(def->name)))
-        return -1;
-
-    if (!(pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase)))
-        return -1;
-
-    if (networkRadvdConfWrite(driver, obj, &configfile) < 0)
-        return -1;
-
-    /* prevent radvd from daemonizing itself with "--debug 1", and use
-     * a dummy pidfile name - virCommand will create the pidfile we
-     * want to use (this is necessary because radvd's internal
-     * daemonization and pidfile creation causes a race, and the
-     * virPidFileRead() below will fail if we use them).
-     * Unfortunately, it isn't possible to tell radvd to not create
-     * its own pidfile, so we just let it do so, with a slightly
-     * different name. Unused, but harmless.
-     */
-    cmd = virCommandNewArgList(RADVD, "--debug", "1",
-                               "--config", configfile,
-                               "--pidfile", NULL);
-    virCommandAddArgFormat(cmd, "%s-bin", pidfile);
-
-    virCommandSetPidFile(cmd, pidfile);
-    virCommandDaemonize(cmd);
-
-    if (virCommandRun(cmd, NULL) < 0)
-        return -1;
-
-    if (virPidFileRead(driver->pidDir, radvdpidbase, &radvdPid) < 0)
-        return -1;
-
-    virNetworkObjSetRadvdPid(obj, radvdPid);
     return 0;
 }
 
@@ -1947,36 +1871,16 @@ networkRefreshRadvd(virNetworkDriverState *driver,
                     virNetworkObj *obj)
 {
     virNetworkDef *def = virNetworkObjGetDef(obj);
-    g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
     g_autofree char *radvdpidbase = NULL;
     g_autofree char *pidfile = NULL;
-    pid_t radvdPid;
 
-    /* Is dnsmasq handling RA? */
-    if (DNSMASQ_RA_SUPPORT(dnsmasq_caps)) {
-        if ((radvdpidbase = networkRadvdPidfileBasename(def->name)) &&
-            (pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase))) {
-            /* radvd should not be running but in case it is */
-            virPidFileForceCleanupPath(pidfile);
-            virNetworkObjSetRadvdPid(obj, -1);
-        }
-        return 0;
+    if ((radvdpidbase = networkRadvdPidfileBasename(def->name)) &&
+        (pidfile = virPidFileBuildPath(driver->pidDir, radvdpidbase))) {
+        /* radvd should not be running but in case it is */
+        virPidFileForceCleanupPath(pidfile);
+        virNetworkObjSetRadvdPid(obj, -1);
     }
-
-    /* if there's no running radvd, just start it */
-    radvdPid = virNetworkObjGetRadvdPid(obj);
-    if (radvdPid <= 0 || (kill(radvdPid, 0) < 0))
-        return networkStartRadvd(driver, obj);
-
-    if (!virNetworkDefGetIPByIndex(def, AF_INET6, 0)) {
-        /* no IPv6 addresses, so we don't need to run radvd */
-        return 0;
-    }
-
-    if (networkRadvdConfWrite(driver, obj, NULL) < 0)
-        return -1;
-
-    return kill(radvdPid, SIGHUP);
+    return 0;
 }
 
 
