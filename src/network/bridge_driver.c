@@ -1329,20 +1329,6 @@ networkDnsmasqConfContents(virNetworkObj *obj,
         }
         if (VIR_SOCKET_ADDR_IS_FAMILY(&ipdef->address, AF_INET6)) {
             if (ipdef->nranges || ipdef->nhosts) {
-                if (!DNSMASQ_DHCPv6_SUPPORT(caps)) {
-                    unsigned long version = dnsmasqCapsGetVersion(caps);
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("The version of dnsmasq on this host "
-                                     "(%d.%d) doesn't adequately support "
-                                     "IPv6 dhcp range or dhcp host "
-                                     "specification. Version %d.%d or later "
-                                     "is required."),
-                                   (int)version / 1000000,
-                                   (int)(version % 1000000) / 1000,
-                                   DNSMASQ_DHCPv6_MAJOR_REQD,
-                                   DNSMASQ_DHCPv6_MINOR_REQD);
-                    return -1;
-                }
                 if (ipv6def) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("For IPv6, multiple DHCP definitions "
