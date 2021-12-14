@@ -112,12 +112,8 @@ static int
 mymain(void)
 {
     int ret = 0;
-    dnsmasqCaps *restricted
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.48");
     dnsmasqCaps *full
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.63\n--bind-dynamic");
-    dnsmasqCaps *dhcpv6
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.64\n--bind-dynamic");
+        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67\n--bind-dynamic\n--ra-param");
 
 #define DO_TEST(xname, xcaps) \
     do { \
@@ -131,15 +127,15 @@ mymain(void)
         } \
     } while (0)
 
-    DO_TEST("isolated-network", restricted);
-    DO_TEST("netboot-network", restricted);
-    DO_TEST("netboot-proxy-network", restricted);
-    DO_TEST("nat-network-dns-srv-record-minimal", restricted);
-    DO_TEST("nat-network-name-with-quotes", restricted);
+    DO_TEST("isolated-network", full);
+    DO_TEST("netboot-network", full);
+    DO_TEST("netboot-proxy-network", full);
+    DO_TEST("nat-network-dns-srv-record-minimal", full);
+    DO_TEST("nat-network-name-with-quotes", full);
     DO_TEST("routed-network", full);
     DO_TEST("routed-network-no-dns", full);
     DO_TEST("open-network", full);
-    DO_TEST("nat-network", dhcpv6);
+    DO_TEST("nat-network", full);
     DO_TEST("nat-network-dns-txt-record", full);
     DO_TEST("nat-network-dns-srv-record", full);
     DO_TEST("nat-network-dns-hosts", full);
@@ -147,20 +143,18 @@ mymain(void)
     DO_TEST("nat-network-dns-forwarders", full);
     DO_TEST("nat-network-dns-forwarder-no-resolv", full);
     DO_TEST("nat-network-dns-local-domain", full);
-    DO_TEST("nat-network-mtu", dhcpv6);
-    DO_TEST("dhcp6-network", dhcpv6);
-    DO_TEST("dhcp6-nat-network", dhcpv6);
-    DO_TEST("dhcp6host-routed-network", dhcpv6);
-    DO_TEST("ptr-domains-auto", dhcpv6);
-    DO_TEST("dnsmasq-options", dhcpv6);
+    DO_TEST("nat-network-mtu", full);
+    DO_TEST("dhcp6-network", full);
+    DO_TEST("dhcp6-nat-network", full);
+    DO_TEST("dhcp6host-routed-network", full);
+    DO_TEST("ptr-domains-auto", full);
+    DO_TEST("dnsmasq-options", full);
     DO_TEST("leasetime-seconds", full);
     DO_TEST("leasetime-minutes", full);
     DO_TEST("leasetime-hours", full);
     DO_TEST("leasetime-infinite", full);
 
-    virObjectUnref(dhcpv6);
     virObjectUnref(full);
-    virObjectUnref(restricted);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
