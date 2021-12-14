@@ -3713,6 +3713,7 @@ void virDomainDefFree(virDomainDef *def)
     g_free(def->emulator);
     g_free(def->description);
     g_free(def->title);
+    g_free(def->kvm_features);
     g_free(def->hyperv_vendor_id);
     g_free(def->tcg_features);
 
@@ -17532,7 +17533,9 @@ static int
 virDomainFeaturesKVMDefParse(virDomainDef *def,
                              xmlNodePtr node)
 {
-    def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
+    g_autofree virDomainFeatureKVM *kvm = NULL;
+
+    kvm = g_new0(virDomainFeatureKVM, 1);
 
     node = xmlFirstElementChild(node);
     while (node) {
@@ -17551,10 +17554,13 @@ virDomainFeaturesKVMDefParse(virDomainDef *def,
                                      &value) < 0)
             return -1;
 
-        def->kvm_features[feature] = value;
+        kvm->features[feature] = value;
 
         node = xmlNextElementSibling(node);
     }
+
+    def->features[VIR_DOMAIN_FEATURE_KVM] = VIR_TRISTATE_SWITCH_ON;
+    def->kvm_features = g_steal_pointer(&kvm);
 
     return 0;
 }
@@ -21803,13 +21809,13 @@ virDomainDefFeaturesCheckABIStability(virDomainDef *src,
             case VIR_DOMAIN_KVM_DEDICATED:
             case VIR_DOMAIN_KVM_POLLCONTROL:
             case VIR_DOMAIN_KVM_PVIPI:
-                if (src->kvm_features[i] != dst->kvm_features[i]) {
+                if (src->kvm_features->features[i] != dst->kvm_features->features[i]) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("State of KVM feature '%s' differs: "
                                      "source: '%s', destination: '%s'"),
                                    virDomainKVMTypeToString(i),
-                                   virTristateSwitchTypeToString(src->kvm_features[i]),
-                                   virTristateSwitchTypeToString(dst->kvm_features[i]));
+                                   virTristateSwitchTypeToString(src->kvm_features->features[i]),
+                                   virTristateSwitchTypeToString(dst->kvm_features->features[i]));
                     return false;
                 }
 
@@ -27873,11 +27879,11 @@ virDomainDefFormatFeatures(virBuffer *buf,
                 case VIR_DOMAIN_KVM_DEDICATED:
                 case VIR_DOMAIN_KVM_POLLCONTROL:
                 case VIR_DOMAIN_KVM_PVIPI:
-                    if (def->kvm_features[j])
+                    if (def->kvm_features->features[j])
                         virBufferAsprintf(&childBuf, "<%s state='%s'/>\n",
                                           virDomainKVMTypeToString(j),
                                           virTristateSwitchTypeToString(
-                                              def->kvm_features[j]));
+                                              def->kvm_features->features[j]));
                     break;
 
                 case VIR_DOMAIN_KVM_LAST:

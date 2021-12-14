@@ -2263,6 +2263,11 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainIBS);
 
+typedef struct _virDomainFeatureKVM virDomainFeatureKVM;
+struct _virDomainFeatureKVM {
+    int features[VIR_DOMAIN_KVM_LAST];
+};
+
 typedef struct _virDomainFeatureTCG virDomainFeatureTCG;
 struct _virDomainFeatureTCG {
     unsigned long long tb_cache; /* Stored in KiB */
@@ -2819,7 +2824,7 @@ struct _virDomainDef {
     int features[VIR_DOMAIN_FEATURE_LAST];
     int caps_features[VIR_DOMAIN_PROCES_CAPS_FEATURE_LAST];
     int hyperv_features[VIR_DOMAIN_HYPERV_LAST];
-    int kvm_features[VIR_DOMAIN_KVM_LAST];
+    virDomainFeatureKVM *kvm_features;
     int msrs_features[VIR_DOMAIN_MSRS_LAST];
     int xen_features[VIR_DOMAIN_XEN_LAST];
     virDomainXenPassthroughMode xen_passthrough_mode;
