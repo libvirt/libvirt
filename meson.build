@@ -860,7 +860,6 @@ optional_programs = [
   'modprobe',
   'ovs-vsctl',
   'pdwtags',
-  'radvd',
   'rmmod',
   'scrub',
   'tc',
