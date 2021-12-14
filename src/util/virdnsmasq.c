@@ -620,12 +620,12 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 
     p = STRSKIP(buf, DNSMASQ_VERSION_STR);
     if (!p)
-       goto fail;
+       goto error;
 
     virSkipToDigit(&p);
 
     if (virParseVersionString(p, &caps->version, true) < 0)
-        goto fail;
+        goto error;
 
     if (strstr(buf, "--bind-dynamic"))
         dnsmasqCapsSet(caps, DNSMASQ_CAPS_BIND_DYNAMIC);
@@ -650,7 +650,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
              dnsmasqCapsGet(caps, DNSMASQ_CAPS_RA_PARAM) ? "" : "NOT ");
     return 0;
 
- fail:
+ error:
     p = strchr(buf, '\n');
     if (!p)
         len = strlen(buf);
