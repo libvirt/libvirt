@@ -99,6 +99,5 @@ dnsmasqCaps *dnsmasqCapsNewFromBuffer(const char *buf);
 dnsmasqCaps *dnsmasqCapsNewFromBinary(void);
 bool dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag);
 const char *dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps);
-unsigned long dnsmasqCapsGetVersion(dnsmasqCaps *caps);
 char *dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,
                                unsigned int nhosts);

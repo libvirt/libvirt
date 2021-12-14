@@ -758,15 +758,6 @@ dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps)
     return caps ? caps->binaryPath : DNSMASQ;
 }
 
-unsigned long
-dnsmasqCapsGetVersion(dnsmasqCaps *caps)
-{
-    if (caps)
-        return caps->version;
-    else
-        return 0;
-}
-
 bool
 dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag)
 {

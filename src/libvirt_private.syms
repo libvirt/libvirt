@@ -2114,7 +2114,6 @@ dnsmasqAddDhcpHost;
 dnsmasqAddHost;
 dnsmasqCapsGet;
 dnsmasqCapsGetBinaryPath;
-dnsmasqCapsGetVersion;
 dnsmasqCapsNewFromBinary;
 dnsmasqCapsNewFromBuffer;
 dnsmasqContextFree;
