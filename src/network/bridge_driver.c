@@ -1062,7 +1062,6 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     size_t i;
     virNetworkDNSDef *dns = &def->dns;
     bool wantDNS = dns->enable != VIR_TRISTATE_BOOL_NO;
-    virNetworkIPDef *tmpipdef;
     virNetworkIPDef *ipdef;
     virNetworkIPDef *ipv4def;
     virNetworkIPDef *ipv6def;
@@ -1173,62 +1172,17 @@ networkDnsmasqConfContents(virNetworkObj *obj,
     virBufferAddLit(&configbuf, "except-interface=lo0\n");
 #endif
 
-    if (dnsmasqCapsGet(caps, DNSMASQ_CAPS_BIND_DYNAMIC)) {
-        /* using --bind-dynamic with only --interface (no
-         * --listen-address) prevents dnsmasq from responding to dns
-         * queries that arrive on some interface other than our bridge
-         * interface (in other words, requests originating somewhere
-         * other than one of the virtual guests connected directly to
-         * this network). This was added in response to CVE 2012-3411.
-         */
-        virBufferAsprintf(&configbuf,
-                          "bind-dynamic\n"
-                          "interface=%s\n",
-                          def->bridge);
-    } else {
-        virBufferAddLit(&configbuf, "bind-interfaces\n");
-        /*
-         * --interface does not actually work with dnsmasq < 2.47,
-         * due to DAD for ipv6 addresses on the interface.
-         *
-         * virCommandAddArgList(cmd, "--interface", def->bridge, NULL);
-         *
-         * So listen on all defined IPv[46] addresses
-         */
-        for (i = 0;
-             (tmpipdef = virNetworkDefGetIPByIndex(def, AF_UNSPEC, i));
-             i++) {
-            g_autofree char *ipaddr = virSocketAddrFormat(&tmpipdef->address);
-
-            if (!ipaddr)
-                return -1;
-
-            /* also part of CVE 2012-3411 - if the host's version of
-             * dnsmasq doesn't have bind-dynamic, only allow listening on
-             * private/local IP addresses (see RFC1918/RFC3484/RFC4193)
-             */
-            if (!dnsmasqCapsGet(caps, DNSMASQ_CAPS_BINDTODEVICE) &&
-                !virSocketAddrIsPrivate(&tmpipdef->address)) {
-                unsigned long version = dnsmasqCapsGetVersion(caps);
-
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Publicly routable address %s is prohibited. "
-                                 "The version of dnsmasq on this host (%d.%d) "
-                                 "doesn't support the bind-dynamic option or "
-                                 "use SO_BINDTODEVICE on listening sockets, "
-                                 "one of which is required for safe operation "
-                                 "on a publicly routable subnet "
-                                 "(see CVE-2012-3411). You must either "
-                                 "upgrade dnsmasq, or use a private/local "
-                                 "subnet range for this network "
-                                 "(as described in RFC1918/RFC3484/RFC4193)."),
-                               ipaddr, (int)version / 1000000,
-                               (int)(version % 1000000) / 1000);
-                return -1;
-            }
-            virBufferAsprintf(&configbuf, "listen-address=%s\n", ipaddr);
-        }
-    }
+    /* using --bind-dynamic with only --interface (no
+     * --listen-address) prevents dnsmasq from responding to dns
+     * queries that arrive on some interface other than our bridge
+     * interface (in other words, requests originating somewhere
+     * other than one of the virtual guests connected directly to
+     * this network). This was added in response to CVE 2012-3411.
+     */
+    virBufferAsprintf(&configbuf,
+                      "bind-dynamic\n"
+                      "interface=%s\n",
+                      def->bridge);
 
     /* If this is an isolated network, set the default route option
      * (3) to be empty to avoid setting a default route that's
