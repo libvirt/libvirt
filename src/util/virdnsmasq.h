@@ -67,10 +67,6 @@ typedef struct
     dnsmasqAddnHostsfile *addnhostsfile;
 } dnsmasqContext;
 
-typedef enum {
-   DNSMASQ_CAPS_LAST,             /* this must always be the last item */
-} dnsmasqCapsFlags;
-
 typedef struct _dnsmasqCaps dnsmasqCaps;
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(dnsmasqCaps, virObjectUnref);
@@ -97,7 +93,6 @@ int              dnsmasqReload(pid_t pid);
 
 dnsmasqCaps *dnsmasqCapsNewFromBuffer(const char *buf);
 dnsmasqCaps *dnsmasqCapsNewFromBinary(void);
-bool dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag);
 const char *dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps);
 char *dnsmasqDhcpHostsToString(dnsmasqDhcpHost *hosts,
                                unsigned int nhosts);

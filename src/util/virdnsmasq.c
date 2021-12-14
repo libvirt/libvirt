@@ -578,7 +578,6 @@ struct _dnsmasqCaps {
     char *binaryPath;
     bool noRefresh;
     time_t mtime;
-    virBitmap *flags;
     unsigned long version;
 };
 
@@ -589,7 +588,6 @@ dnsmasqCapsDispose(void *obj)
 {
     dnsmasqCaps *caps = obj;
 
-    virBitmapFree(caps->flags);
     g_free(caps->binaryPath);
 }
 
@@ -602,13 +600,6 @@ static int dnsmasqCapsOnceInit(void)
 }
 
 VIR_ONCE_GLOBAL_INIT(dnsmasqCaps);
-
-static void
-dnsmasqCapsSet(dnsmasqCaps *caps,
-               dnsmasqCapsFlags flag)
-{
-    ignore_value(virBitmapSetBit(caps->flags, flag));
-}
 
 
 #define DNSMASQ_VERSION_STR "Dnsmasq version "
@@ -717,7 +708,6 @@ dnsmasqCapsNewEmpty(const char *binaryPath)
         return NULL;
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
-    caps->flags = virBitmapNew(DNSMASQ_CAPS_LAST);
     caps->binaryPath = g_strdup(binaryPath ? binaryPath : DNSMASQ);
     return caps;
 }
@@ -757,13 +747,6 @@ dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps)
 {
     return caps ? caps->binaryPath : DNSMASQ;
 }
-
-bool
-dnsmasqCapsGet(dnsmasqCaps *caps, dnsmasqCapsFlags flag)
-{
-    return caps && virBitmapIsBitSet(caps->flags, flag);
-}
-
 
 /** dnsmasqDhcpHostsToString:
  *

@@ -2112,7 +2112,6 @@ virIsDevMapperDevice;
 # util/virdnsmasq.h
 dnsmasqAddDhcpHost;
 dnsmasqAddHost;
-dnsmasqCapsGet;
 dnsmasqCapsGetBinaryPath;
 dnsmasqCapsNewFromBinary;
 dnsmasqCapsNewFromBuffer;
