@@ -344,7 +344,7 @@ struct _qemuDomainChrSourcePrivate {
 
     int fd; /* file descriptor of the chardev source */
     int logfd; /* file descriptor of the logging source */
-    bool wait; /* wait for incomming connections on chardev */
+    bool wait; /* wait for incoming connections on chardev */
 
     char *tlsCertPath; /* path to certificates if TLS is requested */
     bool tlsVerify; /* whether server should verify client certificates */

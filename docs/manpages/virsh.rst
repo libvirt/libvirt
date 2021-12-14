@@ -3234,7 +3234,7 @@ host. By default only non-shared non-readonly images are transferred. Use
 *--migrate-disks* to explicitly specify a list of disk targets to
 transfer via the comma separated ``disk-list`` argument.
 With *--copy-storage-synchronous-writes* flag used the disk data migration will
-synchronously handle guest disk writes to both the original soure and the
+synchronously handle guest disk writes to both the original source and the
 destination to ensure that the disk migration converges at the price of possibly
 decreased burst performance.
 
