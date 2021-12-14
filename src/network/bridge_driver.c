@@ -2090,8 +2090,7 @@ networkStartNetworkVirtual(virNetworkDriverState *driver,
 
 
 static int
-networkShutdownNetworkVirtual(virNetworkDriverState *driver G_GNUC_UNUSED,
-                              virNetworkObj *obj)
+networkShutdownNetworkVirtual(virNetworkObj *obj)
 {
     virNetworkDef *def = virNetworkObjGetDef(obj);
     pid_t dnsmasqPid;
@@ -2419,7 +2418,7 @@ networkShutdownNetwork(virNetworkDriverState *driver,
     case VIR_NETWORK_FORWARD_NAT:
     case VIR_NETWORK_FORWARD_ROUTE:
     case VIR_NETWORK_FORWARD_OPEN:
-        ret = networkShutdownNetworkVirtual(driver, obj);
+        ret = networkShutdownNetworkVirtual(obj);
         break;
 
     case VIR_NETWORK_FORWARD_BRIDGE:
