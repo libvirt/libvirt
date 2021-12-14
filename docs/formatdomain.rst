@@ -1929,7 +1929,14 @@ are:
       Set exactly the specified features.
 
    ``passthrough``
-      Enable all features currently supported by the hypervisor.
+      Enable all features currently supported by the hypervisor, even those that
+      libvirt does not understand. Migration of a guest using passthrough is
+      dangerous if the source and destination hosts are not identical in both
+      hardware, QEMU version, microcode version and configuration. If such a
+      migration is attempted then the guest may hang or crash upon resuming
+      execution on the destination host. Depending on hypervisor version the
+      virtual CPU may or may not contain features which may block migration
+      even to an identical host.
 
    The ``mode`` attribute can be omitted and will default to ``custom``.
 
