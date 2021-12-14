@@ -29,10 +29,12 @@ vshTableFree(vshTable *table);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshTable, vshTableFree);
 
 vshTable *
-vshTableNew(const char *format, ...);
+vshTableNew(const char *format, ...)
+    G_GNUC_NULL_TERMINATED;
 
 int
-vshTableRowAppend(vshTable *table, const char *arg, ...);
+vshTableRowAppend(vshTable *table, const char *arg, ...)
+    G_GNUC_NULL_TERMINATED;
 
 void
 vshTablePrintToStdout(vshTable *table, vshControl *ctl);

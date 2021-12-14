@@ -33,7 +33,7 @@
 static int
 testVshTableNew(const void *opaque G_GNUC_UNUSED)
 {
-    g_autoptr(vshTable) table = vshTableNew(NULL);
+    g_autoptr(vshTable) table = vshTableNew(NULL, NULL);
 
     if (table) {
         fprintf(stderr, "expected failure when passing null to vshTableNew\n");
@@ -85,7 +85,7 @@ testVshTableRowAppend(const void *opaque G_GNUC_UNUSED)
     if (!table)
         return -1;
 
-    if (vshTableRowAppend(table, NULL) >= 0) {
+    if (vshTableRowAppend(table, NULL, NULL) >= 0) {
         fprintf(stderr, "Appending NULL shouldn't work\n");
         return -1;
     }
