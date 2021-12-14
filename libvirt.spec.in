@@ -283,7 +283,6 @@ BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
-BuildRequires: radvd
 BuildRequires: ebtables
 BuildRequires: module-init-tools
 BuildRequires: cyrus-sasl-devel
@@ -464,7 +463,6 @@ Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
-Requires: radvd
 Requires: iptables
 
 %description daemon-driver-network
