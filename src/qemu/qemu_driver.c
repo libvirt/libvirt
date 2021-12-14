@@ -1902,7 +1902,7 @@ qemuDomainShutdownFlagsAgent(virQEMUDriver *driver,
     if (!qemuDomainAgentAvailable(vm, reportError))
         goto endjob;
 
-    qemuDomainSetFakeReboot(driver, vm, false);
+    qemuDomainSetFakeReboot(vm, false);
     agent = qemuDomainObjEnterAgent(vm);
     ret = qemuAgentShutdown(agent, agentFlag);
     qemuDomainObjExitAgent(vm, agent);
@@ -1932,7 +1932,7 @@ qemuDomainShutdownFlagsMonitor(virQEMUDriver *driver,
         goto endjob;
     }
 
-    qemuDomainSetFakeReboot(driver, vm, isReboot);
+    qemuDomainSetFakeReboot(vm, isReboot);
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSystemPowerdown(priv->mon);
     qemuDomainObjExitMonitor(driver, vm);
@@ -2031,7 +2031,7 @@ qemuDomainRebootAgent(virQEMUDriver *driver,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    qemuDomainSetFakeReboot(driver, vm, false);
+    qemuDomainSetFakeReboot(vm, false);
     agent = qemuDomainObjEnterAgent(vm);
     ret = qemuAgentShutdown(agent, agentFlag);
     qemuDomainObjExitAgent(vm, agent);
@@ -2057,7 +2057,7 @@ qemuDomainRebootMonitor(virQEMUDriver *driver,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    qemuDomainSetFakeReboot(driver, vm, isReboot);
+    qemuDomainSetFakeReboot(vm, isReboot);
     qemuDomainObjEnterMonitor(driver, vm);
     ret = qemuMonitorSystemPowerdown(priv->mon);
     qemuDomainObjExitMonitor(driver, vm);
@@ -2213,7 +2213,7 @@ qemuDomainDestroyFlags(virDomainPtr dom,
         goto endjob;
     }
 
-    qemuDomainSetFakeReboot(driver, vm, false);
+    qemuDomainSetFakeReboot(vm, false);
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
@@ -3613,8 +3613,8 @@ processGuestPanicEvent(virQEMUDriver *driver,
         G_GNUC_FALLTHROUGH;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_RESTART:
-        qemuDomainSetFakeReboot(driver, vm, true);
-        qemuProcessShutdownOrReboot(driver, vm);
+        qemuDomainSetFakeReboot(vm, true);
+        qemuProcessShutdownOrReboot(vm);
         break;
 
     case VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE:

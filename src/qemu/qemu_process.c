@@ -498,7 +498,7 @@ qemuProcessFakeReboot(void *opaque)
 
  cleanup:
     priv->pausedShutdown = false;
-    qemuDomainSetFakeReboot(driver, vm, false);
+    qemuDomainSetFakeReboot(vm, false);
     if (ret == -1)
         ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_FORCE));
     virDomainObjEndAPI(&vm);
@@ -506,8 +506,7 @@ qemuProcessFakeReboot(void *opaque)
 
 
 void
-qemuProcessShutdownOrReboot(virQEMUDriver *driver,
-                            virDomainObj *vm)
+qemuProcessShutdownOrReboot(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
@@ -526,7 +525,7 @@ qemuProcessShutdownOrReboot(virQEMUDriver *driver,
             VIR_ERROR(_("Failed to create reboot thread, killing domain"));
             ignore_value(qemuProcessKill(vm, VIR_QEMU_PROCESS_KILL_NOWAIT));
             priv->pausedShutdown = false;
-            qemuDomainSetFakeReboot(driver, vm, false);
+            qemuDomainSetFakeReboot(vm, false);
             virObjectUnref(vm);
         }
     } else {
@@ -622,7 +621,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
     if (priv->agent)
         qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_SHUTDOWN);
 
-    qemuProcessShutdownOrReboot(driver, vm);
+    qemuProcessShutdownOrReboot(vm);
 
  unlock:
     virObjectUnlock(vm);
@@ -5630,7 +5629,7 @@ qemuProcessInit(virQEMUDriver *driver,
         }
     } else {
         vm->def->id = qemuDriverAllocateID(driver);
-        qemuDomainSetFakeReboot(driver, vm, false);
+        qemuDomainSetFakeReboot(vm, false);
         virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_STARTING_UP);
 
         if (g_atomic_int_add(&driver->nactive, 1) == 0 && driver->inhibitCallback)
@@ -8866,7 +8865,7 @@ qemuProcessReconnect(void *opaque)
          reason == VIR_DOMAIN_PAUSED_USER)) {
         VIR_DEBUG("Finishing shutdown sequence for domain %s",
                   obj->def->name);
-        qemuProcessShutdownOrReboot(driver, obj);
+        qemuProcessShutdownOrReboot(obj);
         goto cleanup;
     }
 

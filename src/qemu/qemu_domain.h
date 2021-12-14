@@ -641,8 +641,7 @@ int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriver *driver,
 void qemuDomainRemoveInactive(virQEMUDriver *driver,
                               virDomainObj *vm);
 
-void qemuDomainSetFakeReboot(virQEMUDriver *driver,
-                             virDomainObj *vm,
+void qemuDomainSetFakeReboot(virDomainObj *vm,
                              bool value);
 
 int qemuDomainCheckDiskStartupPolicy(virQEMUDriver *driver,

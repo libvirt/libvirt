@@ -7161,8 +7161,7 @@ qemuDomainRemoveInactiveJobLocked(virQEMUDriver *driver,
 
 
 void
-qemuDomainSetFakeReboot(virQEMUDriver *driver G_GNUC_UNUSED,
-                        virDomainObj *vm,
+qemuDomainSetFakeReboot(virDomainObj *vm,
                         bool value)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
