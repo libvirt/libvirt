@@ -652,6 +652,7 @@ host filesystem. It can contain the following child elements:
      <clusterSize unit='KiB'>64</clusterSize>
      <features>
        <lazy_refcounts/>
+       <extended_l2/>
      </features>
    </target>
 
@@ -714,6 +715,9 @@ host filesystem. It can contain the following child elements:
 
    -  ``<lazy_refcounts/>`` - allow delayed reference counter updates.
       :since:`Since 1.1.0`
+   - ``<extended_l2/>`` - enables subcluster allocation for qcow2 images. QCOW2
+     clusters are split into 32 subclusters decreasing the size of L2 cache
+     needed. It's recommended to increase ``clusterSize``.
 
 Backing store elements
 ~~~~~~~~~~~~~~~~~~~~~~

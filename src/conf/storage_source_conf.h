@@ -86,6 +86,7 @@ VIR_ENUM_DECL(virStorageFileFormat);
 
 typedef enum {
     VIR_STORAGE_FILE_FEATURE_LAZY_REFCOUNTS = 0,
+    VIR_STORAGE_FILE_FEATURE_EXTENDED_L2,
 
     VIR_STORAGE_FILE_FEATURE_LAST
 } virStorageFileFeature;

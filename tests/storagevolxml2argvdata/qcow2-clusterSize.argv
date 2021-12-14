@@ -1,6 +1,6 @@
 qemu-img \
 create \
 -f qcow2 \
--o compat=0.10,cluster_size=131072 \
+-o compat=1.1,cluster_size=131072,extended_l2=on \
 /var/lib/libvirt/images/OtherDemo.img \
 5242880K

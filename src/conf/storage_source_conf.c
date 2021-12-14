@@ -66,6 +66,7 @@ VIR_ENUM_IMPL(virStorageFileFormat,
 VIR_ENUM_IMPL(virStorageFileFeature,
               VIR_STORAGE_FILE_FEATURE_LAST,
               "lazy_refcounts",
+              "extended_l2",
 );
 
 

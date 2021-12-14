@@ -134,6 +134,11 @@
             <empty/>
           </element>
         </optional>
+        <optional>
+          <element name="extended_l2">
+            <empty/>
+          </element>
+        </optional>
       </interleave>
     </element>
   </define>

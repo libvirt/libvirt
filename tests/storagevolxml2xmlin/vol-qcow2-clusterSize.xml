@@ -13,5 +13,8 @@
       <label>unconfined_u:object_r:virt_image_t:s0</label>
     </permissions>
     <clusterSize unit='KiB'>128</clusterSize>
+    <features>
+      <extended_l2/>
+    </features>
   </target>
 </volume>

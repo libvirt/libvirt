@@ -12,6 +12,10 @@
       <group>0</group>
       <label>unconfined_u:object_r:virt_image_t:s0</label>
     </permissions>
+    <compat>1.1</compat>
     <clusterSize unit='B'>131072</clusterSize>
+    <features>
+      <extended_l2/>
+    </features>
   </target>
 </volume>
