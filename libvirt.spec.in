@@ -1277,13 +1277,17 @@ then \
 fi \
 %libvirt_daemon_finish_restart %1
 
+# For daemons with only UNIX sockets
 %define libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
-
-%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
-
 %define libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
 
+# For daemons with UNIX and INET sockets
+%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
 %define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
+
+# For daemons with only UNIX sockets and no unprivileged read-only access
+%define libvirt_daemon_systemd_post_priv() %systemd_post %1.socket %1-admin.socket %1.service
+%define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
 # 'libvirt' group is just to allow password-less polkit access to
@@ -1294,8 +1298,8 @@ getent group libvirt >/dev/null || groupadd -r libvirt
 exit 0
 
 %post daemon
-%libvirt_daemon_systemd_post virtlogd
-%libvirt_daemon_systemd_post virtlockd
+%libvirt_daemon_systemd_post_priv virtlogd
+%libvirt_daemon_systemd_post_priv virtlockd
 %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post_inet virtproxyd
 %else
@@ -1311,8 +1315,8 @@ exit 0
 
 %libvirt_daemon_systemd_preun_inet libvirtd
 %libvirt_daemon_systemd_preun_inet virtproxyd
-%libvirt_daemon_systemd_preun virtlogd
-%libvirt_daemon_systemd_preun virtlockd
+%libvirt_daemon_systemd_preun_priv virtlogd
+%libvirt_daemon_systemd_preun_priv virtlockd
 
 %postun daemon
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
