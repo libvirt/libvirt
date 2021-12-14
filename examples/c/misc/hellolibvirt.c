@@ -107,11 +107,12 @@ main(int argc, char *argv[])
 {
     int ret = 0;
     virConnectPtr conn;
-    char *uri;
+    char *uri = NULL;
 
     printf("Attempting to connect to hypervisor\n");
 
-    uri = (argc > 0 ? argv[1] : NULL);
+    if (argc > 1)
+        uri = argv[1];
 
     /* virConnectOpenAuth is called here with all default parameters,
      * except, possibly, the URI of the hypervisor. */
