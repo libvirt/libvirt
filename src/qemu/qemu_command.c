@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "qemu_command.h"
-#include "qemu_hostdev.h"
 #include "qemu_capabilities.h"
 #include "qemu_dbus.h"
 #include "qemu_interface.h"
@@ -30,14 +29,11 @@
 #include "qemu_security.h"
 #include "qemu_slirp.h"
 #include "qemu_block.h"
-#include "cpu/cpu.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virarch.h"
 #include "virerror.h"
 #include "virfile.h"
-#include "virnetdev.h"
-#include "virnetdevbridge.h"
 #include "virqemu.h"
 #include "virstring.h"
 #include "virtime.h"
@@ -50,7 +46,6 @@
 #include "snapshot_conf.h"
 #include "storage_conf.h"
 #include "secret_conf.h"
-#include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "device_conf.h"
 #include "storage_source_conf.h"
@@ -60,11 +55,6 @@
 #include "virgic.h"
 #include "virmdev.h"
 #include "virdomainsnapshotobjlist.h"
-#if defined(__linux__)
-# include <linux/capability.h>
-#endif
-#include "logging/log_manager.h"
-#include "logging/log_protocol.h"
 #include "virutil.h"
 #include "virsecureerase.h"
 
