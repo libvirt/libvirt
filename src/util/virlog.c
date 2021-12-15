@@ -1187,6 +1187,10 @@ virLogParseDefaultPriority(const char *priority)
         return VIR_LOG_WARN;
     else if (STREQ(priority, "4") || STREQ(priority, "error"))
         return VIR_LOG_ERROR;
+
+    virReportError(VIR_ERR_INVALID_ARG,
+                   _("Failed to set logging priority, argument '%s' is "
+                     "invalid"), priority);
     return -1;
 }
 
