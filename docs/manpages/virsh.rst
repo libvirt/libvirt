@@ -2088,6 +2088,31 @@ launch security protection is active. If none is active, no parameters
 will be reported.
 
 
+domsetlaunchsecstate
+--------------------
+
+**Syntax:**
+
+::
+
+   domsetlaunchsecstate domain --secrethdr hdr-filename
+       --secret secret-filename [--set-address address]
+
+Set a launch security secret in the guest's memory. The guest must have a
+launchSecurity type enabled in its configuration and be in a paused state.
+On success, the guest can be transitioned to a running state. On failure,
+the guest should be destroyed.
+
+*--secrethdr* specifies a filename containing the base64-encoded secret header.
+The header includes artifacts needed by the hypervisor firmware to recover the
+plain text of the launch secret. *--secret* specifies the filename containing
+the base64-encoded encrypted launch secret.
+
+The *--set-address* option can be used to specify a physical address within
+the guest's memory to set the secret. If not specified, the address will be
+determined by the hypervisor.
+
+
 dommemstat
 ----------
 

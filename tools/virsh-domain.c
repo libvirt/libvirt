@@ -9572,6 +9572,107 @@ cmdDomLaunchSecInfo(vshControl * ctl, const vshCmd * cmd)
 }
 
 /*
+ * "domsetlaunchsecstate" command
+ */
+static const vshCmdInfo info_domsetlaunchsecstate[] = {
+    {.name = "help",
+     .data = N_("Set domain launch security state")
+    },
+    {.name = "desc",
+     .data = N_("Set a secret in the guest domain's memory")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_domsetlaunchsecstate[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "secrethdr",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("path to file containing the secret header"),
+    },
+    {.name = "secret",
+     .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
+     .help = N_("path to file containing the secret"),
+    },
+    {.name = "set-address",
+     .type = VSH_OT_INT,
+     .help = N_("physical address within the guest domain's memory to set the secret"),
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomSetLaunchSecState(vshControl * ctl, const vshCmd * cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    const char *sechdrfile = NULL;
+    const char *secfile = NULL;
+    g_autofree char *sechdr = NULL;
+    g_autofree char *sec = NULL;
+    unsigned long long setaddr;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    int rv;
+    bool ret = false;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "secrethdr", &sechdrfile) < 0)
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "secret", &secfile) < 0)
+        return false;
+
+    if (sechdrfile == NULL || secfile == NULL)
+        return false;
+
+    if (virFileReadAll(sechdrfile, 1024*64, &sechdr) < 0) {
+        vshSaveLibvirtError();
+        return false;
+    }
+
+    if (virFileReadAll(secfile, 1024*64, &sec) < 0) {
+        vshSaveLibvirtError();
+        return false;
+    }
+
+    if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER,
+                                sechdr) < 0)
+        return false;
+
+    if (virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET,
+                                sec) < 0)
+        return false;
+
+
+    if ((rv = vshCommandOptULongLong(ctl, cmd, "set-address", &setaddr)) < 0) {
+        return false;
+    } else if (rv > 0) {
+        if (virTypedParamsAddULLong(&params, &nparams, &maxparams,
+                                    VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS,
+                                    setaddr) < 0)
+            return false;
+    }
+
+    if (virDomainSetLaunchSecurityState(dom, params, nparams, 0) != 0) {
+        vshError(ctl, "%s", _("Unable to set launch security state"));
+        goto cleanup;
+    }
+
+    ret = true;
+
+ cleanup:
+    virTypedParamsFree(params, nparams);
+    return ret;
+}
+
+/*
  * "qemu-monitor-command" command
  */
 static const vshCmdInfo info_qemu_monitor_command[] = {
@@ -14594,6 +14695,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomLaunchSecInfo,
      .opts = opts_domlaunchsecinfo,
      .info = info_domlaunchsecinfo,
+     .flags = 0
+    },
+    {.name = "domsetlaunchsecstate",
+     .handler = cmdDomSetLaunchSecState,
+     .opts = opts_domsetlaunchsecstate,
+     .info = info_domsetlaunchsecstate,
      .flags = 0
     },
     {.name = "domname",
