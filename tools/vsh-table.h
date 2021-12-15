@@ -24,9 +24,18 @@
 
 typedef struct _vshTable vshTable;
 
-void vshTableFree(vshTable *table);
-vshTable *vshTableNew(const char *format, ...);
-int vshTableRowAppend(vshTable *table, const char *arg, ...);
-void vshTablePrintToStdout(vshTable *table, vshControl *ctl);
-char *vshTablePrintToString(vshTable *table, bool header);
+void
+vshTableFree(vshTable *table);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshTable, vshTableFree);
+
+vshTable *
+vshTableNew(const char *format, ...);
+
+int
+vshTableRowAppend(vshTable *table, const char *arg, ...);
+
+void
+vshTablePrintToStdout(vshTable *table, vshControl *ctl);
+
+char *
+vshTablePrintToString(vshTable *table, bool header);
