@@ -1127,6 +1127,9 @@ NUMA Node Tuning
    will be ignored if it's specified. If ``placement`` of ``vcpu`` is 'auto',
    and ``numatune`` is not specified, a default ``numatune`` with ``placement``
    'auto' and ``mode`` 'strict' will be added implicitly. :since:`Since 0.9.3`
+   See `virDomainSetNumaParameters
+   <html/libvirt-libvirt-domain.html#virDomainSetNumaParameters>`__ for more
+   information on update of this element.
 ``memnode``
    Optional ``memnode`` elements can specify memory allocation policies per each
    guest NUMA node. For those nodes having no corresponding ``memnode`` element,

@@ -2182,6 +2182,14 @@ virDomainGetMemoryParameters(virDomainPtr domain,
  * Change all or a subset of the numa tunables.
  * This function may require privileged access to the hypervisor.
  *
+ * Changing live configuration may be possible only in some cases. For
+ * instance, for QEMU driver the mode (VIR_DOMAIN_NUMA_MODE) can not be
+ * changed, and changing the nodeset (VIR_DOMAIN_NUMA_NODESET) is possible
+ * only for VIR_DOMAIN_NUMATUNE_MEM_STRICT and
+ * VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE modes.
+ *
+ * Changing persistent configuration does not pose such limitations.
+ *
  * Returns -1 in case of error, 0 in case of success.
  */
 int
