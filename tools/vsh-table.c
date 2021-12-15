@@ -31,6 +31,7 @@
 
 #define HEX_ENCODE_LENGTH 4 /* represents length of '\xNN' */
 
+typedef struct _vshTableRow vshTableRow;
 struct _vshTableRow {
     char **cells;
     size_t ncells;

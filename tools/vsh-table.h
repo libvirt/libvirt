@@ -23,7 +23,6 @@
 #include "vsh.h"
 
 typedef struct _vshTable vshTable;
-typedef struct _vshTableRow vshTableRow;
 
 void vshTableFree(vshTable *table);
 vshTable *vshTableNew(const char *format, ...);
