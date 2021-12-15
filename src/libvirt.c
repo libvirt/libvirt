@@ -232,7 +232,8 @@ virGlobalInit(void)
         goto error;
     }
 
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        goto error;
 
     virNetTLSInit();
 

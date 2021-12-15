@@ -1449,7 +1449,8 @@ main(int argc, char **argv)
     virFileActivateDirOverrideForProg(argv[0]);
 
     /* Initialize the log system */
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        exit(EXIT_FAILURE);
 
     /* clear the environment */
     environ = NULL;

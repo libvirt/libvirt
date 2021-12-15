@@ -835,7 +835,9 @@ int virTestMain(int argc,
     if (virErrorInitialize() < 0)
         return EXIT_FAILURE;
 
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        return EXIT_FAILURE;
+
     if (!getenv("LIBVIRT_DEBUG") && !virLogGetNbOutputs()) {
         if (!(output = virLogOutputNew(virtTestLogOutput, virtTestLogClose,
                                        &testLog, VIR_LOG_DEBUG,

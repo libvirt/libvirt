@@ -751,7 +751,8 @@ virExec(virCommand *cmd)
     VIR_FORCE_CLOSE(null);
 
     /* Initialize full logging for a while */
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        goto fork_error;
 
     if (cmd->pidfile &&
         virPipe(pipesync) < 0)

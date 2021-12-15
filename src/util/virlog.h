@@ -146,7 +146,7 @@ char *virLogGetFilters(void);
 char *virLogGetOutputs(void);
 virLogPriority virLogGetDefaultPriority(void);
 int virLogSetDefaultPriority(virLogPriority priority);
-void virLogSetFromEnv(void);
+int virLogSetFromEnv(void) G_GNUC_WARN_UNUSED_RESULT;
 void virLogOutputFree(virLogOutput *output);
 void virLogOutputListFree(virLogOutput **list, int count);
 void virLogFilterFree(virLogFilter *filter);

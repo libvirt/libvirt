@@ -402,7 +402,8 @@ int main(int argc, char **argv)
     virFileActivateDirOverrideForProg(argv[0]);
 
     /* Initialize the log system */
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        exit(EXIT_FAILURE);
 
     uri_str = argv[1];
     VIR_DEBUG("Using URI %s", uri_str);

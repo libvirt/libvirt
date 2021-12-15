@@ -1200,24 +1200,34 @@ virLogParseDefaultPriority(const char *priority)
  *
  * Sets virLogDefaultPriority, virLogFilters and virLogOutputs based on
  * environment variables.
+ *
+ * This function might fail which should also make the caller fail.
  */
-void
+int
 virLogSetFromEnv(void)
 {
     const char *debugEnv;
 
     if (virLogInitialize() < 0)
-        return;
+        return -1;
 
     debugEnv = getenv("LIBVIRT_DEBUG");
-    if (debugEnv && *debugEnv)
-        virLogSetDefaultPriority(virLogParseDefaultPriority(debugEnv));
+    if (debugEnv && *debugEnv) {
+        int priority = virLogParseDefaultPriority(debugEnv);
+        if (priority < 0 ||
+            virLogSetDefaultPriority(priority) < 0)
+            return -1;
+    }
     debugEnv = getenv("LIBVIRT_LOG_FILTERS");
-    if (debugEnv && *debugEnv)
-        virLogSetFilters(debugEnv);
+    if (debugEnv && *debugEnv &&
+        virLogSetFilters(debugEnv))
+        return -1;
     debugEnv = getenv("LIBVIRT_LOG_OUTPUTS");
-    if (debugEnv && *debugEnv)
-        virLogSetOutputs(debugEnv);
+    if (debugEnv && *debugEnv &&
+        virLogSetOutputs(debugEnv))
+        return -1;
+
+    return 0;
 }
 
 

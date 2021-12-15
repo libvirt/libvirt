@@ -55,7 +55,8 @@ virAdmGlobalInit(void)
     if (virErrorInitialize() < 0)
         goto error;
 
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        goto error;
 
 #ifdef WITH_LIBINTL_H
     if (!bindtextdomain(PACKAGE, LOCALEDIR))

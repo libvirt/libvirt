@@ -2503,7 +2503,8 @@ int main(int argc, char *argv[])
     }
 
     /* Initialize logging */
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        exit(EXIT_FAILURE);
 
     while (1) {
         int c;

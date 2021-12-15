@@ -183,7 +183,8 @@ virDaemonSetupLogging(const char *daemon_name,
         return -1;
 
     /* If there are some environment variables defined, use those instead */
-    virLogSetFromEnv();
+    if (virLogSetFromEnv() < 0)
+        return -1;
 
     /*
      * Command line override for --verbose
