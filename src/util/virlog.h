@@ -154,7 +154,7 @@ void virLogFilterListFree(virLogFilter **list, int count);
 int virLogSetOutputs(const char *outputs);
 int virLogSetFilters(const char *filters);
 char *virLogGetDefaultOutput(void);
-void virLogSetDefaultOutput(const char *fname, bool godaemon, bool privileged);
+int virLogSetDefaultOutput(const char *fname, bool godaemon, bool privileged);
 
 /*
  * Internal logging API

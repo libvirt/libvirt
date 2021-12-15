@@ -201,7 +201,7 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
  * according to @binary, @godaemon, @privileged. This function should be run
  * exactly once at daemon startup, so no locks are used.
  */
-void
+int
 virLogSetDefaultOutput(const char *binary, bool godaemon, bool privileged)
 {
     bool have_journald = access("/run/systemd/journal/socket", W_OK) >= 0;
@@ -209,14 +209,16 @@ virLogSetDefaultOutput(const char *binary, bool godaemon, bool privileged)
     if (godaemon) {
         if (have_journald)
             virLogSetDefaultOutputToJournald();
-        else
-            virLogSetDefaultOutputToFile(binary, privileged);
+        else if (virLogSetDefaultOutputToFile(binary, privileged) < 0)
+            return -1;
     } else {
         if (!isatty(STDIN_FILENO) && have_journald)
             virLogSetDefaultOutputToJournald();
         else
             virLogSetDefaultOutputToStderr();
     }
+
+    return 0;
 }
 
 
