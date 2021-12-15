@@ -125,7 +125,7 @@ static void virLogOutputToFd(virLogSource *src,
 /*
  * Logs accesses must be serialized though a mutex
  */
-virMutex virLogMutex;
+static virMutex virLogMutex = VIR_MUTEX_INITIALIZER;
 
 void
 virLogLock(void)
@@ -250,9 +250,6 @@ virLogPriorityString(virLogPriority lvl)
 static int
 virLogOnceInit(void)
 {
-    if (virMutexInit(&virLogMutex) < 0)
-        return -1;
-
     virLogLock();
     virLogDefaultPriority = VIR_LOG_DEFAULT;
 
