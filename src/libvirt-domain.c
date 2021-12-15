@@ -2185,8 +2185,7 @@ virDomainGetMemoryParameters(virDomainPtr domain,
  * Changing live configuration may be possible only in some cases. For
  * instance, for QEMU driver the mode (VIR_DOMAIN_NUMA_MODE) can not be
  * changed, and changing the nodeset (VIR_DOMAIN_NUMA_NODESET) is possible
- * only for VIR_DOMAIN_NUMATUNE_MEM_STRICT and
- * VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE modes.
+ * only for VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE mode.
  *
  * Changing persistent configuration does not pose such limitations.
  *

@@ -8777,10 +8777,9 @@ qemuDomainSetNumaParamsLive(virDomainObj *vm,
     size_t i = 0;
 
     if (virDomainNumatuneGetMode(vm->def->numa, -1, &mode) == 0 &&
-        mode != VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
         mode != VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("change of nodeset for running domain requires strict or restrictive numa mode"));
+                       _("change of nodeset for running domain requires restrictive numa mode"));
         return -1;
     }
 
@@ -8913,17 +8912,31 @@ qemuDomainSetNumaParameters(virDomainPtr dom,
             goto endjob;
         }
 
-        if (nodeset &&
-            qemuDomainSetNumaParamsLive(vm, nodeset) < 0)
-            goto endjob;
+        if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+            virBitmap *config_nodeset = NULL;
 
-        if (virDomainNumatuneSet(def->numa,
-                                 def->placement_mode ==
-                                 VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
-                                 -1, mode, nodeset) < 0)
-            goto endjob;
+            if (virDomainNumatuneMaybeGetNodeset(def->numa, priv->autoNodeset,
+                                                 &config_nodeset, -1) < 0)
+                goto endjob;
 
-        qemuDomainSaveStatus(vm);
+            if (!virBitmapEqual(nodeset, config_nodeset)) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("can't change nodeset for strict mode for running domain"));
+                goto endjob;
+            }
+        } else {
+            if (nodeset &&
+                qemuDomainSetNumaParamsLive(vm, nodeset) < 0)
+                goto endjob;
+
+            if (virDomainNumatuneSet(def->numa,
+                                     def->placement_mode ==
+                                     VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC,
+                                     -1, mode, nodeset) < 0)
+                goto endjob;
+
+            qemuDomainSaveStatus(vm);
+        }
     }
 
     if (persistentDef) {
