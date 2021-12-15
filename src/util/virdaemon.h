@@ -58,13 +58,13 @@ VIR_ENUM_IMPL(virDaemonErr,
 
 int virDaemonForkIntoBackground(const char *argv0);
 
-void virDaemonSetupLogging(const char *daemon_name,
-                           unsigned int log_level,
-                           char *log_filters,
-                           char *log_outputs,
-                           bool privileged,
-                           bool verbose,
-                           bool godaemon);
+int virDaemonSetupLogging(const char *daemon_name,
+                          unsigned int log_level,
+                          char *log_filters,
+                          char *log_outputs,
+                          bool privileged,
+                          bool verbose,
+                          bool godaemon);
 
 int virDaemonUnixSocketPaths(const char *sock_prefix,
                              bool privileged,

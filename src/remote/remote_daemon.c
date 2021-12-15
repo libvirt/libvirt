@@ -936,13 +936,14 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    virDaemonSetupLogging(DAEMON_NAME,
-                          config->log_level,
-                          config->log_filters,
-                          config->log_outputs,
-                          privileged,
-                          verbose,
-                          godaemon);
+    if (virDaemonSetupLogging(DAEMON_NAME,
+                              config->log_level,
+                              config->log_filters,
+                              config->log_outputs,
+                              privileged,
+                              verbose,
+                              godaemon) < 0)
+        exit(EXIT_FAILURE);
 
     /* Let's try to initialize global variable that holds the host's boot time. */
     if (virHostBootTimeInit() < 0) {

@@ -913,13 +913,14 @@ int main(int argc, char **argv) {
     }
     VIR_FREE(remote_config_file);
 
-    virDaemonSetupLogging("virtlockd",
-                          config->log_level,
-                          config->log_filters,
-                          config->log_outputs,
-                          privileged,
-                          verbose,
-                          godaemon);
+    if (virDaemonSetupLogging("virtlockd",
+                              config->log_level,
+                              config->log_filters,
+                              config->log_outputs,
+                              privileged,
+                              verbose,
+                              godaemon) < 0)
+        exit(EXIT_FAILURE);
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,

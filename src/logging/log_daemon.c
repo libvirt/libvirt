@@ -719,13 +719,14 @@ int main(int argc, char **argv) {
         exit(EXIT_FAILURE);
     }
 
-    virDaemonSetupLogging("virtlogd",
-                          config->log_level,
-                          config->log_filters,
-                          config->log_outputs,
-                          privileged,
-                          verbose,
-                          godaemon);
+    if (virDaemonSetupLogging("virtlogd",
+                              config->log_level,
+                              config->log_filters,
+                              config->log_outputs,
+                              privileged,
+                              verbose,
+                              godaemon) < 0)
+        exit(EXIT_FAILURE);
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,

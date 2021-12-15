@@ -151,7 +151,7 @@ virDaemonForkIntoBackground(const char *argv0)
  * but if verbose or error debugging is asked for then also output
  * informational and debug messages. Default size if 64 kB.
  */
-void
+int
 virDaemonSetupLogging(const char *daemon_name,
                       unsigned int log_level,
                       char *log_filters,
@@ -160,7 +160,8 @@ virDaemonSetupLogging(const char *daemon_name,
                       bool verbose,
                       bool godaemon)
 {
-    virLogReset();
+    if (virLogReset() < 0)
+        return -1;
 
     /*
      * Libvirtd's order of precedence is:
@@ -169,15 +170,17 @@ virDaemonSetupLogging(const char *daemon_name,
      * Given the precedence, we must process the variables in the opposite
      * order, each one overriding the previous.
      */
-    if (log_level != 0)
-        virLogSetDefaultPriority(log_level);
+    if (log_level != 0 &&
+        virLogSetDefaultPriority(log_level) < 0)
+        return -1;
 
     /* In case the config is empty, both filters and outputs will become empty,
      * however we can't start with empty outputs, thus we'll need to define and
      * setup a default one.
      */
-    ignore_value(virLogSetFilters(log_filters));
-    ignore_value(virLogSetOutputs(log_outputs));
+    if (virLogSetFilters(log_filters) < 0 ||
+        virLogSetOutputs(log_outputs) < 0)
+        return -1;
 
     /* If there are some environment variables defined, use those instead */
     virLogSetFromEnv();
@@ -185,16 +188,22 @@ virDaemonSetupLogging(const char *daemon_name,
     /*
      * Command line override for --verbose
      */
-    if ((verbose) && (virLogGetDefaultPriority() > VIR_LOG_INFO))
-        virLogSetDefaultPriority(VIR_LOG_INFO);
+    if (verbose &&
+        virLogGetDefaultPriority() > VIR_LOG_INFO &&
+        virLogSetDefaultPriority(VIR_LOG_INFO) < 0)
+        return -1;
 
     /* Define the default output. This is only applied if there was no setting
      * from either the config or the environment.
      */
-    virLogSetDefaultOutput(daemon_name, godaemon, privileged);
+    if (virLogSetDefaultOutput(daemon_name, godaemon, privileged) < 0)
+        return -1;
 
-    if (virLogGetNbOutputs() == 0)
-        virLogSetOutputs(virLogGetDefaultOutput());
+    if (virLogGetNbOutputs() == 0 &&
+        virLogSetOutputs(virLogGetDefaultOutput()) < 0)
+        return -1;
+
+    return 0;
 }
 
 
