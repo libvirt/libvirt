@@ -19914,30 +19914,30 @@ qemuGetSEVInfoToParams(virQEMUCaps *qemuCaps,
     virCheckFlags(VIR_TYPED_PARAM_STRING_OKAY, -1);
 
     if (virTypedParamsAddString(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_PDH, sev->pdh) < 0)
+                                VIR_NODE_SEV_PDH, sev->pdh) < 0)
         return -1;
 
     if (virTypedParamsAddString(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_CERT_CHAIN, sev->cert_chain) < 0)
+                                VIR_NODE_SEV_CERT_CHAIN, sev->cert_chain) < 0)
         goto cleanup;
 
     if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_CBITPOS, sev->cbitpos) < 0)
+                              VIR_NODE_SEV_CBITPOS, sev->cbitpos) < 0)
         goto cleanup;
 
     if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_REDUCED_PHYS_BITS,
-                    sev->reduced_phys_bits) < 0)
+                              VIR_NODE_SEV_REDUCED_PHYS_BITS,
+                              sev->reduced_phys_bits) < 0)
         goto cleanup;
 
     if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_MAX_GUESTS,
-                    sev->max_guests) < 0)
+                              VIR_NODE_SEV_MAX_GUESTS,
+                              sev->max_guests) < 0)
         goto cleanup;
 
     if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
-                    VIR_NODE_SEV_MAX_ES_GUESTS,
-                    sev->max_es_guests) < 0)
+                              VIR_NODE_SEV_MAX_ES_GUESTS,
+                              sev->max_es_guests) < 0)
         goto cleanup;
 
     *params = g_steal_pointer(&sevParams);
