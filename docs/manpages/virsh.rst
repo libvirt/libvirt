@@ -3545,11 +3545,11 @@ Set or get a domain's numa parameters, corresponding to the <numatune>
 element of domain XML.  Without flags, the current settings are
 displayed.
 
-*mode* can be one of \`strict', \`interleave' and \`preferred' or any
-valid number from the virDomainNumatuneMemMode enum in case the daemon
-supports it.  For a running domain, the mode can't be changed, and the
-nodeset can be changed only if the domain was started with a mode of
-\`strict'.
+*mode* can be one of \`strict', \`interleave', \`preferred' and
+\'restrictive' or any valid number from the virDomainNumatuneMemMode enum
+in case the daemon supports it.  For a running domain, the mode can't be
+changed, and the nodeset can be changed only if the domain was started with
+a mode of \`strict'.
 
 *nodeset* is a list of numa nodes used by the host for running the domain.
 Its syntax is a comma separated list, with '-' for ranges and '^' for
