@@ -4109,6 +4109,14 @@ qemuValidateDomainDeviceDefVNCGraphics(const virDomainGraphicsDef *graphics,
         return -1;
     }
 
+    if (graphics->data.vnc.auth.passwd &&
+        strlen(graphics->data.vnc.auth.passwd) > 8) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("VNC password is %zu characters long, only 8 permitted"),
+                       strlen(graphics->data.vnc.auth.passwd));
+        return -1;
+    }
+
     return 0;
 }
 

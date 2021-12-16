@@ -451,6 +451,12 @@ virQEMUDriverConfigLoadVNCEntry(virQEMUDriverConfig *cfg,
     if (virConfGetValueBool(conf, "vnc_allow_host_audio", &cfg->vncAllowHostAudio) < 0)
         return -1;
 
+    if (cfg->vncPassword &&
+        strlen(cfg->vncPassword) > 8) {
+        VIR_WARN("VNC password is %zu characters long, only 8 permitted, truncating",
+                 strlen(cfg->vncPassword));
+        cfg->vncPassword[8] = '\0';
+    }
     return 0;
 }
 
