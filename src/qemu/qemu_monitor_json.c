@@ -2806,9 +2806,13 @@ qemuMonitorJSONBlockGetNamedNodeDataWorker(size_t pos G_GNUC_UNUSED,
         STREQ_NULLABLE(virJSONValueObjectGetString(format_specific, "type"), "qcow2")) {
         virJSONValue *qcow2props = virJSONValueObjectGetObject(format_specific, "data");
 
-        if (qcow2props &&
-            STREQ_NULLABLE(virJSONValueObjectGetString(qcow2props, "compat"), "0.10"))
-            ent->qcow2v2 = true;
+        if (qcow2props) {
+            if (STREQ_NULLABLE(virJSONValueObjectGetString(qcow2props, "compat"), "0.10"))
+                ent->qcow2v2 = true;
+
+            ignore_value(virJSONValueObjectGetBoolean(qcow2props, "extended-l2",
+                                                      &ent->qcow2extendedL2));
+        }
     }
 
     if (virHashAddEntry(nodes, nodename, ent) < 0)

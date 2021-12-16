@@ -784,6 +784,9 @@ struct _qemuBlockNamedNodeData {
 
     /* image version */
     bool qcow2v2;
+
+    /* qcow2 subcluster allocation -> extended_l2 */
+    bool qcow2extendedL2;
 };
 
 GHashTable *
