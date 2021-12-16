@@ -15,6 +15,14 @@ v8.0.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Explicitly forbid live changing nodeset for strict numatune
+
+    For ``strict`` mode of <numatune/> it can't be guaranteed that memory is
+    moved completely onto new set of nodes (e.g. QEMU might have locked pieces
+    of its memory) thus breaking the strict promise. If live migration of QEMU
+    memory between NUMA nodes is desired, users are advised to use
+    ``restrictive`` mode instead.
+
 * **New features**
 
   * qemu: Synchronous write mode for disk copy operations
