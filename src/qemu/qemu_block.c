@@ -2941,11 +2941,18 @@ qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
         return -1;
     }
 
-    /* propagate cluster size if the images are compatible */
+    /* propagate properties of qcow2 images if possible*/
     if (templ->format == VIR_STORAGE_FILE_QCOW2 &&
-        src->format == VIR_STORAGE_FILE_QCOW2 &&
-        src->clusterSize == 0)
-        src->clusterSize = entry->clusterSize;
+        src->format == VIR_STORAGE_FILE_QCOW2) {
+        if (src->clusterSize == 0)
+            src->clusterSize = entry->clusterSize;
+
+        if (entry->qcow2extendedL2) {
+            if (!src->features)
+                src->features = virBitmapNew(VIR_STORAGE_FILE_FEATURE_LAST);
+            ignore_value(virBitmapSetBit(src->features, VIR_STORAGE_FILE_FEATURE_EXTENDED_L2));
+        }
+    }
 
     if (src->format == VIR_STORAGE_FILE_RAW) {
         src->physical = entry->capacity;
