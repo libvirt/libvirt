@@ -2441,11 +2441,15 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSource *src,
 {
     g_autoptr(virJSONValue) qcow2props = NULL;
     const char *qcow2version = NULL;
+    bool extendedL2 = false;
 
     if (STREQ_NULLABLE(src->compat, "0.10"))
         qcow2version = "v2";
     else if (STREQ_NULLABLE(src->compat, "1.1"))
         qcow2version = "v3";
+
+    if (src->features)
+        extendedL2 = virBitmapIsBitSet(src->features, VIR_STORAGE_FILE_FEATURE_EXTENDED_L2);
 
     if (virJSONValueObjectAdd(&qcow2props,
                               "s:driver", "qcow2",
@@ -2453,6 +2457,7 @@ qemuBlockStorageSourceCreateGetFormatPropsQcow2(virStorageSource *src,
                               "U:size", src->capacity,
                               "S:version", qcow2version,
                               "P:cluster-size", src->clusterSize,
+                              "B:extended-l2", extendedL2,
                               NULL) < 0)
         return -1;
 
