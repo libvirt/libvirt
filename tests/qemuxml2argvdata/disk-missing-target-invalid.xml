@@ -17,6 +17,9 @@
     <disk type='block' device='disk'>
       <source dev='/dev/HostVG/QEMUGuest1'/>
     </disk>
+    <disk type='block' device='disk'>
+      <source dev='/dev/HostVG/QEMUGuest2'/>
+    </disk>
     <memballoon model='virtio'/>
   </devices>
 </domain>
