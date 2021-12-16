@@ -181,3 +181,8 @@ char **
 virshDomainBlockjobBaseTopCompleter(vshControl *ctl,
                                     const vshCmd *cmd,
                                     unsigned int flags);
+
+char **
+virshDomainNumatuneModeCompleter(vshControl *ctl,
+                                 const vshCmd *cmd,
+                                 unsigned int flags);

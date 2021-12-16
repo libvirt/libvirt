@@ -37,6 +37,7 @@
 #include "virkeynametable_osx.h"
 #include "virkeynametable_win32.h"
 #include "conf/storage_conf.h"
+#include "conf/numa_conf.h"
 
 char **
 virshDomainNameCompleter(vshControl *ctl,
@@ -1127,6 +1128,25 @@ virshDomainStorageFileFormatCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     for (i = 0; i < VIR_STORAGE_FILE_LAST; i++)
         ret[i] = g_strdup(virStorageFileFormatTypeToString(i));
+
+    return ret;
+}
+
+
+char **
+virshDomainNumatuneModeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                 const vshCmd *cmd G_GNUC_UNUSED,
+                                 unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIR_DOMAIN_NUMATUNE_MEM_LAST + 1);
+
+    for (i = 0; i < VIR_DOMAIN_NUMATUNE_MEM_LAST; i++)
+        ret[i] = g_strdup(virDomainNumatuneMemModeTypeToString(i));
 
     return ret;
 }
