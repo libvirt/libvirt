@@ -15653,6 +15653,7 @@ void virDomainDiskInsert(virDomainDef *def,
         /* If bus matches and current disk is after
          * new disk, then new disk should go here */
         if (def->disks[idx]->bus == disk->bus &&
+            def->disks[idx]->dst && disk->dst &&
             (virDiskNameToIndex(def->disks[idx]->dst) >
              virDiskNameToIndex(disk->dst))) {
             insertAt = idx;
