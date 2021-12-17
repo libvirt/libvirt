@@ -1296,7 +1296,7 @@
       "arg-type": "0"
     },
     {
-      "name": "exit-preconfig",
+      "name": "x-exit-preconfig",
       "ret-type": "0",
       "allow-oob": false,
       "allow-preconfig": true,
@@ -12327,7 +12327,7 @@
       "name": "system_wakeup"
     },
     {
-      "name": "exit-preconfig"
+      "name": "x-exit-preconfig"
     },
     {
       "name": "cont"
