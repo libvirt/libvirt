@@ -12,21 +12,22 @@
 # Noriko Mizumoto <noriko@redhat.com>, 2006
 # OKANO Takayoshi <kano@na.rim.or.jp>, 2013
 # Tomoyuki KATO <tomo@dream.daynight.jp>, 2011, 2012, 2013, 2014
+# Yasuhiko Kamata <belphegor@belbel.or.jp>, 2021.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-11-25 08:59+0000\n"
-"PO-Revision-Date: 2015-02-23 06:48+0000\n"
-"Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
-"Language-Team: Japanese (http://www.transifex.com/projects/p/libvirt/"
-"language/ja/)\n"
+"PO-Revision-Date: 2021-12-18 10:16+0000\n"
+"Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
+"Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
+"libvirt/libvirt/ja/>\n"
 "Language: ja\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Zanata 4.6.2\n"
+"X-Generator: Weblate 4.10\n"
 
 msgid ""
 "\n"
@@ -399,7 +400,7 @@ msgstr "%s\n"
 
 #, c-format
 msgid "%s %s"
-msgstr ""
+msgstr "%s %s"
 
 #, c-format
 msgid "%s %s '%s' has an unsupported type '%s'"
@@ -519,17 +520,17 @@ msgstr "%s は 'type' プロパティがありません"
 msgid "%s is missing or not an array"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not an executable"
-msgstr "QEMU バイナリー %s が実行可能ではありません"
+msgstr "%s は実行可能ではありません"
 
 #, fuzzy, c-format
 msgid "%s is not available with this QEMU binary"
 msgstr "共有メモリーの無効化はこの QEMU バイナリーで利用できません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s is not supported by this QEMU binary"
-msgstr "破棄はこの QEMU バイナリーによりサポートされません"
+msgstr "%s はこの QEMU バイナリではサポートされていません"
 
 #, c-format
 msgid "%s length greater than maximum: %d > %d"
@@ -595,9 +596,9 @@ msgstr "%s オブジェクトは必要な '%s' プロパティがありません
 msgid "%s reply data was missing 'model'"
 msgstr "qom-list の応答データに 'name' がありませんでした"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s reply data was missing 'name'"
-msgstr "qom-list の応答データに 'name' がありませんでした"
+msgstr "%s の応答データに 'name' がありませんでした"
 
 #, fuzzy, c-format
 msgid "%s reply data was missing 'props'"
@@ -635,9 +636,9 @@ msgstr "%s: %s"
 msgid "%s: %s: unsupported auth %s"
 msgstr "サポートされない機能 %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: '%s' does not exist"
-msgstr "'%s' が存在しません"
+msgstr "%s: '%s' が存在しません"
 
 #, fuzzy, c-format
 msgid "%s: Address '%s' in route definition is not a network address"
@@ -860,9 +861,9 @@ msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 msgid "%s: failure with %s: %s"
 msgstr "%s: ログファイルの書き込みに失敗しました: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: initialization failed"
-msgstr "%s: 初期化に失敗しました\n"
+msgstr "%s: 初期化に失敗しました"
 
 #, c-format
 msgid "%s: initialization failed\n"
@@ -898,7 +899,7 @@ msgstr "%s: migration_port_min: ポートは 0 より大きくする必要があ
 
 #, c-format
 msgid "%s: must be run as root\n"
-msgstr ""
+msgstr "%s: root として実行する必要があります\n"
 
 #, fuzzy, c-format
 msgid "%s: must not be run setuid root\n"
@@ -958,9 +959,9 @@ msgstr "%s: コマンドライン引数が多すぎます\n"
 msgid "%s: try --help for more details"
 msgstr "%s: 詳細は --help を試してください"
 
-#, fuzzy, c-format
+#, c-format
 msgid "%s: try --help for more details\n"
-msgstr "%s: 詳細は --help を試してください"
+msgstr "%s: 詳細は --help をお試しください\n"
 
 #, c-format
 msgid "%s: unable to determine access mode of fd %d"
@@ -1074,9 +1075,9 @@ msgstr ""
 msgid "'%s' is not a suitable pr helper"
 msgstr "パス '%s' にアクセスできません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'%s' is not supported in this QEMU binary"
-msgstr "%s はこの QEMU ライブラリーにおいてサポートされていません"
+msgstr "%s はこの QEMU バイナリではサポートされていません"
 
 #, c-format
 msgid "'%s' missing"
@@ -1125,9 +1126,8 @@ msgstr ""
 msgid "'can-offline' missing in reply of guest-get-vcpus"
 msgstr "guest-get-vcpus の応答に 'can-offline' がありません"
 
-#, fuzzy
 msgid "'cmd_per_lun' is only supported by virtio-scsi controller"
-msgstr "'queues' は virtio-scsi のみによりサポートされます"
+msgstr "'cmd_per_lun' は virtio-scsi コントローラでのみサポートされます"
 
 #, fuzzy
 msgid "'cow' storage format is not supported"
@@ -1162,9 +1162,8 @@ msgstr ""
 msgid "'initiator' refers to a non-existent NUMA node"
 msgstr ""
 
-#, fuzzy
 msgid "'ioeventfd' is only supported by virtio-scsi controller"
-msgstr "'queues' は virtio-scsi のみによりサポートされます"
+msgstr "'ioeventfd' は virtio-scsi コントローラでのみサポートされます"
 
 #, fuzzy
 msgid "'iothread' attribute only supported for virtio scsi controllers"
@@ -1184,9 +1183,8 @@ msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 
-#, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
-msgstr "'queues' は virtio-scsi のみによりサポートされます"
+msgstr "'max_sectors' は virtio-scsi コントローラでのみサポートされます"
 
 #, fuzzy
 msgid "'max_workers' must be greater than 0"
@@ -1273,9 +1271,9 @@ msgid ""
 "in memory element"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid "'rx_queue_size' attribute must be positive number: %s"
-msgstr "'queues' 属性は正の整数である必要があります: %s"
+msgstr "'rx_queue_size' 属性は正の整数でなければなりません: %s"
 
 #, fuzzy
 msgid "'sgio' is not supported for SCSI generic device yet "
@@ -1306,9 +1304,9 @@ msgstr "SATA はこの QEMU バイナリーでサポートされません"
 msgid "'trim' algorithm not supported"
 msgstr "完全削除のアルゴリズム %d はサポートされません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "'tx_queue_size' attribute must be positive number: %s"
-msgstr "'queues' 属性は正の整数である必要があります: %s"
+msgstr "'tx_queue_size' 属性は正の整数でなければなりません: %s"
 
 #, fuzzy
 msgid "'type' missing in reply of guest-get-fsinfo"
@@ -1340,9 +1338,8 @@ msgstr ""
 msgid "(CPU_definition)"
 msgstr "(CPU 定義)"
 
-#, fuzzy
 msgid "(_migration_cookie)"
-msgstr "(qemu_migration_cookie)"
+msgstr "(_migration_cookie)"
 
 msgid "(bridge interface definition)"
 msgstr "(ブリッジインターフェース定義)"
@@ -1594,13 +1591,11 @@ msgstr ""
 msgid "<vendor_field> value evaluation has failed"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses IP "
 "forwarding"
-msgstr ""
-"<virtualport type='%s'> はブリッジデバイスを使用するネットワーク '%s' に対し"
-"てサポートされません"
+msgstr "<virtualport type='%s'> は IP 転送を使用するネットワーク '%s' に対してはサポートされません"
 
 #, c-format
 msgid ""
@@ -1770,11 +1765,10 @@ msgid "Add or remove vcpus"
 msgstr ""
 
 msgid "Added"
-msgstr ""
+msgstr "追加済み"
 
-#, fuzzy
 msgid "Address"
-msgstr "MAC アドレス"
+msgstr "アドレス"
 
 msgid "Advice from numad is needed in case of automatic numa placement"
 msgstr ""
@@ -1915,9 +1909,8 @@ msgstr ""
 msgid "Attempt to create %s without specifying mode"
 msgstr "モードを指定せずに %s を作成しようとします"
 
-#, fuzzy
 msgid "Attempt to migrate guest to the same host"
-msgstr "ゲストを同じホスト %s にマイグレーションしようとします"
+msgstr "ゲストを同じホストに移行しようとします"
 
 #, c-format
 msgid "Attempt to migrate guest to the same host %s"
@@ -13496,9 +13489,8 @@ msgstr "構文解析された JSON 応答 '%s' はオブジェクトではあり
 msgid "Partition path '%s' must start with '/'"
 msgstr "パーティションのパス '%s' は '/' から始まらなければいけません"
 
-#, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
-msgstr "QEMU コマンドライン引数が指定されていません"
+msgstr "コマンドラインパラメータに秘密の値を入力するのは危険です！"
 
 #, c-format
 msgid "Passphrase for key '%s'"
@@ -17321,13 +17313,13 @@ msgstr "JSON フォーマッターを作成できません"
 msgid "Unable to create KVM vCPU for TSC probing"
 msgstr "JSON フォーマッターを作成できません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG parser for %s"
-msgstr "JSON パーサーを作成できません"
+msgstr "%s に対する RNG パーサーを作成できません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to create RNG validation context %s"
-msgstr "SELinux コンテキストを作成できません: %s"
+msgstr "RNG 検証コンテキスト %s を作成できません"
 
 msgid "Unable to create TAP devices on this platform"
 msgstr "このプラットフォームにおいて TAP デバイスを作成できません"
@@ -18172,15 +18164,15 @@ msgstr "ノードの基本情報を表示します。"
 
 #, c-format
 msgid "Unable to open %s"
-msgstr "'%s' を開けません"
+msgstr "%s を開けません"
 
 #, c-format
 msgid "Unable to open %s (%d)"
 msgstr "%s (%d) を開けません"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unable to open %s, is tun module loaded?"
-msgstr "セッションリーダーになれません"
+msgstr "%s を開くことができません。 tun モジュールが読み込まれていますか？"
 
 #, c-format
 msgid "Unable to open '%s'"
@@ -19577,9 +19569,9 @@ msgstr "不明なモデルの種類 '%s'"
 msgid "Unknown namespace: %s"
 msgstr "不明なリリース: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Unknown parameter %s"
-msgstr "不明なパラメーター形式: %d"
+msgstr "不明なパラメーター %s"
 
 #, fuzzy
 msgid "Unknown parameter type"
@@ -28395,11 +28387,12 @@ msgid ""
 "libvir-list@redhat.com"
 msgstr ""
 
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "interface %s - <port isolated='yes'/> is not supported for network "
 "interfaces with type='%s'"
-msgstr "<virtualport> 要素は <interface type='%s'> に対してサポートされません"
+msgstr ""
+"インターフェイス %s - <port isolated='yes'/> は type='%s' のネットワークインターフェイスではサポートされていません"
 
 #, c-format
 msgid ""
