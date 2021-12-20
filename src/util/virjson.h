@@ -50,7 +50,7 @@ int virJSONValueObjectAddVArgs(virJSONValue **objptr, va_list args)
     ATTRIBUTE_NONNULL(1);
 
 
-virJSONValue *virJSONValueNewString(const char *data);
+virJSONValue *virJSONValueNewString(char *data);
 virJSONValue *virJSONValueNewStringLen(const char *data, size_t length);
 virJSONValue *virJSONValueNewNumberInt(int data);
 virJSONValue *virJSONValueNewNumberUint(unsigned int data);

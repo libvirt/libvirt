@@ -441,8 +441,8 @@ testJSONObjectFormatSteal(const void *opaque G_GNUC_UNUSED)
     g_autoptr(virJSONValue) t1 = NULL;
     g_autoptr(virJSONValue) t2 = NULL;
 
-    if (!(a1 = virJSONValueNewString("test")) ||
-        !(a2 = virJSONValueNewString("test"))) {
+    if (!(a1 = virJSONValueNewString(g_strdup("test"))) ||
+        !(a2 = virJSONValueNewString(g_strdup("test")))) {
         VIR_TEST_VERBOSE("Failed to create json object");
     }
 

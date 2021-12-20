@@ -412,7 +412,7 @@ virJSONValueHashFree(void *opaque)
 
 
 virJSONValue *
-virJSONValueNewString(const char *data)
+virJSONValueNewString(char *data)
 {
     virJSONValue *val;
 
@@ -422,7 +422,7 @@ virJSONValueNewString(const char *data)
     val = g_new0(virJSONValue, 1);
 
     val->type = VIR_JSON_TYPE_STRING;
-    val->data.string = g_strdup(data);
+    val->data.string = data;
 
     return val;
 }
@@ -608,12 +608,9 @@ virJSONValueObjectInsertString(virJSONValue *object,
                                const char *value,
                                bool prepend)
 {
-    virJSONValue *jvalue = virJSONValueNewString(value);
-    if (!jvalue)
-        return -1;
-    if (virJSONValueObjectInsert(object, key, &jvalue, prepend) < 0)
-        return -1;
-    return 0;
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewString(g_strdup(value));
+
+    return virJSONValueObjectInsert(object, key, &jvalue, prepend);
 }
 
 
@@ -775,7 +772,7 @@ int
 virJSONValueArrayAppendString(virJSONValue *object,
                               const char *value)
 {
-    g_autoptr(virJSONValue) jvalue = virJSONValueNewString(value);
+    g_autoptr(virJSONValue) jvalue = virJSONValueNewString(g_strdup(value));
 
     if (virJSONValueArrayAppend(object, &jvalue) < 0)
         return -1;
@@ -1438,7 +1435,7 @@ virJSONValueCopy(const virJSONValue *in)
 
     /* No need to error out in the following cases */
     case VIR_JSON_TYPE_STRING:
-        out = virJSONValueNewString(in->data.string);
+        out = virJSONValueNewString(g_strdup(in->data.string));
         break;
     case VIR_JSON_TYPE_NUMBER:
         out = virJSONValueNewNumber(g_strdup(in->data.number));
