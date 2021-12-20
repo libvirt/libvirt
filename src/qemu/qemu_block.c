@@ -881,7 +881,6 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     const char *encformat;
     const char *username = NULL;
     g_autoptr(virJSONValue) authmodes = NULL;
-    g_autoptr(virJSONValue) mode = NULL;
     const char *keysecret = NULL;
 
     if (src->nhosts > 0 &&
@@ -892,14 +891,7 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
         username = srcPriv->secinfo->username;
         keysecret = srcPriv->secinfo->alias;
         /* the auth modes are modelled after our old command line generator */
-        authmodes = virJSONValueNewArray();
-
-        if (!(mode = virJSONValueNewString("cephx")) ||
-            virJSONValueArrayAppend(authmodes, &mode) < 0)
-            return NULL;
-
-        if (!(mode = virJSONValueNewString("none")) ||
-            virJSONValueArrayAppend(authmodes, &mode) < 0)
+        if (!(authmodes = virJSONValueFromString("[\"cephx\",\"none\"]")))
             return NULL;
     }
 
