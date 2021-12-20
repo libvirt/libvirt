@@ -8221,7 +8221,7 @@ qemuMonitorJSONGetSEVMeasurement(qemuMonitor *mon)
 
 
 /**
- * Retrive info about the SEV setup, returning those fields that
+ * Retrieve info about the SEV setup, returning those fields that
  * are required to do a launch attestation, as per
  *
  * HMAC(0x04 || API_MAJOR || API_MINOR || BUILD || GCTX.POLICY || GCTX.LD || MNONCE; GCTX.TIK)
