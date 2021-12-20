@@ -309,11 +309,12 @@ virGlobalInit(void)
 int
 virInitialize(void)
 {
-    if (virOnce(&virGlobalOnce, virGlobalInit) < 0)
+    if (virOnce(&virGlobalOnce, virGlobalInit) < 0 ||
+        virGlobalError) {
+        virDispatchError(NULL);
         return -1;
+    }
 
-    if (virGlobalError)
-        return -1;
     return 0;
 }
 
@@ -1200,18 +1201,15 @@ virConnectOpen(const char *name)
     virConnectPtr ret = NULL;
 
     if (virInitialize() < 0)
-        goto error;
+        return NULL;
 
     VIR_DEBUG("name=%s", NULLSTR(name));
     virResetLastError();
     ret = virConnectOpenInternal(name, NULL, 0);
     if (!ret)
-        goto error;
-    return ret;
+        virDispatchError(NULL);
 
- error:
-    virDispatchError(NULL);
-    return NULL;
+    return ret;
 }
 
 
@@ -1236,18 +1234,14 @@ virConnectOpenReadOnly(const char *name)
     virConnectPtr ret = NULL;
 
     if (virInitialize() < 0)
-        goto error;
+        return NULL;
 
     VIR_DEBUG("name=%s", NULLSTR(name));
     virResetLastError();
     ret = virConnectOpenInternal(name, NULL, VIR_CONNECT_RO);
     if (!ret)
-        goto error;
+        virDispatchError(NULL);
     return ret;
-
- error:
-    virDispatchError(NULL);
-    return NULL;
 }
 
 
@@ -1276,18 +1270,14 @@ virConnectOpenAuth(const char *name,
     virConnectPtr ret = NULL;
 
     if (virInitialize() < 0)
-        goto error;
+        return NULL;
 
     VIR_DEBUG("name=%s, auth=%p, flags=0x%x", NULLSTR(name), auth, flags);
     virResetLastError();
     ret = virConnectOpenInternal(name, auth, flags);
     if (!ret)
-        goto error;
+        virDispatchError(NULL);
     return ret;
-
- error:
-    virDispatchError(NULL);
-    return NULL;
 }
 
 
