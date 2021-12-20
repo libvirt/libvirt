@@ -9,6 +9,7 @@ socket_sources = [
 virt_socket_lib = static_library(
   'virt_socket',
   [
+    dtrace_gen_headers,
     socket_sources,
   ],
   dependencies: [
