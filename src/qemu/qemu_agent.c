@@ -1168,9 +1168,7 @@ qemuAgentMakeStringsArray(const char **strings, unsigned int len)
     g_autoptr(virJSONValue) ret = virJSONValueNewArray();
 
     for (i = 0; i < len; i++) {
-        g_autoptr(virJSONValue) str = virJSONValueNewString(strings[i]);
-
-        if (virJSONValueArrayAppend(ret, &str) < 0)
+        if (virJSONValueArrayAppendString(ret, strings[i]) < 0)
             return NULL;
     }
 
