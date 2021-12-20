@@ -39,123 +39,247 @@ typedef enum {
 
 typedef struct _virJSONValue virJSONValue;
 
-void virJSONValueFree(virJSONValue *value);
-void virJSONValueHashFree(void *opaque);
+void
+virJSONValueFree(virJSONValue *value);
+void
+virJSONValueHashFree(void *opaque);
 
-virJSONType virJSONValueGetType(const virJSONValue *value);
+virJSONType
+virJSONValueGetType(const virJSONValue *value);
 
-int virJSONValueObjectAdd(virJSONValue **obj, ...)
+int
+virJSONValueObjectAdd(virJSONValue **obj, ...)
     ATTRIBUTE_NONNULL(1) G_GNUC_NULL_TERMINATED;
-int virJSONValueObjectAddVArgs(virJSONValue **objptr, va_list args)
+int
+virJSONValueObjectAddVArgs(virJSONValue **objptr,
+                           va_list args)
     ATTRIBUTE_NONNULL(1);
 
 
-virJSONValue *virJSONValueNewString(char *data);
-virJSONValue *virJSONValueNewNumberInt(int data);
-virJSONValue *virJSONValueNewNumberUint(unsigned int data);
-virJSONValue *virJSONValueNewNumberLong(long long data);
-virJSONValue *virJSONValueNewNumberUlong(unsigned long long data);
-virJSONValue *virJSONValueNewNumberDouble(double data);
-virJSONValue *virJSONValueNewBoolean(int boolean);
-virJSONValue *virJSONValueNewNull(void);
-virJSONValue *virJSONValueNewArray(void);
-virJSONValue *virJSONValueNewObject(void);
+virJSONValue *
+virJSONValueNewString(char *data);
+virJSONValue *
+virJSONValueNewNumberInt(int data);
+virJSONValue *
+virJSONValueNewNumberUint(unsigned int data);
+virJSONValue *
+virJSONValueNewNumberLong(long long data);
+virJSONValue *
+virJSONValueNewNumberUlong(unsigned long long data);
+virJSONValue *
+virJSONValueNewNumberDouble(double data);
+virJSONValue *
+virJSONValueNewBoolean(int boolean);
+virJSONValue *
+virJSONValueNewNull(void);
+virJSONValue *
+virJSONValueNewArray(void);
+virJSONValue *
+virJSONValueNewObject(void);
 
-int virJSONValueObjectAppend(virJSONValue *object,
-                             const char *key,
-                             virJSONValue **value);
-int virJSONValueArrayAppend(virJSONValue *object,
-                            virJSONValue **value);
-int virJSONValueArrayConcat(virJSONValue *a,
-                            virJSONValue *c);
+int
+virJSONValueObjectAppend(virJSONValue *object,
+                         const char *key,
+                         virJSONValue **value);
+int
+virJSONValueArrayAppend(virJSONValue *object,
+                        virJSONValue **value);
+int
+virJSONValueArrayConcat(virJSONValue *a,
+                        virJSONValue *c);
 
-int virJSONValueObjectHasKey(virJSONValue *object, const char *key);
-virJSONValue *virJSONValueObjectGet(virJSONValue *object, const char *key);
-virJSONValue *virJSONValueObjectGetByType(virJSONValue *object,
-                                            const char *key, virJSONType type);
+int
+virJSONValueObjectHasKey(virJSONValue *object,
+                         const char *key);
+virJSONValue *
+virJSONValueObjectGet(virJSONValue *object,
+                      const char *key);
+virJSONValue *
+virJSONValueObjectGetByType(virJSONValue *object,
+                            const char *key,
+                            virJSONType type);
 
-bool virJSONValueIsObject(virJSONValue *object);
+bool
+virJSONValueIsObject(virJSONValue *object);
 
-bool virJSONValueIsArray(virJSONValue *array);
-size_t virJSONValueArraySize(const virJSONValue *array);
-virJSONValue *virJSONValueArrayGet(virJSONValue *object, unsigned int element);
-virJSONValue *virJSONValueArraySteal(virJSONValue *object, unsigned int element);
+bool
+virJSONValueIsArray(virJSONValue *array);
+size_t
+virJSONValueArraySize(const virJSONValue *array);
+virJSONValue *
+virJSONValueArrayGet(virJSONValue *object,
+                     unsigned int element);
+virJSONValue *
+virJSONValueArraySteal(virJSONValue *object,
+                       unsigned int element);
+
 typedef int (*virJSONArrayIteratorFunc)(size_t pos,
                                         virJSONValue *item,
                                         void *opaque);
-int virJSONValueArrayForeachSteal(virJSONValue *array,
-                                  virJSONArrayIteratorFunc cb,
-                                  void *opaque);
 
-int virJSONValueObjectKeysNumber(virJSONValue *object);
-const char *virJSONValueObjectGetKey(virJSONValue *object, unsigned int n);
-virJSONValue *virJSONValueObjectGetValue(virJSONValue *object, unsigned int n);
+int
+virJSONValueArrayForeachSteal(virJSONValue *array,
+                              virJSONArrayIteratorFunc cb,
+                              void *opaque);
 
-const char *virJSONValueGetString(virJSONValue *object);
-const char *virJSONValueGetNumberString(virJSONValue *number);
-int virJSONValueGetNumberInt(virJSONValue *object, int *value);
-int virJSONValueGetNumberUint(virJSONValue *object, unsigned int *value);
-int virJSONValueGetNumberLong(virJSONValue *object, long long *value);
-int virJSONValueGetNumberUlong(virJSONValue *object, unsigned long long *value);
-int virJSONValueGetNumberDouble(virJSONValue *object, double *value);
-int virJSONValueGetBoolean(virJSONValue *object, bool *value);
-virJSONValue *virJSONValueObjectGetObject(virJSONValue *object,
-                                            const char *key);
-virJSONValue *virJSONValueObjectGetArray(virJSONValue *object,
-                                           const char *key);
-virJSONValue *virJSONValueObjectStealArray(virJSONValue *object,
-                                             const char *key);
-virJSONValue *virJSONValueObjectStealObject(virJSONValue *object,
-                                              const char *key);
+int
+virJSONValueObjectKeysNumber(virJSONValue *object);
+const char *
+virJSONValueObjectGetKey(virJSONValue *object,
+                         unsigned int n);
+virJSONValue *
+virJSONValueObjectGetValue(virJSONValue *object,
+                           unsigned int n);
 
-const char *virJSONValueObjectGetString(virJSONValue *object, const char *key);
-char **virJSONValueObjectGetStringArray(virJSONValue *object, const char *key);
-const char *virJSONValueObjectGetStringOrNumber(virJSONValue *object, const char *key);
-int virJSONValueObjectGetNumberInt(virJSONValue *object, const char *key, int *value);
-int virJSONValueObjectGetNumberUint(virJSONValue *object, const char *key, unsigned int *value);
-int virJSONValueObjectGetNumberLong(virJSONValue *object, const char *key, long long *value);
-int virJSONValueObjectGetNumberUlong(virJSONValue *object, const char *key, unsigned long long *value);
-int virJSONValueObjectGetNumberDouble(virJSONValue *object, const char *key, double *value);
-int virJSONValueObjectGetBoolean(virJSONValue *object, const char *key, bool *value);
+const char *
+virJSONValueGetString(virJSONValue *object);
+const char *
+virJSONValueGetNumberString(virJSONValue *number);
+int
+virJSONValueGetNumberInt(virJSONValue *object,
+                         int *value);
+int
+virJSONValueGetNumberUint(virJSONValue *object,
+                          unsigned int *value);
+int
+virJSONValueGetNumberLong(virJSONValue *object,
+                          long long *value);
+int
+virJSONValueGetNumberUlong(virJSONValue *object,
+                           unsigned long long *value);
+int
+virJSONValueGetNumberDouble(virJSONValue *object,
+                            double *value);
+int
+virJSONValueGetBoolean(virJSONValue *object,
+                       bool *value);
 
-int virJSONValueObjectAppendString(virJSONValue *object, const char *key, const char *value);
-int virJSONValueObjectAppendStringPrintf(virJSONValue *object, const char *key, const char *fmt, ...)
+virJSONValue *
+virJSONValueObjectGetObject(virJSONValue *object,
+                            const char *key);
+virJSONValue *
+virJSONValueObjectGetArray(virJSONValue *object,
+                           const char *key);
+virJSONValue *
+virJSONValueObjectStealArray(virJSONValue *object,
+                             const char *key);
+virJSONValue *
+virJSONValueObjectStealObject(virJSONValue *object,
+                              const char *key);
+const char *
+virJSONValueObjectGetString(virJSONValue *object,
+                            const char *key);
+char **
+virJSONValueObjectGetStringArray(virJSONValue *object,
+                                 const char *key);
+const char *
+virJSONValueObjectGetStringOrNumber(virJSONValue *object,
+                                    const char *key);
+int
+virJSONValueObjectGetNumberInt(virJSONValue *object,
+                               const char *key,
+                               int *value);
+int
+virJSONValueObjectGetNumberUint(virJSONValue *object,
+                                const char *key,
+                                unsigned int *value);
+int
+virJSONValueObjectGetNumberLong(virJSONValue *object,
+                                const char *key,
+                                long long *value);
+int
+virJSONValueObjectGetNumberUlong(virJSONValue *object,
+                                 const char *key,
+                                 unsigned long long *value);
+int
+virJSONValueObjectGetNumberDouble(virJSONValue *object,
+                                  const char *key,
+                                  double *value);
+int
+virJSONValueObjectGetBoolean(virJSONValue *object,
+                             const char *key,
+                             bool *value);
+
+int
+virJSONValueObjectAppendString(virJSONValue *object,
+                               const char *key,
+                               const char *value);
+int
+virJSONValueObjectAppendStringPrintf(virJSONValue *object,
+                                     const char *key,
+                                     const char *fmt,
+                                     ...)
     G_GNUC_PRINTF(3, 4);
-int virJSONValueObjectPrependString(virJSONValue *object, const char *key, const char *value);
-int virJSONValueObjectAppendNumberInt(virJSONValue *object, const char *key, int number);
-int virJSONValueObjectAppendNumberUint(virJSONValue *object, const char *key, unsigned int number);
-int virJSONValueObjectAppendNumberLong(virJSONValue *object, const char *key, long long number);
-int virJSONValueObjectAppendNumberUlong(virJSONValue *object, const char *key, unsigned long long number);
-int virJSONValueObjectAppendNumberDouble(virJSONValue *object, const char *key, double number);
-int virJSONValueObjectAppendBoolean(virJSONValue *object, const char *key, int boolean);
-int virJSONValueObjectAppendNull(virJSONValue *object, const char *key);
+int
+virJSONValueObjectPrependString(virJSONValue *object,
+                                const char *key,
+                                const char *value);
+int
+virJSONValueObjectAppendNumberInt(virJSONValue *object,
+                                  const char *key,
+                                  int number);
+int
+virJSONValueObjectAppendNumberUint(virJSONValue *object,
+                                   const char *key,
+                                   unsigned int number);
+int
+virJSONValueObjectAppendNumberLong(virJSONValue *object,
+                                   const char *key,
+                                   long long number);
+int
+virJSONValueObjectAppendNumberUlong(virJSONValue *object,
+                                    const char *key,
+                                    unsigned long long number);
+int
+virJSONValueObjectAppendNumberDouble(virJSONValue *object,
+                                     const char *key,
+                                     double number);
+int
+virJSONValueObjectAppendBoolean(virJSONValue *object,
+                                const char *key,
+                                int boolean);
+int
+virJSONValueObjectAppendNull(virJSONValue *object,
+                             const char *key);
 
-int virJSONValueObjectRemoveKey(virJSONValue *object, const char *key,
-                                virJSONValue **value)
+int
+virJSONValueObjectRemoveKey(virJSONValue *object,
+                            const char *key,
+                            virJSONValue **value)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-int virJSONValueArrayAppendString(virJSONValue *object, const char *value);
+int
+virJSONValueArrayAppendString(virJSONValue *object,
+                              const char *value);
 
-virJSONValue *virJSONValueFromString(const char *jsonstring);
-char *virJSONValueToString(virJSONValue *object,
-                           bool pretty);
-int virJSONValueToBuffer(virJSONValue *object,
-                         virBuffer *buf,
-                         bool pretty)
+virJSONValue *
+virJSONValueFromString(const char *jsonstring);
+char *
+virJSONValueToString(virJSONValue *object,
+                     bool pretty);
+int
+virJSONValueToBuffer(virJSONValue *object,
+                     virBuffer *buf,
+                     bool pretty)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 typedef int (*virJSONValueObjectIteratorFunc)(const char *key,
                                               virJSONValue *value,
                                               void *opaque);
 
-int virJSONValueObjectForeachKeyValue(virJSONValue *object,
-                                      virJSONValueObjectIteratorFunc cb,
-                                      void *opaque);
+int
+virJSONValueObjectForeachKeyValue(virJSONValue *object,
+                                  virJSONValueObjectIteratorFunc cb,
+                                  void *opaque);
 
-virJSONValue *virJSONValueCopy(const virJSONValue *in);
+virJSONValue *
+virJSONValueCopy(const virJSONValue *in);
 
-char *virJSONStringReformat(const char *jsonstr, bool pretty);
+char *
+virJSONStringReformat(const char *jsonstr,
+                      bool pretty);
 
-virJSONValue *virJSONValueObjectDeflatten(virJSONValue *json);
+virJSONValue *
+virJSONValueObjectDeflatten(virJSONValue *json);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virJSONValue, virJSONValueFree);
