@@ -826,10 +826,8 @@ int main(int argc, char **argv) {
     };
 
     if (virGettextInitialize() < 0 ||
-        virInitialize() < 0) {
-        fprintf(stderr, _("%s: initialization failed\n"), argv[0]);
+        virInitialize() < 0)
         exit(EXIT_FAILURE);
-    }
 
     virUpdateSelfLastChanged(argv[0]);
 
