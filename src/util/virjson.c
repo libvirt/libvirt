@@ -1136,13 +1136,6 @@ virJSONValueGetBoolean(virJSONValue *val,
 }
 
 
-bool
-virJSONValueIsNull(virJSONValue *val)
-{
-    return val->type == VIR_JSON_TYPE_NULL;
-}
-
-
 const char *
 virJSONValueObjectGetString(virJSONValue *object,
                             const char *key)
@@ -1295,18 +1288,6 @@ virJSONValueObjectStealObject(virJSONValue *object,
     return virJSONValueObjectStealByType(object, key, VIR_JSON_TYPE_OBJECT);
 }
 
-
-int
-virJSONValueObjectIsNull(virJSONValue *object,
-                         const char *key)
-{
-    virJSONValue *val = virJSONValueObjectGet(object, key);
-
-    if (!val)
-        return -1;
-
-    return virJSONValueIsNull(val);
-}
 
 char **
 virJSONValueObjectGetStringArray(virJSONValue *object, const char *key)

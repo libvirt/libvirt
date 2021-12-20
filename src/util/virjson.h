@@ -99,7 +99,6 @@ int virJSONValueGetNumberLong(virJSONValue *object, long long *value);
 int virJSONValueGetNumberUlong(virJSONValue *object, unsigned long long *value);
 int virJSONValueGetNumberDouble(virJSONValue *object, double *value);
 int virJSONValueGetBoolean(virJSONValue *object, bool *value);
-bool virJSONValueIsNull(virJSONValue *object);
 virJSONValue *virJSONValueObjectGetObject(virJSONValue *object,
                                             const char *key);
 virJSONValue *virJSONValueObjectGetArray(virJSONValue *object,
@@ -118,7 +117,6 @@ int virJSONValueObjectGetNumberLong(virJSONValue *object, const char *key, long 
 int virJSONValueObjectGetNumberUlong(virJSONValue *object, const char *key, unsigned long long *value);
 int virJSONValueObjectGetNumberDouble(virJSONValue *object, const char *key, double *value);
 int virJSONValueObjectGetBoolean(virJSONValue *object, const char *key, bool *value);
-int virJSONValueObjectIsNull(virJSONValue *object, const char *key);
 
 int virJSONValueObjectAppendString(virJSONValue *object, const char *key, const char *value);
 int virJSONValueObjectAppendStringPrintf(virJSONValue *object, const char *key, const char *fmt, ...)
