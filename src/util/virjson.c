@@ -428,24 +428,6 @@ virJSONValueNewString(char *data)
 }
 
 
-virJSONValue *
-virJSONValueNewStringLen(const char *data,
-                         size_t length)
-{
-    virJSONValue *val;
-
-    if (!data)
-        return virJSONValueNewNull();
-
-    val = g_new0(virJSONValue, 1);
-
-    val->type = VIR_JSON_TYPE_STRING;
-    val->data.string = g_strndup(data, length);
-
-    return val;
-}
-
-
 /**
  * virJSONValueNewNumber:
  * @data: string representing the number
@@ -1558,8 +1540,7 @@ virJSONParserHandleString(void *ctx,
                           size_t stringLen)
 {
     virJSONParser *parser = ctx;
-    g_autoptr(virJSONValue) value = virJSONValueNewStringLen((const char *)stringVal,
-                                                             stringLen);
+    g_autoptr(virJSONValue) value = virJSONValueNewString(g_strndup((const char *)stringVal, stringLen));
 
     VIR_DEBUG("parser=%p str=%p", parser, (const char *)stringVal);
 
