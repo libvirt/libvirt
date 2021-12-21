@@ -1,6 +1,5 @@
 fonts = [
   'LICENSE.rst',
-  'stylesheet.css',
   'overpass-bold-italic.woff',
   'overpass-bold.woff',
   'overpass-italic.woff',

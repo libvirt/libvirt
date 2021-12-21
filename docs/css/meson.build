@@ -1,4 +1,5 @@
 docs_css_files = [
+  'fonts.css',
   'generic.css',
   'libvirt.css',
   'main.css',
