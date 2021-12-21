@@ -10,7 +10,7 @@
 }
 
 #home {
-    background-image: url(logos/logo-banner-light-256.png);
+    background-image: url(../logos/logo-banner-light-256.png);
     background-repeat: no-repeat;
     background-position: left center;
     height: 100px;
@@ -419,7 +419,7 @@ div.panel h2,
 #index.document h1 {
     border: 0px;
     text-indent: 100%; white-space: nowrap; overflow: hidden;
-    background: url(logos/logo-banner-dark-800.png) no-repeat center center;
+    background: url(../logos/logo-banner-dark-800.png) no-repeat center center;
     height: 300px;
 }
 

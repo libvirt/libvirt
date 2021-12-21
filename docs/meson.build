@@ -13,11 +13,7 @@ docs_assets = [
   'favicon.ico',
   'favicon-16x16.png',
   'favicon-32x32.png',
-  'generic.css',
-  'libvirt.css',
-  'main.css',
   'manifest.json',
-  'mobile.css',
   'mstile-150x150.png',
 ]
 
@@ -288,6 +284,7 @@ html_xslt_gen = []
 
 # --- end of XSLT processing ---
 
+subdir('css')
 subdir('fonts')
 subdir('go')
 subdir('html')

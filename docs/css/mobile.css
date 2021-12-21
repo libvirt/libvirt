@@ -3,7 +3,7 @@
 	width: 100%;
 	display: block;
 	margin: 0px;
-	background: white url(logos/logo-banner-dark-256.png) no-repeat center center;
+	background: white url(../logos/logo-banner-dark-256.png) no-repeat center center;
 	height: 94px;
     }
     #home a {
