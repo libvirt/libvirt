@@ -260,6 +260,6 @@ rules and guidelines. In order to add new API functionality follow the
 instructions regarding `implementing a new API in
 libvirt <api_extension.html>`__.
 
-.. |first class objects exposed by the API| image:: libvirt-object-model.png
-.. |The libvirt driver architecture| image:: libvirt-driver-arch.png
-.. |The libvirt daemon and remote architecture| image:: libvirt-daemon-arch.png
+.. |first class objects exposed by the API| image:: images/libvirt-object-model.png
+.. |The libvirt driver architecture| image:: images/libvirt-driver-arch.png
+.. |The libvirt daemon and remote architecture| image:: images/libvirt-daemon-arch.png

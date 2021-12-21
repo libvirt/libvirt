@@ -15,7 +15,7 @@
     virtualized machine provided by the hypervisor</li>
     </ul>
     <p class="image">
-      <img alt="Hypervisor and domains running on a node" src="node.gif"/>
+      <img alt="Hypervisor and domains running on a node" src="images/node.gif"/>
     </p>
     <p>Now we can define the goal of libvirt: <b> to provide a common and
     stable layer sufficient to securely manage domains on a node, possibly

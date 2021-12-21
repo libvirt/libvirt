@@ -35,7 +35,7 @@
 
     <p class="image">
       <img alt="virConnectOpen calling sequence"
-           src="libvirt-virConnect-example.png"/>
+           src="images/libvirt-virConnect-example.png"/>
     </p>
     <ul>
         <li>"virsh -c qemu:///system list --all"

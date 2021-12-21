@@ -10,27 +10,15 @@ docs_assets = [
   'android-chrome-256x256.png',
   'apple-touch-icon.png',
   'browserconfig.xml',
-  'event_loop_simple.png',
-  'event_loop_worker.png',
   'favicon.ico',
   'favicon-16x16.png',
   'favicon-32x32.png',
   'generic.css',
   'libvirt.css',
-  'libvirt-daemon-arch.png',
-  'libvirt-driver-arch.png',
-  'libvirt-object-model.png',
-  'libvirt-virConnect-example.png',
   'main.css',
   'manifest.json',
-  'migration-managed-direct.png',
-  'migration-managed-p2p.png',
-  'migration-native.png',
-  'migration-tunnel.png',
-  'migration-unmanaged-direct.png',
   'mobile.css',
   'mstile-150x150.png',
-  'node.gif',
 ]
 
 docs_html_in_files = [
@@ -303,6 +291,7 @@ html_xslt_gen = []
 subdir('fonts')
 subdir('go')
 subdir('html')
+subdir('images')
 subdir('internals')
 subdir('js')
 subdir('kbase')

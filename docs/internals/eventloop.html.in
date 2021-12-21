@@ -29,7 +29,7 @@
     not waiting for direct user input and have no graphical
     interface. Such as Libvirt.</p>
 
-    <img alt="event loop" src="../event_loop_simple.png"/>
+    <img alt="event loop" src="../images/event_loop_simple.png"/>
 
     <p>In Libvirt this approach is used in combination with
     <code>poll(2)</code> as all the communication with its
@@ -70,7 +70,7 @@
     acceptable for Libvirt. Therefore we have came up with the
     following solution.</p>
 
-    <img alt="event loop" src="../event_loop_worker.png"/>
+    <img alt="event loop" src="../images/event_loop_worker.png"/>
 
     <p>The event loop does only necessary minimum and hand over
     message processing to another thread. In fact, there can be

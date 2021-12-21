@@ -478,13 +478,13 @@ guest doing a lot of I/O to a local fast storage the
 synchronously written to the destination. This may harm I/O performance during
 the migration.
 
-.. |Migration native path| image:: migration-native.png
+.. |Migration native path| image:: images/migration-native.png
    :class: diagram
-.. |Migration tunnel path| image:: migration-tunnel.png
+.. |Migration tunnel path| image:: images/migration-tunnel.png
    :class: diagram
-.. |Migration direct, managed| image:: migration-managed-direct.png
+.. |Migration direct, managed| image:: images/migration-managed-direct.png
    :class: diagram
-.. |Migration peer-to-peer| image:: migration-managed-p2p.png
+.. |Migration peer-to-peer| image:: images/migration-managed-p2p.png
    :class: diagram
-.. |Migration direct, unmanaged| image:: migration-unmanaged-direct.png
+.. |Migration direct, unmanaged| image:: images/migration-unmanaged-direct.png
    :class: diagram
