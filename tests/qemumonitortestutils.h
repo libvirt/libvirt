@@ -31,76 +31,98 @@ typedef int (*qemuMonitorTestResponseCallback)(qemuMonitorTest *test,
                                                qemuMonitorTestItem *item,
                                                const char *message);
 
-int qemuMonitorTestAddHandler(qemuMonitorTest *test,
-                              const char *identifier,
-                              qemuMonitorTestResponseCallback cb,
-                              void *opaque,
-                              virFreeCallback freecb);
+int
+qemuMonitorTestAddHandler(qemuMonitorTest *test,
+                          const char *identifier,
+                          qemuMonitorTestResponseCallback cb,
+                          void *opaque,
+                          virFreeCallback freecb);
 
-int qemuMonitorTestAddResponse(qemuMonitorTest *test,
-                               const char *response);
-
-int qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTest *test,
-                                             const char *expectedcommand,
-                                             const char *actualcommand);
-
-void *qemuMonitorTestItemGetPrivateData(qemuMonitorTestItem *item);
-
-int qemuMonitorTestAddErrorResponse(qemuMonitorTest *test, const char *errmsg, ...);
-
-void qemuMonitorTestAllowUnusedCommands(qemuMonitorTest *test);
-void qemuMonitorTestSkipDeprecatedValidation(qemuMonitorTest *test,
-                                             bool allowRemoved);
-
-int qemuMonitorTestAddItem(qemuMonitorTest *test,
-                           const char *command_name,
+int
+qemuMonitorTestAddResponse(qemuMonitorTest *test,
                            const char *response);
 
-int qemuMonitorTestAddItemVerbatim(qemuMonitorTest *test,
-                                   const char *command,
-                                   const char *cmderr,
-                                   const char *response);
+int
+qemuMonitorTestAddInvalidCommandResponse(qemuMonitorTest *test,
+                                         const char *expectedcommand,
+                                         const char *actualcommand);
 
-int qemuMonitorTestAddAgentSyncResponse(qemuMonitorTest *test);
+void *
+qemuMonitorTestItemGetPrivateData(qemuMonitorTestItem *item);
 
-int qemuMonitorTestAddItemParams(qemuMonitorTest *test,
-                                 const char *cmdname,
-                                 const char *response,
-                                 ...)
+int
+qemuMonitorTestAddErrorResponse(qemuMonitorTest *test,
+                                const char *errmsg,
+                                ...);
+
+void
+qemuMonitorTestAllowUnusedCommands(qemuMonitorTest *test);
+void
+qemuMonitorTestSkipDeprecatedValidation(qemuMonitorTest *test,
+                                        bool allowRemoved);
+
+int
+qemuMonitorTestAddItem(qemuMonitorTest *test,
+                       const char *command_name,
+                       const char *response);
+
+int
+qemuMonitorTestAddItemVerbatim(qemuMonitorTest *test,
+                               const char *command,
+                               const char *cmderr,
+                               const char *response);
+
+int
+qemuMonitorTestAddAgentSyncResponse(qemuMonitorTest *test);
+
+int
+qemuMonitorTestAddItemParams(qemuMonitorTest *test,
+                             const char *cmdname,
+                             const char *response,
+                             ...)
     G_GNUC_NULL_TERMINATED;
 
-int qemuMonitorTestAddItemExpect(qemuMonitorTest *test,
-                                 const char *cmdname,
-                                 const char *cmdargs,
-                                 bool apostrophe,
-                                 const char *response);
+int
+qemuMonitorTestAddItemExpect(qemuMonitorTest *test,
+                             const char *cmdname,
+                             const char *cmdargs,
+                             bool apostrophe,
+                             const char *response);
 
 #define qemuMonitorTestNewSimple(xmlopt) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, NULL)
 #define qemuMonitorTestNewSchema(xmlopt, schema) \
     qemuMonitorTestNew(xmlopt, NULL, NULL, NULL, schema)
 
-qemuMonitorTest *qemuMonitorTestNew(virDomainXMLOption *xmlopt,
-                                      virDomainObj *vm,
-                                      virQEMUDriver *driver,
-                                      const char *greeting,
-                                      GHashTable *schema);
+qemuMonitorTest *
+qemuMonitorTestNew(virDomainXMLOption *xmlopt,
+                   virDomainObj *vm,
+                   virQEMUDriver *driver,
+                   const char *greeting,
+                   GHashTable *schema);
 
-qemuMonitorTest *qemuMonitorTestNewFromFile(const char *fileName,
-                                              virDomainXMLOption *xmlopt,
-                                              bool simple);
-qemuMonitorTest *qemuMonitorTestNewFromFileFull(const char *fileName,
-                                                  virQEMUDriver *driver,
-                                                  virDomainObj *vm,
-                                                  GHashTable *qmpschema);
+qemuMonitorTest *
+qemuMonitorTestNewFromFile(const char *fileName,
+                           virDomainXMLOption *xmlopt,
+                           bool simple);
+qemuMonitorTest *
+qemuMonitorTestNewFromFileFull(const char *fileName,
+                               virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               GHashTable *qmpschema);
 
-qemuMonitorTest *qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt);
+qemuMonitorTest *
+qemuMonitorTestNewAgent(virDomainXMLOption *xmlopt);
 
 
-void qemuMonitorTestFree(qemuMonitorTest *test);
+void
+qemuMonitorTestFree(qemuMonitorTest *test);
 
-qemuMonitor *qemuMonitorTestGetMonitor(qemuMonitorTest *test);
-qemuAgent *qemuMonitorTestGetAgent(qemuMonitorTest *test);
-virDomainObj *qemuMonitorTestGetDomainObj(qemuMonitorTest *test);
+qemuMonitor *
+qemuMonitorTestGetMonitor(qemuMonitorTest *test);
+qemuAgent *
+qemuMonitorTestGetAgent(qemuMonitorTest *test);
+virDomainObj *
+qemuMonitorTestGetDomainObj(qemuMonitorTest *test);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuMonitorTest, qemuMonitorTestFree);
