@@ -1388,7 +1388,7 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtnetworkd
 
-%preun
+%preun daemon-driver-network
 %libvirt_daemon_systemd_preun virtnetworkd
 
 %postun daemon-driver-network
