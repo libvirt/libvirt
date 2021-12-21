@@ -47,6 +47,12 @@ v8.0.0 (unreleased)
     Libvirt is now able to set the size of translation block cache size
     (tb-size) for TCG domains.
 
+    * qemu: Add new API to inject a launch secret in a domain
+
+    New API ``virDomainSetLaunchSecurityState()`` and virsh command
+    ``domsetlaunchsecstate`` are added to support injecting a launch secret
+    in a domain's memory.
+
 * **Improvements**
 
   * libxl: Implement the virDomainGetMessages API
