@@ -1278,6 +1278,97 @@ qemuMonitorTestFullAddItem(qemuMonitorTest *test,
 
 
 /**
+ * qemuMonitorTestProcessFileEntries:
+ * @inputstr: input file contents (modified)
+ * @fileName: File name of @inputstr (for error reporting)
+ * @items: filled with command, reply tuples
+ * @nitems: Count of elements in @items.
+ *
+ * Process a monitor interaction file.
+ *
+ * The file contains a sequence of JSON commands and reply objects separated by
+ * empty lines. A command is followed by a reply.
+ */
+int
+qemuMonitorTestProcessFileEntries(char *inputstr,
+                                  const char *fileName,
+                                  struct qemuMonitorTestCommandReplyTuple **items,
+                                  size_t *nitems)
+{
+    size_t nalloc = 0;
+    char *tmp = inputstr;
+    size_t line = 0;
+    char *command = inputstr;
+    char *response = NULL;
+    size_t commandln = 0;
+
+    *items = NULL;
+    *nitems = 0;
+
+    while ((tmp = strchr(tmp, '\n'))) {
+        line++;
+
+        /* eof */
+        if (!tmp[1])
+            break;
+
+        /* concatenate block which was broken up for readability */
+        if (*(tmp + 1) != '\n') {
+            *tmp = ' ';
+            tmp++;
+            continue;
+        }
+
+        /* Cut off a single reply. */
+        *(tmp + 1) = '\0';
+
+        if (response) {
+            struct qemuMonitorTestCommandReplyTuple *item;
+
+            VIR_RESIZE_N(*items, nalloc, *nitems, 1);
+
+            item = *items + *nitems;
+
+            item->command = g_steal_pointer(&command);
+            item->reply = g_steal_pointer(&response);
+            item->line = commandln;
+            (*nitems)++;
+        }
+
+        /* Move the @tmp and @singleReply. */
+        tmp += 2;
+
+        if (!command) {
+            commandln = line;
+            command = tmp;
+        } else {
+            response = tmp;
+        }
+    }
+
+    if (command) {
+        struct qemuMonitorTestCommandReplyTuple *item;
+
+        if (!response) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "missing response for command "
+                           "on line '%zu' in '%s'", commandln, fileName);
+            return -1;
+        }
+
+        VIR_RESIZE_N(*items, nalloc, *nitems, 1);
+
+        item = *items + *nitems;
+
+        item->command = g_steal_pointer(&command);
+        item->reply = g_steal_pointer(&response);
+        item->line = commandln;
+        (*nitems)++;
+    }
+
+    return 0;
+}
+
+/**
  * qemuMonitorTestNewFromFileFull:
  * @fileName: File name to load monitor replies from
  * @driver: qemu driver object
@@ -1301,12 +1392,9 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
 {
     g_autoptr(qemuMonitorTest) ret = NULL;
     g_autofree char *jsonstr = NULL;
-    char *tmp;
-    size_t line = 0;
-
-    char *command = NULL;
-    char *response = NULL;
-    size_t commandln = 0;
+    g_autofree struct qemuMonitorTestCommandReplyTuple *items = NULL;
+    size_t nitems = 0;
+    size_t i;
 
     if (virTestLoadFile(fileName, &jsonstr) < 0)
         return NULL;
@@ -1315,53 +1403,14 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
                                    qmpschema)))
         return NULL;
 
-    tmp = jsonstr;
-    command = tmp;
-    while ((tmp = strchr(tmp, '\n'))) {
-        line++;
+    if (qemuMonitorTestProcessFileEntries(jsonstr, fileName, &items, &nitems) < 0)
+        return NULL;
 
-        /* eof */
-        if (!tmp[1])
-            break;
+    for (i = 0; i < nitems; i++) {
+        struct qemuMonitorTestCommandReplyTuple *item = items + i;
 
-        /* concatenate block which was broken up for readability */
-        if (*(tmp + 1) != '\n') {
-            *tmp = ' ';
-            tmp++;
-            continue;
-        }
-
-        /* Cut off a single reply. */
-        *(tmp + 1) = '\0';
-
-        if (response) {
-            if (qemuMonitorTestFullAddItem(ret, fileName, command,
-                                           response, commandln) < 0)
-                return NULL;
-            command = NULL;
-            response = NULL;
-        }
-
-        /* Move the @tmp and @singleReply. */
-        tmp += 2;
-
-        if (!command) {
-            commandln = line;
-            command = tmp;
-        } else {
-            response = tmp;
-        }
-    }
-
-    if (command) {
-        if (!response) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "missing response for command "
-                           "on line '%zu' in '%s'", commandln, fileName);
-            return NULL;
-        }
-
-        if (qemuMonitorTestFullAddItem(ret, fileName, command,
-                                       response, commandln) < 0)
+        if (qemuMonitorTestFullAddItem(ret, fileName, item->command, item->reply,
+                                       item->line) < 0)
             return NULL;
     }
 
