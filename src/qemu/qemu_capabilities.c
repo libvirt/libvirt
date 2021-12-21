@@ -653,6 +653,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-dirty-rate", /* QEMU_CAPS_QUERY_DIRTY_RATE */
               "rbd-encryption", /* QEMU_CAPS_RBD_ENCRYPTION */
               "sev-guest-kernel-hashes", /* QEMU_CAPS_SEV_GUEST_KERNEL_HASHES */
+              "sev-inject-launch-secret", /* QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET */
     );
 
 
@@ -1182,6 +1183,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "set-numa-node", QEMU_CAPS_NUMA },
     { "set-action", QEMU_CAPS_SET_ACTION },
     { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
+    { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
