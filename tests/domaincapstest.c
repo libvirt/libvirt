@@ -422,7 +422,8 @@ mymain(void)
      * to generate updated or new *.replies data files.
      *
      * If you manually edit replies files you can run
-     * "tests/qemucapsfixreplies foo.replies" to fix the replies ids.
+     * VIR_TEST_REGENERATE_OUTPUT=1 tests/qemucapabilitiesnumbering
+     * to fix the replies ids.
      *
      * Once a replies file has been generated and tweaked if necessary,
      * you can drop it into tests/qemucapabilitiesdata/ (with a sensible
