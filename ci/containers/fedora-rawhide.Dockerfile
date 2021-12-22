@@ -72,7 +72,6 @@ exec "$@"' > /usr/bin/nosync && \
         lvm2 \
         make \
         meson \
-        netcf-devel \
         nfs-utils \
         ninja-build \
         numactl-devel \
