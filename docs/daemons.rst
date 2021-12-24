@@ -402,7 +402,7 @@ host first.
           systemctl unmask virt${drv}d{,-ro,-admin}.socket
           systemctl enable virt${drv}d.service
           systemctl enable virt${drv}d{,-ro,-admin}.socket
-	done
+        done
 
 #. Start the sockets for the same set of daemons. There is no need to start the
    services as they will get started when the first socket connection is
@@ -413,7 +413,7 @@ host first.
       $ for drv in qemu network nodedev nwfilter secret storage
         do
           systemctl start virt${drv}d{,-ro,-admin}.socket
-	done
+        done
 
 #. If connections from remote hosts need to be supported the proxy daemon
    must be enabled and started
