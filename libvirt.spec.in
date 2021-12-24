@@ -402,8 +402,12 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
-# (client invokes 'nc' against the UNIX socket on the server)
-Requires: /usr/bin/nc
+# netcat is needed on the server side so that clients that have
+# libvirt < 6.9.0 can connect, but newer versions will prefer
+# virt-ssh-helper. Making this a Recommends means that it gets
+# installed by default, but can still be removed if compatibility
+# with old clients is not required
+Recommends: /usr/bin/nc
 
 # for modprobe of pci devices
 Requires: module-init-tools
