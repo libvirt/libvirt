@@ -613,10 +613,6 @@ headers = [
 ]
 
 if host_machine.system() == 'linux'
-  # check for kernel headers required by btrfs ioctl
-  headers += 'linux/btrfs.h'
-  # check for xfs dev headers required by xfs ioctl
-  headers += 'xfs/xfs.h'
   # check for DEVLINK_CMD_ESWITCH_GET
   headers += 'linux/devlink.h'
 endif
