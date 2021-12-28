@@ -43,16 +43,6 @@
 # include <selinux/selinux.h>
 #endif
 
-#ifdef FICLONE
-# define REFLINK_IOC_CLONE FICLONE
-#elif WITH_LINUX_BTRFS_H
-# include <linux/btrfs.h>
-# define REFLINK_IOC_CLONE BTRFS_IOC_CLONE
-#elif WITH_XFS_XFS_H
-# include <xfs/xfs.h>
-# define REFLINK_IOC_CLONE XFS_IOC_CLONE
-#endif
-
 #include "datatypes.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -109,11 +99,11 @@ virStorageBackendNamespaceInit(int poolType,
  * Perform the O(1) btrfs clone operation, if possible.
  * Upon success, return 0.  Otherwise, return -1 and set errno.
  */
-#ifdef REFLINK_IOC_CLONE
+#ifdef __linux__
 static inline int
 reflinkCloneFile(int dest_fd, int src_fd)
 {
-    return ioctl(dest_fd, REFLINK_IOC_CLONE, src_fd);
+    return ioctl(dest_fd, FICLONE, src_fd);
 }
 #else
 static inline int
