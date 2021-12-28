@@ -85,6 +85,8 @@ VIR_LOG_INIT("storage.storage_util");
 # define S_IRWXUGO (S_IRWXU | S_IRWXG | S_IRWXO)
 #endif
 
+#define PARTED "parted"
+
 /* virStorageBackendNamespaceInit:
  * @poolType: virStoragePoolType
  * @xmlns: Storage Pool specific namespace callback methods

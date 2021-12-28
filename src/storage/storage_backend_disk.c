@@ -40,6 +40,8 @@ VIR_LOG_INIT("storage.storage_backend_disk");
 
 #define SECTOR_SIZE 512
 
+#define PARTED "parted"
+
 static bool
 virStorageVolPartFindExtended(virStorageVolDef *def,
                               const void *opaque G_GNUC_UNUSED)
