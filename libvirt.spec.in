@@ -307,8 +307,6 @@ BuildRequires: libiscsi-devel
 BuildRequires: parted-devel
 # For Multipath support
 BuildRequires: device-mapper-devel
-# For XFS reflink clone support
-BuildRequires: xfsprogs-devel
 %if %{with_storage_rbd}
 BuildRequires: librados-devel
 BuildRequires: librbd-devel
