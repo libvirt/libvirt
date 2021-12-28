@@ -320,12 +320,6 @@ BuildRequires: glusterfs-devel >= 3.4.1
 %if %{with_storage_sheepdog}
 BuildRequires: sheepdog
 %endif
-%if %{with_storage_zfs}
-# Support any conforming implementation of zfs. On stock Fedora
-# this is zfs-fuse, but could be zfsonlinux upstream RPMs
-BuildRequires: /sbin/zfs
-BuildRequires: /sbin/zpool
-%endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
