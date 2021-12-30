@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-11-25 08:59+0000\n"
-"PO-Revision-Date: 2021-11-22 12:07+0000\n"
+"PO-Revision-Date: 2021-12-30 13:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.9\n"
+"X-Generator: Weblate 4.10.1\n"
 
 msgid ""
 "\n"
@@ -797,7 +797,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: File '%s' is too large\n"
-msgstr ""
+msgstr "%s: Filen ”%s” är för stor\n"
 
 #, c-format
 msgid "%s: IPv4 family specified for non-IPv4 address '%s' in route definition"
@@ -1745,7 +1745,7 @@ msgid "A domain definition can have no more than one cipher node with name %s"
 msgstr "En domändefinition kan inte ha mer än en chiffernod med namnet %s"
 
 msgid "A field data length violates the resource length boundary."
-msgstr ""
+msgstr "En fältdatlängd strider mot gränsen för resurslängd."
 
 msgid "A interface driver is already registered"
 msgstr "En gränssnittsdrivrutin är redan registrerad"
@@ -2963,7 +2963,7 @@ msgstr "Kan inte hitta sälerhetsdrivrutin ”%s”"
 
 #, c-format
 msgid "Cannot find start time for pid %d"
-msgstr ""
+msgstr "Kan inte hitta starttiden för pid %d"
 
 msgid "Cannot find suitable CPU model for given data"
 msgstr "Kan inte hitta en lämplig CPU-modell för givna data"
@@ -3240,7 +3240,7 @@ msgstr "Kan inte tolka uttagstjänsten ”%s”: %s"
 
 #, c-format
 msgid "Cannot parse start time %s for pid %d"
-msgstr ""
+msgstr "Kan inte tolka starttiden %s för pid %d"
 
 #, c-format
 msgid "Cannot parse sys stat '%s'"
@@ -3285,7 +3285,7 @@ msgid "Cannot read cputime for domain"
 msgstr "Kan inte läsa spu-tid för domänen"
 
 msgid "Cannot read host CPUID"
-msgstr ""
+msgstr "Kan inte läsa värd-CPUID"
 
 msgid "Cannot recv data"
 msgstr "Kan inte ta emot data"
@@ -3739,6 +3739,10 @@ msgid ""
 "Distinguished Name field in the client certificate, or run this daemon with "
 "--verbose option."
 msgstr ""
+"Klientens särskiljande namn (Distinguished Name) finns inte i listan över "
+"tillåtna klienter (tls_allowed_dn_list). Använd ”virt-pki-query-dn clientcert"
+".pem” för att se fältet särskiljande namn i klientcertifikatet, eller kör "
+"denna demon med flaggan --verbose."
 
 msgid "Client's username is not on the list of allowed clients"
 msgstr "Klientens användarnamn finns inte på listan över tillåtna klienter"
@@ -4914,6 +4918,8 @@ msgid ""
 "Could not run '%s --reconfigure'. exitstatus: %d; Check error log '%s' for "
 "details."
 msgstr ""
+"Kunde inte köra ”%s --reconfigure”: avslutsstatus: %d; granska felloggen ”%s”"
+" för detaljer."
 
 #, c-format
 msgid ""
@@ -5967,7 +5973,7 @@ msgstr "Dubblerat USB-nav på buss %u port %s"
 
 #, c-format
 msgid "Duplicate block info for '%s'"
-msgstr ""
+msgstr "Dubblerad blockinformation för ”%s”"
 
 #, c-format
 msgid "Duplicate cache type in resctrl for level %u"
@@ -7351,7 +7357,7 @@ msgstr "Misslyckades att få diskinformation"
 
 #, c-format
 msgid "Failed to get distinguished name: %s\n"
-msgstr ""
+msgstr "Misslyckades att hämta särskiljande namn (distinguished name): %s\n"
 
 msgid "Failed to get domain autostart state"
 msgstr "Misslyckades att få tillståndet för domänautostart"
@@ -7651,89 +7657,87 @@ msgid "Failed to make dnsmasq (PID: %d) reload config files."
 msgstr ""
 "Misslyckades med att få dnsmasq (PID: %d) att läsa om konfigurationsfilerna."
 
-#, fuzzy
 msgid "Failed to make domain persistent after migration"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "Misslyckades att göra domänen beständig efter migrationen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to make domain persistent after migration: %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att göra domänen beständig efter migrationen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to make mount %s readonly"
-msgstr "Misslyckades att markera domän %s som autostartad"
+msgstr "Misslyckades att göra monteringen %s endast läsbar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to make new root %s readonly"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades att göra den nya roten %s endast läsbar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to make path %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att skapa sökvägen %s"
 
-#, fuzzy
 msgid "Failed to make root private"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att göra roten privat"
 
 #, c-format
 msgid "Failed to mark domain '%s' as autostarted"
 msgstr "Misslyckades att markera domänen %s som autostartad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mkdir %s"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades att göra mkdir %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %s on %s type %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera %s på %s med typen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %s on %s type %s flags=0x%x"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera %s på %s med typen %s flaggor=0x%%x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %s on /dev"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera %s på /dev"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %s on /dev/pts"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera %s på /dev/pts"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount %s on /proc/meminfo"
-msgstr "Det gick inte att läsa /proc/mounts"
+msgstr "Misslyckades att montera %s på /proc/meminfo"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount devfs on %s type %s (%s)"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera devfs på %s med typen %s (%s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount device %s to %s"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades att montera enheten %s på %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount device %s to %s as %s"
-msgstr "Misslyckades att avdefiniera domän %s"
+msgstr "Misslyckades att montera enheten %s på %s som %s"
 
 #, c-format
 msgid "Failed to mount device %s to %s, unable to detect filesystem"
-msgstr ""
+msgstr "Misslyckades att montera enheten %s på %s, kan inte avgöra filsystemet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount devpts on %s"
-msgstr "Misslyckades att avdefiniera domän %s"
+msgstr "Misslyckades att montera devpts på %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount directory %s as tmpfs"
-msgstr "Misslyckades att avdefiniera nätverk %s"
+msgstr "Misslyckades att montera katalogen %s som tmpfs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to mount empty tmpfs at %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades att montera ett tomt tmpfs på %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to move '%s' element in xml document"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr "Misslyckades att flytta elementet ”%s” i xml-dokumentet"
 
 #, c-format
 msgid "Failed to open %s"
@@ -7745,48 +7749,48 @@ msgstr "Misslyckades att öppna ”%s”"
 
 #, c-format
 msgid "Failed to open a VPD file '%s'"
-msgstr ""
+msgstr "Misslyckades att öppna VPD-filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open config space file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att konfigurationsutrymmesfilen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open cpuinfo file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att öppna cpuinfo-filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open domain image file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att öppna domänavbildsfilen ”%s”"
 
 #, c-format
 msgid "Failed to open file '%s'"
 msgstr "Misslyckades att öppna filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open file '%s': couldn't determine fs type"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades att öppna filen ”%s”: kunde inte avgöra fs-typen"
 
 #, c-format
 msgid "Failed to open pid file '%s'"
 msgstr "Misslyckades att öppna pid-filen ”%s”"
 
-#, fuzzy
 msgid "Failed to open socket to sanlock daemon"
-msgstr "Misslyckades att binda uttag till ”%s”"
+msgstr "Misslyckades att öppna ett uttag till sanlock-demonen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open socket to sanlock daemon: %s"
-msgstr "Det gick inte grena av som demon: %s"
+msgstr "Misslyckades att öppna ett uttag till sanlock-demonen: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to open storage volume with path '%s'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "Misslyckades att öppna lagringsvolymen med sökväg ”%s”"
 
 #, c-format
 msgid ""
 "Failed to open the following disk/dvd/floppy to the machine: %s, rc=%08x"
 msgstr ""
+"Misslyckades att öppna följande disk/dvd/floppy till masknen: %s, rk=%08x"
 
 #, c-format
 msgid "Failed to open tty %s"
@@ -7794,45 +7798,44 @@ msgstr "Misslyckades att öppna tty:n %s"
 
 #, c-format
 msgid "Failed to parse %s: only com1 and com2 supported."
-msgstr ""
+msgstr "Misslyckades att tolka %s: endast com1 och com2 stödjs."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse MAC address from '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Misslyckades med att tolka MAC-adressen från ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse PCI config address '%s'"
-msgstr "kan inte tolka mac-adressen ”%s”"
+msgstr "Missllyckades med att tolka PCI-konfigurationsadressen ”%s”"
 
 msgid "Failed to parse arguments for bhyve command"
-msgstr ""
+msgstr "Misslyckades med att tolka argument för kommandot bhyve"
 
 msgid "Failed to parse arguments: VM name mismatch"
-msgstr ""
+msgstr "Misslyckades att tolka argument: VM-namnet stämmer inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse bitmap '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka bitavbildningen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse block name %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka blocknamnet %s"
 
 #, c-format
 msgid "Failed to parse configuration of %s"
 msgstr "Misslyckades att tolka konfigurationen av %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse dir name '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka katalognamnet ”%s”"
 
-#, fuzzy
 msgid "Failed to parse domain description xml"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att tolka domänbeskrivnings-xml"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse firewalld version '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka brandväggsversionen ”%s”"
 
 #, c-format
 msgid "Failed to parse group '%s'"
@@ -7841,62 +7844,60 @@ msgstr "Misslyckades med att tolka gruppen ”%s”"
 #, c-format
 msgid "Failed to parse int '%s' from udev property '%s' on '%s'"
 msgstr ""
+"Misslyckades med att tolka heltalet ”%s” från udev-egenskapen ”%s” på ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse interface index from '%s'"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att tolka gränssnittsindexet från ”%s”"
 
-#, fuzzy
 msgid "Failed to parse memory"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka minnet"
 
-#, fuzzy
 msgid "Failed to parse memory slot count"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka fackantalet"
 
-#, fuzzy
 msgid "Failed to parse memory: size mismatch"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka minnet: storleken stämmer inte"
 
 #, c-format
 msgid "Failed to parse mode '%s'"
 msgstr "Misslyckades med att tolka läget ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse network device name from '%s'"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades med att tolka nätverksenhetsnamnet från ”%s”"
 
-#, fuzzy
 msgid "Failed to parse number of vCPUs"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka antalet vCPU:er"
 
-#, fuzzy
 msgid "Failed to parse port number"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka portnumret"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse positive integer from '%s'"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades med att tolka ett positivt heltal från ”%s”"
 
 #, c-format
 msgid "Failed to parse rate '%s'"
 msgstr "Misslyckades med att tolka hastigheten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse snapshot XML from file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades tolka ögonblicsbilds-XML från filen ”%s”"
 
 #, c-format
 msgid "Failed to parse target '%s'"
 msgstr "Misslyckades med att tolka målet ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse uid and gid from '%s'"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "Misslyckades med att tolka aid och gid från ”%s”"
 
 #, c-format
 msgid "Failed to parse uint '%s' from udev property '%s' on '%s'"
 msgstr ""
+"Misslyckades med att tolka ett teckenlöst heltal ”%s” från udev-egenskapen "
+"”%s” på ”%s”"
 
 #, c-format
 msgid "Failed to parse user '%s'"
@@ -7906,56 +7907,53 @@ msgstr "Misslyckades med att tolka användaren ”%s”"
 msgid "Failed to parse users from '%s'"
 msgstr "Misslyckades med att tolka användare från ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value '%s' as number."
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka värdet ”%s” som ett tal."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value '%s' from cpu.max."
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka värdet ”%s” från cpu.max."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to parse value of URI component %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka värdet av URI-komponenten %s"
 
-#, fuzzy
 msgid "Failed to parse vzlist output"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att tolka utdata från vzlist"
 
 #, c-format
 msgid "Failed to parse wwn '%s' as number"
-msgstr ""
+msgstr "Misslyckades med att tolka wwn ”%s” som ett tal"
 
 #, c-format
 msgid "Failed to pin vcpu '%d' with libxenlight"
-msgstr ""
+msgstr "Misslyckades att fästa vcpu ”%d” med libxenlight"
 
-#, fuzzy
 msgid "Failed to pivot root"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att pivotera rot"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to pre-allocate space for file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att förallokera utrymme för filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to probe capabilities for %s: %s"
-msgstr "Det gick inte att sätta förmågor: %d"
+msgstr "Misslyckades att käna av förmågor hos %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to probe for format type '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att känna av formattypen ”%s”"
 
 #, c-format
 msgid "Failed to process SCSI device with sysfs path '%s'"
-msgstr ""
+msgstr "Misslyckades med att bearbeta SCSI-enheten med sysfs-sökväg ”%s”"
 
-#, fuzzy
 msgid "Failed to query for interfaces addresses"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att känna av gränssnittsadresser"
 
 msgid "Failed to query numad for the advisory nodeset"
-msgstr ""
+msgstr "Misslyckades med att fråga numad om rekommenderat nodeset"
 
 #, c-format
 msgid "Failed to re-attach PCI device: %s"
@@ -7965,9 +7963,9 @@ msgstr "Misslyckades att återansluta PCI-enheten: %s"
 msgid "Failed to re-attach device %s"
 msgstr "Misslyckades att återansluta enheten %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to re-mount %s on %s flags=0x%x"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att montera om %s på %s flaggor=0x%x"
 
 #, c-format
 msgid "Failed to read %s"
@@ -7980,29 +7978,28 @@ msgstr "Misslyckades att läsa ”%s”"
 msgid "Failed to read /proc/mounts"
 msgstr "Det gick inte att läsa /proc/mounts"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read AppArmor profiles list '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att läsa AppArmor-profillistan ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read PCI config space for %s"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Misslyckades med att läsa PCI-konfigurationsutrymmet för %s"
 
 #, c-format
 msgid "Failed to read RDP port value, rc=%08x"
-msgstr ""
+msgstr "Misslyckades med att läsa RDP-portvärdet, rc=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read checkpoint file %s"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Misslyckades med att läsa kontrollpunktsfilen %s"
 
 #, c-format
 msgid "Failed to read file '%s'"
 msgstr "Misslyckades att läsa filen ”%s”"
 
-#, fuzzy
 msgid "Failed to read from signal pipe"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades med att läsa från signalrör"
 
 #, c-format
 msgid "Failed to read pid file %s"
@@ -8012,9 +8009,9 @@ msgstr "Misslyckades att läsa pid-filen %s"
 msgid "Failed to read pidfile %s"
 msgstr "Misslyckades att läsa pid-filen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read product/vendor ID for %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades med att läsa produkt-/tillverkar-ID för %s"
 
 #, fuzzy
 msgid "Failed to read secret"
