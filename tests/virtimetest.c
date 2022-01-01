@@ -197,19 +197,18 @@ mymain(void)
     TEST_LOCALOFFSET("VIR-12:00VID-13:00,1/00:00:00,364/23:59:59",
                      ((13 * 60) +  0) * 60);
 
+    /* experiments have shown that the following tests will fail
+     * during certain hours of Dec 31 or Jan 1 (depending on the
+     * TZ setting in the shell running the test, but in general
+     * for a period that apparently starts at 00:00:00 UTC Jan 1
+     * and continues for 1 - 2 hours). We've determined this is
+     * due to our inability to specify a timezone with DST on/off
+     * settings that make it truly *always* on DST - i.e. it is a
+     * failing of the test data, *not* of the function we are
+     * testing. So to test as much as possible, we still run these
+     * tests, except on Dec 31 and Jan 1.
+     */
     if (!isNearYearEnd()) {
-        /* experiments have shown that the following tests will fail
-         * during certain hours of Dec 31 or Jan 1 (depending on the
-         * TZ setting in the shell running the test, but in general
-         * for a period that apparently starts at 00:00:00 UTC Jan 1
-         * and continues for 1 - 2 hours). We've determined this is
-         * due to our inability to specify a timezone with DST on/off
-         * settings that make it truly *always* on DST - i.e. it is a
-         * failing of the test data, *not* of the function we are
-         * testing. So to test as much as possible, we still run these
-         * tests, except on Dec 31 and Jan 1.
-         */
-
         TEST_LOCALOFFSET("VIR02:45VID00:45,1/00:00:00,364/23:59:59",
                          -45 * 60);
         TEST_LOCALOFFSET("VIR05:00VID04:00,1/00:00:00,364/23:59:59",
