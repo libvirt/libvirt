@@ -197,8 +197,8 @@ mymain(void)
          * but changed to '1' due to GLib GTimeZone parsing bug:
          *  https://gitlab.gnome.org/GNOME/glib/issues/1999
          *
-         * Once we depend on a new enough GLib, we can put then
-         * back to 0 again.
+         * Once we depend on a new enough GLib (>= 2.63.4), we
+         * can put them back to 0 again.
          */
         TEST_LOCALOFFSET("VIR-00:30VID,1/00:00:00,364/23:59:59",
                 ((1 * 60) + 30) * 60);
