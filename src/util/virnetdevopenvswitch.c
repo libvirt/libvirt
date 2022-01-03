@@ -638,11 +638,13 @@ virNetDevOpenvswitchFindUUID(const char *table,
 }
 
 /*
- * Average, peak, floor and burst in virNetDevBandwidth are in kbytes.
- * However other_config in ovs qos is in bit.
- * ingress_policing_rate in ovs interface is in kbit.
+ * In virNetDevBandwidthRate, average, peak, floor are in kilobyes and burst in
+ * kibibytes. However other_config in ovs qos is in bits and
+ * ingress_policing_rate in ovs interface is in kilobit and
+ * ingress_policing_burst is in kibibits.
  */
-#define VIR_NETDEV_TX_TO_OVS 8000
+#define KBYTE_TO_BITS(x) (x * 8000ULL)
+#define KIBIBYTE_TO_BITS(x) (x * 8192ULL)
 #define VIR_NETDEV_RX_TO_OVS 8
 
 /**
@@ -717,11 +719,11 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
         g_autofree char *qos_uuid = NULL;
         g_autofree char *queue_uuid = NULL;
 
-        average = g_strdup_printf("%llu", tx->average * VIR_NETDEV_TX_TO_OVS);
+        average = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->average));
         if (tx->burst)
-            burst = g_strdup_printf("%llu", tx->burst * VIR_NETDEV_TX_TO_OVS);
+            burst = g_strdup_printf("%llu", KIBIBYTE_TO_BITS(tx->burst));
         if (tx->peak)
-            peak = g_strdup_printf("%llu", tx->peak * VIR_NETDEV_TX_TO_OVS);
+            peak = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->peak));
 
         virUUIDFormat(vmuuid, vmuuidstr);
         vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
