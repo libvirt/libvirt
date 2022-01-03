@@ -15,10 +15,10 @@ RUN zypper update -y && \
            ca-certificates \
            ccache \
            clang \
+           codespell \
            cpp \
            cppi \
            cyrus-sasl-devel \
-           dbus-1-devel \
            device-mapper-devel \
            diffutils \
            dnsmasq \
@@ -77,7 +77,6 @@ RUN zypper update -y && \
            python3-setuptools \
            python3-wheel \
            qemu-tools \
-           radvd \
            readline-devel \
            rpcgen \
            rpm-build \

@@ -23,6 +23,7 @@ exec "$@"' > /usr/bin/nosync && \
         bash-completion \
         ca-certificates \
         ccache \
+        codespell \
         cpp \
         cppi \
         diffutils \
@@ -53,13 +54,11 @@ exec "$@"' > /usr/bin/nosync && \
         python3-docutils \
         python3-flake8 \
         qemu-img \
-        radvd \
         rpcgen \
         rpm-build \
         scrub \
         sed \
-        sheepdog \
-        zfs-fuse && \
+        sheepdog && \
     nosync dnf autoremove -y && \
     nosync dnf clean all -y
 
@@ -71,7 +70,6 @@ ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 RUN nosync dnf install -y \
         mingw64-curl \
-        mingw64-dbus \
         mingw64-dlfcn \
         mingw64-gcc \
         mingw64-gettext \

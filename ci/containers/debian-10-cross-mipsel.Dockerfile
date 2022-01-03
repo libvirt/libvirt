@@ -16,6 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             bash-completion \
             ca-certificates \
             ccache \
+            codespell \
             cpp \
             diffutils \
             dnsmasq-base \
@@ -47,7 +48,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             python3-setuptools \
             python3-wheel \
             qemu-utils \
-            radvd \
             scrub \
             sed \
             xsltproc && \
@@ -80,7 +80,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libc6-dev:mipsel \
             libcap-ng-dev:mipsel \
             libcurl4-gnutls-dev:mipsel \
-            libdbus-1-dev:mipsel \
             libdevmapper-dev:mipsel \
             libfuse-dev:mipsel \
             libglib2.0-dev:mipsel \

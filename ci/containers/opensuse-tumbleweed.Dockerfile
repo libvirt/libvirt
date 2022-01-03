@@ -15,10 +15,10 @@ RUN zypper dist-upgrade -y && \
            ca-certificates \
            ccache \
            clang \
+           codespell \
            cpp \
            cppi \
            cyrus-sasl-devel \
-           dbus-1-devel \
            device-mapper-devel \
            diffutils \
            dnsmasq \
@@ -75,7 +75,6 @@ RUN zypper dist-upgrade -y && \
            python3-docutils \
            python3-flake8 \
            qemu-tools \
-           radvd \
            readline-devel \
            rpcgen \
            rpm-build \

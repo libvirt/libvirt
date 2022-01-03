@@ -16,6 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             bash-completion \
             ca-certificates \
             ccache \
+            codespell \
             cpp \
             diffutils \
             dnsmasq-base \
@@ -45,11 +46,9 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             python3 \
             python3-docutils \
             qemu-utils \
-            radvd \
             scrub \
             sed \
-            xsltproc \
-            zfs-fuse && \
+            xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     sed -Ei 's,^# (en_US\.UTF-8 .*)$,\1,' /etc/locale.gen && \
@@ -76,7 +75,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libc6-dev:s390x \
             libcap-ng-dev:s390x \
             libcurl4-gnutls-dev:s390x \
-            libdbus-1-dev:s390x \
             libdevmapper-dev:s390x \
             libfuse-dev:s390x \
             libglib2.0-dev:s390x \
