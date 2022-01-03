@@ -634,7 +634,7 @@
           </dd>
           <dt><code>burst</code></dt>
           <dd>
-          Optional attribute which specifies the amount of kilobytes that
+          Optional attribute which specifies the amount of kibibytes that
           can be transmitted in a single burst at <code>peak</code> speed.
           </dd>
           <dt><code>floor</code></dt>

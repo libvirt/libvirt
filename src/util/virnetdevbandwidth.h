@@ -23,10 +23,10 @@
 
 typedef struct _virNetDevBandwidthRate virNetDevBandwidthRate;
 struct _virNetDevBandwidthRate {
-    unsigned long long average;  /* kbytes/s */
-    unsigned long long peak;     /* kbytes/s */
-    unsigned long long floor;    /* kbytes/s */
-    unsigned long long burst;    /* kbytes */
+    unsigned long long average;  /* kilobytes/s */
+    unsigned long long peak;     /* kilobytes/s */
+    unsigned long long floor;    /* kilobytes/s */
+    unsigned long long burst;    /* kibibytes */
 };
 
 typedef struct _virNetDevBandwidth virNetDevBandwidth;
