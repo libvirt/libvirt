@@ -27,8 +27,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","ats":true,"id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-device virtio-balloon-pci,ats=on,id=balloon0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

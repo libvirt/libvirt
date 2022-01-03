@@ -27,15 +27,15 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
--device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","hotplug":false,"bus":"pcie.0","addr":"0x1.0x1"}' \
--device '{"driver":"ioh3420","port":10,"chassis":3,"id":"pci.3","hotplug":false,"bus":"pcie.0","addr":"0x1.0x2"}' \
--device '{"driver":"x3130-upstream","id":"pci.4","bus":"pci.1","addr":"0x0"}' \
--device '{"driver":"xio3130-downstream","port":0,"chassis":5,"id":"pci.5","hotplug":false,"bus":"pci.4","addr":"0x0"}' \
--device '{"driver":"xio3130-downstream","port":1,"chassis":6,"id":"pci.6","hotplug":true,"bus":"pci.4","addr":"0x1"}' \
--device '{"driver":"xio3130-downstream","port":2,"chassis":7,"id":"pci.7","bus":"pci.4","addr":"0x2"}' \
--device '{"driver":"xio3130-downstream","port":39,"chassis":30,"id":"pci.8","bus":"pci.4","addr":"0x3"}' \
--device '{"driver":"qemu-xhci","id":"usb","bus":"pci.2","addr":"0x0"}' \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-root-port,port=9,chassis=2,id=pci.2,hotplug=off,bus=pcie.0,addr=0x1.0x1 \
+-device ioh3420,port=10,chassis=3,id=pci.3,hotplug=off,bus=pcie.0,addr=0x1.0x2 \
+-device x3130-upstream,id=pci.4,bus=pci.1,addr=0x0 \
+-device xio3130-downstream,port=0,chassis=5,id=pci.5,hotplug=off,bus=pci.4,addr=0x0 \
+-device xio3130-downstream,port=1,chassis=6,id=pci.6,hotplug=on,bus=pci.4,addr=0x1 \
+-device xio3130-downstream,port=2,chassis=7,id=pci.7,bus=pci.4,addr=0x2 \
+-device xio3130-downstream,port=39,chassis=30,id=pci.8,bus=pci.4,addr=0x3 \
+-device qemu-xhci,id=usb,bus=pci.2,addr=0x0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -27,24 +27,24 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
--device '{"driver":"pcie-pci-bridge","id":"pci.2","bus":"pci.1","addr":"0x0"}' \
--device '{"driver":"pcie-root-port","port":9,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x1.0x1"}' \
--device '{"driver":"virtio-scsi-pci-transitional","id":"scsi0","bus":"pci.2","addr":"0x4"}' \
--device '{"driver":"virtio-serial-pci-transitional","id":"virtio-serial0","bus":"pci.2","addr":"0x3"}' \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-pci-bridge,id=pci.2,bus=pci.1,addr=0x0 \
+-device pcie-root-port,port=9,chassis=3,id=pci.3,bus=pcie.0,addr=0x1.0x1 \
+-device virtio-scsi-pci-transitional,id=scsi0,bus=pci.2,addr=0x4 \
+-device virtio-serial-pci-transitional,id=virtio-serial0,bus=pci.2,addr=0x3 \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci-transitional","bus":"pci.2","addr":"0x5","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
+-device virtio-blk-pci-transitional,bus=pci.2,addr=0x5,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/fs1 \
--device '{"driver":"virtio-9p-pci-transitional","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"fs1","bus":"pci.2","addr":"0x1"}' \
+-device virtio-9p-pci-transitional,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,bus=pci.2,addr=0x1 \
 -netdev user,id=hostnet0 \
--device '{"driver":"virtio-net-pci-transitional","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x2"}' \
--device '{"driver":"virtio-input-host-pci-transitional","id":"input0","evdev":"/dev/input/event1234","bus":"pci.2","addr":"0x9"}' \
+-device virtio-net-pci-transitional,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.2,addr=0x2 \
+-device virtio-input-host-pci-transitional,id=input0,evdev=/dev/input/event1234,bus=pci.2,addr=0x9 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"vhost-scsi-pci-transitional","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.2","addr":"0x6"}' \
--device '{"driver":"virtio-balloon-pci-transitional","id":"balloon0","bus":"pci.2","addr":"0x7"}' \
+-device vhost-scsi-pci-transitional,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,bus=pci.2,addr=0x6 \
+-device virtio-balloon-pci-transitional,id=balloon0,bus=pci.2,addr=0x7 \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
--device '{"driver":"virtio-rng-pci-transitional","rng":"objrng0","id":"rng0","bus":"pci.2","addr":"0x8"}' \
+-device virtio-rng-pci-transitional,rng=objrng0,id=rng0,bus=pci.2,addr=0x8 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device '{"driver":"vhost-vsock-pci-transitional","id":"vsock0","guest-cid":4,"vhostfd":"6789","bus":"pci.2","addr":"0xa"}' \
+-device vhost-vsock-pci-transitional,id=vsock0,guest-cid=4,vhostfd=6789,bus=pci.2,addr=0xa \
 -msg timestamp=on

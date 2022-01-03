@@ -628,7 +628,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_CHARDEV_JSON, /* -chardev accepts JSON */
 
     /* 415 */
-    QEMU_CAPS_DEVICE_JSON, /* -device accepts JSON */
+    QEMU_CAPS_DEVICE_JSON, /* -device accepts JSON (must not be used - users are filtering the capbility) */
     QEMU_CAPS_QUERY_DIRTY_RATE, /* accepts query-dirty-rate */
     QEMU_CAPS_RBD_ENCRYPTION, /* Ceph RBD encryption support */
     QEMU_CAPS_SEV_GUEST_KERNEL_HASHES, /* sev-guest.kernel-hashes= */

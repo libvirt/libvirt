@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/random"}' \
--device '{"driver":"virtio-rng-pci","iommu_platform":true,"rng":"objrng0","id":"rng0","bus":"pci.0","addr":"0x2"}' \
+-device virtio-rng-pci,iommu_platform=on,rng=objrng0,id=rng0,bus=pci.0,addr=0x2 \
 -object '{"qom-type":"rng-random","id":"objrng1","filename":"/dev/random"}' \
--device '{"driver":"virtio-rng-pci","iommu_platform":false,"rng":"objrng1","id":"rng1","bus":"pci.0","addr":"0x3"}' \
+-device virtio-rng-pci,iommu_platform=off,rng=objrng1,id=rng1,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

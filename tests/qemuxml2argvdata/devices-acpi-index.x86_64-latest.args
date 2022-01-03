@@ -26,21 +26,21 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr-br/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","acpi-index":1,"drive":"libvirt-2-format","id":"virtio-disk0","bootindex":1}' \
+-device virtio-blk-pci,bus=pci.0,addr=0x3,acpi-index=1,drive=libvirt-2-format,id=virtio-disk0,bootindex=1 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test1.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","acpi-index":42,"drive":"libvirt-1-format","id":"virtio-disk1"}' \
+-device virtio-blk-pci,bus=pci.0,addr=0x4,acpi-index=42,drive=libvirt-1-format,id=virtio-disk1 \
 -netdev user,id=hostnet0 \
--device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x5","acpi-index":100}' \
+-device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.0,addr=0x5,acpi-index=100 \
 -netdev user,id=hostnet1 \
--device '{"driver":"virtio-net-pci","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x7","acpi-index":200}' \
+-device virtio-net-pci,netdev=hostnet1,id=net1,mac=00:11:22:33:44:55,bus=pci.0,addr=0x7,acpi-index=200 \
 -netdev user,id=hostnet2 \
--device '{"driver":"virtio-net-pci","netdev":"hostnet2","id":"net2","mac":"00:11:22:33:44:55","bus":"pci.0","addr":"0x8","acpi-index":300}' \
+-device virtio-net-pci,netdev=hostnet2,id=net2,mac=00:11:22:33:44:55,bus=pci.0,addr=0x8,acpi-index=300 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2","acpi-index":1729}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2,acpi-index=1729 \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

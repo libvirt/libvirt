@@ -27,10 +27,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--device '{"driver":"virtio-mouse-pci","iommu_platform":true,"id":"input0","bus":"pci.0","addr":"0x2"}' \
--device '{"driver":"virtio-keyboard-pci","iommu_platform":false,"id":"input1","bus":"pci.0","addr":"0x3"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device virtio-mouse-pci,iommu_platform=on,id=input0,bus=pci.0,addr=0x2 \
+-device virtio-keyboard-pci,iommu_platform=off,id=input1,bus=pci.0,addr=0x3 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

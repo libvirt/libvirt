@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--device '{"driver":"virtio-scsi-pci","iommu_platform":true,"id":"scsi0","bus":"pci.0","addr":"0x2"}' \
--device '{"driver":"virtio-scsi-pci","iommu_platform":false,"id":"scsi1","bus":"pci.0","addr":"0x3"}' \
--device '{"driver":"virtio-serial-pci","iommu_platform":true,"id":"virtio-serial0","bus":"pci.0","addr":"0x4"}' \
--device '{"driver":"virtio-serial-pci","iommu_platform":false,"id":"virtio-serial1","bus":"pci.0","addr":"0x5"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device virtio-scsi-pci,iommu_platform=on,id=scsi0,bus=pci.0,addr=0x2 \
+-device virtio-scsi-pci,iommu_platform=off,id=scsi1,bus=pci.0,addr=0x3 \
+-device virtio-serial-pci,iommu_platform=on,id=virtio-serial0,bus=pci.0,addr=0x4 \
+-device virtio-serial-pci,iommu_platform=off,id=virtio-serial1,bus=pci.0,addr=0x5 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

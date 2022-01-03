@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -no-acpi \
 -boot strict=on \
 -chardev socket,id=chr-vu-fs0,path=/tmp/lib/domain--1-guest/fs0-fs.sock \
--device '{"driver":"vhost-user-fs-pci","id":"fs0","chardev":"chr-vu-fs0","queue-size":1024,"tag":"mount_tag","bus":"pci.0","addr":"0x2"}' \
+-device vhost-user-fs-pci,id=fs0,chardev=chr-vu-fs0,queue-size=1024,tag=mount_tag,bus=pci.0,addr=0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

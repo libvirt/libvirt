@@ -27,13 +27,13 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x2 \
 -chardev socket,id=charconsole0,fd=1729,server=on,wait=off \
--device '{"driver":"virtconsole","chardev":"charconsole0","id":"console0"}' \
+-device virtconsole,chardev=charconsole0,id=console0 \
 -chardev socket,id=charconsole1,path=/tmp/connect.socket \
--device '{"driver":"virtconsole","chardev":"charconsole1","id":"console1"}' \
+-device virtconsole,chardev=charconsole1,id=console1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

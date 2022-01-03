@@ -26,11 +26,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"pcie-root-port","port":8,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x1"}' \
--device '{"driver":"pcie-root-port","port":9,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x1.0x1"}' \
+-device pcie-root-port,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
+-device pcie-root-port,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.1","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
+-device virtio-blk-pci,bus=pci.1,addr=0x0,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -26,12 +26,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot menu=on,strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -tpmdev passthrough,id=tpm-tpm0,path=/dev/fdset/0,cancel-path=/dev/fdset/1 \
 -add-fd set=0,fd=1730 \
 -add-fd set=1,fd=1731 \
--device '{"driver":"tpm-crb","tpmdev":"tpm-tpm0","id":"tpm0"}' \
+-device tpm-crb,tpmdev=tpm-tpm0,id=tpm0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -object '{"qom-type":"secret","id":"objlibvirt-1-storage_tls0-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -object '{"qom-type":"tls-creds-x509","id":"objlibvirt-1-storage_tls0","dir":"/etc/pki/libvirt-nbd/dummy,path","endpoint":"client","verify-peer":true,"passwordid":"objlibvirt-1-storage_tls0-secret0"}' \
 -blockdev '{"driver":"nbd","server":{"type":"inet","host":"example.com","port":"1234"},"tls-creds":"objlibvirt-1-storage_tls0","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
--device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-1-format","id":"virtio-disk3","bootindex":1,"write-cache":"on"}' \
+-device virtio-blk-pci,bus=pci.0,addr=0x7,drive=libvirt-1-format,id=virtio-disk3,bootindex=1,write-cache=on \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
