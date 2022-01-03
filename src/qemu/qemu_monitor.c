@@ -56,9 +56,6 @@
 
 VIR_LOG_INIT("qemu.qemu_monitor");
 
-#define DEBUG_IO 0
-#define DEBUG_RAW_IO 0
-
 /* We read from QEMU until seeing a \r\n pair to indicate a
  * completed reply or event. To avoid memory denial-of-service
  * though, we must have a size limit on amount of data we
@@ -210,25 +207,6 @@ VIR_ENUM_IMPL(qemuMonitorMemoryFailureAction,
               "ignore", "inject",
               "fatal", "reset");
 
-#if DEBUG_RAW_IO
-static char *
-qemuMonitorEscapeNonPrintable(const char *text)
-{
-    size_t i;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    for (i = 0; text[i] != '\0'; i++) {
-        if (g_ascii_isprint(text[i]) ||
-            text[i] == '\n' ||
-            (text[i] == '\r' && text[i + 1] == '\n'))
-            virBufferAddChar(&buf, text[i]);
-        else
-            virBufferAsprintf(&buf, "0x%02x", text[i]);
-    }
-    return virBufferContentAndReset(&buf);
-}
-#endif
-
-
 static void
 qemuMonitorDispose(void *obj)
 {
@@ -329,17 +307,6 @@ qemuMonitorIOProcess(qemuMonitor *mon)
     if (mon->msg && mon->msg->txOffset == mon->msg->txLength)
         msg = mon->msg;
 
-#if DEBUG_IO
-# if DEBUG_RAW_IO
-    char *str1 = qemuMonitorEscapeNonPrintable(msg ? msg->txBuffer : "");
-    char *str2 = qemuMonitorEscapeNonPrintable(mon->buffer);
-    VIR_ERROR(_("Process %d %p %p [[[[%s]]][[[%s]]]"), (int)mon->bufferOffset, mon->msg, msg, str1, str2);
-    VIR_FREE(str1);
-    VIR_FREE(str2);
-# else
-    VIR_DEBUG("Process %d", (int)mon->bufferOffset);
-# endif
-#endif
 
     PROBE_QUIET(QEMU_MONITOR_IO_PROCESS, "mon=%p buf=%s len=%zu",
                 mon, mon->buffer, mon->bufferOffset);
@@ -360,10 +327,6 @@ qemuMonitorIOProcess(qemuMonitor *mon)
         VIR_FREE(mon->buffer);
         mon->bufferOffset = mon->bufferLength = 0;
     }
-#if DEBUG_IO
-    VIR_DEBUG("Process done %d used %d", (int)mon->bufferOffset, len);
-#endif
-
     /* As the monitor mutex was unlocked in qemuMonitorJSONIOProcess()
      * while dealing with qemu event, mon->msg could be changed which
      * means the above 'msg' may be invalid, thus we use 'mon->msg' here */
@@ -505,10 +468,6 @@ qemuMonitorIORead(qemuMonitor *mon)
         mon->buffer[mon->bufferOffset] = '\0';
     }
 
-#if DEBUG_IO
-    VIR_DEBUG("Now read %d bytes of data", (int)mon->bufferOffset);
-#endif
-
     return ret;
 }
 
@@ -535,9 +494,6 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
     /* lock access to the monitor and protect fd */
     virObjectLock(mon);
-#if DEBUG_IO
-    VIR_DEBUG("Monitor %p I/O on socket %p cond %d", mon, socket, cond);
-#endif
     if (mon->fd == -1 || !mon->watch) {
         virObjectUnlock(mon);
         virObjectUnref(mon);
