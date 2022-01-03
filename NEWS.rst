@@ -59,6 +59,37 @@ v8.0.0 (unreleased)
 
 * **Bug fixes**
 
+  * qemu: Fix device hot-unplug with ``libvirt-7.9`` or ``libvirt-7.10`` used with ``qemu-6.2``
+
+    An internal change to the configuration format used by the above libvirt
+    versions triggers a bug in ``qemu-6.2`` where qemu no longer emits the
+    event notifying that the device was unplugged successfully and thus libvirt
+    never removes the device from the definition.
+
+    This impacts only devices which were present at startup of the VM, hotplugged
+    devices behave correctly.
+
+    This is fixed in ``libvirt-8.0`` by reverting to the old configuration
+    approach until qemu is fixed.
+
+    As a workaround for ``libvirt-7.9`` and ``libvirt-7.10`` the old configuration
+    approach can be forced by:
+
+    Option 1, global ``qemu.conf``::
+
+     capability_filters = [ "device.json" ]
+
+    Option 2, per VM XML override::
+
+     <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+
+      [...]
+
+      <qemu:capabilities>
+        <qemu:del capability='device.json'/>
+      </qemu:capabilities>
+     </domain>
+
 
 v7.10.0 (2021-12-01)
 ====================
