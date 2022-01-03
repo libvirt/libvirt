@@ -13,6 +13,11 @@ v8.0.0 (unreleased)
 
 * **Security**
 
+  * libxl: Fix potential deadlock and crash (CVE-2021-4147)
+
+    A rogue guest could continuously reboot itself and cause libvirtd on the
+    host to deadlock or crash, resulting in a denial of service condition.
+
 * **Removed features**
 
   * qemu: Explicitly forbid live changing nodeset for strict numatune
@@ -43,6 +48,8 @@ v8.0.0 (unreleased)
     (tb-size) for TCG domains.
 
 * **Improvements**
+
+  * libxl: Implement the virDomainGetMessages API
 
 * **Bug fixes**
 
