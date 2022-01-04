@@ -759,6 +759,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("tpm-passthrough");
     DO_TEST_CAPS_LATEST("tpm-passthrough-crb");
     DO_TEST_CAPS_LATEST("tpm-emulator");
+    DO_TEST_CAPS_ARCH_LATEST("tpm-emulator-spapr", "ppc64");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-enc");
     DO_TEST_CAPS_LATEST("tpm-emulator-tpm2-pstate");

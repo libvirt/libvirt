@@ -12,49 +12,59 @@
   <features>
     <acpi/>
   </features>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <console type='pty'>
-      <address type="spapr-vio"/>
-    </console>
-
-    <!-- Two serials, first is the console -->
-    <serial type="pty">
-      <address type="spapr-vio"/>
-    </serial>
-    <serial type="pty">
-      <address type="spapr-vio"/>
-    </serial>
-
-    <!-- One disk -->
-    <disk type="file" device="disk">
-      <driver name="qemu" type="raw"/>
-      <source file="/tmp/scsidisk.img"/>
-      <target dev="sda" bus="scsi"/>
-      <address type="drive" controller="1"/>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source file='/tmp/scsidisk.img'/>
+      <target dev='sda' bus='scsi'/>
+      <address type='drive' controller='1' bus='0' target='0' unit='0'/>
     </disk>
-
-    <!-- Two SCSI controllers -->
-    <controller type="scsi" index="1">
-      <address type="spapr-vio"/>
+    <controller type='scsi' index='0' model='ibmvscsi'>
+      <address type='spapr-vio' reg='0x00002000'/>
     </controller>
-    <controller type="scsi" index="0">
-      <address type="spapr-vio"/>
+    <controller type='scsi' index='1' model='ibmvscsi'>
+      <address type='spapr-vio' reg='0x00003000'/>
     </controller>
-
-    <nvram>
-      <address type='spapr-vio' reg='0x4000'/>
-    </nvram>
-
-    <!-- TPM emulator -->
+    <controller type='usb' index='0' model='pci-ohci'>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x01' function='0x0'/>
+    </controller>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
+    <serial type='pty'>
+      <target type='spapr-vio-serial' port='0'>
+        <model name='spapr-vty'/>
+      </target>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </serial>
+    <serial type='pty'>
+      <target type='spapr-vio-serial' port='1'>
+        <model name='spapr-vty'/>
+      </target>
+      <address type='spapr-vio' reg='0x30001000'/>
+    </serial>
+    <console type='pty'>
+      <target type='serial' port='0'/>
+      <address type='spapr-vio' reg='0x30000000'/>
+    </console>
     <tpm model='tpm-spapr'>
       <backend type='emulator' version='2.0'/>
+      <address type='spapr-vio' reg='0x00005000'/>
     </tpm>
-
+    <audio id='1' type='none'/>
     <memballoon model='none'/>
+    <nvram>
+      <address type='spapr-vio' reg='0x00004000'/>
+    </nvram>
+    <panic model='pseries'/>
   </devices>
 </domain>
