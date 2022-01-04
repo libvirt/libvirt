@@ -9,7 +9,7 @@
   </memoryBacking>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='i686' machine='pc'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
   </os>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>

@@ -23,7 +23,7 @@ QEMU_AUDIO_ADC_TRY_POLL=on \
 QEMU_OSS_DAC_DEV=/dev/dsp1 \
 QEMU_AUDIO_DAC_TRY_POLL=off \
 QEMU_OSS_NFRAGS=30 \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \

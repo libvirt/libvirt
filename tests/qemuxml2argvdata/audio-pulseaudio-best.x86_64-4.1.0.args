@@ -22,7 +22,7 @@ QEMU_PA_SOURCE=fish \
 QEMU_PA_SINK=fish \
 QEMU_PA_SAMPLES=200 \
 QEMU_PA_SERVER=%s=acme.example.org \
-/usr/bin/qemu-system-i386 \
+/usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
