@@ -760,11 +760,11 @@ testCompareXMLToArgv(const void *data)
 
     ctxt->node = root;
 
-    if ((archstr = virXPathString("string(./os/type[1]/@arch)", ctxt))) {
-        if ((arch = virArchFromString(archstr)) == VIR_ARCH_NONE) {
-            arch = virArchFromHost();
-        }
-    }
+    if ((archstr = virXPathString("string(./os/type[1]/@arch)", ctxt)))
+        arch = virArchFromString(archstr);
+
+    if (arch == VIR_ARCH_NONE)
+        arch = virArchFromHost();
 
     if (!(info->flags & FLAG_REAL_CAPS)) {
         if (testUpdateQEMUCaps(info, arch, driver.caps) < 0)
@@ -822,13 +822,6 @@ testCompareXMLToArgv(const void *data)
 
     if (qemuProcessPrepareMonitorChr(&monitor_chr, priv->libDir) < 0)
         goto cleanup;
-
-    if (!(info->flags & FLAG_REAL_CAPS)) {
-        if (testUpdateQEMUCaps(info, vm->def->os.arch, driver.caps) < 0)
-            goto cleanup;
-        if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
-            goto cleanup;
-    }
 
     virResetLastError();
 
