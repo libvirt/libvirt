@@ -48,9 +48,6 @@ VIR_LOG_INIT("qemu.qemu_agent");
 
 #define LINE_ENDING "\n"
 
-#define DEBUG_IO 0
-#define DEBUG_RAW_IO 0
-
 /* We read from QEMU until seeing a \r\n pair to indicate a
  * completed reply or event. To avoid memory denial-of-service
  * though, we must have a size limit on amount of data we
@@ -136,25 +133,6 @@ static int qemuAgentOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(qemuAgent);
 
-
-#if DEBUG_RAW_IO
-static char *
-qemuAgentEscapeNonPrintable(const char *text)
-{
-    size_t i;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    for (i = 0; text[i] != '\0'; i++) {
-        if (text[i] == '\\')
-            virBufferAddLit(&buf, "\\\\");
-        else if (g_ascii_isprint(text[i]) || text[i] == '\n' ||
-                 (text[i] == '\r' && text[i+1] == '\n'))
-            virBufferAddChar(&buf, text[i]);
-        else
-            virBufferAsprintf(&buf, "\\x%02x", text[i]);
-    }
-    return virBufferContentAndReset(&buf);
-}
-#endif
 
 
 static void qemuAgentDispose(void *obj)
@@ -300,14 +278,6 @@ static int qemuAgentIOProcessData(qemuAgent *agent,
 {
     int used = 0;
     size_t i = 0;
-#if DEBUG_IO
-# if DEBUG_RAW_IO
-    g_autofree char *str1 = qemuAgentEscapeNonPrintable(data);
-    VIR_ERROR(_("[%s]"), str1);
-# else
-    VIR_DEBUG("Data %zu bytes [%s]", len, data);
-# endif
-#endif
 
     while (used < len) {
         char *nl = strstr(data + used, LINE_ENDING);
@@ -344,17 +314,6 @@ qemuAgentIOProcess(qemuAgent *agent)
     if (agent->msg && agent->msg->txOffset == agent->msg->txLength)
         msg = agent->msg;
 
-#if DEBUG_IO
-# if DEBUG_RAW_IO
-    g_autofree char *str1 = qemuAgentEscapeNonPrintable(msg ? msg->txBuffer : "");
-    g_autofree char *str2 = qemuAgentEscapeNonPrintable(agent->buffer);
-    VIR_ERROR(_("Process %zu %p %p [[[%s]]][[[%s]]]"),
-              agent->bufferOffset, agent->msg, msg, str1, str2);
-# else
-    VIR_DEBUG("Process %zu", agent->bufferOffset);
-# endif
-#endif
-
     len = qemuAgentIOProcessData(agent,
                                  agent->buffer, agent->bufferOffset,
                                  msg);
@@ -369,9 +328,6 @@ qemuAgentIOProcess(qemuAgent *agent)
         VIR_FREE(agent->buffer);
         agent->bufferOffset = agent->bufferLength = 0;
     }
-#if DEBUG_IO
-    VIR_DEBUG("Process done %zu used %d", agent->bufferOffset, len);
-#endif
     if (msg && msg->finished)
         virCondBroadcast(&agent->notify);
     return len;
@@ -455,10 +411,6 @@ qemuAgentIORead(qemuAgent *agent)
         agent->buffer[agent->bufferOffset] = '\0';
     }
 
-#if DEBUG_IO
-    VIR_DEBUG("Now read %zu bytes of data", agent->bufferOffset);
-#endif
-
     return ret;
 }
 
@@ -527,9 +479,6 @@ qemuAgentIO(GSocket *socket G_GNUC_UNUSED,
     virObjectRef(agent);
     /* lock access to the agent and protect fd */
     virObjectLock(agent);
-#if DEBUG_IO
-    VIR_DEBUG("Agent %p I/O on watch %d socket %p cond %d", agent, agent->socket, cond);
-#endif
 
     if (agent->fd == -1 || !agent->watch) {
         virObjectUnlock(agent);
