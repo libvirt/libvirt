@@ -75,7 +75,6 @@ exec "$@"' > /usr/bin/nosync && \
         ninja-build \
         numactl-devel \
         numad \
-        parted \
         parted-devel \
         perl-base \
         pkgconfig \
@@ -95,7 +94,6 @@ exec "$@"' > /usr/bin/nosync && \
         systemtap-sdt-devel \
         wireshark-devel \
         xen-devel \
-        xfsprogs-devel \
         yajl-devel && \
     nosync dnf autoremove -y && \
     nosync dnf clean all -y && \

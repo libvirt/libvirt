@@ -67,7 +67,6 @@ RUN dnf update -y && \
         ninja-build \
         numactl-devel \
         numad \
-        parted \
         parted-devel \
         perl \
         pkgconfig \
@@ -85,7 +84,6 @@ RUN dnf update -y && \
         systemd-devel \
         systemtap-sdt-devel \
         wireshark-devel \
-        xfsprogs-devel \
         yajl-devel && \
     dnf autoremove -y && \
     dnf clean all -y && \

@@ -66,7 +66,6 @@ RUN zypper dist-upgrade -y && \
            ninja \
            numad \
            open-iscsi \
-           parted \
            parted-devel \
            perl-base \
            pkgconfig \
@@ -83,8 +82,7 @@ RUN zypper dist-upgrade -y && \
            sed \
            systemtap-sdt-devel \
            wireshark-devel \
-           xen-devel \
-           xfsprogs-devel && \
+           xen-devel && \
     zypper clean --all && \
     rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \

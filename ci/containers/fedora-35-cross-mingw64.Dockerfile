@@ -46,7 +46,6 @@ exec "$@"' > /usr/bin/nosync && \
         nfs-utils \
         ninja-build \
         numad \
-        parted \
         perl-base \
         polkit \
         python3 \

@@ -38,7 +38,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ninja-build \
             numad \
             open-iscsi \
-            parted \
             perl-base \
             pkgconf \
             policykit-1 \
@@ -104,8 +103,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             libxen-dev:armhf \
             libxml2-dev:armhf \
             libyajl-dev:armhf \
-            systemtap-sdt-dev:armhf \
-            xfslibs-dev:armhf && \
+            systemtap-sdt-dev:armhf && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
     mkdir -p /usr/local/share/meson/cross && \

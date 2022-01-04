@@ -74,7 +74,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             ninja-build \
             numad \
             open-iscsi \
-            parted \
             perl-base \
             pkgconf \
             policykit-1 \
@@ -89,7 +88,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             sheepdog \
             systemtap-sdt-dev \
             wireshark-dev \
-            xfslibs-dev \
             xsltproc && \
     eatmydata apt-get autoremove -y && \
     eatmydata apt-get autoclean -y && \
