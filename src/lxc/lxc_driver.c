@@ -4308,17 +4308,17 @@ static int lxcDomainAttachDeviceFlags(virDomainPtr dom,
                                          false) < 0)
             goto endjob;
 
-        if ((ret = lxcDomainAttachDeviceConfig(vmdef, dev)) < 0)
+        if ((ret = lxcDomainAttachDeviceConfig(vmdef, dev_copy)) < 0)
             goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if (virDomainDefCompatibleDevice(vm->def, dev_copy, NULL,
+        if (virDomainDefCompatibleDevice(vm->def, dev, NULL,
                                          VIR_DOMAIN_DEVICE_ACTION_ATTACH,
                                          true) < 0)
             goto endjob;
 
-        if ((ret = lxcDomainAttachDeviceLive(driver, vm, dev_copy)) < 0)
+        if ((ret = lxcDomainAttachDeviceLive(driver, vm, dev)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be
@@ -4475,12 +4475,12 @@ static int lxcDomainDetachDeviceFlags(virDomainPtr dom,
         if (!vmdef)
             goto endjob;
 
-        if ((ret = lxcDomainDetachDeviceConfig(vmdef, dev)) < 0)
+        if ((ret = lxcDomainDetachDeviceConfig(vmdef, dev_copy)) < 0)
             goto endjob;
     }
 
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
-        if ((ret = lxcDomainDetachDeviceLive(driver, vm, dev_copy)) < 0)
+        if ((ret = lxcDomainDetachDeviceLive(driver, vm, dev)) < 0)
             goto endjob;
         /*
          * update domain status forcibly because the domain status may be

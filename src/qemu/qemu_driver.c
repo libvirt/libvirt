@@ -8020,7 +8020,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
 
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev, priv->qemuCaps,
+        if ((ret = qemuDomainUpdateDeviceConfig(vmdef, dev_copy, priv->qemuCaps,
                                                 parse_flags,
                                                 driver->xmlopt)) < 0)
             goto endjob;
@@ -8029,7 +8029,7 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         /* virDomainDefCompatibleDevice call is delayed until we know the
          * device we're going to update. */
-        if ((ret = qemuDomainUpdateDeviceLive(vm, dev_copy, dom, force)) < 0)
+        if ((ret = qemuDomainUpdateDeviceLive(vm, dev, dom, force)) < 0)
             goto endjob;
 
         qemuDomainSaveStatus(vm);
@@ -8100,7 +8100,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
         if (!vmdef)
             goto cleanup;
 
-        if (qemuDomainDetachDeviceConfig(vmdef, dev, priv->qemuCaps,
+        if (qemuDomainDetachDeviceConfig(vmdef, dev_copy, priv->qemuCaps,
                                          parse_flags,
                                          driver->xmlopt) < 0)
             goto cleanup;
@@ -8109,7 +8109,7 @@ qemuDomainDetachDeviceLiveAndConfig(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_AFFECT_LIVE) {
         int rc;
 
-        if ((rc = qemuDomainDetachDeviceLive(vm, dev_copy, driver, false)) < 0)
+        if ((rc = qemuDomainDetachDeviceLive(vm, dev, driver, false)) < 0)
             goto cleanup;
 
         if (rc == 0 && qemuDomainUpdateDeviceList(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)
