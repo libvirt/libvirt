@@ -5,14 +5,13 @@
   <currentMemory>1048576</currentMemory>
   <vcpu>1</vcpu>
   <os>
-    <type arch="armv7l" machine="vexpress-a9">hvm</type>
+    <type arch="aarch64" machine="vexpress-a9">hvm</type>
     <kernel>/arm.kernel</kernel>
     <initrd>/arm.initrd</initrd>
     <dtb>/arm.dtb</dtb>
     <cmdline>console=ttyAMA0,115200n8 rw root=/dev/vda3 rootwait physmap.enabled=0</cmdline>
   </os>
   <features>
-    <acpi/>
     <apic/>
     <pae/>
   </features>
@@ -21,7 +20,7 @@
   <on_reboot>restart</on_reboot>
   <on_crash>restart</on_crash>
   <devices>
-    <emulator>/usr/bin/qemu-system-arm</emulator>
+    <emulator>/usr/bin/qemu-system-aarch64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2'/>
       <source file='/arm-sd.qcow2'/>

@@ -7,7 +7,7 @@ XDG_DATA_HOME=/tmp/lib/domain--1-armtest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-armtest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-armtest/.config \
 QEMU_AUDIO_DRV=none \
-/usr/bin/qemu-system-arm \
+/usr/bin/qemu-system-aarch64 \
 -name guest=armtest,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-armtest/master-key.aes \
@@ -24,6 +24,7 @@ QEMU_AUDIO_DRV=none \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \
+-no-acpi \
 -boot strict=on \
 -kernel /arm.kernel \
 -initrd /arm.initrd \
