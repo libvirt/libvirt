@@ -77,6 +77,7 @@ struct _qemuMonitor {
     GSource *watch;
 
     virDomainObj *vm;
+    char *domainName;
 
     qemuMonitorCallbacks *cb;
     void *callbackOpaque;
@@ -221,6 +222,7 @@ qemuMonitorDispose(void *obj)
     virCondDestroy(&mon->notify);
     g_free(mon->buffer);
     g_free(mon->balloonpath);
+    g_free(mon->domainName);
 }
 
 
@@ -539,8 +541,8 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
 
         if (!error && !mon->goteof &&
             cond & G_IO_ERR) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Invalid file descriptor while waiting for monitor"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Invalid file descriptor while waiting for monitor (vm='%s')"), mon->domainName);
             mon->goteof = true;
         }
     }
@@ -565,13 +567,14 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
             virResetLastError();
         } else {
             if (virGetLastErrorCode() == VIR_ERR_OK && !mon->goteof)
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Error while processing monitor IO"));
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("Error while processing monitor IO (vm='%s')"), mon->domainName);
             virCopyLastError(&mon->lastError);
             virResetLastError();
         }
 
-        VIR_DEBUG("Error on monitor %s", NULLSTR(mon->lastError.message));
+        VIR_DEBUG("Error on monitor %s mon=%p vm=%p name=%s",
+                  NULLSTR(mon->lastError.message), mon, mon->vm, mon->domainName);
         /* If IO process resulted in an error & we have a message,
          * then wakeup that waiter */
         if (mon->msg && !mon->msg->finished) {
@@ -592,7 +595,8 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        VIR_DEBUG("Triggering EOF callback");
+        VIR_DEBUG("Triggering EOF callback mon=%p vm=%p name=%s",
+                  mon, mon->vm, mon->domainName);
         (eofNotify)(mon, vm, mon->callbackOpaque);
         virObjectUnref(mon);
     } else if (error) {
@@ -602,7 +606,8 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         /* Make sure anyone waiting wakes up now */
         virCondSignal(&mon->notify);
         virObjectUnlock(mon);
-        VIR_DEBUG("Triggering error callback");
+        VIR_DEBUG("Triggering error callback mon=%p vm=%p name=%s",
+                  mon, mon->vm, mon->domainName);
         (errorNotify)(mon, vm, mon->callbackOpaque);
         virObjectUnref(mon);
     } else {
@@ -650,6 +655,7 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->fd = fd;
     mon->context = g_main_context_ref(context);
     mon->vm = virObjectRef(vm);
+    mon->domainName = g_strdup(NULLSTR(vm->def->name));
     mon->waitGreeting = true;
     mon->cb = cb;
     mon->callbackOpaque = opaque;
@@ -891,14 +897,14 @@ qemuMonitorSend(qemuMonitor *mon,
 
     /* Check whether qemu quit unexpectedly */
     if (mon->lastError.code != VIR_ERR_OK) {
-        VIR_DEBUG("Attempt to send command while error is set %s",
-                  NULLSTR(mon->lastError.message));
+        VIR_DEBUG("Attempt to send command while error is set %s mon=%p vm=%p name=%s",
+                  NULLSTR(mon->lastError.message), mon, mon->vm, mon->domainName);
         virSetError(&mon->lastError);
         return -1;
     }
     if (mon->goteof) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("End of file from qemu monitor"));
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("End of file from qemu monitor (vm='%s')"), mon->domainName);
         return -1;
     }
 
@@ -911,15 +917,15 @@ qemuMonitorSend(qemuMonitor *mon,
 
     while (!mon->msg->finished) {
         if (virCondWait(&mon->notify, &mon->parent.lock) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Unable to wait on monitor condition"));
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to wait on monitor condition (vm='%s')"), mon->domainName);
             goto cleanup;
         }
     }
 
     if (mon->lastError.code != VIR_ERR_OK) {
-        VIR_DEBUG("Send command resulted in error %s",
-                  NULLSTR(mon->lastError.message));
+        VIR_DEBUG("Send command resulted in error %s mon=%p vm=%p name=%s",
+                  NULLSTR(mon->lastError.message), mon, mon->vm, mon->domainName);
         virSetError(&mon->lastError);
         goto cleanup;
     }
