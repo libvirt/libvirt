@@ -178,6 +178,7 @@ virLogSetDefaultOutputToFile(const char *binary, bool privileged)
         old_umask = umask(077);
         if (g_mkdir_with_parents(logdir, 0777) < 0) {
             umask(old_umask);
+            virReportSystemError(errno, "%s", _("Could not create log directory"));
             return -1;
         }
         umask(old_umask);
