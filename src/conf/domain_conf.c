@@ -25495,63 +25495,54 @@ virDomainTPMDefFormat(virBuffer *buf,
                       virDomainTPMDef *def,
                       unsigned int flags)
 {
-    virBufferAsprintf(buf, "<tpm model='%s'>\n",
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) backendAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) backendChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+
+    virBufferAsprintf(&attrBuf, " model='%s'",
                       virDomainTPMModelTypeToString(def->model));
-    virBufferAdjustIndent(buf, 2);
-    virBufferAsprintf(buf, "<backend type='%s'",
+
+    virBufferAsprintf(&backendAttrBuf, " type='%s'",
                       virDomainTPMBackendTypeToString(def->type));
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferEscapeString(buf, "<device path='%s'/>\n",
+        virBufferEscapeString(&backendChildBuf, "<device path='%s'/>\n",
                               def->data.passthrough.source->data.file.path);
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</backend>\n");
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        virBufferAsprintf(buf, " version='%s'",
+        virBufferAsprintf(&backendAttrBuf, " version='%s'",
                           virDomainTPMVersionTypeToString(def->version));
         if (def->data.emulator.persistent_state)
-            virBufferAddLit(buf, " persistent_state='yes'");
+            virBufferAddLit(&backendAttrBuf, " persistent_state='yes'");
         if (def->data.emulator.hassecretuuid) {
             char uuidstr[VIR_UUID_STRING_BUFLEN];
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            virBufferAsprintf(buf, "<encryption secret='%s'/>\n",
-                virUUIDFormat(def->data.emulator.secretuuid, uuidstr));
-            virBufferAdjustIndent(buf, -2);
+
+            virBufferAsprintf(&backendChildBuf, "<encryption secret='%s'/>\n",
+                              virUUIDFormat(def->data.emulator.secretuuid, uuidstr));
         }
         if (def->data.emulator.activePcrBanks) {
+            g_auto(virBuffer) activePcrBanksBuf = VIR_BUFFER_INIT_CHILD(&backendChildBuf);
             size_t i;
-            virBufferAddLit(buf, ">\n");
-            virBufferAdjustIndent(buf, 2);
-            virBufferAddLit(buf, "<active_pcr_banks>\n");
-            virBufferAdjustIndent(buf, 2);
+
             for (i = VIR_DOMAIN_TPM_PCR_BANK_SHA1; i < VIR_DOMAIN_TPM_PCR_BANK_LAST; i++) {
                 if ((def->data.emulator.activePcrBanks & (1 << i)))
-                    virBufferAsprintf(buf, "<%s/>\n",
+                    virBufferAsprintf(&activePcrBanksBuf, "<%s/>\n",
                                       virDomainTPMPcrBankTypeToString(i));
             }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</active_pcr_banks>\n");
-            virBufferAdjustIndent(buf, -2);
+
+            virXMLFormatElement(&backendChildBuf, "active_pcr_banks", NULL, &activePcrBanksBuf);
         }
-        if (def->data.emulator.hassecretuuid ||
-            def->data.emulator.activePcrBanks)
-            virBufferAddLit(buf, "</backend>\n");
-        else
-            virBufferAddLit(buf, "/>\n");
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:
         break;
     }
 
-    virDomainDeviceInfoFormat(buf, &def->info, flags);
+    virXMLFormatElement(&childBuf, "backend", &backendAttrBuf, &backendChildBuf);
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</tpm>\n");
+    virXMLFormatElement(buf, "tpm", &attrBuf, &childBuf);
 
     return 0;
 }
