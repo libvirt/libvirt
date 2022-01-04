@@ -58,27 +58,25 @@ static const char *const aarch64_machines[] = {
     "virt", "virt-2.6", "versatilepb", NULL
 };
 static const char *const arm_machines[] = {
-    "vexpress-a9", "vexpress-a15", "versatilepb", "virt", NULL
+    "vexpress-a9", "virt", NULL
 };
 static const char *const ppc64_machines[] = {
     "pseries", NULL
 };
 static const char *const ppc_machines[] = {
-    "g3beige", "mac99", "prep", "ppce500", NULL
+    "ppce500", NULL
 };
 static const char *const riscv32_machines[] = {
-    "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
+    "virt", NULL
 };
 static const char *const riscv64_machines[] = {
-    "spike_v1.10", "spike_v1.9.1", "sifive_e", "virt", "sifive_u", NULL
+    "virt", NULL
 };
 static const char *const s390x_machines[] = {
     "s390-ccw-virtio", NULL
 };
 static const char *const sparc_machines[] = {
-    "SS-5", "LX", "SPARCClassic", "SPARCbook",
-    "SS-10", "SS-20", "SS-4", "SS-600MP",
-    "Voyager", "leon3_generic", NULL
+    "SS-5", NULL
 };
 
 static const char *const *qemu_machines[VIR_ARCH_LAST] = {
