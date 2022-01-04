@@ -335,10 +335,60 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virCPUDefFree(cpuPower9);
 }
 
+
+static void
+qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
+                                 virArch arch)
+{
+    size_t i;
+    const char *defaultRAMid = NULL;
+
+    /* default-ram-id appeared in QEMU 5.2.0. Reflect
+     * this in our capabilities, i.e. set it for new
+     * enough versions only. */
+    if (virQEMUCapsGetVersion(caps) >= 5002000)
+        defaultRAMid = qemu_default_ram_id[arch];
+
+    virQEMUCapsSetArch(caps, arch);
+
+    for (i = 0; qemu_machines[arch][i] != NULL; i++) {
+        virQEMUCapsAddMachine(caps,
+                              VIR_DOMAIN_VIRT_QEMU,
+                              qemu_machines[arch][i],
+                              NULL,
+                              NULL,
+                              0,
+                              false,
+                              false,
+                              true,
+                              defaultRAMid,
+                              false);
+        virQEMUCapsSet(caps, QEMU_CAPS_TCG);
+    }
+
+    if (kvm_machines[arch] != NULL) {
+        for (i = 0; kvm_machines[arch][i] != NULL; i++) {
+            virQEMUCapsAddMachine(caps,
+                                  VIR_DOMAIN_VIRT_KVM,
+                                  kvm_machines[arch][i],
+                                  NULL,
+                                  NULL,
+                                  0,
+                                  false,
+                                  false,
+                                  true,
+                                  defaultRAMid,
+                                  false);
+            virQEMUCapsSet(caps, QEMU_CAPS_KVM);
+        }
+    }
+}
+
+
 int qemuTestCapsCacheInsert(virFileCache *cache,
                             virQEMUCaps *caps)
 {
-    size_t i, j;
+    size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
         virQEMUCaps *tmpCaps;
@@ -353,48 +403,8 @@ int qemuTestCapsCacheInsert(virFileCache *cache,
         if (!tmpCaps)
             return -1;
 
-        if (!virQEMUCapsHasMachines(tmpCaps)) {
-            const char *defaultRAMid = NULL;
-
-            /* default-ram-id appeared in QEMU 5.2.0. Reflect
-             * this in our capabilities, i.e. set it for new
-             * enough versions only. */
-            if (virQEMUCapsGetVersion(tmpCaps) >= 5002000)
-                defaultRAMid = qemu_default_ram_id[i];
-
-            virQEMUCapsSetArch(tmpCaps, i);
-
-            for (j = 0; qemu_machines[i][j] != NULL; j++) {
-                virQEMUCapsAddMachine(tmpCaps,
-                                      VIR_DOMAIN_VIRT_QEMU,
-                                      qemu_machines[i][j],
-                                      NULL,
-                                      NULL,
-                                      0,
-                                      false,
-                                      false,
-                                      true,
-                                      defaultRAMid,
-                                      false);
-                virQEMUCapsSet(tmpCaps, QEMU_CAPS_TCG);
-            }
-            if (kvm_machines[i] != NULL) {
-                for (j = 0; kvm_machines[i][j] != NULL; j++) {
-                    virQEMUCapsAddMachine(tmpCaps,
-                                          VIR_DOMAIN_VIRT_KVM,
-                                          kvm_machines[i][j],
-                                          NULL,
-                                          NULL,
-                                          0,
-                                          false,
-                                          false,
-                                          true,
-                                          defaultRAMid,
-                                          false);
-                    virQEMUCapsSet(tmpCaps, QEMU_CAPS_KVM);
-                }
-            }
-        }
+        if (!virQEMUCapsHasMachines(tmpCaps))
+            qemuTestCapsPopulateFakeMachines(tmpCaps, i);
 
         if (virFileCacheInsertData(cache, qemu_emulators[i], tmpCaps) < 0) {
             virObjectUnref(tmpCaps);
