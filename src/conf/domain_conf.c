@@ -21994,6 +21994,20 @@ virDomainTPMDefCheckABIStability(virDomainTPMDef *src,
         return false;
     }
 
+    switch (src->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (src->data.emulator.activePcrBanks != dst->data.emulator.activePcrBanks) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target active PCR banks doesn't match source"));
+            return false;
+        }
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
     return virDomainDeviceInfoCheckABIStability(&src->info, &dst->info);
 }
 
