@@ -1447,6 +1447,22 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("devices-acpi-index");
 
+    DO_TEST_MACOS("hvf-x86_64-q35-headless",
+                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
+                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+                  QEMU_CAPS_DEVICE_VIRTIO_NET,
+                  QEMU_CAPS_DEVICE_ISA_SERIAL,
+                  QEMU_CAPS_DEVICE_VIRTIO_RNG,
+                  QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_MACOS("hvf-aarch64-virt-headless",
+                  QEMU_CAPS_OBJECT_GPEX,
+                  QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
+                  QEMU_CAPS_DEVICE_PCIE_ROOT_PORT,
+                  QEMU_CAPS_DEVICE_VIRTIO_NET,
+                  QEMU_CAPS_DEVICE_PL011,
+                  QEMU_CAPS_DEVICE_VIRTIO_RNG,
+                  QEMU_CAPS_OBJECT_RNG_RANDOM);
+
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
         virFileDeleteTree(fakerootdir);
