@@ -460,7 +460,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
     bool enableFips = !!(flags & FLAG_FIPS_HOST);
     size_t i;
 
-    if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI, false,
+    if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
         return NULL;
 

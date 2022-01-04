@@ -6255,7 +6255,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         vm->def->nets[i] = newNet;
     }
 
-    if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL, true,
+    if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
         goto cleanup;
 

@@ -5522,7 +5522,6 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
  * qemuProcessPrepareQEMUCaps:
  * @vm: domain object
  * @qemuCapsCache: cache of QEMU capabilities
- * @processStartFlags: flags based on the VIR_QEMU_PROCESS_START_* enum
  *
  * Prepare the capabilities of a QEMU process for startup. This includes
  * copying the caps to a static cache and potential post-processing depending
@@ -5532,8 +5531,7 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
  */
 static int
 qemuProcessPrepareQEMUCaps(virDomainObj *vm,
-                           virFileCache *qemuCapsCache,
-                           unsigned int processStartFlags)
+                           virFileCache *qemuCapsCache)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
@@ -5543,9 +5541,6 @@ qemuProcessPrepareQEMUCaps(virDomainObj *vm,
                                                       vm->def->emulator,
                                                       vm->def->os.machine)))
         return -1;
-
-    if (processStartFlags & VIR_QEMU_PROCESS_START_STANDALONE)
-        virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
 
     /* Update qemu capabilities according to lists passed in via namespace */
     if (qemuProcessStartUpdateCustomCaps(vm) < 0)
@@ -5605,7 +5600,7 @@ qemuProcessInit(virQEMUDriver *driver,
     }
 
     VIR_DEBUG("Determining emulator version");
-    if (qemuProcessPrepareQEMUCaps(vm, driver->qemuCapsCache, flags) < 0)
+    if (qemuProcessPrepareQEMUCaps(vm, driver->qemuCapsCache) < 0)
         goto cleanup;
 
     if (qemuDomainUpdateCPU(vm, updatedCPU, &origCPU) < 0)
@@ -7887,7 +7882,6 @@ int
 qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    const char *migrateURI,
-                                   bool standalone,
                                    unsigned int flags)
 {
     virCheckFlags(VIR_QEMU_PROCESS_START_COLD |
@@ -7898,9 +7892,6 @@ qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
 
     if (!migrateURI)
         flags |= VIR_QEMU_PROCESS_START_NEW;
-
-    if (standalone)
-        flags |= VIR_QEMU_PROCESS_START_STANDALONE;
 
     if (qemuProcessInit(driver, vm, NULL, QEMU_ASYNC_JOB_NONE,
                         !!migrateURI, flags) < 0)
