@@ -25490,9 +25490,9 @@ virDomainSoundCodecDefFormat(virBuffer *buf,
     return 0;
 }
 
-static int
+static void
 virDomainTPMDefFormat(virBuffer *buf,
-                      virDomainTPMDef *def,
+                      const virDomainTPMDef *def,
                       unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
@@ -25543,8 +25543,6 @@ virDomainTPMDefFormat(virBuffer *buf,
     virDomainDeviceInfoFormat(&childBuf, &def->info, flags);
 
     virXMLFormatElement(buf, "tpm", &attrBuf, &childBuf);
-
-    return 0;
 }
 
 
@@ -28531,8 +28529,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     }
 
     for (n = 0; n < def->ntpms; n++) {
-        if (virDomainTPMDefFormat(buf, def->tpms[n], flags) < 0)
-            return -1;
+        virDomainTPMDefFormat(buf, def->tpms[n], flags);
     }
 
     for (n = 0; n < def->ngraphics; n++) {
@@ -29762,7 +29759,8 @@ virDomainDeviceDefCopy(virDomainDeviceDef *src,
         rc = virDomainChrDefFormat(&buf, src->data.chr, flags);
         break;
     case VIR_DOMAIN_DEVICE_TPM:
-        rc = virDomainTPMDefFormat(&buf, src->data.tpm, flags);
+        virDomainTPMDefFormat(&buf, src->data.tpm, flags);
+        rc = 0;
         break;
     case VIR_DOMAIN_DEVICE_PANIC:
         virDomainPanicDefFormat(&buf, src->data.panic);
