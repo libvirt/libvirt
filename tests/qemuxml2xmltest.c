@@ -528,8 +528,8 @@ mymain(void)
 
     DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
     DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST_NOCAPS("luks-disks");
-    DO_TEST_NOCAPS("luks-disks-source");
+    DO_TEST_CAPS_LATEST("luks-disks");
+    DO_TEST_CAPS_LATEST("luks-disks-source");
     DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
     DO_TEST_NOCAPS("memtune");
     DO_TEST_NOCAPS("memtune-unlimited");
@@ -1236,15 +1236,8 @@ mymain(void)
     DO_TEST("fd-memory-no-numa-topology", QEMU_CAPS_OBJECT_MEMORY_FILE,
             QEMU_CAPS_KVM);
 
-    DO_TEST("memfd-memory-numa",
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD,
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,
-            QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_DEVICE_NVDIMM);
-    DO_TEST("memfd-memory-default-hugepage",
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD,
-            QEMU_CAPS_OBJECT_MEMORY_MEMFD_HUGETLB,
-            QEMU_CAPS_OBJECT_MEMORY_FILE);
+    DO_TEST_CAPS_LATEST("memfd-memory-numa");
+    DO_TEST_CAPS_LATEST("memfd-memory-default-hugepage");
 
     DO_TEST_NOCAPS("acpi-table");
 
@@ -1319,16 +1312,10 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_MOUSE_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW);
 
-    DO_TEST("tseg-explicit-size",
-            QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_PCI_BRIDGE,
-            QEMU_CAPS_DEVICE_IOH3420,
-            QEMU_CAPS_ICH9_AHCI,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_MCH_EXTENDED_TSEG_MBYTES);
+    DO_TEST_CAPS_LATEST("tseg-explicit-size");
 
-    DO_TEST("vhost-vsock", QEMU_CAPS_DEVICE_VHOST_VSOCK);
-    DO_TEST("vhost-vsock-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK);
+    DO_TEST_CAPS_LATEST("vhost-vsock");
+    DO_TEST_CAPS_LATEST("vhost-vsock-auto");
     DO_TEST("vhost-vsock-ccw", QEMU_CAPS_DEVICE_VHOST_VSOCK,
             QEMU_CAPS_CCW);
     DO_TEST("vhost-vsock-ccw-auto", QEMU_CAPS_DEVICE_VHOST_VSOCK,
