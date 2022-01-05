@@ -1127,7 +1127,8 @@ mymain(void)
             QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST_NOCAPS("default-kvm-host-arch");
     DO_TEST_NOCAPS("default-qemu-host-arch");
-    DO_TEST_NOCAPS("x86-kvm-32-on-64");
+    DO_TEST_CAPS_VER("x86-kvm-32-on-64", "4.1.0");
+    DO_TEST_CAPS_LATEST("x86-kvm-32-on-64");
     DO_TEST_NOCAPS("boot-cdrom");
     DO_TEST_NOCAPS("boot-network");
     DO_TEST_NOCAPS("boot-floppy");

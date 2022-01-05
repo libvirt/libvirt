@@ -1332,6 +1332,9 @@ mymain(void)
     DO_TEST("riscv64-virt-pci",
             QEMU_CAPS_OBJECT_GPEX);
 
+    DO_TEST_CAPS_VER("x86-kvm-32-on-64", "4.1.0");
+    DO_TEST_CAPS_LATEST("x86-kvm-32-on-64");
+
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");
 

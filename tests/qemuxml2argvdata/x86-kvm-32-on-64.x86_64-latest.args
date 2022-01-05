@@ -1,0 +1,32 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-kvm \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-kvm/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-kvm/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-kvm/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=kvm,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-kvm/master-key.aes"}' \
+-machine pc-i440fx-6.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
+-cpu qemu64 \
+-m 4096 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":4294967296}' \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
