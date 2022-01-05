@@ -561,11 +561,7 @@ mymain(void)
     DO_TEST_NOCAPS("event_idx");
     DO_TEST_NOCAPS("vhost_queues");
     DO_TEST_NOCAPS("interface-driver");
-    DO_TEST("interface-server", QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_VNC);
+    DO_TEST_NOCAPS("net-server");
     DO_TEST_NOCAPS("virtio-lun");
 
     DO_TEST_NOCAPS("usb-none");
