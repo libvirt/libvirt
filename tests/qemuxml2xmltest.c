@@ -596,9 +596,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("blkdeviotune-max");
     DO_TEST_CAPS_LATEST("blkdeviotune-group-num");
     DO_TEST_CAPS_LATEST("blkdeviotune-max-length");
-    DO_TEST("controller-usb-order",
-            QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4);
+    DO_TEST_CAPS_LATEST("controller-usb-order");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-single", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("ppc64-tpmproxy-with-tpm", "ppc64");
 
