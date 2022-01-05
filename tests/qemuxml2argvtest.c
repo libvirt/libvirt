@@ -2191,6 +2191,7 @@ mymain(void)
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-cpuset");
     DO_TEST_NOCAPS("numad-auto-memory-vcpu-no-cpuset-and-placement");
     DO_TEST_NOCAPS("numad-static-memory-auto-vcpu");
+    DO_TEST_CAPS_LATEST("blkdeviotune");
     DO_TEST_CAPS_VER("blkdeviotune-max", "4.1.0");
     DO_TEST_CAPS_LATEST("blkdeviotune-max");
     DO_TEST_CAPS_VER("blkdeviotune-group-num", "4.1.0");
