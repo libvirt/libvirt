@@ -3273,16 +3273,7 @@ mymain(void)
     DO_TEST("sparc-minimal",
             QEMU_CAPS_SCSI_NCR53C90);
 
-    /* VM XML has invalid arch/ostype/virttype combo, but the SKIP flag
-     * will avoid the error during parse. This will cause us to fill in
-     * the missing machine type using the i386 binary, despite it being
-     * the wrong binary for the arch. We expect to get a failure about
-     * bad arch later when creating the pretend command.
-     */
-    DO_TEST_FULL("missing-machine", "",
-                 ARG_FLAGS, FLAG_EXPECT_FAILURE,
-                 ARG_PARSEFLAGS, VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE,
-                 ARG_END);
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("missing-machine");
 
     DO_TEST_CAPS_VER("name-escape", "2.11.0");
     DO_TEST_CAPS_LATEST("name-escape");
