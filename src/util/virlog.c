@@ -1487,21 +1487,21 @@ virLogParseOutput(const char *src)
     if (!(tokens = g_strsplit(src, ":", 0)) ||
         (count = g_strv_length(tokens)) < 2) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Malformed format for output '%s'"), src);
+                       _("Malformed format for log output '%s'"), src);
         return NULL;
     }
 
     if (virStrToLong_uip(tokens[0], NULL, 10, &prio) < 0 ||
         (prio < VIR_LOG_DEBUG) || (prio > VIR_LOG_ERROR)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid priority '%s' for output '%s'"),
+                       _("Invalid log priority '%s' for log output '%s'"),
                        tokens[0], src);
         return NULL;
     }
 
     if ((dest = virLogDestinationTypeFromString(tokens[1])) < 0) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Invalid destination '%s' for output '%s'"),
+                       _("Invalid log destination '%s' for log output '%s'"),
                        tokens[1], src);
         return NULL;
     }
@@ -1511,7 +1511,7 @@ virLogParseOutput(const char *src)
         ((dest == VIR_LOG_TO_FILE ||
           dest == VIR_LOG_TO_SYSLOG) && count != 3)) {
         virReportError(VIR_ERR_INVALID_ARG,
-                       _("Output '%s' does not meet the format requirements "
+                       _("Log output '%s' does not meet the format requirements "
                          "for destination type '%s'"), src, tokens[1]);
         return NULL;
     }
