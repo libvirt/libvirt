@@ -275,17 +275,17 @@ int virDaemonForkIntoBackground(const char *argv0 G_GNUC_UNUSED)
     return -1;
 }
 
-void virDaemonSetupLogging(const char *daemon_name G_GNUC_UNUSED,
-                           unsigned int log_level G_GNUC_UNUSED,
-                           char *log_filters G_GNUC_UNUSED,
-                           char *log_outputs G_GNUC_UNUSED,
-                           bool privileged G_GNUC_UNUSED,
-                           bool verbose G_GNUC_UNUSED,
-                           bool godaemon G_GNUC_UNUSED)
+int virDaemonSetupLogging(const char *daemon_name G_GNUC_UNUSED,
+                          unsigned int log_level G_GNUC_UNUSED,
+                          char *log_filters G_GNUC_UNUSED,
+                          char *log_outputs G_GNUC_UNUSED,
+                          bool privileged G_GNUC_UNUSED,
+                          bool verbose G_GNUC_UNUSED,
+                          bool godaemon G_GNUC_UNUSED)
 {
     /* NOOP */
     errno = ENOTSUP;
-    return;
+    return -1;
 }
 
 int virDaemonUnixSocketPaths(const char *sock_prefix G_GNUC_UNUSED,
