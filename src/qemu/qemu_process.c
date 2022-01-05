@@ -9239,6 +9239,12 @@ qemuProcessQMPInit(qemuProcessQMP *proc)
 }
 
 
+#if defined(__linux__)
+# define hwaccel "kvm:tcg"
+#else
+# define hwaccel "tcg"
+#endif
+
 static int
 qemuProcessQMPLaunch(qemuProcessQMP *proc)
 {
@@ -9249,7 +9255,7 @@ qemuProcessQMPLaunch(qemuProcessQMP *proc)
     if (proc->forceTCG)
         machine = "none,accel=tcg";
     else
-        machine = "none,accel=kvm:tcg";
+        machine = "none,accel=" hwaccel;
 
     VIR_DEBUG("Try to probe capabilities of '%s' via QMP, machine %s",
               proc->binary, machine);
