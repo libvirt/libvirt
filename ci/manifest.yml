@@ -21,8 +21,6 @@ targets:
   centos-stream-8:
     jobs:
       - arch: x86_64
-        variables:
-          RPM: skip
 
   debian-10:
     jobs:
