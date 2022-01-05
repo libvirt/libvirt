@@ -9,7 +9,7 @@
   </memoryBacking>
   <vcpu placement='static'>4</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-2.9'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <bootmenu enable='yes'/>
   </os>
   <on_poweroff>destroy</on_poweroff>

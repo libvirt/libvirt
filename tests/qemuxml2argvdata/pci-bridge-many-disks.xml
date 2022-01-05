@@ -4,7 +4,7 @@
   <memory unit='KiB'>4000768</memory>
   <currentMemory unit='KiB'>4000000</currentMemory>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-1.4'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <loader>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
   </os>

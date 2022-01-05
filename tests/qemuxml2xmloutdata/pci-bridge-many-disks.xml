@@ -5,7 +5,7 @@
   <currentMemory unit='KiB'>4000000</currentMemory>
   <vcpu placement='static'>1</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-1.4'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <loader type='rom'>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
   </os>

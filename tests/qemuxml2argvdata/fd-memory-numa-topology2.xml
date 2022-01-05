@@ -10,7 +10,7 @@
   </memoryBacking>
   <vcpu placement='static'>20</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-i440fx-2.3'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
   </os>
   <cpu>

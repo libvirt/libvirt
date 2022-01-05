@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest=expander-test,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-expander-test/master-key.aes \
--machine pc-i440fx-2.5,usb=off,dump-guest-core=off \
+-machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m 214 \
 -realtime mlock=off \
