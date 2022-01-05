@@ -8685,20 +8685,6 @@ bool qemuDomainHasBuiltinESP(const virDomainDef *def)
 }
 
 
-static bool
-qemuDomainMachineNeedsFDC(const char *machine,
-                          const virArch arch)
-{
-    if (!ARCH_IS_X86(arch))
-        return false;
-
-    if (!STRPREFIX(machine, "pc-q35-"))
-        return false;
-
-    return true;
-}
-
-
 bool
 qemuDomainIsQ35(const virDomainDef *def)
 {
@@ -8781,7 +8767,8 @@ qemuDomainHasBuiltinIDE(const virDomainDef *def)
 bool
 qemuDomainNeedsFDC(const virDomainDef *def)
 {
-    return qemuDomainMachineNeedsFDC(def->os.machine, def->os.arch);
+    /* all supported Q35 machines need explicit FDC */
+    return qemuDomainIsQ35(def);
 }
 
 
