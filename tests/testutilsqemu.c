@@ -385,30 +385,85 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
 }
 
 
+static int
+qemuTestCapsCacheInsertData(virFileCache *cache,
+                            const char *binary,
+                            virQEMUCaps *caps)
+{
+    if (virFileCacheInsertData(cache, binary, virObjectRef(caps)) < 0) {
+        virObjectUnref(caps);
+        return -1;
+    }
+
+    return 0;
+}
+
+
 int qemuTestCapsCacheInsert(virFileCache *cache,
                             virQEMUCaps *caps)
 {
     size_t i;
 
-    for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
-        virQEMUCaps *tmpCaps;
-        if (qemu_emulators[i] == NULL)
-            continue;
-        if (caps) {
-            tmpCaps = virQEMUCapsNewCopy(caps);
-        } else {
-            tmpCaps = virQEMUCapsNew();
+    if (caps && virQEMUCapsGetArch(caps) != VIR_ARCH_NONE) {
+        /* for capabilities which have architecture set we populate only the
+         * given architecture and poison all other so that the test doesn't
+         * accidentally test a weird combination */
+        virArch arch = virQEMUCapsGetArch(caps);
+        g_autoptr(virQEMUCaps) emptyCaps = virQEMUCapsNew();
+        g_autoptr(virQEMUCaps) copyCaps = NULL;
+        virQEMUCaps *effCaps = caps;
+
+        if (!emptyCaps)
+            return -1;
+
+        if (arch_alias[arch] != VIR_ARCH_NONE)
+            arch = arch_alias[arch];
+
+        if (qemu_emulators[arch]) {
+            /* if we are dealing with fake caps we need to populate machine types */
+            if (!virQEMUCapsHasMachines(caps)) {
+                if (!(copyCaps = effCaps = virQEMUCapsNewCopy(caps)))
+                    return -1;
+
+                qemuTestCapsPopulateFakeMachines(copyCaps, arch);
+            }
+
+            if (qemuTestCapsCacheInsertData(cache, qemu_emulators[arch], effCaps) < 0)
+                return -1;
         }
 
-        if (!tmpCaps)
-            return -1;
 
-        if (!virQEMUCapsHasMachines(tmpCaps))
-            qemuTestCapsPopulateFakeMachines(tmpCaps, i);
+        for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
+            if (!qemu_emulators[i])
+                continue;
 
-        if (virFileCacheInsertData(cache, qemu_emulators[i], tmpCaps) < 0) {
-            virObjectUnref(tmpCaps);
-            return -1;
+            if (i == arch)
+                continue;
+
+            if (qemuTestCapsCacheInsertData(cache, qemu_emulators[i], emptyCaps) < 0)
+                return -1;
+        }
+    } else {
+        /* in case when caps are missing or are missing architecture, we populate
+         * everything */
+        for (i = 0; i < G_N_ELEMENTS(qemu_emulators); i++) {
+            g_autoptr(virQEMUCaps) tmp = NULL;
+
+            if (qemu_emulators[i] == NULL)
+                continue;
+
+            if (caps)
+                tmp = virQEMUCapsNewCopy(caps);
+            else
+                tmp = virQEMUCapsNew();
+
+            if (!tmp)
+                return -1;
+
+            qemuTestCapsPopulateFakeMachines(tmp, i);
+
+            if (qemuTestCapsCacheInsertData(cache, qemu_emulators[i], tmp) < 0)
+                return -1;
         }
     }
 
