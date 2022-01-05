@@ -213,8 +213,7 @@ mymain(void)
     DO_TEST_DOMAIN("disk-detect-zeroes");
     DO_TEST_DOMAIN("disk-error-policy");
     DO_TEST_DOMAIN("disk-floppy");
-    DO_TEST_DOMAIN("disk-floppy-q35-2_11");
-    DO_TEST_DOMAIN("disk-floppy-q35-2_9");
+    DO_TEST_DOMAIN("disk-floppy-q35");
     DO_TEST_DOMAIN("disk-network-gluster");
     DO_TEST_DOMAIN("disk-network-iscsi");
     DO_TEST_DOMAIN("disk-network-nbd");

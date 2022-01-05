@@ -1380,10 +1380,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST_CAPS_VER("disk-floppy", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-floppy");
-    DO_TEST_CAPS_VER("disk-floppy-q35-2_9", "2.12.0");
-    DO_TEST_CAPS_LATEST("disk-floppy-q35-2_9");
-    DO_TEST_CAPS_VER("disk-floppy-q35-2_11", "2.12.0");
-    DO_TEST_CAPS_LATEST("disk-floppy-q35-2_11");
+    DO_TEST_CAPS_VER("disk-floppy-q35", "2.12.0");
+    DO_TEST_CAPS_LATEST("disk-floppy-q35");
     DO_TEST_CAPS_ARCH_LATEST_FAILURE("disk-floppy-pseries", "ppc64");
     DO_TEST_CAPS_LATEST("disk-floppy-tray");
     DO_TEST_CAPS_LATEST("disk-virtio");
