@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=spice \
 -name guest=virt-manager-basic,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-virt-manager-basic/master-key.aes \
--machine pc-q35-2.7,usb=off,vmport=off,dump-guest-core=off \
+-machine q35,usb=off,vmport=off,dump-guest-core=off \
 -accel kvm \
 -m 4096 \
 -realtime mlock=off \

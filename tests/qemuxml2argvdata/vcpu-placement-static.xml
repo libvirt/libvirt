@@ -13,7 +13,7 @@
     <memory mode='strict' placement='auto'/>
   </numatune>
   <os>
-    <type arch='x86_64' machine='pc-q35-2.3'>hvm</type>
+    <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
   </os>
   <clock offset='utc'/>

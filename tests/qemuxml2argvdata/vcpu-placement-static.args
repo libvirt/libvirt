@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest=dummy2,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-dummy2/master-key.aes \
--machine pc-q35-2.3,usb=off,dump-guest-core=off \
+-machine q35,usb=off,dump-guest-core=off \
 -accel kvm \
 -m 128 \
 -realtime mlock=off \

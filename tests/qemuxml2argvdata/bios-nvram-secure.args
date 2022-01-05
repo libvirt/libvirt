@@ -11,7 +11,7 @@ QEMU_AUDIO_DRV=none \
 -name guest=test-bios,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test-bios/master-key.aes \
--machine pc-q35-2.5,usb=off,smm=on,dump-guest-core=off \
+-machine q35,usb=off,smm=on,dump-guest-core=off \
 -accel tcg \
 -global driver=cfi.pflash01,property=secure,value=on \
 -drive file=/usr/share/OVMF/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,readonly=on \
