@@ -34,7 +34,7 @@
 
 VIR_LOG_INIT("util.uri");
 
-static int
+static void
 virURIParamAppend(virURI *uri,
                   const char *name,
                   const char *value)
@@ -52,7 +52,7 @@ virURIParamAppend(virURI *uri,
     uri->params[uri->paramsCount].ignore = false;
     uri->paramsCount++;
 
-    return 0;
+    return;
 }
 
 
@@ -113,8 +113,7 @@ virURIParseParams(virURI *uri)
         }
 
         /* Append to the parameter set. */
-        if (virURIParamAppend(uri, name, NULLSTR_EMPTY(value)) < 0)
-            return -1;
+        virURIParamAppend(uri, name, NULLSTR_EMPTY(value));
 
     next:
         query = end;
