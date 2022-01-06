@@ -39,6 +39,8 @@
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
 static virQEMUDriver driver;
+static virCaps *linuxCaps;
+static virCaps *macOSCaps;
 
 static unsigned char *
 fakeSecretGetValue(virSecretPtr obj G_GNUC_UNUSED,
@@ -716,11 +718,17 @@ testCompareXMLToArgv(const void *data)
     g_autofree char *archstr = NULL;
     virArch arch = VIR_ARCH_NONE;
     g_autoptr(virIdentity) sysident = virIdentityGetSystem();
+    int rc;
 
     memset(&monitor_chr, 0, sizeof(monitor_chr));
 
     if (testQemuInfoInitArgs((struct testQemuInfo *) info) < 0)
         goto cleanup;
+
+    if (info->args.hostOS == HOST_OS_MACOS)
+        driver.caps = macOSCaps;
+    else
+        driver.caps = linuxCaps;
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
@@ -771,7 +779,11 @@ testCompareXMLToArgv(const void *data)
             goto cleanup;
     }
 
-    if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
+    if (info->args.hostOS == HOST_OS_MACOS)
+        rc = qemuTestCapsCacheInsertMacOS(driver.qemuCapsCache, info->qemuCaps);
+    else
+        rc = qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps);
+    if (rc < 0)
         goto cleanup;
 
     if (info->migrateFrom &&
@@ -934,6 +946,13 @@ mymain(void)
     if (qemuTestDriverInit(&driver) < 0)
         return EXIT_FAILURE;
 
+    /* By default, the driver gets a virCaps instance that's suitable for
+     * tests that expect Linux as the host OS. We create another one for
+     * macOS and keep around pointers to both: this allows us to later
+     * pick the appropriate one for each test case */
+    linuxCaps = driver.caps;
+    macOSCaps = testQemuCapsInitMacOS();
+
     driver.privileged = true;
 
     VIR_FREE(driver.config->defaultTLSx509certdir);
@@ -1073,6 +1092,10 @@ mymain(void)
 # define DO_TEST_GIC(name, gic, ...) \
     DO_TEST_FULL(name, "", \
                  ARG_GIC, gic, \
+                 ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
+# define DO_TEST_MACOS(name, ...) \
+    DO_TEST_FULL(name, "", \
+                 ARG_HOST_OS, HOST_OS_MACOS, \
                  ARG_QEMU_CAPS, __VA_ARGS__, QEMU_CAPS_LAST, ARG_END)
 
 # define DO_TEST_FAILURE(name, ...) \

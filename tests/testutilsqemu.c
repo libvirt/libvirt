@@ -870,6 +870,10 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             info->args.capsver = va_arg(argptr, char *);
             break;
 
+        case ARG_HOST_OS:
+            info->args.hostOS = va_arg(argptr, int);
+            break;
+
         case ARG_END:
         default:
             info->args.invalidarg = true;

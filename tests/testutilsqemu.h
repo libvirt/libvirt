@@ -47,6 +47,7 @@ typedef enum {
     ARG_PARSEFLAGS,
     ARG_CAPS_ARCH,
     ARG_CAPS_VER,
+    ARG_HOST_OS,
     ARG_END,
 } testQemuInfoArgName;
 
@@ -72,6 +73,7 @@ struct testQemuArgs {
     char *capsver;
     char *capsarch;
     int gic;
+    testQemuHostOS hostOS;
     bool invalidarg;
 };
 
