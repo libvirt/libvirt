@@ -1766,6 +1766,7 @@ virProcessGetStat(pid_t pid,
 }
 
 
+#ifdef __linux__
 int
 virProcessGetStatInfo(unsigned long long *cpuTime,
                       int *lastCpu,
@@ -1873,3 +1874,26 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
 
     return 0;
 }
+
+#else
+int
+virProcessGetStatInfo(unsigned long long *cpuTime G_GNUC_UNUSED,
+                      int *lastCpu G_GNUC_UNUSED,
+                      long *vm_rss G_GNUC_UNUSED,
+                      pid_t pid G_GNUC_UNUSED,
+                      pid_t tid G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virProcessGetSchedInfo(unsigned long long *cpuWait G_GNUC_UNUSED,
+                       pid_t pid G_GNUC_UNUSED,
+                       pid_t tid G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("scheduler information is not supported on this platform"));
+    return -1;
+}
+#endif /* __linux__ */
