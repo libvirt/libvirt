@@ -34,6 +34,10 @@ enum {
 };
 
 typedef enum {
+    HOST_OS_LINUX = 0,
+} testQemuHostOS;
+
+typedef enum {
     ARG_QEMU_CAPS = QEMU_CAPS_LAST + 1,
     ARG_GIC,
     ARG_MIGRATE_FROM,
