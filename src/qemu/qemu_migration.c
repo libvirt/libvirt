@@ -5145,9 +5145,6 @@ qemuMigrationSrcPerformPeer2Peer(virQEMUDriver *driver,
         goto cleanup;
 
     if (dconn == NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to connect to remote libvirt URI %s: %s"),
-                       dconnuri, virGetLastErrorMessage());
         return -1;
     }
 

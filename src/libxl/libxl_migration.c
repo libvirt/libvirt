@@ -1134,9 +1134,6 @@ libxlDomainMigrationSrcPerformP2P(libxlDriverPrivate *driver,
     virObjectLock(vm);
 
     if (dconn == NULL) {
-        virReportError(VIR_ERR_OPERATION_FAILED,
-                       _("Failed to connect to remote libvirt URI %s: %s"),
-                       dconnuri, virGetLastErrorMessage());
         return ret;
     }
 
