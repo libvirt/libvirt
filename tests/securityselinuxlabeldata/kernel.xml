@@ -3,7 +3,7 @@
   <uuid>c7b3edbd-edaf-9455-926a-d65c16db1800</uuid>
   <memory unit='KiB'>219200</memory>
   <os>
-    <type arch='x86_64' machine='pc-1.0'>hvm</type>
+    <type arch='x86_64' machine='pc'>hvm</type>
     <kernel>/vmlinuz.raw</kernel>
     <initrd>/initrd.raw</initrd>
   </os>
