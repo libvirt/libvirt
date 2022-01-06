@@ -35,6 +35,7 @@ enum {
 
 typedef enum {
     HOST_OS_LINUX = 0,
+    HOST_OS_MACOS,
 } testQemuHostOS;
 
 typedef enum {
@@ -92,6 +93,7 @@ struct testQemuInfo {
 };
 
 virCaps *testQemuCapsInit(void);
+virCaps *testQemuCapsInitMacOS(void);
 virDomainXMLOption *testQemuXMLConfInit(void);
 
 
@@ -113,6 +115,8 @@ int qemuTestDriverInit(virQEMUDriver *driver);
 void qemuTestDriverFree(virQEMUDriver *driver);
 int qemuTestCapsCacheInsert(virFileCache *cache,
                             virQEMUCaps *caps);
+int qemuTestCapsCacheInsertMacOS(virFileCache *cache,
+                                 virQEMUCaps *caps);
 
 int testQemuCapsSetGIC(virQEMUCaps *qemuCaps,
                        int gic);

@@ -97,6 +97,18 @@ static const char *const *kvm_machines[VIR_ARCH_LAST] = {
     [VIR_ARCH_S390X] = s390x_machines,
 };
 
+static const char *const *hvf_machines[VIR_ARCH_LAST] = {
+    [VIR_ARCH_I686] = NULL,
+    [VIR_ARCH_X86_64] = x86_64_machines,
+    [VIR_ARCH_AARCH64] = aarch64_machines,
+    [VIR_ARCH_ARMV7L] = NULL,
+    [VIR_ARCH_PPC64] = NULL,
+    [VIR_ARCH_PPC] = NULL,
+    [VIR_ARCH_RISCV32] = NULL,
+    [VIR_ARCH_RISCV64] = NULL,
+    [VIR_ARCH_S390X] = NULL,
+};
+
 static const char *qemu_default_ram_id[VIR_ARCH_LAST] = {
     [VIR_ARCH_I686] = "pc.ram",
     [VIR_ARCH_X86_64] = "pc.ram",
@@ -208,6 +220,20 @@ testQemuAddGuest(virCaps *caps,
         }
     }
 
+    if (hostOS == HOST_OS_MACOS) {
+        if (hvf_machines[emu_arch] != NULL) {
+            nmachines = g_strv_length((char **)hvf_machines[emu_arch]);
+            machines = virCapabilitiesAllocMachines(hvf_machines[emu_arch],
+                                                    nmachines);
+            if (machines == NULL)
+                goto error;
+
+            virCapabilitiesAddGuestDomain(guest, VIR_DOMAIN_VIRT_HVF,
+                                          qemu_emulators[emu_arch],
+                                          NULL, nmachines, machines);
+        }
+    }
+
     return 0;
 
  error:
@@ -263,6 +289,12 @@ virCaps*
 testQemuCapsInit(void)
 {
     return testQemuCapsInitImpl(HOST_OS_LINUX);
+}
+
+virCaps*
+testQemuCapsInitMacOS(void)
+{
+    return testQemuCapsInitImpl(HOST_OS_MACOS);
 }
 
 
@@ -395,6 +427,25 @@ qemuTestCapsPopulateFakeMachines(virQEMUCaps *caps,
             }
         }
     }
+
+    if (hostOS == HOST_OS_MACOS) {
+        if (hvf_machines[arch] != NULL) {
+            for (i = 0; hvf_machines[arch][i] != NULL; i++) {
+                virQEMUCapsAddMachine(caps,
+                        VIR_DOMAIN_VIRT_HVF,
+                        hvf_machines[arch][i],
+                        NULL,
+                        NULL,
+                        0,
+                        false,
+                        false,
+                        true,
+                        defaultRAMid,
+                        false);
+                virQEMUCapsSet(caps, QEMU_CAPS_HVF);
+            }
+        }
+    }
 }
 
 
@@ -490,6 +541,13 @@ qemuTestCapsCacheInsert(virFileCache *cache,
                         virQEMUCaps *caps)
 {
     return qemuTestCapsCacheInsertImpl(cache, caps, HOST_OS_LINUX);
+}
+
+int
+qemuTestCapsCacheInsertMacOS(virFileCache *cache,
+                             virQEMUCaps *caps)
+{
+    return qemuTestCapsCacheInsertImpl(cache, caps, HOST_OS_MACOS);
 }
 
 
