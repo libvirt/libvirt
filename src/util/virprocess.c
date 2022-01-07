@@ -1827,8 +1827,6 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
         proc = g_strdup_printf("/proc/%d/task/%d/sched", (int) pid, (int) tid);
     else
         proc = g_strdup_printf("/proc/%d/sched", (int) pid);
-    if (!proc)
-        return -1;
 
     /* The file is not guaranteed to exist (needs CONFIG_SCHED_DEBUG) */
     if (access(proc, R_OK) < 0) {
