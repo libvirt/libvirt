@@ -1,0 +1,48 @@
+#!/usr/bin/stap
+#
+# Copyright (C) 2022 Red Hat, Inc.
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library.  If not, see
+# <http://www.gnu.org/licenses/>.
+#
+# A script that captures the VMSA blob for the boot vCPU and
+# first additional vCPU, when a KVM guest is booted with SEV-ES
+#
+# The captured VMSA will be printed to the console in hex format,
+# and can be converted to the required binary format by feeding
+# it through
+#
+# perl -e 'while (<>) { print pack("C64", map { hex($_) } ( $_ =~ m/../g )); }' > vmsa.bin
+#
+
+probe begin {
+  printf("Running\n")
+}
+
+function dump_vmsa(addr:long) {
+  printf("VMSA\n")
+  for (i = 0; i < 4096 ; i+= 64) {
+    printf("%.64M\n", addr + i);
+  }
+}
+
+# This line number will need to be updated for the specific kernel
+# version that is being probed. The line that needs to be targetted
+# is the one beween the call to clflush_cache_range(...) and the
+# call to sev_issue_cmd(kvm, SEV_CMD_LAUNCH_UPDATE...).
+#
+# Line 632 is correct for Linux v6.0
+probe module("kvm_amd").statement("__sev_launch_update_vmsa@arch/x86/kvm/svm/sev.c:632") {
+  dump_vmsa($svm->vmsa)
+}
