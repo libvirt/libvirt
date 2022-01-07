@@ -42,12 +42,12 @@ v8.0.0 (unreleased)
     as ``VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES`` exposed via
     ``virsh migrate --copy-storage-synchronous-writes``.
 
-    * Introduce TCG domain features
+  * Introduce TCG domain features
 
     Libvirt is now able to set the size of translation block cache size
     (tb-size) for TCG domains.
 
-    * qemu: Add new API to inject a launch secret in a domain
+  * qemu: Add new API to inject a launch secret in a domain
 
     New API ``virDomainSetLaunchSecurityState()`` and virsh command
     ``domsetlaunchsecstate`` are added to support injecting a launch secret
