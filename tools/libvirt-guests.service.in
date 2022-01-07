@@ -6,7 +6,7 @@ After=network.target
 After=time-sync.target
 After=libvirtd.service
 After=virt-guest-shutdown.target
-Documentation=man:libvirtd(8)
+Documentation=man:libvirt-guests(8)
 Documentation=https://libvirt.org
 
 [Service]

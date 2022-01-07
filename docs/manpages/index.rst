@@ -41,6 +41,7 @@ Tools
 * `virt-admin(1) <virt-admin.html>`__ - daemon administration interface
 * `virsh(1) <virsh.html>`__ - management user interface
 * `virt-qemu-run(1) <virt-qemu-run.html>`__ - run standalone QEMU instances
+* `libvirt-guests(8) <libvirt-guests.html>`__ - suspend/resume running libvirt guests
 
 Key codes
 =========

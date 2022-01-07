@@ -1694,6 +1694,7 @@ exit 0
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_mandir}/man8/virt-ssh-helper.8*
+%{_mandir}/man8/libvirt-guests.8*
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
