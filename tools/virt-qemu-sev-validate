@@ -36,16 +36,19 @@
 
 import abc
 import argparse
-from base64 import b64decode
+from base64 import b64decode, b64encode
 from hashlib import sha256
 import hmac
 import logging
+import os
 import re
 import socket
 from struct import pack
 import sys
 import traceback
 from uuid import UUID
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
 
 from lxml import etree
 import libvirt
@@ -579,7 +582,46 @@ class KernelTable(GUIDTable):
         return entries
 
 
-class ConfidentialVM(object):
+class SecretsTable(GUIDTable):
+
+    TABLE_GUID = UUID('{1e74f542-71dd-4d66-963e-ef4287ff173b}').bytes_le
+
+    GUID_ALIASES = {
+        "luks-key": UUID('{736869e5-84f0-4973-92ec-06879ce3da0b}')
+    }
+
+    def __init__(self):
+        super().__init__(guid=self.TABLE_GUID,
+                         lenlen=4)
+        self.secrets = {}
+
+    def load_secret(self, alias_or_guid, path):
+        guid = None
+        if re.match(r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$",
+                    alias_or_guid):
+            guid = UUID(alias_or_guid)
+        else:
+            if alias_or_guid not in self.GUID_ALIASES:
+                raise UnsupportedUsageException(
+                    "Secret alias '%s' is not known" % alias_or_guid)
+
+            guid = self.GUID_ALIASES[alias_or_guid]
+
+        if guid in self.secrets:
+            raise UnsupportedUsageException(
+                "Secret for GUID %s already loaded" % guid)
+
+        with open(path, 'rb') as fh:
+            self.secrets[guid] = fh.read()
+
+    def entries(self):
+        entries = bytes([])
+        for guid, value in self.secrets.items():
+            entries += self.build_entry(guid.bytes_le, value, 4)
+        return entries
+
+
+class ConfidentialVM(abc.ABC):
     POLICY_BIT_SEV_ES = 2
     POLICY_VAL_SEV_ES = (1 << POLICY_BIT_SEV_ES)
 
@@ -605,6 +647,7 @@ class ConfidentialVM(object):
         self.vmsa_cpu1 = None
 
         self.kernel_table = KernelTable()
+        self.secrets_table = SecretsTable()
 
     def is_sev_es(self):
         return self.policy & self.POLICY_VAL_SEV_ES
@@ -756,6 +799,82 @@ class ConfidentialVM(object):
         if reported != computed:
             raise AttestationFailedException(
                 "Measurement does not match, VM is not trustworthy")
+
+    def build_secrets(self):
+        measurement, _ = self.get_measurements()
+
+        iv = os.urandom(16)
+
+        secret_table = self.secrets_table.build()
+
+        cipher = Cipher(algorithms.AES(self.tek), modes.CTR(iv))
+        enc = cipher.encryptor()
+        secret_table_ciphertext = (enc.update(secret_table) +
+                                   enc.finalize())
+
+        flags = 0
+
+        ##
+        # Table 55. LAUNCH_SECRET Packet Header Buffer
+        ##
+        header = (
+            flags.to_bytes(4, byteorder='little') +
+            iv
+        )
+
+        # AMD Secure Encrypted Virtualization API , section 6.6
+        #
+        #  hdrmac = HMAC(0x01 || FLAGS || IV || GUEST_LENGTH ||
+        #                TRANS_LENGTH || DATA ||
+        #                MEASURE; GCTX.TIK)
+        #
+        msg = (
+            bytes([0x01]) +
+            flags.to_bytes(4, byteorder='little') +
+            iv +
+            len(secret_table).to_bytes(4, byteorder='little') +
+            len(secret_table).to_bytes(4, byteorder='little') +
+            secret_table_ciphertext +
+            measurement
+        )
+
+        h = hmac.new(self.tik, msg, 'sha256')
+        header = (
+            flags.to_bytes(4, byteorder='little') +
+            iv +
+            h.digest()
+        )
+
+        header64 = b64encode(header).decode('utf8')
+        secret64 = b64encode(secret_table_ciphertext).decode('utf8')
+        log.debug("Header: %s (%d bytes)", header64, len(header))
+        log.debug("Secret: %s (%d bytes)",
+            secret64, len(secret_table_ciphertext))
+
+        return header64, secret64
+
+    @abc.abstractmethod
+    def inject_secrets(self):
+        pass
+
+
+class OfflineConfidentialVM(ConfidentialVM):
+    def __init__(self,
+                 secret_header=None,
+                 secret_payload=None,
+                 **kwargs):
+        super().__init__(**kwargs)
+
+        self.secret_header = secret_header
+        self.secret_payload = secret_payload
+
+    def inject_secrets(self):
+        header64, secret64 = self.build_secrets()
+
+        with open(self.secret_header, "wb") as fh:
+            fh.write(header64.encode('utf8'))
+        with open(self.secret_payload, "wb") as fh:
+            fh.write(secret64.encode('utf8'))
 
 
 class LibvirtConfidentialVM(ConfidentialVM):
@@ -944,6 +1063,14 @@ class LibvirtConfidentialVM(ConfidentialVM):
             cpu_stepping = int(sig[0].get("stepping"))
             self.build_vmsas(cpu_family, cpu_model, cpu_stepping)
 
+    def inject_secrets(self):
+        header64, secret64 = self.build_secrets()
+
+        params = {"sev-secret": secret64,
+                  "sev-secret-header": header64}
+        self.dom.setLaunchSecurityState(params, 0)
+        self.dom.resume()
+
 
 def parse_command_line():
     parser = argparse.ArgumentParser(
@@ -1006,6 +1133,15 @@ def parse_command_line():
     vmconn.add_argument('--ignore-config', '-g', action='store_true',
                         help='Do not attempt to sanity check the guest config')
 
+    # Arguments related to secret injection
+    inject = parser.add_argument_group("Secret injection parameters")
+    inject.add_argument('--inject-secret', '-s', action='append', default=[],
+                        help='ALIAS-OR-GUID:PATH file containing secret to inject')
+    inject.add_argument('--secret-payload',
+                        help='Path to file to write secret data payload to')
+    inject.add_argument('--secret-header',
+                        help='Path to file to write secret data header to')
+
     return parser.parse_args()
 
 
@@ -1046,6 +1182,15 @@ def check_usage(args):
             raise UnsupportedUsageException(
                 "Either --firmware or --domain is required")
 
+        if len(args.inject_secret) > 0:
+            if args.secret_header is None:
+                raise UnsupportedUsageException(
+                    "Either --secret-header or --domain is required")
+
+            if args.secret_payload is None:
+                raise UnsupportedUsageException(
+                    "Either --secret-payload or --domain is required")
+
     if args.kernel is None:
         if args.initrd is not None or args.cmdline is not None:
             raise UnsupportedUsageException(
@@ -1065,15 +1210,22 @@ def check_usage(args):
             raise UnsupportedUsageException(
                 "CPU SKU needs family, model and stepping for SEV-ES domain")
 
+    secret = [args.secret_payload, args.secret_header]
+    if secret.count(None) > 0 and secret.count(None) != len(secret):
+        raise UnsupportedUsageException(
+            "Both --secret-payload and --secret-header are required")
+
 
 def attest(args):
     if args.domain is None:
-        cvm = ConfidentialVM(measurement=args.measurement,
-                             api_major=args.api_major,
-                             api_minor=args.api_minor,
-                             build_id=args.build_id,
-                             policy=args.policy,
-                             num_cpus=args.num_cpus)
+        cvm = OfflineConfidentialVM(measurement=args.measurement,
+                                    api_major=args.api_major,
+                                    api_minor=args.api_minor,
+                                    build_id=args.build_id,
+                                    policy=args.policy,
+                                    num_cpus=args.num_cpus,
+                                    secret_header=args.secret_header,
+                                    secret_payload=args.secret_payload)
     else:
         cvm = LibvirtConfidentialVM(measurement=args.measurement,
                                     api_major=args.api_major,
@@ -1117,9 +1269,22 @@ def attest(args):
                         args.ignore_config)
 
     cvm.attest()
-
     if not args.quiet:
         print("OK: Looks good to me")
+
+    for secret in args.inject_secret:
+        bits = secret.split(":")
+        if len(bits) != 2:
+            raise UnsupportedUsageException(
+                "Expecting ALIAS-OR-GUID:PATH for injected secret")
+
+        cvm.secrets_table.load_secret(bits[0], bits[1])
+
+    if len(args.inject_secret) > 0:
+        cvm.inject_secrets()
+        if not args.quiet:
+            print("OK: Injected %d secrets" % len(args.inject_secret))
+
 
 def main():
     args = parse_command_line()

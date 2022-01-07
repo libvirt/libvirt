@@ -189,6 +189,46 @@ understand any configuration mistakes that have been made. If the
 will be skipped. The result is that the validation will likely be reported as
 failed.
 
+Secret injection options
+------------------------
+
+These options provide a way to inject a secret if validation of the
+launch measurement passes.
+
+``--inject-secret ALIAS-OR-GUID:PATH``
+
+Path to a file containing a secret to inject into the guest OS. Typical
+usage would be to supply a password for unlocking the root filesystem
+full disk encryption. ``ALIAS`` can be one of the well known secrets:
+
+* ``luks-key`` - bytes to use as a key for unlocking a LUKS key slot.
+  GUID of ``736869e5-84f0-4973-92ec-06879ce3da0b``.
+
+Alternatively ``GUID`` refers to an arbitrary UUID of the callers
+choosing. The contents of ``PATH`` are defined by the requirements
+of the associated GUID, and will used as-is without modification.
+In particular be aware:
+
+  * Avoid unwanted trailing newline characters in ``PATH`` unless
+    mandated by the ``GUID``.
+  * Any trailing ``NUL`` byte must be explicitly included in ``PATH``
+    if mandated by the ``GUID``.
+
+This argument can be repeated multiple times, provided a different
+``GUID`` is given for each instance.
+
+``--secret-header PATH``
+
+Path to a file in which the injected secret header will be written in base64
+format and later injected into the domain. This is required if there is no
+connection to libvirt, otherwise the secret will be directly injected.
+
+``--secret-payload PATH``
+
+Path to a file in which the injected secret payload will be written in base64
+format and later injected into the domain. This is required if there is no
+connection to libvirt, otherwise the secret will be directly injected.
+
 EXAMPLES
 ========
 
@@ -263,6 +303,26 @@ automatically constructed VMSA:
        --build-id 13 \
        --policy 7
 
+Validate the measurement of a SEV guest booting from disk and
+inject a disk password on success:
+
+::
+
+   # virt-dom-sev-validate \
+       --loader OVMF.sev.fd \
+       --tk this-guest-tk.bin \
+       --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
+       --api-major 0 \
+       --api-minor 24 \
+       --build-id 13 \
+       --policy 3 \
+       --disk-password passwd.txt \
+       --secret-header secret-header.b64 \
+       --secret-payload secret-payload.b64
+
+The ``secret-header.b64`` and ``secret-payload.b64`` files can now be sent to
+the virtualization host for injection.
+
 Fetch from remote libvirt
 -------------------------
 
@@ -323,6 +383,18 @@ automatically constructed VMSA:
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
+Validate the measurement of a SEV guest booting from disk and
+inject a disk password on success:
+
+::
+
+   # virt-dom-sev-validate \
+       --connect qemu+ssh://root@some.remote.host/system \
+       --loader OVMF.sev.fd \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64 \
+       --disk-password passwd.txt
+
 Fetch from local libvirt
 ------------------------
 
@@ -372,6 +444,17 @@ automatically constructed VMSA:
        --insecure \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
+
+Validate the measurement of a SEV guest booting from disk and
+inject a disk password on success:
+
+::
+
+   # virt-dom-sev-validate \
+       --insecure \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64 \
+       --disk-password passwd.txt
 
 EXIT STATUS
 ===========
