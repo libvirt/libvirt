@@ -203,6 +203,7 @@ sc_prohibit_readlink:
 
 sc_prohibit_gethostname:
 	@prohibit='gethostname *\(' \
+	in_vc_files='\.[ch]$$' \
 	halt='use virGetHostname, not gethostname' \
 	  $(_sc_search_regexp)
 
