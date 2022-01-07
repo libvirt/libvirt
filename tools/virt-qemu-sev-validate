@@ -34,6 +34,7 @@
 #    firmware versions with known flaws.
 #
 
+import abc
 import argparse
 from base64 import b64decode
 from hashlib import sha256
@@ -43,6 +44,7 @@ import re
 import socket
 import sys
 import traceback
+from uuid import UUID
 
 from lxml import etree
 import libvirt
@@ -70,6 +72,91 @@ class InvalidStateException(Exception):
     pass
 
 
+class GUIDTable(abc.ABC):
+    GUID_LEN = 16
+
+    def __init__(self, guid, lenlen=2):
+        self.guid = guid
+        self.lenlen = lenlen
+
+    @abc.abstractmethod
+    def entries(self):
+        pass
+
+    def build_entry(self, guid, payload, lenlen):
+        dummylen = int(0).to_bytes(lenlen, 'little')
+        entry = bytearray(guid + dummylen + payload)
+
+        lenle = len(entry).to_bytes(lenlen, 'little')
+        entry[self.GUID_LEN:(self.GUID_LEN + lenlen)] = lenle
+
+        return bytes(entry)
+
+    def build(self):
+        payload = self.entries()
+
+        if len(payload) == 0:
+            return bytes([])
+
+        dummylen = int(0).to_bytes(self.lenlen, 'little')
+        table = bytearray(self.guid + dummylen + payload)
+
+        guidlen = len(table).to_bytes(self.lenlen, 'little')
+        table[self.GUID_LEN:(self.GUID_LEN + self.lenlen)] = guidlen
+
+        pad = 16 - (len(table) % 16)
+        table += bytes([0]) * pad
+
+        log.debug("Table(hex): %s", bytes(table).hex())
+        return bytes(table)
+
+
+class KernelTable(GUIDTable):
+
+    TABLE_GUID = UUID('{9438d606-4f22-4cc9-b479-a793-d411fd21}').bytes_le
+    KERNEL_GUID = UUID('{4de79437-abd2-427f-b835-d5b1-72d2045b}').bytes_le
+    INITRD_GUID = UUID('{44baf731-3a2f-4bd7-9af1-41e2-9169781d}').bytes_le
+    CMDLINE_GUID = UUID('{97d02dd8-bd20-4c94-aa78-e771-4d36ab2a}').bytes_le
+
+    def __init__(self):
+        super().__init__(guid=self.TABLE_GUID,
+                         lenlen=2)
+
+        self.kernel = None
+        self.initrd = None
+        self.cmdline = None
+
+    def load_kernel(self, path):
+        with open(path, "rb") as fh:
+            self.kernel = sha256(fh.read()).digest()
+
+    def load_initrd(self, path):
+        with open(path, "rb") as fh:
+            self.initrd = sha256(fh.read()).digest()
+
+    def load_cmdline(self, val):
+        self.cmdline = sha256(val.encode("utf8") + bytes([0])).digest()
+
+    def entries(self):
+        entries = bytes([])
+        if self.kernel is None:
+            return entries
+
+        if self.initrd is None:
+            self.initrd = sha256(bytes([])).digest()
+        if self.cmdline is None:
+            self.cmdline = sha256(bytes([0])).digest()
+
+        log.debug("Kernel(sha256): %s", self.kernel.hex())
+        log.debug("Initrd(sha256): %s", self.initrd.hex())
+        log.debug("Cmdline(sha256): %s", self.cmdline.hex())
+        entries += self.build_entry(self.CMDLINE_GUID, self.cmdline, 2)
+        entries += self.build_entry(self.INITRD_GUID, self.initrd, 2)
+        entries += self.build_entry(self.KERNEL_GUID, self.kernel, 2)
+
+        return entries
+
+
 class ConfidentialVM(object):
 
     def __init__(self,
@@ -87,6 +174,8 @@ class ConfidentialVM(object):
         self.firmware = None
         self.tik = None
         self.tek = None
+
+        self.kernel_table = KernelTable()
 
     def load_tik_tek(self, tik_path, tek_path):
         with open(tik_path, 'rb') as fh:
@@ -129,8 +218,10 @@ class ConfidentialVM(object):
     # of the following:
     #
     #  - The firmware blob
+    #  - The kernel GUID table
     def get_measured_data(self):
-        measured_data = self.firmware
+        measured_data = (self.firmware +
+                         self.kernel_table.build())
         log.debug("Measured-data(sha256): %s",
                   sha256(measured_data).hexdigest())
         return measured_data
@@ -303,6 +394,12 @@ def parse_command_line():
     vmconfig = parser.add_argument_group("Virtual machine config")
     vmconfig.add_argument('--firmware', '-f',
                           help='Path to the firmware binary')
+    vmconfig.add_argument('--kernel', '-k',
+                          help='Path to the kernel binary')
+    vmconfig.add_argument('--initrd', '-r',
+                          help='Path to the initrd binary')
+    vmconfig.add_argument('--cmdline', '-e',
+                          help='Cmdline string booted with')
     vmconfig.add_argument('--tik',
                           help='TIK file for domain')
     vmconfig.add_argument('--tek',
@@ -361,6 +458,11 @@ def check_usage(args):
             raise UnsupportedUsageException(
                 "Either --firmware or --domain is required")
 
+    if args.kernel is None:
+        if args.initrd is not None or args.cmdline is not None:
+            raise UnsupportedUsageException(
+                "--initrd/--cmdline require --kernel")
+
 
 def attest(args):
     if args.domain is None:
@@ -383,6 +485,15 @@ def attest(args):
         cvm.load_tk(args.tk)
     else:
         cvm.load_tik_tek(args.tik, args.tek)
+
+    if args.kernel is not None:
+        cvm.kernel_table.load_kernel(args.kernel)
+
+    if args.initrd is not None:
+        cvm.kernel_table.load_initrd(args.initrd)
+
+    if args.cmdline is not None:
+        cvm.kernel_table.load_cmdline(args.cmdline)
 
     if args.domain is not None:
         cvm.load_domain(args.connect,

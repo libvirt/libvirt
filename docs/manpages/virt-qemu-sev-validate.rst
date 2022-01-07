@@ -102,6 +102,20 @@ initialize AMD SEV. For the validation to be trustworthy it important that the
 firmware build used has no support for loading non-volatile variables from
 NVRAM, even if NVRAM is expose to the guest.
 
+``-k PATH``, ``--kernel=PATH``
+
+Path to the kernel binary if doing direct kernel boot.
+
+``-r PATH``, ``--initrd=PATH``
+
+Path to the initrd binary if doing direct kernel boot. Defaults to zero length
+content if omitted.
+
+``-e STRING``, ``--cmdline=STRING``
+
+String containing any kernel command line parameters used during boot of the
+domain. Defaults to the empty string if omitted.
+
 ``--tik PATH``
 
 TIK file for domain. This file must be exactly 16 bytes in size and contains the
@@ -182,6 +196,22 @@ Validate the measurement of a SEV guest booting from disk:
        --build-id 13 \
        --policy 3
 
+Validate the measurement of a SEV guest with direct kernel boot:
+
+::
+
+   # virt-dom-sev-validate \
+       --firmware OVMF.sev.fd \
+       --kernel vmlinuz-5.11.12 \
+       --initrd initramfs-5.11.12 \
+       --cmdline "root=/dev/vda1" \
+       --tk this-guest-tk.bin \
+       --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
+       --api-major 0 \
+       --api-minor 24 \
+       --build-id 13 \
+       --policy 3
+
 Fetch from remote libvirt
 -------------------------
 
@@ -199,6 +229,19 @@ Validate the measurement of a SEV guest booting from disk:
    # virt-qemu-sev-validate \
        --connect qemu+ssh://root@some.remote.host/system \
        --firmware OVMF.sev.fd \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
+Validate the measurement of a SEV guest with direct kernel boot:
+
+::
+
+   # virt-dom-sev-validate \
+       --connect qemu+ssh://root@some.remote.host/system \
+       --firmware OVMF.sev.fd \
+       --kernel vmlinuz-5.11.12 \
+       --initrd initramfs-5.11.12 \
+       --cmdline "root=/dev/vda1" \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
