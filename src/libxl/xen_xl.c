@@ -30,6 +30,7 @@
 #include "viralloc.h"
 #include "virstring.h"
 #include "storage_source.h"
+#include "storage_source_backingstore.h"
 #include "xen_xl.h"
 #include "libxl_capabilities.h"
 #include "libxl_conf.h"

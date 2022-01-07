@@ -29,7 +29,8 @@ virStorageSourceParseBackingURI(virStorageSource *src,
 
 int
 virStorageSourceParseRBDColonString(const char *rbdstr,
-                                    virStorageSource *src);
+                                    virStorageSource *src)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
 int
 virStorageSourceParseBackingColon(virStorageSource *src,

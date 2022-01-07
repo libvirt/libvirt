@@ -67,11 +67,6 @@ virStorageSourceNewFromBacking(virStorageSource *parent,
                                virStorageSource **backing);
 
 int
-virStorageSourceParseRBDColonString(const char *rbdstr,
-                                    virStorageSource *src)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int
 virStorageSourceGetRelativeBackingPath(virStorageSource *top,
                                        virStorageSource *base,
                                        char **relpath)
