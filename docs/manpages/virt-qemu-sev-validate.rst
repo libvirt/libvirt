@@ -116,6 +116,23 @@ content if omitted.
 String containing any kernel command line parameters used during boot of the
 domain. Defaults to the empty string if omitted.
 
+``-n COUNT``, ``--num-cpus=COUNT``
+
+The number of virtual CPUs for the domain. This is required when the
+domain policy is set to require SEV-ES.
+
+``-0 PATH``, ``--vmsa-cpu0=PATH``
+
+Path to the VMSA initial state for the boot CPU. This is required when
+the domain policy is set to require SEV-ES. The file contents must be
+exactly 4096 bytes in length.
+
+``-1 PATH``, ``--vmsa-cpu1=PATH``
+
+Path to the VMSA initial state for the non-boot CPU. This is required when
+the domain policy is set to require SEV-ES and the domain has more than one
+CPU present. The file contents must be exactly 4096 bytes in length.
+
 ``--tik PATH``
 
 TIK file for domain. This file must be exactly 16 bytes in size and contains the
@@ -212,6 +229,22 @@ Validate the measurement of a SEV guest with direct kernel boot:
        --build-id 13 \
        --policy 3
 
+Validate the measurement of a SEV-ES SMP guest booting from disk:
+
+::
+
+   # virt-dom-sev-validate \
+       --firmware OVMF.sev.fd \
+       --num-cpus 2 \
+       --vmsa-cpu0 vmsa0.bin \
+       --vmsa-cpu1 vmsa1.bin \
+       --tk this-guest-tk.bin \
+       --measurement Zs2pf19ubFSafpZ2WKkwquXvACx9Wt/BV+eJwQ/taO8jhyIj/F8swFrybR1fZ2ID \
+       --api-major 0 \
+       --api-minor 24 \
+       --build-id 13 \
+       --policy 7
+
 Fetch from remote libvirt
 -------------------------
 
@@ -245,6 +278,19 @@ Validate the measurement of a SEV guest with direct kernel boot:
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 
+Validate the measurement of a SEV-ES SMP guest booting from disk:
+
+::
+
+   # virt-dom-sev-validate \
+       --connect qemu+ssh://root@some.remote.host/system \
+       --firmware OVMF.sev.fd \
+       --num-cpus 2 \
+       --vmsa-cpu0 vmsa0.bin \
+       --vmsa-cpu1 vmsa1.bin \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
 Fetch from local libvirt
 ------------------------
 
@@ -271,6 +317,18 @@ Validate the measurement of a SEV guest with direct kernel boot:
 
    # virt-dom-sev-validate \
        --insecure \
+       --tk this-guest-tk.bin \
+       --domain fedora34x86_64
+
+Validate the measurement of a SEV-ES SMP guest booting from disk:
+
+::
+
+   # virt-dom-sev-validate \
+       --insecure \
+       --num-cpus 2 \
+       --vmsa-cpu0 vmsa0.bin \
+       --vmsa-cpu1 vmsa1.bin \
        --tk this-guest-tk.bin \
        --domain fedora34x86_64
 

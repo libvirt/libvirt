@@ -158,13 +158,16 @@ class KernelTable(GUIDTable):
 
 
 class ConfidentialVM(object):
+    POLICY_BIT_SEV_ES = 2
+    POLICY_VAL_SEV_ES = (1 << POLICY_BIT_SEV_ES)
 
     def __init__(self,
                  measurement=None,
                  api_major=None,
                  api_minor=None,
                  build_id=None,
-                 policy=None):
+                 policy=None,
+                 num_cpus=None):
         self.measurement = measurement
         self.api_major = api_major
         self.api_minor = api_minor
@@ -175,7 +178,14 @@ class ConfidentialVM(object):
         self.tik = None
         self.tek = None
 
+        self.num_cpus = num_cpus
+        self.vmsa_cpu0 = None
+        self.vmsa_cpu1 = None
+
         self.kernel_table = KernelTable()
+
+    def is_sev_es(self):
+        return self.policy & self.POLICY_VAL_SEV_ES
 
     def load_tik_tek(self, tik_path, tek_path):
         with open(tik_path, 'rb') as fh:
@@ -212,6 +222,43 @@ class ConfidentialVM(object):
             self.firmware = fh.read()
         log.debug("Firmware(sha256): %s", sha256(self.firmware).hexdigest())
 
+    @staticmethod
+    def _load_vmsa(path):
+        with open(path, 'rb') as fh:
+            vmsa = fh.read()
+
+        if len(vmsa) != 4096:
+            raise UnsupportedUsageException(
+                "VMSA must be 4096 bytes in length")
+        return vmsa
+
+    def load_vmsa_cpu0(self, path):
+        self.vmsa_cpu0 = self._load_vmsa(path)
+        log.debug("VMSA CPU 0(sha256): %s",
+                  sha256(self.vmsa_cpu0).hexdigest())
+
+    def load_vmsa_cpu1(self, path):
+        self.vmsa_cpu1 = self._load_vmsa(path)
+        log.debug("VMSA CPU 1(sha256): %s",
+                  sha256(self.vmsa_cpu1).hexdigest())
+
+    def get_cpu_state(self):
+        if self.num_cpus is None:
+            raise UnsupportedUsageException(
+                "Number of virtual CPUs must be specified for SEV-ES domain")
+
+        if self.vmsa_cpu0 is None:
+            raise UnsupportedUsageException(
+                "VMSA for boot CPU required for SEV-ES domain")
+
+        if self.num_cpus > 1 and self.vmsa_cpu1 is None:
+            raise UnsupportedUsageException(
+                "VMSA for additional CPUs required for SEV-ES domain with SMP")
+
+        vmsa = self.vmsa_cpu0 + (self.vmsa_cpu1 * (self.num_cpus - 1))
+        log.debug("VMSA(sha256): %s", sha256(vmsa).hexdigest())
+        return vmsa
+
     # Get the full set of measured launch data for the domain
     #
     # The measured data that the guest is initialized with is the concatenation
@@ -222,6 +269,8 @@ class ConfidentialVM(object):
     def get_measured_data(self):
         measured_data = (self.firmware +
                          self.kernel_table.build())
+        if self.is_sev_es():
+            measured_data += self.get_cpu_state()
         log.debug("Measured-data(sha256): %s",
                   sha256(measured_data).hexdigest())
         return measured_data
@@ -459,6 +508,12 @@ def parse_command_line():
                           help='Path to the initrd binary')
     vmconfig.add_argument('--cmdline', '-e',
                           help='Cmdline string booted with')
+    vmconfig.add_argument('--num-cpus', '-n', type=int,
+                          help='Number of virtual CPUs')
+    vmconfig.add_argument('--vmsa-cpu0', '-0',
+                          help='VMSA state for the boot CPU')
+    vmconfig.add_argument('--vmsa-cpu1', '-1',
+                          help='VMSA state for the additional CPUs')
     vmconfig.add_argument('--tik',
                           help='TIK file for domain')
     vmconfig.add_argument('--tek',
@@ -529,13 +584,15 @@ def attest(args):
                              api_major=args.api_major,
                              api_minor=args.api_minor,
                              build_id=args.build_id,
-                             policy=args.policy)
+                             policy=args.policy,
+                             num_cpus=args.num_cpus)
     else:
         cvm = LibvirtConfidentialVM(measurement=args.measurement,
                                     api_major=args.api_major,
                                     api_minor=args.api_minor,
                                     build_id=args.build_id,
-                                    policy=args.policy)
+                                    policy=args.policy,
+                                    num_cpus=args.num_cpus)
 
     if args.firmware is not None:
         cvm.load_firmware(args.firmware)
@@ -553,6 +610,12 @@ def attest(args):
 
     if args.cmdline is not None:
         cvm.kernel_table.load_cmdline(args.cmdline)
+
+    if args.vmsa_cpu0 is not None:
+        cvm.load_vmsa_cpu0(args.vmsa_cpu0)
+
+    if args.vmsa_cpu1 is not None:
+        cvm.load_vmsa_cpu1(args.vmsa_cpu1)
 
     if args.domain is not None:
         cvm.load_domain(args.connect,
