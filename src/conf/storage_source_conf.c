@@ -929,7 +929,8 @@ virStorageSourceIsSameLocation(virStorageSource *a,
         STRNEQ_NULLABLE(a->snapshot, b->snapshot))
         return false;
 
-    if (a->type == VIR_STORAGE_TYPE_NETWORK) {
+    switch (virStorageSourceGetActualType(a)) {
+    case VIR_STORAGE_TYPE_NETWORK:
         if (a->protocol != b->protocol ||
             a->nhosts != b->nhosts)
             return false;
@@ -941,11 +942,23 @@ virStorageSourceIsSameLocation(virStorageSource *a,
                 STRNEQ_NULLABLE(a->hosts[i].socket, b->hosts[i].socket))
                 return false;
         }
-    }
+        break;
 
-    if (a->type == VIR_STORAGE_TYPE_NVME &&
-        !virStorageSourceNVMeDefIsEqual(a->nvme, b->nvme))
-        return false;
+    case VIR_STORAGE_TYPE_NVME:
+        if (!virStorageSourceNVMeDefIsEqual(a->nvme, b->nvme))
+            return false;
+        break;
+
+    case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_LAST:
+    case VIR_STORAGE_TYPE_VOLUME:
+        /* nothing to do */
+        break;
+    }
 
     return true;
 }
