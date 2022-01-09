@@ -1750,6 +1750,20 @@ qemuValidateDomainDeviceDefNetwork(const virDomainNetDef *net,
             }
         }
 
+        if (net->driver.virtio.rss &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_RSS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio rss is not supported with this QEMU binary"));
+            return -1;
+        }
+
+        if (net->driver.virtio.rss_hash_report &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_RSS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("virtio rss hash report is not supported with this QEMU binary"));
+            return -1;
+        }
+
         if (net->mtu &&
             !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_NET_HOST_MTU)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

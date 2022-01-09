@@ -4149,6 +4149,8 @@ qemuBuildNicDevProps(virDomainDef *def,
                                   "P:vectors", vectors,
                                   "p:rx_queue_size", net->driver.virtio.rx_queue_size,
                                   "p:tx_queue_size", net->driver.virtio.tx_queue_size,
+                                  "T:rss", net->driver.virtio.rss,
+                                  "T:hash", net->driver.virtio.rss_hash_report,
                                   "p:host_mtu", net->mtu,
                                   "T:failover", failover,
                                   NULL) < 0)

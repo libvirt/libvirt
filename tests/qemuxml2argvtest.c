@@ -1594,6 +1594,7 @@ mymain(void)
                     QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_CAPS_LATEST("net-vdpa");
     DO_TEST_CAPS_LATEST("net-vdpa-multiqueue");
+    DO_TEST_CAPS_LATEST("net-virtio-rss");
 
     DO_TEST("hostdev-pci-multifunction",
             QEMU_CAPS_KVM,
