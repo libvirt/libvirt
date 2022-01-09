@@ -671,6 +671,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "memory-backend-file.prealloc-threads", /* QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS */
               "virtio-iommu-pci", /* QEMU_CAPS_DEVICE_VIRTIO_IOMMU_PCI */
               "virtio-iommu.boot-bypass", /* QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS */
+              "virtio-net.rss", /* QEMU_CAPS_VIRTIO_NET_RSS */
     );
 
 
@@ -1452,6 +1453,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioNet[] = {
     { "failover", QEMU_CAPS_VIRTIO_NET_FAILOVER, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
+    { "rss", QEMU_CAPS_VIRTIO_NET_RSS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] = {
