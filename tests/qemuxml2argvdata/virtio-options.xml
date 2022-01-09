@@ -53,7 +53,7 @@
     <interface type='user'>
       <mac address='52:54:56:58:5a:5c'/>
       <model type='virtio'/>
-      <driver iommu='on' ats='on' packed='on' page_per_vq='on'/>
+      <driver rss='on' rss_hash_report='on' iommu='on' ats='on' packed='on' page_per_vq='on'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x06' function='0x0'/>
     </interface>
     <input type='mouse' bus='virtio'>

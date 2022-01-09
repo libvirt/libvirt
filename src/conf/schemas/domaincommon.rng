@@ -3603,6 +3603,16 @@
                 </optional>
               </element>
             </optional>
+            <optional>
+              <attribute name="rss">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
+              <attribute name="rss_hash_report">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
           </interleave>
         </element>
       </optional>

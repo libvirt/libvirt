@@ -5338,6 +5338,24 @@ following attributes are available for the ``"virtio"`` NIC driver:
    only for ``vhostuser`` type. :since:`Since 3.7.0 (QEMU and KVM only)`
    **In general you should leave this option alone, unless you are very certain
    you know what you are doing.**
+``rss``
+   The ``rss`` option enables in-qemu/ebpf RSS for virtio NIC. RSS works with
+   virtio and tap backends only. Virtio NIC will be launched with "rss"
+   property. For now "in-qemu" RSS is supported by libvirt.
+   QEMU may load eBPF RSS if it has CAP_SYS_ADMIN permissions, which is
+   not supported by default in libvirt.
+   **In general you should leave this option alone, unless you are very certain
+   you know what you are doing. Proper RSS configuration depends from vcpu,
+   tap, and vhost settings.**
+``rss_hash_report``
+   The ``rss_hash_report`` option enables in-qemu RSS hash report for virtio
+   NIC. Virtio NIC will be launched with a "hash" property. Network packets provided
+   to VM will contain a hash of the packet in the virt header. Usually enabled
+   alongside with ``rss``. Without ``rss`` option, the hash report doesn't affect
+   steering itself but provides vnet header with a calculated hash.
+   **In general you should leave this option alone, unless you are very certain
+   you know what you are doing. Proper RSS configuration depends from vcpu,
+   tap, and vhost settings.**
 virtio options
    For virtio interfaces, `Virtio-specific options <#elementsVirtio>`__ can also
    be set. ( :since:`Since 3.5.0` )
