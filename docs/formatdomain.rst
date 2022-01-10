@@ -110,16 +110,42 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 
 ::
 
+   <!-- Xen with fullvirt loader -->
    ...
-   <os firmware='efi'>
+   <os>
      <type>hvm</type>
-     <loader readonly='yes' secure='no' type='rom'>/usr/lib/xen/boot/hvmloader</loader>
-     <nvram template='/usr/share/OVMF/OVMF_VARS.fd'>/var/lib/libvirt/nvram/guest_VARS.fd</nvram>
+     <loader>/usr/lib/xen/boot/hvmloader</loader>
      <boot dev='hd'/>
+   </os>
+   ...
+
+   <!-- QEMU with default firmware, serial console and SMBIOS -->
+   ...
+   <os>
+     <type>hvm</type>
      <boot dev='cdrom'/>
      <bootmenu enable='yes' timeout='3000'/>
      <smbios mode='sysinfo'/>
      <bios useserial='yes' rebootTimeout='0'/>
+   </os>
+   ...
+
+   <!-- QEMU with UEFI manual firmware and secure boot -->
+   ...
+   <os>
+     <type>hvm</type>
+     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+     <nvram template='/usr/share/OVMF/OVMF_VARS.fd'>/var/lib/libvirt/nvram/guest_VARS.fd</nvram>
+     <boot dev='hd'/>
+   </os>
+   ...
+
+   <!-- QEMU with automatic UEFI firmware and secure boot -->
+   ...
+   <os firmware='efi'>
+     <type>hvm</type>
+     <loader secure='yes'/>
+     <boot dev='hd'/>
    </os>
    ...
 
