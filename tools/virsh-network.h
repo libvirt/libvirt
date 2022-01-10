@@ -44,4 +44,6 @@ typedef struct virshNetworkEventCallback virshNetworkEventCallback;
 
 extern virshNetworkEventCallback virshNetworkEventCallbacks[];
 
+VIR_ENUM_DECL(virshNetworkUpdateCommand);
+
 extern const vshCmdDef networkCmds[];

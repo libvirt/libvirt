@@ -919,6 +919,7 @@ static const vshCmdOptDef opts_network_update[] = {
     {.name = "command",
      .type = VSH_OT_DATA,
      .flags = VSH_OFLAG_REQ,
+     .completer = virshNetworkUpdateCommandCompleter,
      .help = N_("type of update (add-first, add-last (add), delete, or modify)")
     },
     {.name = "section",
@@ -943,7 +944,6 @@ static const vshCmdOptDef opts_network_update[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshNetworkUpdateCommand);
 VIR_ENUM_IMPL(virshNetworkUpdateCommand,
               VIR_NETWORK_UPDATE_COMMAND_LAST,
               "none", "modify", "delete", "add-last", "add-first");

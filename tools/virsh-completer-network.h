@@ -46,3 +46,8 @@ char **
 virshNetworkDhcpMacCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
+
+char **
+virshNetworkUpdateCommandCompleter(vshControl *ctl,
+                                   const vshCmd *cmd,
+                                   unsigned int flags);

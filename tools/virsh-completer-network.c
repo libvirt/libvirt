@@ -218,3 +218,26 @@ virshNetworkDhcpMacCompleter(vshControl *ctl,
     }
     return ret;
 }
+
+
+char **
+virshNetworkUpdateCommandCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIR_NETWORK_UPDATE_COMMAND_LAST + 1);
+
+    /* The first item in the enum is not accepted by virsh, But there's "add"
+     * which is accepted an is just an alias to "add-last". */
+    ret[0] = g_strdup("add");
+
+    for (i = 1; i < VIR_NETWORK_UPDATE_COMMAND_LAST; i++)
+        ret[i] = g_strdup(virshNetworkUpdateCommandTypeToString(i));
+
+    return ret;
+}
