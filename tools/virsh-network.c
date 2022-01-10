@@ -984,7 +984,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         command = VIR_NETWORK_UPDATE_COMMAND_ADD_LAST;
     } else {
         command = virshNetworkUpdateCommandTypeFromString(commandStr);
-        if (command <= 0 || command >= VIR_NETWORK_UPDATE_COMMAND_LAST) {
+        if (command <= 0) {
             vshError(ctl, _("unrecognized command name '%s'"), commandStr);
             goto cleanup;
         }
@@ -994,7 +994,7 @@ cmdNetworkUpdate(vshControl *ctl, const vshCmd *cmd)
         goto cleanup;
 
     section = virshNetworkSectionTypeFromString(sectionStr);
-    if (section <= 0 || section >= VIR_NETWORK_SECTION_LAST) {
+    if (section <= 0) {
         vshError(ctl, _("unrecognized section name '%s'"), sectionStr);
         goto cleanup;
     }
