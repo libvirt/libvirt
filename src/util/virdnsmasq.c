@@ -46,6 +46,7 @@
 
 VIR_LOG_INIT("util.dnsmasq");
 
+#define DNSMASQ "dnsmasq"
 #define DNSMASQ_HOSTSFILE_SUFFIX "hostsfile"
 #define DNSMASQ_ADDNHOSTSFILE_SUFFIX "addnhosts"
 
@@ -650,16 +651,6 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
     g_autoptr(virCommand) vercmd = NULL;
     g_autofree char *version = NULL;
 
-    /* Make sure the binary we are about to try exec'ing exists.
-     * Technically we could catch the exec() failure, but that's
-     * in a sub-process so it's hard to feed back a useful error.
-     */
-    if (!virFileIsExecutable(caps->binaryPath)) {
-        virReportSystemError(errno, _("dnsmasq binary %s is not executable"),
-                             caps->binaryPath);
-        return -1;
-    }
-
     vercmd = virCommandNewArgList(caps->binaryPath, "--version", NULL);
     virCommandSetOutputBuffer(vercmd, &version);
     virCommandAddEnvPassCommon(vercmd);
@@ -679,7 +670,13 @@ dnsmasqCapsNewEmpty(void)
         return NULL;
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
-    caps->binaryPath = g_strdup(DNSMASQ);
+
+    if (!(caps->binaryPath = virFindFileInPath(DNSMASQ))) {
+        virReportSystemError(ENOENT, "%s",
+                             _("Unable to find 'dnsmasq' binary in $PATH"));
+        return NULL;
+    }
+
     return g_steal_pointer(&caps);
 }
 

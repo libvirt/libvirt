@@ -813,7 +813,6 @@ endforeach
 optional_programs = [
   'augparse',
   'dmidecode',
-  'dnsmasq',
   'ebtables',
   'flake8',
   'ip',
