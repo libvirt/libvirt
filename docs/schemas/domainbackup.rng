@@ -60,10 +60,7 @@
               <element name="server">
                 <optional>
                   <attribute name="tls">
-                    <choice>
-                      <value>yes</value>
-                      <value>no</value>
-                    </choice>
+                    <ref name="virYesNo"/>
                   </attribute>
                 </optional>
                 <choice>

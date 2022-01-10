@@ -300,18 +300,12 @@
           <element name="loader">
             <optional>
               <attribute name="readonly">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
+                <ref name="virYesNo"/>
               </attribute>
             </optional>
             <optional>
               <attribute name="secure">
-                <choice>
-                  <value>yes</value>
-                  <value>no</value>
-                </choice>
+                <ref name="virYesNo"/>
               </attribute>
             </optional>
             <optional>
@@ -5331,11 +5325,8 @@
           <ref name="tpm-backend-emulator-active-pcr-banks"/>
           <optional>
             <attribute name="persistent_state">
-              <choice>
-                <value>yes</value>
-                <value>no</value>
-              </choice>
-           </attribute>
+              <ref name="virYesNo"/>
+            </attribute>
           </optional>
         </group>
       </choice>

@@ -409,10 +409,7 @@
       </optional>
       <optional>
         <attribute name="deprecated">
-          <choice>
-            <value>yes</value>
-            <value>no</value>
-          </choice>
+          <ref name="virYesNo"/>
         </attribute>
       </optional>
       <text/>
