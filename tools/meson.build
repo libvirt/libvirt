@@ -297,29 +297,31 @@ if conf.has('WITH_SANLOCK')
   )
 endif
 
-configure_file(
-  input: 'libvirt-guests.sh.in',
-  output: '@BASENAME@',
-  configuration: tools_conf,
-  install: true,
-  install_dir: libexecdir,
-  install_mode: 'rwxrwxr-x',
-)
-
-if init_script == 'systemd'
-  install_data(
-    'libvirt-guests.sysconf',
-    install_dir: sysconfdir / 'sysconfig',
-    rename: 'libvirt-guests',
-  )
-
+if conf.has('WITH_LIBVIRTD')
   configure_file(
-    input: 'libvirt-guests.service.in',
+    input: 'libvirt-guests.sh.in',
     output: '@BASENAME@',
     configuration: tools_conf,
     install: true,
-    install_dir: prefix / 'lib' / 'systemd' / 'system',
+    install_dir: libexecdir,
+    install_mode: 'rwxrwxr-x',
   )
+
+  if init_script == 'systemd'
+    install_data(
+      'libvirt-guests.sysconf',
+      install_dir: sysconfdir / 'sysconfig',
+      rename: 'libvirt-guests',
+    )
+
+    configure_file(
+      input: 'libvirt-guests.service.in',
+      output: '@BASENAME@',
+      configuration: tools_conf,
+      install: true,
+      install_dir: prefix / 'lib' / 'systemd' / 'system',
+    )
+  endif
 endif
 
 if bash_completion_dep.found()
