@@ -241,3 +241,23 @@ virshNetworkUpdateCommandCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return ret;
 }
+
+
+char **
+virshNetworkUpdateSectionCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIR_NETWORK_SECTION_LAST);
+
+    /* The first item in the enum is not accepted by virsh. */
+    for (i = 1; i < VIR_NETWORK_SECTION_LAST; i++)
+        ret[i - 1] = g_strdup(virshNetworkSectionTypeToString(i));
+
+    return ret;
+}
