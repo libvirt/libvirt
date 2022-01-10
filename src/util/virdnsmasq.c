@@ -711,7 +711,7 @@ dnsmasqCapsNewFromBinary(void)
 const char *
 dnsmasqCapsGetBinaryPath(dnsmasqCaps *caps)
 {
-    return caps ? caps->binaryPath : DNSMASQ;
+    return caps->binaryPath;
 }
 
 /** dnsmasqDhcpHostsToString:
