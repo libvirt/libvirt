@@ -700,7 +700,7 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
 }
 
 static dnsmasqCaps *
-dnsmasqCapsNewEmpty(const char *binaryPath)
+dnsmasqCapsNewEmpty(void)
 {
     dnsmasqCaps *caps;
 
@@ -708,14 +708,14 @@ dnsmasqCapsNewEmpty(const char *binaryPath)
         return NULL;
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
-    caps->binaryPath = g_strdup(binaryPath ? binaryPath : DNSMASQ);
+    caps->binaryPath = g_strdup(DNSMASQ);
     return caps;
 }
 
 dnsmasqCaps *
 dnsmasqCapsNewFromBuffer(const char *buf)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(DNSMASQ);
+    dnsmasqCaps *caps = dnsmasqCapsNewEmpty();
 
     if (!caps)
         return NULL;
@@ -730,7 +730,7 @@ dnsmasqCapsNewFromBuffer(const char *buf)
 dnsmasqCaps *
 dnsmasqCapsNewFromBinary(void)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty(DNSMASQ);
+    dnsmasqCaps *caps = dnsmasqCapsNewEmpty();
 
     if (!caps)
         return NULL;
