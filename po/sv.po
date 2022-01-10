@@ -5,15 +5,15 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # denka <dennis@dennis.se>, 2014
-# Göran Uddeborg <goeran@uddeborg.se, 2011, 2020, 2021.
+# Göran Uddeborg <goeran@uddeborg.se, 2011, 2020, 2021, 2022.
 # Magnus Larsson <fedoratrans@gmail.com>, 2006, 2007, 2008
-# Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021.
+# Göran Uddeborg <goeran@uddeborg.se>, 2015, 2017, 2020, 2021, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2021-11-25 08:59+0000\n"
-"PO-Revision-Date: 2021-12-30 13:16+0000\n"
+"PO-Revision-Date: 2022-01-10 08:39+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8013,116 +8013,107 @@ msgstr "Misslyckades att läsa pid-filen %s"
 msgid "Failed to read product/vendor ID for %s"
 msgstr "Misslyckades med att läsa produkt-/tillverkar-ID för %s"
 
-#, fuzzy
 msgid "Failed to read secret"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades att läsa en hemlighet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to read snapshot file %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades att läsa filen med en ögonblicksbild %s"
 
 #, c-format
 msgid "Failed to read system token '%s'"
-msgstr ""
+msgstr "Misslyckades med att läsa systempoletten ”%s”"
 
-#, fuzzy
 msgid "Failed to read the container continue message"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades med att läsa behållarens fortsättningsmeddelande"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to readdir for %s (%d)"
-msgstr "Misslyckades att skapa domän från %s"
+msgstr "Misslyckades med att läsa katalogen för %s (%d)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reattach NVMe for disk target: %s"
-msgstr "Misslyckades att ansluta enhet från %s"
+msgstr "Misslyckades med att återansluta NVMe för diskmålet: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reboot domain '%d' with libxenlight"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Misslyckades med att starta om domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to reboot domain '%s'"
 msgstr "Misslyckades att starta om domänen '%s'"
 
-#, fuzzy
 msgid "Failed to reconnect to the admin server"
-msgstr "misslyckades att ansluta till hypervisor"
+msgstr "Misslyckades med att återanslutea ansluta till administrationsservern"
 
 msgid "Failed to reconnect to the hypervisor"
 msgstr "Misslyckades att återansluta till hypervisorn"
 
-#, fuzzy
 msgid "Failed to recv file descriptor"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att ta emot en filbeskrivare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to refresh pool %s"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att uppdatera poolen %s"
 
-#, fuzzy
 msgid "Failed to register lock failure action"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "Misslyckades med att registrera en låsmisslyckandesåtgärd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to register lock failure action: %s"
-msgstr "misslyckades att skriva konfigurationsfilen: %s"
+msgstr "Misslyckades med att registrera en låsmisslyckandesåtgärd:%s"
 
-#, fuzzy
 msgid "Failed to register shutdown timeout"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att registrera en tidsgräns för nedstängning"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to register xml namespace '%s'"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att registrera xml-namnrymden ”%s”"
 
-#, fuzzy
 msgid "Failed to release lock"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att släppa låset"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to release lock: %s"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att släppa låset: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to release port %d"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att släppa port %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove capability %s: %d"
-msgstr "Det gick inte att sätta förmågor: %d"
+msgstr "Misslyckades med att ta bort förmågan %s: %d"
 
-#, fuzzy
 msgid "Failed to remove domain managed save image"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att ta bort domänhanterad sparad avbild"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove managed save file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att ta bort hanterad sparfil ”%s”"
 
 #, c-format
 msgid "Failed to remove managed save image for domain '%s'"
-msgstr ""
+msgstr "Misslyckades med att ta bort hanterad sparad avbild för domänen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to remove storage volume '%s'(%s)"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att ta bort lagringsvolymen ”%s” (%s)"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reportluns: %s"
-msgstr "Misslyckades att starta om domän %s"
+msgstr "Misslyckades med reportluns: %s"
 
-#, fuzzy
 msgid "Failed to request maximum NUMA node id"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att begära maximalt NUMA-nod-id"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %d"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att reservera port %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to reserve port %zu"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att reservera port %zu"
 
 #, c-format
 msgid "Failed to reset PCI device: %s"
@@ -8136,61 +8127,60 @@ msgstr "Misslyckades att återställa enheten %s"
 msgid "Failed to reset domain '%s'"
 msgstr "Misslyckades att återställa domänen '%s'"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resize block device '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att ändra storlek på enheten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resolve device link '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att slå upp enhetslänken ”%s”"
 
 #, c-format
 msgid "Failed to resolve symlink at %s"
 msgstr "Misslyckades med att lösa upp symlänken vid %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to restart VM '%s': %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades att starta om VM ”%s”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to restart storage pool '%s': %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att starta om lagringspoolen ”%s”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to restore PCI config space for %s"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "Misslyckades med att återställa PCI-konfigurationsutrymmet för %s"
 
 #, c-format
 msgid "Failed to restore domain from %s"
 msgstr "Misslyckades att återställa domän från %s"
 
-#, fuzzy
 msgid "Failed to restrict process"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att begränsa processen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to restrict process: %s"
-msgstr "Misslyckades med att förstöra gränssnittet %s"
+msgstr "Misslyckades med att begränsa processen: %s"
 
 #, c-format
 msgid "Failed to resume domain '%d'"
 msgstr "Misslyckades att återuppta domän ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resume domain '%d' with libxenlight"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att återuppta domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to resume domain '%s'"
 msgstr "Misslyckades att återuppta domänen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to resume guest %s after failure"
-msgstr "Misslyckades att fortsätta domän %s"
+msgstr "Misslyckades med att återuppta gästen %s efter misslyckande"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to retrieve CPU statistics for domain '%s'"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att hämta CPU-statistik för domänen ”%s”"
 
 #, c-format
 msgid ""
