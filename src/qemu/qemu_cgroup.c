@@ -447,7 +447,7 @@ qemuSetupHostdevCgroup(virDomainObj *vm,
 
 /**
  * qemuTeardownHostdevCgroup:
- * @vm: doamin object
+ * @vm: domain object
  * @dev: device to tear down
  *
  * For given host device @dev deny access to it in CGroups.

@@ -57,7 +57,7 @@ modify(struct qmpCommandList *list G_GNUC_UNUSED)
 
         if (STREQ_NULLABLE(cmdname, "qom-list-properties")) {
             found = i;
-            // break; /* uncomment if you want to find the first occurence */
+            // break; /* uncomment if you want to find the first occurrence */
         }
     }
 

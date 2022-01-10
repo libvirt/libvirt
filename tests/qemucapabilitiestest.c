@@ -213,8 +213,8 @@ mymain(void)
      *
      * If you manually edit replies files you can run
      * VIR_TEST_REGENERATE_OUTPUT=1 tests/qemucapabilitiesnumbering
-     * to fix the replies ids. The tool also allows for programatic modification
-     * of the replies file.
+     * to fix the replies ids. The tool also allows for programmatic
+     * modification of the replies file.
      *
      * Once a replies file has been generated and tweaked if necessary,
      * you can drop it into tests/qemucapabilitiesdata/ (with a sensible
