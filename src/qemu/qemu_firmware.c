@@ -899,7 +899,7 @@ qemuFirmwareMatchesMachineArch(const qemuFirmware *fw,
 
 
 static qemuFirmwareOSInterface
-qemuFirmwareOSInterfaceTypeFromOsDefFirmware(int fw)
+qemuFirmwareOSInterfaceTypeFromOsDefFirmware(virDomainOsDefFirmware fw)
 {
     switch (fw) {
     case VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS:
@@ -908,6 +908,23 @@ qemuFirmwareOSInterfaceTypeFromOsDefFirmware(int fw)
         return QEMU_FIRMWARE_OS_INTERFACE_UEFI;
     case VIR_DOMAIN_OS_DEF_FIRMWARE_NONE:
     case VIR_DOMAIN_OS_DEF_FIRMWARE_LAST:
+        break;
+    }
+
+    return QEMU_FIRMWARE_OS_INTERFACE_NONE;
+}
+
+
+static qemuFirmwareOSInterface
+qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(virDomainLoader type)
+{
+    switch (type) {
+    case VIR_DOMAIN_LOADER_TYPE_ROM:
+        return QEMU_FIRMWARE_OS_INTERFACE_BIOS;
+    case VIR_DOMAIN_LOADER_TYPE_PFLASH:
+        return QEMU_FIRMWARE_OS_INTERFACE_UEFI;
+    case VIR_DOMAIN_LOADER_TYPE_NONE:
+    case VIR_DOMAIN_LOADER_TYPE_LAST:
         break;
     }
 
@@ -939,7 +956,7 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
 
     if (want == QEMU_FIRMWARE_OS_INTERFACE_NONE &&
         def->os.loader) {
-        want = qemuFirmwareOSInterfaceTypeFromOsDefFirmware(def->os.loader->type);
+        want = qemuFirmwareOSInterfaceTypeFromOsDefLoaderType(def->os.loader->type);
 
         if (fw->mapping.device != QEMU_FIRMWARE_DEVICE_FLASH ||
             STRNEQ(def->os.loader->path, fw->mapping.data.flash.executable.filename)) {
