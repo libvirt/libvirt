@@ -8201,7 +8201,7 @@ Note: DEA/TDEA is synonymous with DES/TDES.
 Launch Security
 ---------------
 
-Specifying ``<launchSecurity type='s390-pv'\>`` in a s390 domain prepares
+Specifying ``<launchSecurity type='s390-pv'/>`` in a s390 domain prepares
 the guest to run in protected virtualization secure mode, also known as
 IBM Secure Execution. For more required host and guest preparation steps, see
 `Protected Virtualization on s390 <kbase/s390_protected_virt.html>`__
