@@ -827,9 +827,11 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     unsigned long long duration = 0;
     unsigned long long agentDuration = 0;
     unsigned long long asyncDuration = 0;
+    const char *currentAPI = virThreadJobGet();
 
-    VIR_DEBUG("Starting job: job=%s agentJob=%s asyncJob=%s "
+    VIR_DEBUG("Starting job: API=%s job=%s agentJob=%s asyncJob=%s "
               "(vm=%p name=%s, current job=%s agentJob=%s async=%s)",
+              NULLSTR(currentAPI),
               qemuDomainJobTypeToString(job),
               qemuDomainAgentJobTypeToString(agentJob),
               qemuDomainAsyncJobTypeToString(asyncJob),
@@ -931,13 +933,14 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     if (priv->job.asyncJob && priv->job.asyncStarted)
         asyncDuration = now - priv->job.asyncStarted;
 
-    VIR_WARN("Cannot start job (%s, %s, %s) for domain %s; "
+    VIR_WARN("Cannot start job (%s, %s, %s) in API %s for domain %s; "
              "current job is (%s, %s, %s) "
              "owned by (%llu %s, %llu %s, %llu %s (flags=0x%lx)) "
              "for (%llus, %llus, %llus)",
              qemuDomainJobTypeToString(job),
              qemuDomainAgentJobTypeToString(agentJob),
              qemuDomainAsyncJobTypeToString(asyncJob),
+             NULLSTR(currentAPI),
              obj->def->name,
              qemuDomainJobTypeToString(priv->job.active),
              qemuDomainAgentJobTypeToString(priv->job.agentActive),
