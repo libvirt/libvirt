@@ -1073,8 +1073,6 @@ chDomainHelperGetVcpus(virDomainObj *vm,
             if (virProcessGetStatInfo(&vcpuinfo->cpuTime,
                                       &vcpuinfo->cpu, NULL,
                                       vm->pid, vcpupid) < 0) {
-                virReportSystemError(errno, "%s",
-                                      _("cannot get vCPU placement & pCPU time"));
                 return -1;
             }
         }
