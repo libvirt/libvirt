@@ -1756,7 +1756,7 @@ qemuSnapshotCreate(virDomainObj *vm,
                    virQEMUDriverConfig *cfg,
                    unsigned int flags)
 {
-
+    g_autoptr(virDomainMomentObj) tmpsnap = NULL;
     virDomainMomentObj *snap = NULL;
     virDomainMomentObj *current = NULL;
     virDomainSnapshotPtr ret = NULL;
@@ -1767,15 +1767,19 @@ qemuSnapshotCreate(virDomainObj *vm,
     if (qemuSnapshotPrepare(vm, def, &flags) < 0)
         return NULL;
 
-    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-        return NULL;
+    if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA) {
+        snap = tmpsnap = virDomainMomentObjNew();
+        snap->def = &def->parent;
+    } else {
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+            return NULL;
+
+        if ((current = virDomainSnapshotGetCurrent(vm->snapshots))) {
+            snap->def->parent_name = g_strdup(current->def->name);
+        }
+    }
 
     virObjectRef(def);
-
-    current = virDomainSnapshotGetCurrent(vm->snapshots);
-    if (current) {
-        snap->def->parent_name = g_strdup(current->def->name);
-    }
 
     /* actually do the snapshot */
     if (virDomainObjIsActive(vm)) {
@@ -1804,7 +1808,7 @@ qemuSnapshotCreate(virDomainObj *vm,
         }
     }
 
-    if (!(flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA)) {
+    if (!tmpsnap) {
         qemuSnapshotSetCurrent(vm, snap);
 
         if (qemuSnapshotCreateWriteMetadata(vm, snap, driver, cfg) < 0)
@@ -1818,7 +1822,8 @@ qemuSnapshotCreate(virDomainObj *vm,
     return ret;
 
  error:
-    virDomainSnapshotObjListRemove(vm->snapshots, snap);
+    if (!tmpsnap)
+        virDomainSnapshotObjListRemove(vm->snapshots, snap);
     return NULL;
 }
 
