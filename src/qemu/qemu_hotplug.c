@@ -137,6 +137,44 @@ qemuDomainDeleteDevice(virDomainObj *vm,
 }
 
 
+/**
+ * qemuHotplugRemoveFDSet:
+ * @mon: monitor object
+ * @fdname: the 'opaque' string used as a name for the FD
+ *
+ * Looks up the 'fdset' by looking for a fd inside one of the fdsets which
+ * has the opaque string set to @fdname. Removes the whole fdset which contains
+ * the fd.
+ *
+ * Errors are logged, but this is a best-effort hot-unplug cleanup helper so it's
+ * pointless to return a value.
+ */
+static void
+qemuHotplugRemoveFDSet(qemuMonitor *mon,
+                       const char *fdname)
+{
+    g_autoptr(qemuMonitorFdsets) fdsets = NULL;
+    size_t i;
+
+    if (qemuMonitorQueryFdsets(mon, &fdsets) < 0)
+        return;
+
+    for (i = 0; i < fdsets->nfdsets; i++) {
+        qemuMonitorFdsetInfo *set = &fdsets->fdsets[i];
+        size_t j;
+
+        for (j = 0; j < set->nfds; j++) {
+            qemuMonitorFdsetFdInfo *fdinfo = &set->fds[j];
+
+            if (STREQ_NULLABLE(fdinfo->opaque, fdname)) {
+                ignore_value(qemuMonitorRemoveFdset(mon, set->id));
+                return;
+            }
+        }
+    }
+}
+
+
 static int
 qemuDomainDetachZPCIDevice(qemuMonitor *mon,
                            virDomainDeviceInfo *info)
@@ -4761,37 +4799,8 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
              */
         }
     } else if (actualType == VIR_DOMAIN_NET_TYPE_VDPA) {
-        int vdpafdset = -1;
-        g_autoptr(qemuMonitorFdsets) fdsets = NULL;
-
-        /* query qemu for which fdset is associated with the fd that we passed
-         * to qemu via 'add-fd' for this vdpa device. If we don't remove the
-         * fd, qemu will keep it open */
-        if (qemuMonitorQueryFdsets(priv->mon, &fdsets) == 0) {
-            for (i = 0; i < fdsets->nfdsets && vdpafdset < 0; i++) {
-                size_t j;
-                qemuMonitorFdsetInfo *set = &fdsets->fdsets[i];
-
-                for (j = 0; j < set->nfds; j++) {
-                    qemuMonitorFdsetFdInfo *fdinfo = &set->fds[j];
-                    if (STREQ_NULLABLE(fdinfo->opaque, net->data.vdpa.devicepath)) {
-                        vdpafdset = set->id;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (vdpafdset < 0) {
-            VIR_WARN("Cannot determine fdset for vdpa device");
-        } else {
-            if (qemuMonitorRemoveFdset(priv->mon, vdpafdset) < 0) {
-                /* if it fails, there's not much we can do... just carry on */
-                VIR_WARN("failed to close vdpa device");
-            }
-        }
+        qemuHotplugRemoveFDSet(priv->mon, net->data.vdpa.devicepath);
     }
-
 
     qemuDomainObjExitMonitor(driver, vm);
 
