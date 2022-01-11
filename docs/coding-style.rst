@@ -53,11 +53,16 @@ Struct type names
    All structs should have a 'vir' prefix in their typedef name,
    and each following word should have its first letter in
    uppercase. The struct name should be the same as the typedef
-   name with a leading underscore.
+   name with a leading underscore. For types that are part of the
+   public API, a second typedef should be given for a pointer to
+   the struct with a 'Ptr' suffix. Do not introduce new such
+   typedefs for internal types.
+
    ::
 
-     typedef struct _virHashTable virHashTable;
-     struct _virHashTable {
+     typedef struct _virSomeType virSomeType;
+     typedef virSomeType *virSomeTypePtr;
+     struct _virSomeType {
          ...
      };
 
@@ -69,8 +74,8 @@ Function names
    name prefix should match the object typedef name, otherwise it
    should match the filename. Following this comes the verb /
    action name, and finally an optional subject name. For example,
-   given an object 'virHashTable', all functions should have a
-   name 'virHashTable$VERB' or 'virHashTable$VERB$SUBJECT", e.g.
+   given an object 'virSomeType', all functions should have a
+   name 'virSomeType$VERB' or 'virSomeType$VERB$SUBJECT", e.g.
    'virHashTableLookup' or 'virHashTableGetValue'.
 
 Macro names
