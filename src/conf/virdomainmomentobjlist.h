@@ -50,24 +50,33 @@ struct _virDomainMomentObj {
     virDomainMomentObj *first_child; /* NULL if no children */
 };
 
-int virDomainMomentForEachChild(virDomainMomentObj *moment,
-                                virHashIterator iter,
-                                void *data);
-int virDomainMomentForEachDescendant(virDomainMomentObj *moment,
-                                     virHashIterator iter,
-                                     void *data);
-void virDomainMomentDropParent(virDomainMomentObj *moment);
-void virDomainMomentDropChildren(virDomainMomentObj *moment);
-void virDomainMomentMoveChildren(virDomainMomentObj *from,
-                                 virDomainMomentObj *to);
-void virDomainMomentLinkParent(virDomainMomentObjList *moments,
-                               virDomainMomentObj *moment);
+int
+virDomainMomentForEachChild(virDomainMomentObj *moment,
+                            virHashIterator iter,
+                            void *data);
+int
+virDomainMomentForEachDescendant(virDomainMomentObj *moment,
+                                 virHashIterator iter,
+                                 void *data);
+void
+virDomainMomentDropParent(virDomainMomentObj *moment);
+void
+virDomainMomentDropChildren(virDomainMomentObj *moment);
+void
+virDomainMomentMoveChildren(virDomainMomentObj *from,
+                            virDomainMomentObj *to);
+void
+virDomainMomentLinkParent(virDomainMomentObjList *moments,
+                          virDomainMomentObj *moment);
 
-virDomainMomentObjList *virDomainMomentObjListNew(void);
-void virDomainMomentObjListFree(virDomainMomentObjList *moments);
+virDomainMomentObjList *
+virDomainMomentObjListNew(void);
+void
+virDomainMomentObjListFree(virDomainMomentObjList *moments);
 
-virDomainMomentObj *virDomainMomentAssignDef(virDomainMomentObjList *moments,
-                                               virDomainMomentDef *def);
+virDomainMomentObj *
+virDomainMomentAssignDef(virDomainMomentObjList *moments,
+                         virDomainMomentDef *def);
 
 /* Various enum bits that map to public API filters. Note that the
  * values of the internal bits are not the same as the public ones for
@@ -97,28 +106,46 @@ typedef enum {
                 VIR_DOMAIN_MOMENT_FILTERS_METADATA | \
                 VIR_DOMAIN_MOMENT_FILTERS_LEAVES)
 
-int virDomainMomentObjListGetNames(virDomainMomentObjList *moments,
-                                   virDomainMomentObj *from,
-                                   char **const names,
-                                   int maxnames,
-                                   unsigned int moment_flags,
-                                   virDomainMomentObjListFilter filter,
-                                   unsigned int filter_flags);
-virDomainMomentObj *virDomainMomentFindByName(virDomainMomentObjList *moments,
-                                                const char *name);
-int virDomainMomentObjListSize(virDomainMomentObjList *moments);
-virDomainMomentObj *virDomainMomentGetCurrent(virDomainMomentObjList *moments);
-const char *virDomainMomentGetCurrentName(virDomainMomentObjList *moments);
-void virDomainMomentSetCurrent(virDomainMomentObjList *moments,
-                               virDomainMomentObj *moment);
-bool virDomainMomentObjListRemove(virDomainMomentObjList *moments,
-                                  virDomainMomentObj *moment);
-void virDomainMomentObjListRemoveAll(virDomainMomentObjList *moments);
-int virDomainMomentForEach(virDomainMomentObjList *moments,
-                           virHashIterator iter,
-                           void *data);
-int virDomainMomentUpdateRelations(virDomainMomentObjList *moments);
-int virDomainMomentCheckCycles(virDomainMomentObjList *list,
-                               virDomainMomentDef *def,
-                               const char *domname);
-virDomainMomentObj *virDomainMomentFindLeaf(virDomainMomentObjList *list);
+int
+virDomainMomentObjListGetNames(virDomainMomentObjList *moments,
+                               virDomainMomentObj *from,
+                               char **const names,
+                               int maxnames,
+                               unsigned int moment_flags,
+                               virDomainMomentObjListFilter filter,
+                               unsigned int filter_flags);
+virDomainMomentObj *
+virDomainMomentFindByName(virDomainMomentObjList *moments,
+                          const char *name);
+int
+virDomainMomentObjListSize(virDomainMomentObjList *moments);
+
+virDomainMomentObj *
+virDomainMomentGetCurrent(virDomainMomentObjList *moments);
+const char *
+virDomainMomentGetCurrentName(virDomainMomentObjList *moments);
+void
+virDomainMomentSetCurrent(virDomainMomentObjList *moments,
+                          virDomainMomentObj *moment);
+
+bool
+virDomainMomentObjListRemove(virDomainMomentObjList *moments,
+                             virDomainMomentObj *moment);
+void
+virDomainMomentObjListRemoveAll(virDomainMomentObjList *moments);
+
+int
+virDomainMomentForEach(virDomainMomentObjList *moments,
+                       virHashIterator iter,
+                       void *data);
+
+int
+virDomainMomentUpdateRelations(virDomainMomentObjList *moments);
+
+int
+virDomainMomentCheckCycles(virDomainMomentObjList *list,
+                           virDomainMomentDef *def,
+                           const char *domname);
+
+virDomainMomentObj *
+virDomainMomentFindLeaf(virDomainMomentObjList *list);
