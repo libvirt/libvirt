@@ -1175,6 +1175,8 @@ virDomainMomentDropParent;
 virDomainMomentForEachChild;
 virDomainMomentForEachDescendant;
 virDomainMomentMoveChildren;
+virDomainMomentObjFree;
+virDomainMomentObjNew;
 
 
 # conf/virdomainobjlist.h

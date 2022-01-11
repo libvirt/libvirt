@@ -205,7 +205,7 @@ virDomainMomentMoveChildren(virDomainMomentObj *from,
 }
 
 
-static virDomainMomentObj *
+virDomainMomentObj *
 virDomainMomentObjNew(void)
 {
     virDomainMomentObj *moment;
@@ -218,7 +218,7 @@ virDomainMomentObjNew(void)
 }
 
 
-static void
+void
 virDomainMomentObjFree(virDomainMomentObj *moment)
 {
     if (!moment)

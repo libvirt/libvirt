@@ -50,6 +50,14 @@ struct _virDomainMomentObj {
     virDomainMomentObj *first_child; /* NULL if no children */
 };
 
+virDomainMomentObj *
+virDomainMomentObjNew(void);
+
+void
+virDomainMomentObjFree(virDomainMomentObj *moment);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainMomentObj, virDomainMomentObjFree);
+
 int
 virDomainMomentForEachChild(virDomainMomentObj *moment,
                             virHashIterator iter,
