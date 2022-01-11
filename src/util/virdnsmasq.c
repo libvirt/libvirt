@@ -702,44 +702,42 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
 static dnsmasqCaps *
 dnsmasqCapsNewEmpty(void)
 {
-    dnsmasqCaps *caps;
+    g_autoptr(dnsmasqCaps) caps = NULL;
 
     if (dnsmasqCapsInitialize() < 0)
         return NULL;
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
     caps->binaryPath = g_strdup(DNSMASQ);
-    return caps;
+    return g_steal_pointer(&caps);
 }
 
 dnsmasqCaps *
 dnsmasqCapsNewFromBuffer(const char *buf)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty();
+    g_autoptr(dnsmasqCaps) caps = dnsmasqCapsNewEmpty();
 
     if (!caps)
         return NULL;
 
-    if (dnsmasqCapsSetFromBuffer(caps, buf) < 0) {
-        virObjectUnref(caps);
+    if (dnsmasqCapsSetFromBuffer(caps, buf) < 0)
         return NULL;
-    }
-    return caps;
+
+    return g_steal_pointer(&caps);
 }
 
 dnsmasqCaps *
 dnsmasqCapsNewFromBinary(void)
 {
-    dnsmasqCaps *caps = dnsmasqCapsNewEmpty();
+    g_autoptr(dnsmasqCaps) caps = dnsmasqCapsNewEmpty();
 
     if (!caps)
         return NULL;
 
-    if (dnsmasqCapsRefreshInternal(caps, true) < 0) {
-        virObjectUnref(caps);
+    if (dnsmasqCapsRefreshInternal(caps, true) < 0)
         return NULL;
-    }
-    return caps;
+
+    return g_steal_pointer(&caps);
 }
 
 const char *

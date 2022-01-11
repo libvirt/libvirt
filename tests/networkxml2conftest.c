@@ -112,8 +112,9 @@ static int
 mymain(void)
 {
     int ret = 0;
-    dnsmasqCaps *full
-        = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67\n--bind-dynamic\n--ra-param");
+    g_autoptr(dnsmasqCaps) full = NULL;
+
+    full = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67\n--bind-dynamic\n--ra-param");
 
 #define DO_TEST(xname, xcaps) \
     do { \
@@ -153,8 +154,6 @@ mymain(void)
     DO_TEST("leasetime-minutes", full);
     DO_TEST("leasetime-hours", full);
     DO_TEST("leasetime-infinite", full);
-
-    virObjectUnref(full);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
