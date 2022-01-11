@@ -3695,7 +3695,6 @@ qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,
 
     for (i = 0; i < ninfo; i++) {
         size_t j;
-        const char *tmp;
         virJSONValue *fdarray;
         qemuMonitorFdsetInfo *fdsetinfo = &sets->fdsets[i];
 
@@ -3734,9 +3733,7 @@ qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,
             }
 
             /* opaque is optional and may be missing */
-            tmp = virJSONValueObjectGetString(fdentry, "opaque");
-            if (tmp)
-                fdinfo->opaque = g_strdup(tmp);
+            fdinfo->opaque = g_strdup(virJSONValueObjectGetString(fdentry, "opaque"));
         }
     }
 
