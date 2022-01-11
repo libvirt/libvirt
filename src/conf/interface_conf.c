@@ -453,14 +453,12 @@ virInterfaceDefParseIfAdressing(virInterfaceDef *def,
         }
         proto->family = tmp;
         if (STREQ(tmp, "ipv4")) {
-            ret = virInterfaceDefParseProtoIPv4(proto, ctxt);
-            if (ret != 0) {
+            if (virInterfaceDefParseProtoIPv4(proto, ctxt) != 0) {
                 virInterfaceProtocolDefFree(proto);
                 goto error;
             }
         } else if (STREQ(tmp, "ipv6")) {
-            ret = virInterfaceDefParseProtoIPv6(proto, ctxt);
-            if (ret != 0) {
+            if (virInterfaceDefParseProtoIPv6(proto, ctxt) != 0) {
                 virInterfaceProtocolDefFree(proto);
                 goto error;
             }
@@ -741,10 +739,12 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     switch (type) {
-        case VIR_INTERFACE_TYPE_ETHERNET:
-            if ((tmp = virXPathString("string(./mac/@address)", ctxt)))
-                def->mac = tmp;
+        case VIR_INTERFACE_TYPE_ETHERNET: {
+            char *mac = virXPathString("string(./mac/@address)", ctxt);
+            if (mac != NULL)
+                def->mac = mac;
             break;
+        }
         case VIR_INTERFACE_TYPE_BRIDGE: {
             xmlNodePtr bridge;
 
