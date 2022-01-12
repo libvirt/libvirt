@@ -573,26 +573,14 @@ static virInterfaceDef *
 virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
                         int parentIfType)
 {
-    g_autoptr(virInterfaceDef) def = NULL;
-    int type;
-    g_autofree char *tmp = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autoptr(virInterfaceDef) def = NULL;
+    virInterfaceType type;
     xmlNodePtr lnk;
 
-
-    /* check @type */
-    tmp = virXPathString("string(./@type)", ctxt);
-    if (tmp == NULL) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s", _("interface misses the type attribute"));
+    if (virXMLPropEnum(ctxt->node, "type", virInterfaceTypeFromString,
+                       VIR_XML_PROP_REQUIRED, &type) < 0)
         return NULL;
-    }
-    type = virInterfaceTypeFromString(tmp);
-    if (type == -1) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown interface type %s"), tmp);
-        return NULL;
-    }
 
     def = g_new0(virInterfaceDef, 1);
 
@@ -680,7 +668,8 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
                 return NULL;
             break;
         }
-
+        case VIR_INTERFACE_TYPE_LAST:
+            return NULL;
     }
 
     return g_steal_pointer(&def);
