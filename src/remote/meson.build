@@ -204,11 +204,6 @@ if conf.has('WITH_REMOTE')
       'confd': files('libvirtd.confd'),
     }
 
-    sysconf_files += {
-      'name': 'libvirtd',
-      'file': files('libvirtd.sysconf'),
-    }
-
     virt_daemons += {
       'name': 'virtproxyd',
       'c_args': [
@@ -237,11 +232,6 @@ if conf.has('WITH_REMOTE')
       'name': 'virtproxyd',
       'in_file': files('virtproxyd.init.in'),
       'confd': files('virtproxyd.confd'),
-    }
-
-    sysconf_files += {
-      'name': 'virtproxyd',
-      'file': files('virtproxyd.sysconf'),
     }
 
     virt_install_dirs += [

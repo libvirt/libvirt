@@ -14,6 +14,7 @@ Documentation=https://libvirt.org
 
 [Service]
 Type=notify
+Environment=VIRTVZD_ARGS="--timeout 120"
 EnvironmentFile=-@sysconfdir@/sysconfig/virtvzd
 ExecStart=@sbindir@/virtvzd $VIRTVZD_ARGS
 ExecReload=/bin/kill -HUP $MAINPID

@@ -206,6 +206,24 @@
 
 %define tls_priority "@LIBVIRT,SYSTEM"
 
+# libvirt 8.1.0 stops distributing any sysconfig files.
+# If the user has customized their sysconfig file,
+# the RPM upgrade path will rename it to .rpmsave
+# because the file is no longer managed by RPM.
+# To prevent a regression we rename it back after the
+# transaction to preserve the user's modifications
+%define libvirt_sysconfig_pre() \
+    for sc in %{?*} ; do \
+        test -f "%{_sysconfdir}/sysconfig/${sc}.rpmsave" || continue ; \
+        mv -v "%{_sysconfdir}/sysconfig/${sc}.rpmsave" "%{_sysconfdir}/sysconfig/${sc}.rpmsave.old" ; \
+    done \
+    %{nil}
+%define libvirt_sysconfig_posttrans() \
+    for sc in %{?*} ; do \
+        test -f "%{_sysconfdir}/sysconfig/${sc}.rpmsave" || continue ; \
+        mv -v "%{_sysconfdir}/sysconfig/${sc}.rpmsave" "%{_sysconfdir}/sysconfig/${sc}" ; \
+    done \
+    %{nil}
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
@@ -1286,6 +1304,7 @@ fi \
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
+%libvirt_sysconfig_pre libvirtd virtproxyd virtlogd virtlockd libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
@@ -1334,6 +1353,7 @@ if [ $1 -ge 1 ] ; then
 fi
 
 %posttrans daemon
+%libvirt_sysconfig_posttrans libvirtd virtproxyd virtlogd virtlockd libvirt-guests
 if test %libvirt_daemon_needs_restart libvirtd
 then
     # See if user has previously modified their install to
@@ -1374,6 +1394,9 @@ fi
 
 %libvirt_daemon_finish_restart libvirtd
 
+%pre daemon-driver-network
+%libvirt_sysconfig_pre virtnetworkd
+
 %post daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
@@ -1393,8 +1416,11 @@ fi
 %endif
 
 %posttrans daemon-driver-network
+%libvirt_sysconfig_posttrans virtnetworkd
 %libvirt_daemon_perform_restart virtnetworkd
 
+%pre daemon-driver-nwfilter
+%libvirt_sysconfig_pre virtnwfilterd
 
 %post daemon-driver-nwfilter
 %if %{with_modular_daemons}
@@ -1406,8 +1432,11 @@ fi
 %libvirt_daemon_systemd_preun virtnwfilterd
 
 %posttrans daemon-driver-nwfilter
+%libvirt_sysconfig_posttrans virtnwfilterd
 %libvirt_daemon_perform_restart virtnwfilterd
 
+%pre daemon-driver-nodedev
+%libvirt_sysconfig_pre virtnodedevd
 
 %post daemon-driver-nodedev
 %if %{with_modular_daemons}
@@ -1419,8 +1448,11 @@ fi
 %libvirt_daemon_systemd_preun virtnodedevd
 
 %posttrans daemon-driver-nodedev
+%libvirt_sysconfig_posttrans virtnodedevd
 %libvirt_daemon_perform_restart virtnodedevd
 
+%pre daemon-driver-interface
+%libvirt_sysconfig_pre virtinterfaced
 
 %post daemon-driver-interface
 %if %{with_modular_daemons}
@@ -1432,8 +1464,11 @@ fi
 %libvirt_daemon_systemd_preun virtinterfaced
 
 %posttrans daemon-driver-interface
+%libvirt_sysconfig_posttrans virtinterfaced
 %libvirt_daemon_perform_restart virtinterfaced
 
+%pre daemon-driver-secret
+%libvirt_sysconfig_pre virtsecretd
 
 %post daemon-driver-secret
 %if %{with_modular_daemons}
@@ -1445,8 +1480,12 @@ fi
 %libvirt_daemon_systemd_preun virtsecretd
 
 %posttrans daemon-driver-secret
+%libvirt_sysconfig_posttrans virtsecretd
 %libvirt_daemon_perform_restart virtsecretd
 
+
+%pre daemon-driver-storage
+%libvirt_sysconfig_pre virtstoraged
 
 %post daemon-driver-storage
 %if %{with_modular_daemons}
@@ -1458,11 +1497,13 @@ fi
 %libvirt_daemon_systemd_preun virtstoraged
 
 %posttrans daemon-driver-storage
+%libvirt_sysconfig_posttrans virtstoraged
 %libvirt_daemon_perform_restart virtstoraged
 
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
+%libvirt_sysconfig_pre virtqemud
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
@@ -1487,11 +1528,15 @@ exit 0
 %libvirt_daemon_systemd_preun virtqemud
 
 %posttrans daemon-driver-qemu
+%libvirt_sysconfig_posttrans virtqemud
 %libvirt_daemon_perform_restart virtqemud
 %endif
 
 
 %if %{with_lxc}
+%pre daemon-driver-lxc
+%libvirt_sysconfig_pre virtlxcd
+
 %post daemon-driver-lxc
     %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtlxcd
@@ -1502,6 +1547,7 @@ exit 0
 %libvirt_daemon_systemd_preun virtlxcd
 
 %posttrans daemon-driver-lxc
+%libvirt_sysconfig_posttrans virtlxcd
 %libvirt_daemon_perform_restart virtlxcd
 %endif
 
@@ -1513,10 +1559,14 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtvboxd
 
+%pre daemon-driver-vbox
+%libvirt_sysconfig_pre virtvboxd
+
 %preun daemon-driver-vbox
 %libvirt_daemon_systemd_preun virtvboxd
 
 %posttrans daemon-driver-vbox
+%libvirt_sysconfig_posttrans virtvboxd
 %libvirt_daemon_perform_restart virtvboxd
 %endif
 
@@ -1528,10 +1578,14 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtxend
 
+%pre daemon-driver-libxl
+%libvirt_sysconfig_pre virtxend
+
 %preun daemon-driver-libxl
 %libvirt_daemon_systemd_preun virtxend
 
 %posttrans daemon-driver-libxl
+%libvirt_sysconfig_posttrans virtxend
 %libvirt_daemon_perform_restart virtxend
 %endif
 
@@ -1634,16 +1688,11 @@ exit 0
 %{_unitdir}/virtlockd.socket
 %{_unitdir}/virtlockd-admin.socket
 %{_unitdir}/libvirt-guests.service
-%config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtproxyd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlogd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlockd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtproxyd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlogd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
@@ -1717,7 +1766,6 @@ exit 0
 %ghost %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %files daemon-driver-interface
-%config(noreplace) %{_sysconfdir}/sysconfig/virtinterfaced
 %config(noreplace) %{_sysconfdir}/libvirt/virtinterfaced.conf
 %{_datadir}/augeas/lenses/virtinterfaced.aug
 %{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
@@ -1730,7 +1778,6 @@ exit 0
 %{_mandir}/man8/virtinterfaced.8*
 
 %files daemon-driver-network
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnetworkd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnetworkd.conf
 %{_datadir}/augeas/lenses/virtnetworkd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
@@ -1754,7 +1801,6 @@ exit 0
 %endif
 
 %files daemon-driver-nodedev
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnodedevd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
 %{_datadir}/augeas/lenses/virtnodedevd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
@@ -1767,7 +1813,6 @@ exit 0
 %{_mandir}/man8/virtnodedevd.8*
 
 %files daemon-driver-nwfilter
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnwfilterd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
 %{_datadir}/augeas/lenses/virtnwfilterd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
@@ -1782,7 +1827,6 @@ exit 0
 %{_mandir}/man8/virtnwfilterd.8*
 
 %files daemon-driver-secret
-%config(noreplace) %{_sysconfdir}/sysconfig/virtsecretd
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
 %{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
@@ -1797,7 +1841,6 @@ exit 0
 %files daemon-driver-storage
 
 %files daemon-driver-storage-core
-%config(noreplace) %{_sysconfdir}/sysconfig/virtstoraged
 %config(noreplace) %{_sysconfdir}/libvirt/virtstoraged.conf
 %{_datadir}/augeas/lenses/virtstoraged.aug
 %{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
@@ -1855,7 +1898,6 @@ exit 0
 
 %if %{with_qemu}
 %files daemon-driver-qemu
-%config(noreplace) %{_sysconfdir}/sysconfig/virtqemud
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-qemu-postcopy-migration.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
@@ -1885,7 +1927,6 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-driver-lxc
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlxcd
 %config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
 %{_datadir}/augeas/lenses/virtlxcd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
@@ -1908,7 +1949,6 @@ exit 0
 
 %if %{with_libxl}
 %files daemon-driver-libxl
-%config(noreplace) %{_sysconfdir}/sysconfig/virtxend
 %config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
 %{_datadir}/augeas/lenses/virtxend.aug
 %{_datadir}/augeas/lenses/tests/test_virtxend.aug
@@ -1931,7 +1971,6 @@ exit 0
 
 %if %{with_vbox}
 %files daemon-driver-vbox
-%config(noreplace) %{_sysconfdir}/sysconfig/virtvboxd
 %config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
 %{_datadir}/augeas/lenses/virtvboxd.aug
 %{_datadir}/augeas/lenses/tests/test_virtvboxd.aug

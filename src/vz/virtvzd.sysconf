@@ -1,3 +1,0 @@
-# Customizations for the virtvzd.service systemd unit
-
-VIRTVZD_ARGS="--timeout 120"

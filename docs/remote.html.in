@@ -138,9 +138,9 @@ Blank lines and comments beginning with <code>#</code> are ignored.
         <td> 1 (on) </td>
         <td>
   Listen for secure TLS connections on the public TCP/IP port.
-  Note: it is also necessary to start the server in listening mode by
-  running it with --listen or editing /etc/sysconfig/libvirtd by uncommenting the LIBVIRTD_ARGS="--listen" line
-  to cause the server to come up in listening mode whenever it is started.
+  Note: it is also necessary to start the server in listening mode
+  by running it with --listen or adding a LIBVIRTD_ARGS="--listen"
+  line to /etc/sysconfig/libvirtd.
 </td>
       </tr>
       <tr>

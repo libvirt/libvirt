@@ -156,11 +156,6 @@ if conf.has('WITH_LIBVIRTD')
     'in_file': files('virtlockd.init.in'),
   }
 
-  sysconf_files += {
-    'name': 'virtlockd',
-    'file': files('virtlockd.sysconf'),
-  }
-
   if conf.has('WITH_SANLOCK')
     virt_helpers += {
       'name': 'libvirt_sanlock_helper',

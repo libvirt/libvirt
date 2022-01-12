@@ -63,11 +63,6 @@ if conf.has('WITH_CH')
     'sockets': [ 'main', 'ro', 'admin' ],
   }
 
-  sysconf_files += {
-    'name': 'virtchd',
-    'file': files('virtchd.sysconf'),
-  }
-
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'ch',
     runstatedir / 'libvirt' / 'ch',

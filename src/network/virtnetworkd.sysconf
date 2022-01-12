@@ -1,3 +1,0 @@
-# Customizations for the virtnetworkd.service systemd unit
-
-VIRTNETWORKD_ARGS="--timeout 120"

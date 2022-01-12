@@ -165,11 +165,6 @@ if conf.has('WITH_QEMU')
     'in_file': files('virtqemud.init.in'),
   }
 
-  sysconf_files += {
-    'name': 'virtqemud',
-    'file': files('virtqemud.sysconf'),
-  }
-
   if conf.has('WITH_SYSCTL')
     install_data(
       'postcopy-migration.sysctl',

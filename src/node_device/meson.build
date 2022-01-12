@@ -62,9 +62,4 @@ if conf.has('WITH_NODE_DEVICES')
     'name': 'virtnodedevd',
     'in_file': files('virtnodedevd.init.in'),
   }
-
-  sysconf_files += {
-    'name': 'virtnodedevd',
-    'file': files('virtnodedevd.sysconf'),
-  }
 endif

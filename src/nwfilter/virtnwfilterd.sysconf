@@ -1,3 +1,0 @@
-# Customizations for the virtnwfilterd.service systemd unit
-
-VIRTNWFILTERD_ARGS="--timeout 120"

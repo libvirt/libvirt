@@ -1,3 +1,0 @@
-# Customizations for the virtlogd.service systemd unit
-
-VIRTLOGD_ARGS=""

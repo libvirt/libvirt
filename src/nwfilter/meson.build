@@ -61,10 +61,5 @@ if conf.has('WITH_NWFILTER')
     'in_file': files('virtnwfilterd.init.in'),
   }
 
-  sysconf_files += {
-    'name': 'virtnwfilterd',
-    'file': files('virtnwfilterd.sysconf'),
-  }
-
   subdir('xml')
 endif

@@ -1,3 +1,0 @@
-# Customizations for the virtinterfaced.service systemd unit
-
-VIRTINTERFACED_ARGS="--timeout 120"

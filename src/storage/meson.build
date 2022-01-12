@@ -125,11 +125,6 @@ if conf.has('WITH_STORAGE')
     'name': 'virtstoraged',
     'in_file': files('virtstoraged.init.in'),
   }
-
-  sysconf_files += {
-    'name': 'virtstoraged',
-    'file': files('virtstoraged.sysconf'),
-  }
 endif
 
 if conf.has('WITH_STORAGE_DISK')

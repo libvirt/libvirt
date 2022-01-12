@@ -1,3 +1,0 @@
-# Customizations for the virtproxyd.service systemd unit
-
-VIRTPROXYD_ARGS="--timeout 120"

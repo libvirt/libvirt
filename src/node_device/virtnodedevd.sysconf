@@ -1,3 +1,0 @@
-# Customizations for the virtnodedevd.service systemd unit
-
-VIRTNODEDEVD_ARGS="--timeout 120"

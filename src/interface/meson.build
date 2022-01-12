@@ -54,9 +54,4 @@ if conf.has('WITH_INTERFACE')
     'name': 'virtinterfaced',
     'in_file': files('virtinterfaced.init.in')
   }
-
-  sysconf_files += {
-    'name': 'virtinterfaced',
-    'file': files('virtinterfaced.sysconf'),
-  }
 endif

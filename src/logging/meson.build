@@ -101,11 +101,6 @@ if conf.has('WITH_LIBVIRTD')
     'name': 'virtlogd',
     'in_file': files('virtlogd.init.in'),
   }
-
-  sysconf_files += {
-    'name': 'virtlogd',
-    'file': files('virtlogd.sysconf'),
-  }
 endif
 
 log_inc_dir = include_directories('.')

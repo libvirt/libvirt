@@ -43,9 +43,4 @@ if conf.has('WITH_SECRETS')
     'name': 'virtsecretd',
     'in_file': files('virtsecretd.init.in'),
   }
-
-  sysconf_files += {
-    'name': 'virtsecretd',
-    'file': files('virtsecretd.sysconf'),
-  }
 endif

@@ -686,3 +686,24 @@ socket unit names into the service. When using these old versions, the
 ``unix_sock_dir`` setting in ``virtlockd.conf`` must be changed in
 lock-step with the equivalent setting in the unit files to ensure that
 ``virtlockd`` can identify the sockets.
+
+Changing command line options for daemons
+=========================================
+
+Two ways exist to override the defaults in the provided service files:
+either a systemd "drop-in" configuration file, or a ``/etc/sysconfig/$daemon``
+file must be created.  For example, to change the command line option
+for a debug session of ``libvirtd``, create a file
+``/etc/systemd/system/libvirtd.service.d/debug.conf`` with the following content:
+
+   ::
+
+      [Unit]
+      Description=Virtualization daemon, with override from debug.conf
+
+      [Service]
+      Environment=G_DEBUG=fatal-warnings
+      Environment=LIBVIRTD_ARGS="--listen --verbose"
+
+After changes to systemd "drop-in" configuration files it is required to run
+``systemctl daemon-reload``.

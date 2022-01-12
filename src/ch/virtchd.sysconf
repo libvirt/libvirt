@@ -1,3 +1,0 @@
-# Customizations for the virtchd.service systemd unit
-
-VIRTCHD_ARGS="--timeout 120"

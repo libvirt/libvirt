@@ -72,11 +72,6 @@ if conf.has('WITH_NETWORK')
     'in_file': files('virtnetworkd.init.in'),
   }
 
-  sysconf_files += {
-    'name': 'virtnetworkd',
-    'file': files('virtnetworkd.sysconf'),
-  }
-
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'network',
     localstatedir / 'lib' / 'libvirt' / 'dnsmasq',

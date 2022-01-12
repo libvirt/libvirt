@@ -1,3 +1,0 @@
-# Customizations for the virtxend.service systemd unit
-
-VIRTXEND_ARGS="--timeout 120"

@@ -1,3 +1,0 @@
-# Customizations for the virtstoraged.service systemd unit
-
-VIRTSTORAGED_ARGS="--timeout 120"
