@@ -90,6 +90,24 @@ v8.0.0 (unreleased)
       </qemu:capabilities>
      </domain>
 
+  * Fix sparse streams with split daemon
+
+    In split daemon scenario, a client connected to a hypervisor driver and
+    using sparse streams (e.g. ``virsh vol-download --sparse``) would make the
+    hypervisor daemon enter an infinite loop without any data transfer. This is
+    now fixed.
+
+  * Build no longer requires RPC library
+
+    Code and its cross dependencies were fixed so that build without remote
+    driver and thus an RPC library (like ``tirpc``) fails no more.
+
+  * virnetdevopenvswitch: Fix 'burst' value passed to ovs-vsctl
+
+    When a ``<bandwidth/>`` was defined for a TAP device that's plugged into an
+    OvS bridge values passed to the OvS were incorrectly recalculated resulting
+    in slightly different limits being applied.
+
 
 v7.10.0 (2021-12-01)
 ====================
