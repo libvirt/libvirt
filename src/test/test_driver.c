@@ -8739,6 +8739,33 @@ testDomainSnapshotAlignDisks(virDomainObj *vm,
     return virDomainSnapshotAlignDisks(def, NULL, align_location, true);
 }
 
+
+static virDomainSnapshotPtr
+testDomainSnapshotRedefine(virDomainObj *vm,
+                           virDomainPtr domain,
+                           virDomainSnapshotDef *snapdeftmp,
+                           virDomainMomentObj **snapout,
+                           virDomainXMLOption *xmlopt,
+                           unsigned int flags)
+{
+    virDomainMomentObj *snap = NULL;
+    g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
+
+    if (virDomainSnapshotRedefinePrep(vm, &snapdef, &snap, xmlopt, flags) < 0)
+        return NULL;
+
+    if (!snap) {
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
+            return NULL;
+        snapdef = NULL;
+    }
+
+    *snapout = snap;
+
+    return virGetDomainSnapshot(domain, snap->def->name);
+}
+
+
 static virDomainSnapshotPtr
 testDomainSnapshotCreateXML(virDomainPtr domain,
                             const char *xmlDesc,
@@ -8805,37 +8832,32 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
         goto cleanup;
 
     if (redefine) {
-        if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
-                                          privconn->xmlopt,
-                                          flags) < 0)
-            goto cleanup;
-    } else {
-        if (!(def->parent.dom = virDomainDefCopy(vm->def,
-                                                 privconn->xmlopt,
-                                                 NULL,
-                                                 true)))
-            goto cleanup;
-
-        if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
-            goto cleanup;
+        snapshot = testDomainSnapshotRedefine(vm, domain, def, &snap,
+                                              privconn->xmlopt, flags);
+        goto cleanup;
     }
 
-    if (!snap) {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
-            goto cleanup;
-        def = NULL;
-    }
+    if (!(def->parent.dom = virDomainDefCopy(vm->def,
+                                             privconn->xmlopt,
+                                             NULL,
+                                             true)))
+        goto cleanup;
 
-    if (!redefine) {
-        snap->def->parent_name = g_strdup(virDomainSnapshotGetCurrentName(vm->snapshots));
+    if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
+        goto cleanup;
 
-        if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) &&
-            virDomainObjIsActive(vm)) {
-            testDomainShutdownState(domain, vm,
-                                    VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
-            event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
-                                    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
-        }
+    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+        goto cleanup;
+    def = NULL;
+
+    snap->def->parent_name = g_strdup(virDomainSnapshotGetCurrentName(vm->snapshots));
+
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_HALT) &&
+        virDomainObjIsActive(vm)) {
+        testDomainShutdownState(domain, vm,
+                                VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT);
+        event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
+                                                  VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
     }
 
     snapshot = virGetDomainSnapshot(domain, snap->def->name);
