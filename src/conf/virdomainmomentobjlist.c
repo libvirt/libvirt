@@ -245,14 +245,9 @@ virDomainMomentAssignDef(virDomainMomentObjList *moments,
         return NULL;
     }
 
-    if (!(moment = virDomainMomentObjNew()))
-        return NULL;
-
-    if (virHashAddEntry(moments->objs, def->name, moment) < 0) {
-        VIR_FREE(moment);
-        return NULL;
-    }
+    moment = virDomainMomentObjNew();
     moment->def = def;
+    g_hash_table_insert(moments->objs, g_strdup(def->name), moment);
 
     return moment;
 }
