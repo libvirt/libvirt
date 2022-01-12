@@ -8,7 +8,7 @@
 # Maxim Dziumanenko <dziumanenko@gmail.com>, 2007
 # Rax Garfield <admin@dvizho.ks.ua>, 2012
 # Sergey <dmytserg@gmail.com>, 2011
-# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021.
+# Yuri Chornoivan <yurchor@ukr.net>, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022.
 # Данило Коростіль <ted.korostiled@gmail.com>, 2011
 # Daniel Berrange <dan-zanata@berrange.com>, 2018
 msgid ""
@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2021-11-25 14:36+0000\n"
+"PO-Revision-Date: 2022-01-12 10:44+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.9\n"
+"X-Generator: Weblate 4.10.1\n"
 
 msgid ""
 "\n"
@@ -1294,7 +1294,7 @@ msgstr "у відповіді guest-get-fsinfo пропущено «disk»"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
-msgstr ""
+msgstr "підтримки «extended_l2» не передбачено із рівнем сумісності %s"
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "атрибут «floor» можна використовувати лише у межах елемента <inbound>"
@@ -4254,7 +4254,7 @@ msgid "Could not create harddisk, rc=%08x"
 msgstr "Не вдалося створити жорсткий диск, rc=%08x"
 
 msgid "Could not create log directory"
-msgstr ""
+msgstr "Не вдалося створити каталог журналу"
 
 msgid "Could not create monitor"
 msgstr "Не вдалося створити засіб стеження"
@@ -6281,7 +6281,7 @@ msgstr "Отримано символ кінця файла від сокета 
 
 #, c-format
 msgid "End of file from qemu monitor (vm='%s')"
-msgstr ""
+msgstr "Символ кінця файла від монітора qemu (vm=«%s»)"
 
 msgid "End of file while reading data"
 msgstr "Кінець файла під час читання даних"
@@ -6391,7 +6391,7 @@ msgstr "Помилка під час обробки даних введення-
 
 #, c-format
 msgid "Error while processing monitor IO (vm='%s')"
-msgstr ""
+msgstr "Помилка під час обробки введення-виведення монітора (vm=«%s»)"
 
 msgid "Error while reading /proc/cgroups"
 msgstr "Помилка під час спроби читання /proc/cgroups"
@@ -7192,7 +7192,7 @@ msgstr ""
 #. * Not much we can do on error here except log it.
 #.
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "Не вдалося створити потік обробки для обробки загибелі домену"
 
 #.
 #. * Not much we can do on error here except log it.
@@ -8578,6 +8578,8 @@ msgstr "Не вдалося встановити тип інтерфейсу у 
 #, c-format
 msgid "Failed to set logging priority, argument '%s' is invalid"
 msgstr ""
+"Не вдалося встановити пріоритетність журналювання, аргумент «%s» є "
+"некоректним"
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
@@ -9250,7 +9252,7 @@ msgstr ""
 "отримати пояснення щодо можливих значень полів."
 
 msgid "Get domain launch security info"
-msgstr ""
+msgstr "Отримати відомості щодо безпеки запуску домену"
 
 msgid "Get information of domain's mounted filesystems."
 msgstr "Отримати інформацію щодо змонтованих файлових систем домену."
@@ -9358,7 +9360,7 @@ msgid "Get the CPU models for an arch."
 msgstr "Отримати дані щодо моделей процесорів для архітектури."
 
 msgid "Get the launch security parameters for a guest domain"
-msgstr ""
+msgstr "Отримати параметри безпеки запуску для гостьового домену"
 
 msgid "Get the maximum migration bandwidth"
 msgstr "Встановити максимальну ширину каналу перенесення"
@@ -10429,7 +10431,7 @@ msgstr "Некоректний дескриптор файла під час о�
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
-msgstr ""
+msgstr "Некоректний дескриптор файла під час очікування на монітор (vm=«%s»)"
 
 msgid "Invalid firmware name"
 msgstr "Некоректна назва мікропрограми"
@@ -10521,7 +10523,7 @@ msgstr "Некоректне значення localPtr, «%s», у мережі 
 
 #, c-format
 msgid "Invalid log destination '%s' for log output '%s'"
-msgstr ""
+msgstr "Некоректне призначення для журналу, «%s», для виведення журналу «%s»"
 
 #, c-format
 msgid "Invalid log priority %d"
@@ -10529,7 +10531,7 @@ msgstr "Некоректна пріоритетність ведення жур�
 
 #, c-format
 msgid "Invalid log priority '%s' for log output '%s'"
-msgstr ""
+msgstr "Некоректна пріоритетність журналу, «%s», для виведення до журналу «%s»"
 
 #, c-format
 msgid "Invalid lookup from '%s'"
@@ -11197,6 +11199,8 @@ msgid ""
 "Log output '%s' does not meet the format requirements for destination type "
 "'%s'"
 msgstr ""
+"Виведення до журналу «%s» не відповідає вимогам щодо формату для типу "
+"призначення «%s»"
 
 msgid "Logging filters: "
 msgstr "Фільтри ведення журналу: "
@@ -11316,7 +11320,7 @@ msgstr "Помилкове форматування для фільтра «%s»
 
 #, c-format
 msgid "Malformed format for log output '%s'"
-msgstr ""
+msgstr "Помилкове форматування для виведення до журналу «%s»"
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
 msgstr "Помилкове форматування масиву даних «disk» guest-get-fsinfo"
@@ -13350,7 +13354,7 @@ msgid "Only 1 thread per core is supported"
 msgstr "Передбачено підтримку лише одного потоку обробки на ядро"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
-msgstr ""
+msgstr "З префіксом можна використовувати лише адреси IPv4 або IPv6"
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "Підтримуються лише PCI-адреси пристроїв з функцією=0"
@@ -14208,7 +14212,7 @@ msgstr ""
 "пристрою."
 
 msgid "QEMU does not support setting a launch secret"
-msgstr ""
+msgstr "У QEMU не передбачено можливості встановлення пароля для запуску"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "агент гостьової системи QEMU недоступний через помилку"
@@ -14596,7 +14600,7 @@ msgid "Returns a list of secrets"
 msgstr "Повертає список ключів"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Повертає основні відомості SEV щодо вузла."
 
 msgid "Returns basic information about a checkpoint."
 msgstr "Повертає базові відомості щодо контрольної точки."
@@ -14836,6 +14840,8 @@ msgstr ""
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
+"У цьому виконуваному файлі QEMU не передбачено підтримки безпосереднього "
+"завантаження ядра із вимірюванням SEV"
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
 msgstr "SHUTDOWN_TIMEOUT має бути рівним або більшим за 0"
@@ -15108,13 +15114,13 @@ msgid "Server to retrieve threadpool attributes from."
 msgstr "Сервер, з якого слід отримати атрибути threadpool."
 
 msgid "Set a secret in the guest domain's memory"
-msgstr ""
+msgstr "Встановити пароль у пам'яті гостьового домену"
 
 msgid "Set a secret value."
 msgstr "Встановити значення ключа."
 
 msgid "Set domain launch security state"
-msgstr ""
+msgstr "Встановити стан безпеки запуску домену"
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
@@ -15865,7 +15871,7 @@ msgstr "Жетон системи у %s було пошкоджено"
 
 #, c-format
 msgid "TCG features are incompatible with domain type '%s'"
-msgstr ""
+msgstr "Можливості TCG є несумісними з типом домену «%s»"
 
 #, c-format
 msgid "TLS handshake failed %s"
@@ -16079,7 +16085,7 @@ msgid "Target USB version does not match source"
 msgstr "Запис версії USB призначення не збігається з записом версії джерела"
 
 msgid "Target active PCR banks doesn't match source"
-msgstr ""
+msgstr "Активні банки PCR призначення не відповідають джерелу"
 
 msgid "Target already exists"
 msgstr "Призначення вже існує"
@@ -18436,7 +18442,7 @@ msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "Не вдалося отримати ідентифікатор жорсткого диска, rc=%08x"
 
 msgid "Unable to get host SEV information"
-msgstr ""
+msgstr "Не вдалося отримати відомості SEV вузла"
 
 msgid "Unable to get host boot time"
 msgstr "Не вдалося отримати час завантаження основної системи"
@@ -18460,14 +18466,14 @@ msgid "Unable to get interface parameters"
 msgstr "Не вдалося отримати значення параметрів інтерфейсу"
 
 msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
+msgstr "Не вдалося отримати довжину ключа для параметрів Діффі-Гелмена"
 
 #, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Не вдалося отримати дескриптор kvm: %s"
 
 msgid "Unable to get launch security parameters"
-msgstr ""
+msgstr "Не вдалося отримати параметри безпеки запуску"
 
 msgid "Unable to get local socket name"
 msgstr "Не вдалося отримати назву локального сокета"
@@ -19372,7 +19378,7 @@ msgid "Unable to set interface parameters"
 msgstr "Не вдалося встановити значення параметрів інтерфейсу"
 
 msgid "Unable to set launch security state"
-msgstr ""
+msgstr "Не вдалося встановити стан безпеки запуску"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Не вдалося встановити ознаку close-on-exec для монітора"
@@ -19540,7 +19546,7 @@ msgstr "Не вдалося зачекати на epoll"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%s')"
-msgstr ""
+msgstr "Не вдалося дочекатися виконання умови монітора (vm=«%s»)"
 
 msgid "Unable to wait on parent process"
 msgstr "Не вдалося дочекатися завершення роботи від батьківського процесу"
@@ -20780,9 +20786,13 @@ msgstr "у цій системі поки що не передбачено пр�
 
 msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
 msgstr ""
+"У цій віртуальній машині не передбачено підтримки "
+"VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES"
 
 msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
 msgstr ""
+"У цьому QEMU не передбачено підтримки "
+"VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES"
 
 msgid "VM is already active"
 msgstr "Віртуальна машина вже активна"
@@ -20824,7 +20834,7 @@ msgstr "У bhyve не передбачено підтримки розпізна
 
 #, c-format
 msgid "VNC password is %zu characters long, only 8 permitted"
-msgstr ""
+msgstr "Пароль до VNC складається з %zu символів. Дозволено лише 8"
 
 msgid "VNC power control is not available"
 msgstr "Керування живленням VNC є недоступним"
@@ -22144,6 +22154,7 @@ msgstr ""
 
 msgid "can't change nodeset for strict mode for running domain"
 msgstr ""
+"не можна змінювати набір вузлів для строго режиму для вже запущеного домену"
 
 msgid "can't change numatune mode for running domain"
 msgstr "не можна змінювати режим numatune для домену, який вже працює"
@@ -23867,6 +23878,7 @@ msgstr "змінити кількість віртуальних процесо�
 
 msgid "change of nodeset for running domain requires restrictive numa mode"
 msgstr ""
+"зміна набору вузлів для запущеного домену потребує обмеженого режиму NUMA"
 
 msgid "change the current directory"
 msgstr "змінити поточний каталог"
@@ -25318,12 +25330,14 @@ msgstr ""
 "каталог, до якого слід перейти (типові варіанти: домашній або кореневий)"
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
-msgstr ""
+msgstr "кільце брудності має бути степенем 2 у діапазоні [1024, 65536]"
 
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
 msgstr ""
+"розбіжність розмірів кільця брудності можливості KVM «%s»: джерело: «%d», "
+"призначення: «%d»"
 
 msgid "disable"
 msgstr "вимкнути"
@@ -25628,7 +25642,7 @@ msgstr "Виконуваний файл dnsmasq, %s, насправді не є 
 
 #, c-format
 msgid "dnsmasq version >= %u.%u required but %lu.%lu found"
-msgstr ""
+msgstr "Версія dnsmasq >= %u.Потрібна %u, але знайдено лише %lu.%lu"
 
 msgid "do not enable STP for this bridge"
 msgstr "не вмикати STP для цього містка"
@@ -25859,7 +25873,7 @@ msgid "domain moment %s already exists"
 msgstr "момент домену %s вже існує"
 
 msgid "domain must be in a paused state"
-msgstr ""
+msgstr "домен має перебувати у стані призупинення роботи"
 
 msgid "domain must have at least one disk to perform backup"
 msgstr "номер повинен мати принаймні один диск для створення резервної копії"
@@ -28200,6 +28214,8 @@ msgid ""
 "force guest disk writes to be synchronously written to the destination to "
 "improve storage migration convergence"
 msgstr ""
+"примусово виконувати запис на диск гостьової системи синхронно для "
+"поліпшення збіжності перенесення сховищ даних"
 
 msgid "force media changing"
 msgstr "примусова зміна носія"
@@ -28654,7 +28670,7 @@ msgstr "пристрій PCI основної системи "
 
 #, c-format
 msgid "host pci device %s not found"
-msgstr ""
+msgstr "не знайдено PCI-пристрою основної системи %s"
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -29728,6 +29744,8 @@ msgid ""
 "invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
 msgstr ""
+"некоректне значення loadparm, «%s», значення мало складатися із символів "
+"набору [a-zA-Z0-9.] і пробілів"
 
 #, c-format
 msgid ""
@@ -30074,7 +30092,7 @@ msgid "io uring is not supported by this QEMU binary"
 msgstr "у цьому виконуваному файлі QEMU не передбачено підтримки io uring"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
-msgstr ""
+msgstr "io='native' потребує або кешу на диску або режиму кешування directsync"
 
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr "підтримки ioeventfd для дисків vhostuser не передбачено"
@@ -30709,6 +30727,7 @@ msgstr ""
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
+"значення loadparm «%s» має складатися із набору довжиною від 1 до 8 символів"
 
 msgid "lock manager connection has been restricted"
 msgstr ""
@@ -32160,7 +32179,7 @@ msgid "missing rport name for '%s'"
 msgstr "пропущено назву rport для «%s»"
 
 msgid "missing scheme for URI"
-msgstr ""
+msgstr "пропущено схему для адреси"
 
 #, c-format
 msgid "missing scheme in migration URI: %s"
@@ -33496,7 +33515,7 @@ msgid "node CPU stats not implemented on this platform"
 msgstr "на цій платформі інформацію щодо процесорів вузла не реалізовано"
 
 msgid "node SEV information"
-msgstr ""
+msgstr "відомості SEV вузла"
 
 msgid "node cpu info not implemented on this platform"
 msgstr "на цій платформі отримання даних щодо процесора вузла не реалізовано"
@@ -34294,10 +34313,10 @@ msgid "path to emulator binary (/domain/devices/emulator)"
 msgstr "шлях до виконуваного файла емулятора (/домен/пристрої/емулятор)"
 
 msgid "path to file containing the secret"
-msgstr ""
+msgstr "шлях до файла з паролем"
 
 msgid "path to file containing the secret header"
-msgstr ""
+msgstr "шлях до файла з заголовком пароля"
 
 msgid "path to inputvol secret data file is required"
 msgstr "слід вказати шлях до файла даних ключів inputvol"
@@ -34446,6 +34465,7 @@ msgstr "постійне оновлення пристрою не підтрим
 
 msgid "physical address within the guest domain's memory to set the secret"
 msgstr ""
+"фізична адреса у пам'яті домену гостьової системи для встановлення пароля"
 
 msgid "pid"
 msgstr "PID"
@@ -35686,7 +35706,7 @@ msgstr ""
 "Підтримки налаштовування sbbc не передбачено у цьому виконуваному файлі QEMU"
 
 msgid "scheduler information is not supported on this platform"
-msgstr ""
+msgstr "на цій платформі не передбачено підтримки відомостей планувальника"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
@@ -35937,6 +35957,8 @@ msgstr "підтримки встановлення MTU на типі інтер
 
 msgid "setting a launch secret is only supported in SEV-enabled domains"
 msgstr ""
+"підтримку встановлення пароля запуску передбачено лише у доменах із "
+"увімкненим SEV"
 
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
@@ -36758,7 +36780,7 @@ msgstr ""
 "кількість віртуальних процесорів"
 
 msgid "tb-cache size must be an integer multiple of MiB"
-msgstr ""
+msgstr "розмір tb-кешу має бути цілим числом, яке є краним до МіБ"
 
 msgid "tcp"
 msgstr "tcp"
@@ -36858,6 +36880,8 @@ msgid ""
 "the copy job forces guest writes to be synchronously written to the "
 "destination"
 msgstr ""
+"для завдання з копіювання встановлено режим, у якому гостьова система "
+"записує дані до призначення синхронно"
 
 msgid "the copy job is not persisted if VM is turned off"
 msgstr ""
@@ -37695,7 +37719,7 @@ msgstr "не вдалося виконати керування прапорце
 
 #, c-format
 msgid "unable to create %s <-> %s veth pair"
-msgstr ""
+msgstr "не вдалося створити пару veth %s <-> %s"
 
 msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
