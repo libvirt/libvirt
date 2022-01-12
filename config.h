@@ -45,9 +45,9 @@
 #  endif
 # endif
 #elif defined(__GNUC__) && defined(__GNUC_MINOR__)
-# if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 8)
-#  error You need at least GCC v4.8 to compile libvirt
+# if __GNUC__ < 7 || (__GNUC__ == 7 && __GNUC_MINOR__ < 4)
+#  error You need at least GCC v7.4.0 to compile libvirt
 # endif
 #else
-# error You either need at least GCC 4.8 or Clang 3.4 or XCode Clang 5.1 to compile libvirt
+# error You either need at least GCC 7.4.0 or Clang 3.4 or XCode Clang 5.1 to compile libvirt
 #endif
