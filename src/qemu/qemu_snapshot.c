@@ -1675,7 +1675,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
                        VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
                        VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
     }
-    if (virDomainSnapshotAlignDisks(def, align_location, true) < 0)
+    if (virDomainSnapshotAlignDisks(def, NULL, align_location, true) < 0)
         return -1;
 
     return 0;

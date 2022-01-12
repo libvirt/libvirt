@@ -126,6 +126,7 @@ char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  virDomainXMLOption *xmlopt,
                                  unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapshot,
+                                virDomainDef *existingDomainDef,
                                 virDomainSnapshotLocation default_snapshot,
                                 bool uniform_internal_snapshot);
 

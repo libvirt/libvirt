@@ -535,7 +535,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
         if (external)
             align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
-        if (virDomainSnapshotAlignDisks(def, align_location, true) < 0)
+        if (virDomainSnapshotAlignDisks(def, NULL, align_location, true) < 0)
             return -1;
     }
 
@@ -622,15 +622,21 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
 /**
  * virDomainSnapshotAlignDisks:
  * @snapdef: Snapshot definition to align
+ * @existingDomainDef: definition of the domain belonging to a redefined snapshot
  * @default_snapshot: snapshot location to assign to disks which don't have any
  * @uniform_internal_snapshot: Require that for an internal snapshot all disks
  *                             take part in the internal snapshot
  *
- * Align snapdef->disks to snapdef->parent.dom, filling in any missing disks or
+ * Align snapdef->disks to domain definition, filling in any missing disks or
  * snapshot state defaults given by the domain, with a fallback to
  * @default_snapshot. Ensure that there are no duplicate snapshot disk
  * definitions in @snapdef and there are no disks described in @snapdef but
  * missing from the domain definition.
+ *
+ * By default the domain definition from @snapdef->parent.dom is used, but when
+ * redefining an existing snapshot the domain definition may be omitted in
+ * @snapdef. In such case callers must pass in the definition from the snapsot
+ * being redefined as @existingDomainDef. In all other cases callers pass NULL.
  *
  * When @uniform_internal_snapshot is true and @default_snapshot is
  * VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL, all disks in @snapdef must take part
@@ -643,6 +649,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
  */
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
+                            virDomainDef *existingDomainDef,
                             virDomainSnapshotLocation default_snapshot,
                             bool uniform_internal_snapshot)
 {
@@ -652,6 +659,9 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
     bool require_match = false;
     size_t oldndisks;
     size_t i;
+
+    if (!domdef)
+        domdef = existingDomainDef;
 
     if (!domdef) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
