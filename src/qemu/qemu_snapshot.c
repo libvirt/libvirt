@@ -1750,11 +1750,12 @@ qemuSnapshotRedefine(virDomainObj *vm,
 static virDomainSnapshotPtr
 qemuSnapshotCreate(virDomainObj *vm,
                    virDomainPtr domain,
-                   virDomainSnapshotDef *snapdef,
+                   virDomainSnapshotDef *snapdeftmp,
                    virQEMUDriver *driver,
                    virQEMUDriverConfig *cfg,
                    unsigned int flags)
 {
+    g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
     g_autoptr(virDomainMomentObj) tmpsnap = NULL;
     virDomainMomentObj *snap = NULL;
     virDomainMomentObj *current = NULL;
@@ -1769,16 +1770,16 @@ qemuSnapshotCreate(virDomainObj *vm,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA) {
         snap = tmpsnap = virDomainMomentObjNew();
         snap->def = &snapdef->parent;
+        snapdef = NULL;
     } else {
         if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
             return NULL;
+        snapdef = NULL;
 
         if ((current = virDomainSnapshotGetCurrent(vm->snapshots))) {
             snap->def->parent_name = g_strdup(current->def->name);
         }
     }
-
-    virObjectRef(snapdef);
 
     /* actually do the snapshot */
     if (virDomainObjIsActive(vm)) {
