@@ -343,7 +343,6 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
     g_autofree char *snapDir = NULL;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
-    virDomainSnapshotDef *def = NULL;
     virDomainMomentObj *snap = NULL;
     virDomainMomentObj *current = NULL;
     bool cur;
@@ -367,6 +366,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
         goto cleanup;
 
     while ((direrr = virDirRead(dir, &entry, NULL)) > 0) {
+        g_autoptr(virDomainSnapshotDef) snapdef = NULL;
         g_autofree char *xmlStr = NULL;
         g_autofree char *fullpath = NULL;
 
@@ -384,11 +384,11 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
             continue;
         }
 
-        def = virDomainSnapshotDefParseString(xmlStr,
-                                              qemu_driver->xmlopt,
-                                              priv->qemuCaps, &cur,
-                                              flags);
-        if (def == NULL) {
+        snapdef = virDomainSnapshotDefParseString(xmlStr,
+                                                  qemu_driver->xmlopt,
+                                                  priv->qemuCaps, &cur,
+                                                  flags);
+        if (snapdef == NULL) {
             /* Nothing we can do here, skip this one */
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to parse snapshot XML from file '%s'"),
@@ -396,10 +396,10 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
             continue;
         }
 
-        snap = virDomainSnapshotAssignDef(vm->snapshots, def);
-        if (snap == NULL) {
-            virObjectUnref(def);
-        } else if (cur) {
+        snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef);
+        if (snap)
+            snapdef = NULL;
+        if (cur && snap) {
             if (current)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("Too many snapshots claiming to be current for domain %s"),
