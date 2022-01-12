@@ -30,7 +30,7 @@ virDomainSnapshotObjList *virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjList *snapshots);
 
 virDomainMomentObj *virDomainSnapshotAssignDef(virDomainSnapshotObjList *snapshots,
-                                               virDomainSnapshotDef *def);
+                                               virDomainSnapshotDef **snapdefptr);
 
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjList *snapshots,
                                      virDomainMomentObj *from,

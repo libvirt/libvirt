@@ -968,7 +968,7 @@ testParseDomainSnapshots(testDriver *privconn,
 
     for (i = 0; i < nsdata->num_snap_nodes; i++) {
         virDomainMomentObj *snap;
-        virDomainSnapshotDef *def;
+        g_autoptr(virDomainSnapshotDef) def = NULL;
         xmlNodePtr node = testParseXMLDocFromFile(nodes[i], file,
                                                   "domainsnapshot");
         if (!node)
@@ -984,10 +984,8 @@ testParseDomainSnapshots(testDriver *privconn,
         if (!def)
             return -1;
 
-        if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, def))) {
-            virObjectUnref(def);
+        if (!(snap = virDomainSnapshotAssignDef(domobj->snapshots, &def)))
             return -1;
-        }
 
         if (cur) {
             if (virDomainSnapshotGetCurrent(domobj->snapshots)) {
@@ -8755,9 +8753,8 @@ testDomainSnapshotRedefine(virDomainObj *vm,
         return NULL;
 
     if (!snap) {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef)))
             return NULL;
-        snapdef = NULL;
     }
 
     *snapout = snap;
@@ -8846,9 +8843,8 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     if (testDomainSnapshotAlignDisks(vm, def, flags) < 0)
         goto cleanup;
 
-    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+    if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &def)))
         goto cleanup;
-    def = NULL;
 
     snap->def->parent_name = g_strdup(virDomainSnapshotGetCurrentName(vm->snapshots));
 

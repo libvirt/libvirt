@@ -1721,9 +1721,8 @@ qemuSnapshotRedefine(virDomainObj *vm,
         return NULL;
 
     if (!snap) {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef)))
             return NULL;
-        snapdef = NULL;
     }
     /* XXX Should we validate that the redefined snapshot even
      * makes sense, such as checking that qemu-img recognizes the
@@ -1772,9 +1771,8 @@ qemuSnapshotCreate(virDomainObj *vm,
         snap->def = &snapdef->parent;
         snapdef = NULL;
     } else {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef)))
             return NULL;
-        snapdef = NULL;
 
         if ((current = virDomainSnapshotGetCurrent(vm->snapshots))) {
             snap->def->parent_name = g_strdup(current->def->name);

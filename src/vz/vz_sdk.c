@@ -4661,9 +4661,8 @@ prlsdkParseSnapshotTree(const char *treexml)
         }
         VIR_FREE(xmlstr);
 
-        if (!(snapshot = virDomainSnapshotAssignDef(snapshots, def)))
+        if (!(snapshot = virDomainSnapshotAssignDef(snapshots, &def)))
             goto cleanup;
-        def = NULL;
 
         xmlstr = virXPathString("string(./@current)", ctxt);
         if (xmlstr && STREQ("yes", xmlstr)) {

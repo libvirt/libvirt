@@ -42,9 +42,15 @@ struct _virDomainSnapshotObjList {
 
 virDomainMomentObj *
 virDomainSnapshotAssignDef(virDomainSnapshotObjList *snapshots,
-                           virDomainSnapshotDef *def)
+                           virDomainSnapshotDef **snapdefptr)
 {
-    return virDomainMomentAssignDef(snapshots->base, &def->parent);
+    virDomainSnapshotDef *snapdef = *snapdefptr;
+    virDomainMomentObj *ret = virDomainMomentAssignDef(snapshots->base, &snapdef->parent);
+
+    if (ret)
+        *snapdefptr = NULL;
+
+    return ret;
 }
 
 

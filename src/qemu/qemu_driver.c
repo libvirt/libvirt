@@ -396,9 +396,7 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
             continue;
         }
 
-        snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef);
-        if (snap)
-            snapdef = NULL;
+        snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef);
         if (cur && snap) {
             if (current)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
