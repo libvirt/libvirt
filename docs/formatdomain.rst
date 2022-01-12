@@ -7105,6 +7105,20 @@ is permitted with the following attributes.
   The audio format, one of ``s8``, ``u8``, ``s16``, ``u16``,
   ``s32``, ``u32``, ``f32``. The default is hypervisor specific.
 
+Note:
+If no ``<audio/>`` element is defined, and the ``graphics`` element is set to
+either 'vnc' or 'sdl', the libvirtd or virtqemud process will honor the following
+environment variables:
+
+* ``SDL_AUDIODRIVER``
+
+  Valid values are 'pulseaudio', 'esd', 'alsa' or 'arts'.
+
+* ``QEMU_AUDIO_DRV``
+
+  Valid values are 'pa', 'none', 'alsa', 'coreaudio', 'jack', 'oss',
+  'sdl', 'spice' or 'wav'.
+
 None audio backend
 ^^^^^^^^^^^^^^^^^^
 
