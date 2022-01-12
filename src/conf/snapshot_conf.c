@@ -478,7 +478,8 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
     bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
         virDomainSnapshotDefIsExternal(def);
 
-    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) && !external) {
+    if ((flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) &&
+        def->state != VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("disk-only flag for snapshot %s requires "
                          "disk-snapshot state"),
