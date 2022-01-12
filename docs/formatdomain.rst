@@ -7640,6 +7640,8 @@ Example: usage of the TPM Emulator
    of a TPM 2.0 to activate. Valid names are for example sha1, sha256, sha384,
    and sha512. If this node is provided, the set of PCR banks are activated
    before every start of a VM and this step is logged in the swtpm's log.
+   If this node is removed or omitted then libvirt will not modify the
+   active PCR banks upon VM start but leave them at their last configuration.
    This attribute requires that swtpm_setup v0.7 or later is installed
    and may not have any effect otherwise. The selection of PCR banks only works
    with the ``emulator`` backend. since:`Since 7.10.0`
