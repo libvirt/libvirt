@@ -466,7 +466,7 @@ virDomainSnapshotDefParseString(const char *xmlStr,
 /* Perform sanity checking on a redefined snapshot definition. If
  * @other is non-NULL, this may include swapping def->parent.dom from other
  * into def. */
-int
+static int
 virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
                                   const unsigned char *domain_uuid,
                                   virDomainMomentObj *other,

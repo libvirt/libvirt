@@ -139,11 +139,5 @@ int virDomainSnapshotRedefinePrep(virDomainObj *vm,
                                   virDomainXMLOption *xmlopt,
                                   unsigned int flags);
 
-int virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
-                                      const unsigned char *domain_uuid,
-                                      virDomainMomentObj *other,
-                                      virDomainXMLOption *xmlopt,
-                                      unsigned int flags);
-
 VIR_ENUM_DECL(virDomainSnapshotLocation);
 VIR_ENUM_DECL(virDomainSnapshotState);
