@@ -661,13 +661,14 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
     return dnsmasqCapsSetFromBuffer(caps, version);
 }
 
-static dnsmasqCaps *
-dnsmasqCapsNewEmpty(void)
+dnsmasqCaps *
+dnsmasqCapsNewFromBinary(void)
 {
     g_autoptr(dnsmasqCaps) caps = NULL;
 
     if (dnsmasqCapsInitialize() < 0)
         return NULL;
+
     if (!(caps = virObjectNew(dnsmasqCapsClass)))
         return NULL;
 
@@ -676,17 +677,6 @@ dnsmasqCapsNewEmpty(void)
                              _("Unable to find 'dnsmasq' binary in $PATH"));
         return NULL;
     }
-
-    return g_steal_pointer(&caps);
-}
-
-dnsmasqCaps *
-dnsmasqCapsNewFromBinary(void)
-{
-    g_autoptr(dnsmasqCaps) caps = dnsmasqCapsNewEmpty();
-
-    if (!caps)
-        return NULL;
 
     if (dnsmasqCapsRefreshInternal(caps) < 0)
         return NULL;
