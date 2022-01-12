@@ -704,14 +704,13 @@ virInterfaceDefParse(const char *xmlStr,
                      unsigned int flags)
 {
     g_autoptr(xmlDoc) xml = NULL;
-    virInterfaceDef *def = NULL;
 
-    if ((xml = virXMLParse(filename, xmlStr, _("(interface_definition)"), "interface.rng",
-                           flags & VIR_INTERFACE_DEFINE_VALIDATE))) {
-        def = virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
-    }
+    xml = virXMLParse(filename, xmlStr, _("(interface_definition)"),
+                      "interface.rng", flags & VIR_INTERFACE_DEFINE_VALIDATE);
+    if (!xml)
+        return NULL;
 
-    return def;
+    return virInterfaceDefParseNode(xml, xmlDocGetRootElement(xml));
 }
 
 
