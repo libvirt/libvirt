@@ -474,7 +474,6 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
                                   unsigned int flags)
 {
     virDomainSnapshotLocation align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    bool align_match = true;
     bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
         virDomainSnapshotDefIsExternal(def);
 
@@ -533,12 +532,10 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
     }
 
     if (def->parent.dom) {
-        if (external) {
+        if (external)
             align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-            align_match = false;
-        }
-        if (virDomainSnapshotAlignDisks(def, align_location,
-                                        align_match) < 0)
+
+        if (virDomainSnapshotAlignDisks(def, align_location, true) < 0)
             return -1;
     }
 
@@ -626,13 +623,19 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
  * virDomainSnapshotAlignDisks:
  * @snapdef: Snapshot definition to align
  * @default_snapshot: snapshot location to assign to disks which don't have any
- * @require_match: Require that all disks use the same snapshot mode
+ * @uniform_internal_snapshot: Require that for an internal snapshot all disks
+ *                             take part in the internal snapshot
  *
  * Align snapdef->disks to snapdef->parent.dom, filling in any missing disks or
  * snapshot state defaults given by the domain, with a fallback to
  * @default_snapshot. Ensure that there are no duplicate snapshot disk
  * definitions in @snapdef and there are no disks described in @snapdef but
  * missing from the domain definition.
+ *
+ * When @uniform_internal_snapshot is true and @default_snapshot is
+ * VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL, all disks in @snapdef must take part
+ * in the internal snapshot. This is for hypervisors where granularity of an
+ * internal snapshot can't be controlled.
  *
  * Convert paths to disk targets for uniformity.
  *
@@ -641,11 +644,12 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                             virDomainSnapshotLocation default_snapshot,
-                            bool require_match)
+                            bool uniform_internal_snapshot)
 {
     virDomainDef *domdef = snapdef->parent.dom;
     g_autoptr(GHashTable) map = virHashNew(NULL);
     g_autofree virDomainSnapshotDiskDef *olddisks = NULL;
+    bool require_match = false;
     size_t oldndisks;
     size_t i;
 
@@ -660,6 +664,10 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                        _("too many disk snapshot requests for domain"));
         return -1;
     }
+
+    if (uniform_internal_snapshot &&
+        default_snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL)
+        require_match = true;
 
     /* Unlikely to have a guest without disks but technically possible.  */
     if (!domdef->ndisks)

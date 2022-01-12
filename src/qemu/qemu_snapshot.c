@@ -1631,7 +1631,6 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
     g_autofree char *xml = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainSnapshotLocation align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
-    bool align_match = true;
 
     /* Easiest way to clone inactive portion of vm->def is via
      * conversion in and back out of xml.  */
@@ -1653,7 +1652,6 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-        align_match = false;
         if (virDomainObjIsActive(vm))
             def->state = VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
         else
@@ -1662,7 +1660,6 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
     } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         def->state = virDomainObjGetState(vm, NULL);
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-        align_match = false;
     } else {
         def->state = virDomainObjGetState(vm, NULL);
 
@@ -1678,7 +1675,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
                        VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
                        VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
     }
-    if (virDomainSnapshotAlignDisks(def, align_location, align_match) < 0)
+    if (virDomainSnapshotAlignDisks(def, align_location, true) < 0)
         return -1;
 
     return 0;

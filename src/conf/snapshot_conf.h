@@ -127,7 +127,7 @@ char *virDomainSnapshotDefFormat(const char *uuidstr,
                                  unsigned int flags);
 int virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapshot,
                                 virDomainSnapshotLocation default_snapshot,
-                                bool require_match);
+                                bool uniform_internal_snapshot);
 
 bool virDomainSnapshotDefIsExternal(virDomainSnapshotDef *def);
 bool virDomainSnapshotIsExternal(virDomainMomentObj *snap);
