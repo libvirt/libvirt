@@ -117,23 +117,6 @@ virInterfaceDefFree(virInterfaceDef *def)
 
 
 static int
-virInterfaceDefParseName(virInterfaceDef *def,
-                         xmlXPathContextPtr ctxt)
-{
-    char *tmp;
-
-    tmp = virXPathString("string(./@name)", ctxt);
-    if (tmp == NULL) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       "%s",  _("interface has no name"));
-        return -1;
-    }
-    def->name = tmp;
-    return 0;
-}
-
-
-static int
 virInterfaceDefParseMtu(virInterfaceDef *def,
                         xmlXPathContextPtr ctxt)
 {
@@ -662,8 +645,10 @@ virInterfaceDefParseXML(xmlXPathContextPtr ctxt,
     }
     def->type = type;
 
-    if (virInterfaceDefParseName(def, ctxt) < 0)
-       return NULL;
+    if (!(def->name = virXMLPropString(ctxt->node, "name"))) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",  _("interface has no name"));
+        return NULL;
+    }
 
     if (parentIfType == VIR_INTERFACE_TYPE_LAST) {
         /* only recognize these in toplevel bond interfaces */
