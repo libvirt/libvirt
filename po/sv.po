@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-10 08:39+0000\n"
+"PO-Revision-Date: 2022-01-12 10:44+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -1259,7 +1259,7 @@ msgstr "”disk” saknas i svar från guest-get-fsinfo"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
-msgstr ""
+msgstr "'extended_l2' stödjs inte med kompatibilitetsnivå %s"
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "attributet ”floor” är endast tillåtet i elementet <inbound>"
@@ -4101,7 +4101,7 @@ msgid "Could not create harddisk, rc=%08x"
 msgstr "Kunde inte skapa en hårddisk, rc=%08x"
 
 msgid "Could not create log directory"
-msgstr ""
+msgstr "Kunde inte skapa en loggkatalog"
 
 msgid "Could not create monitor"
 msgstr "Kunde inte skapa en monitor"
@@ -6081,7 +6081,7 @@ msgstr "Slut på filen från agentuttaget"
 
 #, c-format
 msgid "End of file from qemu monitor (vm='%s')"
-msgstr ""
+msgstr "Filslut från qemu-monitorn (vm=”%s”)"
 
 msgid "End of file while reading data"
 msgstr "Slut på filen när data lästes"
@@ -6190,7 +6190,7 @@ msgstr "Fel när kommandots IO bearbetades"
 
 #, c-format
 msgid "Error while processing monitor IO (vm='%s')"
-msgstr ""
+msgstr "Fel vid bearbetning av monitor-IO (vm=”%s”)"
 
 msgid "Error while reading /proc/cgroups"
 msgstr "Fel när /proc/cgroup lästes"
@@ -6982,7 +6982,7 @@ msgstr "Misslyckades att skapa en tråd för att hantera omstart av demonen"
 #. * Not much we can do on error here except log it.
 #.
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "Misslyckades med att skapa en tråd för att hantera att domäner dör"
 
 #.
 #. * Not much we can do on error here except log it.
@@ -8209,90 +8209,94 @@ msgid ""
 "Failed to retrieve config for VM '%s'. Unable to perform soft reset. "
 "Destroying VM"
 msgstr ""
+"Misslyckades med att hämta konfigurationen för VM ”%s”. Kan inte utföra en "
+"mjuk återställning. Förstör VM:en"
 
-#, fuzzy
 msgid "Failed to retrieve current vcpu count"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att hämta aktuellt vcpu-antal"
 
 msgid "Failed to retrieve image data"
-msgstr ""
+msgstr "Misslyckades med att hämta avbildsdata"
 
-#, fuzzy
 msgid "Failed to retrieve maximum vcpu count"
-msgstr "Det gick inte att läsa /proc/mounts"
+msgstr "Misslyckades med att hämta maximalt vcpu-antal"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to retrieve ssh host key: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att hämta ssh-värdnyckel: %s"
 
-#, fuzzy
 msgid "Failed to retrieve vCPU count from the guest"
-msgstr "Misslyckades att återställa domän från %s"
+msgstr "Misslyckades med att hämta vCPU-antal från gästen"
 
-#, fuzzy
 msgid "Failed to retrieve vcpu state bitmap"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att hämta vcpu-tillståndsbitsavbildning"
 
 msgid "Failed to rollback network config change transaction"
 msgstr ""
+"Misslyckades med att rulla tillbaka ändringstransaktionen av "
+"nätverkskonfigurationen"
 
-#, fuzzy
 msgid "Failed to run clone container"
-msgstr "Misslyckades att avdefiniera domän %s"
+msgstr "Misslyckades med att köra klonad behållare"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to run command '%s' to create new iscsi interface"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr ""
+"Misslyckades med att köra kommandot ”%s” för att skapa ett nytt iscsi-"
+"gränssnitt"
 
 #, c-format
 msgid "Failed to run command '%s' to update iscsi interface with IQN '%s'"
 msgstr ""
+"Misslyckades att köra kommandot ”%s” för att uppdatera iscsi-gränssnittet "
+"med IQN ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save '%s' for '%s'"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att spara ”%s” för ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save VM settings, rc=%08x"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att spara VM-inställningar, rl=%08x"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to save domain '%d' with libxenlight"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att spara domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to save domain '%s' state"
-msgstr ""
+msgstr "Misslyckades att spara tillståndet för domänen ”%s”"
 
 #, c-format
 msgid "Failed to save domain '%s' to %s"
-msgstr ""
+msgstr "Misslyckades med att spara domänen ”%s” till %s"
 
 #, c-format
 msgid "Failed to seek to %llu bytes to the end in volume with path '%s'"
 msgstr ""
+"Misslyckades att söka till %llu byte från slutet av volymen med sökvägen ”%s”"
 
 #, c-format
 msgid "Failed to seek to the start in volume with path '%s'"
-msgstr ""
+msgstr "Misslyckades med att söka till början i volymen med sökvägen ”%s”"
 
 msgid "Failed to send continue signal to controller"
-msgstr ""
+msgstr "Misslyckades med att skicka fortsättningssignal till kontrollen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to send file descriptor %d"
-msgstr "Misslyckades att avdefiniera nätverk %s"
+msgstr "Misslyckades med att skicka filbeskrivare %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to send inquiry command: %s"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att skicka frågekommando: %s"
 
 msgid "Failed to send migration data to destination host"
-msgstr ""
+msgstr "Misslyckades med att skicka migreringsdata till destinationsvärden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to send request to init control %s"
-msgstr "Misslyckades att förstöra nätverk %s"
+msgstr "Misslyckades med att skicka begäranden till initieringskontrollen %s"
 
 #, fuzzy
 msgid "Failed to serialize snapshot"
