@@ -252,24 +252,13 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDef *def,
 
 static int
 virInterfaceDefParseIP(virInterfaceIPDef *def,
-                       xmlXPathContextPtr ctxt)
+                       xmlNodePtr node)
 {
-    int ret = 0;
-    char *tmp;
-    long l;
+    if (!(def->address = virXMLPropString(node, "address")))
+        return 0;
 
-    tmp = virXPathString("string(./@address)", ctxt);
-    def->address = tmp;
-    if (tmp != NULL) {
-        ret = virXPathLong("string(./@prefix)", ctxt, &l);
-        if (ret == 0) {
-            def->prefix = (int) l;
-        } else if (ret == -2) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           "%s", _("Invalid ip address prefix value"));
-            return -1;
-        }
-    }
+    if (virXMLPropInt(node, "prefix", 0, VIR_XML_PROP_NONE, &def->prefix, 0) < 0)
+        return -1;
 
     return 0;
 }
@@ -309,8 +298,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDef *def,
 
         ip = g_new0(virInterfaceIPDef, 1);
 
-        ctxt->node = ipNodes[i];
-        if (virInterfaceDefParseIP(ip, ctxt) < 0) {
+        if (virInterfaceDefParseIP(ip, ipNodes[i]) < 0) {
             virInterfaceIPDefFree(ip);
             return -1;
         }
@@ -359,8 +347,7 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDef *def,
 
         ip = g_new0(virInterfaceIPDef, 1);
 
-        ctxt->node = ipNodes[i];
-        if (virInterfaceDefParseIP(ip, ctxt) < 0) {
+        if (virInterfaceDefParseIP(ip, ipNodes[i]) < 0) {
             virInterfaceIPDefFree(ip);
             return -1;
         }
