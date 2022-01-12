@@ -1709,13 +1709,14 @@ qemuSnapshotCreateWriteMetadata(virDomainObj *vm,
 static virDomainSnapshotPtr
 qemuSnapshotRedefine(virDomainObj *vm,
                      virDomainPtr domain,
-                     virDomainSnapshotDef *snapdef,
+                     virDomainSnapshotDef *snapdeftmp,
                      virQEMUDriver *driver,
                      virQEMUDriverConfig *cfg,
                      unsigned int flags)
 {
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr ret = NULL;
+    g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
 
     if (virDomainSnapshotRedefinePrep(vm, &snapdef, &snap,
                                       driver->xmlopt,
@@ -1725,6 +1726,7 @@ qemuSnapshotRedefine(virDomainObj *vm,
     if (!snap) {
         if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
             return NULL;
+        snapdef = NULL;
     }
     /* XXX Should we validate that the redefined snapshot even
      * makes sense, such as checking that qemu-img recognizes the
