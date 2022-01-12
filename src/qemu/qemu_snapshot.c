@@ -1709,7 +1709,7 @@ qemuSnapshotCreateWriteMetadata(virDomainObj *vm,
 static virDomainSnapshotPtr
 qemuSnapshotRedefine(virDomainObj *vm,
                      virDomainPtr domain,
-                     virDomainSnapshotDef *def,
+                     virDomainSnapshotDef *snapdef,
                      virQEMUDriver *driver,
                      virQEMUDriverConfig *cfg,
                      unsigned int flags)
@@ -1717,13 +1717,13 @@ qemuSnapshotRedefine(virDomainObj *vm,
     virDomainMomentObj *snap = NULL;
     virDomainSnapshotPtr ret = NULL;
 
-    if (virDomainSnapshotRedefinePrep(vm, &def, &snap,
+    if (virDomainSnapshotRedefinePrep(vm, &snapdef, &snap,
                                       driver->xmlopt,
                                       flags) < 0)
         return NULL;
 
     if (!snap) {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
             return NULL;
     }
     /* XXX Should we validate that the redefined snapshot even
