@@ -348,7 +348,6 @@ virInterfaceDefParseIfAdressing(virInterfaceDef *def,
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree xmlNodePtr *protoNodes = NULL;
     int nProtoNodes, pp;
-    char *tmp;
 
     nProtoNodes = virXPathNodeSet("./protocol", ctxt, &protoNodes);
     if (nProtoNodes < 0)
@@ -363,26 +362,24 @@ virInterfaceDefParseIfAdressing(virInterfaceDef *def,
 
     def->nprotos = 0;
     for (pp = 0; pp < nProtoNodes; pp++) {
-
         g_autoptr(virInterfaceProtocolDef) proto = g_new0(virInterfaceProtocolDef, 1);
 
-        ctxt->node = protoNodes[pp];
-        tmp = virXPathString("string(./@family)", ctxt);
-        if (tmp == NULL) {
+        if (!(proto->family = virXMLPropString(protoNodes[pp], "family"))) {
             virReportError(VIR_ERR_XML_ERROR,
                            "%s", _("protocol misses the family attribute"));
             return -1;
         }
-        proto->family = tmp;
-        if (STREQ(tmp, "ipv4")) {
+
+        ctxt->node = protoNodes[pp];
+        if (STREQ(proto->family, "ipv4")) {
             if (virInterfaceDefParseProtoIPv4(proto, ctxt) != 0)
                 return -1;
-        } else if (STREQ(tmp, "ipv6")) {
+        } else if (STREQ(proto->family, "ipv6")) {
             if (virInterfaceDefParseProtoIPv6(proto, ctxt) != 0)
                 return -1;
         } else {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("unsupported protocol family '%s'"), tmp);
+                           _("unsupported protocol family '%s'"), proto->family);
             return -1;
         }
         def->protos[def->nprotos++] = g_steal_pointer(&proto);
