@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-11-25 08:59+0000\n"
+"POT-Creation-Date: 2022-01-10 08:58+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -43,6 +43,7 @@ msgstr ""
 "\n"
 "  (specifica help <gruppo> per dettagli sui comandi nel gruppo)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -342,6 +343,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr "    Limite di banda: %llu byte/s (%-.3lf %s/s)"
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NOME\n"
 
@@ -551,10 +553,6 @@ msgid "%s namespace is not available"
 msgstr "le informazioni SMBIOS dell'host non sono disponibili"
 
 #, c-format
-msgid "%s not available, firewall backend will not function"
-msgstr ""
-
-#, c-format
 msgid "%s not found in %s"
 msgstr "%s non trovato in %s"
 
@@ -578,6 +576,16 @@ msgstr "%s non è supportato in questo binario di QEMU"
 msgid "%s object has invalid dynamic type"
 msgstr "L'oggetto '%s' ha un tipo dinamico non valido"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "L'oggetto '%s' non ha la proprietà richiesta '%s'"
@@ -1106,6 +1114,10 @@ msgstr ""
 msgid "'disk' missing in reply of guest-get-fsinfo"
 msgstr "'disk' mancante nella risposta di guest-get-fsinfo"
 
+#, c-format
+msgid "'extended_l2' not supported with compat level %s"
+msgstr ""
+
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "L'attributo 'floor' è permesso solo in elementi <inbound>"
 
@@ -1335,6 +1347,7 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
+#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1398,6 +1411,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1846,9 +1860,6 @@ msgstr ""
 
 #, c-format
 msgid "Attempt to overwrite resctrlid='%s' with id='%s'"
-msgstr ""
-
-msgid "Attempt to pass closed vhostuser FD"
 msgstr ""
 
 msgid "Attempt to send a non-blocking message with a synchronous reply"
@@ -2303,10 +2314,14 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Chiamata a %s per il tipo sconosciuto '%s'"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Chiamata a %s per il tipo sconosciuto '%s', atteso '%s'"
@@ -2714,10 +2729,6 @@ msgstr "Errore nel parsing del controller indice %s"
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "Impossibile estrarre la versione dell'hypervisor %s in esecuzione\n"
-
-#, c-format
-msgid "Cannot find %s - Possibly the package isn't installed"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot find '%s' in node device database"
@@ -3227,21 +3238,6 @@ msgstr "nessuna interfaccia di rete fornita per '%s'"
 msgid "Cannot set memory higher than max memory"
 msgstr "Impossibile impostare la memoria ad un valore maggiore del massimo"
 
-msgid "Cannot set ownerId data in JSON document"
-msgstr ""
-
-msgid "Cannot set ownerName data in JSON document"
-msgstr ""
-
-msgid "Cannot set ownerPid data in JSON document"
-msgstr ""
-
-msgid "Cannot set ownerUUID data in JSON document"
-msgstr ""
-
-msgid "Cannot set restricted data in JSON document"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Cannot set scheduler parameters for pid %lld"
 msgstr "mostrare/impostare i parametri dello scheduler"
@@ -3517,6 +3513,7 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr ""
 
+#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -3939,6 +3936,9 @@ msgstr "Impossibile creare il volume: %s"
 #, fuzzy, c-format
 msgid "Could not create harddisk, rc=%08x"
 msgstr "Impossibile creare lo snapshot: %s"
+
+msgid "Could not create log directory"
+msgstr ""
 
 #, fuzzy
 msgid "Could not create monitor"
@@ -4755,6 +4755,7 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 #, fuzzy
 msgid "Could not retrieve pool information"
 msgstr "Impossibile reperire il resource pool"
@@ -5625,6 +5626,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5933,7 +5935,8 @@ msgstr "Abilitato"
 msgid "End of file from agent socket"
 msgstr "impossibile creare il socket"
 
-msgid "End of file from qemu monitor"
+#, c-format
+msgid "End of file from qemu monitor (vm='%s')"
 msgstr ""
 
 msgid "End of file while reading data"
@@ -6038,7 +6041,8 @@ msgstr ""
 msgid "Error while processing command's IO"
 msgstr ""
 
-msgid "Error while processing monitor IO"
+#, c-format
+msgid "Error while processing monitor IO (vm='%s')"
 msgstr ""
 
 msgid "Error while reading /proc/cgroups"
@@ -6588,10 +6592,6 @@ msgstr "Compilazione regex %s fallita"
 msgid "Failed to connect socket to '%s'"
 msgstr "Impossibile creare il symlink '%s' verso '%s'"
 
-#, fuzzy, c-format
-msgid "Failed to connect to remote libvirt URI %s: %s"
-msgstr "errore nella connessione al socket monitor"
-
 #, fuzzy
 msgid "Failed to connect to ssh agent"
 msgstr "Impossibile convertire '%s' a int"
@@ -6808,14 +6808,27 @@ msgstr "Impossibile creare %s"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Impossibile creare il dominio da %s"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Impossibile creare il dominio da %s"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
+msgid "Failed to create thread to handle domain death"
+msgstr ""
+
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Impossibile creare il dominio da %s"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Impossibile creare il pool da %s"
@@ -7336,10 +7349,6 @@ msgid "Failed to initialize TLS session: %s"
 msgstr "impossibile inizializzare la libreria SASL: %d (%s)"
 
 #, fuzzy
-msgid "Failed to initialize a valid firewall backend"
-msgstr "impossibile inizializzare la libreria SASL: %d (%s)"
-
-#, fuzzy
 msgid "Failed to initialize cgroup backend."
 msgstr "Impossibile inizializzare il certificato"
 
@@ -7414,6 +7423,7 @@ msgstr "Impossibile elencare le reti attive"
 msgid "Failed to list active pools"
 msgstr "Impossibile elencare i pool attivi"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Impossibile elencare i domini attivi"
@@ -7431,25 +7441,31 @@ msgstr "Impossibile elencare le reti inattive"
 msgid "Failed to list inactive pools"
 msgstr "Impossibile elencare i pool inattivi"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Impossibile elencare i pool inattivi"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Impossibile elencare domini inattivi"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filters"
 msgstr "Impossibile avviare la rete %s"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Impossibile elencare le reti attive"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Impossibile elencare i dispositivi nodo"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Impossibile elencare i dispositivi nodo"
@@ -7458,6 +7474,7 @@ msgstr "Impossibile elencare i dispositivi nodo"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Impossibile elencare le reti inattive"
 
+#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Impossibile elencare i pool attivi"
@@ -7482,6 +7499,7 @@ msgstr "Impossibile elencare le reti attive"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Impossibile elencare i pool attivi"
@@ -8082,6 +8100,9 @@ msgstr "Impossibile ripristinare il dominio %s"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Impossibile ripristinare il guest %s dopo l'errore"
@@ -8230,6 +8251,10 @@ msgstr "Impossibile ottenere informazioni sull'interfaccia"
 #, fuzzy, c-format
 msgid "Failed to set interface type to '%s' in xml document"
 msgstr "Impossibile ottenere statistiche sull'interfaccia %s %s"
+
+#, c-format
+msgid "Failed to set logging priority, argument '%s' is invalid"
+msgstr ""
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
@@ -8725,10 +8750,63 @@ msgstr ""
 "Il primo disco fisso basato sul file non presenta alcun sorgente, "
 "impossibile ottenere il percorso e l'archivio dati per il file VMX"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -8831,6 +8909,9 @@ msgid ""
 "explanation of fields"
 msgstr ""
 
+msgid "Get domain launch security info"
+msgstr ""
+
 msgid "Get information of domain's mounted filesystems."
 msgstr ""
 
@@ -8919,6 +9000,9 @@ msgid "Get persistent interface state"
 msgstr "Impossibile impostare i parametri dell'interfaccia"
 
 msgid "Get the CPU models for an arch."
+msgstr ""
+
+msgid "Get the launch security parameters for a guest domain"
 msgstr ""
 
 msgid "Get the maximum migration bandwidth"
@@ -9683,6 +9767,15 @@ msgstr ""
 msgid "Invalid address."
 msgstr "Indirizzo non valido."
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "Argomento non valido"
 
@@ -9833,10 +9926,6 @@ msgstr ""
 msgid "Invalid delay value in network '%s'"
 msgstr "Impossibile rimuovere la definizione della rete %s"
 
-#, fuzzy, c-format
-msgid "Invalid destination '%s' for output '%s'"
-msgstr "Lookup di '%s' non valido da '%s'"
-
 #, c-format
 msgid "Invalid device %s driver file %s is not a symlink"
 msgstr ""
@@ -9946,7 +10035,8 @@ msgstr ""
 msgid "Invalid file descriptor while waiting for agent"
 msgstr ""
 
-msgid "Invalid file descriptor while waiting for monitor"
+#, c-format
+msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
 msgstr ""
 
 msgid "Invalid firmware name"
@@ -10037,8 +10127,16 @@ msgid "Invalid localPtr value '%s' in network '%s'"
 msgstr "Errore nel parsing dell'indirizzo MAC '%s' della rete '%s'"
 
 #, c-format
+msgid "Invalid log destination '%s' for log output '%s'"
+msgstr ""
+
+#, c-format
 msgid "Invalid log priority %d"
 msgstr "Priorità del log %d non valida"
+
+#, c-format
+msgid "Invalid log priority '%s' for log output '%s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid lookup from '%s'"
@@ -10248,10 +10346,6 @@ msgstr "Prefisso o maschera di rete '%s' non valido in <ip>"
 #, c-format
 msgid "Invalid priority '%s' for filter '%s'"
 msgstr "Priorità '%s' non valida per il filtro '%s'"
-
-#, fuzzy, c-format
-msgid "Invalid priority '%s' for output '%s'"
-msgstr "Lookup di '%s' non valido da '%s'"
 
 #, fuzzy, c-format
 msgid "Invalid rate '%s' specified"
@@ -10687,6 +10781,12 @@ msgstr ""
 msgid "Lockspace resource '%s' is not locked"
 msgstr ""
 
+#, c-format
+msgid ""
+"Log output '%s' does not meet the format requirements for destination type "
+"'%s'"
+msgstr ""
+
 msgid "Logging filters: "
 msgstr "Filtri di log: "
 
@@ -10805,9 +10905,9 @@ msgstr "Dimensione malformata %s"
 msgid "Malformed format for filter '%s'"
 msgstr "indirizzo mac malformato '%s'"
 
-#, fuzzy, c-format
-msgid "Malformed format for output '%s'"
-msgstr "elemento uuid malformato per '%s'"
+#, c-format
+msgid "Malformed format for log output '%s'"
+msgstr ""
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
 msgstr ""
@@ -11952,6 +12052,12 @@ msgstr "I dischi NVMe non sono supportati con questo binario di QEMU"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "Nome"
 
@@ -12791,8 +12897,8 @@ msgstr "solo un filesystem supportato"
 msgid "Only 1 thread per core is supported"
 msgstr "viene supportato un solo dispositivo watchdog"
 
-msgid "Only IPv4 or IPv6 addresses can be used with iptables"
-msgstr "Possono essere usati con iptables solo indirizzi IPv4 o IPv6"
+msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
+msgstr ""
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "Sono supportati solo gli indirizzi del dispositivo PCI con function=0"
@@ -12984,6 +13090,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr "L'opzione --%s è richiesta dall'opzione --%s"
@@ -13003,6 +13123,20 @@ msgstr "L'argomento dell'opzione è vuoto"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "Le opzioni --%s e --%s sono mutualmente esclusive"
@@ -13027,11 +13161,6 @@ msgstr ""
 #, fuzzy
 msgid "Outgoing migration"
 msgstr "migrazione a caldo"
-
-#, c-format
-msgid ""
-"Output '%s' does not meet the format requirements for destination type '%s'"
-msgstr ""
 
 msgid "Output a secret value"
 msgstr ""
@@ -13251,6 +13380,7 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr "Il percorso '%s' di una partizione deve iniziare con '/'"
 
+#. warn users that the --base64 option passed from command line is wrong
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr ""
 
@@ -13500,14 +13630,6 @@ msgstr ""
 msgid "Probing TSC is not supported on this platform"
 msgstr "informazioni sul nodo non implementate su questa piattaforma"
 
-#, c-format
-msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
-msgstr "Processo %d %p %p [[[[%s]]][[[%s]]]"
-
-#, fuzzy, c-format
-msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
-msgstr "Processo %d %p %p [[[[%s]]][[[%s]]]"
-
 #, fuzzy
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "affinità cpu non supportata"
@@ -13544,16 +13666,6 @@ msgstr "Protocollo"
 #, fuzzy, c-format
 msgid "Protocol '%s' is not supported for tcp character device."
 msgstr "Supporto rimovibile non supportato per il dispositivo %s"
-
-#, c-format
-msgid ""
-"Publicly routable address %s is prohibited. The version of dnsmasq on this "
-"host (%d.%d) doesn't support the bind-dynamic option or use SO_BINDTODEVICE "
-"on listening sockets, one of which is required for safe operation on a "
-"publicly routable subnet (see CVE-2012-3411). You must either upgrade "
-"dnsmasq, or use a private/local subnet range for this network (as described "
-"in RFC1918/RFC3484/RFC4193)."
-msgstr ""
 
 msgid "Pull aborted"
 msgstr ""
@@ -13604,6 +13716,9 @@ msgid "QEMU does not support device assignment mode '%s'"
 msgstr "Nome destinazione spicevmc '%s' non supportato"
 
 msgid "QEMU does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "QEMU does not support setting a launch secret"
 msgstr ""
 
 msgid "QEMU guest agent is not available due to an error"
@@ -13977,6 +14092,9 @@ msgstr "Restituisce i documenti XML <sources>."
 msgid "Returns a list of secrets"
 msgstr "Mostra l'elenco delle reti"
 
+msgid "Returns basic SEV information about the node."
+msgstr ""
+
 #, fuzzy
 msgid "Returns basic information about a checkpoint."
 msgstr "Mostra le informazioni di base del dominio."
@@ -14122,6 +14240,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "Ci sono altri task sospesi per questo dominio"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14211,6 +14330,9 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "I controller devono usare il tipo di indirizzo 'ccid'"
 
 msgid "SEV launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
@@ -14467,7 +14589,13 @@ msgstr ""
 msgid "Server to retrieve threadpool attributes from."
 msgstr ""
 
+msgid "Set a secret in the guest domain's memory"
+msgstr ""
+
 msgid "Set a secret value."
+msgstr ""
+
+msgid "Set domain launch security state"
 msgstr ""
 
 msgid ""
@@ -14637,6 +14765,9 @@ msgstr "Ora della CPU:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "grafiche spice non supportate con questo QEMU"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "Memoria condivisa:\n"
 
@@ -14715,6 +14846,7 @@ msgstr "SATA non è supportata con questo binario di QEMU"
 msgid "Snapshot"
 msgstr "Snapshot"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "La configurazione XML dello snapshot %s non è cambiata.\n"
@@ -15148,6 +15280,10 @@ msgid "System token in %s was corrupt"
 msgstr ""
 
 #, c-format
+msgid "TCG features are incompatible with domain type '%s'"
+msgstr ""
+
+#, c-format
 msgid "TLS handshake failed %s"
 msgstr ""
 
@@ -15191,6 +15327,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "La riga della tabella non può essere vuota"
 
+#. title
 msgid "Target"
 msgstr ""
 
@@ -15334,6 +15471,9 @@ msgid "Target USB vendor ID does not match source"
 msgstr "I CPU vendor non corrispondono"
 
 msgid "Target USB version does not match source"
+msgstr ""
+
+msgid "Target active PCR banks doesn't match source"
 msgstr ""
 
 #, fuzzy
@@ -16195,12 +16335,6 @@ msgstr "Il driver vbox non supporta il tipo di controller %s"
 msgid "The vbox driver does not support %s disk device"
 msgstr "il bus di xen non supporta il dispositivo di input %s"
 
-#, c-format
-msgid ""
-"The version of dnsmasq on this host (%d.%d) doesn't adequately support IPv6 "
-"dhcp range or dhcp host specification. Version %d.%d or later is required."
-msgstr ""
-
 msgid "There are no more free CCW devnos."
 msgstr ""
 
@@ -16509,9 +16643,11 @@ msgstr ""
 msgid "Try again?"
 msgstr "Riprovare?"
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -17590,6 +17726,9 @@ msgstr "Impossibile cambiare la root dir"
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr ""
 
+msgid "Unable to get host SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get host boot time"
 msgstr "Impossibile cambiare la root dir"
@@ -17613,9 +17752,15 @@ msgstr "Impossibile determinare i parametri dell'interfaccia"
 msgid "Unable to get interface parameters"
 msgstr "Impossibile determinare i parametri dell'interfaccia"
 
+msgid "Unable to get key length for diffie-hellman parameters"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "Impossibile caricare i parametri numa"
+
+msgid "Unable to get launch security parameters"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to get local socket name"
@@ -18108,10 +18253,6 @@ msgstr "errore nel parsing del mac address '%s'"
 msgid "Unable to parse: %s"
 msgstr "Impossibile aprire %s"
 
-#, fuzzy, c-format
-msgid "Unable to pre-create chardev file '%s'"
-msgstr "Impossibile scrivere sul file pid '%s/%s.pid'"
-
 #, c-format
 msgid "Unable to preserve mac/vlan tag for device = %s, vf = %d"
 msgstr ""
@@ -18589,6 +18730,9 @@ msgstr "Impostazione contesto di sicurezza fallita del monitor per %s"
 msgid "Unable to set interface parameters"
 msgstr "Impossibile impostare i parametri dell'interfaccia"
 
+msgid "Unable to set launch security state"
+msgstr ""
+
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "Impossibile impostare il flag close-on-exec del monitor"
 
@@ -18756,9 +18900,9 @@ msgstr "attesa su condizione fallita"
 msgid "Unable to wait on epoll"
 msgstr "Impossibile aprire %s"
 
-#, fuzzy
-msgid "Unable to wait on monitor condition"
-msgstr "attesa su condizione fallita"
+#, c-format
+msgid "Unable to wait on monitor condition (vm='%s')"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to wait on parent process"
@@ -19253,6 +19397,7 @@ msgstr "Tipo modello '%s' sconosciuto"
 msgid "Unknown error"
 msgstr "Errore sconosciuto"
 
+#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "Errore sconosciuto"
@@ -19984,6 +20129,12 @@ msgstr ""
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr ""
 
+msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
+msgstr ""
+
+msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "VM risulta essere già attiva"
 
@@ -20023,6 +20174,10 @@ msgstr ""
 msgid "VNC Password authentication not supported by bhyve"
 msgstr ""
 
+#, c-format
+msgid "VNC password is %zu characters long, only 8 permitted"
+msgstr ""
+
 msgid "VNC power control is not available"
 msgstr ""
 
@@ -20059,10 +20214,12 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr "grafiche spice non supportate con questo QEMU"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -20313,10 +20470,6 @@ msgid "You must map the root user of container"
 msgstr "Impossibile generare il nome eth per il container"
 
 #, c-format
-msgid "[%s]"
-msgstr ""
-
-#, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
 
@@ -20545,6 +20698,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr ""
 
@@ -21272,6 +21430,9 @@ msgid "can't change link state: device alias not found"
 msgstr ""
 
 msgid "can't change media while a block job is running on the device"
+msgstr ""
+
+msgid "can't change nodeset for strict mode for running domain"
 msgstr ""
 
 #, fuzzy
@@ -22297,6 +22458,7 @@ msgstr "Impossibile aprire il percorso '%s'"
 msgid "cannot open path '%s' in '%s'"
 msgstr "Impossibile aprire il percorso '%s'"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "impossibile aprire il volume '%s'"
@@ -22989,7 +23151,7 @@ msgstr "modifica allocazione della memoria"
 msgid "change number of virtual CPUs"
 msgstr "modifica numero di CPU virtuali"
 
-msgid "change of nodeset for running domain requires strict numa mode"
+msgid "change of nodeset for running domain requires restrictive numa mode"
 msgstr ""
 
 #, fuzzy
@@ -23130,6 +23292,7 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, fuzzy, c-format
 msgid "child failed to create directory '%s'"
 msgstr "impossibile creare la cartella %s"
@@ -23909,10 +24072,6 @@ msgstr ""
 msgid "couldn't write dnsmasq config file '%s'"
 msgstr "Impossibile scrivere il file di config '%s' radvd"
 
-#, c-format
-msgid "couldn't write radvd config file '%s'"
-msgstr "Impossibile scrivere il file di config '%s' radvd"
-
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
 
@@ -24455,6 +24614,14 @@ msgstr ""
 msgid "directory to switch to (default: home or else root)"
 msgstr ""
 
+msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
+msgstr ""
+
+#, c-format
+msgid ""
+"dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
+msgstr ""
+
 msgid "disable"
 msgstr "disabilita"
 
@@ -24751,6 +24918,10 @@ msgstr ""
 msgid "dnsmasq binary %s is not executable"
 msgstr ""
 
+#, c-format
+msgid "dnsmasq version >= %u.%u required but %lu.%lu found"
+msgstr ""
+
 #, fuzzy
 msgid "do not enable STP for this bridge"
 msgstr "errore nell'abilitazione dell'IP forwarding"
@@ -24996,6 +25167,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "domain moment %s already exists"
 msgstr "il target %s esiste già"
+
+msgid "domain must be in a paused state"
+msgstr ""
 
 msgid "domain must have at least one disk to perform backup"
 msgstr ""
@@ -27112,6 +27286,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "il valore di configurazione %s era malformato"
@@ -27307,9 +27484,6 @@ msgstr "trovate potenziali sorgenti pool di storage"
 msgid "finish step ignored that migration was cancelled"
 msgstr ""
 
-msgid "firewalld backend requested, but service is not running"
-msgstr ""
-
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
 "'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
@@ -27382,6 +27556,11 @@ msgid "force disconnect a client from the given server"
 msgstr ""
 
 msgid "force fresh boot by discarding any managed save"
+msgstr ""
+
+msgid ""
+"force guest disk writes to be synchronously written to the destination to "
+"improve storage migration convergence"
 msgstr ""
 
 msgid "force media changing"
@@ -27716,6 +27895,7 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr "attesa su condizione fallita"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -27788,6 +27968,10 @@ msgstr ""
 #, fuzzy
 msgid "host pci device "
 msgstr "dispositivo a blocchi"
+
+#, c-format
+msgid "host pci device %s not found"
+msgstr ""
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -28281,6 +28465,25 @@ msgstr "l'interfaccia non ha un nome"
 msgid "interface name %s does not fit into buffer "
 msgstr "nome interfaccia %s non adatto per il buffer"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 #, fuzzy
 msgid "interface name or MAC address"
 msgstr "l'interfaccia non ha un nome"
@@ -28803,8 +29006,8 @@ msgstr "stato '%s' del dominio non valido"
 
 #, c-format
 msgid ""
-"invalid loadparm char '%c', expecting chars in set of [a-zA-Z0-9.] and blank "
-"spaces"
+"invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and "
+"blank spaces"
 msgstr ""
 
 #, c-format
@@ -29004,14 +29207,6 @@ msgstr "tipo di dominio non valido %s"
 msgid "invalid secret uuid '%s'"
 msgstr "uuid %s non valido"
 
-#, fuzzy, c-format
-msgid "invalid security relabel value %s"
-msgstr "puntatore al volume di storage non valido in %s"
-
-#, c-format
-msgid "invalid security relabel value '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "invalid server address"
 msgstr "indirizzo MAC non valido"
@@ -29161,6 +29356,9 @@ msgstr "sorgente dispositivo del disco"
 #, fuzzy
 msgid "io uring is not supported by this QEMU binary"
 msgstr "vhost-net non è supportato con questo binario di QEMU"
+
+msgid "io='native' needs either no disk cache or directsync cache mode"
+msgstr ""
 
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr ""
@@ -29815,11 +30013,8 @@ msgid "live update of device '%s' is not supported"
 msgstr "modalità hostdev '%s' non supportata"
 
 #, c-format
-msgid "loadparm '%s' exceeds 8 characters"
-msgstr "loadparm '%s' è più lungo di 8 caratteri"
-
-msgid "loadparm cannot be an empty string"
-msgstr "loadparm non può essere una stringa vuota"
+msgid "loadparm value '%s' must be between 1 and 8 characters"
+msgstr ""
 
 msgid "lock manager connection has been restricted"
 msgstr ""
@@ -31255,6 +31450,9 @@ msgstr "elemento radice mancante"
 msgid "missing rport name for '%s'"
 msgstr "nome dell'host mancante"
 
+msgid "missing scheme for URI"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing scheme in migration URI: %s"
 msgstr "informazioni mancanti sui dispositivi per %s"
@@ -31543,6 +31741,15 @@ msgstr ""
 msgid "monitor failure"
 msgstr "nessun percorso del monitor"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "il monitor non deve essere NULL"
 
@@ -31686,11 +31893,6 @@ msgstr "nome del volume"
 msgid "namespace key is required when modifying metadata"
 msgstr ""
 
-msgid ""
-"native I/O needs either no disk cache or directsync cache mode, QEMU will "
-"fallback to aio=threads"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "nbd does not support transport '%s'"
 msgstr "il bus di xen non supporta il dispositivo di input %s"
@@ -31742,6 +31944,7 @@ msgstr "richiede la funzionalità rawio"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "la negoziazione SSF %d non è abbastanza forte"
@@ -32587,6 +32790,9 @@ msgstr ""
 msgid "node CPU stats not implemented on this platform"
 msgstr "informazioni sul nodo non implementate su questa piattaforma"
 
+msgid "node SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "node cpu info not implemented on this platform"
 msgstr "informazioni sul nodo non implementate su questa piattaforma"
@@ -33376,6 +33582,12 @@ msgstr ""
 msgid "path to emulator binary (/domain/devices/emulator)"
 msgstr ""
 
+msgid "path to file containing the secret"
+msgstr ""
+
+msgid "path to file containing the secret header"
+msgstr ""
+
 msgid "path to inputvol secret data file is required"
 msgstr ""
 
@@ -33513,6 +33725,9 @@ msgstr "modalità hostdev '%s' non supportata"
 #, fuzzy
 msgid "persistent update of device is not supported"
 msgstr "La creazione di volumi %s non è supportata"
+
+msgid "physical address within the guest domain's memory to set the secret"
+msgstr ""
 
 msgid "pid"
 msgstr ""
@@ -34719,6 +34934,9 @@ msgstr "salvataggio dominio '%s' in '%s': scrittura fallita"
 msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr "vhost-net non è supportato con questo binario di QEMU"
 
+msgid "scheduler information is not supported on this platform"
+msgstr ""
+
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
 msgstr ""
@@ -34972,6 +35190,9 @@ msgstr "SATA non è supportata con questo binario di QEMU"
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "Tipo di rete %d non supportata"
+
+msgid "setting a launch secret is only supported in SEV-enabled domains"
+msgstr ""
 
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
@@ -35757,6 +35978,9 @@ msgstr "il target type deve essere specificato per il dispositivo %s"
 msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
+msgid "tb-cache size must be an integer multiple of MiB"
+msgstr ""
+
 msgid "tcp"
 msgstr ""
 
@@ -35837,6 +36061,11 @@ msgid ""
 msgstr ""
 
 msgid "the codeset of keycodes, default:linux"
+msgstr ""
+
+msgid ""
+"the copy job forces guest writes to be synchronously written to the "
+"destination"
 msgstr ""
 
 msgid "the copy job is not persisted if VM is turned off"
@@ -36600,6 +36829,10 @@ msgstr "impossibile creare rundir %s: %s"
 msgid "unable to control COW flag on '%s', not btrfs"
 msgstr "impossibile modificare la configurazione sul tipo di grafici '%s'"
 
+#, c-format
+msgid "unable to create %s <-> %s veth pair"
+msgstr ""
+
 msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
@@ -36700,6 +36933,7 @@ msgstr "impossibile generare uuid"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, fuzzy, c-format
 msgid "unable to fsync %s"
 msgstr "impossibile chiudere %s"
@@ -37541,6 +37775,8 @@ msgstr "tipo di rete %d inaspettato"
 msgid "unix"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 #, fuzzy
 msgid "unknown"
 msgstr "sconosciuto"
@@ -38424,6 +38660,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "flag (0x%x) non supportati"
@@ -39619,6 +39877,57 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#, fuzzy
+#~ msgid "Failed to connect to remote libvirt URI %s: %s"
+#~ msgstr "errore nella connessione al socket monitor"
+
+#, fuzzy
+#~ msgid "Failed to initialize a valid firewall backend"
+#~ msgstr "impossibile inizializzare la libreria SASL: %d (%s)"
+
+#, fuzzy
+#~ msgid "Invalid destination '%s' for output '%s'"
+#~ msgstr "Lookup di '%s' non valido da '%s'"
+
+#, fuzzy
+#~ msgid "Invalid priority '%s' for output '%s'"
+#~ msgstr "Lookup di '%s' non valido da '%s'"
+
+#, fuzzy
+#~ msgid "Malformed format for output '%s'"
+#~ msgstr "elemento uuid malformato per '%s'"
+
+#~ msgid "Only IPv4 or IPv6 addresses can be used with iptables"
+#~ msgstr "Possono essere usati con iptables solo indirizzi IPv4 o IPv6"
+
+#~ msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
+#~ msgstr "Processo %d %p %p [[[[%s]]][[[%s]]]"
+
+#, fuzzy
+#~ msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
+#~ msgstr "Processo %d %p %p [[[[%s]]][[[%s]]]"
+
+#, fuzzy
+#~ msgid "Unable to pre-create chardev file '%s'"
+#~ msgstr "Impossibile scrivere sul file pid '%s/%s.pid'"
+
+#, fuzzy
+#~ msgid "Unable to wait on monitor condition"
+#~ msgstr "attesa su condizione fallita"
+
+#~ msgid "couldn't write radvd config file '%s'"
+#~ msgstr "Impossibile scrivere il file di config '%s' radvd"
+
+#, fuzzy
+#~ msgid "invalid security relabel value %s"
+#~ msgstr "puntatore al volume di storage non valido in %s"
+
+#~ msgid "loadparm '%s' exceeds 8 characters"
+#~ msgstr "loadparm '%s' è più lungo di 8 caratteri"
+
+#~ msgid "loadparm cannot be an empty string"
+#~ msgstr "loadparm non può essere una stringa vuota"
 
 #, fuzzy
 #~ msgid "Cannot find start time in %s"

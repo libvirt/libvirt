@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-11-25 08:59+0000\n"
+"POT-Creation-Date: 2022-01-10 08:58+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -45,6 +45,7 @@ msgstr ""
 "\n"
 "  (കൂട്ടത്തിലുള്ള കല്പ്പന വിശദാംശങ്ങളെക്കുറിച്ചുള്ള സഹായസംഹിത <group> എടുത്തു പറയുക)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -345,6 +346,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  പേര്\n"
 
@@ -557,10 +559,6 @@ msgstr ""
 msgid "%s namespace is not available"
 msgstr "സിസ്റ്റം ലഭ്യമല്ല"
 
-#, c-format
-msgid "%s not available, firewall backend will not function"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "%s not found in %s"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
@@ -585,6 +583,16 @@ msgstr "ഈ QEMU ബൈനറിയില്‍ %s പിന്തുണയ്�
 msgid "%s object has invalid dynamic type"
 msgstr "%s വസ്തുവില്‍ തെറ്റായ ഡൈനമിക് തരം"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s വസ്തുവില്‍ ആവശ്യമായ '%s' വിശേഷത ലഭ്യമല്ല"
@@ -1112,6 +1120,10 @@ msgstr ""
 msgid "'disk' missing in reply of guest-get-fsinfo"
 msgstr "'online', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
 
+#, c-format
+msgid "'extended_l2' not supported with compat level %s"
+msgstr ""
+
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' വിശേഷത <inbound> എലമെന്റില്‍ മാത്രം അനുവദിയ്ക്കുന്നുള്ളൂ"
 
@@ -1356,6 +1368,7 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "മെറ്റാ-വിവരം:"
@@ -1419,6 +1432,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(വോള്യം_നിര്‍വചനം)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1884,9 +1898,6 @@ msgstr "ഒരേ ഹോസ്റ്റ് %s-ലേക്കു് ഗസ്റ
 msgid "Attempt to overwrite resctrlid='%s' with id='%s'"
 msgstr ""
 
-msgid "Attempt to pass closed vhostuser FD"
-msgstr ""
-
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr "ഒരു സിന്‍ക്രൊണസ് മറുപടിയ്ക്കൊപ്പം ഒരു നോണ്‍-ബ്ലോക്കിങ് സന്ദേശം അയയ്ക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
@@ -2349,10 +2360,14 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s-ലേക്കു് വിളിയ്ക്കുക, ഇവ അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s-ലേക്കുള്ള കോള്‍,  അപ്രതീക്ഷിതമായ '%s' തരത്തിനു്,  പ്രതീക്ഷിച്ചതു് '%s'"
@@ -2759,10 +2774,6 @@ msgstr "emulatorpin നോഡുകള്‍ ലഭ്യമാക്കുവ�
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "പ്രവര്‍ത്തനത്തിലുളള %s ഹൈപ്പര്‍‍വൈസറിന്‍റെ വേര്‍ഷന്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യാമല്ല\n"
-
-#, c-format
-msgid "Cannot find %s - Possibly the package isn't installed"
-msgstr "%s കണ്ടെത്താന്‍ കഴിഞ്ഞില്ല - പൊതിക്കെട്ട് ഇന്‍സ്റ്റോള്‍ ചെയ്തുകാണില്ല"
 
 #, fuzzy, c-format
 msgid "Cannot find '%s' in node device database"
@@ -3272,21 +3283,6 @@ msgstr "'%s' ല്‍ സമ്പര്‍ക്കമുഖത്തെ ക�
 msgid "Cannot set memory higher than max memory"
 msgstr "നല്‍കിയിരിക്കുന്ന ഏറ്റവും കൂടുതല്‍ മെമ്മറിയേക്കാള്‍ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "Cannot set ownerId data in JSON document"
-msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerId സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set ownerName data in JSON document"
-msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerName സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set ownerPid data in JSON document"
-msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerPid സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set ownerUUID data in JSON document"
-msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerUUID സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "Cannot set restricted data in JSON document"
-msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
-
 #, fuzzy, c-format
 msgid "Cannot set scheduler parameters for pid %lld"
 msgstr "ഷെഡ്യൂളറ്‍ പാരമീറ്ററുകള്‍ കാണിക്കുക/ക്റമികരിക്കുക."
@@ -3559,6 +3555,7 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "ഡൊമെയിന്‍ %s-നു് സ്നാപ്പ്ഷോട്ടുകള്‍ക്കു് അസ്ഥിരമായ ബന്ധം"
 
+#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -3977,6 +3974,9 @@ msgstr "ഫില്‍റ്റര്‍ തയ്യാറാക്കുവ�
 #, fuzzy, c-format
 msgid "Could not create harddisk, rc=%08x"
 msgstr "ഡൊമെയിന്‍ വെട്ടി നീക്കുവാന്‍ സാധ്യമല്ല, rc=%08x"
+
+msgid "Could not create log directory"
+msgstr ""
 
 #, fuzzy
 msgid "Could not create monitor"
@@ -4783,6 +4783,7 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "പൂള്‍ സംബന്ധിച്ചുള്ള വിവരം ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
 
@@ -5667,6 +5668,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "ഡൊമൈനില്‍ %d ഇന്റെര്‍ഫേസുകളുണ്ട്. --mac ഉപയോഗിച്ച് വിച്ഛേദിക്കേണ്ടതിനെ പറയുക"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5980,9 +5982,9 @@ msgstr "പ്രവര്‍ത്തന സജ്ജം"
 msgid "End of file from agent socket"
 msgstr "സോക്കറ്റ് ഉണ്ടാക്കുന്നതില്‍ പരാജയം"
 
-#, fuzzy
-msgid "End of file from qemu monitor"
-msgstr "മോണിറ്ററില്‍ നിന്നും ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+#, c-format
+msgid "End of file from qemu monitor (vm='%s')"
+msgstr ""
 
 msgid "End of file while reading data"
 msgstr "ഡേറ്റാ ലഭ്യമാക്കുമ്പോള്‍ ഫയലിന്റെ അവസാനം"
@@ -6089,8 +6091,9 @@ msgstr "മോണിറ്റര്‍ IO പ്രോസസ്സ് ചെയ�
 msgid "Error while processing command's IO"
 msgstr "കമാന്‍ഡുകളുടെ ഐഒ നടപ്പിലാക്കുന്നതില്‍ പിശക്"
 
-msgid "Error while processing monitor IO"
-msgstr "മോണിറ്റര്‍ IO പ്രോസസ്സ് ചെയ്യുന്നതില്‍ പിഴവ് "
+#, c-format
+msgid "Error while processing monitor IO (vm='%s')"
+msgstr ""
 
 msgid "Error while reading /proc/cgroups"
 msgstr "/proc/cgroups ലഭ്യമാക്കുമ്പോള്‍ പിശക്"
@@ -6677,10 +6680,6 @@ msgstr "ട്രീ പട്ടിക പൂര്‍ത്തിയാക്�
 msgid "Failed to connect socket to '%s'"
 msgstr "'%s'-ലേക്കു് സോക്കറ്റ് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു"
 
-#, c-format
-msgid "Failed to connect to remote libvirt URI %s: %s"
-msgstr "റിമോട്ട് libvirt യുആര്‍ഐ %s-ലേക്കു് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
-
 msgid "Failed to connect to ssh agent"
 msgstr "ssh ഏജന്റിലേക്കു് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയം"
 
@@ -6891,14 +6890,27 @@ msgstr "%s ഉണ്ടാക്കുന്നതില്‍ പരാജയ�
 msgid "Failed to create thread for receiving migration data"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
+msgid "Failed to create thread to handle domain death"
+msgstr ""
+
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
@@ -7394,10 +7406,6 @@ msgid "Failed to initialize TLS session: %s"
 msgstr "ടിഎല്‍എസ് സെഷന്‍ ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
 
 #, fuzzy
-msgid "Failed to initialize a valid firewall backend"
-msgstr "libvirt ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം"
-
-#, fuzzy
 msgid "Failed to initialize cgroup backend."
 msgstr "mutex തയ്യാറാക്കുന്നതില്‍ പരാജയം"
 
@@ -7465,6 +7473,7 @@ msgstr "സജീവമായ നെറ്റ്‌വറ്‍ക്കുക�
 msgid "Failed to list active pools"
 msgstr "സജീവമായ പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ഡൊമെയിനുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7480,22 +7489,28 @@ msgstr "സജീവമല്ലാത്ത നെറ്റ്‌വറ്‍�
 msgid "Failed to list inactive pools"
 msgstr "സജീവമല്ലാത്ത പൂളുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ഇന്റര്‍ഫെയിസ് കാണിക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "നോഡ് അരിപ്പക്കള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "നെറ്റ്‌വര്‍ക്ക് കാണിക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "നോഡ് ഡിവൈസുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്നതില്‍ പരാജയം"
 
@@ -7503,6 +7518,7 @@ msgstr "നോഡ് രഹസ്യം ലഭ്യമാക്കുന്ന�
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri-ല്‍ സ്ഥിരമായ ഗസ്റ്റുകള്‍ ലഭ്യമാക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "പൂള്‍ പട്ടിക ലഭ്യമായില്ല"
 
@@ -7522,6 +7538,7 @@ msgstr "സ്ഥായിയല്ലാത്ത ഗസ്റ്റുകള�
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '%d'ന്റെ vcpuകള്‍ നിരത്തുന്നതില്‍ പരാജയപ്പെട്ടു"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "വോള്യം പട്ടിക ലഭ്യമായില്ല"
 
@@ -8110,6 +8127,9 @@ msgstr "libxenlight ഉപയോഗിച്ച് ഡൊമെയിന്‍ '
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "പരാജയത്തിനു് ശേഷം ഗസ്റ്റ് %s വീണ്ടും ആരംഭിയ്ക്കുന്നതില്‍ പരാജയപ്പെട്ടു"
@@ -8259,6 +8279,10 @@ msgstr "xml രേഖയില്‍ ഇന്റെര്‍ഫേസ് നാ
 #, c-format
 msgid "Failed to set interface type to '%s' in xml document"
 msgstr "xml രേഖയില്‍ ഇന്റെര്‍ഫേസ് തരത്തെ '%s' ആയി ക്രമീകരിക്കാന്‍ പറ്റിയില്ല"
+
+#, c-format
+msgid "Failed to set logging priority, argument '%s' is invalid"
+msgstr ""
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
@@ -8746,10 +8770,63 @@ msgstr ""
 "ആദ്യത്തെ ഫയല്‍ അടിസ്ഥാനത്തിലുള്ള ഹാര്‍ഡ് ഡിസ്കില്‍ ശ്രോതസ്സില്ല, വിഎംഎക്സ് ഫയലില്‍ നിന്നും "
 "ഡേറ്റാസ്റ്റോര്‍ അല്ലെങ്കില്‍ പാഥ് ലഭ്യമല്ല"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -8850,6 +8927,9 @@ msgid ""
 msgstr ""
 "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിന്റെ ഡിവൈസ് ബ്ലോക്ക് സ്ഥിതികള്‍ ലഭ്യമാക്കുക. കൂടുതല്‍ വിവരങ്ങള്‍ക്കായി മാന്‍ "
 "താള്‍ കാണുക അല്ലെങ്കില്‍ --human  ഉപയോഗിയ്ക്കുക."
+
+msgid "Get domain launch security info"
+msgstr ""
 
 #, fuzzy
 msgid "Get information of domain's mounted filesystems."
@@ -8960,6 +9040,9 @@ msgid "Get persistent interface state"
 msgstr "സ്ഥായിയായ ഇന്റര്‍ഫെയിസ് അവസ്ഥ ലഭ്യമാക്കുക"
 
 msgid "Get the CPU models for an arch."
+msgstr ""
+
+msgid "Get the launch security parameters for a guest domain"
 msgstr ""
 
 msgid "Get the maximum migration bandwidth"
@@ -9721,6 +9804,15 @@ msgstr "'%2$s' പരാമീറ്ററിനു് '%1$s' എന്ന അ�
 msgid "Invalid address."
 msgstr "അസാധുവായ വിലാസം."
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്‍റ്"
 
@@ -9873,10 +9965,6 @@ msgstr "ഗസ്റ്റ് ഏജന്റ് തെറ്റായ ഡേറ
 msgid "Invalid delay value in network '%s'"
 msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
-#, fuzzy, c-format
-msgid "Invalid destination '%s' for output '%s'"
-msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
-
 #, c-format
 msgid "Invalid device %s driver file %s is not a symlink"
 msgstr "തെറ്റായ ഡിവൈസ് %s ഡ്രൈവര്‍ ഫയല്‍ %s ഒരു സിംലിങ്കല്ല"
@@ -9983,8 +10071,9 @@ msgstr "തെറ്റായ പിന്‍വിളി വിശേഷത"
 msgid "Invalid file descriptor while waiting for agent"
 msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത്തിരിക്കുമ്പോള്‍ സാധുവല്ലാത്ത ഫയല്‍ ഡിസ്ക്രിപ്റ്റ"
 
-msgid "Invalid file descriptor while waiting for monitor"
-msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത്തിരിക്കുമ്പോള്‍ സാധുവല്ലാത്ത ഫയല്‍ ഡിസ്ക്രിപ്റ്റ"
+#, c-format
+msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
+msgstr ""
 
 msgid "Invalid firmware name"
 msgstr ""
@@ -10073,9 +10162,17 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 msgid "Invalid localPtr value '%s' in network '%s'"
 msgstr "തെറ്റായ വിലാസം '%s', നെറ്റ്‌വര്‍ക്ക് '%s'-ല്‍"
 
+#, c-format
+msgid "Invalid log destination '%s' for log output '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid log priority %d"
 msgstr "തെറ്റായ പോര്‍ട്ടുകള്‍: %s"
+
+#, c-format
+msgid "Invalid log priority '%s' for log output '%s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid lookup from '%s'"
@@ -10289,10 +10386,6 @@ msgstr "തെറ്റായ fromConfig മൂല്ല്യം: %s"
 #, fuzzy, c-format
 msgid "Invalid priority '%s' for filter '%s'"
 msgstr "തെറ്റായ പ്രിഫിക്സ് അല്ലെങ്കില്‍ '%s'-നുള്ള നെറ്റ്മാസ്ക്"
-
-#, fuzzy, c-format
-msgid "Invalid priority '%s' for output '%s'"
-msgstr "'%s' പട്ടിക, '%s'-ല്‍ നിന്നും തെറ്റായ തെരച്ചില്‍"
 
 #, fuzzy, c-format
 msgid "Invalid rate '%s' specified"
@@ -10729,6 +10822,12 @@ msgstr "ലോക്ക്സ്പെയിസ് റിസോഴ്സ് '%s'
 msgid "Lockspace resource '%s' is not locked"
 msgstr "ലോക്ക്സ്പെയിസ് റിസോഴ്സ് '%s' പൂട്ടിയിട്ടില്ല"
 
+#, c-format
+msgid ""
+"Log output '%s' does not meet the format requirements for destination type "
+"'%s'"
+msgstr ""
+
 msgid "Logging filters: "
 msgstr ""
 
@@ -10852,9 +10951,9 @@ msgstr "തെറ്റായ വ്യാപ്തി %s"
 msgid "Malformed format for filter '%s'"
 msgstr "തെറ്റായ nbd പോര്‍ട്ട് '%s'"
 
-#, fuzzy, c-format
-msgid "Malformed format for output '%s'"
-msgstr "തെറ്റായ nbd പോര്‍ട്ട് '%s'"
+#, c-format
+msgid "Malformed format for log output '%s'"
+msgstr ""
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
 msgstr ""
@@ -12014,6 +12113,12 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "പേര്"
 
@@ -12849,8 +12954,8 @@ msgstr "PTY കണ്‍സോള്‍ തരങള്‍ മാത്രം �
 msgid "Only 1 thread per core is supported"
 msgstr "ഒറ്റ പ്രൈമറി വീഡിയോ ഡിവൈസ് മാത്രമേ പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
-msgid "Only IPv4 or IPv6 addresses can be used with iptables"
-msgstr "ഐപിടേബിള്‍സിനൊപ്പം ഐപിവി4 അല്ലെങ്കില്‍ ഐപിവി6 വിലാസങ്ങള്‍ മാത്രമേ ഉപയോഗിയ്ക്കാവൂ"
+msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
+msgstr ""
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "function=0 എന്നുള്ള പിസിഐ ഡിവൈസ് വിലാസങ്ങള്‍ മാത്രം പിന്തുണയ്ക്കുന്നുള്ളൂ"
@@ -13058,6 +13163,20 @@ msgstr ""
 "%u സൂചികയുള്ള പിസിഐ കണ്ട്രോളറിനുള്ള പിസിഐയ്ക്കു് ഡിവൈസിന്റെ വിളിപ്പേരു് സജ്ജമല്ല, %s "
 "വിലാസത്തില്‍ ഡിവൈസിനു് ആവശ്യമുണ്ടു്"
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13077,6 +13196,20 @@ msgstr "ആര്‍ഗ്യുമെന്റ് കാലിയാണു്"
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s, --%s ഐച്ഛികങ്ങള്‍ പരസ്പര വിരുദ്ധമാകുന്നു"
@@ -13101,11 +13234,6 @@ msgstr "ലോഗ് ഔട്ട്പുട്ട് ലഭ്യമാക്�
 #, fuzzy
 msgid "Outgoing migration"
 msgstr "ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍"
-
-#, c-format
-msgid ""
-"Output '%s' does not meet the format requirements for destination type '%s'"
-msgstr ""
 
 msgid "Output a secret value"
 msgstr "ഒരു രഹസ്യ മൂല്ല്യം ലഭ്യമാക്കുക"
@@ -13324,6 +13452,7 @@ msgstr "ല്ലപാര്‍സ് ചെയ്ത JSON മറുപറട�
 msgid "Partition path '%s' must start with '/'"
 msgstr "'%s' എന്ന പാര്‍ട്ടീഷന്‍ പാഥ് '/'-ല്‍ ആരംഭിയ്ക്കണം"
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "qemu കമാന്‍ഡ്-ലൈന്‍ ആര്‍ഗ്യുമെന്റ് നല്‍കിയിട്ടില്ല"
@@ -13578,14 +13707,6 @@ msgstr "മുന്‍ഗണന '%d' സാധുവായ പരിധിക�
 msgid "Probing TSC is not supported on this platform"
 msgstr "റോ ഐ/ഒ ഈ പ്ലാറ്റ്ഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
-#, c-format
-msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
-msgstr "പ്രക്രിയ %d %p %p [[[[%s]]][[[%s]]]"
-
-#, c-format
-msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
-msgstr "പ്രക്രിയ %zu %p %p [[[%s]]][[[%s]]]"
-
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "പ്രൊസസ്സിന്റെ സിപിയു അഫിനിറ്റി ഈ പ്ലാറ്റിഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -13622,22 +13743,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Protocol '%s' is not supported for tcp character device."
 msgstr "vport പ്രക്രിയ '%s' host%d പിന്തുണയ്ക്കുന്നില്ല"
-
-#, c-format
-msgid ""
-"Publicly routable address %s is prohibited. The version of dnsmasq on this "
-"host (%d.%d) doesn't support the bind-dynamic option or use SO_BINDTODEVICE "
-"on listening sockets, one of which is required for safe operation on a "
-"publicly routable subnet (see CVE-2012-3411). You must either upgrade "
-"dnsmasq, or use a private/local subnet range for this network (as described "
-"in RFC1918/RFC3484/RFC4193)."
-msgstr ""
-"പൊതുവേയുള്ള റൌട്ടബിള്‍ വിലാസം %s നിഷേധിച്ചിരിയ്ക്കുന്നു. ഈ ഹോസ്റ്റിലുള്ള (%d.%d) dnsmasq-ന്റെ "
-"പതിപ്പു് ബൈന്‍ഡ്-ഡൈനമിക് ഐച്ഛികം പിന്തുണയ്ക്കുന്നില്ല അല്ലെങ്കില്‍ സോക്കറ്റുകളില്‍ ശ്രദ്ധിയ്ക്കുന്നതിനു് "
-"SO_BINDTODEVICE ഉപയോഗിയ്ക്കുക. പൊതുവേയുള്ള റൌട്ടബിള്‍ സബ്നെറ്റില്‍ (CVE-2012-3411 കാണുക) "
-"സുരക്ഷിതമായ പ്രക്രിയയ്ക്കു് ഇതു് ആവശ്യമാകുന്നു. ഒന്നെങ്കില്‍ dnsmasq പരിഷ്കരിയ്ക്കുക, അല്ലെങ്കില്‍ ഈ "
-"നെറ്റ്‌വര്‍ക്കിനു് ഒരു സ്വകാര്യ/ലോക്കല്‍ സബ്നെറ്റ് പരിധി ഉപയോഗിയ്ക്കുക (RFC1918/RFC3484/RFC4193-"
-"ല്‍ വിവരിച്ചിരിയ്ക്കുന്നതു് പോലെ)."
 
 msgid "Pull aborted"
 msgstr "വലി നിര്‍ത്തിയിരിക്കുന്നു"
@@ -13691,6 +13796,9 @@ msgid "QEMU does not support device assignment mode '%s'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിവൈസ് തരം '%s'"
 
 msgid "QEMU does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "QEMU does not support setting a launch secret"
 msgstr ""
 
 msgid "QEMU guest agent is not available due to an error"
@@ -14065,6 +14173,9 @@ msgstr "XML <sources> വിവരണക്കുറിപ്പു് നല്
 msgid "Returns a list of secrets"
 msgstr "രഹസ്യങ്ങളുടെ പട്ടിക നല്‍കുന്നു"
 
+msgid "Returns basic SEV information about the node."
+msgstr ""
+
 #, fuzzy
 msgid "Returns basic information about a checkpoint."
 msgstr "സ്നാപ്പ്ഷോട്ടിന്റെ അടിസ്ഥാന വിവരങ്ങള്‍ നല്‍കുന്നു."
@@ -14206,6 +14317,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "ഈ ഡൊമെയിനു് S4 അവസ്ഥ പ്രവര്‍ത്തന രഹിതമാക്കിയിരിയ്ക്കുന്നു"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14294,6 +14406,9 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "കണ്ട്രോളറുകള്‍ 'ccid' വിലാസ തരം ഉപയോഗിയ്ക്കണം"
 
 msgid "SEV launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
@@ -14561,8 +14676,14 @@ msgstr ""
 msgid "Server to retrieve threadpool attributes from."
 msgstr ""
 
+msgid "Set a secret in the guest domain's memory"
+msgstr ""
+
 msgid "Set a secret value."
 msgstr "ഒരു രഹസ്യ മൂല്ല്യം സജ്ജമാക്കുക."
+
+msgid "Set domain launch security state"
+msgstr ""
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
@@ -14742,6 +14863,9 @@ msgstr "സിപിയു സമയം:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "പങ്കിട്ട മെമ്മറി:\n"
 
@@ -14821,6 +14945,7 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 msgid "Snapshot"
 msgstr "സ്നാപ്പ്ഷോട്ട് പട്ടിക"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "സ്നാപ്പ്ഷോട്ട് %s XML ക്രമീകരണത്തില്‍ മാറ്റം വരുത്തിയിട്ടില്ല.\n"
@@ -15266,6 +15391,10 @@ msgid "System token in %s was corrupt"
 msgstr ""
 
 #, c-format
+msgid "TCG features are incompatible with domain type '%s'"
+msgstr ""
+
+#, c-format
 msgid "TLS handshake failed %s"
 msgstr "ടിഎല്‍എസ് ഹാന്‍ഡ്ഷെയിക്ക് %s-ല്‍ പരാജയപ്പെട്ടു"
 
@@ -15310,6 +15439,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s കാലിയാകുവാന്‍ പാടില്ല"
 
+#. title
 msgid "Target"
 msgstr "ടാര്‍ഗറ്റ്"
 
@@ -15452,6 +15582,9 @@ msgstr "ലക്ഷ്യമായ യു.എസ.ബി. വെന്റര്�
 
 msgid "Target USB version does not match source"
 msgstr "ലക്ഷ്യമായ യു.എസ.ബി. വെര്‍ഷന്‍ ഉറവിടവുമായി യോജിക്കുന്നില്ല"
+
+msgid "Target active PCR banks doesn't match source"
+msgstr ""
 
 msgid "Target already exists"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഫയല്‍ നിലവിലുണ്ട്"
@@ -16285,14 +16418,6 @@ msgstr "ഈ QEMU virtio scsi കണ്ട്രോളര്‍ പിന്ത�
 msgid "The vbox driver does not support %s disk device"
 msgstr "xen ബസ് %s ഇന്‍പുട്ട് ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
-#, c-format
-msgid ""
-"The version of dnsmasq on this host (%d.%d) doesn't adequately support IPv6 "
-"dhcp range or dhcp host specification. Version %d.%d or later is required."
-msgstr ""
-"ഈ ഹോസ്റ്റിലുള്ള (%d.%d) dnsmasq ആവശ്യമനുസരിച്ചു് IPv6 dhcp പരിധി അല്ലെങ്കില്‍ dhcp ഹോസ്റ്റ് "
-"വിവരണം പിന്തുണയ്ക്കുന്നില്ല. %d.%d പതിപ്പു് അല്ലെങ്കില്‍ പിന്നീടുള്ളതു് ആവശ്യമാണു്."
-
 msgid "There are no more free CCW devnos."
 msgstr "ഉപയോഗത്തിലില്ലാത്ത സിസിഡബ്ല്യൂ devnos ലഭ്യമല്ല."
 
@@ -16612,9 +16737,11 @@ msgstr "പിശക് അവസ്ഥയില്‍ സോക്കറ്റ�
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "ഇപ്പോഴും ഉപയോഗത്തിലുള്ള MultiCURL വസ്തു സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ഉപയോഗത്തിലുള്ള SharedCURL വസ്തുവിനെ സ്വതന്ത്രമാക്കുവാന്‍ ശ്രമിയ്ക്കുന്നു"
 
@@ -17673,6 +17800,9 @@ msgstr "%s %s എന്ന ബ്രിഡ്ജ് കിട്ടിയില�
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "ഡിവൈസ് ഐഡി '%s' ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
 
+msgid "Unable to get host SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get host boot time"
 msgstr "ഇപ്പോഴത്തെ സമയം ലഭ്യമാക്കുവാനായില്ല"
@@ -17695,9 +17825,15 @@ msgstr "ഈ പ്ലാറ്റ്ഫോമില്‍ സമ്പര്‍�
 msgid "Unable to get interface parameters"
 msgstr "ഇന്റെര്‍ഫേസ് പരാമീറ്റര്‍ കിട്ടുന്നില്ല"
 
+msgid "Unable to get key length for diffie-hellman parameters"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "%d ഫയല്‍ വിവരണം ലഭ്യമാക്കുവന്‍ സാധ്യമല്ല"
+
+msgid "Unable to get launch security parameters"
+msgstr ""
 
 msgid "Unable to get local socket name"
 msgstr "ലോക്കല്‍ സോക്കറ്റ് നാമം ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
@@ -18160,10 +18296,6 @@ msgstr "എഫ്ഡി നംബര്‍ '%s' പാഴ്സ് ചെയ്�
 #, fuzzy, c-format
 msgid "Unable to parse: %s"
 msgstr "%s എന്ന യുആര്‍ഐ മനസ്സിലായില്ല"
-
-#, c-format
-msgid "Unable to pre-create chardev file '%s'"
-msgstr "chardev ഫയല്‍ '%s' മുമ്പു് തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
 
 #, fuzzy, c-format
 msgid "Unable to preserve mac/vlan tag for device = %s, vf = %d"
@@ -18642,6 +18774,9 @@ msgstr ""
 msgid "Unable to set interface parameters"
 msgstr "ഇന്റെര്‍ഫേസ് പരാമീറ്റര്‍ ക്രമീകരിക്കാനാകുന്നില്ല"
 
+msgid "Unable to set launch security state"
+msgstr ""
+
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "മോണിറ്ററിനുള്ള close-on-exec ഫ്ലാഗ് സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
 
@@ -18805,8 +18940,9 @@ msgstr "മോണിറ്റര്‍ കണ്ടീഷനായി കാത�
 msgid "Unable to wait on epoll"
 msgstr "epoll-ല്‍ കാത്തിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-msgid "Unable to wait on monitor condition"
-msgstr "മോണിറ്റര്‍ കണ്ടീഷനായി കാത്തിരിക്കാന്‍ സാധ്യമല്ല"
+#, c-format
+msgid "Unable to wait on monitor condition (vm='%s')"
+msgstr ""
 
 msgid "Unable to wait on parent process"
 msgstr "പേരന്റില്‍ പ്രക്രിയയില്‍ കാത്തിയിരിയ്ക്കുവാന്‍ സാധ്യമല്ല"
@@ -19290,6 +19426,7 @@ msgstr "അജ്ഞാതമായ ഫോര്‍വേഡ് രീതി %d,
 msgid "Unknown error"
 msgstr "അറിയാത്ത ഏതോ പ്രശ്നം"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "അപരിചിതമായ പിശക് മൂല്ല്യം"
 
@@ -20013,6 +20150,12 @@ msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നത�
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO പിസിഐ ഡിവൈസ് നല്‍കുന്നതു് qemu-ന്റെ ഈ പതിപ്പു് പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
+msgstr ""
+
+msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "വിഎം നിലിവില്‍ പ്രവര്‍ത്തനത്തിലാണ്"
 
@@ -20048,6 +20191,10 @@ msgid "VNC"
 msgstr ""
 
 msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
+
+#, c-format
+msgid "VNC password is %zu characters long, only 8 permitted"
 msgstr ""
 
 msgid "VNC power control is not available"
@@ -20086,10 +20233,12 @@ msgstr "സന്ദേശം"
 msgid "Video adapters are not supported int containers."
 msgstr "ഈ QEMU സ്പയിസ് ഗ്രാഫിക്സ് പിന്തുണയ്ക്കുന്നില്ല"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s-നുള്ള Virsh കമാന്‍ഡ് ലൈന്‍ പ്രയോഗം\n"
@@ -20331,10 +20480,6 @@ msgid "You must map the root user of container"
 msgstr "കണ്ടെയിനറിന്റെ റൂട്ട് ഉപയോക്താവു് മാപ്പ് ചെയ്യണം"
 
 #, c-format
-msgid "[%s]"
-msgstr ""
-
-#, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
 
@@ -20565,6 +20710,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "വെറുതേ ഇടുന്നതിന് പകരം പുതിയ സ്ഥലം ഉപയോഗിക്കുക"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "അനുവദിച്ച നെറ്റ്ലിങ്ക് ബഫര്‍ വളരെ ചെറുതാണു്"
 
@@ -21299,6 +21449,9 @@ msgid "can't change link state: device alias not found"
 msgstr "കണ്ണിയുടെ അവസ്ഥ മാറ്റുവാന്‍ സാധ്യമല്ല: ഡിവൈസിന്റെ വിളിപ്പേരു് ലഭ്യമല്ല"
 
 msgid "can't change media while a block job is running on the device"
+msgstr ""
+
+msgid "can't change nodeset for strict mode for running domain"
 msgstr ""
 
 #, fuzzy
@@ -22315,6 +22468,7 @@ msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യ�
 msgid "cannot open path '%s' in '%s'"
 msgstr "പാഥ് '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "വോള്യം '%s' തുറക്കുവാന്‍ സാധ്യമല്ല"
@@ -22997,9 +23151,8 @@ msgstr "മെമ്മറി അലോക്കേഷന്‍ മാറ്റ�
 msgid "change number of virtual CPUs"
 msgstr "വിര്‍ച്ച്വല്‍ CPU-കളുടെ എണ്ണം മാറ്റുക"
 
-msgid "change of nodeset for running domain requires strict numa mode"
+msgid "change of nodeset for running domain requires restrictive numa mode"
 msgstr ""
-"പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനിനുള്ള ചെയിഞ്ച്സെറ്റ് മാറ്റുന്നതിനായി കര്‍ശനമായ ന്യൂമാ മോഡ് ആവശ്യമുണ്ടു്"
 
 msgid "change the current directory"
 msgstr "നിലവിലുള്ള ഡയറക്ടറി മാറ്റുക"
@@ -23134,6 +23287,7 @@ msgstr "ക്ലോണിന്റെ പേര്"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "%s എന്ന തട്ടു്  ഉണ്ടാക്കുന്നതില്‍ ചൈല്‍ഡ് പരാജയപ്പെട്ടു"
@@ -23900,10 +24054,6 @@ msgstr ""
 msgid "couldn't write dnsmasq config file '%s'"
 msgstr "dnsmasq ക്രമീകരണ ഫയല്‍ '%s' സൂക്ഷിയ്ക്കുവാനായില്ല"
 
-#, c-format
-msgid "couldn't write radvd config file '%s'"
-msgstr "radvd ക്രമീകരണ ഫയല്‍ '%s' സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
-
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
 
@@ -24442,6 +24592,14 @@ msgstr ""
 msgid "directory to switch to (default: home or else root)"
 msgstr "ഏതു് ഡയറക്ടറിയിലേക്ക് മാറ്റണം (സ്വതവേ: home അല്ലെങ്കില്‍ root)"
 
+msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
+msgstr ""
+
+#, c-format
+msgid ""
+"dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
+msgstr ""
+
 msgid "disable"
 msgstr "പ്രവര്‍ത്തന രഹിതമാക്കുക"
 
@@ -24734,6 +24892,10 @@ msgstr "സൂക്ഷിക്കുന്നതിന്റെ പുരോ�
 msgid "dnsmasq binary %s is not executable"
 msgstr "dnsmasq ബൈനറി %s നടപ്പിലാക്കുവാന്‍ സാധ്യമല്ല"
 
+#, c-format
+msgid "dnsmasq version >= %u.%u required but %lu.%lu found"
+msgstr ""
+
 msgid "do not enable STP for this bridge"
 msgstr "STP ഈ ബ്രിഡ്ജില്‍ എനേബിള്‍ ചെയ്യുക"
 
@@ -24971,6 +25133,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "domain moment %s already exists"
 msgstr "ടാര്‍ഗറ്റ് %s നിലവിലുണ്ട്"
+
+msgid "domain must be in a paused state"
+msgstr ""
 
 msgid "domain must have at least one disk to perform backup"
 msgstr ""
@@ -27065,6 +27230,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "കോണ്‍ഫിഗ് മൂല്ല്യം %s തെറ്റാണു്"
@@ -27256,9 +27424,6 @@ msgstr "കാര്യപ്രാപ്തിയുള്ള സ്റ്റ�
 msgid "finish step ignored that migration was cancelled"
 msgstr ""
 
-msgid "firewalld backend requested, but service is not running"
-msgstr ""
-
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
 "'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
@@ -27333,6 +27498,11 @@ msgstr ""
 
 msgid "force fresh boot by discarding any managed save"
 msgstr "സേവ് ചെയ്തത് ഒഴിവാക്കി പുതിയ ബൂട്ട് നിര്‍ബന്ധിപ്പിക്കുക"
+
+msgid ""
+"force guest disk writes to be synchronously written to the destination to "
+"improve storage migration convergence"
+msgstr ""
 
 msgid "force media changing"
 msgstr "മീഡിയ മാറ്റുന്നത് നിര്‍ബന്ധിക്കുക"
@@ -27672,6 +27842,7 @@ msgstr "സ്നാപ്ഷോട്ട് ഉണ്ടാക്കിയശ�
 msgid "handler failed to wait on condition"
 msgstr "അവസ്ഥയ്ക്കായി കാത്തിരിക്കുന്നതില്‍ പരാജയം"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ഹാഷ് തെരച്ചില്‍ നള്‍ പോയിന്റര്‍ ലഭ്യമാക്കുന്നു"
 
@@ -27746,6 +27917,10 @@ msgstr ""
 #, fuzzy
 msgid "host pci device "
 msgstr "ബ്ളോക്ക് ഡിവൈസ്"
+
+#, c-format
+msgid "host pci device %s not found"
+msgstr ""
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -28226,6 +28401,25 @@ msgstr "ഇന്റര്‍ഫെയിസ് പേര്"
 msgid "interface name %s does not fit into buffer "
 msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറിനു ചേരില്ല"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര് അല്ലെങ്കില്‍ MAC വിലാസം"
 
@@ -28747,8 +28941,8 @@ msgstr "തെറ്റായ ലിങ്ക് സ്ഥിതി '%s'"
 
 #, c-format
 msgid ""
-"invalid loadparm char '%c', expecting chars in set of [a-zA-Z0-9.] and blank "
-"spaces"
+"invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and "
+"blank spaces"
 msgstr ""
 
 #, c-format
@@ -28942,14 +29136,6 @@ msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 msgid "invalid secret uuid '%s'"
 msgstr "തെറ്റായ രഹസ്യ രീതി '%s'"
 
-#, c-format
-msgid "invalid security relabel value %s"
-msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
-
-#, c-format
-msgid "invalid security relabel value '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "invalid server address"
 msgstr "തെറ്റായ മാക് വിലാസം"
@@ -29098,6 +29284,9 @@ msgstr "ഡിസ്ക് ഡിവൈസ് സീരിയല്‍"
 #, fuzzy
 msgid "io uring is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "io='native' needs either no disk cache or directsync cache mode"
+msgstr ""
 
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr ""
@@ -29737,11 +29926,8 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
 
-#, fuzzy, c-format
-msgid "loadparm '%s' exceeds 8 characters"
-msgstr "ലീസ് പാഥ് '%s', %d അക്ഷരങ്ങളേക്കാള്‍ കൂടുതല്‍"
-
-msgid "loadparm cannot be an empty string"
+#, c-format
+msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
 
 msgid "lock manager connection has been restricted"
@@ -31156,6 +31342,9 @@ msgstr "റൂട്ട് എലമെന്റ് ലഭ്യമല്ല"
 msgid "missing rport name for '%s'"
 msgstr "ഹോസ്റ്റിനുള്ള നാമം ലഭ്യമല്ല"
 
+msgid "missing scheme for URI"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing scheme in migration URI: %s"
 msgstr "മൈഗ്രേഷന്‍ യുആര്‍ഐയില്‍ ഹോസ്റ്റ് ലഭ്യമല്ല: %s"
@@ -31436,6 +31625,15 @@ msgstr "വിവരണത്തിന് പകരം തലക്കെട്�
 msgid "monitor failure"
 msgstr "മോണിറ്റര്‍ പാഥ് ലഭ്യമല്ല"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "മോണിറ്റര്‍ NULL ആയിരിയ്ക്കരുതു്"
 
@@ -31581,11 +31779,6 @@ msgstr "വോള്യത്തിന്റ് പേര്"
 msgid "namespace key is required when modifying metadata"
 msgstr ""
 
-msgid ""
-"native I/O needs either no disk cache or directsync cache mode, QEMU will "
-"fallback to aio=threads"
-msgstr ""
-
 #, c-format
 msgid "nbd does not support transport '%s'"
 msgstr "nbd '%s' ട്രാന്‍പോര്‍ട്ട് പിന്തുണയ്ക്കുന്നില്ല"
@@ -31636,6 +31829,7 @@ msgstr "rawio വിശേഷത ആവശ്യമുണ്ടു്"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ചോദ്യം ചെയ്ത SSF %d മതിയാകുന്നതല്ല"
@@ -32487,6 +32681,9 @@ msgstr ""
 msgid "node CPU stats not implemented on this platform"
 msgstr "നോഡ് സിപിയു സ്റ്റാറ്റ്സ് ഈ പ്ലാറ്റ്ഫോമില്‍ ലഭ്യമല്ല"
 
+msgid "node SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "node cpu info not implemented on this platform"
 msgstr "ഈ പ്ളാറ്റ്ഫോമില്‍ നോഡ് വിവരം ലഭ്യമാക്കിയിട്ടില്ല"
@@ -33271,6 +33468,12 @@ msgstr "കമ്മിറ്റ് ചെയ്യേണ്ട ടോപ്പ�
 msgid "path to emulator binary (/domain/devices/emulator)"
 msgstr ""
 
+msgid "path to file containing the secret"
+msgstr ""
+
+msgid "path to file containing the secret header"
+msgstr ""
+
 msgid "path to inputvol secret data file is required"
 msgstr ""
 
@@ -33405,6 +33608,9 @@ msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ പരിഷ്കര�
 
 msgid "persistent update of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ പരിഷ്കരണം പിന്തുണയ്ക്കുന്നില്ല"
+
+msgid "physical address within the guest domain's memory to set the secret"
+msgstr ""
 
 msgid "pid"
 msgstr "pid"
@@ -34615,6 +34821,9 @@ msgstr "ഡൊമെയിന്‍ '%s' '%s'-ലേക്ക് സൂക്ഷ
 msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി discard പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "scheduler information is not supported on this platform"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
 msgstr "മൈഗ്രേഷന്‍ യുആര്‍ഐയില്‍ ഹോസ്റ്റ് ലഭ്യമല്ല: %s"
@@ -34861,6 +35070,9 @@ msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക�
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "നെറ്റ്‌വര്‍ക്ക് തരം %d-യ്ക്കുള്ള പിന്തുണ ലഭ്യമല്ല"
+
+msgid "setting a launch secret is only supported in SEV-enabled domains"
+msgstr ""
 
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
@@ -35665,6 +35877,9 @@ msgstr "%s ഡിവൈസിനു് ലക്ഷ്യ തരം നല്‍
 msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
+msgid "tb-cache size must be an integer multiple of MiB"
+msgstr ""
+
 msgid "tcp"
 msgstr ""
 
@@ -35750,6 +35965,11 @@ msgstr "കോളര്‍ keepalive പിന്തുണ ലഭ്യമാക
 
 msgid "the codeset of keycodes, default:linux"
 msgstr "കീകോഡിന്റെ കോഡ്സെറ്റ്, സാധാരണയായി linux"
+
+msgid ""
+"the copy job forces guest writes to be synchronously written to the "
+"destination"
+msgstr ""
 
 msgid "the copy job is not persisted if VM is turned off"
 msgstr ""
@@ -36532,6 +36752,10 @@ msgstr "'%s:%s'-ലുള്ള സര്‍വറിലേക്കു് ക�
 msgid "unable to control COW flag on '%s', not btrfs"
 msgstr ""
 
+#, c-format
+msgid "unable to create %s <-> %s veth pair"
+msgstr ""
+
 msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
@@ -36634,6 +36858,7 @@ msgstr "mutex init ചെയ്യുവാന്‍ സാധ്യമല്ല
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s fsync ചെയ്യുവാന്‍ സാധ്യമല്ല"
@@ -37462,6 +37687,8 @@ msgstr "ലഭ്യമാക്കിയിട്ടില്ലാത്ത �
 msgid "unix"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "അറിയാത്ത"
 
@@ -38340,6 +38567,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഫ്ലാഗുകള്‍ (0x%lx), %s ഫംഗ്ഷനില്‍"
@@ -39536,6 +39785,105 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot find %s - Possibly the package isn't installed"
+#~ msgstr "%s കണ്ടെത്താന്‍ കഴിഞ്ഞില്ല - പൊതിക്കെട്ട് ഇന്‍സ്റ്റോള്‍ ചെയ്തുകാണില്ല"
+
+#~ msgid "Cannot set ownerId data in JSON document"
+#~ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerId സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set ownerName data in JSON document"
+#~ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerName സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set ownerPid data in JSON document"
+#~ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerPid സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set ownerUUID data in JSON document"
+#~ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ownerUUID സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Cannot set restricted data in JSON document"
+#~ msgstr "JSON രേഖയില്‍ നിഷേധിച്ചിരിയ്ക്കുന്ന ഡേറ്റാ സജ്ജമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#, fuzzy
+#~ msgid "End of file from qemu monitor"
+#~ msgstr "മോണിറ്ററില്‍ നിന്നും ലഭ്യമാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Error while processing monitor IO"
+#~ msgstr "മോണിറ്റര്‍ IO പ്രോസസ്സ് ചെയ്യുന്നതില്‍ പിഴവ് "
+
+#~ msgid "Failed to connect to remote libvirt URI %s: %s"
+#~ msgstr "റിമോട്ട് libvirt യുആര്‍ഐ %s-ലേക്കു് കണക്ട് ചെയ്യുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
+
+#, fuzzy
+#~ msgid "Failed to initialize a valid firewall backend"
+#~ msgstr "libvirt ആരംഭിയ്ക്കുന്നതില്‍ പരാജയം"
+
+#, fuzzy
+#~ msgid "Invalid destination '%s' for output '%s'"
+#~ msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍ട്രി '%s'-ല്‍"
+
+#~ msgid "Invalid file descriptor while waiting for monitor"
+#~ msgstr "ര്‍മോണിറ്ററിനു വേണ്ടി കാത്തിരിക്കുമ്പോള്‍ സാധുവല്ലാത്ത ഫയല്‍ ഡിസ്ക്രിപ്റ്റ"
+
+#, fuzzy
+#~ msgid "Invalid priority '%s' for output '%s'"
+#~ msgstr "'%s' പട്ടിക, '%s'-ല്‍ നിന്നും തെറ്റായ തെരച്ചില്‍"
+
+#, fuzzy
+#~ msgid "Malformed format for output '%s'"
+#~ msgstr "തെറ്റായ nbd പോര്‍ട്ട് '%s'"
+
+#~ msgid "Only IPv4 or IPv6 addresses can be used with iptables"
+#~ msgstr "ഐപിടേബിള്‍സിനൊപ്പം ഐപിവി4 അല്ലെങ്കില്‍ ഐപിവി6 വിലാസങ്ങള്‍ മാത്രമേ ഉപയോഗിയ്ക്കാവൂ"
+
+#~ msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
+#~ msgstr "പ്രക്രിയ %d %p %p [[[[%s]]][[[%s]]]"
+
+#~ msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
+#~ msgstr "പ്രക്രിയ %zu %p %p [[[%s]]][[[%s]]]"
+
+#~ msgid ""
+#~ "Publicly routable address %s is prohibited. The version of dnsmasq on "
+#~ "this host (%d.%d) doesn't support the bind-dynamic option or use "
+#~ "SO_BINDTODEVICE on listening sockets, one of which is required for safe "
+#~ "operation on a publicly routable subnet (see CVE-2012-3411). You must "
+#~ "either upgrade dnsmasq, or use a private/local subnet range for this "
+#~ "network (as described in RFC1918/RFC3484/RFC4193)."
+#~ msgstr ""
+#~ "പൊതുവേയുള്ള റൌട്ടബിള്‍ വിലാസം %s നിഷേധിച്ചിരിയ്ക്കുന്നു. ഈ ഹോസ്റ്റിലുള്ള (%d.%d) dnsmasq-"
+#~ "ന്റെ പതിപ്പു് ബൈന്‍ഡ്-ഡൈനമിക് ഐച്ഛികം പിന്തുണയ്ക്കുന്നില്ല അല്ലെങ്കില്‍ സോക്കറ്റുകളില്‍ "
+#~ "ശ്രദ്ധിയ്ക്കുന്നതിനു് SO_BINDTODEVICE ഉപയോഗിയ്ക്കുക. പൊതുവേയുള്ള റൌട്ടബിള്‍ സബ്നെറ്റില്‍ "
+#~ "(CVE-2012-3411 കാണുക) സുരക്ഷിതമായ പ്രക്രിയയ്ക്കു് ഇതു് ആവശ്യമാകുന്നു. ഒന്നെങ്കില്‍ dnsmasq "
+#~ "പരിഷ്കരിയ്ക്കുക, അല്ലെങ്കില്‍ ഈ നെറ്റ്‌വര്‍ക്കിനു് ഒരു സ്വകാര്യ/ലോക്കല്‍ സബ്നെറ്റ് പരിധി "
+#~ "ഉപയോഗിയ്ക്കുക (RFC1918/RFC3484/RFC4193-ല്‍ വിവരിച്ചിരിയ്ക്കുന്നതു് പോലെ)."
+
+#~ msgid ""
+#~ "The version of dnsmasq on this host (%d.%d) doesn't adequately support "
+#~ "IPv6 dhcp range or dhcp host specification. Version %d.%d or later is "
+#~ "required."
+#~ msgstr ""
+#~ "ഈ ഹോസ്റ്റിലുള്ള (%d.%d) dnsmasq ആവശ്യമനുസരിച്ചു് IPv6 dhcp പരിധി അല്ലെങ്കില്‍ dhcp "
+#~ "ഹോസ്റ്റ് വിവരണം പിന്തുണയ്ക്കുന്നില്ല. %d.%d പതിപ്പു് അല്ലെങ്കില്‍ പിന്നീടുള്ളതു് ആവശ്യമാണു്."
+
+#~ msgid "Unable to pre-create chardev file '%s'"
+#~ msgstr "chardev ഫയല്‍ '%s' മുമ്പു് തയ്യാറാക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Unable to wait on monitor condition"
+#~ msgstr "മോണിറ്റര്‍ കണ്ടീഷനായി കാത്തിരിക്കാന്‍ സാധ്യമല്ല"
+
+#~ msgid "change of nodeset for running domain requires strict numa mode"
+#~ msgstr ""
+#~ "പ്രവര്‍ത്തനത്തിലുള്ള ഡൊമെയിനിനുള്ള ചെയിഞ്ച്സെറ്റ് മാറ്റുന്നതിനായി കര്‍ശനമായ ന്യൂമാ മോഡ് ആവശ്യമുണ്ടു്"
+
+#~ msgid "couldn't write radvd config file '%s'"
+#~ msgstr "radvd ക്രമീകരണ ഫയല്‍ '%s' സൂക്ഷിയ്ക്കുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "invalid security relabel value %s"
+#~ msgstr "തെറ്റായ സുരക്ഷ റീലേബല്‍ മൂല്ല്യം %s"
+
+#, fuzzy
+#~ msgid "loadparm '%s' exceeds 8 characters"
+#~ msgstr "ലീസ് പാഥ് '%s', %d അക്ഷരങ്ങളേക്കാള്‍ കൂടുതല്‍"
 
 #~ msgid "Cannot find start time in %s"
 #~ msgstr "%s-ല്‍ പ്രാരംഭ സമയം കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"

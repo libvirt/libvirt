@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2021-11-25 08:59+0000\n"
+"POT-Creation-Date: 2022-01-10 08:58+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -38,6 +38,7 @@ msgstr ""
 "\n"
 "  (సమూహం నందలి ఆదేశాల గురించి వివరాల కొరకు help <group> తెలుపుము)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -338,6 +339,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  నామం\n"
 
@@ -547,10 +549,6 @@ msgstr ""
 msgid "%s namespace is not available"
 msgstr "వ్యవస్థ అందుబాటులో లేదు"
 
-#, c-format
-msgid "%s not available, firewall backend will not function"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "%s not found in %s"
 msgstr "డిస్కు %s కనబడలేదు"
@@ -575,6 +573,16 @@ msgstr "ఈ QEMU బైనరీ చేత %s తోడ్పాటునీయ�
 msgid "%s object has invalid dynamic type"
 msgstr "%s ఆబ్జక్టు చెల్లని గతిక రకం కలిగివుంది"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s ఆబ్జక్టు కావలసిన '%s' లక్షణం నందు దొరకలేదు"
@@ -1096,6 +1104,10 @@ msgstr ""
 msgid "'disk' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
 
+#, c-format
+msgid "'extended_l2' not supported with compat level %s"
+msgstr ""
+
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' యాట్రిబ్యూట్ అనునది <inbound> మూలకం నందు మాత్రమే అనుమతించబడును"
 
@@ -1340,6 +1352,7 @@ msgstr "(interface_definition)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "మెటాడాటా:"
@@ -1403,6 +1416,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1866,9 +1880,6 @@ msgstr "అతిథిని అదే అతిధేయ %s కు మైగ�
 msgid "Attempt to overwrite resctrlid='%s' with id='%s'"
 msgstr ""
 
-msgid "Attempt to pass closed vhostuser FD"
-msgstr ""
-
 msgid "Attempt to send a non-blocking message with a synchronous reply"
 msgstr "సింక్రొనస్ ప్రత్యుత్తరముతో నాన్-బ్లాకింగ్ సందేశం పంపుటకు ప్రయత్నం"
 
@@ -2330,10 +2341,14 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s కు కాల్ అనుకోని రకం '%s' కొరకు"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s కు కాల్ అనుకోని రకం '%s' కొరకు, అనుకొన్నది '%s'"
@@ -2737,10 +2752,6 @@ msgstr "ఎమ్యులేటర్‌పిన్ నోడ్స్ వె�
 #, c-format
 msgid "Cannot extract running %s hypervisor version\n"
 msgstr "ప్రస్తుతం నడుస్తున్న %s అధివిశోర్ ప్రతిని సంగ్రహించలేదు\n"
-
-#, c-format
-msgid "Cannot find %s - Possibly the package isn't installed"
-msgstr "%s కనుగొనలేక పోయింది - బహుశా ప్యాకేజీ సంస్థాపించి వుండకపోవచ్చు"
 
 #, fuzzy, c-format
 msgid "Cannot find '%s' in node device database"
@@ -3246,21 +3257,6 @@ msgstr "'%s' పైన ఇంటర్ఫేస్ ఫ్లాగ్స్ అ�
 msgid "Cannot set memory higher than max memory"
 msgstr "గరిష్ట మెమొరీకన్నా యెక్కువగా మెమొరీని అమర్చలేము"
 
-msgid "Cannot set ownerId data in JSON document"
-msgstr "JSON పత్రము నందు యజమానిఐడి దత్తాంశం అమర్చలేదు"
-
-msgid "Cannot set ownerName data in JSON document"
-msgstr "JSON పత్రము నందు యజమానిపేరు దత్తాంశం అమర్చలేదు"
-
-msgid "Cannot set ownerPid data in JSON document"
-msgstr "JSON పత్రము నందు యజమానిపిఐడి దత్తాంశం అమర్చలేదు"
-
-msgid "Cannot set ownerUUID data in JSON document"
-msgstr "JSON పత్రము నందు యజమానిUUID దత్తాంశం అమర్చలేదు"
-
-msgid "Cannot set restricted data in JSON document"
-msgstr "JSON పత్రము నందు నిర్భందిత దత్తాంశం అమర్చలేదు"
-
 #, fuzzy, c-format
 msgid "Cannot set scheduler parameters for pid %lld"
 msgstr "చూపుము/అమర్చుము షెడ్యూలర్ పారామితులను."
@@ -3533,6 +3529,7 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "డొమైన్ %s కొరకు స్నాప్‌షాట్లు అస్థిర సంభందాలు కలిగివున్నాయి"
 
+#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -3948,6 +3945,9 @@ msgstr "వడపోత సృష్టించలేక పోయింది"
 #, fuzzy, c-format
 msgid "Could not create harddisk, rc=%08x"
 msgstr "డొమైన్ తొలగించలేక పోయింది, rc=%08x"
+
+msgid "Could not create log directory"
+msgstr ""
 
 #, fuzzy
 msgid "Could not create monitor"
@@ -4749,6 +4749,7 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "పూల్ సమాచారం వెలికితీయలేదు"
 
@@ -5618,6 +5619,7 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr "డొమైన్ %d ఇంటర్ఫేసులను కలిగివుంది. దేనిని వేరుచేయాలో --mac వుపయోగించి తెలుపుము"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -5931,9 +5933,9 @@ msgstr "చేతనంచేసిన"
 msgid "End of file from agent socket"
 msgstr "సాకెట్ సృష్టించుటలో విఫలమైంది"
 
-#, fuzzy
-msgid "End of file from qemu monitor"
-msgstr "మానిటర్ నుండి వ్రాయలేదు"
+#, c-format
+msgid "End of file from qemu monitor (vm='%s')"
+msgstr ""
 
 msgid "End of file while reading data"
 msgstr "దత్తాంశం చదువునప్పుడు ఫైల్ ముగింపు"
@@ -6040,8 +6042,9 @@ msgstr "మానిటర్ IO ప్రోసెస్ చేయునప్�
 msgid "Error while processing command's IO"
 msgstr "ఆదేశం IO ప్రోసెస్ చేయునప్పుడు దోషం"
 
-msgid "Error while processing monitor IO"
-msgstr "మానిటర్ IO ప్రోసెస్ చేయునప్పుడు దోషం"
+#, c-format
+msgid "Error while processing monitor IO (vm='%s')"
+msgstr ""
 
 msgid "Error while reading /proc/cgroups"
 msgstr "/proc/cgroups చదువునప్పుడు దోషం"
@@ -6604,10 +6607,6 @@ msgstr "ట్రీ జాబితా పూర్తిచేయుటకు 
 msgid "Failed to connect socket to '%s'"
 msgstr "సాకెట్‌ను '%s' కు అనుసంధానించుటకు విఫలమైంది"
 
-#, c-format
-msgid "Failed to connect to remote libvirt URI %s: %s"
-msgstr "రిమోట్ లిబ్‌వర్ట్ URI %s కు అనుసంధానమగుటకు విఫలమైంది: %s"
-
 msgid "Failed to connect to ssh agent"
 msgstr "ssh ఏజెంట్‌కు అనుసంధానమగుటకు విఫలమైంది"
 
@@ -6818,14 +6817,27 @@ msgstr "%s సృష్టించుటకు విఫలమైంది"
 msgid "Failed to create thread for receiving migration data"
 msgstr "అతిధేయ ను నిలువరించుటకు త్రెడ్ సృష్టించుటలో విఫలమైంది"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "అతిధేయ ను నిలువరించుటకు త్రెడ్ సృష్టించుటలో విఫలమైంది"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
+msgid "Failed to create thread to handle domain death"
+msgstr ""
+
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "అతిధేయ ను నిలువరించుటకు త్రెడ్ సృష్టించుటలో విఫలమైంది"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "అతిధేయ ను నిలువరించుటకు త్రెడ్ సృష్టించుటలో విఫలమైంది"
@@ -7319,10 +7331,6 @@ msgid "Failed to initialize TLS session: %s"
 msgstr "TLS సెషన్ సిద్దము చేయుటకు విఫలమైంది: %s"
 
 #, fuzzy
-msgid "Failed to initialize a valid firewall backend"
-msgstr "libvirt సిద్దంచేయుటకు విఫలమైంది"
-
-#, fuzzy
 msgid "Failed to initialize cgroup backend."
 msgstr "మ్యూటెక్స్ సిద్దంచేయుటకు విఫలమైంది"
 
@@ -7390,6 +7398,7 @@ msgstr "క్రియాశీల నెట్వర్కుల జాబి�
 msgid "Failed to list active pools"
 msgstr "క్రియాశీల పూల్సును జాబితా ఇవ్వటంలో విఫలమైంది"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "డొమైన్లను జాబితా చేయుటకు విఫలమైంది"
 
@@ -7405,22 +7414,28 @@ msgstr "క్రియారహిత నెట్వర్కులను జ�
 msgid "Failed to list inactive pools"
 msgstr "క్రియారహిత పూల్సును జాబితా చేయటంలో విఫలమైంది"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ఇంటర్ఫేసులు జాబితా చేయుటకు విఫలమైైంది"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "నెట్వర్కు ఫిల్టర్స్ జాబితా చేయుటకు విఫలమైంది"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "నెట్వర్కు ఫిల్టర్స్ జాబితా చేయుటకు విఫలమైంది"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "నెట్వర్కులను జాబితా చేయుటకు విఫలమైంది"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "నోడ్ పరికరాలను జాబితాచేయుటకు విఫలమైంది"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "నోడ్ రహస్యాలు జాబితాచేయుటకు విఫలమైంది"
 
@@ -7428,6 +7443,7 @@ msgstr "నోడ్ రహస్యాలు జాబితాచేయుట�
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri పైన స్థిరమైన అతిథులను జాబితాచేయుటకు విఫలమైంది"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "పూల్స్ జాబితాచేయుటకు విఫలమైంది"
 
@@ -7447,6 +7463,7 @@ msgstr "అస్థిర అతిథులు జాబితాచేయు�
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr "డొమైన్ '%d' కొరకు libxenlight తో vcpus ను జాబితా చేయుటలో విఫలమైంది"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "వాల్యూమ్‌లను జాబితా చేయుటకు విఫలమైంది"
 
@@ -8035,6 +8052,9 @@ msgstr "డొమైన్ '%d' అనునది libxenlight తో తిర�
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "వైఫల్యం తరువాత గెస్టు  %s తిరిగికొనసాగించుట విఫలమైంది"
@@ -8181,6 +8201,10 @@ msgstr "xml పత్రము నందు  ఇంటర్ఫేస్ పే�
 #, c-format
 msgid "Failed to set interface type to '%s' in xml document"
 msgstr "xml పత్రము నందు ఇంటర్ఫేస్ రకం '%s' కు అమర్చుటకు విఫలమైంది"
+
+#, c-format
+msgid "Failed to set logging priority, argument '%s' is invalid"
+msgstr ""
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
@@ -8659,10 +8683,63 @@ msgid ""
 msgstr ""
 "మొదటి ఫైల్-ఆధారిత హార్డుడిస్కు యెటువంటి మూలం కలిగిలేదు, VMX ఫైలు కొరకు డాటా‌స్టోర్ మరియు పాత్ రాబట్టలేదు"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "ఐచ్చికాలు --%s మరియు --%s పరస్పరం విరుద్దం"
@@ -8762,6 +8839,9 @@ msgid ""
 msgstr ""
 "నడుస్తున్న డొమైన్ కొరకు పరికర నిరోధక గణాంకాలను పొందు. క్షేత్రాల వివరణ కొరకు man పేజీ లేదా --human "
 "వుపయోగించు"
+
+msgid "Get domain launch security info"
+msgstr ""
 
 #, fuzzy
 msgid "Get information of domain's mounted filesystems."
@@ -8868,6 +8948,9 @@ msgid "Get persistent interface state"
 msgstr "స్థిరమైన ఇంటర్ఫేస్ స్థితి పొందు"
 
 msgid "Get the CPU models for an arch."
+msgstr ""
+
+msgid "Get the launch security parameters for a guest domain"
 msgstr ""
 
 msgid "Get the maximum migration bandwidth"
@@ -9618,6 +9701,15 @@ msgstr "చెల్లని రకం '%s' పారామితి '%s' క�
 msgid "Invalid address."
 msgstr "చెల్లని చిరునామా."
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "నిస్సారమైన క్రమానుగత సంకేతం"
 
@@ -9769,10 +9861,6 @@ msgstr "అతిథి ఏజెంట్ చేత చెల్లని ద�
 msgid "Invalid delay value in network '%s'"
 msgstr "చెల్లని చిరునామా '%s' నెట్వర్కు '%s' నందు"
 
-#, fuzzy, c-format
-msgid "Invalid destination '%s' for output '%s'"
-msgstr "చెల్లని విలువ '%s' VMX ప్రవేశం '%s' కొరకు"
-
 #, c-format
 msgid "Invalid device %s driver file %s is not a symlink"
 msgstr "చెల్లని పరికరం %s డ్రైవర్ ఫైల్ %s సిమ్‌లింక్ కాదు"
@@ -9879,8 +9967,9 @@ msgstr "చెల్లని ఫాల్‌బ్యాక్ యాట్ర�
 msgid "Invalid file descriptor while waiting for agent"
 msgstr "మానిటర్ కొరకు ప్రయత్నించునప్పుడు చెల్లని ఫైల్ డిస్క్రిప్టార్"
 
-msgid "Invalid file descriptor while waiting for monitor"
-msgstr "మానిటర్ కొరకు ప్రయత్నించునప్పుడు చెల్లని ఫైల్ డిస్క్రిప్టార్"
+#, c-format
+msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
+msgstr ""
 
 msgid "Invalid firmware name"
 msgstr ""
@@ -9969,9 +10058,17 @@ msgstr "చెల్లని సీక్రెట్ రకం '%s'"
 msgid "Invalid localPtr value '%s' in network '%s'"
 msgstr "చెల్లని చిరునామా '%s' నెట్వర్కు '%s' నందు"
 
+#, c-format
+msgid "Invalid log destination '%s' for log output '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Invalid log priority %d"
 msgstr "చెల్లని పోర్టులు: %s"
+
+#, c-format
+msgid "Invalid log priority '%s' for log output '%s'"
+msgstr ""
 
 #, c-format
 msgid "Invalid lookup from '%s'"
@@ -10181,10 +10278,6 @@ msgstr "చెల్లని fromConfig విలువ: %s"
 #, fuzzy, c-format
 msgid "Invalid priority '%s' for filter '%s'"
 msgstr "చెల్లని ప్రిఫిక్స్ లేదా '%s' కొరకు నెట్‌మాస్క్"
-
-#, fuzzy, c-format
-msgid "Invalid priority '%s' for output '%s'"
-msgstr "'%s' యొక్క చెల్లని లుకప్ '%s' నుండి"
 
 #, fuzzy, c-format
 msgid "Invalid rate '%s' specified"
@@ -10619,6 +10712,12 @@ msgstr "లాక్‌స్పేస్ వనరు '%s' లాకైంద�
 msgid "Lockspace resource '%s' is not locked"
 msgstr "లాక్‌స్పేస్ వనరు '%s' లాక్ కాలేదు"
 
+#, c-format
+msgid ""
+"Log output '%s' does not meet the format requirements for destination type "
+"'%s'"
+msgstr ""
+
 msgid "Logging filters: "
 msgstr ""
 
@@ -10739,9 +10838,9 @@ msgstr "తప్పుగాఫార్మైన పరిమాణము %s"
 msgid "Malformed format for filter '%s'"
 msgstr "తప్పుగారూపొందిన nbd పోర్ట్ '%s'"
 
-#, fuzzy, c-format
-msgid "Malformed format for output '%s'"
-msgstr "తప్పుగారూపొందిన nbd పోర్ట్ '%s'"
+#, c-format
+msgid "Malformed format for log output '%s'"
+msgstr ""
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
 msgstr ""
@@ -11898,6 +11997,12 @@ msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "పేరు"
 
@@ -12730,8 +12835,8 @@ msgstr "PTY కన్సోల్ రకములు మాత్రమే త�
 msgid "Only 1 thread per core is supported"
 msgstr "ఒక ప్రాథమిక వీడియో పరికరం మాత్రమే తోడ్పాటునిచ్చును"
 
-msgid "Only IPv4 or IPv6 addresses can be used with iptables"
-msgstr "iptables తో IPv4 లేదా IPv6 చిరునామాలు మాత్రమే వుపయోగించగలం"
+msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
+msgstr ""
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "function=0తో గుర్తించబడు PCI పరికరము మాత్రమే మద్దతించబడును"
@@ -12929,6 +13034,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -12948,6 +13067,20 @@ msgstr "ఐచ్చికం ఆర్గుమెంట్ ఖాళీగా 
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "ఐచ్చికాలు --%s మరియు --%s పరస్పరం విరుద్దం"
@@ -12972,11 +13105,6 @@ msgstr "లాగ్ అవుట్పుట్ చదువుటలో జా
 #, fuzzy
 msgid "Outgoing migration"
 msgstr "ఆఫ్‌లైన్ మైగ్రేషన్"
-
-#, c-format
-msgid ""
-"Output '%s' does not meet the format requirements for destination type '%s'"
-msgstr ""
 
 msgid "Output a secret value"
 msgstr "రహస్య విలువను అవుట్పుట్ చేయి"
@@ -13196,6 +13324,7 @@ msgstr "పార్స్ చేసిన JSON ప్రత్యుత్త�
 msgid "Partition path '%s' must start with '/'"
 msgstr "విభజన పాత్ '%s' తప్పక '/' తో ప్రారంభమవ్వాలి"
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "ఏ qemu కమాండ్-లైన్ ఆర్గుమెంట్ తెలుపలేదు"
@@ -13448,14 +13577,6 @@ msgstr "ప్రాముఖ్యత '%d' అనునది చెల్ల�
 msgid "Probing TSC is not supported on this platform"
 msgstr "ఈ ప్లాట్‌ఫాం పైన రా I/O తోడ్పాటునీయబడదు"
 
-#, c-format
-msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
-msgstr "ప్రోసెస్ %d %p %p [[[[%s]]][[[%s]]]"
-
-#, c-format
-msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
-msgstr "ప్రోసెస్ %zu %p %p [[[%s]]][[[%s]]]"
-
 msgid "Process CPU affinity is not supported on this platform"
 msgstr "CPU ఎఫినిటి ప్రోసెస్ ఈ ప్లాట్‌ఫాంపై మద్దతించబడదు"
 
@@ -13491,21 +13612,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Protocol '%s' is not supported for tcp character device."
 msgstr "vport ఆపరేషన్ '%s' అనునది host%d కొరకు తోడ్పాటునీయదు"
-
-#, c-format
-msgid ""
-"Publicly routable address %s is prohibited. The version of dnsmasq on this "
-"host (%d.%d) doesn't support the bind-dynamic option or use SO_BINDTODEVICE "
-"on listening sockets, one of which is required for safe operation on a "
-"publicly routable subnet (see CVE-2012-3411). You must either upgrade "
-"dnsmasq, or use a private/local subnet range for this network (as described "
-"in RFC1918/RFC3484/RFC4193)."
-msgstr ""
-"పబ్లిక్‌గా రౌట్ చేయదగ్గ చిరునామా %s నిషేధించబడెను. ఈ అతిధేయ (%d.%d) పైని dnsmasq యొక్క వర్షన్ బైండ్-"
-"డైనమిక్ ఐచ్చికం లేదా లిజనింగ్ సాకెట్లపైన SO_BINDTODEVICE వుపయోగంను తోడ్పాటునివ్వదు, పబ్లిక్‌గా రౌట్ "
-"చేయదగ సబ్‌నెట్ పై సురక్షిత ఆపరేషన్ కొరకు యేదో వొకటి కావాలి (CVE-2012-3411 చూడండి). మీరు dnsmasq "
-"నవీకరించాలి, లేదా ఈ నెట్వర్కు కొరకు వ్యక్తిగత/స్థానిక సబ్‌నెట్ విస్తృతి వుపయోగించు (RFC1918/RFC3484/"
-"RFC4193 నందు వివరించినట్లు)."
 
 msgid "Pull aborted"
 msgstr "పుల్ విరమించబడెను"
@@ -13559,6 +13665,9 @@ msgid "QEMU does not support device assignment mode '%s'"
 msgstr "తోడ్పాటులేని పరికర రకం '%s'"
 
 msgid "QEMU does not support multiple listens for one graphics device."
+msgstr ""
+
+msgid "QEMU does not support setting a launch secret"
 msgstr ""
 
 msgid "QEMU guest agent is not available due to an error"
@@ -13919,6 +14028,9 @@ msgstr "XML <sources> పత్రము తిప్పియిస్తుం
 msgid "Returns a list of secrets"
 msgstr "రహస్యాల జాబితాను తిరిగియిస్తుంది"
 
+msgid "Returns basic SEV information about the node."
+msgstr ""
+
 #, fuzzy
 msgid "Returns basic information about a checkpoint."
 msgstr "స్నాప్‌షాట్ గురించి ప్రాధమిక సమాచారం తిరిగియిచ్చును."
@@ -14056,6 +14168,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "S4 స్థితి ఈ డొమైన్ కొరకు అచేతనంచేయబడెను"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14144,6 +14257,9 @@ msgid "SCSI_host host device must use 'pci' or 'ccw' address type"
 msgstr "నియంత్రికలు తప్పక 'ccid' చిరునామా రకం వుపయోగించాలి"
 
 msgid "SEV launch security is not supported with this QEMU binary"
+msgstr ""
+
+msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
 msgstr ""
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
@@ -14410,8 +14526,14 @@ msgstr ""
 msgid "Server to retrieve threadpool attributes from."
 msgstr ""
 
+msgid "Set a secret in the guest domain's memory"
+msgstr ""
+
 msgid "Set a secret value."
 msgstr "రహస్య విలువను అమర్చుము."
+
+msgid "Set domain launch security state"
+msgstr ""
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
@@ -14587,6 +14709,9 @@ msgstr "CPU సమయం:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "ఈ QEMU చేత స్పైస్ గ్రాఫిక్స్ తోడ్పాటునీయబడదు"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "భాగస్వామ్య మెమొరీ:\n"
 
@@ -14666,6 +14791,7 @@ msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు
 msgid "Snapshot"
 msgstr "స్నాప్‌షాట్ జాబితా"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "స్నాప్‌షాట్ %s XML ఆకృతీకరణ మారలేదు.\n"
@@ -15108,6 +15234,10 @@ msgid "System token in %s was corrupt"
 msgstr ""
 
 #, c-format
+msgid "TCG features are incompatible with domain type '%s'"
+msgstr ""
+
+#, c-format
 msgid "TLS handshake failed %s"
 msgstr "TLS హాండ్‌షేక్ విఫలమైంది %s"
 
@@ -15152,6 +15282,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s ఖాళీ కాలేదు"
 
+#. title
 msgid "Target"
 msgstr "లక్ష్యం"
 
@@ -15294,6 +15425,9 @@ msgstr "లక్ష్యపు USB అమ్మకందారు ఐడి �
 
 msgid "Target USB version does not match source"
 msgstr "లక్ష్యపు USB వర్షన్ మూలం తో సరిపోలలేదు"
+
+msgid "Target active PCR banks doesn't match source"
+msgstr ""
 
 msgid "Target already exists"
 msgstr "లక్ష్యము యిప్పటికే వుంది"
@@ -16107,14 +16241,6 @@ msgstr "QEMU అనునది virtio scsi నియంత్రికకు �
 msgid "The vbox driver does not support %s disk device"
 msgstr "xen బస్ అనునది %s ఇన్‌పుట్ పరికరమును మద్దతీయుటలేదు"
 
-#, c-format
-msgid ""
-"The version of dnsmasq on this host (%d.%d) doesn't adequately support IPv6 "
-"dhcp range or dhcp host specification. Version %d.%d or later is required."
-msgstr ""
-"dnsmasq యొక్క వర్షన్ ఈ అతిధేయ (%d.%d) పైన తగినట్టుగా IPv6 dhcp విస్తృతిని లేదా dhcp అతిధేయ "
-"విశదీకరణను తోడ్పాటునివ్వదు. వర్షన్ %d.%d లేదా తరువాతిది అవసరమైంది."
-
 msgid "There are no more free CCW devnos."
 msgstr "అక్కడ ఖాళీ CCW devno లు లేవు."
 
@@ -16431,9 +16557,11 @@ msgstr "దోష స్థితి నందు సాకెట్‌కు �
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "ఇంకా వుపయోగంలోవున్న MultiCURL ఆబ్జక్టు విడుపుటకు ప్రయత్నిస్తోంది"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ఇప్పటికీ వుపయోగంలోవున్న SharedCURL ఆబ్జక్టును విడుపుటకు ప్రయత్నిస్తోంది"
 
@@ -17486,6 +17614,9 @@ msgstr "బ్రిడ్జ్ %s %s పొందలేదు"
 msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "పరికర ఐడి '%s' పొందలేదు"
 
+msgid "Unable to get host SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "Unable to get host boot time"
 msgstr "ప్రస్తుత సమయం పొందలేదు"
@@ -17508,9 +17639,15 @@ msgstr "ఈ ప్లాట్‌ఫాం పైన ఇంటర్ఫేస్
 msgid "Unable to get interface parameters"
 msgstr "ఇంటర్ఫేస్ పారామితులను పొందలేదు"
 
+msgid "Unable to get key length for diffie-hellman parameters"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "ఫైల్ వివరణి %d యాక్సెస్ చేయలేదు"
+
+msgid "Unable to get launch security parameters"
+msgstr ""
 
 msgid "Unable to get local socket name"
 msgstr "స్థానిక సాకెట్ పేరు పొందలేదు"
@@ -17973,10 +18110,6 @@ msgstr "FD సంఖ్య '%s' పార్స్ చేయలేదు"
 #, fuzzy, c-format
 msgid "Unable to parse: %s"
 msgstr "URI %s పార్స్ చేయలేదు"
-
-#, c-format
-msgid "Unable to pre-create chardev file '%s'"
-msgstr "chardev ఫైల్ '%s' ముందుగా-సృష్టించలేదు"
 
 #, fuzzy, c-format
 msgid "Unable to preserve mac/vlan tag for device = %s, vf = %d"
@@ -18449,6 +18582,9 @@ msgstr ""
 msgid "Unable to set interface parameters"
 msgstr "ఇంటర్ఫేస్ పారామితులను అమర్చలేదు"
 
+msgid "Unable to set launch security state"
+msgstr ""
+
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "మానిటర్‌కు close-on-exec ఫ్లాగ్‌ను అమర్చలేక పోయింది"
 
@@ -18612,8 +18748,9 @@ msgstr "మానిటర్ పరిస్థితి పై వేచివ
 msgid "Unable to wait on epoll"
 msgstr "epoll పై వేచివుండలేదు"
 
-msgid "Unable to wait on monitor condition"
-msgstr "మానిటర్ పరిస్థితి పై వేచివుండలేక పోయింది"
+#, c-format
+msgid "Unable to wait on monitor condition (vm='%s')"
+msgstr ""
 
 msgid "Unable to wait on parent process"
 msgstr "పేరెంట్ ప్రోసెస్ కొరకు వేచివుండలేదు"
@@ -19096,6 +19233,7 @@ msgstr "తెలియని ఫార్వార్డ్ రకం %d నె
 msgid "Unknown error"
 msgstr "తెలియని దోషం"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "తెలియని దోష విలువ"
 
@@ -19818,6 +19956,12 @@ msgstr "qemu యొక్క ఈ వర్షన్‌ చేత VFIO PCI పర
 msgid "VFIO device assignment is currently not supported on this system"
 msgstr "qemu యొక్క ఈ వర్షన్‌ చేత VFIO PCI పరికర అప్పగింత తోడ్పాటునీయదు"
 
+msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
+msgstr ""
+
+msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
+msgstr ""
+
 msgid "VM is already active"
 msgstr "VM యిప్పటికే క్రియాశీల పర్చబడింది"
 
@@ -19853,6 +19997,10 @@ msgid "VNC"
 msgstr ""
 
 msgid "VNC Password authentication not supported by bhyve"
+msgstr ""
+
+#, c-format
+msgid "VNC password is %zu characters long, only 8 permitted"
 msgstr ""
 
 msgid "VNC power control is not available"
@@ -19891,10 +20039,12 @@ msgstr "సందేశం"
 msgid "Video adapters are not supported int containers."
 msgstr "ఈ QEMU చేత స్పైస్ గ్రాఫిక్స్ తోడ్పాటునీయబడదు"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s యొక్క Virsh ఆదేశ వరుస సాధనం\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s యొక్క Virsh ఆదేశ వరుస సాధనం\n"
@@ -20136,10 +20286,6 @@ msgid "You must map the root user of container"
 msgstr "మీరు తప్పక కంటైనర్ యొక్క రూట్ వాడుకరిని మాప్ చేయాలి"
 
 #, c-format
-msgid "[%s]"
-msgstr ""
-
-#, c-format
 msgid "[--%s <number>]"
 msgstr "[--%s <number>]"
 
@@ -20369,6 +20515,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "కొత్త సామర్ధ్యం కేటాయించు, స్పార్స్ వలె వదులుటకన్నా"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "కేటాయించిన నెట్‌లింక్ బఫర్ మరీ చిన్నది"
 
@@ -21096,6 +21247,9 @@ msgid "can't change link state: device alias not found"
 msgstr "లింకు స్థితిని మార్చలేదు: పరికరం మారుపేరు కనబడలేదు"
 
 msgid "can't change media while a block job is running on the device"
+msgstr ""
+
+msgid "can't change nodeset for strict mode for running domain"
 msgstr ""
 
 #, fuzzy
@@ -22108,6 +22262,7 @@ msgstr "పాత్ '%s'ను తెరువలేక పోయింది"
 msgid "cannot open path '%s' in '%s'"
 msgstr "పాత్ '%s'ను తెరువలేక పోయింది"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "వాల్యూమ్ '%s' తెరువలేక పోయింది"
@@ -22784,8 +22939,8 @@ msgstr "మెమోరీ కేటాయింపులను మార్చ�
 msgid "change number of virtual CPUs"
 msgstr "వాస్తవిక సంఖ్యల CPUల మార్పు"
 
-msgid "change of nodeset for running domain requires strict numa mode"
-msgstr "నడుస్తున్న డొమైన్ అభ్యర్ధనల కొరకు nodeset యొక్క మార్పు ఖచ్చిత numa రీతి కావాలి"
+msgid "change of nodeset for running domain requires restrictive numa mode"
+msgstr ""
 
 msgid "change the current directory"
 msgstr "ప్రస్తుత డైరెక్టరీను మార్చుము"
@@ -22920,6 +23075,7 @@ msgstr "క్లోన్ నామము"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "డైరెక్టరీ '%s' సృష్టించుటకు చెల్డు వైఫల్యం చెందింది"
@@ -23681,10 +23837,6 @@ msgstr ""
 msgid "couldn't write dnsmasq config file '%s'"
 msgstr "dnsmasg ఆకృతీకరణ ఫైల్ '%s' వ్రాయలేక పోయింది"
 
-#, c-format
-msgid "couldn't write radvd config file '%s'"
-msgstr "radvd ఆకృతీకరణ ఫైల్ '%s' వ్రాయలేక పోయింది"
-
 msgid "cow feature may only be used for 'fs' and 'dir' pools"
 msgstr ""
 
@@ -24215,6 +24367,14 @@ msgstr "%s రీతి వుపయోగించు hostdev పరికర�
 msgid "directory to switch to (default: home or else root)"
 msgstr "మారుటకు డైరెక్టరీ (అప్రమేయ: home లేదా root)"
 
+msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
+msgstr ""
+
+#, c-format
+msgid ""
+"dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
+msgstr ""
+
 msgid "disable"
 msgstr "అచేతనపరచు"
 
@@ -24505,6 +24665,10 @@ msgstr "దాయట పురోగతిని ప్రదర్శించ�
 msgid "dnsmasq binary %s is not executable"
 msgstr "dnsmasq బైనరీ %s నిర్వర్తించదగినది కాదు"
 
+#, c-format
+msgid "dnsmasq version >= %u.%u required but %lu.%lu found"
+msgstr ""
+
 msgid "do not enable STP for this bridge"
 msgstr "ఈ బ్రిడ్జ్ కొరకు కొత్త STP చేతనం చేయవద్దు"
 
@@ -24742,6 +24906,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "domain moment %s already exists"
 msgstr "లక్ష్యము %s యిప్పటికే వుంది"
+
+msgid "domain must be in a paused state"
+msgstr ""
 
 msgid "domain must have at least one disk to perform backup"
 msgstr ""
@@ -26835,6 +27002,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "ఆకృతీకరణ విలువ %s తప్పుగావుంది"
@@ -27024,9 +27194,6 @@ msgstr "శక్తివంతమైన నిల్వ పూల్ మూల
 msgid "finish step ignored that migration was cancelled"
 msgstr ""
 
-msgid "firewalld backend requested, but service is not running"
-msgstr ""
-
 msgid ""
 "firewalld is set to use the nftables backend, but the required firewalld "
 "'libvirt' zone is missing. Either set the firewalld backend to 'iptables', "
@@ -27100,6 +27267,11 @@ msgstr ""
 
 msgid "force fresh boot by discarding any managed save"
 msgstr "నిర్వాహిత దాపును తప్పించుట ద్వారా బలవంతంగా తాజా బూట్‌ చేయి"
+
+msgid ""
+"force guest disk writes to be synchronously written to the destination to "
+"improve storage migration convergence"
+msgstr ""
 
 msgid "force media changing"
 msgstr "మాధ్యమం మార్చుట బలవతంచేయి"
@@ -27437,6 +27609,7 @@ msgstr "స్నాప్‌షాట్ సృష్టించనతరు�
 msgid "handler failed to wait on condition"
 msgstr "నియమముపై వేచివుండుటకు విఫలమైంది"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "హాష్ లుకప్ అనునది NULL పాయింటర్‌గా వచ్చెను"
 
@@ -27511,6 +27684,10 @@ msgstr ""
 #, fuzzy
 msgid "host pci device "
 msgstr "నిరోధక పరికరం"
+
+#, c-format
+msgid "host pci device %s not found"
+msgstr ""
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -27989,6 +28166,25 @@ msgstr "ఇంటర్ఫేస్ నామము"
 msgid "interface name %s does not fit into buffer "
 msgstr "ఇంటర్ఫేస్ పేరు %s బఫర్‌ నందు అమరలేదు"
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "ఇంటర్ఫేస్ నామము లేదా MAC చిరునామా"
 
@@ -28508,8 +28704,8 @@ msgstr "చెల్లని లింకు స్థితి '%s'"
 
 #, c-format
 msgid ""
-"invalid loadparm char '%c', expecting chars in set of [a-zA-Z0-9.] and blank "
-"spaces"
+"invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and "
+"blank spaces"
 msgstr ""
 
 #, c-format
@@ -28703,14 +28899,6 @@ msgstr "చెల్లని సీక్రెట్ రకం '%s'"
 msgid "invalid secret uuid '%s'"
 msgstr "చెల్లని సీక్రెట్ రకం '%s'"
 
-#, c-format
-msgid "invalid security relabel value %s"
-msgstr "చెల్లని రక్షణ రిలేబుల్ విలువ %s"
-
-#, c-format
-msgid "invalid security relabel value '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "invalid server address"
 msgstr "సరికాని MAC చిరునామా"
@@ -28859,6 +29047,9 @@ msgstr "డిస్కు పరికరం వరుస"
 #, fuzzy
 msgid "io uring is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత డిస్కార్డ్ తోడ్పాటునీయదు"
+
+msgid "io='native' needs either no disk cache or directsync cache mode"
+msgstr ""
 
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr ""
@@ -29498,11 +29689,8 @@ msgstr ""
 msgid "live update of device '%s' is not supported"
 msgstr "పరికరం '%s' యొక్క లైవ్ నవీకరణ తోడ్పాటునీయదు"
 
-#, fuzzy, c-format
-msgid "loadparm '%s' exceeds 8 characters"
-msgstr "లీజ్ పాత్ '%s' అనునది %d అక్షరాలను మించినది"
-
-msgid "loadparm cannot be an empty string"
+#, c-format
+msgid "loadparm value '%s' must be between 1 and 8 characters"
 msgstr ""
 
 msgid "lock manager connection has been restricted"
@@ -30926,6 +31114,9 @@ msgstr "తప్పిపోయిన root మూలకము"
 msgid "missing rport name for '%s'"
 msgstr "అతిధేయి కొరకు పేరు లేదు"
 
+msgid "missing scheme for URI"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing scheme in migration URI: %s"
 msgstr "మైగ్రేషన్ URI నందు అతిధేయ దొరకలేదు: %s"
@@ -31205,6 +31396,15 @@ msgstr "వివరణకు బదులుగా శీర్షిక సవ
 msgid "monitor failure"
 msgstr "మానిటర్ పాత్ లేదు"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "మానిటర్ NULL కాకూడదు"
 
@@ -31350,11 +31550,6 @@ msgstr "వాల్యూమ్ నామము"
 msgid "namespace key is required when modifying metadata"
 msgstr ""
 
-msgid ""
-"native I/O needs either no disk cache or directsync cache mode, QEMU will "
-"fallback to aio=threads"
-msgstr ""
-
 #, c-format
 msgid "nbd does not support transport '%s'"
 msgstr "nbd బదిలీ '%s' కు తోడ్పాటునీయదు"
@@ -31405,6 +31600,7 @@ msgstr "rawio సామర్ధ్యం కావాలి"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "లెక్కకురాని SSF %d కావలిసినంత బలమైనదికాదు"
@@ -32249,6 +32445,9 @@ msgstr ""
 msgid "node CPU stats not implemented on this platform"
 msgstr "నోడ్ CPU గణాంకాలు యీ ప్లాట్‌ఫాం పైన యింప్లిమెంట్ చేయలేదు"
 
+msgid "node SEV information"
+msgstr ""
+
 #, fuzzy
 msgid "node cpu info not implemented on this platform"
 msgstr "ఈ ప్లాట్‌ఫాంనందు నోడ్ సమాచారము మెరుగుపరచలేదు"
@@ -33033,6 +33232,12 @@ msgstr "టాప్ ఫైల్ ఎక్కడనుండి కమిట్
 msgid "path to emulator binary (/domain/devices/emulator)"
 msgstr ""
 
+msgid "path to file containing the secret"
+msgstr ""
+
+msgid "path to file containing the secret header"
+msgstr ""
+
 msgid "path to inputvol secret data file is required"
 msgstr ""
 
@@ -33167,6 +33372,9 @@ msgstr "పరికరం '%s' యొక్క స్థిరమైన నవ�
 
 msgid "persistent update of device is not supported"
 msgstr "పరికరం యొక్క స్థిరమైన నవీకరణ తోడ్పాటులేదు"
+
+msgid "physical address within the guest domain's memory to set the secret"
+msgstr ""
 
 msgid "pid"
 msgstr "pid"
@@ -34372,6 +34580,9 @@ msgstr "డొమైన్ '%s'ను '%s'కు దాయుచున్నద�
 msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr "ఈ QEMU బైనరీ చేత డిస్కార్డ్ తోడ్పాటునీయదు"
 
+msgid "scheduler information is not supported on this platform"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
 msgstr "మైగ్రేషన్ URI నందు అతిధేయ దొరకలేదు: %s"
@@ -34617,6 +34828,9 @@ msgstr "SATA ఈ QEMU బైనరీతో మద్దతించబడదు
 #, fuzzy, c-format
 msgid "setting MTU on interface type %s is not supported yet"
 msgstr "నెట్వర్కు రకము %d మద్దతీయుటలేదు"
+
+msgid "setting a launch secret is only supported in SEV-enabled domains"
+msgstr ""
 
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr ""
@@ -35417,6 +35631,9 @@ msgstr "%s పరికరం కొరకు లక్ష్యపు పరి
 msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr ""
 
+msgid "tb-cache size must be an integer multiple of MiB"
+msgstr ""
+
 msgid "tcp"
 msgstr ""
 
@@ -35503,6 +35720,11 @@ msgstr ""
 
 msgid "the codeset of keycodes, default:linux"
 msgstr "కీకోడ్స్ యొక్క కోడ్‌సెట్, default:linux"
+
+msgid ""
+"the copy job forces guest writes to be synchronously written to the "
+"destination"
+msgstr ""
 
 msgid "the copy job is not persisted if VM is turned off"
 msgstr ""
@@ -36282,6 +36504,10 @@ msgstr "దీనివద్ద సేవికకు అనుసంధాన�
 msgid "unable to control COW flag on '%s', not btrfs"
 msgstr ""
 
+#, c-format
+msgid "unable to create %s <-> %s veth pair"
+msgstr ""
+
 msgid "unable to create blockdev props for vhostuser disk type"
 msgstr ""
 
@@ -36384,6 +36610,7 @@ msgstr "init mutex చేయలేకపోయింది"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "fsync %s చేయలేదు"
@@ -37212,6 +37439,8 @@ msgstr "ఇంప్లిమెంట్ చేయని పారామిత�
 msgid "unix"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "తెలియని"
 
@@ -38091,6 +38320,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "తోడ్పాటులేని ఫ్లాగ్స్ (0x%lx) ఫంక్షన్ %s నందు"
@@ -39286,6 +39537,103 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Cannot find %s - Possibly the package isn't installed"
+#~ msgstr "%s కనుగొనలేక పోయింది - బహుశా ప్యాకేజీ సంస్థాపించి వుండకపోవచ్చు"
+
+#~ msgid "Cannot set ownerId data in JSON document"
+#~ msgstr "JSON పత్రము నందు యజమానిఐడి దత్తాంశం అమర్చలేదు"
+
+#~ msgid "Cannot set ownerName data in JSON document"
+#~ msgstr "JSON పత్రము నందు యజమానిపేరు దత్తాంశం అమర్చలేదు"
+
+#~ msgid "Cannot set ownerPid data in JSON document"
+#~ msgstr "JSON పత్రము నందు యజమానిపిఐడి దత్తాంశం అమర్చలేదు"
+
+#~ msgid "Cannot set ownerUUID data in JSON document"
+#~ msgstr "JSON పత్రము నందు యజమానిUUID దత్తాంశం అమర్చలేదు"
+
+#~ msgid "Cannot set restricted data in JSON document"
+#~ msgstr "JSON పత్రము నందు నిర్భందిత దత్తాంశం అమర్చలేదు"
+
+#, fuzzy
+#~ msgid "End of file from qemu monitor"
+#~ msgstr "మానిటర్ నుండి వ్రాయలేదు"
+
+#~ msgid "Error while processing monitor IO"
+#~ msgstr "మానిటర్ IO ప్రోసెస్ చేయునప్పుడు దోషం"
+
+#~ msgid "Failed to connect to remote libvirt URI %s: %s"
+#~ msgstr "రిమోట్ లిబ్‌వర్ట్ URI %s కు అనుసంధానమగుటకు విఫలమైంది: %s"
+
+#, fuzzy
+#~ msgid "Failed to initialize a valid firewall backend"
+#~ msgstr "libvirt సిద్దంచేయుటకు విఫలమైంది"
+
+#, fuzzy
+#~ msgid "Invalid destination '%s' for output '%s'"
+#~ msgstr "చెల్లని విలువ '%s' VMX ప్రవేశం '%s' కొరకు"
+
+#~ msgid "Invalid file descriptor while waiting for monitor"
+#~ msgstr "మానిటర్ కొరకు ప్రయత్నించునప్పుడు చెల్లని ఫైల్ డిస్క్రిప్టార్"
+
+#, fuzzy
+#~ msgid "Invalid priority '%s' for output '%s'"
+#~ msgstr "'%s' యొక్క చెల్లని లుకప్ '%s' నుండి"
+
+#, fuzzy
+#~ msgid "Malformed format for output '%s'"
+#~ msgstr "తప్పుగారూపొందిన nbd పోర్ట్ '%s'"
+
+#~ msgid "Only IPv4 or IPv6 addresses can be used with iptables"
+#~ msgstr "iptables తో IPv4 లేదా IPv6 చిరునామాలు మాత్రమే వుపయోగించగలం"
+
+#~ msgid "Process %d %p %p [[[[%s]]][[[%s]]]"
+#~ msgstr "ప్రోసెస్ %d %p %p [[[[%s]]][[[%s]]]"
+
+#~ msgid "Process %zu %p %p [[[%s]]][[[%s]]]"
+#~ msgstr "ప్రోసెస్ %zu %p %p [[[%s]]][[[%s]]]"
+
+#~ msgid ""
+#~ "Publicly routable address %s is prohibited. The version of dnsmasq on "
+#~ "this host (%d.%d) doesn't support the bind-dynamic option or use "
+#~ "SO_BINDTODEVICE on listening sockets, one of which is required for safe "
+#~ "operation on a publicly routable subnet (see CVE-2012-3411). You must "
+#~ "either upgrade dnsmasq, or use a private/local subnet range for this "
+#~ "network (as described in RFC1918/RFC3484/RFC4193)."
+#~ msgstr ""
+#~ "పబ్లిక్‌గా రౌట్ చేయదగ్గ చిరునామా %s నిషేధించబడెను. ఈ అతిధేయ (%d.%d) పైని dnsmasq యొక్క వర్షన్ బైండ్-"
+#~ "డైనమిక్ ఐచ్చికం లేదా లిజనింగ్ సాకెట్లపైన SO_BINDTODEVICE వుపయోగంను తోడ్పాటునివ్వదు, పబ్లిక్‌గా రౌట్ "
+#~ "చేయదగ సబ్‌నెట్ పై సురక్షిత ఆపరేషన్ కొరకు యేదో వొకటి కావాలి (CVE-2012-3411 చూడండి). మీరు "
+#~ "dnsmasq నవీకరించాలి, లేదా ఈ నెట్వర్కు కొరకు వ్యక్తిగత/స్థానిక సబ్‌నెట్ విస్తృతి వుపయోగించు "
+#~ "(RFC1918/RFC3484/RFC4193 నందు వివరించినట్లు)."
+
+#~ msgid ""
+#~ "The version of dnsmasq on this host (%d.%d) doesn't adequately support "
+#~ "IPv6 dhcp range or dhcp host specification. Version %d.%d or later is "
+#~ "required."
+#~ msgstr ""
+#~ "dnsmasq యొక్క వర్షన్ ఈ అతిధేయ (%d.%d) పైన తగినట్టుగా IPv6 dhcp విస్తృతిని లేదా dhcp అతిధేయ "
+#~ "విశదీకరణను తోడ్పాటునివ్వదు. వర్షన్ %d.%d లేదా తరువాతిది అవసరమైంది."
+
+#~ msgid "Unable to pre-create chardev file '%s'"
+#~ msgstr "chardev ఫైల్ '%s' ముందుగా-సృష్టించలేదు"
+
+#~ msgid "Unable to wait on monitor condition"
+#~ msgstr "మానిటర్ పరిస్థితి పై వేచివుండలేక పోయింది"
+
+#~ msgid "change of nodeset for running domain requires strict numa mode"
+#~ msgstr "నడుస్తున్న డొమైన్ అభ్యర్ధనల కొరకు nodeset యొక్క మార్పు ఖచ్చిత numa రీతి కావాలి"
+
+#~ msgid "couldn't write radvd config file '%s'"
+#~ msgstr "radvd ఆకృతీకరణ ఫైల్ '%s' వ్రాయలేక పోయింది"
+
+#~ msgid "invalid security relabel value %s"
+#~ msgstr "చెల్లని రక్షణ రిలేబుల్ విలువ %s"
+
+#, fuzzy
+#~ msgid "loadparm '%s' exceeds 8 characters"
+#~ msgstr "లీజ్ పాత్ '%s' అనునది %d అక్షరాలను మించినది"
 
 #~ msgid "Cannot find start time in %s"
 #~ msgstr "%s నందు ప్రారంభ సమయం కనుగొనలేదు"
