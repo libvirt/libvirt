@@ -1630,7 +1630,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
 {
     g_autofree char *xml = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
-    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+    virDomainSnapshotLocation align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
 
     /* Easiest way to clone inactive portion of vm->def is via

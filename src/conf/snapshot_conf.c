@@ -473,7 +473,7 @@ virDomainSnapshotRedefineValidate(virDomainSnapshotDef *def,
                                   virDomainXMLOption *xmlopt,
                                   unsigned int flags)
 {
-    int align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+    virDomainSnapshotLocation align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     bool align_match = true;
     bool external = def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT ||
         virDomainSnapshotDefIsExternal(def);
@@ -640,7 +640,7 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
  */
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
-                            int default_snapshot,
+                            virDomainSnapshotLocation default_snapshot,
                             bool require_match)
 {
     virDomainDef *domdef = snapdef->parent.dom;
