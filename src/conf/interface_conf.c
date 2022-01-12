@@ -226,24 +226,18 @@ virInterfaceDefParseBondArpValid(xmlXPathContextPtr ctxt)
 
 static int
 virInterfaceDefParseDhcp(virInterfaceProtocolDef *def,
-                         xmlNodePtr dhcp, xmlXPathContextPtr ctxt)
+                         xmlNodePtr dhcp)
 {
-    VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *tmp = NULL;
+    virTristateBool peerdns;
 
     def->dhcp = 1;
-    ctxt->node = dhcp;
     def->peerdns = -1;
-    /* Not much to do in the current version */
-    tmp = virXPathString("string(./@peerdns)", ctxt);
-    if (tmp) {
-        bool state = false;
-        if (virStringParseYesNo(tmp, &state) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown dhcp peerdns value %s"), tmp);
-            return -1;
-        }
-        def->peerdns = state ? 1 : 0;
+
+    if (virXMLPropTristateBool(dhcp, "peerdns", VIR_XML_PROP_NONZERO, &peerdns) < 0)
+        return -1;
+
+    if (peerdns != VIR_TRISTATE_BOOL_ABSENT) {
+        def->peerdns = peerdns == VIR_TRISTATE_BOOL_YES ? 1 : 0;
     }
 
     return 0;
@@ -279,7 +273,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDef *def,
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        if (virInterfaceDefParseDhcp(def, dhcp, ctxt) < 0)
+        if (virInterfaceDefParseDhcp(def, dhcp) < 0)
             return -1;
     }
 
@@ -328,7 +322,7 @@ virInterfaceDefParseProtoIPv6(virInterfaceProtocolDef *def,
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
-        if (virInterfaceDefParseDhcp(def, dhcp, ctxt) < 0)
+        if (virInterfaceDefParseDhcp(def, dhcp) < 0)
             return -1;
     }
 
