@@ -134,7 +134,7 @@ bool virDomainSnapshotDefIsExternal(virDomainSnapshotDef *def);
 bool virDomainSnapshotIsExternal(virDomainMomentObj *snap);
 
 int virDomainSnapshotRedefinePrep(virDomainObj *vm,
-                                  virDomainSnapshotDef **def,
+                                  virDomainSnapshotDef *snapdef,
                                   virDomainMomentObj **snap,
                                   virDomainXMLOption *xmlopt,
                                   unsigned int flags);

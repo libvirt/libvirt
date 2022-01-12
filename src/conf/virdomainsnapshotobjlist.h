@@ -32,6 +32,9 @@ void virDomainSnapshotObjListFree(virDomainSnapshotObjList *snapshots);
 virDomainMomentObj *virDomainSnapshotAssignDef(virDomainSnapshotObjList *snapshots,
                                                virDomainSnapshotDef **snapdefptr);
 
+void virDomainSnapshotReplaceDef(virDomainMomentObj *snap,
+                                 virDomainSnapshotDef **snapdefptr);
+
 int virDomainSnapshotObjListGetNames(virDomainSnapshotObjList *snapshots,
                                      virDomainMomentObj *from,
                                      char **const names, int maxnames,

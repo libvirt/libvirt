@@ -1715,15 +1715,16 @@ qemuSnapshotRedefine(virDomainObj *vm,
     virDomainSnapshotPtr ret = NULL;
     g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
 
-    if (virDomainSnapshotRedefinePrep(vm, &snapdef, &snap,
-                                      driver->xmlopt,
-                                      flags) < 0)
+    if (virDomainSnapshotRedefinePrep(vm, snapdef, &snap, driver->xmlopt, flags) < 0)
         return NULL;
 
-    if (!snap) {
+    if (snap) {
+        virDomainSnapshotReplaceDef(snap, &snapdef);
+    } else {
         if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef)))
             return NULL;
     }
+
     /* XXX Should we validate that the redefined snapshot even
      * makes sense, such as checking that qemu-img recognizes the
      * snapshot name in at least one of the domain's disks?  */

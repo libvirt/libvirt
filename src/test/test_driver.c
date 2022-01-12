@@ -8749,10 +8749,12 @@ testDomainSnapshotRedefine(virDomainObj *vm,
     virDomainMomentObj *snap = NULL;
     g_autoptr(virDomainSnapshotDef) snapdef = virObjectRef(snapdeftmp);
 
-    if (virDomainSnapshotRedefinePrep(vm, &snapdef, &snap, xmlopt, flags) < 0)
+    if (virDomainSnapshotRedefinePrep(vm, snapdef, &snap, xmlopt, flags) < 0)
         return NULL;
 
-    if (!snap) {
+    if (snap) {
+        virDomainSnapshotReplaceDef(snap, &snapdef);
+    } else {
         if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, &snapdef)))
             return NULL;
     }

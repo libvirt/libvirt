@@ -1212,6 +1212,7 @@ virDomainSnapshotObjListNew;
 virDomainSnapshotObjListNum;
 virDomainSnapshotObjListRemove;
 virDomainSnapshotObjListRemoveAll;
+virDomainSnapshotReplaceDef;
 virDomainSnapshotSetCurrent;
 virDomainSnapshotUpdateRelations;
 

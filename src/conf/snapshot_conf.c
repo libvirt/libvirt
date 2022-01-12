@@ -957,12 +957,11 @@ virDomainSnapshotIsExternal(virDomainMomentObj *snap)
 
 int
 virDomainSnapshotRedefinePrep(virDomainObj *vm,
-                              virDomainSnapshotDef **defptr,
+                              virDomainSnapshotDef *snapdef,
                               virDomainMomentObj **snap,
                               virDomainXMLOption *xmlopt,
                               unsigned int flags)
 {
-    virDomainSnapshotDef *snapdef = *defptr;
     virDomainMomentObj *other;
     virDomainSnapshotDef *otherSnapDef = NULL;
     virDomainDef *otherDomDef = NULL;
@@ -976,6 +975,8 @@ virDomainSnapshotRedefinePrep(virDomainObj *vm,
         otherDomDef = otherSnapDef->parent.dom;
     }
 
+    *snap = other;
+
     if (virDomainSnapshotRedefineValidate(snapdef, vm->def->uuid, other, xmlopt, flags) < 0)
         return -1;
 
@@ -985,21 +986,6 @@ virDomainSnapshotRedefinePrep(virDomainObj *vm,
 
     if (virDomainSnapshotAlignDisks(snapdef, otherDomDef, align_location, true) < 0)
         return -1;
-
-    if (other) {
-        /* steal the domain definition if redefining an existing snapshot which
-         * with a snapshot definition lacking the domain definition */
-        if (!snapdef->parent.dom)
-            snapdef->parent.dom = g_steal_pointer(&otherSnapDef->parent.dom);
-
-        /* Drop and rebuild the parent relationship, but keep all
-         * child relations by reusing snap. */
-        virDomainMomentDropParent(other);
-        virObjectUnref(otherSnapDef);
-        other->def = &(*defptr)->parent;
-        *defptr = NULL;
-        *snap = other;
-    }
 
     return 0;
 }
