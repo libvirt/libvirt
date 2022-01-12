@@ -19,6 +19,16 @@ v8.1.0 (unreleased)
 
 * **Improvements**
 
+  * packaging: sysconfig files no longer installed
+
+    libvirt used to provide defaults in various /etc/sysconfig/ files, such
+    as /etc/sysconfig/libvirtd. Since these files are owned by the admin, this
+    made it difficult to change built-in defaults in case such file was
+    modified by the admin. The built-in defaults are now part of the provided
+    systemd unit files, such as libvirtd.service. These unit files continue
+    to parse sysconfig files, in case they are created by the admin and filled
+    with the desired key=value pairs.
+
 * **Bug fixes**
 
 
