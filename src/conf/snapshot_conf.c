@@ -622,13 +622,22 @@ virDomainSnapshotDefAssignExternalNames(virDomainSnapshotDef *def)
 }
 
 
-/* Align def->disks to def->parent.dom.  Sort the list of def->disks,
- * filling in any missing disks or snapshot state defaults given by
- * the domain, with a fallback to a passed in default.  Convert paths
- * to disk targets for uniformity.  Issue an error and return -1 if
- * any def->disks[n]->name appears more than once or does not map to
- * dom->disks.  If require_match, also ensure that there is no
- * conflicting requests for both internal and external snapshots.  */
+/**
+ * virDomainSnapshotAlignDisks:
+ * @snapdef: Snapshot definition to align
+ * @default_snapshot: snapshot location to assign to disks which don't have any
+ * @require_match: Require that all disks use the same snapshot mode
+ *
+ * Align snapdef->disks to snapdef->parent.dom, filling in any missing disks or
+ * snapshot state defaults given by the domain, with a fallback to
+ * @default_snapshot. Ensure that there are no duplicate snapshot disk
+ * definitions in @snapdef and there are no disks described in @snapdef but
+ * missing from the domain definition.
+ *
+ * Convert paths to disk targets for uniformity.
+ *
+ * On error -1 is returned and a libvirt error is reported.
+ */
 int
 virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
                             int default_snapshot,
