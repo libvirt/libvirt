@@ -980,23 +980,23 @@ virDomainSnapshotRedefinePrep(virDomainObj *vm,
                               virDomainXMLOption *xmlopt,
                               unsigned int flags)
 {
-    virDomainSnapshotDef *def = *defptr;
+    virDomainSnapshotDef *snapdef = *defptr;
     virDomainMomentObj *other;
     virDomainSnapshotDef *otherdef = NULL;
     bool check_if_stolen;
 
-    if (virDomainSnapshotCheckCycles(vm->snapshots, def, vm->def->name) < 0)
+    if (virDomainSnapshotCheckCycles(vm->snapshots, snapdef, vm->def->name) < 0)
         return -1;
 
-    other = virDomainSnapshotFindByName(vm->snapshots, def->parent.name);
+    other = virDomainSnapshotFindByName(vm->snapshots, snapdef->parent.name);
     if (other)
         otherdef = virDomainSnapshotObjGetDef(other);
     check_if_stolen = other && otherdef->parent.dom;
-    if (virDomainSnapshotRedefineValidate(def, vm->def->uuid, other, xmlopt,
+    if (virDomainSnapshotRedefineValidate(snapdef, vm->def->uuid, other, xmlopt,
                                           flags) < 0) {
         /* revert any stealing of the snapshot domain definition */
-        if (check_if_stolen && def->parent.dom && !otherdef->parent.dom)
-            otherdef->parent.dom = g_steal_pointer(&def->parent.dom);
+        if (check_if_stolen && snapdef->parent.dom && !otherdef->parent.dom)
+            otherdef->parent.dom = g_steal_pointer(&snapdef->parent.dom);
         return -1;
     }
     if (other) {
