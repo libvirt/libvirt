@@ -681,20 +681,6 @@ dnsmasqCapsNewEmpty(void)
 }
 
 dnsmasqCaps *
-dnsmasqCapsNewFromBuffer(const char *buf)
-{
-    g_autoptr(dnsmasqCaps) caps = dnsmasqCapsNewEmpty();
-
-    if (!caps)
-        return NULL;
-
-    if (dnsmasqCapsSetFromBuffer(caps, buf) < 0)
-        return NULL;
-
-    return g_steal_pointer(&caps);
-}
-
-dnsmasqCaps *
 dnsmasqCapsNewFromBinary(void)
 {
     g_autoptr(dnsmasqCaps) caps = dnsmasqCapsNewEmpty();

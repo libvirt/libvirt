@@ -2117,7 +2117,6 @@ dnsmasqAddDhcpHost;
 dnsmasqAddHost;
 dnsmasqCapsGetBinaryPath;
 dnsmasqCapsNewFromBinary;
-dnsmasqCapsNewFromBuffer;
 dnsmasqContextFree;
 dnsmasqContextNew;
 dnsmasqDelete;
