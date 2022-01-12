@@ -6,7 +6,7 @@
 # Daniel <veillard@redhat.com>, 2011
 # eukim <eukim@redhat.com>, 2006, 2007, 2009, 2012, 2013, 2014
 # Seong-ho Cho <darkcircle.0426@gmail.com>, 2014
-# simmon <simmon@nplob.com>, 2021.
+# simmon <simmon@nplob.com>, 2021, 2022.
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 msgid ""
@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2021-11-27 15:16+0000\n"
+"PO-Revision-Date: 2022-01-12 10:44+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.9.1\n"
+"X-Generator: Weblate 4.10.1\n"
 
 msgid ""
 "\n"
@@ -1239,7 +1239,7 @@ msgstr "guest-get-fsinfo의 응답에서 '디스크'가 누락됨"
 
 #, c-format
 msgid "'extended_l2' not supported with compat level %s"
-msgstr ""
+msgstr "'extended_l2'는 호환 수준 %s에서 지원되지 않습니다"
 
 msgid "'floor' attribute allowed only in <inbound> element"
 msgstr "'floor' 속성은 <inbound> 요소에만 허용됩니다"
@@ -4051,7 +4051,7 @@ msgid "Could not create harddisk, rc=%08x"
 msgstr "rc=%08x인 하드디스크를 생성 할 수 없습니다"
 
 msgid "Could not create log directory"
-msgstr ""
+msgstr "로그 디렉토리를 생성 할 수 없습니다"
 
 msgid "Could not create monitor"
 msgstr "모니터를 생성 할 수 없습니다"
@@ -6009,7 +6009,7 @@ msgstr "에이전트 소켓의 파일 끝"
 
 #, c-format
 msgid "End of file from qemu monitor (vm='%s')"
-msgstr ""
+msgstr "qemu 모니터에서 파일의 끝 (vm='%s')"
 
 msgid "End of file while reading data"
 msgstr "데이터를 읽는 동안 파일 끝"
@@ -6120,7 +6120,7 @@ msgstr "명령의 IO를 처리하는 동안 오류가 발생했습니다"
 
 #, c-format
 msgid "Error while processing monitor IO (vm='%s')"
-msgstr ""
+msgstr "모니터 입출력을 처리하는 동안 오류 (vm='%s')"
 
 msgid "Error while reading /proc/cgroups"
 msgstr "/proc/cgroups를 읽는 동안 오류가 발생했습니다"
@@ -6902,7 +6902,7 @@ msgstr "데몬 재시작을 처리할 스레드를 생성하지 못했습니다"
 #. * Not much we can do on error here except log it.
 #.
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "도메인 사멸을 처리하기 위한 쓰레드를 생성하는데 실패함"
 
 #.
 #. * Not much we can do on error here except log it.
