@@ -12,6 +12,8 @@
 #include "viralloc.h"
 #include "network/bridge_driver.h"
 #include "virstring.h"
+#define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
+#include "vircommandpriv.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -108,13 +110,44 @@ testCompareXMLToConfHelper(const void *data)
     return result;
 }
 
+static void
+buildCapsCallback(const char *const*args,
+                  const char *const*env G_GNUC_UNUSED,
+                  const char *input G_GNUC_UNUSED,
+                  char **output,
+                  char **error G_GNUC_UNUSED,
+                  int *status,
+                  void *opaque G_GNUC_UNUSED)
+{
+    if (STREQ(args[0], "/usr/sbin/dnsmasq") && STREQ(args[1], "--version")) {
+        *output = g_strdup("Dnsmasq version 2.67\n");
+        *status = EXIT_SUCCESS;
+    } else {
+        *status = EXIT_FAILURE;
+    }
+}
+
+static dnsmasqCaps *
+buildCaps(void)
+{
+    g_autoptr(dnsmasqCaps) caps = NULL;
+    g_autoptr(virCommandDryRunToken) dryRunToken = virCommandDryRunTokenNew();
+
+    virCommandSetDryRun(dryRunToken, NULL, true, true, buildCapsCallback, NULL);
+
+    caps = dnsmasqCapsNewFromBinary();
+
+    return g_steal_pointer(&caps);
+}
+
+
 static int
 mymain(void)
 {
     int ret = 0;
     g_autoptr(dnsmasqCaps) full = NULL;
 
-    full = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67");
+    full = buildCaps();
 
 #define DO_TEST(xname, xcaps) \
     do { \
