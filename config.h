@@ -36,12 +36,12 @@
 
 #if defined(__clang_major__) && defined(__clang_minor__)
 # ifdef __apple_build_version__
-#  if __clang_major__ < 5 || (__clang_major__ == 5 && __clang_minor__ < 1)
-#   error You need at least XCode Clang v5.1 to compile libvirt
+#  if __clang_major__ < 10 || (__clang_major__ == 10 && __clang_minor__ < 0)
+#   error You need at least XCode Clang v10.0 to compile libvirt
 #  endif
 # else
-#  if __clang_major__ < 3 || (__clang_major__ == 3 && __clang_minor__ < 4)
-#   error You need at least Clang v3.4 to compile libvirt
+#  if __clang_major__ < 6 || (__clang_major__ == 6 && __clang_minor__ < 4)
+#   error You need at least Clang v6.0 to compile libvirt
 #  endif
 # endif
 #elif defined(__GNUC__) && defined(__GNUC_MINOR__)
@@ -49,5 +49,5 @@
 #  error You need at least GCC v7.4.0 to compile libvirt
 # endif
 #else
-# error You either need at least GCC 7.4.0 or Clang 3.4 or XCode Clang 5.1 to compile libvirt
+# error You either need at least GCC 7.4.0 or Clang 6.0 or XCode Clang 10.0 to compile libvirt
 #endif
