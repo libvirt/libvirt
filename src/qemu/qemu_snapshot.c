@@ -1750,7 +1750,7 @@ qemuSnapshotRedefine(virDomainObj *vm,
 static virDomainSnapshotPtr
 qemuSnapshotCreate(virDomainObj *vm,
                    virDomainPtr domain,
-                   virDomainSnapshotDef *def,
+                   virDomainSnapshotDef *snapdef,
                    virQEMUDriver *driver,
                    virQEMUDriverConfig *cfg,
                    unsigned int flags)
@@ -1760,17 +1760,17 @@ qemuSnapshotCreate(virDomainObj *vm,
     virDomainMomentObj *current = NULL;
     virDomainSnapshotPtr ret = NULL;
 
-    if (qemuSnapshotCreateAlignDisks(vm, def, driver, flags) < 0)
+    if (qemuSnapshotCreateAlignDisks(vm, snapdef, driver, flags) < 0)
         return NULL;
 
-    if (qemuSnapshotPrepare(vm, def, &flags) < 0)
+    if (qemuSnapshotPrepare(vm, snapdef, &flags) < 0)
         return NULL;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA) {
         snap = tmpsnap = virDomainMomentObjNew();
-        snap->def = &def->parent;
+        snap->def = &snapdef->parent;
     } else {
-        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, def)))
+        if (!(snap = virDomainSnapshotAssignDef(vm->snapshots, snapdef)))
             return NULL;
 
         if ((current = virDomainSnapshotGetCurrent(vm->snapshots))) {
@@ -1778,7 +1778,7 @@ qemuSnapshotCreate(virDomainObj *vm,
         }
     }
 
-    virObjectRef(def);
+    virObjectRef(snapdef);
 
     /* actually do the snapshot */
     if (virDomainObjIsActive(vm)) {
