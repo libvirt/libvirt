@@ -266,10 +266,8 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDef *def,
     g_autofree xmlNodePtr *ipNodes = NULL;
     int nipNodes;
     size_t i;
-    char *tmp;
 
-    tmp = virXPathString("string(./route[1]/@gateway)", ctxt);
-    def->gateway = tmp;
+    def->gateway = virXPathString("string(./route[1]/@gateway)", ctxt);
 
     dhcp = virXPathNode("./dhcp", ctxt);
     if (dhcp != NULL) {
@@ -287,10 +285,7 @@ virInterfaceDefParseProtoIPv4(virInterfaceProtocolDef *def,
 
     def->nips = 0;
     for (i = 0; i < nipNodes; i++) {
-
-        virInterfaceIPDef *ip;
-
-        ip = g_new0(virInterfaceIPDef, 1);
+        virInterfaceIPDef *ip = g_new0(virInterfaceIPDef, 1);
 
         if (virInterfaceDefParseIP(ip, ipNodes[i]) < 0) {
             virInterfaceIPDefFree(ip);
