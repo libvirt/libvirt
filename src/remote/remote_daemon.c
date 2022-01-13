@@ -940,8 +940,10 @@ int main(int argc, char **argv) {
                               config->log_outputs,
                               privileged,
                               verbose,
-                              godaemon) < 0)
+                              godaemon) < 0) {
+        virDispatchError(NULL);
         exit(EXIT_FAILURE);
+    }
 
     /* Let's try to initialize global variable that holds the host's boot time. */
     if (virHostBootTimeInit() < 0) {

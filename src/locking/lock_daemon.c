@@ -919,8 +919,10 @@ int main(int argc, char **argv) {
                               config->log_outputs,
                               privileged,
                               verbose,
-                              godaemon) < 0)
+                              godaemon) < 0) {
+        virDispatchError(NULL);
         exit(EXIT_FAILURE);
+    }
 
     if (!pid_file &&
         virPidFileConstructPath(privileged,
