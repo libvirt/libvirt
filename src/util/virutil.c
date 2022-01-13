@@ -1324,35 +1324,6 @@ virValidateWWN(const char *wwn)
     return true;
 }
 
-#if defined(major) && defined(minor)
-int
-virGetDeviceID(const char *path, int *maj, int *min)
-{
-    struct stat sb;
-
-    if (stat(path, &sb) < 0)
-        return -errno;
-
-    if (!S_ISBLK(sb.st_mode))
-        return -EINVAL;
-
-    if (maj)
-        *maj = major(sb.st_rdev);
-    if (min)
-        *min = minor(sb.st_rdev);
-
-    return 0;
-}
-#else
-int
-virGetDeviceID(const char *path G_GNUC_UNUSED,
-               int *maj,
-               int *min)
-{
-    *maj = *min = 0;
-    return -ENOSYS;
-}
-#endif
 
 int
 virSetDeviceUnprivSGIO(const char *path G_GNUC_UNUSED,

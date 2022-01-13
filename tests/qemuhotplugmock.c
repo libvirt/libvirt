@@ -27,7 +27,6 @@
 #include "virmock.h"
 #include <fcntl.h>
 
-static int (*real_virGetDeviceID)(const char *path, int *maj, int *min);
 static bool (*real_virFileExists)(const char *path);
 
 static void
@@ -36,7 +35,6 @@ init_syms(void)
     if (real_virFileExists)
         return;
 
-    VIR_MOCK_REAL_INIT(virGetDeviceID);
     VIR_MOCK_REAL_INIT(virFileExists);
 }
 
@@ -65,21 +63,6 @@ virDevMapperGetTargets(const char *path,
     }
 
     return 0;
-}
-
-
-int
-virGetDeviceID(const char *path, int *maj, int *min)
-{
-    init_syms();
-
-    if (STREQ(path, "/dev/mapper/virt")) {
-        *maj = 254;
-        *min = 0;
-        return 0;
-    }
-
-    return real_virGetDeviceID(path, maj, min);
 }
 
 

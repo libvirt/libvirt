@@ -3508,7 +3508,6 @@ virDoesUserExist;
 virDoubleToStr;
 virFormatIntDecimal;
 virFormatIntPretty;
-virGetDeviceID;
 virGetGroupID;
 virGetGroupList;
 virGetGroupName;
