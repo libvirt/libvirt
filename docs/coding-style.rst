@@ -948,7 +948,6 @@ makes sense:
 
   error:     A path only taken upon return with an error code
   cleanup:   A path taken upon return with success code + optional error
-  no_memory: A path only taken upon return with an OOM error code
   retry:     If needing to jump upwards (e.g., retry on EINTR)
 
 Top-level labels should be indented by one space (putting them on
