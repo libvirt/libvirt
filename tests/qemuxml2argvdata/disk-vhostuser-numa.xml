@@ -1,0 +1,32 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>qemu64</model>
+    <numa>
+      <cell id='0' cpus='0' memory='14680064' unit='KiB' memAccess='shared'/>
+    </numa>
+  </cpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+  </os>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='vhostuser' device='disk'>
+      <driver name='qemu' type='raw'/>
+      <source type='unix' path='/tmp/vhost1.sock'/>
+      <target dev='vda' bus='virtio'/>
+      <boot order='1'/>
+    </disk>
+    <disk type='vhostuser' device='disk'>
+      <driver name='qemu' type='raw' iommu='on' ats='on' packed='on'/>
+      <source type='unix' path='/tmp/vhost1.sock'>
+        <reconnect enabled='yes' timeout='10'/>
+      </source>
+      <target dev='vdb' bus='virtio'/>
+    </disk>
+  </devices>
+</domain>

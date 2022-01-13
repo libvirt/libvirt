@@ -1442,6 +1442,8 @@ mymain(void)
     VIR_FREE(driver.config->vxhsTLSx509certdir);
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
+    DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
+    DO_TEST_CAPS_LATEST("disk-vhostuser-numa");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-device-lun-type-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-attaching-partition-nosupport");
