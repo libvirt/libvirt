@@ -603,7 +603,6 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virStorageSource *oldsrc = disk->src;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    bool sharedAdded = false;
     bool managedpr = virStorageSourceChainHasManagedPR(oldsrc) ||
                      virStorageSourceChainHasManagedPR(newsrc);
     int ret = -1;
@@ -619,11 +618,6 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
-
-    if (qemuAddSharedDisk(driver, disk, vm->def->name) < 0)
-        goto cleanup;
-
-    sharedAdded = true;
 
     if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) < 0)
         goto cleanup;
@@ -647,24 +641,17 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     if (rc < 0)
         goto cleanup;
 
-    /* remove the old source from shared device list */
-    disk->src = oldsrc;
-    ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
     ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, oldsrc));
 
     /* media was changed, so we can remove the old media definition now */
     virObjectUnref(oldsrc);
     oldsrc = NULL;
-    disk->src = newsrc;
 
     ret = 0;
 
  cleanup:
     /* undo changes to the new disk */
     if (ret < 0) {
-        if (sharedAdded)
-            ignore_value(qemuRemoveSharedDisk(driver, disk, vm->def->name));
-
         ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, newsrc));
     }
 
@@ -977,9 +964,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (virDomainDiskTranslateSourcePool(disk) < 0)
         goto cleanup;
 
-    if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
-        goto cleanup;
-
     if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) < 0)
         goto cleanup;
 
@@ -1076,8 +1060,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
  cleanup:
     if (ret < 0) {
-        ignore_value(qemuRemoveSharedDevice(driver, dev, vm->def->name));
-
         if (releaseUSB)
             virDomainUSBAddressRelease(priv->usbaddrs, &disk->info);
 
@@ -4418,7 +4400,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
 {
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     g_autoptr(qemuBlockStorageSourceChainData) diskBackend = NULL;
-    virDomainDeviceDef dev;
     size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
     bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
@@ -4481,10 +4462,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     /* tear down disk security access */
     if (diskBackend)
         qemuDomainStorageSourceChainAccessRevoke(driver, vm, disk->src);
-
-    dev.type = VIR_DOMAIN_DEVICE_DISK;
-    dev.data.disk = disk;
-    ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
 
     if (virStorageSourceChainHasManagedPR(disk->src) &&
         qemuHotplugRemoveManagedPR(driver, vm, QEMU_ASYNC_JOB_NONE) < 0)

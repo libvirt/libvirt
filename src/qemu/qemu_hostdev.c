@@ -272,24 +272,7 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriver *driver,
                               virDomainHostdevDef **hostdevs,
                               int nhostdevs)
 {
-    size_t i;
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
-
-    /* Loop 1: Add the shared scsi host device to shared device
-     * table.
-     */
-    for (i = 0; i < nhostdevs; i++) {
-        virDomainDeviceDef dev;
-
-        if (!virHostdevIsSCSIDevice(hostdevs[i]))
-            continue;
-
-        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        dev.data.hostdev = hostdevs[i];
-
-        if (qemuAddSharedDevice(driver, &dev, name) < 0)
-            return -1;
-    }
 
     return virHostdevPrepareSCSIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                         name, hostdevs, nhostdevs);
@@ -426,18 +409,7 @@ qemuHostdevReAttachSCSIDevices(virQEMUDriver *driver,
                                virDomainHostdevDef **hostdevs,
                                int nhostdevs)
 {
-    size_t i;
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
-
-    for (i = 0; i < nhostdevs; i++) {
-        virDomainHostdevDef *hostdev = hostdevs[i];
-        virDomainDeviceDef dev;
-
-        dev.type = VIR_DOMAIN_DEVICE_HOSTDEV;
-        dev.data.hostdev = hostdev;
-
-        ignore_value(qemuRemoveSharedDevice(driver, &dev, name));
-    }
 
     virHostdevReAttachSCSIDevices(hostdev_mgr, QEMU_DRIVER_NAME,
                                   name, hostdevs, nhostdevs);

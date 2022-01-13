@@ -292,9 +292,6 @@ struct _virQEMUDriver {
 
     virHostdevManager *hostdevMgr;
 
-    /* Immutable pointer. Unsafe APIs. XXX */
-    GHashTable *sharedDevices;
-
     /* Immutable pointer, immutable object */
     virPortAllocatorRange *remotePorts;
 
@@ -343,38 +340,6 @@ virQEMUDriverGetDomainCapabilities(virQEMUDriver *driver,
                                    const char *machine,
                                    virArch arch,
                                    virDomainVirtType virttype);
-
-typedef struct _qemuSharedDeviceEntry qemuSharedDeviceEntry;
-
-bool qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntry *entry,
-                                       const char *name,
-                                       int *idx)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-char *qemuGetSharedDeviceKey(const char *disk_path)
-    ATTRIBUTE_NONNULL(1);
-
-void qemuSharedDeviceEntryFree(void *payload);
-
-int qemuAddSharedDisk(virQEMUDriver *driver,
-                      virDomainDiskDef *disk,
-                      const char *name)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-int qemuAddSharedDevice(virQEMUDriver *driver,
-                        virDomainDeviceDef *dev,
-                        const char *name)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-int qemuRemoveSharedDevice(virQEMUDriver *driver,
-                           virDomainDeviceDef *dev,
-                           const char *name)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
-
-int qemuRemoveSharedDisk(virQEMUDriver *driver,
-                         virDomainDiskDef *disk,
-                         const char *name)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int qemuDriverAllocateID(virQEMUDriver *driver);
 virDomainXMLOption *virQEMUDriverCreateXMLConf(virQEMUDriver *driver,

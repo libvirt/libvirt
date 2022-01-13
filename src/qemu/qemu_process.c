@@ -5022,7 +5022,7 @@ qemuProcessSetupGraphics(virQEMUDriver *driver,
 
 
 static int
-qemuProcessSetupRawIO(virQEMUDriver *driver,
+qemuProcessSetupRawIO(virQEMUDriver *driver G_GNUC_UNUSED,
                       virDomainObj *vm,
                       virCommand *cmd G_GNUC_UNUSED)
 {
@@ -5032,7 +5032,6 @@ qemuProcessSetupRawIO(virQEMUDriver *driver,
 
     /* in case a certain disk is desirous of CAP_SYS_RAWIO, add this */
     for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDeviceDef dev;
         virDomainDiskDef *disk = vm->def->disks[i];
 
         if (disk->rawio == VIR_TRISTATE_BOOL_YES) {
@@ -5041,11 +5040,6 @@ qemuProcessSetupRawIO(virQEMUDriver *driver,
             break;
 #endif
         }
-
-        dev.type = VIR_DOMAIN_DEVICE_DISK;
-        dev.data.disk = disk;
-        if (qemuAddSharedDevice(driver, &dev, vm->def->name) < 0)
-            goto cleanup;
     }
 
     /* If rawio not already set, check hostdevs as well */
@@ -5066,7 +5060,6 @@ qemuProcessSetupRawIO(virQEMUDriver *driver,
 
     ret = 0;
 
- cleanup:
     if (rawio) {
 #ifdef CAP_SYS_RAWIO
         if (ret == 0)
@@ -8134,15 +8127,6 @@ void qemuProcessStop(virQEMUDriver *driver,
         qemuSecurityRestoreAllLabel(driver, vm,
                                     !!(flags & VIR_QEMU_PROCESS_STOP_MIGRATED));
 
-    for (i = 0; i < vm->def->ndisks; i++) {
-        virDomainDeviceDef dev;
-        virDomainDiskDef *disk = vm->def->disks[i];
-
-        dev.type = VIR_DOMAIN_DEVICE_DISK;
-        dev.data.disk = disk;
-        ignore_value(qemuRemoveSharedDevice(driver, &dev, vm->def->name));
-    }
-
     /* Clear out dynamically assigned labels */
     for (i = 0; i < vm->def->nseclabels; i++) {
         if (vm->def->seclabels[i]->type == VIR_DOMAIN_SECLABEL_DYNAMIC)
@@ -8789,12 +8773,8 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainInitializePflashStorageSource(obj) < 0)
         goto error;
 
-    /* XXX: Need to change as long as lock is introduced for
-     * qemu_driver->sharedDevices.
-     */
     for (i = 0; i < obj->def->ndisks; i++) {
         virDomainDiskDef *disk = obj->def->disks[i];
-        virDomainDeviceDef dev;
 
         if (virDomainDiskTranslateSourcePool(disk) < 0)
             goto error;
@@ -8811,11 +8791,6 @@ qemuProcessReconnect(void *opaque)
         } else {
             VIR_DEBUG("skipping backing chain detection for '%s'", disk->dst);
         }
-
-        dev.type = VIR_DOMAIN_DEVICE_DISK;
-        dev.data.disk = disk;
-        if (qemuAddSharedDevice(driver, &dev, obj->def->name) < 0)
-            goto error;
     }
 
     for (i = 0; i < obj->def->ngraphics; i++) {

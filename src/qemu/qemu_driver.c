@@ -733,8 +733,6 @@ qemuStateInitialize(bool privileged,
     if (!(qemu_driver->hostdevMgr = virHostdevManagerGetDefault()))
         goto error;
 
-    qemu_driver->sharedDevices = virHashNew(qemuSharedDeviceEntryFree);
-
     if (qemuMigrationDstErrorInit(qemu_driver) < 0)
         goto error;
 
@@ -1076,7 +1074,6 @@ qemuStateCleanup(void)
     virPortAllocatorRangeFree(qemu_driver->migrationPorts);
     virPortAllocatorRangeFree(qemu_driver->webSocketPorts);
     virPortAllocatorRangeFree(qemu_driver->remotePorts);
-    g_clear_pointer(&qemu_driver->sharedDevices, g_hash_table_unref);
     virObjectUnref(qemu_driver->hostdevMgr);
     virObjectUnref(qemu_driver->securityManager);
     virObjectUnref(qemu_driver->domainEventState);
