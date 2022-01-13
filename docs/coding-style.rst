@@ -600,6 +600,19 @@ calling another function.
         ...
     }
 
+Prefer variable definitions on separate lines. This allows for smaller,
+easier to understand diffs when changing them. Define variables in the
+smallest possible scope.
+
+::
+
+  GOOD:
+    int count = 0;
+    int nnodes;
+
+  BAD:
+    int count = 0, nnodes;
+
 Attribute annotations
 ---------------------
 
