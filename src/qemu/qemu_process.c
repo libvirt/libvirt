@@ -5022,8 +5022,7 @@ qemuProcessSetupGraphics(virQEMUDriver *driver,
 
 
 static int
-qemuProcessSetupRawIO(virQEMUDriver *driver G_GNUC_UNUSED,
-                      virDomainObj *vm,
+qemuProcessSetupRawIO(virDomainObj *vm,
                       virCommand *cmd G_GNUC_UNUSED)
 {
     bool rawio = false;
@@ -5062,8 +5061,7 @@ qemuProcessSetupRawIO(virQEMUDriver *driver G_GNUC_UNUSED,
 
     if (rawio) {
 #ifdef CAP_SYS_RAWIO
-        if (ret == 0)
-            virCommandAllowCap(cmd, CAP_SYS_RAWIO);
+        virCommandAllowCap(cmd, CAP_SYS_RAWIO);
 #else
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("Raw I/O is not supported on this platform"));
@@ -7423,7 +7421,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting up raw IO");
-    if (qemuProcessSetupRawIO(driver, vm, cmd) < 0)
+    if (qemuProcessSetupRawIO(vm, cmd) < 0)
         goto cleanup;
 
     virCommandSetPreExecHook(cmd, qemuProcessHook, &hookData);
