@@ -617,11 +617,6 @@ mymain(void)
                  ARG_END);
     DO_TEST_NOCAPS("numad-static-vcpu-no-numatune");
 
-    DO_TEST("disk-scsi-lun-passthrough-sgio",
-            QEMU_CAPS_SCSI_LSI,
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_DISK_WWN,
-            QEMU_CAPS_SCSI_BLOCK);
     DO_TEST("disk-scsi-disk-vpd",
             QEMU_CAPS_SCSI_LSI, QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_SCSI_DISK_WWN);
     DO_TEST_NOCAPS("disk-source-pool");
@@ -1000,12 +995,6 @@ mymain(void)
             QEMU_CAPS_SCSI_LSI);
 
     DO_TEST("hostdev-scsi-shareable",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-sgio",
-            QEMU_CAPS_VIRTIO_SCSI,
-            QEMU_CAPS_SCSI_LSI);
-    DO_TEST("hostdev-scsi-rawio",
             QEMU_CAPS_VIRTIO_SCSI,
             QEMU_CAPS_SCSI_LSI);
 

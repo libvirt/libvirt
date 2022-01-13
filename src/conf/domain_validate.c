@@ -621,6 +621,12 @@ virDomainDiskDefValidate(const virDomainDef *def,
     if (virDomainDiskDefValidateSource(disk->src) < 0)
         return -1;
 
+    if (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("unfiltered sgio is no longer supported"));
+        return -1;
+    }
+
     /* Validate LUN configuration */
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         if (virDomainDiskDefSourceLUNValidate(disk->src) < 0)
@@ -1915,6 +1921,11 @@ virDomainHostdevDefValidate(const virDomainHostdevDef *hostdev)
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("SCSI host device must use 'drive' "
                                  "address type"));
+                return -1;
+            }
+            if (hostdev->source.subsys.u.scsi.sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("unfiltered sgio is no longer supported"));
                 return -1;
             }
             break;
