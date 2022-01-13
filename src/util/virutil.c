@@ -1325,27 +1325,6 @@ virValidateWWN(const char *wwn)
 }
 
 
-int
-virSetDeviceUnprivSGIO(const char *path G_GNUC_UNUSED,
-                       const char *sysfs_dir G_GNUC_UNUSED,
-                       int unpriv_sgio G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("unpriv_sgio is not supported by this kernel"));
-    return -1;
-}
-
-int
-virGetDeviceUnprivSGIO(const char *path G_GNUC_UNUSED,
-                       const char *sysfs_dir G_GNUC_UNUSED,
-                       int *unpriv_sgio G_GNUC_UNUSED)
-{
-    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                   _("unpriv_sgio is not supported by this kernel"));
-    return -1;
-}
-
-
 /**
  * virParseOwnershipIds:
  *

@@ -116,13 +116,6 @@ bool virDoesGroupExist(const char *name);
 
 bool virValidateWWN(const char *wwn);
 
-int virSetDeviceUnprivSGIO(const char *path,
-                           const char *sysfs_dir,
-                           int unpriv_sgio);
-int virGetDeviceUnprivSGIO(const char *path,
-                           const char *sysfs_dir,
-                           int *unpriv_sgio);
-
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
 
