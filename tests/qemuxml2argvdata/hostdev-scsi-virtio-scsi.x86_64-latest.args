@@ -27,28 +27,28 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.0","addr":"0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-2-backend","read-only":false}' \
--device scsi-generic,drive=libvirt-2-backend,id=hostdev0,bus=scsi0.0,channel=0,scsi-id=4,lun=8 \
+-device '{"driver":"scsi-generic","drive":"libvirt-2-backend","id":"hostdev0","bus":"scsi0.0","channel":0,"scsi-id":4,"lun":8}' \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-3-backend","read-only":true}' \
--device scsi-generic,drive=libvirt-3-backend,id=hostdev1,bus=scsi0.0,channel=0,scsi-id=4,lun=7 \
+-device '{"driver":"scsi-generic","drive":"libvirt-3-backend","id":"hostdev1","bus":"scsi0.0","channel":0,"scsi-id":4,"lun":7}' \
 -blockdev '{"driver":"host_device","filename":"/dev/sg0","node-name":"libvirt-4-backend","read-only":false}' \
--device scsi-generic,drive=libvirt-4-backend,id=ua-7996c8dc-a4fa-4012-b76f-043d20144263,bus=scsi0.0,channel=0,scsi-id=4,lun=6 \
+-device '{"driver":"scsi-generic","drive":"libvirt-4-backend","id":"ua-7996c8dc-a4fa-4012-b76f-043d20144263","bus":"scsi0.0","channel":0,"scsi-id":4,"lun":6}' \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260","target":"iqn.1992-01.com.example","lun":0,"transport":"tcp","node-name":"libvirt-5-backend","read-only":false}' \
--device scsi-generic,drive=libvirt-5-backend,id=hostdev2,bus=scsi0.0,channel=0,scsi-id=2,lun=4 \
+-device '{"driver":"scsi-generic","drive":"libvirt-5-backend","id":"hostdev2","bus":"scsi0.0","channel":0,"scsi-id":2,"lun":4}' \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260","target":"iqn.1992-01.com.example","lun":1,"transport":"tcp","node-name":"libvirt-6-backend","read-only":true}' \
--device scsi-generic,drive=libvirt-6-backend,id=hostdev3,bus=scsi0.0,channel=0,scsi-id=2,lun=5 \
+-device '{"driver":"scsi-generic","drive":"libvirt-6-backend","id":"hostdev3","bus":"scsi0.0","channel":0,"scsi-id":2,"lun":5}' \
 -object '{"qom-type":"secret","id":"libvirt-7-backend-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260","target":"iqn.1992-01.com.example:storage","lun":1,"transport":"tcp","user":"myname","password-secret":"libvirt-7-backend-secret0","node-name":"libvirt-7-backend","read-only":false}' \
--device scsi-generic,drive=libvirt-7-backend,id=hostdev4,bus=scsi0.0,channel=0,scsi-id=3,lun=4 \
+-device '{"driver":"scsi-generic","drive":"libvirt-7-backend","id":"hostdev4","bus":"scsi0.0","channel":0,"scsi-id":3,"lun":4}' \
 -object '{"qom-type":"secret","id":"libvirt-8-backend-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"iscsi","portal":"example.org:3260","target":"iqn.1992-01.com.example:storage","lun":2,"transport":"tcp","user":"myname","password-secret":"libvirt-8-backend-secret0","initiator-name":"iqn.2020-07.com.example:test","node-name":"libvirt-8-backend","read-only":false}' \
--device scsi-generic,drive=libvirt-8-backend,id=hostdev5,bus=scsi0.0,channel=0,scsi-id=3,lun=5 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-device '{"driver":"scsi-generic","drive":"libvirt-8-backend","id":"hostdev5","bus":"scsi0.0","channel":0,"scsi-id":3,"lun":5}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

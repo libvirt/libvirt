@@ -29,10 +29,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-rhel7/.config \
 -global PIIX4_PM.disable_s3=1 \
 -global PIIX4_PM.disable_s4=1 \
 -boot strict=on \
--device ich9-usb-ehci1,id=usb,bus=pci.0,multifunction=on,addr=0x6.0x7 \
--device ich9-usb-uhci1,masterbus=usb.0,firstport=0,bus=pci.0,multifunction=on,addr=0x6 \
--device nec-usb-xhci,id=usb1,bus=pci.0,addr=0xa \
+-device '{"driver":"ich9-usb-ehci1","id":"usb","bus":"pci.0","multifunction":true,"addr":"0x6.0x7"}' \
+-device '{"driver":"ich9-usb-uhci1","masterbus":"usb.0","firstport":0,"bus":"pci.0","multifunction":true,"addr":"0x6"}' \
+-device '{"driver":"nec-usb-xhci","id":"usb1","bus":"pci.0","addr":"0xa"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -25,15 +25,15 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-f14/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot menu=on,strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x6 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x6"}' \
 -netdev tap,fd=3,id=hostnet0 \
--device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:71:70:89,bus=pci.0,addr=0x7 \
--device usb-tablet,id=input0,bus=usb.0,port=1 \
+-device '{"driver":"rtl8139","netdev":"hostnet0","id":"net0","mac":"52:54:00:71:70:89","bus":"pci.0","addr":"0x7"}' \
+-device '{"driver":"usb-tablet","id":"input0","bus":"usb.0","port":"1"}' \
 -audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5900,addr=127.0.0.1,seamless-migration=on \
--device VGA,id=video0,vgamem_mb=16,bus=pci.0,addr=0x2 \
--device AC97,id=sound0,audiodev=audio1,bus=pci.0,addr=0x3 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 \
+-device '{"driver":"VGA","id":"video0","vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"AC97","id":"sound0","audiodev":"audio1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x5"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

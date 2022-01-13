@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/tmp/missing-backing-store.qcow","node-name":"libvirt-25-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-25-format","read-only":true,"driver":"qcow2","file":"libvirt-25-storage"}' \
 -blockdev '{"driver":"gluster","volume":"Volume2","path":"Image","server":[{"type":"unix","path":"/path/to/sock"}],"debug":4,"node-name":"libvirt-24-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-24-format","read-only":false,"driver":"qcow2","file":"libvirt-24-storage","backing":"libvirt-25-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-24-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-24-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/tmp/Fedora-17-x86_64-Live-KDE.iso","node-name":"libvirt-23-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-23-format","read-only":true,"driver":"raw","file":"libvirt-23-storage"}' \
 -blockdev '{"driver":"file","filename":"/tmp/image5.qcow","node-name":"libvirt-22-storage","auto-read-only":true,"discard":"unmap"}' \
@@ -47,19 +47,19 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"node-name":"libvirt-18-format","read-only":true,"driver":"qcow2","file":"libvirt-18-storage","backing":"libvirt-19-format"}' \
 -blockdev '{"driver":"nbd","server":{"type":"unix","path":"/var/run/nbdsock"},"export":"bar","node-name":"libvirt-17-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-17-format","read-only":false,"driver":"qcow2","file":"libvirt-17-storage","backing":"libvirt-18-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-17-format,id=virtio-disk1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-17-format","id":"virtio-disk1"}' \
 -blockdev '{"driver":"gluster","volume":"Volume1","path":"Image","server":[{"type":"inet","host":"example.org","port":"6000"}],"debug":4,"node-name":"libvirt-16-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-16-format","read-only":false,"driver":"raw","file":"libvirt-16-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-16-format,id=virtio-disk2 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-16-format","id":"virtio-disk2"}' \
 -blockdev '{"driver":"file","filename":"/tmp/image.qcow","node-name":"libvirt-15-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-15-format","read-only":true,"driver":"qcow2","file":"libvirt-15-storage","backing":null}' \
 -object '{"qom-type":"secret","id":"libvirt-14-storage-auth-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"rbd","pool":"pool","image":"image","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"user":"myname","auth-client-required":["cephx","none"],"key-secret":"libvirt-14-storage-auth-secret0","node-name":"libvirt-14-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-14-format","read-only":false,"driver":"qcow2","file":"libvirt-14-storage","backing":"libvirt-15-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x5,drive=libvirt-14-format,id=virtio-disk3 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-14-format","id":"virtio-disk3"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest11","node-name":"libvirt-13-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-13-format","read-only":false,"driver":"qcow2","file":"libvirt-13-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x6,drive=libvirt-13-format,id=virtio-disk4 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x6","drive":"libvirt-13-format","id":"virtio-disk4"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/rhel7.qcow2","node-name":"libvirt-12-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-12-format","read-only":true,"driver":"qcow2","file":"libvirt-12-storage","backing":null}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/rhel7.1483536402","node-name":"libvirt-11-storage","auto-read-only":true,"discard":"unmap"}' \
@@ -84,8 +84,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"qcow2","file":"libvirt-2-storage","backing":"libvirt-3-format"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/rhel7.1484071880","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage","backing":"libvirt-2-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x7,drive=libvirt-1-format,id=virtio-disk5 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-1-format","id":"virtio-disk5"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x8 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x8"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

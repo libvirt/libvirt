@@ -241,6 +241,7 @@
   <flag name='rbd-encryption'/>
   <flag name='sev-guest-kernel-hashes'/>
   <flag name='sev-inject-launch-secret'/>
+  <flag name='device.json+hotplug'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

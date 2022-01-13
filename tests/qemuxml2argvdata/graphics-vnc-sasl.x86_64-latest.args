@@ -27,12 +27,12 @@ SASL_CONF_PATH=/root/.sasl2 \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -vnc 127.0.0.1:3,sasl=on,audiodev=audio1 \
--device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
+-device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

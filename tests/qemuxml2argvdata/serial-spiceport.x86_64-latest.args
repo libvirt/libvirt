@@ -26,16 +26,16 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-1-format","id":"ide0-0-0","bootindex":1}' \
 -chardev spiceport,id=charserial0,name=org.qemu.console.serial.0 \
--device isa-serial,chardev=charserial0,id=serial0,index=0 \
--device usb-tablet,id=input0,bus=usb.0,port=1 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-device '{"driver":"usb-tablet","id":"input0","bus":"usb.0","port":"1"}' \
 -audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,seamless-migration=on \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,vram64_size_mb=0,vgamem_mb=8,max_outputs=1,bus=pci.0,addr=0x2 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-device '{"driver":"qxl-vga","id":"video0","ram_size":67108864,"vram_size":67108864,"vram64_size_mb":0,"vgamem_mb":8,"max_outputs":1,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

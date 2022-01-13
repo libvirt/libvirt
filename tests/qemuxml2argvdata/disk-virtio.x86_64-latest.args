@@ -27,19 +27,19 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw","file":"libvirt-4-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-4-format,id=ide0-0-0,bootindex=1 \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-4-format","id":"ide0-0-0","bootindex":1}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest2","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw","file":"libvirt-3-storage"}' \
--device ide-cd,bus=ide.1,unit=0,drive=libvirt-3-format,id=ide0-1-0 \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-3-format","id":"ide0-1-0"}' \
 -blockdev '{"driver":"file","filename":"/tmp/data.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-2-format,id=virtio-disk0 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-2-format","id":"virtio-disk0"}' \
 -blockdev '{"driver":"file","filename":"/tmp/logs.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-1-format,id=virtio-disk1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-1-format","id":"virtio-disk1"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -27,7 +27,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device intel-iommu,intremap=on,device-iotlb=on \
+-device '{"driver":"intel-iommu","intremap":"on","device-iotlb":true}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

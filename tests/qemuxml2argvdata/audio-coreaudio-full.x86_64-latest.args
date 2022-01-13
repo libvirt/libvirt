@@ -27,10 +27,10 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"host_cdrom","filename":"/dev/cdrom","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
--device ide-cd,bus=ide.1,unit=0,drive=libvirt-1-format,id=ide0-1-0,bootindex=1 \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-1-format","id":"ide0-1-0","bootindex":1}' \
 -audiodev '{"id":"audio1","driver":"coreaudio","in":{"mixing-engine":true,"fixed-settings":true,"voices":1,"buffer-length":100,"frequency":44100,"channels":2,"format":"s16","buffer-count":50},"out":{"mixing-engine":true,"fixed-settings":true,"voices":2,"buffer-length":200,"frequency":22050,"channels":4,"format":"f32","buffer-count":42}}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

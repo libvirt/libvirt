@@ -27,12 +27,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -chardev socket,id=chr-vu-video0,fd=1729 \
--device vhost-user-vga,id=video0,max_outputs=1,chardev=chr-vu-video0,bus=pci.0,addr=0x2 \
+-device '{"driver":"vhost-user-vga","id":"video0","max_outputs":1,"chardev":"chr-vu-video0","bus":"pci.0","addr":"0x2"}' \
 -chardev socket,id=chr-vu-video1,fd=1729 \
--device vhost-user-gpu-pci,packed=off,id=video1,max_outputs=1,chardev=chr-vu-video1,bus=pci.0,addr=0x3 \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x4 \
+-device '{"driver":"vhost-user-gpu-pci","packed":false,"id":"video1","max_outputs":1,"chardev":"chr-vu-video1","bus":"pci.0","addr":"0x3"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x4"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -649,11 +649,14 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev.json", /* QEMU_CAPS_CHARDEV_JSON */
 
               /* 415 */
-              "device.json", /* QEMU_CAPS_DEVICE_JSON */
+              "device.json", /* X_QEMU_CAPS_DEVICE_JSON_BROKEN_HOTPLUG */
               "query-dirty-rate", /* QEMU_CAPS_QUERY_DIRTY_RATE */
               "rbd-encryption", /* QEMU_CAPS_RBD_ENCRYPTION */
               "sev-guest-kernel-hashes", /* QEMU_CAPS_SEV_GUEST_KERNEL_HASHES */
               "sev-inject-launch-secret", /* QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET */
+
+              /* 420 */
+              "device.json+hotplug", /* QEMU_CAPS_DEVICE_JSON */
     );
 
 
@@ -1556,6 +1559,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "chardev-add/arg-type/backend/+file/data/logfile", QEMU_CAPS_CHARDEV_LOGFILE },
     { "chardev-add/arg-type/backend/+file/data/logappend", QEMU_CAPS_CHARDEV_FILE_APPEND },
+    { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "human-monitor-command/$savevm-monitor-nodes", QEMU_CAPS_SAVEVM_MONITOR_NODES },
     { "migrate-set-parameters/arg-type/max-bandwidth", QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH },
     { "migrate-set-parameters/arg-type/downtime-limit", QEMU_CAPS_MIGRATION_PARAM_DOWNTIME },

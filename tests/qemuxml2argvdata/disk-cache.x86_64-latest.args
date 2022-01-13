@@ -27,23 +27,23 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
--device lsi,id=scsi0,bus=pci.0,addr=0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"lsi","id":"scsi0","bus":"pci.0","addr":"0x2"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-5-storage","cache":{"direct":false,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-5-format","read-only":false,"cache":{"direct":false,"no-flush":false},"driver":"qcow2","file":"libvirt-5-storage"}' \
--device ide-hd,bus=ide.0,unit=0,drive=libvirt-5-format,id=ide0-0-0,bootindex=1,write-cache=on \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":0,"drive":"libvirt-5-format","id":"ide0-0-0","bootindex":1,"write-cache":"on"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-4-storage","cache":{"direct":false,"no-flush":true},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"cache":{"direct":false,"no-flush":true},"driver":"qcow2","file":"libvirt-4-storage"}' \
--device ide-hd,bus=ide.0,unit=1,drive=libvirt-4-format,id=ide0-0-1,write-cache=on \
+-device '{"driver":"ide-hd","bus":"ide.0","unit":1,"drive":"libvirt-4-format","id":"ide0-0-1","write-cache":"on"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-3-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-3-storage"}' \
--device scsi-hd,bus=scsi0.0,scsi-id=0,device_id=drive-scsi0-0-0,drive=libvirt-3-format,id=scsi0-0-0,write-cache=on \
+-device '{"driver":"scsi-hd","bus":"scsi0.0","scsi-id":0,"device_id":"drive-scsi0-0-0","drive":"libvirt-3-format","id":"scsi0-0-0","write-cache":"on"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/disk/by-path/ip-192.168.44.1:3260-iscsi-iqn.2011-02.lan.hdserver:hydrar-desktop.win7vm-lun-0","node-name":"libvirt-2-storage","cache":{"direct":false,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"cache":{"direct":false,"no-flush":false},"driver":"qcow2","file":"libvirt-2-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-2-format,id=virtio-disk0,write-cache=off \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-2-format","id":"virtio-disk0","write-cache":"off"}' \
 -blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
--device usb-storage,bus=usb.0,port=1,drive=libvirt-1-format,id=usb-disk1,removable=off,write-cache=off \
+-device '{"driver":"usb-storage","bus":"usb.0","port":"1","drive":"libvirt-1-format","id":"usb-disk1","removable":false,"write-cache":"off"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

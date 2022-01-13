@@ -27,8 +27,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

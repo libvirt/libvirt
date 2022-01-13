@@ -27,30 +27,30 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
+-device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/raw.img","node-name":"libvirt-6-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-6-format","read-only":false,"driver":"raw","offset":0,"size":321,"file":"libvirt-6-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-6-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-6-format","id":"virtio-disk0","bootindex":1}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/raw.img","node-name":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"driver":"raw","node-name":"libvirt-5-slice-sto","offset":9876,"size":123456789,"file":"libvirt-5-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-5-format","read-only":true,"driver":"qcow2","file":"libvirt-5-slice-sto","backing":null}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/overlay.qcow2","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"qcow2","file":"libvirt-4-storage","backing":"libvirt-5-format"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x3,drive=libvirt-4-format,id=virtio-disk1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x3","drive":"libvirt-4-format","id":"virtio-disk1"}' \
 -object '{"qom-type":"secret","id":"libvirt-3-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/luks.img","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"driver":"raw","node-name":"libvirt-3-slice-sto","offset":1234,"size":321,"file":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"luks","key-secret":"libvirt-3-format-encryption-secret0","file":"libvirt-3-slice-sto"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x4,drive=libvirt-3-format,id=virtio-disk2 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x4","drive":"libvirt-3-format","id":"virtio-disk2"}' \
 -blockdev '{"driver":"nvme","device":"0000:02:00.0","namespace":1,"node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","offset":1234,"size":321,"file":"libvirt-2-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x6,drive=libvirt-2-format,id=virtio-disk3 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x6","drive":"libvirt-2-format","id":"virtio-disk3"}' \
 -object '{"qom-type":"secret","id":"libvirt-1-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"nvme","device":"0001:02:00.0","namespace":2,"node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"driver":"raw","node-name":"libvirt-1-slice-sto","offset":1234,"size":321,"file":"libvirt-1-storage","auto-read-only":true,"discard":"unmap","cache":{"direct":true,"no-flush":false}}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","encrypt":{"format":"luks","key-secret":"libvirt-1-format-encryption-secret0"},"file":"libvirt-1-slice-sto"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x7,drive=libvirt-1-format,id=virtio-disk4,write-cache=on \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-1-format","id":"virtio-disk4","write-cache":"on"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x5 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x5"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
