@@ -10757,6 +10757,12 @@ qemuBuildSerialChrDeviceProps(const virDomainDef *def,
                               NULL) < 0)
         return NULL;
 
+    if (serial->targetModel == VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL &&
+        virJSONValueObjectAdd(&props,
+                              "k:index", serial->target.port,
+                              NULL) < 0)
+        return NULL;
+
     if (qemuBuildDeviceAddressProps(props, def, &serial->info) < 0)
         return NULL;
 

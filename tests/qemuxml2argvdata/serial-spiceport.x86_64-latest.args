@@ -31,7 +31,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
 -device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
 -chardev spiceport,id=charserial0,name=org.qemu.console.serial.0 \
--device isa-serial,chardev=charserial0,id=serial0 \
+-device isa-serial,chardev=charserial0,id=serial0,index=0 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,seamless-migration=on \

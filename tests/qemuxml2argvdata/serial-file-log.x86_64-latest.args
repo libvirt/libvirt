@@ -34,7 +34,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -add-fd set=0,fd=1750 \
 -add-fd set=1,fd=1751 \
 -chardev file,id=charserial0,path=/dev/fdset/0,append=on,logfile=/dev/fdset/1,logappend=on \
--device isa-serial,chardev=charserial0,id=serial0 \
+-device isa-serial,chardev=charserial0,id=serial0,index=0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

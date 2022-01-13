@@ -30,8 +30,8 @@ QEMU_AUDIO_DRV=none \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -chardev udp,id=charserial0,host=127.0.0.1,port=9998,localaddr=127.0.0.1,localport=9999 \
--device isa-serial,chardev=charserial0,id=serial0 \
+-device isa-serial,chardev=charserial0,id=serial0,index=0 \
 -chardev udp,id=charserial1,host=,port=9999,localaddr=,localport=0 \
--device isa-serial,chardev=charserial1,id=serial1 \
+-device isa-serial,chardev=charserial1,id=serial1,index=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on
