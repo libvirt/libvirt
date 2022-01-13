@@ -10,7 +10,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-kvm/.config \
 -name guest=kvm,debug-threads=on \
 -S \
 -object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-kvm/master-key.aes"}' \
--machine pc-i440fx-6.2,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
 -accel kvm \
 -cpu qemu64 \
 -m 4096 \

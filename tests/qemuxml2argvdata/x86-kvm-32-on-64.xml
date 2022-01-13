@@ -3,7 +3,7 @@
   <uuid>d091ea82-29e6-2e34-3005-f02617b36e87</uuid>
   <memory unit='KiB'>4194304</memory>
   <os>
-    <type arch='i686'>hvm</type>
+    <type arch='i686' machine='pc'>hvm</type>
   </os>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
