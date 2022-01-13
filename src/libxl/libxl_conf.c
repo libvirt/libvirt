@@ -1191,16 +1191,8 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
         return -1;
     }
 
-    if (l_disk->domain_name) {
-#ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
+    if (l_disk->domain_name)
         x_disk->backend_domname = g_strdup(l_disk->domain_name);
-#else
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                _("this version of libxenlight does not "
-                  "support backend domain name"));
-        return -1;
-#endif
-    }
 
     return 0;
 }
@@ -1408,16 +1400,8 @@ libxlMakeNic(virDomainDef *def,
             goto cleanup;
     }
 
-    if (l_nic->domain_name) {
-#ifdef LIBXL_HAVE_DEVICE_BACKEND_DOMNAME
+    if (l_nic->domain_name)
         x_nic->backend_domname = g_strdup(l_nic->domain_name);
-#else
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                _("this version of libxenlight does not "
-                  "support backend domain name"));
-        goto cleanup;
-#endif
-    }
 
     /*
      * Set bandwidth.
