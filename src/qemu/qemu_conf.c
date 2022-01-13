@@ -1484,42 +1484,11 @@ qemuGetSharedDeviceKey(const char *device_path)
  *      being used and in the future the hostdev information.
  */
 static int
-qemuCheckUnprivSGIO(GHashTable *sharedDevices,
-                    const char *device_path,
-                    int sgio)
+qemuCheckUnprivSGIO(GHashTable *sharedDevices G_GNUC_UNUSED,
+                    const char *device_path G_GNUC_UNUSED,
+                    int sgio G_GNUC_UNUSED)
 {
-    g_autofree char *sysfs_path = NULL;
-    g_autofree char *key = NULL;
-    int val;
-
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(device_path, NULL)))
-        return -1;
-
     /* It can't be conflict if unpriv_sgio is not supported by kernel. */
-    if (!virFileExists(sysfs_path))
-        return 0;
-
-    if (!(key = qemuGetSharedDeviceKey(device_path)))
-        return -1;
-
-    /* It can't be conflict if no other domain is sharing it. */
-    if (!(virHashLookup(sharedDevices, key)))
-        return 0;
-
-    if (virGetDeviceUnprivSGIO(device_path, NULL, &val) < 0)
-        return -1;
-
-    /* Error message on failure needs to be handled in caller
-     * since there is more specific knowledge of device
-     */
-    if (!((val == 0 &&
-           (sgio == VIR_DOMAIN_DEVICE_SGIO_FILTERED ||
-            sgio == VIR_DOMAIN_DEVICE_SGIO_DEFAULT)) ||
-          (val == 1 &&
-           sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED))) {
-        return -2;
-    }
-
     return 0;
 }
 
@@ -1840,7 +1809,6 @@ qemuSetUnprivSGIO(virDomainDeviceDef *dev)
 {
     virDomainDiskDef *disk = NULL;
     virDomainHostdevDef *hostdev = NULL;
-    g_autofree char *sysfs_path = NULL;
     const char *path = NULL;
     int val = -1;
 
@@ -1873,9 +1841,6 @@ qemuSetUnprivSGIO(virDomainDeviceDef *dev)
         return 0;
     }
 
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(path, NULL)))
-        return -1;
-
     /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
     val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
 
@@ -1883,7 +1848,7 @@ qemuSetUnprivSGIO(virDomainDeviceDef *dev)
      * whitelist is enabled.  But if requesting unfiltered access, always call
      * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
      */
-    if (virFileExists(sysfs_path) || val == 1) {
+    if (val == 1) {
         int curr_val;
 
         if (virGetDeviceUnprivSGIO(path, NULL, &curr_val) < 0)

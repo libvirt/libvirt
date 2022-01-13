@@ -1354,96 +1354,24 @@ virGetDeviceID(const char *path G_GNUC_UNUSED,
 }
 #endif
 
-#define SYSFS_DEV_BLOCK_PATH "/sys/dev/block"
-
-char *
-virGetUnprivSGIOSysfsPath(const char *path,
-                          const char *sysfs_dir)
+int
+virSetDeviceUnprivSGIO(const char *path G_GNUC_UNUSED,
+                       const char *sysfs_dir G_GNUC_UNUSED,
+                       int unpriv_sgio G_GNUC_UNUSED)
 {
-    int maj, min;
-    int rc;
-
-    if ((rc = virGetDeviceID(path, &maj, &min)) < 0) {
-        virReportSystemError(-rc,
-                             _("Unable to get device ID '%s'"),
-                             path);
-        return NULL;
-    }
-
-    return g_strdup_printf("%s/%d:%d/queue/unpriv_sgio",
-                           sysfs_dir ? sysfs_dir : SYSFS_DEV_BLOCK_PATH, maj,
-                           min);
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("unpriv_sgio is not supported by this kernel"));
+    return -1;
 }
 
 int
-virSetDeviceUnprivSGIO(const char *path,
-                       const char *sysfs_dir,
-                       int unpriv_sgio)
+virGetDeviceUnprivSGIO(const char *path G_GNUC_UNUSED,
+                       const char *sysfs_dir G_GNUC_UNUSED,
+                       int *unpriv_sgio G_GNUC_UNUSED)
 {
-    char *sysfs_path = NULL;
-    char *val = NULL;
-    int ret = -1;
-    int rc;
-
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(path, sysfs_dir)))
-        return -1;
-
-    if (!virFileExists(sysfs_path)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("unpriv_sgio is not supported by this kernel"));
-        goto cleanup;
-    }
-
-    val = g_strdup_printf("%d", unpriv_sgio);
-
-    if ((rc = virFileWriteStr(sysfs_path, val, 0)) < 0) {
-        virReportSystemError(-rc, _("failed to set %s"), sysfs_path);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(val);
-    return ret;
-}
-
-int
-virGetDeviceUnprivSGIO(const char *path,
-                       const char *sysfs_dir,
-                       int *unpriv_sgio)
-{
-    char *sysfs_path = NULL;
-    char *buf = NULL;
-    char *tmp = NULL;
-    int ret = -1;
-
-    if (!(sysfs_path = virGetUnprivSGIOSysfsPath(path, sysfs_dir)))
-        return -1;
-
-    if (!virFileExists(sysfs_path)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("unpriv_sgio is not supported by this kernel"));
-        goto cleanup;
-    }
-
-    if (virFileReadAll(sysfs_path, 1024, &buf) < 0)
-        goto cleanup;
-
-    if ((tmp = strchr(buf, '\n')))
-        *tmp = '\0';
-
-    if (virStrToLong_i(buf, NULL, 10, unpriv_sgio) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to parse value of %s"), sysfs_path);
-        goto cleanup;
-    }
-
-    ret = 0;
- cleanup:
-    VIR_FREE(sysfs_path);
-    VIR_FREE(buf);
-    return ret;
+    virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                   _("unpriv_sgio is not supported by this kernel"));
+    return -1;
 }
 
 

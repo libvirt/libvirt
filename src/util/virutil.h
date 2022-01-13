@@ -125,8 +125,6 @@ int virSetDeviceUnprivSGIO(const char *path,
 int virGetDeviceUnprivSGIO(const char *path,
                            const char *sysfs_dir,
                            int *unpriv_sgio);
-char *virGetUnprivSGIOSysfsPath(const char *path,
-                                const char *sysfs_dir);
 
 int virParseOwnershipIds(const char *label, uid_t *uidPtr, gid_t *gidPtr);
 
