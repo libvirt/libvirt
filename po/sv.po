@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-12 10:44+0000\n"
+"PO-Revision-Date: 2022-01-13 21:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8298,67 +8298,72 @@ msgstr "Misslyckades med att skicka migreringsdata till destinationsvärden"
 msgid "Failed to send request to init control %s"
 msgstr "Misslyckades med att skicka begäranden till initieringskontrollen %s"
 
-#, fuzzy
 msgid "Failed to serialize snapshot"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att serialisera ögonblicksbilden"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set %s for %s: value too large"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att sätta %s för %s: värdet är för stort"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set TLS session priority to %s: %s"
-msgstr "Misslyckades att hämta block statistik %sl %s"
+msgstr "Misslyckades med att sätta TLS-sessionsprioriteten till %s: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set attributes from %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att sätta attribut från %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set bridge %s %s via ioctl"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att sätta bryggan %s %s med ioctl"
 
 #, c-format
 msgid "Failed to set bridge delay %d in xml document"
-msgstr ""
+msgstr "Misslyckades med att sätta bryggfördröjningen %d i xml-dokumentet"
 
 msgid "Failed to set bridge interface type to 'bridge' in xml document"
 msgstr ""
+"Misslyckades med att sätta bryggränssnittets typ till ”bridge” i xml-"
+"dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set close-on-exec flag '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att sätta flaggan close-on-exec ”%s”"
 
 #, c-format
 msgid "Failed to set com port %s: does not start with '/dev/nmdm'."
-msgstr ""
+msgstr "Misslyckades med att säta com-porten %s: börjar inte med ”/dev/nmdm”."
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set credential: %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att sätta kreditiven: %s"
 
 msgid "Failed to set hostname"
 msgstr "Misslyckades att sätta värdnamnet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set interface name to '%s' in xml document"
-msgstr "misslyckades att få gränssnittsinformation"
+msgstr "Misslyckades med att sätta gränssnittsnamnet till ”%s” i xml-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set interface type to '%s' in xml document"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Misslyckades med att sätta gränssnittstypen till ”%s” i xml-dokumentet"
 
 #, c-format
 msgid "Failed to set logging priority, argument '%s' is invalid"
 msgstr ""
+"Misslyckades med att sätta loggningsprioriteten, argumentet ”%s” är ogiltigt"
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
 msgstr ""
+"Misslyckades med att sätta loggningsprioriteten, argumentet ”%u” är ogiltigt"
 
 #, c-format
 msgid "Failed to set master bridge interface name to '%s' in xml document"
 msgstr ""
+"Misslyckades med att sätta huvudbryggans gränssnittsnamn till ”%s” i xml-"
+"dokumentet"
 
 #, c-format
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
