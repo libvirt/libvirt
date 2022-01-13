@@ -1472,65 +1472,6 @@ qemuGetSharedDeviceKey(const char *device_path)
     return g_strdup_printf("%d:%d", maj, min);
 }
 
-/*
- * Make necessary checks for the need to check and for the current setting
- * of the 'unpriv_sgio' value for the device_path passed.
- *
- * Returns:
- *  0 - Success
- * -1 - Some failure which would already have been messaged
- * -2 - Mismatch with the "shared" sgio setting - needs to be messaged
- *      by caller since it has context of which type of disk resource is
- *      being used and in the future the hostdev information.
- */
-static int
-qemuCheckUnprivSGIO(GHashTable *sharedDevices G_GNUC_UNUSED,
-                    const char *device_path G_GNUC_UNUSED,
-                    int sgio G_GNUC_UNUSED)
-{
-    /* It can't be conflict if unpriv_sgio is not supported by kernel. */
-    return 0;
-}
-
-
-/* Check if a shared device's setting conflicts with the conf
- * used by other domain(s). Currently only checks the sgio
- * setting. Note that this should only be called for disk with
- * block source if the device type is disk.
- *
- * Returns 0 if no conflicts, otherwise returns -1.
- */
-static int
-qemuCheckSharedDisk(GHashTable *sharedDevices,
-                    virDomainDiskDef *disk)
-{
-    int ret;
-
-    if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN)
-        return 0;
-
-    if ((ret = qemuCheckUnprivSGIO(sharedDevices, disk->src->path,
-                                   disk->sgio)) < 0) {
-        if (ret == -2) {
-            if (virDomainDiskGetType(disk) == VIR_STORAGE_TYPE_VOLUME) {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("sgio of shared disk 'pool=%s' 'volume=%s' "
-                                 "conflicts with other active domains"),
-                               disk->src->srcpool->pool,
-                               disk->src->srcpool->volume);
-            } else {
-                virReportError(VIR_ERR_OPERATION_INVALID,
-                               _("sgio of shared disk '%s' conflicts with "
-                                 "other active domains"),
-                               disk->src->path);
-            }
-        }
-        return -1;
-    }
-
-    return 0;
-}
-
 
 bool
 qemuSharedDeviceEntryDomainExists(qemuSharedDeviceEntry *entry,
@@ -1647,9 +1588,6 @@ qemuSharedDiskAddRemoveInternal(virQEMUDriver *driver,
         goto cleanup;
 
     if (addDisk) {
-        if (qemuCheckSharedDisk(driver->sharedDevices, disk) < 0)
-            goto cleanup;
-
         if (qemuSharedDeviceEntryInsert(driver, key, name) < 0)
             goto cleanup;
     } else {
@@ -1803,65 +1741,6 @@ qemuRemoveSharedDevice(virQEMUDriver *driver,
     return qemuSharedDeviceAddRemoveInternal(driver, dev, name, false);
 }
 
-
-int
-qemuSetUnprivSGIO(virDomainDeviceDef *dev)
-{
-    virDomainDiskDef *disk = NULL;
-    virDomainHostdevDef *hostdev = NULL;
-    const char *path = NULL;
-    int val = -1;
-
-    /* "sgio" is only valid for block disk; cdrom
-     * and floopy disk can have empty source.
-     */
-    if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
-        disk = dev->data.disk;
-
-        if (disk->device != VIR_DOMAIN_DISK_DEVICE_LUN ||
-            !virStorageSourceIsBlockLocal(disk->src))
-            return 0;
-
-        path = virDomainDiskGetSource(disk);
-    } else if (dev->type == VIR_DOMAIN_DEVICE_HOSTDEV) {
-        hostdev = dev->data.hostdev;
-
-        if (!qemuIsSharedHostdev(hostdev))
-            return 0;
-
-        if (hostdev->source.subsys.u.scsi.sgio) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'sgio' is not supported for SCSI "
-                             "generic device yet "));
-            return -1;
-        }
-
-        return 0;
-    } else {
-        return 0;
-    }
-
-    /* By default, filter the SG_IO commands, i.e. set unpriv_sgio to 0.  */
-    val = (disk->sgio == VIR_DOMAIN_DEVICE_SGIO_UNFILTERED);
-
-    /* Do not do anything if unpriv_sgio is not supported by the kernel and the
-     * whitelist is enabled.  But if requesting unfiltered access, always call
-     * virSetDeviceUnprivSGIO, to report an error for unsupported unpriv_sgio.
-     */
-    if (val == 1) {
-        int curr_val;
-
-        if (virGetDeviceUnprivSGIO(path, NULL, &curr_val) < 0)
-            return -1;
-
-        if (curr_val != val &&
-            virSetDeviceUnprivSGIO(path, NULL, val) < 0) {
-            return -1;
-        }
-    }
-
-    return 0;
-}
 
 int qemuDriverAllocateID(virQEMUDriver *driver)
 {

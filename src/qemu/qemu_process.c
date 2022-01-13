@@ -5046,9 +5046,6 @@ qemuProcessSetupRawIO(virQEMUDriver *driver,
         dev.data.disk = disk;
         if (qemuAddSharedDevice(driver, &dev, vm->def->name) < 0)
             goto cleanup;
-
-        if (qemuSetUnprivSGIO(&dev) < 0)
-            goto cleanup;
     }
 
     /* If rawio not already set, check hostdevs as well */

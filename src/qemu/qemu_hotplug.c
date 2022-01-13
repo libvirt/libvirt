@@ -980,9 +980,6 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     if (qemuAddSharedDevice(driver, dev, vm->def->name) < 0)
         goto cleanup;
 
-    if (qemuSetUnprivSGIO(dev) < 0)
-        goto cleanup;
-
     if (qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true) < 0)
         goto cleanup;
 

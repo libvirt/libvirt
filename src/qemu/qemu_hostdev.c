@@ -289,9 +289,6 @@ qemuHostdevPrepareSCSIDevices(virQEMUDriver *driver,
 
         if (qemuAddSharedDevice(driver, &dev, name) < 0)
             return -1;
-
-        if (qemuSetUnprivSGIO(&dev) < 0)
-            return -1;
     }
 
     return virHostdevPrepareSCSIDevices(hostdev_mgr, QEMU_DRIVER_NAME,

@@ -376,8 +376,6 @@ int qemuRemoveSharedDisk(virQEMUDriver *driver,
                          const char *name)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
-int qemuSetUnprivSGIO(virDomainDeviceDef *dev);
-
 int qemuDriverAllocateID(virQEMUDriver *driver);
 virDomainXMLOption *virQEMUDriverCreateXMLConf(virQEMUDriver *driver,
                                                  const char *defsecmodel);
