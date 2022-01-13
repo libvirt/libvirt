@@ -37,7 +37,7 @@
     <serial type='tcp'>
       <source mode='connect' host='127.0.0.1' service='5555' tls='no'/>
       <protocol type='raw'/>
-      <target type='isa-serial' port='0'>
+      <target type='isa-serial' port='1'>
         <model name='isa-serial'/>
       </target>
     </serial>

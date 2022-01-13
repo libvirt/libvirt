@@ -5330,6 +5330,58 @@ virDomainHostdevDefPostParse(virDomainHostdevDef *dev,
 }
 
 
+static int
+virDomainChrIsaSerialDefPostParse(virDomainDef *def)
+{
+    size_t i;
+    size_t isa_serial_count = 0;
+    bool used_serial_port[VIR_MAX_ISA_SERIAL_PORTS] = { false };
+
+    /* Perform all the required checks. */
+    for (i = 0; i < def->nserials; i++) {
+        if (def->serials[i]->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL)
+            continue;
+
+        if (isa_serial_count++ >= VIR_MAX_ISA_SERIAL_PORTS ||
+            def->serials[i]->target.port >= VIR_MAX_ISA_SERIAL_PORTS) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Maximum supported number of ISA serial ports is '%d'"),
+                           VIR_MAX_ISA_SERIAL_PORTS);
+            return -1;
+        }
+
+        if (def->serials[i]->target.port != -1) {
+            if (used_serial_port[def->serials[i]->target.port]) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("target port '%d' already allocated"),
+                               def->serials[i]->target.port);
+                return -1;
+            }
+            used_serial_port[def->serials[i]->target.port] = true;
+        }
+    }
+
+    /* Assign the ports to the devices. */
+    for (i = 0; i < def->nserials; i++) {
+        size_t j;
+
+        if (def->serials[i]->targetType != VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL ||
+            def->serials[i]->target.port != -1)
+            continue;
+
+        for (j = 0; j < VIR_MAX_ISA_SERIAL_PORTS; j++) {
+            if (!used_serial_port[j]) {
+                def->serials[i]->target.port = j;
+                used_serial_port[j] = true;
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
+
+
 static void
 virDomainChrDefPostParse(virDomainChrDef *chr,
                          const virDomainDef *def)
@@ -6196,6 +6248,9 @@ virDomainDefPostParse(virDomainDef *def,
         if (virDomainDefPostParseCheckFailure(def, parseFlags, ret) < 0)
             goto cleanup;
     }
+
+    if (virDomainChrIsaSerialDefPostParse(def) < 0)
+            return -1;
 
     /* iterate the devices */
     ret = virDomainDeviceInfoIterateFlags(def,
@@ -19929,14 +19984,6 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
         if (!chr)
             return NULL;
 
-        if (chr->target.port == -1) {
-            int maxport = -1;
-            for (j = 0; j < i; j++) {
-                if (def->serials[j]->target.port > maxport)
-                    maxport = def->serials[j]->target.port;
-            }
-            chr->target.port = maxport + 1;
-        }
         def->serials[def->nserials++] = chr;
     }
     VIR_FREE(nodes);

@@ -29,7 +29,7 @@
     <serial type='tcp'>
       <source mode='connect' host='127.0.0.1' service='5555'/>
       <protocol type='raw'/>
-      <target port='0'/>
+      <target port='1'/>
     </serial>
     <console type='udp'>
       <source mode='bind' host='127.0.0.1' service='1111'/>

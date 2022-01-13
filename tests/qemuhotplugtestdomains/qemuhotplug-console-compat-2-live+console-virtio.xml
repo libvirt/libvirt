@@ -74,7 +74,7 @@
       <alias name='serial0'/>
     </serial>
     <serial type='pty'>
-      <target type='isa-serial' port='0'>
+      <target type='isa-serial' port='1'>
         <model name='isa-serial'/>
       </target>
       <alias name='serial1'/>
@@ -82,7 +82,7 @@
     <serial type='tcp'>
       <source mode='bind' host='0.0.0.0' service='2445'/>
       <protocol type='raw'/>
-      <target type='isa-serial' port='1'>
+      <target type='isa-serial' port='2'>
         <model name='isa-serial'/>
       </target>
       <alias name='serial2'/>

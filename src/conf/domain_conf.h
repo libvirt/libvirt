@@ -1187,6 +1187,12 @@ typedef enum {
     VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_LAST
 } virDomainChrConsoleTargetType;
 
+/*
+ * The value of VIR_MAX_ISA_SERIAL_PORTS corresponds to MAX_ISA_SERIAL_PORTS
+ * set in QEMU code base.
+ */
+#define VIR_MAX_ISA_SERIAL_PORTS 4
+
 typedef enum {
     VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE = 0,
     VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_SERIAL,
