@@ -422,25 +422,47 @@ Conditional expressions
 -----------------------
 
 For readability reasons new code should avoid shortening
-comparisons to 0 for numeric types. Boolean and pointer
-comparisons may be shortened. All long forms are okay:
+comparisons to 0 for numeric types:
 
 ::
 
-  virFoo *foos = NULL;
   size nfoos = 0;
+
+  GOOD:
+    if (nfoos != 0)
+    if (nfoos == 0)
+
+  BAD:
+    if (nfoos)
+    if (!nfoos)
+
+Prefer the shortened version for boolean values. Boolean values
+should never be compared against the literal ``true``, as a
+logical non-false value need not be ``1``.
+
+::
+
   bool hasFoos = false;
 
   GOOD:
-    if (!foos)
+    if (hasFoos)
     if (!hasFoos)
-    if (nfoos == 0)
-    if (foos == NULL)
-    if (hasFoos == true)
 
   BAD:
-    if (!nfoos)
-    if (nfoos)
+    if (hasFoos == true)
+    if (hasFoos != false)
+    if (hasFoos == false)
+    if (hasFoos != true)
+
+Pointer comparisons may be shortened. All long forms are okay.
+
+::
+
+  virFoo *foo = NULL;
+
+  GOOD:
+    if (foo)                 # or: if (foo != NULL)
+    if (!foo)                # or: if (foo == NULL)
 
 New code should avoid the ternary operator as much as possible.
 Specifically it must never span more than one line or nest:
@@ -502,19 +524,13 @@ Scalars
 -  In the unusual event that you require a specific width, use a
    standard type like ``int32_t``, ``uint32_t``, ``uint64_t``,
    etc.
--  While using ``bool`` is good for readability, it comes with
-   minor caveats:
-
-   -  Don't use ``bool`` in places where the type size must be
-      constant across all systems, like public interfaces and
-      on-the-wire protocols. Note that it would be possible
-      (albeit wasteful) to use ``bool`` in libvirt's logical wire
-      protocol, since XDR maps that to its lower-level ``bool_t``
-      type, which **is** fixed-size.
-   -  Don't compare a bool variable against the literal, ``true``,
-      since a value with a logical non-false value need not be
-      ``1``. I.e., don't write ``if (seen == true) ...``. Rather,
-      write ``if (seen)...``.
+-  While using ``bool`` is good for readability, it comes with a
+   minor caveat: Don't use ``bool`` in places where the type size
+   must be constant across all systems, like public interfaces and
+   on-the-wire protocols. Note that it would be possible (albeit
+   wasteful) to use ``bool`` in libvirt's logical wire protocol,
+   since XDR maps that to its lower-level ``bool_t`` type, which
+   **is** fixed-size.
 
 Of course, take all of the above with a grain of salt. If you're
 about to use some system interface that requires a type like
