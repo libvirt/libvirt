@@ -57,6 +57,13 @@ v8.0.0 (unreleased)
 
   * libxl: Implement the virDomainGetMessages API
 
+  * qemu: Preserve qcow2 sub-cluster allocation state after external snapshots and block-copy
+
+    The new image which is installed as an overlay on top of the current chain
+    when taking an external snapshot, or the target of a block copy operation
+    now enables sub-cluster allocation (``extended_l2``) if the original
+    image has the option enabled.
+
 * **Bug fixes**
 
   * qemu: Fix device hot-unplug with ``libvirt-7.9`` or ``libvirt-7.10`` used with ``qemu-6.2``
