@@ -6,7 +6,7 @@ virt-ssh-helper
 libvirt socket proxy
 --------------------
 
-:Manual section: 1
+:Manual section: 8
 :Manual group: Virtualization Support
 
 .. contents::
