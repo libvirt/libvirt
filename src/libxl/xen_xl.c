@@ -396,7 +396,7 @@ xenParseXLVnuma(virConf *conf,
     size_t vcpus = 0;
     size_t nr_nodes = 0;
     size_t vnodeCnt = 0;
-    virCPUDef *cpu = NULL;
+    g_autoptr(virCPUDef) cpu = NULL;
     virConfValue *list;
     virConfValue *vnode;
     virDomainNuma *numa;
@@ -529,14 +529,11 @@ xenParseXLVnuma(virConf *conf,
     }
 
     cpu->type = VIR_CPU_TYPE_GUEST;
-    def->cpu = cpu;
+    def->cpu = g_steal_pointer(&cpu);
 
     ret = 0;
 
  cleanup:
-    if (ret)
-        VIR_FREE(cpu);
-
     return ret;
 }
 
