@@ -340,7 +340,7 @@ xenFormatXMDisk(virConfValue *list,
 static int
 xenFormatXMDisks(virConf *conf, virDomainDef *def)
 {
-    virConfValue *diskVal = NULL;
+    g_autoptr(virConfValue) diskVal = NULL;
     size_t i = 0;
 
     diskVal = g_new0(virConfValue, 1);
@@ -362,12 +362,10 @@ xenFormatXMDisks(virConf *conf, virDomainDef *def)
         if (ret < 0)
             goto cleanup;
     }
-    VIR_FREE(diskVal);
 
     return 0;
 
  cleanup:
-    virConfFreeValue(diskVal);
     return -1;
 }
 

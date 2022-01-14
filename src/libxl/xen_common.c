@@ -1729,7 +1729,7 @@ xenFormatNet(virConnectPtr conn,
 static int
 xenFormatPCI(virConf *conf, virDomainDef *def)
 {
-    virConfValue *pciVal = NULL;
+    g_autoptr(virConfValue) pciVal = NULL;
     int hasPCI = 0;
     size_t i;
 
@@ -1794,7 +1794,6 @@ xenFormatPCI(virConf *conf, virDomainDef *def)
         if (ret < 0)
             return -1;
     }
-    VIR_FREE(pciVal);
 
     return 0;
 }
@@ -1970,7 +1969,7 @@ xenFormatCharDev(virConf *conf, virDomainDef *def,
             } else {
                 size_t j = 0;
                 int maxport = -1, port;
-                virConfValue *serialVal = NULL;
+                g_autoptr(virConfValue) serialVal = NULL;
 
                 if (STREQ(nativeFormat, XEN_CONFIG_FORMAT_XM)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -1997,7 +1996,6 @@ xenFormatCharDev(virConf *conf, virDomainDef *def,
                     }
 
                     if (xenFormatSerial(serialVal, chr) < 0) {
-                        VIR_FREE(serialVal);
                         return -1;
                     }
                 }
@@ -2009,7 +2007,6 @@ xenFormatCharDev(virConf *conf, virDomainDef *def,
                     if (ret < 0)
                         return -1;
                 }
-                VIR_FREE(serialVal);
             }
         } else {
             if (xenConfigSetString(conf, "serial", "none") < 0)
@@ -2224,8 +2221,8 @@ xenFormatVfb(virConf *conf, virDomainDef *def)
                     return -1;
             }
         } else {
-            virConfValue *vfb;
-            virConfValue *disp;
+            g_autoptr(virConfValue) vfb = NULL;
+            g_autoptr(virConfValue) disp = NULL;
             char *vfbstr = NULL;
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
@@ -2259,16 +2256,19 @@ xenFormatVfb(virConf *conf, virDomainDef *def)
 
             vfbstr = virBufferContentAndReset(&buf);
 
-            vfb = g_new0(virConfValue, 1);
             disp = g_new0(virConfValue, 1);
-
-            vfb->type = VIR_CONF_LIST;
-            vfb->list = disp;
             disp->type = VIR_CONF_STRING;
             disp->str = vfbstr;
 
-            if (virConfSetValue(conf, "vfb", vfb) < 0)
+            vfb = g_new0(virConfValue, 1);
+            vfb->type = VIR_CONF_LIST;
+            vfb->list = g_steal_pointer(&disp);
+
+            if (virConfSetValue(conf, "vfb", vfb) < 0) {
+                vfb = NULL;
                 return -1;
+            }
+            vfb = NULL;
         }
     }
 
@@ -2312,7 +2312,7 @@ xenFormatVif(virConf *conf,
              virDomainDef *def,
              const char *vif_typename)
 {
-    virConfValue *netVal = NULL;
+    g_autoptr(virConfValue) netVal = NULL;
     size_t i;
     int hvm = def->os.type == VIR_DOMAIN_OSTYPE_HVM;
 
@@ -2333,11 +2333,9 @@ xenFormatVif(virConf *conf,
             goto cleanup;
     }
 
-    VIR_FREE(netVal);
     return 0;
 
  cleanup:
-    virConfFreeValue(netVal);
     return -1;
 }
 

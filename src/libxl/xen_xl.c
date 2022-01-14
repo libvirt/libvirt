@@ -1429,7 +1429,7 @@ xenFormatXLDomainVnuma(virConf *conf,
                        virDomainDef *def)
 {
     virDomainNuma *numa = def->numa;
-    virConfValue *vnumaVal;
+    g_autoptr(virConfValue) vnumaVal = NULL;
     size_t i;
     size_t nr_nodes;
 
@@ -1453,12 +1453,10 @@ xenFormatXLDomainVnuma(virConf *conf,
             if (ret < 0)
                 return -1;
     }
-    VIR_FREE(vnumaVal);
 
     return 0;
 
  cleanup:
-    virConfFreeValue(vnumaVal);
     return -1;
 }
 
@@ -1683,7 +1681,7 @@ xenFormatXLDisk(virConfValue *list, virDomainDiskDef *disk)
 static int
 xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
 {
-    virConfValue *diskVal;
+    g_autoptr(virConfValue) diskVal = NULL;
     size_t i;
 
     diskVal = g_new0(virConfValue, 1);
@@ -1705,12 +1703,10 @@ xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
         if (ret < 0)
             return -1;
     }
-    VIR_FREE(diskVal);
 
     return 0;
 
  cleanup:
-    virConfFreeValue(diskVal);
     return -1;
 }
 
@@ -1807,7 +1803,7 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
 {
     size_t i;
     const char *devtype;
-    virConfValue *usbdevices = NULL;
+    g_autoptr(virConfValue) usbdevices = NULL;
     virConfValue *lastdev;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
@@ -1851,7 +1847,6 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
                  * only one device present */
                 if (xenConfigSetString(conf, "usbdevice", usbdevices->list->str) < 0)
                     goto error;
-                virConfFreeValue(usbdevices);
             } else {
                 if (virConfSetValue(conf, "usbdevice", usbdevices) < 0) {
                     usbdevices = NULL;
@@ -1859,14 +1854,11 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
                 }
                 usbdevices = NULL;
             }
-        } else {
-            VIR_FREE(usbdevices);
         }
     }
 
     return 0;
  error:
-    virConfFreeValue(usbdevices);
     return -1;
 }
 
@@ -1874,7 +1866,7 @@ static int
 xenFormatXLUSBController(virConf *conf,
                          virDomainDef *def)
 {
-    virConfValue *usbctrlVal = NULL;
+    g_autoptr(virConfValue) usbctrlVal = NULL;
     int hasUSBCtrl = 0;
     size_t i;
 
@@ -1937,12 +1929,10 @@ xenFormatXLUSBController(virConf *conf,
         if (ret < 0)
             return -1;
     }
-    VIR_FREE(usbctrlVal);
 
     return 0;
 
  error:
-    virConfFreeValue(usbctrlVal);
     return -1;
 }
 
@@ -1951,7 +1941,7 @@ static int
 xenFormatXLUSB(virConf *conf,
                virDomainDef *def)
 {
-    virConfValue *usbVal = NULL;
+    g_autoptr(virConfValue) usbVal = NULL;
     int hasUSB = 0;
     size_t i;
 
@@ -2001,7 +1991,6 @@ xenFormatXLUSB(virConf *conf,
         if (ret < 0)
             return -1;
     }
-    VIR_FREE(usbVal);
 
     return 0;
 }
@@ -2050,7 +2039,7 @@ xenFormatXLChannel(virConfValue *list, virDomainChrDef *channel)
 static int
 xenFormatXLDomainChannels(virConf *conf, virDomainDef *def)
 {
-    virConfValue *channelVal = NULL;
+    g_autoptr(virConfValue) channelVal = NULL;
     size_t i;
 
     channelVal = g_new0(virConfValue, 1);
@@ -2075,11 +2064,9 @@ xenFormatXLDomainChannels(virConf *conf, virDomainDef *def)
             goto cleanup;
     }
 
-    VIR_FREE(channelVal);
     return 0;
 
  cleanup:
-    virConfFreeValue(channelVal);
     return -1;
 }
 
@@ -2087,7 +2074,7 @@ static int
 xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
 {
     libxlDomainXmlNsDef *nsdata = def->namespaceData;
-    virConfValue *args = NULL;
+    g_autoptr(virConfValue) args = NULL;
     size_t i;
 
     if (!nsdata)
@@ -2118,14 +2105,17 @@ xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
             args->list = val;
     }
 
-    if (args->list != NULL)
-        if (virConfSetValue(conf, "device_model_args", args) < 0)
+    if (args->list != NULL) {
+        if (virConfSetValue(conf, "device_model_args", args) < 0) {
+            args = NULL;
             goto error;
+        }
+        args = NULL;
+    }
 
     return 0;
 
  error:
-    virConfFreeValue(args);
     return -1;
 }
 
