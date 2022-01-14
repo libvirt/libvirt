@@ -641,10 +641,8 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
     int ret = -1;
     virConfValue *list = virConfGetValue(conf, "disk");
     XLU_Config *xluconf;
-    libxl_device_disk *libxldisk;
+    libxl_device_disk libxldisk;
     virDomainDiskDef *disk = NULL;
-
-    libxldisk = g_new0(libxl_device_disk, 1);
 
     if (!(xluconf = xlu_cfg_init(stderr, "command line")))
         goto cleanup;
@@ -657,23 +655,23 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
             if (list->type != VIR_CONF_STRING || list->str == NULL)
                 goto skipdisk;
 
-            libxl_device_disk_init(libxldisk);
+            libxl_device_disk_init(&libxldisk);
 
-            if (xlu_disk_parse(xluconf, 1, &disk_spec, libxldisk))
+            if (xlu_disk_parse(xluconf, 1, &disk_spec, &libxldisk))
                 goto fail;
 
             if (!(disk = virDomainDiskDefNew(NULL)))
                 goto fail;
 
-            if (xenParseXLDiskSrc(disk, libxldisk->pdev_path) < 0)
+            if (xenParseXLDiskSrc(disk, libxldisk.pdev_path) < 0)
                 goto fail;
 
-            disk->dst = g_strdup(libxldisk->vdev);
+            disk->dst = g_strdup(libxldisk.vdev);
 
-            disk->src->readonly = !libxldisk->readwrite;
-            disk->removable = libxldisk->removable;
+            disk->src->readonly = !libxldisk.readwrite;
+            disk->removable = libxldisk.removable;
 
-            if (libxldisk->is_cdrom) {
+            if (libxldisk.is_cdrom) {
                 virDomainDiskSetDriver(disk, "qemu");
 
                 virDomainDiskSetType(disk, VIR_STORAGE_TYPE_FILE);
@@ -683,7 +681,7 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
                 else
                     disk->src->format = VIR_STORAGE_FILE_RAW;
             } else {
-                switch (libxldisk->format) {
+                switch (libxldisk.format) {
                 case LIBXL_DISK_FORMAT_QCOW:
                     disk->src->format = VIR_STORAGE_FILE_QCOW;
                     break;
@@ -711,11 +709,11 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("disk image format not supported: %s"),
-                                   libxl_disk_format_to_string(libxldisk->format));
+                                   libxl_disk_format_to_string(libxldisk.format));
                     goto fail;
                 }
 
-                switch (libxldisk->backend) {
+                switch (libxldisk.backend) {
                 case LIBXL_DISK_BACKEND_QDISK:
                 case LIBXL_DISK_BACKEND_UNKNOWN:
                     virDomainDiskSetDriver(disk, "qemu");
@@ -735,22 +733,22 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
                 default:
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                    _("disk backend not supported: %s"),
-                                   libxl_disk_backend_to_string(libxldisk->backend));
+                                   libxl_disk_backend_to_string(libxldisk.backend));
                     goto fail;
                 }
             }
 
-            if (STRPREFIX(libxldisk->vdev, "xvd") ||
+            if (STRPREFIX(libxldisk.vdev, "xvd") ||
                 def->os.type != VIR_DOMAIN_OSTYPE_HVM)
                 disk->bus = VIR_DOMAIN_DISK_BUS_XEN;
-            else if (STRPREFIX(libxldisk->vdev, "sd"))
+            else if (STRPREFIX(libxldisk.vdev, "sd"))
                 disk->bus = VIR_DOMAIN_DISK_BUS_SCSI;
             else
                 disk->bus = VIR_DOMAIN_DISK_BUS_IDE;
 
             VIR_APPEND_ELEMENT(def->disks, def->ndisks, disk);
 
-            libxl_device_disk_dispose(libxldisk);
+            libxl_device_disk_dispose(&libxldisk);
 
         skipdisk:
             list = list->next;
@@ -761,11 +759,10 @@ xenParseXLDisk(virConf *conf, virDomainDef *def)
  cleanup:
     virDomainDiskDefFree(disk);
     xlu_cfg_destroy(xluconf);
-    VIR_FREE(libxldisk);
     return ret;
 
  fail:
-    libxl_device_disk_dispose(libxldisk);
+    libxl_device_disk_dispose(&libxldisk);
     goto cleanup;
 }
 
