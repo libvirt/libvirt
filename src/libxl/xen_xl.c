@@ -394,7 +394,6 @@ xenParseXLVnuma(virConf *conf,
                 virDomainDef *def)
 {
     int ret = -1;
-    char *tmp = NULL;
     size_t vcpus = 0;
     size_t nr_nodes = 0;
     size_t vnodeCnt = 0;
@@ -446,19 +445,10 @@ xenParseXLVnuma(virConf *conf,
                 data++;
 
                 if (*data) {
-                    char vtoken[64];
-
                     if (STRPREFIX(str, "pnode")) {
                         unsigned int cellid;
 
-                        if (virStrcpyStatic(vtoken, data) < 0) {
-                            virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("vnuma vnode %zu pnode '%s' too long for destination"),
-                                           vnodeCnt, data);
-                            goto cleanup;
-                        }
-
-                        if ((virStrToLong_ui(vtoken, NULL, 10, &cellid) < 0) ||
+                        if ((virStrToLong_ui(data, NULL, 10, &cellid) < 0) ||
                             (cellid >= nr_nodes)) {
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                            _("vnuma vnode %zu contains invalid pnode value '%s'"),
@@ -467,27 +457,13 @@ xenParseXLVnuma(virConf *conf,
                         }
                         pnode = cellid;
                     } else if (STRPREFIX(str, "size")) {
-                        if (virStrcpyStatic(vtoken, data) < 0) {
-                            virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("vnuma vnode %zu size '%s' too long for destination"),
-                                           vnodeCnt, data);
-                            goto cleanup;
-                        }
-
-                        if (virStrToLong_ull(vtoken, NULL, 10, &kbsize) < 0)
+                        if (virStrToLong_ull(data, NULL, 10, &kbsize) < 0)
                             goto cleanup;
 
                         virDomainNumaSetNodeMemorySize(numa, vnodeCnt, (kbsize * 1024));
 
                     } else if (STRPREFIX(str, "vcpus")) {
-                        if (virStrcpyStatic(vtoken, data) < 0) {
-                            virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("vnuma vnode %zu vcpus '%s' too long for destination"),
-                                           vnodeCnt, data);
-                            goto cleanup;
-                        }
-
-                        if (virBitmapParse(vtoken, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
+                        if (virBitmapParse(data, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
                             goto cleanup;
 
                         virDomainNumaSetNodeCpumask(numa, vnodeCnt, cpumask);
@@ -498,17 +474,7 @@ xenParseXLVnuma(virConf *conf,
                         size_t i, ndistances;
                         unsigned int value;
 
-                        if (virStrcpyStatic(vtoken, data) < 0) {
-                            virReportError(VIR_ERR_INTERNAL_ERROR,
-                                           _("vnuma vnode %zu vdistances '%s' too long for destination"),
-                                           vnodeCnt, data);
-                            goto cleanup;
-                        }
-
-                        VIR_FREE(tmp);
-                        tmp = g_strdup(vtoken);
-
-                        if (!(token = g_strsplit(tmp, ",", 0)))
+                        if (!(token = g_strsplit(data, ",", 0)))
                             goto cleanup;
 
                         ndistances = g_strv_length(token);
@@ -571,7 +537,6 @@ xenParseXLVnuma(virConf *conf,
  cleanup:
     if (ret)
         VIR_FREE(cpu);
-    VIR_FREE(tmp);
 
     return ret;
 }
