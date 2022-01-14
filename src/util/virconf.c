@@ -1329,6 +1329,9 @@ virConfSetValue(virConf *conf,
     virConfEntry *prev = NULL;
 
     if (value && value->type == VIR_CONF_STRING && value->str == NULL) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("expecting a value for value of type %s"),
+                       virConfTypeToString(VIR_CONF_STRING));
         virConfFreeValue(value);
         return -1;
     }
