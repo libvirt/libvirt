@@ -321,10 +321,11 @@ xenParseXLSpice(virConf *conf, virDomainDef *def)
 {
     virDomainGraphicsDef *graphics = NULL;
     unsigned long port;
-    char *listenAddr = NULL;
     int val;
 
     if (def->os.type == VIR_DOMAIN_OSTYPE_HVM) {
+        g_autofree char *listenAddr = NULL;
+
         if (xenConfigGetBool(conf, "spice", &val, 0) < 0)
             return -1;
 
@@ -335,7 +336,6 @@ xenParseXLSpice(virConf *conf, virDomainDef *def)
                 goto cleanup;
             if (virDomainGraphicsListenAppendAddress(graphics, listenAddr) < 0)
                 goto cleanup;
-            VIR_FREE(listenAddr);
 
             if (xenConfigGetULong(conf, "spicetls_port", &port, 0) < 0)
                 goto cleanup;
@@ -384,7 +384,6 @@ xenParseXLSpice(virConf *conf, virDomainDef *def)
     return 0;
 
  cleanup:
-    VIR_FREE(listenAddr);
     virDomainGraphicsDefFree(graphics);
     return -1;
 }
@@ -575,7 +574,6 @@ xenParseXLXenbusLimits(virConf *conf, virDomainDef *def)
 static int
 xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
 {
-    char *tmpstr = NULL;
     int ret = -1;
 
     /* A NULL source is valid, e.g. an empty CDROM */
@@ -583,6 +581,8 @@ xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
         return 0;
 
     if (STRPREFIX(srcstr, "rbd:")) {
+        g_autofree char *tmpstr = NULL;
+
         if (!(tmpstr = virStringReplace(srcstr, "\\\\", "\\")))
             goto cleanup;
 
@@ -596,7 +596,6 @@ xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
     }
 
  cleanup:
-    VIR_FREE(tmpstr);
     return ret;
 }
 
@@ -952,13 +951,13 @@ xenParseXLChannel(virConf *conf, virDomainDef *def)
 {
     virConfValue *list = virConfGetValue(conf, "channel");
     virDomainChrDef *channel = NULL;
-    char *name = NULL;
-    char *path = NULL;
 
     if (list && list->type == VIR_CONF_LIST) {
         list = list->list;
         while (list) {
             g_autofree char *type = NULL;
+            g_autofree char *name = NULL;
+            g_autofree char *path = NULL;
             char *key;
 
             if ((list->type != VIR_CONF_STRING) || (list->str == NULL))
@@ -977,13 +976,11 @@ xenParseXLChannel(virConf *conf, virDomainDef *def)
                     int len = nextkey ? (nextkey - data) : strlen(data);
                     g_clear_pointer(&type, g_free);
                     type = g_strndup(data, len);
-                } else if (STRPREFIX(key, "name=")) {
+                } else if (!name && STRPREFIX(key, "name=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    VIR_FREE(name);
                     name = g_strndup(data, len);
-                } else if (STRPREFIX(key, "path=")) {
+                } else if (!path && STRPREFIX(key, "path=")) {
                     int len = nextkey ? (nextkey - data) : strlen(data);
-                    VIR_FREE(path);
                     path = g_strndup(data, len);
                 }
 
@@ -1003,7 +1000,6 @@ xenParseXLChannel(virConf *conf, virDomainDef *def)
                 channel->source->data.nix.path = g_steal_pointer(&path);
             } else if (STRPREFIX(type, "pty")) {
                 channel->source->type = VIR_DOMAIN_CHR_TYPE_PTY;
-                VIR_FREE(path);
             } else {
                 goto cleanup;
             }
@@ -1023,8 +1019,6 @@ xenParseXLChannel(virConf *conf, virDomainDef *def)
 
  cleanup:
     virDomainChrDefFree(channel);
-    VIR_FREE(path);
-    VIR_FREE(name);
     return -1;
 }
 
@@ -1382,7 +1376,6 @@ xenFormatXLVnuma(virConfValue *list,
         list->list = numaVnode;
     ret = 0;
 
-    VIR_FREE(nodeVcpus);
     return ret;
 }
 
