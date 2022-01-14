@@ -392,7 +392,6 @@ static int
 xenParseXLVnuma(virConf *conf,
                 virDomainDef *def)
 {
-    int ret = -1;
     size_t vcpus = 0;
     size_t nr_nodes = 0;
     size_t vnodeCnt = 0;
@@ -416,7 +415,7 @@ xenParseXLVnuma(virConf *conf,
     }
 
     if (!virDomainNumaSetNodeCount(numa, nr_nodes))
-        goto cleanup;
+        return -1;
 
     cpu = virCPUDefNew();
 
@@ -439,7 +438,7 @@ xenParseXLVnuma(virConf *conf,
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("vnuma vnode invalid format '%s'"),
                                    str);
-                    goto cleanup;
+                    return -1;
                 }
                 data++;
 
@@ -452,18 +451,18 @@ xenParseXLVnuma(virConf *conf,
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                            _("vnuma vnode %zu contains invalid pnode value '%s'"),
                                            vnodeCnt, data);
-                            goto cleanup;
+                            return -1;
                         }
                         pnode = cellid;
                     } else if (STRPREFIX(str, "size")) {
                         if (virStrToLong_ull(data, NULL, 10, &kbsize) < 0)
-                            goto cleanup;
+                            return -1;
 
                         virDomainNumaSetNodeMemorySize(numa, vnodeCnt, (kbsize * 1024));
 
                     } else if (STRPREFIX(str, "vcpus")) {
                         if (virBitmapParse(data, &cpumask, VIR_DOMAIN_CPUMASK_LEN) < 0)
-                            goto cleanup;
+                            return -1;
 
                         virDomainNumaSetNodeCpumask(numa, vnodeCnt, cpumask);
                         vcpus += virBitmapCountBits(cpumask);
@@ -474,7 +473,7 @@ xenParseXLVnuma(virConf *conf,
                         unsigned int value;
 
                         if (!(token = g_strsplit(data, ",", 0)))
-                            goto cleanup;
+                            return -1;
 
                         ndistances = g_strv_length(token);
 
@@ -482,23 +481,23 @@ xenParseXLVnuma(virConf *conf,
                             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                        _("vnuma pnode %d configured '%s' (count %zu) doesn't fit the number of specified vnodes %zu"),
                                        pnode, str, ndistances, nr_nodes);
-                            goto cleanup;
+                            return -1;
                         }
 
                         if (virDomainNumaSetNodeDistanceCount(numa, vnodeCnt, ndistances) != ndistances)
-                            goto cleanup;
+                            return -1;
 
                         for (i = 0; i < ndistances; i++) {
                             if ((virStrToLong_ui(token[i], NULL, 10, &value) < 0) ||
                                 (virDomainNumaSetNodeDistance(numa, vnodeCnt, i, value) != value))
-                                goto cleanup;
+                                return -1;
                         }
 
                     } else {
                         virReportError(VIR_ERR_CONF_SYNTAX,
                                        _("Invalid vnuma configuration for vnode %zu"),
                                        vnodeCnt);
-                        goto cleanup;
+                        return -1;
                     }
                 }
                 vnode = vnode->next;
@@ -511,7 +510,7 @@ xenParseXLVnuma(virConf *conf,
             virReportError(VIR_ERR_CONF_SYNTAX,
                            _("Incomplete vnuma configuration for vnode %zu"),
                            vnodeCnt);
-            goto cleanup;
+            return -1;
         }
 
         list = list->next;
@@ -525,16 +524,13 @@ xenParseXLVnuma(virConf *conf,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("vnuma configuration contains %zu vcpus, which is greater than %zu maxvcpus"),
                        vcpus, def->maxvcpus);
-        goto cleanup;
+        return -1;
     }
 
     cpu->type = VIR_CPU_TYPE_GUEST;
     def->cpu = g_steal_pointer(&cpu);
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 static int
@@ -571,8 +567,6 @@ xenParseXLXenbusLimits(virConf *conf, virDomainDef *def)
 static int
 xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
 {
-    int ret = -1;
-
     /* A NULL source is valid, e.g. an empty CDROM */
     if (srcstr == NULL)
         return 0;
@@ -581,19 +575,16 @@ xenParseXLDiskSrc(virDomainDiskDef *disk, char *srcstr)
         g_autofree char *tmpstr = NULL;
 
         if (!(tmpstr = virStringReplace(srcstr, "\\\\", "\\")))
-            goto cleanup;
+            return -1;
 
         virDomainDiskSetType(disk, VIR_STORAGE_TYPE_NETWORK);
         disk->src->protocol = VIR_STORAGE_NET_PROTOCOL_RBD;
-        ret = virStorageSourceParseRBDColonString(tmpstr, disk->src);
-    } else {
-        virDomainDiskSetSource(disk, srcstr);
-
-        ret = 0;
+        return virStorageSourceParseRBDColonString(tmpstr, disk->src);
     }
 
- cleanup:
-    return ret;
+    virDomainDiskSetSource(disk, srcstr);
+
+    return 0;
 }
 
 
@@ -1396,7 +1387,7 @@ xenFormatXLDomainVnuma(virConf *conf,
     nr_nodes = virDomainNumaGetNodeCount(numa);
     for (i = 0; i < nr_nodes; i++) {
         if (xenFormatXLVnuma(vnumaVal, numa, i, nr_nodes) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (vnumaVal->list != NULL &&
@@ -1404,9 +1395,6 @@ xenFormatXLDomainVnuma(virConf *conf,
         return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 static int
@@ -1643,7 +1631,7 @@ xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
             continue;
 
         if (xenFormatXLDisk(diskVal, def->disks[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (diskVal->list != NULL &&
@@ -1651,9 +1639,6 @@ xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
         return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 
@@ -1760,7 +1745,7 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
         for (i = 0; i < def->ninputs; i++) {
             if (def->inputs[i]->bus == VIR_DOMAIN_INPUT_BUS_USB) {
                 if (xenConfigSetInt(conf, "usb", 1) < 0)
-                    goto error;
+                    return -1;
 
                 switch (def->inputs[i]->type) {
                     case VIR_DOMAIN_INPUT_TYPE_MOUSE:
@@ -1792,17 +1777,15 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
                 /* for compatibility with Xen <= 4.2, use old syntax when
                  * only one device present */
                 if (xenConfigSetString(conf, "usbdevice", usbdevices->list->str) < 0)
-                    goto error;
+                    return -1;
             } else {
                 if (virConfSetValue(conf, "usbdevice", &usbdevices) < 0)
-                    goto error;
+                    return -1;
             }
         }
     }
 
     return 0;
- error:
-    return -1;
 }
 
 static int
@@ -1845,7 +1828,7 @@ xenFormatXLUSBController(virConf *conf,
                     break;
 
                 default:
-                    goto error;
+                    return -1;
                 }
             }
 
@@ -1871,9 +1854,6 @@ xenFormatXLUSBController(virConf *conf,
         return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 
@@ -1991,17 +1971,14 @@ xenFormatXLDomainChannels(virConf *conf, virDomainDef *def)
             continue;
 
         if (xenFormatXLChannel(channelVal, def->channels[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (channelVal->list != NULL &&
         virConfSetValue(conf, "channel", &channelVal) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 static int
@@ -2041,12 +2018,9 @@ xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
 
     if (args->list != NULL &&
         virConfSetValue(conf, "device_model_args", &args) < 0)
-        goto error;
+        return -1;
 
     return 0;
-
- error:
-    return -1;
 }
 
 virConf *

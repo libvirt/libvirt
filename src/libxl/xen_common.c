@@ -2313,17 +2313,14 @@ xenFormatVif(virConf *conf,
     for (i = 0; i < def->nnets; i++) {
         if (xenFormatNet(conn, netVal, def->nets[i],
                          hvm, vif_typename) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (netVal->list != NULL &&
         virConfSetValue(conf, "vif", &netVal) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 

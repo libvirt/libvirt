@@ -353,17 +353,14 @@ xenFormatXMDisks(virConf *conf, virDomainDef *def)
             continue;
 
         if (xenFormatXMDisk(diskVal, def->disks[i]) < 0)
-            goto cleanup;
+            return -1;
     }
 
     if (diskVal->list != NULL &&
         virConfSetValue(conf, "disk", &diskVal) < 0)
-        goto cleanup;
+        return -1;
 
     return 0;
-
- cleanup:
-    return -1;
 }
 
 
