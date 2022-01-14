@@ -548,7 +548,7 @@ virNetworkDHCPHostDefParseXML(const char *networkName,
     }
 
     name = virXMLPropString(node, "name");
-    if (name && (!g_ascii_isalpha(name[0]))) {
+    if (name && !(g_ascii_isalpha(name[0]) || g_ascii_isdigit(name[0]))) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Cannot use host name '%s' in network '%s'"),
                        name, networkName);
