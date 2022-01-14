@@ -1853,7 +1853,11 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
                     goto error;
                 virConfFreeValue(usbdevices);
             } else {
-                virConfSetValue(conf, "usbdevice", usbdevices);
+                if (virConfSetValue(conf, "usbdevice", usbdevices) < 0) {
+                    usbdevices = NULL;
+                    goto error;
+                }
+                usbdevices = NULL;
             }
         } else {
             VIR_FREE(usbdevices);
