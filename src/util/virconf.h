@@ -115,7 +115,7 @@ int virConfGetValueULLong(virConf *conf,
 
 int virConfSetValue(virConf *conf,
                     const char *setting,
-                    virConfValue *value);
+                    virConfValue **value);
 int virConfWalk(virConf *conf,
                 virConfWalkCallback callback,
                 void *opaque);

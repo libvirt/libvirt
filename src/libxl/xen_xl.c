@@ -1447,12 +1447,9 @@ xenFormatXLDomainVnuma(virConf *conf,
             goto cleanup;
     }
 
-    if (vnumaVal->list != NULL) {
-        int ret = virConfSetValue(conf, "vnuma", vnumaVal);
-            vnumaVal = NULL;
-            if (ret < 0)
-                return -1;
-    }
+    if (vnumaVal->list != NULL &&
+        virConfSetValue(conf, "vnuma", &vnumaVal) < 0)
+        return -1;
 
     return 0;
 
@@ -1697,12 +1694,9 @@ xenFormatXLDomainDisks(virConf *conf, virDomainDef *def)
             goto cleanup;
     }
 
-    if (diskVal->list != NULL) {
-        int ret = virConfSetValue(conf, "disk", diskVal);
-        diskVal = NULL;
-        if (ret < 0)
-            return -1;
-    }
+    if (diskVal->list != NULL &&
+        virConfSetValue(conf, "disk", &diskVal) < 0)
+        return -1;
 
     return 0;
 
@@ -1848,11 +1842,8 @@ xenFormatXLInputDevs(virConf *conf, virDomainDef *def)
                 if (xenConfigSetString(conf, "usbdevice", usbdevices->list->str) < 0)
                     goto error;
             } else {
-                if (virConfSetValue(conf, "usbdevice", usbdevices) < 0) {
-                    usbdevices = NULL;
+                if (virConfSetValue(conf, "usbdevice", &usbdevices) < 0)
                     goto error;
-                }
-                usbdevices = NULL;
             }
         }
     }
@@ -1923,12 +1914,9 @@ xenFormatXLUSBController(virConf *conf,
         }
     }
 
-    if (usbctrlVal->list != NULL) {
-        int ret = virConfSetValue(conf, "usbctrl", usbctrlVal);
-        usbctrlVal = NULL;
-        if (ret < 0)
-            return -1;
-    }
+    if (usbctrlVal->list != NULL &&
+        virConfSetValue(conf, "usbctrl", &usbctrlVal) < 0)
+        return -1;
 
     return 0;
 
@@ -1985,12 +1973,9 @@ xenFormatXLUSB(virConf *conf,
         }
     }
 
-    if (usbVal->list != NULL) {
-        int ret = virConfSetValue(conf, "usbdev", usbVal);
-        usbVal = NULL;
-        if (ret < 0)
-            return -1;
-    }
+    if (usbVal->list != NULL &&
+        virConfSetValue(conf, "usbdev", &usbVal) < 0)
+        return -1;
 
     return 0;
 }
@@ -2057,12 +2042,9 @@ xenFormatXLDomainChannels(virConf *conf, virDomainDef *def)
             goto cleanup;
     }
 
-    if (channelVal->list != NULL) {
-        int ret = virConfSetValue(conf, "channel", channelVal);
-        channelVal = NULL;
-        if (ret < 0)
-            goto cleanup;
-    }
+    if (channelVal->list != NULL &&
+        virConfSetValue(conf, "channel", &channelVal) < 0)
+        goto cleanup;
 
     return 0;
 
@@ -2105,13 +2087,9 @@ xenFormatXLDomainNamespaceData(virConf *conf, virDomainDef *def)
             args->list = val;
     }
 
-    if (args->list != NULL) {
-        if (virConfSetValue(conf, "device_model_args", args) < 0) {
-            args = NULL;
-            goto error;
-        }
-        args = NULL;
-    }
+    if (args->list != NULL &&
+        virConfSetValue(conf, "device_model_args", &args) < 0)
+        goto error;
 
     return 0;
 

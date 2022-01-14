@@ -356,12 +356,9 @@ xenFormatXMDisks(virConf *conf, virDomainDef *def)
             goto cleanup;
     }
 
-    if (diskVal->list != NULL) {
-        int ret = virConfSetValue(conf, "disk", diskVal);
-        diskVal = NULL;
-        if (ret < 0)
-            goto cleanup;
-    }
+    if (diskVal->list != NULL &&
+        virConfSetValue(conf, "disk", &diskVal) < 0)
+        goto cleanup;
 
     return 0;
 

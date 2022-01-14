@@ -1323,16 +1323,22 @@ int virConfGetValueULLong(virConf *conf,
 int
 virConfSetValue(virConf *conf,
                 const char *setting,
-                virConfValue *value)
+                virConfValue **value)
 {
     virConfEntry *cur;
     virConfEntry *prev = NULL;
 
-    if (value && value->type == VIR_CONF_STRING && value->str == NULL) {
+    if (!value) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("invalid use of conf API"));
+        return -1;
+    }
+
+    if (*value && (*value)->type == VIR_CONF_STRING && !(*value)->str) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("expecting a value for value of type %s"),
                        virConfTypeToString(VIR_CONF_STRING));
-        virConfFreeValue(value);
+        g_clear_pointer(value, virConfFreeValue);
         return -1;
     }
 
@@ -1348,7 +1354,7 @@ virConfSetValue(virConf *conf,
         cur = g_new0(virConfEntry, 1);
         cur->comment = NULL;
         cur->name = g_strdup(setting);
-        cur->value = value;
+        cur->value = g_steal_pointer(value);
         if (prev) {
             cur->next = prev->next;
             prev->next = cur;
@@ -1358,7 +1364,7 @@ virConfSetValue(virConf *conf,
         }
     } else {
         virConfFreeValue(cur->value);
-        cur->value = value;
+        cur->value = g_steal_pointer(value);
     }
     return 0;
 }

@@ -259,7 +259,7 @@ xenConfigSetInt(virConf *conf, const char *setting, long long l)
     value->next = NULL;
     value->l = l;
 
-    return virConfSetValue(conf, setting, value);
+    return virConfSetValue(conf, setting, &value);
 }
 
 
@@ -274,7 +274,7 @@ xenConfigSetString(virConf *conf, const char *setting, const char *str)
     value->next = NULL;
     value->str = g_strdup(str);
 
-    return virConfSetValue(conf, setting, value);
+    return virConfSetValue(conf, setting, &value);
 }
 
 
@@ -1788,12 +1788,9 @@ xenFormatPCI(virConf *conf, virDomainDef *def)
         }
     }
 
-    if (pciVal->list != NULL) {
-        int ret = virConfSetValue(conf, "pci", pciVal);
-        pciVal = NULL;
-        if (ret < 0)
-            return -1;
-    }
+    if (pciVal->list != NULL &&
+        virConfSetValue(conf, "pci", &pciVal) < 0)
+        return -1;
 
     return 0;
 }
@@ -2000,13 +1997,9 @@ xenFormatCharDev(virConf *conf, virDomainDef *def,
                     }
                 }
 
-                if (serialVal->list != NULL) {
-                    int ret = virConfSetValue(conf, "serial", serialVal);
-
-                    serialVal = NULL;
-                    if (ret < 0)
-                        return -1;
-                }
+                if (serialVal->list != NULL &&
+                    virConfSetValue(conf, "serial", &serialVal) < 0)
+                    return -1;
             }
         } else {
             if (xenConfigSetString(conf, "serial", "none") < 0)
@@ -2264,11 +2257,8 @@ xenFormatVfb(virConf *conf, virDomainDef *def)
             vfb->type = VIR_CONF_LIST;
             vfb->list = g_steal_pointer(&disp);
 
-            if (virConfSetValue(conf, "vfb", vfb) < 0) {
-                vfb = NULL;
+            if (virConfSetValue(conf, "vfb", &vfb) < 0)
                 return -1;
-            }
-            vfb = NULL;
         }
     }
 
@@ -2326,12 +2316,9 @@ xenFormatVif(virConf *conf,
             goto cleanup;
     }
 
-    if (netVal->list != NULL) {
-        int ret = virConfSetValue(conf, "vif", netVal);
-        netVal = NULL;
-        if (ret < 0)
-            goto cleanup;
-    }
+    if (netVal->list != NULL &&
+        virConfSetValue(conf, "vif", &netVal) < 0)
+        goto cleanup;
 
     return 0;
 
