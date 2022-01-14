@@ -3360,7 +3360,6 @@ const vshCmdInfo info_complete[] = {
 bool
 cmdComplete(vshControl *ctl, const vshCmd *cmd)
 {
-    bool ret = false;
     const vshClientHooks *hooks = ctl->hooks;
     int stdin_fileno = STDIN_FILENO;
     const char *arg = "";
@@ -3370,7 +3369,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
     if (vshCommandOptStringQuiet(ctl, cmd, "string", &arg) <= 0)
-        goto cleanup;
+        return false;
 
     /* This command is flagged VSH_CMD_FLAG_NOCONNECT because we
      * need to prevent auth hooks reading any input. Therefore, we
@@ -3378,7 +3377,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     VIR_FORCE_CLOSE(stdin_fileno);
 
     if (!(hooks && hooks->connHandler && hooks->connHandler(ctl)))
-        goto cleanup;
+        return false;
 
     while ((opt = vshCommandOptArgv(ctl, cmd, opt))) {
         if (virBufferUse(&buf) != 0)
@@ -3397,7 +3396,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
     rl_point = strlen(rl_line_buffer);
 
     if (!(matches = vshReadlineCompletion(arg, 0, 0)))
-        goto cleanup;
+        return false;
 
     for (iter = matches; *iter; iter++) {
         if (iter == matches && matches[1])
@@ -3405,9 +3404,7 @@ cmdComplete(vshControl *ctl, const vshCmd *cmd)
         printf("%s\n", *iter);
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 

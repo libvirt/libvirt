@@ -1195,7 +1195,6 @@ static bool
 cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
 {
     const char *from = NULL;
-    bool ret = false;
     int result;
     g_auto(GStrv) cpus = NULL;
     unsigned int flags = 0;
@@ -1219,7 +1218,7 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     case VIR_CPU_COMPARE_INCOMPATIBLE:
         vshPrint(ctl, _("CPU described in %s is incompatible with host CPU\n"),
                  from);
-        goto cleanup;
+        return false;
         break;
 
     case VIR_CPU_COMPARE_IDENTICAL:
@@ -1235,13 +1234,10 @@ cmdCPUCompare(vshControl *ctl, const vshCmd *cmd)
     case VIR_CPU_COMPARE_ERROR:
     default:
         vshError(ctl, _("Failed to compare host CPU with %s"), from);
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 /*
@@ -1615,7 +1611,6 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     const char *emulator = NULL;
     const char *arch = NULL;
     const char *machine = NULL;
-    bool ret = false;
     int result;
     g_auto(GStrv) cpus = NULL;
     unsigned int flags = 0;
@@ -1646,7 +1641,7 @@ cmdHypervisorCPUCompare(vshControl *ctl,
                  _("CPU described in %s is incompatible with the CPU provided "
                    "by hypervisor on the host\n"),
                  from);
-        goto cleanup;
+        return false;
         break;
 
     case VIR_CPU_COMPARE_IDENTICAL:
@@ -1666,13 +1661,10 @@ cmdHypervisorCPUCompare(vshControl *ctl,
     case VIR_CPU_COMPARE_ERROR:
     default:
         vshError(ctl, _("Failed to compare hypervisor CPU with %s"), from);
-        goto cleanup;
+        return false;
     }
 
-    ret = true;
-
- cleanup:
-    return ret;
+    return true;
 }
 
 
