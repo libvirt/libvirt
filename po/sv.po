@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-13 21:16+0000\n"
+"PO-Revision-Date: 2022-01-14 22:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8368,65 +8368,69 @@ msgstr ""
 #, c-format
 msgid "Failed to set maximum memory for domain '%d' with libxenlight"
 msgstr ""
+"Misslyckades med att sätta maximalt minne för domän ”%d” med libxenlight"
 
-#, fuzzy
 msgid "Failed to set memory for domain"
-msgstr "Misslyckades att förstöra domän %s"
+msgstr "Misslyckades med att sätta minnet för domänen"
 
 #, c-format
 msgid "Failed to set memory for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Misslyckades med att sätta minnet för domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to set new attached interface name to '%s' in xml document"
 msgstr ""
+"Misslyckades med att sätta ett nytt inkopplat gränssnittsnamn till ”%s” i "
+"xml-dokumentet"
 
 #, c-format
 msgid "Failed to set new attached interface type to '%s' in xml document"
 msgstr ""
+"Misslyckades med att sätta en nytt inkopplad gränssnittstyp till ”%s” i xml-"
+"dokumentet"
 
-#, fuzzy
 msgid "Failed to set new domain description"
-msgstr "fil som innehåller XML-domänbeskrivningen"
+msgstr "Misslyckades med att sätta en ny domänbeskrivning"
 
-#, fuzzy
 msgid "Failed to set new domain title"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att sätta en ny domäntitel"
 
 msgid "Failed to set non-blocking file descriptor flag"
-msgstr ""
+msgstr "Misslyckades med att sätta filbeskrivarflaggan för icke blockerande"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set permissions for device %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att sätta rättigheter för enheten %s"
 
 #, c-format
 msgid "Failed to set scheduler parameters for domain '%d' with libxenlight"
 msgstr ""
+"Misslyckades med att sätta schemaläggningsparametrar för domän ”%d” med "
+"libxenlight"
 
-#, fuzzy
 msgid "Failed to set secret value"
-msgstr "Misslyckades att skapa uttag"
+msgstr "Misslyckades med att sätta ett hemligt värde"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set security context for agent for %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att sätta säkerhetskontexten för agenten för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set security context for monitor for %s"
-msgstr "Misslyckades att skapa nätverk från %s"
+msgstr "Misslyckades med att sätta säkerhetskontexten för övervakningen av %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set session type: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att sätta sessionstypen: %s"
 
 #, c-format
 msgid "Failed to set slave for %s: last letter not 'A' or 'B'"
 msgstr ""
+"Misslyckades med att sätta slaven för %s: sista bokstaven är inte ”A” eller "
+"”B”"
 
-#, fuzzy
 msgid "Failed to set stp attribute in xml document"
-msgstr "Misslyckades att lista aktiva domäner"
+msgstr "Misslyckades med att sätta stp-attribut i xml-dokumentet"
 
 #, fuzzy, c-format
 msgid "Failed to set target name: %s"
