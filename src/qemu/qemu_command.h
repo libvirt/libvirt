@@ -256,3 +256,6 @@ qemuBuildTPMOpenBackendFDs(const char *tpmdev,
                            int *cancelfd)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4) G_GNUC_NO_INLINE;
+
+const char * qemuAudioDriverTypeToString(virDomainAudioType type);
+virDomainAudioType qemuAudioDriverTypeFromString(const char *str);

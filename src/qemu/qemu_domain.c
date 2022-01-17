@@ -3482,20 +3482,10 @@ qemuDomainDefSuggestDefaultAudioBackend(virQEMUDriver *driver,
         if (audioenv == NULL) {
             *addAudio = false;
         } else {
-            /*
-             * QEMU audio driver names are mostly the same as
-             * libvirt XML audio backend names
-             */
-            if (STREQ(audioenv, "pa")) {
-                *audioBackend = VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO;
-            } else if (STREQ(audioenv, "wav")) {
-                *audioBackend = VIR_DOMAIN_AUDIO_TYPE_FILE;
-            } else {
-                if (((*audioBackend) = virDomainAudioTypeTypeFromString(audioenv)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("unknown QEMU_AUDIO_DRV setting %s"), audioenv);
-                    return -1;
-                }
+            if (((*audioBackend) = qemuAudioDriverTypeFromString(audioenv)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("unknown QEMU_AUDIO_DRV setting %s"), audioenv);
+                return -1;
             }
         }
     }

@@ -130,19 +130,39 @@ VIR_ENUM_IMPL(qemuNumaPolicy,
               "restrictive",
 );
 
-VIR_ENUM_DECL(qemuAudioDriver);
-VIR_ENUM_IMPL(qemuAudioDriver,
-              VIR_DOMAIN_AUDIO_TYPE_LAST,
-              "none",
-              "alsa",
-              "coreaudio",
-              "jack",
-              "oss",
-              "pa",
-              "sdl",
-              "spice",
-              "wav",
-);
+
+const char *
+qemuAudioDriverTypeToString(virDomainAudioType type)
+{
+    switch (type) {
+        case VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO:
+            return "pa";
+        case VIR_DOMAIN_AUDIO_TYPE_FILE:
+            return "wav";
+        case VIR_DOMAIN_AUDIO_TYPE_NONE:
+        case VIR_DOMAIN_AUDIO_TYPE_ALSA:
+        case VIR_DOMAIN_AUDIO_TYPE_COREAUDIO:
+        case VIR_DOMAIN_AUDIO_TYPE_JACK:
+        case VIR_DOMAIN_AUDIO_TYPE_OSS:
+        case VIR_DOMAIN_AUDIO_TYPE_SDL:
+        case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        case VIR_DOMAIN_AUDIO_TYPE_LAST:
+            break;
+    }
+    return virDomainAudioTypeTypeToString(type);
+}
+
+
+virDomainAudioType
+qemuAudioDriverTypeFromString(const char *str)
+{
+    if (STREQ(str, "pa")) {
+        return VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO;
+    } else if (STREQ(str, "wav")) {
+        return VIR_DOMAIN_AUDIO_TYPE_FILE;
+    }
+    return virDomainAudioTypeTypeFromString(str);
+}
 
 
 static const char *
