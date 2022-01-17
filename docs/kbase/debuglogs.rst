@@ -89,7 +89,7 @@ configuring your filters is to start with the `Example filter settings`_.
 The rule of thumb here is to have more logs rather than less and miss something
 important.
 
-How to turn on debug logs for libvirt
+Libvirt daemons logging configuration
 =====================================
 
 Persistent setting
@@ -119,14 +119,6 @@ URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
 *Note:* Libvirt prior to the ``libvirt-4.4.0`` release didn't support globbing
 patterns and thus requires more configuration. See
 `Legacy (pre-4.4.0) libvirt daemon logging configuration`_.
-
-In case you want to get the client logs, you need to set this environment
-variable:
-
-::
-
-   export LIBVIRT_LOG_OUTPUTS="1:file:/tmp/libvirt_client.log"
-
 
 However, when you are using the session mode ``qemu:///session`` or you run the
 ``libvirtd`` as unprivileged user you will find configuration file under
@@ -214,6 +206,19 @@ Or using ``virt-admin``:
    ## LEGACY APPROACH ENUMERATING ALL THE DESIRED MODULES ##
    # virt-admin daemon-log-filters "1:util 1:libvirt 1:storage 1:network 1:nodedev 1:qemu"
 
+Client library logging
+======================
+
+By default the client library doesn't produce any logs and usually usually it's
+not very interesting on its own anyway.
+
+In case you want to get the client logs, logging is controlled via the
+``LIBVIRT_LOG_OUTPUTS`` and ``LIBVIRT_LOG_FILTERS`` environment variables.
+Generally when client logs are needed make sure you don't filter them:
+
+::
+
+   export LIBVIRT_LOG_OUTPUTS="1:file:/tmp/libvirt_client.log"
 
 What to attach?
 ===============
