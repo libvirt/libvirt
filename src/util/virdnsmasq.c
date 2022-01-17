@@ -648,10 +648,7 @@ static int
 dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
 {
     g_autoptr(virCommand) vercmd = NULL;
-    g_autoptr(virCommand) helpcmd = NULL;
-    g_autofree char *help = NULL;
     g_autofree char *version = NULL;
-    g_autofree char *complete = NULL;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
@@ -670,16 +667,7 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
     if (virCommandRun(vercmd, NULL) < 0)
         return -1;
 
-    helpcmd = virCommandNewArgList(caps->binaryPath, "--help", NULL);
-    virCommandSetOutputBuffer(helpcmd, &help);
-    virCommandAddEnvPassCommon(helpcmd);
-    virCommandClearCaps(helpcmd);
-    if (virCommandRun(helpcmd, NULL) < 0)
-        return -1;
-
-    complete = g_strdup_printf("%s\n%s", version, help);
-
-    return dnsmasqCapsSetFromBuffer(caps, complete);
+    return dnsmasqCapsSetFromBuffer(caps, version);
 }
 
 static dnsmasqCaps *

@@ -114,7 +114,7 @@ mymain(void)
     int ret = 0;
     g_autoptr(dnsmasqCaps) full = NULL;
 
-    full = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67\n--bind-dynamic\n--ra-param");
+    full = dnsmasqCapsNewFromBuffer("Dnsmasq version 2.67");
 
 #define DO_TEST(xname, xcaps) \
     do { \
