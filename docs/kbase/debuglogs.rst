@@ -18,10 +18,10 @@ well.
 
 
 How to turn on debug logs for libvirt
--------------------------------------
+=====================================
 
 Persistent setting
-~~~~~~~~~~~~~~~~~~
+------------------
 
 The daemon configuration files location is dependent on `connection
 URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
@@ -71,7 +71,7 @@ However, when you are using the session mode ``qemu:///session`` or you run the
 ``$XDG_CONFIG_HOME/libvirt/libvirtd.conf``.
 
 Runtime setting
-~~~~~~~~~~~~~~~
+---------------
 
 Debugging anomalies can be very painful, especially when trying to reproduce it
 after the daemon restarts, since the new session can make the anomaly
@@ -112,7 +112,7 @@ once you're finished debugging, just remember to save the original sets of
 filters and outputs and restore them at the end the same way as described above.
 
 Removing filters and outputs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It's also possible to remove all the filters and produce an enormous log file,
 but it is not recommended since some of libvirt's modules can produce a large
