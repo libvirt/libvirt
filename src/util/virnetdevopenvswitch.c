@@ -637,6 +637,104 @@ virNetDevOpenvswitchFindUUID(const char *table,
     return uuid;
 }
 
+int
+virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
+                                        const unsigned char *vmuuid)
+{
+    int ret = 0;
+    char vmuuidstr[VIR_UUID_STRING_BUFLEN];
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *ifname_ex_id = NULL;
+    g_autofree char *vmid_ex_id = NULL;
+    g_autofree char *qos_uuid = NULL;
+    g_autofree char *queue_uuid = NULL;
+    g_autofree char *port_qos = NULL;
+    size_t i;
+
+    /* find qos */
+    virUUIDFormat(vmuuid, vmuuidstr);
+    vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
+    ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
+    /* find queue */
+    queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
+    /* find qos */
+    qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
+
+    if (qos_uuid && *qos_uuid) {
+        g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
+
+        /* destroy qos */
+        for (i = 0; lines[i] != NULL; i++) {
+            const char *line = lines[i];
+            if (!*line) {
+                continue;
+            }
+            virCommandFree(cmd);
+            cmd = virNetDevOpenvswitchCreateCmd();
+            virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "--if-exists",
+                                 "list", "port", ifname, "qos", NULL);
+            virCommandSetOutputBuffer(cmd, &port_qos);
+            if (virCommandRun(cmd, NULL) < 0) {
+                VIR_WARN("Unable to remove port qos on port %s", ifname);
+            }
+            if (port_qos && *port_qos) {
+                virCommandFree(cmd);
+                cmd = virNetDevOpenvswitchCreateCmd();
+                virCommandAddArgList(cmd, "remove", "port", ifname, "qos", line, NULL);
+                if (virCommandRun(cmd, NULL) < 0) {
+                    VIR_WARN("Unable to remove port qos on port %s", ifname);
+                }
+            }
+            virCommandFree(cmd);
+            cmd = virNetDevOpenvswitchCreateCmd();
+            virCommandAddArgList(cmd, "destroy", "qos", line, NULL);
+            if (virCommandRun(cmd, NULL) < 0) {
+                VIR_WARN("Unable to destroy qos on port %s", ifname);
+                ret = -1;
+            }
+        }
+    }
+    /* destroy queue */
+    if (queue_uuid && *queue_uuid) {
+        g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
+
+        for (i = 0; lines[i] != NULL; i++) {
+            const char *line = lines[i];
+            if (!*line) {
+                continue;
+            }
+            virCommandFree(cmd);
+            cmd = virNetDevOpenvswitchCreateCmd();
+            virCommandAddArgList(cmd, "destroy", "queue", line, NULL);
+            if (virCommandRun(cmd, NULL) < 0) {
+                VIR_WARN("Unable to destroy queue on port %s", ifname);
+                ret = -1;
+            }
+        }
+    }
+
+    return ret;
+}
+
+int
+virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
+{
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = virNetDevOpenvswitchCreateCmd();
+    virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
+    virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu", 0llu);
+    virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu", 0llu);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to reset ingress on port %s"), ifname);
+        return -1;
+    }
+
+    return 0;
+}
+
 /*
  * In virNetDevBandwidthRate, average, peak, floor are in kilobyes and burst in
  * kibibytes. However other_config in ovs qos is in bits and
@@ -817,104 +915,6 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
         if (virNetDevOpenvswitchInterfaceClearRxQos(ifname) < 0) {
             VIR_WARN("Clean rx qos for interface %s failed", ifname);
         }
-    }
-
-    return 0;
-}
-
-int
-virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
-                                        const unsigned char *vmuuid)
-{
-    int ret = 0;
-    char vmuuidstr[VIR_UUID_STRING_BUFLEN];
-    g_autoptr(virCommand) cmd = NULL;
-    g_autofree char *ifname_ex_id = NULL;
-    g_autofree char *vmid_ex_id = NULL;
-    g_autofree char *qos_uuid = NULL;
-    g_autofree char *queue_uuid = NULL;
-    g_autofree char *port_qos = NULL;
-    size_t i;
-
-    /* find qos */
-    virUUIDFormat(vmuuid, vmuuidstr);
-    vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
-    ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
-    /* find queue */
-    queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
-    /* find qos */
-    qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
-
-    if (qos_uuid && *qos_uuid) {
-        g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
-
-        /* destroy qos */
-        for (i = 0; lines[i] != NULL; i++) {
-            const char *line = lines[i];
-            if (!*line) {
-                continue;
-            }
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "--if-exists",
-                                 "list", "port", ifname, "qos", NULL);
-            virCommandSetOutputBuffer(cmd, &port_qos);
-            if (virCommandRun(cmd, NULL) < 0) {
-                VIR_WARN("Unable to remove port qos on port %s", ifname);
-            }
-            if (port_qos && *port_qos) {
-                virCommandFree(cmd);
-                cmd = virNetDevOpenvswitchCreateCmd();
-                virCommandAddArgList(cmd, "remove", "port", ifname, "qos", line, NULL);
-                if (virCommandRun(cmd, NULL) < 0) {
-                    VIR_WARN("Unable to remove port qos on port %s", ifname);
-                }
-            }
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "destroy", "qos", line, NULL);
-            if (virCommandRun(cmd, NULL) < 0) {
-                VIR_WARN("Unable to destroy qos on port %s", ifname);
-                ret = -1;
-            }
-        }
-    }
-    /* destroy queue */
-    if (queue_uuid && *queue_uuid) {
-        g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
-
-        for (i = 0; lines[i] != NULL; i++) {
-            const char *line = lines[i];
-            if (!*line) {
-                continue;
-            }
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "destroy", "queue", line, NULL);
-            if (virCommandRun(cmd, NULL) < 0) {
-                VIR_WARN("Unable to destroy queue on port %s", ifname);
-                ret = -1;
-            }
-        }
-    }
-
-    return ret;
-}
-
-int
-virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
-{
-    g_autoptr(virCommand) cmd = NULL;
-
-    cmd = virNetDevOpenvswitchCreateCmd();
-    virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
-    virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu", 0llu);
-    virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu", 0llu);
-
-    if (virCommandRun(cmd, NULL) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to reset ingress on port %s"), ifname);
-        return -1;
     }
 
     return 0;
