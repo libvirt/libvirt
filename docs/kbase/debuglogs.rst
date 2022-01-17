@@ -17,6 +17,78 @@ Moreover, libvirt catches stderr of all running domains. These can be useful as
 well.
 
 
+Logging settings in libvirt
+===========================
+
+Log levels
+----------
+
+Libvirt log messages are classified into 4 priority levels; the higher the
+priority level, the less is the volume of produced messages.
+
+The log level setting is controlled by the ``log_filters`` and ``log_outputs``
+settings explained in the `Log outputs`_ and `Log filters`_ sections
+respectively.
+
+  * ``1: DEBUG``
+  * ``2: INFO``
+  * ``3: WARNING``
+  * ``4: ERROR``
+
+For debugging it's necessary to capture the ``DEBUG`` level entries as the name
+implies.
+
+Log outputs
+-----------
+
+Log outputs describe where the log messages are being recorded. The outputs
+are described by a space-separated list of tuples in the following format:
+
+::
+
+  level:output
+
+``level`` refers to the minimum priority level of entries recorded in the output.
+
+``output`` is one of the following:
+
+  ``file:FILENAME``
+    Logging messages are appended to FILENAME.
+
+  ``journald``
+    Logging goes to the ``journald`` logging daemon.
+
+  ``stderr``
+    Logging goes to the standard error output stream of the libvirt daemon.
+
+  ``syslog:name``
+    Logging goes to syslogd. ``name`` is used to identify the entries.
+
+The default output on systems running ``journald`` is ``3:journald``. Note that
+``journald`` can throttle the amount of logs per process so in order to capture
+debug logs of a libvirt daemon should go to a file instead (in addition to
+theoriginal logging daemon), e.g.:
+
+::
+
+  "1:file:/var/log/libvirt/libvirtd.log 3:journald"
+
+
+Log filters
+-----------
+
+Log filters, as the name suggest, help filtering out messages which are
+irrelevant to the cause.  The log filters is a space-separated list of tuples
+list of tuples using the ``level:identifier`` format. Each filter defined this
+way will then limit messages coming from a module matching the ``identifier``
+pattern (accepts globs too) to the given ``level``."
+
+As ``identifier`` is based on internal naming of modules, preferred way of
+configuring your filters is to start with the `Example filter settings`_.
+
+The rule of thumb here is to have more logs rather than less and miss something
+important.
+
 How to turn on debug logs for libvirt
 =====================================
 
