@@ -685,11 +685,10 @@ virNetDevBandwidthUpdateRate(const char *ifname,
                              virNetDevBandwidth *bandwidth,
                              unsigned long long new_rate)
 {
-    int ret = -1;
-    virCommand *cmd = NULL;
-    char *class_id = NULL;
-    char *rate = NULL;
-    char *ceil = NULL;
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *class_id = NULL;
+    g_autofree char *rate = NULL;
+    g_autofree char *ceil = NULL;
 
     class_id = g_strdup_printf("1:%x", id);
     rate = g_strdup_printf("%llukbps", new_rate);
@@ -703,17 +702,7 @@ virNetDevBandwidthUpdateRate(const char *ifname,
                          "ceil", ceil, NULL);
     virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
-
-    ret = 0;
-
- cleanup:
-    virCommandFree(cmd);
-    VIR_FREE(class_id);
-    VIR_FREE(rate);
-    VIR_FREE(ceil);
-    return ret;
+    return virCommandRun(cmd, NULL);
 }
 
 /**
