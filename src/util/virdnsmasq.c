@@ -577,7 +577,6 @@ dnsmasqReload(pid_t pid G_GNUC_UNUSED)
 struct _dnsmasqCaps {
     virObject parent;
     char *binaryPath;
-    unsigned long version;
 };
 
 static virClass *dnsmasqCapsClass;
@@ -608,6 +607,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 {
     int len;
     const char *p;
+    unsigned long version;
 
     p = STRSKIP(buf, DNSMASQ_VERSION_STR);
     if (!p)
@@ -615,21 +615,21 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 
     virSkipToDigit(&p);
 
-    if (virParseVersionString(p, &caps->version, true) < 0)
+    if (virParseVersionString(p, &version, true) < 0)
         goto error;
 
-    if (caps->version < DNSMASQ_MIN_MAJOR * 1000000 + DNSMASQ_MIN_MINOR * 1000) {
+    if (version < DNSMASQ_MIN_MAJOR * 1000000 + DNSMASQ_MIN_MINOR * 1000) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("dnsmasq version >= %u.%u required but %lu.%lu found"),
                        DNSMASQ_MIN_MAJOR, DNSMASQ_MIN_MINOR,
-                       caps->version / 1000000,
-                       caps->version % 1000000 / 1000);
+                       version / 1000000,
+                       version % 1000000 / 1000);
         goto error;
     }
 
     VIR_INFO("dnsmasq version is %d.%d",
-             (int)caps->version / 1000000,
-             (int)(caps->version % 1000000) / 1000);
+             (int)version / 1000000,
+             (int)(version % 1000000) / 1000);
     return 0;
 
  error:
