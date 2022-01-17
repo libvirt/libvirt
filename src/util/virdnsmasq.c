@@ -649,7 +649,7 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 }
 
 static int
-dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
+dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
 {
     struct stat sb;
     g_autoptr(virCommand) vercmd = NULL;
@@ -666,7 +666,7 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps, bool force)
                              caps->binaryPath);
         return -1;
     }
-    if (!force && caps->mtime == sb.st_mtime)
+    if (caps->mtime == sb.st_mtime)
         return 0;
     caps->mtime = sb.st_mtime;
 
@@ -734,7 +734,7 @@ dnsmasqCapsNewFromBinary(void)
     if (!caps)
         return NULL;
 
-    if (dnsmasqCapsRefreshInternal(caps, true) < 0)
+    if (dnsmasqCapsRefreshInternal(caps) < 0)
         return NULL;
 
     return g_steal_pointer(&caps);
