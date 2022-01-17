@@ -653,9 +653,6 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
     g_autofree char *version = NULL;
     g_autofree char *complete = NULL;
 
-    if (!caps)
-        return 0;
-
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
      * in a sub-process so it's hard to feed back a useful error.
