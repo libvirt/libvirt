@@ -814,19 +814,18 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
 
     if (qos_uuid && *qos_uuid) {
         g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
+        g_autoptr(virCommand) qoscmd = virNetDevOpenvswitchCreateCmd();
 
-        virCommandFree(cmd);
-        cmd = virNetDevOpenvswitchCreateCmd();
-        virCommandAddArgList(cmd, "set", "qos", lines[0], NULL);
-        virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
+        virCommandAddArgList(qoscmd, "set", "qos", lines[0], NULL);
+        virCommandAddArgFormat(qoscmd, "other_config:min-rate=%s", average);
         if (burst) {
-            virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
+            virCommandAddArgFormat(qoscmd, "other_config:burst=%s", burst);
         }
         if (peak) {
-            virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
+            virCommandAddArgFormat(qoscmd, "other_config:max-rate=%s", peak);
         }
-        virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
-        if (virCommandRun(cmd, NULL) < 0) {
+        virCommandAddArgList(qoscmd, vmid_ex_id, ifname_ex_id, NULL);
+        if (virCommandRun(qoscmd, NULL) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Unable to set qos configuration on port %s"), ifname);
             return -1;
