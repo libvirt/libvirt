@@ -576,7 +576,6 @@ dnsmasqReload(pid_t pid G_GNUC_UNUSED)
 struct _dnsmasqCaps {
     virObject parent;
     char *binaryPath;
-    bool noRefresh;
     unsigned long version;
 };
 
@@ -608,8 +607,6 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 {
     int len;
     const char *p;
-
-    caps->noRefresh = true;
 
     p = STRSKIP(buf, DNSMASQ_VERSION_STR);
     if (!p)
@@ -656,7 +653,7 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
     g_autofree char *version = NULL;
     g_autofree char *complete = NULL;
 
-    if (!caps || caps->noRefresh)
+    if (!caps)
         return 0;
 
     /* Make sure the binary we are about to try exec'ing exists.
