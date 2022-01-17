@@ -3488,6 +3488,8 @@ qemuDomainDefSuggestDefaultAudioBackend(virQEMUDriver *driver,
              */
             if (STREQ(audioenv, "pa")) {
                 *audioBackend = VIR_DOMAIN_AUDIO_TYPE_PULSEAUDIO;
+            } else if (STREQ(audioenv, "wav")) {
+                *audioBackend = VIR_DOMAIN_AUDIO_TYPE_FILE;
             } else {
                 if (((*audioBackend) = virDomainAudioTypeTypeFromString(audioenv)) < 0) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
