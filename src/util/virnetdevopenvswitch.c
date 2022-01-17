@@ -745,6 +745,97 @@ virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
 #define KIBIBYTE_TO_BITS(x) (x * 8192ULL)
 #define VIR_NETDEV_RX_TO_OVS 8
 
+static int
+virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
+                                      const virNetDevBandwidthRate *tx,
+                                      const unsigned char *vmuuid)
+{
+    char vmuuidstr[VIR_UUID_STRING_BUFLEN];
+    g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *vmid_ex_id = NULL;
+    g_autofree char *ifname_ex_id = NULL;
+    g_autofree char *average = NULL;
+    g_autofree char *peak = NULL;
+    g_autofree char *burst = NULL;
+    g_autofree char *qos_uuid = NULL;
+    g_autofree char *queue_uuid = NULL;
+
+    average = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->average));
+    if (tx->burst)
+        burst = g_strdup_printf("%llu", KIBIBYTE_TO_BITS(tx->burst));
+    if (tx->peak)
+        peak = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->peak));
+
+    virUUIDFormat(vmuuid, vmuuidstr);
+    vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
+    ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
+    /* find queue */
+    queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
+    /* find qos */
+    qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
+
+    /* create qos and set */
+    cmd = virNetDevOpenvswitchCreateCmd();
+    if (queue_uuid && *queue_uuid) {
+        g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
+        virCommandAddArgList(cmd, "set", "queue", lines[0], NULL);
+    } else {
+        virCommandAddArgList(cmd, "set", "port", ifname, "qos=@qos1",
+                             vmid_ex_id, ifname_ex_id,
+                             "--", "--id=@qos1", "create", "qos", "type=linux-htb", NULL);
+        virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
+        if (burst) {
+            virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
+        }
+        if (peak) {
+            virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
+        }
+        virCommandAddArgList(cmd, "queues:0=@queue0", vmid_ex_id, ifname_ex_id,
+                             "--", "--id=@queue0", "create", "queue", NULL);
+    }
+    virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
+    if (burst) {
+        virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
+    }
+    if (peak) {
+        virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
+    }
+    virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
+    if (virCommandRun(cmd, NULL) < 0) {
+        if (queue_uuid && *queue_uuid) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to set queue configuration on port %s"), ifname);
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to create and set qos configuration on port %s"), ifname);
+        }
+        return -1;
+    }
+
+    if (qos_uuid && *qos_uuid) {
+        g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
+
+        virCommandFree(cmd);
+        cmd = virNetDevOpenvswitchCreateCmd();
+        virCommandAddArgList(cmd, "set", "qos", lines[0], NULL);
+        virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
+        if (burst) {
+            virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
+        }
+        if (peak) {
+            virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
+        }
+        virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
+        if (virCommandRun(cmd, NULL) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Unable to set qos configuration on port %s"), ifname);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
 /**
  * virNetDevOpenvswitchInterfaceSetQos:
  * @ifname: on which interface
@@ -807,88 +898,8 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (tx && tx->average) {
-        char vmuuidstr[VIR_UUID_STRING_BUFLEN];
-        g_autoptr(virCommand) cmd = NULL;
-        g_autofree char *vmid_ex_id = NULL;
-        g_autofree char *ifname_ex_id = NULL;
-        g_autofree char *average = NULL;
-        g_autofree char *peak = NULL;
-        g_autofree char *burst = NULL;
-        g_autofree char *qos_uuid = NULL;
-        g_autofree char *queue_uuid = NULL;
-
-        average = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->average));
-        if (tx->burst)
-            burst = g_strdup_printf("%llu", KIBIBYTE_TO_BITS(tx->burst));
-        if (tx->peak)
-            peak = g_strdup_printf("%llu", KBYTE_TO_BITS(tx->peak));
-
-        virUUIDFormat(vmuuid, vmuuidstr);
-        vmid_ex_id = g_strdup_printf("external-ids:vm-id=\"%s\"", vmuuidstr);
-        ifname_ex_id = g_strdup_printf("external-ids:ifname=\"%s\"", ifname);
-        /* find queue */
-        queue_uuid = virNetDevOpenvswitchFindUUID("queue", vmid_ex_id, ifname_ex_id);
-        /* find qos */
-        qos_uuid = virNetDevOpenvswitchFindUUID("qos", vmid_ex_id, ifname_ex_id);
-
-        /* create qos and set */
-        cmd = virNetDevOpenvswitchCreateCmd();
-        if (queue_uuid && *queue_uuid) {
-            g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
-            virCommandAddArgList(cmd, "set", "queue", lines[0], NULL);
-        } else {
-            virCommandAddArgList(cmd, "set", "port", ifname, "qos=@qos1",
-                                 vmid_ex_id, ifname_ex_id,
-                                 "--", "--id=@qos1", "create", "qos", "type=linux-htb", NULL);
-            virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
-            if (burst) {
-                virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
-            }
-            if (peak) {
-                virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
-            }
-            virCommandAddArgList(cmd, "queues:0=@queue0", vmid_ex_id, ifname_ex_id,
-                                 "--", "--id=@queue0", "create", "queue", NULL);
-        }
-        virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
-        if (burst) {
-            virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
-        }
-        if (peak) {
-            virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
-        }
-        virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
-        if (virCommandRun(cmd, NULL) < 0) {
-            if (queue_uuid && *queue_uuid) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to set queue configuration on port %s"), ifname);
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to create and set qos configuration on port %s"), ifname);
-            }
+        if (virNetDevOpenvswitchInterfaceSetTxQos(ifname, tx, vmuuid) < 0)
             return -1;
-        }
-
-        if (qos_uuid && *qos_uuid) {
-            g_auto(GStrv) lines = g_strsplit(qos_uuid, "\n", 0);
-
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "set", "qos", lines[0], NULL);
-            virCommandAddArgFormat(cmd, "other_config:min-rate=%s", average);
-            if (burst) {
-                virCommandAddArgFormat(cmd, "other_config:burst=%s", burst);
-            }
-            if (peak) {
-                virCommandAddArgFormat(cmd, "other_config:max-rate=%s", peak);
-            }
-            virCommandAddArgList(cmd, vmid_ex_id, ifname_ex_id, NULL);
-            if (virCommandRun(cmd, NULL) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unable to set qos configuration on port %s"), ifname);
-                return -1;
-            }
-        }
     } else {
         if (virNetDevOpenvswitchInterfaceClearTxQos(ifname, vmuuid) < 0) {
             VIR_WARN("Clean tx qos for interface %s failed", ifname);
