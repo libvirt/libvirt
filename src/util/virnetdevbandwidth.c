@@ -105,8 +105,7 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
                                    bool create_new)
 {
     int ret = -1;
-    char *filter_id = NULL;
-    virCommand *cmd = NULL;
+    g_autofree char *filter_id = NULL;
     unsigned char ifmac[VIR_MAC_BUFLEN];
     char *mac[2] = {NULL, NULL};
 
@@ -120,9 +119,9 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
     filter_id = g_strdup_printf("800::%u", id);
 
     if (remove_old) {
+        g_autoptr(virCommand) cmd = virCommandNew(TC);
         int cmd_ret = 0;
 
-        cmd = virCommandNew(TC);
         virCommandAddArgList(cmd, "filter", "del", "dev", ifname,
                              "prio", "2", "handle",  filter_id, "u32", NULL);
 
@@ -132,14 +131,13 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
     }
 
     if (create_new) {
+        g_autoptr(virCommand) cmd = virCommandNew(TC);
         virMacAddrGetRaw(ifmac_ptr, ifmac);
 
         mac[0] = g_strdup_printf("0x%02x%02x%02x%02x", ifmac[2],
                                  ifmac[3], ifmac[4], ifmac[5]);
         mac[1] = g_strdup_printf("0x%02x%02x", ifmac[0], ifmac[1]);
 
-        virCommandFree(cmd);
-        cmd = virCommandNew(TC);
         /* Okay, this not nice. But since libvirt does not necessarily track
          * interface IP address(es), and tc fw filter simply refuse to use
          * ebtables marks, we need to use u32 selector to match MAC address.
@@ -160,8 +158,6 @@ virNetDevBandwidthManipulateFilter(const char *ifname,
  cleanup:
     VIR_FREE(mac[1]);
     VIR_FREE(mac[0]);
-    VIR_FREE(filter_id);
-    virCommandFree(cmd);
     return ret;
 }
 
