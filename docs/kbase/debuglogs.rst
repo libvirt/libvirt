@@ -92,37 +92,93 @@ important.
 Libvirt daemons logging configuration
 =====================================
 
+Libvirt daemons can be configured either via a config file or via the
+administration API. The configuration location depends on multiple factors.
+
+Session vs system daemons
+-------------------------
+
+Libvirt daemons run either in the ``system`` mode or on ``session`` (user)
+mode, depending on the configuration of the host and available permission
+levels.
+
+The `connection URI <https://libvirt.org/uri.html>`__ influences which daemon
+the client will communicate with.
+
+System daemon mode
+~~~~~~~~~~~~~~~~~~
+  * all connection URIs end in ``/system`` e.g. ``qemu:///system``
+
+  * config files are usually placed in ``/etc/libvirt``
+
+Session daemon mode
+~~~~~~~~~~~~~~~~~~~
+
+  * connection URIs end in ``/session``
+
+  * config files are usually placed in ``$XDG_CONFIG_HOME/libvirt/`` directory
+
+Modular vs. monolithic daemons
+------------------------------
+
+While there is only a single 'libvirtd.conf' configuration file in case of the
+monolithic daemon setup, each of the modular daemons has their own
+configuration file giving you a lot of possibilities how to configure them
+individually including logging. Realistically though, logging will have to be
+configured only for a single or a couple of daemons in case debug logs are
+requested.
+
+
+Refer to `documentation about daemons <../daemons.html#checking-whether-modular-monolithic-mode-is-in-use>`__
+to figure out which is in use by your system.
+
+Modular daemons
+~~~~~~~~~~~~~~~
+
+The configuration of modular daemons is in file named after the daemon. E.g.
+for ``qemu:///system`` connection this is the ``virtqemud`` daemon and
+correspondingly:
+
+  * ``virtqemud.conf`` config file is used
+
+  * ``virtqemud:///system`` or ``virtqemud:///session`` admin URI is used
+
+Monolithic daemon
+~~~~~~~~~~~~~~~~~
+
+   * ``libvirtd.conf`` config file is used
+
+   * ``libvirtd:///system`` or ``libvirtd:///session`` admin URI is used
+     when the modular qemu hypervisor driver ``virtqemud``
+
 Persistent setting
 ------------------
 
-The daemon configuration files location is dependent on `connection
-URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
+In order to setup libvirt logging persistently, follow the steps below:
 
+-  open the appropriate daemon config file in your favourite editor ::
 
+     /etc/libvirt/virtqemud.conf
+     /etc/libvirt/libvirtd.conf
+     $XDG_CONFIG_HOME/libvirt/libvirtd.conf
+     $XDG_CONFIG_HOME/libvirt/virtqemud.conf
 
--  open ``/etc/libvirt/libvirtd.conf`` in your favourite editor
--  find & replace, or set these variables:
+-  find & replace, or set the apropriate `Log outputs`_ and `Log filters`_, e.g ::
 
-::
-
-   log_filters="3:remote 4:event 3:util.json 3:rpc 1:*"
-   log_outputs="1:file:/var/log/libvirt/libvirtd.log"
+     log_filters="3:remote 4:event 3:util.json 3:rpc 1:*"
+     log_outputs="1:file:/var/log/libvirt/libvirtd.log"
 
 -  save and exit
--  restart libvirtd service
+-  restart the corresponding service/daemon e.g. ::
 
-::
-
-   systemctl restart libvirtd.service
+    systemctl restart virtqemud.socket
+    systemctl restart libvirtd.socket
+    systemctl restart libvirtd.service
 
 
 *Note:* Libvirt prior to the ``libvirt-4.4.0`` release didn't support globbing
 patterns and thus requires more configuration. See
 `Legacy (pre-4.4.0) libvirt daemon logging configuration`_.
-
-However, when you are using the session mode ``qemu:///session`` or you run the
-``libvirtd`` as unprivileged user you will find configuration file under
-``$XDG_CONFIG_HOME/libvirt/libvirtd.conf``.
 
 Runtime setting
 ---------------
@@ -132,9 +188,13 @@ after the daemon restarts, since the new session can make the anomaly
 "disappear". Therefore, it's possible to enable the debug logs during runtime
 using libvirt administration API. To use it conveniently, there's the
 ``virt-admin`` client provided by the ``libvirt-admin`` package. Use the
-package manager provided by your distribution to install this package. Once you
-have it installed, run the following as root to see the set of log filters
-currently being active:
+package manager provided by your distribution to install this package.
+
+**Important**: Substitute ``virt-admin -c $ADMIN_URI`` according to the
+guideline in the sections above in place of ``virt-admin`` in the examples
+below if needed.
+
+The following command allows to query the list of currently active log filters:
 
 ::
 
