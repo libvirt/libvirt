@@ -836,6 +836,29 @@ virNetDevOpenvswitchInterfaceSetTxQos(const char *ifname,
     return 0;
 }
 
+static int
+virNetDevOpenvswitchInterfaceSetRxQos(const char *ifname,
+                                      const virNetDevBandwidthRate *rx)
+{
+    g_autoptr(virCommand) cmd = NULL;
+
+    cmd = virNetDevOpenvswitchCreateCmd();
+    virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
+    virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu",
+                           rx->average * VIR_NETDEV_RX_TO_OVS);
+    if (rx->burst)
+        virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu",
+                               rx->burst * VIR_NETDEV_RX_TO_OVS);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to set vlan configuration on port %s"), ifname);
+        return -1;
+    }
+
+    return 0;
+}
+
 /**
  * virNetDevOpenvswitchInterfaceSetQos:
  * @ifname: on which interface
@@ -907,21 +930,8 @@ virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
     }
 
     if (rx) {
-        g_autoptr(virCommand) cmd = NULL;
-
-        cmd = virNetDevOpenvswitchCreateCmd();
-        virCommandAddArgList(cmd, "set", "Interface", ifname, NULL);
-        virCommandAddArgFormat(cmd, "ingress_policing_rate=%llu",
-                               rx->average * VIR_NETDEV_RX_TO_OVS);
-        if (rx->burst)
-            virCommandAddArgFormat(cmd, "ingress_policing_burst=%llu",
-                                   rx->burst * VIR_NETDEV_RX_TO_OVS);
-
-        if (virCommandRun(cmd, NULL) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Unable to set vlan configuration on port %s"), ifname);
+        if (virNetDevOpenvswitchInterfaceSetRxQos(ifname, rx) < 0)
             return -1;
-        }
     } else {
         if (virNetDevOpenvswitchInterfaceClearRxQos(ifname) < 0) {
             VIR_WARN("Clean rx qos for interface %s failed", ifname);
