@@ -416,26 +416,23 @@ virNetDevBandwidthClear(const char *ifname)
 {
     int ret = 0;
     int dummy; /* for ignoring the exit status */
-    virCommand *cmd = NULL;
+    g_autoptr(virCommand) rootcmd = NULL;
+    g_autoptr(virCommand) ingresscmd = NULL;
 
     if (!ifname)
        return 0;
 
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc", "del", "dev", ifname, "root", NULL);
+    rootcmd = virCommandNew(TC);
+    virCommandAddArgList(rootcmd, "qdisc", "del", "dev", ifname, "root", NULL);
 
-    if (virCommandRun(cmd, &dummy) < 0)
+    if (virCommandRun(rootcmd, &dummy) < 0)
         ret = -1;
 
-    virCommandFree(cmd);
+    ingresscmd = virCommandNew(TC);
+    virCommandAddArgList(ingresscmd, "qdisc",  "del", "dev", ifname, "ingress", NULL);
 
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc",  "del", "dev", ifname, "ingress", NULL);
-
-    if (virCommandRun(cmd, &dummy) < 0)
+    if (virCommandRun(ingresscmd, &dummy) < 0)
         ret = -1;
-
-    virCommandFree(cmd);
 
     return ret;
 }
