@@ -577,7 +577,6 @@ struct _dnsmasqCaps {
     virObject parent;
     char *binaryPath;
     bool noRefresh;
-    time_t mtime;
     unsigned long version;
 };
 
@@ -651,7 +650,6 @@ dnsmasqCapsSetFromBuffer(dnsmasqCaps *caps, const char *buf)
 static int
 dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
 {
-    struct stat sb;
     g_autoptr(virCommand) vercmd = NULL;
     g_autoptr(virCommand) helpcmd = NULL;
     g_autofree char *help = NULL;
@@ -660,15 +658,6 @@ dnsmasqCapsRefreshInternal(dnsmasqCaps *caps)
 
     if (!caps || caps->noRefresh)
         return 0;
-
-    if (stat(caps->binaryPath, &sb) < 0) {
-        virReportSystemError(errno, _("Cannot check dnsmasq binary %s"),
-                             caps->binaryPath);
-        return -1;
-    }
-    if (caps->mtime == sb.st_mtime)
-        return 0;
-    caps->mtime = sb.st_mtime;
 
     /* Make sure the binary we are about to try exec'ing exists.
      * Technically we could catch the exec() failure, but that's
