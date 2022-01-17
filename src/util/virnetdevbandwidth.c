@@ -538,12 +538,12 @@ virNetDevBandwidthPlug(const char *brname,
                        virNetDevBandwidth *bandwidth,
                        unsigned int id)
 {
-    int ret = -1;
-    virCommand *cmd = NULL;
-    char *class_id = NULL;
-    char *qdisc_id = NULL;
-    char *floor = NULL;
-    char *ceil = NULL;
+    g_autoptr(virCommand) cmd1 = NULL;
+    g_autoptr(virCommand) cmd2 = NULL;
+    g_autofree char *class_id = NULL;
+    g_autofree char *qdisc_id = NULL;
+    g_autofree char *floor = NULL;
+    g_autofree char *ceil = NULL;
     char ifmacStr[VIR_MAC_STRING_BUFLEN];
 
     if (id <= 2) {
@@ -568,37 +568,28 @@ virNetDevBandwidthPlug(const char *brname,
                            net_bandwidth->in->peak :
                            net_bandwidth->in->average);
 
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "class", "add", "dev", brname, "parent", "1:1",
+    cmd1 = virCommandNew(TC);
+    virCommandAddArgList(cmd1, "class", "add", "dev", brname, "parent", "1:1",
                          "classid", class_id, "htb", "rate", floor,
                          "ceil", ceil, NULL);
-    virNetDevBandwidthCmdAddOptimalQuantum(cmd, bandwidth->in);
+    virNetDevBandwidthCmdAddOptimalQuantum(cmd1, bandwidth->in);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+    if (virCommandRun(cmd1, NULL) < 0)
+        return -1;
 
-    virCommandFree(cmd);
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc", "add", "dev", brname, "parent",
+    cmd2 = virCommandNew(TC);
+    virCommandAddArgList(cmd2, "qdisc", "add", "dev", brname, "parent",
                          class_id, "handle", qdisc_id, "sfq", "perturb",
                          "10", NULL);
 
-    if (virCommandRun(cmd, NULL) < 0)
-        goto cleanup;
+    if (virCommandRun(cmd2, NULL) < 0)
+        return -1;
 
     if (virNetDevBandwidthManipulateFilter(brname, ifmac_ptr, id,
                                            class_id, false, true) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(ceil);
-    VIR_FREE(floor);
-    VIR_FREE(qdisc_id);
-    VIR_FREE(class_id);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 /*
