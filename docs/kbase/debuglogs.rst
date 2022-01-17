@@ -33,14 +33,6 @@ URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
 
 ::
 
-   # LEGACY SETTINGS PRIOR LIBVIRT 4.4.0 SEE BELOW! #
-   log_level = 1
-   log_filters="1:qemu 3:remote 4:event 3:util.json 3:rpc"
-   log_outputs="1:file:/var/log/libvirt/libvirtd.log"
-
-::
-
-   # PREFERRED SETTINGS AFTER LIBVIRT 4.4.0 #
    log_filters="3:remote 4:event 3:util.json 3:rpc 1:*"
    log_outputs="1:file:/var/log/libvirt/libvirtd.log"
 
@@ -51,12 +43,10 @@ URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
 
    systemctl restart libvirtd.service
 
-In the config variables above, we have set logging level to 1 (debug level), set
-some filters (to filter out noise), e.g. from rpc only warnings (=level 3) and
-above will be reported. The logs are saved into
-``/var/log/libvirt/libvirtd.log``. Since libvirt **4.4.0** log filters support
-shell globbing, therefore the usage of ``log_level`` is considered deprecated in
-favour of pure usage of ``log_filters``.
+
+*Note:* Libvirt prior to the ``libvirt-4.4.0`` release didn't support globbing
+patterns and thus requires more configuration. See
+`Legacy (pre-4.4.0) libvirt daemon logging configuration`_.
 
 In case you want to get the client logs, you need to set this environment
 variable:
@@ -91,12 +81,6 @@ own set of filters:
 
 ::
 
-   ## LEGACY APPROACH ENUMERATING ALL THE DESIRED MODULES ##
-   # virt-admin daemon-log-filters "1:util 1:libvirt 1:storage 1:network 1:nodedev 1:qemu"
-
-::
-
-   ## CURRENT APPROACH USING SHELL GLOBBING ##
    # virt-admin daemon-log-filters "3:remote 4:util.json 4:rpc 1:*"
 
 Analogically, the same procedure can be performed with log outputs:
@@ -134,6 +118,30 @@ setting which depends on the host configuration, *journald* in our case:
     Logging outputs: 1:file:/var/log/libvirt/libvirtd.log
    # virt-admin daemon-log-outputs ""
     Logging outputs: 2:journald
+
+Legacy (pre-4.4.0) libvirt daemon logging configuration
+-------------------------------------------------------
+
+Old libvirt versions didn't support globbing (e.g. ``1:*``) to configure
+logging, thus it's required to explicitly set logging level to 1 (debug level)
+with the ``log_level`` setting and then filter out the noise with a tailored log
+``log_filters`` string.
+
+::
+
+   # LEGACY SETTINGS PRIOR LIBVIRT 4.4.0
+   log_level = 1
+   log_filters="1:qemu 3:remote 4:event 3:util.json 3:rpc"
+   log_outputs="1:file:/var/log/libvirt/libvirtd.log"
+
+
+Or using ``virt-admin``:
+
+::
+
+   ## LEGACY APPROACH ENUMERATING ALL THE DESIRED MODULES ##
+   # virt-admin daemon-log-filters "1:util 1:libvirt 1:storage 1:network 1:nodedev 1:qemu"
+
 
 What to attach?
 ===============
