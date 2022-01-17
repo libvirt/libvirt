@@ -435,6 +435,58 @@ host first.
       $ systemctl enable virtproxyd-tls.socket
       $ systemctl start virtproxyd-tls.socket
 
+Checking whether modular/monolithic mode is in use
+==================================================
+
+New distributions are likely to use the modular mode although the upgrade
+process preserves whichever mode was in use before the upgrade.
+
+To determine whether modular or monolithic mode is in use on a host running
+``systemd`` as the init system you can take the following steps:
+
+#. Check whether the modular daemon infrastructure is in use
+
+   First check whether the modular daemon you are interested (see
+   `Modular driver daemons`_ for a summary of which daemons are provided by
+   libvirt) in is running:
+
+   #. Check ``.socket`` for socket activated services
+
+     ::
+
+       # systemctl is-active virtqemud.socket
+       active
+
+   #. Check ``.service`` for always-running daemons
+
+     ::
+
+       # systemctl is-active virtqemud.service
+       active
+
+   If either of the above is ``active`` your system is using the modular daemons.
+
+#. Check whether the monolithic daemon is in use
+
+   #. Check ``libvirtd.socket``
+
+     ::
+
+       # systemctl is-active libvirtd.socket
+       active
+
+   #. Check ``libvirtd.service`` for always-running daemon
+
+     ::
+
+       # systemctl is-active libvirtd.service
+       active
+
+   If either of the above is ``active`` your system is using the monolithic
+   daemon.
+
+#. To determine which of the above will be in use on the next boot of the system,
+   substitute ``is-enabled`` for ``is-active`` in the above examples.
 
 Proxy daemon
 ============
