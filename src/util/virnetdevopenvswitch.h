@@ -80,10 +80,3 @@ int virNetDevOpenvswitchInterfaceSetQos(const char *ifname,
 int virNetDevOpenvswitchInterfaceClearQos(const char *ifname,
                                           const unsigned char *vmuuid)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
-
-int virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
-ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT;
-
-int virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
-                                                    const unsigned char *vmid)
-ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;

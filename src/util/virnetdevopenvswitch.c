@@ -637,7 +637,7 @@ virNetDevOpenvswitchFindUUID(const char *table,
     return uuid;
 }
 
-int
+static int
 virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
                                         const unsigned char *vmuuid)
 {
@@ -716,7 +716,7 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
     return ret;
 }
 
-int
+static int
 virNetDevOpenvswitchInterfaceClearRxQos(const char *ifname)
 {
     g_autoptr(virCommand) cmd = NULL;

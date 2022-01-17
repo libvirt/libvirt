@@ -2824,8 +2824,6 @@ virNetDevOpenvswitchAddPort;
 virNetDevOpenvswitchGetMigrateData;
 virNetDevOpenvswitchGetVhostuserIfname;
 virNetDevOpenvswitchInterfaceClearQos;
-virNetDevOpenvswitchInterfaceClearRxQos;
-virNetDevOpenvswitchInterfaceClearTxQos;
 virNetDevOpenvswitchInterfaceGetMaster;
 virNetDevOpenvswitchInterfaceParseStats;
 virNetDevOpenvswitchInterfaceSetQos;
