@@ -605,11 +605,11 @@ int
 virNetDevBandwidthUnplug(const char *brname,
                          unsigned int id)
 {
-    int ret = -1;
     int cmd_ret = 0;
-    virCommand *cmd = NULL;
-    char *class_id = NULL;
-    char *qdisc_id = NULL;
+    g_autoptr(virCommand) cmd1 = NULL;
+    g_autoptr(virCommand) cmd2 = NULL;
+    g_autofree char *class_id = NULL;
+    g_autofree char *qdisc_id = NULL;
 
     if (id <= 2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, _("Invalid class ID %d"), id);
@@ -619,34 +619,27 @@ virNetDevBandwidthUnplug(const char *brname,
     class_id = g_strdup_printf("1:%x", id);
     qdisc_id = g_strdup_printf("%x:", id);
 
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "qdisc", "del", "dev", brname,
+    cmd1 = virCommandNew(TC);
+    virCommandAddArgList(cmd1, "qdisc", "del", "dev", brname,
                          "handle", qdisc_id, NULL);
 
     /* Don't threat tc errors as fatal, but
      * try to remove as much as possible */
-    if (virCommandRun(cmd, &cmd_ret) < 0)
-        goto cleanup;
+    if (virCommandRun(cmd1, &cmd_ret) < 0)
+        return -1;
 
     if (virNetDevBandwidthManipulateFilter(brname, NULL, id,
                                            NULL, true, false) < 0)
-        goto cleanup;
+        return -1;
 
-    virCommandFree(cmd);
-    cmd = virCommandNew(TC);
-    virCommandAddArgList(cmd, "class", "del", "dev", brname,
+    cmd2 = virCommandNew(TC);
+    virCommandAddArgList(cmd2, "class", "del", "dev", brname,
                          "classid", class_id, NULL);
 
-    if (virCommandRun(cmd, &cmd_ret) < 0)
-        goto cleanup;
+    if (virCommandRun(cmd2, &cmd_ret) < 0)
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    VIR_FREE(qdisc_id);
-    VIR_FREE(class_id);
-    virCommandFree(cmd);
-    return ret;
+    return 0;
 }
 
 /**
