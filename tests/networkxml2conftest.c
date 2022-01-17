@@ -147,7 +147,11 @@ mymain(void)
     int ret = 0;
     g_autoptr(dnsmasqCaps) full = NULL;
 
-    full = buildCaps();
+    if (!(full = buildCaps())) {
+        fprintf(stderr, "failed to create the fake capabilities: %s",
+                virGetLastErrorMessage());
+        return EXIT_FAILURE;
+    }
 
 #define DO_TEST(xname, xcaps) \
     do { \
