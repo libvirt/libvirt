@@ -130,10 +130,11 @@ Runtime setting
 Debugging anomalies can be very painful, especially when trying to reproduce it
 after the daemon restarts, since the new session can make the anomaly
 "disappear". Therefore, it's possible to enable the debug logs during runtime
-using libvirt administration API. To use it conveniently, there's a virt-admin
-client provided by the libvirt-admin package. Use the package manager provided
-by your distribution to install this package. Once you have it installed, run
-the following as root to see the set of log filters currently being active:
+using libvirt administration API. To use it conveniently, there's the
+``virt-admin`` client provided by the ``libvirt-admin`` package. Use the
+package manager provided by your distribution to install this package. Once you
+have it installed, run the following as root to see the set of log filters
+currently being active:
 
 ::
 
