@@ -26,12 +26,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
 -blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/guest.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
--device virtio-blk-pci,bus=pci.0,addr=0x2,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x2","drive":"libvirt-1-format","id":"virtio-disk0","bootindex":1}' \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,id=serial0,reg=805306368 \
+-device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -msg timestamp=on

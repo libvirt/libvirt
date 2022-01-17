@@ -26,8 +26,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
--device spapr-tpm-proxy,id=tpm0,host-path=/dev/tpmrm0 \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
+-device '{"driver":"spapr-tpm-proxy","id":"tpm0","host-path":"/dev/tpmrm0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
--device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
 -msg timestamp=on

@@ -26,19 +26,19 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -rtc base=utc \
 -no-shutdown \
 -boot menu=on,strict=on \
--device pci-ohci,id=usb,bus=pci.0,addr=0x1 \
--device spapr-vscsi,id=scsi0,reg=8192 \
--device spapr-vscsi,id=scsi1,reg=12288 \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
+-device '{"driver":"spapr-vscsi","id":"scsi0","reg":8192}' \
+-device '{"driver":"spapr-vscsi","id":"scsi1","reg":12288}' \
 -blockdev '{"driver":"file","filename":"/tmp/scsidisk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device scsi-hd,bus=scsi1.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi1-0-0-0,drive=libvirt-1-format,id=scsi1-0-0-0,bootindex=1 \
+-device '{"driver":"scsi-hd","bus":"scsi1.0","channel":0,"scsi-id":0,"lun":0,"device_id":"drive-scsi1-0-0-0","drive":"libvirt-1-format","id":"scsi1-0-0-0","bootindex":1}' \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,id=serial0,reg=805306368 \
+-device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \
 -chardev pty,id=charserial1 \
--device spapr-vty,chardev=charserial1,id=serial1,reg=805310464 \
+-device '{"driver":"spapr-vty","chardev":"charserial1","id":"serial1","reg":805310464}' \
 -chardev socket,id=chrtpm,path=/dev/test \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
--device tpm-spapr,tpmdev=tpm-tpm0,id=tpm0,reg=20480 \
+-device '{"driver":"tpm-spapr","tpmdev":"tpm-tpm0","id":"tpm0","reg":20480}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global spapr-nvram.reg=0x4000 \
 -msg timestamp=on
