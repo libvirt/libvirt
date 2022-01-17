@@ -5,7 +5,7 @@ Debug Logs
 .. contents::
 
 Turning on debug logs
----------------------
+=====================
 
 If you `report a bug <https://gitlab.com/libvirt/libvirt/-/issues/new>`__
 against libvirt, in most cases you will be asked to attach debug logs. These
@@ -18,10 +18,10 @@ well.
 
 
 How to turn on debug logs for libvirt
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 Persistent setting
-^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~
 
 The daemon configuration files location is dependent on `connection
 URI <https://libvirt.org/uri.html>`__. For ``qemu:///system``:
@@ -71,7 +71,7 @@ However, when you are using the session mode ``qemu:///session`` or you run the
 ``$XDG_CONFIG_HOME/libvirt/libvirtd.conf``.
 
 Runtime setting
-^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~
 
 Debugging anomalies can be very painful, especially when trying to reproduce it
 after the daemon restarts, since the new session can make the anomaly
@@ -112,7 +112,7 @@ once you're finished debugging, just remember to save the original sets of
 filters and outputs and restore them at the end the same way as described above.
 
 Removing filters and outputs
-''''''''''''''''''''''''''''
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 It's also possible to remove all the filters and produce an enormous log file,
 but it is not recommended since some of libvirt's modules can produce a large
@@ -136,7 +136,7 @@ setting which depends on the host configuration, *journald* in our case:
     Logging outputs: 2:journald
 
 What to attach?
----------------
+===============
 
 Now you should go and reproduce the bug. Once you're finished, attach:
 
@@ -156,7 +156,7 @@ Now you should go and reproduce the bug. Once you're finished, attach:
    required.
 
 Example filter settings
------------------------
+=======================
 
 Some filter setting suggestions for debugging more specific things. Unless it's
 explicitly stated, these work on libvirt 4.4.0 and later. Please note that some
@@ -164,7 +164,7 @@ of the filters below may not log enough information for filing a proper libvirt
 bug. Usually it's better to log more than less.
 
 Targeted logging for debugging QEMU VMs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------------
 
 Specifying only some sections allows for a targeted filter configuration which
 works on all versions and is sufficient for most cases.
@@ -174,7 +174,7 @@ works on all versions and is sufficient for most cases.
     1:libvirt 1:qemu 1:conf 1:security 3:event 3:json 3:file 3:object 1:util
 
 Less verbose logging for QEMU VMs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+---------------------------------
 
 Some subsystems are very noisy and usually not the culprit of the problems. They
 can be silenced individually for a less verbose log while still logging
@@ -186,7 +186,7 @@ A permissive filter is good for development use cases.
     3:remote 4:event 3:util.json 3:util.object 3:util.dbus 3:util.netlink 3:node_device 3:rpc 3:access 1:*
 
 Minimalistic QEMU QMP monitor logging
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------------------
 
 This filter logs only QMP traffic and skips most of libvirt's messages.
 
