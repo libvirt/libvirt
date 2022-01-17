@@ -643,7 +643,6 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
 {
     int ret = 0;
     char vmuuidstr[VIR_UUID_STRING_BUFLEN];
-    g_autoptr(virCommand) cmd = NULL;
     g_autofree char *ifname_ex_id = NULL;
     g_autofree char *vmid_ex_id = NULL;
     g_autofree char *qos_uuid = NULL;
@@ -666,29 +665,29 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
         /* destroy qos */
         for (i = 0; lines[i] != NULL; i++) {
             const char *line = lines[i];
+            g_autoptr(virCommand) listcmd = NULL;
+            g_autoptr(virCommand) destroycmd = NULL;
+
             if (!*line) {
                 continue;
             }
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "--no-heading", "--columns=_uuid", "--if-exists",
+            listcmd = virNetDevOpenvswitchCreateCmd();
+            virCommandAddArgList(listcmd, "--no-heading", "--columns=_uuid", "--if-exists",
                                  "list", "port", ifname, "qos", NULL);
-            virCommandSetOutputBuffer(cmd, &port_qos);
-            if (virCommandRun(cmd, NULL) < 0) {
+            virCommandSetOutputBuffer(listcmd, &port_qos);
+            if (virCommandRun(listcmd, NULL) < 0) {
                 VIR_WARN("Unable to remove port qos on port %s", ifname);
             }
             if (port_qos && *port_qos) {
-                virCommandFree(cmd);
-                cmd = virNetDevOpenvswitchCreateCmd();
+                g_autoptr(virCommand) cmd = virNetDevOpenvswitchCreateCmd();
                 virCommandAddArgList(cmd, "remove", "port", ifname, "qos", line, NULL);
                 if (virCommandRun(cmd, NULL) < 0) {
                     VIR_WARN("Unable to remove port qos on port %s", ifname);
                 }
             }
-            virCommandFree(cmd);
-            cmd = virNetDevOpenvswitchCreateCmd();
-            virCommandAddArgList(cmd, "destroy", "qos", line, NULL);
-            if (virCommandRun(cmd, NULL) < 0) {
+            destroycmd = virNetDevOpenvswitchCreateCmd();
+            virCommandAddArgList(destroycmd, "destroy", "qos", line, NULL);
+            if (virCommandRun(destroycmd, NULL) < 0) {
                 VIR_WARN("Unable to destroy qos on port %s", ifname);
                 ret = -1;
             }
@@ -699,11 +698,12 @@ virNetDevOpenvswitchInterfaceClearTxQos(const char *ifname,
         g_auto(GStrv) lines = g_strsplit(queue_uuid, "\n", 0);
 
         for (i = 0; lines[i] != NULL; i++) {
+            g_autoptr(virCommand) cmd = NULL;
             const char *line = lines[i];
             if (!*line) {
                 continue;
             }
-            virCommandFree(cmd);
+
             cmd = virNetDevOpenvswitchCreateCmd();
             virCommandAddArgList(cmd, "destroy", "queue", line, NULL);
             if (virCommandRun(cmd, NULL) < 0) {
