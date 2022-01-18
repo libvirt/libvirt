@@ -900,8 +900,6 @@ qemuBuildVirtioDevGetConfigDev(const virDomainDeviceDef *device,
 
             case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
                 *baseName = "virtio-input-host";
-                *has_tmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL;
-                *has_ntmodel = device->data.input->model == VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL;
                 break;
 
             case VIR_DOMAIN_INPUT_TYPE_EVDEV:
