@@ -9,6 +9,7 @@ Before=@service@.service
 ListenStream=@runstatedir@/libvirt/@sockprefix@-sock
 Service=@service@.service
 SocketMode=@mode@
+RemoveOnStop=yes
 
 [Install]
 WantedBy=sockets.target
