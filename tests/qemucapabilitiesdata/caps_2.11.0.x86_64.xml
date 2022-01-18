@@ -106,7 +106,6 @@
   <flag name='pxb-pcie'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='qxl.max_outputs'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='intel-iommu'/>
   <flag name='virtio-pci-disable-legacy'/>
@@ -133,7 +132,6 @@
   <flag name='intel-iommu.device-iotlb'/>
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-gpu.max_outputs'/>
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>

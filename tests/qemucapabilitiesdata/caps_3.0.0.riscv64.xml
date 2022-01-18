@@ -45,7 +45,6 @@
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-gpu.max_outputs'/>
   <flag name='vxhs'/>
   <flag name='disk-share-rw'/>
   <flag name='dump-completed'/>

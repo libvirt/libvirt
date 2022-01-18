@@ -110,7 +110,6 @@
   <flag name='qemu-xhci'/>
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-gpu.max_outputs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='vmcoreinfo'/>
   <flag name='disk-share-rw'/>

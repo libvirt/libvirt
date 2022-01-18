@@ -379,7 +379,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "nec-usb-xhci-ports", /* QEMU_CAPS_NEC_USB_XHCI_PORTS */
               "virtio-scsi-pci.iothread", /* QEMU_CAPS_VIRTIO_SCSI_IOTHREAD */
               "name-guest", /* X_QEMU_CAPS_NAME_GUEST */
-              "qxl.max_outputs", /* QEMU_CAPS_QXL_MAX_OUTPUTS */
+              "qxl.max_outputs", /* X_QEMU_CAPS_QXL_MAX_OUTPUTS */
               "qxl-vga.max_outputs", /* X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS */
 
               /* 225 */
@@ -441,7 +441,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 265 */
               "virtio-net.tx_queue_size", /* QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE */
               "chardev-reconnect", /* QEMU_CAPS_CHARDEV_RECONNECT */
-              "virtio-gpu.max_outputs", /* QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
+              "virtio-gpu.max_outputs", /* X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS */
               "vxhs", /* QEMU_CAPS_VXHS */
               "virtio-blk.num-queues", /* QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
 
@@ -1494,12 +1494,10 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVmwareSvga[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQxl[] = {
     { "vgamem_mb", QEMU_CAPS_QXL_VGAMEM, NULL },
     { "vram64_size_mb", QEMU_CAPS_QXL_VRAM64, NULL },
-    { "max_outputs", QEMU_CAPS_QXL_MAX_OUTPUTS, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL, NULL },
-    { "max_outputs", QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },

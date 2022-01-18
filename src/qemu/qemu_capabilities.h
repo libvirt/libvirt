@@ -358,7 +358,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_NEC_USB_XHCI_PORTS, /* -device nec-usb-xhci.p3 ports setting */
     QEMU_CAPS_VIRTIO_SCSI_IOTHREAD, /* virtio-scsi-{pci,ccw}.iothread */
     X_QEMU_CAPS_NAME_GUEST, /* -name guest= */
-    QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
+    X_QEMU_CAPS_QXL_MAX_OUTPUTS, /* -device qxl,max-outputs= */
     X_QEMU_CAPS_QXL_VGA_MAX_OUTPUTS, /* -device qxl-vga,max-outputs= */
 
     /* 225 */
@@ -420,7 +420,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 265 */
     QEMU_CAPS_VIRTIO_NET_TX_QUEUE_SIZE, /* virtio-net-*.tx_queue_size */
     QEMU_CAPS_CHARDEV_RECONNECT, /* -chardev reconnect */
-    QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, /* -device virtio-(vga|gpu-*),max-outputs= */
+    X_QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS, /* -device virtio-(vga|gpu-*),max-outputs= */
     QEMU_CAPS_VXHS, /* -drive file.driver=vxhs via query-qmp-schema */
     QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, /* virtio-blk-*.num-queues */
 

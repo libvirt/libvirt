@@ -62,7 +62,6 @@
   <flag name='loadparm'/>
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
-  <flag name='virtio-gpu.max_outputs'/>
   <flag name='vxhs'/>
   <flag name='virtio-blk.num-queues'/>
   <flag name='sclplmconsole'/>

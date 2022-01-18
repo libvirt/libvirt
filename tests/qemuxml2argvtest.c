@@ -2478,15 +2478,9 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_QXL_VGAMEM);
     DO_TEST_CAPS_LATEST("video-qxl-sec-device-vram64");
-    DO_TEST("video-qxl-heads",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_MAX_OUTPUTS);
-    DO_TEST("video-vga-qxl-heads",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_MAX_OUTPUTS);
-    DO_TEST("video-qxl-noheads",
-            QEMU_CAPS_DEVICE_QXL,
-            QEMU_CAPS_QXL_MAX_OUTPUTS);
+    DO_TEST("video-qxl-heads", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("video-vga-qxl-heads", QEMU_CAPS_DEVICE_QXL);
+    DO_TEST("video-qxl-noheads", QEMU_CAPS_DEVICE_QXL);
     DO_TEST("video-qxl-resolution",
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_QXL_VGAMEM);
@@ -2509,8 +2503,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_VIRTIO_GPU);
     DO_TEST("video-virtio-vga",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_DEVICE_VIRTIO_VGA,
-            QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS);
+            QEMU_CAPS_DEVICE_VIRTIO_VGA);
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");
@@ -3390,7 +3383,6 @@ mymain(void)
 
     DO_TEST("video-virtio-gpu-ccw", QEMU_CAPS_CCW,
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
-            QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS,
             QEMU_CAPS_VNC,
             QEMU_CAPS_DEVICE_VIRTIO_GPU_CCW);
 
