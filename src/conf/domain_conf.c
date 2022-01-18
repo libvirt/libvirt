@@ -6786,7 +6786,7 @@ virDomainDeviceInfoParseXML(virDomainXMLOption *xmlopt,
     }
 
     if ((acpi = virXPathNode("./acpi", ctxt))) {
-        if (virXMLPropUInt(acpi, "index", 10, VIR_XML_PROP_NONE,
+        if (virXMLPropUInt(acpi, "index", 10, VIR_XML_PROP_NONZERO,
                            &info->acpiIndex) < 0)
             goto cleanup;
     }
