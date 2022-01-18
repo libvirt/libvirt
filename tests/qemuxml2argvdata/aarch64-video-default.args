@@ -30,5 +30,5 @@ QEMU_AUDIO_DRV=none \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
 -device ioh3420,port=16,chassis=3,id=pci.3,bus=pcie.0,addr=0x2 \
 -vnc 127.0.0.1:0 \
--device virtio-gpu-pci,id=video0,bus=pci.2,addr=0x1 \
+-device virtio-gpu-pci,id=video0,max_outputs=1,bus=pci.2,addr=0x1 \
 -msg timestamp=on

@@ -56,7 +56,7 @@ QEMU_AUDIO_DRV=none \
 -device virtio-mouse-pci,id=input1,bus=pci.13,addr=0x0 \
 -device virtio-keyboard-pci,id=input2,bus=pci.14,addr=0x0 \
 -device virtio-tablet-pci,id=input3,bus=pci.15,addr=0x0 \
--device virtio-gpu-pci,id=video0,bus=pcie.0,addr=0x1 \
+-device virtio-gpu-pci,id=video0,max_outputs=1,bus=pcie.0,addr=0x1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.10,addr=0x0 \
 -object rng-random,id=objrng0,filename=/dev/urandom \
 -device virtio-rng-pci,rng=objrng0,id=rng0,max-bytes=123,period=1234,bus=pci.11,addr=0x0 \

@@ -32,6 +32,6 @@ QEMU_AUDIO_DRV=spice \
 -device isa-serial,chardev=charserial0,id=serial0,index=0 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,seamless-migration=on \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,bus=pci.0,addr=0x2 \
+-device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,max_outputs=1,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -msg timestamp=on

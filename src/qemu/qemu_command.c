@@ -4869,12 +4869,10 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
                 return -1;
         }
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_QXL_MAX_OUTPUTS)) {
-            if (virJSONValueObjectAdd(&props,
-                                      "p:max_outputs", video->heads,
-                                      NULL) < 0)
-                return -1;
-        }
+        if (virJSONValueObjectAdd(&props,
+                                  "p:max_outputs", video->heads,
+                                  NULL) < 0)
+            return -1;
     } else if (video->backend == VIR_DOMAIN_VIDEO_BACKEND_TYPE_VHOSTUSER) {
         g_autofree char *alias = qemuDomainGetVhostUserChrAlias(video->info.alias);
 
@@ -4886,8 +4884,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
     } else if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
         unsigned int heads = 0;
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_MAX_OUTPUTS))
-            heads = video->heads;
+        heads = video->heads;
 
         if (virJSONValueObjectAdd(&props,
                                   "p:max_outputs", heads,
