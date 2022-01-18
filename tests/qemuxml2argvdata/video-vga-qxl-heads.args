@@ -29,8 +29,8 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,max_outputs=1,bus=pci.0,addr=0x2 \
--device qxl,id=video1,ram_size=67108864,vram_size=33554432,max_outputs=3,bus=pci.0,addr=0x4 \
--device qxl,id=video2,ram_size=67108864,vram_size=67108864,max_outputs=7,bus=pci.0,addr=0x5 \
+-device qxl-vga,id=video0,max_outputs=1,ram_size=67108864,vram_size=67108864,bus=pci.0,addr=0x2 \
+-device qxl,id=video1,max_outputs=3,ram_size=67108864,vram_size=33554432,bus=pci.0,addr=0x4 \
+-device qxl,id=video2,max_outputs=7,ram_size=67108864,vram_size=67108864,bus=pci.0,addr=0x5 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
 -msg timestamp=on

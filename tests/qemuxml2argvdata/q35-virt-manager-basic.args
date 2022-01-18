@@ -47,7 +47,7 @@ QEMU_AUDIO_DRV=spice \
 -device virtserialport,bus=virtio-serial0.0,nr=2,chardev=charchannel1,id=channel1,name=com.redhat.spice.0 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
 -spice port=5901,tls-port=5902,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,image-compression=off,seamless-migration=on \
--device qxl-vga,id=video0,ram_size=67108864,vram_size=67108864,max_outputs=1,bus=pcie.0,addr=0x1 \
+-device qxl-vga,id=video0,max_outputs=1,ram_size=67108864,vram_size=67108864,bus=pcie.0,addr=0x1 \
 -device ich9-intel-hda,id=sound0,bus=pcie.0,addr=0x1b \
 -device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 \
 -chardev spicevmc,id=charredir0,name=usbredir \

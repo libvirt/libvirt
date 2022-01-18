@@ -30,7 +30,7 @@ SASL_CONF_PATH=/root/.sasl2 \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
 -audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5903,tls-port=5904,addr=127.0.0.1,sasl=on,x509-dir=/etc/pki/libvirt-spice,tls-channel=default,seamless-migration=on \
--device '{"driver":"qxl-vga","id":"video0","ram_size":67108864,"vram_size":33554432,"vram64_size_mb":0,"vgamem_mb":16,"max_outputs":1,"bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"qxl-vga","id":"video0","max_outputs":1,"ram_size":67108864,"vram_size":33554432,"vram64_size_mb":0,"vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
