@@ -2472,14 +2472,14 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
         return -1;
     }
 
-    if (!video->primary &&
-        video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&
+    if (video->type != VIR_DOMAIN_VIDEO_TYPE_QXL &&
         video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("video type '%s' is only valid as primary "
-                         "video device"),
-                       virDomainVideoTypeToString(video->type));
-        return -1;
+        if (!video->primary) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type '%s' is only valid as primary video device"),
+                           virDomainVideoTypeToString(video->type));
+            return -1;
+        }
     }
 
     if (video->accel && video->accel->accel2d == VIR_TRISTATE_SWITCH_ON) {
