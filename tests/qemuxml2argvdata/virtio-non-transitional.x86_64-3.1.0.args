@@ -36,7 +36,6 @@ QEMU_AUDIO_DRV=none \
 -device pcie-root-port,port=15,chassis=8,id=pci.8,bus=pcie.0,addr=0x1.0x7 \
 -device pcie-root-port,port=16,chassis=9,id=pci.9,bus=pcie.0,multifunction=on,addr=0x2 \
 -device pcie-root-port,port=17,chassis=10,id=pci.10,bus=pcie.0,addr=0x2.0x1 \
--device pcie-root-port,port=18,chassis=11,id=pci.11,bus=pcie.0,addr=0x2.0x2 \
 -device virtio-scsi-pci,disable-legacy=on,disable-modern=off,id=scsi0,bus=pci.4,addr=0x0 \
 -device virtio-serial-pci,disable-legacy=on,disable-modern=off,id=virtio-serial0,bus=pci.3,addr=0x0 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk0 \
@@ -45,11 +44,10 @@ QEMU_AUDIO_DRV=none \
 -device virtio-9p-pci,disable-legacy=on,disable-modern=off,id=fs0,fsdev=fsdev-fs0,mount_tag=fs1,bus=pci.1,addr=0x0 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,disable-legacy=on,disable-modern=off,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bus=pci.2,addr=0x0 \
--device virtio-input-host-pci,disable-legacy=on,disable-modern=off,id=input0,evdev=/dev/input/event1234,bus=pci.9,addr=0x0 \
 -device vhost-scsi-pci,disable-legacy=on,disable-modern=off,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,bus=pci.6,addr=0x0 \
 -device virtio-balloon-pci,disable-legacy=on,disable-modern=off,id=balloon0,bus=pci.7,addr=0x0 \
 -object rng-random,id=objrng0,filename=/dev/urandom \
 -device virtio-rng-pci,disable-legacy=on,disable-modern=off,rng=objrng0,id=rng0,bus=pci.8,addr=0x0 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device vhost-vsock-pci,disable-legacy=on,disable-modern=off,id=vsock0,guest-cid=4,vhostfd=6789,bus=pci.10,addr=0x0 \
+-device vhost-vsock-pci,disable-legacy=on,disable-modern=off,id=vsock0,guest-cid=4,vhostfd=6789,bus=pci.9,addr=0x0 \
 -msg timestamp=on

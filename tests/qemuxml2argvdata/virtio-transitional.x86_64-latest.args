@@ -39,12 +39,11 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -device '{"driver":"virtio-9p-pci-transitional","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"fs1","bus":"pci.2","addr":"0x1"}' \
 -netdev user,id=hostnet0 \
 -device '{"driver":"virtio-net-pci-transitional","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x2"}' \
--device '{"driver":"virtio-input-host-pci-transitional","id":"input0","evdev":"/dev/input/event1234","bus":"pci.2","addr":"0x9"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"vhost-scsi-pci-transitional","wwpn":"naa.5123456789abcde0","vhostfd":"3","id":"hostdev0","bus":"pci.2","addr":"0x6"}' \
 -device '{"driver":"virtio-balloon-pci-transitional","id":"balloon0","bus":"pci.2","addr":"0x7"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
 -device '{"driver":"virtio-rng-pci-transitional","rng":"objrng0","id":"rng0","bus":"pci.2","addr":"0x8"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
--device '{"driver":"vhost-vsock-pci-transitional","id":"vsock0","guest-cid":4,"vhostfd":"6789","bus":"pci.2","addr":"0xa"}' \
+-device '{"driver":"vhost-vsock-pci-transitional","id":"vsock0","guest-cid":4,"vhostfd":"6789","bus":"pci.2","addr":"0x9"}' \
 -msg timestamp=on

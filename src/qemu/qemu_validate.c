@@ -4699,29 +4699,15 @@ qemuValidateDomainDeviceDefInput(const virDomainInputDef *input,
     if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO)
         return 0;
 
-    /* Only type=passthrough supports model=virtio-(non-)transitional */
+    /* model=virtio-(non-)transitional is unsupported */
     switch ((virDomainInputModel)input->model) {
     case VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL:
     case VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL:
-        switch ((virDomainInputType)input->type) {
-        case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        case VIR_DOMAIN_INPUT_TYPE_KBD:
-        case VIR_DOMAIN_INPUT_TYPE_EVDEV:
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("virtio (non-)transitional models are not "
-                             "supported for input type=%s"),
-                           virDomainInputTypeToString(input->type));
-            return -1;
-        case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-            break;
-        case VIR_DOMAIN_INPUT_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainInputType,
-                                    input->type);
-            return -1;
-        }
-        break;
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("virtio (non-)transitional models are not "
+                         "supported for input type=%s"),
+                       virDomainInputTypeToString(input->type));
+        return -1;
     case VIR_DOMAIN_INPUT_MODEL_VIRTIO:
     case VIR_DOMAIN_INPUT_MODEL_DEFAULT:
         break;

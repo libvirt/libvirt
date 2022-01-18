@@ -25,9 +25,6 @@
       <source dir='/export/fs1'/>
       <target dir='fs1'/>
     </filesystem>
-    <input type='passthrough' bus='virtio' model='virtio-non-transitional'>
-      <source evdev='/dev/input/event1234'/>
-    </input>
     <controller type='virtio-serial' model='virtio-non-transitional'/>
     <controller type='scsi' model='virtio-non-transitional'/>
     <controller type='usb' model='none'/>
