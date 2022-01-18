@@ -1412,7 +1412,7 @@ virLogDefineOutputs(virLogOutput **outputs, size_t noutputs)
         tmp = g_strdup(outputs[id]->name);
         VIR_FREE(current_ident);
         current_ident = tmp;
-        openlog(current_ident, 0, 0);
+        openlog(current_ident, 0, LOG_DAEMON);
     }
 #endif /* WITH_SYSLOG_H */
 
