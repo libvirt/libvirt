@@ -925,7 +925,13 @@ virLogOutputToJournald(virLogSource *source,
     journalAddString(&state, "MESSAGE", rawstr);
     journalAddInt(&state, "PRIORITY",
                   virLogPrioritySyslog(priority));
-    journalAddInt(&state, "SYSLOG_FACILITY", LOG_DAEMON);
+    /* See RFC 5424 section 6.2.1
+     *
+     * Don't use LOG_nnn constants as those have a bit-shift
+     * applied for use with syslog()  API, while journald
+     * needs the raw value
+     */
+    journalAddInt(&state, "SYSLOG_FACILITY", 3);
     journalAddString(&state, "LIBVIRT_SOURCE", source->name);
     if (filename)
         journalAddString(&state, "CODE_FILE", filename);
