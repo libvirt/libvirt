@@ -1784,10 +1784,7 @@ virProcessGetStatInfo(unsigned long long *cpuTime,
         virStrToLong_ullp(proc_stat[VIR_PROCESS_STAT_STIME], NULL, 10, &systime) < 0 ||
         virStrToLong_l(proc_stat[VIR_PROCESS_STAT_RSS], NULL, 10, &rss) < 0 ||
         virStrToLong_i(proc_stat[VIR_PROCESS_STAT_PROCESSOR], NULL, 10, &cpu) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("cannot parse process status data for pid '%d/%d'"),
-                       (int) pid, (int) tid);
-        return -1;
+        VIR_WARN("cannot parse process status data");
     }
 
     /* We got jiffies
@@ -1884,8 +1881,7 @@ virProcessGetStatInfo(unsigned long long *cpuTime G_GNUC_UNUSED,
                       pid_t pid G_GNUC_UNUSED,
                       pid_t tid G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("Process statistics data is not supported on this platform"));
+    errno = ENOSYS;
     return -1;
 }
 

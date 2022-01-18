@@ -1354,6 +1354,8 @@ qemuDomainHelperGetVcpus(virDomainObj *vm,
             if (virProcessGetStatInfo(&vcpuinfo->cpuTime,
                                       &vcpuinfo->cpu, NULL,
                                       vm->pid, vcpupid) < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("cannot get vCPU placement & pCPU time"));
                 return -1;
             }
         }
@@ -2514,6 +2516,8 @@ qemuDomainGetInfo(virDomainPtr dom,
     if (virDomainObjIsActive(vm)) {
         if (virProcessGetStatInfo(&(info->cpuTime), NULL, NULL,
                                   vm->pid, 0) < 0) {
+            virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                           _("cannot read cputime for domain"));
             goto cleanup;
         }
     }
@@ -10513,7 +10517,8 @@ qemuDomainMemoryStatsInternal(virQEMUDriver *driver,
     }
 
     if (virProcessGetStatInfo(NULL, NULL, &rss, vm->pid, 0) < 0) {
-        virResetLastError();
+        virReportError(VIR_ERR_OPERATION_FAILED, "%s",
+                       _("cannot get RSS for domain"));
     } else {
         stats[ret].tag = VIR_DOMAIN_MEMORY_STAT_RSS;
         stats[ret].val = rss;
