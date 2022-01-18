@@ -2480,6 +2480,13 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
                            virDomainVideoTypeToString(video->type));
             return -1;
         }
+
+        if (video->heads != 1) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type '%s' doesn't support multiple 'heads'"),
+                           virDomainVideoTypeToString(video->type));
+            return -1;
+        }
     }
 
     if (video->accel && video->accel->accel2d == VIR_TRISTATE_SWITCH_ON) {
