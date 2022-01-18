@@ -5011,7 +5011,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
     if (def) {
         virDomainIOThreadIDDef *iothrid;
-        virBitmap *cpumask;
 
         if (!(iothrid = virDomainIOThreadIDFind(def, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -5019,11 +5018,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!(cpumask = virBitmapNewData(cpumap, maplen)))
-            goto endjob;
-
         virBitmapFree(iothrid->cpumask);
-        iothrid->cpumask = cpumask;
+        iothrid->cpumask = virBitmapNewCopy(pcpumap);
         iothrid->autofill = false;
 
         /* Configure the corresponding cpuset cgroup before set affinity. */
@@ -5060,7 +5056,6 @@ qemuDomainPinIOThread(virDomainPtr dom,
 
     if (persistentDef) {
         virDomainIOThreadIDDef *iothrid;
-        virBitmap *cpumask;
 
         if (!(iothrid = virDomainIOThreadIDFind(persistentDef, iothread_id))) {
             virReportError(VIR_ERR_INVALID_ARG,
@@ -5068,11 +5063,8 @@ qemuDomainPinIOThread(virDomainPtr dom,
             goto endjob;
         }
 
-        if (!(cpumask = virBitmapNewData(cpumap, maplen)))
-            goto endjob;
-
         virBitmapFree(iothrid->cpumask);
-        iothrid->cpumask = cpumask;
+        iothrid->cpumask = virBitmapNewCopy(pcpumap);
         iothrid->autofill = false;
 
         ret = virDomainDefSave(persistentDef, driver->xmlopt, cfg->configDir);
