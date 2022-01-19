@@ -1483,19 +1483,19 @@ fi
 %libvirt_daemon_perform_restart virtsecretd
 
 
-%pre daemon-driver-storage
+%pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
 
-%post daemon-driver-storage
+%post daemon-driver-storage-core
 %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtstoraged
 %endif
 %libvirt_daemon_schedule_restart virtstoraged
 
-%preun daemon-driver-storage
+%preun daemon-driver-storage-core
 %libvirt_daemon_systemd_preun virtstoraged
 
-%posttrans daemon-driver-storage
+%posttrans daemon-driver-storage-core
 %libvirt_sysconfig_posttrans virtstoraged
 %libvirt_daemon_perform_restart virtstoraged
 
