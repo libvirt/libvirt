@@ -21,7 +21,7 @@ DESCRIPTION
 ===========
 
 ``libvirt-guests`` is a service that can be used to coordinate guest and host
-lifecyle actions. By default, ``libvirt-guests`` will suspend running guests
+lifecycle actions. By default, ``libvirt-guests`` will suspend running guests
 when the host shuts down, and restore them to their pre-shutdown state when
 the host reboots.
 
@@ -40,7 +40,7 @@ FILES
 =====
 
 ``libvirt-guests`` defines several variables to control service behavior.
-The default vaule of these variables can be overridden in:
+The default value of these variables can be overridden in:
 
 * ``@SYSCONFDIR@/sysconfig/libvirt-guests``
 
