@@ -3281,7 +3281,7 @@ typedef enum {
  * @conn: virConnect connection
  * @dom: The domain on which the event occurred
  * @event: The specific virDomainEventType which occurred
- * @detail: event specific detail information
+ * @detail: event specific detail information (virDomainEvent*DetailType)
  * @opaque: opaque user data
  *
  * A callback function to be registered, and called when a domain event occurs
@@ -3783,7 +3783,7 @@ typedef enum {
  * virConnectDomainEventWatchdogCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
- * @action: action that is to be taken due to watchdog firing
+ * @action: action that is to be taken due to watchdog firing (virDomainEventWatchdogAction)
  * @opaque: application specified data
  *
  * The callback signature to use when registering for an event of type
@@ -3817,7 +3817,7 @@ typedef enum {
  * @dom: domain on which the event occurred
  * @srcPath: The host file on which the IO error occurred
  * @devAlias: The guest device alias associated with the path
- * @action: action that is to be taken due to the IO error
+ * @action: action that is to be taken due to the IO error (virDomainEventIOErrorAction)
  * @opaque: application specified data
  *
  * The callback signature to use when registering for an event of type
@@ -3836,7 +3836,7 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * @dom: domain on which the event occurred
  * @srcPath: The host file on which the IO error occurred
  * @devAlias: The guest device alias associated with the path
- * @action: action that is to be taken due to the IO error
+ * @action: action that is to be taken due to the IO error (virDomainEventIOErrorAction)
  * @reason: the cause of the IO error
  * @opaque: application specified data
  *
@@ -3940,7 +3940,7 @@ typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
  * virConnectDomainEventGraphicsCallback:
  * @conn: connection object
  * @dom: domain on which the event occurred
- * @phase: the phase of the connection
+ * @phase: the phase of the connection (virDomainEventGraphicsPhase)
  * @local: the local server address
  * @remote: the remote client address
  * @authScheme: the authentication scheme activated
@@ -4072,7 +4072,7 @@ typedef enum {
  * @conn: connection object
  * @dom: domain on which the event occurred
  * @devAlias: device alias
- * @reason: why the tray status was changed?
+ * @reason: why the tray status was changed? (virDomainEventTrayChangeReason)
  * @opaque: application specified data
  *
  * This callback occurs when the tray of a removable device is moved.
@@ -4653,7 +4653,7 @@ typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
  *             (virDomainMemoryFailureRecipientType)
  * @action: the action of hardware memory failure
  *          (virDomainMemoryFailureActionType)
- * @flags: the flags of hardware memory failure
+ * @flags: the flags of hardware memory failure (virDomainMemoryFailureFlags)
  * @opaque: application specified data
  *
  * The callback occurs when the hypervisor handles the hardware memory
