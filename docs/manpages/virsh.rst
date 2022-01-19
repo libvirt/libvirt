@@ -2768,11 +2768,14 @@ Note that this command requires a guest agent to be configured and running in
 the domain's guest OS.
 
 When run without any arguments, this command prints all information types that
-are supported by the guest agent. You can limit the types of information that
-are returned by specifying one or more flags.  If a requested information
-type is not supported, the processes will provide an exit code of 1.
-Available information types flags are *--user*, *--os*,
+are supported by the guest agent at that point, omitting unavailable ones.
+Success is always reported in this case.
+
+You can limit the types of information that are returned by specifying one or
+more flags.  Available information types flags are *--user*, *--os*,
 *--timezone*, *--hostname*, *--filesystem*, *--disk* and *--interface*.
+If an explicitly requested information type is not supported by the guest agent
+at that point, the processes will provide an exit code of 1.
 
 Note that depending on the hypervisor type and the version of the guest agent
 running within the domain, not all of the following information may be
