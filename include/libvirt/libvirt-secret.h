@@ -190,7 +190,7 @@ typedef enum {
  * virConnectSecretEventLifecycleCallback:
  * @conn: connection object
  * @secret: secret on which the event occurred
- * @event: The specific virSecretEventLifeCycleType which occurred
+ * @event: The specific virSecretEventLifecycleType which occurred
  * @detail: contains some details on the reason of the event.
  * @opaque: application specified data
  *

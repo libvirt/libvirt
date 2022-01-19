@@ -262,7 +262,7 @@ typedef enum {
  * virConnectNetworkEventLifecycleCallback:
  * @conn: connection object
  * @net: network on which the event occurred
- * @event: The specific virNetworkEventLifeCycleType which occurred
+ * @event: The specific virNetworkEventLifecycleType which occurred
  * @detail: contains some details on the reason of the event.
  *          It will be 0 for the while.
  * @opaque: application specified data

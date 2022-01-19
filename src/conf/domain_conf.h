@@ -2822,7 +2822,7 @@ struct _virDomainDef {
     virDomainResourceDef *resource;
     virDomainIdMapDef idmap;
 
-    /* These 3 are based on virDomainLifeCycleAction enum flags */
+    /* These 3 are based on virDomainLifecycleAction enum flags */
     int onReboot;
     int onPoweroff;
     int onCrash;

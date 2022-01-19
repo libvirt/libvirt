@@ -229,7 +229,7 @@ typedef enum {
  * virConnectNodeDeviceEventLifecycleCallback:
  * @conn: connection object
  * @dev: node device on which the event occurred
- * @event: The specific virNodeDeviceEventLifeCycleType which occurred
+ * @event: The specific virNodeDeviceEventLifecycleType which occurred
  * @detail: contains some details on the reason of the event.
  * @opaque: application specified data
  *

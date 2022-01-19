@@ -4054,7 +4054,7 @@ typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
                                                         void *opaque);
 
 /**
- * virConnectDomainEventTrayChangeReason:
+ * virDomainEventTrayChangeReason:
  *
  * The reason describing why the callback was called
  */
