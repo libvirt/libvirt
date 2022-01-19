@@ -10,7 +10,6 @@ docs_image_files = [
   'migration-native.png',
   'migration-tunnel.png',
   'migration-unmanaged-direct.png',
-  'node.gif',
 ]
 
 install_data(docs_image_files, install_dir: docs_html_dir / 'images')
