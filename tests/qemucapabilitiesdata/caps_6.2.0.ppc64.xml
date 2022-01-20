@@ -198,10 +198,11 @@
   <flag name='piix4.acpi-root-pci-hotplug'/>
   <flag name='query-dirty-rate'/>
   <flag name='rbd-encryption'/>
-  <version>6001050</version>
+  <flag name='sev-guest-kernel-hashes'/>
+  <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>
-  <package>v6.1.0-1714-gc5b2f55981</package>
+  <package>v6.2.0</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc' typename='604-powerpc64-cpu'/>
