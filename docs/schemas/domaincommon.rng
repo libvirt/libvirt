@@ -4401,6 +4401,7 @@
         <value>spapr-vio-serial</value>
         <value>system-serial</value>
         <value>sclp-serial</value>
+        <value>isa-debug</value>
       </choice>
     </attribute>
   </define>
@@ -4417,6 +4418,7 @@
           <value>16550a</value>
           <value>sclpconsole</value>
           <value>sclplmconsole</value>
+          <value>isa-debugcon</value>
         </choice>
       </attribute>
     </element>

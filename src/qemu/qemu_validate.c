@@ -1817,6 +1817,7 @@ qemuValidateChrSerialTargetTypeToAddressType(int targetType)
 {
     switch ((virDomainChrSerialTargetType)targetType) {
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG:
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
         return VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB;
@@ -1853,6 +1854,8 @@ qemuValidateChrSerialTargetModelToTargetType(int targetModel)
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
         return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP;
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_DEBUGCON:
+        return VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -1876,6 +1879,7 @@ qemuValidateDomainChrTargetDef(const virDomainChrDef *chr)
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SPAPR_VIO:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG:
 
             expected = qemuValidateChrSerialTargetTypeToAddressType(chr->targetType);
 
@@ -1915,6 +1919,7 @@ qemuValidateDomainChrTargetDef(const virDomainChrDef *chr)
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_DEBUGCON:
 
             expected = qemuValidateChrSerialTargetModelToTargetType(chr->targetModel);
 

@@ -9371,6 +9371,7 @@ qemuChrSerialTargetModelToCaps(virDomainChrSerialTargetModel targetModel)
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_PL011:
         return QEMU_CAPS_DEVICE_PL011;
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_16550A:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_DEBUGCON:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_NONE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_LAST:
         break;
@@ -10782,6 +10783,7 @@ qemuBuildSerialChrDeviceProps(const virDomainDef *def,
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SPAPR_VTY:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE:
     case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPLMCONSOLE:
+    case VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_DEBUGCON:
 
         caps = qemuChrSerialTargetModelToCaps(serial->targetModel);
 

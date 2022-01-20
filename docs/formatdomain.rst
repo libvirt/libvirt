@@ -6418,8 +6418,9 @@ values are, :since:`since 1.0.2` , ``isa-serial`` (usable with x86 guests),
 ``usb-serial`` (usable whenever USB support is available) and ``pci-serial``
 (usable whenever PCI support is available); :since:`since 3.10.0` ,
 ``spapr-vio-serial`` (usable with ppc64/pseries guests), ``system-serial``
-(usable with aarch64/virt and, :since:`since 4.7.0` , riscv/virt guests) and
-``sclp-serial`` (usable with s390 and s390x guests) are available as well.
+(usable with aarch64/virt and, :since:`since 4.7.0` , riscv/virt guests),
+``sclp-serial`` (usable with s390 and s390x guests) are available as well
+and :since:`since 8.1.0` ``isa-debug`` (usable with x86 guests).
 
 :since:`Since 3.10.0` , the ``target`` element can have an optional ``model``
 subelement; valid values for its ``name`` attribute are: ``isa-serial`` (usable
@@ -6428,9 +6429,12 @@ with the ``isa-serial`` target type); ``usb-serial`` (usable with the
 target type); ``spapr-vty`` (usable with the ``spapr-vio-serial`` target type);
 ``pl011`` and, :since:`since 4.7.0` , ``16550a`` (usable with the
 ``system-serial`` target type); ``sclpconsole`` and ``sclplmconsole`` (usable
-with the ``sclp-serial`` target type). Providing a target model is usually
-unnecessary: libvirt will automatically pick one that's suitable for the chosen
-target type, and overriding that value is generally not recommended.
+with the ``sclp-serial`` target type). ``isa-debugcon`` (usable with the
+``isa-debug`` target type); provides a virtual console for receiving debug
+messages from the firmware on x86 platforms. :since:`Since: 8.1.0`.
+Providing a target model is usually unnecessary: libvirt will automatically
+pick one that's suitable for the chosen target type, and overriding that
+value is generally not recommended.
 
 If any of the attributes is not specified by the user, libvirt will choose a
 value suitable for most users.

@@ -5192,6 +5192,9 @@ qemuDomainChrDefPostParse(virDomainChrDef *chr,
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
             chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_SCLPCONSOLE;
             break;
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG:
+            chr->targetModel = VIR_DOMAIN_CHR_SERIAL_TARGET_MODEL_ISA_DEBUGCON;
+            break;
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
             /* Nothing to do */
@@ -6199,6 +6202,7 @@ qemuDomainDefFormatBufInternal(virQEMUDriver *driver,
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_SCLP:
+                case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_NONE:
                 case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
                     /* Nothing to do */

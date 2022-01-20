@@ -652,6 +652,7 @@ VIR_ENUM_IMPL(virDomainChrSerialTarget,
               "spapr-vio-serial",
               "system-serial",
               "sclp-serial",
+              "isa-debug",
 );
 
 VIR_ENUM_IMPL(virDomainChrChannelTarget,
@@ -686,6 +687,7 @@ VIR_ENUM_IMPL(virDomainChrSerialTargetModel,
               "sclpconsole",
               "sclplmconsole",
               "16550a",
+              "isa-debugcon",
 );
 
 VIR_ENUM_IMPL(virDomainChrDevice,
@@ -4953,6 +4955,7 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
 
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_PCI:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_USB:
+        case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG:
         case VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_LAST:
             /* Nothing to do */
             break;
@@ -5397,7 +5400,7 @@ virDomainChrIsaSerialDefPostParse(virDomainDef *def)
 }
 
 
-static void
+static int
 virDomainChrDefPostParse(virDomainChrDef *chr,
                          const virDomainDef *def)
 {
@@ -5409,6 +5412,14 @@ virDomainChrDefPostParse(virDomainChrDef *chr,
     if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE &&
         chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_NONE) {
         chr->targetType = VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL;
+    }
+
+    if (chr->deviceType == VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL &&
+        chr->targetType == VIR_DOMAIN_CHR_SERIAL_TARGET_TYPE_ISA_DEBUG &&
+        !ARCH_IS_X86(def->os.arch)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("isa-debug serial type only valid on x86 architecture"));
+        return -1;
     }
 
     if (chr->target.port == -1 &&
@@ -5424,6 +5435,8 @@ virDomainChrDefPostParse(virDomainChrDef *chr,
 
         chr->target.port = maxport + 1;
     }
+
+    return 0;
 }
 
 
@@ -5635,8 +5648,7 @@ virDomainDeviceDefPostParseCommon(virDomainDeviceDef *dev,
 
     switch ((virDomainDeviceType)dev->type) {
     case VIR_DOMAIN_DEVICE_CHR:
-        virDomainChrDefPostParse(dev->data.chr, def);
-        ret = 0;
+        ret = virDomainChrDefPostParse(dev->data.chr, def);
         break;
 
     case VIR_DOMAIN_DEVICE_RNG:
