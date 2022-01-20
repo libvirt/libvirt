@@ -1447,13 +1447,11 @@ virStoragePoolObjSourceFindDuplicateCb(const void *payload,
         break;
 
     case VIR_STORAGE_POOL_ISCSI:
-    case VIR_STORAGE_POOL_ISCSI_DIRECT:
     case VIR_STORAGE_POOL_FS:
     case VIR_STORAGE_POOL_LOGICAL:
     case VIR_STORAGE_POOL_DISK:
     case VIR_STORAGE_POOL_ZFS:
         if ((data->def->type == VIR_STORAGE_POOL_ISCSI ||
-             data->def->type == VIR_STORAGE_POOL_ISCSI_DIRECT ||
              data->def->type == VIR_STORAGE_POOL_FS ||
              data->def->type == VIR_STORAGE_POOL_LOGICAL ||
              data->def->type == VIR_STORAGE_POOL_DISK ||
@@ -1481,6 +1479,7 @@ virStoragePoolObjSourceFindDuplicateCb(const void *payload,
             return 1;
         break;
 
+    case VIR_STORAGE_POOL_ISCSI_DIRECT:
     case VIR_STORAGE_POOL_RBD:
     case VIR_STORAGE_POOL_LAST:
         break;
