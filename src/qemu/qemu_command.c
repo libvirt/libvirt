@@ -695,7 +695,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
 {
     const char *model = NULL;
     bool primaryVga = false;
-    virTristateSwitch accel3d = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateBool accel3d = VIR_TRISTATE_BOOL_ABSENT;
 
     *virtio = false;
     *virtioBusSuffix = false;
@@ -735,7 +735,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_VGA_GL) &&
-                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    accel3d == VIR_TRISTATE_BOOL_YES)
                     model = "virtio-vga-gl";
                 else
                     model = "virtio-vga";
@@ -765,7 +765,7 @@ qemuDeviceVideoGetModel(virQEMUCaps *qemuCaps,
                 break;
             case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
                 if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) &&
-                    accel3d == VIR_TRISTATE_SWITCH_ON)
+                    accel3d == VIR_TRISTATE_BOOL_YES)
                     model = "virtio-gpu-gl";
                 else
                     model = "virtio-gpu";
@@ -4816,7 +4816,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
                         virQEMUCaps *qemuCaps)
 {
     const char *model = NULL;
-    virTristateSwitch virgl = VIR_TRISTATE_SWITCH_ABSENT;
+    virTristateBool virgl = VIR_TRISTATE_BOOL_ABSENT;
     bool virtio = false;
     bool virtioBusSuffix = false;
     g_autoptr(virJSONValue) props = NULL;

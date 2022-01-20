@@ -2489,7 +2489,7 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
         }
     }
 
-    if (video->accel && video->accel->accel2d == VIR_TRISTATE_SWITCH_ON) {
+    if (video->accel && video->accel->accel2d == VIR_TRISTATE_BOOL_YES) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("qemu does not support the accel2d setting"));
         return -1;
@@ -2553,7 +2553,7 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
             return -1;
         }
     } else if (video->accel) {
-        if (video->accel->accel3d == VIR_TRISTATE_SWITCH_ON &&
+        if (video->accel->accel3d == VIR_TRISTATE_BOOL_YES &&
             (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO ||
              !(virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_VIRGL) ||
                virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_GL_PCI) ||
