@@ -122,7 +122,7 @@ struct _virCPUDef {
     int refs;
     int type;           /* enum virCPUType */
     int mode;           /* enum virCPUMode */
-    int match;          /* enum virCPUMatch */
+    virCPUMatch match;
     virCPUCheck check;
     virArch arch;
     char *model;

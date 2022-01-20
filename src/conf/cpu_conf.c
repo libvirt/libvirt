@@ -407,17 +407,11 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     }
 
     if (def->type == VIR_CPU_TYPE_GUEST) {
-        g_autofree char *match = virXMLPropString(ctxt->node, "match");
-
-        if (match) {
-            def->match = virCPUMatchTypeFromString(match);
-            if (def->match < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid match attribute for CPU "
-                                 "specification"));
-                return -1;
-            }
-        }
+        if (virXMLPropEnum(ctxt->node, "match",
+                           virCPUMatchTypeFromString,
+                           VIR_XML_PROP_NONE,
+                           &def->match) < 0)
+            return -1;
 
         if (virXMLPropEnum(ctxt->node, "check", virCPUCheckTypeFromString,
                            VIR_XML_PROP_NONE, &def->check) < 0)
@@ -450,12 +444,10 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         if ((counter_node = virXPathNode("./counter[@name='tsc'])", ctxt))) {
             tsc = g_new0(virHostCPUTscInfo, 1);
 
-            if (virXPathULongLong("string(./counter[@name='tsc']/@frequency)",
-                                  ctxt, &tsc->frequency) < 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("Invalid TSC frequency"));
+            if (virXMLPropULongLong(counter_node, "frequency", 10,
+                                    VIR_XML_PROP_REQUIRED,
+                                    &tsc->frequency) < 0)
                 return -1;
-            }
 
             if (virXMLPropTristateBool(counter_node, "scaling",
                                        VIR_XML_PROP_NONE,
