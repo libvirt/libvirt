@@ -91,11 +91,7 @@ NOTES
 =====
 
 Running ``virt-admin`` requires root privileges due to the
-communications channels used to talk to the daemon. Consider changing the
-*unix_sock_group* ownership setting to grant access to specific set of users
-or modifying *unix_sock_rw_perms* permissions. Daemon configuration file
-provides more information about setting permissions.
-
+communications channels used to talk to the daemon.
 
 GENERIC COMMANDS
 ================
