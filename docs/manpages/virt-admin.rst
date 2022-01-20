@@ -55,7 +55,7 @@ The ``virt-admin`` program understands the following *OPTIONS*.
 ``-c``, ``--connect`` *URI*
 
 Connect to the specified *URI*, as if by the ``connect`` command,
-instead of the default connection.
+instead of the default connection. See `NOTES`_.
 
 ``-d``, ``--debug`` *LEVEL*
 
@@ -90,7 +90,14 @@ virt-admin is coming from.
 NOTES
 =====
 
-Running ``virt-admin`` requires root privileges due to the
+The ``virt-admin`` supports both the monolithic ``libvirtd`` daemon and the
+`modular daemons <https://www.libvirt.org/daemons.html#modular-driver-daemons>`__
+whichever is in use by your system. The connection *URI* used with
+``-c/--connect`` or the `connect`_ command is based on the name of the
+controlled daemon e.g.: ``virtqemud:///system``, ``libvirtd:///system``.
+
+Running ``virt-admin`` requires root privileges when communicating with the
+system instance of a daemon (*URI* ending in ``/system``) due to the
 communications channels used to talk to the daemon.
 
 GENERIC COMMANDS
@@ -193,6 +200,8 @@ If *LIBVIRT_ADMIN_DEFAULT_URI* or *uri_default* (see below) were set,
 *connect* is automatically issued every time a command that requires an
 active connection is executed. Note that this only applies if there is no
 connection at all or there is an inactive one.
+
+See `NOTES`_ on picking the correct *URI* corresponding to a libvirt daemon.
 
 To find the currently used URI, check the *uri* command documented below.
 
