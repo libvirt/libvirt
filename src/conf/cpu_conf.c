@@ -323,12 +323,12 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     xmlNodePtr topology = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     int n;
+    int rv;
     size_t i;
     g_autofree char *cpuMode = NULL;
     g_autofree char *fallback = NULL;
     g_autofree char *vendor_id = NULL;
     g_autofree char *tscScaling = NULL;
-    g_autofree char *migratable = NULL;
     g_autofree virHostCPUTscInfo *tsc = NULL;
 
     *cpu = NULL;
@@ -394,25 +394,17 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             def->mode = VIR_CPU_MODE_CUSTOM;
     }
 
-    if ((migratable = virXMLPropString(ctxt->node, "migratable"))) {
-        int val;
-
-        if (def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
-            def->mode != VIR_CPU_MODE_MAXIMUM) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Attribute migratable is only allowed for "
-                             "'host-passthrough' / 'maximum' CPU mode"));
-            return -1;
-        }
-
-        if ((val = virTristateSwitchTypeFromString(migratable)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Invalid value in migratable attribute: '%s'"),
-                           migratable);
-            return -1;
-        }
-
-        def->migratable = val;
+    if ((rv = virXMLPropTristateSwitch(ctxt->node, "migratable",
+                                       VIR_XML_PROP_NONE,
+                                       &def->migratable)) < 0) {
+        return -1;
+    } else if (rv > 0 &&
+               def->mode != VIR_CPU_MODE_HOST_PASSTHROUGH &&
+               def->mode != VIR_CPU_MODE_MAXIMUM) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Attribute migratable is only allowed for "
+                         "'host-passthrough' / 'maximum' CPU mode"));
+        return -1;
     }
 
     if (def->type == VIR_CPU_TYPE_GUEST) {

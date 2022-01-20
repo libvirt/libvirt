@@ -272,9 +272,9 @@ struct _virDomainHostdevSubsysSCSI {
 
 struct _virDomainHostdevSubsysMediatedDev {
     int model;                          /* enum virMediatedDeviceModelType */
-    int display; /* virTristateSwitch */
+    virTristateSwitch display;
     char uuidstr[VIR_UUID_STRING_BUFLEN];   /* mediated device's uuid string */
-    int ramfb; /* virTristateSwitch */
+    virTristateSwitch ramfb;
 };
 
 typedef enum {
@@ -2674,7 +2674,7 @@ struct _virDomainMemtune {
 
     bool nosharepages;
     bool locked;
-    int dump_core; /* enum virTristateSwitch */
+    virTristateSwitch dump_core;
     unsigned long long hard_limit; /* in kibibytes, limit at off_t bytes */
     unsigned long long soft_limit; /* in kibibytes, limit at off_t bytes */
     unsigned long long min_guarantee; /* in kibibytes, limit at off_t bytes */

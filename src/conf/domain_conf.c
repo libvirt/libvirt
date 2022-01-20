@@ -7310,8 +7310,6 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     g_autofree char *rawio = NULL;
     g_autofree char *backendStr = NULL;
     g_autofree char *model = NULL;
-    g_autofree char *display = NULL;
-    g_autofree char *ramfb = NULL;
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
@@ -7324,8 +7322,6 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     sgio = virXMLPropString(node, "sgio");
     rawio = virXMLPropString(node, "rawio");
     model = virXMLPropString(node, "model");
-    display = virXMLPropString(node, "display");
-    ramfb = virXMLPropString(node, "ramfb");
 
     /* @type is passed in from the caller rather than read from the
      * xml document, because it is specified in different places for
@@ -7426,23 +7422,15 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
             return -1;
         }
 
-        if (display &&
-            (mdevsrc->display = virTristateSwitchTypeFromString(display)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown value '%s' for <hostdev> attribute "
-                             "'display'"),
-                           display);
+        if (virXMLPropTristateSwitch(node, "display",
+                                     VIR_XML_PROP_NONE,
+                                     &mdevsrc->display) < 0)
             return -1;
-        }
 
-        if (ramfb &&
-            (mdevsrc->ramfb = virTristateSwitchTypeFromString(ramfb)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown value '%s' for <hostdev> attribute "
-                             "'ramfb'"),
-                           ramfb);
+        if (virXMLPropTristateSwitch(node, "ramfb",
+                                     VIR_XML_PROP_NONE,
+                                     &mdevsrc->ramfb) < 0)
             return -1;
-        }
     }
 
     switch (def->source.subsys.type) {
@@ -9924,11 +9912,10 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         g_autofree char *queue_size = virXPathString("string(./driver/@queue)", ctxt);
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
-        g_autofree char *xattr = virXPathString("string(./binary/@xattr)", ctxt);
         g_autofree char *cache = virXPathString("string(./binary/cache/@mode)", ctxt);
         g_autofree char *sandbox = virXPathString("string(./binary/sandbox/@mode)", ctxt);
-        g_autofree char *posix_lock = virXPathString("string(./binary/lock/@posix)", ctxt);
-        g_autofree char *flock = virXPathString("string(./binary/lock/@flock)", ctxt);
+        xmlNodePtr binary_node = virXPathNode("./binary", ctxt);
+        xmlNodePtr binary_lock_node = virXPathNode("./binary/lock", ctxt);
         int val;
 
         if (queue_size && virStrToLong_ull(queue_size, NULL, 10, &def->queue_size) < 0) {
@@ -9941,14 +9928,20 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         if (binary)
             def->binary = virFileSanitizePath(binary);
 
-        if (xattr) {
-            if ((val = virTristateSwitchTypeFromString(xattr)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown xattr value '%s'"), xattr);
-                goto error;
-            }
-            def->xattr = val;
-        }
+        if (virXMLPropTristateSwitch(binary_node, "xattr",
+                                     VIR_XML_PROP_NONE,
+                                     &def->xattr) < 0)
+            goto error;
+
+        if (virXMLPropTristateSwitch(binary_lock_node, "posix",
+                                     VIR_XML_PROP_NONE,
+                                     &def->posix_lock) < 0)
+            goto error;
+
+        if (virXMLPropTristateSwitch(binary_lock_node, "flock",
+                                     VIR_XML_PROP_NONE,
+                                     &def->flock) < 0)
+            goto error;
 
         if (cache) {
             if ((val = virDomainFSCacheModeTypeFromString(cache)) <= 0) {
@@ -9970,23 +9963,6 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             def->sandbox = val;
         }
 
-        if (posix_lock) {
-            if ((val = virTristateSwitchTypeFromString(posix_lock)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown posix lock value '%s'"), posix_lock);
-                goto error;
-            }
-            def->posix_lock = val;
-        }
-
-        if (flock) {
-            if ((val = virTristateSwitchTypeFromString(flock)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown flock value '%s'"), flock);
-                goto error;
-            }
-            def->flock = val;
-        }
     }
 
     if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
@@ -10309,8 +10285,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *model = NULL;
     g_autofree char *backend = NULL;
     g_autofree char *txmode = NULL;
-    g_autofree char *ioeventfd = NULL;
-    g_autofree char *event_idx = NULL;
     g_autofree char *queues = NULL;
     g_autofree char *rx_queue_size = NULL;
     g_autofree char *tx_queue_size = NULL;
@@ -10462,8 +10436,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     backend = virXMLPropString(driver_node, "name");
     txmode = virXMLPropString(driver_node, "txmode");
-    ioeventfd = virXMLPropString(driver_node, "ioeventfd");
-    event_idx = virXMLPropString(driver_node, "event_idx");
     queues = virXMLPropString(driver_node, "queues");
     rx_queue_size = virXMLPropString(driver_node, "rx_queue_size");
     tx_queue_size = virXMLPropString(driver_node, "tx_queue_size");
@@ -10828,24 +10800,17 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
             }
             def->driver.virtio.txmode = val;
         }
-        if (ioeventfd) {
-            if ((val = virTristateSwitchTypeFromString(ioeventfd)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown interface ioeventfd mode '%s'"),
-                               ioeventfd);
-                goto error;
-            }
-            def->driver.virtio.ioeventfd = val;
-        }
-        if (event_idx) {
-            if ((val = virTristateSwitchTypeFromString(event_idx)) <= 0) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("unknown interface event_idx mode '%s'"),
-                               event_idx);
-                goto error;
-            }
-            def->driver.virtio.event_idx = val;
-        }
+
+        if (virXMLPropTristateSwitch(driver_node, "ioeventfd",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.ioeventfd) < 0)
+            goto error;
+
+        if (virXMLPropTristateSwitch(driver_node, "event_idx",
+                                     VIR_XML_PROP_NONE,
+                                     &def->driver.virtio.event_idx) < 0)
+            goto error;
+
         if (queues) {
             unsigned int q;
             if (virStrToLong_uip(queues, NULL, 10, &q) < 0) {
@@ -19112,13 +19077,11 @@ virDomainDefParseMemory(virDomainDef *def,
     }
 
     /* and info about it */
-    if ((tmp = virXPathString("string(./memory[1]/@dumpCore)", ctxt)) &&
-        (def->mem.dump_core = virTristateSwitchTypeFromString(tmp)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Invalid memory core dump attribute value '%s'"), tmp);
+    if ((node = virXPathNode("./memory[1]", ctxt)) &&
+        virXMLPropTristateSwitch(node, "dumpCore",
+                                 VIR_XML_PROP_NONE,
+                                 &def->mem.dump_core) < 0)
         return -1;
-    }
-    VIR_FREE(tmp);
 
     tmp = virXPathString("string(./memoryBacking/source/@type)", ctxt);
     if (tmp) {
