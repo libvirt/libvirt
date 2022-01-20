@@ -9759,86 +9759,66 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     virDomainFSDef *def;
     xmlNodePtr driver_node = NULL;
     xmlNodePtr source_node = NULL;
-    g_autofree char *type = NULL;
     g_autofree char *source = NULL;
     g_autofree char *target = NULL;
     g_autofree char *format = NULL;
-    g_autofree char *accessmode = NULL;
     g_autofree char *usage = NULL;
     g_autofree char *units = NULL;
-    g_autofree char *model = NULL;
-    g_autofree char *multidevs = NULL;
-    g_autofree char *fmode = NULL;
-    g_autofree char *dmode = NULL;
     g_autofree char *sock = NULL;
+    int rv;
 
     ctxt->node = node;
 
     if (!(def = virDomainFSDefNew(xmlopt)))
         return NULL;
 
-    type = virXMLPropString(node, "type");
-    if (type) {
-        if ((def->type = virDomainFSTypeFromString(type)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown filesystem type '%s'"), type);
-            goto error;
-        }
-    } else {
-        def->type = VIR_DOMAIN_FS_TYPE_MOUNT;
-    }
+    if (virXMLPropEnum(node, "type",
+                       virDomainFSTypeFromString,
+                       VIR_XML_PROP_NONE,
+                       &def->type) < 0)
+        goto error;
 
-    accessmode = virXMLPropString(node, "accessmode");
-    if (accessmode) {
-        if ((def->accessmode = virDomainFSAccessModeTypeFromString(accessmode)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown accessmode '%s'"), accessmode);
-            goto error;
-        }
-    } else {
-        def->accessmode = VIR_DOMAIN_FS_ACCESSMODE_DEFAULT;
-    }
+    if (virXMLPropEnum(node, "accessmode",
+                             virDomainFSAccessModeTypeFromString,
+                             VIR_XML_PROP_NONE,
+                             &def->accessmode) < 0)
+        goto error;
 
-    fmode = virXMLPropString(node, "fmode");
-    if (fmode) {
-        if ((virStrToLong_uip(fmode, NULL, 8, &def->fmode) < 0) ||
-            (def->fmode > 0777)) {
+    if ((rv = virXMLPropUInt(node, "fmode", 8,
+                             VIR_XML_PROP_NONE,
+                             &def->fmode)) < 0) {
+        goto error;
+    } else if (rv > 0) {
+        if (def->fmode > 0777) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid fmode: '%s'"), fmode);
+                           _("invalid fmode: '0%o'"), def->fmode);
             goto error;
         }
     }
 
-    dmode = virXMLPropString(node, "dmode");
-    if (dmode) {
-        if ((virStrToLong_uip(dmode, NULL, 8, &def->dmode) < 0) ||
-            (def->dmode > 0777)) {
+    if ((rv = virXMLPropUInt(node, "dmode", 8,
+                             VIR_XML_PROP_NONE,
+                             &def->dmode)) < 0) {
+        goto error;
+    } else if (rv > 0) {
+        if (def->dmode > 0777) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid dmode: '%s'"), dmode);
+                           _("invalid dmode: '0%o'"), def->dmode);
             goto error;
         }
     }
 
-    model = virXMLPropString(node, "model");
-    if (model) {
-        if ((def->model = virDomainFSModelTypeFromString(model)) < 0 ||
-            def->model == VIR_DOMAIN_FS_MODEL_DEFAULT) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown model '%s'"), model);
-            goto error;
-        }
-    }
+    if (virXMLPropEnum(node, "model",
+                       virDomainFSModelTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &def->model) < 0)
+        goto error;
 
-    multidevs = virXMLPropString(node, "multidevs");
-    if (multidevs) {
-        if ((def->multidevs = virDomainFSMultidevsTypeFromString(multidevs)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown multidevs '%s'"), multidevs);
-            goto error;
-        }
-    } else {
-        def->multidevs = VIR_DOMAIN_FS_MULTIDEVS_DEFAULT;
-    }
+    if (virXMLPropEnum(node, "multidevs",
+                       virDomainFSMultidevsTypeFromString,
+                       VIR_XML_PROP_NONE,
+                       &def->multidevs) < 0)
+        goto error;
 
     if (virParseScaledValue("./space_hard_limit[1]",
                             NULL, ctxt, &def->space_hard_limit,
@@ -9901,11 +9881,10 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         g_autofree char *queue_size = virXPathString("string(./driver/@queue)", ctxt);
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
-        g_autofree char *cache = virXPathString("string(./binary/cache/@mode)", ctxt);
-        g_autofree char *sandbox = virXPathString("string(./binary/sandbox/@mode)", ctxt);
         xmlNodePtr binary_node = virXPathNode("./binary", ctxt);
         xmlNodePtr binary_lock_node = virXPathNode("./binary/lock", ctxt);
-        int val;
+        xmlNodePtr binary_cache_node = virXPathNode("./binary/cache", ctxt);
+        xmlNodePtr binary_sandbox_node = virXPathNode("./binary/sandbox", ctxt);
 
         if (queue_size && virStrToLong_ull(queue_size, NULL, 10, &def->queue_size) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
@@ -9932,26 +9911,17 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
                                      &def->flock) < 0)
             goto error;
 
-        if (cache) {
-            if ((val = virDomainFSCacheModeTypeFromString(cache)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("cannot parse cache mode '%s' for virtiofs"),
-                               cache);
-                goto error;
-            }
-            def->cache = val;
-        }
+        if (virXMLPropEnum(binary_cache_node, "mode",
+                           virDomainFSCacheModeTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->cache) < 0)
+            goto error;
 
-        if (sandbox) {
-            if ((val = virDomainFSSandboxModeTypeFromString(sandbox)) <= 0) {
-                virReportError(VIR_ERR_XML_ERROR,
-                               _("cannot parse sandbox mode '%s' for virtiofs"),
-                               sandbox);
-                goto error;
-            }
-            def->sandbox = val;
-        }
-
+        if (virXMLPropEnum(binary_sandbox_node, "mode",
+                           virDomainFSSandboxModeTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->sandbox) < 0)
+            goto error;
     }
 
     if (source == NULL && def->type != VIR_DOMAIN_FS_TYPE_RAM
@@ -24182,6 +24152,9 @@ virDomainFSDefFormat(virBuffer *buf,
         virBufferEscapeString(buf, " pool='%s'", def->src->srcpool->pool);
         virBufferEscapeString(buf, " volume='%s'", def->src->srcpool->volume);
         virBufferAddLit(buf, "/>\n");
+        break;
+
+    case VIR_DOMAIN_FS_TYPE_LAST:
         break;
     }
 

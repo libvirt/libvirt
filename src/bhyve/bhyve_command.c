@@ -577,7 +577,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
 {
     g_auto(virBuffer) params = VIR_BUFFER_INITIALIZER;
 
-    switch ((virDomainFSType) fs->type) {
+    switch (fs->type) {
     case VIR_DOMAIN_FS_TYPE_MOUNT:
         break;
     case VIR_DOMAIN_FS_TYPE_BLOCK:

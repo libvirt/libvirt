@@ -787,7 +787,7 @@ struct _virDomainControllerDef {
 
 /* Types of disk backends */
 typedef enum {
-    VIR_DOMAIN_FS_TYPE_MOUNT, /* Mounts (binds) a host dir on a guest dir */
+    VIR_DOMAIN_FS_TYPE_MOUNT = 0, /* Mounts (binds) a host dir on a guest dir */
     VIR_DOMAIN_FS_TYPE_BLOCK, /* Mounts a host block dev on a guest dir */
     VIR_DOMAIN_FS_TYPE_FILE,  /* Loopback mounts a host file on a guest dir */
     VIR_DOMAIN_FS_TYPE_TEMPLATE, /* Expands a OS template to a guest dir */
@@ -867,15 +867,15 @@ typedef enum {
 } virDomainFSSandboxMode;
 
 struct _virDomainFSDef {
-    int type;
+    virDomainFSType type;
     virDomainFSDriverType fsdriver;
-    int accessmode; /* enum virDomainFSAccessMode */
+    virDomainFSAccessMode accessmode;
     int format; /* virStorageFileFormat */
     virDomainFSWrpolicy wrpolicy;
-    int model; /* virDomainFSModel */
+    virDomainFSModel model;
     unsigned int fmode;
     unsigned int dmode;
-    int multidevs; /* virDomainFSMultidevs */
+    virDomainFSMultidevs multidevs;
     unsigned long long usage; /* in bytes */
     virStorageSource *src;
     char *sock;

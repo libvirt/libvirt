@@ -705,7 +705,7 @@ qemuDomainDeviceCalculatePCIConnectFlags(virDomainDeviceDef *dev,
         case VIR_DOMAIN_FS_DRIVER_TYPE_PATH:
         case VIR_DOMAIN_FS_DRIVER_TYPE_HANDLE:
             /* these drivers are handled by virtio-9p-pci */
-            switch ((virDomainFSModel) dev->data.fs->model) {
+            switch (dev->data.fs->model) {
             case VIR_DOMAIN_FS_MODEL_VIRTIO_TRANSITIONAL:
                 /* Transitional devices only work in conventional PCI slots */
                 return pciFlags;

@@ -1447,6 +1447,9 @@ static int lxcContainerMountFS(virDomainFSDef *fs,
                        _("Unexpected filesystem type %s"),
                        virDomainFSTypeToString(fs->type));
         return -1;
+    case VIR_DOMAIN_FS_TYPE_TEMPLATE:
+    case VIR_DOMAIN_FS_TYPE_VOLUME:
+    case VIR_DOMAIN_FS_TYPE_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Cannot mount filesystem type %s"),
