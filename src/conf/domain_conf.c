@@ -10225,7 +10225,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     virDomainChrSourceReconnectDef reconnect = {0};
     int rv, val;
     g_autofree char *macaddr = NULL;
-    g_autofree char *macaddr_type = NULL;
     g_autofree char *network = NULL;
     g_autofree char *portgroup = NULL;
     g_autofree char *portid = NULL;
@@ -10242,11 +10241,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     g_autofree char *localaddr = NULL;
     g_autofree char *localport = NULL;
     g_autofree char *model = NULL;
-    g_autofree char *backend = NULL;
-    g_autofree char *txmode = NULL;
-    g_autofree char *queues = NULL;
-    g_autofree char *rx_queue_size = NULL;
-    g_autofree char *tx_queue_size = NULL;
     g_autofree char *filter = NULL;
     g_autofree char *internal = NULL;
     g_autofree char *mode = NULL;
@@ -10393,12 +10387,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         (virDomainVirtioOptionsParseXML(driver_node, &def->virtio) < 0))
         goto error;
 
-    backend = virXMLPropString(driver_node, "name");
-    txmode = virXMLPropString(driver_node, "txmode");
-    queues = virXMLPropString(driver_node, "queues");
-    rx_queue_size = virXMLPropString(driver_node, "rx_queue_size");
-    tx_queue_size = virXMLPropString(driver_node, "tx_queue_size");
-
     if ((filterref_node = virXPathNode("./filterref", ctxt))) {
         filter = virXMLPropString(filterref_node, "filter");
         filterparams = virNWFilterParseParamAttributes(filterref_node);
@@ -10446,18 +10434,11 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         def->mac_generated = true;
     }
 
-    if ((macaddr_type = virXPathString("string(./mac/@type)", ctxt))) {
-        int tmp;
-
-        if ((tmp = virDomainNetMacTypeTypeFromString(macaddr_type)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid mac address type value: '%s'. Valid "
-                             "values are \"generated\" and \"static\"."),
-                           macaddr_type);
-            goto error;
-        }
-        def->mac_type = tmp;
-    }
+    if (virXMLPropEnum(mac_node, "type",
+                       virDomainNetMacTypeTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &def->mac_type) < 0)
+        goto error;
 
     if (virXMLPropTristateBool(mac_node, "check",
                                VIR_XML_PROP_NONE,
@@ -10732,28 +10713,18 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
 
     if (def->type != VIR_DOMAIN_NET_TYPE_HOSTDEV &&
         virDomainNetIsVirtioModel(def)) {
-        if (backend != NULL) {
-            if ((val = virDomainNetBackendTypeFromString(backend)) < 0 ||
-                val == VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown interface <driver name='%s'> "
-                                 "has been specified"),
-                               backend);
-                goto error;
-            }
-            def->driver.virtio.name = val;
-        }
-        if (txmode != NULL) {
-            if ((val = virDomainNetVirtioTxModeTypeFromString(txmode)) < 0 ||
-                val == VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Unknown interface <driver txmode='%s'> "
-                                 "has been specified"),
-                               txmode);
-                goto error;
-            }
-            def->driver.virtio.txmode = val;
-        }
+
+        if (virXMLPropEnum(driver_node, "name",
+                           virDomainNetBackendTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->driver.virtio.name) < 0)
+            goto error;
+
+        if (virXMLPropEnum(driver_node, "txmode",
+                           virDomainNetVirtioTxModeTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->driver.virtio.txmode) < 0)
+            goto error;
 
         if (virXMLPropTristateSwitch(driver_node, "ioeventfd",
                                      VIR_XML_PROP_NONE,
@@ -10765,37 +10736,24 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
                                      &def->driver.virtio.event_idx) < 0)
             goto error;
 
-        if (queues) {
-            unsigned int q;
-            if (virStrToLong_uip(queues, NULL, 10, &q) < 0) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("'queues' attribute must be positive number: %s"),
-                               queues);
-                goto error;
-            }
-            if (q > 1)
-                def->driver.virtio.queues = q;
-        }
-        if (rx_queue_size) {
-            unsigned int q;
-            if (virStrToLong_uip(rx_queue_size, NULL, 10, &q) < 0) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("'rx_queue_size' attribute must be positive number: %s"),
-                               rx_queue_size);
-                goto error;
-            }
-            def->driver.virtio.rx_queue_size = q;
-        }
-        if (tx_queue_size) {
-            unsigned int q;
-            if (virStrToLong_uip(tx_queue_size, NULL, 10, &q) < 0) {
-                virReportError(VIR_ERR_XML_DETAIL,
-                               _("'tx_queue_size' attribute must be positive number: %s"),
-                               tx_queue_size);
-                goto error;
-            }
-            def->driver.virtio.tx_queue_size = q;
-        }
+        if (virXMLPropUInt(driver_node, "queues", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.queues) < 0)
+            goto error;
+
+        /* There's always at least one TX/RX queue. */
+        if (def->driver.virtio.queues == 1)
+            def->driver.virtio.queues = 0;
+
+        if (virXMLPropUInt(driver_node, "rx_queue_size", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.rx_queue_size) < 0)
+            goto error;
+
+        if (virXMLPropUInt(driver_node, "tx_queue_size", 10,
+                           VIR_XML_PROP_NONE,
+                           &def->driver.virtio.tx_queue_size) < 0)
+            goto error;
 
         if ((tmpNode = virXPathNode("./driver/host", ctxt))) {
             if (virXMLPropTristateSwitch(tmpNode, "csum", VIR_XML_PROP_NONE,

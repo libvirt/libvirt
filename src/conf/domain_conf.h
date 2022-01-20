@@ -945,7 +945,7 @@ typedef enum {
 
 /* the backend driver used for virtio interfaces */
 typedef enum {
-    VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT, /* prefer kernel, fall back to user */
+    VIR_DOMAIN_NET_BACKEND_TYPE_DEFAULT = 0, /* prefer kernel, fall back to user */
     VIR_DOMAIN_NET_BACKEND_TYPE_QEMU,    /* userland */
     VIR_DOMAIN_NET_BACKEND_TYPE_VHOST,   /* kernel */
 
@@ -954,7 +954,7 @@ typedef enum {
 
 /* the TX algorithm used for virtio interfaces */
 typedef enum {
-    VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT, /* default for this version of qemu */
+    VIR_DOMAIN_NET_VIRTIO_TX_MODE_DEFAULT = 0, /* default for this version of qemu */
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_IOTHREAD,
     VIR_DOMAIN_NET_VIRTIO_TX_MODE_TIMER,
 

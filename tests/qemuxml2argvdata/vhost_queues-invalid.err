@@ -1,1 +1,1 @@
-'queues' attribute must be positive number: -5
+XML error: Invalid value for attribute 'queues' in element 'driver': '-5'. Expected non-negative integer value
