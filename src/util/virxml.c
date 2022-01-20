@@ -679,7 +679,7 @@ virXMLPropUInt(xmlNodePtr node,
 
     if (ret < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected integer value"),
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative integer value"),
                        name, node->name, tmp);
         return -1;
     }
@@ -738,7 +738,7 @@ virXMLPropULongLong(xmlNodePtr node,
 
     if (ret < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected integer value"),
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative integer value"),
                        name, node->name, tmp);
         return -1;
     }
