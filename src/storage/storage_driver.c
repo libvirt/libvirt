@@ -156,6 +156,8 @@ storagePoolUpdateStateCallback(virStoragePoolObj *obj,
         active = false;
     }
 
+    VIR_DEBUG("updating state of storage pool '%s' active=%d", def->name, active);
+
     /* We can pass NULL as connection, most backends do not use
      * it anyway, but if they do and fail, we want to log error and
      * continue with other pools.

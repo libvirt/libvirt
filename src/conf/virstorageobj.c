@@ -1614,6 +1614,8 @@ virStoragePoolObjLoad(virStoragePoolObjList *pools,
     virStoragePoolObj *obj;
     g_autoptr(virStoragePoolDef) def = NULL;
 
+    VIR_DEBUG("loading storage pool config XML '%s'", path);
+
     if (!(def = virStoragePoolDefParseFile(path)))
         return NULL;
 
@@ -1654,6 +1656,8 @@ virStoragePoolObjLoadState(virStoragePoolObjList *pools,
 
     if (!(stateFile = virFileBuildPath(stateDir, name, ".xml")))
         return NULL;
+
+    VIR_DEBUG("loading storage pool state XML '%s'", stateFile);
 
     if (!(xml = virXMLParseCtxt(stateFile, NULL, _("(pool state)"), &ctxt)))
         return NULL;
