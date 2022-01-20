@@ -186,7 +186,7 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (plugtype &&
         (def->plugtype = virNetworkPortPlugTypeFromString(plugtype)) < 0) {
         virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid network prt plug type '%s'"), plugtype);
+                       _("Invalid network port plug type '%s'"), plugtype);
     }
 
     switch (def->plugtype) {
