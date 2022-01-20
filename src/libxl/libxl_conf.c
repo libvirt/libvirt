@@ -609,6 +609,8 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                 case VIR_DOMAIN_BOOT_NET:
                     bootorder[i] = 'n';
                     break;
+                case VIR_DOMAIN_BOOT_LAST:
+                    break;
             }
         }
         if (def->os.nBootDevs == 0) {

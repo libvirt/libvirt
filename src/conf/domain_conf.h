@@ -2195,7 +2195,7 @@ typedef enum {
 VIR_ENUM_DECL(virDomainLockFailure);
 
 struct _virDomainBIOSDef {
-    int useserial; /* enum virTristateBool */
+    virTristateBool useserial;
     /* reboot-timeout parameters */
     bool rt_set;
     int rt_delay;
@@ -2324,7 +2324,7 @@ struct _virDomainOSDef {
     virArch arch;
     char *machine;
     size_t nBootDevs;
-    int bootDevs[VIR_DOMAIN_BOOT_LAST];
+    virDomainBootOrder bootDevs[VIR_DOMAIN_BOOT_LAST];
     virTristateBool bootmenu;
     unsigned int bm_timeout;
     bool bm_timeout_set;

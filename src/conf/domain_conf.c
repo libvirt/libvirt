@@ -16905,7 +16905,6 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     xmlNodePtr node;
     size_t i;
     int n;
-    g_autofree char *tmp = NULL;
     g_autofree xmlNodePtr *nodes = NULL;
 
     /* analysis of the boot devices */
@@ -16913,20 +16912,13 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
         return -1;
 
     for (i = 0; i < n && i < VIR_DOMAIN_BOOT_LAST; i++) {
-        int val;
-        g_autofree char *dev = virXMLPropString(nodes[i], "dev");
-        if (!dev) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("missing boot device"));
+        if (virXMLPropEnum(nodes[i], "dev",
+                           virDomainBootTypeFromString,
+                           VIR_XML_PROP_REQUIRED,
+                           &def->os.bootDevs[def->os.nBootDevs]) < 0)
             return -1;
-        }
-        if ((val = virDomainBootTypeFromString(dev)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown boot device '%s'"),
-                           dev);
-            return -1;
-        }
-        def->os.bootDevs[def->os.nBootDevs++] = val;
+
+        def->os.nBootDevs++;
     }
 
     if ((node = virXPathNode("./os/bootmenu[1]", ctxt))) {
@@ -16935,36 +16927,33 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
                                    &def->os.bootmenu) < 0)
             return -1;
 
-        tmp = virXMLPropString(node, "timeout");
-        if (tmp && def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
-            if (virStrToLong_uip(tmp, NULL, 0, &def->os.bm_timeout) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("invalid value for boot menu timeout"));
+        if (def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
+            int rv;
+
+            if ((rv = virXMLPropUInt(node, "timeout", 10,
+                                     VIR_XML_PROP_NONE,
+                                     &def->os.bm_timeout)) < 0) {
                 return -1;
+            } else if (rv > 0) {
+                def->os.bm_timeout_set = true;
             }
-            def->os.bm_timeout_set = true;
         }
-        VIR_FREE(tmp);
     }
 
     if ((node = virXPathNode("./os/bios[1]", ctxt))) {
-        tmp = virXMLPropString(node, "useserial");
-        if (tmp) {
-            bool state = false;
-            ignore_value(virStringParseYesNo(tmp, &state));
-            def->os.bios.useserial = virTristateBoolFromBool(state);
-            VIR_FREE(tmp);
+        int rv;
+
+        if (virXMLPropTristateBool(node, "useserial",
+                                   VIR_XML_PROP_NONE,
+                                   &def->os.bios.useserial) < 0) {
+            def->os.bios.useserial = VIR_TRISTATE_BOOL_NO;
         }
 
-        tmp = virXMLPropString(node, "rebootTimeout");
-        if (tmp) {
-            /* that was really just for the check if it is there */
-
-            if (virStrToLong_i(tmp, NULL, 0, &def->os.bios.rt_delay) < 0) {
-                virReportError(VIR_ERR_XML_ERROR, "%s",
-                               _("invalid value for rebootTimeout"));
-                return -1;
-            }
+        if ((rv = virXMLPropInt(node, "rebootTimeout", 10,
+                                VIR_XML_PROP_NONE,
+                                &def->os.bios.rt_delay, 0)) < 0) {
+            return -1;
+        } else if (rv > 0) {
             def->os.bios.rt_set = true;
         }
     }

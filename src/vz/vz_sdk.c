@@ -3799,7 +3799,7 @@ prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDef *def)
     for (i = 0; i < def->os.nBootDevs; ++i) {
         virType = def->os.bootDevs[i];
 
-        switch ((int)virType) {
+        switch (virType) {
         case VIR_DOMAIN_BOOT_CDROM:
             sdkType = PDE_OPTICAL_DISK;
             break;
@@ -3809,6 +3809,8 @@ prlsdkSetBootOrderVm(PRL_HANDLE sdkdom, virDomainDef *def)
         case VIR_DOMAIN_BOOT_NET:
             sdkType = PDE_GENERIC_NETWORK_ADAPTER;
             break;
+        case VIR_DOMAIN_BOOT_FLOPPY:
+        case VIR_DOMAIN_BOOT_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported boot device type: '%s'"),

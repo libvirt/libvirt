@@ -1153,6 +1153,8 @@ xenFormatXLOS(virConf *conf, virDomainDef *def)
             default:
                 boot[i] = 'c';
                 break;
+            case VIR_DOMAIN_BOOT_LAST:
+                break;
             }
         }
 

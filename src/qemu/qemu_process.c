@@ -6183,7 +6183,7 @@ qemuProcessPrepareDeviceBootorder(virDomainDef *def)
         return;
 
     for (i = 0; i < def->os.nBootDevs; i++) {
-        switch ((virDomainBootOrder) def->os.bootDevs[i]) {
+        switch (def->os.bootDevs[i]) {
         case VIR_DOMAIN_BOOT_CDROM:
             bootCD = i + 1;
             break;
