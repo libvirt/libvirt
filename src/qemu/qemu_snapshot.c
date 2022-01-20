@@ -2190,7 +2190,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
 
     if (*inactiveConfig) {
         virDomainObjAssignDef(vm, inactiveConfig, false, NULL);
-        return -1;
+        defined = true;
     }
 
     if (flags & (VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
