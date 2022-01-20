@@ -169,14 +169,14 @@ qemuHostdevPreparePCIDevicesCheckSupport(virDomainHostdevDef **hostdevs,
     /* assign defaults for hostdev passthrough */
     for (i = 0; i < nhostdevs; i++) {
         virDomainHostdevDef *hostdev = hostdevs[i];
-        int *backend = &hostdev->source.subsys.u.pci.backend;
+        virDomainHostdevSubsysPCIBackendType *backend = &hostdev->source.subsys.u.pci.backend;
 
         if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS)
             continue;
         if (hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_PCI)
             continue;
 
-        switch ((virDomainHostdevSubsysPCIBackendType)*backend) {
+        switch (*backend) {
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
             if (supportsPassthroughVFIO &&
                 virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {

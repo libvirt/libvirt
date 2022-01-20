@@ -214,7 +214,7 @@ typedef enum {
 
 /* the backend driver used for PCI hostdev devices */
 typedef enum {
-    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT, /* detect automatically, prefer VFIO */
+    VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT = 0, /* detect automatically, prefer VFIO */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_KVM,    /* force legacy kvm style */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO,   /* force vfio */
     VIR_DOMAIN_HOSTDEV_PCI_BACKEND_XEN,    /* force legacy xen style, use pciback */
@@ -245,7 +245,7 @@ struct _virDomainHostdevSubsysUSB {
 
 struct _virDomainHostdevSubsysPCI {
     virPCIDeviceAddress addr; /* host address */
-    int backend; /* enum virDomainHostdevSubsysPCIBackendType */
+    virDomainHostdevSubsysPCIBackendType backend;
 };
 
 struct _virDomainHostdevSubsysSCSIHost {
@@ -260,9 +260,17 @@ struct _virDomainHostdevSubsysSCSIiSCSI {
     virStorageSource *src;
 };
 
+typedef enum {
+    VIR_DOMAIN_DEVICE_SGIO_DEFAULT = 0,
+    VIR_DOMAIN_DEVICE_SGIO_FILTERED,
+    VIR_DOMAIN_DEVICE_SGIO_UNFILTERED,
+
+    VIR_DOMAIN_DEVICE_SGIO_LAST
+} virDomainDeviceSGIO;
+
 struct _virDomainHostdevSubsysSCSI {
     int protocol; /* enum virDomainHostdevSCSIProtocolType */
-    int sgio; /* enum virDomainDeviceSGIO */
+    virDomainDeviceSGIO sgio;
     virTristateBool rawio;
     union {
         virDomainHostdevSubsysSCSIHost host;
@@ -271,7 +279,7 @@ struct _virDomainHostdevSubsysSCSI {
 };
 
 struct _virDomainHostdevSubsysMediatedDev {
-    int model;                          /* enum virMediatedDeviceModelType */
+    virMediatedDeviceModelType model;
     virTristateSwitch display;
     char uuidstr[VIR_UUID_STRING_BUFLEN];   /* mediated device's uuid string */
     virTristateSwitch ramfb;
@@ -300,7 +308,7 @@ VIR_ENUM_DECL(virDomainHostdevSubsysSCSIVHostModel);
 struct _virDomainHostdevSubsysSCSIVHost {
     int protocol; /* enum virDomainHostdevSubsysSCSIHostProtocolType */
     char *wwpn;
-    int model; /* enum virDomainHostdevSubsysSCSIVHostModelType */
+    virDomainHostdevSubsysSCSIVHostModelType model;
 };
 
 struct _virDomainHostdevSubsys {
@@ -448,14 +456,6 @@ typedef enum {
 
     VIR_DOMAIN_DISK_IO_LAST
 } virDomainDiskIo;
-
-typedef enum {
-    VIR_DOMAIN_DEVICE_SGIO_DEFAULT = 0,
-    VIR_DOMAIN_DEVICE_SGIO_FILTERED,
-    VIR_DOMAIN_DEVICE_SGIO_UNFILTERED,
-
-    VIR_DOMAIN_DEVICE_SGIO_LAST
-} virDomainDeviceSGIO;
 
 typedef enum {
     VIR_DOMAIN_DISK_DISCARD_DEFAULT = 0,

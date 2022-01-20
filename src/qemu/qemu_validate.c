@@ -2357,7 +2357,7 @@ qemuValidateDomainMdevDef(const virDomainHostdevDef *hostdev,
     const virDomainHostdevSubsysMediatedDev *mdevsrc;
 
     mdevsrc = &hostdev->source.subsys.u.mdev;
-    switch ((virMediatedDeviceModelType) mdevsrc->model) {
+    switch (mdevsrc->model) {
     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
         return qemuValidateDomainMdevDefVFIOPCI(hostdev, def, qemuCaps);
     case VIR_MDEV_MODEL_TYPE_VFIO_AP:

@@ -1622,7 +1622,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
     /* this could have been changed by qemuHostdevPreparePCIDevices */
     backend = hostdev->source.subsys.u.pci.backend;
 
-    switch ((virDomainHostdevSubsysPCIBackendType)backend) {
+    switch (backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DEVICE_VFIO_PCI)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -2814,6 +2814,7 @@ qemuDomainAttachMediatedDevice(virQEMUDriver *driver,
         if (qemuDomainEnsureVirtioAddress(&releaseaddr, vm, &dev) < 0)
             return -1;
     }   break;
+    case VIR_MDEV_MODEL_TYPE_VFIO_AP:
     case VIR_MDEV_MODEL_TYPE_LAST:
         break;
     }

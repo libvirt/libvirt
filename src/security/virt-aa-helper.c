@@ -1070,7 +1070,7 @@ get_files(vahControl * ctl)
 
             case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV: {
                 virDomainHostdevSubsysMediatedDev *mdevsrc = &dev->source.subsys.u.mdev;
-                switch ((virMediatedDeviceModelType) mdevsrc->model) {
+                switch (mdevsrc->model) {
                     case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
                     case VIR_MDEV_MODEL_TYPE_VFIO_AP:
                     case VIR_MDEV_MODEL_TYPE_VFIO_CCW:

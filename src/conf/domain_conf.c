@@ -7293,14 +7293,12 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                   virDomainXMLOption *xmlopt)
 {
     xmlNodePtr sourcenode;
-    int backend;
+    xmlNodePtr driver_node = NULL;
     virDomainHostdevSubsysPCI *pcisrc = &def->source.subsys.u.pci;
     virDomainHostdevSubsysSCSI *scsisrc = &def->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHost *scsihostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &def->source.subsys.u.mdev;
     virTristateBool managed;
-    g_autofree char *sgio = NULL;
-    g_autofree char *backendStr = NULL;
     g_autofree char *model = NULL;
     int rv;
 
@@ -7313,7 +7311,6 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                         VIR_XML_PROP_NONE, &managed));
     virTristateBoolToBool(managed, &def->managed);
 
-    sgio = virXMLPropString(node, "sgio");
     model = virXMLPropString(node, "model");
 
     /* @type is passed in from the caller rather than read from the
@@ -7352,16 +7349,15 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         return -1;
     }
 
-    if (sgio) {
+    if ((rv = virXMLPropEnum(node, "sgio",
+                             virDomainDeviceSGIOTypeFromString,
+                             VIR_XML_PROP_NONZERO,
+                             &scsisrc->sgio)) < 0) {
+        return -1;
+    } else if (rv > 0) {
         if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("sgio is only supported for scsi host device"));
-            return -1;
-        }
-
-        if ((scsisrc->sgio = virDomainDeviceSGIOTypeFromString(sgio)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown sgio mode '%s'"), sgio);
             return -1;
         }
     }
@@ -7389,27 +7385,17 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     }
 
     if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI_HOST) {
-        if (model &&
-            ((scsihostsrc->model = virDomainHostdevSubsysSCSIVHostModelTypeFromString(model)) < 0)) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown hostdev model '%s'"),
-                           model);
+        if (virXMLPropEnum(node, "model",
+                           virDomainHostdevSubsysSCSIVHostModelTypeFromString,
+                           VIR_XML_PROP_NONE,
+                           &scsihostsrc->model) < 0)
             return -1;
-        }
     } else if (def->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV) {
-        if (!model) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing 'model' attribute in mediated device's "
-                             "<hostdev> element"));
+        if (virXMLPropEnum(node, "model",
+                           virMediatedDeviceModelTypeFromString,
+                           VIR_XML_PROP_REQUIRED,
+                           &mdevsrc->model) < 0)
             return -1;
-        }
-
-        if ((mdevsrc->model = virMediatedDeviceModelTypeFromString(model)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown hostdev model '%s'"),
-                           model);
-            return -1;
-        }
 
         if (virXMLPropTristateSwitch(node, "display",
                                      VIR_XML_PROP_NONE,
@@ -7427,16 +7413,12 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         if (virDomainHostdevSubsysPCIDefParseXML(sourcenode, ctxt, def, flags) < 0)
             return -1;
 
-        backend = VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT;
-        if ((backendStr = virXPathString("string(./driver/@name)", ctxt)) &&
-            (((backend = virDomainHostdevSubsysPCIBackendTypeFromString(backendStr)) < 0) ||
-             backend == VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unknown PCI device <driver name='%s'/> "
-                             "has been specified"), backendStr);
+        driver_node = virXPathNode("./driver", ctxt);
+        if (virXMLPropEnum(driver_node, "name",
+                           virDomainHostdevSubsysPCIBackendTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &pcisrc->backend) < 0)
             return -1;
-        }
-        pcisrc->backend = backend;
 
         break;
 
@@ -30559,7 +30541,7 @@ virDomainNetDefActualToNetworkPort(virDomainDef *dom,
         }
         port->plug.hostdevpci.managed = virTristateBoolFromBool(actual->data.hostdev.def.managed);
         port->plug.hostdevpci.addr = actual->data.hostdev.def.source.subsys.u.pci.addr;
-        switch ((virDomainHostdevSubsysPCIBackendType)actual->data.hostdev.def.source.subsys.u.pci.backend) {
+        switch (actual->data.hostdev.def.source.subsys.u.pci.backend) {
         case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_DEFAULT:
             port->plug.hostdevpci.driver = VIR_NETWORK_FORWARD_DRIVER_NAME_DEFAULT;
             break;

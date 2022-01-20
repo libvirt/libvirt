@@ -4967,7 +4967,7 @@ qemuBuildPCIHostdevDevProps(const virDomainDef *def,
     const char *failover_pair_id = NULL;
 
     /* caller has to assign proper passthrough backend type */
-    switch ((virDomainHostdevSubsysPCIBackendType) pcisrc->backend) {
+    switch (pcisrc->backend) {
     case VIR_DOMAIN_HOSTDEV_PCI_BACKEND_VFIO:
         break;
 
@@ -5480,7 +5480,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
 
         /* MDEV */
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV:
-            switch ((virMediatedDeviceModelType) mdevsrc->model) {
+            switch (mdevsrc->model) {
             case VIR_MDEV_MODEL_TYPE_VFIO_PCI:
             case VIR_MDEV_MODEL_TYPE_VFIO_CCW:
             case VIR_MDEV_MODEL_TYPE_VFIO_AP:
