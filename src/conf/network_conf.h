@@ -158,8 +158,8 @@ struct _virNetworkDNSForwarder {
 
 typedef struct _virNetworkDNSDef virNetworkDNSDef;
 struct _virNetworkDNSDef {
-    int enable;            /* enum virTristateBool */
-    int forwardPlainNames; /* enum virTristateBool */
+    virTristateBool enable;
+    virTristateBool forwardPlainNames;
     size_t ntxts;
     virNetworkDNSTxtDef *txts;
     size_t nhosts;
@@ -184,7 +184,7 @@ struct _virNetworkIPDef {
     unsigned int prefix;        /* ipv6 - only prefix allowed */
     virSocketAddr netmask;      /* ipv4 - either netmask or prefix specified */
 
-    int localPTR; /* virTristateBool */
+    virTristateBool localPTR;
 
     size_t nranges;             /* Zero or more dhcp ranges */
     virNetworkDHCPRangeDef *ranges;
@@ -243,7 +243,7 @@ struct _virPortGroupDef {
     virNetDevVPortProfile *virtPortProfile;
     virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
-    int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool trustGuestRxFilters;
 };
 
 typedef struct _virNetworkDef virNetworkDef;
@@ -257,7 +257,7 @@ struct _virNetworkDef {
     char *bridgeZone;  /* name of firewalld zone for bridge */
     int  macTableManager; /* enum virNetworkBridgeMACTableManager */
     char *domain;
-    int domainLocalOnly; /* enum virTristateBool: yes disables dns forwarding */
+    virTristateBool domainLocalOnly; /* yes disables dns forwarding */
     unsigned long delay;   /* Bridge forward delay (ms) */
     bool stp; /* Spanning tree protocol */
     unsigned int mtu; /* MTU for bridge, 0 means "default" i.e. unset in config */
@@ -284,7 +284,7 @@ struct _virNetworkDef {
     virPortGroupDef *portGroups;
     virNetDevBandwidth *bandwidth;
     virNetDevVlan vlan;
-    int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool trustGuestRxFilters;
     virTristateBool isolatedPort;
 
     /* Application-specific custom metadata */

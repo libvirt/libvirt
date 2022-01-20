@@ -3758,7 +3758,6 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
                                 xmlXPathContextPtr ctxt,
                                 const char *typeStr)
 {
-    g_autofree char *migratability = NULL;
     xmlNodePtr hostCPUNode;
     g_autofree xmlNodePtr *nodes = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -3766,6 +3765,7 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
     g_autofree char *xpath = g_strdup_printf("./hostCPU[@type='%s']", typeStr);
     size_t i;
     int n;
+    virTristateBool migratability;
     int val;
 
     if (!(hostCPUNode = virXPathNode(xpath, ctxt))) {
@@ -3781,13 +3781,12 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
         return -1;
     }
 
-    if (!(migratability = virXMLPropString(hostCPUNode, "migratability")) ||
-        (val = virTristateBoolTypeFromString(migratability)) <= 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid migratability value for host CPU model"));
+    if (virXMLPropTristateBool(hostCPUNode, "migratability",
+                               VIR_XML_PROP_REQUIRED,
+                               &migratability) < 0)
         return -1;
-    }
-    hostCPU->migratability = val == VIR_TRISTATE_BOOL_YES;
+
+    virTristateBoolToBool(migratability, &hostCPU->migratability);
 
     ctxt->node = hostCPUNode;
 
@@ -3798,7 +3797,6 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
         for (i = 0; i < n; i++) {
             qemuMonitorCPUProperty *prop = hostCPU->props + i;
             g_autofree char *type = NULL;
-            g_autofree char *migratable = NULL;
 
             ctxt->node = nodes[i];
 
@@ -3850,17 +3848,11 @@ virQEMUCapsLoadHostCPUModelInfo(virQEMUCapsAccel *caps,
                 break;
             }
 
-            if ((migratable = virXMLPropString(ctxt->node, "migratable"))) {
-                if ((val = virTristateBoolTypeFromString(migratable)) <= 0) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("unknown migratable value for '%s' host "
-                                     "CPU model property"),
-                                   prop->name);
-                    return -1;
-                }
+            if (virXMLPropTristateBool(ctxt->node, "migratable",
+                                       VIR_XML_PROP_NONE,
+                                       &prop->migratable) < 0)
+                return -1;
 
-                prop->migratable = val;
-            }
         }
     }
 

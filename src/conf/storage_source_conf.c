@@ -322,24 +322,16 @@ virStoragePRDefParseXML(xmlXPathContextPtr ctxt)
 {
     virStoragePRDef *prd;
     virStoragePRDef *ret = NULL;
-    g_autofree char *managed = NULL;
     g_autofree char *type = NULL;
     g_autofree char *path = NULL;
     g_autofree char *mode = NULL;
 
     prd = g_new0(virStoragePRDef, 1);
 
-    if (!(managed = virXPathString("string(./@managed)", ctxt))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing @managed attribute for <reservations/>"));
+    if (virXMLPropTristateBool(ctxt->node, "managed",
+                               VIR_XML_PROP_REQUIRED,
+                               &prd->managed) < 0)
         goto cleanup;
-    }
-
-    if ((prd->managed = virTristateBoolTypeFromString(managed)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("invalid value for 'managed': %s"), managed);
-        goto cleanup;
-    }
 
     type = virXPathString("string(./source[1]/@type)", ctxt);
     path = virXPathString("string(./source[1]/@path)", ctxt);

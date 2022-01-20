@@ -55,7 +55,7 @@ struct _virNetworkPortDef {
     virNetDevBandwidth *bandwidth;
     unsigned int class_id; /* class ID for bandwidth 'floor' */
     virNetDevVlan vlan;
-    int trustGuestRxFilters; /* enum virTristateBool */
+    virTristateBool trustGuestRxFilters;
     virTristateBool isolatedPort;
 
     int plugtype; /* virNetworkPortPlugType */
@@ -71,7 +71,7 @@ struct _virNetworkPortDef {
         struct {
             virPCIDeviceAddress addr; /* PCI Address of device */
             int driver; /* virNetworkForwardDriverNameType */
-            int managed;
+            virTristateBool managed;
         } hostdevpci;
     } plug;
 };

@@ -226,7 +226,7 @@ struct _virStorageAuthDef {
 
 typedef struct _virStoragePRDef virStoragePRDef;
 struct _virStoragePRDef {
-    int managed; /* enum virTristateBool */
+    virTristateBool managed;
     char *path;
 
     /* manager object alias */

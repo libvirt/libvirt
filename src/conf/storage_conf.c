@@ -804,20 +804,19 @@ static int
 virStoragePoolDefParseFeatures(virStoragePoolDef *def,
                                xmlXPathContextPtr ctxt)
 {
-    g_autofree char *cow = virXPathString("string(./features/cow/@state)", ctxt);
+    xmlNodePtr node = virXPathNode("./features/cow", ctxt);
+    virTristateBool val;
+    int rv;
 
-    if (cow) {
-        int val;
+    if ((rv = virXMLPropTristateBool(node, "state",
+                                     VIR_XML_PROP_NONE,
+                                     &val)) < 0) {
+        return -1;
+    } else if (rv > 0) {
         if (def->type != VIR_STORAGE_POOL_FS &&
             def->type != VIR_STORAGE_POOL_DIR) {
             virReportError(VIR_ERR_NO_SUPPORT, "%s",
                            _("cow feature may only be used for 'fs' and 'dir' pools"));
-            return -1;
-        }
-        if ((val = virTristateBoolTypeFromString(cow)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid storage pool cow feature state '%s'"),
-                           cow);
             return -1;
         }
         def->features.cow = val;

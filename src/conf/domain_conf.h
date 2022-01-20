@@ -263,7 +263,7 @@ struct _virDomainHostdevSubsysSCSIiSCSI {
 struct _virDomainHostdevSubsysSCSI {
     int protocol; /* enum virDomainHostdevSCSIProtocolType */
     int sgio; /* enum virDomainDeviceSGIO */
-    int rawio; /* enum virTristateBool */
+    virTristateBool rawio;
     union {
         virDomainHostdevSubsysSCSIHost host;
         virDomainHostdevSubsysSCSIiSCSI iscsi;
@@ -1706,8 +1706,8 @@ typedef enum {
 VIR_ENUM_DECL(virDomainVideoVGAConf);
 
 struct _virDomainVideoAccelDef {
-    int accel2d; /* enum virTristateBool */
-    int accel3d; /* enum virTristateBool */
+    virTristateBool accel2d;
+    virTristateBool accel3d;
     char *rendernode;
 };
 
@@ -2325,7 +2325,7 @@ struct _virDomainOSDef {
     char *machine;
     size_t nBootDevs;
     int bootDevs[VIR_DOMAIN_BOOT_LAST];
-    int bootmenu; /* enum virTristateBool */
+    virTristateBool bootmenu;
     unsigned int bm_timeout;
     bool bm_timeout_set;
     char *init;
@@ -2688,9 +2688,8 @@ struct _virDomainMemtune {
 };
 
 struct _virDomainPowerManagement {
-    /* These options are of type enum virTristateBool */
-    int s3;
-    int s4;
+    virTristateBool s3;
+    virTristateBool s4;
 };
 
 struct _virDomainPerfDef {

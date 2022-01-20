@@ -328,7 +328,6 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     g_autofree char *cpuMode = NULL;
     g_autofree char *fallback = NULL;
     g_autofree char *vendor_id = NULL;
-    g_autofree char *tscScaling = NULL;
     g_autofree virHostCPUTscInfo *tsc = NULL;
 
     *cpu = NULL;
@@ -427,6 +426,8 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
 
     if (def->type == VIR_CPU_TYPE_HOST) {
         g_autofree char *arch = virXPathString("string(./arch[1])", ctxt);
+        xmlNodePtr counter_node = NULL;
+
         if (!arch) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing CPU architecture"));
@@ -446,7 +447,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             return -1;
         }
 
-        if (virXPathBoolean("boolean(./counter[@name='tsc'])", ctxt) > 0) {
+        if ((counter_node = virXPathNode("./counter[@name='tsc'])", ctxt))) {
             tsc = g_new0(virHostCPUTscInfo, 1);
 
             if (virXPathULongLong("string(./counter[@name='tsc']/@frequency)",
@@ -456,17 +457,10 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
                 return -1;
             }
 
-            tscScaling = virXPathString("string(./counter[@name='tsc']/@scaling)",
-                                        ctxt);
-            if (tscScaling) {
-                int scaling = virTristateBoolTypeFromString(tscScaling);
-                if (scaling < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                   _("Invalid TSC scaling attribute"));
-                    return -1;
-                }
-                tsc->scaling = scaling;
-            }
+            if (virXMLPropTristateBool(counter_node, "scaling",
+                                       VIR_XML_PROP_NONE,
+                                       &tsc->scaling) < 0)
+                return -1;
 
             def->tsc = g_steal_pointer(&tsc);
         }

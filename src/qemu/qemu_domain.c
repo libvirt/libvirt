@@ -2829,19 +2829,11 @@ int
 qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
                                         virTristateBool *allowReboot)
 {
-    int val;
-    g_autofree char *valStr = NULL;
+    xmlNodePtr node = virXPathNode("./allowReboot", ctxt);
 
-    if ((valStr = virXPathString("string(./allowReboot/@value)", ctxt))) {
-        if ((val = virTristateBoolTypeFromString(valStr)) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("invalid allowReboot value '%s'"), valStr);
-            return -1;
-        }
-        *allowReboot = val;
-    }
-
-    return 0;
+    return virXMLPropTristateBool(node, "value",
+                                  VIR_XML_PROP_NONE,
+                                  allowReboot);
 }
 
 

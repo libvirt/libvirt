@@ -6912,23 +6912,16 @@ virDomainHostdevSubsysPCIDefParseXML(xmlNodePtr node,
                                      virDomainHostdevDef *def,
                                      unsigned int flags)
 {
-    g_autofree char *filtering = NULL;
     xmlNodePtr address = NULL;
     xmlNodePtr origstates = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
-    if ((filtering = virXMLPropString(node, "writeFiltering"))) {
-        int val;
-        if ((val = virTristateBoolTypeFromString(filtering)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown pci writeFiltering setting '%s'"),
-                           filtering);
-            return -1;
-        }
-        def->writeFiltering = val;
-    }
+    if (virXMLPropTristateBool(node, "writeFiltering",
+                               VIR_XML_PROP_NONE,
+                               &def->writeFiltering) < 0)
+        return -1;
 
     if ((address = virXPathNode("./address", ctxt)) &&
         virPCIDeviceAddressParseXML(address, &def->source.subsys.u.pci.addr) < 0)
@@ -7305,22 +7298,22 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
     virDomainHostdevSubsysSCSI *scsisrc = &def->source.subsys.u.scsi;
     virDomainHostdevSubsysSCSIVHost *scsihostsrc = &def->source.subsys.u.scsi_host;
     virDomainHostdevSubsysMediatedDev *mdevsrc = &def->source.subsys.u.mdev;
-    g_autofree char *managed = NULL;
+    virTristateBool managed;
     g_autofree char *sgio = NULL;
-    g_autofree char *rawio = NULL;
     g_autofree char *backendStr = NULL;
     g_autofree char *model = NULL;
+    int rv;
 
     /* @managed can be read from the xml document - it is always an
      * attribute of the toplevel element, no matter what type of
      * element that might be (pure hostdev, or higher level device
      * (e.g. <interface>) with type='hostdev')
      */
-    if ((managed = virXMLPropString(node, "managed")) != NULL)
-        ignore_value(virStringParseYesNo(managed, &def->managed));
+    ignore_value(virXMLPropTristateBool(node, "managed",
+                                        VIR_XML_PROP_NONE, &managed));
+    virTristateBoolToBool(managed, &def->managed);
 
     sgio = virXMLPropString(node, "sgio");
-    rawio = virXMLPropString(node, "rawio");
     model = virXMLPropString(node, "model");
 
     /* @type is passed in from the caller rather than read from the
@@ -7373,19 +7366,15 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
         }
     }
 
-    if (rawio) {
-        if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("rawio is only supported for scsi host device"));
-            return -1;
-        }
-
-        if ((scsisrc->rawio = virTristateBoolTypeFromString(rawio)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown hostdev rawio setting '%s'"),
-                           rawio);
-            return -1;
-        }
+    if ((rv = virXMLPropTristateBool(node, "rawio",
+                                     VIR_XML_PROP_NONE,
+                                     &scsisrc->rawio)) < 0) {
+        return -1;
+    } else if (rv > 0 &&
+               def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("rawio is only supported for scsi host device"));
+        return -1;
     }
 
     if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
@@ -10259,6 +10248,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     xmlNodePtr vlan_node = NULL;
     xmlNodePtr bandwidth_node = NULL;
     xmlNodePtr tmpNode;
+    xmlNodePtr mac_node = NULL;
     g_autoptr(GHashTable) filterparams = NULL;
     virDomainActualNetDef *actual = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -10266,7 +10256,6 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     int rv, val;
     g_autofree char *macaddr = NULL;
     g_autofree char *macaddr_type = NULL;
-    g_autofree char *macaddr_check = NULL;
     g_autofree char *network = NULL;
     g_autofree char *portgroup = NULL;
     g_autofree char *portid = NULL;
@@ -10467,7 +10456,9 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     if ((vhost = virXPathString("string(./backend/@vhost)", ctxt)))
         vhost_path = virFileSanitizePath(vhost);
 
-    if ((macaddr = virXPathString("string(./mac/@address)", ctxt))) {
+    mac_node = virXPathNode("./mac", ctxt);
+
+    if ((macaddr = virXMLPropString(mac_node, "address"))) {
         if (virMacAddrParse((const char *)macaddr, &def->mac) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unable to parse mac address '%s'"),
@@ -10498,17 +10489,10 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
         def->mac_type = tmp;
     }
 
-    if ((macaddr_check = virXPathString("string(./mac/@check)", ctxt))) {
-        int tmpCheck;
-
-        if ((tmpCheck = virTristateBoolTypeFromString(macaddr_check)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid mac address check value: '%s'"),
-                           macaddr_check);
-            goto error;
-        }
-        def->mac_check = tmpCheck;
-    }
+    if (virXMLPropTristateBool(mac_node, "check",
+                               VIR_XML_PROP_NONE,
+                               &def->mac_check) < 0)
+        goto error;
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT
@@ -14165,40 +14149,21 @@ static virDomainVideoAccelDef *
 virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
     g_autofree virDomainVideoAccelDef *def = NULL;
-    int val;
-    g_autofree char *accel2d = NULL;
-    g_autofree char *accel3d = NULL;
     g_autofree char *rendernode = NULL;
 
-    accel3d = virXMLPropString(node, "accel3d");
-    accel2d = virXMLPropString(node, "accel2d");
     rendernode = virXMLPropString(node, "rendernode");
-
-    if (!accel3d && !accel2d && !rendernode) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("missing values for acceleration"));
-        return NULL;
-    }
 
     def = g_new0(virDomainVideoAccelDef, 1);
 
-    if (accel3d) {
-        if ((val = virTristateBoolTypeFromString(accel3d)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown accel3d value '%s'"), accel3d);
-            return NULL;
-        }
-        def->accel3d = val;
-    }
+    if (virXMLPropTristateBool(node, "accel3d",
+                               VIR_XML_PROP_NONE,
+                               &def->accel3d) < 0)
+        return NULL;
 
-    if (accel2d) {
-        if ((val = virTristateBoolTypeFromString(accel2d)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown accel2d value '%s'"), accel2d);
-            return NULL;
-        }
-        def->accel2d = val;
-    }
+    if (virXMLPropTristateBool(node, "accel2d",
+                               VIR_XML_PROP_NONE,
+                               &def->accel2d) < 0)
+        return NULL;
 
     if (rendernode)
         def->rendernode = virFileSanitizePath(rendernode);
@@ -14633,20 +14598,13 @@ virDomainEventActionParseXML(xmlXPathContextPtr ctxt,
 static int
 virDomainPMStateParseXML(xmlXPathContextPtr ctxt,
                          const char *xpath,
-                         int *val)
+                         virTristateBool *val)
 {
-    g_autofree char *tmp = virXPathString(xpath, ctxt);
+    xmlNodePtr node = virXPathNode(xpath, ctxt);
 
-    if (tmp) {
-        *val = virTristateBoolTypeFromString(tmp);
-        if (*val < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown PM state value %s"), tmp);
-            return -1;
-        }
-    }
-
-    return 0;
+    return virXMLPropTristateBool(node, "enabled",
+                                  VIR_XML_PROP_NONE,
+                                  val);
 }
 
 
@@ -16972,19 +16930,10 @@ virDomainDefParseBootXML(xmlXPathContextPtr ctxt,
     }
 
     if ((node = virXPathNode("./os/bootmenu[1]", ctxt))) {
-        tmp = virXMLPropString(node, "enable");
-        if (tmp) {
-            def->os.bootmenu = virTristateBoolTypeFromString(tmp);
-            if (def->os.bootmenu <= 0) {
-                /* In order not to break misconfigured machines, this
-                 * should not emit an error, but rather set the bootmenu
-                 * to disabled */
-                VIR_WARN("disabling bootmenu due to unknown option '%s'",
-                         tmp);
-                def->os.bootmenu = VIR_TRISTATE_BOOL_NO;
-            }
-            VIR_FREE(tmp);
-        }
+        if (virXMLPropTristateBool(node, "enable",
+                                   VIR_XML_PROP_NONE,
+                                   &def->os.bootmenu) < 0)
+            return -1;
 
         tmp = virXMLPropString(node, "timeout");
         if (tmp && def->os.bootmenu == VIR_TRISTATE_BOOL_YES) {
@@ -18388,26 +18337,21 @@ virDomainDefParseBootFirmwareOptions(virDomainDef *def,
         features = g_new0(int, VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_LAST);
 
     for (i = 0; i < n; i++) {
-        g_autofree char *name = virXMLPropString(nodes[i], "name");
-        g_autofree char *enabled = virXMLPropString(nodes[i], "enabled");
-        int feature = virDomainOsDefFirmwareFeatureTypeFromString(name);
-        int val = virTristateBoolTypeFromString(enabled);
+        unsigned int feature;
+        virTristateBool enabled;
 
-        if (feature < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid firmware feature name '%s'"),
-                           name);
+        if (virXMLPropEnum(nodes[i], "name",
+                           virDomainOsDefFirmwareFeatureTypeFromString,
+                           VIR_XML_PROP_REQUIRED,
+                           &feature) < 0)
             return -1;
-        }
 
-        if (val < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("invalid firmware feature enabled value '%s'"),
-                           enabled);
+        if (virXMLPropTristateBool(nodes[i], "enabled",
+                                   VIR_XML_PROP_REQUIRED,
+                                   &enabled) < 0)
             return -1;
-        }
 
-        features[feature] = val;
+        features[feature] = enabled;
     }
 
     def->os.firmwareFeatures = g_steal_pointer(&features);
@@ -19523,12 +19467,12 @@ virDomainDefLifecycleParse(virDomainDef *def,
         return -1;
 
     if (virDomainPMStateParseXML(ctxt,
-                                 "string(./pm/suspend-to-mem/@enabled)",
+                                 "./pm/suspend-to-mem",
                                  &def->pm.s3) < 0)
         return -1;
 
     if (virDomainPMStateParseXML(ctxt,
-                                 "string(./pm/suspend-to-disk/@enabled)",
+                                 "./pm/suspend-to-disk",
                                  &def->pm.s4) < 0)
         return -1;
 
@@ -30565,6 +30509,7 @@ virDomainNetDefActualFromNetworkPort(virDomainNetDef *iface,
             break;
         case VIR_TRISTATE_BOOL_ABSENT:
         case VIR_TRISTATE_BOOL_NO:
+        case VIR_TRISTATE_BOOL_LAST:
             actual->data.hostdev.def.managed = false;
             break;
         }

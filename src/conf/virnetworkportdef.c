@@ -87,12 +87,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     xmlNodePtr vlanNode;
     xmlNodePtr bandwidthNode;
     xmlNodePtr addressNode;
-    g_autofree char *trustGuestRxFilters = NULL;
+    xmlNodePtr rxfiltersNode = NULL;
+    xmlNodePtr plugNode = NULL;
     g_autofree char *mac = NULL;
     g_autofree char *macmgr = NULL;
     g_autofree char *mode = NULL;
     g_autofree char *plugtype = NULL;
-    g_autofree char *managed = NULL;
     g_autofree char *driver = NULL;
 
     def = g_new0(virNetworkPortDef, 1);
@@ -169,18 +169,13 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     if (virNetworkPortOptionsParseXML(ctxt, &def->isolatedPort) < 0)
         return NULL;
 
-    trustGuestRxFilters
-        = virXPathString("string(./rxfilters/@trustGuest)", ctxt);
-    if (trustGuestRxFilters) {
-        if ((def->trustGuestRxFilters
-             = virTristateBoolTypeFromString(trustGuestRxFilters)) <= 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid guest rx filters trust setting '%s' "),
-                           trustGuestRxFilters);
-            return NULL;
-        }
-    }
+    rxfiltersNode = virXPathNode("./rxfilters", ctxt);
+    if (virXMLPropTristateBool(rxfiltersNode, "trustGuest",
+                               VIR_XML_PROP_NONE,
+                               &def->trustGuestRxFilters) < 0)
+        return NULL;
 
+    plugNode = virXPathNode("./plug", ctxt);
     plugtype = virXPathString("string(./plug/@type)", ctxt);
 
     if (plugtype &&
@@ -228,14 +223,10 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI:
-        managed = virXPathString("string(./plug/@managed)", ctxt);
-        if (managed &&
-            (def->plug.hostdevpci.managed =
-             virTristateBoolTypeFromString(managed)) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("Invalid managed setting '%s' in network port"), mode);
+        if (virXMLPropTristateBool(plugNode, "managed",
+                                   VIR_XML_PROP_NONE,
+                                   &def->plug.hostdevpci.managed) < 0)
             return NULL;
-        }
         driver = virXPathString("string(./plug/driver/@name)", ctxt);
         if (driver &&
             (def->plug.hostdevpci.driver =

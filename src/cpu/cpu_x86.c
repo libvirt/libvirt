@@ -1603,8 +1603,8 @@ x86ModelParseFeatures(virCPUx86Model *model,
 
     for (i = 0; i < n; i++) {
         g_autofree char *ftname = NULL;
-        g_autofree char *removed = NULL;
         virCPUx86Feature *feature;
+        virTristateBool rem;
 
         if (!(ftname = virXMLPropString(nodes[i], "name"))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1620,21 +1620,14 @@ x86ModelParseFeatures(virCPUx86Model *model,
             return -1;
         }
 
-        if ((removed = virXMLPropString(nodes[i], "removed"))) {
-            int rem;
+        if (virXMLPropTristateBool(nodes[i], "removed",
+                                   VIR_XML_PROP_NONE,
+                                   &rem) < 0)
+            return -1;
 
-            if ((rem = virTristateBoolTypeFromString(removed)) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Invalid 'removed' attribute for feature %s "
-                                 "in model %s"),
-                               ftname, model->name);
-                return -1;
-            }
-
-            if (rem == VIR_TRISTATE_BOOL_YES) {
-                model->removedFeatures[nremoved++] = g_strdup(ftname);
-                continue;
-            }
+        if (rem == VIR_TRISTATE_BOOL_YES) {
+            model->removedFeatures[nremoved++] = g_strdup(ftname);
+            continue;
         }
 
         if (x86DataAdd(&model->data, &feature->data))
