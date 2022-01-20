@@ -1736,27 +1736,15 @@ virStoragePoolObjLoadAllConfigs(virStoragePoolObjList *pools,
         return rc;
 
     while ((ret = virDirRead(dir, &entry, configDir)) > 0) {
-        char *path;
-        char *autostartLink;
+        g_autofree char *path = virFileBuildPath(configDir, entry->d_name, NULL);
+        g_autofree char *autostartLink = virFileBuildPath(autostartDir, entry->d_name, NULL);
         virStoragePoolObj *obj;
 
         if (!virStringHasSuffix(entry->d_name, ".xml"))
             continue;
 
-        if (!(path = virFileBuildPath(configDir, entry->d_name, NULL)))
-            continue;
-
-        if (!(autostartLink = virFileBuildPath(autostartDir, entry->d_name,
-                                               NULL))) {
-            VIR_FREE(path);
-            continue;
-        }
-
         obj = virStoragePoolObjLoad(pools, entry->d_name, path, autostartLink);
         virStoragePoolObjEndAPI(&obj);
-
-        VIR_FREE(path);
-        VIR_FREE(autostartLink);
     }
 
     return ret;
