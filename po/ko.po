@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-12 10:44+0000\n"
+"PO-Revision-Date: 2022-01-20 13:46+0000\n"
 "Last-Translator: simmon <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -8258,7 +8258,7 @@ msgstr "xml 문서에서 인터페이스 유형을 '%s'로 설정하는데 실�
 
 #, c-format
 msgid "Failed to set logging priority, argument '%s' is invalid"
-msgstr ""
+msgstr "로깅 우선순위 설정에 실패하였으며, 인수 '%s'는 잘못되었습니다"
 
 #, c-format
 msgid "Failed to set logging priority, argument '%u' is invalid"
@@ -8906,7 +8906,7 @@ msgstr ""
 "얼 페이지를 참조하거나 --human을 사용하십시오"
 
 msgid "Get domain launch security info"
-msgstr ""
+msgstr "도메인 시작 보안 정보 가져오기"
 
 msgid "Get information of domain's mounted filesystems."
 msgstr "도메인의 마운트된 파일 시스템 정보를 가져옵니다."
@@ -9011,7 +9011,7 @@ msgid "Get the CPU models for an arch."
 msgstr "아치용 CPU 모델을 가져오십시오."
 
 msgid "Get the launch security parameters for a guest domain"
-msgstr ""
+msgstr "게스트 도메인을 위한 시작 보안 매개변수 가져오기"
 
 msgid "Get the maximum migration bandwidth"
 msgstr "최대 이전 대역폭을 갖습니다"
@@ -10036,7 +10036,7 @@ msgstr "에이전트를 기다리는 동안 잘못된 파일 설명자"
 
 #, c-format
 msgid "Invalid file descriptor while waiting for monitor (vm='%s')"
-msgstr ""
+msgstr "모니터를 위한 대기 중에 잘못된 파일 서술자 (vm='%s')"
 
 msgid "Invalid firmware name"
 msgstr "잘못된 펌웨어 이름"
@@ -10128,7 +10128,7 @@ msgstr "네트워크 '%s'의 잘못된 localPtr 값 '%s'"
 
 #, c-format
 msgid "Invalid log destination '%s' for log output '%s'"
-msgstr ""
+msgstr "로그 출력 '%s'를 위해 잘못된 로그 대상 '%s'"
 
 #, c-format
 msgid "Invalid log priority %d"
@@ -10136,7 +10136,7 @@ msgstr "잘못된 기록 순위 %d"
 
 #, c-format
 msgid "Invalid log priority '%s' for log output '%s'"
-msgstr ""
+msgstr "로그 출력 '%s'를 위해 잘못된 로그 우선순위 '%s'"
 
 #, c-format
 msgid "Invalid lookup from '%s'"
@@ -10775,7 +10775,7 @@ msgstr "잠금경로 자원 '%s'가 잠기지 않습니다"
 msgid ""
 "Log output '%s' does not meet the format requirements for destination type "
 "'%s'"
-msgstr ""
+msgstr "로그 출력 '%s'는 대상 유형 '%s'에 대한 형식 요구 사항을 충족하지 않습니다"
 
 msgid "Logging filters: "
 msgstr "로깅 필터: "
@@ -10895,7 +10895,7 @@ msgstr "필터 '%s'의 형식이 잘못되었습니다"
 
 #, c-format
 msgid "Malformed format for log output '%s'"
-msgstr ""
+msgstr "로그 출력 '%s'를 위한 잘못된 형식"
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
 msgstr "잘못된 guest-get-fsinfo '디스크' 데이터 배열"
@@ -12806,7 +12806,7 @@ msgid "Only 1 thread per core is supported"
 msgstr "코어당 1개의 스레드만 지원됩니다"
 
 msgid "Only IPv4 or IPv6 addresses can be used with a prefix"
-msgstr ""
+msgstr "IPv4 또는 IPv6 주소만 접두사로 사용 될 수 있습니다"
 
 msgid "Only PCI device addresses with function=0 are supported"
 msgstr "function=0인 PCI 장치 주소만 지원됩니다"
@@ -13615,7 +13615,7 @@ msgid "QEMU does not support multiple listens for one graphics device."
 msgstr "QEMU는 하나의 그래픽 장치에 대한 다중 수신을 지원하지 않습니다."
 
 msgid "QEMU does not support setting a launch secret"
-msgstr ""
+msgstr "QEMU는 실행 비밀 설정하기를 지원하지 않습니다"
 
 msgid "QEMU guest agent is not available due to an error"
 msgstr "오류로 인해 QEMU 게스트 에이전트를 사용할 수 없습니다"
@@ -13985,7 +13985,7 @@ msgid "Returns a list of secrets"
 msgstr "비밀정보 목록을 반환"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "노드에 대한 기본 SEV 정보를 반환합니다."
 
 msgid "Returns basic information about a checkpoint."
 msgstr "체크포인트에 대한 기본 정보를 반환합니다."
@@ -14216,7 +14216,7 @@ msgid "SEV launch security is not supported with this QEMU binary"
 msgstr "이 QEMU 바이너리에서는 SEV 실행 보안이 지원되지 않습니다"
 
 msgid "SEV measured direct kernel boot is not supported with this QEMU binary"
-msgstr ""
+msgstr "SEV 측정된 직접 커널 부트는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "SHUTDOWN_TIMEOUT must be equal or greater than 0"
 msgstr "SHUTDOWN_TIMEOUT은 0보다 크거나 같아야 합니다"
@@ -14480,13 +14480,13 @@ msgid "Server to retrieve threadpool attributes from."
 msgstr "쓰레드 풀 속성을 검색할 서버입니다."
 
 msgid "Set a secret in the guest domain's memory"
-msgstr ""
+msgstr "게스트 도메인의 메모리에서 비밀을 설정합니다"
 
 msgid "Set a secret value."
 msgstr "비밀정보 값을 설정."
 
 msgid "Set domain launch security state"
-msgstr ""
+msgstr "도메인 실행 보안 상태 설정"
 
 msgid ""
 "Set link state of a domain's virtual interface. This command wraps usage of "
@@ -15152,7 +15152,7 @@ msgstr "%s의 시스템 토큰이 손상되었습니다"
 
 #, c-format
 msgid "TCG features are incompatible with domain type '%s'"
-msgstr ""
+msgstr "TCG 기능은 도메인 유형 '%s'와 호환되지 않습니다"
 
 #, c-format
 msgid "TLS handshake failed %s"
@@ -15338,7 +15338,7 @@ msgid "Target USB version does not match source"
 msgstr "대상 USB 버전이 소스과 일치하지 않음"
 
 msgid "Target active PCR banks doesn't match source"
-msgstr ""
+msgstr "대상 활성화 PCR 뱅크는 원천과 일치하지 않습니다"
 
 msgid "Target already exists"
 msgstr "대상이 이미 존재합니다"
@@ -17501,7 +17501,7 @@ msgid "Unable to get hardDisk Id, rc=%08x"
 msgstr "하드 디스크 ID를 가져올 수 없습니다; rc=%08x"
 
 msgid "Unable to get host SEV information"
-msgstr ""
+msgstr "호스트 SEV 정보를 가져 올 수 없습니다"
 
 msgid "Unable to get host boot time"
 msgstr "호스트 부팅 시간을 가져올 수 없습니다"
@@ -17525,14 +17525,14 @@ msgid "Unable to get interface parameters"
 msgstr "인터페이스 매개변수를 가져올 수 없습니다"
 
 msgid "Unable to get key length for diffie-hellman parameters"
-msgstr ""
+msgstr "디피-헬만(diffie-hellman) 매개변수를 위한 키 길이를 가져올 수 없습니다"
 
 #, c-format
 msgid "Unable to get kvm descriptor: %s"
 msgstr "kvm 서술자를 가져올 수 없습니다: %s"
 
 msgid "Unable to get launch security parameters"
-msgstr ""
+msgstr "시작 보안 매개변수를 가져올 수 없습니다"
 
 msgid "Unable to get local socket name"
 msgstr "로컬 소켓 이름을 가져올 수 없습니다"
@@ -18420,7 +18420,7 @@ msgid "Unable to set interface parameters"
 msgstr "인터페이스 매개변수를 설정할 수 없습니다"
 
 msgid "Unable to set launch security state"
-msgstr ""
+msgstr "시작 보안 상태를 설정 할 수 없습니다"
 
 msgid "Unable to set monitor close-on-exec flag"
 msgstr "모니터의 close-on-exec 플래그를 설정할 수 없음"
@@ -18581,7 +18581,7 @@ msgstr "epoll에 대기 할 수 없습니다"
 
 #, c-format
 msgid "Unable to wait on monitor condition (vm='%s')"
-msgstr ""
+msgstr "모니터 상태에서 대기 할 수 없습니다 (vm='%s')"
 
 msgid "Unable to wait on parent process"
 msgstr "상위 프로세스를 기다릴 수 없습니다"
@@ -19795,10 +19795,10 @@ msgid "VFIO device assignment is currently not supported on this system"
 msgstr "VFIO 장치 할당은 현재 이 시스템에서 지원되지 않습니다"
 
 msgid "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"
-msgstr ""
+msgstr "VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES는 이 VM에서 지원되지 않습니다"
 
 msgid "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"
-msgstr ""
+msgstr "VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES는 이 QEMU에서 지원되지 않습니다"
 
 msgid "VM is already active"
 msgstr "VM이 이미 실행중입니다"
@@ -19840,7 +19840,7 @@ msgstr "bhyve에서 지원하지 않는 VNC 비밀번호 인증"
 
 #, c-format
 msgid "VNC password is %zu characters long, only 8 permitted"
-msgstr ""
+msgstr "VNC 비밀번호는 %zu 문자 길이, 8 자만 허용됩니다"
 
 msgid "VNC power control is not available"
 msgstr "VNC 전원 제어를 사용할 수 없습니다"
@@ -21066,7 +21066,7 @@ msgid "can't change media while a block job is running on the device"
 msgstr "장치에서 차단 작업이 실행되는 동안 미디어를 변경할 수 없습니다"
 
 msgid "can't change nodeset for strict mode for running domain"
-msgstr ""
+msgstr "실행 중인 도메인을 위해 엄격한 방식을 위한 노드 구성을 변경 할 수 없습니다"
 
 msgid "can't change numatune mode for running domain"
 msgstr "실행 중인 도메인에 대한 numatune 모드를 변경할 수 없습니다"
@@ -22706,7 +22706,7 @@ msgid "change number of virtual CPUs"
 msgstr "가상 CPU 수 변경"
 
 msgid "change of nodeset for running domain requires restrictive numa mode"
-msgstr ""
+msgstr "실행 중인 도메인의 노드 구성의 변경은 제한적인 numa 방식이 필요합니다"
 
 msgid "change the current directory"
 msgstr "현재 디렉터리를 변경함"
@@ -24096,12 +24096,12 @@ msgid "directory to switch to (default: home or else root)"
 msgstr "변경하려는 디렉터리(디폴트: 홈 또는 다른 루트)"
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
-msgstr ""
+msgstr "더티 링(dirty ring)은 2의 거듭제곱과 범위여야 합니다 [1024, 65536]"
 
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
-msgstr ""
+msgstr "KVM 기능 '%s'의 더티 링(dirty ring) 크기는 다릅니다: 원천: '%d', 대상: '%d'"
 
 msgid "disable"
 msgstr "비활성화됨"
@@ -24387,7 +24387,7 @@ msgstr "dnsmasq 바이너리 %s를 실행 할 수 없습니다"
 
 #, c-format
 msgid "dnsmasq version >= %u.%u required but %lu.%lu found"
-msgstr ""
+msgstr "dnsmasq 버전 >= %u.%u가 필요하지만 %lu.%lu를 찾았습니다"
 
 msgid "do not enable STP for this bridge"
 msgstr "이 브리지에 대해 STP를 활성화하지 마십시오"
@@ -24615,7 +24615,7 @@ msgid "domain moment %s already exists"
 msgstr "도메인 모멘트 %s이(가) 이미 있습니다"
 
 msgid "domain must be in a paused state"
-msgstr ""
+msgstr "도메인은 일시 정지된 상태 이어야만 합니다"
 
 msgid "domain must have at least one disk to perform backup"
 msgstr "백업을 수행하려면 도메인에 하나 이상의 디스크가 있어야 합니다"
@@ -26899,7 +26899,7 @@ msgstr "관리되는 모든 저장을 삭제하여 강제로 새로 부팅"
 msgid ""
 "force guest disk writes to be synchronously written to the destination to "
 "improve storage migration convergence"
-msgstr ""
+msgstr "저장소 이전 수렴을 개선하려면 게스트 디스크 쓰기가 대상에 동기화 되어 기록되도록 강제합니다"
 
 msgid "force media changing"
 msgstr "강제 미디어 변경"
@@ -27307,7 +27307,7 @@ msgstr "호스트 PCI 장치 "
 
 #, c-format
 msgid "host pci device %s not found"
-msgstr ""
+msgstr "호스트 pci 장치 %s는 찾을 수 없습니다"
 
 #, c-format
 msgid "host reports map buffer length exceeds maximum: %d > %d"
@@ -28324,7 +28324,7 @@ msgstr "잘못된 링크 상태 '%s'"
 msgid ""
 "invalid loadparm value '%s', expecting chars in set of [a-zA-Z0-9.] and "
 "blank spaces"
-msgstr ""
+msgstr "잘못된 loadparm 값 '%s', [a-zA-Z0-9.]의 구성에서 문자와 빈 공간이 예상됩니다"
 
 #, c-format
 msgid ""
@@ -28657,7 +28657,7 @@ msgid "io uring is not supported by this QEMU binary"
 msgstr "이 QEMU 바이너리는 ioing을 지원하지 않습니다"
 
 msgid "io='native' needs either no disk cache or directsync cache mode"
-msgstr ""
+msgstr "io='native'는 디스크 캐쉬가 없거나 직접 동기화 캐쉬 방식 중 하나이어야 합니다"
 
 msgid "ioeventfd is not supported with vhostuser disk"
 msgstr "ioeventfd는 vhostuser 디스크에서 지원되지 않습니다"
@@ -29254,7 +29254,7 @@ msgstr "장치 '%s'의 라이브 업데이트가 지원되지 않습니다"
 
 #, c-format
 msgid "loadparm value '%s' must be between 1 and 8 characters"
-msgstr ""
+msgstr "loadparm 값 '%s'는 1 ~ 8개의 문자 사이여야 합니다"
 
 msgid "lock manager connection has been restricted"
 msgstr "잠금 관리자 연결이 제한되어 있습니다"
@@ -30497,12 +30497,12 @@ msgid "missing or malformed 'namespace' field of 'nvme' storage"
 msgstr "'nvme' 저장소의 '이름공간' 부부이 없거나 형식이 잘못되었습니다"
 
 msgid "missing or malformed SEV cbitpos information in QEMU capabilities cache"
-msgstr "QEMU 기능 캐시에서 누락되거나 잘못된 SEV cbitpos 정보"
+msgstr "QEMU 기능 캐쉬에서 누락되거나 잘못된 SEV cbitpos 정보"
 
 msgid ""
 "missing or malformed SEV reducedPhysBits information in QEMU capabilities "
 "cache"
-msgstr "QEMU 기능 캐시의 SEV ReducedPhysBits 정보 누락 또는 잘못된 형식"
+msgstr "QEMU 기능 캐쉬의 SEV ReducedPhysBits 정보 누락 또는 잘못된 형식"
 
 msgid "missing or malformed session-uuid element in migration data"
 msgstr "이전 자료에서 누락되거나 잘못된 형식의 session-uuid 요소"
@@ -30587,7 +30587,7 @@ msgid "missing rport name for '%s'"
 msgstr "'%s'에 대한 보고서 이름이 없습니다"
 
 msgid "missing scheme for URI"
-msgstr ""
+msgstr "URI을 위해 누락된 스키마"
 
 #, c-format
 msgid "missing scheme in migration URI: %s"
@@ -31888,7 +31888,7 @@ msgid "node CPU stats not implemented on this platform"
 msgstr "이 플랫폼에서 구현되어 않은 노드 CPU 통계"
 
 msgid "node SEV information"
-msgstr ""
+msgstr "노드 SEV 정보"
 
 msgid "node cpu info not implemented on this platform"
 msgstr "이 플랫폼에는 구현되지 않은 노드 cpu 정보"
@@ -32631,10 +32631,10 @@ msgid "path to emulator binary (/domain/devices/emulator)"
 msgstr "에뮬레이터 바이너리 경로(/domain/devices/emulator)"
 
 msgid "path to file containing the secret"
-msgstr ""
+msgstr "비밀이 포함되어 있는 파일의 경로"
 
 msgid "path to file containing the secret header"
-msgstr ""
+msgstr "비밀 헤더를 포함하는 파일의 경로"
 
 msgid "path to inputvol secret data file is required"
 msgstr "inputvol 비밀 데이터 파일의 경로가 필요합니다"
@@ -32767,7 +32767,7 @@ msgid "persistent update of device is not supported"
 msgstr "장치의 영구 업데이트는 지원되지 않습니다"
 
 msgid "physical address within the guest domain's memory to set the secret"
-msgstr ""
+msgstr "비밀을 설정하는 게스트 도메인 메모리 내의 물리적 주소"
 
 msgid "pid"
 msgstr "pid"
@@ -33924,7 +33924,7 @@ msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr "sbbc 구성은 이 QEMU 바이너리에서 지원되지 않습니다"
 
 msgid "scheduler information is not supported on this platform"
-msgstr ""
+msgstr "일정(scheduler) 정보는 이와 같은 기술 환경에서 지원되지 않습니다"
 
 #, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
@@ -34161,7 +34161,7 @@ msgid "setting MTU on interface type %s is not supported yet"
 msgstr "인터페이스 유형 %s에 대한 MTU 설정은 아직 지원되지 않습니다"
 
 msgid "setting a launch secret is only supported in SEV-enabled domains"
-msgstr ""
+msgstr "시작 비밀번호 설정은 SEV-활성화된 도메인에서만 지원됩니다"
 
 msgid "setting audio buffer count is not supported with this QEMU"
 msgstr "이 QEMU에서는 오디오 버퍼 수 설정이 지원되지 않습니다"
@@ -34938,7 +34938,7 @@ msgid "target vm vcpu granularity does not allow the desired vcpu count"
 msgstr "대상 vm vcpu 세분성이 원하는 vcpu 수를 허용하지 않습니다"
 
 msgid "tb-cache size must be an integer multiple of MiB"
-msgstr ""
+msgstr "tb-캐쉬 크기는 Mbyte의 정수배여야 합니다"
 
 msgid "tcp"
 msgstr "tcp"
@@ -35028,7 +35028,7 @@ msgstr "키 코드의 코드 세트, 기본값:linux"
 msgid ""
 "the copy job forces guest writes to be synchronously written to the "
 "destination"
-msgstr ""
+msgstr "복사 작업은 대상에서 게스트 쓰기가 동기적으로 기록되도록 강제합니다"
 
 msgid "the copy job is not persisted if VM is turned off"
 msgstr "VM이 꺼져 있으면 복사 작업이 지속되지 않습니다"
@@ -35835,7 +35835,7 @@ msgstr "btrfs가 아닌 '%s'에서 COW 플래그를 제어할 수 없습니다"
 
 #, c-format
 msgid "unable to create %s <-> %s veth pair"
-msgstr ""
+msgstr "%s <-> %s veth 쌍을 생성 할 수 없습니다"
 
 msgid "unable to create blockdev props for vhostuser disk type"
 msgstr "vhostuser 디스크 유형에 대한 blockdev 소품을 만들 수 없습니다"
