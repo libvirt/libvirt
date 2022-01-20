@@ -476,6 +476,32 @@ virStorageBackendDiskStartPool(virStoragePoolObj *pool)
 }
 
 
+static int
+virStorageBackendDiskCheckPool(virStoragePoolObj *pool,
+                               bool *isActive)
+{
+    virStoragePoolDef *def = virStoragePoolObjGetDef(pool);
+    const char *path = def->source.devices[0].path;
+
+    *isActive = false;
+
+    if (!virFileExists(path))
+        return 0;
+
+    if (def->source.format == VIR_STORAGE_POOL_DISK_UNKNOWN)
+        def->source.format = VIR_STORAGE_POOL_DISK_DOS;
+
+    if (!virStorageBackendDeviceIsEmpty(path,
+                                        virStoragePoolFormatDiskTypeToString(def->source.format),
+                                        false))
+        return -1;
+
+    *isActive = true;
+
+    return 0;
+}
+
+
 /**
  * Write a new partition table header
  */
@@ -973,6 +999,7 @@ virStorageBackend virStorageBackendDisk = {
     .buildPool = virStorageBackendDiskBuildPool,
     .refreshPool = virStorageBackendDiskRefreshPool,
     .deletePool = virStorageBackendDiskDeletePool,
+    .checkPool = virStorageBackendDiskCheckPool,
 
     .createVol = virStorageBackendDiskCreateVol,
     .deleteVol = virStorageBackendDiskDeleteVol,
