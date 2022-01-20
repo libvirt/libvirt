@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-14 22:16+0000\n"
+"PO-Revision-Date: 2022-01-20 13:46+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8432,20 +8432,20 @@ msgstr ""
 msgid "Failed to set stp attribute in xml document"
 msgstr "Misslyckades med att sätta stp-attribut i xml-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to set target name: %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att sätta målnamnet: %s"
 
 #, c-format
 msgid "Failed to set vcpus for domain '%d' with libxenlight"
-msgstr ""
+msgstr "Misslyckades med att sätta vcpu:er för domän ”%d” med libxenlight"
 
 msgid "Failed to setup keepalive on connection\n"
 msgstr "Misslyckades att ordna livsuppehållande på förbindelsen\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to shutdown domain '%d' with libxenlight"
-msgstr "Misslyckades att stänga ned domän %s"
+msgstr "Misslyckades med att stänga av domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to shutdown domain '%s'"
@@ -8453,15 +8453,15 @@ msgstr "Misslyckades att stänga av domänen ”%s”"
 
 #, c-format
 msgid "Failed to soft reset VM '%s'. Destroying VM"
-msgstr ""
+msgstr "Misslyckades med att mjukt återställa VM ”%s”. Förstör VM"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start QEMU binary %s for probing: %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att starta QEMU-binären %s för sondering: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start SASL negotiation: %d (%s)"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att starta SASL-förhandling: %d (%s)"
 
 #, c-format
 msgid "Failed to start bridge interface %s"
@@ -8469,7 +8469,7 @@ msgstr "Misslyckades med att starta bryggränssnittet %s"
 
 #, c-format
 msgid "Failed to start device %s"
-msgstr ""
+msgstr "Misslyckades med att starta enheten %s"
 
 #, c-format
 msgid "Failed to start domain '%s'"
@@ -8479,9 +8479,9 @@ msgstr "Misslyckades att starta domänen '%s'"
 msgid "Failed to start interface %s"
 msgstr "Misslyckades med att starta gränssnittet %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start job on VM '%s': %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att starta ett jobb på VM ”%s”: %s"
 
 #, c-format
 msgid "Failed to start network %s"
@@ -8491,85 +8491,83 @@ msgstr "Misslyckades att starta nätverk %s"
 msgid "Failed to start pool %s"
 msgstr "Misslyckades att starta poolen %s"
 
-#, fuzzy
 msgid "Failed to start slirp"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Misslyckades med att starta slirp"
 
-#, fuzzy
 msgid "Failed to start the nwfilter driver"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att startanwfilter-drivrutinen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to start the nwfilter driver: %s"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att startanwfilter-drivrutinen: %s"
 
 #, c-format
 msgid "Failed to stat %s"
 msgstr "Misslyckades att ta status på %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to stat storage volume with path '%s'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "Misslyckades med att ta status på lagringsvolymen med sökväg ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to step SASL negotiation: %d (%s)"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att stega SASL-förhandling: %d (%s)"
 
 #, c-format
 msgid "Failed to suspend domain '%d'"
 msgstr "Misslyckades att söva domänen ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to suspend domain '%d' with libxenlight"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att söva domän ”%d” med libxenlight"
 
 #, c-format
 msgid "Failed to suspend domain '%s'"
 msgstr "Misslyckades att söva domänen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to symlink device %s to %s"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att mjuklänka enheten %s till %s"
 
 #, c-format
 msgid "Failed to take snapshot: %s"
 msgstr "Misslyckades att ta ögonblicksbild: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to terminate process %lld with SIG%s"
-msgstr "Misslyckades att hämta gränssnittsstatistik %s %s"
+msgstr "Misslyckades med att avsluta process %lld med SIG%s"
 
 #, c-format
 msgid "Failed to translate bridge '%s' prefix %d to netmask"
-msgstr ""
+msgstr "Misslyckades att översätta bryggan ”%s” prefix %d till en nätmask"
 
 #, c-format
 msgid "Failed to translate net prefix %d to netmask"
-msgstr ""
+msgstr "Misslyckades att översätta nätprefixet %d till en nätmask"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to trigger a probe for PCI device '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att starta en avkänning av PCI-enheten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to truncate file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att hugga av filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to truncate pid file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att hugga av pid-filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to truncate volume with path '%s' to %ju bytes"
-msgstr "Misslyckades att spara domän %s till %s"
+msgstr "Misslyckades med att hugga av volymen med sökvägen ”%s” till %ju byte"
 
 #, c-format
 msgid "Failed to truncate volume with path '%s' to 0 bytes"
-msgstr ""
+msgstr "Misslyckades med att hugga av volymen med sökvägen ”%s” till 0 byte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unbind PCI device '%s' from %s"
-msgstr "Misslyckades att avmontera enheten från %s"
+msgstr "Misslyckades med att avbinda PCI-enheten ”%s” från %s"
 
 #, c-format
 msgid "Failed to undefine bridge interface %s"
@@ -8577,7 +8575,7 @@ msgstr "Misslyckades att avdefiniera bryggränssnittet %s"
 
 #, c-format
 msgid "Failed to undefine domain '%s'"
-msgstr ""
+msgstr "Misslyckades med att avdefiniera domänen ”%s”"
 
 #, c-format
 msgid "Failed to undefine interface %s"
@@ -8593,127 +8591,125 @@ msgstr "Misslyckades att avdefiniera nätverksfiltret %s"
 
 #, c-format
 msgid "Failed to undefine node device '%s'"
-msgstr ""
+msgstr "Misslyckades med att avdefiniera nodenheten ”%s”"
 
 #, c-format
 msgid "Failed to undefine pool %s"
 msgstr "Misslyckades att avdefiniera poolen %s"
 
-#, fuzzy
 msgid "Failed to unescape command line string"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att ta bort ”escape” från kommandoradssträngen"
 
 #, c-format
 msgid "Failed to unlink '%s'"
-msgstr ""
+msgstr "Misslyckades med att avlänka ”%s”"
 
 #, c-format
 msgid "Failed to unmark domain '%s' as autostarted"
 msgstr "Misslyckades att avmarkera domänen ”%s” som autostartad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unmarshall reply: %s"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att ordna svaret: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to unmarshall reportluns: %s"
-msgstr "Misslyckades att ta ögonblicksbild: %s"
+msgstr "Misslyckades med att ordna reportluns: %s"
 
 #, c-format
 msgid "Failed to unmount '%s' and could not detach subtree '%s'"
 msgstr ""
+"Misslyckades med att avmontera ”%s” och kunde inte koppla ifrån underträdet "
+"”%s”"
 
 #, c-format
 msgid "Failed to unmount '%s' and could not unmount old root '%s'"
 msgstr ""
+"Misslyckades med att avmontera ”%s” och kunde inte avmontera den gamla "
+"rooten ”%s”"
 
-#, fuzzy
 msgid "Failed to unpause domain"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att avpausa domänen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update %s"
-msgstr "Misslyckades att suspendera domän %s"
+msgstr "Misslyckades med att uppdatera %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update %s XML configuration"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "Misslyckades med att uppdatera XML-konfigurationen för %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to update '%s' of node mode for target '%s'"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att uppdatera ”%s” av nod-läget för målet ”%s”"
 
 #, c-format
 msgid "Failed to update device from %s"
 msgstr "Misslyckades att uppdatera enheten från %s"
 
-#, fuzzy
 msgid "Failed to update interface link state"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Misslyckades med att uppdatera gränssnittslänkens tillstånd"
 
 #, c-format
 msgid "Failed to update network %s"
 msgstr "Misslyckades att uppdatera nätverket %s"
 
-#, fuzzy
 msgid "Failed to verify peer's certificate"
-msgstr "Kan inte initiera certifikat"
+msgstr "Misslyckades med att verifiera motpartens certifikat"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to wipe vol %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att rensa volymen %s"
 
 #, c-format
 msgid "Failed to write %zu bytes to storage volume with path '%s'"
 msgstr ""
+"Misslyckades med att skriva %zu byte till lagringsvolymen med sökvägen ”%s”"
 
 #, c-format
 msgid "Failed to write '%s'"
 msgstr "Misslyckades att skriva ”%s”"
 
 msgid "Failed to write pixel data"
-msgstr ""
+msgstr "Misslyckades med att skriva pixeldata"
 
-#, fuzzy
 msgid "Failed to write save file header"
-msgstr "misslyckades att skriva loggfilen"
+msgstr "Misslyckades med att skriva filhuvudet"
 
 #, c-format
 msgid "Failed to write system token '%s'"
-msgstr ""
+msgstr "Misslyckades med att skriva systempoletten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write to pid file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att skriva till pid-filen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Failed to write vmx file '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Misslyckades med att skriva till vmx-filen ”%s”"
 
-#, fuzzy
 msgid "Failed to write xml description"
-msgstr "misslyckades att skriva konfigurationsfilen"
+msgstr "Misslyckades med att skriva xml-beskrivningen"
 
 msgid "Failed! Volume not removed."
-msgstr ""
+msgstr "Misslyckat! Volymen inte borttagen."
 
 msgid "Failed."
 msgstr "Misslyckades."
 
 #, c-format
 msgid "Failure action %s is not supported by sanlock"
-msgstr ""
+msgstr "Felåtgärd %s stödjs inte av sanlock"
 
 #, c-format
 msgid "Failure in libvirt_lxc startup: %s\n"
-msgstr ""
+msgstr "Misslyckande i uppstart av libvirt_lxc: %s\n"
 
-#, fuzzy
 msgid "Failure to mask address"
-msgstr "Misslyckades med att tolka läget ”%s”"
+msgstr "Misslyckades med att maska adressen"
 
 msgid "Failure while reading log output"
-msgstr ""
+msgstr "Fel när loggutdata lästes"
 
 #, c-format
 msgid "Family 'ipv6' specified for non-IPv6 address '%s' in network '%s'"
@@ -8721,127 +8717,136 @@ msgstr "Familjen ”ipv6” angiven för en icke-IPv6-adress ”%s” i nätverk
 
 #, c-format
 msgid "Feature %s required by CPU model %s not found"
-msgstr ""
+msgstr "Funktionen %s som krävs av CPU-modell %s finns inte"
 
 msgid "Fibre Channel 'appid' is not a printable string"
-msgstr ""
+msgstr "Fiberkanal ”appid” är inte en skrivbar sträng"
 
 #, c-format
 msgid "Fibre Channel 'appid' string length must be between [%d, %d]"
-msgstr ""
+msgstr "Fiberkanal ”appid” stränglängden måste vara mellan [%d, %d]"
 
 #, c-format
 msgid "Field '%s' too long for destination"
-msgstr ""
+msgstr "Fältet ”%s” är för långt för destinationen"
 
 msgid "Field kernel memory too long for destination"
-msgstr ""
+msgstr "Fältkärnminnet är för långt för destinationen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Field name '%s' too long"
-msgstr "parametern profileid är för lång"
+msgstr "Fältnamnet ”%s” är för långt"
 
-#, fuzzy
 msgid "Field name too long"
-msgstr "parametern profileid är för lång"
+msgstr "Fältnamnet är för långt"
 
 #, c-format
 msgid "File %s contains no keys"
-msgstr ""
+msgstr "Filen %s innehåller inga nycklar"
 
 #, c-format
 msgid ""
 "File '%s' does not contain any <cpu> element or valid domain XML, host "
 "capabilities XML, or domain capabilities XML"
 msgstr ""
+"Filen ”%s” innehåller inte något <cpu>-element eller giltig domän-XML, "
+"värdförmåge-XML eller ddomänförmåge-XML"
 
 #, c-format
 msgid "File '%s' does not exist"
-msgstr ""
+msgstr "Filen ”%s” finns inte"
 
 #, c-format
 msgid "File '%s' has unknown type"
-msgstr ""
+msgstr "Filen ”%s” har okänd typ"
 
-#, fuzzy, c-format
+#, c-format
 msgid "File '%s/%s/%s' does not exist."
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "Filen ”%s/%s/%s” finns inte."
 
 msgid "File bandwidth:"
-msgstr ""
+msgstr "Filbandbredd:"
 
 #, c-format
 msgid ""
 "File descriptor returned by udev %d does not match node device file "
 "descriptor %d"
 msgstr ""
+"Filbeskrivaren som returnerades av udev %d stämmer inte med nodenhetens "
+"filbeskrivare %d"
 
 #, c-format
 msgid ""
 "File name '%s' doesn't have expected format '/vmfs/volumes/<datastore>/"
 "<path>'"
 msgstr ""
+"Filnamnet ”%s” har inte det förväntade formatet ”/vmfs/volumes/"
+"<datalager>/<sökväg>”"
 
 #, c-format
 msgid "File name '%s' refers to non-existing datastore '%s'"
-msgstr ""
+msgstr "Filnamnet ”%s” refererar till ett obefintligt datalager ”%s”"
 
 msgid "File processed:"
-msgstr ""
+msgstr "Fil bearbetad:"
 
 msgid "File remaining:"
-msgstr ""
+msgstr "Fil återstående:"
 
 msgid "File streams are not supported on this platform"
 msgstr "Filströmmar stödjs inte på denna plattform"
 
 msgid "File total:"
-msgstr ""
+msgstr "Fil totalt:"
 
 msgid "Filepath is Null"
-msgstr ""
+msgstr "Filsökvägen är Null"
 
 msgid "Filepath is null"
-msgstr ""
+msgstr "Filsökvägen är null"
 
 msgid "Filesystem driver type not supported"
-msgstr ""
+msgstr "Filsystemsdrivrutintypen stödjs inte"
 
 msgid "Filesystems in VMs are not supported by vz driver"
-msgstr ""
+msgstr "Filsystem i VM:ar stödjs inte av vz-drivrutinen"
 
 msgid "Filter"
 msgstr "Filtrera"
 
 #, c-format
 msgid "Filter '%s' is in use."
-msgstr ""
+msgstr "Filtret ”%s” används."
 
 msgid "Filtering is not supported by this libvirt"
-msgstr ""
+msgstr "Filtrering stödjs inte av denna libvirt"
 
 msgid "Filtering using --type is not supported by this libvirt"
-msgstr ""
+msgstr "Filtrering som använder --type stödjs inte av denna libvirt"
 
 msgid "Finished"
 msgstr "Avslutad"
 
 msgid "Finished after guest request"
-msgstr ""
+msgstr "Avslutade efter gästbegäran"
 
 msgid "Finished after host request"
-msgstr ""
+msgstr "Avslutade efter värdbegäran"
 
 msgid "Firmware entry is missing 'name' attribute"
-msgstr ""
+msgstr "Posten för fast programvara saknar attributet ”name”"
 
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
+"Posten för fast programvara måste antingen ha ett värde eller ett attribut "
+"”file”"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
 "for VMX file"
 msgstr ""
+"Första filbaserade hårddisken har ingen källa, kan inte avgöra datalager och "
+"sökväg för VMX-filen"
 
 #. Macros to help dealing with flag requirements.
 #. *
@@ -8871,7 +8876,7 @@ msgstr ""
 #.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
-msgstr ""
+msgstr "Flaggan ”%s” krävs av flaggan ”%s”"
 
 #. Macros to help dealing with mutually exclusive flags.
 #. *
@@ -8902,12 +8907,14 @@ msgstr ""
 #.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
-msgstr ""
+msgstr "Flaggorna ”%s” och ”%s” är ömsesidigt uteslutande"
 
 msgid ""
 "Flags 'VIR_DOMAIN_AFFECT_LIVE' and 'VIR_DOMAIN_AFFECT_CONFIG' are mutually "
 "exclusive"
 msgstr ""
+"Flaggan ”VIR_DOMAIN_AFFECT_LIVE” och ”VIR_DOMAIN_AFFECT_CONFIG” är "
+"ömsesidigt uteslutande"
 
 #, c-format
 msgid "Floppy '%s' has unsupported type '%s', expecting '%s' or '%s'"
@@ -8916,19 +8923,21 @@ msgstr ""
 
 #, c-format
 msgid "Floppy disk index (parsed from '%s') is too large"
-msgstr ""
+msgstr "Floppy disk-indexet (tolkat från ”%s”) är för stort"
 
 msgid "For IPv4, multiple DHCP definitions cannot be specified."
-msgstr ""
+msgstr "För IPv4 kan inte multipla DHCP-definitioner anges."
 
 msgid "For IPv6, multiple DHCP definitions cannot be specified."
-msgstr ""
+msgstr "För IPv6 kan inte multipla DHCP-definitioner anges."
 
 msgid "Force close a specific client's connection to the given server."
 msgstr ""
+"Framtvinga stängning av en specifik klients anslutning till den givna "
+"servern."
 
 msgid "Forcefully stop a given domain, but leave its resources intact."
-msgstr ""
+msgstr "Framtvinga stopp av en given domän, men lämna dess resurser intakta."
 
 msgid "Forcefully stop a given network."
 msgstr ""
