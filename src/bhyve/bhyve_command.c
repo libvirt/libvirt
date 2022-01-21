@@ -616,6 +616,7 @@ bhyveBuildFSArgStr(const virDomainDef *def G_GNUC_UNUSED,
         break;
     case VIR_DOMAIN_FS_ACCESSMODE_MAPPED:
     case VIR_DOMAIN_FS_ACCESSMODE_SQUASH:
+    case VIR_DOMAIN_FS_ACCESSMODE_DEFAULT:
     case VIR_DOMAIN_FS_ACCESSMODE_LAST:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported filesystem accessmode '%s'"),
@@ -1052,6 +1053,9 @@ virBhyveGetBootDisk(virDomainDef *def)
         case VIR_DOMAIN_BOOT_DISK:
             boot_dev = VIR_DOMAIN_DISK_DEVICE_DISK;
             break;
+        case VIR_DOMAIN_BOOT_FLOPPY:
+        case VIR_DOMAIN_BOOT_NET:
+        case VIR_DOMAIN_BOOT_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Cannot boot from device %s"),
