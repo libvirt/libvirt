@@ -4234,7 +4234,7 @@ qemuValidateDomainDeviceDefFS(virDomainFSDef *fs,
                        _("only supports mount filesystem type"));
         return -1;
     }
-    if (fs->multidevs != VIR_DOMAIN_FS_MODEL_DEFAULT &&
+    if (fs->multidevs != VIR_DOMAIN_FS_MULTIDEVS_DEFAULT &&
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_FSDEV_MULTIDEVS)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("multidevs is not supported with this QEMU binary"));
