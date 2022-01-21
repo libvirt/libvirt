@@ -58,7 +58,7 @@ struct _virNetworkPortDef {
     virTristateBool trustGuestRxFilters;
     virTristateBool isolatedPort;
 
-    int plugtype; /* virNetworkPortPlugType */
+    virNetworkPortPlugType plugtype;
     union {
         struct {
             char *brname;

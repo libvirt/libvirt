@@ -92,7 +92,6 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
     g_autofree char *mac = NULL;
     g_autofree char *macmgr = NULL;
     g_autofree char *mode = NULL;
-    g_autofree char *plugtype = NULL;
     g_autofree char *driver = NULL;
 
     def = g_new0(virNetworkPortDef, 1);
@@ -176,13 +175,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         return NULL;
 
     plugNode = virXPathNode("./plug", ctxt);
-    plugtype = virXPathString("string(./plug/@type)", ctxt);
 
-    if (plugtype &&
-        (def->plugtype = virNetworkPortPlugTypeFromString(plugtype)) < 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("Invalid network port plug type '%s'"), plugtype);
-    }
+    if (virXMLPropEnum(plugNode, "type",
+                       virNetworkPortPlugTypeFromString,
+                       VIR_XML_PROP_NONE,
+                       &def->plugtype) < 0)
+        return NULL;
 
     switch (def->plugtype) {
     case VIR_NETWORK_PORT_PLUG_TYPE_NONE:
@@ -190,12 +188,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
 
     case VIR_NETWORK_PORT_PLUG_TYPE_NETWORK:
     case VIR_NETWORK_PORT_PLUG_TYPE_BRIDGE:
-        if (!(def->plug.bridge.brname = virXPathString("string(./plug/@bridge)", ctxt))) {
+        if (!(def->plug.bridge.brname = virXMLPropString(plugNode, "bridge"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port bridge name"));
             return NULL;
         }
-        macmgr = virXPathString("string(./plug/@macTableManager)", ctxt);
+        macmgr = virXMLPropString(plugNode, "macTableManager");
         if (macmgr &&
             (def->plug.bridge.macTableManager =
              virNetworkBridgeMACTableManagerTypeFromString(macmgr)) <= 0) {
@@ -207,12 +205,12 @@ virNetworkPortDefParseXML(xmlXPathContextPtr ctxt)
         break;
 
     case VIR_NETWORK_PORT_PLUG_TYPE_DIRECT:
-        if (!(def->plug.direct.linkdev = virXPathString("string(./plug/@dev)", ctxt))) {
+        if (!(def->plug.direct.linkdev = virXMLPropString(plugNode, "dev"))) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("Missing network port link device name"));
             return NULL;
         }
-        mode = virXPathString("string(./plug/@mode)", ctxt);
+        mode = virXMLPropString(plugNode, "mode");
         if (mode &&
             (def->plug.direct.mode =
              virNetDevMacVLanModeTypeFromString(mode)) < 0) {
