@@ -9614,7 +9614,7 @@ qemuBuildRedirdevCommandLine(virCommand *cmd,
 
 
 static void
-qemuBuldDomainLoaderPflashCommandLine(virCommand *cmd,
+qemuBuildDomainLoaderPflashCommandLine(virCommand *cmd,
                                       virDomainLoaderDef *loader,
                                       virQEMUCaps *qemuCaps)
 {
@@ -9673,7 +9673,7 @@ qemuBuildDomainLoaderCommandLine(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_PFLASH:
-        qemuBuldDomainLoaderPflashCommandLine(cmd, loader, qemuCaps);
+        qemuBuildDomainLoaderPflashCommandLine(cmd, loader, qemuCaps);
         break;
 
     case VIR_DOMAIN_LOADER_TYPE_NONE:
