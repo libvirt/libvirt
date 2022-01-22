@@ -20,7 +20,7 @@ endif
 
 if host_machine.system() == 'freebsd'
   grep_prog = find_program('grep')
-  grep_cmd = run_command(grep_prog, '--version')
+  grep_cmd = run_command(grep_prog, '--version', check: true)
   if grep_cmd.stdout().startswith('grep (BSD grep')
     grep_prog = find_program('/usr/local/bin/grep', required: false)
     if not grep_prog.found()

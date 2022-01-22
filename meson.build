@@ -14,10 +14,10 @@ project(
 
 # figure out if we are building from git
 
-git = run_command('test', '-d', '.git').returncode() == 0
+git = run_command('test', '-d', '.git', check: false).returncode() == 0
 
 if git and not get_option('no_git')
-  run_command('git', 'submodule', 'update', '--init')
+  run_command('git', 'submodule', 'update', '--init', check: true)
 endif
 
 
@@ -45,7 +45,7 @@ endif
 if get_option('system')
   prefix = '/usr'
   libdir = prefix / 'lib64'
-  if run_command('test', '-d', libdir).returncode() != 0
+  if run_command('test', '-d', libdir, check: false).returncode() != 0
     libdir = prefix / 'lib'
   endif
   localstatedir = '/var'
@@ -222,6 +222,7 @@ size_max = cc.sizeof('size_t', prefix: '#include <stdint.h>')
 alloc_max = run_command(
   'python3', '-c',
   'print(min(2**(@0@ * 8 - 1) - 1, 2**(@1@ * 8) - 1))'.format(ptrdiff_max, size_max),
+  check: true,
 )
 
 # sanitizer instrumentation may enlarge stack frames
@@ -1096,7 +1097,7 @@ if not get_option('nls').disabled()
   endforeach
 
   if xgettext_prog.found() and msgfmt_prog.found() and msgmerge_prog.found()
-    rc = run_command(msgfmt_prog, '--version')
+    rc = run_command(msgfmt_prog, '--version', check: false)
     if rc.returncode() == 0 and rc.stdout().contains('GNU gettext')
       have_gnu_gettext_tools = true
     endif
@@ -1199,7 +1200,7 @@ selinux_dep = dependency('libselinux', required: get_option('selinux'))
 if selinux_dep.found()
   selinux_mount = get_option('selinux_mount')
   if selinux_mount == ''
-    if run_command('test', '-d', '/sys/fs/selinux').returncode() == 0
+    if run_command('test', '-d', '/sys/fs/selinux', check: false).returncode() == 0
       selinux_mount = '/sys/fs/selinux'
     else
       selinux_mount = '/selinux'
@@ -1658,7 +1659,7 @@ if not get_option('driver_qemu').disabled()
       default_qemu_user = 'root'
       default_qemu_group = 'wheel'
     else
-      os_release = run_command('grep', '^ID=', '/etc/os-release').stdout()
+      os_release = run_command('grep', '^ID=', '/etc/os-release', check: true).stdout()
       if os_release.contains('arch')
         default_qemu_user = 'nobody'
         default_qemu_group = 'nobody'
@@ -1682,8 +1683,8 @@ if not get_option('driver_qemu').disabled()
       # If the expected user and group don't exist, or we haven't hit any
       # of the cases above bacuse we're running on an unknown OS, the only
       # sensible fallback is root:root
-      if (run_command('getent', 'passwd', default_qemu_user).returncode() != 0 and
-          run_command('getent', 'group', default_qemu_group).returncode() != 0)
+      if (run_command('getent', 'passwd', default_qemu_user, check: false).returncode() != 0 and
+          run_command('getent', 'group', default_qemu_group, check: false).returncode() != 0)
         default_qemu_user = 'root'
         default_qemu_group = 'root'
       endif
@@ -2178,7 +2179,8 @@ if git
     )
   endforeach
 
-  authors = run_command(python3_prog, meson_gen_authors_prog.path(), env: runutf8)
+  authors = run_command(python3_prog, meson_gen_authors_prog.path(),
+                        env: runutf8, check: true)
   authors_file = 'AUTHORS.rst.in'
 
   authors_conf = configuration_data()
@@ -2218,7 +2220,7 @@ configure_file(
   output: '@BASENAME@',
   configuration: run_conf,
 )
-run_command('chmod', 'a+x', meson.current_build_dir() / 'run')
+run_command('chmod', 'a+x', meson.current_build_dir() / 'run', check: true)
 
 
 # generate developer tooling files

@@ -132,7 +132,7 @@ aclperms_gen = custom_target(
 )
 
 docs_timestamp = run_command(
-  python3_prog, meson_timestamp_prog.path(), env: runutf8
+  python3_prog, meson_timestamp_prog.path(), env: runutf8, check: true,
 ).stdout().strip()
 
 site_xsl = files('site.xsl')
@@ -206,7 +206,7 @@ endforeach
 #
 # Use this knowledge to detect the version that we know doesn't work
 # for building libvirt and reject it
-rst2html5_version = run_command(rst2html5_prog, '--version')
+rst2html5_version = run_command(rst2html5_prog, '--version', check: true)
 rst2html5_version = rst2html5_version.stdout().split(' ')
 if rst2html5_version[1] != '(Docutils'
   error('Please uninstall the rst2html5 package and install the docutils package')
