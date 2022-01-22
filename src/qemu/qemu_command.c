@@ -2234,7 +2234,8 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         if (disk->iothread > 0)
             iothread = g_strdup_printf("iothread%u", disk->iothread);
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
+        if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_VHOST_USER &&
+            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_BLK_SCSI)) {
             /* if sg_io is true but the scsi option isn't supported,
              * that means it's just always on in this version of qemu.
              */
