@@ -4973,6 +4973,11 @@ esxVI_LookupManagedObjectHelper(esxVI_Context *ctx,
              candidate = candidate->_next) {
             name_candidate = NULL;
 
+            if (candidate->obj->_type == root->_type &&
+                g_strcmp0(candidate->obj->type, root->type) == 0 &&
+                g_strcmp0(candidate->obj->value, root->value) == 0)
+                continue;
+
             if (esxVI_GetStringValue(candidate, "name", &name_candidate,
                                      esxVI_Occurrence_RequiredItem) < 0) {
                 goto cleanup;
