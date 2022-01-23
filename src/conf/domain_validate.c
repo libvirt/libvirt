@@ -2112,8 +2112,71 @@ virDomainVsockDefValidate(const virDomainVsockDef *vsock)
 
 
 static int
-virDomainInputDefValidate(const virDomainInputDef *input)
+virDomainInputDefValidate(const virDomainInputDef *input,
+                          const virDomainDef *def)
 {
+    switch (def->os.type) {
+    case VIR_DOMAIN_OSTYPE_HVM:
+        if (input->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
+            input->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+            input->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("ps2 bus does not support %s input device"),
+                           virDomainInputTypeToString(input->type));
+            return -1;
+        }
+        if (input->bus == VIR_DOMAIN_INPUT_BUS_XEN) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported input bus %s"),
+                           virDomainInputBusTypeToString(input->bus));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_OSTYPE_XEN:
+    case VIR_DOMAIN_OSTYPE_XENPVH:
+        if (input->bus != VIR_DOMAIN_INPUT_BUS_XEN) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("unsupported input bus %s"),
+                           virDomainInputBusTypeToString(input->bus));
+            return -1;
+        }
+        if (input->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+            input->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("xen bus does not support %s input device"),
+                           virDomainInputTypeToString(input->type));
+            return -1;
+        }
+        break;
+
+    default:
+        if (def->virtType == VIR_DOMAIN_VIRT_VZ ||
+            def->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
+            if (input->bus != VIR_DOMAIN_INPUT_BUS_PARALLELS) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("parallels containers don't support "
+                                 "input bus %s"),
+                               virDomainInputBusTypeToString(input->bus));
+                return -1;
+            }
+
+            if (input->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
+                input->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("parallels bus does not support "
+                                 "%s input device"),
+                               virDomainInputTypeToString(input->type));
+                return -1;
+            }
+        } else {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Input devices are not supported by this "
+                             "virtualization driver."));
+            return -1;
+        }
+    }
+
     switch ((virDomainInputType) input->type) {
         case VIR_DOMAIN_INPUT_TYPE_MOUSE:
         case VIR_DOMAIN_INPUT_TYPE_TABLET:
@@ -2296,7 +2359,7 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
         return virDomainVsockDefValidate(dev->data.vsock);
 
     case VIR_DOMAIN_DEVICE_INPUT:
-        return virDomainInputDefValidate(dev->data.input);
+        return virDomainInputDefValidate(dev->data.input, def);
 
     case VIR_DOMAIN_DEVICE_SHMEM:
         return virDomainShmemDefValidate(dev->data.shmem);

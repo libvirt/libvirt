@@ -11857,62 +11857,6 @@ virDomainInputDefParseXML(virDomainXMLOption *xmlopt,
             goto error;
         }
 
-        if (dom->os.type == VIR_DOMAIN_OSTYPE_HVM) {
-            if (def->bus == VIR_DOMAIN_INPUT_BUS_PS2 &&
-                def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
-                def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("ps2 bus does not support %s input device"),
-                               type);
-                goto error;
-            }
-            if (def->bus == VIR_DOMAIN_INPUT_BUS_XEN) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported input bus %s"),
-                               bus);
-                goto error;
-            }
-        } else if (dom->os.type == VIR_DOMAIN_OSTYPE_XEN ||
-                   dom->os.type == VIR_DOMAIN_OSTYPE_XENPVH) {
-            if (def->bus != VIR_DOMAIN_INPUT_BUS_XEN) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unsupported input bus %s"),
-                               bus);
-                goto error;
-            }
-            if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
-                def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("xen bus does not support %s input device"),
-                               type);
-                goto error;
-            }
-        } else {
-            if (dom->virtType == VIR_DOMAIN_VIRT_VZ ||
-                dom->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
-                if (def->bus != VIR_DOMAIN_INPUT_BUS_PARALLELS) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("parallels containers don't support "
-                                     "input bus %s"),
-                                   bus);
-                    goto error;
-                }
-
-                if (def->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
-                    def->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
-                    virReportError(VIR_ERR_INTERNAL_ERROR,
-                                   _("parallels bus does not support "
-                                     "%s input device"),
-                                   type);
-                    goto error;
-                }
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("Input devices are not supported by this "
-                                 "virtualization driver."));
-                goto error;
-            }
-        }
     } else {
         if (dom->os.type == VIR_DOMAIN_OSTYPE_HVM) {
             if ((def->type == VIR_DOMAIN_INPUT_TYPE_MOUSE ||
