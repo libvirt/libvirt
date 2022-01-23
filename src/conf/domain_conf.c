@@ -2732,8 +2732,9 @@ virDomainChrSourceDefClear(virDomainChrSourceDef *def)
     VIR_FREE(def->logfile);
 }
 
-/* Deep copies the contents of src into dest.  Return -1 and report
- * error on failure.  */
+/* Almost deep copies the contents of src into dest. Some parts are not copied
+ * though.
+ * Returns -1 and report error on failure.  */
 int
 virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
                           virDomainChrSourceDef *src)
@@ -2743,7 +2744,11 @@ virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
 
     virDomainChrSourceDefClear(dest);
 
-    switch (src->type) {
+    dest->type = src->type;
+    dest->logfile = g_strdup(src->logfile);
+    dest->logappend = src->logappend;
+
+    switch ((virDomainChrType)src->type) {
     case VIR_DOMAIN_CHR_TYPE_FILE:
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
@@ -2783,9 +2788,21 @@ virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
         dest->data.nmdm.slave = g_strdup(src->data.nmdm.slave);
 
         break;
-    }
 
-    dest->type = src->type;
+    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+        dest->data.spicevmc = src->data.spicevmc;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+        dest->data.spiceport.channel = g_strdup(src->data.spiceport.channel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NULL:
+    case VIR_DOMAIN_CHR_TYPE_VC:
+    case VIR_DOMAIN_CHR_TYPE_STDIO:
+    case VIR_DOMAIN_CHR_TYPE_LAST:
+        break;
+    }
 
     return 0;
 }
