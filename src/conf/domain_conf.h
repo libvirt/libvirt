@@ -2363,7 +2363,8 @@ typedef enum {
 } virDomainTimerNameType;
 
 typedef enum {
-    VIR_DOMAIN_TIMER_TRACK_BOOT = 0,
+    VIR_DOMAIN_TIMER_TRACK_NONE = 0,
+    VIR_DOMAIN_TIMER_TRACK_BOOT,
     VIR_DOMAIN_TIMER_TRACK_GUEST,
     VIR_DOMAIN_TIMER_TRACK_WALL,
     VIR_DOMAIN_TIMER_TRACK_REALTIME,
@@ -2417,7 +2418,7 @@ struct _virDomainTimerDef {
     virDomainTimerCatchupDef catchup;
 
     /* track is only valid for name='platform|rtc' */
-    int track;  /* boot|guest|wall */
+    int track;  /* enum virDomainTimerTrackType */
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long long frequency; /* in Hz, unspecified = 0 */

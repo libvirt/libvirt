@@ -428,7 +428,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
 
         case VIR_DOMAIN_TIMER_NAME_RTC:
             switch (timer->track) {
-            case -1: /* unspecified - use hypervisor default */
+            case VIR_DOMAIN_TIMER_TRACK_NONE: /* unspecified - use hypervisor default */
             case VIR_DOMAIN_TIMER_TRACK_GUEST:
             case VIR_DOMAIN_TIMER_TRACK_WALL:
             case VIR_DOMAIN_TIMER_TRACK_REALTIME:

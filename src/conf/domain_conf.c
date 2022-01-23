@@ -1189,6 +1189,7 @@ VIR_ENUM_IMPL(virDomainTimerName,
 
 VIR_ENUM_IMPL(virDomainTimerTrack,
               VIR_DOMAIN_TIMER_TRACK_LAST,
+              "none",
               "boot",
               "guest",
               "wall",
@@ -5011,7 +5012,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
 
         if (timer->name != VIR_DOMAIN_TIMER_NAME_PLATFORM &&
             timer->name != VIR_DOMAIN_TIMER_NAME_RTC) {
-            if (timer->track != -1) {
+            if (timer->track != VIR_DOMAIN_TIMER_TRACK_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("timer %s doesn't support setting of "
                                  "timer track"),
@@ -12034,10 +12035,9 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         }
     }
 
-    def->track = -1;
     track = virXMLPropString(node, "track");
     if (track != NULL) {
-        if ((def->track = virDomainTimerTrackTypeFromString(track)) < 0) {
+        if ((def->track = virDomainTimerTrackTypeFromString(track)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer track '%s'"), track);
             goto error;
@@ -26124,19 +26124,9 @@ virDomainTimerDefFormat(virBuffer *buf,
                           virDomainTimerTickpolicyTypeToString(def->tickpolicy));
     }
 
-    if ((def->name == VIR_DOMAIN_TIMER_NAME_PLATFORM)
-        || (def->name == VIR_DOMAIN_TIMER_NAME_RTC)) {
-        if (def->track != -1) {
-            const char *track
-                = virDomainTimerTrackTypeToString(def->track);
-            if (!track) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected timer track %d"),
-                               def->track);
-                return -1;
-            }
-            virBufferAsprintf(buf, " track='%s'", track);
-        }
+    if (def->track != VIR_DOMAIN_TIMER_TRACK_NONE) {
+        virBufferAsprintf(buf, " track='%s'",
+                          virDomainTimerTrackTypeToString(def->track));
     }
 
     if (def->name == VIR_DOMAIN_TIMER_NAME_TSC) {
