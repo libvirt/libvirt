@@ -1207,6 +1207,7 @@ VIR_ENUM_IMPL(virDomainTimerTickpolicy,
 
 VIR_ENUM_IMPL(virDomainTimerMode,
               VIR_DOMAIN_TIMER_MODE_LAST,
+              "none",
               "auto",
               "native",
               "emulate",
@@ -5001,7 +5002,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
                 return -1;
              }
 
-            if (timer->mode != -1) {
+            if (timer->mode) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("timer %s doesn't support setting of "
                                  "timer mode"),
@@ -12053,10 +12054,9 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    def->mode = -1;
     mode = virXMLPropString(node, "mode");
     if (mode != NULL) {
-        if ((def->mode = virDomainTimerModeTypeFromString(mode)) < 0) {
+        if ((def->mode = virDomainTimerModeTypeFromString(mode)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer mode '%s'"), mode);
             goto error;
@@ -26133,16 +26133,9 @@ virDomainTimerDefFormat(virBuffer *buf,
         if (def->frequency > 0)
             virBufferAsprintf(buf, " frequency='%llu'", def->frequency);
 
-        if (def->mode != -1) {
-            const char *mode
-                = virDomainTimerModeTypeToString(def->mode);
-            if (!mode) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("unexpected timer mode %d"),
-                               def->mode);
-                return -1;
-            }
-            virBufferAsprintf(buf, " mode='%s'", mode);
+        if (def->mode) {
+            virBufferAsprintf(buf, " mode='%s'",
+                              virDomainTimerModeTypeToString(def->mode));
         }
     }
 

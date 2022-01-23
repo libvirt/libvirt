@@ -627,7 +627,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = virTristateBoolFromBool(val);
             timer->tickpolicy = VIR_DOMAIN_TIMER_TICKPOLICY_NONE;
-            timer->mode = -1;
+            timer->mode = VIR_DOMAIN_TIMER_MODE_NONE;
             timer->track = VIR_DOMAIN_TIMER_TRACK_NONE;
 
             def->clock.timers[def->clock.ntimers - 1] = timer;

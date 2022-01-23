@@ -2383,7 +2383,8 @@ typedef enum {
 } virDomainTimerTickpolicyType;
 
 typedef enum {
-    VIR_DOMAIN_TIMER_MODE_AUTO = 0,
+    VIR_DOMAIN_TIMER_MODE_NONE = 0,
+    VIR_DOMAIN_TIMER_MODE_AUTO,
     VIR_DOMAIN_TIMER_MODE_NATIVE,
     VIR_DOMAIN_TIMER_MODE_EMULATE,
     VIR_DOMAIN_TIMER_MODE_PARAVIRT,
@@ -2422,7 +2423,7 @@ struct _virDomainTimerDef {
 
     /* frequency & mode are only valid for name='tsc' */
     unsigned long long frequency; /* in Hz, unspecified = 0 */
-    int mode;       /* auto|native|emulate|paravirt */
+    int mode;   /* enum virDomainTimerModeType */
 };
 
 typedef enum {
