@@ -554,7 +554,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
         timer = g_new0(virDomainTimerDef, 1);
         timer->name = VIR_DOMAIN_TIMER_NAME_TSC;
         timer->present = VIR_TRISTATE_BOOL_YES;
-        timer->tickpolicy = -1;
+        timer->tickpolicy = VIR_DOMAIN_TIMER_TICKPOLICY_NONE;
         timer->mode = VIR_DOMAIN_TIMER_MODE_AUTO;
         timer->track = -1;
         if (STREQ_NULLABLE(tscmode, "always_emulate"))
@@ -626,7 +626,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
             timer = g_new0(virDomainTimerDef, 1);
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
             timer->present = virTristateBoolFromBool(val);
-            timer->tickpolicy = -1;
+            timer->tickpolicy = VIR_DOMAIN_TIMER_TICKPOLICY_NONE;
             timer->mode = -1;
             timer->track = -1;
 

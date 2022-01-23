@@ -6206,7 +6206,7 @@ qemuBuildClockArgStr(virDomainClockDef *def)
             }
 
             switch (def->timers[i]->tickpolicy) {
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
                 /* This is the default - missed ticks delivered when
                    next scheduled, at normal rate */
@@ -6269,7 +6269,7 @@ qemuBuildClockCommandLine(virCommand *cmd,
 
         case VIR_DOMAIN_TIMER_NAME_PIT:
             switch (def->clock.timers[i]->tickpolicy) {
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
                 /* delay is the default if we don't have kernel
                    (kvm-pit), otherwise, the default is catchup. */
@@ -6659,7 +6659,7 @@ qemuBuildCpuCommandLine(virCommand *cmd,
             case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
                 virBufferAddLit(&buf, ",kvm-no-adjvtime=on");
                 break;
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP:
             case VIR_DOMAIN_TIMER_TICKPOLICY_MERGE:
                 break;

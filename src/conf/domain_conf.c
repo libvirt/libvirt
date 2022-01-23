@@ -1197,6 +1197,7 @@ VIR_ENUM_IMPL(virDomainTimerTrack,
 
 VIR_ENUM_IMPL(virDomainTimerTickpolicy,
               VIR_DOMAIN_TIMER_TICKPOLICY_LAST,
+              "none",
               "delay",
               "catchup",
               "merge",
@@ -4971,7 +4972,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
 
         if (timer->name == VIR_DOMAIN_TIMER_NAME_KVMCLOCK ||
             timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK) {
-            if (timer->tickpolicy != -1) {
+            if (timer->tickpolicy) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("timer %s doesn't support setting of "
                                  "timer tickpolicy"),
@@ -12024,10 +12025,9 @@ virDomainTimerDefParseXML(xmlNodePtr node,
                                &def->present) < 0)
         goto error;
 
-    def->tickpolicy = -1;
     tickpolicy = virXMLPropString(node, "tickpolicy");
     if (tickpolicy != NULL) {
-        if ((def->tickpolicy = virDomainTimerTickpolicyTypeFromString(tickpolicy)) < 0) {
+        if ((def->tickpolicy = virDomainTimerTickpolicyTypeFromString(tickpolicy)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown timer tickpolicy '%s'"), tickpolicy);
             goto error;
@@ -26119,16 +26119,9 @@ virDomainTimerDefFormat(virBuffer *buf,
                           virTristateBoolTypeToString(def->present));
     }
 
-    if (def->tickpolicy != -1) {
-        const char *tickpolicy
-            = virDomainTimerTickpolicyTypeToString(def->tickpolicy);
-        if (!tickpolicy) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unexpected timer tickpolicy %d"),
-                           def->tickpolicy);
-            return -1;
-        }
-        virBufferAsprintf(buf, " tickpolicy='%s'", tickpolicy);
+    if (def->tickpolicy) {
+        virBufferAsprintf(buf, " tickpolicy='%s'",
+                          virDomainTimerTickpolicyTypeToString(def->tickpolicy));
     }
 
     if ((def->name == VIR_DOMAIN_TIMER_NAME_PLATFORM)

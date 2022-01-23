@@ -2372,7 +2372,8 @@ typedef enum {
 } virDomainTimerTrackType;
 
 typedef enum {
-    VIR_DOMAIN_TIMER_TICKPOLICY_DELAY = 0,
+    VIR_DOMAIN_TIMER_TICKPOLICY_NONE = 0,
+    VIR_DOMAIN_TIMER_TICKPOLICY_DELAY,
     VIR_DOMAIN_TIMER_TICKPOLICY_CATCHUP,
     VIR_DOMAIN_TIMER_TICKPOLICY_MERGE,
     VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD,
@@ -2411,7 +2412,7 @@ struct _virDomainTimerCatchupDef {
 struct _virDomainTimerDef {
     int name;
     virTristateBool present;
-    int tickpolicy; /* none|catchup|merge|discard */
+    int tickpolicy; /* enum virDomainTimerTickpolicyType */
 
     virDomainTimerCatchupDef catchup;
 

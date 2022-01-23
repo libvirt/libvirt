@@ -441,7 +441,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             }
 
             switch (timer->tickpolicy) {
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
                 /* This is the default - missed ticks delivered when
                    next scheduled, at normal rate */
@@ -461,7 +461,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
 
         case VIR_DOMAIN_TIMER_NAME_PIT:
             switch (timer->tickpolicy) {
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
                 break;
@@ -523,7 +523,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             }
 
             switch (timer->tickpolicy) {
-            case -1:
+            case VIR_DOMAIN_TIMER_TICKPOLICY_NONE:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DELAY:
             case VIR_DOMAIN_TIMER_TICKPOLICY_DISCARD:
                 break;
