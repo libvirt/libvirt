@@ -8658,7 +8658,7 @@ virDomainStorageSourceParse(xmlNodePtr node,
 
     ctxt->node = node;
 
-    switch ((virStorageType)src->type) {
+    switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
         src->path = virXMLPropString(node, "file");
         break;
@@ -23349,7 +23349,7 @@ virDomainDiskSourceFormat(virBuffer *buf,
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
-    switch ((virStorageType)src->type) {
+    switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
         virBufferEscapeString(&attrBuf, " file='%s'", src->path);
         break;
