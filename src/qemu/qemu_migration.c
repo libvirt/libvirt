@@ -1504,7 +1504,7 @@ qemuMigrationSrcIsSafe(virDomainDef *def,
     for (i = 0; i < def->ndisks; i++) {
         virDomainDiskDef *disk = def->disks[i];
         const char *src = virDomainDiskGetSource(disk);
-        int actualType = virStorageSourceGetActualType(disk->src);
+        virStorageType actualType = virStorageSourceGetActualType(disk->src);
         bool unsafe = false;
 
         /* Disks without any source (i.e. floppies and CD-ROMs)
@@ -1519,7 +1519,7 @@ qemuMigrationSrcIsSafe(virDomainDef *def,
             continue;
 
         /* However, disks on local FS (e.g. ext4) are not safe. */
-        switch ((virStorageType) actualType) {
+        switch (actualType) {
         case VIR_STORAGE_TYPE_FILE:
             if ((rc = virFileIsSharedFS(src)) < 0) {
                 return false;

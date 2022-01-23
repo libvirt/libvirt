@@ -14790,7 +14790,7 @@ qemuDomainBlockCopyValidateMirror(virStorageSource *mirror,
                                   const char *dst,
                                   bool *reuse)
 {
-    int desttype = virStorageSourceGetActualType(mirror);
+    virStorageType desttype = virStorageSourceGetActualType(mirror);
     struct stat st;
 
     if (!virStorageSourceIsLocalStorage(mirror))

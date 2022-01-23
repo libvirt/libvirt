@@ -1067,7 +1067,7 @@ libxlMakeDisk(virDomainDiskDef *l_disk, libxl_device_disk *x_disk)
 {
     const char *driver = virDomainDiskGetDriver(l_disk);
     int format = virDomainDiskGetFormat(l_disk);
-    int actual_type = virStorageSourceGetActualType(l_disk->src);
+    virStorageType actual_type = virStorageSourceGetActualType(l_disk->src);
 
     if (actual_type == VIR_STORAGE_TYPE_NETWORK) {
         if (STRNEQ_NULLABLE(driver, "qemu")) {

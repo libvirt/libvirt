@@ -199,7 +199,7 @@ struct _virStorageSourcePoolDef {
     char *volume; /* volume name */
     int voltype; /* virStorageVolType, internal only */
     int pooltype; /* virStoragePoolType from storage_conf.h, internal only */
-    int actualtype; /* virStorageType, internal only */
+    virStorageType actualtype; /* internal only */
     int mode; /* virStorageSourcePoolMode, currently makes sense only for iscsi pool */
 };
 
@@ -469,7 +469,7 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDef *def);
 void
 virStorageSourceClear(virStorageSource *def);
 
-int
+virStorageType
 virStorageSourceGetActualType(const virStorageSource *def);
 
 bool

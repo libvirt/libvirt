@@ -1004,7 +1004,7 @@ virStorageSourcePoolDefFree(virStorageSourcePoolDef *def)
  * and virDomainDiskTranslateSourcePool was called on @def the actual type
  * of the storage volume is returned rather than VIR_STORAGE_TYPE_VOLUME.
  */
-int
+virStorageType
 virStorageSourceGetActualType(const virStorageSource *def)
 {
     if (def->type == VIR_STORAGE_TYPE_VOLUME &&

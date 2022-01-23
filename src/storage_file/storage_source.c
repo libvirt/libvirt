@@ -807,7 +807,7 @@ static int
 virStorageSourceGetBackendForSupportCheck(const virStorageSource *src,
                                           virStorageFileBackend **backend)
 {
-    int actualType;
+    virStorageType actualType;
 
 
     if (!src) {
@@ -944,7 +944,7 @@ int
 virStorageSourceInitAs(virStorageSource *src,
                        uid_t uid, gid_t gid)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     virStorageDriverData *drv = g_new0(virStorageDriverData, 1);
 
     src->drv = drv;

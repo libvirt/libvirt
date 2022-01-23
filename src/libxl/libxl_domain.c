@@ -330,7 +330,7 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
 
     if (dev->type == VIR_DOMAIN_DEVICE_DISK) {
         virDomainDiskDef *disk = dev->data.disk;
-        int actual_type = virStorageSourceGetActualType(disk->src);
+        virStorageType actual_type = virStorageSourceGetActualType(disk->src);
         int format = virDomainDiskGetFormat(disk);
 
         /* for network-based disks, set 'qemu' as the default driver */

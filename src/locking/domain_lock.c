@@ -72,7 +72,7 @@ static int virDomainLockManagerAddImage(virLockManager *lock,
                                         virStorageSource *src)
 {
     unsigned int diskFlags = 0;
-    int type = virStorageSourceGetActualType(src);
+    virStorageType type = virStorageSourceGetActualType(src);
 
     if (!src->path)
         return 0;

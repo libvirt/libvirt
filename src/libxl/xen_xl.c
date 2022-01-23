@@ -1489,14 +1489,14 @@ xenFormatXLDiskSrcNet(virStorageSource *src)
 static int
 xenFormatXLDiskSrc(virStorageSource *src, char **srcstr)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
 
     *srcstr = NULL;
 
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    switch ((virStorageType)actualType) {
+    switch (actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:

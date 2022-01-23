@@ -1128,7 +1128,7 @@ virJSONValue *
 qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
                                       unsigned int flags)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) fileprops = NULL;
     const char *driver = NULL;
     virTristateBool aro = VIR_TRISTATE_BOOL_ABSENT;
@@ -1145,7 +1145,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             ro = VIR_TRISTATE_BOOL_NO;
     }
 
-    switch ((virStorageType)actualType) {
+    switch (actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
         if (virStorageSourceIsBlockLocal(src)) {
@@ -2200,7 +2200,7 @@ char *
 qemuBlockGetBackingStoreString(virStorageSource *src,
                                bool pretty)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) backingProps = NULL;
     g_autoptr(virJSONValue) sliceProps = NULL;
     virJSONValue *props = NULL;
@@ -2599,12 +2599,12 @@ int
 qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
                                             virJSONValue **props)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) location = NULL;
     const char *driver = NULL;
     const char *filename = NULL;
 
-    switch ((virStorageType) actualType) {
+    switch (actualType) {
     case VIR_STORAGE_TYPE_FILE:
         driver = "file";
         filename = src->path;
@@ -2745,7 +2745,7 @@ qemuBlockStorageSourceCreateStorage(virDomainObj *vm,
                                     virStorageSource *chain,
                                     virDomainAsyncJob asyncJob)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     g_autoptr(virJSONValue) createstorageprops = NULL;
     int ret;
 

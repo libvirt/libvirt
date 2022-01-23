@@ -4809,7 +4809,7 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                                 virQEMUCaps *qemuCaps,
                                 bool maskBlockdev)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
     bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     if (maskBlockdev)
@@ -10932,7 +10932,7 @@ qemuDomainPrepareDiskSource(virDomainDiskDef *disk,
     /* set default format for storage pool based disks */
     if (disk->src->type == VIR_STORAGE_TYPE_VOLUME &&
         disk->src->format <= VIR_STORAGE_FILE_NONE) {
-        int actualType = virStorageSourceGetActualType(disk->src);
+        virStorageType actualType = virStorageSourceGetActualType(disk->src);
 
         if (actualType == VIR_STORAGE_TYPE_DIR)
             disk->src->format = VIR_STORAGE_FILE_FAT;

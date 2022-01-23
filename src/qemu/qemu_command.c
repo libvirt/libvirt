@@ -1736,7 +1736,7 @@ qemuGetDriveSourceString(virStorageSource *src,
                          qemuDomainSecretInfo *secinfo,
                          char **source)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
 
     *source = NULL;
 
@@ -1744,7 +1744,7 @@ qemuGetDriveSourceString(virStorageSource *src,
     if (virStorageSourceIsEmpty(src))
         return 1;
 
-    switch ((virStorageType)actualType) {
+    switch (actualType) {
     case VIR_STORAGE_TYPE_BLOCK:
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_DIR:
@@ -1803,7 +1803,7 @@ qemuDiskBusIsSD(int bus)
 static bool
 qemuDiskSourceNeedsProps(virStorageSource *src)
 {
-    int actualType = virStorageSourceGetActualType(src);
+    virStorageType actualType = virStorageSourceGetActualType(src);
 
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
         src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
@@ -1879,7 +1879,7 @@ static int
 qemuBuildDriveSourceStr(virDomainDiskDef *disk,
                         virBuffer *buf)
 {
-    int actualType = virStorageSourceGetActualType(disk->src);
+    virStorageType actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
     qemuDomainSecretInfo *secinfo = NULL;
     qemuDomainSecretInfo *encinfo = NULL;
