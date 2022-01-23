@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-20 13:46+0000\n"
+"PO-Revision-Date: 2022-01-23 20:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -8940,55 +8940,58 @@ msgid "Forcefully stop a given domain, but leave its resources intact."
 msgstr "Framtvinga stopp av en given domän, men lämna dess resurser intakta."
 
 msgid "Forcefully stop a given network."
-msgstr ""
+msgstr "Framtvinga stopp av ett givet nätverk."
 
 msgid "Forcefully stop a given pool. Raw data in the pool is untouched"
-msgstr ""
+msgstr "Framtvinga stopp av en given poo. Rådata i poolen rörs inte"
 
 #, c-format
 msgid "Format of device '%s' does not match the expected format '%s'"
-msgstr ""
+msgstr "Formatet på enheten ”%s” matchar inte det förväntade formatet ”%s”"
 
 #, c-format
 msgid ""
 "Format of device '%s' does not match the expected format '%s', forced "
 "overwrite is necessary"
 msgstr ""
+"Formatet på enheten ”%s” matchar inte det förväntade formatet ”%s”, tvingad "
+"överskrivning är nödvändigt"
 
 #, c-format
 msgid "Formatting IP address for host '%s' failed: %s"
-msgstr ""
+msgstr "Att formatera IP-adressen för värden ”%s” misslyckades: %s"
 
 msgid "Found additional probes to run, probing may be incorrect"
-msgstr ""
+msgstr "Hittade ytterligare prober att köra, avkänningen kan vara felaktig"
 
 #, c-format
 msgid ""
 "Found duplicate drive address for disk with target name '%s' controller='%u' "
 "bus='%u' target='%u' unit='%u'"
 msgstr ""
+"Hittade dubblerad adress för disken med målnamnet ”%s” styrenhet=”%u” "
+"buss=”%u” mål=”%u” enhet=”%u”"
 
 #, c-format
 msgid "Found invalid device link '%s' in '%s'"
-msgstr ""
+msgstr "Hittade felaktig enhetslänk ”%s” i ”%s”"
 
 #, c-format
 msgid "Found unexpected controller model '%s' for disk '%s'"
-msgstr ""
+msgstr "Hittade oväntad styrenhetsmodell ”%s” för disken ”%s”"
 
 msgid "Freeze domain's mounted filesystems."
-msgstr ""
+msgstr "Frys domänens monterade filsystem."
 
 #, c-format
 msgid "Froze %d filesystem(s)\n"
-msgstr ""
+msgstr "Fryste %d filsystem\n"
 
 msgid "Fully-qualified path of block device"
-msgstr ""
+msgstr "Fullt kvalificerad sökväg till blockenheten"
 
-#, fuzzy
 msgid "Fully-qualified path or target of disk device"
-msgstr "mål för diskenhet"
+msgstr "Fullt kvalificerad sökväg eller mål för diskenheten"
 
 msgid "GET operation failed"
 msgstr "GET-operation misslyckades"
@@ -9000,51 +9003,49 @@ msgstr "GET-operation misslyckades: %s"
 msgid "GNUTLS call error"
 msgstr "GNUTLS-anropsfel"
 
-#, fuzzy
 msgid "Get block device size info for a domain."
-msgstr "hämta enhetsblocks-statistik för en domän"
+msgstr "Hämta storleksinformation för blocksenheten för en domän."
 
 msgid ""
 "Get device block stats for a running domain. See man page or use --human for "
 "explanation of fields"
 msgstr ""
+"Hämta enhetsblockstatus för en körande domän. Se manualsidan eller använd --"
+"human för förklaring till fälten"
 
 msgid "Get domain launch security info"
-msgstr ""
+msgstr "Hämta säkerhetsinformation för domänstarten"
 
 msgid "Get information of domain's mounted filesystems."
-msgstr ""
+msgstr "Hämta information om domänens monterade filsystem."
 
 msgid "Get link state of a domain's virtual interface."
-msgstr ""
+msgstr "Hämta längstatus för en domäns virtuella gränssnitt."
 
 msgid ""
 "Get maximum tolerable downtime of a domain which is being live-migrated to "
 "another host."
 msgstr ""
+"Hämta maximalt tolererbar nertid för en domän som live-migreras till en "
+"annan värd."
 
-#, fuzzy
 msgid "Get memory statistics for a running domain."
-msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
+msgstr "Hämta minnesstatistik för en körande domän."
 
 msgid "Get network interface stats for a running domain."
 msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
 
-#, fuzzy
 msgid "Get network interfaces' addresses for a running domain"
-msgstr "Hämta statistik för nätverksgränssnitt för en köranade domän."
+msgstr "Hämta nätverksgränssnittens adresser för en körande domän"
 
-#, fuzzy
 msgid "Get or set blkio parameters"
-msgstr "visa/sätt parametrar för schemaläggare"
+msgstr "Hämta eller sätt blkio-parametrar"
 
-#, fuzzy
 msgid "Get or set memory parameters"
-msgstr "visa/sätt parametrar för schemaläggare"
+msgstr "Hämta eller sätt minnesparametrar"
 
-#, fuzzy
 msgid "Get or set node memory parameters"
-msgstr "visa/sätt parametrar för schemaläggare"
+msgstr "Hämta eller sätt nodminnesparametrar"
 
 msgid ""
 "Get or set node memory parameters\n"
@@ -9052,13 +9053,16 @@ msgid ""
 "\n"
 "    virsh # node-memory-tune"
 msgstr ""
+"Hämta eller sätt nodminnesparametrar\n"
+"    För att hämta minnesparametrar, använd följande kommando: \n"
+"\n"
+"    virsh # node-memory-tune"
 
-#, fuzzy
 msgid "Get or set numa parameters"
-msgstr "visa/sätt parametrar för schemaläggare"
+msgstr "Visa eller sätt numa-parametrar"
 
 msgid "Get or set perf event"
-msgstr ""
+msgstr "Hämta eller sätt perf-händelse"
 
 msgid ""
 "Get or set the current blkio parameters for a guest domain.\n"
@@ -9066,6 +9070,10 @@ msgid ""
 "\n"
 "    virsh # blkiotune <domain>"
 msgstr ""
+"Hämta eller sätt de aktuella blkio-parametrarna för en gästdomän.\n"
+"    För att hämta blkio-parametrarna använd följande kommando: \n"
+"\n"
+"    virsh # blkiotune <domän>"
 
 msgid ""
 "Get or set the current memory parameters for a guest domain.\n"
@@ -9073,6 +9081,10 @@ msgid ""
 "\n"
 "    virsh # memtune <domain>"
 msgstr ""
+"Hämta eller sätt de aktuella minnesparametrarna för en gästdomän.\n"
+"    För att hämta minnesparametrarna använd följande kommando: \n"
+"\n"
+"    virsh # memtune <domän>"
 
 msgid ""
 "Get or set the current numa parameters for a guest domain.\n"
@@ -9080,6 +9092,10 @@ msgid ""
 "\n"
 "    virsh # numatune <domain>"
 msgstr ""
+"Hämta eller sätt de aktuella numa-parametrarna för en gästdomän.\n"
+"    För att hämta numa-parametrarna använd följande kommando: \n"
+"\n"
+"    virsh # numatune <domän>"
 
 msgid ""
 "Get or set the current perf events for a guest domain.\n"
@@ -9087,68 +9103,69 @@ msgid ""
 "\n"
 "    virsh # perf <domain>"
 msgstr ""
+"Hämta eller sätt de aktuella perf-händelserna för en gästdomän.\n"
+"    För att hämta perf-händelser använd följande kommando: \n"
+"\n"
+"    virsh # perf <domän>"
 
 msgid "Get or set the current snapshot"
-msgstr ""
+msgstr "Hämta eller sätt den aktuella ögonblicksbilden"
 
-#, fuzzy
 msgid "Get persistent config failed"
-msgstr "kan inte skriva konfigurationsfilen ”%s”"
+msgstr "Att hämta bestående konfiguration misslyckades"
 
-#, fuzzy
 msgid "Get persistent interface state"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Hämta bestående gränssnittstillstånd"
 
 msgid "Get the CPU models for an arch."
-msgstr ""
+msgstr "Hämta CPU-modellerna för en arkitektur."
 
 msgid "Get the launch security parameters for a guest domain"
-msgstr ""
+msgstr "Hämta startsäkerhetsparametrarna för en gästdomän"
 
 msgid "Get the maximum migration bandwidth"
-msgstr ""
+msgstr "Hämta den maximala migrationsbandbredden"
 
-#, fuzzy
 msgid "Get the maximum migration bandwidth (in MiB/s) for a domain."
-msgstr "Ändra gräns för maximal minnesallokering för gästdomänen."
+msgstr "Hämta den maximala migrationsbandbredden (i MiB/s) för en domän."
 
 msgid "Get the name of the parent of a checkpoint"
-msgstr ""
+msgstr "Hämta namnet på föräldern till en kontrollpunkt"
 
 msgid "Get the name of the parent of a snapshot"
-msgstr ""
+msgstr "Hämta namnet på föräldern till en ögonblicksbild"
 
-#, fuzzy
 msgid "Get the summary of block devices for a domain."
-msgstr "hämta enhetsblocks-statistik för en domän"
+msgstr "Hämta sammanfattningen om blockenheter för en domän."
 
-#, fuzzy
 msgid "Get the summary of virtual interfaces for a domain."
-msgstr "hämta nätverksgränssnitt-statistik för en domän"
+msgstr "Hämta sammanfattningen över virtuella gränssnitt för en domän."
 
 msgid "Get/set parameters of a domain's virtual interface."
-msgstr ""
+msgstr "Hämta/sätt parametrar för en domäns virtuella gränssnitt."
 
 msgid ""
 "Get/set size of the cache (in bytes) used for compressing repeatedly "
 "transferred memory pages during live migration."
 msgstr ""
+"Hämta/sätt storleken på cachen (i byte) som används för att komprimera "
+"återkommande överförda minnessidor under live-migrering."
 
 msgid "Gets or sets the domain's system time"
-msgstr ""
+msgstr "Hämtar eller sätter domänens systemtid"
 
 msgid "Gets statistics about one or more (or all) domains"
-msgstr ""
+msgstr "Hämtar statistik om en eller flera (eller alla) domäner"
 
 msgid "Got empty feature list from resctrl"
-msgstr ""
+msgstr "Fick en tom funktionslista från resctrl"
 
 #, c-format
 msgid "Got invalid memory size %d"
-msgstr ""
+msgstr "Fick felaktig minnesstorlek %d"
 
 msgid "Graphics are only supported when booting using UEFI"
-msgstr ""
+msgstr "Grafik stödjs endast vid uppstart som använder UEFI"
 
 #, c-format
 msgid "Group %s doesn't exist"
@@ -9158,23 +9175,25 @@ msgid ""
 "Grouped commands:\n"
 "\n"
 msgstr ""
+"Grupperade kommandon:\n"
+"\n"
 
 #, c-format
 msgid "Guest %s got signal %d and crashed"
-msgstr ""
+msgstr "Gästen %s fick signal %d och kraschade"
 
 msgid "Guest agent disappeared while executing command"
-msgstr ""
+msgstr "Gästagenten försvann när kommandot kördes"
 
 msgid "Guest agent is not responding"
-msgstr ""
+msgstr "Gästagenten svarar inte"
 
 #, c-format
 msgid "Guest agent is not responding: %s"
-msgstr ""
+msgstr "Gästagenten svarar inte: %s"
 
 msgid "Guest agent not available for now"
-msgstr ""
+msgstr "Gästagenten är inte tillgänglig för tillfället"
 
 msgid "HMAT is not supported with this QEMU"
 msgstr ""
