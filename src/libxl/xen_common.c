@@ -553,7 +553,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
 
         timer = g_new0(virDomainTimerDef, 1);
         timer->name = VIR_DOMAIN_TIMER_NAME_TSC;
-        timer->present = 1;
+        timer->present = VIR_TRISTATE_BOOL_YES;
         timer->tickpolicy = -1;
         timer->mode = VIR_DOMAIN_TIMER_MODE_AUTO;
         timer->track = -1;
@@ -625,7 +625,7 @@ xenParseHypervisorFeatures(virConf *conf, virDomainDef *def)
 
             timer = g_new0(virDomainTimerDef, 1);
             timer->name = VIR_DOMAIN_TIMER_NAME_HPET;
-            timer->present = val;
+            timer->present = virTristateBoolFromBool(val);
             timer->tickpolicy = -1;
             timer->mode = -1;
             timer->track = -1;
@@ -2112,9 +2112,10 @@ xenFormatHypervisorFeatures(virConf *conf, virDomainDef *def)
 
         case VIR_DOMAIN_TIMER_NAME_HPET:
             if (hvm) {
-                int enable_hpet = def->clock.timers[i]->present != 0;
+                int enable_hpet = def->clock.timers[i]->present != VIR_TRISTATE_BOOL_NO;
 
-                /* disable hpet if 'present' is 0, enable otherwise */
+                /* disable hpet if 'present' is VIR_TRISTATE_BOOL_NO, enable
+                 * otherwise */
                 if (xenConfigSetInt(conf, "hpet", enable_hpet) < 0)
                     return -1;
             } else {

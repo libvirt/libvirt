@@ -411,7 +411,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
         case VIR_DOMAIN_TIMER_NAME_TSC:
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
-            if (!ARCH_IS_X86(def->os.arch) && timer->present == 1) {
+            if (!ARCH_IS_X86(def->os.arch) && timer->present == VIR_TRISTATE_BOOL_YES) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("Configuring the '%s' timer is not supported "
                                  "for virtType=%s arch=%s machine=%s guests"),
@@ -489,7 +489,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             /* no hpet timer available. The only possible action
               is to raise an error if present="yes" */
             if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_HPET) &&
-                timer->present == 1) {
+                timer->present == VIR_TRISTATE_BOOL_YES) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                "%s", _("hpet timer is not supported"));
                 return -1;
@@ -508,7 +508,7 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                def->os.machine);
                 return -1;
             }
-            if (timer->present == 0) {
+            if (timer->present == VIR_TRISTATE_BOOL_NO) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                                _("The '%s' timer can't be disabled"),
                                virDomainTimerNameTypeToString(timer->name));

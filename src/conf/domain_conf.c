@@ -11999,7 +11999,6 @@ virDomainTimerDefParseXML(xmlNodePtr node,
     xmlNodePtr catchup;
     int ret;
     g_autofree char *name = NULL;
-    g_autofree char *present = NULL;
     g_autofree char *tickpolicy = NULL;
     g_autofree char *track = NULL;
     g_autofree char *mode = NULL;
@@ -12020,16 +12019,10 @@ virDomainTimerDefParseXML(xmlNodePtr node,
         goto error;
     }
 
-    def->present = -1; /* unspecified */
-    if ((present = virXMLPropString(node, "present")) != NULL) {
-        bool state = false;
-        if (virStringParseYesNo(present, &state) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("unknown timer present value '%s'"), present);
-            goto error;
-        }
-        def->present = state ? 1 : 0;
-    }
+    if (virXMLPropTristateBool(node, "present",
+                               VIR_XML_PROP_NONE,
+                               &def->present) < 0)
+        goto error;
 
     def->tickpolicy = -1;
     tickpolicy = virXMLPropString(node, "tickpolicy");
@@ -20482,8 +20475,9 @@ virDomainTimerDefCheckABIStability(virDomainTimerDef *src,
 
     if (src->present != dst->present) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Target timer presence %d does not match source %d"),
-                       dst->present, src->present);
+                       _("Target timer presence '%s' does not match source '%s'"),
+                       virTristateBoolTypeToString(dst->present),
+                       virTristateBoolTypeToString(src->present));
         return false;
     }
 
@@ -26120,10 +26114,9 @@ virDomainTimerDefFormat(virBuffer *buf,
     }
     virBufferAsprintf(buf, "<timer name='%s'", name);
 
-    if (def->present == 0) {
-        virBufferAddLit(buf, " present='no'");
-    } else if (def->present == 1) {
-        virBufferAddLit(buf, " present='yes'");
+    if (def->present != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(buf, " present='%s'",
+                          virTristateBoolTypeToString(def->present));
     }
 
     if (def->tickpolicy != -1) {

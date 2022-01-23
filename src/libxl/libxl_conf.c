@@ -423,7 +423,7 @@ libxlMakeDomBuildInfo(virDomainDef *def,
                                virDomainTimerNameTypeToString(clock.timers[i]->name));
                 return -1;
             }
-            if (clock.timers[i]->present == 1)
+            if (clock.timers[i]->present == VIR_TRISTATE_BOOL_YES)
                 libxl_defbool_set(&b_info->u.hvm.hpet, 1);
             break;
 

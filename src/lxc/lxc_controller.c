@@ -1510,7 +1510,7 @@ virLXCControllerSetupTimers(virLXCController *ctrl)
         dev_t dev;
 
         /* Check if "present" is set to "no" otherwise enable it. */
-        if (!timer->present)
+        if (timer->present == VIR_TRISTATE_BOOL_NO)
             continue;
 
         switch ((virDomainTimerNameType)timer->name) {

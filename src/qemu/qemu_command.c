@@ -6293,15 +6293,14 @@ qemuBuildClockCommandLine(virCommand *cmd,
             break;
 
         case VIR_DOMAIN_TIMER_NAME_HPET:
-            /* the only meaningful attribute for hpet is "present". If
-             * present is -1, that means it wasn't specified, and
-             * should be left at the default for the
-             * hypervisor. "default" when -no-hpet exists is "yes",
-             * and when -no-hpet doesn't exist is "no". "confusing"?
-             * "yes"! */
+            /* the only meaningful attribute for hpet is "present". If present
+             * is VIR_TRISTATE_BOOL_ABSENT, that means it wasn't specified, and
+             * should be left at the default for the hypervisor. "default" when
+             * -no-hpet exists is VIR_TRISTATE_BOOL_YES, and when -no-hpet
+             *  doesn't exist is VIR_TRISTATE_BOOL_NO. "confusing"?  "yes"! */
 
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_NO_HPET)) {
-                if (def->clock.timers[i]->present == 0)
+                if (def->clock.timers[i]->present == VIR_TRISTATE_BOOL_NO)
                     virCommandAddArg(cmd, "-no-hpet");
             }
             break;
@@ -6638,13 +6637,14 @@ qemuBuildCpuCommandLine(virCommand *cmd,
 
         switch ((virDomainTimerNameType)timer->name) {
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
-            if (timer->present != -1) {
+            if (timer->present != VIR_TRISTATE_BOOL_ABSENT) {
+                /* QEMU expects on/off -> virTristateSwitch. */
                 virBufferAsprintf(&buf, ",kvmclock=%s",
-                                  timer->present ? "on" : "off");
+                                  virTristateSwitchTypeToString(timer->present));
             }
             break;
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
-            if (timer->present == 1)
+            if (timer->present == VIR_TRISTATE_BOOL_YES)
                 virBufferAddLit(&buf, ",hv-time=on");
             break;
         case VIR_DOMAIN_TIMER_NAME_TSC:

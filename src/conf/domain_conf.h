@@ -2410,7 +2410,7 @@ struct _virDomainTimerCatchupDef {
 
 struct _virDomainTimerDef {
     int name;
-    int present;    /* unspecified = -1, no = 0, yes = 1 */
+    virTristateBool present;
     int tickpolicy; /* none|catchup|merge|discard */
 
     virDomainTimerCatchupDef catchup;
