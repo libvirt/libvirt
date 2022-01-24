@@ -1682,6 +1682,7 @@ exit 0
 %dir %{_datadir}/libvirt/
 
 %ghost %dir %{_rundir}/libvirt/
+%ghost %dir %{_rundir}/libvirt/common/
 
 %dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
@@ -1758,6 +1759,7 @@ exit 0
 %{_unitdir}/virtinterfaced-ro.socket
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
+%ghost %dir %{_rundir}/libvirt/interface/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 %{_mandir}/man8/virtinterfaced.8*
 
@@ -1793,6 +1795,7 @@ exit 0
 %{_unitdir}/virtnodedevd-ro.socket
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
+%ghost %dir %{_rundir}/libvirt/nodedev/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 %{_mandir}/man8/virtnodedevd.8*
 
@@ -1807,6 +1810,8 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtnwfilterd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_rundir}/libvirt/network/
+%ghost %dir %{_rundir}/libvirt/nwfilter-binding/
+%ghost %dir %{_rundir}/libvirt/nwfilter/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
 %{_mandir}/man8/virtnwfilterd.8*
 
@@ -1819,6 +1824,8 @@ exit 0
 %{_unitdir}/virtsecretd-ro.socket
 %{_unitdir}/virtsecretd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtsecretd
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/secrets/
+%ghost %dir %{_rundir}/libvirt/secrets/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 %{_mandir}/man8/virtsecretd.8*
 
@@ -1834,6 +1841,9 @@ exit 0
 %{_unitdir}/virtstoraged-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtstoraged
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/autostart/
+%ghost %dir %{_rundir}/libvirt/storage/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
 %{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
@@ -1892,12 +1902,23 @@ exit 0
 %{_unitdir}/virtqemud-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtqemud
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/autostart/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
 %ghost %dir %{_rundir}/libvirt/qemu/
+%ghost %dir %{_rundir}/libvirt/qemu/dbus/
+%ghost %dir %{_rundir}/libvirt/qemu/slirp/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/target/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/checkpoint/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/dump/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/nvram/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/ram/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/save/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/snapshot/
 %dir %attr(0750, root, root) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
@@ -1920,6 +1941,8 @@ exit 0
 %{_unitdir}/virtlxcd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtlxcd
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/autostart/
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
 %ghost %dir %{_rundir}/libvirt/lxc/
@@ -1944,11 +1967,17 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/libxl/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/libxl/autostart/
 %{_datadir}/augeas/lenses/libvirtd_libxl.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_rundir}/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/channel/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/channel/target/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/dump/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/save/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
 %{_mandir}/man8/virtxend.8*
 %endif
