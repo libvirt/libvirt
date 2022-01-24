@@ -226,6 +226,7 @@ libxlDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     libxlDomainObjPrivate *priv = vm->privateData;
 
     priv->lockState = virXPathString("string(./lockstate)", ctxt);
+    priv->lockProcessRunning = virXPathBoolean("boolean(./lockProcessRunning)", ctxt);
 
     return 0;
 }
@@ -238,6 +239,9 @@ libxlDomainObjPrivateXMLFormat(virBuffer *buf,
 
     if (priv->lockState)
         virBufferAsprintf(buf, "<lockstate>%s</lockstate>\n", priv->lockState);
+
+    if (priv->lockProcessRunning)
+        virBufferAddLit(buf, "<lockProcessRunning/>\n");
 
     return 0;
 }
