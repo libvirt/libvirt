@@ -26101,7 +26101,7 @@ virDomainInputDefFormat(virBuffer *buf,
 }
 
 
-static int
+static void
 virDomainTimerDefFormat(virBuffer *buf,
                         virDomainTimerDef *def)
 {
@@ -26146,8 +26146,6 @@ virDomainTimerDefFormat(virBuffer *buf,
 
     virXMLFormatElement(&timerChld, "catchup", &catchupAttr, NULL);
     virXMLFormatElement(buf, "timer", &timerAttr, &timerChld);
-
-    return 0;
 }
 
 static void
@@ -28192,8 +28190,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
         for (n = 0; n < def->clock.ntimers; n++) {
-            if (virDomainTimerDefFormat(buf, def->clock.timers[n]) < 0)
-                return -1;
+            virDomainTimerDefFormat(buf, def->clock.timers[n]);
         }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</clock>\n");
