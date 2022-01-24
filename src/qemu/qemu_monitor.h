@@ -983,7 +983,7 @@ struct _qemuMonitorFdsetFdInfo {
 };
 typedef struct _qemuMonitorFdsetInfo qemuMonitorFdsetInfo;
 struct _qemuMonitorFdsetInfo {
-    int id;
+    unsigned int id;
     qemuMonitorFdsetFdInfo *fds;
     int nfds;
 };

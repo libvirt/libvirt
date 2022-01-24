@@ -3704,7 +3704,7 @@ qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,
             return -1;
         }
 
-        if (virJSONValueObjectGetNumberInt(entry, "fdset-id", &fdsetinfo->id) < 0) {
+        if (virJSONValueObjectGetNumberUint(entry, "fdset-id", &fdsetinfo->id) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("query-fdsets reply was missing 'fdset-id'"));
             return -1;
