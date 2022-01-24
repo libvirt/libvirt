@@ -974,7 +974,7 @@ qemuMonitorAddFileHandleToSet(qemuMonitor *mon,
 
 int
 qemuMonitorRemoveFdset(qemuMonitor *mon,
-                       int fdset);
+                       unsigned int fdset);
 
 typedef struct _qemuMonitorFdsetFdInfo qemuMonitorFdsetFdInfo;
 struct _qemuMonitorFdsetFdInfo {

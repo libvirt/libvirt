@@ -257,7 +257,7 @@ qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
 
 int
 qemuMonitorJSONRemoveFdset(qemuMonitor *mon,
-                           int fdset);
+                           unsigned int fdset);
 
 int
 qemuMonitorJSONQueryFdsets(qemuMonitor *mon,

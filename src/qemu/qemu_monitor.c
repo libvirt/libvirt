@@ -2553,23 +2553,17 @@ qemuMonitorAddFileHandleToSet(qemuMonitor *mon,
 /**
  * qemuMonitorRemoveFdset:
  * @mon: monitor object
- * @fdset: the fdset to remove
+ * @fdset: id of the fdset to remove
  *
- * Attempts to remove a fdset from qemu and close associated file descriptors
+ * Attempts to remove @fdset from qemu and close associated file descriptors
  * Returns 0 if ok, and -1 on failure */
 int
 qemuMonitorRemoveFdset(qemuMonitor *mon,
-                       int fdset)
+                       unsigned int fdset)
 {
-    VIR_DEBUG("fdset=%d", fdset);
+    VIR_DEBUG("fdset=%u", fdset);
 
     QEMU_CHECK_MONITOR(mon);
-
-    if (fdset < 0) {
-        virReportError(VIR_ERR_INVALID_ARG, "%s",
-                       _("fdset must be valid"));
-        return -1;
-    }
 
     return qemuMonitorJSONRemoveFdset(mon, fdset);
 }

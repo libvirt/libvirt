@@ -3766,11 +3766,11 @@ int qemuMonitorJSONQueryFdsets(qemuMonitor *mon,
 
 
 int qemuMonitorJSONRemoveFdset(qemuMonitor *mon,
-                               int fdset)
+                               unsigned int fdset)
 {
     g_autoptr(virJSONValue) reply = NULL;
     g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("remove-fd",
-                                                             "i:fdset-id", fdset,
+                                                             "u:fdset-id", fdset,
                                                              NULL);
 
     if (!cmd)
