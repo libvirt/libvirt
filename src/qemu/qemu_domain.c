@@ -656,6 +656,33 @@ qemuDomainMasterKeyCreate(virDomainObj *vm)
 }
 
 
+/**
+ * qemuDomainStorageIdNew:
+ * @priv: qemu VM private data object.
+ *
+ * Generate a new unique id for a storage object. Useful for node name generation.
+ */
+static unsigned int
+qemuDomainStorageIdNew(qemuDomainObjPrivate *priv)
+{
+    return ++priv->nodenameindex;
+}
+
+
+/**
+ * qemuDomainStorageIdReset:
+ * @priv: qemu VM private data object.
+ *
+ * Resets the data for the node name generator. The node names need to be unique
+ * for a single instance, so can be reset on VM shutdown.
+ */
+static void
+qemuDomainStorageIdReset(qemuDomainObjPrivate *priv)
+{
+    priv->nodenameindex = 0;
+}
+
+
 static void
 qemuDomainSecretInfoClear(qemuDomainSecretInfo *secinfo,
                           bool keepAlias)
@@ -10886,33 +10913,6 @@ qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivate *priv)
 {
     return g_strdup_printf("%s/%s.sock", priv->libDir,
                            qemuDomainGetManagedPRAlias());
-}
-
-
-/**
- * qemuDomainStorageIdNew:
- * @priv: qemu VM private data object.
- *
- * Generate a new unique id for a storage object. Useful for node name generation.
- */
-unsigned int
-qemuDomainStorageIdNew(qemuDomainObjPrivate *priv)
-{
-    return ++priv->nodenameindex;
-}
-
-
-/**
- * qemuDomainStorageIdReset:
- * @priv: qemu VM private data object.
- *
- * Resets the data for the node name generator. The node names need to be unique
- * for a single instance, so can be reset on VM shutdown.
- */
-void
-qemuDomainStorageIdReset(qemuDomainObjPrivate *priv)
-{
-    priv->nodenameindex = 0;
 }
 
 

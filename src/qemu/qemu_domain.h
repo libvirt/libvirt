@@ -969,9 +969,6 @@ char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivate *priv);
 
 bool qemuDomainDefHasManagedPR(virDomainObj *vm);
 
-unsigned int qemuDomainStorageIdNew(qemuDomainObjPrivate *priv);
-void qemuDomainStorageIdReset(qemuDomainObjPrivate *priv);
-
 virDomainEventResumedDetailType
 qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);
 
