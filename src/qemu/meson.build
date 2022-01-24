@@ -15,6 +15,7 @@ qemu_driver_sources = [
   'qemu_domainjob.c',
   'qemu_driver.c',
   'qemu_extdevice.c',
+  'qemu_fd.c',
   'qemu_firmware.c',
   'qemu_hostdev.c',
   'qemu_hotplug.c',

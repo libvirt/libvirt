@@ -164,6 +164,7 @@
 @SRCDIR@src/qemu/qemu_domainjob.c
 @SRCDIR@src/qemu/qemu_driver.c
 @SRCDIR@src/qemu/qemu_extdevice.c
+@SRCDIR@src/qemu/qemu_fd.c
 @SRCDIR@src/qemu/qemu_firmware.c
 @SRCDIR@src/qemu/qemu_hostdev.c
 @SRCDIR@src/qemu/qemu_hotplug.c
