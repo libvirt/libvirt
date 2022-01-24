@@ -3349,7 +3349,8 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainSmartcardDef, virDomainSmartcardDefFree);
 void virDomainChrDefFree(virDomainChrDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainChrDef, virDomainChrDefFree);
 int virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
-                              virDomainChrSourceDef *src);
+                              virDomainChrSourceDef *src)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 void virDomainSoundCodecDefFree(virDomainSoundCodecDef *def);
 ssize_t virDomainSoundDefFind(const virDomainDef *def,
                               const virDomainSoundDef *sound);

@@ -2739,9 +2739,6 @@ int
 virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
                           virDomainChrSourceDef *src)
 {
-    if (!dest || !src)
-        return -1;
-
     virDomainChrSourceDefClear(dest);
 
     dest->type = src->type;
