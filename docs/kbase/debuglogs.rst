@@ -163,7 +163,7 @@ In order to setup libvirt logging persistently, follow the steps below:
      $XDG_CONFIG_HOME/libvirt/libvirtd.conf
      $XDG_CONFIG_HOME/libvirt/virtqemud.conf
 
--  find & replace, or set the apropriate `Log outputs`_ and `Log filters`_, e.g ::
+-  find & replace, or set the appropriate `Log outputs`_ and `Log filters`_, e.g ::
 
      log_filters="3:remote 4:event 3:util.json 3:rpc 1:*"
      log_outputs="1:file:/var/log/libvirt/libvirtd.log"
