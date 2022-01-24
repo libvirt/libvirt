@@ -26105,57 +26105,47 @@ static int
 virDomainTimerDefFormat(virBuffer *buf,
                         virDomainTimerDef *def)
 {
-    const char *name = virDomainTimerNameTypeToString(def->name);
+    virBuffer timerAttr = VIR_BUFFER_INITIALIZER;
+    virBuffer timerChld = VIR_BUFFER_INIT_CHILD(buf);
+    virBuffer catchupAttr = VIR_BUFFER_INITIALIZER;
 
-    if (!name) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("unexpected timer name %d"), def->name);
-        return -1;
-    }
-    virBufferAsprintf(buf, "<timer name='%s'", name);
+    virBufferAsprintf(&timerAttr, " name='%s'",
+                      virDomainTimerNameTypeToString(def->name));
 
     if (def->present != VIR_TRISTATE_BOOL_ABSENT) {
-        virBufferAsprintf(buf, " present='%s'",
+        virBufferAsprintf(&timerAttr, " present='%s'",
                           virTristateBoolTypeToString(def->present));
     }
 
     if (def->tickpolicy) {
-        virBufferAsprintf(buf, " tickpolicy='%s'",
+        virBufferAsprintf(&timerAttr, " tickpolicy='%s'",
                           virDomainTimerTickpolicyTypeToString(def->tickpolicy));
     }
 
     if (def->track != VIR_DOMAIN_TIMER_TRACK_NONE) {
-        virBufferAsprintf(buf, " track='%s'",
+        virBufferAsprintf(&timerAttr, " track='%s'",
                           virDomainTimerTrackTypeToString(def->track));
     }
 
     if (def->name == VIR_DOMAIN_TIMER_NAME_TSC) {
         if (def->frequency > 0)
-            virBufferAsprintf(buf, " frequency='%llu'", def->frequency);
+            virBufferAsprintf(&timerAttr, " frequency='%llu'", def->frequency);
 
         if (def->mode) {
-            virBufferAsprintf(buf, " mode='%s'",
+            virBufferAsprintf(&timerAttr, " mode='%s'",
                               virDomainTimerModeTypeToString(def->mode));
         }
     }
 
-    if (def->catchup.threshold == 0 && def->catchup.slew == 0 &&
-        def->catchup.limit == 0) {
-        virBufferAddLit(buf, "/>\n");
-    } else {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        virBufferAddLit(buf, "<catchup");
-        if (def->catchup.threshold > 0)
-            virBufferAsprintf(buf, " threshold='%lu'", def->catchup.threshold);
-        if (def->catchup.slew > 0)
-            virBufferAsprintf(buf, " slew='%lu'", def->catchup.slew);
-        if (def->catchup.limit > 0)
-            virBufferAsprintf(buf, " limit='%lu'", def->catchup.limit);
-        virBufferAddLit(buf, "/>\n");
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</timer>\n");
-    }
+    if (def->catchup.threshold > 0)
+        virBufferAsprintf(&catchupAttr, " threshold='%lu'", def->catchup.threshold);
+    if (def->catchup.slew > 0)
+        virBufferAsprintf(&catchupAttr, " slew='%lu'", def->catchup.slew);
+    if (def->catchup.limit > 0)
+        virBufferAsprintf(&catchupAttr, " limit='%lu'", def->catchup.limit);
+
+    virXMLFormatElement(&timerChld, "catchup", &catchupAttr, NULL);
+    virXMLFormatElement(buf, "timer", &timerAttr, &timerChld);
 
     return 0;
 }
