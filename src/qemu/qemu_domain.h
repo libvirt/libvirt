@@ -207,6 +207,9 @@ struct _qemuDomainObjPrivate {
     /* counter for generating node names for qemu disks */
     unsigned long long nodenameindex;
 
+    /* counter for generating IDs of fdsets - only relevant during startup */
+    unsigned int fdsetindex;
+
     /* qemuProcessStartCPUs stores the reason for starting vCPUs here for the
      * RESUME event handler to use it */
     virDomainRunningReason runningReason;
@@ -968,6 +971,8 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
 char * qemuDomainGetManagedPRSocketPath(qemuDomainObjPrivate *priv);
 
 bool qemuDomainDefHasManagedPR(virDomainObj *vm);
+
+unsigned int qemuDomainFDSetIDNew(qemuDomainObjPrivate *priv);
 
 virDomainEventResumedDetailType
 qemuDomainRunningReasonToResumeEvent(virDomainRunningReason reason);

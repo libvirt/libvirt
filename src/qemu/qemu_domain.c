@@ -683,6 +683,33 @@ qemuDomainStorageIDReset(qemuDomainObjPrivate *priv)
 }
 
 
+/**
+ * qemuDomainFDSetIDNew:
+ * @priv: qemu VM private data object.
+ *
+ * Generate a new unique id for a fdset. Note that this is necessary only for
+ * startup. When running qemu auto-assigns id for added fdset.
+ */
+unsigned int
+qemuDomainFDSetIDNew(qemuDomainObjPrivate *priv)
+{
+    return priv->fdsetindex++;
+}
+
+
+/**
+ * qemuDomainFDSetIDReset:
+ * @priv: qemu VM private data object.
+ *
+ * Resets the data for the fdset ID generator.
+ */
+static void
+qemuDomainFDSetIDReset(qemuDomainObjPrivate *priv)
+{
+    priv->fdsetindex = 0;
+}
+
+
 static void
 qemuDomainSecretInfoClear(qemuDomainSecretInfo *secinfo,
                           bool keepAlias)
@@ -1682,6 +1709,8 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 
     /* reset node name allocator */
     qemuDomainStorageIDReset(priv);
+
+    qemuDomainFDSetIDReset(priv);
 
     priv->dbusDaemonRunning = false;
 
