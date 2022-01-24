@@ -26148,6 +26148,47 @@ virDomainTimerDefFormat(virBuffer *buf,
     virXMLFormatElement(buf, "timer", &timerAttr, &timerChld);
 }
 
+
+static void
+virDomainClockDefFormat(virBuffer *buf,
+                        const virDomainClockDef *def,
+                        unsigned int flags)
+{
+    virBuffer clockAttr = VIR_BUFFER_INITIALIZER;
+    virBuffer clockChld = VIR_BUFFER_INIT_CHILD(buf);
+    size_t n;
+
+    virBufferAsprintf(&clockAttr, " offset='%s'",
+                      virDomainClockOffsetTypeToString(def->offset));
+    switch (def->offset) {
+    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
+    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
+        if (def->data.utc_reset)
+            virBufferAddLit(&clockAttr, " adjustment='reset'");
+        break;
+    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
+        virBufferAsprintf(&clockAttr, " adjustment='%lld' basis='%s'",
+                          def->data.variable.adjustment,
+                          virDomainClockBasisTypeToString(def->data.variable.basis));
+        if (flags & VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST &&
+            def->data.variable.adjustment0) {
+            virBufferAsprintf(&clockAttr, " adjustment0='%lld'",
+                              def->data.variable.adjustment0);
+        }
+        break;
+    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
+        virBufferEscapeString(&clockAttr, " timezone='%s'", def->data.timezone);
+        break;
+    }
+
+    for (n = 0; n < def->ntimers; n++) {
+        virDomainTimerDefFormat(&clockChld, def->timers[n]);
+    }
+
+    virXMLFormatElement(buf, "clock", &clockAttr, &clockChld);
+}
+
+
 static void
 virDomainGraphicsAuthDefFormatAttr(virBuffer *buf,
                                    virDomainGraphicsAuthDef *def,
@@ -28162,39 +28203,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (virCPUDefFormatBufFull(buf, def->cpu, def->numa) < 0)
         return -1;
 
-    virBufferAsprintf(buf, "<clock offset='%s'",
-                      virDomainClockOffsetTypeToString(def->clock.offset));
-    switch (def->clock.offset) {
-    case VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME:
-    case VIR_DOMAIN_CLOCK_OFFSET_UTC:
-        if (def->clock.data.utc_reset)
-            virBufferAddLit(buf, " adjustment='reset'");
-        break;
-    case VIR_DOMAIN_CLOCK_OFFSET_VARIABLE:
-        virBufferAsprintf(buf, " adjustment='%lld' basis='%s'",
-                          def->clock.data.variable.adjustment,
-                          virDomainClockBasisTypeToString(def->clock.data.variable.basis));
-        if (flags & VIR_DOMAIN_DEF_FORMAT_CLOCK_ADJUST) {
-            if (def->clock.data.variable.adjustment0)
-                virBufferAsprintf(buf, " adjustment0='%lld'",
-                                  def->clock.data.variable.adjustment0);
-        }
-        break;
-    case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
-        virBufferEscapeString(buf, " timezone='%s'", def->clock.data.timezone);
-        break;
-    }
-    if (def->clock.ntimers == 0) {
-        virBufferAddLit(buf, "/>\n");
-    } else {
-        virBufferAddLit(buf, ">\n");
-        virBufferAdjustIndent(buf, 2);
-        for (n = 0; n < def->clock.ntimers; n++) {
-            virDomainTimerDefFormat(buf, def->clock.timers[n]);
-        }
-        virBufferAdjustIndent(buf, -2);
-        virBufferAddLit(buf, "</clock>\n");
-    }
+    virDomainClockDefFormat(buf, &def->clock, flags);
 
     if (virDomainEventActionDefFormat(buf, def->onPoweroff,
                                       "on_poweroff",
