@@ -1651,8 +1651,6 @@ exit 0
 
 %files daemon
 
-%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
-
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirtd.socket
 %{_unitdir}/libvirtd-ro.socket
@@ -2019,6 +2017,7 @@ exit 0
 
 %files libs -f %{name}.lang
 %license COPYING COPYING.LESSER
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf
 %{_libdir}/libvirt.so.*
