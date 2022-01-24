@@ -2733,11 +2733,10 @@ virDomainChrSourceDefClear(virDomainChrSourceDef *def)
 }
 
 /* Almost deep copies the contents of src into dest. Some parts are not copied
- * though.
- * Returns -1 and report error on failure.  */
-int
+ * though. */
+void
 virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
-                          virDomainChrSourceDef *src)
+                          const virDomainChrSourceDef *src)
 {
     virDomainChrSourceDefClear(dest);
 
@@ -2800,8 +2799,6 @@ virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
     }
-
-    return 0;
 }
 
 static void

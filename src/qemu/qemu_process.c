@@ -2129,9 +2129,8 @@ qemuProcessFindCharDevicePTYsMonitor(virDomainObj *vm,
             chr->targetType == VIR_DOMAIN_CHR_CONSOLE_TARGET_TYPE_SERIAL) {
             /* yes, the first console is just an alias for serials[0] */
             i = 1;
-            if (virDomainChrSourceDefCopy(chr->source,
-                                          ((vm->def->serials[0])->source)) < 0)
-                return -1;
+            virDomainChrSourceDefCopy(chr->source,
+                                      ((vm->def->serials[0])->source));
         }
     }
 
