@@ -26,6 +26,8 @@
 #include "ch_domain.h"
 #include "ch_monitor.h"
 #include "ch_process.h"
+#include "domain_cgroup.h"
+#include "virnuma.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virjson.h"
@@ -131,6 +133,251 @@ virCHProcessUpdateInfo(virDomainObj *vm)
     return 0;
 }
 
+static int
+virCHProcessGetAllCpuAffinity(virBitmap **cpumapRet)
+{
+    *cpumapRet = NULL;
+
+    if (!virHostCPUHasBitmap())
+        return 0;
+
+    if (!(*cpumapRet = virHostCPUGetOnlineBitmap()))
+        return -1;
+
+    return 0;
+}
+
+#if defined(WITH_SCHED_GETAFFINITY) || defined(WITH_BSD_CPU_AFFINITY)
+static int
+virCHProcessInitCpuAffinity(virDomainObj *vm)
+{
+    g_autoptr(virBitmap) cpumapToSet = NULL;
+    virDomainNumatuneMemMode mem_mode;
+    virCHDomainObjPrivate *priv = vm->privateData;
+
+    if (!vm->pid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot setup CPU affinity until process is started"));
+        return -1;
+    }
+
+    if (virDomainNumaGetNodeCount(vm->def->numa) <= 1 &&
+        virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT) {
+        virBitmap *nodeset = NULL;
+
+        if (virDomainNumatuneMaybeGetNodeset(vm->def->numa,
+                                             priv->autoNodeset,
+                                             &nodeset, -1) < 0)
+            return -1;
+
+        if (virNumaNodesetToCPUset(nodeset, &cpumapToSet) < 0)
+            return -1;
+    } else if (vm->def->cputune.emulatorpin) {
+        if (!(cpumapToSet = virBitmapNewCopy(vm->def->cputune.emulatorpin)))
+            return -1;
+    } else {
+        if (virCHProcessGetAllCpuAffinity(&cpumapToSet) < 0)
+            return -1;
+    }
+
+    if (cpumapToSet && virProcessSetAffinity(vm->pid, cpumapToSet, false) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+#else /* !defined(WITH_SCHED_GETAFFINITY) && !defined(WITH_BSD_CPU_AFFINITY) */
+static int
+virCHProcessInitCpuAffinity(virDomainObj *vm G_GNUC_UNUSED)
+{
+    return 0;
+}
+#endif /* !defined(WITH_SCHED_GETAFFINITY) && !defined(WITH_BSD_CPU_AFFINITY) */
+
+/**
+ * virCHProcessSetupPid:
+ *
+ * This function sets resource properties (affinity, cgroups,
+ * scheduler) for any PID associated with a domain.  It should be used
+ * to set up emulator PIDs as well as vCPU and I/O thread pids to
+ * ensure they are all handled the same way.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+static int
+virCHProcessSetupPid(virDomainObj *vm,
+                     pid_t pid,
+                     virCgroupThreadName nameval,
+                     int id,
+                     virBitmap *cpumask,
+                     unsigned long long period,
+                     long long quota,
+                     virDomainThreadSchedParam *sched)
+{
+    virCHDomainObjPrivate *priv = vm->privateData;
+    virDomainNumatuneMemMode mem_mode;
+    g_autoptr(virCgroup) cgroup = NULL;
+    virBitmap *use_cpumask = NULL;
+    virBitmap *affinity_cpumask = NULL;
+    g_autoptr(virBitmap) hostcpumap = NULL;
+    g_autofree char *mem_mask = NULL;
+    int ret = -1;
+
+    if ((period || quota) &&
+        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        goto cleanup;
+    }
+
+    /* Infer which cpumask shall be used. */
+    if (cpumask) {
+        use_cpumask = cpumask;
+    } else if (vm->def->placement_mode == VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO) {
+        use_cpumask = priv->autoCpuset;
+    } else if (vm->def->cpumask) {
+        use_cpumask = vm->def->cpumask;
+    } else {
+        /* we can't assume cloud-hypervisor itself is running on all pCPUs,
+         * so we need to explicitly set the spawned instance to all pCPUs. */
+        if (virCHProcessGetAllCpuAffinity(&hostcpumap) < 0)
+            goto cleanup;
+        affinity_cpumask = hostcpumap;
+    }
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) ||
+        virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+
+        if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+            mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+            virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+                                                priv->autoNodeset,
+                                                &mem_mask, -1) < 0)
+            goto cleanup;
+
+        if (virCgroupNewThread(priv->cgroup, nameval, id, true, &cgroup) < 0)
+            goto cleanup;
+
+        if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
+            if (use_cpumask &&
+                virDomainCgroupSetupCpusetCpus(cgroup, use_cpumask) < 0)
+                goto cleanup;
+
+            if (mem_mask && virCgroupSetCpusetMems(cgroup, mem_mask) < 0)
+                goto cleanup;
+
+        }
+
+        if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
+            goto cleanup;
+
+        /* Move the thread to the sub dir */
+        VIR_INFO("Adding pid %d to cgroup", pid);
+        if (virCgroupAddThread(cgroup, pid) < 0)
+            goto cleanup;
+
+    }
+
+    if (!affinity_cpumask)
+        affinity_cpumask = use_cpumask;
+
+    /* Setup legacy affinity. */
+    if (affinity_cpumask
+        && virProcessSetAffinity(pid, affinity_cpumask, false) < 0)
+        goto cleanup;
+
+    /* Set scheduler type and priority, but not for the main thread. */
+    if (sched &&
+        nameval != VIR_CGROUP_THREAD_EMULATOR &&
+        virProcessSetScheduler(pid, sched->policy, sched->priority) < 0)
+        goto cleanup;
+
+    ret = 0;
+ cleanup:
+    if (ret < 0 && cgroup)
+        virCgroupRemove(cgroup);
+
+    return ret;
+}
+
+/**
+ * virCHProcessSetupVcpu:
+ * @vm: domain object
+ * @vcpuid: id of VCPU to set defaults
+ *
+ * This function sets resource properties (cgroups, affinity, scheduler) for a
+ * vCPU. This function expects that the vCPU is online and the vCPU pids were
+ * correctly detected at the point when it's called.
+ *
+ * Returns 0 on success, -1 on error.
+ */
+int
+virCHProcessSetupVcpu(virDomainObj *vm,
+                      unsigned int vcpuid)
+{
+    pid_t vcpupid = virCHDomainGetVcpuPid(vm, vcpuid);
+    virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, vcpuid);
+
+    return virCHProcessSetupPid(vm, vcpupid, VIR_CGROUP_THREAD_VCPU,
+                                vcpuid, vcpu->cpumask,
+                                vm->def->cputune.period,
+                                vm->def->cputune.quota, &vcpu->sched);
+}
+
+static int
+virCHProcessSetupVcpus(virDomainObj *vm)
+{
+    virDomainVcpuDef *vcpu;
+    unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    size_t i;
+
+    if ((vm->def->cputune.period || vm->def->cputune.quota) &&
+        !virCgroupHasController(((virCHDomainObjPrivate *) vm->privateData)->
+                                cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
+    if (!virCHDomainHasVcpuPids(vm)) {
+        /* If any CPU has custom affinity that differs from the
+         * VM default affinity, we must reject it */
+        for (i = 0; i < maxvcpus; i++) {
+            vcpu = virDomainDefGetVcpu(vm->def, i);
+
+            if (!vcpu->online)
+                continue;
+
+            if (vcpu->cpumask &&
+                !virBitmapEqual(vm->def->cpumask, vcpu->cpumask)) {
+                virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                               _("cpu affinity is not supported"));
+                return -1;
+            }
+        }
+
+        return 0;
+    }
+
+    for (i = 0; i < maxvcpus; i++) {
+        vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
+        if (virCHProcessSetupVcpu(vm, i) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 /**
  * virCHProcessStart:
  * @driver: pointer to driver structure
@@ -141,12 +388,14 @@ virCHProcessUpdateInfo(virDomainObj *vm)
  *
  * Returns 0 on success or -1 in case of error
  */
-int virCHProcessStart(virCHDriver *driver,
-                      virDomainObj *vm,
-                      virDomainRunningReason reason)
+int
+virCHProcessStart(virCHDriver *driver,
+                  virDomainObj *vm,
+                  virDomainRunningReason reason)
 {
     int ret = -1;
     virCHDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virCHDriverConfig) cfg = virCHDriverGetConfig(priv->driver);
     g_autofree int *nicindexes = NULL;
     size_t nnicindexes = 0;
 
@@ -154,17 +403,33 @@ int virCHProcessStart(virCHDriver *driver,
         /* And we can get the first monitor connection now too */
         if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm))) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("failed to create connection to CH socket"));
+                           _("failed to create connection to CH socket"));
             goto cleanup;
         }
 
         if (virCHMonitorCreateVM(priv->monitor,
                                  &nnicindexes, &nicindexes) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                        _("failed to create guest VM"));
+                           _("failed to create guest VM"));
             goto cleanup;
         }
     }
+
+    vm->pid = priv->monitor->pid;
+    vm->def->id = vm->pid;
+    priv->machineName = virCHDomainGetMachineName(vm);
+
+    if (virDomainCgroupSetupCgroup("ch", vm,
+                                   nnicindexes, nicindexes,
+                                   &priv->cgroup,
+                                   cfg->cgroupControllers,
+                                   0, /*maxThreadsPerProc*/
+                                   priv->driver->privileged,
+                                   priv->machineName) < 0)
+        goto cleanup;
+
+    if (virCHProcessInitCpuAffinity(vm) < 0)
+        goto cleanup;
 
     if (virCHMonitorBootVM(priv->monitor) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -172,12 +437,19 @@ int virCHProcessStart(virCHDriver *driver,
         goto cleanup;
     }
 
-    priv->machineName = virCHDomainGetMachineName(vm);
-    vm->pid = priv->monitor->pid;
-    vm->def->id = vm->pid;
+    virCHDomainRefreshThreadInfo(vm);
+
+    VIR_DEBUG("Setting global CPU cgroup (if required)");
+    if (virDomainCgroupSetupGlobalCpuCgroup(vm,
+                                            priv->cgroup,
+                                            priv->autoNodeset) < 0)
+        goto cleanup;
+
+    VIR_DEBUG("Setting vCPU tuning/settings");
+    if (virCHProcessSetupVcpus(vm) < 0)
+        goto cleanup;
 
     virCHProcessUpdateInfo(vm);
-
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING, reason);
 
     return 0;
@@ -189,10 +461,13 @@ int virCHProcessStart(virCHDriver *driver,
     return ret;
 }
 
-int virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
-                     virDomainObj *vm,
-                     virDomainShutoffReason reason)
+int
+virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
+                 virDomainObj *vm,
+                 virDomainShutoffReason reason)
 {
+    int ret;
+    int retries = 0;
     virCHDomainObjPrivate *priv = vm->privateData;
 
     VIR_DEBUG("Stopping VM name=%s pid=%d reason=%d",
@@ -201,6 +476,18 @@ int virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
     if (priv->monitor) {
         virCHMonitorClose(priv->monitor);
         priv->monitor = NULL;
+    }
+
+ retry:
+    if ((ret = virDomainCgroupRemoveCgroup(vm,
+                                           priv->cgroup,
+                                           priv->machineName)) < 0) {
+        if (ret == -EBUSY && (retries++ < 5)) {
+            g_usleep(200*1000);
+            goto retry;
+        }
+        VIR_WARN("Failed to remove cgroup for %s",
+                 vm->def->name);
     }
 
     vm->pid = -1;

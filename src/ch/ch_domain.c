@@ -319,6 +319,41 @@ chValidateDomainDeviceDef(const virDomainDeviceDef *dev,
                        _("Serial can only be enabled for a PTY"));
         return -1;
     }
+    return 0;
+}
+
+int
+virCHDomainRefreshThreadInfo(virDomainObj *vm)
+{
+    size_t maxvcpus = virDomainDefGetVcpusMax(vm->def);
+    virCHMonitorThreadInfo *info = NULL;
+    size_t nthreads;
+    size_t ncpus = 0;
+    size_t i;
+
+    nthreads = virCHMonitorGetThreadInfo(virCHDomainGetMonitor(vm),
+                                         true, &info);
+
+    for (i = 0; i < nthreads; i++) {
+        virCHDomainVcpuPrivate *vcpupriv;
+        virDomainVcpuDef *vcpu;
+        virCHMonitorCPUInfo *vcpuInfo;
+
+        if (info[i].type != virCHThreadTypeVcpu)
+            continue;
+
+        /* TODO: hotplug support */
+        vcpuInfo = &info[i].vcpuInfo;
+        vcpu = virDomainDefGetVcpu(vm->def, vcpuInfo->cpuid);
+        vcpupriv = CH_DOMAIN_VCPU_PRIVATE(vcpu);
+        vcpupriv->tid = vcpuInfo->tid;
+        ncpus++;
+    }
+
+    /* TODO: Remove the warning when hotplug is implemented.*/
+    if (ncpus != maxvcpus)
+        VIR_WARN("Mismatch in the number of cpus, expected: %ld, actual: %ld",
+                 maxvcpus, ncpus);
 
     return 0;
 }

@@ -37,6 +37,50 @@
 #define URL_VM_RESUME "vm.resume"
 #define URL_VM_INFO "vm.info"
 
+#define VIRCH_THREAD_NAME_LEN   16
+
+typedef enum {
+    virCHThreadTypeEmulator,
+    virCHThreadTypeVcpu,
+    virCHThreadTypeIO,
+    virCHThreadTypeMax
+} virCHThreadType;
+
+typedef struct _virCHMonitorCPUInfo virCHMonitorCPUInfo;
+
+struct _virCHMonitorCPUInfo {
+    int cpuid;
+    pid_t tid;
+
+    bool online;
+};
+
+typedef struct _virCHMonitorEmuThreadInfo virCHMonitorEmuThreadInfo;
+
+struct _virCHMonitorEmuThreadInfo {
+    char    thrName[VIRCH_THREAD_NAME_LEN];
+    pid_t   tid;
+};
+
+typedef struct _virCHMonitorIOThreadInfo virCHMonitorIOThreadInfo;
+
+struct _virCHMonitorIOThreadInfo {
+    char    thrName[VIRCH_THREAD_NAME_LEN];
+    pid_t   tid;
+};
+
+typedef struct _virCHMonitorThreadInfo virCHMonitorThreadInfo;
+
+struct _virCHMonitorThreadInfo {
+    virCHThreadType type;
+
+    union {
+        virCHMonitorCPUInfo vcpuInfo;
+        virCHMonitorEmuThreadInfo emuInfo;
+        virCHMonitorIOThreadInfo ioInfo;
+    };
+};
+
 typedef struct _virCHMonitor virCHMonitor;
 
 struct _virCHMonitor {
@@ -49,6 +93,9 @@ struct _virCHMonitor {
     pid_t pid;
 
     virDomainObj *vm;
+
+    size_t nthreads;
+    virCHMonitorThreadInfo *threads;
 };
 
 virCHMonitor *virCHMonitorNew(virDomainObj *vm, const char *socketdir);
@@ -66,12 +113,9 @@ int virCHMonitorSuspendVM(virCHMonitor *mon);
 int virCHMonitorResumeVM(virCHMonitor *mon);
 int virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info);
 
-typedef struct _virCHMonitorCPUInfo virCHMonitorCPUInfo;
-struct _virCHMonitorCPUInfo {
-    pid_t tid;
-    bool online;
-};
 void virCHMonitorCPUInfoFree(virCHMonitorCPUInfo *cpus);
 int virCHMonitorGetCPUInfo(virCHMonitor *mon,
                            virCHMonitorCPUInfo **vcpus,
                            size_t maxvcpus);
+size_t virCHMonitorGetThreadInfo(virCHMonitor *mon, bool refresh,
+                                 virCHMonitorThreadInfo **threads);
