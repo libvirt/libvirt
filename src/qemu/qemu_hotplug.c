@@ -1663,9 +1663,10 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
 
     qemuAssignDeviceHostdevAlias(vm->def, &info->alias, -1);
 
-    if (qemuDomainIsPSeries(vm->def))
+    if (qemuDomainIsPSeries(vm->def)) {
         /* Isolation groups are only relevant for pSeries guests */
         qemuDomainFillDeviceIsolationGroup(vm->def, &dev);
+    }
 
     if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
         goto error;
