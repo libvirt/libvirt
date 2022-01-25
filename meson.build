@@ -1667,6 +1667,7 @@ if not get_option('driver_qemu').disabled()
             os_release.contains('fedora') or
             os_release.contains('gentoo') or
             os_release.contains('rhel') or
+            os_release.contains('sles') or
             os_release.contains('suse'))
         default_qemu_user = 'qemu'
         default_qemu_group = 'qemu'
