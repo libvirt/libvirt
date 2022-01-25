@@ -216,12 +216,19 @@ def gather_model(args):
             "id": "model-expansion"
         }])
 
+    version = 0, 0
     static_model = None
     for o in output:
         if o.get("id") == "model-expansion":
             static_model = o["return"]["model"]
+        if "QMP" in o:
+            version = o["QMP"]["version"]["qemu"]
+            version = version["major"], version["minor"]
 
     if static_model:
+        if version[0] > 6 or (version[0] == 6 and version[1] >= 1):
+            static_model["props"]["hv-passthrough"] = True
+
         return call_qemu(args.path_to_qemu, [
             {
                 "execute": "query-cpu-model-expansion",
