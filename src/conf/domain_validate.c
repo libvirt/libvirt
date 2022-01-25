@@ -2321,9 +2321,54 @@ virDomainGraphicsDefValidate(const virDomainDef *def,
 }
 
 static int
+virDomainDeviceInfoValidate(const virDomainDeviceDef *dev)
+{
+    virDomainDeviceInfo *info;
+
+    if (!(info = virDomainDeviceGetInfo(dev)))
+        return 0;
+
+    switch ((virDomainDeviceAddressType) info->type) {
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_SPAPRVIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_S390:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_SERIAL:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCID:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_USB:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_VIRTIO_MMIO:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_ISA:
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DIMM:
+        /* No validation for these address types yet */
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED:
+        if (dev->type != VIR_DOMAIN_DEVICE_HOSTDEV) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("address of type '%s' is supported only for hostdevs"),
+                           virDomainDeviceAddressTypeToString(info->type));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainDeviceAddressType, info->type);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
                                    const virDomainDef *def)
 {
+    if (virDomainDeviceInfoValidate(dev) < 0)
+        return -1;
+
     switch ((virDomainDeviceType) dev->type) {
     case VIR_DOMAIN_DEVICE_DISK:
         return virDomainDiskDefValidate(def, dev->data.disk);
