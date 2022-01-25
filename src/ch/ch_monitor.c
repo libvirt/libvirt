@@ -928,3 +928,64 @@ virCHMonitorGetInfo(virCHMonitor *mon, virJSONValue **info)
 {
     return virCHMonitorGet(mon, URL_VM_INFO, info);
 }
+
+/**
+ * virCHMonitorGetIOThreads:
+ * @mon: Pointer to the monitor
+ * @iothreads: Location to return array of IOThreadInfo data
+ *
+ * Retrieve the list of iothreads defined/running for the machine
+ *
+ * Returns count of IOThreadInfo structures on success
+ *        -1 on error.
+ */
+int
+virCHMonitorGetIOThreads(virCHMonitor *mon,
+                         virDomainIOThreadInfo ***iothreads)
+{
+    size_t nthreads = 0;
+    size_t niothreads = 0;
+    int thd_index;
+    virDomainIOThreadInfo **iothreadinfolist = NULL;
+    virDomainIOThreadInfo *iothreadinfo = NULL;
+
+    *iothreads = NULL;
+    nthreads = virCHMonitorRefreshThreadInfo(mon);
+
+    iothreadinfolist = g_new0(virDomainIOThreadInfo*, nthreads + 1);
+
+    for (thd_index = 0; thd_index < nthreads; thd_index++) {
+        g_autoptr(virBitmap) map = NULL;
+
+        if (mon->threads[thd_index].type == virCHThreadTypeIO) {
+            iothreadinfo = g_new0(virDomainIOThreadInfo, 1);
+
+            iothreadinfo->iothread_id = mon->threads[thd_index].ioInfo.tid;
+
+            if (!(map = virProcessGetAffinity(iothreadinfo->iothread_id)))
+                goto error;
+
+            if (virBitmapToData(map, &(iothreadinfo->cpumap),
+                                &(iothreadinfo->cpumaplen)) < 0) {
+                goto error;
+            }
+
+            /* Append to iothreadinfolist */
+            iothreadinfolist[niothreads] = g_steal_pointer(&iothreadinfo);
+            niothreads++;
+        }
+    }
+
+    VIR_DEBUG("niothreads = %ld", niothreads);
+    *iothreads = g_steal_pointer(iothreadinfolist);
+    return niothreads;
+
+ error:
+    if (iothreadinfolist) {
+        for (thd_index = 0; thd_index < niothreads; thd_index++)
+            virDomainIOThreadInfoFree(iothreadinfolist[thd_index]);
+        VIR_FREE(iothreadinfolist);
+    }
+    virDomainIOThreadInfoFree(iothreadinfo);
+    return -1;
+}
