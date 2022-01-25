@@ -6219,6 +6219,10 @@ qemuDomainDetachDeviceLive(virDomainObj *vm,
                            info->addr.pci.slot, info->addr.pci.function);
             return -1;
         }
+    } else if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED) {
+        /* Unassigned devices are not exposed to QEMU, so remove the device
+         * explicitly, just like if we received DEVICE_DELETED event.*/
+        return qemuDomainRemoveDevice(driver, vm, &detach);
     }
 
     /*
