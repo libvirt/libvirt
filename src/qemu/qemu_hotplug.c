@@ -1668,6 +1668,12 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
         qemuDomainFillDeviceIsolationGroup(vm->def, &dev);
     }
 
+    if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED) {
+        /* Unassigned devices are not exposed to QEMU. Our job is done here. */
+        ret = 0;
+        goto done;
+    }
+
     if (qemuDomainEnsurePCIAddress(vm, &dev) < 0)
         goto error;
     releaseaddr = true;
@@ -1692,6 +1698,7 @@ qemuDomainAttachHostPCIDevice(virQEMUDriver *driver,
  exit_monitor:
     qemuDomainObjExitMonitor(driver, vm);
 
+ done:
     virDomainAuditHostdev(vm, hostdev, "attach", ret == 0);
     if (ret < 0)
         goto error;
