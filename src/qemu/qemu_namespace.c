@@ -251,7 +251,7 @@ qemuDomainSetupDisk(virStorageSource *src,
             if (!(tmpPath = virPCIDeviceAddressGetIOMMUGroupDev(&next->nvme->pciAddr)))
                 return -1;
         } else {
-            GSList *targetPaths;
+            GSList *targetPaths = NULL;
 
             if (virStorageSourceIsEmpty(next) ||
                 !virStorageSourceIsLocalStorage(next)) {
