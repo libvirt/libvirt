@@ -1544,11 +1544,23 @@ virSetConnectStorage;
 
 
 # hypervisor/domain_cgroup.h
+virDomainCgroupConnectCgroup;
+virDomainCgroupEmulatorAllNodesAllow;
+virDomainCgroupEmulatorAllNodesRestore;
+virDomainCgroupInitCgroup;
+virDomainCgroupRemoveCgroup;
 virDomainCgroupSetMemoryLimitParameters;
 virDomainCgroupSetupBlkio;
+virDomainCgroupSetupBlkioCgroup;
+virDomainCgroupSetupCgroup;
+virDomainCgroupSetupCpuCgroup;
+virDomainCgroupSetupCpusetCgroup;
+virDomainCgroupSetupCpusetCpus;
 virDomainCgroupSetupDomainBlkioParameters;
+virDomainCgroupSetupGlobalCpuCgroup;
+virDomainCgroupSetupMemoryCgroup;
 virDomainCgroupSetupMemtune;
-
+virDomainCgroupSetupVcpuBW;
 
 # hypervisor/domain_driver.h
 virDomainDriverAddIOThreadCheck;

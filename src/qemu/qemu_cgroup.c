@@ -593,46 +593,6 @@ qemuSetupVideoCgroup(virDomainObj *vm,
     return ret;
 }
 
-
-static int
-qemuSetupBlkioCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virCgroupHasController(priv->cgroup,
-                                VIR_CGROUP_CONTROLLER_BLKIO)) {
-        if (vm->def->blkio.weight || vm->def->blkio.ndevices) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Block I/O tuning is not available on this host"));
-            return -1;
-        }
-        return 0;
-    }
-
-    return virDomainCgroupSetupBlkio(priv->cgroup, vm->def->blkio);
-}
-
-
-static int
-qemuSetupMemoryCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
-        if (virMemoryLimitIsSet(vm->def->mem.hard_limit) ||
-            virMemoryLimitIsSet(vm->def->mem.soft_limit) ||
-            virMemoryLimitIsSet(vm->def->mem.swap_hard_limit)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Memory cgroup is not available on this host"));
-            return -1;
-        }
-        return 0;
-    }
-
-    return virDomainCgroupSetupMemtune(priv->cgroup, vm->def->mem);
-}
-
-
 static int
 qemuSetupFirmwareCgroup(virDomainObj *vm)
 {
@@ -862,44 +822,6 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
 
 
 static int
-qemuSetupCpusetCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-    if (virCgroupSetCpusetMemoryMigrate(priv->cgroup, true) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
-qemuSetupCpuCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-       if (vm->def->cputune.sharesSpecified) {
-           virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                          _("CPU tuning is not available on this host"));
-           return -1;
-       }
-       return 0;
-    }
-
-    if (vm->def->cputune.sharesSpecified) {
-        if (virCgroupSetCpuShares(priv->cgroup, vm->def->cputune.shares) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuSetupCgroupAppid(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -927,174 +849,24 @@ qemuSetupCgroupAppid(virDomainObj *vm)
 }
 
 
-static int
-qemuInitCgroup(virDomainObj *vm,
-               size_t nnicindexes,
-               int *nicindexes)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
-
-    if (!priv->driver->privileged)
-        return 0;
-
-    if (!virCgroupAvailable())
-        return 0;
-
-    virCgroupFree(priv->cgroup);
-    priv->cgroup = NULL;
-
-    if (!vm->def->resource)
-        vm->def->resource = g_new0(virDomainResourceDef, 1);
-
-    if (!vm->def->resource->partition)
-        vm->def->resource->partition = g_strdup("/machine");
-
-    if (!g_path_is_absolute(vm->def->resource->partition)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Resource partition '%s' must start with '/'"),
-                       vm->def->resource->partition);
-        return -1;
-    }
-
-    if (virCgroupNewMachine(priv->machineName,
-                            "qemu",
-                            vm->def->uuid,
-                            NULL,
-                            vm->pid,
-                            false,
-                            nnicindexes, nicindexes,
-                            vm->def->resource->partition,
-                            cfg->cgroupControllers,
-                            cfg->maxThreadsPerProc,
-                            &priv->cgroup) < 0) {
-        if (virCgroupNewIgnoreError())
-            return 0;
-
-        return -1;
-    }
-
-    return 0;
-}
-
-static int
-qemuRestoreCgroupThread(virCgroup *cgroup,
-                        virCgroupThreadName thread,
-                        int id)
-{
-    g_autoptr(virCgroup) cgroup_temp = NULL;
-    g_autofree char *nodeset = NULL;
-
-    if (virCgroupNewThread(cgroup, thread, id, false, &cgroup_temp) < 0)
-        return -1;
-
-    if (virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0)
-        return -1;
-
-    if (virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0)
-        return -1;
-
-    if (virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
-        return -1;
-
-    return 0;
-}
-
-static void
-qemuRestoreCgroupState(virDomainObj *vm)
-{
-    g_autofree char *mem_mask = NULL;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    size_t i = 0;
-    g_autoptr(virBitmap) all_nodes = NULL;
-
-    if (!virNumaIsAvailable() ||
-        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return;
-
-    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
-        goto error;
-
-    if (!(mem_mask = virBitmapFormat(all_nodes)))
-        goto error;
-
-    if (virCgroupHasEmptyTasks(priv->cgroup,
-                               VIR_CGROUP_CONTROLLER_CPUSET) <= 0)
-        goto error;
-
-    if (virCgroupSetCpusetMems(priv->cgroup, mem_mask) < 0)
-        goto error;
-
-    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
-        virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, i);
-
-        if (!vcpu->online)
-            continue;
-
-        if (qemuRestoreCgroupThread(priv->cgroup,
-                                    VIR_CGROUP_THREAD_VCPU, i) < 0)
-            return;
-    }
-
-    for (i = 0; i < vm->def->niothreadids; i++) {
-        if (qemuRestoreCgroupThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
-                                    vm->def->iothreadids[i]->iothread_id) < 0)
-            return;
-    }
-
-    if (qemuRestoreCgroupThread(priv->cgroup,
-                                VIR_CGROUP_THREAD_EMULATOR, 0) < 0)
-        return;
-
-    return;
-
- error:
-    virResetLastError();
-    VIR_DEBUG("Couldn't restore cgroups to meaningful state");
-    return;
-}
-
-int
-qemuConnectCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
-
-    if (!priv->driver->privileged)
-        return 0;
-
-    if (!virCgroupAvailable())
-        return 0;
-
-    virCgroupFree(priv->cgroup);
-    priv->cgroup = NULL;
-
-    if (virCgroupNewDetectMachine(vm->def->name,
-                                  "qemu",
-                                  vm->pid,
-                                  cfg->cgroupControllers,
-                                  priv->machineName,
-                                  &priv->cgroup) < 0)
-        return -1;
-
-    qemuRestoreCgroupState(vm);
-    return 0;
-}
-
 int
 qemuSetupCgroup(virDomainObj *vm,
                 size_t nnicindexes,
                 int *nicindexes)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
 
-    if (!vm->pid) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Cannot setup cgroups until process is started"));
-        return -1;
-    }
+    if (virDomainCgroupSetupCgroup("qemu",
+                                   vm,
+                                   nnicindexes,
+                                   nicindexes,
+                                   &priv->cgroup,
+                                   cfg->cgroupControllers,
+                                   cfg->maxThreadsPerProc,
+                                   priv->driver->privileged,
+                                   priv->machineName) < 0)
 
-    if (qemuInitCgroup(vm, nnicindexes, nicindexes) < 0)
         return -1;
 
     if (!priv->cgroup)
@@ -1103,40 +875,11 @@ qemuSetupCgroup(virDomainObj *vm,
     if (qemuSetupDevicesCgroup(vm) < 0)
         return -1;
 
-    if (qemuSetupBlkioCgroup(vm) < 0)
-        return -1;
-
-    if (qemuSetupMemoryCgroup(vm) < 0)
-        return -1;
-
-    if (qemuSetupCpuCgroup(vm) < 0)
-        return -1;
-
-    if (qemuSetupCpusetCgroup(vm) < 0)
-        return -1;
-
     if (qemuSetupCgroupAppid(vm) < 0)
         return -1;
 
     return 0;
 }
-
-int
-qemuSetupCgroupVcpuBW(virCgroup *cgroup,
-                      unsigned long long period,
-                      long long quota)
-{
-    return virCgroupSetupCpuPeriodQuota(cgroup, period, quota);
-}
-
-
-int
-qemuSetupCgroupCpusetCpus(virCgroup *cgroup,
-                          virBitmap *cpumask)
-{
-    return virCgroupSetupCpusetCpus(cgroup, cpumask);
-}
-
 
 int
 qemuSetupCgroupForExtDevices(virDomainObj *vm,
@@ -1163,149 +906,4 @@ qemuSetupCgroupForExtDevices(virDomainObj *vm,
         return -1;
 
     return qemuExtDevicesSetupCgroup(driver, vm, cgroup_temp);
-}
-
-
-int
-qemuSetupGlobalCpuCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    unsigned long long period = vm->def->cputune.global_period;
-    long long quota = vm->def->cputune.global_quota;
-    g_autofree char *mem_mask = NULL;
-    virDomainNumatuneMemMode mem_mode;
-
-    if ((period || quota) &&
-        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("cgroup cpu is required for scheduler tuning"));
-        return -1;
-    }
-
-    /*
-     * If CPU cgroup controller is not initialized here, then we need
-     * neither period nor quota settings.  And if CPUSET controller is
-     * not initialized either, then there's nothing to do anyway.
-     */
-    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
-        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-
-    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
-        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
-        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
-                                            priv->autoNodeset,
-                                            &mem_mask, -1) < 0)
-        return -1;
-
-    if (period || quota) {
-        if (qemuSetupCgroupVcpuBW(priv->cgroup, period, quota) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
-int
-qemuRemoveCgroup(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (priv->cgroup == NULL)
-        return 0; /* Not supported, so claim success */
-
-    if (virCgroupTerminateMachine(priv->machineName) < 0) {
-        if (!virCgroupNewIgnoreError())
-            VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
-    }
-
-    return virCgroupRemove(priv->cgroup);
-}
-
-
-static void
-qemuCgroupEmulatorAllNodesDataFree(qemuCgroupEmulatorAllNodesData *data)
-{
-    if (!data)
-        return;
-
-    virCgroupFree(data->emulatorCgroup);
-    g_free(data->emulatorMemMask);
-    g_free(data);
-}
-
-
-/**
- * qemuCgroupEmulatorAllNodesAllow:
- * @cgroup: domain cgroup pointer
- * @retData: filled with structure used to roll back the operation
- *
- * Allows all NUMA nodes for the qemu emulator thread temporarily. This is
- * necessary when hotplugging cpus since it requires memory allocated in the
- * DMA region. Afterwards the operation can be reverted by
- * qemuCgroupEmulatorAllNodesRestore.
- *
- * Returns 0 on success -1 on error
- */
-int
-qemuCgroupEmulatorAllNodesAllow(virCgroup *cgroup,
-                                qemuCgroupEmulatorAllNodesData **retData)
-{
-    qemuCgroupEmulatorAllNodesData *data = NULL;
-    g_autofree char *all_nodes_str = NULL;
-    g_autoptr(virBitmap) all_nodes = NULL;
-    int ret = -1;
-
-    if (!virNumaIsAvailable() ||
-        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
-        return 0;
-
-    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
-        goto cleanup;
-
-    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
-        goto cleanup;
-
-    data = g_new0(qemuCgroupEmulatorAllNodesData, 1);
-
-    if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
-                           false, &data->emulatorCgroup) < 0)
-        goto cleanup;
-
-    if (virCgroupGetCpusetMems(data->emulatorCgroup, &data->emulatorMemMask) < 0 ||
-        virCgroupSetCpusetMems(data->emulatorCgroup, all_nodes_str) < 0)
-        goto cleanup;
-
-    *retData = g_steal_pointer(&data);
-    ret = 0;
-
- cleanup:
-    qemuCgroupEmulatorAllNodesDataFree(data);
-
-    return ret;
-}
-
-
-/**
- * qemuCgroupEmulatorAllNodesRestore:
- * @data: data structure created by qemuCgroupEmulatorAllNodesAllow
- *
- * Rolls back the setting done by qemuCgroupEmulatorAllNodesAllow and frees the
- * associated data.
- */
-void
-qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesData *data)
-{
-    virErrorPtr err;
-
-    if (!data)
-        return;
-
-    virErrorPreserveLast(&err);
-    virCgroupSetCpusetMems(data->emulatorCgroup, data->emulatorMemMask);
-    virErrorRestore(&err);
-
-    qemuCgroupEmulatorAllNodesDataFree(data);
 }

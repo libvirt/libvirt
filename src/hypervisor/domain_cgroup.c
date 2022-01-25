@@ -22,11 +22,12 @@
 
 #include "domain_cgroup.h"
 #include "domain_driver.h"
-
+#include "util/virnuma.h"
+#include "virlog.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
-
+VIR_LOG_INIT("domain.cgroup");
 
 int
 virDomainCgroupSetupBlkio(virCgroup *cgroup, virDomainBlkiotune blkio)
@@ -268,4 +269,448 @@ virDomainCgroupSetMemoryLimitParameters(virCgroup *cgroup,
 #undef VIR_SET_MEM_PARAMETER
 
     return 0;
+}
+
+
+int
+virDomainCgroupSetupBlkioCgroup(virDomainObj *vm,
+                                virCgroup *cgroup)
+{
+    if (!virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_BLKIO)) {
+        if (vm->def->blkio.weight || vm->def->blkio.ndevices) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Block I/O tuning is not available on this host"));
+            return -1;
+        }
+        return 0;
+    }
+
+    return virDomainCgroupSetupBlkio(cgroup, vm->def->blkio);
+}
+
+
+int
+virDomainCgroupSetupMemoryCgroup(virDomainObj *vm,
+                                 virCgroup *cgroup)
+{
+    if (!virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_MEMORY)) {
+        if (virMemoryLimitIsSet(vm->def->mem.hard_limit) ||
+            virMemoryLimitIsSet(vm->def->mem.soft_limit) ||
+            virMemoryLimitIsSet(vm->def->mem.swap_hard_limit)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Memory cgroup is not available on this host"));
+            return -1;
+        }
+        return 0;
+    }
+
+    return virDomainCgroupSetupMemtune(cgroup, vm->def->mem);
+}
+
+
+int
+virDomainCgroupSetupCpusetCgroup(virCgroup *cgroup)
+{
+    if (!virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if (virCgroupSetCpusetMemoryMigrate(cgroup, true) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virDomainCgroupSetupCpuCgroup(virDomainObj *vm,
+                              virCgroup *cgroup)
+{
+    if (!virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        if (vm->def->cputune.sharesSpecified) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("CPU tuning is not available on this host"));
+            return -1;
+        }
+        return 0;
+    }
+
+    if (vm->def->cputune.sharesSpecified) {
+        if (virCgroupSetCpuShares(cgroup, vm->def->cputune.shares) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainCgroupInitCgroup(const char *prefix,
+                          virDomainObj *vm,
+                          size_t nnicindexes,
+                          int *nicindexes,
+                          virCgroup **cgroup,
+                          int cgroupControllers,
+                          unsigned int maxThreadsPerProc,
+                          bool privileged,
+                          char *machineName)
+{
+    if (!privileged)
+        return 0;
+
+    if (!virCgroupAvailable())
+        return 0;
+
+    g_clear_pointer(cgroup, virCgroupFree);
+
+    if (!vm->def->resource)
+        vm->def->resource = g_new0(virDomainResourceDef, 1);
+
+    if (!vm->def->resource->partition)
+        vm->def->resource->partition = g_strdup("/machine");
+
+    if (!g_path_is_absolute(vm->def->resource->partition)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Resource partition '%s' must start with '/'"),
+                       vm->def->resource->partition);
+        return -1;
+    }
+
+    if (virCgroupNewMachine(machineName,
+                            prefix,
+                            vm->def->uuid,
+                            NULL,
+                            vm->pid,
+                            false,
+                            nnicindexes, nicindexes,
+                            vm->def->resource->partition,
+                            cgroupControllers,
+                            maxThreadsPerProc,
+                            cgroup) < 0) {
+        if (virCgroupNewIgnoreError())
+            return 0;
+
+        return -1;
+    }
+
+    return 0;
+}
+
+
+void
+virDomainCgroupRestoreCgroupState(virDomainObj *vm,
+                                  virCgroup *cgroup)
+{
+    g_autofree char *mem_mask = NULL;
+    size_t i = 0;
+    g_autoptr(virBitmap) all_nodes = NULL;
+
+    if (!virNumaIsAvailable() ||
+        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return;
+
+    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
+        goto error;
+
+    if (!(mem_mask = virBitmapFormat(all_nodes)))
+        goto error;
+
+    if (virCgroupHasEmptyTasks(cgroup, VIR_CGROUP_CONTROLLER_CPUSET) <= 0)
+        goto error;
+
+    if (virCgroupSetCpusetMems(cgroup, mem_mask) < 0)
+        goto error;
+
+    for (i = 0; i < virDomainDefGetVcpusMax(vm->def); i++) {
+        virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, i);
+
+        if (!vcpu->online)
+            continue;
+
+        if (virDomainCgroupRestoreCgroupThread(cgroup,
+                                               VIR_CGROUP_THREAD_VCPU,
+                                               i) < 0)
+            return;
+    }
+
+    for (i = 0; i < vm->def->niothreadids; i++) {
+        if (virDomainCgroupRestoreCgroupThread(cgroup,
+                                               VIR_CGROUP_THREAD_IOTHREAD,
+                                               vm->def->iothreadids[i]->iothread_id) < 0)
+            return;
+    }
+
+    if (virDomainCgroupRestoreCgroupThread(cgroup,
+                                           VIR_CGROUP_THREAD_EMULATOR,
+                                           0) < 0)
+        return;
+
+    return;
+
+ error:
+    virResetLastError();
+    VIR_DEBUG("Couldn't restore cgroups to meaningful state");
+    return;
+}
+
+
+int
+virDomainCgroupRestoreCgroupThread(virCgroup *cgroup,
+                                   virCgroupThreadName thread,
+                                   int id)
+{
+    g_autoptr(virCgroup) cgroup_temp = NULL;
+    g_autofree char *nodeset = NULL;
+
+    if (virCgroupNewThread(cgroup, thread, id, false, &cgroup_temp) < 0)
+        return -1;
+
+    if (virCgroupSetCpusetMemoryMigrate(cgroup_temp, true) < 0)
+        return -1;
+
+    if (virCgroupGetCpusetMems(cgroup_temp, &nodeset) < 0)
+        return -1;
+
+    if (virCgroupSetCpusetMems(cgroup_temp, nodeset) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virDomainCgroupConnectCgroup(const char *prefix,
+                             virDomainObj *vm,
+                             virCgroup **cgroup,
+                             int cgroupControllers,
+                             bool privileged,
+                             char *machineName)
+{
+    if (privileged)
+        return 0;
+
+    if (!virCgroupAvailable())
+        return 0;
+
+    g_clear_pointer(cgroup, virCgroupFree);
+
+    if (virCgroupNewDetectMachine(vm->def->name,
+                                  prefix,
+                                  vm->pid,
+                                  cgroupControllers,
+                                  machineName,
+                                  cgroup) < 0)
+        return -1;
+
+    virDomainCgroupRestoreCgroupState(vm, *cgroup);
+    return 0;
+}
+
+
+int
+virDomainCgroupSetupCgroup(const char *prefix,
+                           virDomainObj *vm,
+                           size_t nnicindexes,
+                           int *nicindexes,
+                           virCgroup **cgroup,
+                           int cgroupControllers,
+                           unsigned int maxThreadsPerProc,
+                           bool privileged,
+                           char *machineName)
+{
+    if (!vm->pid) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cannot setup cgroups until process is started"));
+        return -1;
+    }
+
+    if (virDomainCgroupInitCgroup(prefix,
+                                  vm,
+                                  nnicindexes,
+                                  nicindexes,
+                                  cgroup,
+                                  cgroupControllers,
+                                  maxThreadsPerProc,
+                                  privileged,
+                                  machineName) < 0)
+        return -1;
+
+    if (!*cgroup)
+        return 0;
+
+    if (virDomainCgroupSetupBlkioCgroup(vm, *cgroup) < 0)
+        return -1;
+
+    if (virDomainCgroupSetupMemoryCgroup(vm, *cgroup) < 0)
+        return -1;
+
+    if (virDomainCgroupSetupCpuCgroup(vm, *cgroup) < 0)
+        return -1;
+
+    if (virDomainCgroupSetupCpusetCgroup(*cgroup) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
+virDomainCgroupSetupVcpuBW(virCgroup *cgroup,
+                           unsigned long long period,
+                           long long quota)
+{
+    return virCgroupSetupCpuPeriodQuota(cgroup, period, quota);
+}
+
+
+int
+virDomainCgroupSetupCpusetCpus(virCgroup *cgroup,
+                               virBitmap *cpumask)
+{
+    return virCgroupSetupCpusetCpus(cgroup, cpumask);
+}
+
+
+int
+virDomainCgroupSetupGlobalCpuCgroup(virDomainObj *vm,
+                                    virCgroup *cgroup,
+                                    virBitmap *autoNodeset)
+{
+    unsigned long long period = vm->def->cputune.global_period;
+    long long quota = vm->def->cputune.global_quota;
+    g_autofree char *mem_mask = NULL;
+    virDomainNumatuneMemMode mem_mode;
+
+    if ((period || quota) &&
+        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPU)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("cgroup cpu is required for scheduler tuning"));
+        return -1;
+    }
+
+    /*
+     * If CPU cgroup controller is not initialized here, then we need
+     * neither period nor quota settings.  And if CPUSET controller is
+     * not initialized either, then there's nothing to do anyway.
+     */
+    if (!virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPU) &&
+        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+
+    if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
+        mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
+                                            autoNodeset, &mem_mask, -1) < 0)
+        return -1;
+
+    if (period || quota) {
+        if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+int
+virDomainCgroupRemoveCgroup(virDomainObj *vm,
+                            virCgroup *cgroup,
+                            char *machineName)
+{
+    if (cgroup == NULL)
+        return 0;               /* Not supported, so claim success */
+
+    if (virCgroupTerminateMachine(machineName) < 0) {
+        if (!virCgroupNewIgnoreError())
+            VIR_DEBUG("Failed to terminate cgroup for %s", vm->def->name);
+    }
+
+    return virCgroupRemove(cgroup);
+}
+
+
+void
+virDomainCgroupEmulatorAllNodesDataFree(virCgroupEmulatorAllNodesData *data)
+{
+    if (!data)
+        return;
+
+    virCgroupFree(data->emulatorCgroup);
+    g_free(data->emulatorMemMask);
+    g_free(data);
+}
+
+
+/**
+ * virDomainCgroupEmulatorAllNodesAllow:
+ * @cgroup: domain cgroup pointer
+ * @retData: filled with structure used to roll back the operation
+ *
+ * Allows all NUMA nodes for the cloud hypervisor thread temporarily. This is
+ * necessary when hotplugging cpus since it requires memory allocated in the
+ * DMA region. Afterwards the operation can be reverted by
+ * virDomainCgroupEmulatorAllNodesRestore.
+ *
+ * Returns 0 on success -1 on error
+ */
+int
+virDomainCgroupEmulatorAllNodesAllow(virCgroup *cgroup,
+                                     virCgroupEmulatorAllNodesData **retData)
+{
+    virCgroupEmulatorAllNodesData *data = NULL;
+    g_autofree char *all_nodes_str = NULL;
+
+    g_autoptr(virBitmap) all_nodes = NULL;
+    int ret = -1;
+
+    if (!virNumaIsAvailable() ||
+        !virCgroupHasController(cgroup, VIR_CGROUP_CONTROLLER_CPUSET))
+        return 0;
+
+    if (!(all_nodes = virNumaGetHostMemoryNodeset()))
+        goto cleanup;
+
+    if (!(all_nodes_str = virBitmapFormat(all_nodes)))
+        goto cleanup;
+
+    data = g_new0(virCgroupEmulatorAllNodesData, 1);
+
+    if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
+                           false, &data->emulatorCgroup) < 0)
+        goto cleanup;
+
+    if (virCgroupGetCpusetMems(data->emulatorCgroup, &data->emulatorMemMask) < 0
+        || virCgroupSetCpusetMems(data->emulatorCgroup, all_nodes_str) < 0)
+        goto cleanup;
+
+    *retData = g_steal_pointer(&data);
+    ret = 0;
+
+ cleanup:
+    virDomainCgroupEmulatorAllNodesDataFree(data);
+
+    return ret;
+}
+
+
+/**
+ * virDomainCgroupEmulatorAllNodesRestore:
+ * @data: data structure created by virDomainCgroupEmulatorAllNodesAllow
+ *
+ * Rolls back the setting done by virDomainCgroupEmulatorAllNodesAllow and frees the
+ * associated data.
+ */
+void
+virDomainCgroupEmulatorAllNodesRestore(virCgroupEmulatorAllNodesData *data)
+{
+    virError *err;
+
+    if (!data)
+        return;
+
+    virErrorPreserveLast(&err);
+    virCgroupSetCpusetMems(data->emulatorCgroup, data->emulatorMemMask);
+    virErrorRestore(&err);
+
+    virDomainCgroupEmulatorAllNodesDataFree(data);
 }

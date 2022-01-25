@@ -56,27 +56,16 @@ int qemuSetupChardevCgroup(virDomainObj *vm,
                            virDomainChrDef *dev);
 int qemuTeardownChardevCgroup(virDomainObj *vm,
                               virDomainChrDef *dev);
-int qemuConnectCgroup(virDomainObj *vm);
 int qemuSetupCgroup(virDomainObj *vm,
                     size_t nnicindexes,
                     int *nicindexes);
-int qemuSetupCgroupVcpuBW(virCgroup *cgroup,
-                          unsigned long long period,
-                          long long quota);
-int qemuSetupCgroupCpusetCpus(virCgroup *cgroup, virBitmap *cpumask);
-int qemuSetupGlobalCpuCgroup(virDomainObj *vm);
 int qemuSetupCgroupForExtDevices(virDomainObj *vm,
                                  virQEMUDriver *driver);
-int qemuRemoveCgroup(virDomainObj *vm);
 
 typedef struct _qemuCgroupEmulatorAllNodesData qemuCgroupEmulatorAllNodesData;
 struct _qemuCgroupEmulatorAllNodesData {
     virCgroup *emulatorCgroup;
     char *emulatorMemMask;
 };
-
-int qemuCgroupEmulatorAllNodesAllow(virCgroup *cgroup,
-                                    qemuCgroupEmulatorAllNodesData **data);
-void qemuCgroupEmulatorAllNodesRestore(qemuCgroupEmulatorAllNodesData *data);
 
 extern const char *const defaultDeviceACL[];

@@ -4419,7 +4419,7 @@ qemuDomainPinVcpuLive(virDomainObj *vm,
             if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_VCPU, vcpu,
                                    false, &cgroup_vcpu) < 0)
                 goto cleanup;
-            if (qemuSetupCgroupCpusetCpus(cgroup_vcpu, cpumap) < 0)
+            if (virDomainCgroupSetupCpusetCpus(cgroup_vcpu, cpumap) < 0)
                 goto cleanup;
         }
 
@@ -4628,7 +4628,7 @@ qemuDomainPinEmulator(virDomainPtr dom,
                                    0, false, &cgroup_emulator) < 0)
                 goto endjob;
 
-            if (qemuSetupCgroupCpusetCpus(cgroup_emulator, pcpumap) < 0) {
+            if (virDomainCgroupSetupCpusetCpus(cgroup_emulator, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("failed to set cpuset.cpus in cgroup"
                                  " for emulator threads"));
@@ -5025,7 +5025,7 @@ qemuDomainPinIOThread(virDomainPtr dom,
             if (virCgroupNewThread(priv->cgroup, VIR_CGROUP_THREAD_IOTHREAD,
                                    iothread_id, false, &cgroup_iothread) < 0)
                 goto endjob;
-            if (qemuSetupCgroupCpusetCpus(cgroup_iothread, pcpumap) < 0) {
+            if (virDomainCgroupSetupCpusetCpus(cgroup_iothread, pcpumap) < 0) {
                 virReportError(VIR_ERR_OPERATION_INVALID,
                                _("failed to set cpuset.cpus in cgroup"
                                  " for iothread %d"), iothread_id);
@@ -8925,7 +8925,7 @@ qemuSetGlobalBWLive(virCgroup *cgroup, unsigned long long period,
     if (period == 0 && quota == 0)
         return 0;
 
-    if (qemuSetupCgroupVcpuBW(cgroup, period, quota) < 0)
+    if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
         return -1;
 
     return 0;
@@ -9120,7 +9120,7 @@ qemuSetVcpusBWLive(virDomainObj *vm, virCgroup *cgroup,
                                false, &cgroup_vcpu) < 0)
             return -1;
 
-        if (qemuSetupCgroupVcpuBW(cgroup_vcpu, period, quota) < 0)
+        if (virDomainCgroupSetupVcpuBW(cgroup_vcpu, period, quota) < 0)
             return -1;
     }
 
@@ -9141,7 +9141,7 @@ qemuSetEmulatorBandwidthLive(virCgroup *cgroup,
                            false, &cgroup_emulator) < 0)
         return -1;
 
-    if (qemuSetupCgroupVcpuBW(cgroup_emulator, period, quota) < 0)
+    if (virDomainCgroupSetupVcpuBW(cgroup_emulator, period, quota) < 0)
         return -1;
 
     return 0;
@@ -9168,7 +9168,7 @@ qemuSetIOThreadsBWLive(virDomainObj *vm, virCgroup *cgroup,
                                false, &cgroup_iothread) < 0)
             return -1;
 
-        if (qemuSetupCgroupVcpuBW(cgroup_iothread, period, quota) < 0)
+        if (virDomainCgroupSetupVcpuBW(cgroup_iothread, period, quota) < 0)
             return -1;
     }
 

@@ -73,6 +73,7 @@
 #include "virpidfile.h"
 #include "virhostcpu.h"
 #include "domain_audit.h"
+#include "domain_cgroup.h"
 #include "domain_nwfilter.h"
 #include "domain_validate.h"
 #include "locking/domain_lock.h"
@@ -2685,7 +2686,7 @@ qemuProcessSetupPid(virDomainObj *vm,
 
         if (virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
             if (use_cpumask &&
-                qemuSetupCgroupCpusetCpus(cgroup, use_cpumask) < 0)
+                virDomainCgroupSetupCpusetCpus(cgroup, use_cpumask) < 0)
                 goto cleanup;
 
             if (mem_mask && virCgroupSetCpusetMems(cgroup, mem_mask) < 0)
@@ -2694,7 +2695,7 @@ qemuProcessSetupPid(virDomainObj *vm,
         }
 
         if ((period || quota) &&
-            qemuSetupCgroupVcpuBW(cgroup, period, quota) < 0)
+            virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
             goto cleanup;
 
         /* Move the thread to the sub dir */
@@ -5951,7 +5952,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
 {
     unsigned int maxvcpus = virDomainDefGetVcpusMax(vm->def);
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
+    virCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
     virDomainVcpuDef *vcpu;
     qemuDomainVcpuPrivate *vcpupriv;
     size_t i;
@@ -5979,7 +5980,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
     qsort(bootHotplug, nbootHotplug, sizeof(*bootHotplug),
           qemuProcessVcpusSortOrder);
 
-    if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
+    if (virDomainCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
         goto cleanup;
 
     for (i = 0; i < nbootHotplug; i++) {
@@ -6003,7 +6004,7 @@ qemuProcessSetupHotpluggableVcpus(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
+    virDomainCgroupEmulatorAllNodesRestore(emulatorCgroup);
     return ret;
 }
 
@@ -6993,7 +6994,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
     /* Ensure no historical cgroup for this VM is lying around bogus
      * settings */
     VIR_DEBUG("Ensuring no historical cgroup is lying around");
-    qemuRemoveCgroup(vm);
+    virDomainCgroupRemoveCgroup(vm, priv->cgroup, priv->machineName);
 
     if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
         virReportSystemError(errno,
@@ -7602,7 +7603,7 @@ qemuProcessLaunch(virConnectPtr conn,
         goto cleanup;
 
     VIR_DEBUG("Setting global CPU cgroup (if required)");
-    if (qemuSetupGlobalCpuCgroup(vm) < 0)
+    if (virDomainCgroupSetupGlobalCpuCgroup(vm, priv->cgroup, priv->autoNodeset) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting vCPU tuning/settings");
@@ -8201,7 +8202,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     }
 
  retry:
-    if ((ret = qemuRemoveCgroup(vm)) < 0) {
+    if ((ret = virDomainCgroupRemoveCgroup(vm, priv->cgroup, priv->machineName)) < 0) {
         if (ret == -EBUSY && (retries++ < 5)) {
             g_usleep(200*1000);
             goto retry;
@@ -8760,7 +8761,12 @@ qemuProcessReconnect(void *opaque)
     if (!priv->machineName)
         goto error;
 
-    if (qemuConnectCgroup(obj) < 0)
+    if (virDomainCgroupConnectCgroup("qemu",
+                                     obj,
+                                     &priv->cgroup,
+                                     cfg->cgroupControllers,
+                                     priv->driver->privileged,
+                                     priv->machineName) < 0)
         goto error;
 
     if (qemuDomainPerfRestart(obj) < 0)

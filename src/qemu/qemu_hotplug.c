@@ -37,6 +37,7 @@
 #include "qemu_snapshot.h"
 #include "qemu_virtiofs.h"
 #include "domain_audit.h"
+#include "domain_cgroup.h"
 #include "netdev_bandwidth_conf.h"
 #include "domain_nwfilter.h"
 #include "virlog.h"
@@ -6538,11 +6539,11 @@ qemuDomainSetVcpusLive(virQEMUDriver *driver,
                        bool enable)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
+    virCgroupEmulatorAllNodesData *emulatorCgroup = NULL;
     ssize_t nextvcpu = -1;
     int ret = -1;
 
-    if (qemuCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
+    if (virDomainCgroupEmulatorAllNodesAllow(priv->cgroup, &emulatorCgroup) < 0)
         goto cleanup;
 
     if (enable) {
@@ -6563,7 +6564,7 @@ qemuDomainSetVcpusLive(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    qemuCgroupEmulatorAllNodesRestore(emulatorCgroup);
+    virDomainCgroupEmulatorAllNodesRestore(emulatorCgroup);
 
     return ret;
 }
