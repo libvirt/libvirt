@@ -1659,7 +1659,7 @@ if not get_option('driver_qemu').disabled()
       default_qemu_user = 'root'
       default_qemu_group = 'wheel'
     else
-      os_release = run_command('grep', '^ID=', '/etc/os-release', check: true).stdout()
+      os_release = run_command('grep', '^ID=', '/etc/os-release', check: false).stdout()
       if os_release.contains('arch')
         default_qemu_user = 'nobody'
         default_qemu_group = 'nobody'
