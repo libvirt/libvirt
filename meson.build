@@ -1655,43 +1655,39 @@ if not get_option('driver_qemu').disabled()
     endif
     conf.set_quoted('QEMU_DATADIR', qemu_datadir)
 
-    if host_machine.system() in [ 'freebsd', 'darwin' ]
-      default_qemu_user = 'root'
-      default_qemu_group = 'wheel'
-    else
-      os_release = run_command('grep', '^ID=', '/etc/os-release', check: false).stdout()
-      if os_release.contains('arch')
-        default_qemu_user = 'nobody'
-        default_qemu_group = 'nobody'
-      elif (os_release.contains('centos') or
-            os_release.contains('fedora') or
-            os_release.contains('gentoo') or
-            os_release.contains('rhel') or
-            os_release.contains('sles') or
-            os_release.contains('suse'))
-        default_qemu_user = 'qemu'
-        default_qemu_group = 'qemu'
-      elif os_release.contains('debian')
-        default_qemu_user = 'libvirt-qemu'
-        default_qemu_group = 'libvirt-qemu'
-      elif os_release.contains('ubuntu')
-        default_qemu_user = 'libvirt-qemu'
-        default_qemu_group = 'kvm'
-      else
-        default_qemu_user = 'root'
-        default_qemu_group = 'root'
-      endif
-    endif
     qemu_user = get_option('qemu_user')
     qemu_group = get_option('qemu_group')
     if (qemu_user == '' and qemu_group != '') or (qemu_user != '' and qemu_group == '')
       error('Please specify both qemu_user and qemu_group or neither of them')
     endif
-    if qemu_user == ''
-      qemu_user = default_qemu_user
-    endif
-    if qemu_group == ''
-      qemu_group = default_qemu_group
+    if qemu_user == '' and qemu_group == ''
+      if host_machine.system() in [ 'freebsd', 'darwin' ]
+        qemu_user = 'root'
+        qemu_group = 'wheel'
+      else
+        os_release = run_command('grep', '^ID=', '/etc/os-release', check: false).stdout()
+        if os_release.contains('arch')
+          qemu_user = 'nobody'
+          qemu_group = 'nobody'
+        elif (os_release.contains('centos') or
+              os_release.contains('fedora') or
+              os_release.contains('gentoo') or
+              os_release.contains('rhel') or
+              os_release.contains('sles') or
+              os_release.contains('suse'))
+          qemu_user = 'qemu'
+          qemu_group = 'qemu'
+        elif os_release.contains('debian')
+          qemu_user = 'libvirt-qemu'
+          qemu_group = 'libvirt-qemu'
+        elif os_release.contains('ubuntu')
+          qemu_user = 'libvirt-qemu'
+          qemu_group = 'kvm'
+        else
+          qemu_user = 'root'
+          qemu_group = 'root'
+        endif
+      endif
     endif
     conf.set_quoted('QEMU_USER', qemu_user)
     conf.set_quoted('QEMU_GROUP', qemu_group)
