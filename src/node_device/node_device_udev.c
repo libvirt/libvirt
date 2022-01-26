@@ -903,6 +903,11 @@ udevKludgeStorageType(virNodeDeviceDef *def)
          * ID_TYPE=disk does not exist on DASDs they fall through
          * the udevProcessStorage detection logic. */
         { "/dev/dasd", "dasd" },
+
+        /* NVMe disk. While strictly speaking /dev/nvme is a
+         * controller not a disk, this function is called if and
+         * only if @def is of VIR_NODE_DEV_CAP_STORAGE type. */
+        { "/dev/nvme", "disk" },
     };
 
     VIR_DEBUG("Could not find definitive storage type for device "
