@@ -9627,8 +9627,10 @@ cmdDomSetLaunchSecState(vshControl * ctl, const vshCmd * cmd)
     if (vshCommandOptStringReq(ctl, cmd, "secret", &secfile) < 0)
         return false;
 
-    if (sechdrfile == NULL || secfile == NULL)
+    if (sechdrfile == NULL || secfile == NULL) {
+        vshError(ctl, "%s", _("Both secret and the secret header are required"));
         return false;
+    }
 
     if (virFileReadAll(sechdrfile, 1024*64, &sechdr) < 0) {
         vshSaveLibvirtError();
