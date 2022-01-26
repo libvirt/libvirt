@@ -1683,10 +1683,13 @@ if not get_option('driver_qemu').disabled()
       endif
     endif
     qemu_user = get_option('qemu_user')
+    qemu_group = get_option('qemu_group')
+    if (qemu_user == '' and qemu_group != '') or (qemu_user != '' and qemu_group == '')
+      error('Please specify both qemu_user and qemu_group or neither of them')
+    endif
     if qemu_user == ''
       qemu_user = default_qemu_user
     endif
-    qemu_group = get_option('qemu_group')
     if qemu_group == ''
       qemu_group = default_qemu_group
     endif
