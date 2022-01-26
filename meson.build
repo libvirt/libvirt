@@ -1681,14 +1681,6 @@ if not get_option('driver_qemu').disabled()
         default_qemu_user = 'root'
         default_qemu_group = 'root'
       endif
-      # If the expected user and group don't exist, or we haven't hit any
-      # of the cases above bacuse we're running on an unknown OS, the only
-      # sensible fallback is root:root
-      if (run_command('getent', 'passwd', default_qemu_user, check: false).returncode() != 0 and
-          run_command('getent', 'group', default_qemu_group, check: false).returncode() != 0)
-        default_qemu_user = 'root'
-        default_qemu_group = 'root'
-      endif
     endif
     qemu_user = get_option('qemu_user')
     if qemu_user == ''
