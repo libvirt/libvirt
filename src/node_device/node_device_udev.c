@@ -890,32 +890,35 @@ udevProcessDASD(struct udev_device *device,
 static int
 udevKludgeStorageType(virNodeDeviceDef *def)
 {
+    size_t i;
+    const struct {
+        const char *prefix;
+        const char *subst;
+    } fixups[] = {
+        /* virtio disk */
+        { "/dev/vd", "disk" },
+
+        /* For Direct Access Storage Devices (DASDs) there are
+         * currently no identifiers in udev besides ID_PATH. Since
+         * ID_TYPE=disk does not exist on DASDs they fall through
+         * the udevProcessStorage detection logic. */
+        { "/dev/dasd", "dasd" },
+    };
+
     VIR_DEBUG("Could not find definitive storage type for device "
               "with sysfs path '%s', trying to guess it",
               def->sysfs_path);
 
-    /* virtio disk */
-    if (STRPREFIX(def->caps->data.storage.block, "/dev/vd")) {
-        def->caps->data.storage.drive_type = g_strdup("disk");
-        VIR_DEBUG("Found storage type '%s' for device "
-                  "with sysfs path '%s'",
-                  def->caps->data.storage.drive_type,
-                  def->sysfs_path);
-        return 0;
+    for (i = 0; i < G_N_ELEMENTS(fixups); i++) {
+        if (STRPREFIX(def->caps->data.storage.block, fixups[i].prefix)) {
+            def->caps->data.storage.drive_type = g_strdup(fixups[i].subst);
+            VIR_DEBUG("Found storage type '%s' for device with sysfs path '%s'",
+                      def->caps->data.storage.drive_type,
+                      def->sysfs_path);
+            return 0;
+        }
     }
 
-    /* For Direct Access Storage Devices (DASDs) there are
-     * currently no identifiers in udev besides ID_PATH. Since
-     * ID_TYPE=disk does not exist on DASDs they fall through
-     * the udevProcessStorage detection logic. */
-    if (STRPREFIX(def->caps->data.storage.block, "/dev/dasd")) {
-        def->caps->data.storage.drive_type = g_strdup("dasd");
-        VIR_DEBUG("Found storage type '%s' for device "
-                  "with sysfs path '%s'",
-                  def->caps->data.storage.drive_type,
-                  def->sysfs_path);
-        return 0;
-    }
     VIR_DEBUG("Could not determine storage type "
               "for device with sysfs path '%s'", def->sysfs_path);
     return -1;
