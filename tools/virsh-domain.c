@@ -13166,13 +13166,13 @@ static void
 virshEventPrint(virshDomEventData *data,
                 virBuffer *buf)
 {
-    char *msg;
+    g_autofree char *msg = NULL;
 
     if (!(msg = virBufferContentAndReset(buf)))
         return;
 
     if (!data->loop && *data->count)
-        goto cleanup;
+        return;
 
     if (data->timestamp) {
         char timestamp[VIR_TIME_STRING_BUFLEN];
@@ -13188,9 +13188,6 @@ virshEventPrint(virshDomEventData *data,
     (*data->count)++;
     if (!data->loop)
         vshEventDone(data->ctl);
-
- cleanup:
-    VIR_FREE(msg);
 }
 
 static void
