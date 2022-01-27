@@ -48,9 +48,9 @@ typedef enum {
 # ifdef VIR_ENUM_SENTINELS
     VIR_SECRET_USAGE_TYPE_LAST
     /*
-     * NB: this enum value will increase over time as new events are
-     * added to the libvirt API. It reflects the last secret owner ID
-     * supported by this version of the libvirt API.
+     * NB: this enum value will increase over time as new usage types are
+     * added to the libvirt API. It reflects the last usage type supported
+     * by this version of the libvirt API.
      */
 # endif
 } virSecretUsageType;
