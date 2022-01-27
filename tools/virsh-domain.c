@@ -225,6 +225,50 @@ virshAddressFormat(virBuffer *buf,
 }
 
 
+/**
+ * virshFetchPassFdsList
+ *
+ * Helper to process the 'pass-fds' argument.
+ */
+static int
+virshFetchPassFdsList(vshControl *ctl,
+                      const vshCmd *cmd,
+                      size_t *nfdsret,
+                      int **fdsret)
+{
+    const char *fdopt;
+    g_auto(GStrv) fdlist = NULL;
+    g_autofree int *fds = NULL;
+    size_t nfds = 0;
+    size_t i;
+
+    *nfdsret = 0;
+    *fdsret = NULL;
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "pass-fds", &fdopt) <= 0)
+        return 0;
+
+    if (!(fdlist = g_strsplit(fdopt, ",", -1))) {
+        vshError(ctl, _("Unable to split FD list '%s'"), fdopt);
+        return -1;
+    }
+
+    nfds = g_strv_length(fdlist);
+    fds = g_new0(int, nfds);
+
+    for (i = 0; i < nfds; i++) {
+        if (virStrToLong_i(fdlist[i], NULL, 10, fds + i) < 0) {
+            vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
+            return -1;
+        }
+    }
+
+    *fdsret = g_steal_pointer(&fds);
+    *nfdsret = nfds;
+    return 0;
+}
+
+
 #define VIRSH_COMMON_OPT_DOMAIN_PERSISTENT \
     {.name = "persistent", \
      .type = VSH_OT_BOOL, \
@@ -4017,44 +4061,6 @@ static const vshCmdOptDef opts_start[] = {
     {.name = NULL}
 };
 
-static int
-cmdStartGetFDs(vshControl *ctl,
-               const vshCmd *cmd,
-               size_t *nfdsret,
-               int **fdsret)
-{
-    const char *fdopt;
-    g_auto(GStrv) fdlist = NULL;
-    g_autofree int *fds = NULL;
-    size_t nfds = 0;
-    size_t i;
-
-    *nfdsret = 0;
-    *fdsret = NULL;
-
-    if (vshCommandOptStringQuiet(ctl, cmd, "pass-fds", &fdopt) <= 0)
-        return 0;
-
-    if (!(fdlist = g_strsplit(fdopt, ",", -1))) {
-        vshError(ctl, _("Unable to split FD list '%s'"), fdopt);
-        return -1;
-    }
-
-    nfds = g_strv_length(fdlist);
-    fds = g_new0(int, nfds);
-
-    for (i = 0; i < nfds; i++) {
-        if (virStrToLong_i(fdlist[i], NULL, 10, fds + i) < 0) {
-            vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
-            return -1;
-        }
-    }
-
-    *fdsret = g_steal_pointer(&fds);
-    *nfdsret = nfds;
-    return 0;
-}
-
 static bool
 cmdStart(vshControl *ctl, const vshCmd *cmd)
 {
@@ -4076,7 +4082,7 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
+    if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "paused"))
@@ -8128,7 +8134,7 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
     if (virFileReadAll(from, VSH_MAX_XML_FILE, &buffer) < 0)
         return false;
 
-    if (cmdStartGetFDs(ctl, cmd, &nfds, &fds) < 0)
+    if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
         return false;
 
     if (vshCommandOptBool(cmd, "paused"))
