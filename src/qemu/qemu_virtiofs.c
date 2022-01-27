@@ -184,6 +184,13 @@ qemuVirtioFSStart(virQEMUDriver *driver,
     VIR_AUTOCLOSE logfd = -1;
     int rc;
 
+    if (!virFileIsExecutable(fs->binary)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("virtiofsd binary '%s' is not executable"),
+                       fs->binary);
+        return -1;
+    }
+
     if (!virFileExists(fs->src->path)) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("the virtiofs export directory '%s' does not exist"),
