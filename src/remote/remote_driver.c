@@ -5931,6 +5931,62 @@ remoteDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
 }
 
 
+static int
+remoteDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
+                                        const char *cmd,
+                                        unsigned int ninfiles,
+                                        int *infiles,
+                                        unsigned int *noutfiles,
+                                        int **outfiles,
+                                        char **result,
+                                        unsigned int flags)
+{
+    int rv = -1;
+    qemu_domain_monitor_command_with_files_args args;
+    qemu_domain_monitor_command_with_files_ret ret;
+    struct private_data *priv = domain->conn->privateData;
+    size_t rpc_noutfiles = 0;
+    g_autofree int *rpc_outfiles = NULL;
+    size_t i;
+
+    remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.cmd = (char *)cmd;
+    args.flags = flags;
+
+    memset(&ret, 0, sizeof(ret));
+    if (callFull(domain->conn, priv, REMOTE_CALL_QEMU,
+                 infiles, ninfiles, &rpc_outfiles, &rpc_noutfiles,
+                 QEMU_PROC_DOMAIN_MONITOR_COMMAND_WITH_FILES,
+                 (xdrproc_t) xdr_qemu_domain_monitor_command_with_files_args, (char *) &args,
+                 (xdrproc_t) xdr_qemu_domain_monitor_command_with_files_ret, (char *) &ret) == -1)
+        goto done;
+
+    if (outfiles)
+        *outfiles = g_steal_pointer(&rpc_outfiles);
+
+    if (noutfiles)
+        *noutfiles = rpc_noutfiles;
+
+    *result = g_strdup(ret.result);
+
+    rv = 0;
+
+    xdr_free((xdrproc_t) xdr_qemu_domain_monitor_command_with_files_ret, (char *) &ret);
+
+ done:
+    if (rpc_outfiles) {
+        for (i = 0; rpc_noutfiles < i; i++) {
+            VIR_FORCE_CLOSE(rpc_outfiles[i]);
+        }
+    }
+
+    remoteDriverUnlock(priv);
+    return rv;
+}
+
+
 static char *
 remoteDomainMigrateBegin3(virDomainPtr domain,
                           const char *xmlin,
@@ -8506,6 +8562,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainSnapshotHasMetadata = remoteDomainSnapshotHasMetadata, /* 0.9.13 */
     .domainSnapshotDelete = remoteDomainSnapshotDelete, /* 0.8.0 */
     .domainQemuMonitorCommand = remoteDomainQemuMonitorCommand, /* 0.8.3 */
+    .domainQemuMonitorCommandWithFiles = remoteDomainQemuMonitorCommandWithFiles, /* 8.2.0 */
     .domainQemuAttach = remoteDomainQemuAttach, /* 0.9.4 */
     .domainQemuAgentCommand = remoteDomainQemuAgentCommand, /* 0.10.0 */
     .connectDomainQemuMonitorEventRegister = remoteConnectDomainQemuMonitorEventRegister, /* 1.2.3 */

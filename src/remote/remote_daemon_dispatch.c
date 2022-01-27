@@ -4685,6 +4685,68 @@ qemuDispatchDomainMonitorCommand(virNetServer *server G_GNUC_UNUSED,
 
 
 static int
+qemuDispatchDomainMonitorCommandWithFiles(virNetServer *server G_GNUC_UNUSED,
+                                          virNetServerClient *client,
+                                          virNetMessage *msg,
+                                          struct virNetMessageError *rerr,
+                                          qemu_domain_monitor_command_with_files_args *args,
+                                          qemu_domain_monitor_command_with_files_ret *ret)
+{
+    virDomainPtr dom = NULL;
+    int *infiles = NULL;
+    unsigned int ninfiles = 0;
+    int *outfiles = NULL;
+    unsigned int noutfiles = 0;
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    size_t i;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    infiles = g_new0(int, msg->nfds);
+    for (i = 0; i < msg->nfds; i++) {
+        if ((infiles[i] = virNetMessageDupFD(msg, i)) < 0)
+            goto cleanup;
+        ninfiles++;
+    }
+
+    /* This API can both receive FDs from the client and send FDs back, but 'msg'
+     * is being reused. Thus we must clear the list of FDs in it to prevent
+     * us sending back the FDs client sent us. */
+    virNetMessageClearFDs(msg);
+
+    if (virDomainQemuMonitorCommandWithFiles(dom, args->cmd, ninfiles, infiles,
+                                             &noutfiles, &outfiles,
+                                             &ret->result, args->flags) < 0)
+        goto cleanup;
+
+    for (i = 0; i < noutfiles; i++) {
+        if (virNetMessageAddFD(msg, outfiles[i]) < 0)
+            goto cleanup;
+    }
+
+    /* return 1 here to let virNetServerProgramDispatchCall know we are passing fds */
+    if (noutfiles > 0)
+        rv = 1;
+    else
+        rv = 0;
+
+ cleanup:
+    for (i = 0; i < noutfiles; i++)
+        VIR_FORCE_CLOSE(outfiles[i]);
+
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(dom);
+    return rv;
+}
+
+
+static int
 remoteDispatchDomainMigrateBegin3(virNetServer *server G_GNUC_UNUSED,
                                   virNetServerClient *client,
                                   virNetMessage *msg G_GNUC_UNUSED,

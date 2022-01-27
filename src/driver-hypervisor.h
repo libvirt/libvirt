@@ -874,6 +874,15 @@ typedef int
                                   const char *cmd,
                                   char **result,
                                   unsigned int flags);
+typedef int
+(*virDrvDomainQemuMonitorCommandWithFiles)(virDomainPtr domain,
+                                           const char *cmd,
+                                           unsigned int ninfiles,
+                                           int *infiles,
+                                           unsigned int *noutfiles,
+                                           int **outfiles,
+                                           char **result,
+                                           unsigned int flags);
 
 typedef char *
 (*virDrvDomainQemuAgentCommand)(virDomainPtr domain,
@@ -1597,6 +1606,7 @@ struct _virHypervisorDriver {
     virDrvDomainRevertToSnapshot domainRevertToSnapshot;
     virDrvDomainSnapshotDelete domainSnapshotDelete;
     virDrvDomainQemuMonitorCommand domainQemuMonitorCommand;
+    virDrvDomainQemuMonitorCommandWithFiles domainQemuMonitorCommandWithFiles;
     virDrvDomainQemuAttach domainQemuAttach;
     virDrvDomainQemuAgentCommand domainQemuAgentCommand;
     virDrvConnectDomainQemuMonitorEventRegister connectDomainQemuMonitorEventRegister;

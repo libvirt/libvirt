@@ -79,6 +79,17 @@ struct qemu_domain_monitor_event_msg {
     remote_string details;
 };
 
+struct qemu_domain_monitor_command_with_files_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string cmd;
+    unsigned int flags;
+};
+
+struct qemu_domain_monitor_command_with_files_ret {
+    remote_nonnull_string result;
+};
+
+
 /* Define the program number, protocol version and procedure numbers here. */
 const QEMU_PROGRAM = 0x20008087;
 const QEMU_PROTOCOL_VERSION = 1;
@@ -151,5 +162,12 @@ enum qemu_procedure {
      * @generate: both
      * @acl: none
      */
-    QEMU_PROC_DOMAIN_MONITOR_EVENT = 6
+    QEMU_PROC_DOMAIN_MONITOR_EVENT = 6,
+
+    /**
+     * @generate: none
+     * @priority: low
+     * @acl: domain:write
+     */
+    QEMU_PROC_DOMAIN_MONITOR_COMMAND_WITH_FILES = 7
 };

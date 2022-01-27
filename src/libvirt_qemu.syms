@@ -30,3 +30,8 @@ LIBVIRT_QEMU_1.2.3 {
         virConnectDomainQemuMonitorEventDeregister;
         virConnectDomainQemuMonitorEventRegister;
 } LIBVIRT_QEMU_0.10.0;
+
+LIBVIRT_QEMU_8.2.0 {
+    global:
+        virDomainQemuMonitorCommandWithFiles;
+} LIBVIRT_QEMU_1.2.3;
