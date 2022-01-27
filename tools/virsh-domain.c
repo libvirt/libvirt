@@ -4025,7 +4025,7 @@ cmdStartGetFDs(vshControl *ctl,
 {
     const char *fdopt;
     g_auto(GStrv) fdlist = NULL;
-    int *fds = NULL;
+    g_autofree int *fds = NULL;
     size_t nfds = 0;
     size_t i;
 
@@ -4040,23 +4040,19 @@ cmdStartGetFDs(vshControl *ctl,
         return -1;
     }
 
-    for (i = 0; fdlist[i] != NULL; i++) {
-        int fd;
-        if (virStrToLong_i(fdlist[i], NULL, 10, &fd) < 0) {
+    nfds = g_strv_length(fdlist);
+    fds = g_new0(int, nfds);
+
+    for (i = 0; i < nfds; i++) {
+        if (virStrToLong_i(fdlist[i], NULL, 10, fds + i) < 0) {
             vshError(ctl, _("Unable to parse FD number '%s'"), fdlist[i]);
-            goto error;
+            return -1;
         }
-        VIR_EXPAND_N(fds, nfds, 1);
-        fds[nfds - 1] = fd;
     }
 
-    *fdsret = fds;
+    *fdsret = g_steal_pointer(&fds);
     *nfdsret = nfds;
     return 0;
-
- error:
-    VIR_FREE(fds);
-    return -1;
 }
 
 static bool
