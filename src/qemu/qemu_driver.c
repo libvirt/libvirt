@@ -19975,10 +19975,9 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
     virDomainObj *vm;
     int ret = -1;
     int rc;
-    size_t i;
     g_autoptr(virQEMUCaps) qemucaps = NULL;
-    g_autofree char *secrethdr = NULL;
-    g_autofree char *secret = NULL;
+    const char *secrethdr = NULL;
+    const char *secret = NULL;
     unsigned long long setaddr = 0;
     bool hasSetaddr = false;
     int state;
@@ -20019,18 +20018,24 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
         goto cleanup;
     }
 
-    for (i = 0; i < nparams; i++) {
-        virTypedParameterPtr param = &params[i];
-
-        if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER)) {
-            secrethdr = g_strdup(param->value.s);
-        } else if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET)) {
-            secret = g_strdup(param->value.s);
-        } else if (STREQ(param->field, VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS)) {
-            setaddr =  param->value.ul;
-            hasSetaddr = true;
-        }
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER,
+                                &secrethdr) < 0 ||
+        virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET,
+                                &secret) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s",
+                       _("Both secret and the secret header are required"));
+        goto cleanup;
     }
+
+    if ((rc = virTypedParamsGetULLong(params, nparams,
+                                      VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS,
+                                      &setaddr)) < 0)
+        goto cleanup;
+    else if (rc == 1)
+        hasSetaddr = true;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
         goto cleanup;
