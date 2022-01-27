@@ -1064,11 +1064,256 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
 }
 
 
+/* virsh event-await */
+
+struct virshDomEventAwaitConditionData;
+
+struct virshDomainEventAwaitCondition {
+    const char *name;
+    int event;
+    int (*handler)(struct virshDomEventAwaitConditionData *data);
+};
+
+struct virshDomEventAwaitConditionData {
+    vshControl *ctl;
+    virshDomain *dom;
+    const struct virshDomainEventAwaitCondition *cond;
+
+    virMutex *m; /* synchronization to ensure clean shutdown */
+    virCond *c;
+    bool done;
+};
+
+
+static void
+virshDomEventAwaitConditionDataUnregistered(struct virshDomEventAwaitConditionData *data)
+{
+    g_auto(virLockGuard) name = virLockGuardLock(data->m);
+    /* signal that the handler was unregistered */
+    data->done = true;
+    virCondSignal(data->c);
+}
+
+
+static void
+virshDomainEventAwaitCallbackLifecycle(virConnectPtr conn G_GNUC_UNUSED,
+                                       virDomainPtr dom G_GNUC_UNUSED,
+                                       int event G_GNUC_UNUSED,
+                                       int detail G_GNUC_UNUSED,
+                                       void *opaque)
+{
+    struct virshDomEventAwaitConditionData *data = opaque;
+
+    if (data->cond->handler(data) < 1)
+        vshEventDone(data->ctl);
+}
+
+
+struct virshDomainEventAwaitCallbackTuple {
+    int event;
+    virConnectDomainEventGenericCallback eventCB;
+};
+
+
+static const struct virshDomainEventAwaitCallbackTuple callbacks[] =
+{
+    { .event = VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+      .eventCB = VIR_DOMAIN_EVENT_CALLBACK(virshDomainEventAwaitCallbackLifecycle),
+    },
+};
+
+
+static int
+virshDomainEventAwaitConditionDomainInactive(struct virshDomEventAwaitConditionData *data)
+{
+    int state = -1;
+
+    if (virDomainGetState(data->dom, &state, NULL, 0) < 0) {
+        vshError(data->ctl, "%s", _("failed to update domain state"));
+        return -1;
+    }
+
+    switch ((virDomainState) state) {
+    case VIR_DOMAIN_SHUTOFF:
+    case VIR_DOMAIN_CRASHED:
+        return 0;
+
+    case VIR_DOMAIN_NOSTATE:
+    case VIR_DOMAIN_RUNNING:
+    case VIR_DOMAIN_BLOCKED:
+    case VIR_DOMAIN_PAUSED:
+    case VIR_DOMAIN_SHUTDOWN:
+    case VIR_DOMAIN_PMSUSPENDED:
+    case VIR_DOMAIN_LAST:
+        break;
+    }
+
+    return 1;
+}
+
+
+static const struct virshDomainEventAwaitCondition conditions[] = {
+    { .name = "domain-inactive",
+      .event = VIR_DOMAIN_EVENT_ID_LIFECYCLE,
+      .handler = virshDomainEventAwaitConditionDomainInactive,
+    },
+};
+
+
+static char **
+virshDomainAwaitConditionNameCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                       const vshCmd *cmd G_GNUC_UNUSED,
+                                       unsigned int flags)
+{
+    size_t i = 0;
+    GStrv ret = NULL;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, G_N_ELEMENTS(conditions) + 1);
+
+    for (i = 0; i < G_N_ELEMENTS(conditions); i++)
+        ret[i] = g_strdup(conditions[i].name);
+
+    return ret;
+}
+
+
+static const vshCmdInfo info_await = {
+     .help = N_("await a domain event"),
+     .desc = N_("waits for a certain domain event to happen and then terminates"),
+};
+
+static const vshCmdOptDef opts_await[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "condition",
+     .type = VSH_OT_STRING,
+     .required = true,
+     .completer = virshDomainAwaitConditionNameCompleter,
+     .help = N_("which condition to wait until")
+    },
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("timeout seconds")
+    },
+    {.name = NULL}
+};
+
+
+static int
+cmdAwait(vshControl *ctl,
+         const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    int timeout = 0;
+    size_t i;
+    const char *conditionName = NULL;
+    virshControl *priv = ctl->privData;
+    const struct virshDomainEventAwaitCallbackTuple *callback = NULL;
+    int evid = -1;
+    g_auto(virMutex) m = VIR_MUTEX_INITIALIZER;
+    g_auto(virCond) c = VIR_COND_INITIALIZER;
+    struct virshDomEventAwaitConditionData data = {
+        .ctl = ctl,
+        .m = &m,
+        .c = &c,
+    };
+    int ret = -1;
+
+    if (vshCommandOptString(ctl, cmd, "condition", &conditionName) < 0)
+        return -1;
+
+    for (i = 0; i < G_N_ELEMENTS(conditions); i++) {
+        if (STREQ(conditionName, conditions[i].name)) {
+            data.cond = conditions + i;
+            break;
+        }
+    }
+
+    if (!data.cond) {
+        vshError(ctl, _("Unsupported await condition name '%1$s'"), conditionName);
+        return -1;
+    }
+
+    for (i = 0; i < G_N_ELEMENTS(callbacks); i++) {
+        if (data.cond->event == callbacks[i].event) {
+            callback = callbacks + i;
+            break;
+        }
+    }
+
+    if (!callback) {
+        vshError(ctl, _("Missing callback definition for event type '%1$d'"), data.cond->event);
+        return -1;
+    }
+
+    if (vshCommandOptTimeoutToMs(ctl, cmd, &timeout) < 0)
+        return -1;
+
+    if (!(data.dom = dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return -1;
+
+    if (vshEventStart(ctl, timeout) < 0)
+        goto cleanup;
+
+    if ((evid = virConnectDomainEventRegisterAny(priv->conn, dom,
+                                                 callback->event,
+                                                 callback->eventCB,
+                                                 &data,
+                                                 (virFreeCallback) virshDomEventAwaitConditionDataUnregistered)) < 0)
+        goto cleanup;
+
+    /* invoke the handler to ensure initial state update */
+    if ((ret = data.cond->handler(&data)) <= 0)
+        goto cleanup;
+
+    switch (vshEventWait(ctl)) {
+    case VSH_EVENT_INTERRUPT:
+        vshPrintExtra(ctl, "%s", _("event loop interrupted\n"));
+        ret = 2;
+        break;
+
+    case VSH_EVENT_TIMEOUT:
+        vshPrintExtra(ctl, "%s", _("event loop timed out\n"));
+        ret = 2;
+        break;
+
+    case VSH_EVENT_DONE:
+        ret = 0;
+        break;
+
+    default:
+        ret = -1;
+        goto cleanup;
+    }
+
+ cleanup:
+    if (evid >= 0) {
+        virConnectDomainEventDeregisterAny(priv->conn, evid);
+
+        virMutexLock(&m);
+        while (!data.done) {
+            if (virCondWait(&c, &m) < 0)
+                break;
+        }
+        virMutexUnlock(&m);
+    }
+    vshEventCleanup(ctl);
+
+    return ret;
+}
+
 const vshCmdDef domEventCmds[] = {
     {.name = "event",
      .handler = cmdEvent,
      .opts = opts_event,
      .info = &info_event,
+     .flags = 0
+    },
+    {.name = "await",
+     .handler_rv = cmdAwait,
+     .opts = opts_await,
+     .info = &info_await,
      .flags = 0
     },
     {.name = NULL}

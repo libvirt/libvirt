@@ -3062,6 +3062,31 @@ When *--timestamp* is used, a human-readable timestamp will be printed
 before the event.
 
 
+await
+-----
+
+**Syntax:**
+
+::
+
+  await <domain> --condition <string> [--timeout seconds]
+
+Wait until the *--condition* for <domain> is satisfied. Uses events for
+efficient state updates.
+
+Supported conditions:
+
+ *domain-inactive*
+
+    domain is or becomes inactive
+
+If *--timeout* is specified, the command gives up waiting for the condition to
+satisfy after *seconds* have elapsed. If SIGINT is delivered to virsh
+(usually via ``Ctrl-C``) the wait is given up immediately. In non-interactive
+mode virsh will return '2' if either of those cases instead of '1' which means
+an error happened.
+
+
 get-user-sshkeys
 ----------------
 
