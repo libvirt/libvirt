@@ -7118,8 +7118,7 @@ void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
 
 
 qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                                virDomainObj *vm,
-                                                qemuDomainLogContextMode mode)
+                                              virDomainObj *vm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainLogContext *ctxt = QEMU_DOMAIN_LOG_CONTEXT(g_object_new(QEMU_TYPE_DOMAIN_LOG_CONTEXT, NULL));
@@ -7160,25 +7159,22 @@ qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
         /* For unprivileged startup we must truncate the file since
          * we can't rely on logrotate. We don't use O_TRUNC since
          * it is better for SELinux policy if we truncate afterwards */
-        if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START &&
-            !driver->privileged &&
+        if (!driver->privileged &&
             ftruncate(ctxt->writefd, 0) < 0) {
             virReportSystemError(errno, _("failed to truncate %1$s"),
                                  ctxt->path);
             goto error;
         }
 
-        if (mode == QEMU_DOMAIN_LOG_CONTEXT_MODE_START) {
-            if ((ctxt->readfd = open(ctxt->path, O_RDONLY)) < 0) {
-                virReportSystemError(errno, _("failed to open logfile %1$s"),
-                                     ctxt->path);
-                goto error;
-            }
-            if (virSetCloseExec(ctxt->readfd) < 0) {
-                virReportSystemError(errno, _("failed to set close-on-exec flag on %1$s"),
-                                     ctxt->path);
-                goto error;
-            }
+        if ((ctxt->readfd = open(ctxt->path, O_RDONLY)) < 0) {
+            virReportSystemError(errno, _("failed to open logfile %1$s"),
+                                 ctxt->path);
+            goto error;
+        }
+        if (virSetCloseExec(ctxt->readfd) < 0) {
+            virReportSystemError(errno, _("failed to set close-on-exec flag on %1$s"),
+                                 ctxt->path);
+            goto error;
         }
 
         if ((ctxt->pos = lseek(ctxt->writefd, 0, SEEK_END)) < 0) {

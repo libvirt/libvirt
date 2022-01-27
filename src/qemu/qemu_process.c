@@ -7612,8 +7612,7 @@ qemuProcessLaunch(virConnectPtr conn,
     hookData.cfg = cfg;
 
     VIR_DEBUG("Creating domain log file");
-    if (!(logCtxt = qemuDomainLogContextNew(driver, vm,
-                                            QEMU_DOMAIN_LOG_CONTEXT_MODE_START))) {
+    if (!(logCtxt = qemuDomainLogContextNew(driver, vm))) {
         virLastErrorPrefixMessage("%s", _("can't connect to virtlogd"));
         goto cleanup;
     }

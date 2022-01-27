@@ -652,15 +652,8 @@ void qemuDomainObjCheckNetTaint(virQEMUDriver *driver,
                                 virDomainNetDef *net,
                                 qemuDomainLogContext *logCtxt);
 
-typedef enum {
-    QEMU_DOMAIN_LOG_CONTEXT_MODE_START,
-    QEMU_DOMAIN_LOG_CONTEXT_MODE_ATTACH,
-    QEMU_DOMAIN_LOG_CONTEXT_MODE_STOP,
-} qemuDomainLogContextMode;
-
 qemuDomainLogContext *qemuDomainLogContextNew(virQEMUDriver *driver,
-                                                virDomainObj *vm,
-                                                qemuDomainLogContextMode mode);
+                                              virDomainObj *vm);
 int qemuDomainLogContextWrite(qemuDomainLogContext *ctxt,
                               const char *fmt, ...) G_GNUC_PRINTF(2, 3);
 ssize_t qemuDomainLogContextRead(qemuDomainLogContext *ctxt,
