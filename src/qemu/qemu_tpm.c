@@ -50,19 +50,18 @@
 
 VIR_LOG_INIT("qemu.tpm");
 
-/*
- * qemuTPMCreateEmulatorStoragePath
- *
+/**
+ * qemuTPMEmulatorStorageBuildPath:
  * @swtpmStorageDir: directory for swtpm persistent state
- * @uuid: The UUID of the VM for which to create the storage
+ * @uuidstr: UUID of the VM
  * @tpmversion: version of the TPM
  *
- * Create the swtpm's storage path
+ * Generate the swtpm's storage path.
  */
 static char *
-qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
-                                 const char *uuidstr,
-                                 virDomainTPMVersion tpmversion)
+qemuTPMEmulatorStorageBuildPath(const char *swtpmStorageDir,
+                                const char *uuidstr,
+                                virDomainTPMVersion tpmversion)
 {
     char *path = NULL;
     const char *dir = "";
@@ -85,15 +84,15 @@ qemuTPMCreateEmulatorStoragePath(const char *swtpmStorageDir,
 
 
 /**
- * qemuTPMCreateEmulatorLogPath:
- * @logDir: directory where swtpm writes its logs into
+ * qemuTPMEmulatorLogBuildPath:
+ * @logDir: directory for swtpm log files
  * @vmname: name of the VM
  *
- * Create the swtpm's log path.
+ * Generate the swtpm's log path.
  */
 static char*
-qemuTPMCreateEmulatorLogPath(const char *logDir,
-                             const char *vmname)
+qemuTPMEmulatorLogBuildPath(const char *logDir,
+                            const char *vmname)
 {
     return g_strdup_printf("%s/%s-swtpm.log", logDir, vmname);
 }
@@ -163,17 +162,16 @@ qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 }
 
 
-/*
- * qemuTPMCreateEmulatorSocket:
- *
- * @swtpmStateDir: the directory where to create the socket in
+/**
+ * qemuTPMEmulatorSocketBuildPath:
+ * @swtpmStateDir: directory for swtpm runtime state
  * @shortName: short and unique name of the domain
  *
- * Create the Unix socket path from the given parameters
+ * Generate the swtpm's Unix socket path.
  */
 static char *
-qemuTPMCreateEmulatorSocket(const char *swtpmStateDir,
-                            const char *shortName)
+qemuTPMEmulatorSocketBuildPath(const char *swtpmStateDir,
+                               const char *shortName)
 {
     return g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
 }
@@ -202,25 +200,29 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
 
     if (!tpm->data.emulator.storagepath &&
         !(tpm->data.emulator.storagepath =
-            qemuTPMCreateEmulatorStoragePath(swtpmStorageDir, uuidstr,
-                                             tpm->version)))
+            qemuTPMEmulatorStorageBuildPath(swtpmStorageDir, uuidstr,
+                                            tpm->version)))
         return -1;
 
     if (!tpm->data.emulator.logfile) {
-        tpm->data.emulator.logfile = qemuTPMCreateEmulatorLogPath(logDir,
-                                                                  vmname);
+        tpm->data.emulator.logfile = qemuTPMEmulatorLogBuildPath(logDir,
+                                                                 vmname);
     }
 
     return 0;
 }
 
 
-/*
- * qemuTPMCreatePidFilename
+/**
+ * qemuTPMEmulatorPidFileBuildPath:
+ * @swtpmStateDir: directory for swtpm runtime state
+ * @shortName: short and unique name of the domain
+ *
+ * Generate the swtpm's pidfile path.
  */
 static char *
-qemuTPMEmulatorCreatePidFilename(const char *swtpmStateDir,
-                                 const char *shortName)
+qemuTPMEmulatorPidFileBuildPath(const char *swtpmStateDir,
+                                const char *shortName)
 {
     g_autofree char *devicename = NULL;
 
@@ -246,9 +248,8 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
                       const char *shortName,
                       pid_t *pid)
 {
-    g_autofree char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
-                                                                shortName);
-
+    g_autofree char *pidfile = qemuTPMEmulatorPidFileBuildPath(swtpmStateDir,
+                                                               shortName);
     if (!pidfile)
         return -1;
 
@@ -333,7 +334,7 @@ qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
     /* create the socket filename */
     if (!tpm->data.emulator.source->data.nix.path &&
         !(tpm->data.emulator.source->data.nix.path =
-          qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
+          qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)))
         return -1;
     tpm->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
 
@@ -790,7 +791,7 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
     if (!swtpm_ioctl)
         return;
 
-    if (!(pathname = qemuTPMCreateEmulatorSocket(swtpmStateDir, shortName)))
+    if (!(pathname = qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)))
         return;
 
     if (!virFileExists(pathname))
@@ -949,7 +950,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "TPM Emulator") < 0)
         return -1;
 
-    if (!(pidfile = qemuTPMEmulatorCreatePidFilename(cfg->swtpmStateDir, shortName)))
+    if (!(pidfile = qemuTPMEmulatorPidFileBuildPath(cfg->swtpmStateDir, shortName)))
         return -1;
 
     virCommandDaemonize(cmd);
