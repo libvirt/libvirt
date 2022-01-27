@@ -17,10 +17,6 @@ QEMU_AUDIO_DRV=none \
 -realtime mlock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -numa node,nodeid=0,cpus=0-1,mem=1024 \
--object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,prealloc=on,size=1073741824,host-nodes=1-3,policy=bind \
--device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
--object memory-backend-file,id=memdimm1,mem-path=/var/lib/libvirt/qemu/ram/-1-fedora/dimm1,discard-data=on,share=off,size=536870912 \
--device pc-dimm,node=0,memdev=memdimm1,id=dimm1,slot=1 \
 -uuid 63840878-0deb-4095-97e6-fc444d9bc9fa \
 -display none \
 -no-user-config \
@@ -32,4 +28,8 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -usb \
+-object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,prealloc=on,size=1073741824,host-nodes=1-3,policy=bind \
+-device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
+-object memory-backend-file,id=memdimm1,mem-path=/var/lib/libvirt/qemu/ram/-1-fedora/dimm1,discard-data=on,share=off,size=536870912 \
+-device pc-dimm,node=0,memdev=memdimm1,id=dimm1,slot=1 \
 -msg timestamp=on

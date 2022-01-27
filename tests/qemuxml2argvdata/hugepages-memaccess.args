@@ -24,8 +24,6 @@ QEMU_AUDIO_DRV=none \
 -numa node,nodeid=2,cpus=2,memdev=ram-node2 \
 -object memory-backend-file,id=ram-node3,mem-path=/dev/hugepages1G/libvirt/qemu/-1-QEMUGuest1,share=off,prealloc=on,size=1073741824,host-nodes=3,policy=bind \
 -numa node,nodeid=3,cpus=3,memdev=ram-node3 \
--object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=on,prealloc=on,size=536870912,host-nodes=0-3,policy=bind \
--device pc-dimm,node=1,memdev=memdimm0,id=dimm0,slot=0,addr=4294967296 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
 -no-user-config \
@@ -37,6 +35,8 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -usb \
+-object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages2M/libvirt/qemu/-1-QEMUGuest1,share=on,prealloc=on,size=536870912,host-nodes=0-3,policy=bind \
+-device pc-dimm,node=1,memdev=memdimm0,id=dimm0,slot=0,addr=4294967296 \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \
