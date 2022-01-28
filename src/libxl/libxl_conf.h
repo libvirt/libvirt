@@ -204,14 +204,12 @@ libxlMakeVfb(virPortAllocatorRange *graphicsports,
 int
 libxlMakePCI(virDomainHostdevDef *hostdev, libxl_device_pci *pcidev);
 
-#ifdef LIBXL_HAVE_PVUSB
 int
 libxlMakeUSBController(virDomainControllerDef *controller,
                        libxl_device_usbctrl *usbctrl);
 
 int
 libxlMakeUSB(virDomainHostdevDef *hostdev, libxl_device_usbdev *usbdev);
-#endif
 
 virDomainXMLOption *
 libxlCreateXMLConf(libxlDriverPrivate *driver);
