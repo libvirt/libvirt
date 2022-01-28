@@ -12746,7 +12746,6 @@ virDomainGraphicsDefNew(virDomainXMLOption *xmlopt)
     if (xmlopt && xmlopt->privateData.graphicsNew &&
         !(def->privateData = xmlopt->privateData.graphicsNew())) {
         VIR_FREE(def);
-        def = NULL;
     }
 
     return def;

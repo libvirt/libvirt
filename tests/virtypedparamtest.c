@@ -106,7 +106,6 @@ testTypedParamsFilter(const void *opaque G_GNUC_UNUSED)
             goto cleanup;
     }
     VIR_FREE(filtered);
-    filtered = NULL;
 
     nfiltered = virTypedParamsFilter(params, G_N_ELEMENTS(params),
                                      "bar", &filtered);
