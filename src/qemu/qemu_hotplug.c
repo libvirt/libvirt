@@ -4297,8 +4297,7 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
 
             /* Steal the new dev's  char * reference */
             VIR_FREE(olddev->data.vnc.auth.passwd);
-            olddev->data.vnc.auth.passwd = dev->data.vnc.auth.passwd;
-            dev->data.vnc.auth.passwd = NULL;
+            olddev->data.vnc.auth.passwd = g_steal_pointer(&dev->data.vnc.auth.passwd);
             olddev->data.vnc.auth.validTo = dev->data.vnc.auth.validTo;
             olddev->data.vnc.auth.expires = dev->data.vnc.auth.expires;
             olddev->data.vnc.auth.connected = dev->data.vnc.auth.connected;
@@ -4345,8 +4344,7 @@ qemuDomainChangeGraphics(virQEMUDriver *driver,
 
             /* Steal the new dev's char * reference */
             VIR_FREE(olddev->data.spice.auth.passwd);
-            olddev->data.spice.auth.passwd = dev->data.spice.auth.passwd;
-            dev->data.spice.auth.passwd = NULL;
+            olddev->data.spice.auth.passwd = g_steal_pointer(&dev->data.spice.auth.passwd);
             olddev->data.spice.auth.validTo = dev->data.spice.auth.validTo;
             olddev->data.spice.auth.expires = dev->data.spice.auth.expires;
             olddev->data.spice.auth.connected = dev->data.spice.auth.connected;

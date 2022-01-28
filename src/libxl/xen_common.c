@@ -682,9 +682,8 @@ xenParseVfb(virConf *conf, virDomainDef *def)
             if (xenConfigCopyStringOpt(conf, "keymap", &graphics->data.vnc.keymap) < 0)
                 goto cleanup;
             def->graphics = g_new0(virDomainGraphicsDef *, 1);
-            def->graphics[0] = graphics;
+            def->graphics[0] = g_steal_pointer(&graphics);
             def->ngraphics = 1;
-            graphics = NULL;
         } else {
             if (xenConfigGetBool(conf, "sdl", &val, 0) < 0)
                 goto cleanup;
@@ -696,9 +695,8 @@ xenParseVfb(virConf *conf, virDomainDef *def)
                 if (xenConfigCopyStringOpt(conf, "xauthority", &graphics->data.sdl.xauth) < 0)
                     goto cleanup;
                 def->graphics = g_new0(virDomainGraphicsDef *, 1);
-                def->graphics[0] = graphics;
+                def->graphics[0] = g_steal_pointer(&graphics);
                 def->ngraphics = 1;
-                graphics = NULL;
             }
         }
     }
@@ -774,9 +772,8 @@ xenParseVfb(virConf *conf, virDomainDef *def)
                 VIR_FREE(listenAddr);
             }
             def->graphics = g_new0(virDomainGraphicsDef *, 1);
-            def->graphics[0] = graphics;
+            def->graphics[0] = g_steal_pointer(&graphics);
             def->ngraphics = 1;
-            graphics = NULL;
         } else {
             if (xenHandleConfGetValueStringListErrors(rc) < 0)
                 goto cleanup;
@@ -953,9 +950,8 @@ xenParseCharDev(virConf *conf, virDomainDef *def, const char *nativeFormat)
 
             chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL;
             chr->target.port = 0;
-            def->parallels[0] = chr;
+            def->parallels[0] = g_steal_pointer(&chr);
             def->nparallels++;
-            chr = NULL;
         }
 
         /* Try to get the list of values to support multiple serial ports */

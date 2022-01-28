@@ -3443,8 +3443,7 @@ storageBackendProbeTarget(virStorageSource *target,
 
             target->backingStore = virStorageSourceNew();
             target->backingStore->type = VIR_STORAGE_TYPE_NETWORK;
-            target->backingStore->path = meta->backingStoreRaw;
-            meta->backingStoreRaw = NULL;
+            target->backingStore->path = g_steal_pointer(&meta->backingStoreRaw);
             target->backingStore->format = VIR_STORAGE_FILE_RAW;
         }
 
@@ -3479,8 +3478,7 @@ storageBackendProbeTarget(virStorageSource *target,
         if (meta->encryption->payload_offset != -1)
             target->capacity -= meta->encryption->payload_offset * 512;
 
-        *encryption = meta->encryption;
-        meta->encryption = NULL;
+        *encryption = g_steal_pointer(&meta->encryption);
 
         /* XXX ideally we'd fill in secret UUID here
          * but we cannot guarantee 'conn' is non-NULL

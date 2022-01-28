@@ -3029,8 +3029,7 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
     if (mig->lockState) {
         VIR_DEBUG("Received lockstate %s", mig->lockState);
         VIR_FREE(priv->lockState);
-        priv->lockState = mig->lockState;
-        mig->lockState = NULL;
+        priv->lockState = g_steal_pointer(&mig->lockState);
     } else {
         VIR_DEBUG("Received no lockstate");
     }
@@ -5598,8 +5597,7 @@ qemuMigrationDstPersist(virQEMUDriver *driver,
  error:
     virDomainDefFree(vm->newDef);
     vm->persistent = oldPersist;
-    vm->newDef = oldDef;
-    oldDef = NULL;
+    vm->newDef = g_steal_pointer(&oldDef);
     return -1;
 }
 
@@ -5778,8 +5776,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     }
 
     if (mig->jobInfo) {
-        jobInfo = mig->jobInfo;
-        mig->jobInfo = NULL;
+        jobInfo = g_steal_pointer(&mig->jobInfo);
 
         if (jobInfo->sent && timeReceived) {
             jobInfo->timeDelta = timeReceived - jobInfo->sent;

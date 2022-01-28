@@ -1033,8 +1033,7 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
             if (root != ctx->service->rootFolder)
                 esxVI_ManagedObjectReference_Free(&root);
 
-            root = folder->_reference;
-            folder->_reference = NULL;
+            root = g_steal_pointer(&folder->_reference);
         } else {
             /* Try to lookup item as a datacenter */
             if (esxVI_LookupDatacenter(ctx, item, root, NULL, &ctx->datacenter,
@@ -1087,8 +1086,7 @@ esxVI_Context_LookupManagedObjectsByPath(esxVI_Context *ctx, const char *path)
             if (root != ctx->datacenter->hostFolder)
                 esxVI_ManagedObjectReference_Free(&root);
 
-            root = folder->_reference;
-            folder->_reference = NULL;
+            root = g_steal_pointer(&folder->_reference);
         } else {
             /* Try to lookup item as a compute resource */
             if (esxVI_LookupComputeResource(ctx, item, root, NULL,

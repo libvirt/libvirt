@@ -290,13 +290,10 @@ virStorageBackendGlusterRefreshVol(virStorageBackendGlusterState *state,
     if (meta->capacity)
         vol->target.capacity = meta->capacity;
     if (meta->encryption) {
-        vol->target.encryption = meta->encryption;
-        meta->encryption = NULL;
+        vol->target.encryption = g_steal_pointer(&meta->encryption);
     }
-    vol->target.features = meta->features;
-    meta->features = NULL;
-    vol->target.compat = meta->compat;
-    meta->compat = NULL;
+    vol->target.features = g_steal_pointer(&meta->features);
+    vol->target.compat = g_steal_pointer(&meta->compat);
 
     *volptr = g_steal_pointer(&vol);
     ret = 0;

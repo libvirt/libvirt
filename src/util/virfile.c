@@ -967,8 +967,7 @@ int virFileNBDDeviceAssociate(const char *file,
 
     VIR_DEBUG("Associated NBD device %s with file %s and format %s",
               nbddev, file, fmtstr);
-    *dev = nbddev;
-    nbddev = NULL;
+    *dev = g_steal_pointer(&nbddev);
 
     return 0;
 }

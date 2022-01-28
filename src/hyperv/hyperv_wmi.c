@@ -994,8 +994,7 @@ hypervEnumAndPull(hypervPrivate *priv, hypervWqlQuery *wqlQuery,
         response = NULL;
     }
 
-    *list = head;
-    head = NULL;
+    *list = g_steal_pointer(&head);
 
     return 0;
 }

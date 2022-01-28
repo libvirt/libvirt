@@ -586,8 +586,7 @@ virHostdevRestoreNetConfig(virDomainHostdevDef *hostdev,
          */
         if (MAC) {
             VIR_FREE(adminMAC);
-            adminMAC = MAC;
-            MAC = NULL;
+            adminMAC = g_steal_pointer(&MAC);
         }
 
         ignore_value(virNetDevSetNetConfig(linkdev, vf,

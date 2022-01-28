@@ -254,7 +254,6 @@ virLeaseNew(virJSONValue **lease_ret,
     if (virJSONValueObjectAppendNumberLong(lease_new, "expiry-time", expirytime) < 0)
         return -1;
 
-    *lease_ret = lease_new;
-    lease_new = NULL;
+    *lease_ret = g_steal_pointer(&lease_new);
     return 0;
 }

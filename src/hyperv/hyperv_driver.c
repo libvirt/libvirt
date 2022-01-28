@@ -1780,8 +1780,7 @@ hypervConnectOpen(virConnectPtr conn, virConnectAuthPtr auth,
 
     priv->version = g_strdup(os->data->Version);
 
-    conn->privateData = priv;
-    priv = NULL;
+    conn->privateData = g_steal_pointer(&priv);
     result = VIR_DRV_OPEN_SUCCESS;
 
  cleanup:
@@ -3519,8 +3518,7 @@ hypervConnectListAllDomains(virConnectPtr conn,
     }
 
     if (doms)
-        *domains = doms;
-    doms = NULL;
+        *domains = g_steal_pointer(&doms);
     ret = count;
 
  cleanup:

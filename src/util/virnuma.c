@@ -839,16 +839,13 @@ virNumaGetPages(int node,
     } while (exchange);
 
     if (pages_size) {
-        *pages_size = tmp_size;
-        tmp_size = NULL;
+        *pages_size = g_steal_pointer(&tmp_size);
     }
     if (pages_avail) {
-        *pages_avail = tmp_avail;
-        tmp_avail = NULL;
+        *pages_avail = g_steal_pointer(&tmp_avail);
     }
     if (pages_free) {
-        *pages_free = tmp_free;
-        tmp_free = NULL;
+        *pages_free = g_steal_pointer(&tmp_free);
     }
     *npages = ntmp;
     return 0;
