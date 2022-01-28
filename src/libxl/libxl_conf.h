@@ -149,11 +149,7 @@ struct _libxlDriverPrivate {
 };
 
 #define LIBXL_SAVE_MAGIC "libvirt-xml\n \0 \r"
-#ifdef LIBXL_HAVE_SRM_V2
-# define LIBXL_SAVE_VERSION 2
-#else
-# define LIBXL_SAVE_VERSION 1
-#endif
+#define LIBXL_SAVE_VERSION 2
 
 typedef struct _libxlSavefileHeader libxlSavefileHeader;
 struct _libxlSavefileHeader {
