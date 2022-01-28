@@ -220,11 +220,6 @@ libxlMakeUSB(virDomainHostdevDef *hostdev, libxl_device_usbdev *usbdev);
 virDomainXMLOption *
 libxlCreateXMLConf(libxlDriverPrivate *driver);
 
-#ifdef LIBXL_HAVE_DEVICE_CHANNEL
-# define LIBXL_ATTR_UNUSED
-#else
-# define LIBXL_ATTR_UNUSED G_GNUC_UNUSED
-#endif
 int
 libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
                        virDomainDef *def,
