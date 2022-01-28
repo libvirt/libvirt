@@ -49,25 +49,6 @@ VIR_LOG_INIT("ch.ch_driver");
 
 virCHDriver *ch_driver = NULL;
 
-static virDomainObj *
-chDomObjFromDomain(virDomain *domain)
-{
-    virDomainObj *vm;
-    virCHDriver *driver = domain->conn->privateData;
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    vm = virDomainObjListFindByUUID(driver->domains, domain->uuid);
-    if (!vm) {
-        virUUIDFormat(domain->uuid, uuidstr);
-        virReportError(VIR_ERR_NO_DOMAIN,
-                       _("no domain with matching uuid '%s' (%s)"),
-                       uuidstr, domain->name);
-        return NULL;
-    }
-
-    return vm;
-}
-
 /* Functions */
 static int
 chConnectURIProbe(char **uri)
@@ -271,7 +252,7 @@ chDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -349,7 +330,7 @@ chDomainUndefineFlags(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainUndefineFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -387,7 +368,7 @@ static int chDomainIsActive(virDomainPtr dom)
     int ret = -1;
 
     chDriverLock(driver);
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainIsActiveEnsureACL(dom->conn, vm->def) < 0)
@@ -412,7 +393,7 @@ chDomainShutdownFlags(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -468,7 +449,7 @@ chDomainReboot(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(VIR_DOMAIN_REBOOT_ACPI_POWER_BTN, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -517,7 +498,7 @@ chDomainSuspend(virDomainPtr dom)
     virDomainObj *vm;
     int ret = -1;
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -562,7 +543,7 @@ chDomainResume(virDomainPtr dom)
     virDomainObj *vm;
     int ret = -1;
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     priv = vm->privateData;
@@ -618,7 +599,7 @@ chDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
 
     virCheckFlags(0, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
@@ -742,7 +723,7 @@ chDomainGetState(virDomainPtr dom,
 
     virCheckFlags(0, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetStateEnsureACL(dom->conn, vm->def) < 0)
@@ -765,7 +746,7 @@ static char *chDomainGetXMLDesc(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_XML_COMMON_FLAGS, NULL);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -785,7 +766,7 @@ static int chDomainGetInfo(virDomainPtr dom,
     virDomainObj *vm;
     int ret = -1;
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -820,7 +801,7 @@ chDomainOpenConsole(virDomainPtr dom,
 
      virCheckFlags(VIR_DOMAIN_CONSOLE_SAFE | VIR_DOMAIN_CONSOLE_FORCE, -1);
 
-     if (!(vm = chDomObjFromDomain(dom)))
+     if (!(vm = virCHDomainObjFromDomain(dom)))
           goto cleanup;
 
      if (virDomainOpenConsoleEnsureACL(dom->conn, vm->def) < 0)
@@ -954,7 +935,7 @@ chDomainGetVcpusFlags(virDomainPtr dom,
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_VCPU_MAXIMUM | VIR_DOMAIN_VCPU_GUEST, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         return -1;
 
     if (virDomainGetVcpusFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
@@ -999,7 +980,7 @@ chDomainGetVcpuPinInfo(virDomain *dom,
 
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE | VIR_DOMAIN_AFFECT_CONFIG, -1);
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetVcpuPinInfoEnsureACL(dom->conn, vm->def) < 0)
@@ -1110,7 +1091,7 @@ chDomainGetVcpus(virDomainPtr dom,
     virDomainObj *vm;
     int ret = -1;
 
-    if (!(vm = chDomObjFromDomain(dom)))
+    if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainGetVcpusEnsureACL(dom->conn, vm->def) < 0)

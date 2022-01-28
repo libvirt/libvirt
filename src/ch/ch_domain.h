@@ -99,3 +99,6 @@ virCHDomainHasVcpuPids(virDomainObj *vm);
 
 char *
 virCHDomainGetMachineName(virDomainObj *vm);
+
+virDomainObj *
+virCHDomainObjFromDomain(virDomainPtr domain);
