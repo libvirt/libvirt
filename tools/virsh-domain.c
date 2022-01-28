@@ -9721,6 +9721,11 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
      .type = VSH_OT_BOOL,
      .help = N_("extract the value of the 'return' key from the returned string")
     },
+    {.name = "pass-fds",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("pass file descriptors N,M,... along with the command")
+    },
     {.name = "cmd",
      .type = VSH_OT_ARGV,
      .flags = VSH_OFLAG_REQ,
@@ -9819,6 +9824,8 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
     bool returnval = vshCommandOptBool(cmd, "return-value");
     virJSONValue *formatjson;
     g_autofree char *jsonstr = NULL;
+    g_autofree int *fds = NULL;
+    size_t nfds = 0;
 
     VSH_EXCLUSIVE_OPTIONS("hmp", "pretty");
     VSH_EXCLUSIVE_OPTIONS("hmp", "return-value");
@@ -9838,8 +9845,18 @@ cmdQemuMonitorCommand(vshControl *ctl, const vshCmd *cmd)
         return NULL;
     }
 
-    if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
+    if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
         return false;
+
+    if (fds) {
+        if (virDomainQemuMonitorCommandWithFiles(dom, monitor_cmd, nfds, fds,
+                                                 NULL, NULL,
+                                                 &result, flags) < 0)
+            return false;
+    } else {
+        if (virDomainQemuMonitorCommand(dom, monitor_cmd, &result, flags) < 0)
+            return false;
+    }
 
     if (returnval || pretty) {
         resultjson = virJSONValueFromString(result);

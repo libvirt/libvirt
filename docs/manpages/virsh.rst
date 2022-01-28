@@ -7897,7 +7897,8 @@ qemu-monitor-command
 
 ::
 
-   qemu-monitor-command domain { [--hmp] | [--pretty] [--return-value] } command...
+   qemu-monitor-command domain { [--hmp] | [--pretty] [--return-value] }
+       [--pass-fds N,M,...] command...
 
 Send an arbitrary monitor command *command* to domain *domain* through the
 QEMU monitor.  The results of the command will be printed on stdout.
@@ -7930,6 +7931,9 @@ extracted rather than passing through the full reply from QEMU.
 If *--hmp* is passed, the command is considered to be a human monitor command
 and libvirt will automatically convert it into QMP and convert the result back.
 
+If *--pass-fds* is specified, the argument is a comma separated list
+of open file descriptors which should be passed on to qemu along with the
+command.
 
 qemu-agent-command
 ------------------
