@@ -43,6 +43,7 @@ qemuMonitorJSONIOProcess(qemuMonitor *mon,
 int
 qemuMonitorJSONHumanCommand(qemuMonitor *mon,
                             const char *cmd,
+                            int fd,
                             char **reply);
 
 int
@@ -369,6 +370,7 @@ qemuMonitorJSONDiskNameLookup(qemuMonitor *mon,
 int
 qemuMonitorJSONArbitraryCommand(qemuMonitor *mon,
                                 const char *cmd_str,
+                                int fd,
                                 char **reply_str);
 
 int

@@ -1088,6 +1088,7 @@ char *qemuMonitorDiskNameLookup(qemuMonitor *mon,
 
 int qemuMonitorArbitraryCommand(qemuMonitor *mon,
                                 const char *cmd,
+                                int fd,
                                 char **reply,
                                 bool hmp);
 

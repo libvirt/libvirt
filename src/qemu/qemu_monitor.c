@@ -3074,17 +3074,18 @@ qemuMonitorDrivePivot(qemuMonitor *mon,
 int
 qemuMonitorArbitraryCommand(qemuMonitor *mon,
                             const char *cmd,
+                            int fd,
                             char **reply,
                             bool hmp)
 {
-    VIR_DEBUG("cmd=%s, reply=%p, hmp=%d", cmd, reply, hmp);
+    VIR_DEBUG("cmd=%s, fd=%d, reply=%p, hmp=%d", cmd, fd, reply, hmp);
 
     QEMU_CHECK_MONITOR(mon);
 
     if (hmp)
-        return qemuMonitorJSONHumanCommand(mon, cmd, reply);
+        return qemuMonitorJSONHumanCommand(mon, cmd, fd, reply);
     else
-        return qemuMonitorJSONArbitraryCommand(mon, cmd, reply);
+        return qemuMonitorJSONArbitraryCommand(mon, cmd, fd, reply);
 }
 
 

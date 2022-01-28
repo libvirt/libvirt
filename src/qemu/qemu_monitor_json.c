@@ -1438,6 +1438,7 @@ qemuMonitorJSONHandleGuestCrashloaded(qemuMonitor *mon,
 int
 qemuMonitorJSONHumanCommand(qemuMonitor *mon,
                             const char *cmd_str,
+                            int fd,
                             char **reply_str)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -1449,7 +1450,7 @@ qemuMonitorJSONHumanCommand(qemuMonitor *mon,
                                      "s:command-line", cmd_str,
                                      NULL);
 
-    if (!cmd || qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+    if (!cmd || qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply) < 0)
         return -1;
 
     if (qemuMonitorJSONHasError(reply, "CommandNotFound")) {
@@ -4471,6 +4472,7 @@ qemuMonitorJSONDiskNameLookup(qemuMonitor *mon,
 
 int qemuMonitorJSONArbitraryCommand(qemuMonitor *mon,
                                     const char *cmd_str,
+                                    int fd,
                                     char **reply_str)
 {
     g_autoptr(virJSONValue) cmd = NULL;
@@ -4479,7 +4481,7 @@ int qemuMonitorJSONArbitraryCommand(qemuMonitor *mon,
     if (!(cmd = virJSONValueFromString(cmd_str)))
         return -1;
 
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+    if (qemuMonitorJSONCommandWithFd(mon, cmd, fd, &reply) < 0)
         return -1;
 
     if (!(*reply_str = virJSONValueToString(reply, false)))

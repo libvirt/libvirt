@@ -13920,21 +13920,44 @@ qemuDomainBackupGetXMLDesc(virDomainPtr domain,
 }
 
 
-static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
-                                        char **result, unsigned int flags)
+static int
+qemuDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
+                                      const char *cmd,
+                                      unsigned int ninfds,
+                                      int *infds,
+                                      unsigned int *noutfds,
+                                      int **outfds,
+                                      char **result,
+                                      unsigned int flags)
 {
     virQEMUDriver *driver = domain->conn->privateData;
     virDomainObj *vm = NULL;
     int ret = -1;
     qemuDomainObjPrivate *priv;
     bool hmp;
+    int fd = -1;
 
     virCheckFlags(VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP, -1);
+
+    /* currently we don't pass back any fds */
+    if (outfds)
+        *outfds = NULL;
+    if (noutfds)
+        *noutfds = 0;
+
+    if (ninfds > 1) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("at most 1 fd can be passed to qemu along with a command"));
+        return -1;
+    }
+
+    if (ninfds == 1)
+        fd = infds[0];
 
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
-    if (virDomainQemuMonitorCommandEnsureACL(domain->conn, vm->def) < 0)
+    if (virDomainQemuMonitorCommandWithFilesEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_QUERY) < 0)
@@ -13950,7 +13973,7 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
     hmp = !!(flags & VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP);
 
     qemuDomainObjEnterMonitor(driver, vm);
-    ret = qemuMonitorArbitraryCommand(priv->mon, cmd, result, hmp);
+    ret = qemuMonitorArbitraryCommand(priv->mon, cmd, fd, result, hmp);
     qemuDomainObjExitMonitor(driver, vm);
 
  endjob:
@@ -13959,6 +13982,16 @@ static int qemuDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
+}
+
+
+static int
+qemuDomainQemuMonitorCommand(virDomainPtr domain,
+                             const char *cmd,
+                             char **result,
+                             unsigned int flags)
+{
+    return qemuDomainQemuMonitorCommandWithFiles(domain, cmd, 0, NULL, NULL, NULL, result, flags);
 }
 
 
@@ -20923,6 +20956,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainRevertToSnapshot = qemuDomainRevertToSnapshot, /* 0.8.0 */
     .domainSnapshotDelete = qemuDomainSnapshotDelete, /* 0.8.0 */
     .domainQemuMonitorCommand = qemuDomainQemuMonitorCommand, /* 0.8.3 */
+    .domainQemuMonitorCommandWithFiles = qemuDomainQemuMonitorCommandWithFiles, /* 8.2.0 */
     .domainQemuAttach = NULL, /* 0.9.4 - 5.5.0 */
     .domainQemuAgentCommand = qemuDomainQemuAgentCommand, /* 0.10.0 */
     .connectDomainQemuMonitorEventRegister = qemuConnectDomainQemuMonitorEventRegister, /* 1.2.3 */
