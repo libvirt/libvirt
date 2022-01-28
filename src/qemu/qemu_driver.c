@@ -19975,12 +19975,12 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
     virDomainObj *vm;
     int ret = -1;
     int rc;
-    g_autoptr(virQEMUCaps) qemucaps = NULL;
     const char *secrethdr = NULL;
     const char *secret = NULL;
     unsigned long long setaddr = 0;
     bool hasSetaddr = false;
     int state;
+    qemuDomainObjPrivate *priv;
 
     virCheckFlags(0, -1);
     if (virTypedParamsValidate(params, nparams,
@@ -19996,6 +19996,8 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
     if (!(vm = qemuDomainObjFromDomain(domain)))
         goto cleanup;
 
+    priv = vm->privateData;
+
     if (virDomainSetLaunchSecurityStateEnsureACL(domain->conn, vm->def) < 0)
         goto cleanup;
 
@@ -20004,17 +20006,6 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
         vm->def->sec->sectype != VIR_DOMAIN_LAUNCH_SECURITY_SEV) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("setting a launch secret is only supported in SEV-enabled domains"));
-        goto cleanup;
-    }
-
-    if (!(qemucaps = virQEMUCapsCacheLookupDefault(driver->qemuCapsCache,
-                                                   NULL, NULL, NULL, NULL,
-                                                   NULL, NULL, NULL)))
-        goto cleanup;
-
-    if (!virQEMUCapsGet(qemucaps, QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("QEMU does not support setting a launch secret"));
         goto cleanup;
     }
 
@@ -20047,6 +20038,12 @@ qemuDomainSetLaunchSecurityState(virDomainPtr domain,
     if (state != VIR_DOMAIN_PAUSED) {
         virReportError(VIR_ERR_OPERATION_INVALID,
                        "%s", _("domain must be in a paused state"));
+        goto endjob;
+    }
+
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("QEMU does not support setting a launch secret"));
         goto endjob;
     }
 
