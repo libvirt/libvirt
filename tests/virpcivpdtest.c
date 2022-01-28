@@ -227,7 +227,7 @@ testPCIVPDResourceCustomCompareIndex(const void *data G_GNUC_UNUSED)
         return -1;
 
     /* Different index, same value pointers */
-    g_free(b->value);
+    g_clear_pointer(&b->value, g_free);
     b->value = a->value;
     if (virPCIVPDResourceCustomCompareIndex(b, a)) {
         b->value = NULL;

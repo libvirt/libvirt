@@ -209,8 +209,7 @@ qemuBlockJobUnregister(qemuBlockJobData *job,
         diskPriv = QEMU_DOMAIN_DISK_PRIVATE(job->disk);
 
         if (job == diskPriv->blockjob) {
-            virObjectUnref(diskPriv->blockjob);
-            diskPriv->blockjob = NULL;
+            g_clear_pointer(&diskPriv->blockjob, virObjectUnref);
         }
 
         job->disk = NULL;
@@ -698,8 +697,7 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObj *vm,
         /* discard any detected backing store */
         if (virStorageSourceIsBacking(n->backingStore) &&
             n->backingStore->detected) {
-            virObjectUnref(n->backingStore);
-            n->backingStore = NULL;
+            g_clear_pointer(&n->backingStore, virObjectUnref);
             break;
         }
     }
@@ -827,8 +825,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriver *driver,
              * Remove security driver metadata so that they are not leaked. */
             qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
 
-            virObjectUnref(disk->mirror);
-            disk->mirror = NULL;
+            g_clear_pointer(&disk->mirror, virObjectUnref);
         }
         disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
         disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
@@ -940,8 +937,7 @@ qemuBlockJobClearConfigChain(virDomainObj *vm,
     if (!virStorageSourceIsSameLocation(disk->src, cfgdisk->src))
         return;
 
-    virObjectUnref(cfgdisk->src->backingStore);
-    cfgdisk->src->backingStore = NULL;
+    g_clear_pointer(&cfgdisk->src->backingStore, virObjectUnref);
 }
 
 
@@ -1232,8 +1228,7 @@ qemuBlockJobProcessEventCompletedCommit(virQEMUDriver *driver,
     if (job->data.commit.deleteCommittedImages)
         qemuBlockJobDeleteImages(driver, vm, job->disk, job->data.commit.top);
 
-    virObjectUnref(job->data.commit.top);
-    job->data.commit.top = NULL;
+    g_clear_pointer(&job->data.commit.top, virObjectUnref);
 
     if (cfgbaseparent) {
         cfgbase = g_steal_pointer(&cfgbaseparent->backingStore);
@@ -1327,11 +1322,9 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriver *driver,
     if (job->data.commit.deleteCommittedImages)
         qemuBlockJobDeleteImages(driver, vm, job->disk, job->data.commit.top);
 
-    virObjectUnref(job->data.commit.top);
-    job->data.commit.top = NULL;
+    g_clear_pointer(&job->data.commit.top, virObjectUnref);
     /* the mirror element does not serve functional purpose for the commit job */
-    virObjectUnref(job->disk->mirror);
-    job->disk->mirror = NULL;
+    g_clear_pointer(&job->disk->mirror, virObjectUnref);
 }
 
 
@@ -1422,8 +1415,7 @@ qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
 
     /* activeWrite bitmap is removed automatically here */
     qemuBlockJobEventProcessConcludedRemoveChain(driver, vm, asyncJob, job->disk->mirror);
-    virObjectUnref(job->disk->mirror);
-    job->disk->mirror = NULL;
+    g_clear_pointer(&job->disk->mirror, virObjectUnref);
 }
 
 
@@ -1455,8 +1447,7 @@ qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriver *driver,
      * not leaking security driver metadata is more important. */
     qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
 
-    virObjectUnref(disk->mirror);
-    disk->mirror = NULL;
+    g_clear_pointer(&disk->mirror, virObjectUnref);
 }
 
 
@@ -1472,8 +1463,7 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriver *driver,
      * it will handle further hotplug of the created volume and also that
      * the 'chain' which was registered is under their control */
     if (job->synchronous) {
-        virObjectUnref(job->chain);
-        job->chain = NULL;
+        g_clear_pointer(&job->chain, virObjectUnref);
         return;
     }
 

@@ -179,8 +179,7 @@ getJobResultHelper(PRL_HANDLE job, unsigned int timeout, PRL_HANDLE *result,
         ret = PrlJob_GetResult(job, result);
         if (PRL_FAILED(ret)) {
             logPrlErrorHelper(ret, filename, funcname, linenr);
-            PrlHandle_Free(*result);
-            *result = NULL;
+            g_clear_pointer(result, PrlHandle_Free);
             goto cleanup;
         }
 

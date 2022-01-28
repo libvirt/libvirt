@@ -3921,8 +3921,7 @@ processSerialChangedEvent(virQEMUDriver *driver,
                 goto endjob;
         } else {
             if (priv->agent) {
-                qemuAgentClose(priv->agent);
-                priv->agent = NULL;
+                g_clear_pointer(&priv->agent, qemuAgentClose);
             }
             priv->agentError = false;
         }
@@ -7492,8 +7491,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
                            _("domain has no watchdog"));
             return -1;
         }
-        virDomainWatchdogDefFree(vmdef->watchdog);
-        vmdef->watchdog = NULL;
+        g_clear_pointer(&vmdef->watchdog, virDomainWatchdogDefFree);
         break;
 
     case VIR_DOMAIN_DEVICE_INPUT:
@@ -7512,8 +7510,7 @@ qemuDomainDetachDeviceConfig(virDomainDef *vmdef,
                            _("matching vsock device not found"));
             return -1;
         }
-        virDomainVsockDefFree(vmdef->vsock);
-        vmdef->vsock = NULL;
+        g_clear_pointer(&vmdef->vsock, virDomainVsockDefFree);
         break;
 
     case VIR_DOMAIN_DEVICE_VIDEO:

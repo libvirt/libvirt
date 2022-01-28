@@ -103,8 +103,7 @@ virSecretObjEndAPI(virSecretObj **obj)
         return;
 
     virObjectUnlock(*obj);
-    virObjectUnref(*obj);
-    *obj = NULL;
+    g_clear_pointer(obj, virObjectUnref);
 }
 
 
@@ -882,8 +881,7 @@ virSecretLoad(virSecretObjList *secrets,
 
     if (virSecretLoadValue(obj) < 0) {
         virSecretObjListRemove(secrets, obj);
-        virObjectUnref(obj);
-        obj = NULL;
+        g_clear_pointer(&obj, virObjectUnref);
     }
 
  cleanup:

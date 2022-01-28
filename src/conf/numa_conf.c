@@ -554,8 +554,7 @@ virDomainNumatuneSet(virDomainNuma *numa,
     /* setting nodeset when placement auto is invalid */
     if (placement == VIR_DOMAIN_NUMATUNE_PLACEMENT_AUTO &&
         numa->memory.nodeset) {
-        virBitmapFree(numa->memory.nodeset);
-        numa->memory.nodeset = NULL;
+        g_clear_pointer(&numa->memory.nodeset, virBitmapFree);
     }
 
     if (placement != -1)

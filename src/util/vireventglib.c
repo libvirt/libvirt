@@ -228,8 +228,7 @@ virEventGLibHandleUpdate(int watch,
 
         VIR_DEBUG("Removed old handle source=%p", data->source);
         g_source_destroy(data->source);
-        vir_g_source_unref(data->source, NULL);
-        data->source = NULL;
+        g_clear_pointer(&data->source, g_source_destroy);
         data->events = 0;
     }
 
@@ -276,9 +275,8 @@ virEventGLibHandleRemove(int watch)
               data, watch, data->fd);
 
     if (data->source != NULL) {
-        g_source_destroy(data->source);
         vir_g_source_unref(data->source, NULL);
-        data->source = NULL;
+        g_clear_pointer(&data->source, g_source_destroy);
         data->events = 0;
     }
 
@@ -419,9 +417,8 @@ virEventGLibTimeoutUpdate(int timer,
         if (data->source == NULL)
             goto cleanup;
 
-        g_source_destroy(data->source);
         vir_g_source_unref(data->source, NULL);
-        data->source = NULL;
+        g_clear_pointer(&data->source, g_source_destroy);
     }
 
  cleanup:
@@ -468,9 +465,8 @@ virEventGLibTimeoutRemove(int timer)
               data, timer);
 
     if (data->source != NULL) {
-        g_source_destroy(data->source);
         vir_g_source_unref(data->source, NULL);
-        data->source = NULL;
+        g_clear_pointer(&data->source, g_source_destroy);
     }
 
     /* since the actual timeout deletion is done asynchronously, a timeoutUpdate call may

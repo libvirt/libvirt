@@ -2514,8 +2514,7 @@ virNWFilterRuleParse(xmlNodePtr node)
     return ret;
 
  err_exit:
-    virNWFilterRuleDefFree(ret);
-    ret = NULL;
+    g_clear_pointer(&ret, virNWFilterRuleDefFree);
     goto cleanup;
 }
 

@@ -220,8 +220,7 @@ static virLXCController *virLXCControllerNew(const char *name)
     return ctrl;
 
  error:
-    virLXCControllerFree(ctrl);
-    ctrl = NULL;
+    g_clear_pointer(&ctrl, virLXCControllerFree);
     goto cleanup;
 }
 
@@ -951,8 +950,7 @@ static int virLXCControllerSetupServer(virLXCController *ctrl)
 
     if (virNetServerAddService(srv, svc) < 0)
         goto error;
-    virObjectUnref(svc);
-    svc = NULL;
+    g_clear_pointer(&svc, virObjectUnref);
 
     if (!(ctrl->prog = virNetServerProgramNew(VIR_LXC_MONITOR_PROGRAM,
                                               VIR_LXC_MONITOR_PROGRAM_VERSION,
@@ -969,8 +967,7 @@ static int virLXCControllerSetupServer(virLXCController *ctrl)
 
  error:
     virObjectUnref(srv);
-    virObjectUnref(ctrl->daemon);
-    ctrl->daemon = NULL;
+    g_clear_pointer(&ctrl->daemon, virObjectUnref);
     virObjectUnref(svc);
     return -1;
 }
@@ -2067,8 +2064,7 @@ lxcCreateTty(virLXCController *ctrl, int *ttyprimary,
  cleanup:
     if (ret != 0) {
         VIR_FORCE_CLOSE(*ttyprimary);
-        g_free(*ttyName);
-        *ttyName = NULL;
+        g_clear_pointer(ttyName, g_free);
     }
 
     return ret;

@@ -12614,8 +12614,7 @@ virshUpdateDiskXML(xmlNodePtr disk_node,
 
         /* remove current source */
         xmlUnlinkNode(source);
-        xmlFreeNode(source);
-        source = NULL;
+        g_clear_pointer(&source, xmlFreeNode);
     }
 
     /* set the correct disk type */

@@ -4953,8 +4953,7 @@ vboxSnapshotRedefine(virDomainPtr dom,
         tmp = virStringReplace(newSnapshotPtr->storageController,
                                searchResultTab[it],
                                uuidReplacing);
-        g_strfreev(searchResultTab);
-        searchResultTab = NULL;
+        g_clear_pointer(&searchResultTab, g_strfreev);
         VIR_FREE(newSnapshotPtr->storageController);
         if (!tmp)
             goto cleanup;

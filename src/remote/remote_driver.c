@@ -1193,12 +1193,9 @@ doRemoteOpen(virConnectPtr conn,
     virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
     virNetClientClose(priv->client);
-    virObjectUnref(priv->client);
-    priv->client = NULL;
-    virObjectUnref(priv->closeCallback);
-    priv->closeCallback = NULL;
-    virObjectUnref(priv->tls);
-    priv->tls = NULL;
+    g_clear_pointer(&priv->client, virObjectUnref);
+    g_clear_pointer(&priv->closeCallback, virObjectUnref);
+    g_clear_pointer(&priv->tls, virObjectUnref);
 
     VIR_FREE(priv->hostname);
     return VIR_DRV_OPEN_ERROR;
@@ -1302,18 +1299,15 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
              (xdrproc_t) xdr_void, (char *) NULL) == -1)
         ret = -1;
 
-    virObjectUnref(priv->tls);
-    priv->tls = NULL;
+    g_clear_pointer(&priv->tls, virObjectUnref);
 
     virNetClientSetCloseCallback(priv->client,
                                  NULL,
                                  priv->closeCallback, virObjectFreeCallback);
 
     virNetClientClose(priv->client);
-    virObjectUnref(priv->client);
-    priv->client = NULL;
-    virObjectUnref(priv->closeCallback);
-    priv->closeCallback = NULL;
+    g_clear_pointer(&priv->client, virObjectUnref);
+    g_clear_pointer(&priv->closeCallback, virObjectUnref);
     virObjectUnref(priv->remoteProgram);
     virObjectUnref(priv->lxcProgram);
     virObjectUnref(priv->qemuProgram);
@@ -1325,8 +1319,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
     /* See comment for remoteType. */
     VIR_FREE(priv->type);
 
-    virObjectUnref(priv->eventState);
-    priv->eventState = NULL;
+    g_clear_pointer(&priv->eventState, virObjectUnref);
 
     return ret;
 }

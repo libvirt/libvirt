@@ -136,8 +136,7 @@ virLockDaemonNew(virLockDaemonConfig *config, bool privileged)
 
     if (virNetDaemonAddServer(lockd->dmn, srv) < 0)
         goto error;
-    virObjectUnref(srv);
-    srv = NULL;
+    g_clear_pointer(&srv, virObjectUnref);
 
     if (!(srv = virNetServerNew("admin", 1,
                                 0, 0, 0, config->admin_max_clients,
@@ -150,8 +149,7 @@ virLockDaemonNew(virLockDaemonConfig *config, bool privileged)
 
     if (virNetDaemonAddServer(lockd->dmn, srv) < 0)
          goto error;
-    virObjectUnref(srv);
-    srv = NULL;
+    g_clear_pointer(&srv, virObjectUnref);
 
     lockd->lockspaces = virHashNew(virLockDaemonLockSpaceDataFree);
 

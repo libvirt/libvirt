@@ -1018,8 +1018,7 @@ virNetServerClientCloseLocked(virNetServerClient *client)
         virNetSocketRemoveIOCallback(client->sock);
 
     if (client->tls) {
-        virObjectUnref(client->tls);
-        client->tls = NULL;
+        g_clear_pointer(&client->tls, virObjectUnref);
     }
     client->wantClose = true;
 
@@ -1035,8 +1034,7 @@ virNetServerClientCloseLocked(virNetServerClient *client)
     }
 
     if (client->sock) {
-        virObjectUnref(client->sock);
-        client->sock = NULL;
+        g_clear_pointer(&client->sock, virObjectUnref);
     }
 }
 
@@ -1255,9 +1253,8 @@ static virNetMessage *virNetServerClientDispatchRead(virNetServerClient *client)
               msg->header.type, msg->header.status, msg->header.serial);
 
         if (virKeepAliveCheckMessage(client->keepalive, msg, &response)) {
-            virNetMessageFree(msg);
+            g_clear_pointer(&msg, virNetMessageFree);
             client->nrequests--;
-            msg = NULL;
 
             if (response &&
                 virNetServerClientSendMessageLocked(client, response) < 0)
@@ -1270,8 +1267,7 @@ static virNetMessage *virNetServerClientDispatchRead(virNetServerClient *client)
             while (filter) {
                 int ret = filter->func(client, msg, filter->opaque);
                 if (ret < 0) {
-                    virNetMessageFree(msg);
-                    msg = NULL;
+                    g_clear_pointer(&msg, virNetMessageFree);
                     client->wantClose = true;
                     break;
                 }
@@ -1375,8 +1371,7 @@ virNetServerClientDispatchWrite(virNetServerClient *client)
              */
             if (client->sasl) {
                 virNetSocketSetSASLSession(client->sock, client->sasl);
-                virObjectUnref(client->sasl);
-                client->sasl = NULL;
+                g_clear_pointer(&client->sasl, virObjectUnref);
             }
 #endif
 

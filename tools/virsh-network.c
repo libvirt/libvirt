@@ -640,8 +640,7 @@ virshNetworkListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        virshNetworkListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshNetworkListFree);
     }
 
     return list;
@@ -1697,8 +1696,7 @@ virshNetworkPortListCollect(vshControl *ctl,
 
  cleanup:
     if (!success) {
-        virshNetworkPortListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshNetworkPortListFree);
     }
 
     return list;

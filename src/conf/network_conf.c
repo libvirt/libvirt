@@ -118,9 +118,8 @@ virPortGroupDefClear(virPortGroupDef *def)
 {
     VIR_FREE(def->name);
     VIR_FREE(def->virtPortProfile);
-    virNetDevBandwidthFree(def->bandwidth);
+    g_clear_pointer(&def->bandwidth, virNetDevBandwidthFree);
     virNetDevVlanClear(&def->vlan);
-    def->bandwidth = NULL;
 }
 
 

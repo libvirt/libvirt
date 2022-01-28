@@ -1298,8 +1298,7 @@ virshStorageVolListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        virshStorageVolListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshStorageVolListFree);
     }
 
     return list;

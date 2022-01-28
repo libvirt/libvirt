@@ -2948,8 +2948,7 @@ int virNetDevGetRxFilter(const char *ifname,
     ret = 0;
  cleanup:
     if (ret < 0) {
-        virNetDevRxFilterFree(fil);
-        fil = NULL;
+        g_clear_pointer(&fil, virNetDevRxFilterFree);
     }
 
     *filter = fil;

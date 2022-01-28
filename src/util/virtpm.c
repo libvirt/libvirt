@@ -330,8 +330,7 @@ virTPMEmulatorInit(bool quiet)
                 return -1;
             }
             swtpmBinaries[i].path = g_steal_pointer(&path);
-            virBitmapFree(swtpmBinaries[i].caps);
-            swtpmBinaries[i].caps = NULL;
+            g_clear_pointer(&swtpmBinaries[i].caps, virBitmapFree);
         }
     }
 

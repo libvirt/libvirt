@@ -179,8 +179,7 @@ testCreateServer(const char *server_name, const char *host, int family)
     return srv;
 
  error:
-    virObjectUnref(srv);
-    srv = NULL;
+    g_clear_pointer(&srv, virObjectUnref);
     goto cleanup;
 }
 

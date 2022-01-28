@@ -553,8 +553,7 @@ virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
               vm->def->name, (int)vm->pid, (int)reason);
 
     if (priv->monitor) {
-        virCHMonitorClose(priv->monitor);
-        priv->monitor = NULL;
+        g_clear_pointer(&priv->monitor, virCHMonitorClose);
     }
 
  retry:

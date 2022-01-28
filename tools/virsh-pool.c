@@ -1012,8 +1012,7 @@ virshStoragePoolListCollect(vshControl *ctl,
         VIR_FREE(names[i]);
 
     if (!success) {
-        virshStoragePoolListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshStoragePoolListFree);
     }
 
     VIR_FREE(names);

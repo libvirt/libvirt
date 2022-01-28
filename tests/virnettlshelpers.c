@@ -428,8 +428,7 @@ void testTLSDiscardCert(struct testTLSCertReq *req)
     if (!req->crt)
         return;
 
-    gnutls_x509_crt_deinit(req->crt);
-    req->crt = NULL;
+    g_clear_pointer(&req->crt, gnutls_x509_crt_deinit);
 
     if (getenv("VIRT_TEST_DEBUG_CERTS") == NULL)
         unlink(req->filename);

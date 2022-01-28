@@ -8065,21 +8065,18 @@ void qemuProcessStop(virQEMUDriver *driver,
     priv->nbdPort = 0;
 
     if (priv->agent) {
-        qemuAgentClose(priv->agent);
-        priv->agent = NULL;
+        g_clear_pointer(&priv->agent, qemuAgentClose);
     }
     priv->agentError = false;
 
     if (priv->mon) {
-        qemuMonitorClose(priv->mon);
-        priv->mon = NULL;
+        g_clear_pointer(&priv->mon, qemuMonitorClose);
     }
 
     if (priv->monConfig) {
         if (priv->monConfig->type == VIR_DOMAIN_CHR_TYPE_UNIX)
             unlink(priv->monConfig->data.nix.path);
-        virObjectUnref(priv->monConfig);
-        priv->monConfig = NULL;
+        g_clear_pointer(&priv->monConfig, virObjectUnref);
     }
 
     qemuDomainObjStopWorker(vm);
@@ -8277,9 +8274,8 @@ void qemuProcessStop(virQEMUDriver *driver,
 
     for (i = 0; i < vm->ndeprecations; i++)
         g_free(vm->deprecations[i]);
-    g_free(vm->deprecations);
+    g_clear_pointer(&vm->deprecations, g_free);
     vm->ndeprecations = 0;
-    vm->deprecations = NULL;
     vm->taint = 0;
     vm->pid = -1;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
@@ -9091,14 +9087,12 @@ qemuProcessQMPStop(qemuProcessQMP *proc)
 {
     if (proc->mon) {
         virObjectUnlock(proc->mon);
-        qemuMonitorClose(proc->mon);
-        proc->mon = NULL;
+        g_clear_pointer(&proc->mon, qemuMonitorClose);
     }
 
     if (proc->cmd) {
         virCommandAbort(proc->cmd);
-        virCommandFree(proc->cmd);
-        proc->cmd = NULL;
+        g_clear_pointer(&proc->cmd, virCommandFree);
     }
 
     if (proc->monpath)

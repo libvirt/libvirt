@@ -518,8 +518,7 @@ lxcAddNetworkDefinition(virDomainDef *def, lxcNetworkParseData *data)
  error:
     for (i = 0; i < data->nips; i++)
         g_free(data->ips[i]);
-    g_free(data->ips);
-    data->ips = NULL;
+    g_clear_pointer(&data->ips, g_free);
     virDomainNetDefFree(net);
     virDomainHostdevDefFree(hostdev);
     return -1;
@@ -743,8 +742,7 @@ lxcConvertNetworkSettings(virDomainDef *def, virConf *properties)
  cleanup:
     for (i = 0; i < networks.ndata; i++)
         g_free(networks.parseData[i]);
-    g_free(networks.parseData);
-    networks.parseData = NULL;
+    g_clear_pointer(&networks.parseData, g_free);
     return ret;
 
  error:
@@ -752,8 +750,7 @@ lxcConvertNetworkSettings(virDomainDef *def, virConf *properties)
         lxcNetworkParseData *data = networks.parseData[i];
         for (j = 0; j < data->nips; j++)
             g_free(data->ips[j]);
-        g_free(data->ips);
-        data->ips = NULL;
+        g_clear_pointer(&data->ips, g_free);
     }
     goto cleanup;
 }
@@ -854,8 +851,7 @@ lxcSetMemTune(virDomainDef *def, virConf *properties)
         size = size / 1024;
         virDomainDefSetMemoryTotal(def, size);
         def->mem.hard_limit = virMemoryLimitTruncate(size);
-        g_free(value);
-        value = NULL;
+        g_clear_pointer(&value, g_free);
     }
 
     if (virConfGetValueString(properties,
@@ -864,8 +860,7 @@ lxcSetMemTune(virDomainDef *def, virConf *properties)
         if (lxcConvertSize(value, &size) < 0)
             return -1;
         def->mem.soft_limit = virMemoryLimitTruncate(size / 1024);
-        g_free(value);
-        value = NULL;
+        g_clear_pointer(&value, g_free);
     }
 
     if (virConfGetValueString(properties,
@@ -888,16 +883,14 @@ lxcSetCpuTune(virDomainDef *def, virConf *properties)
         if (virStrToLong_ull(value, NULL, 10, &def->cputune.shares) < 0)
             goto error;
         def->cputune.sharesSpecified = true;
-        g_free(value);
-        value = NULL;
+        g_clear_pointer(&value, g_free);
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_quota_us",
                               &value) > 0) {
         if (virStrToLong_ll(value, NULL, 10, &def->cputune.quota) < 0)
             goto error;
-        g_free(value);
-        value = NULL;
+        g_clear_pointer(&value, g_free);
     }
 
     if (virConfGetValueString(properties, "lxc.cgroup.cpu.cfs_period_us",
@@ -1111,8 +1104,7 @@ lxcParseConfigString(const char *config,
         else if (arch == VIR_ARCH_NONE && STREQ(value, "amd64"))
             arch = VIR_ARCH_X86_64;
         vmdef->os.arch = arch;
-        g_free(value);
-        value = NULL;
+        g_clear_pointer(&value, g_free);
     }
 
     vmdef->os.init = g_strdup("/sbin/init");

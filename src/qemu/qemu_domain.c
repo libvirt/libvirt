@@ -124,8 +124,7 @@ qemuJobResetPrivate(void *opaque)
     priv->spiceMigration = false;
     priv->spiceMigrated = false;
     priv->dumpCompleted = false;
-    qemuMigrationParamsFree(priv->migParams);
-    priv->migParams = NULL;
+    g_clear_pointer(&priv->migParams, qemuMigrationParamsFree);
 }
 
 
@@ -1618,19 +1617,13 @@ qemuDomainObjStopWorker(virDomainObj *dom)
 void
 qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
 {
-    g_strfreev(priv->qemuDevices);
-    priv->qemuDevices = NULL;
-
-    virCgroupFree(priv->cgroup);
-    priv->cgroup = NULL;
-
-    virPerfFree(priv->perf);
-    priv->perf = NULL;
+    g_clear_pointer(&priv->qemuDevices, g_strfreev);
+    g_clear_pointer(&priv->cgroup, virCgroupFree);
+    g_clear_pointer(&priv->perf, virPerfFree);
 
     VIR_FREE(priv->machineName);
 
-    virObjectUnref(priv->qemuCaps);
-    priv->qemuCaps = NULL;
+    g_clear_pointer(&priv->qemuCaps, virObjectUnref);
 
     VIR_FREE(priv->pidfile);
 
@@ -1640,41 +1633,25 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     priv->memPrealloc = false;
 
     /* remove automatic pinning data */
-    virBitmapFree(priv->autoNodeset);
-    priv->autoNodeset = NULL;
-    virBitmapFree(priv->autoCpuset);
-    priv->autoCpuset = NULL;
-
-    /* remove address data */
-    virDomainPCIAddressSetFree(priv->pciaddrs);
-    priv->pciaddrs = NULL;
-    virDomainUSBAddressSetFree(priv->usbaddrs);
-    priv->usbaddrs = NULL;
-
-    virCPUDefFree(priv->origCPU);
-    priv->origCPU = NULL;
-
-    /* clear previously used namespaces */
-    virBitmapFree(priv->namespaces);
-    priv->namespaces = NULL;
+    g_clear_pointer(&priv->autoNodeset, virBitmapFree);
+    g_clear_pointer(&priv->autoCpuset, virBitmapFree);
+    g_clear_pointer(&priv->pciaddrs, virDomainPCIAddressSetFree);
+    g_clear_pointer(&priv->usbaddrs, virDomainUSBAddressSetFree);
+    g_clear_pointer(&priv->origCPU, virCPUDefFree);
+    g_clear_pointer(&priv->namespaces, virBitmapFree);
 
     priv->rememberOwner = false;
 
     priv->reconnectBlockjobs = VIR_TRISTATE_BOOL_ABSENT;
     priv->allowReboot = VIR_TRISTATE_BOOL_ABSENT;
 
-    virBitmapFree(priv->migrationCaps);
-    priv->migrationCaps = NULL;
+    g_clear_pointer(&priv->migrationCaps, virBitmapFree);
 
     virHashRemoveAll(priv->blockjobs);
 
-    virObjectUnref(priv->pflash0);
-    priv->pflash0 = NULL;
-    virObjectUnref(priv->pflash1);
-    priv->pflash1 = NULL;
-
-    virDomainBackupDefFree(priv->backup);
-    priv->backup = NULL;
+    g_clear_pointer(&priv->pflash0, virObjectUnref);
+    g_clear_pointer(&priv->pflash1, virObjectUnref);
+    g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
     /* reset node name allocator */
     qemuDomainStorageIdReset(priv);
@@ -2962,8 +2939,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     if (priv->namespaces &&
         virBitmapIsAllClear(priv->namespaces)) {
-        virBitmapFree(priv->namespaces);
-        priv->namespaces = NULL;
+        g_clear_pointer(&priv->namespaces, virBitmapFree);
     }
 
     priv->rememberOwner = virXPathBoolean("count(./rememberOwner) > 0", ctxt);
@@ -3100,12 +3076,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     return 0;
 
  error:
-    virBitmapFree(priv->namespaces);
-    priv->namespaces = NULL;
-    virObjectUnref(priv->monConfig);
-    priv->monConfig = NULL;
-    g_strfreev(priv->qemuDevices);
-    priv->qemuDevices = NULL;
+    g_clear_pointer(&priv->namespaces, virBitmapFree);
+    g_clear_pointer(&priv->monConfig, virObjectUnref);
+    g_clear_pointer(&priv->qemuDevices, g_strfreev);
     return -1;
 }
 
@@ -3557,9 +3530,8 @@ qemuDomainDefClearDefaultAudioBackend(virQEMUDriver *driver,
 
     if (virDomainAudioIsEqual(def->audios[0], audio)) {
         virDomainAudioDefFree(def->audios[0]);
-        g_free(def->audios);
+        g_clear_pointer(&def->audios, g_free);
         def->naudios = 0;
-        def->audios = NULL;
     }
     virDomainAudioDefFree(audio);
 

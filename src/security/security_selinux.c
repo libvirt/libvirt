@@ -687,8 +687,7 @@ virSecuritySELinuxLXCInitialize(virSecurityManager *mgr)
     return 0;
 
  error:
-    selabel_close(data->label_handle);
-    data->label_handle = NULL;
+    g_clear_pointer(&data->label_handle, selabel_close);
     VIR_FREE(data->domain_context);
     VIR_FREE(data->file_context);
     VIR_FREE(data->content_context);
@@ -758,8 +757,7 @@ virSecuritySELinuxQEMUInitialize(virSecurityManager *mgr)
     return 0;
 
  error:
-    selabel_close(data->label_handle);
-    data->label_handle = NULL;
+    g_clear_pointer(&data->label_handle, selabel_close);
     VIR_FREE(data->domain_context);
     VIR_FREE(data->alt_domain_context);
     VIR_FREE(data->file_context);

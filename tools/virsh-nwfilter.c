@@ -329,8 +329,7 @@ virshNWFilterListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        virshNWFilterListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshNWFilterListFree);
     }
 
     return list;
@@ -692,8 +691,7 @@ virshNWFilterBindingListCollect(vshControl *ctl,
 
  cleanup:
     if (!success) {
-        virshNWFilterBindingListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshNWFilterBindingListFree);
     }
 
     return list;

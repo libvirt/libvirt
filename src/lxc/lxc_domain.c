@@ -490,9 +490,7 @@ virLXCDomainSetRunlevel(virDomainObj *vm,
                                         lxcDomainInitctlCallback,
                                         &data);
  cleanup:
-    g_free(data.st);
-    data.st = NULL;
-    g_free(data.st_valid);
-    data.st_valid = NULL;
+    g_clear_pointer(&data.st, g_free);
+    g_clear_pointer(&data.st_valid, g_free);
     return ret;
 }

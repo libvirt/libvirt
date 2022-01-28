@@ -845,8 +845,7 @@ qemuMigrationSrcNBDCopyCancel(virQEMUDriver *driver,
 
         qemuBlockStorageSourceDetachOneBlockdev(driver, vm, asyncJob,
                                                 diskPriv->migrSource);
-        virObjectUnref(diskPriv->migrSource);
-        diskPriv->migrSource = NULL;
+        g_clear_pointer(&diskPriv->migrSource, virObjectUnref);
     }
 
     ret = failed ? -1 : 0;
@@ -3659,8 +3658,7 @@ static void qemuMigrationSrcIOFunc(void *arg)
  abrt:
     virErrorPreserveLast(&err);
     if (err && err->code == VIR_ERR_OK) {
-        virFreeError(err);
-        err = NULL;
+        g_clear_pointer(&err, virFreeError);
     }
     virStreamAbort(data->st);
     virErrorRestore(&err);
@@ -4988,8 +4986,7 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
                 if (err &&
                     err->domain == VIR_FROM_QEMU &&
                     err->code != VIR_ERR_MIGRATE_FINISH_OK) {
-                    virFreeError(orig_err);
-                    orig_err = NULL;
+                    g_clear_pointer(&orig_err, virFreeError);
                 }
             }
         }

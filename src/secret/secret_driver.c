@@ -275,8 +275,7 @@ secretDefineXML(virConnectPtr conn,
         def = g_steal_pointer(&objDef);
     } else {
         virSecretObjListRemove(driver->secrets, obj);
-        virObjectUnref(obj);
-        obj = NULL;
+        g_clear_pointer(&obj, virObjectUnref);
     }
 
  cleanup:
@@ -434,8 +433,7 @@ secretUndefine(virSecretPtr secret)
     virSecretObjDeleteData(obj);
 
     virSecretObjListRemove(driver->secrets, obj);
-    virObjectUnref(obj);
-    obj = NULL;
+    g_clear_pointer(&obj, virObjectUnref);
 
     ret = 0;
 

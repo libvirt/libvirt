@@ -3205,8 +3205,7 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
                 if (err &&
                     err->domain == VIR_FROM_QEMU &&
                     err->code != VIR_ERR_MIGRATE_FINISH_OK) {
-                    virFreeError(orig_err);
-                    orig_err = NULL;
+                    g_clear_pointer(&orig_err, virFreeError);
                 }
             }
         }

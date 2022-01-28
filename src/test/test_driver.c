@@ -1537,8 +1537,7 @@ testConnectOpen(virConnectPtr conn,
 
     /* Fake authentication. */
     if (testConnectAuthenticate(conn, auth) < 0) {
-        testDriverCloseInternal(conn->privateData);
-        conn->privateData = NULL;
+        g_clear_pointer(&conn->privateData, testDriverCloseInternal);
         return VIR_DRV_OPEN_ERROR;
     }
 
@@ -1549,8 +1548,7 @@ testConnectOpen(virConnectPtr conn,
 static int
 testConnectClose(virConnectPtr conn)
 {
-    testDriverCloseInternal(conn->privateData);
-    conn->privateData = NULL;
+    g_clear_pointer(&conn->privateData, testDriverCloseInternal);
     return 0;
 }
 

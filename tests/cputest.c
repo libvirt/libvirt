@@ -293,8 +293,7 @@ cpuTestBaseline(const void *arg)
     if (baseline &&
         (data->flags & VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES) &&
         virCPUExpandFeatures(data->arch, baseline) < 0) {
-        virCPUDefFree(baseline);
-        baseline = NULL;
+        g_clear_pointer(&baseline, virCPUDefFree);
     }
 
     if (data->result < 0) {

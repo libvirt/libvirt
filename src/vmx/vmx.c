@@ -1425,8 +1425,7 @@ virVMXParseConfig(virVMXContext *ctx,
     if (encoding == NULL || STRCASEEQ(encoding, "UTF-8")) {
         /* nothing */
     } else {
-        virConfFree(conf);
-        conf = NULL;
+        g_clear_pointer(&conf, virConfFree);
 
         utf8 = virVMXConvertToUTF8(encoding, vmx);
 
@@ -2053,8 +2052,7 @@ virVMXParseVNC(virConf *conf, virDomainGraphicsDef **def)
 
  failure:
     VIR_FREE(listenAddr);
-    virDomainGraphicsDefFree(*def);
-    *def = NULL;
+    g_clear_pointer(def, virDomainGraphicsDefFree);
 
     return -1;
 }
@@ -2556,8 +2554,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
 
  cleanup:
     if (result < 0) {
-        virDomainDiskDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainDiskDefFree);
     }
 
     VIR_FREE(prefix);
@@ -2569,8 +2566,7 @@ virVMXParseDisk(virVMXContext *ctx, virDomainXMLOption *xmlopt, virConf *conf,
     return result;
 
  ignore:
-    virDomainDiskDefFree(*def);
-    *def = NULL;
+    g_clear_pointer(def, virDomainDiskDefFree);
 
     result = 0;
 
@@ -2653,8 +2649,7 @@ virVMXParseFileSystem(virConf *conf, int number, virDomainFSDef **def)
 
  cleanup:
     if (result < 0) {
-        virDomainFSDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainFSDefFree);
     }
 
     VIR_FREE(hostPath);
@@ -2869,8 +2864,7 @@ virVMXParseEthernet(virConf *conf, int controller, virDomainNetDef **def)
 
  cleanup:
     if (result < 0) {
-        virDomainNetDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainNetDefFree);
     }
 
     VIR_FREE(networkName);
@@ -3051,8 +3045,7 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
 
  cleanup:
     if (result < 0) {
-        virDomainChrDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainChrDefFree);
     }
 
     VIR_FREE(fileType);
@@ -3153,8 +3146,7 @@ virVMXParseParallel(virVMXContext *ctx, virConf *conf, int port,
 
  cleanup:
     if (result < 0) {
-        virDomainChrDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainChrDefFree);
     }
 
     VIR_FREE(fileType);
@@ -3191,8 +3183,7 @@ virVMXParseSVGA(virConf *conf, virDomainVideoDef **def)
 
  cleanup:
     if (result < 0) {
-        virDomainVideoDefFree(*def);
-        *def = NULL;
+        g_clear_pointer(def, virDomainVideoDefFree);
     }
 
     return result;

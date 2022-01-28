@@ -1472,8 +1472,7 @@ static int lxcStateInitialize(bool privileged,
     lxc_driver = g_new0(virLXCDriver, 1);
     lxc_driver->lockFD = -1;
     if (virMutexInit(&lxc_driver->lock) < 0) {
-        g_free(lxc_driver);
-        lxc_driver = NULL;
+        g_clear_pointer(&lxc_driver, g_free);
         return VIR_DRV_STATE_INIT_ERROR;
     }
 
@@ -1611,8 +1610,7 @@ static int lxcStateCleanup(void)
 
     virObjectUnref(lxc_driver->config);
     virMutexDestroy(&lxc_driver->lock);
-    g_free(lxc_driver);
-    lxc_driver = NULL;
+    g_clear_pointer(&lxc_driver, g_free);
 
     return 0;
 }

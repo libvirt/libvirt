@@ -94,8 +94,7 @@ static void
 virDomainSnapshotDiskDefClear(virDomainSnapshotDiskDef *disk)
 {
     VIR_FREE(disk->name);
-    virObjectUnref(disk->src);
-    disk->src = NULL;
+    g_clear_pointer(&disk->src, virObjectUnref);
 }
 
 void

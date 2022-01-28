@@ -262,8 +262,7 @@ libxlDoMigrateDstReceive(void *opaque)
     for (i = 0; i < nsocks; i++) {
         virNetSocketRemoveIOCallback(socks[i]);
         virNetSocketClose(socks[i]);
-        virObjectUnref(socks[i]);
-        socks[i] = NULL;
+        g_clear_pointer(&socks[i], virObjectUnref);
     }
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);
@@ -323,8 +322,7 @@ libxlMigrateDstReceive(virNetSocket *sock,
     for (i = 0; i < nsocks; i++) {
         virNetSocketUpdateIOCallback(socks[i], 0);
         virNetSocketRemoveIOCallback(socks[i]);
-        virNetSocketClose(socks[i]);
-        socks[i] = NULL;
+        g_clear_pointer(&socks[i], virNetSocketClose);
     }
     args->nsocks = 0;
     VIR_FORCE_CLOSE(recvfd);

@@ -262,8 +262,7 @@ static void lxcFuseDestroy(struct virLXCFuse *fuse)
 {
     virMutexLock(&fuse->lock);
     fuse_unmount(fuse->mountpoint, fuse->ch);
-    fuse_destroy(fuse->fuse);
-    fuse->fuse = NULL;
+    g_clear_pointer(&fuse->fuse, fuse_destroy);
     virMutexUnlock(&fuse->lock);
 }
 

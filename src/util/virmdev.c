@@ -282,8 +282,7 @@ virMediatedDeviceListDispose(void *obj)
     size_t i;
 
     for (i = 0; i < list->count; i++) {
-        virMediatedDeviceFree(list->devs[i]);
-        list->devs[i] = NULL;
+        g_clear_pointer(&list->devs[i], virMediatedDeviceFree);
     }
 
     list->count = 0;

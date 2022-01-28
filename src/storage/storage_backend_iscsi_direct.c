@@ -272,8 +272,7 @@ virISCSIDirectGetVolumeCapacity(struct iscsi_context *iscsi,
     if (inq->device_type == SCSI_INQUIRY_PERIPHERAL_DEVICE_TYPE_DIRECT_ACCESS) {
         struct scsi_readcapacity16 *rc16 = NULL;
 
-        scsi_free_scsi_task(task);
-        task = NULL;
+        g_clear_pointer(&task, scsi_free_scsi_task);
 
         if (!(task = iscsi_readcapacity16_sync(iscsi, lun)) ||
             task->status != SCSI_STATUS_GOOD) {

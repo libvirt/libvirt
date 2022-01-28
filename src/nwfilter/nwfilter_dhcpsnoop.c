@@ -1409,8 +1409,7 @@ virNWFilterDHCPSnoopThread(void *req0)
                 }
 
                 if (++errcount > PCAP_READ_MAXERRS) {
-                    pcap_close(pcapConf[i].handle);
-                    pcapConf[i].handle = NULL;
+                    g_clear_pointer(&pcapConf[i].handle, pcap_close);
 
                     /* protect req->binding->portdevname */
                     virNWFilterSnoopReqLock(req);
@@ -1542,8 +1541,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
             virNWFilterSnoopReqPut(req);
             return 0;
         }
-        virNWFilterBindingDefFree(req->binding);
-        req->binding = NULL;
+        g_clear_pointer(&req->binding, virNWFilterBindingDefFree);
     } else {
         req = virNWFilterSnoopReqNew(ifkey);
         if (!req)

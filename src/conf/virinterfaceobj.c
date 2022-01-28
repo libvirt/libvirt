@@ -103,8 +103,7 @@ virInterfaceObjEndAPI(virInterfaceObj **obj)
         return;
 
     virObjectUnlock(*obj);
-    virObjectUnref(*obj);
-    *obj = NULL;
+    g_clear_pointer(obj, virObjectUnref);
 }
 
 

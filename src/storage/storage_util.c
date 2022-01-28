@@ -3593,8 +3593,7 @@ virStorageBackendRefreshLocal(virStoragePoolObj *pool)
             if (err == -2) {
                 /* Silently ignore non-regular files,
                  * eg 'lost+found', dangling symbolic link */
-                virStorageVolDefFree(vol);
-                vol = NULL;
+                g_clear_pointer(&vol, virStorageVolDefFree);
                 continue;
             }
             return -1;

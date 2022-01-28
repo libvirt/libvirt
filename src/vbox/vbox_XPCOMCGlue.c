@@ -152,8 +152,7 @@ tryLoadOne(const char *dir, bool setAppHome, bool ignoreMissing,
 
  cleanup:
     if (hVBoxXPCOMC != NULL && result < 0) {
-        dlclose(hVBoxXPCOMC);
-        hVBoxXPCOMC = NULL;
+        g_clear_pointer(&hVBoxXPCOMC, dlclose);
     }
 
     VIR_FREE(name);

@@ -174,8 +174,7 @@ virshConnect(vshControl *ctl, const char *uri, bool readonly)
             vshError(ctl, "%s",
                      _("Cannot setup keepalive on connection "
                        "as requested, disconnecting"));
-            virConnectClose(c);
-            c = NULL;
+            g_clear_pointer(&c, virConnectClose);
             goto cleanup;
         }
         vshDebug(ctl, VSH_ERR_INFO, "%s",

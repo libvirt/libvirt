@@ -969,8 +969,7 @@ virStorageFileProbeGetMetadata(virStorageSource *meta,
             return -1;
     }
 
-    virBitmapFree(meta->features);
-    meta->features = NULL;
+    g_clear_pointer(&meta->features, virBitmapFree);
     if (fileTypeInfo[meta->format].getFeatures != NULL &&
         fileTypeInfo[meta->format].getFeatures(&meta->features, meta->format, buf, len) < 0)
         return -1;

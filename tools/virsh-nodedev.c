@@ -343,8 +343,7 @@ virshNodeDeviceListCollect(vshControl *ctl,
     VIR_FREE(names);
 
     if (!success) {
-        virshNodeDeviceListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshNodeDeviceListFree);
     }
 
     return list;

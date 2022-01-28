@@ -302,8 +302,7 @@ virshInterfaceListCollect(vshControl *ctl,
     VIR_FREE(inactiveNames);
 
     if (!success) {
-        virshInterfaceListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshInterfaceListFree);
     }
 
     return list;

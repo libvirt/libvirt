@@ -833,8 +833,7 @@ qemuDomainDisableNamespace(virDomainObj *vm,
     if (priv->namespaces) {
         ignore_value(virBitmapClearBit(priv->namespaces, ns));
         if (virBitmapIsAllClear(priv->namespaces)) {
-            virBitmapFree(priv->namespaces);
-            priv->namespaces = NULL;
+            g_clear_pointer(&priv->namespaces, virBitmapFree);
         }
     }
 }

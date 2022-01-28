@@ -3168,12 +3168,10 @@ static void
 virDomainHostdevSubsysSCSIClear(virDomainHostdevSubsysSCSI *scsisrc)
 {
     if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        virObjectUnref(scsisrc->u.iscsi.src);
-        scsisrc->u.iscsi.src = NULL;
+        g_clear_pointer(&scsisrc->u.iscsi.src, virObjectUnref);
     } else {
         VIR_FREE(scsisrc->u.host.adapter);
-        virObjectUnref(scsisrc->u.host.src);
-        scsisrc->u.host.src = NULL;
+        g_clear_pointer(&scsisrc->u.host.src, virObjectUnref);
     }
 }
 
@@ -3938,8 +3936,7 @@ virDomainObjEndAPI(virDomainObj **vm)
         return;
 
     virObjectUnlock(*vm);
-    virObjectUnref(*vm);
-    *vm = NULL;
+    g_clear_pointer(vm, virObjectUnref);
 }
 
 
@@ -4842,8 +4839,8 @@ virDomainDefPostParseMemtune(virDomainDef *def)
 
             nextBit = virBitmapNextSetBit(def->mem.hugepages[i].nodemask, 0);
             if (nextBit < 0) {
-                virBitmapFree(def->mem.hugepages[i].nodemask);
-                def->mem.hugepages[i].nodemask = NULL;
+                g_clear_pointer(&def->mem.hugepages[i].nodemask,
+                                virBitmapFree);
             }
         }
     }
@@ -4907,8 +4904,7 @@ virDomainDefAddConsoleCompat(virDomainDef *def)
             /* if the console source doesn't match */
             if (!virDomainChrSourceDefIsEqual(def->serials[0]->source,
                                               def->consoles[0]->source)) {
-                virDomainChrDefFree(def->consoles[0]);
-                def->consoles[0] = NULL;
+                g_clear_pointer(&def->consoles[0], virDomainChrDefFree);
             }
         }
 
@@ -5737,8 +5733,7 @@ virDomainDefRemoveOfflineVcpuPin(virDomainDef *def)
         vcpu = virDomainDefGetVcpu(def, i);
 
         if (vcpu && !vcpu->online && vcpu->cpumask) {
-            virBitmapFree(vcpu->cpumask);
-            vcpu->cpumask = NULL;
+            g_clear_pointer(&vcpu->cpumask, virBitmapFree);
 
             VIR_WARN("Ignoring unsupported vcpupin for offline vcpu '%zu'", i);
         }
@@ -10887,8 +10882,7 @@ virDomainNetDefParseXML(virDomainXMLOption *xmlopt,
     return def;
 
  error:
-    virDomainNetDefFree(def);
-    def = NULL;
+    g_clear_pointer(&def, virDomainNetDefFree);
     goto cleanup;
 }
 
@@ -11398,8 +11392,7 @@ virDomainChrSourceDefNew(virDomainXMLOption *xmlopt)
 
     if (xmlopt && xmlopt->privateData.chrSourceNew &&
         !(def->privateData = xmlopt->privateData.chrSourceNew())) {
-        virObjectUnref(def);
-        def = NULL;
+        g_clear_pointer(&def, virObjectUnref);
     }
 
     return def;
@@ -12773,8 +12766,7 @@ virDomainNetDefNew(virDomainXMLOption *xmlopt)
 
     if (xmlopt && xmlopt->privateData.networkNew &&
         !(def->privateData = xmlopt->privateData.networkNew())) {
-        virDomainNetDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virDomainNetDefFree);
     }
 
     return def;
@@ -12828,8 +12820,7 @@ virDomainGraphicsDefParseXML(virDomainXMLOption *xmlopt,
     return def;
 
  error:
-    virDomainGraphicsDefFree(def);
-    def = NULL;
+    g_clear_pointer(&def, virDomainGraphicsDefFree);
     return NULL;
 }
 
@@ -13395,8 +13386,7 @@ virDomainRNGDefParseXML(virDomainXMLOption *xmlopt,
     return def;
 
  error:
-    virDomainRNGDefFree(def);
-    def = NULL;
+    g_clear_pointer(&def, virDomainRNGDefFree);
     return NULL;
 }
 
@@ -13601,8 +13591,7 @@ virSysinfoBIOSParseXML(xmlNodePtr node,
 
     if (!def->vendor && !def->version &&
         !def->date && !def->release) {
-        virSysinfoBIOSDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoBIOSDefFree);
     }
 
     *bios = g_steal_pointer(&def);
@@ -13675,8 +13664,7 @@ virSysinfoSystemParseXML(xmlNodePtr node,
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
-        virSysinfoSystemDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoSystemDefFree);
     }
 
     *sysdef = g_steal_pointer(&def);
@@ -13806,8 +13794,7 @@ virSysinfoChassisParseXML(xmlNodePtr node,
 
     if (!def->manufacturer && !def->version &&
         !def->serial && !def->asset && !def->sku) {
-        virSysinfoChassisDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoChassisDefFree);
     }
 
     *chassisdef = g_steal_pointer(&def);
@@ -30588,8 +30575,7 @@ virDomainNetCreatePort(virConnectPtr conn,
         return -1;
 
     /* prepare to re-use portdef */
-    virNetworkPortDefFree(portdef);
-    portdef = NULL;
+    g_clear_pointer(&portdef, virNetworkPortDefFree);
 
     if (!(port = virNetworkPortCreateXML(net, portxml, flags)))
         return -1;
@@ -30992,8 +30978,7 @@ virDomainStorageSourceTranslateSourcePool(virStorageSource *src,
     virStorageNetHostDefFree(src->nhosts, src->hosts);
     src->nhosts = 0;
     src->hosts = NULL;
-    virStorageAuthDefFree(src->auth);
-    src->auth = NULL;
+    g_clear_pointer(&src->auth, virStorageAuthDefFree);
 
     switch ((virStoragePoolType) pooldef->type) {
     case VIR_STORAGE_POOL_DIR:

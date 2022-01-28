@@ -420,8 +420,7 @@ virStorageSourceNewFromBackingAbsolute(const char *path,
          * also used in other places. For backing store detection the
          * authentication data would be invalid anyways, so we clear it */
         if (def->auth) {
-            virStorageAuthDefFree(def->auth);
-            def->auth = NULL;
+            g_clear_pointer(&def->auth, virStorageAuthDefFree);
         }
     }
 

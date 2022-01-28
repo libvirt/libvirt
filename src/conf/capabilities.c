@@ -417,8 +417,7 @@ virCapabilitiesFreeMachines(virCapsGuestMachine **machines,
     if (!machines)
         return;
     for (i = 0; i < nmachines && machines[i]; i++) {
-        virCapabilitiesFreeGuestMachine(machines[i]);
-        machines[i] = NULL;
+        g_clear_pointer(&machines[i], virCapabilitiesFreeGuestMachine);
     }
     g_free(machines);
 }
@@ -2132,8 +2131,7 @@ virCapabilitiesInitResctrlMemory(virCaps *caps)
 
             VIR_APPEND_ELEMENT(caps->host.memBW.nodes, caps->host.memBW.nnodes, node);
         }
-        virCapsHostMemBWNodeFree(node);
-        node = NULL;
+        g_clear_pointer(&node, virCapsHostMemBWNodeFree);
     }
 
     if (virResctrlInfoGetMonitorPrefix(caps->host.resctrl, prefix,
@@ -2252,8 +2250,7 @@ virCapabilitiesInitCaches(virCaps *caps)
                 VIR_APPEND_ELEMENT(caps->host.cache.banks, caps->host.cache.nbanks, bank);
             }
 
-            virCapsHostCacheBankFree(bank);
-            bank = NULL;
+            g_clear_pointer(&bank, virCapsHostCacheBankFree);
         }
         if (rv < 0)
             goto cleanup;

@@ -1213,8 +1213,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                            STRNEQ_NULLABLE(fromname,
                                            snaplist->snaps[i].parent)))) ||
                 (roots && snaplist->snaps[i].parent)) {
-                virshDomainSnapshotFree(snaplist->snaps[i].snap);
-                snaplist->snaps[i].snap = NULL;
+                g_clear_pointer(&snaplist->snaps[i].snap,
+                                virshDomainSnapshotFree);
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
             }
@@ -1241,8 +1241,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
         for (i = 0; i < count; i++) {
             if (i == start_index || !snaplist->snaps[i].parent) {
                 VIR_FREE(names[i]);
-                virshDomainSnapshotFree(snaplist->snaps[i].snap);
-                snaplist->snaps[i].snap = NULL;
+                g_clear_pointer(&snaplist->snaps[i].snap,
+                                virshDomainSnapshotFree);
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
             } else if (STREQ(snaplist->snaps[i].parent, fromname)) {
@@ -1279,8 +1279,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
                 if (!found_parent) {
                     changed = true;
                     VIR_FREE(names[i]);
-                    virshDomainSnapshotFree(snaplist->snaps[i].snap);
-                    snaplist->snaps[i].snap = NULL;
+                    g_clear_pointer(&snaplist->snaps[i].snap,
+                                    virshDomainSnapshotFree);
                     VIR_FREE(snaplist->snaps[i].parent);
                     deleted++;
                 }
@@ -1302,8 +1302,8 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
             case 1:
                 break;
             case 0:
-                virshDomainSnapshotFree(snaplist->snaps[i].snap);
-                snaplist->snaps[i].snap = NULL;
+                g_clear_pointer(&snaplist->snaps[i].snap,
+                                virshDomainSnapshotFree);
                 VIR_FREE(snaplist->snaps[i].parent);
                 deleted++;
                 break;

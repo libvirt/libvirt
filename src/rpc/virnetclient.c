@@ -791,19 +791,15 @@ virNetClientCloseLocked(virNetClient *client)
     if (!client->sock)
         return;
 
-    virObjectUnref(client->sock);
-    client->sock = NULL;
-    virObjectUnref(client->tls);
-    client->tls = NULL;
+    g_clear_pointer(&client->sock, virObjectUnref);
+    g_clear_pointer(&client->tls, virObjectUnref);
 #if WITH_SASL
-    virObjectUnref(client->sasl);
-    client->sasl = NULL;
+    g_clear_pointer(&client->sasl, virObjectUnref);
 #endif
     ka = g_steal_pointer(&client->keepalive);
     client->wantClose = false;
 
-    virFreeError(client->error);
-    client->error = NULL;
+    g_clear_pointer(&client->error, virFreeError);
 
     if (ka || client->closeCb) {
         virNetClientCloseFunc closeCb = client->closeCb;
@@ -1025,8 +1021,7 @@ int virNetClientSetTLSSession(virNetClient *client,
     return 0;
 
  error:
-    virObjectUnref(client->tls);
-    client->tls = NULL;
+    g_clear_pointer(&client->tls, virObjectUnref);
     virObjectUnlock(client);
     return -1;
 }

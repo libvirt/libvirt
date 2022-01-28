@@ -616,8 +616,7 @@ qemuBackupJobTerminate(virDomainObj *vm,
         qemuDomainEventEmitJobCompleted(priv->driver, vm);
     }
 
-    virDomainBackupDefFree(priv->backup);
-    priv->backup = NULL;
+    g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_BACKUP)
         qemuDomainObjEndAsyncJob(priv->driver, vm);

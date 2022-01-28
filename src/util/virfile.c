@@ -3723,8 +3723,7 @@ virFileSetACLs(const char *file,
 void
 virFileFreeACLs(void **acl)
 {
-    acl_free(*acl);
-    *acl = NULL;
+    g_clear_pointer(acl, acl_free);
 }
 
 #else /* !defined(WITH_LIBACL) */

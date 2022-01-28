@@ -2738,8 +2738,7 @@ qemuDomainAssignPCIAddresses(virDomainDef *def,
         }
 
         nbuses = addrs->nbuses;
-        virDomainPCIAddressSetFree(addrs);
-        addrs = NULL;
+        g_clear_pointer(&addrs, virDomainPCIAddressSetFree);
     }
 
     if (!(addrs = qemuDomainPCIAddressSetCreate(def, qemuCaps, nbuses, false)))

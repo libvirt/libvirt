@@ -272,8 +272,7 @@ testSocketAccept(const void *opaque)
         goto join;
     }
 
-    virObjectUnref(ssock);
-    ssock = NULL;
+    g_clear_pointer(&ssock, virObjectUnref);
 
     ret = 0;
 

@@ -192,8 +192,7 @@ void
 virNetlinkShutdown(void)
 {
     if (placeholder_nlhandle) {
-        virNetlinkFree(placeholder_nlhandle);
-        placeholder_nlhandle = NULL;
+        g_clear_pointer(&placeholder_nlhandle, virNetlinkFree);
     }
 }
 

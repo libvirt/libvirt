@@ -201,12 +201,9 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     /* Clear out dynamically assigned labels */
     if (vm->def->nseclabels &&
         vm->def->seclabels[0]->type == VIR_DOMAIN_SECLABEL_DYNAMIC) {
-        g_free(vm->def->seclabels[0]->model);
-        g_free(vm->def->seclabels[0]->label);
-        g_free(vm->def->seclabels[0]->imagelabel);
-        vm->def->seclabels[0]->model = NULL;
-        vm->def->seclabels[0]->label = NULL;
-        vm->def->seclabels[0]->imagelabel = NULL;
+        g_clear_pointer(&vm->def->seclabels[0]->model, g_free);
+        g_clear_pointer(&vm->def->seclabels[0]->label, g_free);
+        g_clear_pointer(&vm->def->seclabels[0]->imagelabel, g_free);
     }
 
     /* Stop autodestroy in case guest is restarted */
@@ -215,8 +212,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 
     if (priv->monitor) {
         virLXCMonitorClose(priv->monitor);
-        virObjectUnref(priv->monitor);
-        priv->monitor = NULL;
+        g_clear_pointer(&priv->monitor, virObjectUnref);
     }
 
     virPidFileDelete(cfg->stateDir, vm->def->name);
@@ -254,8 +250,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
 
     if (priv->cgroup) {
         virCgroupRemove(priv->cgroup);
-        virCgroupFree(priv->cgroup);
-        priv->cgroup = NULL;
+        g_clear_pointer(&priv->cgroup, virCgroupFree);
     }
 
     /* Get machined to terminate the machine as it may not have cleaned it
@@ -263,8 +258,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
      * the bug we are working around here.
      */
     virCgroupTerminateMachine(priv->machineName);
-    g_free(priv->machineName);
-    priv->machineName = NULL;
+    g_clear_pointer(&priv->machineName, g_free);
 
     /* The "release" hook cleans up additional resources */
     if (virHookPresent(VIR_HOOK_DRIVER_LXC)) {
@@ -680,8 +674,7 @@ virLXCProcessCleanInterfaces(virDomainDef *def)
     size_t i;
 
     for (i = 0; i < def->nnets; i++) {
-        g_free(def->nets[i]->ifname_guest_actual);
-        def->nets[i]->ifname_guest_actual = NULL;
+        g_clear_pointer(&def->nets[i]->ifname_guest_actual, g_free);
         VIR_DEBUG("Cleared net names: %s", def->nets[i]->ifname_guest);
     }
 }

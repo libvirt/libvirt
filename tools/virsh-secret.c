@@ -512,8 +512,7 @@ virshSecretListCollect(vshControl *ctl,
     }
 
     if (!success) {
-        virshSecretListFree(list);
-        list = NULL;
+        g_clear_pointer(&list, virshSecretListFree);
     }
 
     return list;

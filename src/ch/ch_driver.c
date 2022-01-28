@@ -871,8 +871,7 @@ static int chStateCleanup(void)
     virObjectUnref(ch_driver->caps);
     virObjectUnref(ch_driver->config);
     virMutexDestroy(&ch_driver->lock);
-    g_free(ch_driver);
-    ch_driver = NULL;
+    g_clear_pointer(&ch_driver, g_free);
 
     return 0;
 }
@@ -1401,8 +1400,7 @@ chDomainPinEmulator(virDomainPtr dom,
         if (virProcessSetAffinity(vm->pid, pcpumap, false) < 0)
             goto endjob;
 
-        virBitmapFree(def->cputune.emulatorpin);
-        def->cputune.emulatorpin = NULL;
+        g_clear_pointer(&def->cputune.emulatorpin, virBitmapFree);
 
         if (!(def->cputune.emulatorpin = virBitmapNewCopy(pcpumap)))
             goto endjob;

@@ -356,15 +356,13 @@ virStorageBackendRBDCloseRADOSConn(virStorageBackendRBDState *ptr)
 {
     if (ptr->ioctx != NULL) {
         VIR_DEBUG("Closing RADOS IoCTX");
-        rados_ioctx_destroy(ptr->ioctx);
+        g_clear_pointer(&ptr->ioctx, rados_ioctx_destroy);
     }
-    ptr->ioctx = NULL;
 
     if (ptr->cluster != NULL) {
         VIR_DEBUG("Closing RADOS connection");
-        rados_shutdown(ptr->cluster);
+        g_clear_pointer(&ptr->cluster, rados_shutdown);
     }
-    ptr->cluster = NULL;
 
     VIR_DEBUG("RADOS connection existed for %ld seconds",
               time(0) - ptr->starttime);

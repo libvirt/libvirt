@@ -187,8 +187,7 @@ virConnectCloseCallbackDataReset(virConnectCloseCallbackData *closeData)
 
     closeData->freeCallback = NULL;
     closeData->opaque = NULL;
-    virObjectUnref(closeData->conn);
-    closeData->conn = NULL;
+    g_clear_pointer(&closeData->conn, virObjectUnref);
 }
 
 /**
@@ -1141,8 +1140,7 @@ virAdmConnectCloseCallbackDataReset(virAdmConnectCloseCallbackData *cbdata)
     if (cbdata->freeCallback)
         cbdata->freeCallback(cbdata->opaque);
 
-    virObjectUnref(cbdata->conn);
-    cbdata->conn = NULL;
+    g_clear_pointer(&cbdata->conn, virObjectUnref);
     cbdata->freeCallback = NULL;
     cbdata->callback = NULL;
     cbdata->opaque = NULL;

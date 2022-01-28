@@ -50,10 +50,8 @@ static void networkSetupPrivateChains(void)
 
     VIR_DEBUG("Setting up global firewall chains");
 
-    virFreeError(errInitV4);
-    errInitV4 = NULL;
-    virFreeError(errInitV6);
-    errInitV6 = NULL;
+    g_clear_pointer(&errInitV4, virFreeError);
+    g_clear_pointer(&errInitV6, virFreeError);
 
     rc = iptablesSetupPrivateChains(VIR_FIREWALL_LAYER_IPV4);
     if (rc < 0) {

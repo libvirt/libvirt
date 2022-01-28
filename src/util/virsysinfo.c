@@ -254,8 +254,7 @@ virSysinfoParsePPCSystem(const char *base, virSysinfoSystemDef **sysdef)
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
-        virSysinfoSystemDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoSystemDefFree);
     }
 
     *sysdef = g_steal_pointer(&def);
@@ -375,8 +374,7 @@ virSysinfoParseARMSystem(const char *base, virSysinfoSystemDef **sysdef)
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
-        virSysinfoSystemDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoSystemDefFree);
     }
 
     *sysdef = g_steal_pointer(&def);
@@ -509,8 +507,7 @@ virSysinfoParseS390System(const char *base, virSysinfoSystemDef **sysdef)
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
-        virSysinfoSystemDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoSystemDefFree);
     }
 
     *sysdef = g_steal_pointer(&def);
@@ -672,8 +669,7 @@ virSysinfoParseBIOS(const char *base, virSysinfoBIOSDef **bios)
 
     if (!def->vendor && !def->version &&
         !def->date && !def->release) {
-        virSysinfoBIOSDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoBIOSDefFree);
     }
 
     *bios = g_steal_pointer(&def);
@@ -748,8 +744,7 @@ virSysinfoParseX86System(const char *base, virSysinfoSystemDef **sysdef)
 
     if (!def->manufacturer && !def->product && !def->version &&
         !def->serial && !def->uuid && !def->sku && !def->family) {
-        virSysinfoSystemDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoSystemDefFree);
     }
 
     *sysdef = g_steal_pointer(&def);
@@ -889,8 +884,7 @@ virSysinfoParseX86Chassis(const char *base,
 
     if (!def->manufacturer && !def->version &&
         !def->serial && !def->asset && !def->sku) {
-        virSysinfoChassisDefFree(def);
-        def = NULL;
+        g_clear_pointer(&def, virSysinfoChassisDefFree);
     }
 
     *chassisdef = g_steal_pointer(&def);

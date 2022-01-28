@@ -818,9 +818,8 @@ void
 qemuMonitorUnregister(qemuMonitor *mon)
 {
     if (mon->watch) {
-        g_source_destroy(mon->watch);
         vir_g_source_unref(mon->watch, mon->context);
-        mon->watch = NULL;
+        g_clear_pointer(&mon->watch, g_source_destroy);
     }
 }
 
@@ -837,8 +836,7 @@ qemuMonitorClose(qemuMonitor *mon)
 
     if (mon->socket) {
         qemuMonitorUnregister(mon);
-        g_object_unref(mon->socket);
-        mon->socket = NULL;
+        g_clear_pointer(&mon->socket, g_object_unref);
         mon->fd = -1;
     }
 
@@ -1557,8 +1555,7 @@ qemuMonitorCPUInfoClear(qemuMonitorCPUInfo *cpus,
         VIR_FREE(cpus[i].qom_path);
         VIR_FREE(cpus[i].alias);
         VIR_FREE(cpus[i].type);
-        virJSONValueFree(cpus[i].props);
-        cpus[i].props = NULL;
+        g_clear_pointer(&cpus[i].props, virJSONValueFree);
     }
 }
 

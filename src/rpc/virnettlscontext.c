@@ -505,8 +505,7 @@ static gnutls_x509_crt_t virNetTLSContextLoadCertFromFile(const char *certFile,
 
  cleanup:
     if (ret != 0) {
-        gnutls_x509_crt_deinit(cert);
-        cert = NULL;
+        g_clear_pointer(&cert, gnutls_x509_crt_deinit);
     }
     VIR_FREE(buf);
     return cert;

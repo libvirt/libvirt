@@ -1097,8 +1097,7 @@ virStorageSourceBackingStoreClear(virStorageSource *def)
     VIR_FREE(def->backingStoreRaw);
 
     /* recursively free backing chain */
-    virObjectUnref(def->backingStore);
-    def->backingStore = NULL;
+    g_clear_pointer(&def->backingStore, virObjectUnref);
 }
 
 

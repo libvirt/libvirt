@@ -104,8 +104,7 @@ virVBoxSnapshotConfCreateVBoxSnapshotConfHardDiskPtr(xmlNodePtr diskNode,
     VIR_FREE(location);
     VIR_FREE(tmp);
     if (result < 0) {
-        virVboxSnapshotConfHardDiskFree(hardDisk);
-        hardDisk = NULL;
+        g_clear_pointer(&hardDisk, virVboxSnapshotConfHardDiskFree);
     }
     return hardDisk;
 }
@@ -165,8 +164,7 @@ virVBoxSnapshotConfRetrieveMediaRegistry(xmlNodePtr mediaRegistryNode,
 
  cleanup:
     if (result < 0) {
-        virVBoxSnapshotConfMediaRegistryFree(mediaRegistry);
-        mediaRegistry = NULL;
+        g_clear_pointer(&mediaRegistry, virVBoxSnapshotConfMediaRegistryFree);
     }
     VIR_FREE(nodes);
     return mediaRegistry;
@@ -264,8 +262,7 @@ virVBoxSnapshotConfRetrieveSnapshot(xmlNodePtr snapshotNode,
 
  cleanup:
     if (result < 0) {
-        virVBoxSnapshotConfSnapshotFree(snapshot);
-        snapshot = NULL;
+        g_clear_pointer(&snapshot, virVBoxSnapshotConfSnapshotFree);
     }
     VIR_FREE(nodes);
     VIR_FREE(uuid);
@@ -348,8 +345,7 @@ virVBoxSnapshotConfCreateHardDiskNode(virVBoxSnapshotConfHardDisk *hardDisk)
  cleanup:
     if (result < 0) {
         xmlUnlinkNode(ret);
-        xmlFreeNode(ret);
-        ret = NULL;
+        g_clear_pointer(&ret, xmlFreeNode);
     }
     VIR_FREE(uuid);
     return ret;

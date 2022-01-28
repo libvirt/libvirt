@@ -372,8 +372,7 @@ static void virLockManagerLockDaemonFree(virLockManager *lock)
     if (!lock)
         return;
 
-    virLockManagerLockDaemonPrivateFree(lock->privateData);
-    lock->privateData = NULL;
+    g_clear_pointer(&lock->privateData, virLockManagerLockDaemonPrivateFree);
 }
 
 

@@ -446,8 +446,7 @@ static int test13(const void *unused G_GNUC_UNUSED)
     if (!outactual)
         goto cleanup;
 
-    virCommandFree(cmd);
-    cmd = NULL;
+    g_clear_pointer(&cmd, virCommandFree);
 
     if (STRNEQ(outactual, outexpect)) {
         virTestDifference(stderr, outexpect, outactual);
@@ -668,8 +667,7 @@ static int test18(const void *unused G_GNUC_UNUSED)
         goto cleanup;
     }
 
-    virCommandFree(cmd);
-    cmd = NULL;
+    g_clear_pointer(&cmd, virCommandFree);
     if (kill(pid, 0) != 0) {
         printf("daemon should still be running\n");
         goto cleanup;

@@ -919,8 +919,7 @@ int virConfGetValueStringList(virConf *conf,
     if (!cval)
         return 0;
 
-    g_strfreev(*values);
-    *values = NULL;
+    g_clear_pointer(values, g_strfreev);
 
     switch (cval->type) {
     case VIR_CONF_LIST:

@@ -445,8 +445,7 @@ virErrorRestore(virErrorPtr *savederr)
         return;
 
     virSetError(*savederr);
-    virFreeError(*savederr);
-    *savederr = NULL;
+    g_clear_pointer(savederr, virFreeError);
     errno = saved_errno;
 }
 

@@ -1705,8 +1705,7 @@ virResctrlAllocGetGroup(virResctrlInfo *resctrl,
 
  error:
     VIR_FREE(schemata);
-    virObjectUnref(*alloc);
-    *alloc = NULL;
+    g_clear_pointer(alloc, virObjectUnref);
     return -1;
 }
 

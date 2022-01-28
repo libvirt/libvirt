@@ -645,8 +645,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     ignore_value(qemuDomainStorageSourceChainAccessRevoke(driver, vm, oldsrc));
 
     /* media was changed, so we can remove the old media definition now */
-    virObjectUnref(oldsrc);
-    oldsrc = NULL;
+    g_clear_pointer(&oldsrc, virObjectUnref);
 
     ret = 0;
 
@@ -4426,8 +4425,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
         if (diskPriv->blockjob) {
             /* the block job keeps reference to the disk chain */
             diskPriv->blockjob->disk = NULL;
-            virObjectUnref(diskPriv->blockjob);
-            diskPriv->blockjob = NULL;
+            g_clear_pointer(&diskPriv->blockjob, virObjectUnref);
         } else {
             if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareBlockdev(disk->src)))
                 goto cleanup;
@@ -5013,8 +5011,7 @@ qemuDomainRemoveWatchdog(virDomainObj *vm,
               watchdog->info.alias, vm, vm->def->name);
 
     qemuDomainReleaseDeviceAddress(vm, &watchdog->info);
-    virDomainWatchdogDefFree(vm->def->watchdog);
-    vm->def->watchdog = NULL;
+    g_clear_pointer(&vm->def->watchdog, virDomainWatchdogDefFree);
     return 0;
 }
 
@@ -5056,8 +5053,7 @@ qemuDomainRemoveVsockDevice(virDomainObj *vm,
               dev->info.alias, vm, vm->def->name);
 
     qemuDomainReleaseDeviceAddress(vm, &dev->info);
-    virDomainVsockDefFree(vm->def->vsock);
-    vm->def->vsock = NULL;
+    g_clear_pointer(&vm->def->vsock, virDomainVsockDefFree);
     return 0;
 }
 

@@ -209,8 +209,7 @@ virFileCacheNewData(virFileCache *cache,
             return NULL;
 
         if (virFileCacheSave(cache, name, data) < 0) {
-            virObjectUnref(data);
-            data = NULL;
+            g_clear_pointer(&data, virObjectUnref);
         }
     }
 
@@ -273,8 +272,7 @@ virFileCacheValidate(virFileCache *cache,
         if (*data) {
             VIR_DEBUG("Caching data '%p' for '%s'", *data, name);
             if (virHashAddEntry(cache->table, name, *data) < 0) {
-                virObjectUnref(*data);
-                *data = NULL;
+                g_clear_pointer(data, virObjectUnref);
             }
         }
     }

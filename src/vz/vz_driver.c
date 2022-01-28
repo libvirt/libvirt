@@ -4071,8 +4071,7 @@ static int
 vzStateCleanup(void)
 {
     if (vz_driver_privileged) {
-        virObjectUnref(vz_driver);
-        vz_driver = NULL;
+        g_clear_pointer(&vz_driver, virObjectUnref);
         if (vz_driver_lock_fd != -1)
             virPidFileRelease(VZ_STATEDIR, "driver", vz_driver_lock_fd);
         virMutexDestroy(&vz_driver_lock);

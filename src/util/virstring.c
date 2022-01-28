@@ -638,8 +638,7 @@ virStringSearch(const char *str,
 
  cleanup:
     if (ret < 0) {
-        g_strfreev(*matches);
-        *matches = NULL;
+        g_clear_pointer(matches, g_strfreev);
     }
     return ret;
 }

@@ -63,8 +63,7 @@ virRemoteSSHHelperShutdown(virRemoteSSHHelper *proxy)
     if (proxy->sock) {
         virNetSocketRemoveIOCallback(proxy->sock);
         virNetSocketClose(proxy->sock);
-        virObjectUnref(proxy->sock);
-        proxy->sock = NULL;
+        g_clear_pointer(&proxy->sock, virObjectUnref);
     }
     VIR_FREE(proxy->sockToTerminal.data);
     VIR_FREE(proxy->terminalToSock.data);

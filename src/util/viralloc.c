@@ -136,8 +136,7 @@ void virShrinkN(void *ptrptr, size_t size, size_t *countptr, size_t toremove)
     if (toremove < *countptr) {
         virReallocN(ptrptr, size, *countptr -= toremove);
     } else {
-        g_free(*((void **)ptrptr));
-        *((void **)ptrptr) = NULL;
+        g_clear_pointer(((void **)ptrptr), g_free);
         *countptr = 0;
     }
 }

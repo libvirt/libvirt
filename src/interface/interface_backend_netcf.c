@@ -136,8 +136,7 @@ netcfStateInitialize(bool privileged,
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
-    virObjectUnref(driver);
-    driver = NULL;
+    g_clear_pointer(&driver, virObjectUnref);
     return VIR_DRV_STATE_INIT_ERROR;
 }
 
@@ -148,8 +147,7 @@ netcfStateCleanup(void)
     if (!driver)
         return -1;
 
-    virObjectUnref(driver);
-    driver = NULL;
+    g_clear_pointer(&driver, virObjectUnref);
     return 0;
 }
 
@@ -685,8 +683,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
             goto cleanup;
 
         if (!virConnectListAllInterfacesCheckACL(conn, def)) {
-            ncf_if_free(iface);
-            iface = NULL;
+            g_clear_pointer(&iface, ncf_if_free);
             continue;
         }
 
@@ -698,8 +695,7 @@ netcfConnectListAllInterfaces(virConnectPtr conn,
         }
         niface_objs++;
 
-        ncf_if_free(iface);
-        iface = NULL;
+        g_clear_pointer(&iface, ncf_if_free);
     }
 
     if (tmp_iface_objs) {

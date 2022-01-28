@@ -1841,8 +1841,7 @@ remoteOpenConn(const char *uri,
 
  error:
     if (*conn) {
-        virConnectClose(*conn);
-        *conn = NULL;
+        g_clear_pointer(conn, virConnectClose);
     }
     goto cleanup;
 }
@@ -2191,8 +2190,7 @@ remoteDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
     if (rv < 0) {
         virNetMessageSaveError(rerr);
         if (priv->conn) {
-            virObjectUnref(priv->conn);
-            priv->conn = NULL;
+            g_clear_pointer(&priv->conn, virObjectUnref);
         }
     }
     virMutexUnlock(&priv->lock);
@@ -3763,8 +3761,7 @@ remoteSASLFinish(virNetServer *server,
           "client=%p auth=%d identity=%s",
           client, REMOTE_AUTH_SASL, identity);
 
-    virObjectUnref(priv->sasl);
-    priv->sasl = NULL;
+    g_clear_pointer(&priv->sasl, virObjectUnref);
 
     return 0;
 }
@@ -3856,8 +3853,7 @@ remoteDispatchAuthSaslStart(virNetServer *server,
     goto error;
 
  error:
-    virObjectUnref(priv->sasl);
-    priv->sasl = NULL;
+    g_clear_pointer(&priv->sasl, virObjectUnref);
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
                    _("authentication failed"));
@@ -3951,8 +3947,7 @@ remoteDispatchAuthSaslStep(virNetServer *server,
     goto error;
 
  error:
-    virObjectUnref(priv->sasl);
-    priv->sasl = NULL;
+    g_clear_pointer(&priv->sasl, virObjectUnref);
     virResetLastError();
     virReportError(VIR_ERR_AUTH_FAILED, "%s",
                    _("authentication failed"));

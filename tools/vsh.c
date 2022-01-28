@@ -199,8 +199,7 @@ vshSaveLibvirtHelperError(void)
 void
 vshResetLibvirtError(void)
 {
-    virFreeError(last_error);
-    last_error = NULL;
+    g_clear_pointer(&last_error, virFreeError);
     virResetLastError();
 }
 
@@ -1377,8 +1376,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
     const vshCmdDef *cmd = NULL;
 
     if (!partial) {
-        vshCommandFree(ctl->cmd);
-        ctl->cmd = NULL;
+        g_clear_pointer(&ctl->cmd, vshCommandFree);
     }
 
     while (1) {
@@ -1393,8 +1391,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
         first = NULL;
 
         if (partial) {
-            vshCommandFree(*partial);
-            *partial = NULL;
+            g_clear_pointer(partial, vshCommandFree);
         }
 
         while (1) {
@@ -1605,8 +1602,7 @@ vshCommandParse(vshControl *ctl, vshCommandParser *parser, vshCmd **partial)
 
         *partial = tmp;
     } else {
-        vshCommandFree(ctl->cmd);
-        ctl->cmd = NULL;
+        g_clear_pointer(&ctl->cmd, vshCommandFree);
         vshCommandOptFree(first);
     }
     VIR_FREE(tkdata);
@@ -2731,8 +2727,7 @@ vshReadlineParse(const char *text, int state)
         const vshCmdOptDef *opt = NULL;
         g_autofree char *line = g_strdup(rl_line_buffer);
 
-        g_strfreev(list);
-        list = NULL;
+        g_clear_pointer(&list, g_strfreev);
         list_index = 0;
 
         *(line + rl_point) = '\0';
@@ -2798,8 +2793,7 @@ vshReadlineParse(const char *text, int state)
 
  cleanup:
     if (!ret) {
-        g_strfreev(list);
-        list = NULL;
+        g_clear_pointer(&list, g_strfreev);
         list_index = 0;
     }
 

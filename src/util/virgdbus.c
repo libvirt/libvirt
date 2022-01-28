@@ -174,8 +174,7 @@ virGDBusCloseSystemBus(void)
 
     g_dbus_connection_flush_sync(systemBus, NULL, NULL);
     g_dbus_connection_close_sync(systemBus, NULL, NULL);
-    g_object_unref(systemBus);
-    systemBus = NULL;
+    g_clear_pointer(&systemBus, g_object_unref);
 }
 
 

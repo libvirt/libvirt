@@ -134,8 +134,7 @@ virLogDaemonNew(virLogDaemonConfig *config, bool privileged)
 
     if (virNetDaemonAddServer(logd->dmn, srv) < 0)
         goto error;
-    virObjectUnref(srv);
-    srv = NULL;
+    g_clear_pointer(&srv, virObjectUnref);
 
     if (!(srv = virNetServerNew("admin", 1,
                                 0, 0, 0, config->admin_max_clients,
@@ -148,8 +147,7 @@ virLogDaemonNew(virLogDaemonConfig *config, bool privileged)
 
     if (virNetDaemonAddServer(logd->dmn, srv) < 0)
         goto error;
-    virObjectUnref(srv);
-    srv = NULL;
+    g_clear_pointer(&srv, virObjectUnref);
 
     if (!(logd->handler = virLogHandlerNew(privileged,
                                            config->max_size,

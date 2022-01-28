@@ -327,8 +327,7 @@ qemuMonitorTestIO(virNetSocket *sock,
     if (err) {
         virNetSocketRemoveIOCallback(sock);
         virNetSocketClose(sock);
-        virObjectUnref(test->client);
-        test->client = NULL;
+        g_clear_pointer(&test->client, virObjectUnref);
     } else {
         events = VIR_EVENT_HANDLE_READABLE;
 
