@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-23 20:16+0000\n"
+"PO-Revision-Date: 2022-01-30 17:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9196,79 +9196,78 @@ msgid "Guest agent not available for now"
 msgstr "Gästagenten är inte tillgänglig för tillfället"
 
 msgid "HMAT is not supported with this QEMU"
-msgstr ""
+msgstr "HMAT stödjs inte med denna QEMU"
 
-#, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "HTM-konfiguration stödjs inte av denna QEMU-binär"
 
 msgid "HTP resizing is not supported by this QEMU binary"
 msgstr "HTP-storleksändring stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "HTTP response code %d for call to '%s'"
-msgstr ""
+msgstr "HTTP-svarskod %d på anrop till ”%s”"
 
 #, c-format
 msgid ""
 "HTTP response code %d for call to '%s'. Fault is unknown, XPath evaluation "
 "failed"
 msgstr ""
+"HTTP-svarskod %d på anrop av ”%s”. Felet är okänt, XPath-beräkningen "
+"misslyckades"
 
 #, c-format
 msgid ""
 "HTTP response code %d for call to '%s'. Fault is unknown, deserialization "
 "failed"
 msgstr ""
+"HTTP-svarskod %d på anrop av ”%s”. Felet är okänt, avserialiseringen "
+"misslyckades"
 
 #, c-format
 msgid "HTTP response code %d for call to '%s'. Fault: %s - %s"
-msgstr ""
+msgstr "HTTP-svarskod %d på anrop av ”%s”. Fel: %s - %s"
 
 #, c-format
 msgid "HTTP response code %d for download from '%s'"
-msgstr ""
+msgstr "HTTP-svarskod %d vid hämtning från ”%s”"
 
 #, c-format
 msgid "HTTP response code %d for upload to '%s'"
-msgstr ""
+msgstr "HTTP-svarskod %d vid skickande till ”%s”"
 
-#, fuzzy
 msgid "Handshake is already complete"
-msgstr "Domänen är redan aktiv"
+msgstr "Hndskakningen är redan klar"
 
 msgid "Hard disk is null"
-msgstr ""
+msgstr "Hårddisken är null"
 
-#, fuzzy
 msgid "Holes are not supported with this stream"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Hål stödjs inte med denna ström"
 
 #, c-format
 msgid "Hook for %s, failed to find operation #%d"
-msgstr ""
+msgstr "Hake för %s, misslyckades att finna åtgärd nr. %d"
 
-#, fuzzy
 msgid "Hook script execution failed"
-msgstr "operation misslyckades"
+msgstr "Exekvering av hakens skript misslyckades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hook script execution failed: %s"
-msgstr "operation misslyckades: %s"
+msgstr "Exekvering av hakens skript misslyckades: %s"
 
 msgid "Host CPU does not provide required features"
-msgstr ""
+msgstr "Värd-CPU:n tillhandahåller inte de begärda funktionerna"
 
 msgid "Host CPU does not strictly match guest CPU: Extra features"
-msgstr ""
+msgstr "Värd-CPU:n stämmer inte strikt med gäst-CPU:n: Extra funktioner"
 
-#, fuzzy
 msgid "Host CPU does not support compatibility modes"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Värd-CPU:n stödjer inte kompatibilitetslägen"
 
 #, c-format
 msgid "Host CPU is a superset of CPU described in %s\n"
-msgstr ""
+msgstr "Värd-CPU:n är en övermängd av CPU:n som beskrivs i %s\n"
 
 #, c-format
 msgid "Host CPU model does not match required CPU vendor %s or(and) model %s"
