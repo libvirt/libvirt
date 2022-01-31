@@ -8830,9 +8830,9 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
             goto cleanup;
 
-        vdpa = qemuFDPassNew(net->data.vdpa.devicepath, priv);
+        vdpa = qemuFDPassNew(net->info.alias, priv);
 
-        if (qemuFDPassAddFD(vdpa, &vdpafd, NULL) < 0)
+        if (qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa") < 0)
             return -1;
     }
         break;
