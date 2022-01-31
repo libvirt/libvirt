@@ -4027,7 +4027,6 @@ testDomainSetBlockIoTune(virDomainPtr dom,
 #undef TEST_BLOCK_IOTUNE_MAX_CHECK
 
     virDomainDiskSetBlockIOTune(conf_disk, &info);
-    info.group_name = NULL;
 
     ret = 0;
  cleanup:
