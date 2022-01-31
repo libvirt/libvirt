@@ -423,7 +423,7 @@ qemuMigrationCookieAddPersistent(qemuMigrationCookie *mig,
     if (!def || !*def)
         return 0;
 
-    mig->persistent = g_steal_pointer(&*def);
+    mig->persistent = g_steal_pointer(def);
     mig->flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     mig->flagsMandatory |= QEMU_MIGRATION_COOKIE_PERSISTENT;
     return 0;

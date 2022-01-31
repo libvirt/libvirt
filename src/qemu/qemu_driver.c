@@ -12221,7 +12221,7 @@ qemuConnectStealCPUModelFromInfo(virCPUDef *dst,
 
     virCPUDefFreeModel(dst);
 
-    info = g_steal_pointer(&*src);
+    info = g_steal_pointer(src);
     dst->model = g_steal_pointer(&info->name);
 
     for (i = 0; i < info->nprops; i++) {

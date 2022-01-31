@@ -1765,7 +1765,7 @@ qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfo **secinfo,
         *secinfo = g_new0(qemuDomainSecretInfo, 1);
     }
 
-    (*secinfo)->alias = g_steal_pointer(&*alias);
+    (*secinfo)->alias = g_steal_pointer(alias);
 
     return 0;
 }
