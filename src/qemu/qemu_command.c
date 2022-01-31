@@ -29,6 +29,7 @@
 #include "qemu_security.h"
 #include "qemu_slirp.h"
 #include "qemu_block.h"
+#include "qemu_fd.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virarch.h"
@@ -8732,6 +8733,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               size_t *nnicindexes,
                               int **nicindexes)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     int ret = -1;
     g_autoptr(virJSONValue) nicprops = NULL;
@@ -8743,8 +8745,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     g_autofree char *slirpfdName = NULL;
-    g_autofree char *vdpafdName = NULL;
-    int vdpafd = -1;
+    g_autoptr(qemuFDPass) vdpa = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     const virNetDevBandwidth *actualBandwidth;
     bool requireNicdev = false;
@@ -8823,9 +8824,17 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
         break;
 
-    case VIR_DOMAIN_NET_TYPE_VDPA:
+    case VIR_DOMAIN_NET_TYPE_VDPA: {
+        VIR_AUTOCLOSE vdpafd = -1;
+
         if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
             goto cleanup;
+
+        vdpa = qemuFDPassNew(net->data.vdpa.devicepath, priv);
+
+        if (qemuFDPassAddFD(vdpa, &vdpafd, NULL) < 0)
+            return -1;
+    }
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -8958,26 +8967,13 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         vhostfd[i] = -1;
     }
 
-    if (vdpafd > 0) {
-        g_autofree char *fdset = NULL;
-        g_autofree char *addfdarg = NULL;
-        size_t idx;
-
-        virCommandPassFDIndex(cmd, vdpafd, VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
-        fdset = qemuBuildFDSet(vdpafd, idx);
-        vdpafdName = g_strdup_printf("/dev/fdset/%zu", idx);
-        /* set opaque to the devicepath so that we can look up the fdset later
-         * if necessary */
-        addfdarg = g_strdup_printf("%s,opaque=%s", fdset,
-                                   net->data.vdpa.devicepath);
-        virCommandAddArgList(cmd, "-add-fd", addfdarg, NULL);
-        vdpafd = -1;
-    }
+    qemuFDPassTransferCommand(vdpa, cmd);
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
                                                tapfdName, tapfdSize,
                                                vhostfdName, vhostfdSize,
-                                               slirpfdName, vdpafdName)))
+                                               slirpfdName,
+                                               qemuFDPassGetPath(vdpa))))
         goto cleanup;
 
     if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)
@@ -9035,7 +9031,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     VIR_FREE(tapfdName);
     VIR_FREE(vhostfd);
     VIR_FREE(tapfd);
-    VIR_FORCE_CLOSE(vdpafd);
     return ret;
 }
 
