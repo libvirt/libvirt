@@ -300,6 +300,8 @@ Now you should go and reproduce the bug. Once you're finished, attach:
 -  If you are asked for client logs, ``/tmp/libvirt_client.log``.
 -  Ideally don't tear down the environment in case additional information is
    required.
+-  Consider whether you view any of the information in the debug logs
+   sensitive: `Sensitive information in debug logs`_.
 
 Example filter settings
 =======================
@@ -339,3 +341,25 @@ This filter logs only QMP traffic and skips most of libvirt's messages.
 ::
 
     2:qemu.qemu_monitor 3:*
+
+Sensitive information in debug logs
+===================================
+
+Debug logs may contain information that certain users may consider sensitive
+although generally it's okay to share debuglogs publicly.
+
+Information which could be deemed sensitive:
+
+ - hostname of the host
+ - names of VMs and other objects
+ - paths to disk images
+ - IP addresses of guests and the host
+ - hostnames/IP addresses of disks accessed via network
+
+
+Libvirt's debug logs only ever have passwords and disk encryption secrets in
+encrypted form without the key being part of the log. There's one notable
+exception, that ``VNC/SPICE`` passwords can be found in the logs.
+
+In case you decide to mask information you consider sensitive from the posted
+debug logs, make sure that the masking doesn't introduce ambiguity.
