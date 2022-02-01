@@ -57,10 +57,15 @@ VIR_ONCE_GLOBAL_INIT(virNWFilterBindingObj);
 virNWFilterBindingObj *
 virNWFilterBindingObjNew(void)
 {
+    virNWFilterBindingObj *ret;
     if (virNWFilterBindingObjInitialize() < 0)
         return NULL;
 
-    return virObjectNew(virNWFilterBindingObjClass);
+    if (!(ret = virObjectLockableNew(virNWFilterBindingObjClass)))
+        return NULL;
+
+    virObjectLock(ret);
+    return ret;
 }
 
 
