@@ -2847,6 +2847,13 @@ virNetDevOpenvswitchSetTimeout;
 virNetDevOpenvswitchUpdateVlan;
 
 
+# util/virnetdevpriv.h
+virNetDevSendVfSetLinkRequest;
+virNetDevSetVfConfig;
+virNetDevSetVfMac;
+virNetDevSetVfVlan;
+
+
 # util/virnetdevtap.h
 virNetDevTapAttachBridge;
 virNetDevTapCreate;

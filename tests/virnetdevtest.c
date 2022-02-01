@@ -18,11 +18,17 @@
 
 #include <config.h>
 
+#include "internal.h"
 #include "testutils.h"
+
+#include "virnetlink.h"
+
+#define LIBVIRT_VIRNETDEVPRIV_H_ALLOW
 
 #ifdef __linux__
 
-# include "virnetdev.h"
+# include "virmock.h"
+# include "virnetdevpriv.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -59,6 +65,227 @@ testVirNetDevGetLinkInfo(const void *opaque)
     return 0;
 }
 
+# if defined(WITH_LIBNL)
+
+int
+(*real_virNetDevSendVfSetLinkRequest)(const char *ifname,
+                                      int vfInfoType,
+                                      const void *payload,
+                                      const size_t payloadLen);
+
+int
+(*real_virNetDevSetVfMac)(const char *ifname,
+                          int vf,
+                          const virMacAddr *macaddr,
+                          bool *allowRetry);
+
+int
+(*real_virNetDevSetVfVlan)(const char *ifname,
+                           int vf,
+                           int vlanid);
+
+static void
+init_syms(void)
+{
+    VIR_MOCK_REAL_INIT(virNetDevSendVfSetLinkRequest);
+    VIR_MOCK_REAL_INIT(virNetDevSetVfMac);
+    VIR_MOCK_REAL_INIT(virNetDevSetVfVlan);
+}
+
+int
+virNetDevSetVfMac(const char *ifname,
+                  int vf,
+                  const virMacAddr *macaddr,
+                  bool *allowRetry)
+{
+    init_syms();
+
+    if (STREQ_NULLABLE(ifname, "fakeiface-macerror")) {
+        return -EBUSY;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-altmacerror")) {
+        return -EINVAL;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-macerror-novlanerror")) {
+        return -EAGAIN;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-macerror-vlanerror")) {
+        return -ENODEV;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-nomacerror-vlanerror")) {
+        return 0;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-nomacerror-novlanerror")) {
+        return 0;
+    }
+    return real_virNetDevSetVfMac(ifname, vf, macaddr, allowRetry);
+}
+
+int
+virNetDevSetVfVlan(const char *ifname,
+                   int vf,
+                   int vlanid)
+{
+    init_syms();
+
+    if (STREQ_NULLABLE(ifname, "fakeiface-macerror-vlanerror")) {
+        return -EPERM;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-nomacerror-vlanerror")) {
+        return -EPERM;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-macerror-novlanerror")) {
+        return 0;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-nomacerror-novlanerror")) {
+        return 0;
+    }
+    return real_virNetDevSetVfVlan(ifname, vf, vlanid);
+}
+
+int
+virNetDevSendVfSetLinkRequest(const char *ifname,
+                              int vfInfoType,
+                              const void *payload,
+                              const size_t payloadLen)
+{
+    init_syms();
+
+    if (STREQ_NULLABLE(ifname, "fakeiface-eperm")) {
+        return -EPERM;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-eagain")) {
+        return -EAGAIN;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-einval")) {
+        return -EINVAL;
+    } else if (STREQ_NULLABLE(ifname, "fakeiface-ok")) {
+        return 0;
+    }
+    return real_virNetDevSendVfSetLinkRequest(ifname, vfInfoType, payload, payloadLen);
+}
+
+static int
+testVirNetDevSetVfMac(const void *opaque G_GNUC_UNUSED)
+{
+    struct testCase {
+        const char *ifname;
+        const int vf_num;
+        const virMacAddr macaddr;
+        bool allow_retry;
+        const int rc;
+    };
+    size_t i = 0;
+    int rc = 0;
+    struct testCase testCases[] = {
+        { .ifname = "fakeiface-ok", .vf_num = 1,
+          .macaddr = { .addr = { 0, 0, 0, 0, 0, 0 } }, .allow_retry = false, .rc = 0 },
+        { .ifname = "fakeiface-ok", .vf_num = 2,
+          .macaddr = { .addr = { 0, 0, 0, 7, 7, 7 } }, .allow_retry = false, .rc = 0 },
+        { .ifname = "fakeiface-ok", .vf_num = 3,
+          .macaddr = { .addr = { 0, 0, 0, 0, 0, 0 } }, .allow_retry = true, .rc = 0 },
+        { .ifname = "fakeiface-ok", .vf_num = 4,
+          .macaddr = { .addr = { 0, 0, 0, 7, 7, 7 } }, .allow_retry = true, .rc = 0 },
+        { .ifname = "fakeiface-eperm", .vf_num = 5,
+          .macaddr = { .addr = { 0, 0, 0, 0, 0, 0 } }, .allow_retry = false, .rc = -EPERM },
+        { .ifname = "fakeiface-einval", .vf_num = 6,
+          .macaddr = { .addr = { 0, 0, 0, 0, 0, 0 } }, .allow_retry = false, .rc = -EINVAL },
+        { .ifname = "fakeiface-einval", .vf_num = 7,
+          .macaddr = { .addr = { 0, 0, 0, 0, 0, 0 } }, .allow_retry = true, .rc = -EINVAL },
+        { .ifname = "fakeiface-einval", .vf_num = 8,
+          .macaddr = { .addr = { 0, 0, 0, 7, 7, 7 } }, .allow_retry = false, .rc = -EINVAL },
+        { .ifname = "fakeiface-einval", .vf_num = 9,
+          .macaddr = { .addr = { 0, 0, 0, 7, 7, 7 } }, .allow_retry = true, .rc = -EINVAL },
+    };
+
+    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+       rc = virNetDevSetVfMac(testCases[i].ifname, testCases[i].vf_num,
+                              &testCases[i].macaddr, &testCases[i].allow_retry);
+       if (rc != testCases[i].rc) {
+           return -1;
+       }
+    }
+    return 0;
+}
+
+static int
+testVirNetDevSetVfMissingMac(const void *opaque G_GNUC_UNUSED)
+{
+    bool allowRetry = false;
+    /* NULL MAC pointer. */
+    if (virNetDevSetVfMac("fakeiface-ok", 1, NULL, &allowRetry) != -EINVAL) {
+        return -1;
+    }
+    allowRetry = true;
+    if (virNetDevSetVfMac("fakeiface-ok", 1, NULL, &allowRetry) != -EINVAL) {
+        return -1;
+    }
+    return 0;
+}
+
+static int
+testVirNetDevSetVfVlan(const void *opaque G_GNUC_UNUSED)
+{
+    struct testCase {
+        const char *ifname;
+        const int vf_num;
+        const int vlan_id;
+        const int rc;
+    };
+    size_t i = 0;
+    int rc = 0;
+    const struct testCase testCases[] = {
+        /* VLAN ID is out of range of valid values (0-4095). */
+        { .ifname = "enxdeadbeefcafe", .vf_num = 1, .vlan_id = 4096, .rc = -ERANGE },
+        { .ifname = "enxdeadbeefcafe", .vf_num = 1, .vlan_id = -1, .rc = -ERANGE },
+        { .ifname = "fakeiface-eperm", .vf_num = 1, .vlan_id = 0, .rc = -EPERM },
+        { .ifname = "fakeiface-eagain", .vf_num = 1, .vlan_id = 0, .rc = -EAGAIN },
+        /* Successful requests with vlan id 0 need to have a zero return code. */
+        { .ifname = "fakeiface-ok", .vf_num = 1, .vlan_id = 0, .rc = 0 },
+        /* Requests with a non-zero VLAN ID that result in an EPERM need to result in failures.
+         * failures. */
+        { .ifname = "fakeiface-eperm", .vf_num = 1, .vlan_id = 42, .rc = -EPERM },
+        /* Requests with a non-zero VLAN ID that result in some other errors need to result in
+         * failures. */
+        { .ifname = "fakeiface-eagain", .vf_num = 1, .vlan_id = 42, .rc = -EAGAIN },
+        /* Successful requests with a non-zero VLAN ID */
+        { .ifname = "fakeiface-ok", .vf_num = 1, .vlan_id = 42, .rc = 0 },
+    };
+
+    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+       rc = virNetDevSetVfVlan(testCases[i].ifname, testCases[i].vf_num, testCases[i].vlan_id);
+       if (rc != testCases[i].rc) {
+           return -1;
+       }
+    }
+
+    return 0;
+}
+
+static int
+testVirNetDevSetVfConfig(const void *opaque G_GNUC_UNUSED)
+{
+    struct testCase {
+        const char *ifname;
+        const int rc;
+    };
+    int rc = 0;
+    size_t i = 0;
+    /* Nested functions are mocked so dummy values are used. */
+    const virMacAddr mac = { .addr = { 0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE }};
+    const int vfNum = 1;
+    const int vlanid = 0;
+    bool *allowRetry = NULL;
+
+    const struct testCase testCases[] = {
+        { .ifname = "fakeiface-macerror", .rc = -EBUSY },
+        { .ifname = "fakeiface-altmacerror", .rc = -EINVAL },
+        { .ifname = "fakeiface-macerror-novlanerror", .rc = -EAGAIN },
+        { .ifname = "fakeiface-macerror-vlanerror", .rc = -ENODEV },
+        { .ifname = "fakeiface-nomacerror-novlanerror", .rc = 0 },
+    };
+
+    for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
+       rc = virNetDevSetVfConfig(testCases[i].ifname, vfNum, &mac, vlanid, allowRetry);
+       if (rc != testCases[i].rc) {
+           return -1;
+       }
+    }
+    return 0;
+}
+
+# endif /* defined(WITH_LIBNL) */
+
 static int
 mymain(void)
 {
@@ -75,6 +302,19 @@ mymain(void)
     DO_TEST_LINK("eth0", VIR_NETDEV_IF_STATE_UP, 1000);
     DO_TEST_LINK("lo", VIR_NETDEV_IF_STATE_UNKNOWN, 0);
     DO_TEST_LINK("eth0-broken", VIR_NETDEV_IF_STATE_DOWN, 0);
+
+# if defined(WITH_LIBNL)
+
+    if (virTestRun("Set VF MAC", testVirNetDevSetVfMac, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Set VF MAC: missing MAC pointer", testVirNetDevSetVfMissingMac, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Set VF VLAN", testVirNetDevSetVfVlan, NULL) < 0)
+        ret = -1;
+    if (virTestRun("Set VF Config", testVirNetDevSetVfConfig, NULL) < 0)
+        ret = -1;
+
+# endif /* defined(WITH_LIBNL) */
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

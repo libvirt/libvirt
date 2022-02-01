@@ -19,7 +19,9 @@
 #include <config.h>
 #include <math.h>
 
-#include "virnetdev.h"
+#define LIBVIRT_VIRNETDEVPRIV_H_ALLOW
+
+#include "virnetdevpriv.h"
 #include "viralloc.h"
 #include "virnetlink.h"
 #include "virmacaddr.h"
@@ -1509,16 +1511,15 @@ static struct nla_policy ifla_vfstats_policy[IFLA_VF_STATS_MAX+1] = {
     [IFLA_VF_STATS_MULTICAST]   = { .type = NLA_U64 },
 };
 
-
-static int
-virNetDevSetVfConfig(const char *ifname, int vf,
-                     const virMacAddr *macaddr, int vlanid,
-                     bool *allowRetry)
+int
+virNetDevSendVfSetLinkRequest(const char *ifname,
+                              int vfInfoType,
+                              const void *payload,
+                              const size_t payloadLen)
 {
     int rc = -1;
-    char macstr[VIR_MAC_STRING_BUFLEN];
     g_autofree struct nlmsghdr *resp = NULL;
-    struct nlmsgerr *err;
+    struct nlmsgerr *err = NULL;
     unsigned int recvbuflen = 0;
     struct nl_msg *nl_msg;
     struct nlattr *vfinfolist, *vfinfo;
@@ -1526,9 +1527,6 @@ virNetDevSetVfConfig(const char *ifname, int vf,
         .ifi_family = AF_UNSPEC,
         .ifi_index  = -1,
     };
-
-    if (!macaddr && vlanid < 0)
-        return -1;
 
     nl_msg = virNetlinkMsgNew(RTM_SETLINK, NLM_F_REQUEST);
 
@@ -1539,37 +1537,14 @@ virNetDevSetVfConfig(const char *ifname, int vf,
         nla_put(nl_msg, IFLA_IFNAME, strlen(ifname)+1, ifname) < 0)
         goto buffer_too_small;
 
-
     if (!(vfinfolist = nla_nest_start(nl_msg, IFLA_VFINFO_LIST)))
         goto buffer_too_small;
 
     if (!(vfinfo = nla_nest_start(nl_msg, IFLA_VF_INFO)))
         goto buffer_too_small;
 
-    if (macaddr) {
-        struct ifla_vf_mac ifla_vf_mac = {
-             .vf = vf,
-             .mac = { 0, },
-        };
-
-        virMacAddrGetRaw(macaddr, ifla_vf_mac.mac);
-
-        if (nla_put(nl_msg, IFLA_VF_MAC, sizeof(ifla_vf_mac),
-                    &ifla_vf_mac) < 0)
-            goto buffer_too_small;
-    }
-
-    if (vlanid >= 0) {
-        struct ifla_vf_vlan ifla_vf_vlan = {
-             .vf = vf,
-             .vlan = vlanid,
-             .qos = 0,
-        };
-
-        if (nla_put(nl_msg, IFLA_VF_VLAN, sizeof(ifla_vf_vlan),
-                    &ifla_vf_vlan) < 0)
-            goto buffer_too_small;
-    }
+    if (nla_put(nl_msg, vfInfoType, payloadLen, payload) < 0)
+        goto buffer_too_small;
 
     nla_nest_end(nl_msg, vfinfo);
     nla_nest_end(nl_msg, vfinfolist);
@@ -1586,44 +1561,16 @@ virNetDevSetVfConfig(const char *ifname, int vf,
         err = (struct nlmsgerr *)NLMSG_DATA(resp);
         if (resp->nlmsg_len < NLMSG_LENGTH(sizeof(*err)))
             goto malformed_resp;
-
-        /* if allowRetry is true and the error was EINVAL, then
-         * silently return a failure so the caller can retry with a
-         * different MAC address
-         */
-        if (err->error == -EINVAL && *allowRetry &&
-            macaddr && !virMacAddrCmp(macaddr, &zeroMAC)) {
-            goto cleanup;
-        } else if (err->error) {
-            /* other errors are permanent */
-            virReportSystemError(-err->error,
-                                 _("Cannot set interface MAC/vlanid to %s/%d "
-                                   "for ifname %s vf %d"),
-                                 (macaddr
-                                  ? virMacAddrFormat(macaddr, macstr)
-                                  : "(unchanged)"),
-                                 vlanid,
-                                 ifname ? ifname : "(unspecified)",
-                                 vf);
-            *allowRetry = false; /* no use retrying */
-            goto cleanup;
-        }
+        rc = err->error;
         break;
-
     case NLMSG_DONE:
+        rc = 0;
         break;
-
     default:
         goto malformed_resp;
     }
 
-    rc = 0;
  cleanup:
-    VIR_DEBUG("RTM_SETLINK %s vf %d MAC=%s vlanid=%d - %s",
-              ifname, vf,
-              macaddr ? virMacAddrFormat(macaddr, macstr) : "(unchanged)",
-              vlanid, rc < 0 ? "Fail" : "Success");
-
     nlmsg_free(nl_msg);
     return rc;
 
@@ -1636,6 +1583,96 @@ virNetDevSetVfConfig(const char *ifname, int vf,
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("allocated netlink buffer is too small"));
     goto cleanup;
+}
+
+int
+virNetDevSetVfVlan(const char *ifname,
+                   int vf,
+                   int vlanid)
+{
+    int ret = -1;
+    struct ifla_vf_vlan ifla_vf_vlan = {
+        .vf = vf,
+        .vlan = vlanid,
+        .qos = 0,
+    };
+
+    /* VLAN ids 0 and 4095 are reserved per 802.1Q but are valid values. */
+    if ((vlanid < 0 || vlanid > 4095)) {
+        virReportError(ERANGE, _("vlanid out of range: %d"), vlanid);
+        return -ERANGE;
+    }
+
+    ret = virNetDevSendVfSetLinkRequest(ifname, IFLA_VF_VLAN,
+                                        &ifla_vf_vlan, sizeof(ifla_vf_vlan));
+
+    if (ret < 0) {
+        virReportSystemError(-ret,
+                             _("Cannot set interface vlanid to %d for ifname %s vf %d"),
+                             vlanid, ifname ? ifname : "(unspecified)", vf);
+    }
+
+    VIR_DEBUG("RTM_SETLINK %s vf %d vlanid=%d - %s",
+              ifname, vf, vlanid, ret < 0 ? "Fail" : "Success");
+    return ret;
+}
+
+int
+virNetDevSetVfMac(const char *ifname, int vf,
+                  const virMacAddr *macaddr,
+                  bool *allowRetry)
+{
+    int ret = -1;
+    char macstr[VIR_MAC_STRING_BUFLEN];
+    struct ifla_vf_mac ifla_vf_mac = {
+        .vf = vf,
+        .mac = { 0, },
+    };
+
+    if (macaddr == NULL || allowRetry == NULL) {
+        virReportError(EINVAL, "%s", _("Invalid parameters: %d"));
+        return -EINVAL;
+    }
+
+    virMacAddrGetRaw(macaddr, ifla_vf_mac.mac);
+
+    ret = virNetDevSendVfSetLinkRequest(ifname, IFLA_VF_MAC,
+                                        &ifla_vf_mac, sizeof(ifla_vf_mac));
+    if (ret == -EINVAL && *allowRetry && !virMacAddrCmp(macaddr, &zeroMAC)) {
+        /* if allowRetry is true and the error was EINVAL, then
+         * silently return a failure so the caller can retry with a
+         * different MAC address. */
+    } else if (ret < 0) {
+        /* other errors are permanent */
+        virReportSystemError(-ret,
+                             _("Cannot set interface MAC to %s for ifname %s vf %d"),
+                             macaddr ? virMacAddrFormat(macaddr, macstr) : "(unchanged)",
+                             ifname ? ifname : "(unspecified)",
+                             vf);
+        *allowRetry = false; /* don't use retrying */
+    }
+
+    VIR_DEBUG("RTM_SETLINK %s vf %d MAC=%s - %s",
+              ifname, vf,
+              macaddr ? virMacAddrFormat(macaddr, macstr) : "(unchanged)",
+              ret < 0 ? "Fail" : "Success");
+    return ret;
+}
+
+int
+virNetDevSetVfConfig(const char *ifname,
+                     int vf,
+                     const virMacAddr *macaddr,
+                     int vlanid,
+                     bool *allowRetry)
+{
+    int ret = -1;
+
+    if ((ret = virNetDevSetVfMac(ifname, vf, macaddr, allowRetry)) < 0)
+        return ret;
+    if ((ret = virNetDevSetVfVlan(ifname, vf, vlanid)) < 0)
+        return ret;
+    return ret;
 }
 
 /**
@@ -2389,6 +2426,50 @@ virNetDevVFInterfaceStats(virPCIDeviceAddress *vfAddr G_GNUC_UNUSED,
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to get VF net device stats on this platform"));
     return -1;
+}
+
+int
+virNetDevSendVfSetLinkRequest(const char *ifname G_GNUC_UNUSED,
+                              int vfInfoType G_GNUC_UNUSED,
+                              const void *payload G_GNUC_UNUSED,
+                              const size_t payloadLen G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to send a VF SETLINK request on this platform"));
+    return -ENOSYS;
+}
+
+int
+virNetDevSetVfVlan(const char *ifname G_GNUC_UNUSED,
+                   int vf G_GNUC_UNUSED,
+                   int vlanid G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to set a VF VLAN on this platform"));
+    return -ENOSYS;
+}
+
+int
+virNetDevSetVfMac(const char *ifname G_GNUC_UNUSED,
+                  int vf G_GNUC_UNUSED,
+                  const virMacAddr *macaddr G_GNUC_UNUSED,
+                  bool *allowRetry G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to set a VF MAC on this platform"));
+    return -ENOSYS;
+}
+
+int
+virNetDevSetVfConfig(const char *ifname G_GNUC_UNUSED,
+                     int vf G_GNUC_UNUSED,
+                     const virMacAddr *macaddr G_GNUC_UNUSED,
+                     int vlanid G_GNUC_UNUSED,
+                     bool *allowRetry G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Unable to set a VF config on this platform"));
+    return -ENOSYS;
 }
 
 
