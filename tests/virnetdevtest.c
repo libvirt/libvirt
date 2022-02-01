@@ -248,7 +248,7 @@ testVirNetDevSetVfVlan(const void *opaque G_GNUC_UNUSED)
     };
 
     const struct nullVlanTestCase nullVLANTestCases[] = {
-        { .ifname = "fakeiface-eperm", .vf_num = 1, .rc = -EPERM },
+        { .ifname = "fakeiface-eperm", .vf_num = 1, .rc = 0 },
         { .ifname = "fakeiface-eagain", .vf_num = 1, .rc = -EAGAIN },
         /* Successful requests with vlan id 0 need to have a zero return code. */
         { .ifname = "fakeiface-ok", .vf_num = 1, .rc = 0 },

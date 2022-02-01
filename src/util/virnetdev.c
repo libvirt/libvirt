@@ -1610,7 +1610,15 @@ virNetDevSetVfVlan(const char *ifname,
     ret = virNetDevSendVfSetLinkRequest(ifname, IFLA_VF_VLAN,
                                         &ifla_vf_vlan, sizeof(ifla_vf_vlan));
 
-    if (ret < 0) {
+    /* If vlanid is NULL - we are attempting to implicitly clear an existing
+     * VLAN id.  An EPERM received at this stage is an indicator that the
+     * embedded switch is not exposed to this host and the network driver is
+     * not able to set a VLAN for a VF, whereas the Libvirt client has not
+     * explicitly configured a VLAN or requested it to be cleared via VLAN id
+     * 0. */
+    if (ret == -EPERM && vlanid == NULL) {
+        ret = 0;
+    } else if (ret < 0) {
         virReportSystemError(-ret,
                              _("Cannot set interface vlanid to %d for ifname %s vf %d"),
                              ifla_vf_vlan.vlan, ifname ? ifname : "(unspecified)", vf);
