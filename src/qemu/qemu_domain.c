@@ -3703,6 +3703,14 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
         addPCIRoot = true;
         break;
 
+    case VIR_ARCH_MIPS:
+    case VIR_ARCH_MIPSEL:
+    case VIR_ARCH_MIPS64:
+    case VIR_ARCH_MIPS64EL:
+        if (qemuDomainIsMipsMalta(def))
+            addPCIRoot = true;
+        break;
+
     case VIR_ARCH_ARMV7B:
     case VIR_ARCH_CRIS:
     case VIR_ARCH_ITANIUM:
@@ -3710,10 +3718,6 @@ qemuDomainDefAddDefaultDevices(virQEMUDriver *driver,
     case VIR_ARCH_M68K:
     case VIR_ARCH_MICROBLAZE:
     case VIR_ARCH_MICROBLAZEEL:
-    case VIR_ARCH_MIPS:
-    case VIR_ARCH_MIPSEL:
-    case VIR_ARCH_MIPS64:
-    case VIR_ARCH_MIPS64EL:
     case VIR_ARCH_OR32:
     case VIR_ARCH_PARISC:
     case VIR_ARCH_PARISC64:
