@@ -524,7 +524,7 @@ virNodeDeviceObjListRemove(virNodeDeviceObjList *devs,
     virObjectRWLockWrite(devs);
     virObjectLock(obj);
     virNodeDeviceObjListRemoveLocked(devs, obj);
-    virNodeDeviceObjEndAPI(&obj);
+    virObjectUnref(obj);
     virObjectRWUnlock(devs);
 }
 
