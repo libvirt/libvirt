@@ -11,7 +11,7 @@ After=ip6tables.service
 After=dbus.service
 After=apparmor.service
 After=local-fs.target
-Documentation=man:libvirtd(8)
+Documentation=man:virtnetworkd(8)
 Documentation=https://libvirt.org
 
 [Service]
