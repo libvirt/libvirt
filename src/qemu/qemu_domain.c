@@ -8647,6 +8647,20 @@ qemuDomainMachineIsPSeries(const char *machine,
 }
 
 
+static bool
+qemuDomainMachineIsMipsMalta(const char *machine,
+                             const virArch arch)
+{
+    if (!ARCH_IS_MIPS(arch))
+        return false;
+
+    if (STREQ(machine, "malta"))
+        return true;
+
+    return false;
+}
+
+
 /* You should normally avoid this function and use
  * qemuDomainHasBuiltinIDE() instead. */
 bool
@@ -8716,6 +8730,13 @@ bool
 qemuDomainIsPSeries(const virDomainDef *def)
 {
     return qemuDomainMachineIsPSeries(def->os.machine, def->os.arch);
+}
+
+
+bool
+qemuDomainIsMipsMalta(const virDomainDef *def)
+{
+    return qemuDomainMachineIsMipsMalta(def->os.machine, def->os.arch);
 }
 
 
