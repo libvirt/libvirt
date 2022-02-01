@@ -1325,18 +1325,18 @@ if yajl_dep.found()
   #
   # [1] https://github.com/Homebrew/homebrew-core/pull/74516
   if host_machine.system() != 'linux'
-    includedir = yajl_dep.get_pkgconfig_variable('includedir')
-    if includedir.contains('include/yajl')
+    yajl_includedir = yajl_dep.get_pkgconfig_variable('includedir')
+    if yajl_includedir.contains('include/yajl')
       rc = run_command(
         'python3', '-c',
         'print("@0@".replace("@1@", "@2@"))'.format(
-          includedir, 'include/yajl', 'include',
+          yajl_includedir, 'include/yajl', 'include',
         ),
         check: true,
       )
-      includedir = rc.stdout().strip()
+      yajl_includedir = rc.stdout().strip()
       yajl_dep = declare_dependency(
-        compile_args: [ '-I' + includedir ],
+        compile_args: [ '-I' + yajl_includedir ],
         dependencies: [ yajl_dep ],
       )
     endif
