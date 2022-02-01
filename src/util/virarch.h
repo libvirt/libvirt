@@ -95,6 +95,11 @@ typedef enum {
 #define ARCH_IS_S390(arch) ((arch) == VIR_ARCH_S390 ||\
                             (arch) == VIR_ARCH_S390X)
 
+#define ARCH_IS_MIPS(arch) ((arch) == VIR_ARCH_MIPS ||\
+                            (arch) == VIR_ARCH_MIPSEL ||\
+                            (arch) == VIR_ARCH_MIPS64 ||\
+                            (arch) == VIR_ARCH_MIPS64EL)
+
 #define ARCH_IS_MIPS64(arch) ((arch) == VIR_ARCH_MIPS64 ||\
                               (arch) == VIR_ARCH_MIPS64EL)
 
