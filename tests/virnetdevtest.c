@@ -82,7 +82,7 @@ int
 int
 (*real_virNetDevSetVfVlan)(const char *ifname,
                            int vf,
-                           int vlanid);
+                           const int *vlanid);
 
 static void
 init_syms(void)
@@ -119,7 +119,7 @@ virNetDevSetVfMac(const char *ifname,
 int
 virNetDevSetVfVlan(const char *ifname,
                    int vf,
-                   int vlanid)
+                   const int *vlanid)
 {
     init_syms();
 
@@ -222,6 +222,11 @@ testVirNetDevSetVfVlan(const void *opaque G_GNUC_UNUSED)
         const int vlan_id;
         const int rc;
     };
+    struct nullVlanTestCase {
+        const char *ifname;
+        const int vf_num;
+        const int rc;
+    };
     size_t i = 0;
     int rc = 0;
     const struct testCase testCases[] = {
@@ -242,9 +247,23 @@ testVirNetDevSetVfVlan(const void *opaque G_GNUC_UNUSED)
         { .ifname = "fakeiface-ok", .vf_num = 1, .vlan_id = 42, .rc = 0 },
     };
 
+    const struct nullVlanTestCase nullVLANTestCases[] = {
+        { .ifname = "fakeiface-eperm", .vf_num = 1, .rc = -EPERM },
+        { .ifname = "fakeiface-eagain", .vf_num = 1, .rc = -EAGAIN },
+        /* Successful requests with vlan id 0 need to have a zero return code. */
+        { .ifname = "fakeiface-ok", .vf_num = 1, .rc = 0 },
+    };
+
     for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
-       rc = virNetDevSetVfVlan(testCases[i].ifname, testCases[i].vf_num, testCases[i].vlan_id);
+       rc = virNetDevSetVfVlan(testCases[i].ifname, testCases[i].vf_num, &testCases[i].vlan_id);
        if (rc != testCases[i].rc) {
+           return -1;
+       }
+    }
+
+    for (i = 0; i < sizeof(nullVLANTestCases) / sizeof(struct nullVlanTestCase); ++i) {
+       rc = virNetDevSetVfVlan(nullVLANTestCases[i].ifname, nullVLANTestCases[i].vf_num, NULL);
+       if (rc != nullVLANTestCases[i].rc) {
            return -1;
        }
     }
@@ -276,7 +295,7 @@ testVirNetDevSetVfConfig(const void *opaque G_GNUC_UNUSED)
     };
 
     for (i = 0; i < sizeof(testCases) / sizeof(struct testCase); ++i) {
-       rc = virNetDevSetVfConfig(testCases[i].ifname, vfNum, &mac, vlanid, allowRetry);
+       rc = virNetDevSetVfConfig(testCases[i].ifname, vfNum, &mac, &vlanid, allowRetry);
        if (rc != testCases[i].rc) {
            return -1;
        }

@@ -1588,19 +1588,23 @@ virNetDevSendVfSetLinkRequest(const char *ifname,
 int
 virNetDevSetVfVlan(const char *ifname,
                    int vf,
-                   int vlanid)
+                   const int *vlanid)
 {
     int ret = -1;
     struct ifla_vf_vlan ifla_vf_vlan = {
         .vf = vf,
-        .vlan = vlanid,
+        .vlan = 0,
         .qos = 0,
     };
 
-    /* VLAN ids 0 and 4095 are reserved per 802.1Q but are valid values. */
-    if ((vlanid < 0 || vlanid > 4095)) {
-        virReportError(ERANGE, _("vlanid out of range: %d"), vlanid);
-        return -ERANGE;
+    /* If vlanid is NULL, assume it needs to be cleared. */
+    if (vlanid) {
+        /* VLAN ids 0 and 4095 are reserved per 802.1Q but are valid values. */
+        if ((*vlanid < 0 || *vlanid > 4095)) {
+            virReportError(ERANGE, _("vlanid out of range: %d"), *vlanid);
+            return -ERANGE;
+        }
+        ifla_vf_vlan.vlan = *vlanid;
     }
 
     ret = virNetDevSendVfSetLinkRequest(ifname, IFLA_VF_VLAN,
@@ -1609,11 +1613,11 @@ virNetDevSetVfVlan(const char *ifname,
     if (ret < 0) {
         virReportSystemError(-ret,
                              _("Cannot set interface vlanid to %d for ifname %s vf %d"),
-                             vlanid, ifname ? ifname : "(unspecified)", vf);
+                             ifla_vf_vlan.vlan, ifname ? ifname : "(unspecified)", vf);
     }
 
     VIR_DEBUG("RTM_SETLINK %s vf %d vlanid=%d - %s",
-              ifname, vf, vlanid, ret < 0 ? "Fail" : "Success");
+              ifname, vf, ifla_vf_vlan.vlan, ret < 0 ? "Fail" : "Success");
     return ret;
 }
 
@@ -1663,7 +1667,7 @@ int
 virNetDevSetVfConfig(const char *ifname,
                      int vf,
                      const virMacAddr *macaddr,
-                     int vlanid,
+                     const int *vlanid,
                      bool *allowRetry)
 {
     int ret = -1;
@@ -2200,7 +2204,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
     const char *pfDevName = NULL;
     g_autofree char *pfDevOrig = NULL;
     g_autofree char *vfDevOrig = NULL;
-    int vlanTag = -1;
+    g_autofree int *vlanTag = NULL;
     g_autoptr(virPCIDevice) vfPCIDevice = NULL;
 
     if (vf >= 0) {
@@ -2259,10 +2263,17 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
                 return -1;
             }
 
-            vlanTag = vlan->tag[0];
+            vlanTag = g_new0(int, 1);
+            *vlanTag = vlan->tag[0];
 
         } else if (setVlan) {
-            vlanTag = 0; /* assure any existing vlan tag is reset */
+            vlanTag = g_new0(int, 1);
+            /* Assure any existing vlan tag is reset. */
+            *vlanTag = 0;
+        } else {
+            /* Indicate that setting a VLAN has not been explicitly requested.
+             * This allows selected errors in clearing a VF VLAN to be ignored. */
+            vlanTag = NULL;
         }
     }
 
@@ -2344,7 +2355,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
         }
     }
 
-    if (adminMAC || vlanTag >= 0) {
+    if (adminMAC) {
         /* Set vlanTag and admin MAC using an RTM_SETLINK request sent to
          * PFdevname+VF#, if mac != NULL this will set the "admin MAC" via
          * the PF, *not* the actual VF MAC - the admin MAC only takes
@@ -2442,7 +2453,7 @@ virNetDevSendVfSetLinkRequest(const char *ifname G_GNUC_UNUSED,
 int
 virNetDevSetVfVlan(const char *ifname G_GNUC_UNUSED,
                    int vf G_GNUC_UNUSED,
-                   int vlanid G_GNUC_UNUSED)
+                   const int *vlanid G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",
                          _("Unable to set a VF VLAN on this platform"));
@@ -2464,7 +2475,7 @@ int
 virNetDevSetVfConfig(const char *ifname G_GNUC_UNUSED,
                      int vf G_GNUC_UNUSED,
                      const virMacAddr *macaddr G_GNUC_UNUSED,
-                     int vlanid G_GNUC_UNUSED,
+                     const int *vlanid G_GNUC_UNUSED,
                      bool *allowRetry G_GNUC_UNUSED)
 {
     virReportSystemError(ENOSYS, "%s",

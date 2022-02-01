@@ -35,7 +35,7 @@ virNetDevSendVfSetLinkRequest(const char *ifname,
 int
 virNetDevSetVfVlan(const char *ifname,
                    int vf,
-                   int vlanid);
+                   const int *vlanid);
 
 int
 virNetDevSetVfMac(const char *ifname,
@@ -47,5 +47,5 @@ int
 virNetDevSetVfConfig(const char *ifname,
                      int vf,
                      const virMacAddr *macaddr,
-                     int vlanid,
+                     const int *vlanid,
                      bool *allowRetry);

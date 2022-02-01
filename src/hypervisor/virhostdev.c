@@ -463,6 +463,7 @@ virHostdevSetNetConfig(virDomainHostdevDef *hostdev,
     const virNetDevVPortProfile *virtPort;
     int vf = -1;
     bool port_profile_associate = true;
+    bool setVlan = false;
 
     if (!virHostdevIsPCINetDevice(hostdev))
         return 0;
@@ -471,6 +472,7 @@ virHostdevSetNetConfig(virDomainHostdevDef *hostdev,
         return -1;
 
     vlan = virDomainNetGetActualVlan(hostdev->parentnet);
+    setVlan = vlan != NULL;
     virtPort = virDomainNetGetActualVirtPortProfile(hostdev->parentnet);
     if (virtPort) {
         if (vlan) {
@@ -486,7 +488,7 @@ virHostdevSetNetConfig(virDomainHostdevDef *hostdev,
             return -1;
     } else {
         if (virNetDevSetNetConfig(linkdev, vf, &hostdev->parentnet->mac,
-                                  vlan, NULL, true) < 0)
+                                  vlan, NULL, setVlan) < 0)
             return -1;
     }
 
