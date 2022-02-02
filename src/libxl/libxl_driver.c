@@ -393,6 +393,7 @@ libxlReconnectDomain(virDomainObj *vm,
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     int ret = -1;
+    size_t i;
 
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
 
@@ -446,6 +447,28 @@ libxlReconnectDomain(virDomainObj *vm,
     libxl_evenable_domain_death(cfg->ctx, vm->def->id, 0, &priv->deathW);
 
     libxlReconnectNotifyNets(vm->def);
+
+    /* Set any auto-allocated graphics ports to used */
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDef *graphics = vm->def->graphics[i];
+
+         switch (graphics->type) {
+         case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+             if (graphics->data.vnc.autoport)
+                 virPortAllocatorSetUsed(graphics->data.vnc.port);
+             break;
+         case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+             if (graphics->data.spice.autoport)
+                 virPortAllocatorSetUsed(graphics->data.spice.port);
+             break;
+         case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+             break;
+         }
+    }
 
     if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0)
         VIR_WARN("Cannot update XML for running Xen guest %s", vm->def->name);
