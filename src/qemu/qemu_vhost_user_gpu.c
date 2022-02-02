@@ -54,7 +54,6 @@ qemuVhostUserGPUCreatePidFilename(const char *stateDir,
 
 /*
  * qemuVhostUserGPUGetPid:
- * @binpath: path of executable associated with the pidfile
  * @stateDir: the directory where vhost-user-gpu writes the pidfile into
  * @shortName: short name of the domain
  * @alias: video device alias
@@ -65,8 +64,7 @@ qemuVhostUserGPUCreatePidFilename(const char *stateDir,
  * set to -1;
  */
 static int
-qemuVhostUserGPUGetPid(const char *binPath,
-                       const char *stateDir,
+qemuVhostUserGPUGetPid(const char *stateDir,
                        const char *shortName,
                        const char *alias,
                        pid_t *pid)
@@ -76,7 +74,7 @@ qemuVhostUserGPUGetPid(const char *binPath,
     if (!(pidfile = qemuVhostUserGPUCreatePidFilename(stateDir, shortName, alias)))
         return -1;
 
-    if (virPidFileReadPathIfAlive(pidfile, pid, binPath) < 0)
+    if (virPidFileReadPathIfLocked(pidfile, pid) < 0)
         return -1;
 
     return 0;
@@ -253,8 +251,7 @@ qemuExtVhostUserGPUSetupCgroup(virQEMUDriver *driver,
     if (!shortname)
         return -1;
 
-    rc = qemuVhostUserGPUGetPid(video->driver->vhost_user_binary,
-                                cfg->stateDir, shortname, video->info.alias, &pid);
+    rc = qemuVhostUserGPUGetPid(cfg->stateDir, shortname, video->info.alias, &pid);
     if (rc < 0 || (rc == 0 && pid == (pid_t)-1)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Could not get process id of vhost-user-gpu"));
