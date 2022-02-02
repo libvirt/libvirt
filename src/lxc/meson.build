@@ -177,7 +177,7 @@ if conf.has('WITH_LXC')
 
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'lxc',
-    runstatedir / 'libvirt' / 'lxc',
     localstatedir / 'log' / 'libvirt' / 'lxc',
+    runstatedir / 'libvirt' / 'lxc',
   ]
 endif

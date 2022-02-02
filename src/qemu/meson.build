@@ -174,12 +174,12 @@ if conf.has('WITH_QEMU')
   endif
 
   virt_install_dirs += [
-    localstatedir / 'lib' / 'libvirt' / 'qemu',
-    runstatedir / 'libvirt' / 'qemu',
     localstatedir / 'cache' / 'libvirt' / 'qemu',
-    localstatedir / 'log' / 'libvirt' / 'qemu',
+    localstatedir / 'lib' / 'libvirt' / 'qemu',
     localstatedir / 'lib' / 'libvirt' / 'swtpm',
-    runstatedir / 'libvirt' / 'qemu' / 'swtpm',
+    localstatedir / 'log' / 'libvirt' / 'qemu',
     localstatedir / 'log' / 'swtpm' / 'libvirt' / 'qemu',
+    runstatedir / 'libvirt' / 'qemu',
+    runstatedir / 'libvirt' / 'qemu' / 'swtpm',
   ]
 endif

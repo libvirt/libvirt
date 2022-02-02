@@ -80,7 +80,7 @@ if conf.has('WITH_LIBXL')
 
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'libxl',
-    runstatedir / 'libvirt' / 'libxl',
     localstatedir / 'log' / 'libvirt' / 'libxl',
+    runstatedir / 'libvirt' / 'libxl',
   ]
 endif
