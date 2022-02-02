@@ -34,6 +34,20 @@ v8.1.0 (unreleased)
     to parse sysconfig files, in case they are created by the admin and filled
     with the desired key=value pairs.
 
+  * virnetdev: Ignore EPERM on implicit clearing of VF VLAN ID
+
+    Libvirt will now ignore EPERM errors on attempts to implicitly clear a
+    VLAN ID (when a VLAN is not explicitly provided via an interface XML
+    using a 0 or a non-zero value) as SmartNIC DPUs do not expose VLAN
+    programming capabilities to the hypervisor host. This allows Libvirt
+    clients to avoid specifying a VLAN and expect VF configuration to work
+    since Libvirt tries to clear a VLAN in the same operation
+    as setting a MAC address for VIR_DOMAIN_NET_TYPE_HOSTDEV devices which
+    is now split into two distinct operations. EPERM errors received while
+    trying to program a non-zero VLAN ID or explicitly program a VLAN ID 0
+    will still cause errors as before so there is no change in behavior
+    in those cases.
+
 * **Bug fixes**
 
 
