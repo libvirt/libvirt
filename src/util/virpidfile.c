@@ -302,6 +302,41 @@ int virPidFileReadIfAlive(const char *dir,
     return 0;
 }
 
+/**
+ * virPidFileReadPathIfLocked:
+ * @path: path to pidfile
+ * @pid: variable to return pid in
+ *
+ * This will attempt to read a pid from @path, and store it in
+ * @pid. The @pid will only be set, however, if the pid in @path
+ * is running, and @path is locked by virFileLock() at byte 0
+ * (which is exactly what virCommandSetPidFile() results in).
+ * This adds protection against returning a stale pid.
+ *
+ * Returns -1 upon error, or zero on successful
+ * reading of the pidfile. If @path is not locked
+ * or if the PID was not still alive, zero will
+ * be returned, but @pid will be set to -1.
+ */
+int virPidFileReadPathIfLocked(const char *path, pid_t *pid)
+{
+    VIR_AUTOCLOSE fd = -1;
+
+    if ((fd = open(path, O_RDWR)) < 0)
+        return -1;
+
+    if (virFileLock(fd, false, 0, 1, false) >= 0) {
+        /* The file isn't locked. PID is stale. */
+        *pid = -1;
+        return 0;
+    }
+
+    if (virPidFileReadPathIfAlive(path, pid, NULL) < 0)
+        return -1;
+
+    return 0;
+}
+
 
 int virPidFileDeletePath(const char *pidfile)
 {

@@ -3077,6 +3077,7 @@ virPidFileRead;
 virPidFileReadIfAlive;
 virPidFileReadPath;
 virPidFileReadPathIfAlive;
+virPidFileReadPathIfLocked;
 virPidFileRelease;
 virPidFileReleasePath;
 virPidFileWrite;

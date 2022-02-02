@@ -48,6 +48,8 @@ int virPidFileReadIfAlive(const char *dir,
                           const char *name,
                           pid_t *pid,
                           const char *binpath) G_GNUC_WARN_UNUSED_RESULT;
+int virPidFileReadPathIfLocked(const char *path,
+                               pid_t *pid)  G_GNUC_WARN_UNUSED_RESULT;
 
 int virPidFileDeletePath(const char *path);
 int virPidFileDelete(const char *dir,
