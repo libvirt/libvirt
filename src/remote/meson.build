@@ -236,6 +236,8 @@ if conf.has('WITH_REMOTE')
 
     virt_install_dirs += [
       localstatedir / 'log' / 'libvirt',
+      runstatedir / 'libvirt',
+      runstatedir / 'libvirt' / 'common',
     ]
 
     logrotate_conf = configuration_data()

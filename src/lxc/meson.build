@@ -176,6 +176,8 @@ if conf.has('WITH_LXC')
   }
 
   virt_install_dirs += [
+    confdir / 'lxc',
+    confdir / 'lxc' / 'autostart',
     localstatedir / 'lib' / 'libvirt' / 'lxc',
     localstatedir / 'log' / 'libvirt' / 'lxc',
     runstatedir / 'libvirt' / 'lxc',

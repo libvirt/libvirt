@@ -210,7 +210,7 @@ openrc_init_files = []
 
 # virt_install_dirs:
 #   list of directories to create during installation
-virt_install_dirs = []
+virt_install_dirs = [ confdir ]
 
 # driver_source_files:
 #   driver source files to check

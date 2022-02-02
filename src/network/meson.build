@@ -73,6 +73,8 @@ if conf.has('WITH_NETWORK')
   }
 
   virt_install_dirs += [
+    confdir / 'qemu' / 'networks',
+    confdir / 'qemu' / 'networks' / 'autostart',
     localstatedir / 'lib' / 'libvirt' / 'network',
     localstatedir / 'lib' / 'libvirt' / 'dnsmasq',
     runstatedir / 'libvirt' / 'network',

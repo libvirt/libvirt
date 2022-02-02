@@ -61,5 +61,11 @@ if conf.has('WITH_NWFILTER')
     'in_file': files('virtnwfilterd.init.in'),
   }
 
+  virt_install_dirs += [
+    confdir / 'nwfilter',
+    runstatedir / 'libvirt' / 'nwfilter-binding',
+    runstatedir / 'libvirt' / 'nwfilter',
+  ]
+
   subdir('xml')
 endif

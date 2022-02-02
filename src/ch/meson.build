@@ -65,6 +65,7 @@ if conf.has('WITH_CH')
 
   virt_install_dirs += [
     localstatedir / 'lib' / 'libvirt' / 'ch',
+    localstatedir / 'log' / 'libvirt' / 'ch',
     runstatedir / 'libvirt' / 'ch',
   ]
 endif

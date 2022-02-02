@@ -62,4 +62,8 @@ if conf.has('WITH_NODE_DEVICES')
     'name': 'virtnodedevd',
     'in_file': files('virtnodedevd.init.in'),
   }
+
+  virt_install_dirs += [
+    runstatedir / 'libvirt' / 'nodedev',
+  ]
 endif
