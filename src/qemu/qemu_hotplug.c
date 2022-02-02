@@ -140,18 +140,21 @@ qemuDomainDeleteDevice(virDomainObj *vm,
 /**
  * qemuHotplugRemoveFDSet:
  * @mon: monitor object
- * @fdname: the 'opaque' string used as a name for the FD
+ * @prefix: the prefix of FD names ('opaque' field) to delete
+ * @alternate: alternate name for FD, for historical usage (may be NULL)
  *
  * Looks up the 'fdset' by looking for a fd inside one of the fdsets which
- * has the opaque string set to @fdname. Removes the whole fdset which contains
- * the fd.
+ * has the opaque string starting with @prefix. Removes the whole fdset which
+ * contains the fd. Alternatively if @alternate is specified fdsets having a fd
+ * with that exact 'opaque' string is removed too.
  *
  * Errors are logged, but this is a best-effort hot-unplug cleanup helper so it's
  * pointless to return a value.
  */
 static void
 qemuHotplugRemoveFDSet(qemuMonitor *mon,
-                       const char *fdname)
+                       const char *prefix,
+                       const char *alternate)
 {
     g_autoptr(qemuMonitorFdsets) fdsets = NULL;
     size_t i;
@@ -166,9 +169,11 @@ qemuHotplugRemoveFDSet(qemuMonitor *mon,
         for (j = 0; j < set->nfds; j++) {
             qemuMonitorFdsetFdInfo *fdinfo = &set->fds[j];
 
-            if (STREQ_NULLABLE(fdinfo->opaque, fdname)) {
+            if (fdinfo->opaque &&
+                (STRPREFIX(fdinfo->opaque, prefix) ||
+                 STREQ_NULLABLE(fdinfo->opaque, alternate))) {
                 ignore_value(qemuMonitorRemoveFdset(mon, set->id));
-                return;
+                break;
             }
         }
     }
@@ -4799,7 +4804,7 @@ qemuDomainRemoveNetDevice(virQEMUDriver *driver,
              */
         }
     } else if (actualType == VIR_DOMAIN_NET_TYPE_VDPA) {
-        qemuHotplugRemoveFDSet(priv->mon, net->data.vdpa.devicepath);
+        qemuHotplugRemoveFDSet(priv->mon, net->info.alias, net->data.vdpa.devicepath);
     }
 
     qemuDomainObjExitMonitor(driver, vm);
