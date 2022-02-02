@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-30 17:16+0000\n"
+"PO-Revision-Date: 2022-02-02 13:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9272,16 +9272,18 @@ msgstr "Värd-CPU:n är en övermängd av CPU:n som beskrivs i %s\n"
 #, c-format
 msgid "Host CPU model does not match required CPU vendor %s or(and) model %s"
 msgstr ""
+"Värd-CPU-modellen stämmer inte med den begärda CPU-tillverkaren %s eller(och)"
+" modell %s"
 
 #, c-format
 msgid "Host CPU provides forbidden feature '%s'"
-msgstr ""
+msgstr "Värd-CPU:n tillhandahåller en förbjuden funktion ”%s”"
 
 msgid "Host CPU provides forbidden features"
-msgstr ""
+msgstr "Värd-CPU:n tillhandahåller förbjudna funktioner"
 
 msgid "Host SMBIOS information is not available"
-msgstr ""
+msgstr "Värd-SMBIOS-information är inte tillgänglig"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "Extrahering av värdend stödjs inte på denna plattform"
@@ -9294,67 +9296,68 @@ msgstr "HostCpuIdInfo-register ”%s” har ett oväntat format"
 msgid "HostCpuIdInfo register '%s' has an unexpected length"
 msgstr "HostCpuIdInfo-register ”%s” har en oväntad längd"
 
-#, fuzzy, c-format
+#, c-format
 msgid "HostPortGroup with name '%s' exists already"
-msgstr "domän %s finns redan"
+msgstr "HostPortGroup med namnet ”%s” finns redan"
 
 msgid ""
 "HostVirtualSwitch already exists, editing existing ones is not supported yet"
-msgstr ""
+msgstr "HostVirtualSwitch finns redan, att redigera befintliga stödjs inte ännu"
 
 msgid "Hostdev already exists in the domain configuration"
-msgstr ""
+msgstr "Hostdev finns redan i domänkonfigurationen"
 
 #, c-format
 msgid "Hostdev source %s must be a block device"
-msgstr ""
+msgstr "Hostdev-källan %s måste vara en blockenhet"
 
 msgid "Hostname"
 msgstr "Värdnamn"
 
 msgid "Hostname is needed for host key verification"
-msgstr ""
+msgstr "Värdnamn behövs för värdnyckelverifikation"
 
 #, c-format
 msgid "Hostname of '%s' is unset"
-msgstr ""
+msgstr "Värdnamnet på ”%s” är inte satt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Hotplug unsupported for char device type '%s'"
-msgstr "Diskenhettypen ”%s” stödjs inte"
+msgstr "Byte i drift stödjs inte för teckenenhetstypen ”%s”"
 
 #, c-format
 msgid "Human monitor command is not available to run %s"
-msgstr ""
+msgstr "Människoövervakningskommandot är inte tillgängligt för att köra %s"
 
 msgid "Human readable output"
-msgstr ""
+msgstr "Mänskligt läsbar utdata"
 
 msgid "Hybrid-Suspend"
-msgstr ""
+msgstr "Hybridsovläge"
 
 #, c-format
 msgid "HyperV spinlock retry count differs: source: '%u', destination: '%u'"
-msgstr ""
+msgstr "Antalet omförsök för HyperV-spinnlås skiljer: källa: ”%u”, mål ”%u”"
 
 msgid "HyperV spinlock retry count must be at least 4095"
-msgstr ""
+msgstr "Antalet omförsök för HyperV-spinnlås måste vara åtminstone 4095"
 
 #, c-format
 msgid "HyperV vendor_id differs: source: '%s', destination: '%s'"
-msgstr ""
+msgstr "HyperV-tillverkar-id skiljer: källa: ”%s”, mål: ”%s”"
 
 msgid "HyperV vendor_id value is invalid"
-msgstr ""
+msgstr "HyperV-tillverkar-id-värdet är felaktigt"
 
 #, c-format
 msgid "HyperV vendor_id value must not be more than %d characters."
-msgstr ""
+msgstr "HyperV-tillverkar-id-värdet får inte vara längre än %d tecken."
 
 #, c-format
 msgid ""
 "Hyperv features are not supported for architecture '%s' or machine type '%s'"
 msgstr ""
+"Hyperv-funktioner stödjs inte för arkitekturen ”%s” eller maskintypen ”%s”"
 
 msgid "I/O Error"
 msgstr "I/O-fel"
