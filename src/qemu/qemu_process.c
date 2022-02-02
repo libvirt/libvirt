@@ -6781,6 +6781,7 @@ struct qemuProcessPrepareHostBackendChardevData {
     virLogManager *logManager;
     virQEMUDriverConfig *cfg;
     virDomainDef *def;
+    const char *fdprefix;
 };
 
 
@@ -6791,10 +6792,14 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 {
     struct qemuProcessPrepareHostBackendChardevData *data = opaque;
     qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chardev);
+    const char *devalias = NULL;
 
     /* this function is also called for the monitor backend which doesn't have
      * a 'dev' */
     if (dev) {
+        virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
+        devalias = info->alias;
+
         /* vhost-user disk doesn't use FD passing */
         if (dev->type == VIR_DOMAIN_DEVICE_DISK)
             return 0;
@@ -6808,6 +6813,8 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         /* TPMs FD passing setup is special and handled separately */
         if (dev->type == VIR_DOMAIN_DEVICE_TPM)
             return 0;
+    } else {
+        devalias = data->fdprefix;
     }
 
     switch ((virDomainChrType) chardev->type) {
@@ -6823,33 +6830,42 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_FILE: {
+        VIR_AUTOCLOSE sourcefd = -1;
+
         if (qemuProcessPrepareHostBackendChardevFileHelper(chardev->data.file.path,
                                                            chardev->data.file.append,
-                                                           &charpriv->fd,
+                                                           &sourcefd,
                                                            data->logManager,
                                                            data->priv->driver->securityManager,
                                                            data->cfg,
                                                            data->def) < 0)
             return -1;
 
+        charpriv->sourcefd = qemuFDPassNew(devalias, data->priv);
+
+        if (qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source") < 0)
+            return -1;
+    }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (chardev->data.nix.listen &&
             virQEMUCapsGet(data->priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+            VIR_AUTOCLOSE sourcefd = -1;
 
             if (qemuSecuritySetSocketLabel(data->priv->driver->securityManager, data->def) < 0)
                 return -1;
 
-            charpriv->fd = qemuOpenChrChardevUNIXSocket(chardev);
+            sourcefd = qemuOpenChrChardevUNIXSocket(chardev);
 
-            if (qemuSecurityClearSocketLabel(data->priv->driver->securityManager, data->def) < 0) {
-                VIR_FORCE_CLOSE(charpriv->fd);
+            if (qemuSecurityClearSocketLabel(data->priv->driver->securityManager, data->def) < 0 ||
+                sourcefd < 0)
                 return -1;
-            }
 
-            if (charpriv->fd < 0)
+            charpriv->sourcefd = qemuFDPassNewDirect(devalias, data->priv);
+
+            if (qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source") < 0)
                 return -1;
         }
         break;
@@ -6864,13 +6880,20 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     }
 
     if (chardev->logfile) {
+        VIR_AUTOCLOSE logfd = -1;
+
         if (qemuProcessPrepareHostBackendChardevFileHelper(chardev->logfile,
                                                            chardev->logappend,
-                                                           &charpriv->logfd,
+                                                           &logfd,
                                                            data->logManager,
                                                            data->priv->driver->securityManager,
                                                            data->cfg,
                                                            data->def) < 0)
+            return -1;
+
+        charpriv->logfd = qemuFDPassNew(devalias, data->priv);
+
+        if (qemuFDPassAddFD(charpriv->logfd, &logfd, "-log") < 0)
             return -1;
     }
 
@@ -6903,6 +6926,8 @@ qemuProcessPrepareHostBackendChardev(virDomainObj *vm)
                                               qemuProcessPrepareHostBackendChardevOne,
                                               &data) < 0)
         return -1;
+
+    data.fdprefix = "monitor";
 
     if (qemuProcessPrepareHostBackendChardevOne(NULL, priv->monConfig, &data) < 0)
         return -1;

@@ -302,23 +302,6 @@ qemuBuildMasterKeyCommandLine(virCommand *cmd,
 
 
 /**
- * qemuBuildFDSet:
- * @fd: fd to reassign to the child
- * @idx: index in the fd set
- *
- * Format the parameters for the -add-fd command line option
- * for the given file descriptor. The file descriptor must previously
- * have been 'transferred' in a virCommandPassFDIndex() call,
- * and @idx is the value returned by that call.
- */
-static char *
-qemuBuildFDSet(int fd, size_t idx)
-{
-    return g_strdup_printf("set=%zu,fd=%d", idx, fd);
-}
-
-
-/**
  * qemuVirCommandGetFDSet:
  * @cmd: the command to modify
  * @fd: fd to reassign to the child
@@ -1362,8 +1345,8 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
         path = dev->data.file.path;
         append = dev->data.file.append;
 
-        if (chrSourcePriv->fdset) {
-            path = chrSourcePriv->fdset;
+        if (chrSourcePriv->sourcefd) {
+            path = qemuFDPassGetPath(chrSourcePriv->sourcefd);
             append = VIR_TRISTATE_SWITCH_ON;
         }
 
@@ -1430,8 +1413,8 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(&buf, "socket,id=%s", charAlias);
-        if (chrSourcePriv->passedFD != -1) {
-            virBufferAsprintf(&buf, ",fd=%d", chrSourcePriv->passedFD);
+        if (chrSourcePriv->sourcefd) {
+            virBufferAsprintf(&buf, ",fd=%s", qemuFDPassGetPath(chrSourcePriv->sourcefd));
         } else {
             virBufferAddLit(&buf, ",path=");
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
@@ -1466,8 +1449,8 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
         path = dev->logfile;
         append = dev->logappend;
 
-        if (chrSourcePriv->logFdset) {
-            path = chrSourcePriv->logFdset;
+        if (chrSourcePriv->logfd) {
+            path = qemuFDPassGetPath(chrSourcePriv->logfd);
             append = VIR_TRISTATE_SWITCH_ON;
         }
 
@@ -1527,28 +1510,8 @@ qemuBuildChardevCommand(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (chrSourcePriv->fd != -1) {
-            g_autofree char *fdset = NULL;
-            size_t idx;
-
-            virCommandPassFDIndex(cmd, chrSourcePriv->fd,
-                                  VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
-            fdset = qemuBuildFDSet(chrSourcePriv->fd, idx);
-            chrSourcePriv->fd = -1;
-
-            virCommandAddArg(cmd, "-add-fd");
-            virCommandAddArg(cmd, fdset);
-
-            chrSourcePriv->fdset = g_strdup_printf("/dev/fdset/%zu", idx);
-        }
-        break;
-
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (chrSourcePriv->fd != -1) {
-            virCommandPassFD(cmd, chrSourcePriv->fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-            chrSourcePriv->passedFD = chrSourcePriv->fd;
-            chrSourcePriv->fd = -1;
-        }
+        qemuFDPassTransferCommand(chrSourcePriv->sourcefd, cmd);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -1571,20 +1534,7 @@ qemuBuildChardevCommand(virCommand *cmd,
         return -1;
     }
 
-    if (chrSourcePriv->logfd != -1) {
-        g_autofree char *fdset = NULL;
-        size_t idx;
-
-        virCommandPassFDIndex(cmd, chrSourcePriv->logfd,
-                              VIR_COMMAND_PASS_FD_CLOSE_PARENT, &idx);
-        fdset = qemuBuildFDSet(chrSourcePriv->logfd, idx);
-        chrSourcePriv->logfd = -1;
-
-        virCommandAddArg(cmd, "-add-fd");
-        virCommandAddArg(cmd, fdset);
-
-        chrSourcePriv->logFdset = g_strdup_printf("/dev/fdset/%zu", idx);
-    }
+    qemuFDPassTransferCommand(chrSourcePriv->logfd, cmd);
 
     if (!(charstr = qemuBuildChardevStr(dev, charAlias)))
         return -1;
@@ -5001,8 +4951,12 @@ qemuBuildVideoCommandLine(virCommand *cmd,
             qemuDomainChrSourcePrivate *chrsrcpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chrsrc);
 
             chrsrc->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-            chrsrcpriv->fd = videopriv->vhost_user_fd;
-            videopriv->vhost_user_fd = -1;
+            chrsrcpriv->sourcefd = qemuFDPassNewDirect(video->info.alias, priv);
+
+            if (qemuFDPassAddFD(chrsrcpriv->sourcefd,
+                                &videopriv->vhost_user_fd,
+                                "-vhost-user") < 0)
+                return -1;
 
             if (qemuBuildChardevCommand(cmd, chrsrc, chrAlias, priv->qemuCaps) < 0)
                 return -1;

@@ -29,7 +29,7 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
 -device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
--add-fd set=0,fd=1750 \
+-add-fd set=0,fd=1750,opaque=serial0-source \
 -chardev file,id=charserial0,path=/dev/fdset/0,append=on \
 -device isa-serial,chardev=charserial0,id=serial0,index=0 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \

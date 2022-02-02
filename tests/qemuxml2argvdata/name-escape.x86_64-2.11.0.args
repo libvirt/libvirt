@@ -33,7 +33,7 @@ QEMU_AUDIO_DRV=spice \
 -device ccid-card-emulated,backend=certificates,cert1=cert1,,foo,cert2=cert2,cert3=cert3,db=/etc/pki/nssdb,,foo,id=smartcard0,bus=ccid0.0 \
 -chardev tty,id=charserial0,path=/dev/ttyS2,,foo \
 -device isa-serial,chardev=charserial0,id=serial0,index=1 \
--add-fd set=0,fd=1750 \
+-add-fd set=0,fd=1750,opaque=serial1-source \
 -chardev file,id=charserial1,path=/dev/fdset/0,append=on \
 -device isa-serial,chardev=charserial1,id=serial1,index=0 \
 -chardev pipe,id=charchannel0,path=/tmp/guestfwd,,foo \

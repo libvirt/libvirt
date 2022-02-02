@@ -904,11 +904,6 @@ qemuDomainChrSourcePrivateNew(void)
     if (!(priv = virObjectNew(qemuDomainChrSourcePrivateClass)))
         return NULL;
 
-    priv->fd = -1;
-    priv->logfd = -1;
-
-    priv->passedFD = -1;
-
     return (virObject *) priv;
 }
 
@@ -918,13 +913,11 @@ qemuDomainChrSourcePrivateDispose(void *obj)
 {
     qemuDomainChrSourcePrivate *priv = obj;
 
-    VIR_FORCE_CLOSE(priv->fd);
-    VIR_FORCE_CLOSE(priv->logfd);
+    qemuFDPassFree(priv->sourcefd);
+    qemuFDPassFree(priv->logfd);
 
     g_free(priv->tlsCertPath);
 
-    g_free(priv->fdset);
-    g_free(priv->logFdset);
     g_free(priv->tlsCredsAlias);
 
     g_clear_pointer(&priv->secinfo, qemuDomainSecretInfoFree);
