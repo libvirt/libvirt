@@ -327,9 +327,11 @@ virCHProcessSetupIOThreads(virDomainObj *vm)
     virCHDomainObjPrivate *priv = vm->privateData;
     virDomainIOThreadInfo **iothreads = NULL;
     size_t i;
-    size_t  niothreads;
+    int niothreads;
 
-    niothreads = virCHMonitorGetIOThreads(priv->monitor, &iothreads);
+    if ((niothreads = virCHMonitorGetIOThreads(priv->monitor, &iothreads)) < 0)
+        return -1;
+
     for (i = 0; i < niothreads; i++) {
         VIR_DEBUG("IOThread index = %ld , tid = %d", i, iothreads[i]->iothread_id);
         if (virCHProcessSetupIOThread(vm, iothreads[i]) < 0)
