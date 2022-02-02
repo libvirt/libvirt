@@ -44,6 +44,7 @@
 #include "qemu_tpm.h"
 #include "virtpm.h"
 #include "virsecret.h"
+#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
@@ -258,13 +259,13 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
                       const char *shortName,
                       pid_t *pid)
 {
-    g_autofree char *swtpm = virTPMGetSwtpm();
     g_autofree char *pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir,
                                                                 shortName);
+
     if (!pidfile)
         return -1;
 
-    if (virPidFileReadPathIfAlive(pidfile, pid, swtpm) < 0)
+    if (virPidFileReadPathIfLocked(pidfile, pid) < 0)
         return -1;
 
     return 0;
@@ -660,9 +661,6 @@ qemuTPMEmulatorReconfigure(const char *storagepath,
  * @privileged: whether we are running in privileged mode
  * @swtpm_user: The uid for the swtpm to run as (drop privileges to from root)
  * @swtpm_group: The gid for the swtpm to run as
- * @swtpmStateDir: the directory where swtpm writes the pid file and creates the
- *                 Unix socket
- * @shortName: the short name of the VM
  * @incomingMigration: whether we have an incoming migration
  *
  * Create the virCommand use for starting the emulator
@@ -676,13 +674,10 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
                             bool privileged,
                             uid_t swtpm_user,
                             gid_t swtpm_group,
-                            const char *swtpmStateDir,
-                            const char *shortName,
                             bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
     bool created = false;
-    g_autofree char *pidfile = NULL;
     g_autofree char *swtpm = virTPMGetSwtpm();
     int pwdfile_fd = -1;
     int migpwdfile_fd = -1;
@@ -721,7 +716,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
     virCommandClearCaps(cmd);
 
-    virCommandAddArgList(cmd, "socket", "--daemon", "--ctrl", NULL);
+    virCommandAddArgList(cmd, "socket", "--ctrl", NULL);
     virCommandAddArgFormat(cmd, "type=unixio,path=%s,mode=0600",
                            tpm->data.emulator.source->data.nix.path);
 
@@ -747,12 +742,6 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     case VIR_DOMAIN_TPM_VERSION_LAST:
         break;
     }
-
-    if (!(pidfile = qemuTPMEmulatorCreatePidFilename(swtpmStateDir, shortName)))
-        goto error;
-
-    virCommandAddArg(cmd, "--pid");
-    virCommandAddArgFormat(cmd, "file=%s", pidfile);
 
     if (tpm->data.emulator.hassecretuuid) {
         if (!virTPMSwtpmCapsGet(VIR_TPM_SWTPM_FEATURE_CMDARG_PWD_FD)) {
@@ -904,12 +893,14 @@ qemuExtTPMStartEmulator(virQEMUDriver *driver,
                         bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
-    int exitstatus = 0;
-    g_autofree char *errbuf = NULL;
+    VIR_AUTOCLOSE errfd = -1;
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
-    int cmdret = 0, timeout, rc;
-    pid_t pid;
+    g_autofree char *pidfile = NULL;
+    virTimeBackOffVar timebackoff;
+    const unsigned long long timeout = 1000; /* ms */
+    int cmdret = 0;
+    pid_t pid = -1;
 
     if (!shortName)
         return -1;
@@ -923,48 +914,71 @@ qemuExtTPMStartEmulator(virQEMUDriver *driver,
                                             driver->privileged,
                                             cfg->swtpm_user,
                                             cfg->swtpm_group,
-                                            cfg->swtpmStateDir, shortName,
                                             incomingMigration)))
         return -1;
 
     if (qemuExtDeviceLogCommand(driver, vm, cmd, "TPM Emulator") < 0)
         return -1;
 
-    virCommandSetErrorBuffer(cmd, &errbuf);
+    if (!(pidfile = qemuTPMEmulatorCreatePidFilename(cfg->swtpmStateDir, shortName)))
+        return -1;
+
+    virCommandDaemonize(cmd);
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandSetErrorFD(cmd, &errfd);
 
     if (qemuSecurityStartTPMEmulator(driver, vm, cmd,
                                      cfg->swtpm_user, cfg->swtpm_group,
-                                     &exitstatus, &cmdret) < 0)
+                                     NULL, &cmdret) < 0)
         return -1;
 
-    if (cmdret < 0 || exitstatus != 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Could not start 'swtpm'. exitstatus: %d, "
-                         "error: %s"), exitstatus, errbuf);
-        return -1;
-    }
-
-    /* check that the swtpm has written its pid into the file */
-    timeout = 1000; /* ms */
-    while (timeout > 0) {
-        rc = qemuTPMEmulatorGetPid(cfg->swtpmStateDir, shortName, &pid);
-        if (rc < 0) {
-            timeout -= 50;
-            g_usleep(50 * 1000);
-            continue;
-        }
-        if (rc == 0 && pid == (pid_t)-1)
-            goto error;
-        break;
-    }
-    if (timeout <= 0)
+    if (cmdret < 0) {
+        /* virCommandRun() hidden in qemuSecurityStartTPMEmulator()
+         * already reported error. */
         goto error;
+    }
+
+    if (virPidFileReadPath(pidfile, &pid) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("swtpm didn't show up"));
+        goto error;
+    }
+
+    if (virTimeBackOffStart(&timebackoff, 1, timeout) < 0)
+        goto error;
+    while (virTimeBackOffWait(&timebackoff)) {
+        char errbuf[1024] = { 0 };
+
+        if (virFileExists(tpm->data.emulator.source->data.nix.path))
+            break;
+
+        if (virProcessKill(pid, 0) == 0)
+            continue;
+
+        if (saferead(errfd, errbuf, sizeof(errbuf) - 1) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("swtpm died unexpectedly"));
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("swtpm died and reported: %s"), errbuf);
+        }
+        goto error;
+    }
+
+    if (!virFileExists(tpm->data.emulator.source->data.nix.path)) {
+        virReportError(VIR_ERR_OPERATION_TIMEOUT, "%s",
+                       _("swtpm socket did not show up"));
+        goto error;
+    }
 
     return 0;
 
  error:
-    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("swtpm failed to start"));
+    virCommandAbort(cmd);
+    if (pid >= 0)
+        virProcessKillPainfully(pid, true);
+    if (pidfile)
+        unlink(pidfile);
     return -1;
 }
 
