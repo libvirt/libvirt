@@ -21094,6 +21094,14 @@ virDomainSerialDefCheckABIStability(virDomainChrDef *src,
         return false;
     }
 
+    if (src->targetModel != dst->targetModel) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Target serial model %s does not match source %s"),
+                       virDomainChrSerialTargetModelTypeToString(dst->targetModel),
+                       virDomainChrSerialTargetModelTypeToString(src->targetModel));
+        return false;
+    }
+
     if (src->target.port != dst->target.port) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Target serial port %d does not match source %d"),
