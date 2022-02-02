@@ -1717,6 +1717,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("serial-file-log");
     DO_TEST_CAPS_LATEST("serial-spiceport");
     DO_TEST_CAPS_LATEST("serial-spiceport-nospice");
+    DO_TEST_CAPS_LATEST("serial-debugcon");
 
     DO_TEST_CAPS_LATEST("console-compat");
     DO_TEST_CAPS_LATEST("console-compat-auto");
