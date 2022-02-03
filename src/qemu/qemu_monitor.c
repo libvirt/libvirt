@@ -223,16 +223,12 @@ qemuMonitorDispose(void *obj)
     g_free(mon->domainName);
 }
 
-#define QEMU_DEFAULT_MONITOR_WAIT 30
 
 static int
-qemuMonitorOpenUnix(const char *monitor,
-                    pid_t cpid,
-                    bool retry)
+qemuMonitorOpenUnix(const char *monitor)
 {
     struct sockaddr_un addr;
     VIR_AUTOCLOSE monfd = -1;
-    virTimeBackOffVar timebackoff;
     int ret = -1;
 
     if ((monfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
@@ -249,39 +245,11 @@ qemuMonitorOpenUnix(const char *monitor,
         return -1;
     }
 
-    if (retry) {
-        if (virTimeBackOffStart(&timebackoff, 1, QEMU_DEFAULT_MONITOR_WAIT * 1000) < 0)
-            return -1;
-        while (virTimeBackOffWait(&timebackoff)) {
-            ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
-
-            if (ret == 0)
-                break;
-
-            if ((errno == ENOENT || errno == ECONNREFUSED) &&
-                (!cpid || virProcessKill(cpid, 0) == 0)) {
-                /* ENOENT       : Socket may not have shown up yet
-                 * ECONNREFUSED : Leftover socket hasn't been removed yet */
-                continue;
-            }
-
-            virReportSystemError(errno, "%s",
-                                 _("failed to connect to monitor socket"));
-            return -1;
-        }
-
-        if (ret != 0) {
-            virReportSystemError(errno, "%s",
-                                 _("monitor socket did not show up"));
-            return -1;
-        }
-    } else {
-        ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
-        if (ret < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("failed to connect to monitor socket"));
-            return -1;
-        }
+    ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
+    if (ret < 0) {
+        virReportSystemError(errno, "%s",
+                             _("failed to connect to monitor socket"));
+        return -1;
     }
 
     ret = monfd;
@@ -707,7 +675,6 @@ qemuMonitorOpenInternal(virDomainObj *vm,
 qemuMonitor *
 qemuMonitorOpen(virDomainObj *vm,
                 virDomainChrSourceDef *config,
-                bool retry,
                 GMainContext *context,
                 qemuMonitorCallbacks *cb)
 {
@@ -722,7 +689,7 @@ qemuMonitorOpen(virDomainObj *vm,
     }
 
     virObjectUnlock(vm);
-    fd = qemuMonitorOpenUnix(config->data.nix.path, vm->pid, retry);
+    fd = qemuMonitorOpenUnix(config->data.nix.path);
     virObjectLock(vm);
 
     if (fd < 0)

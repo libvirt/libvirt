@@ -408,7 +408,6 @@ struct _qemuMonitorCallbacks {
 
 qemuMonitor *qemuMonitorOpen(virDomainObj *vm,
                                virDomainChrSourceDef *config,
-                               bool retry,
                                GMainContext *context,
                                qemuMonitorCallbacks *cb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);

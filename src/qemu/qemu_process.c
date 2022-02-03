@@ -1899,7 +1899,6 @@ qemuConnectMonitor(virQEMUDriver *driver,
 
     mon = qemuMonitorOpen(vm,
                           priv->monConfig,
-                          false,
                           virEventThreadGetContext(priv->eventThread),
                           &monitorCallbacks);
 
@@ -9493,7 +9492,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 
     proc->vm->pid = proc->pid;
 
-    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, false,
+    if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig,
                                       virEventThreadGetContext(proc->eventThread),
                                       &callbacks)))
         return -1;
