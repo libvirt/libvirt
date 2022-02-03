@@ -979,6 +979,10 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
  * inactive snapshots with a @flags request to start the domain after
  * the revert.
  *
+ * If @flags includes VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM, then
+ * libvirt will discard any existing NVRAM file and re-initialize
+ * NVRAM from the pristine template.
+ *
  * Returns 0 if the creation is successful, -1 on error.
  */
 int

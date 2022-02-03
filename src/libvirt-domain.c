@@ -154,6 +154,10 @@ virDomainGetConnect(virDomainPtr dom)
  * block attempts at migration. Hypervisors may also block save-to-file,
  * or snapshots.
  *
+ * If @flags includes VIR_DOMAIN_START_RESET_NVRAM, then libvirt will
+ * discard any existing NVRAM file and re-initialize NVRAM from the
+ * pristine template.
+ *
  * virDomainFree should be used to free the resources after the
  * domain object is no longer needed.
  *
@@ -1014,6 +1018,10 @@ virDomainRestore(virConnectPtr conn, const char *from)
  * Specifying VIR_DOMAIN_SAVE_RUNNING or VIR_DOMAIN_SAVE_PAUSED in
  * @flags will override the default read from the file.  These two
  * flags are mutually exclusive.
+ *
+ * If @flags includes VIR_DOMAIN_SAVE_RESET_NVRAM, then libvirt will
+ * discard any existing NVRAM file and re-initialize NVRAM from the
+ * pristine template.
  *
  * Returns 0 in case of success and -1 in case of failure.
  */
@@ -6763,6 +6771,10 @@ virDomainCreate(virDomainPtr domain)
  * If the VIR_DOMAIN_START_FORCE_BOOT flag is set, then any managed save
  * file for this domain is discarded, and the domain boots from scratch.
  *
+ * If @flags includes VIR_DOMAIN_START_RESET_NVRAM, then libvirt will
+ * discard any existing NVRAM file and re-initialize NVRAM from the
+ * pristine template.
+ *
  * Returns 0 in case of success, -1 in case of error
  */
 int
@@ -6834,6 +6846,10 @@ virDomainCreateWithFlags(virDomainPtr domain, unsigned int flags)
  *
  * If the VIR_DOMAIN_START_FORCE_BOOT flag is set, then any managed save
  * file for this domain is discarded, and the domain boots from scratch.
+ *
+ * If @flags includes VIR_DOMAIN_START_RESET_NVRAM, then libvirt will
+ * discard any existing NVRAM file and re-initialize NVRAM from the
+ * pristine template.
  *
  * Returns 0 in case of success, -1 in case of error
  */

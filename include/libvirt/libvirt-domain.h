@@ -302,6 +302,7 @@ typedef enum {
     VIR_DOMAIN_START_BYPASS_CACHE = 1 << 2, /* Avoid file system cache pollution */
     VIR_DOMAIN_START_FORCE_BOOT   = 1 << 3, /* Boot, discarding any managed save */
     VIR_DOMAIN_START_VALIDATE     = 1 << 4, /* Validate the XML document against schema */
+    VIR_DOMAIN_START_RESET_NVRAM  = 1 << 5, /* Re-initialize NVRAM from template */
 } virDomainCreateFlags;
 
 
@@ -1268,6 +1269,7 @@ typedef enum {
     VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution */
     VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused */
     VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running */
+    VIR_DOMAIN_SAVE_RESET_NVRAM  = 1 << 3, /* Re-initialize NVRAM from template */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,

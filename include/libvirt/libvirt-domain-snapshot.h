@@ -198,6 +198,7 @@ typedef enum {
     VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert */
     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert */
     VIR_DOMAIN_SNAPSHOT_REVERT_FORCE   = 1 << 2, /* Allow risky reverts */
+    VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM = 1 << 3, /* Re-initialize NVRAM from template */
 } virDomainSnapshotRevertFlags;
 
 /* Revert the domain to a point-in-time snapshot.  The
