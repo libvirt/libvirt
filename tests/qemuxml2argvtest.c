@@ -2037,7 +2037,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model", "3.0.0");
     DO_TEST_CAPS_VER("cpu-host-model", "3.1.0");
     DO_TEST_CAPS_VER("cpu-host-model", "4.0.0");
     DO_TEST_CAPS_VER("cpu-host-model", "4.1.0");
@@ -2823,8 +2822,6 @@ mymain(void)
                         QEMU_CAPS_VIRTIO_SCSI,
                         QEMU_CAPS_DEVICE_VHOST_SCSI);
 
-    DO_TEST_CAPS_VER("mlock-on", "3.0.0");
-    DO_TEST_CAPS_VER("mlock-off", "3.0.0");
     DO_TEST_CAPS_LATEST("mlock-on");
     DO_TEST_CAPS_LATEST("mlock-off");
 
