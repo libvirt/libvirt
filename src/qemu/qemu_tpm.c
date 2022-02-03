@@ -875,9 +875,8 @@ qemuExtTPMCleanupHost(virDomainDef *def)
 }
 
 
-/*
- * qemuExtTPMStartEmulator:
- *
+/**
+ * qemuTPMEmulatorStart:
  * @driver: QEMU driver
  * @vm: the domain object
  * @incomingMigration: whether we have an incoming migration
@@ -887,10 +886,10 @@ qemuExtTPMCleanupHost(virDomainDef *def)
  * - start the external TPM Emulator and sync with it before QEMU start
  */
 static int
-qemuExtTPMStartEmulator(virQEMUDriver *driver,
-                        virDomainObj *vm,
-                        virDomainTPMDef *tpm,
-                        bool incomingMigration)
+qemuTPMEmulatorStart(virQEMUDriver *driver,
+                     virDomainObj *vm,
+                     virDomainTPMDef *tpm,
+                     bool incomingMigration)
 {
     g_autoptr(virCommand) cmd = NULL;
     VIR_AUTOCLOSE errfd = -1;
@@ -994,8 +993,8 @@ qemuExtTPMStart(virQEMUDriver *driver,
         if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
-        return qemuExtTPMStartEmulator(driver, vm, vm->def->tpms[i],
-                                       incomingMigration);
+        return qemuTPMEmulatorStart(driver, vm, vm->def->tpms[i],
+                                    incomingMigration);
     }
 
     return 0;
