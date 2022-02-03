@@ -5,7 +5,7 @@
 QEMU/KVM/HVF hypervisor driver
 ==============================
 
-The libvirt KVM/QEMU driver can manage any QEMU emulator from version 2.11.0 or
+The libvirt KVM/QEMU driver can manage any QEMU emulator from version 3.1.0 or
 later.
 
 It supports multiple QEMU accelerators: software
@@ -34,8 +34,8 @@ Deployment pre-requisites
    ``qemu-kvm`` and ``/dev/kvm`` device node. If both are found, then KVM fully
    virtualized, hardware accelerated guests will be available.
 -  **Hypervisor.framework (HVF)**: The driver will probe ``sysctl`` for the
-   presence of ``Hypervisor.framework``. If it is found and QEMU is newer than
-   2.12, then it will be possible to create hardware accelerated guests.
+   presence of ``Hypervisor.framework``. If it is found it will be possible to
+   create hardware accelerated guests.
 
 Connections to QEMU driver
 --------------------------
