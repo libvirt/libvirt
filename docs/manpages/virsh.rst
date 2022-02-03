@@ -1455,7 +1455,7 @@ create
 ::
 
    create FILE [--console] [--paused] [--autodestroy]
-      [--pass-fds N,M,...] [--validate]
+      [--pass-fds N,M,...] [--validate] [--reset-nvram]
 
 Create a domain from an XML <file>. Optionally, *--validate* option can be
 passed to validate the format of the input XML file against an internal RNG
@@ -1477,6 +1477,9 @@ If *--pass-fds* is specified, the argument is a comma separated list
 of open file descriptors which should be pass on into the guest. The
 file descriptors will be re-numbered in the guest, starting from 3. This
 is only supported with container based virtualization.
+
+If *--reset-nvram* is specified, any existing NVRAM file will be deleted
+and re-initialized from its pristine template.
 
 **Example:**
 
@@ -3736,7 +3739,7 @@ restore
 ::
 
    restore state-file [--bypass-cache] [--xml file]
-      [{--running | --paused}]
+      [{--running | --paused}] [--reset-nvram]
 
 Restores a domain from a ``virsh save`` state file. See *save* for more info.
 
@@ -3753,6 +3756,9 @@ Normally, restoring a saved image will use the state recorded in the
 save image to decide between running or paused; passing either the
 *--running* or *--paused* flag will allow overriding which state the
 domain should be started in.
+
+If *--reset-nvram* is specified, any existing NVRAM file will be deleted
+and re-initialized from its pristine template.
 
 ``Note``: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second ``restore`` unless you
@@ -4350,7 +4356,7 @@ start
 
    start domain-name-or-uuid [--console] [--paused]
       [--autodestroy] [--bypass-cache] [--force-boot]
-      [--pass-fds N,M,...]
+      [--pass-fds N,M,...] [--reset-nvram]
 
 Start a (previously defined) inactive domain, either from the last
 ``managedsave`` state, or via a fresh boot if no managedsave state is
@@ -4368,6 +4374,9 @@ If *--pass-fds* is specified, the argument is a comma separated list
 of open file descriptors which should be pass on into the guest. The
 file descriptors will be re-numbered in the guest, starting from 3. This
 is only supported with container based virtualization.
+
+If *--reset-nvram* is specified, any existing NVRAM file will be deleted
+and re-initialized from its pristine template.
 
 
 suspend
@@ -7352,7 +7361,8 @@ snapshot-revert
 
 ::
 
-   snapshot-revert domain {snapshot | --current} [{--running | --paused}] [--force]
+   snapshot-revert domain {snapshot | --current} [{--running | --paused}]
+      [--force] [--reset-nvram]
 
 Revert the given domain to the snapshot specified by *snapshot*, or to
 the current snapshot with *--current*.  Be aware
@@ -7397,6 +7407,9 @@ requires the use of *--force* to proceed:
     state. This ends up switching a disk underneath a running system and will
     likely cause extensive filesystem corruption or crashes due to swap content
     mismatches when run.
+
+If *--reset-nvram* is specified, any existing NVRAM file will be deleted
+and re-initialized from its pristine template.
 
 
 snapshot-delete

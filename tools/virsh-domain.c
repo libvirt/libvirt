@@ -4010,6 +4010,10 @@ static const vshCmdOptDef opts_start[] = {
      .completer = virshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... to the guest")
     },
+    {.name = "reset-nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("re-initialize NVRAM from its pristine template")
+    },
     {.name = NULL}
 };
 
@@ -4087,6 +4091,8 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_START_BYPASS_CACHE;
     if (vshCommandOptBool(cmd, "force-boot"))
         flags |= VIR_DOMAIN_START_FORCE_BOOT;
+    if (vshCommandOptBool(cmd, "reset-nvram"))
+        flags |= VIR_DOMAIN_START_RESET_NVRAM;
 
     /* We can emulate force boot, even for older servers that reject it.  */
     if (flags & VIR_DOMAIN_START_FORCE_BOOT) {
@@ -5268,6 +5274,10 @@ static const vshCmdOptDef opts_restore[] = {
      .type = VSH_OT_BOOL,
      .help = N_("restore domain into paused state")
     },
+    {.name = "reset-nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("re-initialize NVRAM from its pristine template")
+    },
     {.name = NULL}
 };
 
@@ -5289,6 +5299,8 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SAVE_PAUSED;
+    if (vshCommandOptBool(cmd, "reset-nvram"))
+        flags |= VIR_DOMAIN_SAVE_RESET_NVRAM;
 
     if (vshCommandOptStringReq(ctl, cmd, "xml", &xmlfile) < 0)
         return false;
@@ -8093,6 +8105,10 @@ static const vshCmdOptDef opts_create[] = {
      .type = VSH_OT_BOOL,
      .help = N_("validate the XML against the schema")
     },
+    {.name = "reset-nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("re-initialize NVRAM from its pristine template")
+    },
     {.name = NULL}
 };
 
@@ -8125,6 +8141,8 @@ cmdCreate(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_START_AUTODESTROY;
     if (vshCommandOptBool(cmd, "validate"))
         flags |= VIR_DOMAIN_START_VALIDATE;
+    if (vshCommandOptBool(cmd, "reset-nvram"))
+        flags |= VIR_DOMAIN_START_RESET_NVRAM;
 
     if (nfds)
         dom = virDomainCreateXMLWithFiles(priv->conn, buffer, nfds, fds, flags);

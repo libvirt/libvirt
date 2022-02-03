@@ -1725,6 +1725,10 @@ static const vshCmdOptDef opts_snapshot_revert[] = {
      .type = VSH_OT_BOOL,
      .help = N_("try harder on risky reverts")
     },
+    {.name = "reset-nvram",
+     .type = VSH_OT_BOOL,
+     .help = N_("re-initialize NVRAM from its pristine template")
+    },
     {.name = NULL}
 };
 
@@ -1742,6 +1746,8 @@ cmdDomainSnapshotRevert(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED;
+    if (vshCommandOptBool(cmd, "reset-nvram"))
+        flags |= VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM;
     /* We want virsh snapshot-revert --force to work even when talking
      * to older servers that did the unsafe revert by default but
      * reject the flag, so we probe without the flag, and only use it
