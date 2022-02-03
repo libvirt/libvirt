@@ -244,7 +244,7 @@ sc_prohobit_vsnprintf:
 
 sc_prohibit_strdup:
 	@prohibit='\<strn?dup\> *\(' \
-	halt='use VIR_STRDUP, not strdup' \
+	halt='use g_str(n)dup, not str(n)dup' \
 	  $(_sc_search_regexp)
 
 # Prefer virSetUIDGID.
