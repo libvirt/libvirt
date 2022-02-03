@@ -725,7 +725,7 @@ qemuMonitorOpen(virDomainObj *vm,
                 qemuMonitorCallbacks *cb,
                 void *opaque)
 {
-    int fd = -1;
+    VIR_AUTOCLOSE fd = -1;
     qemuMonitor *ret = NULL;
 
     timeout += QEMU_DEFAULT_MONITOR_WAIT;
@@ -734,7 +734,7 @@ qemuMonitorOpen(virDomainObj *vm,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unable to handle monitor type: %s"),
                        virDomainChrTypeToString(config->type));
-        goto cleanup;
+        return NULL;
     }
 
     virObjectUnlock(vm);
@@ -743,18 +743,16 @@ qemuMonitorOpen(virDomainObj *vm,
     virObjectLock(vm);
 
     if (fd < 0)
-        goto cleanup;
+        return NULL;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_FAILED, "%s",
                        _("domain is not running"));
-        goto cleanup;
+        return NULL;
     }
 
     ret = qemuMonitorOpenInternal(vm, fd, context, cb, opaque);
- cleanup:
-    if (!ret)
-        VIR_FORCE_CLOSE(fd);
+    fd = -1;
     return ret;
 }
 
