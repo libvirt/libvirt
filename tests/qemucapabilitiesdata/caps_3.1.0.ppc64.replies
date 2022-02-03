@@ -17,8 +17,8 @@
 {
   "return": {
     "qemu": {
-      "micro": 91,
-      "minor": 0,
+      "micro": 0,
+      "minor": 1,
       "major": 3
     },
     "package": "v3.1.0-rc1-74-g3c035a41dc"
