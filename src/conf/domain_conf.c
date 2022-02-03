@@ -30086,8 +30086,7 @@ virDomainDefHasMemballoon(const virDomainDef *def)
 
 /**
  * virDomainDefGetShortName:
- * @vm: Machine for which to get a name
- * @unique: Make sure the name is unique (use id as well)
+ * @def: domain definition
  *
  * Shorten domain name to avoid possible path length limitations.
  */
