@@ -6395,6 +6395,12 @@ Serial port
        <source path='/dev/pts/3'/>
        <target port='0'/>
      </serial>
+     <!-- Debug port for SeaBIOS / EDK II -->
+     <serial type='pty'>
+       <target type='isa-debug'/>
+       <address type='isa' iobase='0x402'/>
+     </console>
+
    </devices>
    ...
 
