@@ -120,6 +120,12 @@ int qemuProcessOpenVhostVsock(virDomainVsockDef *vsock);
 
 int qemuProcessPrepareHostHostdev(virDomainHostdevDef *hostdev);
 
+
+int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
+                                                virDomainDeviceDef *dev)
+    G_GNUC_NO_INLINE;
+
+
 int qemuProcessPrepareHost(virQEMUDriver *driver,
                            virDomainObj *vm,
                            unsigned int flags);

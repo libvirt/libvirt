@@ -6936,6 +6936,33 @@ qemuProcessPrepareHostBackendChardev(virDomainObj *vm)
 }
 
 
+int
+qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
+                                            virDomainDeviceDef *dev)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    struct qemuProcessPrepareHostBackendChardevData data = {
+        .priv = priv,
+        .logManager = NULL,
+        .cfg = cfg,
+        .def = vm->def,
+    };
+    g_autoptr(virLogManager) logManager = NULL;
+
+    if (cfg->stdioLogD) {
+        if (!(logManager = data.logManager = virLogManagerNew(priv->driver->privileged)))
+            return -1;
+    }
+
+    if (qemuDomainDeviceBackendChardevForeachOne(dev,
+                                                 qemuProcessPrepareHostBackendChardevOne,
+                                                 &data) < 0)
+        return -1;
+
+    return 0;
+}
+
 /**
  * qemuProcessPrepareHost:
  * @driver: qemu driver
