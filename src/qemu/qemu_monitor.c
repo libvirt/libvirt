@@ -233,7 +233,7 @@ qemuMonitorOpenUnix(const char *monitor,
                     unsigned long long timeout)
 {
     struct sockaddr_un addr;
-    int monfd;
+    VIR_AUTOCLOSE monfd = -1;
     virTimeBackOffVar timebackoff;
     int ret = -1;
 
@@ -248,12 +248,12 @@ qemuMonitorOpenUnix(const char *monitor,
     if (virStrcpyStatic(addr.sun_path, monitor) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Monitor path %s too big for destination"), monitor);
-        goto error;
+        return -1;
     }
 
     if (retry) {
         if (virTimeBackOffStart(&timebackoff, 1, timeout * 1000) < 0)
-            goto error;
+            return -1;
         while (virTimeBackOffWait(&timebackoff)) {
             ret = connect(monfd, (struct sockaddr *)&addr, sizeof(addr));
 
@@ -269,28 +269,27 @@ qemuMonitorOpenUnix(const char *monitor,
 
             virReportSystemError(errno, "%s",
                                  _("failed to connect to monitor socket"));
-            goto error;
+            return -1;
         }
 
         if (ret != 0) {
             virReportSystemError(errno, "%s",
                                  _("monitor socket did not show up"));
-            goto error;
+            return -1;
         }
     } else {
         ret = connect(monfd, (struct sockaddr *) &addr, sizeof(addr));
         if (ret < 0) {
             virReportSystemError(errno, "%s",
                                  _("failed to connect to monitor socket"));
-            goto error;
+            return -1;
         }
     }
 
-    return monfd;
+    ret = monfd;
+    monfd = -1;
 
- error:
-    VIR_FORCE_CLOSE(monfd);
-    return -1;
+    return ret;
 }
 
 
