@@ -577,6 +577,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
                      virQEMUSaveData *data,
                      const char *path,
                      bool start_paused,
+                     bool reset_nvram,
                      qemuDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -590,6 +591,11 @@ qemuSaveImageStartVM(virConnectPtr conn,
     virQEMUSaveHeader *header = &data->header;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
     int rc = 0;
+    unsigned int start_flags = VIR_QEMU_PROCESS_START_PAUSED |
+        VIR_QEMU_PROCESS_START_GEN_VMID;
+
+    if (reset_nvram)
+        start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
     if (virSaveCookieParseString(data->cookie, (virObject **)&cookie,
                                  virDomainXMLOptionGetSaveCookie(driver->xmlopt)) < 0)
@@ -628,8 +634,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
     if (qemuProcessStart(conn, driver, vm, cookie ? cookie->cpu : NULL,
                          asyncJob, "stdio", *fd, path, NULL,
                          VIR_NETDEV_VPORT_PROFILE_OP_RESTORE,
-                         VIR_QEMU_PROCESS_START_PAUSED |
-                         VIR_QEMU_PROCESS_START_GEN_VMID) == 0)
+                         start_flags) == 0)
         started = true;
 
     if (intermediatefd != -1) {

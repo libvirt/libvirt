@@ -4423,7 +4423,8 @@ qemuProcessUpdateCPU(virQEMUDriver *driver,
 
 static int
 qemuPrepareNVRAM(virQEMUDriver *driver,
-                 virDomainObj *vm)
+                 virDomainObj *vm,
+                 bool reset_nvram)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
@@ -4435,7 +4436,8 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     ssize_t r;
     g_autofree char *tmp_dst_path = NULL;
 
-    if (!loader || !loader->nvram || virFileExists(loader->nvram))
+    if (!loader || !loader->nvram ||
+        (virFileExists(loader->nvram) && !reset_nvram))
         return 0;
 
     master_nvram_path = loader->templt;
@@ -6981,7 +6983,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         return -1;
 
-    if (qemuPrepareNVRAM(driver, vm) < 0)
+    if (qemuPrepareNVRAM(driver, vm, flags & VIR_QEMU_PROCESS_START_RESET_NVRAM) < 0)
         return -1;
 
     if (vm->def->vsock) {

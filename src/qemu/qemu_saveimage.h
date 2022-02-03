@@ -67,6 +67,7 @@ qemuSaveImageStartVM(virConnectPtr conn,
                      virQEMUSaveData *data,
                      const char *path,
                      bool start_paused,
+                     bool reset_nvram,
                      qemuDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5) ATTRIBUTE_NONNULL(6);
 

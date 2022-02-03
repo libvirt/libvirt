@@ -2243,7 +2243,11 @@ qemuSnapshotRevert(virDomainObj *vm,
 
     virCheckFlags(VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING |
                   VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED |
-                  VIR_DOMAIN_SNAPSHOT_REVERT_FORCE, -1);
+                  VIR_DOMAIN_SNAPSHOT_REVERT_FORCE |
+                  VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM, -1);
+
+    if (flags & VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM)
+        start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
     /* We have the following transitions, which create the following events:
      * 1. inactive -> inactive: none

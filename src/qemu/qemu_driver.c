@@ -1589,7 +1589,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
 
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
                   VIR_DOMAIN_START_AUTODESTROY |
-                  VIR_DOMAIN_START_VALIDATE, NULL);
+                  VIR_DOMAIN_START_VALIDATE |
+                  VIR_DOMAIN_START_RESET_NVRAM, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
@@ -1597,6 +1598,8 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
         start_flags |= VIR_QEMU_PROCESS_START_PAUSED;
     if (flags & VIR_DOMAIN_START_AUTODESTROY)
         start_flags |= VIR_QEMU_PROCESS_START_AUTODESTROY;
+    if (flags & VIR_DOMAIN_START_RESET_NVRAM)
+        start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -5753,11 +5756,15 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     virQEMUSaveData *data = NULL;
     virFileWrapperFd *wrapperFd = NULL;
     bool hook_taint = false;
+    bool reset_nvram = false;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
-                  VIR_DOMAIN_SAVE_PAUSED, -1);
+                  VIR_DOMAIN_SAVE_PAUSED |
+                  VIR_DOMAIN_SAVE_RESET_NVRAM, -1);
 
+    if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
+        reset_nvram = true;
 
     virNWFilterReadLockFilterUpdates();
 
@@ -5819,7 +5826,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
         goto cleanup;
 
     ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path,
-                               false, QEMU_ASYNC_JOB_START);
+                               false, reset_nvram, QEMU_ASYNC_JOB_START);
 
     qemuProcessEndJob(driver, vm);
 
@@ -6028,6 +6035,7 @@ qemuDomainObjRestore(virConnectPtr conn,
                      const char *path,
                      bool start_paused,
                      bool bypass_cache,
+                     bool reset_nvram,
                      qemuDomainAsyncJob asyncJob)
 {
     g_autoptr(virDomainDef) def = NULL;
@@ -6086,7 +6094,7 @@ qemuDomainObjRestore(virConnectPtr conn,
     virDomainObjAssignDef(vm, &def, true, NULL);
 
     ret = qemuSaveImageStartVM(conn, driver, vm, &fd, data, path,
-                               start_paused, asyncJob);
+                               start_paused, reset_nvram, asyncJob);
 
  cleanup:
     virQEMUSaveDataFree(data);
@@ -6298,11 +6306,13 @@ qemuDomainObjStart(virConnectPtr conn,
     bool autodestroy = (flags & VIR_DOMAIN_START_AUTODESTROY) != 0;
     bool bypass_cache = (flags & VIR_DOMAIN_START_BYPASS_CACHE) != 0;
     bool force_boot = (flags & VIR_DOMAIN_START_FORCE_BOOT) != 0;
+    bool reset_nvram = (flags & VIR_DOMAIN_START_RESET_NVRAM) != 0;
     unsigned int start_flags = VIR_QEMU_PROCESS_START_COLD;
     qemuDomainObjPrivate *priv = vm->privateData;
 
     start_flags |= start_paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
     start_flags |= autodestroy ? VIR_QEMU_PROCESS_START_AUTODESTROY : 0;
+    start_flags |= reset_nvram ? VIR_QEMU_PROCESS_START_RESET_NVRAM : 0;
 
     /*
      * If there is a managed saved state restore it instead of starting
@@ -6327,7 +6337,8 @@ qemuDomainObjStart(virConnectPtr conn,
             priv->job.current->operation = VIR_DOMAIN_JOB_OPERATION_RESTORE;
 
             ret = qemuDomainObjRestore(conn, driver, vm, managed_save,
-                                       start_paused, bypass_cache, asyncJob);
+                                       start_paused, bypass_cache,
+                                       reset_nvram, asyncJob);
 
             if (ret == 0) {
                 if (unlink(managed_save) < 0)
@@ -6379,7 +6390,8 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     virCheckFlags(VIR_DOMAIN_START_PAUSED |
                   VIR_DOMAIN_START_AUTODESTROY |
                   VIR_DOMAIN_START_BYPASS_CACHE |
-                  VIR_DOMAIN_START_FORCE_BOOT, -1);
+                  VIR_DOMAIN_START_FORCE_BOOT |
+                  VIR_DOMAIN_START_RESET_NVRAM, -1);
 
     virNWFilterReadLockFilterUpdates();
 
