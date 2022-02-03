@@ -1482,41 +1482,26 @@ mymain(void)
     DO_TEST_CAPS_LATEST("graphics-egl-headless");
     DO_TEST_CAPS_LATEST("graphics-egl-headless-rendernode");
 
-    /* DO_TEST_CAPS_VER("graphics-vnc-*", "2.11.0"); were added as a demonstration
-     * that the old fake-caps tests were already using the new format, thus
-     * they can be removed without replacement when "2.11.0" will be retired */
-    DO_TEST_CAPS_VER("graphics-vnc", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc");
-    DO_TEST_CAPS_VER("graphics-vnc-socket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-socket");
-    DO_TEST_CAPS_VER("graphics-vnc-websocket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-websocket");
-    DO_TEST_CAPS_VER("graphics-vnc-policy", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-policy");
     DO_TEST_CAPS_LATEST("graphics-vnc-power");
-    DO_TEST_CAPS_VER("graphics-vnc-no-listen-attr", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-no-listen-attr");
-    DO_TEST_CAPS_VER("graphics-vnc-remove-generated-socket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-remove-generated-socket");
     driver.config->vncAutoUnixSocket = true;
-    DO_TEST_CAPS_VER("graphics-vnc-auto-socket-cfg", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket-cfg");
     driver.config->vncAutoUnixSocket = false;
-    DO_TEST_CAPS_VER("graphics-vnc-auto-socket", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-auto-socket");
-    DO_TEST_CAPS_VER("graphics-vnc-none", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-none");
-    DO_TEST_CAPS_VER("graphics-vnc-socket-new-cmdline", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-socket-new-cmdline");
 
     driver.config->vncSASL = 1;
     VIR_FREE(driver.config->vncSASLdir);
     driver.config->vncSASLdir = g_strdup("/root/.sasl2");
-    DO_TEST_CAPS_VER("graphics-vnc-sasl", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-sasl");
     driver.config->vncTLS = 1;
     driver.config->vncTLSx509verify = 1;
-    DO_TEST_CAPS_VER("graphics-vnc-tls", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-tls");
     driver.config->vncTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     DO_TEST_CAPS_VER("graphics-vnc-tls-secret", "5.2.0");
@@ -1525,7 +1510,6 @@ mymain(void)
     driver.config->vncSASL = driver.config->vncTLSx509verify = driver.config->vncTLS = 0;
     VIR_FREE(driver.config->vncSASLdir);
     VIR_FREE(driver.config->vncTLSx509certdir);
-    DO_TEST_CAPS_VER("graphics-vnc-egl-headless", "2.11.0");
     DO_TEST_CAPS_LATEST("graphics-vnc-egl-headless");
 
     DO_TEST("graphics-sdl",
@@ -2055,7 +2039,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model", "2.11.0");
     DO_TEST_CAPS_VER("cpu-host-model", "2.12.0");
     DO_TEST_CAPS_VER("cpu-host-model", "3.0.0");
     DO_TEST_CAPS_VER("cpu-host-model", "3.1.0");
@@ -3229,7 +3212,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST_PARSE_ERROR("missing-machine");
 
-    DO_TEST_CAPS_VER("name-escape", "2.11.0");
     DO_TEST_CAPS_LATEST("name-escape");
 
     DO_TEST_NOCAPS("master-key");
