@@ -1,17 +1,13 @@
 {
-    "description": "OVMF with SB+SMM, empty varstore",
+    "description": "OVMF for x86_64, with SEV, without SB, without SMM, with NO varstore",
     "interface-types": [
         "uefi"
     ],
     "mapping": {
         "device": "flash",
-        "mode": "split",
+        "mode": "stateless",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF_CODE.secboot.fd",
-            "format": "raw"
-        },
-        "nvram-template": {
-            "filename": "/usr/share/OVMF/OVMF_VARS.fd",
+            "filename": "/usr/share/OVMF/OVMF.sev.fd",
             "format": "raw"
         }
     },
@@ -26,8 +22,7 @@
     "features": [
         "acpi-s3",
         "amd-sev",
-        "requires-smm",
-        "secure-boot",
+        "amd-sev-es",
         "verbose-dynamic"
     ],
     "tags": [

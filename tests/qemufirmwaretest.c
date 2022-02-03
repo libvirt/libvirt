@@ -17,22 +17,31 @@ static int
 testParseFormatFW(const void *opaque)
 {
     const char *filename = opaque;
-    g_autofree char *path = NULL;
+    g_autofree char *inpath = NULL;
+    g_autofree char *outpath = NULL;
     g_autoptr(qemuFirmware) fw = NULL;
-    g_autofree char *buf = NULL;
     g_autoptr(virJSONValue) json = NULL;
     g_autofree char *expected = NULL;
     g_autofree char *actual = NULL;
+    g_autofree char *buf = NULL;
 
-    path = g_strdup_printf("%s/qemufirmwaredata/%s", abs_srcdir, filename);
+    inpath = g_strdup_printf("%s/qemufirmwaredata/%s", abs_srcdir, filename);
+    outpath = g_strdup_printf("%s/qemufirmwaredata/out/%s", abs_srcdir, filename);
 
-    if (!(fw = qemuFirmwareParse(path)))
+    if (!(fw = qemuFirmwareParse(inpath)))
         return -1;
 
-    if (virFileReadAll(path,
-                       1024 * 1024, /* 1MiB */
-                       &buf) < 0)
-        return -1;
+    if (virFileExists(outpath)) {
+        if (virFileReadAll(outpath,
+                           1024 * 1024, /* 1MiB */
+                           &buf) < 0)
+            return -1;
+    } else {
+        if (virFileReadAll(inpath,
+                           1024 * 1024, /* 1MiB */
+                           &buf) < 0)
+            return -1;
+    }
 
     if (!(json = virJSONValueFromString(buf)))
         return -1;
@@ -60,7 +69,9 @@ testFWPrecedence(const void *opaque G_GNUC_UNUSED)
     const char *expected[] = {
         PREFIX "/share/qemu/firmware/40-bios.json",
         SYSCONFDIR "/qemu/firmware/40-ovmf-sb-keys.json",
+        PREFIX "/share/qemu/firmware/45-ovmf-sev-stateless.json",
         PREFIX "/share/qemu/firmware/50-ovmf-sb-keys.json",
+        PREFIX "/share/qemu/firmware/55-ovmf-sb-combined.json",
         PREFIX "/share/qemu/firmware/61-ovmf.json",
         PREFIX "/share/qemu/firmware/70-aavmf.json",
         NULL
@@ -218,7 +229,9 @@ mymain(void)
     } while (0)
 
     DO_PARSE_TEST("usr/share/qemu/firmware/40-bios.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/45-ovmf-sev-stateless.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/50-ovmf-sb-keys.json");
+    DO_PARSE_TEST("usr/share/qemu/firmware/55-ovmf-sb-combined.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/60-ovmf-sb.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/61-ovmf.json");
     DO_PARSE_TEST("usr/share/qemu/firmware/70-aavmf.json");
@@ -250,6 +263,8 @@ mymain(void)
     DO_SUPPORTED_TEST("pc-q35-3.1", VIR_ARCH_X86_64, true,
                       "/usr/share/seabios/bios-256k.bin:NULL:"
                       "/usr/share/OVMF/OVMF_CODE.secboot.fd:/usr/share/OVMF/OVMF_VARS.secboot.fd:"
+                      "/usr/share/OVMF/OVMF.sev.fd:NULL:"
+                      "/usr/share/OVMF/OVMF.secboot.fd:NULL:"
                       "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd",
                       VIR_DOMAIN_OS_DEF_FIRMWARE_BIOS,
                       VIR_DOMAIN_OS_DEF_FIRMWARE_EFI);

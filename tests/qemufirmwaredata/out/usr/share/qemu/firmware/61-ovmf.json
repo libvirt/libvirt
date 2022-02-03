@@ -1,5 +1,4 @@
 {
-    "description": "OVMF with SB+SMM, empty varstore",
     "interface-types": [
         "uefi"
     ],
@@ -7,7 +6,7 @@
         "device": "flash",
         "mode": "split",
         "executable": {
-            "filename": "/usr/share/OVMF/OVMF_CODE.secboot.fd",
+            "filename": "/usr/share/OVMF/OVMF_CODE.fd",
             "format": "raw"
         },
         "nvram-template": {
@@ -19,6 +18,7 @@
         {
             "architecture": "x86_64",
             "machines": [
+                "pc-i440fx-*",
                 "pc-q35-*"
             ]
         }
@@ -26,11 +26,6 @@
     "features": [
         "acpi-s3",
         "amd-sev",
-        "requires-smm",
-        "secure-boot",
         "verbose-dynamic"
-    ],
-    "tags": [
-
     ]
 }

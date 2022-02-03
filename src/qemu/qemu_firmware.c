@@ -59,6 +59,22 @@ VIR_ENUM_IMPL(qemuFirmwareOSInterface,
 );
 
 
+typedef enum {
+    QEMU_FIRMWARE_FLASH_MODE_SPLIT,
+    QEMU_FIRMWARE_FLASH_MODE_COMBINED,
+    QEMU_FIRMWARE_FLASH_MODE_STATELESS,
+
+    QEMU_FIRMWARE_FLASH_MODE_LAST,
+} qemuFirmwareFlashMode;
+
+VIR_ENUM_DECL(qemuFirmwareFlashMode);
+VIR_ENUM_IMPL(qemuFirmwareFlashMode,
+              QEMU_FIRMWARE_FLASH_MODE_LAST,
+              "split",
+              "combined",
+              "stateless",
+);
+
 typedef struct _qemuFirmwareFlashFile qemuFirmwareFlashFile;
 struct _qemuFirmwareFlashFile {
     char *filename;
@@ -68,6 +84,7 @@ struct _qemuFirmwareFlashFile {
 
 typedef struct _qemuFirmwareMappingFlash qemuFirmwareMappingFlash;
 struct _qemuFirmwareMappingFlash {
+    qemuFirmwareFlashMode mode;
     qemuFirmwareFlashFile executable;
     qemuFirmwareFlashFile nvram_template;
 };
@@ -359,8 +376,30 @@ qemuFirmwareMappingFlashParse(const char *path,
                               virJSONValue *doc,
                               qemuFirmwareMappingFlash *flash)
 {
+    virJSONValue *mode;
     virJSONValue *executable;
     virJSONValue *nvram_template;
+
+    if (!(mode = virJSONValueObjectGet(doc, "mode"))) {
+        /* Historical default */
+        flash->mode = QEMU_FIRMWARE_FLASH_MODE_SPLIT;
+    } else {
+        const char *modestr = virJSONValueGetString(mode);
+        int modeval;
+        if (!modestr) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Firmware flash mode value was malformed"));
+            return -1;
+        }
+        modeval = qemuFirmwareFlashModeTypeFromString(modestr);
+        if (modeval < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Firmware flash mode value '%s' unexpected"),
+                           modestr);
+            return -1;
+        }
+        flash->mode = modeval;
+    }
 
     if (!(executable = virJSONValueObjectGet(doc, "executable"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -372,15 +411,17 @@ qemuFirmwareMappingFlashParse(const char *path,
     if (qemuFirmwareFlashFileParse(path, executable, &flash->executable) < 0)
         return -1;
 
-    if (!(nvram_template = virJSONValueObjectGet(doc, "nvram-template"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing 'nvram-template' in '%s'"),
-                       path);
-        return -1;
-    }
+    if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+        if (!(nvram_template = virJSONValueObjectGet(doc, "nvram-template"))) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("missing 'nvram-template' in '%s'"),
+                           path);
+            return -1;
+        }
 
-    if (qemuFirmwareFlashFileParse(path, nvram_template, &flash->nvram_template) < 0)
-        return -1;
+        if (qemuFirmwareFlashFileParse(path, nvram_template, &flash->nvram_template) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -693,10 +734,12 @@ qemuFirmwareMappingFlashFormat(virJSONValue *mapping,
     g_autoptr(virJSONValue) executable = NULL;
     g_autoptr(virJSONValue) nvram_template = NULL;
 
-    if (!(executable = qemuFirmwareFlashFileFormat(flash->executable)))
+    if (virJSONValueObjectAppendString(mapping,
+                                       "mode",
+                                       qemuFirmwareFlashModeTypeToString(flash->mode)) < 0)
         return -1;
 
-    if (!(nvram_template = qemuFirmwareFlashFileFormat(flash->nvram_template)))
+    if (!(executable = qemuFirmwareFlashFileFormat(flash->executable)))
         return -1;
 
     if (virJSONValueObjectAppend(mapping,
@@ -704,11 +747,15 @@ qemuFirmwareMappingFlashFormat(virJSONValue *mapping,
                                  &executable) < 0)
         return -1;
 
+    if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+        if (!(nvram_template = qemuFirmwareFlashFileFormat(flash->nvram_template)))
+            return -1;
 
-    if (virJSONValueObjectAppend(mapping,
+        if (virJSONValueObjectAppend(mapping,
                                  "nvram-template",
-                                 &nvram_template) < 0)
-        return -1;
+                                     &nvram_template) < 0)
+            return -1;
+    }
 
     return 0;
 }
@@ -1067,6 +1114,12 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         !requiresSMM) {
         VIR_DEBUG("Domain restricts pflash programming to SMM, "
                   "but firmware '%s' doesn't support SMM", path);
+        return false;
+    }
+
+    if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH &&
+        fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+        VIR_DEBUG("Discarding loader without split flash");
         return false;
     }
 
