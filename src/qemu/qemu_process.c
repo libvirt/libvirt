@@ -6777,9 +6777,8 @@ qemuProcessPrepareHostBackendChardevFileHelper(const char *path,
 
 
 struct qemuProcessPrepareHostBackendChardevData {
-    virQEMUCaps *qemuCaps;
+    qemuDomainObjPrivate *priv;
     virLogManager *logManager;
-    virSecurityManager *secManager;
     virQEMUDriverConfig *cfg;
     virDomainDef *def;
 };
@@ -6829,7 +6828,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                                            chardev->data.file.append,
                                                            &charpriv->fd,
                                                            data->logManager,
-                                                           data->secManager,
+                                                           data->priv->driver->securityManager,
                                                            data->cfg,
                                                            data->def) < 0)
             return -1;
@@ -6838,14 +6837,14 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (chardev->data.nix.listen &&
-            virQEMUCapsGet(data->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+            virQEMUCapsGet(data->priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
 
-            if (qemuSecuritySetSocketLabel(data->secManager, data->def) < 0)
+            if (qemuSecuritySetSocketLabel(data->priv->driver->securityManager, data->def) < 0)
                 return -1;
 
             charpriv->fd = qemuOpenChrChardevUNIXSocket(chardev);
 
-            if (qemuSecurityClearSocketLabel(data->secManager, data->def) < 0) {
+            if (qemuSecurityClearSocketLabel(data->priv->driver->securityManager, data->def) < 0) {
                 VIR_FORCE_CLOSE(charpriv->fd);
                 return -1;
             }
@@ -6869,7 +6868,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                                            chardev->logappend,
                                                            &charpriv->logfd,
                                                            data->logManager,
-                                                           data->secManager,
+                                                           data->priv->driver->securityManager,
                                                            data->cfg,
                                                            data->def) < 0)
             return -1;
@@ -6883,16 +6882,13 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
  * serial/parallel/channel chardevs, vhost-user disks, vhost-user network
  * interfaces, smartcards, shared memory, and redirdevs */
 static int
-qemuProcessPrepareHostBackendChardev(virDomainObj *vm,
-                                     virQEMUCaps *qemuCaps,
-                                     virSecurityManager *secManager)
+qemuProcessPrepareHostBackendChardev(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     struct qemuProcessPrepareHostBackendChardevData data = {
-        .qemuCaps = qemuCaps,
+        .priv = priv,
         .logManager = NULL,
-        .secManager = secManager,
         .cfg = cfg,
         .def = vm->def,
     };
@@ -6970,9 +6966,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         return -1;
 
     VIR_DEBUG("Preparing chr device backends");
-    if (qemuProcessPrepareHostBackendChardev(vm,
-                                             priv->qemuCaps,
-                                             driver->securityManager) < 0)
+    if (qemuProcessPrepareHostBackendChardev(vm) < 0)
         return -1;
 
     if (qemuProcessBuildDestroyMemoryPaths(driver, vm, NULL, true) < 0)
