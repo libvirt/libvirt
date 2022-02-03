@@ -19,7 +19,7 @@ QEMU_AUDIO_DRV=none \
 -uuid 3ec6cbe1-b5a2-4515-b800-31a61855df41 \
 -no-user-config \
 -nodefaults \
--chardev socket,id=charmonitor,path=/tmp/lib/domain--1-fdr-br/monitor.sock,server=on,wait=off \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
 -mon chardev=charmonitor,id=monitor,mode=control \
 -rtc base=utc \
 -no-shutdown \

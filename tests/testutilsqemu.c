@@ -1049,8 +1049,7 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (chardev->data.nix.listen &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
+        if (chardev->data.nix.listen)
             fakesourcefd = 1729;
 
         usefdset = false;

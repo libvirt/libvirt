@@ -2347,11 +2347,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
     int ret = -1;
     g_autoptr(GHashTable) info = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool retry = true;
-
-    if (priv->qemuCaps &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
-        retry = false;
+    bool retry = false;
 
     VIR_DEBUG("Connect monitor to vm=%p name='%s' retry=%d",
               vm, vm->def->name, retry);
@@ -6856,8 +6852,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (chardev->data.nix.listen &&
-            virQEMUCapsGet(data->priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
+        if (chardev->data.nix.listen) {
             VIR_AUTOCLOSE sourcefd = -1;
 
             if (qemuSecuritySetSocketLabel(data->priv->driver->securityManager, data->def) < 0)
@@ -8744,7 +8739,7 @@ qemuProcessReconnect(void *opaque)
     size_t i;
     unsigned int stopFlags = 0;
     bool jobStarted = false;
-    bool retry = true;
+    bool retry = false;
     bool tryMonReconn = false;
 
     virIdentitySetCurrent(data->identity);
@@ -8779,9 +8774,6 @@ qemuProcessReconnect(void *opaque)
 
     if (qemuHostdevUpdateActiveDomainDevices(driver, obj->def) < 0)
         goto error;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
-        retry = false;
 
     if (qemuDomainObjStartWorker(obj) < 0)
         goto error;

@@ -1548,7 +1548,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("misc-no-reboot");
     DO_TEST_NOCAPS("misc-uuid");
     DO_TEST_PARSE_ERROR_NOCAPS("vhost_queues-invalid");
-    DO_TEST("net-vhostuser", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
+    DO_TEST_NOCAPS("net-vhostuser");
     DO_TEST_CAPS_LATEST("net-vhostuser");
     DO_TEST_NOCAPS("net-vhostuser-multiq");
     DO_TEST_FAILURE_NOCAPS("net-vhostuser-fail");

@@ -95,7 +95,6 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_BLOCK);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_KBD);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA);
-    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
