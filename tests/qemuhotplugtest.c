@@ -708,7 +708,7 @@ mymain(void)
 
     DO_TEST_DETACH("console-compat-2-live", "console-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("console1") QMP_OK,
-                   "chardev-remove", QMP_OK);
+                   "chardev-remove", QMP_OK, "query-fdsets", "{\"return\": []}");
 
     DO_TEST_ATTACH("base-live", "disk-virtio", false, true,
                    "human-monitor-command", HMP("OK\\r\\n"),
@@ -768,7 +768,7 @@ mymain(void)
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "qemu-agent-detach", false, false,
                    "device_del", QMP_DEVICE_DELETED("channel0") QMP_OK,
-                   "chardev-remove", QMP_OK);
+                   "chardev-remove", QMP_OK, "query-fdsets", "{\"return\": []}");
 
     DO_TEST_ATTACH("base-ccw-live", "ccw-virtio", false, true,
                    "human-monitor-command", HMP("OK\\r\\n"),

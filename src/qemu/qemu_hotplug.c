@@ -4881,6 +4881,7 @@ qemuDomainRemoveChrDevice(virQEMUDriver *driver,
     if (monitor) {
         qemuDomainObjEnterMonitor(driver, vm);
         rc = qemuMonitorDetachCharDev(priv->mon, charAlias);
+        qemuHotplugRemoveFDSet(priv->mon, chr->info.alias, NULL);
         qemuDomainObjExitMonitor(driver, vm);
     }
 
