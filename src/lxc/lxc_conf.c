@@ -156,28 +156,28 @@ virCaps *virLXCDriverCapsInit(virLXCDriver *driver)
 virCaps *virLXCDriverGetCapabilities(virLXCDriver *driver,
                                        bool refresh)
 {
-    virCaps *ret;
-    if (refresh) {
-        virCaps *caps = NULL;
-        if ((caps = virLXCDriverCapsInit(driver)) == NULL)
-            return NULL;
+    virCaps *ret = NULL;
+    virCaps *caps = NULL;
 
-        lxcDriverLock(driver);
+    lxcDriverLock(driver);
+    if (!refresh && !driver->caps) {
+        VIR_DEBUG("Capabilities didn't detect any guests. Forcing a refresh.");
+        refresh = true;
+    }
+    lxcDriverUnlock(driver);
+
+    if (refresh && !(caps = virLXCDriverCapsInit(driver)))
+        return NULL;
+
+    lxcDriverLock(driver);
+    if (refresh) {
         virObjectUnref(driver->caps);
         driver->caps = caps;
-    } else {
-        lxcDriverLock(driver);
-
-        if (driver->caps == NULL) {
-            VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
-                      "refresh.");
-            lxcDriverUnlock(driver);
-            return virLXCDriverGetCapabilities(driver, true);
-        }
     }
 
     ret = virObjectRef(driver->caps);
     lxcDriverUnlock(driver);
+
     return ret;
 }
 
