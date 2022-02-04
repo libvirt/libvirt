@@ -797,6 +797,36 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
 }
 
 
+/**
+ * qemuExtTPMEmulatorSetupCgroup:
+ * @swtpmStateDir: directory for swtpm's persistent state
+ * @shortName: short and unique name of the domain
+ * @cgroup: cgroup to add the swtpm process to
+ *
+ * Add the swtpm process to the appropriate cgroup.
+ */
+static int
+qemuExtTPMEmulatorSetupCgroup(const char *swtpmStateDir,
+                              const char *shortName,
+                              virCgroup *cgroup)
+{
+    int rc;
+    pid_t pid;
+
+    rc = qemuTPMEmulatorGetPid(swtpmStateDir, shortName, &pid);
+    if (rc < 0 || (rc == 0 && pid == (pid_t)-1)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Could not get process id of swtpm"));
+        return -1;
+    }
+
+    if (virCgroupAddProcess(cgroup, pid) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 int
 qemuExtTPMInitPaths(virQEMUDriver *driver,
                     virDomainDef *def)
@@ -1019,8 +1049,6 @@ qemuExtTPMSetupCgroup(virQEMUDriver *driver,
                       virCgroup *cgroup)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int rc;
-    pid_t pid;
     size_t i;
 
     for (i = 0; i < def->ntpms; i++) {
@@ -1032,13 +1060,8 @@ qemuExtTPMSetupCgroup(virQEMUDriver *driver,
         shortName = virDomainDefGetShortName(def);
         if (!shortName)
             return -1;
-        rc = qemuTPMEmulatorGetPid(cfg->swtpmStateDir, shortName, &pid);
-        if (rc < 0 || (rc == 0 && pid == (pid_t)-1)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Could not get process id of swtpm"));
-            return -1;
-        }
-        if (virCgroupAddProcess(cgroup, pid) < 0)
+
+        if (qemuExtTPMEmulatorSetupCgroup(cfg->swtpmStateDir, shortName, cgroup) < 0)
             return -1;
     }
 
