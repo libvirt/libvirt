@@ -306,15 +306,13 @@ void virThreadPoolFree(virThreadPool *pool)
     if (!pool)
         return;
 
-    virMutexLock(&pool->mutex);
-    virThreadPoolDrainLocked(pool);
+    virThreadPoolDrain(pool);
 
     if (pool->identity)
         g_object_unref(pool->identity);
 
     g_free(pool->jobName);
     g_free(pool->workers);
-    virMutexUnlock(&pool->mutex);
     virMutexDestroy(&pool->mutex);
     virCondDestroy(&pool->quit_cond);
     virCondDestroy(&pool->cond);
@@ -326,66 +324,60 @@ void virThreadPoolFree(virThreadPool *pool)
 
 size_t virThreadPoolGetMinWorkers(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->minWorkers;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
 
 size_t virThreadPoolGetMaxWorkers(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->maxWorkers;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
 
 size_t virThreadPoolGetPriorityWorkers(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->nPrioWorkers;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
 
 size_t virThreadPoolGetCurrentWorkers(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->nWorkers;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
 
 size_t virThreadPoolGetFreeWorkers(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->freeWorkers;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
 
 size_t virThreadPoolGetJobQueueDepth(virThreadPool *pool)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t ret;
 
-    virMutexLock(&pool->mutex);
     ret = pool->jobQueueDepth;
-    virMutexUnlock(&pool->mutex);
 
     return ret;
 }
@@ -398,9 +390,9 @@ int virThreadPoolSendJob(virThreadPool *pool,
                          unsigned int priority,
                          void *jobData)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     virThreadPoolJob *job;
 
-    virMutexLock(&pool->mutex);
     if (pool->quit)
         goto error;
 
@@ -431,11 +423,9 @@ int virThreadPoolSendJob(virThreadPool *pool,
     if (priority)
         virCondSignal(&pool->prioCond);
 
-    virMutexUnlock(&pool->mutex);
     return 0;
 
  error:
-    virMutexUnlock(&pool->mutex);
     return -1;
 }
 
@@ -445,10 +435,9 @@ virThreadPoolSetParameters(virThreadPool *pool,
                            long long int maxWorkers,
                            long long int prioWorkers)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
     size_t max;
     size_t min;
-
-    virMutexLock(&pool->mutex);
 
     max = maxWorkers >= 0 ? maxWorkers : pool->maxWorkers;
     min = minWorkers >= 0 ? minWorkers : pool->minWorkers;
@@ -490,26 +479,24 @@ virThreadPoolSetParameters(virThreadPool *pool,
         pool->maxPrioWorkers = prioWorkers;
     }
 
-    virMutexUnlock(&pool->mutex);
     return 0;
 
  error:
-    virMutexUnlock(&pool->mutex);
     return -1;
 }
 
 void
 virThreadPoolStop(virThreadPool *pool)
 {
-    virMutexLock(&pool->mutex);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
+
     virThreadPoolStopLocked(pool);
-    virMutexUnlock(&pool->mutex);
 }
 
 void
 virThreadPoolDrain(virThreadPool *pool)
 {
-    virMutexLock(&pool->mutex);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&pool->mutex);
+
     virThreadPoolDrainLocked(pool);
-    virMutexUnlock(&pool->mutex);
 }
