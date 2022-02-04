@@ -26,30 +26,31 @@
       }
     ],
     "matrix": [
-      { "783e6dbb-ea0e-411f-94e2-717eaad438bf": {
-        "mdev_type": "vfio_ap-passthrough",
-        "start": "manual",
-        "attrs": [
-          {
-            "assign_adapter": "5"
-          },
-          {
-            "assign_adapter": "6"
-          },
-          {
-            "assign_domain": "0xab"
-          },
-          {
-            "assign_control_domain": "0xab"
-          },
-          {
-            "assign_domain": "4"
-          },
-          {
-            "assign_control_domain": "4"
-          }
-        ]
-      }
+      {
+        "783e6dbb-ea0e-411f-94e2-717eaad438bf": {
+          "mdev_type": "vfio_ap-passthrough",
+          "start": "manual",
+          "attrs": [
+            {
+              "assign_adapter": "5"
+            },
+            {
+              "assign_adapter": "6"
+            },
+            {
+              "assign_domain": "0xab"
+            },
+            {
+              "assign_control_domain": "0xab"
+            },
+            {
+              "assign_domain": "4"
+            },
+            {
+              "assign_control_domain": "4"
+            }
+          ]
+        }
       }
     ]
   }
