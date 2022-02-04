@@ -879,6 +879,7 @@ qemuExtTPMCleanupHost(virDomainDef *def)
  * qemuTPMEmulatorStart:
  * @driver: QEMU driver
  * @vm: the domain object
+ * @tpm: TPM definition
  * @incomingMigration: whether we have an incoming migration
  *
  * Start the external TPM Emulator:
