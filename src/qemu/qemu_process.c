@@ -9131,11 +9131,8 @@ qemuProcessQMPStop(qemuProcessQMP *proc)
 
     if (proc->pid != 0) {
         VIR_DEBUG("Killing QMP caps process %lld", (long long)proc->pid);
-        if (virProcessKill(proc->pid, SIGKILL) < 0 && errno != ESRCH)
-            VIR_ERROR(_("Failed to kill process %lld: %s"),
-                      (long long)proc->pid,
-                      g_strerror(errno));
-
+        virProcessKillPainfully(proc->pid, true);
+        virResetLastError();
         proc->pid = 0;
     }
 
