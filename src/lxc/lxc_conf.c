@@ -159,24 +159,24 @@ virCaps *virLXCDriverGetCapabilities(virLXCDriver *driver,
     virCaps *ret = NULL;
     virCaps *caps = NULL;
 
-    lxcDriverLock(driver);
-    if (!refresh && !driver->caps) {
-        VIR_DEBUG("Capabilities didn't detect any guests. Forcing a refresh.");
-        refresh = true;
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        if (!refresh && !driver->caps) {
+            VIR_DEBUG("Capabilities didn't detect any guests. Forcing a refresh.");
+            refresh = true;
+        }
     }
-    lxcDriverUnlock(driver);
 
     if (refresh && !(caps = virLXCDriverCapsInit(driver)))
         return NULL;
 
-    lxcDriverLock(driver);
-    if (refresh) {
-        virObjectUnref(driver->caps);
-        driver->caps = caps;
-    }
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        if (refresh) {
+            virObjectUnref(driver->caps);
+            driver->caps = caps;
+        }
 
-    ret = virObjectRef(driver->caps);
-    lxcDriverUnlock(driver);
+        ret = virObjectRef(driver->caps);
+    }
 
     return ret;
 }
@@ -248,11 +248,8 @@ virLXCLoadDriverConfig(virLXCDriverConfig *cfg,
 
 virLXCDriverConfig *virLXCDriverGetConfig(virLXCDriver *driver)
 {
-    virLXCDriverConfig *cfg;
-    lxcDriverLock(driver);
-    cfg = virObjectRef(driver->config);
-    lxcDriverUnlock(driver);
-    return cfg;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+    return virObjectRef(driver->config);
 }
 
 static void

@@ -113,12 +113,3 @@ virCaps *virLXCDriverGetCapabilities(virLXCDriver *driver,
                                        bool refresh);
 virDomainXMLOption *lxcDomainXMLConfInit(virLXCDriver *driver,
                                            const char *defsecmodel);
-
-static inline void lxcDriverLock(virLXCDriver *driver)
-{
-    virMutexLock(&driver->lock);
-}
-static inline void lxcDriverUnlock(virLXCDriver *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
