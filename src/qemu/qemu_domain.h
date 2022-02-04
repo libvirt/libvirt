@@ -983,10 +983,6 @@ qemuDomainNVRAMPathFormat(virQEMUDriverConfig *cfg,
                           virDomainDef *def,
                           char **path);
 
-void
-qemuDomainNVRAMPathGenerate(virQEMUDriverConfig *cfg,
-                            virDomainDef *def);
-
 virDomainEventSuspendedDetailType
 qemuDomainPausedReasonToSuspendedEvent(virDomainPausedReason reason);
 

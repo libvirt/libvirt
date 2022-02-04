@@ -4451,7 +4451,9 @@ qemuDomainDefPostParse(virDomainDef *def,
         def->os.machine = g_strdup(machine);
     }
 
-    qemuDomainNVRAMPathGenerate(cfg, def);
+    if (virDomainDefHasOldStyleROUEFI(def) &&
+        !def->os.loader->nvram)
+        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
 
     if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)
         return -1;
@@ -10984,16 +10986,6 @@ qemuDomainNVRAMPathFormat(virQEMUDriverConfig *cfg,
                           char **path)
 {
     *path = g_strdup_printf("%s/%s_VARS.fd", cfg->nvramDir, def->name);
-}
-
-
-void
-qemuDomainNVRAMPathGenerate(virQEMUDriverConfig *cfg,
-                            virDomainDef *def)
-{
-    if (virDomainDefHasOldStyleROUEFI(def) &&
-        !def->os.loader->nvram)
-        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
 }
 
 

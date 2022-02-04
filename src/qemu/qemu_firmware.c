@@ -1139,11 +1139,12 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         VIR_FREE(def->os.loader->templt);
         def->os.loader->templt = g_strdup(flash->nvram_template.filename);
 
-        qemuDomainNVRAMPathGenerate(cfg, def);
+        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
 
-        VIR_DEBUG("decided on firmware '%s' varstore template '%s'",
+        VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
                   def->os.loader->path,
-                  def->os.loader->templt);
+                  def->os.loader->templt,
+                  def->os.loader->nvram);
         break;
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
