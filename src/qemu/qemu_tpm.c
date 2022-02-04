@@ -842,68 +842,6 @@ qemuExtTPMEmulatorSetupCgroup(const char *swtpmStateDir,
 }
 
 
-int
-qemuExtTPMInitPaths(virQEMUDriver *driver,
-                    virDomainDef *def)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    size_t i;
-
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        return qemuTPMEmulatorInitPaths(def->tpms[i],
-                                        cfg->swtpmStorageDir,
-                                        cfg->swtpmLogDir,
-                                        def->name,
-                                        def->uuid);
-    }
-
-    return 0;
-}
-
-
-int
-qemuExtTPMPrepareHost(virQEMUDriver *driver,
-                      virDomainDef *def)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    g_autofree char *shortName = virDomainDefGetShortName(def);
-    size_t i;
-
-    if (!shortName)
-        return -1;
-
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        return qemuTPMEmulatorPrepareHost(def->tpms[i], cfg->swtpmLogDir,
-                                          cfg->swtpm_user,
-                                          cfg->swtpm_group,
-                                          cfg->swtpmStateDir, cfg->user,
-                                          shortName);
-    }
-
-    return 0;
-}
-
-
-void
-qemuExtTPMCleanupHost(virDomainDef *def)
-{
-    size_t i;
-
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        qemuTPMEmulatorCleanupHost(def->tpms[i]);
-    }
-}
-
-
 /**
  * qemuTPMEmulatorStart:
  * @driver: QEMU driver
@@ -1007,6 +945,77 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     if (pidfile)
         unlink(pidfile);
     return -1;
+}
+
+
+/* ---------------------
+ *  Module entry points
+ * ---------------------
+ *
+ * These are the public functions that will be called by other parts
+ * of the QEMU driver.
+ */
+
+
+int
+qemuExtTPMInitPaths(virQEMUDriver *driver,
+                    virDomainDef *def)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+            continue;
+
+        return qemuTPMEmulatorInitPaths(def->tpms[i],
+                                        cfg->swtpmStorageDir,
+                                        cfg->swtpmLogDir,
+                                        def->name,
+                                        def->uuid);
+    }
+
+    return 0;
+}
+
+
+int
+qemuExtTPMPrepareHost(virQEMUDriver *driver,
+                      virDomainDef *def)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    g_autofree char *shortName = virDomainDefGetShortName(def);
+    size_t i;
+
+    if (!shortName)
+        return -1;
+
+    for (i = 0; i < def->ntpms; i++) {
+        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+            continue;
+
+        return qemuTPMEmulatorPrepareHost(def->tpms[i], cfg->swtpmLogDir,
+                                          cfg->swtpm_user,
+                                          cfg->swtpm_group,
+                                          cfg->swtpmStateDir, cfg->user,
+                                          shortName);
+    }
+
+    return 0;
+}
+
+
+void
+qemuExtTPMCleanupHost(virDomainDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
+            continue;
+
+        qemuTPMEmulatorCleanupHost(def->tpms[i]);
+    }
 }
 
 
