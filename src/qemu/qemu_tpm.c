@@ -99,6 +99,68 @@ qemuTPMEmulatorLogBuildPath(const char *logDir,
 
 
 /**
+ * qemuTPMEmulatorSocketBuildPath:
+ * @swtpmStateDir: directory for swtpm runtime state
+ * @shortName: short and unique name of the domain
+ *
+ * Generate the swtpm's Unix socket path.
+ */
+static char *
+qemuTPMEmulatorSocketBuildPath(const char *swtpmStateDir,
+                               const char *shortName)
+{
+    return g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
+}
+
+
+/**
+ * qemuTPMEmulatorPidFileBuildPath:
+ * @swtpmStateDir: directory for swtpm runtime state
+ * @shortName: short and unique name of the domain
+ *
+ * Generate the swtpm's pidfile path.
+ */
+static char *
+qemuTPMEmulatorPidFileBuildPath(const char *swtpmStateDir,
+                                const char *shortName)
+{
+    g_autofree char *devicename = NULL;
+
+    devicename = g_strdup_printf("%s-swtpm", shortName);
+
+    return virPidFileBuildPath(swtpmStateDir, devicename);
+}
+
+
+/*
+ * qemuTPMEmulatorGetPid
+ *
+ * @swtpmStateDir: the directory where swtpm writes the pidfile into
+ * @shortName: short name of the domain
+ * @pid: pointer to pid
+ *
+ * Return -1 upon error, or zero on successful reading of the pidfile.
+ * If the PID was not still alive, zero will be returned, and @pid will be
+ * set to -1;
+ */
+static int
+qemuTPMEmulatorGetPid(const char *swtpmStateDir,
+                      const char *shortName,
+                      pid_t *pid)
+{
+    g_autofree char *pidfile = qemuTPMEmulatorPidFileBuildPath(swtpmStateDir,
+                                                               shortName);
+    if (!pidfile)
+        return -1;
+
+    if (virPidFileReadPathIfLocked(pidfile, pid) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+/**
  * qemuTPMEmulatorCreateStorage:
  * @tpm: TPM definition for an emulator type
  * @created: a pointer to a bool that will be set to true if the
@@ -162,21 +224,6 @@ qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 }
 
 
-/**
- * qemuTPMEmulatorSocketBuildPath:
- * @swtpmStateDir: directory for swtpm runtime state
- * @shortName: short and unique name of the domain
- *
- * Generate the swtpm's Unix socket path.
- */
-static char *
-qemuTPMEmulatorSocketBuildPath(const char *swtpmStateDir,
-                               const char *shortName)
-{
-    return g_strdup_printf("%s/%s-swtpm.sock", swtpmStateDir, shortName);
-}
-
-
 /*
  * qemuTPMEmulatorInitPaths:
  *
@@ -208,53 +255,6 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
         tpm->data.emulator.logfile = qemuTPMEmulatorLogBuildPath(logDir,
                                                                  vmname);
     }
-
-    return 0;
-}
-
-
-/**
- * qemuTPMEmulatorPidFileBuildPath:
- * @swtpmStateDir: directory for swtpm runtime state
- * @shortName: short and unique name of the domain
- *
- * Generate the swtpm's pidfile path.
- */
-static char *
-qemuTPMEmulatorPidFileBuildPath(const char *swtpmStateDir,
-                                const char *shortName)
-{
-    g_autofree char *devicename = NULL;
-
-    devicename = g_strdup_printf("%s-swtpm", shortName);
-
-    return virPidFileBuildPath(swtpmStateDir, devicename);
-}
-
-
-/*
- * qemuTPMEmulatorGetPid
- *
- * @swtpmStateDir: the directory where swtpm writes the pidfile into
- * @shortName: short name of the domain
- * @pid: pointer to pid
- *
- * Return -1 upon error, or zero on successful reading of the pidfile.
- * If the PID was not still alive, zero will be returned, and @pid will be
- * set to -1;
- */
-static int
-qemuTPMEmulatorGetPid(const char *swtpmStateDir,
-                      const char *shortName,
-                      pid_t *pid)
-{
-    g_autofree char *pidfile = qemuTPMEmulatorPidFileBuildPath(swtpmStateDir,
-                                                               shortName);
-    if (!pidfile)
-        return -1;
-
-    if (virPidFileReadPathIfLocked(pidfile, pid) < 0)
-        return -1;
 
     return 0;
 }
