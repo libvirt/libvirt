@@ -87,21 +87,22 @@ virCaps *virCHDriverCapsInit(void)
 virCaps *virCHDriverGetCapabilities(virCHDriver *driver,
                                       bool refresh)
 {
-    virCaps *ret;
-    if (refresh) {
-        virCaps *caps = NULL;
-        if ((caps = virCHDriverCapsInit()) == NULL)
-            return NULL;
+    virCaps *ret = NULL;
+    virCaps *caps = NULL;
 
-        chDriverLock(driver);
+    if (refresh && !(caps = virCHDriverCapsInit()))
+        return NULL;
+
+    chDriverLock(driver);
+
+    if (refresh) {
         virObjectUnref(driver->caps);
         driver->caps = caps;
-    } else {
-        chDriverLock(driver);
     }
 
     ret = virObjectRef(driver->caps);
     chDriverUnlock(driver);
+
     return ret;
 }
 
