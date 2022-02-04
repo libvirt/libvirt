@@ -281,7 +281,7 @@ qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm)
  * @logDir: directory where swtpm writes its logs into
  * @swtpm_user: uid to run the swtpm with
  * @swtpm_group: gid to run the swtpm with
- * @swtpmStateDir: directory for swtpm's persistent state
+ * @swtpmStateDir: directory for swtpm runtime state
  * @qemu_user: uid that qemu will run with; we share the socket file with it
  * @shortName: short and unique name of the domain
  *
@@ -814,7 +814,7 @@ qemuTPMEmulatorStop(const char *swtpmStateDir,
 
 /**
  * qemuExtTPMEmulatorSetupCgroup:
- * @swtpmStateDir: directory for swtpm's persistent state
+ * @swtpmStateDir: directory for swtpm runtime state
  * @shortName: short and unique name of the domain
  * @cgroup: cgroup to add the swtpm process to
  *
