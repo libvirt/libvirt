@@ -101,7 +101,7 @@ qemuTPMCreateEmulatorLogPath(const char *logDir,
 
 /**
  * qemuTPMEmulatorCreateStorage:
- * @storagepath: directory for swtpm's persistent state
+ * @tpm: TPM definition for an emulator type
  * @created: a pointer to a bool that will be set to true if the
  *           storage was created because it did not exist yet
  * @swtpm_user: The uid that needs to be able to access the directory
@@ -112,11 +112,12 @@ qemuTPMCreateEmulatorLogPath(const char *logDir,
  * Adapt ownership of the directory and all swtpm's state files there.
  */
 static int
-qemuTPMEmulatorCreateStorage(const char *storagepath,
+qemuTPMEmulatorCreateStorage(virDomainTPMDef *tpm,
                              bool *created,
                              uid_t swtpm_user,
                              gid_t swtpm_group)
 {
+    const char *storagepath = tpm->data.emulator.storagepath;
     g_autofree char *swtpmStorageDir = g_path_get_dirname(storagepath);
 
     /* allow others to cd into this dir */
@@ -672,8 +673,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (!swtpm)
         return NULL;
 
-    if (qemuTPMEmulatorCreateStorage(tpm->data.emulator.storagepath,
-                                     &created, swtpm_user, swtpm_group) < 0)
+    if (qemuTPMEmulatorCreateStorage(tpm, &created, swtpm_user, swtpm_group) < 0)
         return NULL;
 
     if (tpm->data.emulator.hassecretuuid)
