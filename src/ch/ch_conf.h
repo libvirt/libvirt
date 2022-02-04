@@ -78,13 +78,3 @@ virDomainXMLOption *chDomainXMLConfInit(virCHDriver *driver);
 virCHDriverConfig *virCHDriverConfigNew(bool privileged);
 virCHDriverConfig *virCHDriverGetConfig(virCHDriver *driver);
 int chExtractVersion(virCHDriver *driver);
-
-static inline void chDriverLock(virCHDriver *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-static inline void chDriverUnlock(virCHDriver *driver)
-{
-    virMutexUnlock(&driver->lock);
-}

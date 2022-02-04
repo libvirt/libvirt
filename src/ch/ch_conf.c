@@ -93,15 +93,14 @@ virCaps *virCHDriverGetCapabilities(virCHDriver *driver,
     if (refresh && !(caps = virCHDriverCapsInit()))
         return NULL;
 
-    chDriverLock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        if (refresh) {
+            virObjectUnref(driver->caps);
+            driver->caps = caps;
+        }
 
-    if (refresh) {
-        virObjectUnref(driver->caps);
-        driver->caps = caps;
+        ret = virObjectRef(driver->caps);
     }
-
-    ret = virObjectRef(driver->caps);
-    chDriverUnlock(driver);
 
     return ret;
 }
@@ -159,11 +158,8 @@ virCHDriverConfigNew(bool privileged)
 
 virCHDriverConfig *virCHDriverGetConfig(virCHDriver *driver)
 {
-    virCHDriverConfig *cfg;
-    chDriverLock(driver);
-    cfg = virObjectRef(driver->config);
-    chDriverUnlock(driver);
-    return cfg;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+    return virObjectRef(driver->config);
 }
 
 static void
