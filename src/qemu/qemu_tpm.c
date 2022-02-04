@@ -225,123 +225,6 @@ qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 
 
 /*
- * qemuTPMEmulatorInitPaths:
- *
- * @tpm: TPM definition for an emulator type
- * @swtpmStorageDir: the general swtpm storage dir which is used as a base
- *                   directory for creating VM specific directories
- * @logDir: directory where swtpm writes its logs into
- * @vmname: name of the VM
- * @uuid: the UUID of the VM
- */
-static int
-qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
-                         const char *swtpmStorageDir,
-                         const char *logDir,
-                         const char *vmname,
-                         const unsigned char *uuid)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-
-    virUUIDFormat(uuid, uuidstr);
-
-    if (!tpm->data.emulator.storagepath &&
-        !(tpm->data.emulator.storagepath =
-            qemuTPMEmulatorStorageBuildPath(swtpmStorageDir, uuidstr,
-                                            tpm->version)))
-        return -1;
-
-    if (!tpm->data.emulator.logfile) {
-        tpm->data.emulator.logfile = qemuTPMEmulatorLogBuildPath(logDir,
-                                                                 vmname);
-    }
-
-    return 0;
-}
-
-
-/**
- * qemuTPMEmulatorCleanupHost:
- * @tpm: TPM definition
- *
- * Clean up persistent storage for the swtpm.
- */
-static void
-qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm)
-{
-    if (!tpm->data.emulator.persistent_state)
-        qemuTPMEmulatorDeleteStorage(tpm);
-}
-
-
-/*
- * qemuTPMEmulatorPrepareHost:
- *
- * @tpm: tpm definition
- * @logDir: directory where swtpm writes its logs into
- * @swtpm_user: uid to run the swtpm with
- * @swtpm_group: gid to run the swtpm with
- * @swtpmStateDir: directory for swtpm runtime state
- * @qemu_user: uid that qemu will run with; we share the socket file with it
- * @shortName: short and unique name of the domain
- *
- * Prepare the log directory for the swtpm and adjust ownership of it and the
- * log file we will be using. Prepare the state directory where we will share
- * the socket between tss and qemu users.
- */
-static int
-qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
-                           const char *logDir,
-                           uid_t swtpm_user,
-                           gid_t swtpm_group,
-                           const char *swtpmStateDir,
-                           uid_t qemu_user,
-                           const char *shortName)
-{
-    /* create log dir ... allow 'tss' user to cd into it */
-    if (g_mkdir_with_parents(logDir, 0711) < 0)
-        return -1;
-
-    /* ... and adjust ownership */
-    if (virDirCreate(logDir, 0730, swtpm_user, swtpm_group,
-                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
-        return -1;
-
-    if (!virFileExists(tpm->data.emulator.logfile) &&
-        virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
-        return -1;
-    }
-
-    /* ... and make sure it can be accessed by swtpm_user */
-    if (chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
-        virReportSystemError(errno,
-                             _("Could not chown on swtpm logfile %s"),
-                             tpm->data.emulator.logfile);
-        return -1;
-    }
-
-    /*
-      create our swtpm state dir ...
-      - QEMU user needs to be able to access the socket there
-      - swtpm group needs to be able to create files there
-      - in privileged mode 0570 would be enough, for non-privileged mode
-        we need 0770
-    */
-    if (virDirCreate(swtpmStateDir, 0770, qemu_user, swtpm_group,
-                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
-        return -1;
-
-    /* create the socket filename */
-    if (!tpm->data.emulator.source->data.nix.path &&
-        !(tpm->data.emulator.source->data.nix.path =
-          qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)))
-        return -1;
-    tpm->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-
-    return 0;
-}
-
-/*
  * qemuTPMSetupEncryption
  *
  * @secretuuid: The UUID with the secret holding passphrase
@@ -769,6 +652,134 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         qemuTPMEmulatorDeleteStorage(tpm);
 
     return NULL;
+}
+
+
+/* --------------------
+ *  High-level actions
+ * --------------------
+ *
+ * Each of these corresponds to one of the public entry points
+ * defined below, but operates on a single TPM device instead of the
+ * entire VM.
+ */
+
+
+/*
+ * qemuTPMEmulatorInitPaths:
+ *
+ * @tpm: TPM definition for an emulator type
+ * @swtpmStorageDir: the general swtpm storage dir which is used as a base
+ *                   directory for creating VM specific directories
+ * @logDir: directory where swtpm writes its logs into
+ * @vmname: name of the VM
+ * @uuid: the UUID of the VM
+ */
+static int
+qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
+                         const char *swtpmStorageDir,
+                         const char *logDir,
+                         const char *vmname,
+                         const unsigned char *uuid)
+{
+    char uuidstr[VIR_UUID_STRING_BUFLEN];
+
+    virUUIDFormat(uuid, uuidstr);
+
+    if (!tpm->data.emulator.storagepath &&
+        !(tpm->data.emulator.storagepath =
+            qemuTPMEmulatorStorageBuildPath(swtpmStorageDir, uuidstr,
+                                            tpm->version)))
+        return -1;
+
+    if (!tpm->data.emulator.logfile) {
+        tpm->data.emulator.logfile = qemuTPMEmulatorLogBuildPath(logDir,
+                                                                 vmname);
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuTPMEmulatorCleanupHost:
+ * @tpm: TPM definition
+ *
+ * Clean up persistent storage for the swtpm.
+ */
+static void
+qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm)
+{
+    if (!tpm->data.emulator.persistent_state)
+        qemuTPMEmulatorDeleteStorage(tpm);
+}
+
+
+/*
+ * qemuTPMEmulatorPrepareHost:
+ *
+ * @tpm: tpm definition
+ * @logDir: directory where swtpm writes its logs into
+ * @swtpm_user: uid to run the swtpm with
+ * @swtpm_group: gid to run the swtpm with
+ * @swtpmStateDir: directory for swtpm runtime state
+ * @qemu_user: uid that qemu will run with; we share the socket file with it
+ * @shortName: short and unique name of the domain
+ *
+ * Prepare the log directory for the swtpm and adjust ownership of it and the
+ * log file we will be using. Prepare the state directory where we will share
+ * the socket between tss and qemu users.
+ */
+static int
+qemuTPMEmulatorPrepareHost(virDomainTPMDef *tpm,
+                           const char *logDir,
+                           uid_t swtpm_user,
+                           gid_t swtpm_group,
+                           const char *swtpmStateDir,
+                           uid_t qemu_user,
+                           const char *shortName)
+{
+    /* create log dir ... allow 'tss' user to cd into it */
+    if (g_mkdir_with_parents(logDir, 0711) < 0)
+        return -1;
+
+    /* ... and adjust ownership */
+    if (virDirCreate(logDir, 0730, swtpm_user, swtpm_group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
+        return -1;
+
+    if (!virFileExists(tpm->data.emulator.logfile) &&
+        virFileTouch(tpm->data.emulator.logfile, 0644) < 0) {
+        return -1;
+    }
+
+    /* ... and make sure it can be accessed by swtpm_user */
+    if (chown(tpm->data.emulator.logfile, swtpm_user, swtpm_group) < 0) {
+        virReportSystemError(errno,
+                             _("Could not chown on swtpm logfile %s"),
+                             tpm->data.emulator.logfile);
+        return -1;
+    }
+
+    /*
+      create our swtpm state dir ...
+      - QEMU user needs to be able to access the socket there
+      - swtpm group needs to be able to create files there
+      - in privileged mode 0570 would be enough, for non-privileged mode
+        we need 0770
+    */
+    if (virDirCreate(swtpmStateDir, 0770, qemu_user, swtpm_group,
+                     VIR_DIR_CREATE_ALLOW_EXIST) < 0)
+        return -1;
+
+    /* create the socket filename */
+    if (!tpm->data.emulator.source->data.nix.path &&
+        !(tpm->data.emulator.source->data.nix.path =
+          qemuTPMEmulatorSocketBuildPath(swtpmStateDir, shortName)))
+        return -1;
+    tpm->data.emulator.source->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+
+    return 0;
 }
 
 
