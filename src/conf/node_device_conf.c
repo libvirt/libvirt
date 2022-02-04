@@ -604,6 +604,8 @@ virNodeDeviceCapMdevDefFormat(virBuffer *buf,
 
     virBufferEscapeString(buf, "<type id='%s'/>\n", data->mdev.type);
     virBufferEscapeString(buf, "<uuid>%s</uuid>\n", data->mdev.uuid);
+    virBufferEscapeString(buf, "<parent_addr>%s</parent_addr>\n",
+                          data->mdev.parent_addr);
     virBufferAsprintf(buf, "<iommuGroup number='%u'/>\n",
                       data->mdev.iommuGroupNumber);
 

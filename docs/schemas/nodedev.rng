@@ -644,6 +644,11 @@
           <ref name="UUID"/>
         </element>
       </optional>
+      <optional>
+        <element name="parent_addr">
+          <data type="string"/>
+        </element>
+      </optional>
       <zeroOrMore>
         <element name="attr">
           <attribute name="name"/>

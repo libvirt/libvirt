@@ -4,6 +4,7 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>200f228a-c80a-4d50-bfb7-f5a0e4e34045</uuid>
+    <parent_addr>0000:00:02.0</parent_addr>
     <iommuGroup number='0'/>
   </capability>
 </device>
@@ -13,6 +14,7 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_4'/>
     <uuid>de807ffc-1923-4d5f-b6c9-b20ecebc6d4b</uuid>
+    <parent_addr>0000:00:02.0</parent_addr>
     <iommuGroup number='0'/>
   </capability>
 </device>
@@ -22,6 +24,7 @@
   <capability type='mdev'>
     <type id='i915-GVTg_V5_8'/>
     <uuid>435722ea-5f43-468a-874f-da34f1217f13</uuid>
+    <parent_addr>0000:00:02.0</parent_addr>
     <iommuGroup number='0'/>
     <attr name='testattr' value='42'/>
   </capability>
@@ -32,6 +35,7 @@
   <capability type='mdev'>
     <type id='vfio_ap-passthrough'/>
     <uuid>783e6dbb-ea0e-411f-94e2-717eaad438bf</uuid>
+    <parent_addr>matrix</parent_addr>
     <iommuGroup number='0'/>
     <attr name='assign_adapter' value='5'/>
     <attr name='assign_adapter' value='6'/>
@@ -47,6 +51,7 @@
   <capability type='mdev'>
     <type id='vfio_ccw-io'/>
     <uuid>cc000052-9b13-9b13-9b13-cc23009b1326</uuid>
+    <parent_addr>0.0.0052</parent_addr>
     <iommuGroup number='0'/>
   </capability>
 </device>
