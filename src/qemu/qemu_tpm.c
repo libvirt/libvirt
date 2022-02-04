@@ -99,30 +99,6 @@ qemuTPMCreateEmulatorLogPath(const char *logDir,
 }
 
 
-/*
- * qemuTPMEmulatorInitStorage
- *
- * Initialize the TPM Emulator storage by creating its root directory,
- * which is typically found in /var/lib/libvirt/tpm.
- *
- */
-static int
-qemuTPMEmulatorInitStorage(const char *swtpmStorageDir)
-{
-    int rc = 0;
-
-    /* allow others to cd into this dir */
-    if (g_mkdir_with_parents(swtpmStorageDir, 0711) < 0) {
-        virReportSystemError(errno,
-                             _("Could not create TPM directory %s"),
-                             swtpmStorageDir);
-        rc = -1;
-    }
-
-    return rc;
-}
-
-
 /**
  * qemuTPMEmulatorCreateStorage:
  * @storagepath: directory for swtpm's persistent state
@@ -143,8 +119,13 @@ qemuTPMEmulatorCreateStorage(const char *storagepath,
 {
     g_autofree char *swtpmStorageDir = g_path_get_dirname(storagepath);
 
-    if (qemuTPMEmulatorInitStorage(swtpmStorageDir) < 0)
+    /* allow others to cd into this dir */
+    if (g_mkdir_with_parents(swtpmStorageDir, 0711) < 0) {
+        virReportSystemError(errno,
+                             _("Could not create TPM directory %s"),
+                             swtpmStorageDir);
         return -1;
+    }
 
     *created = false;
 
