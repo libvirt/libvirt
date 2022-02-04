@@ -1,0 +1,8 @@
+<device>
+  <name>mdev_cc000052_9b13_9b13_9b13_cc23009b1326</name>
+  <parent>css_0_0_0052</parent>
+  <capability type='mdev'>
+    <type id='vfio_ccw-io'/>
+    <uuid>cc000052-9b13-9b13-9b13-cc23009b1326</uuid>
+  </capability>
+</device>

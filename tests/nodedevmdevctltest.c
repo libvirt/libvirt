@@ -331,6 +331,32 @@ fakeMatrixDevice(void)
 
     return def;
 }
+
+/* Add a fake css device that can be used as a parent device for mediated
+ * devices. For our purposes, it only needs to have a name that matches the
+ * parent of the mdev, and it needs the proper name
+ */
+static virNodeDeviceDef *
+fakeCSSDevice(void)
+{
+    virNodeDeviceDef *def = NULL;
+    virNodeDevCapCCW *css_dev;
+
+    def = g_new0(virNodeDeviceDef, 1);
+    def->caps = g_new0(virNodeDevCapsDef, 1);
+
+    def->name = g_strdup("css_0_0_0052");
+    def->parent = g_strdup("computer");
+
+    def->caps->data.type = VIR_NODE_DEV_CAP_CSS_DEV;
+    css_dev = &def->caps->data.ccw_dev;
+    css_dev->cssid = 0;
+    css_dev->ssid = 0;
+    css_dev->devno = 82;
+
+    return def;
+}
+
 static int
 addDevice(virNodeDeviceDef *def)
 {
@@ -354,7 +380,8 @@ nodedevTestDriverAddTestDevices(void)
 {
     if (addDevice(fakeRootDevice()) < 0 ||
         addDevice(fakePCIDevice()) < 0 ||
-        addDevice(fakeMatrixDevice()) < 0)
+        addDevice(fakeMatrixDevice()) < 0 ||
+        addDevice(fakeCSSDevice()) < 0)
         return -1;
 
     return 0;
@@ -437,6 +464,7 @@ mymain(void)
     DO_TEST_CREATE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST_CREATE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST_CREATE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+    DO_TEST_CREATE("mdev_cc000052_9b13_9b13_9b13_cc23009b1326");
 
     /* Test mdevctl stop command, pass an arbitrary uuid */
     DO_TEST_STOP("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
@@ -449,6 +477,7 @@ mymain(void)
     DO_TEST_DEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
     DO_TEST_DEFINE("mdev_fedc4916_1ca8_49ac_b176_871d16c13076");
     DO_TEST_DEFINE("mdev_d2441d39_495e_4243_ad9f_beb3f14c23d9");
+    DO_TEST_DEFINE("mdev_cc000052_9b13_9b13_9b13_cc23009b1326");
 
     DO_TEST_UNDEFINE("mdev_d069d019_36ea_4111_8f0a_8c9a70e21366");
 

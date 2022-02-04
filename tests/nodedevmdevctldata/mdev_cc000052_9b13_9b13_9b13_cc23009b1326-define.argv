@@ -1,0 +1,5 @@
+mdevctl \
+define \
+--parent=0.0.0052 \
+--jsonfile=/dev/stdin \
+--uuid=cc000052-9b13-9b13-9b13-cc23009b1326
