@@ -259,6 +259,20 @@ qemuTPMEmulatorGetPid(const char *swtpmStateDir,
 }
 
 
+/**
+ * qemuTPMEmulatorCleanupHost:
+ * @tpm: TPM definition
+ *
+ * Clean up persistent storage for the swtpm.
+ */
+static void
+qemuTPMEmulatorCleanupHost(virDomainTPMDef *tpm)
+{
+    if (!tpm->data.emulator.persistent_state)
+        qemuTPMEmulatorDeleteStorage(tpm);
+}
+
+
 /*
  * qemuTPMEmulatorPrepareHost:
  *
@@ -885,8 +899,7 @@ qemuExtTPMCleanupHost(virDomainDef *def)
         if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
             continue;
 
-        if (!def->tpms[i]->data.emulator.persistent_state)
-            qemuTPMEmulatorDeleteStorage(def->tpms[i]);
+        qemuTPMEmulatorCleanupHost(def->tpms[i]);
     }
 }
 
