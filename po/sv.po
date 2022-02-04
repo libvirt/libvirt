@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-02-02 13:16+0000\n"
+"PO-Revision-Date: 2022-02-04 22:16+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9366,72 +9366,73 @@ msgid "I/O error"
 msgstr "I/O-fel"
 
 msgid "I/O size in bytes"
-msgstr ""
+msgstr "I/O-storlek i byte"
 
 msgid "ID of a screen to take screenshot of"
-msgstr ""
+msgstr "ID för en skärm att ta en skärmbild av"
 
 #, c-format
 msgid "IDE bus index %d out of [0..1] range"
-msgstr ""
+msgstr "IDE-bussindex %d utanför intervallet [0..1]"
 
 #, c-format
 msgid "IDE controller index %d out of [0] range"
-msgstr ""
+msgstr "IDE-styrindex %d utanför intervallet [0]"
 
 msgid "IDE controllers are unsupported for this QEMU binary or machine type"
-msgstr ""
+msgstr "IDE-styrenheter stödjs inte för denna QEMU-binär eller maskintyp"
 
 #, c-format
 msgid "IDE disk index (parsed from '%s') is too large"
-msgstr ""
+msgstr "IDE-disk-indexet (tolkat från ”%s”) är för stort"
 
 #, c-format
 msgid "IDE unit index %d out of [0..1] range"
-msgstr ""
+msgstr "IDE-enhetsindex %d utanför intervallet [0..1]"
 
 msgid "IFLA_PORT_SELF is missing"
-msgstr ""
+msgstr "IFLA_PORT_SELF saknas"
 
 msgid "IFLA_VF_PORTS is missing"
-msgstr ""
+msgstr "IFLA_VF_PORTS saknas"
 
 msgid "IO Weight"
-msgstr ""
+msgstr "IO-vikt"
 
 msgid "IO error on stdin"
-msgstr ""
+msgstr "IO-fel i standard in"
 
 msgid "IO error stdout"
-msgstr ""
+msgstr "IO-fel i standard ut"
 
 #, c-format
 msgid "IOMMU device: '%s' is not supported with this QEMU binary"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with ARM Virt machines"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” stödjs endast med ARM virt-maskiner"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” stödjs endast med Q35-maskiner"
 
 msgid "IOMMU eim requires interrupt remapping to be enabled"
-msgstr ""
+msgstr "IOMMU eim kräver att omavbildning av avbrott är aktiverat"
 
 msgid ""
 "IOMMU interrupt remapping requires split I/O APIC (ioapic driver='qemu')"
 msgstr ""
+"IOMMU omavbildning av avbrott kräver delad I/O APIC (ioapic driver=”qemu”)"
 
 msgid "IOThread ID"
-msgstr ""
+msgstr "IO-tråd ID"
 
 msgid "IOThread ID number"
-msgstr ""
+msgstr "IO-tråd ID-nummer"
 
 msgid "IOThread to be used by supported device"
-msgstr ""
+msgstr "IO-tråd att använda av stödd enhet"
 
 msgid "IOThreads for virtio-scsi not supported for this QEMU"
 msgstr ""
