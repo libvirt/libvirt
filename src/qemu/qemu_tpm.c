@@ -123,9 +123,8 @@ qemuTPMEmulatorInitStorage(const char *swtpmStorageDir)
 }
 
 
-/*
- * qemuTPMCreateEmulatorStorage
- *
+/**
+ * qemuTPMEmulatorCreateStorage:
  * @storagepath: directory for swtpm's persistent state
  * @created: a pointer to a bool that will be set to true if the
  *           storage was created because it did not exist yet
@@ -137,7 +136,7 @@ qemuTPMEmulatorInitStorage(const char *swtpmStorageDir)
  * Adapt ownership of the directory and all swtpm's state files there.
  */
 static int
-qemuTPMCreateEmulatorStorage(const char *storagepath,
+qemuTPMEmulatorCreateStorage(const char *storagepath,
                              bool *created,
                              uid_t swtpm_user,
                              gid_t swtpm_group)
@@ -168,7 +167,7 @@ qemuTPMCreateEmulatorStorage(const char *storagepath,
 
 
 static void
-qemuTPMDeleteEmulatorStorage(virDomainTPMDef *tpm)
+qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 {
     g_autofree char *path =  g_path_get_dirname(tpm->data.emulator.storagepath);
 
@@ -686,7 +685,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (!swtpm)
         return NULL;
 
-    if (qemuTPMCreateEmulatorStorage(tpm->data.emulator.storagepath,
+    if (qemuTPMEmulatorCreateStorage(tpm->data.emulator.storagepath,
                                      &created, swtpm_user, swtpm_group) < 0)
         return NULL;
 
@@ -765,7 +764,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
 
  error:
     if (created)
-        qemuTPMDeleteEmulatorStorage(tpm);
+        qemuTPMEmulatorDeleteStorage(tpm);
 
     return NULL;
 }
@@ -870,7 +869,7 @@ qemuExtTPMCleanupHost(virDomainDef *def)
             continue;
 
         if (!def->tpms[i]->data.emulator.persistent_state)
-            qemuTPMDeleteEmulatorStorage(def->tpms[i]);
+            qemuTPMEmulatorDeleteStorage(def->tpms[i]);
     }
 }
 
