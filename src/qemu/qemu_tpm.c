@@ -166,6 +166,12 @@ qemuTPMEmulatorCreateStorage(const char *storagepath,
 }
 
 
+/**
+ * qemuTPMEmulatorDeleteStorage:
+ * @tpm: TPM definition
+ *
+ * Delete all persistent storage associated with the swtpm.
+ */
 static void
 qemuTPMEmulatorDeleteStorage(virDomainTPMDef *tpm)
 {
