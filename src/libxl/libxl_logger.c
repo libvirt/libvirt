@@ -79,16 +79,16 @@ libvirt_vmessage(xentoollog_logger *logger_in,
     /* Should we print to a domain-specific log file? */
     if ((start = strstr(message, ": Domain ")) &&
         (end = strstr(start + 9, ":"))) {
-        FILE *domainLogFile;
+        FILE *domainLogFile = NULL;
 
         VIR_DEBUG("Found domain log message");
 
         start = start + 9;
         *end = '\0';
 
-        virMutexLock(&lg->tableLock);
-        domainLogFile = virHashLookup(lg->files, start);
-        virMutexUnlock(&lg->tableLock);
+        VIR_WITH_MUTEX_LOCK_GUARD(&lg->tableLock) {
+            domainLogFile = virHashLookup(lg->files, start);
+        }
         if (domainLogFile)
             logFile = domainLogFile;
 
@@ -197,9 +197,9 @@ libxlLoggerOpenFile(libxlLogger *logger,
                  path, g_strerror(errno));
         return;
     }
-    virMutexLock(&logger->tableLock);
-    ignore_value(virHashAddEntry(logger->files, domidstr, logFile));
-    virMutexUnlock(&logger->tableLock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&logger->tableLock) {
+        ignore_value(virHashAddEntry(logger->files, domidstr, logFile));
+    }
 
     /* domain_config is non NULL only when starting a new domain */
     if (domain_config) {
@@ -211,10 +211,8 @@ libxlLoggerOpenFile(libxlLogger *logger,
 void
 libxlLoggerCloseFile(libxlLogger *logger, int id)
 {
-    g_autofree char *domidstr = NULL;
-    domidstr = g_strdup_printf("%d", id);
+    g_autofree char *domidstr = g_strdup_printf("%d", id);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&logger->tableLock);
 
-    virMutexLock(&logger->tableLock);
     ignore_value(virHashRemoveEntry(logger->files, domidstr));
-    virMutexUnlock(&logger->tableLock);
 }

@@ -219,15 +219,3 @@ libxlBuildDomainConfig(virPortAllocatorRange *graphicsports,
                        virDomainDef *def,
                        libxlDriverConfig *cfg,
                        libxl_domain_config *d_config);
-
-static inline void
-libxlDriverLock(libxlDriverPrivate *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-static inline void
-libxlDriverUnlock(libxlDriverPrivate *driver)
-{
-    virMutexUnlock(&driver->lock);
-}

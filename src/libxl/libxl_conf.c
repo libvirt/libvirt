@@ -1815,12 +1815,8 @@ libxlDriverConfigInit(libxlDriverConfig *cfg)
 libxlDriverConfig *
 libxlDriverConfigGet(libxlDriverPrivate *driver)
 {
-    libxlDriverConfig *cfg;
-
-    libxlDriverLock(driver);
-    cfg = virObjectRef(driver->config);
-    libxlDriverUnlock(driver);
-    return cfg;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+    return virObjectRef(driver->config);
 }
 
 int libxlDriverConfigLoadFile(libxlDriverConfig *cfg,
