@@ -8850,13 +8850,13 @@ qemuProcessReconnect(void *opaque)
     ignore_value(qemuSecurityCheckAllLabel(driver->securityManager,
                                            obj->def));
 
-    if (qemuProcessRefreshCPU(driver, obj) < 0)
-        goto error;
-
     if (qemuDomainRefreshVcpuInfo(driver, obj, QEMU_ASYNC_JOB_NONE, true) < 0)
         goto error;
 
     qemuDomainVcpuPersistOrder(obj->def);
+
+    if (qemuProcessRefreshCPU(driver, obj) < 0)
+        goto error;
 
     if (qemuDomainUpdateMemoryDeviceInfo(driver, obj, QEMU_ASYNC_JOB_NONE) < 0)
         goto error;
