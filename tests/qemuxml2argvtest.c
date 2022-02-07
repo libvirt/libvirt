@@ -1188,6 +1188,7 @@ mymain(void)
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_NOCAPS("bios-nvram");
+    DO_TEST_PARSE_ERROR_NOCAPS("bios-nvram-no-path");
     DO_TEST_CAPS_LATEST("bios-nvram-rw");
     DO_TEST_CAPS_LATEST("bios-nvram-rw-implicit");
     DO_TEST("bios-nvram-secure",
