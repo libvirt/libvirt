@@ -416,11 +416,9 @@ testPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
-            if (fcntl(1750, F_GETFD) != -1)
-                abort();
-            charpriv->fd = 1750;
-        }
+        if (fcntl(1750, F_GETFD) != -1)
+            abort();
+        charpriv->fd = 1750;
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -440,11 +438,9 @@ testPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     }
 
     if (chardev->logfile) {
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE)) {
-            if (fcntl(1751, F_GETFD) != -1)
-                abort();
-            charpriv->logfd = 1751;
-        }
+        if (fcntl(1751, F_GETFD) != -1)
+            abort();
+        charpriv->logfd = 1751;
     }
 
     return 0;

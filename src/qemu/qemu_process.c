@@ -6730,18 +6730,9 @@ qemuProcessPrepareHostBackendChardevFileHelper(const char *path,
                                                int *fd,
                                                virLogManager *logManager,
                                                virSecurityManager *secManager,
-                                               virQEMUCaps *qemuCaps,
                                                virQEMUDriverConfig *cfg,
                                                const virDomainDef *def)
 {
-    /* Technically, to pass an FD via /dev/fdset we don't need
-     * any capability check because X_QEMU_CAPS_ADD_FD is already
-     * assumed. But keeping the old style is still handy when
-     * building a standalone command line (e.g. for tests). */
-    if (!logManager &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
-        return 0;
-
     if (logManager) {
         int flags = 0;
 
@@ -6839,7 +6830,6 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                                            &charpriv->fd,
                                                            data->logManager,
                                                            data->secManager,
-                                                           data->qemuCaps,
                                                            data->cfg,
                                                            data->def) < 0)
             return -1;
@@ -6880,7 +6870,6 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                                                            &charpriv->logfd,
                                                            data->logManager,
                                                            data->secManager,
-                                                           data->qemuCaps,
                                                            data->cfg,
                                                            data->def) < 0)
             return -1;
