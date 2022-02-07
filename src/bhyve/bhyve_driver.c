@@ -70,18 +70,6 @@ VIR_LOG_INIT("bhyve.bhyve_driver");
 
 struct _bhyveConn *bhyve_driver = NULL;
 
-void
-bhyveDriverLock(struct _bhyveConn *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-void
-bhyveDriverUnlock(struct _bhyveConn *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 static int
 bhyveAutostartDomain(virDomainObj *vm, void *opaque)
 {

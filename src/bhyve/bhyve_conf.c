@@ -85,11 +85,8 @@ virBhyveLoadDriverConfig(struct _virBhyveDriverConfig *cfg,
 struct _virBhyveDriverConfig *
 virBhyveDriverGetConfig(struct _bhyveConn *driver)
 {
-    struct _virBhyveDriverConfig *cfg;
-    bhyveDriverLock(driver);
-    cfg = virObjectRef(driver->config);
-    bhyveDriverUnlock(driver);
-    return cfg;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+    return virObjectRef(driver->config);
 }
 
 static void
