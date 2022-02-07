@@ -93,9 +93,9 @@ udevEventDataDispose(void *obj)
     udev_monitor_unref(priv->udev_monitor);
     udev_unref(udev);
 
-    virMutexLock(&priv->mdevctlLock);
-    g_list_free_full(priv->mdevctlMonitors, g_object_unref);
-    virMutexUnlock(&priv->mdevctlLock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
+        g_list_free_full(priv->mdevctlMonitors, g_object_unref);
+    }
     virMutexDestroy(&priv->mdevctlLock);
 
     virCondDestroy(&priv->threadCond);
@@ -348,13 +348,9 @@ udevTranslatePCIIds(unsigned int vendor,
     m.match_data = 0;
 
     /* pci_get_strings returns void and unfortunately is not thread safe. */
-    virMutexLock(&pciaccessMutex);
-    pci_get_strings(&m,
-                    &device_name,
-                    &vendor_name,
-                    NULL,
-                    NULL);
-    virMutexUnlock(&pciaccessMutex);
+    VIR_WITH_MUTEX_LOCK_GUARD(&pciaccessMutex) {
+        pci_get_strings(&m, &device_name, &vendor_name, NULL, NULL);
+    }
 
     *vendor_string = g_strdup(vendor_name);
     *product_string = g_strdup(device_name);
@@ -373,11 +369,11 @@ udevProcessPCI(struct udev_device *device,
     virPCIDeviceAddress devAddr;
     int ret = -1;
     char *p;
-    bool privileged;
+    bool privileged = false;
 
-    nodeDeviceLock();
-    privileged = driver->privileged;
-    nodeDeviceUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        privileged = driver->privileged;
+    }
 
     pci_dev->klass = -1;
     if (udevGetIntProperty(device, "PCI_CLASS", &pci_dev->klass, 16) < 0)
@@ -1989,10 +1985,10 @@ nodeStateInitializeEnumerate(void *opaque)
         goto error;
 
  cleanup:
-    nodeDeviceLock();
-    driver->initialized = true;
-    virCondBroadcast(&driver->initCond);
-    nodeDeviceUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        driver->initialized = true;
+        virCondBroadcast(&driver->initCond);
+    }
 
     return;
 
@@ -2036,12 +2032,10 @@ static void
 mdevctlHandlerThread(void *opaque G_GNUC_UNUSED)
 {
     udevEventData *priv = driver->privateData;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->mdevctlLock);
 
-    /* ensure only a single thread can query mdevctl at a time */
-    virMutexLock(&priv->mdevctlLock);
     if (nodeDeviceUpdateMediatedDevices() < 0)
         VIR_WARN("mdevctl failed to updated mediated devices");
-    virMutexUnlock(&priv->mdevctlLock);
 }
 
 
@@ -2143,13 +2137,10 @@ mdevctlEnableMonitor(udevEventData *priv)
      * mdevctl configuration is stored in a directory tree within
      * /etc/mdevctl.d/. There is a directory for each parent device, which
      * contains a file defining each mediated device */
-    virMutexLock(&priv->mdevctlLock);
-    if (!(priv->mdevctlMonitors = monitorFileRecursively(priv,
-                                                         mdevctlConfigDir))) {
-        virMutexUnlock(&priv->mdevctlLock);
-        return -1;
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
+        if (!(priv->mdevctlMonitors = monitorFileRecursively(priv, mdevctlConfigDir)))
+            return -1;
     }
-    virMutexUnlock(&priv->mdevctlLock);
 
     return 0;
 }
@@ -2171,9 +2162,10 @@ mdevctlEventHandleCallback(GFileMonitor *monitor G_GNUC_UNUSED,
         if (file_type == G_FILE_TYPE_DIRECTORY) {
             GList *newmonitors = monitorFileRecursively(priv, file);
 
-            virMutexLock(&priv->mdevctlLock);
-            priv->mdevctlMonitors = g_list_concat(priv->mdevctlMonitors, newmonitors);
-            virMutexUnlock(&priv->mdevctlLock);
+            VIR_WITH_MUTEX_LOCK_GUARD(&priv->mdevctlLock) {
+                priv->mdevctlMonitors = g_list_concat(priv->mdevctlMonitors,
+                                                      newmonitors);
+            }
         }
     }
 

@@ -156,33 +156,18 @@ nodeDeviceUpdateDriverName(virNodeDeviceDef *def G_GNUC_UNUSED)
 #endif
 
 
-void
-nodeDeviceLock(void)
-{
-    virMutexLock(&driver->lock);
-}
-
-
-void
-nodeDeviceUnlock(void)
-{
-    virMutexUnlock(&driver->lock);
-}
-
-
 static int
 nodeDeviceInitWait(void)
 {
-    nodeDeviceLock();
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+
     while (!driver->initialized) {
         if (virCondWait(&driver->initCond, &driver->lock) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("failed to wait on condition"));
-            nodeDeviceUnlock();
+            virReportSystemError(errno, "%s", _("failed to wait on condition"));
             return -1;
         }
     }
-    nodeDeviceUnlock();
+
     return 0;
 }
 
