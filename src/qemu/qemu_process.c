@@ -4226,8 +4226,16 @@ qemuProcessTranslateCPUFeatures(const char *name,
 
 /* returns the QOM path to the first vcpu */
 static const char *
-qemuProcessGetVCPUQOMPath(void)
+qemuProcessGetVCPUQOMPath(virDomainObj *vm)
 {
+    virDomainVcpuDef *vcpu = virDomainDefGetVcpu(vm->def, 0);
+    qemuDomainVcpuPrivate *vcpupriv;
+
+    if (vcpu &&
+        (vcpupriv = QEMU_DOMAIN_VCPU_PRIVATE(vcpu)) &&
+        vcpupriv->qomPath)
+        return vcpupriv->qomPath;
+
     return "/machine/unattached/device[0]";
 }
 
@@ -4242,7 +4250,7 @@ qemuProcessFetchGuestCPU(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCPUData) dataEnabled = NULL;
     g_autoptr(virCPUData) dataDisabled = NULL;
-    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath();
+    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath(vm);
     bool generic;
     int rc;
 
@@ -8465,7 +8473,7 @@ qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
-    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath();
+    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath(vm);
     bool migratable;
     int rc;
 
