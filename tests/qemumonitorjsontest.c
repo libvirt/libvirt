@@ -2186,6 +2186,7 @@ testQemuMonitorJSONGetCPUData(const void *opaque)
         return -1;
 
     if (qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
+                                      "dummy",
                                       &cpuData, NULL) < 0)
         return -1;
 
@@ -2221,6 +2222,7 @@ testQemuMonitorJSONGetNonExistingCPUData(const void *opaque)
         return -1;
 
     rv = qemuMonitorJSONGetGuestCPUx86(qemuMonitorTestGetMonitor(test),
+                                       "dummy",
                                        &cpuData, NULL);
     if (rv != -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR,

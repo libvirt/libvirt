@@ -4224,6 +4224,14 @@ qemuProcessTranslateCPUFeatures(const char *name,
 }
 
 
+/* returns the QOM path to the first vcpu */
+static const char *
+qemuProcessGetVCPUQOMPath(void)
+{
+    return "/machine/unattached/device[0]";
+}
+
+
 static int
 qemuProcessFetchGuestCPU(virQEMUDriver *driver,
                          virDomainObj *vm,
@@ -4234,6 +4242,7 @@ qemuProcessFetchGuestCPU(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virCPUData) dataEnabled = NULL;
     g_autoptr(virCPUData) dataDisabled = NULL;
+    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath();
     bool generic;
     int rc;
 
@@ -4251,10 +4260,11 @@ qemuProcessFetchGuestCPU(virQEMUDriver *driver,
     if (generic) {
         rc = qemuMonitorGetGuestCPU(priv->mon,
                                     vm->def->os.arch,
+                                    cpuQOMPath,
                                     qemuProcessTranslateCPUFeatures, priv->qemuCaps,
                                     &dataEnabled, &dataDisabled);
     } else {
-        rc = qemuMonitorGetGuestCPUx86(priv->mon, &dataEnabled, &dataDisabled);
+        rc = qemuMonitorGetGuestCPUx86(priv->mon, cpuQOMPath, &dataEnabled, &dataDisabled);
     }
 
     qemuDomainObjExitMonitor(driver, vm);
@@ -8455,6 +8465,7 @@ qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
+    const char *cpuQOMPath = qemuProcessGetVCPUQOMPath();
     bool migratable;
     int rc;
 
@@ -8473,7 +8484,7 @@ qemuProcessRefreshCPUMigratability(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    rc = qemuMonitorGetCPUMigratable(priv->mon, &migratable);
+    rc = qemuMonitorGetCPUMigratable(priv->mon, cpuQOMPath, &migratable);
 
     qemuDomainObjExitMonitor(driver, vm);
     if (rc < 0)
