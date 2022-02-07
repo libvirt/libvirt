@@ -1267,6 +1267,8 @@ mymain(void)
     DO_TEST("bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_NOCAPS("bios-nvram");
+    DO_TEST_CAPS_LATEST("bios-nvram-rw");
+    DO_TEST_CAPS_LATEST("bios-nvram-rw-implicit");
     DO_TEST("bios-nvram-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
