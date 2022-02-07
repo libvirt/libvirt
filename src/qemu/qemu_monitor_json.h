@@ -647,11 +647,6 @@ qemuMonitorJSONGetDeviceAliases(qemuMonitor *mon,
                                 char ***aliases);
 
 int
-qemuMonitorJSONGetCPUx86Data(qemuMonitor *mon,
-                             const char *property,
-                             virCPUData **cpudata);
-
-int
 qemuMonitorJSONGetGuestCPUx86(qemuMonitor *mon,
                               virCPUData **data,
                               virCPUData **disabled);

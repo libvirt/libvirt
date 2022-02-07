@@ -7024,7 +7024,7 @@ qemuMonitorJSONParseCPUx86Features(virJSONValue *data)
 }
 
 
-int
+static int
 qemuMonitorJSONGetCPUx86Data(qemuMonitor *mon,
                              const char *property,
                              virCPUData **cpudata)
