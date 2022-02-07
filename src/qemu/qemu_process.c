@@ -4335,25 +4335,19 @@ qemuProcessUpdateAndVerifyCPU(virQEMUDriver *driver,
                               virDomainObj *vm,
                               qemuDomainAsyncJob asyncJob)
 {
-    virCPUData *cpu = NULL;
-    virCPUData *disabled = NULL;
-    int ret = -1;
+    g_autoptr(virCPUData) cpu = NULL;
+    g_autoptr(virCPUData) disabled = NULL;
 
     if (qemuProcessFetchGuestCPU(driver, vm, asyncJob, &cpu, &disabled) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessVerifyCPU(vm, cpu) < 0)
-        goto cleanup;
+        return -1;
 
     if (qemuProcessUpdateLiveGuestCPU(vm, cpu, disabled) < 0)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
-
- cleanup:
-    virCPUDataFree(cpu);
-    virCPUDataFree(disabled);
-    return ret;
+    return 0;
 }
 
 
