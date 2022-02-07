@@ -906,10 +906,10 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
 {
     libxlDomainObjPrivate *priv = vm->privateData;
     g_autoptr(libxlDriverConfig) cfg = libxlDriverConfigGet(driver);
-    int vnc_port;
     char *file;
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
+    size_t i;
 
     VIR_DEBUG("Cleaning up domain with id '%d' and name '%s'",
               vm->def->id, vm->def->name);
@@ -944,13 +944,31 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
     if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
         driver->inhibitCallback(false, driver->inhibitOpaque);
 
-    if ((vm->def->ngraphics == 1) &&
-        vm->def->graphics[0]->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC &&
-        vm->def->graphics[0]->data.vnc.autoport) {
-        vnc_port = vm->def->graphics[0]->data.vnc.port;
-        if (vnc_port >= LIBXL_VNC_PORT_MIN) {
-            if (virPortAllocatorRelease(vnc_port) < 0)
-                VIR_DEBUG("Could not mark port %d as unused", vnc_port);
+    /* Release auto-allocated graphics ports */
+    for (i = 0; i < vm->def->ngraphics; i++) {
+        virDomainGraphicsDef *graphics = vm->def->graphics[i];
+        int gport = -1;
+
+        switch (graphics->type) {
+        case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+            if (graphics->data.vnc.autoport &&
+                graphics->data.vnc.port >= LIBXL_VNC_PORT_MIN)
+                gport = graphics->data.vnc.port;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
+            if (graphics->data.spice.autoport)
+                gport = graphics->data.spice.port;
+            break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+        case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+        case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+        case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+            break;
+        }
+        if (gport != -1) {
+            if (virPortAllocatorRelease(gport) < 0)
+                VIR_DEBUG("Could not mark port %d as unused", gport);
         }
     }
 
