@@ -316,6 +316,8 @@ struct _qemuDomainVcpuPrivate {
     int thread_id;
     int node_id;
     int vcpus;
+
+    char *qomPath;
 };
 
 #define QEMU_DOMAIN_VCPU_PRIVATE(vcpu) \

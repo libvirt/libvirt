@@ -692,7 +692,6 @@ struct _qemuMonitorCPUInfo {
     /* alias of an hotpluggable entry. Entries with alias can be hot-unplugged */
     char *alias;
 
-    /* internal for use in the matching code */
     char *qom_path;
 
     bool halted;

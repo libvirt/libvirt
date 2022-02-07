@@ -821,6 +821,7 @@ qemuDomainVcpuPrivateDispose(void *obj)
     g_free(priv->type);
     g_free(priv->alias);
     virJSONValueFree(priv->props);
+    g_free(priv->qomPath);
     return;
 }
 
@@ -9550,6 +9551,8 @@ qemuDomainRefreshVcpuInfo(virQEMUDriver *driver,
         vcpupriv->props = g_steal_pointer(&info[i].props);
         vcpupriv->enable_id = info[i].id;
         vcpupriv->qemu_id = info[i].qemu_id;
+        g_free(vcpupriv->qomPath);
+        vcpupriv->qomPath = g_steal_pointer(&info[i].qom_path);
 
         if (hotplug && state) {
             vcpu->online = info[i].online;
