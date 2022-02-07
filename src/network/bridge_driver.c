@@ -100,28 +100,11 @@ networkGetDriver(void)
 }
 
 
-static void
-networkDriverLock(virNetworkDriverState *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-
-static void
-networkDriverUnlock(virNetworkDriverState *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
-
 static dnsmasqCaps *
 networkGetDnsmasqCaps(virNetworkDriverState *driver)
 {
-    dnsmasqCaps *ret;
-    networkDriverLock(driver);
-    ret = virObjectRef(driver->dnsmasqCaps);
-    networkDriverUnlock(driver);
-    return ret;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+    return virObjectRef(driver->dnsmasqCaps);
 }
 
 
@@ -133,10 +116,11 @@ networkDnsmasqCapsRefresh(virNetworkDriverState *driver)
     if (!(caps = dnsmasqCapsNewFromBinary()))
         return -1;
 
-    networkDriverLock(driver);
-    virObjectUnref(driver->dnsmasqCaps);
-    driver->dnsmasqCaps = caps;
-    networkDriverUnlock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        virObjectUnref(driver->dnsmasqCaps);
+        driver->dnsmasqCaps = caps;
+    }
+
     return 0;
 }
 
@@ -2725,27 +2709,22 @@ static int
 networkBridgeNameValidate(virNetworkObjList *nets,
                           virNetworkDef *def)
 {
-    virMutexLock(&bridgeNameValidateMutex);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&bridgeNameValidateMutex);
 
     if (def->bridge && !strstr(def->bridge, "%d")) {
         if (virNetworkObjBridgeInUse(nets, def->bridge, def->name)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("bridge name '%s' already in use."),
                            def->bridge);
-            goto error;
+            return -1;
         }
     } else {
         /* Allocate a bridge name */
         if (networkFindUnusedBridgeName(nets, def) < 0)
-            goto error;
+            return -1;
     }
 
-    virMutexUnlock(&bridgeNameValidateMutex);
     return 0;
-
- error:
-    virMutexUnlock(&bridgeNameValidateMutex);
-    return -1;
 }
 
 
