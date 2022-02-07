@@ -2808,7 +2808,6 @@ static int vboxDomainGetInfo(virDomainPtr dom, virDomainInfoPtr info)
             if (systemProperties) {
                 gVBoxAPI.UISystemProperties.GetMaxGuestRAM(systemProperties, &maxMemorySize);
                 VBOX_RELEASE(systemProperties);
-                systemProperties = NULL;
             }
 
             gVBoxAPI.UIMachine.GetCPUCount(machine, &CPUCount);
@@ -4015,7 +4014,6 @@ static char *vboxDomainGetXMLDesc(virDomainPtr dom, unsigned int flags)
         gVBoxAPI.UISystemProperties.GetSerialPortCount(systemProperties, &serialPortCount);
         gVBoxAPI.UISystemProperties.GetParallelPortCount(systemProperties, &parallelPortCount);
         VBOX_RELEASE(systemProperties);
-        systemProperties = NULL;
     }
     /* Currently setting memory and maxMemory as same, cause
      * the notation here seems to be inconsistent while
