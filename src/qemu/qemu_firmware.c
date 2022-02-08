@@ -1136,14 +1136,14 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
             return -1;
         }
 
-        VIR_FREE(def->os.loader->templt);
-        def->os.loader->templt = g_strdup(flash->nvram_template.filename);
+        VIR_FREE(def->os.loader->nvramTemplate);
+        def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
 
         qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
 
         VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
                   def->os.loader->path,
-                  def->os.loader->templt,
+                  def->os.loader->nvramTemplate,
                   def->os.loader->nvram);
         break;
 
@@ -1310,7 +1310,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * its path in domain XML) but no template for NVRAM was
          * specified and the varstore doesn't exist ... */
         if (!virDomainDefHasOldStyleROUEFI(def) ||
-            def->os.loader->templt ||
+            def->os.loader->nvramTemplate ||
             (!reset_nvram && virFileExists(def->os.loader->nvram)))
             return 0;
 

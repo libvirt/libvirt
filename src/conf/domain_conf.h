@@ -2220,7 +2220,7 @@ struct _virDomainLoaderDef {
     virDomainLoader type;
     virTristateBool secure;
     char *nvram;    /* path to non-volatile RAM */
-    char *templt;   /* user override of path to master nvram */
+    char *nvramTemplate;   /* user override of path to master nvram */
 };
 
 void virDomainLoaderDefFree(virDomainLoaderDef *loader);

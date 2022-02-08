@@ -3528,7 +3528,7 @@ virDomainLoaderDefFree(virDomainLoaderDef *loader)
 
     g_free(loader->path);
     g_free(loader->nvram);
-    g_free(loader->templt);
+    g_free(loader->nvramTemplate);
     g_free(loader);
 }
 
@@ -18225,7 +18225,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
 
     def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
     if (!fwAutoSelect)
-        def->os.loader->templt = virXPathString("string(./os/nvram[1]/@template)", ctxt);
+        def->os.loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
 
     return 0;
 }
@@ -26912,9 +26912,9 @@ virDomainLoaderDefFormat(virBuffer *buf,
     else
         virBufferAddLit(buf, "/>\n");
 
-    if (loader->nvram || loader->templt) {
+    if (loader->nvram || loader->nvramTemplate) {
         virBufferAddLit(buf, "<nvram");
-        virBufferEscapeString(buf, " template='%s'", loader->templt);
+        virBufferEscapeString(buf, " template='%s'", loader->nvramTemplate);
         if (loader->nvram)
             virBufferEscapeString(buf, ">%s</nvram>\n", loader->nvram);
         else
