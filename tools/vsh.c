@@ -2018,10 +2018,10 @@ vshEventLoop(void *opaque)
     vshControl *ctl = opaque;
 
     while (1) {
-        bool quit;
-        virMutexLock(&ctl->lock);
-        quit = ctl->quit;
-        virMutexUnlock(&ctl->lock);
+        bool quit = false;
+        VIR_WITH_MUTEX_LOCK_GUARD(&ctl->lock) {
+            quit = ctl->quit;
+        }
 
         if (quit)
             break;

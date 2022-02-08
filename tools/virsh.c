@@ -412,13 +412,13 @@ virshDeinit(vshControl *ctl)
     virResetLastError();
 
     if (ctl->eventLoopStarted) {
-        int timer;
+        int timer = -1;
 
-        virMutexLock(&ctl->lock);
-        ctl->quit = true;
-        /* HACK: Add a dummy timeout to break event loop */
-        timer = virEventAddTimeout(0, virshDeinitTimer, NULL, NULL);
-        virMutexUnlock(&ctl->lock);
+        VIR_WITH_MUTEX_LOCK_GUARD(&ctl->lock) {
+            ctl->quit = true;
+            /* HACK: Add a dummy timeout to break event loop */
+            timer = virEventAddTimeout(0, virshDeinitTimer, NULL, NULL);
+        }
 
         virThreadJoin(&ctl->eventLoop);
 
