@@ -137,27 +137,21 @@ virFileGetXAttrQuiet(const char *path,
                      const char *name,
                      char **value)
 {
-    int ret = -1;
-    g_autofree char *key = NULL;
+    g_autofree char *key = get_key(path, name);
     char *val;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    key = get_key(path, name);
-
-    virMutexLock(&m);
     init_syms();
     init_hash();
 
     if (!(val = virHashLookup(xattr_paths, key))) {
         errno = ENODATA;
-        goto cleanup;
+        return -1;
     }
 
     *value = g_strdup(val);
 
-    ret = 0;
- cleanup:
-    virMutexUnlock(&m);
-    return ret;
+    return 0;
 }
 
 
@@ -193,25 +187,18 @@ int virFileSetXAttr(const char *path,
                     const char *name,
                     const char *value)
 {
-    int ret = -1;
-    g_autofree char *key = NULL;
-    g_autofree char *val = NULL;
+    g_autofree char *key = get_key(path, name);
+    g_autofree char *val = g_strdup(value);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    key = get_key(path, name);
-    val = g_strdup(value);
-
-    virMutexLock(&m);
     init_syms();
     init_hash();
 
     if (virHashUpdateEntry(xattr_paths, key, val) < 0)
-        goto cleanup;
+        return -1;
     val = NULL;
 
-    ret = 0;
- cleanup:
-    virMutexUnlock(&m);
-    return ret;
+    return 0;
 }
 
 
@@ -219,18 +206,15 @@ int virFileRemoveXAttr(const char *path,
                        const char *name)
 {
     int ret = -1;
-    g_autofree char *key = NULL;
+    g_autofree char *key = get_key(path, name);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    key = get_key(path, name);
-
-    virMutexLock(&m);
     init_syms();
     init_hash();
 
     if ((ret = virHashRemoveEntry(xattr_paths, key)) < 0)
         errno = ENODATA;
 
-    virMutexUnlock(&m);
     return ret;
 }
 
@@ -270,8 +254,8 @@ mock_chown(const char *path,
            uid_t uid,
            gid_t gid)
 {
-    uint32_t *val = NULL;
-    int ret = -1;
+    g_autofree uint32_t *val = NULL;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
     if (gid >> 16 || uid >> 16) {
         fprintf(stderr, "Attempt to set too high UID or GID: %llu %llu",
@@ -283,18 +267,13 @@ mock_chown(const char *path,
 
     *val = (gid << 16) + uid;
 
-    virMutexLock(&m);
     init_hash();
 
     if (virHashUpdateEntry(chown_paths, path, val) < 0)
-        goto cleanup;
-    val = NULL;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virMutexUnlock(&m);
-    VIR_FREE(val);
-    return ret;
+    val = NULL;
+    return 0;
 }
 
 
@@ -460,13 +439,12 @@ printXATTR(void *payload,
  */
 int checkPaths(GHashTable *paths)
 {
-    int ret = -1;
     checkOwnerData data = { .paths = paths, .chown_fail = false, .selinux_fail = false };
     bool xattr_fail = false;
     GHashTableIter htitr;
     void *key;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    virMutexLock(&m);
     init_hash();
 
     g_hash_table_iter_init(&htitr, paths);
@@ -474,38 +452,35 @@ int checkPaths(GHashTable *paths)
     while (g_hash_table_iter_next(&htitr, &key, NULL)) {
         if (!virHashLookup(chown_paths, key)) {
             fprintf(stderr, "Unexpected path restored: %s\n", (const char *) key);
-            goto cleanup;
+            return -1;
         }
     }
 
     if (virHashForEach(selinux_paths, checkSELinux, &data) < 0)
-        goto cleanup;
+        return -1;
 
     if (virHashForEach(chown_paths, checkOwner, &data) < 0)
-        goto cleanup;
+        return -1;
 
     if (virHashForEach(xattr_paths, printXATTR, &xattr_fail) < 0)
-        goto cleanup;
+        return -1;
 
     if (data.chown_fail || data.selinux_fail || xattr_fail)
-        goto cleanup;
+        return -1;
 
-    ret = 0;
- cleanup:
-    virMutexUnlock(&m);
-    return ret;
+    return 0;
 }
 
 
 void freePaths(void)
 {
-    virMutexLock(&m);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
+
     init_hash();
 
     g_clear_pointer(&selinux_paths, g_hash_table_unref);
     g_clear_pointer(&chown_paths, g_hash_table_unref);
     g_clear_pointer(&xattr_paths, g_hash_table_unref);
-    virMutexUnlock(&m);
 }
 
 
@@ -578,19 +553,15 @@ mock_setfilecon_raw(const char *path,
                     const char *context)
 {
     g_autofree char *val = g_strdup(context);
-    int ret = -1;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    virMutexLock(&m);
     init_hash();
 
     if (virHashUpdateEntry(selinux_paths, path, val) < 0)
-        goto cleanup;
+        return -1;
     val = NULL;
 
-    ret = 0;
- cleanup:
-    virMutexUnlock(&m);
-    return ret;
+    return 0;
 }
 
 
@@ -599,8 +570,8 @@ mock_getfilecon_raw(const char *path,
                     char **context)
 {
     const char *val;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&m);
 
-    virMutexLock(&m);
     init_hash();
 
     val = virHashLookup(selinux_paths, path);
@@ -608,7 +579,6 @@ mock_getfilecon_raw(const char *path,
         val = DEFAULT_SELINUX_LABEL;
 
     *context = g_strdup(val);
-    virMutexUnlock(&m);
     return 0;
 }
 
