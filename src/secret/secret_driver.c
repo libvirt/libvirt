@@ -52,9 +52,10 @@ enum { SECRET_MAX_XML_FILE = 10*1024*1024 };
 
 /* Internal driver state */
 
+static virMutex mutex = VIR_MUTEX_INITIALIZER;
+
 typedef struct _virSecretDriverState virSecretDriverState;
 struct _virSecretDriverState {
-    virMutex lock;
     bool privileged; /* readonly */
     char *embeddedRoot; /* readonly */
     int embeddedRefs;
@@ -74,14 +75,14 @@ static virSecretDriverState *driver;
 static void
 secretDriverLock(void)
 {
-    virMutexLock(&driver->lock);
+    virMutexLock(&mutex);
 }
 
 
 static void
 secretDriverUnlock(void)
 {
-    virMutexUnlock(&driver->lock);
+    virMutexUnlock(&mutex);
 }
 
 
@@ -463,7 +464,6 @@ secretStateCleanup(void)
 
     VIR_FREE(driver->stateDir);
     secretDriverUnlock();
-    virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
 
     return 0;
@@ -479,10 +479,6 @@ secretStateInitialize(bool privileged,
     driver = g_new0(virSecretDriverState, 1);
 
     driver->lockFD = -1;
-    if (virMutexInit(&driver->lock) < 0) {
-        VIR_FREE(driver);
-        return VIR_DRV_STATE_INIT_ERROR;
-    }
     secretDriverLock();
 
     driver->secretEventState = virObjectEventStateNew();
