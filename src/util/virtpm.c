@@ -137,18 +137,12 @@ static int virTPMEmulatorInit(bool quiet);
 static char *
 virTPMBinaryGetPath(virTPMBinary binary)
 {
-    char *s = NULL;
-
-    virMutexLock(&swtpm_tools_lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&swtpm_tools_lock);
 
     if (virTPMEmulatorInit(false) < 0)
-        goto cleanup;
+        return NULL;
 
-    s = g_strdup(swtpmBinaries[binary].path);
-
- cleanup:
-    virMutexUnlock(&swtpm_tools_lock);
-    return s;
+    return g_strdup(swtpmBinaries[binary].path);
 }
 
 char *
@@ -171,20 +165,14 @@ virTPMGetSwtpmIoctl(void)
 
 bool virTPMHasSwtpm(void)
 {
-    bool ret = false;
-
-    virMutexLock(&swtpm_tools_lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&swtpm_tools_lock);
 
     if (virTPMEmulatorInit(true) < 0)
-        goto cleanup;
+        return false;
 
-    ret = swtpmBinaries[VIR_TPM_BINARY_SWTPM].path != NULL &&
+    return swtpmBinaries[VIR_TPM_BINARY_SWTPM].path != NULL &&
         swtpmBinaries[VIR_TPM_BINARY_SWTPM_SETUP].path != NULL &&
         swtpmBinaries[VIR_TPM_BINARY_SWTPM_IOCTL].path != NULL;
-
- cleanup:
-    virMutexUnlock(&swtpm_tools_lock);
-    return ret;
 }
 
 /* virTPMExecGetCaps
@@ -341,12 +329,10 @@ static bool
 virTPMBinaryGetCaps(virTPMBinary binary,
                     unsigned int cap)
 {
-    bool ret = false;
-
-    virMutexLock(&swtpm_tools_lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&swtpm_tools_lock);
 
     if (virTPMEmulatorInit(false) < 0)
-        goto cleanup;
+        return false;
 
     if (!swtpmBinaries[binary].caps &&
         swtpmBinaries[binary].capsParse) {
@@ -355,12 +341,11 @@ virTPMBinaryGetCaps(virTPMBinary binary,
             swtpmBinaries[binary].path,
             swtpmBinaries[binary].parm);
     }
-    if (swtpmBinaries[binary].caps)
-        ret = virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
 
- cleanup:
-    virMutexUnlock(&swtpm_tools_lock);
-    return ret;
+    if (!swtpmBinaries[binary].caps)
+        return false;
+
+    return virBitmapIsBitSet(swtpmBinaries[binary].caps, cap);
 }
 
 bool
