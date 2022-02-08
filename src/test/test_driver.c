@@ -1385,16 +1385,14 @@ testOpenFromFile(virConnectPtr conn, const char *file)
 static int
 testOpenDefault(virConnectPtr conn)
 {
-    int ret = VIR_DRV_OPEN_ERROR;
     testDriver *privconn = NULL;
     g_autoptr(xmlDoc) doc = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     size_t i;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&defaultLock);
 
-    virMutexLock(&defaultLock);
     if (defaultPrivconn) {
         conn->privateData = virObjectRef(defaultPrivconn);
-        virMutexUnlock(&defaultLock);
         return VIR_DRV_OPEN_SUCCESS;
     }
 
@@ -1433,15 +1431,12 @@ testOpenDefault(virConnectPtr conn)
         goto error;
 
     defaultPrivconn = privconn;
-    ret = VIR_DRV_OPEN_SUCCESS;
- cleanup:
-    virMutexUnlock(&defaultLock);
-    return ret;
+    return VIR_DRV_OPEN_SUCCESS;
 
  error:
     virObjectUnref(privconn);
     conn->privateData = NULL;
-    goto cleanup;
+    return VIR_DRV_OPEN_ERROR;
 }
 
 static int
@@ -1499,12 +1494,12 @@ testConnectAuthenticate(virConnectPtr conn,
 static void
 testDriverCloseInternal(testDriver *driver)
 {
-    virMutexLock(&defaultLock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&defaultLock);
+
     testDriverDisposed = false;
     virObjectUnref(driver);
     if (testDriverDisposed && driver == defaultPrivconn)
         defaultPrivconn = NULL;
-    virMutexUnlock(&defaultLock);
 }
 
 
