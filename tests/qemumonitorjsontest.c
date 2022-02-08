@@ -27,6 +27,7 @@
 #include "qemu/qemu_block.h"
 #include "qemu/qemu_monitor_json.h"
 #include "qemu/qemu_qapi.h"
+#include "qemu/qemu_alias.h"
 #include "virthread.h"
 #include "virerror.h"
 #include "virstring.h"
@@ -736,6 +737,7 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
     {
         g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
+        qemuDomainChrSourcePrivate *chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chr);
 
         chr->type = VIR_DOMAIN_CHR_TYPE_TCP;
         chr->data.tcp.host = g_strdup("example.com");
@@ -748,6 +750,19 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                                   "'port':'1234'}},"
                                   "'telnet':false,"
                                   "'server':false}}}");
+
+        chr->data.tcp.tlscreds = true;
+        chrSourcePriv->tlsCredsAlias = qemuAliasTLSObjFromSrcAlias("alias");
+        CHECK("tcp", false,
+              "{'id':'alias',"
+               "'backend':{'type':'socket',"
+                          "'data':{'addr':{'type':'inet',"
+                                          "'data':{'host':'example.com',"
+                                                  "'port':'1234'}},"
+                                  "'telnet':false,"
+                                  "'server':false,"
+                                  "'tls-creds':'objalias_tls0'}}}");
+
     }
 
     {
