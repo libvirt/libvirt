@@ -224,7 +224,7 @@ vboxSdkUninitialize(void)
 static struct _vboxDriver *
 vboxGetDriverConnection(void)
 {
-    virMutexLock(&vbox_driver_lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&vbox_driver_lock);
 
     if (vbox_driver) {
         virObjectRef(vbox_driver);
@@ -234,9 +234,6 @@ vboxGetDriverConnection(void)
         if (!vbox_driver) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Failed to create vbox driver object."));
-
-            virMutexUnlock(&vbox_driver_lock);
-
             return NULL;
         }
     }
@@ -248,26 +245,20 @@ vboxGetDriverConnection(void)
         virObjectUnref(vbox_driver);
         if (vboxDriverDisposed)
             vbox_driver = NULL;
-
-        virMutexUnlock(&vbox_driver_lock);
-
         return NULL;
     }
 
     vbox_driver->connectionCount++;
-
-    virMutexUnlock(&vbox_driver_lock);
-
     return vbox_driver;
 }
 
 static void
 vboxDestroyDriverConnection(void)
 {
-    virMutexLock(&vbox_driver_lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&vbox_driver_lock);
 
     if (!vbox_driver)
-        goto cleanup;
+        return;
 
     vbox_driver->connectionCount--;
 
@@ -277,9 +268,6 @@ vboxDestroyDriverConnection(void)
     virObjectUnref(vbox_driver);
     if (vboxDriverDisposed)
         vbox_driver = NULL;
-
- cleanup:
-    virMutexUnlock(&vbox_driver_lock);
 }
 
 static int openSessionForMachine(struct _vboxDriver *data, const unsigned char *dom_uuid,
