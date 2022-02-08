@@ -679,114 +679,126 @@ static int
 qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                  GHashTable *schema)
 {
-    virDomainChrSourceDef chr;
     int ret = 0;
 
 #define CHECK(label, fail, expectargs) \
-    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, label, &chr, \
+    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, label, chr, \
                                             expectargs, NULL, NULL, fail) < 0) \
         ret = -1
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_NULL };
-    CHECK("null", false,
-          "{'id':'alias','backend':{'type':'null','data':{}}}");
+    {
+        g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_VC };
-    CHECK("vc", false,
-          "{'id':'alias','backend':{'type':'vc','data':{}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_NULL;
+        CHECK("null", false,
+              "{'id':'alias','backend':{'type':'null','data':{}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
-    if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, "pty", &chr,
-                                            "{'id':'alias',"
-                                             "'backend':{'type':'pty',"
-                                                        "'data':{}}}",
-                                            "\"pty\" : \"/dev/pts/0\"",
-                                            "/dev/pts/0", false) < 0)
-        ret = -1;
+        chr->type = VIR_DOMAIN_CHR_TYPE_VC;
+        CHECK("vc", false,
+              "{'id':'alias','backend':{'type':'vc','data':{}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PTY };
-    CHECK("pty missing path", true,
-          "{'id':'alias','backend':{'type':'pty','data':{}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_SPICEVMC;
+        CHECK("spicevmc", false,
+              "{'id':'alias','backend':{'type':'spicevmc',"
+                                       "'data':{'type':'vdagent'}}}");
 
-    memset(&chr, 0, sizeof(chr));
-    chr.type = VIR_DOMAIN_CHR_TYPE_FILE;
-    chr.data.file.path = (char *) "/test/path";
-    CHECK("file", false,
-          "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path'}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_PIPE;
+        CHECK("pipe", true, NULL);
 
-    memset(&chr, 0, sizeof(chr));
-    chr.type = VIR_DOMAIN_CHR_TYPE_DEV;
-    chr.data.file.path = (char *) "/test/path";
-    CHECK("device", false,
-          "{'id':'alias','backend':{'type':'serial','data':{'device':'/test/path'}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_STDIO;
+        CHECK("stdio", true, NULL);
 
-    memset(&chr, 0, sizeof(chr));
-    chr.type = VIR_DOMAIN_CHR_TYPE_TCP;
-    chr.data.tcp.host = (char *) "example.com";
-    chr.data.tcp.service = (char *) "1234";
-    CHECK("tcp", false,
-          "{'id':'alias',"
-           "'backend':{'type':'socket',"
-                      "'data':{'addr':{'type':'inet',"
-                                      "'data':{'host':'example.com',"
-                                              "'port':'1234'}},"
-                              "'telnet':false,"
-                              "'server':false}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_PTY;
+        CHECK("pty missing path", true,
+              "{'id':'alias','backend':{'type':'pty','data':{}}}");
+        if (qemuMonitorJSONTestAttachOneChardev(xmlopt, schema, "pty", chr,
+                                                "{'id':'alias',"
+                                                 "'backend':{'type':'pty',"
+                                                 "'data':{}}}",
+                                                "\"pty\" : \"/dev/pts/0\"",
+                                                "/dev/pts/0", false) < 0)
+            ret = -1;
+    }
 
-    memset(&chr, 0, sizeof(chr));
-    chr.type = VIR_DOMAIN_CHR_TYPE_UDP;
-    chr.data.udp.connectHost = (char *) "example.com";
-    chr.data.udp.connectService = (char *) "1234";
-    CHECK("udp", false,
-          "{'id':'alias',"
-           "'backend':{'type':'udp',"
-                      "'data':{'remote':{'type':'inet',"
-                                        "'data':{'host':'example.com',"
-                                                "'port':'1234'}}}}}");
+    {
+        g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
 
-    chr.data.udp.bindHost = (char *) "localhost";
-    chr.data.udp.bindService = (char *) "4321";
-    CHECK("udp", false,
-          "{'id':'alias',"
-           "'backend':{'type':'udp',"
-                      "'data':{'remote':{'type':'inet',"
-                                        "'data':{'host':'example.com',"
-                                                "'port':'1234'}},"
-                              "'local':{'type':'inet',"
-                                       "'data':{'host':'localhost',"
-                                               "'port':'4321'}}}}}");
+        chr->data.file.path = g_strdup("/test/path");
 
-    chr.data.udp.bindHost = NULL;
-    chr.data.udp.bindService = (char *) "4321";
-    CHECK("udp", false,
-          "{'id':'alias',"
-           "'backend':{'type':'udp',"
-                      "'data':{'remote':{'type':'inet',"
-                                        "'data':{'host':'example.com',"
-                                                "'port':'1234'}},"
-                              "'local':{'type':'inet',"
-                                       "'data':{'host':'',"
-                                               "'port':'4321'}}}}}");
-    memset(&chr, 0, sizeof(chr));
-    chr.type = VIR_DOMAIN_CHR_TYPE_UNIX;
-    chr.data.nix.path = (char *) "/path/to/socket";
-    CHECK("unix", false,
-          "{'id':'alias',"
-           "'backend':{'type':'socket',"
-                      "'data':{'addr':{'type':'unix',"
-                                      "'data':{'path':'/path/to/socket'}},"
-                              "'server':false}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_FILE;
+        CHECK("file", false,
+              "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path'}}}");
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_SPICEVMC };
-    CHECK("spicevmc", false,
-          "{'id':'alias','backend':{'type':'spicevmc','"
-                                    "data':{'type':'vdagent'}}}");
+        chr->type = VIR_DOMAIN_CHR_TYPE_DEV;
+        CHECK("device", false,
+              "{'id':'alias','backend':{'type':'serial','data':{'device':'/test/path'}}}");
+    }
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
-    CHECK("pipe", true, NULL);
+    {
+        g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
 
-    chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_STDIO };
-    CHECK("stdio", true, NULL);
+        chr->type = VIR_DOMAIN_CHR_TYPE_TCP;
+        chr->data.tcp.host = g_strdup("example.com");
+        chr->data.tcp.service = g_strdup("1234");
+        CHECK("tcp", false,
+              "{'id':'alias',"
+               "'backend':{'type':'socket',"
+                          "'data':{'addr':{'type':'inet',"
+                                          "'data':{'host':'example.com',"
+                                                  "'port':'1234'}},"
+                                  "'telnet':false,"
+                                  "'server':false}}}");
+    }
+
+    {
+        g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
+
+        chr->type = VIR_DOMAIN_CHR_TYPE_UDP;
+        chr->data.udp.connectHost = g_strdup("example.com");
+        chr->data.udp.connectService = g_strdup("1234");
+        CHECK("udp", false,
+              "{'id':'alias',"
+               "'backend':{'type':'udp',"
+                          "'data':{'remote':{'type':'inet',"
+                                            "'data':{'host':'example.com',"
+                                                    "'port':'1234'}}}}}");
+
+        chr->data.udp.bindService = g_strdup("4321");
+        CHECK("udp", false,
+              "{'id':'alias',"
+               "'backend':{'type':'udp',"
+                          "'data':{'remote':{'type':'inet',"
+                                            "'data':{'host':'example.com',"
+                                                    "'port':'1234'}},"
+                                  "'local':{'type':'inet',"
+                                           "'data':{'host':'',"
+                                                   "'port':'4321'}}}}}");
+
+        chr->data.udp.bindHost = g_strdup("localhost");
+        CHECK("udp", false,
+              "{'id':'alias',"
+               "'backend':{'type':'udp',"
+                          "'data':{'remote':{'type':'inet',"
+                                            "'data':{'host':'example.com',"
+                                                    "'port':'1234'}},"
+                                  "'local':{'type':'inet',"
+                                           "'data':{'host':'localhost',"
+                                                   "'port':'4321'}}}}}");
+    }
+
+    {
+        g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
+
+        chr->type = VIR_DOMAIN_CHR_TYPE_UNIX;
+        chr->data.nix.path = g_strdup("/path/to/socket");
+        CHECK("unix", false,
+              "{'id':'alias',"
+               "'backend':{'type':'socket',"
+                          "'data':{'addr':{'type':'unix',"
+                                          "'data':{'path':'/path/to/socket'}},"
+                                  "'server':false}}}");
+    }
+
 #undef CHECK
 
     return ret;
