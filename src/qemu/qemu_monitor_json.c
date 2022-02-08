@@ -6527,6 +6527,23 @@ qemuMonitorJSONBuildUnixSocketAddress(const char *path)
     return g_steal_pointer(&addr);
 }
 
+
+static virJSONValue *
+qemuMonitorJSONBuildFDSocketAddress(const char *fdname)
+{
+    g_autoptr(virJSONValue) addr = NULL;
+    g_autoptr(virJSONValue) data = NULL;
+
+    if (virJSONValueObjectAdd(&data, "s:str", fdname, NULL) < 0)
+        return NULL;
+
+    if (virJSONValueObjectAdd(&addr,
+                              "s:type", "fd",
+                              "a:data", &data, NULL) < 0)
+        return NULL;
+
+    return g_steal_pointer(&addr);
+}
 int
 qemuMonitorJSONNBDServerStart(qemuMonitor *mon,
                               const virStorageNetHostDef *server,
@@ -6683,6 +6700,7 @@ static virJSONValue *
 qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                                      const virDomainChrSourceDef *chr)
 {
+    qemuDomainChrSourcePrivate *chrSourcePriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chr);
     g_autoptr(virJSONValue) props = NULL;
     g_autoptr(virJSONValue) backend = NULL;
     g_autoptr(virJSONValue) backendData = virJSONValueNewObject();
@@ -6695,14 +6713,22 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
         backendType = virDomainChrTypeToString(chr->type);
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_FILE:
+    case VIR_DOMAIN_CHR_TYPE_FILE: {
+        const char *path = chr->data.file.path;
+        virTristateSwitch append = chr->data.file.append;
         backendType = "file";
+
+        if (chrSourcePriv->sourcefd) {
+            path = qemuFDPassGetPath(chrSourcePriv->sourcefd);
+            append = VIR_TRISTATE_SWITCH_ON;
+        }
+
         if (virJSONValueObjectAdd(&backendData,
-                                  "s:out", chr->data.file.path,
-                                  "T:append", chr->data.file.append,
+                                  "s:out", path,
+                                  "T:append", append,
                                   NULL) < 0)
             return NULL;
-
+    }
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DEV:
@@ -6720,7 +6746,7 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
     case VIR_DOMAIN_CHR_TYPE_TCP: {
-        g_autofree char *tlsalias = NULL;
+        const char *tlsalias = NULL;
         g_autoptr(virJSONValue) addr = NULL;
         virTristateBool waitval = VIR_TRISTATE_BOOL_ABSENT;
         virTristateBool telnet = VIR_TRISTATE_BOOL_ABSENT;
@@ -6737,9 +6763,7 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                 waitval = VIR_TRISTATE_BOOL_NO;
             }
 
-            if (chr->data.tcp.tlscreds &&
-                !(tlsalias = qemuAliasTLSObjFromSrcAlias(chrID)))
-                return NULL;
+            tlsalias = chrSourcePriv->tlsCredsAlias;
 
             if (!(addr = qemuMonitorJSONBuildInetSocketAddress(chr->data.tcp.host,
                                                                chr->data.tcp.service)))
@@ -6755,13 +6779,18 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                 waitval = VIR_TRISTATE_BOOL_NO;
             }
 
-            if (!(addr = qemuMonitorJSONBuildUnixSocketAddress(chr->data.nix.path)))
-                return NULL;
+            if (chrSourcePriv->sourcefd) {
+                if (!(addr = qemuMonitorJSONBuildFDSocketAddress(qemuFDPassGetPath(chrSourcePriv->sourcefd))))
+                    return NULL;
+            } else {
+                if (!(addr = qemuMonitorJSONBuildUnixSocketAddress(chr->data.nix.path)))
+                    return NULL;
 
-            if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES)
-                reconnect = chr->data.tcp.reconnect.timeout;
-            else if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_NO)
-                reconnect = 0;
+                if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_YES)
+                    reconnect = chr->data.tcp.reconnect.timeout;
+                else if (chr->data.nix.reconnect.enabled == VIR_TRISTATE_BOOL_NO)
+                    reconnect = 0;
+            }
         }
 
         if (virJSONValueObjectAdd(&backendData,
@@ -6826,9 +6855,17 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
     }
 
     if (chr->logfile) {
+        const char *path = chr->logfile;
+        virTristateSwitch append = chr->logappend;
+
+        if (chrSourcePriv->logfd) {
+            path = qemuFDPassGetPath(chrSourcePriv->logfd);
+            append = VIR_TRISTATE_SWITCH_ON;
+        }
+
         if (virJSONValueObjectAdd(&backendData,
-                                  "s:logfile", chr->logfile,
-                                  "T:logappend", chr->logappend,
+                                  "s:logfile", path,
+                                  "T:logappend", append,
                                   NULL) < 0)
             return NULL;
     }
