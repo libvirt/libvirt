@@ -441,7 +441,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             return -1;
         }
 
-        if ((counter_node = virXPathNode("./counter[@name='tsc'])", ctxt))) {
+        if ((counter_node = virXPathNode("./counter[@name='tsc']", ctxt))) {
             tsc = g_new0(virHostCPUTscInfo, 1);
 
             if (virXMLPropULongLong(counter_node, "frequency", 10,
