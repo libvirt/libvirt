@@ -659,9 +659,8 @@ qemuMonitorJSONTestAttachOneChardev(virDomainXMLOption *xmlopt,
 
     fulllabel = g_strdup_printf("qemuMonitorJSONTestAttachChardev(%s)", label);
 
-    qemuMonitorTestAllowUnusedCommands(test);
-
-    if (qemuMonitorTestAddItemExpect(test, "chardev-add",
+    if (expectargs &&
+        qemuMonitorTestAddItemExpect(test, "chardev-add",
                                      expectargs, true, jsonreply) < 0)
         return -1;
 
@@ -784,10 +783,10 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                     "data':{'type':'vdagent'}}}");
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_PIPE };
-    CHECK("pipe", true, "");
+    CHECK("pipe", true, NULL);
 
     chr = (virDomainChrSourceDef) { .type = VIR_DOMAIN_CHR_TYPE_STDIO };
-    CHECK("stdio", true, "");
+    CHECK("stdio", true, NULL);
 #undef CHECK
 
     return ret;
