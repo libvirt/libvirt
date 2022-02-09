@@ -924,6 +924,7 @@ chConnectSupportsFeature(virConnectPtr conn,
 
     switch ((virDrvFeature) feature) {
         case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+        case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
             return 1;
         case VIR_DRV_FEATURE_MIGRATION_V2:
         case VIR_DRV_FEATURE_MIGRATION_V3:
@@ -939,7 +940,6 @@ chConnectSupportsFeature(virConnectPtr conn,
         case VIR_DRV_FEATURE_REMOTE:
         case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
         case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
-        case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         default:
             return 0;
     }
