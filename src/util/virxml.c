@@ -1195,7 +1195,8 @@ virXMLSaveFile(const char *path,
 {
     struct virXMLRewriteFileData data = { warnName, warnCommand, xml };
 
-    return virFileRewrite(path, S_IRUSR | S_IWUSR, virXMLRewriteFile, &data);
+    return virFileRewrite(path, S_IRUSR | S_IWUSR, -1, -1,
+                          virXMLRewriteFile, &data);
 }
 
 /**

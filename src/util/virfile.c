@@ -484,9 +484,28 @@ int virFileUnlock(int fd G_GNUC_UNUSED,
 #endif /* WIN32 */
 
 
+/**
+ * virFileRewrite:
+ * @path: file to rewrite
+ * @mode: mode of the file
+ * @uid: uid that should own file
+ * @gid: gid that should own file
+ * @rewrite: callback to write file contents
+ * @opaque: opaque data to pass to the callback
+ *
+ * Rewrite given @path atomically. This is achieved by writing a
+ * temporary file on a side and renaming it to the desired name.
+ * The temporary file is created using supplied @mode and
+ * @uid:@gid (pass -1 for current uid/gid) and written by
+ * @rewrite callback.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise (with error reported)
+ */
 int
 virFileRewrite(const char *path,
                mode_t mode,
+               uid_t uid, gid_t gid,
                virFileRewriteFunc rewrite,
                const void *opaque)
 {
@@ -496,8 +515,11 @@ virFileRewrite(const char *path,
 
     newfile = g_strdup_printf("%s.new", path);
 
-    if ((fd = open(newfile, O_WRONLY | O_CREAT | O_TRUNC, mode)) < 0) {
-        virReportSystemError(errno, _("cannot create file '%s'"),
+    if ((fd = virFileOpenAs(newfile, O_WRONLY | O_CREAT | O_TRUNC, mode,
+                            uid, gid,
+                            VIR_FILE_OPEN_FORCE_OWNER | VIR_FILE_OPEN_FORCE_MODE)) < 0) {
+        virReportSystemError(-fd,
+                             _("Failed to create file '%s'"),
                              newfile);
         goto cleanup;
     }
@@ -552,7 +574,7 @@ virFileRewriteStr(const char *path,
                   mode_t mode,
                   const char *str)
 {
-    return virFileRewrite(path, mode,
+    return virFileRewrite(path, mode, -1, -1,
                           virFileRewriteStrHelper, str);
 }
 

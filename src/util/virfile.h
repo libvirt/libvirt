@@ -126,6 +126,7 @@ int virFileUnlock(int fd, off_t start, off_t len)
 typedef int (*virFileRewriteFunc)(int fd, const void *opaque);
 int virFileRewrite(const char *path,
                    mode_t mode,
+                   uid_t uid, gid_t gid,
                    virFileRewriteFunc rewrite,
                    const void *opaque);
 int virFileRewriteStr(const char *path,
