@@ -605,8 +605,10 @@ int virNetDevOpenvswitchUpdateVlan(const char *ifname,
     virCommandAddArgList(cmd,
                          "--", "--if-exists", "clear", "Port", ifname, "tag",
                          "--", "--if-exists", "clear", "Port", ifname, "trunk",
-                         "--", "--if-exists", "clear", "Port", ifname, "vlan_mode",
-                         "--", "--if-exists", "set", "Port", ifname, NULL);
+                         "--", "--if-exists", "clear", "Port", ifname, "vlan_mode", NULL);
+
+	if (virtVlan && virtVlan->nTags > 0)
+		virCommandAddArgList(cmd, "--", "--if-exists", "set", "Port", ifname, NULL);
 
     virNetDevOpenvswitchConstructVlans(cmd, virtVlan);
 
