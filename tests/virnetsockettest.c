@@ -570,12 +570,13 @@ mymain(void)
         .path = "/tmp/socket",
         .netcat = "nc",
         .expectOut = "-T -e none -- somehost sh -c '"
-                     "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'nc' $ARG -U /tmp/socket'\n",
+                         "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'nc' $ARG -U /tmp/socket"
+                     "'\n",
     };
     if (virTestRun("SSH test 1", testSocketSSH, &sshData1) < 0)
         ret = -1;
@@ -589,12 +590,13 @@ mymain(void)
         .noVerify = false,
         .path = "/tmp/socket",
         .expectOut = "-p 9000 -l fred -T -e none -o BatchMode=yes -- somehost sh -c '"
-                     "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'netcat' $ARG -U /tmp/socket'\n",
+                         "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'netcat' $ARG -U /tmp/socket"
+                     "'\n",
     };
     if (virTestRun("SSH test 2", testSocketSSH, &sshData2) < 0)
         ret = -1;
@@ -608,12 +610,13 @@ mymain(void)
         .noVerify = true,
         .path = "/tmp/socket",
         .expectOut = "-p 9000 -l fred -T -e none -o StrictHostKeyChecking=no -- somehost sh -c '"
-                     "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'netcat' $ARG -U /tmp/socket'\n",
+                         "if 'netcat' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'netcat' $ARG -U /tmp/socket"
+                     "'\n",
     };
     if (virTestRun("SSH test 3", testSocketSSH, &sshData3) < 0)
         ret = -1;
@@ -631,12 +634,13 @@ mymain(void)
         .path = "/tmp/socket",
         .netcat = "nc",
         .expectOut = "-T -e none -- crashyhost sh -c '"
-                     "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'nc' $ARG -U /tmp/socket'\n",
+                         "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'nc' $ARG -U /tmp/socket"
+                     "'\n",
         .dieEarly = true,
     };
     if (virTestRun("SSH test 5", testSocketSSH, &sshData5) < 0)
@@ -649,12 +653,13 @@ mymain(void)
         .keyfile = "/root/.ssh/example_key",
         .noVerify = true,
         .expectOut = "-i /root/.ssh/example_key -T -e none -o StrictHostKeyChecking=no -- example.com sh -c '"
-                     "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'nc' $ARG -U /tmp/socket'\n",
+                         "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'nc' $ARG -U /tmp/socket"
+                     "'\n",
     };
     if (virTestRun("SSH test 6", testSocketSSH, &sshData6) < 0)
         ret = -1;
@@ -664,12 +669,13 @@ mymain(void)
         .netcat = "/tmp/fo o/nc",
         .path = "/tmp/socket",
         .expectOut = "-T -e none -- somehost sh -c '"
-                     "if '''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
-                         "ARG=-q0;"
-                     "else "
-                         "ARG=;"
-                     "fi;"
-                     "'''\\''/tmp/fo o/nc'\\'''' $ARG -U /tmp/socket'\n",
+                         "if '''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'''\\''/tmp/fo o/nc'\\'''' $ARG -U /tmp/socket"
+                     "'\n",
     };
     VIR_WARNINGS_RESET
     if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
