@@ -678,10 +678,71 @@ mymain(void)
                          "'''\\''n c'\\'''' $ARG -U /tmp/socket"
                      "'\n",
     };
-    VIR_WARNINGS_RESET
     if (virTestRun("SSH test 7", testSocketSSH, &sshData7) < 0)
         ret = -1;
 
+    struct testSSHData sshData8 = {
+        .nodename = "somehost",
+        .netcat = "n'c",
+        .path = "/tmp/socket",
+        .expectOut = "-T -e none -- somehost sh -c '"
+                         "if '''\\''n'\\''\\'\\'''\\''c'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'''\\''n'\\''\\'\\'''\\''c'\\'''' $ARG -U /tmp/socket"
+                     "'\n",
+    };
+    if (virTestRun("SSH test 8", testSocketSSH, &sshData8) < 0)
+        ret = -1;
+
+    struct testSSHData sshData9 = {
+        .nodename = "somehost",
+        .netcat = "n\"c",
+        .path = "/tmp/socket",
+        .expectOut = "-T -e none -- somehost sh -c '"
+                         "if '''\\''n\"c'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                             "ARG=-q0;"
+                         "else "
+                             "ARG=;"
+                         "fi;"
+                         "'''\\''n\"c'\\'''' $ARG -U /tmp/socket"
+                     "'\n",
+    };
+    if (virTestRun("SSH test 9", testSocketSSH, &sshData9) < 0)
+        ret = -1;
+
+    struct testSSHData sshData10 = {
+        .nodename = "somehost",
+        .path = "/tmp/socket",
+        .expectOut = "-T -e none -- somehost sh -c '"
+                         "which virt-ssh-helper 1>/dev/null 2>&1; "
+                         "if test $? = 0; then "
+                         "    virt-ssh-helper -r 'qemu:///session'; "
+                         "else"
+                         "    if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                                 "ARG=-q0;"
+                             "else "
+                                 "ARG=;"
+                             "fi;"
+                             "'nc' $ARG -U /tmp/socket; "
+                         "fi"
+                     "'\n"
+    };
+    if (virTestRun("SSH test 10", testSocketSSH, &sshData10) < 0)
+        ret = -1;
+
+    struct testSSHData sshData11 = {
+        .nodename = "somehost",
+        .proxy = VIR_NET_CLIENT_PROXY_NATIVE,
+        .expectOut = "-T -e none -- somehost sh -c '"
+                         "virt-ssh-helper -r 'qemu:///session'"
+                     "'\n"
+    };
+    if (virTestRun("SSH test 11", testSocketSSH, &sshData11) < 0)
+        ret = -1;
+    VIR_WARNINGS_RESET
 #endif
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
