@@ -529,7 +529,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 325 */
               "scsi-disk.device_id", /* QEMU_CAPS_SCSI_DISK_DEVICE_ID */
               "virtio-pci-non-transitional", /* QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL */
-              "overcommit", /* QEMU_CAPS_OVERCOMMIT */
+              "overcommit", /* X_QEMU_CAPS_OVERCOMMIT */
               "query-current-machine", /* QEMU_CAPS_QUERY_CURRENT_MACHINE */
               "machine.virt.iommu", /* QEMU_CAPS_MACHINE_VIRT_IOMMU */
 
@@ -3298,7 +3298,6 @@ struct virQEMUCapsCommandLineProps {
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
-    { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },

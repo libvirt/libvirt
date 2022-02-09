@@ -164,7 +164,6 @@
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
   <flag name='nvdimm.unarmed'/>
-  <flag name='overcommit'/>
   <flag name='x86-max-cpu'/>
   <flag name='bochs-display'/>
   <flag name='ramfb'/>

@@ -123,7 +123,6 @@
   <flag name='machine.pseries.cap-nested-hv'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
-  <flag name='overcommit'/>
   <flag name='bochs-display'/>
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
