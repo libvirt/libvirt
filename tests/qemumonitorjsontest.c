@@ -680,6 +680,8 @@ static int
 qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                  GHashTable *schema)
 {
+    virDomainChrDef chrdev = { .info = { .alias = (char *) "alias" }};
+    virDomainDeviceDef dev = { .type = VIR_DOMAIN_DEVICE_CHR, .data.chr = &chrdev };
     int ret = 0;
 
 #define CHECK(label, fail, expectargs) \
@@ -723,6 +725,7 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
     {
         g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
+        qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chr);
 
         chr->data.file.path = g_strdup("/test/path");
 
@@ -737,6 +740,16 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
               "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path',"
                                                              "'logfile':'/test/logfile',"
                                                              "'logappend':false}}}");
+
+        chrdev.source = chr;
+        ignore_value(testQemuPrepareHostBackendChardevOne(&dev, chr, NULL));
+        qemuFDPassTransferMonitorFake(charpriv->sourcefd);
+        qemuFDPassTransferMonitorFake(charpriv->logfd);
+        CHECK("file", false,
+              "{'id':'alias','backend':{'type':'file','data':{'out':'/dev/fdset/monitor-fake',"
+                                                             "'append':true,"
+                                                             "'logfile':'/dev/fdset/monitor-fake',"
+                                                             "'logappend':true}}}");
     }
 
     {
