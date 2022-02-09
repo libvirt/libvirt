@@ -117,7 +117,7 @@ int qemuDomainAttachLease(virQEMUDriver *driver,
                           virDomainLeaseDef *lease);
 int qemuDomainAttachChrDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
-                              virDomainChrDef *chr);
+                              virDomainDeviceDef *dev);
 int qemuDomainAttachRNGDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
                               virDomainRNGDef *rng);

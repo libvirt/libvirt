@@ -2180,10 +2180,14 @@ qemuDomainAttachChrDeviceAssignAddr(virDomainObj *vm,
     return 0;
 }
 
-int qemuDomainAttachChrDevice(virQEMUDriver *driver,
-                              virDomainObj *vm,
-                              virDomainChrDef *chr)
+
+int
+qemuDomainAttachChrDevice(virQEMUDriver *driver,
+                          virDomainObj *vm,
+                          virDomainDeviceDef *dev)
 {
+    virDomainChrDef *chr = dev->data.chr;
+    qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chr->source);
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
     virErrorPtr orig_err;
@@ -2223,6 +2227,19 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuSetupChardevCgroup(vm, chr) < 0)
         goto cleanup;
     teardowncgroup = true;
+
+    if (qemuProcessPrepareHostBackendChardevHotplug(vm, dev) < 0)
+        goto cleanup;
+
+    if (charpriv->sourcefd || charpriv->logfd) {
+        qemuDomainObjEnterMonitor(driver, vm);
+
+        if (qemuFDPassTransferMonitor(charpriv->sourcefd, priv->mon) < 0 ||
+            qemuFDPassTransferMonitor(charpriv->logfd, priv->mon) < 0)
+            goto exit_monitor;
+
+        qemuDomainObjExitMonitor(driver, vm);
+    }
 
     if (guestfwd) {
         if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
@@ -2286,6 +2303,8 @@ int qemuDomainAttachChrDevice(virQEMUDriver *driver,
     /* detach associated chardev on error */
     if (chardevAttached)
         qemuMonitorDetachCharDev(priv->mon, charAlias);
+    qemuFDPassTransferMonitorRollback(charpriv->sourcefd, priv->mon);
+    qemuFDPassTransferMonitorRollback(charpriv->logfd, priv->mon);
     qemuDomainObjExitMonitor(driver, vm);
     virErrorRestore(&orig_err);
 

@@ -6730,8 +6730,7 @@ qemuDomainAttachDeviceLive(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(driver, vm,
-                                        dev->data.chr);
+        ret = qemuDomainAttachChrDevice(driver, vm, dev);
         if (!ret) {
             alias = dev->data.chr->info.alias;
             dev->data.chr = NULL;

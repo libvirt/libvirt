@@ -135,7 +135,7 @@ testQemuHotplugAttach(virDomainObj *vm,
         ret = qemuDomainAttachDeviceDiskLive(&driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_CHR:
-        ret = qemuDomainAttachChrDevice(&driver, vm, dev->data.chr);
+        ret = qemuDomainAttachChrDevice(&driver, vm, dev);
         break;
     case VIR_DOMAIN_DEVICE_SHMEM:
         ret = qemuDomainAttachShmemDevice(&driver, vm, dev->data.shmem);
