@@ -1824,6 +1824,7 @@ struct _virDomainVideoDef {
     bool primary;
     virDomainVideoAccelDef *accel;
     virDomainVideoResolutionDef *res;
+    virTristateSwitch blob;
     virDomainVideoDriverDef *driver;
     virDomainDeviceInfo info;
     virDomainVirtioOptions *virtio;

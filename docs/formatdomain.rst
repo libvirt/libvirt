@@ -6437,6 +6437,13 @@ A video device.
    :since:`since 1.3.3` ) extends secondary bar and makes it addressable as
    64bit memory.
 
+   :since:`Since 9.2.0` (QEMU driver only), devices with type "virtio" have an
+   optional ``blob`` attribute that can be set to "on" or "off". Setting
+   ``blob`` to "on" will enable the use of blob resources in the device. This
+   can accelerate the display path by reducing or eliminating copying of pixel
+   data between the guest and host. Note that blob resource support requires
+   QEMU version 6.1 or newer.
+
    :since:`Since 5.9.0` , the ``model`` element may also have an optional
    ``resolution`` sub-element. The ``resolution`` element has attributes ``x``
    and ``y`` to set the minimum resolution for the video device. This

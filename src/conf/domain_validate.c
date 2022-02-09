@@ -225,9 +225,16 @@ virDomainVideoDefValidate(const virDomainVideoDef *video,
         }
     }
 
-    if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO &&
-        (virDomainCheckVirtioOptionsAreAbsent(video->virtio) < 0))
-        return -1;
+    if (video->type != VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+        if (virDomainCheckVirtioOptionsAreAbsent(video->virtio) < 0)
+            return -1;
+        if (video->blob != VIR_TRISTATE_SWITCH_ABSENT) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("video type '%s' does not support blob resources"),
+                           virDomainVideoTypeToString(video->type));
+            return -1;
+        }
+    }
 
     return 0;
 }

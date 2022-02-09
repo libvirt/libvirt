@@ -4500,6 +4500,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="blob">
+                <ref name="virOnOff"/>
+              </attribute>
+            </optional>
+            <optional>
               <element name="acceleration">
                 <optional>
                   <attribute name="accel3d">

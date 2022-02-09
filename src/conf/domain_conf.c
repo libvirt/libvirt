@@ -12904,6 +12904,9 @@ virDomainVideoModelDefParseXML(virDomainVideoDef *def,
     if (virXMLPropUIntDefault(node, "heads", 10, VIR_XML_PROP_NONE, &def->heads, 1) < 0)
         return -1;
 
+    if (virXMLPropTristateSwitch(node, "blob", VIR_XML_PROP_NONE, &def->blob) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -25280,6 +25283,8 @@ virDomainVideoDefFormat(virBuffer *buf,
         virBufferAsprintf(buf, " heads='%u'", def->heads);
     if (def->primary)
         virBufferAddLit(buf, " primary='yes'");
+    if (def->blob != VIR_TRISTATE_SWITCH_ABSENT)
+        virBufferAsprintf(buf, " blob='%s'", virTristateSwitchTypeToString(def->blob));
     if (def->accel || def->res) {
         virBufferAddLit(buf, ">\n");
         virBufferAdjustIndent(buf, 2);
