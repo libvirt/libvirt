@@ -726,13 +726,17 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
         chr->data.file.path = g_strdup("/test/path");
 
-        chr->type = VIR_DOMAIN_CHR_TYPE_FILE;
-        CHECK("file", false,
-              "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path'}}}");
-
         chr->type = VIR_DOMAIN_CHR_TYPE_DEV;
         CHECK("device", false,
               "{'id':'alias','backend':{'type':'serial','data':{'device':'/test/path'}}}");
+
+        chr->type = VIR_DOMAIN_CHR_TYPE_FILE;
+        chr->logfile = g_strdup("/test/logfile");
+        chr->logappend = VIR_TRISTATE_SWITCH_OFF;
+        CHECK("file", false,
+              "{'id':'alias','backend':{'type':'file','data':{'out':'/test/path',"
+                                                             "'logfile':'/test/logfile',"
+                                                             "'logappend':false}}}");
     }
 
     {
@@ -753,6 +757,7 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
         chr->data.tcp.tlscreds = true;
         chrSourcePriv->tlsCredsAlias = qemuAliasTLSObjFromSrcAlias("alias");
+        chr->logfile = g_strdup("/test/log");
         CHECK("tcp", false,
               "{'id':'alias',"
                "'backend':{'type':'socket',"
@@ -761,7 +766,8 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
                                                   "'port':'1234'}},"
                                   "'telnet':false,"
                                   "'server':false,"
-                                  "'tls-creds':'objalias_tls0'}}}");
+                                  "'tls-creds':'objalias_tls0',"
+                                  "'logfile':'/test/log'}}}");
 
     }
 
