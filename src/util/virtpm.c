@@ -59,7 +59,6 @@ VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
 char *
 virTPMCreateCancelPath(const char *devpath)
 {
-    char *path = NULL;
     const char *dev;
     const char *prefix[] = {"misc/", "tpm/"};
     size_t i;
@@ -77,18 +76,14 @@ virTPMCreateCancelPath(const char *devpath)
 
     dev++;
     for (i = 0; i < G_N_ELEMENTS(prefix); i++) {
-        path = g_strdup_printf("/sys/class/%s%s/device/cancel", prefix[i],
-                               dev);
+        g_autofree char *path = g_strdup_printf("/sys/class/%s%s/device/cancel",
+                                                prefix[i], dev);
 
         if (virFileExists(path))
-            break;
-
-        VIR_FREE(path);
+            return g_steal_pointer(&path);
     }
-    if (!path)
-        path = g_strdup("/dev/null");
 
-    return path;
+    return g_strdup("/dev/null");
 }
 
 /*
