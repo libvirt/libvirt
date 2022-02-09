@@ -6983,7 +6983,7 @@ qemuProcessPrepareHost(virQEMUDriver *driver,
         qemuProcessMakeDir(driver, vm, priv->channelTargetDir) < 0)
         return -1;
 
-    if (qemuPrepareNVRAM(driver, vm, flags & VIR_QEMU_PROCESS_START_RESET_NVRAM) < 0)
+    if (qemuPrepareNVRAM(driver, vm, !!(flags & VIR_QEMU_PROCESS_START_RESET_NVRAM)) < 0)
         return -1;
 
     if (vm->def->vsock) {
