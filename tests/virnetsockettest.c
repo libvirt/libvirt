@@ -630,8 +630,8 @@ mymain(void)
         .nodename = "crashyhost",
         .path = "/tmp/socket",
         .netcat = "nc",
-        .expectOut = "-T -e none -- crashyhost sh -c "
-                     "'if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+        .expectOut = "-T -e none -- crashyhost sh -c '"
+                     "if 'nc' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
                          "ARG=;"
