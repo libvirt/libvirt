@@ -1172,17 +1172,26 @@ struct virXMLRewriteFileData {
 };
 
 static int
-virXMLRewriteFile(int fd, const void *opaque)
+virXMLRewriteFile(int fd,
+                  const char *path,
+                  const void *opaque)
 {
     const struct virXMLRewriteFileData *data = opaque;
 
-    if (data->warnCommand) {
-        if (virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0)
-            return -1;
+    if (data->warnCommand &&
+        virXMLEmitWarning(fd, data->warnName, data->warnCommand) < 0) {
+        virReportSystemError(errno,
+                             _("cannot write data to file '%s'"),
+                             path);
+        return -1;
     }
 
-    if (safewrite(fd, data->xml, strlen(data->xml)) < 0)
+    if (safewrite(fd, data->xml, strlen(data->xml)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot write data to file '%s'"),
+                             path);
         return -1;
+    }
 
     return 0;
 }

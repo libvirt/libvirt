@@ -123,7 +123,9 @@ int virFileLock(int fd, bool shared, off_t start, off_t len, bool waitForLock)
 int virFileUnlock(int fd, off_t start, off_t len)
     G_GNUC_NO_INLINE;
 
-typedef int (*virFileRewriteFunc)(int fd, const void *opaque);
+typedef int (*virFileRewriteFunc)(int fd,
+                                  const char *path,
+                                  const void *opaque);
 int virFileRewrite(const char *path,
                    mode_t mode,
                    uid_t uid, gid_t gid,

@@ -497,7 +497,8 @@ int virFileUnlock(int fd G_GNUC_UNUSED,
  * temporary file on a side and renaming it to the desired name.
  * The temporary file is created using supplied @mode and
  * @uid:@gid (pass -1 for current uid/gid) and written by
- * @rewrite callback.
+ * @rewrite callback. It's callback's responsibility to report
+ * errors.
  *
  * Returns: 0 on success,
  *         -1 otherwise (with error reported)
@@ -512,6 +513,7 @@ virFileRewrite(const char *path,
     g_autofree char *newfile = NULL;
     int fd = -1;
     int ret = -1;
+    int rc;
 
     newfile = g_strdup_printf("%s.new", path);
 
@@ -524,9 +526,7 @@ virFileRewrite(const char *path,
         goto cleanup;
     }
 
-    if (rewrite(fd, opaque) < 0) {
-        virReportSystemError(errno, _("cannot write data to file '%s'"),
-                             newfile);
+    if ((rc = rewrite(fd, newfile, opaque)) < 0) {
         goto cleanup;
     }
 
@@ -558,12 +558,18 @@ virFileRewrite(const char *path,
 
 
 static int
-virFileRewriteStrHelper(int fd, const void *opaque)
+virFileRewriteStrHelper(int fd,
+                        const char *path,
+                        const void *opaque)
 {
     const char *data = opaque;
 
-    if (safewrite(fd, data, strlen(data)) < 0)
+    if (safewrite(fd, data, strlen(data)) < 0) {
+        virReportSystemError(errno,
+                             _("cannot write data to file '%s'"),
+                             path);
         return -1;
+    }
 
     return 0;
 }
