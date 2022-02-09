@@ -73,7 +73,7 @@ warned = False
 for func in mocked.keys():
     if func not in noninlined:
         warned = True
-        print("%s is mocked at %s but missing noinline annotation" %
+        print("%s is mocked at %s but missing 'G_GNUC_NO_INLINE' annotation" %
               (func, mocked[func]), file=sys.stderr)
 
 if warned:
