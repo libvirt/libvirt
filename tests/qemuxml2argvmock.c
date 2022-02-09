@@ -263,7 +263,6 @@ qemuOpenChrChardevUNIXSocket(const virDomainChrSourceDef *dev G_GNUC_UNUSED)
 
 int
 qemuBuildTPMOpenBackendFDs(const char *tpmdev G_GNUC_UNUSED,
-                           const char *cancel_path G_GNUC_UNUSED,
                            int *tpmfd,
                            int *cancelfd)
 {

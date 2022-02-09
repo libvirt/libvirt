@@ -9737,10 +9737,14 @@ qemuBuildTPMDevCmd(virCommand *cmd,
 /* this function is exported so that tests can mock the FDs */
 int
 qemuBuildTPMOpenBackendFDs(const char *tpmdev,
-                           const char *cancel_path,
                            int *tpmfd,
                            int *cancelfd)
 {
+    g_autofree char *cancel_path = NULL;
+
+    if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
+        return -1;
+
     if ((*tpmfd = open(tpmdev, O_RDWR)) < 0) {
         virReportSystemError(errno, _("Could not open TPM device %s"),
                              tpmdev);
@@ -9766,10 +9770,8 @@ qemuBuildTPMBackendStr(virCommand *cmd,
                        int *cancelfd)
 {
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *cancel_path = NULL;
     g_autofree char *devset = NULL;
     g_autofree char *cancelset = NULL;
-    const char *tpmdev;
 
     *tpmfd = -1;
     *cancelfd = -1;
@@ -9779,11 +9781,8 @@ qemuBuildTPMBackendStr(virCommand *cmd,
 
     switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        tpmdev = tpm->data.passthrough.source->data.file.path;
-        if (!(cancel_path = virTPMCreateCancelPath(tpmdev)))
-            return NULL;
-
-        if (qemuBuildTPMOpenBackendFDs(tpmdev, cancel_path, tpmfd, cancelfd) < 0)
+        if (qemuBuildTPMOpenBackendFDs(tpm->data.passthrough.source->data.file.path,
+                                       tpmfd, cancelfd) < 0)
             return NULL;
 
         virCommandPassFD(cmd, *tpmfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
