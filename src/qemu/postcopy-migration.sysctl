@@ -3,4 +3,4 @@
 # privileged processes.
 # It can be safely overridden by a file in /etc/sysctl.d/ in case post-copy
 # migration is not used on the host.
-vm.unprivileged_userfaultfd = 1
+-vm.unprivileged_userfaultfd = 1
