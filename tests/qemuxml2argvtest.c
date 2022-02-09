@@ -378,98 +378,6 @@ testCheckExclusiveFlags(int flags)
 }
 
 
-static int
-testPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
-                                 virDomainChrSourceDef *chardev,
-                                 void *opaque)
-{
-    virDomainObj *vm = opaque;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chardev);
-    int fakesourcefd = -1;
-    const char *devalias = NULL;
-    bool usefdset = true;
-
-    if (dev) {
-        virDomainDeviceInfo *info = virDomainDeviceGetInfo(dev);
-        devalias = info->alias;
-
-        /* vhost-user disk doesn't use FD passing */
-        if (dev->type == VIR_DOMAIN_DEVICE_DISK)
-            return 0;
-
-        if (dev->type == VIR_DOMAIN_DEVICE_NET) {
-            /* due to a historical bug in qemu we don't use FD passtrhough for
-             * vhost-sockets for network devices */
-            return 0;
-        }
-
-        /* TPMs FD passing setup is special and handled separately */
-        if (dev->type == VIR_DOMAIN_DEVICE_TPM)
-            return 0;
-    } else {
-        devalias = "monitor";
-    }
-
-    switch ((virDomainChrType) chardev->type) {
-    case VIR_DOMAIN_CHR_TYPE_NULL:
-    case VIR_DOMAIN_CHR_TYPE_VC:
-    case VIR_DOMAIN_CHR_TYPE_PTY:
-    case VIR_DOMAIN_CHR_TYPE_DEV:
-    case VIR_DOMAIN_CHR_TYPE_PIPE:
-    case VIR_DOMAIN_CHR_TYPE_STDIO:
-    case VIR_DOMAIN_CHR_TYPE_UDP:
-    case VIR_DOMAIN_CHR_TYPE_TCP:
-    case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
-    case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_FILE:
-        fakesourcefd = 1750;
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (chardev->data.nix.listen &&
-            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE))
-            fakesourcefd = 1729;
-
-        usefdset = false;
-        break;
-
-    case VIR_DOMAIN_CHR_TYPE_NMDM:
-    case VIR_DOMAIN_CHR_TYPE_LAST:
-        break;
-    }
-
-    if (fakesourcefd != -1) {
-        if (fcntl(fakesourcefd, F_GETFD) != -1)
-            abort();
-
-        if (usefdset)
-            charpriv->sourcefd = qemuFDPassNew(devalias, priv);
-        else
-            charpriv->sourcefd = qemuFDPassNewDirect(devalias, priv);
-
-        if (qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source") < 0)
-            return -1;
-    }
-
-    if (chardev->logfile) {
-        int fd = 1751;
-
-        if (fcntl(fd, F_GETFD) != -1)
-            abort();
-
-        charpriv->logfd = qemuFDPassNew(devalias, priv);
-
-        if (qemuFDPassAddFD(charpriv->logfd, &fd, "-log") < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
 static virCommand *
 testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                                virDomainObj *vm,
@@ -486,11 +394,11 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         return NULL;
 
     if (qemuDomainDeviceBackendChardevForeach(vm->def,
-                                              testPrepareHostBackendChardevOne,
+                                              testQemuPrepareHostBackendChardevOne,
                                               vm) < 0)
         return NULL;
 
-    if (testPrepareHostBackendChardevOne(NULL, priv->monConfig, vm) < 0)
+    if (testQemuPrepareHostBackendChardevOne(NULL, priv->monConfig, vm) < 0)
         return NULL;
 
     for (i = 0; i < vm->def->ndisks; i++) {

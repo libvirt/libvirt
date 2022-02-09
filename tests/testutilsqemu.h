@@ -143,4 +143,7 @@ void testQemuInfoSetArgs(struct testQemuInfo *info,
 int testQemuInfoInitArgs(struct testQemuInfo *info);
 void testQemuInfoClear(struct testQemuInfo *info);
 
+int testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
+                                         virDomainChrSourceDef *chardev,
+                                         void *opaque);
 #endif
