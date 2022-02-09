@@ -79,7 +79,7 @@ typedef enum {
     VIR_QEMU_PROCESS_START_PRETEND      = 1 << 3,
     VIR_QEMU_PROCESS_START_NEW          = 1 << 4, /* internal, new VM is starting */
     VIR_QEMU_PROCESS_START_GEN_VMID     = 1 << 5, /* Generate a new VMID */
-    VIR_QEMU_PROCESS_START_RESET_NVRAM  = 1 << 5, /* Re-initialize NVRAM from template */
+    VIR_QEMU_PROCESS_START_RESET_NVRAM  = 1 << 6, /* Re-initialize NVRAM from template */
 } qemuProcessStartFlags;
 
 int qemuProcessStart(virConnectPtr conn,
