@@ -664,7 +664,7 @@ mymain(void)
         .netcat = "/tmp/fo o/nc",
         .path = "/tmp/socket",
         .expectOut = "-T -e none -- somehost sh -c '"
-                     "if \'''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                     "if '''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                          "ARG=-q0;"
                      "else "
                          "ARG=;"
