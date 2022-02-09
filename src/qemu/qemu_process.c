@@ -4421,6 +4421,41 @@ qemuProcessUpdateCPU(virQEMUDriver *driver,
 }
 
 
+struct qemuPrepareNVRAMHelperData {
+    int srcFD;
+    const char *srcPath;
+};
+
+static int
+qemuPrepareNVRAMHelper(int dstFD,
+                       const char *dstPath,
+                       const void *opaque)
+{
+    const struct qemuPrepareNVRAMHelperData *data = opaque;
+    ssize_t r;
+
+    do {
+        char buf[1024];
+
+        if ((r = saferead(data->srcFD, buf, sizeof(buf))) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to read from file '%s'"),
+                                 data->srcPath);
+            return -2;
+        }
+
+        if (safewrite(dstFD, buf, r) < 0) {
+            virReportSystemError(errno,
+                                 _("Unable to write to file '%s'"),
+                                 dstPath);
+            return -1;
+        }
+    } while (r);
+
+    return 0;
+}
+
+
 static int
 qemuPrepareNVRAM(virQEMUDriver *driver,
                  virDomainObj *vm,
@@ -4429,12 +4464,9 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
     int srcFD = -1;
-    int dstFD = -1;
     virDomainLoaderDef *loader = vm->def->os.loader;
-    bool created = false;
     const char *master_nvram_path;
-    ssize_t r;
-    g_autofree char *tmp_dst_path = NULL;
+    struct qemuPrepareNVRAMHelperData data;
 
     if (!loader || !loader->nvram ||
         (virFileExists(loader->nvram) && !reset_nvram))
@@ -4466,76 +4498,20 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    tmp_dst_path = g_strdup_printf("%s.tmp", loader->nvram);
-    if ((dstFD = virFileOpenAs(tmp_dst_path,
-                               O_WRONLY | O_CREAT | O_EXCL,
-                               S_IRUSR | S_IWUSR,
-                               cfg->user, cfg->group,
-                               VIR_FILE_OPEN_FORCE_OWNER)) < 0) {
-        virReportSystemError(-dstFD,
-                             _("Failed to create file '%s'"),
-                             tmp_dst_path);
-        goto cleanup;
-    }
+    data.srcFD = srcFD;
+    data.srcPath = master_nvram_path;
 
-    created = true;
-
-    do {
-        char buf[1024];
-
-        if ((r = saferead(srcFD, buf, sizeof(buf))) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to read from file '%s'"),
-                                 master_nvram_path);
-            goto cleanup;
-        }
-
-        if (safewrite(dstFD, buf, r) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to write to file '%s'"),
-                                 tmp_dst_path);
-            goto cleanup;
-        }
-    } while (r);
-
-    if (VIR_CLOSE(srcFD) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to close file '%s'"),
-                             master_nvram_path);
-        goto cleanup;
-    }
-
-    if (g_fsync(dstFD) < 0) {
-        virReportSystemError(errno, _("cannot sync file '%s'"),
-                             tmp_dst_path);
-        goto cleanup;
-    }
-
-    if (VIR_CLOSE(dstFD) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to close file '%s'"),
-                             tmp_dst_path);
-        goto cleanup;
-    }
-
-    if (rename(tmp_dst_path, loader->nvram) < 0) {
-        virReportSystemError(errno,
-                             _("Unable to replace '%s'"),
-                             loader->nvram);
+    if (virFileRewrite(loader->nvram,
+                       S_IRUSR | S_IWUSR,
+                       cfg->user, cfg->group,
+                       qemuPrepareNVRAMHelper,
+                       &data) < 0) {
         goto cleanup;
     }
 
     ret = 0;
  cleanup:
-    /* We successfully generated the nvram path, but failed to
-     * copy the file content. Roll back. */
-    if (ret < 0) {
-        if (created)
-            unlink(tmp_dst_path);
-    }
-
     VIR_FORCE_CLOSE(srcFD);
-    VIR_FORCE_CLOSE(dstFD);
     return ret;
 }
 
