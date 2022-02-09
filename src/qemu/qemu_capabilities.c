@@ -591,7 +591,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 370 */
               "cpu.migratable", /* QEMU_CAPS_CPU_MIGRATABLE */
-              "query-cpu-model-expansion.migratable", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE */
+              "query-cpu-model-expansion.migratable", /* X_QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE */
               "fw_cfg", /* X_QEMU_CAPS_FW_CFG */
               "migration-param.bandwidth", /* QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH */
               "migration-param.downtime", /* QEMU_CAPS_MIGRATION_PARAM_DOWNTIME */
@@ -3088,7 +3088,7 @@ virQEMUCapsProbeQMPHostCPU(virQEMUCaps *qemuCaps,
 
     /* Try to check migratability of each feature. */
     if (modelInfo &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE) &&
+        ARCH_IS_X86(qemuCaps->arch) &&
         qemuMonitorGetCPUModelExpansion(mon, type, cpu, false, fail_no_props,
                                         &nonMigratable) < 0)
         return -1;
@@ -5298,12 +5298,6 @@ virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
     if (ARCH_IS_X86(qemuCaps->arch) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION)) {
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CPU_CACHE);
-
-        /* Old x86 QEMU supported migratable:false property in
-         * query-cpu-model-expansion arguments even though it was not properly
-         * advertised as a CPU property.
-         */
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE);
     }
 
     if (ARCH_IS_S390(qemuCaps->arch)) {
