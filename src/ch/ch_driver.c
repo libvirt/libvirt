@@ -239,7 +239,6 @@ chDomainCreateXML(virConnectPtr conn,
         virDomainObjListRemove(driver->domains, vm);
     }
     virDomainObjEndAPI(&vm);
-    chDriverUnlock(driver);
     return dom;
 }
 
