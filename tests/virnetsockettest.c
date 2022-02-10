@@ -666,15 +666,15 @@ mymain(void)
 
     struct testSSHData sshData7 = {
         .nodename = "somehost",
-        .netcat = "/tmp/fo o/nc",
+        .netcat = "n c",
         .path = "/tmp/socket",
         .expectOut = "-T -e none -- somehost sh -c '"
-                         "if '''\\''/tmp/fo o/nc'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
+                         "if '''\\''n c'\\'''' -q 2>&1 | grep \"requires an argument\" >/dev/null 2>&1; then "
                              "ARG=-q0;"
                          "else "
                              "ARG=;"
                          "fi;"
-                         "'''\\''/tmp/fo o/nc'\\'''' $ARG -U /tmp/socket"
+                         "'''\\''n c'\\'''' $ARG -U /tmp/socket"
                      "'\n",
     };
     VIR_WARNINGS_RESET
