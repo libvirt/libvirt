@@ -180,12 +180,12 @@ static char *
 qemuDomainExtractTLSSubject(const char *certdir)
 {
     g_autofree char *certfile = NULL;
-    char *subject = NULL;
+    g_autofree char *subject = NULL;
     g_autofree char *pemdata = NULL;
     gnutls_datum_t pemdatum;
     gnutls_x509_crt_t cert;
     int rc;
-    size_t subjectlen;
+    size_t subjectlen = 256;
 
     certfile = g_strdup_printf("%s/server-cert.pem", certdir);
 
@@ -214,13 +214,21 @@ qemuDomainExtractTLSSubject(const char *certdir)
         return NULL;
     }
 
-    subjectlen = 1024;
     subject = g_new0(char, subjectlen + 1);
-
-    gnutls_x509_crt_get_dn(cert, subject, &subjectlen);
+    rc = gnutls_x509_crt_get_dn(cert, subject, &subjectlen);
+    if (rc == GNUTLS_E_SHORT_MEMORY_BUFFER) {
+        subject = g_realloc(subject, subjectlen + 1);
+        rc = gnutls_x509_crt_get_dn(cert, subject, &subjectlen);
+    }
+    if (rc != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("cannot get cert distinguished name: %s"),
+                       gnutls_strerror(rc));
+        return NULL;
+    }
     subject[subjectlen] = '\0';
 
-    return subject;
+    return g_steal_pointer(&subject);
 }
 
 
