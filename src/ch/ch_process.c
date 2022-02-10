@@ -470,6 +470,12 @@ virCHProcessStart(virCHDriver *driver,
     g_autofree int *nicindexes = NULL;
     size_t nnicindexes = 0;
 
+    if (virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("VM is already active"));
+        return -1;
+    }
+
     if (!priv->monitor) {
         /* And we can get the first monitor connection now too */
         if (!(priv->monitor = virCHProcessConnectMonitor(driver, vm))) {
