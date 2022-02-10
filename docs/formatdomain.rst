@@ -1662,14 +1662,13 @@ ACPI Heterogeneous Memory Attribute Table
    <cpu>
      ...
      <numa>
-       <cell id='0' cpus='0-3' memory='512000' unit='KiB' discard='yes'/>
-       <cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/>
-       <cell id='3' cpus='0-3' memory='2097152' unit='KiB'>
+       <cell id='0' cpus='0-3' memory='2097152' unit='KiB' discard='yes'>
          <cache level='1' associativity='direct' policy='writeback'>
            <size value='10' unit='KiB'/>
            <line value='8' unit='B'/>
          </cache>
        </cell>
+       <cell id='1' cpus='4-7' memory='512000' unit='KiB' memAccess='shared'/>
        <interconnects>
          <latency initiator='0' target='0' type='access' value='5'/>
          <latency initiator='0' target='0' cache='1' type='access' value='10'/>
