@@ -228,10 +228,11 @@ chDomainCreateXML(virConnectPtr conn,
         goto cleanup;
 
     if (virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0)
-        goto cleanup;
+        goto endjob;
 
     dom = virGetDomain(conn, vm->def->name, vm->def->uuid, vm->def->id);
 
+ endjob:
     virCHDomainObjEndJob(vm);
 
  cleanup:
