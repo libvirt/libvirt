@@ -1312,17 +1312,18 @@ mymain(void)
 
     DO_TEST_PARSE_ERROR("non-x86_64-timer-error", QEMU_CAPS_CCW);
 
-    DO_TEST_CAPS_VER("disk-cdrom", "2.12.0");
+    /* qemu-4.1 was the last qemu version which we didn't use -blockdev with */
+    DO_TEST_CAPS_VER("disk-cdrom", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-cdrom");
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST_CAPS_LATEST("disk-cdrom-bus-other");
-    DO_TEST_CAPS_VER("disk-cdrom-network", "2.12.0");
+    DO_TEST_CAPS_VER("disk-cdrom-network", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
-    DO_TEST_CAPS_VER("disk-cdrom-tray", "2.12.0");
+    DO_TEST_CAPS_VER("disk-cdrom-tray", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
-    DO_TEST_CAPS_VER("disk-floppy", "2.12.0");
+    DO_TEST_CAPS_VER("disk-floppy", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-floppy");
-    DO_TEST_CAPS_VER("disk-floppy-q35", "2.12.0");
+    DO_TEST_CAPS_VER("disk-floppy-q35", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-floppy-q35");
     DO_TEST_CAPS_ARCH_LATEST_FAILURE("disk-floppy-pseries", "ppc64");
     DO_TEST_CAPS_LATEST("disk-floppy-tray");
@@ -1334,9 +1335,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-virtio-queues");
     DO_TEST_CAPS_LATEST("disk-boot-disk");
     DO_TEST_CAPS_LATEST("disk-boot-cdrom");
-    DO_TEST_CAPS_VER("floppy-drive-fat", "2.12.0");
+    DO_TEST_CAPS_VER("floppy-drive-fat", "4.1.0");
     DO_TEST_CAPS_LATEST("floppy-drive-fat");
-    DO_TEST_CAPS_VER("disk-readonly-disk", "2.12.0");
+    DO_TEST_CAPS_VER("disk-readonly-disk", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-readonly-disk");
     DO_TEST_CAPS_VER("disk-fmt-qcow", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-fmt-qcow");
@@ -1359,32 +1360,33 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("disk-transient", "x86_64", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-transient");
-    DO_TEST_CAPS_VER("disk-network-nbd", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-nbd", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-nbd");
-    DO_TEST_CAPS_VER("disk-network-iscsi", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-iscsi", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-iscsi");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-secrettype-invalid");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-iscsi-auth-wrong-secrettype");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-network-source-auth-both");
-    DO_TEST_CAPS_VER("disk-network-gluster", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-gluster", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-gluster");
-    DO_TEST_CAPS_VER("disk-network-rbd", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-rbd", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd");
     DO_TEST_CAPS_VER_PARSE_ERROR("disk-network-rbd-encryption", "6.0.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-encryption");
     DO_TEST_CAPS_VER_FAILURE("disk-network-rbd-no-colon", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-rbd-no-colon");
-    DO_TEST_CAPS_VER("disk-network-sheepdog", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-sheepdog", "4.1.0");
+    /* qemu-6.0 is the last qemu version supporting sheepdog */
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
-    DO_TEST_CAPS_VER("disk-network-source-auth", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-source-auth", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
     DO_TEST_CAPS_LATEST("disk-network-nfs");
     driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
     driver.config->vxhsTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
-    DO_TEST_CAPS_VER("disk-network-tlsx509-nbd", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-nbd", "4.1.0");
     DO_TEST_CAPS_VER("disk-network-tlsx509-nbd", "5.2.0");
-    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "2.12.0");
+    DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
@@ -1408,7 +1410,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-disk-vpd-build-error");
     DO_TEST_CAPS_LATEST("controller-virtio-scsi");
     DO_TEST_CAPS_LATEST("disk-sata-device");
-    DO_TEST_CAPS_VER("disk-aio", "2.12.0");
+    DO_TEST_CAPS_VER("disk-aio", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-aio");
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST_CAPS_VER("disk-source-pool", "4.1.0");
@@ -1416,11 +1418,11 @@ mymain(void)
     DO_TEST_CAPS_VER("disk-source-pool-mode", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-source-pool-mode");
     DO_TEST_CAPS_LATEST("disk-ioeventfd");
-    DO_TEST_CAPS_VER("disk-copy_on_read", "2.12.0");
+    DO_TEST_CAPS_VER("disk-copy_on_read", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-copy_on_read");
     DO_TEST_CAPS_VER("disk-discard", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-discard");
-    DO_TEST_CAPS_VER("disk-detect-zeroes", "2.12.0");
+    DO_TEST_CAPS_VER("disk-detect-zeroes", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-detect-zeroes");
     DO_TEST_CAPS_LATEST("disk-snapshot");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-same-targets");
@@ -1436,9 +1438,9 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-ide-incompatible-address");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-sata-incompatible-address");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-scsi-incompatible-address");
-    DO_TEST_CAPS_VER("disk-backing-chains-index", "2.12.0");
+    DO_TEST_CAPS_VER("disk-backing-chains-index", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-backing-chains-index");
-    DO_TEST_CAPS_VER("disk-backing-chains-noindex", "2.12.0");
+    DO_TEST_CAPS_VER("disk-backing-chains-noindex", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-backing-chains-noindex");
 
     DO_TEST_CAPS_LATEST("disk-slices");
@@ -1465,7 +1467,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-geometry");
     DO_TEST_CAPS_LATEST("disk-blockio");
 
-    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "2.12.0");
+    DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "4.1.0");
     DO_TEST_CAPS_VER("disk-virtio-scsi-reservations", "5.2.0");
     DO_TEST_CAPS_LATEST("disk-virtio-scsi-reservations");
 
