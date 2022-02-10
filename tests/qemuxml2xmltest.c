@@ -333,7 +333,6 @@ mymain(void)
     DO_TEST_NOCAPS("disk-error-policy");
     DO_TEST_CAPS_LATEST("disk-transient");
     DO_TEST_NOCAPS("disk-fmt-qcow");
-    DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST_NOCAPS("disk-network-nbd");
