@@ -184,7 +184,7 @@ qemuDomainExtractTLSSubject(const char *certdir)
     g_autofree char *pemdata = NULL;
     gnutls_datum_t pemdatum;
     gnutls_x509_crt_t cert;
-    int ret;
+    int rc;
     size_t subjectlen;
 
     certfile = g_strdup_printf("%s/server-cert.pem", certdir);
@@ -195,22 +195,22 @@ qemuDomainExtractTLSSubject(const char *certdir)
         return NULL;
     }
 
-    ret = gnutls_x509_crt_init(&cert);
-    if (ret < 0) {
+    rc = gnutls_x509_crt_init(&cert);
+    if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot initialize cert object: %s"),
-                       gnutls_strerror(ret));
+                       gnutls_strerror(rc));
         return NULL;
     }
 
     pemdatum.data = (unsigned char *)pemdata;
     pemdatum.size = strlen(pemdata);
 
-    ret = gnutls_x509_crt_import(cert, &pemdatum, GNUTLS_X509_FMT_PEM);
-    if (ret < 0) {
+    rc = gnutls_x509_crt_import(cert, &pemdatum, GNUTLS_X509_FMT_PEM);
+    if (rc < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("cannot load cert data from %s: %s"),
-                       certfile, gnutls_strerror(ret));
+                       certfile, gnutls_strerror(rc));
         return NULL;
     }
 
