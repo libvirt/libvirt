@@ -496,7 +496,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "blockdev-del", /* QEMU_CAPS_BLOCKDEV_DEL */
               "vmgenid", /* QEMU_CAPS_DEVICE_VMGENID */
               "vhost-vsock", /* QEMU_CAPS_DEVICE_VHOST_VSOCK */
-              "chardev-fd-pass", /* QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE */
+              "chardev-fd-pass", /* X_QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE */
 
               /* 305 */
               "tpm-emulator", /* QEMU_CAPS_DEVICE_TPM_EMULATOR */
@@ -3297,7 +3297,6 @@ struct virQEMUCapsCommandLineProps {
  * in qemu and thus isn't being properly extended. Other means to detect
  * features should be used if possible. */
 static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
-    { "chardev", "fd", QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE },
     { "fsdev", "multidevs", QEMU_CAPS_FSDEV_MULTIDEVS },
     { "overcommit", NULL, QEMU_CAPS_OVERCOMMIT },
     { "sandbox", NULL, QEMU_CAPS_SECCOMP_SANDBOX },

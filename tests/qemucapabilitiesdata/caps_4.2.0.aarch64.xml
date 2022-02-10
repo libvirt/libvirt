@@ -118,7 +118,6 @@
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
-  <flag name='chardev-fd-pass'/>
   <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>

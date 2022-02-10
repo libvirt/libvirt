@@ -120,7 +120,6 @@
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
-  <flag name='chardev-fd-pass'/>
   <flag name='tpm-emulator'/>
   <flag name='machine.pseries.cap-hpt-max-page-size'/>
   <flag name='machine.pseries.cap-htm'/>

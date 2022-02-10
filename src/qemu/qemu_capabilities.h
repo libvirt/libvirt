@@ -471,7 +471,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BLOCKDEV_DEL, /* blockdev-del is supported */
     QEMU_CAPS_DEVICE_VMGENID, /* -device vmgenid */
     QEMU_CAPS_DEVICE_VHOST_VSOCK, /* -device vhost-vsock-* */
-    QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE, /* Passing pre-opened FDs for chardevs on commandline */
+    X_QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE, /* Passing pre-opened FDs for chardevs on commandline */
 
     /* 305 */
     QEMU_CAPS_DEVICE_TPM_EMULATOR, /* -tpmdev emulator */
