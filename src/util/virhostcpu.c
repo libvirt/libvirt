@@ -928,8 +928,14 @@ virHostCPUGetInfo(virArch hostarch G_GNUC_UNUSED,
     *mhz = cpu_freq;
 # else
     if (sysctlbyname("hw.cpufrequency", &cpu_freq, &cpu_freq_len, NULL, 0) < 0) {
-        virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
-        return -1;
+        if (errno == ENOENT) {
+            /* The hw.cpufrequency sysctl is not implemented on Apple Silicon.
+             * In that case, we report 0 instead of erroring out */
+            cpu_freq = 0;
+        } else {
+            virReportSystemError(errno, "%s", _("cannot obtain CPU freq"));
+            return -1;
+        }
     }
 
     *mhz = cpu_freq / 1000000;
