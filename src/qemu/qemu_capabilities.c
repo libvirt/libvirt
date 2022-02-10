@@ -3269,12 +3269,6 @@ virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps)
     if (qemuCaps->arch != hostArch)
         return 0;
 
-    /* We don't have a nice way to probe whether the QEMU binary
-     * contains HVF support, but we know that versions older than
-     * QEMU 2.12 didn't have the feature at all */
-    if (qemuCaps->version < 2012000)
-        return 0;
-
     /* We need the OS to report Hypervisor.framework availability */
     if (sysctlbyname("kern.hv_support", &hv_support, &len, NULL, 0) < 0)
         return 0;
@@ -5311,9 +5305,7 @@ virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
          * query-cpu-model-expansion arguments even though it was not properly
          * advertised as a CPU property.
          */
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_MIGRATABLE) ||
-            qemuCaps->version < 2012000)
-            virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE);
+        virQEMUCapsSet(qemuCaps, QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE);
     }
 
     if (ARCH_IS_S390(qemuCaps->arch)) {
