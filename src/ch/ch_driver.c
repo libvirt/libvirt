@@ -106,9 +106,7 @@ static int chConnectGetVersion(virConnectPtr conn,
     if (virConnectGetVersionEnsureACL(conn) < 0)
         return -1;
 
-    chDriverLock(driver);
     *version = driver->version;
-    chDriverUnlock(driver);
     return 0;
 }
 
