@@ -1297,6 +1297,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
     ssize_t nfirmwares = 0;
     const qemuFirmware *theone = NULL;
     bool needResult = true;
+    const bool reset_nvram = flags & VIR_QEMU_PROCESS_START_RESET_NVRAM;
     size_t i;
     int ret = -1;
 
@@ -1309,7 +1310,7 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * specified and the varstore doesn't exist ... */
         if (!virDomainDefHasOldStyleROUEFI(def) ||
             def->os.loader->templt ||
-            virFileExists(def->os.loader->nvram))
+            (!reset_nvram && virFileExists(def->os.loader->nvram)))
             return 0;
 
         /* ... then we want to consult JSON FW descriptors first,
