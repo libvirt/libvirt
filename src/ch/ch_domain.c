@@ -136,6 +136,15 @@ virCHDomainObjEndJob(virDomainObj *obj)
     virCondSignal(&priv->job.cond);
 }
 
+void
+virCHDomainRemoveInactive(virCHDriver *driver,
+                          virDomainObj *vm)
+{
+    if (vm->persistent) {
+        virDomainObjListRemove(driver->domains, vm);
+    }
+}
+
 static void *
 virCHDomainObjPrivateAlloc(void *opaque)
 {

@@ -88,6 +88,10 @@ virCHDomainObjBeginJob(virDomainObj *obj, enum virCHDomainJob job)
 void
 virCHDomainObjEndJob(virDomainObj *obj);
 
+void
+virCHDomainRemoveInactive(virCHDriver *driver,
+                          virDomainObj *vm);
+
 int
 virCHDomainRefreshThreadInfo(virDomainObj *vm);
 

@@ -237,7 +237,7 @@ chDomainCreateXML(virConnectPtr conn,
 
  cleanup:
     if (vm && !dom) {
-        virDomainObjListRemove(driver->domains, vm);
+        virCHDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
     return dom;
@@ -342,10 +342,9 @@ chDomainUndefineFlags(virDomainPtr dom,
         goto cleanup;
     }
 
-    if (virDomainObjIsActive(vm)) {
-        vm->persistent = 0;
-    } else {
-        virDomainObjListRemove(driver->domains, vm);
+    vm->persistent = 0;
+    if (!virDomainObjIsActive(vm)) {
+        virCHDomainRemoveInactive(driver, vm);
     }
 
     ret = 0;
@@ -608,12 +607,14 @@ chDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    ret = virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED);
+    if (virCHProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED) < 0)
+        goto endjob;
+
+    virCHDomainRemoveInactive(driver, vm);
+    ret = 0;
 
  endjob:
     virCHDomainObjEndJob(vm);
-    if (!vm->persistent)
-        virDomainObjListRemove(driver->domains, vm);
 
  cleanup:
     virDomainObjEndAPI(&vm);
