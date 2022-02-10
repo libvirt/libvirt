@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=spice \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -m 4096 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid d091ea82-29e6-2e34-3005-f02617b36e87 \
 -no-user-config \

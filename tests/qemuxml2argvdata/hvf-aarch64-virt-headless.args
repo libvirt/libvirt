@@ -16,7 +16,7 @@ QEMU_AUDIO_DRV=none \
 -drive file=/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw,if=pflash,format=raw,unit=0,readonly=on \
 -drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 4096 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
 -uuid 1b826c23-8767-47ad-a6b5-c83a88277f71 \
 -display none \

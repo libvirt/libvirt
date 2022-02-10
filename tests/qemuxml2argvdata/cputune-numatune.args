@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
 -m 128 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 2,maxcpus=6,sockets=6,cores=1,threads=1 \
 -object iothread,id=iothread1 \
 -object iothread,id=iothread2 \

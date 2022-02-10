@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -accel kvm \
 -cpu core2duo,ds=on,ht=on,tm=on,ds-cpl=on,xtpr=on,3dnowext=on,lahf-lm=on,nx=off,cx16=off,tm2=off,pbe=off,ss=off,sse4a=off,wdt=off \
 -m 214 \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \

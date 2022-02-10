@@ -14,7 +14,7 @@ QEMU_AUDIO_DRV=none \
 -machine pc,usb=off,dump-guest-core=off \
 -accel tcg \
 -m size=4194304k,slots=16,maxmem=8388608k \
--realtime mlock=off \
+-overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -object memory-backend-file,id=ram-node0,mem-path=/var/lib/libvirt/qemu/ram/-1-QEMUGuest1/ram-node0,share=off,size=1073741824,host-nodes=0-3,policy=bind \
 -numa node,nodeid=0,cpus=0,memdev=ram-node0 \
