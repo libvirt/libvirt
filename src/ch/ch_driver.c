@@ -363,11 +363,9 @@ chDomainUndefine(virDomainPtr dom)
 
 static int chDomainIsActive(virDomainPtr dom)
 {
-    virCHDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     int ret = -1;
 
-    chDriverLock(driver);
     if (!(vm = virCHDomainObjFromDomain(dom)))
         goto cleanup;
 
@@ -378,7 +376,6 @@ static int chDomainIsActive(virDomainPtr dom)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    chDriverUnlock(driver);
     return ret;
 }
 
@@ -636,9 +633,7 @@ static virDomainPtr chDomainLookupByID(virConnectPtr conn,
     virDomainObj *vm;
     virDomainPtr dom = NULL;
 
-    chDriverLock(driver);
     vm = virDomainObjListFindByID(driver->domains, id);
-    chDriverUnlock(driver);
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -663,9 +658,7 @@ static virDomainPtr chDomainLookupByName(virConnectPtr conn,
     virDomainObj *vm;
     virDomainPtr dom = NULL;
 
-    chDriverLock(driver);
     vm = virDomainObjListFindByName(driver->domains, name);
-    chDriverUnlock(driver);
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -690,9 +683,7 @@ static virDomainPtr chDomainLookupByUUID(virConnectPtr conn,
     virDomainObj *vm;
     virDomainPtr dom = NULL;
 
-    chDriverLock(driver);
     vm = virDomainObjListFindByUUID(driver->domains, uuid);
-    chDriverUnlock(driver);
 
     if (!vm) {
         char uuidstr[VIR_UUID_STRING_BUFLEN];
