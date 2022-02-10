@@ -3052,9 +3052,16 @@ qemuProcessUpdateVideoRamSize(virQEMUDriver *driver,
                     goto error;
             }
             break;
+        case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
         case VIR_DOMAIN_VIDEO_TYPE_CIRRUS:
         case VIR_DOMAIN_VIDEO_TYPE_XEN:
         case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+        case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+        case VIR_DOMAIN_VIDEO_TYPE_GOP:
+        case VIR_DOMAIN_VIDEO_TYPE_NONE:
+        case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+        case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
         case VIR_DOMAIN_VIDEO_TYPE_LAST:
             break;
         }

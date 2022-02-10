@@ -2378,6 +2378,16 @@ libxlMakeVideo(virDomainDef *def, libxl_domain_config *d_config)
             }
             break;
 
+        case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+        case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+        case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+        case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+        case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+        case VIR_DOMAIN_VIDEO_TYPE_GOP:
+        case VIR_DOMAIN_VIDEO_TYPE_NONE:
+        case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+        case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+        case VIR_DOMAIN_VIDEO_TYPE_LAST:
         default:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("video type %s is not supported by libxl"),

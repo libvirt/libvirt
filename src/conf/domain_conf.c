@@ -12868,7 +12868,6 @@ virDomainVideoModelDefParseXML(virDomainVideoDef *def,
     xmlNodePtr accel_node;
     xmlNodePtr res_node;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    virDomainVideoType type;
     virTristateBool primary;
 
     ctxt->node = node;
@@ -12886,10 +12885,9 @@ virDomainVideoModelDefParseXML(virDomainVideoDef *def,
 
     if (virXMLPropEnumDefault(node, "type",
                               virDomainVideoTypeFromString,
-                              VIR_XML_PROP_NONE, &type,
+                              VIR_XML_PROP_NONE, &def->type,
                               VIR_DOMAIN_VIDEO_TYPE_DEFAULT) < 0)
         return -1;
-    def->type = type;
 
     if (virXMLPropUInt(node, "ram", 10, VIR_XML_PROP_NONE, &def->ram) < 0)
         return -1;

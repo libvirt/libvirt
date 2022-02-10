@@ -1815,7 +1815,7 @@ struct _virDomainVideoDriverDef {
 struct _virDomainVideoDef {
     virObject *privateData;
 
-    int type;   /* enum virDomainVideoType */
+    virDomainVideoType type;
     unsigned int ram;  /* kibibytes (multiples of 1024) */
     unsigned int vram; /* kibibytes (multiples of 1024) */
     unsigned int vram64; /* kibibytes (multiples of 1024) */

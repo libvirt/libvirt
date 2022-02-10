@@ -201,6 +201,17 @@ libxlDomainDeviceDefPostParse(virDomainDeviceDef *dev,
                     if (dev->data.video->vram == 0)
                         dev->data.video->vram = 128 * 1024;
                     break;
+                case VIR_DOMAIN_VIDEO_TYPE_DEFAULT:
+                case VIR_DOMAIN_VIDEO_TYPE_VMVGA:
+                case VIR_DOMAIN_VIDEO_TYPE_VBOX:
+                case VIR_DOMAIN_VIDEO_TYPE_PARALLELS:
+                case VIR_DOMAIN_VIDEO_TYPE_VIRTIO:
+                case VIR_DOMAIN_VIDEO_TYPE_GOP:
+                case VIR_DOMAIN_VIDEO_TYPE_NONE:
+                case VIR_DOMAIN_VIDEO_TYPE_BOCHS:
+                case VIR_DOMAIN_VIDEO_TYPE_RAMFB:
+                case VIR_DOMAIN_VIDEO_TYPE_LAST:
+                    break;
             }
         }
     }
