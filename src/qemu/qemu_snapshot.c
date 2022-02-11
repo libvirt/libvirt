@@ -1414,13 +1414,12 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
     /* do the memory snapshot if necessary */
     if (memory) {
-        qemuDomainJobDataPrivate *privJobCurrent = priv->job.current->privateData;
-
         /* check if migration is possible */
         if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
             goto cleanup;
 
-        privJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
+        qemuDomainJobSetStatsType(priv->job.current,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
         /* allow the migration job to be cancelled or the domain to be paused */
         qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |

@@ -2637,7 +2637,6 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     int ret = -1;
     virObjectEvent *event = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobDataPrivate *privJobCurrent = priv->job.current->privateData;
     virQEMUSaveData *data = NULL;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
@@ -2654,7 +2653,8 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
     }
 
-    privJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
+    qemuDomainJobSetStatsType(priv->job.current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -2995,9 +2995,8 @@ qemuDumpToFd(virQEMUDriver *driver,
         return -1;
 
     if (detach) {
-        qemuDomainJobDataPrivate *privStats = priv->job.current->privateData;
-
-        privStats->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
+        qemuDomainJobSetStatsType(priv->job.current,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP);
     } else {
         g_clear_pointer(&priv->job.current, virDomainJobDataFree);
     }
@@ -3135,7 +3134,6 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     qemuDomainObjPrivate *priv = NULL;
-    qemuDomainJobDataPrivate *privJobCurrent = NULL;
     bool resume = false, paused = false;
     int ret = -1;
     virObjectEvent *event = NULL;
@@ -3160,8 +3158,8 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         goto endjob;
 
     priv = vm->privateData;
-    privJobCurrent = priv->job.current->privateData;
-    privJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
+    qemuDomainJobSetStatsType(priv->job.current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */

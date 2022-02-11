@@ -174,6 +174,9 @@ struct _qemuDomainJobObj {
     qemuDomainObjPrivateJobCallbacks *cb;
 };
 
+void qemuDomainJobSetStatsType(virDomainJobData *jobData,
+                               qemuDomainJobStatsType type);
+
 const char *qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                             int phase);
 int qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,

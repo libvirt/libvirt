@@ -95,6 +95,16 @@ virDomainJobDataPrivateDataCallbacks qemuJobDataPrivateDataCallbacks = {
 };
 
 
+void
+qemuDomainJobSetStatsType(virDomainJobData *jobData,
+                          qemuDomainJobStatsType type)
+{
+    qemuDomainJobDataPrivate *privData = jobData->privateData;
+
+    privData->statsType = type;
+}
+
+
 const char *
 qemuDomainAsyncJobPhaseToString(qemuDomainAsyncJob job,
                                 int phase G_GNUC_UNUSED)

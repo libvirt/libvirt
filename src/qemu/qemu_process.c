@@ -3597,7 +3597,6 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
                       unsigned int *stopFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobDataPrivate *privDataJobCurrent = NULL;
     virDomainState state;
     int reason;
     unsigned long long now;
@@ -3666,10 +3665,10 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
          * active. This is possible because we are able to recover the state
          * of blockjobs and also the backup job allows all sub-job types */
         priv->job.current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
-        privDataJobCurrent = priv->job.current->privateData;
 
+        qemuDomainJobSetStatsType(priv->job.current,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP);
         priv->job.current->operation = VIR_DOMAIN_JOB_OPERATION_BACKUP;
-        privDataJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP;
         priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
         priv->job.current->started = now;
         break;

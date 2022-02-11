@@ -5853,11 +5853,10 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     if (dom) {
         if (jobData) {
-            qemuDomainJobDataPrivate *privJob = jobData->privateData;
-
             priv->job.completed = g_steal_pointer(&jobData);
             priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
-            privJob->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
+            qemuDomainJobSetStatsType(jobData,
+                                      QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
         }
 
         if (qemuMigrationCookieFormat(mig, driver, vm,
@@ -6099,7 +6098,6 @@ qemuMigrationJobStart(virQEMUDriver *driver,
                       unsigned long apiFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobDataPrivate *privJob = priv->job.current->privateData;
     virDomainJobOperation op;
     unsigned long long mask;
 
@@ -6116,7 +6114,8 @@ qemuMigrationJobStart(virQEMUDriver *driver,
     if (qemuDomainObjBeginAsyncJob(driver, vm, job, op, apiFlags) < 0)
         return -1;
 
-    privJob->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION;
+    qemuDomainJobSetStatsType(priv->job.current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
 
     qemuDomainObjSetAsyncJobMask(vm, mask);
     return 0;

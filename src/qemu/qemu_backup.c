@@ -745,7 +745,6 @@ qemuBackupBegin(virDomainObj *vm,
                 unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobDataPrivate *privData = priv->job.current->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
     g_autoptr(virDomainBackupDef) def = NULL;
     g_autofree char *suffix = NULL;
@@ -799,7 +798,8 @@ qemuBackupBegin(virDomainObj *vm,
     qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
                                       JOB_MASK(QEMU_JOB_SUSPEND) |
                                       JOB_MASK(QEMU_JOB_MODIFY)));
-    privData->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP;
+    qemuDomainJobSetStatsType(priv->job.current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP);
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
