@@ -45,12 +45,12 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
 
 void
 qemuBackupJobTerminate(virDomainObj *vm,
-                       qemuDomainJobStatus jobstatus);
+                       virDomainJobStatus jobstatus);
 
 int
 qemuBackupGetJobInfoStats(virQEMUDriver *driver,
                           virDomainObj *vm,
-                          qemuDomainJobInfo *jobInfo);
+                          virDomainJobData *jobData);
 
 /* exported for testing */
 int

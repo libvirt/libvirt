@@ -166,7 +166,7 @@ qemuMigrationCookieFree(qemuMigrationCookie *mig)
     g_free(mig->name);
     g_free(mig->lockState);
     g_free(mig->lockDriver);
-    g_clear_pointer(&mig->jobInfo, qemuDomainJobInfoFree);
+    g_clear_pointer(&mig->jobData, virDomainJobDataFree);
     virCPUDefFree(mig->cpu);
     qemuMigrationCookieCapsFree(mig->caps);
     if (mig->blockDirtyBitmaps)
@@ -539,8 +539,8 @@ qemuMigrationCookieAddStatistics(qemuMigrationCookie *mig,
     if (!priv->job.completed)
         return 0;
 
-    g_clear_pointer(&mig->jobInfo, qemuDomainJobInfoFree);
-    mig->jobInfo = qemuDomainJobInfoCopy(priv->job.completed);
+    g_clear_pointer(&mig->jobData, virDomainJobDataFree);
+    mig->jobData = virDomainJobDataCopy(priv->job.completed);
 
     mig->flags |= QEMU_MIGRATION_COOKIE_STATS;
 
@@ -640,22 +640,23 @@ qemuMigrationCookieNetworkXMLFormat(virBuffer *buf,
 
 static void
 qemuMigrationCookieStatisticsXMLFormat(virBuffer *buf,
-                                       qemuDomainJobInfo *jobInfo)
+                                       virDomainJobData *jobData)
 {
-    qemuMonitorMigrationStats *stats = &jobInfo->stats.mig;
+    qemuDomainJobDataPrivate *priv = jobData->privateData;
+    qemuMonitorMigrationStats *stats = &priv->stats.mig;
 
     virBufferAddLit(buf, "<statistics>\n");
     virBufferAdjustIndent(buf, 2);
 
-    virBufferAsprintf(buf, "<started>%llu</started>\n", jobInfo->started);
-    virBufferAsprintf(buf, "<stopped>%llu</stopped>\n", jobInfo->stopped);
-    virBufferAsprintf(buf, "<sent>%llu</sent>\n", jobInfo->sent);
-    if (jobInfo->timeDeltaSet)
-        virBufferAsprintf(buf, "<delta>%lld</delta>\n", jobInfo->timeDelta);
+    virBufferAsprintf(buf, "<started>%llu</started>\n", jobData->started);
+    virBufferAsprintf(buf, "<stopped>%llu</stopped>\n", jobData->stopped);
+    virBufferAsprintf(buf, "<sent>%llu</sent>\n", jobData->sent);
+    if (jobData->timeDeltaSet)
+        virBufferAsprintf(buf, "<delta>%lld</delta>\n", jobData->timeDelta);
 
     virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                       VIR_DOMAIN_JOB_TIME_ELAPSED,
-                      jobInfo->timeElapsed);
+                      jobData->timeElapsed);
     if (stats->downtime_set)
         virBufferAsprintf(buf, "<%1$s>%2$llu</%1$s>\n",
                           VIR_DOMAIN_JOB_DOWNTIME,
@@ -892,8 +893,8 @@ qemuMigrationCookieXMLFormat(virQEMUDriver *driver,
     if ((mig->flags & QEMU_MIGRATION_COOKIE_NBD) && mig->nbd)
         qemuMigrationCookieNBDXMLFormat(mig->nbd, buf);
 
-    if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo)
-        qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobInfo);
+    if (mig->flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobData)
+        qemuMigrationCookieStatisticsXMLFormat(buf, mig->jobData);
 
     if (mig->flags & QEMU_MIGRATION_COOKIE_CPU && mig->cpu)
         virCPUDefFormatBufFull(buf, mig->cpu, NULL);
@@ -1039,29 +1040,30 @@ qemuMigrationCookieNBDXMLParse(xmlXPathContextPtr ctxt)
 }
 
 
-static qemuDomainJobInfo *
+static virDomainJobData *
 qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
 {
-    qemuDomainJobInfo *jobInfo = NULL;
+    virDomainJobData *jobData = NULL;
     qemuMonitorMigrationStats *stats;
+    qemuDomainJobDataPrivate *priv = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     if (!(ctxt->node = virXPathNode("./statistics", ctxt)))
         return NULL;
 
-    jobInfo = g_new0(qemuDomainJobInfo, 1);
+    jobData = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+    priv = jobData->privateData;
+    stats = &priv->stats.mig;
+    jobData->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
 
-    stats = &jobInfo->stats.mig;
-    jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
-
-    virXPathULongLong("string(./started[1])", ctxt, &jobInfo->started);
-    virXPathULongLong("string(./stopped[1])", ctxt, &jobInfo->stopped);
-    virXPathULongLong("string(./sent[1])", ctxt, &jobInfo->sent);
-    if (virXPathLongLong("string(./delta[1])", ctxt, &jobInfo->timeDelta) == 0)
-        jobInfo->timeDeltaSet = true;
+    virXPathULongLong("string(./started[1])", ctxt, &jobData->started);
+    virXPathULongLong("string(./stopped[1])", ctxt, &jobData->stopped);
+    virXPathULongLong("string(./sent[1])", ctxt, &jobData->sent);
+    if (virXPathLongLong("string(./delta[1])", ctxt, &jobData->timeDelta) == 0)
+        jobData->timeDeltaSet = true;
 
     virXPathULongLong("string(./" VIR_DOMAIN_JOB_TIME_ELAPSED "[1])",
-                      ctxt, &jobInfo->timeElapsed);
+                      ctxt, &jobData->timeElapsed);
 
     if (virXPathULongLong("string(./" VIR_DOMAIN_JOB_DOWNTIME "[1])",
                           ctxt, &stats->downtime) == 0)
@@ -1121,7 +1123,7 @@ qemuMigrationCookieStatisticsXMLParse(xmlXPathContextPtr ctxt)
     virXPathInt("string(./" VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE "[1])",
                 ctxt, &stats->cpu_throttle_percentage);
 
-    return jobInfo;
+    return jobData;
 }
 
 
@@ -1393,7 +1395,7 @@ qemuMigrationCookieXMLParse(qemuMigrationCookie *mig,
 
     if (flags & QEMU_MIGRATION_COOKIE_STATS &&
         virXPathBoolean("boolean(./statistics)", ctxt) &&
-        (!(mig->jobInfo = qemuMigrationCookieStatisticsXMLParse(ctxt))))
+        (!(mig->jobData = qemuMigrationCookieStatisticsXMLParse(ctxt))))
         return -1;
 
     if (flags & QEMU_MIGRATION_COOKIE_CPU &&
@@ -1554,8 +1556,8 @@ qemuMigrationCookieParse(virQEMUDriver *driver,
         }
     }
 
-    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobInfo && priv->job.current)
-        mig->jobInfo->operation = priv->job.current->operation;
+    if (flags & QEMU_MIGRATION_COOKIE_STATS && mig->jobData && priv->job.current)
+        mig->jobData->operation = priv->job.current->operation;
 
     return g_steal_pointer(&mig);
 }

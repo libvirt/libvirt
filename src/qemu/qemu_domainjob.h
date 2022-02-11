@@ -20,6 +20,7 @@
 
 #include <glib-object.h>
 #include "qemu_monitor.h"
+#include "domain_job.h"
 
 #define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
 #define QEMU_JOB_DEFAULT_MASK \
@@ -79,17 +80,6 @@ typedef enum {
 } qemuDomainAsyncJob;
 VIR_ENUM_DECL(qemuDomainAsyncJob);
 
-typedef enum {
-    QEMU_DOMAIN_JOB_STATUS_NONE = 0,
-    QEMU_DOMAIN_JOB_STATUS_ACTIVE,
-    QEMU_DOMAIN_JOB_STATUS_MIGRATING,
-    QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED,
-    QEMU_DOMAIN_JOB_STATUS_PAUSED,
-    QEMU_DOMAIN_JOB_STATUS_POSTCOPY,
-    QEMU_DOMAIN_JOB_STATUS_COMPLETED,
-    QEMU_DOMAIN_JOB_STATUS_FAILED,
-    QEMU_DOMAIN_JOB_STATUS_CANCELED,
-} qemuDomainJobStatus;
 
 typedef enum {
     QEMU_DOMAIN_JOB_STATS_TYPE_NONE = 0,
@@ -114,24 +104,8 @@ struct _qemuDomainBackupStats {
     unsigned long long tmp_total;
 };
 
-typedef struct _qemuDomainJobInfo qemuDomainJobInfo;
-struct _qemuDomainJobInfo {
-    qemuDomainJobStatus status;
-    virDomainJobOperation operation;
-    unsigned long long started; /* When the async job started */
-    unsigned long long stopped; /* When the domain's CPUs were stopped */
-    unsigned long long sent; /* When the source sent status info to the
-                                destination (only for migrations). */
-    unsigned long long received; /* When the destination host received status
-                                    info from the source (migrations only). */
-    /* Computed values */
-    unsigned long long timeElapsed;
-    long long timeDelta; /* delta = received - sent, i.e., the difference
-                            between the source and the destination time plus
-                            the time between the end of Perform phase on the
-                            source and the beginning of Finish phase on the
-                            destination. */
-    bool timeDeltaSet;
+typedef struct _qemuDomainJobDataPrivate qemuDomainJobDataPrivate;
+struct _qemuDomainJobDataPrivate {
     /* Raw values from QEMU */
     qemuDomainJobStatsType statsType;
     union {
@@ -140,17 +114,9 @@ struct _qemuDomainJobInfo {
         qemuDomainBackupStats backup;
     } stats;
     qemuDomainMirrorStats mirrorStats;
-
-    char *errmsg; /* optional error message for failed completed jobs */
 };
 
-void
-qemuDomainJobInfoFree(qemuDomainJobInfo *info);
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuDomainJobInfo, qemuDomainJobInfoFree);
-
-qemuDomainJobInfo *
-qemuDomainJobInfoCopy(qemuDomainJobInfo *info);
+extern virDomainJobDataPrivateDataCallbacks qemuJobDataPrivateDataCallbacks;
 
 typedef struct _qemuDomainJobObj qemuDomainJobObj;
 
@@ -198,8 +164,8 @@ struct _qemuDomainJobObj {
     unsigned long long asyncStarted;    /* When the current async job started */
     int phase;                          /* Job phase (mainly for migrations) */
     unsigned long long mask;            /* Jobs allowed during async job */
-    qemuDomainJobInfo *current;       /* async job progress data */
-    qemuDomainJobInfo *completed;     /* statistics data of a recently completed job */
+    virDomainJobData *current;       /* async job progress data */
+    virDomainJobData *completed;     /* statistics data of a recently completed job */
     bool abortJob;                      /* abort of the job requested */
     char *error;                        /* job event completion error */
     unsigned long apiFlags; /* flags passed to the API which started the async job */
@@ -256,14 +222,14 @@ void qemuDomainObjDiscardAsyncJob(virQEMUDriver *driver,
                                   virDomainObj *obj);
 void qemuDomainObjReleaseAsyncJob(virDomainObj *obj);
 
-int qemuDomainJobInfoUpdateTime(qemuDomainJobInfo *jobInfo)
+int qemuDomainJobDataUpdateTime(virDomainJobData *jobData)
     ATTRIBUTE_NONNULL(1);
-int qemuDomainJobInfoUpdateDowntime(qemuDomainJobInfo *jobInfo)
+int qemuDomainJobDataUpdateDowntime(virDomainJobData *jobData)
     ATTRIBUTE_NONNULL(1);
-int qemuDomainJobInfoToInfo(qemuDomainJobInfo *jobInfo,
+int qemuDomainJobDataToInfo(virDomainJobData *jobData,
                             virDomainJobInfoPtr info)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int qemuDomainJobInfoToParams(qemuDomainJobInfo *jobInfo,
+int qemuDomainJobDataToParams(virDomainJobData *jobData,
                               int *type,
                               virTypedParameterPtr *params,
                               int *nparams)

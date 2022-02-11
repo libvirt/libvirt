@@ -2637,6 +2637,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
     int ret = -1;
     virObjectEvent *event = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobDataPrivate *privJobCurrent = priv->job.current->privateData;
     virQEMUSaveData *data = NULL;
     g_autoptr(qemuDomainSaveCookie) cookie = NULL;
 
@@ -2653,7 +2654,7 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
         goto endjob;
     }
 
-    priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
+    privJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
 
     /* Pause */
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -2946,6 +2947,7 @@ qemuDumpWaitForCompletion(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobDataPrivate *privJobCurrent = priv->job.current->privateData;
 
     VIR_DEBUG("Waiting for dump completion");
     while (!jobPriv->dumpCompleted && !priv->job.abortJob) {
@@ -2953,7 +2955,7 @@ qemuDumpWaitForCompletion(virDomainObj *vm)
             return -1;
     }
 
-    if (priv->job.current->stats.dump.status == QEMU_MONITOR_DUMP_STATUS_FAILED) {
+    if (privJobCurrent->stats.dump.status == QEMU_MONITOR_DUMP_STATUS_FAILED) {
         if (priv->job.error)
             virReportError(VIR_ERR_OPERATION_FAILED,
                            _("memory-only dump failed: %s"),
@@ -2964,7 +2966,7 @@ qemuDumpWaitForCompletion(virDomainObj *vm)
 
         return -1;
     }
-    qemuDomainJobInfoUpdateTime(priv->job.current);
+    qemuDomainJobDataUpdateTime(priv->job.current);
 
     return 0;
 }
@@ -2992,10 +2994,13 @@ qemuDumpToFd(virQEMUDriver *driver,
     if (qemuSecuritySetImageFDLabel(driver->securityManager, vm->def, fd) < 0)
         return -1;
 
-    if (detach)
-        priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
-    else
-        g_clear_pointer(&priv->job.current, qemuDomainJobInfoFree);
+    if (detach) {
+        qemuDomainJobDataPrivate *privStats = priv->job.current->privateData;
+
+        privStats->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP;
+    } else {
+        g_clear_pointer(&priv->job.current, virDomainJobDataFree);
+    }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
@@ -3130,6 +3135,7 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     qemuDomainObjPrivate *priv = NULL;
+    qemuDomainJobDataPrivate *privJobCurrent = NULL;
     bool resume = false, paused = false;
     int ret = -1;
     virObjectEvent *event = NULL;
@@ -3154,7 +3160,8 @@ qemuDomainCoreDumpWithFormat(virDomainPtr dom,
         goto endjob;
 
     priv = vm->privateData;
-    priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
+    privJobCurrent = priv->job.current->privateData;
+    privJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP;
 
     /* Migrate will always stop the VM, so the resume condition is
        independent of whether the stop command is issued.  */
@@ -12422,28 +12429,30 @@ qemuConnectBaselineHypervisorCPU(virConnectPtr conn,
 static int
 qemuDomainGetJobInfoMigrationStats(virQEMUDriver *driver,
                                    virDomainObj *vm,
-                                   qemuDomainJobInfo *jobInfo)
+                                   virDomainJobData *jobData)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobDataPrivate *privStats = jobData->privateData;
+
     bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
 
-    if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_MIGRATING ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_QEMU_COMPLETED ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY) {
+    if (jobData->status == VIR_DOMAIN_JOB_STATUS_ACTIVE ||
+        jobData->status == VIR_DOMAIN_JOB_STATUS_MIGRATING ||
+        jobData->status == VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED ||
+        jobData->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
         if (events &&
-            jobInfo->status != QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
+            jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE &&
             qemuMigrationAnyFetchStats(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                       jobInfo, NULL) < 0)
+                                       jobData, NULL) < 0)
             return -1;
 
-        if (jobInfo->status == QEMU_DOMAIN_JOB_STATUS_ACTIVE &&
-            jobInfo->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION &&
+        if (jobData->status == VIR_DOMAIN_JOB_STATUS_ACTIVE &&
+            privStats->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION &&
             qemuMigrationSrcFetchMirrorStats(driver, vm, QEMU_ASYNC_JOB_NONE,
-                                             jobInfo) < 0)
+                                             jobData) < 0)
             return -1;
 
-        if (qemuDomainJobInfoUpdateTime(jobInfo) < 0)
+        if (qemuDomainJobDataUpdateTime(jobData) < 0)
             return -1;
     }
 
@@ -12454,9 +12463,10 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriver *driver,
 static int
 qemuDomainGetJobInfoDumpStats(virQEMUDriver *driver,
                               virDomainObj *vm,
-                              qemuDomainJobInfo *jobInfo)
+                              virDomainJobData *jobData)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobDataPrivate *privJob = jobData->privateData;
     qemuMonitorDumpStats stats = { 0 };
     int rc;
 
@@ -12469,33 +12479,33 @@ qemuDomainGetJobInfoDumpStats(virQEMUDriver *driver,
     if (rc < 0)
         return -1;
 
-    jobInfo->stats.dump = stats;
+    privJob->stats.dump = stats;
 
-    if (qemuDomainJobInfoUpdateTime(jobInfo) < 0)
+    if (qemuDomainJobDataUpdateTime(jobData) < 0)
         return -1;
 
-    switch (jobInfo->stats.dump.status) {
+    switch (privJob->stats.dump.status) {
     case QEMU_MONITOR_DUMP_STATUS_NONE:
     case QEMU_MONITOR_DUMP_STATUS_FAILED:
     case QEMU_MONITOR_DUMP_STATUS_LAST:
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("dump query failed, status=%d"),
-                       jobInfo->stats.dump.status);
+                       privJob->stats.dump.status);
         return -1;
         break;
 
     case QEMU_MONITOR_DUMP_STATUS_ACTIVE:
-        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
+        jobData->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
         VIR_DEBUG("dump active, bytes written='%llu' remaining='%llu'",
-                  jobInfo->stats.dump.completed,
-                  jobInfo->stats.dump.total -
-                  jobInfo->stats.dump.completed);
+                  privJob->stats.dump.completed,
+                  privJob->stats.dump.total -
+                  privJob->stats.dump.completed);
         break;
 
     case QEMU_MONITOR_DUMP_STATUS_COMPLETED:
-        jobInfo->status = QEMU_DOMAIN_JOB_STATUS_COMPLETED;
+        jobData->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
         VIR_DEBUG("dump completed, bytes written='%llu'",
-                  jobInfo->stats.dump.completed);
+                  privJob->stats.dump.completed);
         break;
     }
 
@@ -12507,16 +12517,17 @@ static int
 qemuDomainGetJobStatsInternal(virQEMUDriver *driver,
                               virDomainObj *vm,
                               bool completed,
-                              qemuDomainJobInfo **jobInfo)
+                              virDomainJobData **jobData)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobDataPrivate *privStats = NULL;
     int ret = -1;
 
-    *jobInfo = NULL;
+    *jobData = NULL;
 
     if (completed) {
         if (priv->job.completed && !priv->job.current)
-            *jobInfo = qemuDomainJobInfoCopy(priv->job.completed);
+            *jobData = virDomainJobDataCopy(priv->job.completed);
 
         return 0;
     }
@@ -12538,22 +12549,24 @@ qemuDomainGetJobStatsInternal(virQEMUDriver *driver,
         ret = 0;
         goto cleanup;
     }
-    *jobInfo = qemuDomainJobInfoCopy(priv->job.current);
+    *jobData = virDomainJobDataCopy(priv->job.current);
 
-    switch ((*jobInfo)->statsType) {
+    privStats = (*jobData)->privateData;
+
+    switch (privStats->statsType) {
     case QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION:
     case QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP:
-        if (qemuDomainGetJobInfoMigrationStats(driver, vm, *jobInfo) < 0)
+        if (qemuDomainGetJobInfoMigrationStats(driver, vm, *jobData) < 0)
             goto cleanup;
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_MEMDUMP:
-        if (qemuDomainGetJobInfoDumpStats(driver, vm, *jobInfo) < 0)
+        if (qemuDomainGetJobInfoDumpStats(driver, vm, *jobData) < 0)
             goto cleanup;
         break;
 
     case QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP:
-        if (qemuBackupGetJobInfoStats(driver, vm, *jobInfo) < 0)
+        if (qemuBackupGetJobInfoStats(driver, vm, *jobData) < 0)
             goto cleanup;
         break;
 
@@ -12574,7 +12587,7 @@ qemuDomainGetJobInfo(virDomainPtr dom,
                      virDomainJobInfoPtr info)
 {
     virQEMUDriver *driver = dom->conn->privateData;
-    g_autoptr(qemuDomainJobInfo) jobInfo = NULL;
+    g_autoptr(virDomainJobData) jobData = NULL;
     virDomainObj *vm;
     int ret = -1;
 
@@ -12586,16 +12599,16 @@ qemuDomainGetJobInfo(virDomainPtr dom,
     if (virDomainGetJobInfoEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (qemuDomainGetJobStatsInternal(driver, vm, false, &jobInfo) < 0)
+    if (qemuDomainGetJobStatsInternal(driver, vm, false, &jobData) < 0)
         goto cleanup;
 
-    if (!jobInfo ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_NONE) {
+    if (!jobData ||
+        jobData->status == VIR_DOMAIN_JOB_STATUS_NONE) {
         ret = 0;
         goto cleanup;
     }
 
-    ret = qemuDomainJobInfoToInfo(jobInfo, info);
+    ret = qemuDomainJobDataToInfo(jobData, info);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -12613,7 +12626,7 @@ qemuDomainGetJobStats(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
     qemuDomainObjPrivate *priv;
-    g_autoptr(qemuDomainJobInfo) jobInfo = NULL;
+    g_autoptr(virDomainJobData) jobData = NULL;
     bool completed = !!(flags & VIR_DOMAIN_JOB_STATS_COMPLETED);
     int ret = -1;
 
@@ -12627,11 +12640,11 @@ qemuDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-    if (qemuDomainGetJobStatsInternal(driver, vm, completed, &jobInfo) < 0)
+    if (qemuDomainGetJobStatsInternal(driver, vm, completed, &jobData) < 0)
         goto cleanup;
 
-    if (!jobInfo ||
-        jobInfo->status == QEMU_DOMAIN_JOB_STATUS_NONE) {
+    if (!jobData ||
+        jobData->status == VIR_DOMAIN_JOB_STATUS_NONE) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
         *nparams = 0;
@@ -12639,10 +12652,10 @@ qemuDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
     }
 
-    ret = qemuDomainJobInfoToParams(jobInfo, type, params, nparams);
+    ret = qemuDomainJobDataToParams(jobData, type, params, nparams);
 
     if (completed && ret == 0 && !(flags & VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED))
-        g_clear_pointer(&priv->job.completed, qemuDomainJobInfoFree);
+        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
 
  cleanup:
     virDomainObjEndAPI(&vm);
@@ -12708,7 +12721,7 @@ static int qemuDomainAbortJob(virDomainPtr dom)
         break;
 
     case QEMU_ASYNC_JOB_MIGRATION_OUT:
-        if ((priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY ||
+        if ((priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY ||
              (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
               reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
             virReportError(VIR_ERR_OPERATION_INVALID, "%s",

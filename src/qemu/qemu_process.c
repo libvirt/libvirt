@@ -651,7 +651,7 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING &&
         !priv->pausedShutdown) {
         if (priv->job.asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
-            if (priv->job.current->status == QEMU_DOMAIN_JOB_STATUS_POSTCOPY)
+            if (priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
                 reason = VIR_DOMAIN_PAUSED_POSTCOPY;
             else
                 reason = VIR_DOMAIN_PAUSED_MIGRATION;
@@ -1545,6 +1545,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
                                  void *opaque)
 {
     qemuDomainObjPrivate *priv;
+    qemuDomainJobDataPrivate *privJob = NULL;
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
     int reason;
@@ -1561,7 +1562,9 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         goto cleanup;
     }
 
-    priv->job.current->stats.mig.status = status;
+    privJob = priv->job.current->privateData;
+
+    privJob->stats.mig.status = status;
     virDomainObjBroadcast(vm);
 
     if (status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY &&
@@ -1623,6 +1626,7 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
 {
     qemuDomainObjPrivate *priv;
     qemuDomainJobPrivate *jobPriv;
+    qemuDomainJobDataPrivate *privJobCurrent = NULL;
 
     virObjectLock(vm);
 
@@ -1631,18 +1635,19 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
 
     priv = vm->privateData;
     jobPriv = priv->job.privateData;
+    privJobCurrent = priv->job.current->privateData;
     if (priv->job.asyncJob == QEMU_ASYNC_JOB_NONE) {
         VIR_DEBUG("got DUMP_COMPLETED event without a dump_completed job");
         goto cleanup;
     }
     jobPriv->dumpCompleted = true;
-    priv->job.current->stats.dump = *stats;
+    privJobCurrent->stats.dump = *stats;
     priv->job.error = g_strdup(error);
 
     /* Force error if extracting the DUMP_COMPLETED status failed */
     if (!error && status < 0) {
         priv->job.error = g_strdup(virGetLastErrorMessage());
-        priv->job.current->stats.dump.status = QEMU_MONITOR_DUMP_STATUS_FAILED;
+        privJobCurrent->stats.dump.status = QEMU_MONITOR_DUMP_STATUS_FAILED;
     }
 
     virDomainObjBroadcast(vm);
@@ -3592,6 +3597,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
                       unsigned int *stopFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobDataPrivate *privDataJobCurrent = NULL;
     virDomainState state;
     int reason;
     unsigned long long now;
@@ -3659,10 +3665,12 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
         /* We reset the job parameters for backup so that the job will look
          * active. This is possible because we are able to recover the state
          * of blockjobs and also the backup job allows all sub-job types */
-        priv->job.current = g_new0(qemuDomainJobInfo, 1);
+        priv->job.current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+        privDataJobCurrent = priv->job.current->privateData;
+
         priv->job.current->operation = VIR_DOMAIN_JOB_OPERATION_BACKUP;
-        priv->job.current->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP;
-        priv->job.current->status = QEMU_DOMAIN_JOB_STATUS_ACTIVE;
+        privDataJobCurrent->statsType = QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP;
+        priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
         priv->job.current->started = now;
         break;
 
@@ -8311,7 +8319,7 @@ void qemuProcessStop(virQEMUDriver *driver,
 
     /* clean up a possible backup job */
     if (priv->backup)
-        qemuBackupJobTerminate(vm, QEMU_DOMAIN_JOB_STATUS_CANCELED);
+        qemuBackupJobTerminate(vm, VIR_DOMAIN_JOB_STATUS_CANCELED);
 
     /* Do this explicitly after vm->pid is reset so that security drivers don't
      * try to enter the domain's namespace which is non-existent by now as qemu

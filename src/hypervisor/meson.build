@@ -3,6 +3,7 @@ hypervisor_sources = [
   'domain_driver.c',
   'virclosecallbacks.c',
   'virhostdev.c',
+  'domain_job.c',
 ]
 
 stateful_driver_source_files += files(hypervisor_sources)

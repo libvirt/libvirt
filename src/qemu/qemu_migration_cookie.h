@@ -162,7 +162,7 @@ struct _qemuMigrationCookie {
     qemuMigrationCookieNBD *nbd;
 
     /* If (flags & QEMU_MIGRATION_COOKIE_STATS) */
-    qemuDomainJobInfo *jobInfo;
+    virDomainJobData *jobData;
 
     /* If flags & QEMU_MIGRATION_COOKIE_CPU */
     virCPUDef *cpu;

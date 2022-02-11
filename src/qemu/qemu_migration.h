@@ -221,7 +221,7 @@ int
 qemuMigrationAnyFetchStats(virQEMUDriver *driver,
                            virDomainObj *vm,
                            qemuDomainAsyncJob asyncJob,
-                           qemuDomainJobInfo *jobInfo,
+                           virDomainJobData *jobData,
                            char **error);
 
 int
@@ -258,4 +258,4 @@ int
 qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  qemuDomainAsyncJob asyncJob,
-                                 qemuDomainJobInfo *jobInfo);
+                                 virDomainJobData *jobData);
