@@ -5235,7 +5235,11 @@ libxlDomainGetJobInfo(virDomainPtr dom,
     if (libxlDomainJobUpdateTime(&priv->job) < 0)
         goto cleanup;
 
-    memcpy(info, priv->job.current, sizeof(virDomainJobInfo));
+    /* setting only these two attributes is enough because libxl never sets
+     * anything else */
+    memset(info, 0, sizeof(*info));
+    info->type = priv->job.current->jobType;
+    info->timeElapsed = priv->job.current->timeElapsed;
     ret = 0;
 
  cleanup:
@@ -5252,7 +5256,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
 {
     libxlDomainObjPrivate *priv;
     virDomainObj *vm;
-    virDomainJobInfoPtr jobInfo;
+    virDomainJobData *jobData;
     int ret = -1;
     int maxparams = 0;
 
@@ -5266,7 +5270,7 @@ libxlDomainGetJobStats(virDomainPtr dom,
         goto cleanup;
 
     priv = vm->privateData;
-    jobInfo = priv->job.current;
+    jobData = priv->job.current;
     if (!priv->job.active) {
         *type = VIR_DOMAIN_JOB_NONE;
         *params = NULL;
@@ -5283,10 +5287,10 @@ libxlDomainGetJobStats(virDomainPtr dom,
 
     if (virTypedParamsAddULLong(params, nparams, &maxparams,
                                 VIR_DOMAIN_JOB_TIME_ELAPSED,
-                                jobInfo->timeElapsed) < 0)
+                                jobData->timeElapsed) < 0)
         goto cleanup;
 
-    *type = jobInfo->type;
+    *type = jobData->jobType;
     ret = 0;
 
  cleanup:

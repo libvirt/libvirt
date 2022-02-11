@@ -60,7 +60,7 @@ libxlDomainObjInitJob(libxlDomainObjPrivate *priv)
     if (virCondInit(&priv->job.cond) < 0)
         return -1;
 
-    priv->job.current = g_new0(virDomainJobInfo, 1);
+    priv->job.current = virDomainJobDataInit(NULL);
 
     return 0;
 }
@@ -78,7 +78,7 @@ static void
 libxlDomainObjFreeJob(libxlDomainObjPrivate *priv)
 {
     ignore_value(virCondDestroy(&priv->job.cond));
-    VIR_FREE(priv->job.current);
+    virDomainJobDataFree(priv->job.current);
 }
 
 /* Give up waiting for mutex after 30 seconds */
@@ -119,7 +119,7 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
     priv->job.active = job;
     priv->job.owner = virThreadSelfID();
     priv->job.started = now;
-    priv->job.current->type = VIR_DOMAIN_JOB_UNBOUNDED;
+    priv->job.current->jobType = VIR_DOMAIN_JOB_UNBOUNDED;
 
     return 0;
 
@@ -168,7 +168,7 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
 int
 libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
 {
-    virDomainJobInfoPtr jobInfo = job->current;
+    virDomainJobData *jobData = job->current;
     unsigned long long now;
 
     if (!job->started)
@@ -182,7 +182,7 @@ libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
         return 0;
     }
 
-    jobInfo->timeElapsed = now - job->started;
+    jobData->timeElapsed = now - job->started;
     return 0;
 }
 

@@ -26,6 +26,7 @@
 #include "libxl_conf.h"
 #include "virchrdev.h"
 #include "virenum.h"
+#include "domain_job.h"
 
 /* Only 1 job is allowed at any time
  * A job includes *all* libxl.so api, even those just querying
@@ -46,7 +47,7 @@ struct libxlDomainJobObj {
     enum libxlDomainJob active;         /* Currently running job */
     int owner;                          /* Thread which set current job */
     unsigned long long started;         /* When the job started */
-    virDomainJobInfoPtr current;        /* Statistics for the current job */
+    virDomainJobData *current;        /* Statistics for the current job */
 };
 
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
