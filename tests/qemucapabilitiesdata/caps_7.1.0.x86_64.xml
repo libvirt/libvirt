@@ -197,6 +197,7 @@
   <flag name='screenshot-format-png'/>
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
+  <flag name='virtio-gpu.blob'/>
   <version>7001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

@@ -201,6 +201,7 @@
   <flag name='virtio-crypto'/>
   <flag name='cryptodev-backend-lkcf'/>
   <flag name='pvpanic-pci'/>
+  <flag name='virtio-gpu.blob'/>
   <version>7002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100245</microcodeVersion>

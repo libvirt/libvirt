@@ -167,6 +167,7 @@
   <flag name='migration.blocked-reasons'/>
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
+  <flag name='virtio-gpu.blob'/>
   <version>7000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>

@@ -142,6 +142,7 @@
   <flag name='netdev.stream'/>
   <flag name='virtio-crypto'/>
   <flag name='pvpanic-pci'/>
+  <flag name='virtio-gpu.blob'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

@@ -203,6 +203,7 @@
   <flag name='cryptodev-backend-lkcf'/>
   <flag name='pvpanic-pci'/>
   <flag name='netdev.stream.reconnect'/>
+  <flag name='virtio-gpu.blob'/>
   <version>7002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

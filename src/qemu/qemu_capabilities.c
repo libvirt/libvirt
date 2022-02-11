@@ -690,6 +690,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 445 */
               "netdev.stream.reconnect", /* QEMU_CAPS_NETDEV_STREAM_RECONNECT */
+              "virtio-gpu.blob", /* QEMU_CAPS_VIRTIO_GPU_BLOB */
     );
 
 
@@ -1512,6 +1513,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsQxl[] = {
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioGpu[] = {
     { "virgl", QEMU_CAPS_VIRTIO_GPU_VIRGL, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
+    { "blob", QEMU_CAPS_VIRTIO_GPU_BLOB, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsICH9[] = {
