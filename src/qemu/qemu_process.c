@@ -4463,7 +4463,7 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     int ret = -1;
-    int srcFD = -1;
+    VIR_AUTOCLOSE srcFD = -1;
     virDomainLoaderDef *loader = vm->def->os.loader;
     const char *master_nvram_path;
     struct qemuPrepareNVRAMHelperData data;
@@ -4511,7 +4511,6 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
 
     ret = 0;
  cleanup:
-    VIR_FORCE_CLOSE(srcFD);
     return ret;
 }
 
