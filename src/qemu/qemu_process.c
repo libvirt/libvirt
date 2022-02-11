@@ -4462,7 +4462,6 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
                  bool reset_nvram)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    int ret = -1;
     VIR_AUTOCLOSE srcFD = -1;
     virDomainLoaderDef *loader = vm->def->os.loader;
     const char *master_nvram_path;
@@ -4487,7 +4486,7 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("unable to find any master var store for "
                          "loader: %s"), loader->path);
-        goto cleanup;
+        return -1;
     }
 
     if ((srcFD = virFileOpenAs(master_nvram_path, O_RDONLY,
@@ -4495,7 +4494,7 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
         virReportSystemError(-srcFD,
                              _("Failed to open file '%s'"),
                              master_nvram_path);
-        goto cleanup;
+        return -1;
     }
 
     data.srcFD = srcFD;
@@ -4506,12 +4505,10 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
                        cfg->user, cfg->group,
                        qemuPrepareNVRAMHelper,
                        &data) < 0) {
-        goto cleanup;
+        return -1;
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    return 0;
 }
 
 
