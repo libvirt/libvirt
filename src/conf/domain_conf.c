@@ -31472,7 +31472,8 @@ virDomainObjGetMessages(virDomainObj *vm,
         }
     }
 
-    (*msgs)[nmsgs] = NULL;
+    if (*msgs)
+        (*msgs)[nmsgs] = NULL;
 
     rv = nmsgs;
 
