@@ -1743,7 +1743,7 @@ qemuDomainValidateDevicePCISlotsPIIX3(virDomainDef *def,
                                       virDomainPCIAddressSet *addrs)
 {
     size_t i;
-    virPCIDeviceAddress tmp_addr;
+    virPCIDeviceAddress tmp_addr = { 0 };
     g_autofree char *addrStr = NULL;
     virDomainPCIConnectFlags flags = (VIR_PCI_CONNECT_AUTOASSIGN
                                       | VIR_PCI_CONNECT_TYPE_PCI_DEVICE);
@@ -1853,7 +1853,7 @@ qemuDomainValidateDevicePCISlotsQ35(virDomainDef *def,
                                     virDomainPCIAddressSet *addrs)
 {
     size_t i;
-    virPCIDeviceAddress tmp_addr;
+    virPCIDeviceAddress tmp_addr = { 0 };
     g_autofree char *addrStr = NULL;
     virDomainPCIConnectFlags flags = VIR_PCI_CONNECT_TYPE_PCIE_DEVICE;
 

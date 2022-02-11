@@ -1181,7 +1181,7 @@ virDomainPCIAddressReserveNextAddr(virDomainPCIAddressSet *addrs,
                                    virDomainPCIConnectFlags flags,
                                    int function)
 {
-    virPCIDeviceAddress addr;
+    virPCIDeviceAddress addr = { 0 };
 
     if (virDomainPCIAddressGetNextAddr(addrs, &addr, flags,
                                        dev->isolationGroup, function) < 0)

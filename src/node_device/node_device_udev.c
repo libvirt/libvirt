@@ -366,7 +366,7 @@ udevProcessPCI(struct udev_device *device,
     virNodeDevCapPCIDev *pci_dev = &def->caps->data.pci_dev;
     virPCIEDeviceInfo *pci_express = NULL;
     virPCIDevice *pciDev = NULL;
-    virPCIDeviceAddress devAddr;
+    virPCIDeviceAddress devAddr = { 0 };
     int ret = -1;
     char *p;
     bool privileged = false;

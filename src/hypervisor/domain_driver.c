@@ -375,7 +375,7 @@ virDomainDriverNodeDeviceReset(virNodeDevicePtr dev,
                                virHostdevManager *hostdevMgr)
 {
     g_autoptr(virPCIDevice) pci = NULL;
-    virPCIDeviceAddress devAddr;
+    virPCIDeviceAddress devAddr = { 0 };
     g_autoptr(virNodeDeviceDef) def = NULL;
     g_autofree char *xml = NULL;
     g_autoptr(virConnect) nodeconn = NULL;
@@ -421,7 +421,7 @@ virDomainDriverNodeDeviceReAttach(virNodeDevicePtr dev,
                                   virHostdevManager *hostdevMgr)
 {
     g_autoptr(virPCIDevice) pci = NULL;
-    virPCIDeviceAddress devAddr;
+    virPCIDeviceAddress devAddr = { 0 };
     g_autoptr(virNodeDeviceDef) def = NULL;
     g_autofree char *xml = NULL;
     g_autoptr(virConnect) nodeconn = NULL;
@@ -466,7 +466,7 @@ virDomainDriverNodeDeviceDetachFlags(virNodeDevicePtr dev,
                                      const char *driverName)
 {
     g_autoptr(virPCIDevice) pci = NULL;
-    virPCIDeviceAddress devAddr;
+    virPCIDeviceAddress devAddr = { 0 };
     g_autoptr(virNodeDeviceDef) def = NULL;
     g_autofree char *xml = NULL;
     g_autoptr(virConnect) nodeconn = NULL;

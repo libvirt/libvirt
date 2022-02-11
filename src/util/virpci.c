@@ -1865,7 +1865,7 @@ virPCIDeviceAddressIOMMUGroupIterate(virPCIDeviceAddress *orig,
     }
 
     while ((direrr = virDirRead(groupDir, &ent, groupPath)) > 0) {
-        virPCIDeviceAddress newDev;
+        virPCIDeviceAddress newDev = { 0 };
 
         if (virPCIDeviceAddressParse(ent->d_name, &newDev) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR,

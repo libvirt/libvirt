@@ -2947,7 +2947,7 @@ virNodeDeviceGetPCIIOMMUGroupCaps(virNodeDevCapPCIDev *pci_dev)
 {
     size_t i;
     int tmpGroup;
-    virPCIDeviceAddress addr;
+    virPCIDeviceAddress addr = { 0 };
 
     /* this could be a refresh, so clear out the old data */
     for (i = 0; i < pci_dev->nIommuGroupDevices; i++)
@@ -3018,7 +3018,7 @@ static int
 virNodeDeviceGetPCIVPDDynamicCap(virNodeDevCapPCIDev *devCapPCIDev)
 {
     g_autoptr(virPCIDevice) pciDev = NULL;
-    virPCIDeviceAddress devAddr;
+    virPCIDeviceAddress devAddr = { 0 };
     g_autoptr(virPCIVPDResource) res = NULL;
 
     devAddr.domain = devCapPCIDev->domain;
