@@ -441,6 +441,7 @@ struct testSSHData {
     const char *username;
     bool noTTY;
     bool noVerify;
+    virNetClientProxy proxy;
     const char *netcat;
     const char *keyfile;
     const char *path;
@@ -456,7 +457,7 @@ static int testSocketSSH(const void *opaque)
     virNetSocket *csock = NULL; /* Client socket */
     int ret = -1;
     char buf[1024];
-    g_autofree char *command = virNetClientSSHHelperCommand(VIR_NET_CLIENT_PROXY_AUTO,
+    g_autofree char *command = virNetClientSSHHelperCommand(data->proxy,
                                                             data->netcat,
                                                             data->path,
                                                             "qemu:///session",
