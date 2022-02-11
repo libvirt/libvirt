@@ -65,16 +65,6 @@ static int openvzDomainSetMemoryInternal(virDomainObj *vm,
                                          unsigned long long memory);
 static int openvzGetVEStatus(virDomainObj *vm, int *status, int *reason);
 
-static void openvzDriverLock(struct openvz_driver *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-static void openvzDriverUnlock(struct openvz_driver *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 struct openvz_driver ovz_driver;
 
 
@@ -101,12 +91,9 @@ static virDomainObj *
 openvzDomObjFromDomain(struct openvz_driver *driver,
                        const unsigned char *uuid)
 {
-    virDomainObj *vm;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
-    openvzDriverLock(driver);
-    vm = openvzDomObjFromDomainLocked(driver, uuid);
-    openvzDriverUnlock(driver);
-    return vm;
+    return openvzDomObjFromDomainLocked(driver, uuid);
 }
 
 
@@ -262,12 +249,12 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
                                            int id)
 {
     struct openvz_driver *driver = conn->privateData;
-    virDomainObj *vm;
+    virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
 
-    openvzDriverLock(driver);
-    vm = virDomainObjListFindByID(driver->domains, id);
-    openvzDriverUnlock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        vm = virDomainObjListFindByID(driver->domains, id);
+    }
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -285,9 +272,9 @@ static virDomainPtr openvzDomainLookupByID(virConnectPtr conn,
 static int openvzConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     struct  openvz_driver *driver = conn->privateData;
-    openvzDriverLock(driver);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+
     *version = driver->version;
-    openvzDriverUnlock(driver);
     return 0;
 }
 
@@ -334,12 +321,12 @@ static virDomainPtr openvzDomainLookupByName(virConnectPtr conn,
                                              const char *name)
 {
     struct openvz_driver *driver = conn->privateData;
-    virDomainObj *vm;
+    virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
 
-    openvzDriverLock(driver);
-    vm = virDomainObjListFindByName(driver->domains, name);
-    openvzDriverUnlock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        vm = virDomainObjListFindByName(driver->domains, name);
+    }
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -808,13 +795,13 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
     virCheckFlags(VIR_DOMAIN_DEFINE_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_DEFINE_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
@@ -876,7 +863,6 @@ openvzDomainDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int fla
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    openvzDriverUnlock(driver);
     return dom;
 }
 
@@ -896,13 +882,13 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
     virDomainObj *vm = NULL;
     virDomainPtr dom = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
     virCheckFlags(VIR_DOMAIN_START_VALIDATE, NULL);
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    openvzDriverLock(driver);
     if ((vmdef = virDomainDefParseString(xml, driver->xmlopt,
                                          NULL, parse_flags)) == NULL)
         goto cleanup;
@@ -963,7 +949,6 @@ openvzDomainCreateXML(virConnectPtr conn, const char *xml,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    openvzDriverUnlock(driver);
     return dom;
 }
 
@@ -972,15 +957,15 @@ openvzDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 {
     g_autoptr(virCommand) cmd = virCommandNewArgList(VZCTL, "--quiet", "start", NULL);
     struct openvz_driver *driver = dom->conn->privateData;
-    virDomainObj *vm;
+    virDomainObj *vm = NULL;
     int ret = -1;
     int status;
 
     virCheckFlags(0, -1);
 
-    openvzDriverLock(driver);
-    vm = virDomainObjListFindByName(driver->domains, dom->name);
-    openvzDriverUnlock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        vm = virDomainObjListFindByName(driver->domains, dom->name);
+    }
 
     if (!vm) {
         virReportError(VIR_ERR_NO_DOMAIN,
@@ -1028,10 +1013,10 @@ openvzDomainUndefineFlags(virDomainPtr dom,
     virDomainObj *vm;
     int ret = -1;
     int status;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
     virCheckFlags(0, -1);
 
-    openvzDriverLock(driver);
     if (!(vm = openvzDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
 
@@ -1052,7 +1037,6 @@ openvzDomainUndefineFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    openvzDriverUnlock(driver);
     return ret;
 }
 
@@ -1321,13 +1305,9 @@ openvzConnectIsAlive(virConnectPtr conn G_GNUC_UNUSED)
 
 static char *openvzConnectGetCapabilities(virConnectPtr conn) {
     struct openvz_driver *driver = conn->privateData;
-    char *ret;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
-    openvzDriverLock(driver);
-    ret = virCapabilitiesFormatXML(driver->caps);
-    openvzDriverUnlock(driver);
-
-    return ret;
+    return virCapabilitiesFormatXML(driver->caps);
 }
 
 static int openvzConnectListDomains(virConnectPtr conn G_GNUC_UNUSED,
@@ -1370,13 +1350,9 @@ static int openvzConnectListDomains(virConnectPtr conn G_GNUC_UNUSED,
 static int openvzConnectNumOfDomains(virConnectPtr conn)
 {
     struct openvz_driver *driver = conn->privateData;
-    int n;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
-    openvzDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, true, NULL, NULL);
-    openvzDriverUnlock(driver);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, true, NULL, NULL);
 }
 
 static int openvzConnectListDefinedDomains(virConnectPtr conn G_GNUC_UNUSED,
@@ -1480,13 +1456,9 @@ Version: 2.2
 static int openvzConnectNumOfDefinedDomains(virConnectPtr conn)
 {
     struct openvz_driver *driver =  conn->privateData;
-    int n;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
-    openvzDriverLock(driver);
-    n = virDomainObjListNumOfDomains(driver->domains, false, NULL, NULL);
-    openvzDriverUnlock(driver);
-
-    return n;
+    return virDomainObjListNumOfDomains(driver->domains, false, NULL, NULL);
 }
 
 static int
@@ -1818,11 +1790,11 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     virDomainObj *vm = NULL;
     virDomainDef *def = NULL;
     bool persist = false;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
     virCheckFlags(VIR_DOMAIN_DEVICE_MODIFY_LIVE |
                   VIR_DOMAIN_DEVICE_MODIFY_CONFIG, -1);
 
-    openvzDriverLock(driver);
     if (!(vm = openvzDomObjFromDomainLocked(driver, dom->uuid)))
         goto cleanup;
 
@@ -1849,7 +1821,6 @@ openvzDomainUpdateDeviceFlags(virDomainPtr dom, const char *xml,
     ret = 0;
 
  cleanup:
-    openvzDriverUnlock(driver);
     virDomainDeviceDefFree(dev);
     virDomainObjEndAPI(&vm);
     return ret;
@@ -1861,16 +1832,10 @@ openvzConnectListAllDomains(virConnectPtr conn,
                             unsigned int flags)
 {
     struct openvz_driver *driver = conn->privateData;
-    int ret = -1;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
 
     virCheckFlags(VIR_CONNECT_LIST_DOMAINS_FILTERS_ALL, -1);
-
-    openvzDriverLock(driver);
-    ret = virDomainObjListExport(driver->domains, conn, domains,
-                                 NULL, flags);
-    openvzDriverUnlock(driver);
-
-    return ret;
+    return virDomainObjListExport(driver->domains, conn, domains, NULL, flags);
 }
 
 
