@@ -657,27 +657,27 @@ qemuDomainMasterKeyCreate(virDomainObj *vm)
 
 
 /**
- * qemuDomainStorageIdNew:
+ * qemuDomainStorageIDNew:
  * @priv: qemu VM private data object.
  *
  * Generate a new unique id for a storage object. Useful for node name generation.
  */
 static unsigned int
-qemuDomainStorageIdNew(qemuDomainObjPrivate *priv)
+qemuDomainStorageIDNew(qemuDomainObjPrivate *priv)
 {
     return ++priv->nodenameindex;
 }
 
 
 /**
- * qemuDomainStorageIdReset:
+ * qemuDomainStorageIDReset:
  * @priv: qemu VM private data object.
  *
  * Resets the data for the node name generator. The node names need to be unique
  * for a single instance, so can be reset on VM shutdown.
  */
 static void
-qemuDomainStorageIdReset(qemuDomainObjPrivate *priv)
+qemuDomainStorageIDReset(qemuDomainObjPrivate *priv)
 {
     priv->nodenameindex = 0;
 }
@@ -1681,7 +1681,7 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
     /* reset node name allocator */
-    qemuDomainStorageIdReset(priv);
+    qemuDomainStorageIDReset(priv);
 
     priv->dbusDaemonRunning = false;
 
@@ -3090,7 +3090,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     if (qemuDomainObjPrivateXMLParseBackups(priv, ctxt) < 0)
         goto error;
 
-    qemuDomainStorageIdReset(priv);
+    qemuDomainStorageIDReset(priv);
     if (virXPathULongLong("string(./nodename/@index)", ctxt,
                           &priv->nodenameindex) == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -10646,7 +10646,7 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
                                        qemuDomainObjPrivate *priv,
                                        virQEMUDriverConfig *cfg)
 {
-    src->id = qemuDomainStorageIdNew(priv);
+    src->id = qemuDomainStorageIDNew(priv);
 
     src->nodestorage = g_strdup_printf("libvirt-%u-storage", src->id);
     src->nodeformat = g_strdup_printf("libvirt-%u-format", src->id);
@@ -10773,7 +10773,7 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
             src->readonly = hostdev->readonly;
 
             if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-                src->id = qemuDomainStorageIdNew(priv);
+                src->id = qemuDomainStorageIDNew(priv);
                 src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
                 backendalias = src->nodestorage;
             }
