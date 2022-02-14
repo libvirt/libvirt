@@ -43,15 +43,10 @@ struct _qemuMonitorMessage {
     int txOffset;
     int txLength;
 
-    /* Used by the text monitor reply / error */
-    char *rxBuffer;
-    int rxLength;
     /* Used by the JSON monitor to hold reply / error */
     void *rxObject;
 
-    /* True if rxBuffer / rxObject are ready, or a
-     * fatal error occurred on the monitor channel
-     */
+    /* True if rxObject is ready, or a fatal error occurred on the monitor channel */
     bool finished;
 };
 
