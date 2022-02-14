@@ -24,5 +24,21 @@
 
 #include "qemu_monitor.h"
 
+
+struct _qemuMonitorMessage {
+    int txFD;
+
+    const char *txBuffer;
+    int txOffset;
+    int txLength;
+
+    /* Used by the JSON monitor to hold reply / error */
+    void *rxObject;
+
+    /* True if rxObject is ready, or a fatal error occurred on the monitor channel */
+    bool finished;
+};
+
+
 void
 qemuMonitorResetCommandID(qemuMonitor *mon);

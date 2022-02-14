@@ -44,6 +44,9 @@
 # include "libvirt_qemu_probes.h"
 #endif
 
+#define LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
+#include "qemu_monitor_priv.h"
+
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
 VIR_LOG_INIT("qemu.qemu_monitor_json");
