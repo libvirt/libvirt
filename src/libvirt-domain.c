@@ -524,6 +524,12 @@ virDomainDestroy(virDomainPtr domain)
  * timeout; at that time, the management application can decide if
  * calling again without VIR_DOMAIN_DESTROY_GRACEFUL is appropriate.
  *
+ * If VIR_DOMAIN_DESTROY_REMOVE_LOGS flag is set then domain specific
+ * logs will be deleted as well if there are any. Note that not all
+ * deployments are be supported. For example in case of QEMU driver
+ * this flags is noop if virtlogd is not used for handling QEMU
+ * process output.
+ *
  * Another alternative which may produce cleaner results for the
  * guest's disks is to use virDomainShutdown() instead, but that
  * depends on guest support (some hypervisor/guest combinations may

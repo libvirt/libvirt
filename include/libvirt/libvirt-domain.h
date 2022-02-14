@@ -1237,6 +1237,7 @@ int                     virDomainDestroy        (virDomainPtr domain);
 typedef enum {
     VIR_DOMAIN_DESTROY_DEFAULT   = 0,      /* Default behavior - could lead to data loss!! */
     VIR_DOMAIN_DESTROY_GRACEFUL  = 1 << 0, /* only SIGTERM, no SIGKILL */
+    VIR_DOMAIN_DESTROY_REMOVE_LOGS = 1 << 1, /* remove VM logs on destroy */
 } virDomainDestroyFlagsValues;
 
 int                     virDomainDestroyFlags   (virDomainPtr domain,
