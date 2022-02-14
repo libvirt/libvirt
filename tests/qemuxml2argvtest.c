@@ -1347,8 +1347,10 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-shared-qcow");
     DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
+    DO_TEST_CAPS_VER("disk-error-policy", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-error-policy");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
+    DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "4.0.0");
     DO_TEST_CAPS_ARCH_LATEST("disk-error-policy-s390x", "s390x");
     DO_TEST_CAPS_VER("disk-cache", "2.12.0");
     DO_TEST_CAPS_LATEST("disk-cache");
