@@ -2002,22 +2002,6 @@ qemuBuildDiskGetErrorPolicy(virDomainDiskDef *disk,
 }
 
 
-static void
-qemuBuildDiskFrontendAttributeErrorPolicy(virDomainDiskDef *disk,
-                                          virBuffer *buf)
-{
-    const char *wpolicy = NULL;
-    const char *rpolicy = NULL;
-
-    qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
-
-    if (wpolicy)
-        virBufferAsprintf(buf, ",werror=%s", wpolicy);
-    if (rpolicy)
-        virBufferAsprintf(buf, ",rerror=%s", rpolicy);
-}
-
-
 static char *
 qemuBuildDriveStr(virDomainDiskDef *disk,
                   virQEMUCaps *qemuCaps)
@@ -2043,8 +2027,17 @@ qemuBuildDriveStr(virDomainDiskDef *disk,
 
     /* werror/rerror are really frontend attributes, but older
      * qemu requires them on -drive instead of -device */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
-        qemuBuildDiskFrontendAttributeErrorPolicy(disk, &opt);
+    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR)) {
+        const char *wpolicy = NULL;
+        const char *rpolicy = NULL;
+
+        qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
+
+        if (wpolicy)
+            virBufferAsprintf(&opt, ",werror=%s", wpolicy);
+        if (rpolicy)
+            virBufferAsprintf(&opt, ",rerror=%s", rpolicy);
+    }
 
     if (disk->src->readonly)
         virBufferAddLit(&opt, ",readonly=on");
