@@ -441,8 +441,10 @@ int virSystemdCreateMachine(const char *name,
                                                 nicindexes, nnicindexes, sizeof(int));
         gprops = g_variant_new_parsed("[('Slice', <%s>),"
                                       " ('After', <['libvirtd.service']>),"
+                                      " ('After', <['virt%sd.service']>),"
                                       " ('Before', <['virt-guest-shutdown.target']>)]",
-                                      slicename);
+                                      slicename,
+                                      drivername);
         message = g_variant_new("(s@ayssus@ai@a(sv))",
                                 name,
                                 guuid,
@@ -489,8 +491,10 @@ int virSystemdCreateMachine(const char *name,
                                           uuid, 16, sizeof(unsigned char));
         gprops = g_variant_new_parsed("[('Slice', <%s>),"
                                       " ('After', <['libvirtd.service']>),"
+                                      " ('After', <['virt%sd.service']>),"
                                       " ('Before', <['virt-guest-shutdown.target']>)]",
-                                      slicename);
+                                      slicename,
+                                      drivername);
         message = g_variant_new("(s@ayssus@a(sv))",
                                 name,
                                 guuid,
