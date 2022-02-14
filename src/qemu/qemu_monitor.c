@@ -65,56 +65,6 @@ VIR_LOG_INIT("qemu.qemu_monitor");
  */
 #define QEMU_MONITOR_MAX_RESPONSE (10 * 1024 * 1024)
 
-struct _qemuMonitor {
-    virObjectLockable parent;
-
-    virCond notify;
-
-    int fd;
-
-    GMainContext *context;
-    GSocket *socket;
-    GSource *watch;
-
-    virDomainObj *vm;
-    char *domainName;
-
-    qemuMonitorCallbacks *cb;
-    void *callbackOpaque;
-
-    /* If there's a command being processed this will be
-     * non-NULL */
-    qemuMonitorMessage *msg;
-
-    /* Buffer incoming data ready for Text/QMP monitor
-     * code to process & find message boundaries */
-    size_t bufferOffset;
-    size_t bufferLength;
-    char *buffer;
-
-    /* If anything went wrong, this will be fed back
-     * the next monitor msg */
-    virError lastError;
-
-    /* Set to true when EOF is detected on the monitor */
-    bool goteof;
-
-    int nextSerial;
-
-    bool waitGreeting;
-
-    /* If found, path to the virtio memballoon driver */
-    char *balloonpath;
-    bool ballooninit;
-
-    /* Log file context of the qemu process to dig for usable info */
-    qemuMonitorReportDomainLogError logFunc;
-    void *logOpaque;
-    virFreeCallback logDestroy;
-
-    /* true if qemu no longer wants 'props' sub-object of object-add */
-    bool objectAddNoWrap;
-};
 
 /**
  * QEMU_CHECK_MONITOR_FULL:
