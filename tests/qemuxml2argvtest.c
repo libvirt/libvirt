@@ -1343,7 +1343,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-cow");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-dir");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-fmt-iso");
-    DO_TEST_CAPS_VER("disk-shared", "2.12.0");
+    DO_TEST_CAPS_VER("disk-shared", "3.1.0");
+    DO_TEST_CAPS_VER("disk-shared", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-shared");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("disk-shared-qcow");
     DO_TEST_CAPS_VER("disk-error-policy", "2.12.0");
@@ -1352,7 +1353,8 @@ mymain(void)
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "2.12.0");
     DO_TEST_CAPS_ARCH_VER("disk-error-policy-s390x", "s390x", "4.0.0");
     DO_TEST_CAPS_ARCH_LATEST("disk-error-policy-s390x", "s390x");
-    DO_TEST_CAPS_VER("disk-cache", "2.12.0");
+    DO_TEST_CAPS_VER("disk-cache", "3.1.0");
+    DO_TEST_CAPS_VER("disk-cache", "4.1.0");
     DO_TEST_CAPS_LATEST("disk-cache");
     DO_TEST_CAPS_LATEST("disk-metadata-cache");
     DO_TEST_CAPS_ARCH_VER_PARSE_ERROR("disk-transient", "x86_64", "4.1.0");
