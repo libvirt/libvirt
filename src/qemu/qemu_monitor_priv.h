@@ -96,3 +96,10 @@ struct _qemuMonitor {
 
 void
 qemuMonitorResetCommandID(qemuMonitor *mon);
+
+int
+qemuMonitorIOWriteWithFD(qemuMonitor *mon,
+                         const char *data,
+                         size_t len,
+                         int fd)
+    G_GNUC_NO_INLINE;

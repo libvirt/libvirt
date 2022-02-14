@@ -288,7 +288,7 @@ qemuMonitorIOProcess(qemuMonitor *mon)
 
 
 /* Call this function while holding the monitor lock. */
-static int
+int
 qemuMonitorIOWriteWithFD(qemuMonitor *mon,
                          const char *data,
                          size_t len,

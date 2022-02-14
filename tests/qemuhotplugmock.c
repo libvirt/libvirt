@@ -28,6 +28,9 @@
 #include "virmock.h"
 #include <fcntl.h>
 
+#define LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
+#include "qemu/qemu_monitor_priv.h"
+
 static bool (*real_virFileExists)(const char *path);
 
 static void
@@ -106,4 +109,15 @@ qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
     return qemuDomainDeviceBackendChardevForeachOne(dev,
                                                     testQemuPrepareHostBackendChardevOne,
                                                     vm);
+}
+
+
+/* we don't really want to send fake FDs across the monitor */
+int
+qemuMonitorIOWriteWithFD(qemuMonitor *mon,
+                         const char *data,
+                         size_t len,
+                         int fd G_GNUC_UNUSED)
+{
+    return write(mon->fd, data, len); /* sc_avoid_write */
 }
