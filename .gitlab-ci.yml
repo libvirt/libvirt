@@ -56,9 +56,9 @@ include: '/ci/gitlab.yml'
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=website
 website:
   stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
+  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-centos-8-container
+    - x86_64-almalinux-8-container
   before_script:
     - *script_variables
   script:
@@ -92,9 +92,9 @@ codestyle:
 #    https://gitlab.com/libvirt/libvirt/-/jobs/artifacts/master/download?job=potfile
 potfile:
   stage: builds
-  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
+  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-centos-8-container
+    - x86_64-almalinux-8-container
   rules:
     - if: "$CI_COMMIT_BRANCH == 'master'"
   before_script:
@@ -114,9 +114,9 @@ potfile:
 
 # Coverity job that is run only by schedules
 coverity:
-  image: $CI_REGISTRY_IMAGE/ci-centos-8:latest
+  image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-centos-8-container
+    - x86_64-almalinux-8-container
   stage: builds
   script:
     - curl https://scan.coverity.com/download/linux64 --form project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN -o /tmp/cov-analysis-linux64.tgz

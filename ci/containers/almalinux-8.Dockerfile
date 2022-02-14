@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM docker.io/library/centos:8
+FROM docker.io/library/almalinux:8
 
 RUN dnf update -y && \
     dnf install 'dnf-command(config-manager)' -y && \

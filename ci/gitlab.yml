@@ -80,11 +80,11 @@ check-dco:
 
 # Native container jobs
 
-x86_64-centos-8-container:
+x86_64-almalinux-8-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: centos-8
+    NAME: almalinux-8
 
 
 x86_64-centos-stream-8-container:
@@ -379,24 +379,24 @@ mingw64-fedora-rawhide-container:
 
 # Native build jobs
 
-x86_64-centos-8:
+x86_64-almalinux-8:
   extends: .native_build_job
   needs:
-    - x86_64-centos-8-container
+    - x86_64-almalinux-8-container
   allow_failure: false
   variables:
-    NAME: centos-8
+    NAME: almalinux-8
     RPM: skip
 
 
-x86_64-centos-8-clang:
+x86_64-almalinux-8-clang:
   extends: .native_build_job
   needs:
-    - x86_64-centos-8-container
+    - x86_64-almalinux-8-container
   allow_failure: false
   variables:
     CC: clang
-    NAME: centos-8
+    NAME: almalinux-8
     RPM: skip
 
 
