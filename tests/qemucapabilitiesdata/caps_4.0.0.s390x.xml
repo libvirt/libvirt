@@ -105,7 +105,6 @@
   <flag name='query-cpu-model-baseline'/>
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>
-  <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>

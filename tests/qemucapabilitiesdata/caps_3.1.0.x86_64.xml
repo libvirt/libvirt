@@ -154,7 +154,6 @@
   <flag name='tpm-emulator'/>
   <flag name='mch'/>
   <flag name='mch.extended-tseg-mbytes'/>
-  <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
@@ -169,7 +168,6 @@
   <flag name='ramfb'/>
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
-  <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='cpu.migratable'/>

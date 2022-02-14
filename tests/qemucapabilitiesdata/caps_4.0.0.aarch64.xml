@@ -116,7 +116,6 @@
   <flag name='hda-output'/>
   <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
-  <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
@@ -136,7 +135,6 @@
   <flag name='ramfb'/>
   <flag name='arm-max-cpu'/>
   <flag name='drive-nvme'/>
-  <flag name='storage.werror'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='migration-param.bandwidth'/>

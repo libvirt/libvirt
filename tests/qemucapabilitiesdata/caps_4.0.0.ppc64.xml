@@ -120,7 +120,6 @@
   <flag name='vhost-vsock'/>
   <flag name='machine.pseries.cap-hpt-max-page-size'/>
   <flag name='machine.pseries.cap-htm'/>
-  <flag name='usb-storage.werror'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='memory-backend-memfd'/>
@@ -140,7 +139,6 @@
   <flag name='machine.pseries.cap-ccf-assist'/>
   <flag name='drive-nvme'/>
   <flag name='i8042'/>
-  <flag name='storage.werror'/>
   <flag name='machine.pseries.cap-cfpc'/>
   <flag name='machine.pseries.cap-sbbc'/>
   <flag name='machine.pseries.cap-ibs'/>

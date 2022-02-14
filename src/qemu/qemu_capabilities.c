@@ -507,7 +507,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 310 */
               "machine.pseries.cap-htm", /* QEMU_CAPS_MACHINE_PSERIES_CAP_HTM */
-              "usb-storage.werror", /* QEMU_CAPS_USB_STORAGE_WERROR */
+              "usb-storage.werror", /* X_QEMU_CAPS_USB_STORAGE_WERROR */
               "egl-headless", /* QEMU_CAPS_EGL_HEADLESS */
               "vfio-pci.display", /* QEMU_CAPS_VFIO_PCI_DISPLAY */
               "blockdev", /* QEMU_CAPS_BLOCKDEV */
@@ -573,7 +573,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-named-block-nodes.flat", /* QEMU_CAPS_QMP_QUERY_NAMED_BLOCK_NODES_FLAT */
               "blockdev-snapshot.allow-write-only-overlay", /* QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY */
               "blockdev-reopen", /* QEMU_CAPS_BLOCKDEV_REOPEN */
-              "storage.werror", /* QEMU_CAPS_STORAGE_WERROR */
+              "storage.werror", /* X_QEMU_CAPS_STORAGE_WERROR */
 
               /* 360 */
               "fsdev.multidevs", /* QEMU_CAPS_FSDEV_MULTIDEVS */
@@ -1439,7 +1439,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioBlk[] = {
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "disable-legacy", QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
-    { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
     { "packed", QEMU_CAPS_VIRTIO_PACKED_QUEUES, NULL },
     { "acpi-index", QEMU_CAPS_ACPI_INDEX, NULL },
 };
@@ -1484,7 +1483,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
     { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID, NULL },
-    { "werror", QEMU_CAPS_STORAGE_WERROR, NULL },
     { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
 };
 
@@ -1516,7 +1514,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBStorage[] = {
     { "removable", QEMU_CAPS_USB_STORAGE_REMOVABLE, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
-    { "werror", QEMU_CAPS_USB_STORAGE_WERROR, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsKVMPit[] = {
@@ -5258,11 +5255,6 @@ virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE) &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_STORAGE_WERROR)) {
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_STORAGE_WERROR);
-    }
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
