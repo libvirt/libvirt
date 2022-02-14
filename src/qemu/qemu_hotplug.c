@@ -770,8 +770,7 @@ qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
         }
 
     } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk,
-                                                                   priv->qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk)))
             return -1;
     }
 

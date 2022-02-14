@@ -2036,8 +2036,7 @@ qemuBuildDiskGetErrorPolicy(virDomainDiskDef *disk,
 
 
 static char *
-qemuBuildDriveStr(virDomainDiskDef *disk,
-                  virQEMUCaps *qemuCaps)
+qemuBuildDriveStr(virDomainDiskDef *disk)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     int detect_zeroes = virDomainDiskGetDetectZeroesMode(disk->discard,
@@ -2056,20 +2055,6 @@ qemuBuildDriveStr(virDomainDiskDef *disk,
     } else {
         virBufferAsprintf(&opt, "if=sd,index=%d",
                           virDiskNameToIndex(disk->dst));
-    }
-
-    /* werror/rerror are really frontend attributes, but older
-     * qemu requires them on -drive instead of -device */
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR)) {
-        const char *wpolicy = NULL;
-        const char *rpolicy = NULL;
-
-        qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
-
-        if (wpolicy)
-            virBufferAsprintf(&opt, ",werror=%s", wpolicy);
-        if (rpolicy)
-            virBufferAsprintf(&opt, ",rerror=%s", rpolicy);
     }
 
     if (disk->src->readonly)
@@ -2307,8 +2292,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
         serial = virBufferContentAndReset(&buf);
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_STORAGE_WERROR))
-        qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
+    qemuBuildDiskGetErrorPolicy(disk, &wpolicy, &rpolicy);
 
     if (virJSONValueObjectAdd(&props,
                               "S:device_id", scsiVPDDeviceId,
@@ -2588,7 +2572,7 @@ qemuBuildDiskSourceCommandLine(virCommand *cmd,
             !(copyOnReadProps = qemuBlockStorageGetCopyOnReadProps(disk)))
             return -1;
     } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk, qemuCaps)))
+        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk)))
             return -1;
     }
 
@@ -10906,20 +10890,18 @@ qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
 /**
  * qemuBuildStorageSourceAttachPrepareDrive:
  * @disk: disk object to prepare
- * @qemuCaps: qemu capabilities object
  *
  * Prepare qemuBlockStorageSourceAttachData *for use with the old approach
  * using -drive/drive_add. See qemuBlockStorageSourceAttachPrepareBlockdev.
  */
 static qemuBlockStorageSourceAttachData *
-qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk,
-                                         virQEMUCaps *qemuCaps)
+qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk, qemuCaps)) ||
+    if (!(data->driveCmd = qemuBuildDriveStr(disk)) ||
         !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
         return NULL;
 
@@ -11001,20 +10983,18 @@ qemuBuildStorageSourceAttachPrepareCommon(virStorageSource *src,
 /**
  * qemuBuildStorageSourceChainAttachPrepareDrive:
  * @disk: disk definition
- * @qemuCaps: qemu capabilities object
  *
  * Prepares qemuBlockStorageSourceChainData *for attaching @disk via -drive.
  */
 qemuBlockStorageSourceChainData *
-qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk,
-                                              virQEMUCaps *qemuCaps)
+qemuBuildStorageSourceChainAttachPrepareDrive(virDomainDiskDef *disk)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) elem = NULL;
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceChainData, 1);
 
-    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk, qemuCaps)))
+    if (!(elem = qemuBuildStorageSourceAttachPrepareDrive(disk)))
         return NULL;
 
     if (qemuBuildStorageSourceAttachPrepareCommon(disk->src, elem) < 0)
