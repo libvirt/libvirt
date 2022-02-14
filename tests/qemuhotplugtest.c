@@ -95,6 +95,7 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_SCSI_BLOCK);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_KBD);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_NETDEV_VHOST_VDPA);
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE);
 
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, priv->qemuCaps) < 0)
         return -1;
@@ -764,6 +765,7 @@ mymain(void)
                    "object-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "qemu-agent", false, true,
+                   "getfd", QMP_OK,
                    "chardev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "qemu-agent-detach", false, false,
@@ -856,6 +858,7 @@ mymain(void)
                    "device_del", QMP_DEVICE_DELETED("ua-UserWatchdog") QMP_OK);
 
     DO_TEST_ATTACH("base-live", "guestfwd", false, true,
+                   "getfd", QMP_OK,
                    "chardev-add", QMP_OK,
                    "netdev_add", QMP_OK);
     DO_TEST_DETACH("base-live", "guestfwd", false, false,
