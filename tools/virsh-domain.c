@@ -8257,6 +8257,10 @@ static const vshCmdOptDef opts_destroy[] = {
      .type = VSH_OT_BOOL,
      .help = N_("terminate gracefully")
     },
+    {.name = "remove-logs",
+     .type = VSH_OT_BOOL,
+     .help = N_("remove domain logs")
+    },
     {.name = NULL}
 };
 
@@ -8273,9 +8277,11 @@ cmdDestroy(vshControl *ctl, const vshCmd *cmd)
 
     if (vshCommandOptBool(cmd, "graceful"))
        flags |= VIR_DOMAIN_DESTROY_GRACEFUL;
+    if (vshCommandOptBool(cmd, "remove-logs"))
+       flags |= VIR_DOMAIN_DESTROY_REMOVE_LOGS;
 
     if (flags)
-       result = virDomainDestroyFlags(dom, VIR_DOMAIN_DESTROY_GRACEFUL);
+       result = virDomainDestroyFlags(dom, flags);
     else
        result = virDomainDestroy(dom);
 

@@ -1566,7 +1566,7 @@ destroy
 
 ::
 
-   destroy domain [--graceful]
+   destroy domain [--graceful] [--remove-logs]
 
 Immediately terminate the domain *domain*.  This doesn't give the domain
 OS any chance to react, and it's the equivalent of ripping the power
@@ -1585,6 +1585,11 @@ If *--graceful* is specified, don't resort to extreme measures
 (e.g. SIGKILL) when the guest doesn't stop after a reasonable timeout;
 return an error instead.
 
+If *--remove-logs* is specified, remove per *domain* log files. Not all
+deployment configuration can be supported.
+
+In case of QEMU the flag is only supported if virlogd is used to handle QEMU
+process output. Otherwise the flag is ignored.
 
 
 domblkerror
