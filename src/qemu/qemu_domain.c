@@ -11820,3 +11820,44 @@ qemuDomainDeviceBackendChardevForeach(virDomainDef *def,
                                            DOMAIN_DEVICE_ITERATE_MISSING_INFO,
                                            &data);
 }
+
+
+int
+qemuDomainRemoveLogs(virQEMUDriver *driver,
+                     const char *name)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    g_autofree char *format = NULL;
+    g_autofree char *main = NULL;
+    g_autoptr(DIR) dir = NULL;
+    struct dirent *entry;
+    int rc;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if (!cfg->stdioLogD)
+        return 0;
+
+    if (virDirOpen(&dir, cfg->logDir) < 0)
+        return -1;
+
+    main = g_strdup_printf("%s.log", name);
+    format = g_strdup_printf("%s.log.%%u", name);
+
+    while ((rc = virDirRead(dir, &entry, cfg->logDir)) > 0) {
+        unsigned int u;
+
+        if (STREQ(entry->d_name, main) ||
+            sscanf(entry->d_name, format, &u) == 1) {
+            g_autofree char *path = NULL;
+
+            path = g_strdup_printf("%s/%s", cfg->logDir, entry->d_name);
+            if (unlink(path) && errno != ENOENT)
+                VIR_WARN("unlink(%s) error: %s", path, g_strerror(errno));
+        }
+    }
+
+    if (rc < 0)
+        return -1;
+
+    return 0;
+}

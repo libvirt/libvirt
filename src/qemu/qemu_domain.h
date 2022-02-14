@@ -1084,3 +1084,7 @@ int
 qemuDomainDeviceBackendChardevForeach(virDomainDef *def,
                                       qemuDomainDeviceBackendChardevForeachCallback cb,
                                       void *opaque);
+
+int
+qemuDomainRemoveLogs(virQEMUDriver *driver,
+                     const char *name);

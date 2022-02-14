@@ -2072,7 +2072,8 @@ qemuDomainDestroyFlags(virDomainPtr dom,
     int reason;
     bool starting;
 
-    virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL, -1);
+    virCheckFlags(VIR_DOMAIN_DESTROY_GRACEFUL |
+                  VIR_DOMAIN_DESTROY_REMOVE_LOGS, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         return -1;
@@ -2112,6 +2113,11 @@ qemuDomainDestroyFlags(virDomainPtr dom,
 
     qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_DESTROYED,
                     VIR_ASYNC_JOB_NONE, stopFlags);
+
+    if ((flags & VIR_DOMAIN_DESTROY_REMOVE_LOGS) &&
+        qemuDomainRemoveLogs(driver, vm->def->name) < 0)
+        VIR_WARN("Failed to remove logs for VM '%s'", vm->def->name);
+
     event = virDomainEventLifecycleNewFromObj(vm,
                                      VIR_DOMAIN_EVENT_STOPPED,
                                      VIR_DOMAIN_EVENT_STOPPED_DESTROYED);
