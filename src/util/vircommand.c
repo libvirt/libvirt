@@ -1794,7 +1794,7 @@ virCommandSendBuffersHandlePoll(virCommand *cmd,
     if (i == virCommandGetNumSendBuffers(cmd))
         return 0;
 
-    done = write(fds->fd,
+    done = write(fds->fd, /* sc_avoid_write */
                  cmd->sendBuffers[i].buffer + cmd->sendBuffers[i].offset,
                  cmd->sendBuffers[i].buflen - cmd->sendBuffers[i].offset);
     if (done < 0) {
@@ -2306,7 +2306,7 @@ virCommandProcessIO(virCommand *cmd)
                 fds[i].fd == cmd->inpipe) {
                 int done;
 
-                done = write(cmd->inpipe, cmd->inbuf + inoff,
+                done = write(cmd->inpipe, cmd->inbuf + inoff, /* sc_avoid_write */
                              inlen - inoff);
                 if (done < 0) {
                     if (errno == EPIPE) {

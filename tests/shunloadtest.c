@@ -81,7 +81,7 @@ static void *threadMain(void *arg)
 
 static void sigHandler(int sig)
 {
-    ignore_value(write(STDERR_FILENO, "FAIL\n", 5));
+    ignore_value(write(STDERR_FILENO, "FAIL\n", 5)); /* sc_avoid_write */
     signal(sig, SIG_DFL);
     raise(sig);
 }

@@ -54,7 +54,7 @@ static ssize_t testWrite(const char *buf, size_t len, void *opaque)
 {
     int *fd = opaque;
 
-    return write(*fd, buf, len);
+    return write(*fd, buf, len); /* sc_avoid_write */
 }
 
 static ssize_t testRead(char *buf, size_t len, void *opaque)

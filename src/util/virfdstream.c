@@ -850,7 +850,7 @@ static int virFDStreamWrite(virStreamPtr st, const char *bytes, size_t nbytes)
         ret = nbytes;
     } else {
      retry:
-        ret = write(fdst->fd, bytes, nbytes);
+        ret = write(fdst->fd, bytes, nbytes); /* sc_avoid_write */
         if (ret < 0) {
             VIR_WARNINGS_NO_WLOGICALOP_EQUAL_EXPR
             if (errno == EAGAIN || errno == EWOULDBLOCK) {

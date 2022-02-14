@@ -1104,7 +1104,7 @@ int main(int argc, char **argv) {
      */
     if (statuswrite != -1) {
         char status = 0;
-        while (write(statuswrite, &status, 1) == -1 &&
+        while (write(statuswrite, &status, 1) == -1 && /* sc_avoid_write */
                errno == EINTR)
             ;
         VIR_FORCE_CLOSE(statuswrite);
@@ -1133,7 +1133,7 @@ int main(int argc, char **argv) {
         if (ret != 0) {
             /* Tell parent of daemon what failed */
             char status = ret;
-            while (write(statuswrite, &status, 1) == -1 &&
+            while (write(statuswrite, &status, 1) == -1 && /* sc_avoid_write */
                    errno == EINTR)
                 ;
         }

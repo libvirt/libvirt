@@ -83,7 +83,7 @@ static int make_file(const char *path,
     if ((fd = real_open(filepath, O_CREAT|O_WRONLY, 0600)) < 0)
         goto cleanup;
 
-    if (write(fd, value, strlen(value)) != strlen(value))
+    if (write(fd, value, strlen(value)) != strlen(value)) /* sc_avoid_write */
         goto cleanup;
 
     ret = 0;

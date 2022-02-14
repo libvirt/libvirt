@@ -316,7 +316,7 @@ virConsoleEventOnStdout(int watch G_GNUC_UNUSED,
         con->streamToTerminal.offset) {
         ssize_t done;
         size_t avail;
-        done = write(fd,
+        done = write(fd, /* sc_avoid_write */
                      con->streamToTerminal.data,
                      con->streamToTerminal.offset);
         if (done < 0) {

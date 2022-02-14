@@ -1623,7 +1623,7 @@ static ssize_t virNetSocketTLSSessionWrite(const char *buf,
                                            void *opaque)
 {
     virNetSocket *sock = opaque;
-    return write(sock->fd, buf, len);
+    return write(sock->fd, buf, len); /* sc_avoid_write */
 }
 
 
@@ -1818,7 +1818,7 @@ static ssize_t virNetSocketWriteWire(virNetSocket *sock, const char *buf, size_t
         VIR_NET_TLS_HANDSHAKE_COMPLETE) {
         ret = virNetTLSSessionWrite(sock->tlsSession, buf, len);
     } else {
-        ret = write(sock->fd, buf, len);
+        ret = write(sock->fd, buf, len); /* sc_avoid_write */
     }
 
     if (ret < 0) {

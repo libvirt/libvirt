@@ -255,7 +255,7 @@ virRemoteSSHHelperEventOnStdout(int watch G_GNUC_UNUSED,
     if (events & VIR_EVENT_HANDLE_WRITABLE &&
         proxy->sockToTerminal.offset) {
         ssize_t done;
-        done = write(fd,
+        done = write(fd, /* sc_avoid_write */
                      proxy->sockToTerminal.data,
                      proxy->sockToTerminal.offset);
         if (done < 0) {

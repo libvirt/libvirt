@@ -1112,17 +1112,17 @@ saferead(int fd, void *buf, size_t count)
     return nread;
 }
 
-/* Like write(), but restarts after EINTR. Doesn't play
- * nicely with nonblocking FD and EAGAIN, in which case
- * you want to use bare write(). Or even use virSocket()
- * if the FD is related to a socket rather than a plain
+/* Like write(), but restarts after EINTR. Encouraged by sc_avoid_write.
+ * Doesn't play nicely with nonblocking FD and EAGAIN, in which case
+ * you want to use bare write() and mark it's use with sc_avoid_write.
+ * Or even use virSocket() if the FD is related to a socket rather than a plain
  * file or pipe. */
 ssize_t
 safewrite(int fd, const void *buf, size_t count)
 {
     size_t nwritten = 0;
     while (count > 0) {
-        ssize_t r = write(fd, buf, count);
+        ssize_t r = write(fd, buf, count); /* sc_avoid_write */
 
         if (r < 0 && errno == EINTR)
             continue;

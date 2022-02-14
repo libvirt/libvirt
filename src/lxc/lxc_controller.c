@@ -1222,7 +1222,7 @@ static void virLXCControllerConsoleIO(int watch, int fd, int events, void *opaqu
         }
 
      rewrite:
-        done = write(fd, buf, *len);
+        done = write(fd, buf, *len); /* sc_avoid_write */
         if (done == -1 && errno == EINTR)
             goto rewrite;
         if (done == -1 && errno != EAGAIN) {

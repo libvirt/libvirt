@@ -344,7 +344,7 @@ qemuMonitorIOWrite(qemuMonitor *mon)
     buf = mon->msg->txBuffer + mon->msg->txOffset;
     len = mon->msg->txLength - mon->msg->txOffset;
     if (mon->msg->txFD == -1)
-        done = write(mon->fd, buf, len);
+        done = write(mon->fd, buf, len); /* sc_avoid_write */
     else
         done = qemuMonitorIOWriteWithFD(mon, buf, len, mon->msg->txFD);
 
