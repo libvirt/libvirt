@@ -848,6 +848,7 @@ if conf.has('WITH_LIBVIRTD')
       install_data(
         init_file,
         install_dir: sysconfdir / 'init.d',
+        install_mode: 'rwxr-xr-x',
         rename: [ init['name'] ],
       )
 
