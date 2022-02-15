@@ -170,13 +170,6 @@ x86_64-opensuse-tumbleweed-container:
     NAME: opensuse-tumbleweed
 
 
-x86_64-ubuntu-1804-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: ubuntu-1804
-
-
 x86_64-ubuntu-2004-container:
   extends: .container_job
   allow_failure: false
@@ -557,15 +550,6 @@ x86_64-opensuse-tumbleweed:
   variables:
     NAME: opensuse-tumbleweed
     RPM: skip
-
-
-x86_64-ubuntu-1804:
-  extends: .native_build_job
-  needs:
-    - x86_64-ubuntu-1804-container
-  allow_failure: false
-  variables:
-    NAME: ubuntu-1804
 
 
 x86_64-ubuntu-2004:
