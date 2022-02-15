@@ -5,7 +5,7 @@
 # Translators:
 # Daniel <veillard@redhat.com>, 2011
 # mmarzantowicz <mmarzantowicz@osdf.com.pl>, 2012, 2013
-# Piotr Drąg <piotrdrag@gmail.com>, 2011, 2012, 2016, 2020, 2021.
+# Piotr Drąg <piotrdrag@gmail.com>, 2011, 2012, 2016, 2020, 2021, 2022.
 # Szymon Scholz <szymonscholz@gmail.com>, 2020.
 # Michał Smyk <fedora@smyk.it>, 2020.
 msgid ""
@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2021-11-06 14:17+0000\n"
+"PO-Revision-Date: 2022-02-13 12:06+0000\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/pl/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.8\n"
+"X-Generator: Weblate 4.10.1\n"
 
 msgid ""
 "\n"
@@ -7697,7 +7697,7 @@ msgstr "utworzenie katalogu „%s” się nie powiodło"
 msgid "Failed to make dnsmasq (PID: %d) reload config files."
 msgstr ""
 "Ponowne wczytanie plików konfiguracji przez dnsmasq (PID: %d) się nie "
-"powiodło"
+"powiodło."
 
 msgid "Failed to make domain persistent after migration"
 msgstr "Uczynienie domeny trwałej po migracji się nie powiodło"
@@ -14322,10 +14322,10 @@ msgid "Returns XML <sources> document."
 msgstr "Zwraca dokument <źródłowy> XML."
 
 msgid "Returns a list of secrets"
-msgstr "Zwraca listę sekretów."
+msgstr "Zwraca listę sekretów"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Zwraca podstawowe informacje SEV o węźle."
 
 #, fuzzy
 msgid "Returns basic information about a checkpoint."
@@ -18170,11 +18170,10 @@ msgstr "Nie można zainicjować certyfikatu"
 
 #, c-format
 msgid "Unable to initialize certificate: %s\n"
-msgstr ""
+msgstr "Nie można zainicjować certyfikatu: %s\n"
 
-#, fuzzy
 msgid "Unable to initialize condition variable"
-msgstr "nie można zainicjować zmiennej warunkowej"
+msgstr "Nie można zainicjować zmiennej warunkowej"
 
 #, fuzzy, c-format
 msgid "Unable to initialize diffie-hellman parameters: %s"
@@ -24334,7 +24333,7 @@ msgid "cpu count too large"
 msgstr "nparams jest za duże"
 
 msgid "cpu hotplug is not supported"
-msgstr ""
+msgstr "przyłączanie procesora w czasie działania jest nieobsługiwane"
 
 msgid "cpu parameter is missing a model name"
 msgstr ""
@@ -33077,7 +33076,7 @@ msgid "node CPU stats not implemented on this platform"
 msgstr "informacje o węźle nie są zaimplementowane na tej platformie"
 
 msgid "node SEV information"
-msgstr ""
+msgstr "informacje SEV o węźle"
 
 #, fuzzy
 msgid "node cpu info not implemented on this platform"
@@ -36221,7 +36220,7 @@ msgstr "cel %s już istnieje"
 
 #, c-format
 msgid "target %s already exists."
-msgstr "cel %s już istnieje"
+msgstr "cel %s już istnieje."
 
 #, fuzzy, c-format
 msgid "target %s doesn't exist."
@@ -38572,7 +38571,7 @@ msgstr "nieznany  tryb smbios „%s”"
 
 #, c-format
 msgid "unknown smbios mode '%s'"
-msgstr "nieznany  tryb smbios „%s”"
+msgstr "nieznany tryb smbios „%s”"
 
 #, fuzzy, c-format
 msgid "unknown source mode '%s' for volume type disk"
