@@ -57,13 +57,15 @@ static int nwfilterStateCleanup(void);
 
 static int nwfilterStateReload(void);
 
+static virMutex driverMutex = VIR_MUTEX_INITIALIZER;
+
 static void nwfilterDriverLock(void)
 {
-    virMutexLock(&driver->lock);
+    virMutexLock(&driverMutex);
 }
 static void nwfilterDriverUnlock(void)
 {
-    virMutexUnlock(&driver->lock);
+    virMutexUnlock(&driverMutex);
 }
 
 #ifdef WITH_FIREWALLD
@@ -174,10 +176,8 @@ nwfilterStateInitialize(bool privileged,
     driver = g_new0(virNWFilterDriverState, 1);
 
     driver->lockFD = -1;
-    if (virMutexInit(&driver->lock) < 0)
-        goto err_free_driverstate;
-
     driver->privileged = privileged;
+
     if (!(driver->nwfilters = virNWFilterObjListNew()))
         goto error;
 
@@ -343,7 +343,6 @@ nwfilterStateCleanup(void)
     /* free inactive nwfilters */
     virNWFilterObjListFree(driver->nwfilters);
 
-    virMutexDestroy(&driver->lock);
     g_clear_pointer(&driver, g_free);
 
     return 0;
