@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-02-04 22:16+0000\n"
+"PO-Revision-Date: 2022-02-15 08:56+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9435,40 +9435,44 @@ msgid "IOThread to be used by supported device"
 msgstr "IO-tråd att använda av stödd enhet"
 
 msgid "IOThreads for virtio-scsi not supported for this QEMU"
-msgstr ""
+msgstr "IOThreads för virtio-scsi stödjs inte för denna QEMU"
 
 #, c-format
 msgid "IOThreads not available for bus %s target %s"
-msgstr ""
+msgstr "IOThreads är inte tillgängligt för bussen %s mål %s"
 
 msgid "IOThreads not supported for this QEMU"
-msgstr ""
+msgstr "IOThreads stödjs inte för denna QEMU"
 
 msgid "IOThreads not supported with this binary"
-msgstr ""
+msgstr "IOThreads stödjs inte med denna binär"
 
 msgid "IOThreads polling is not supported for this QEMU"
-msgstr ""
+msgstr "IOThreads-pollning stödjs inte med denna QEMU"
 
 msgid "IP address"
 msgstr "IP-adress"
 
 #, c-format
 msgid "IP address lookup for host '%s' failed: %s"
-msgstr ""
+msgstr "IP-adressupslagningen för värden ”%s” misslyckades: %s"
 
 msgid ""
 "IP parameter must be given since libvirt was not compiled with IP address "
 "learning support"
 msgstr ""
+"IP-parametrar måste anges eftersom libvirt inte kompilerades med stöd för "
+"ätt lära sig IP-adresser"
 
 msgid ""
 "IP parameter must be provided since snooping the IP address does not work "
 "possibly due to missing tools"
 msgstr ""
+"IP-parametrar måste anges eftersom att snoka up IP-adressen inte fungerar "
+"kanske på grund av saknade verktyg"
 
 msgid "IPC namespace support is required"
-msgstr ""
+msgstr "Stöd för IPC-namnrymder krävs"
 
 msgid "IPv4"
 msgstr "IPv4"
@@ -9477,10 +9481,10 @@ msgid "IPv6"
 msgstr "IPv6"
 
 msgid "ISession object is null"
-msgstr ""
+msgstr "ISession-objektet är null"
 
 msgid "IVirtualBox object is null"
-msgstr ""
+msgstr "IVirtualBox-objektet är null"
 
 msgid "Id"
 msgstr "Id"
@@ -9489,111 +9493,109 @@ msgid "Id:"
 msgstr "Id:"
 
 msgid "Identical vcpus found in same type monitors"
-msgstr ""
+msgstr "Identiska vcpu:er hittade i samma typövervakare"
 
 msgid "Identical vcpus in cachetunes found"
-msgstr ""
+msgstr "Identiska vcpu:er i cachetunes funna"
 
 msgid "Identity attribute is already set"
-msgstr ""
+msgstr "Identitetsattributet är redan satt"
 
 #, sh-format
 msgid "Ignoring guests on $uri URI"
-msgstr ""
+msgstr "Ignorerar gäster på URI:n $uri"
 
 #, c-format
 msgid "Image file for %s %s '%s' has unsupported suffix, expecting '%s'"
 msgstr ""
+"Avbildsfilen för %s %s ”%s” har ett suffix som inte stödjs, ”%s” förväntades"
 
 msgid "In use"
-msgstr ""
+msgstr "Används"
 
 #, c-format
 msgid "Inappropriate new pci controller index %zu exceeds addrs array length"
 msgstr ""
+"Felaktigt nytt index för pci-styrenhet %zu överskrider adressvektorlängden"
 
 #, c-format
 msgid "Incoming cookie data had unexpected UUID %s vs %s"
-msgstr ""
+msgstr "Inkommande kakdata hade oväntat UUID %s mot %s"
 
 #, c-format
 msgid "Incoming cookie data had unexpected name %s vs %s"
-msgstr ""
+msgstr "Inkommande kakdata hade oväntat namn %s mot %s"
 
-#, fuzzy
 msgid "Incoming migration"
-msgstr "live-migrering"
+msgstr "Ingommande migrering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Incomplete vnuma configuration for vnode %zu"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Ofullständig vnuma-konfiguration för vnode %zu"
 
 #, c-format
 msgid ""
 "Inconsistent SCSI controller model ('%s' is not '%s') for SCSI controller "
 "index %d"
 msgstr ""
+"Inkonsekvent SCSI-styrenhetsmodell (”%s” är inte ”%s”) för SCSI-"
+"styrenhetsindex %d"
 
 msgid "Incorrect data type"
-msgstr ""
+msgstr "Felaktig datatyp"
 
 msgid "Incorrect disk format"
-msgstr ""
+msgstr "Felaktigt diskformat"
 
 msgid "Incorrect number of cells in a table row"
-msgstr ""
+msgstr "Felaktigt antal celler i en tabellrad"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Incorrect xpath '%s'"
-msgstr "oväntad data '%s'"
+msgstr "Felaktig xpath '%s'"
 
 #, c-format
 msgid "Index for '%s' controllers must be 0"
-msgstr ""
+msgstr "Indexet för styrenheten ”%s” måste vara 0"
 
 #, c-format
 msgid "Index for '%s' controllers must be > 0"
-msgstr ""
+msgstr "Indexet för styrenheten ”%s” måste vara > 0"
 
 msgid "Init pid is not yet available"
-msgstr ""
+msgstr "Init-pid är inte tillgängligt ännu"
 
 msgid "Init process ID is not yet known"
-msgstr ""
+msgstr "Init-process-ID är inte känt ännu"
 
-#, fuzzy
 msgid "Initial memory size too large"
-msgstr "nparams är för stor"
+msgstr "Initial minnesstorlek är för stor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Initialization of %s state driver failed: %s"
-msgstr "att ta bort %s-enheten misslyckades: %s"
+msgstr "Initiering av tillståndsdrivrutinen %s misslyckades: %s"
 
 #, c-format
 msgid "Initialization of mandatory %s state driver skipped"
-msgstr ""
+msgstr "Initiering av obligatorisk tillståndsdrivrutin %s hoppades över"
 
-#, fuzzy
 msgid "Inject NMI to the guest"
-msgstr "anslut till gästkonsolen"
+msgstr "Skjut in NMI till gästen"
 
-#, fuzzy
 msgid "Inject NMI to the guest domain."
-msgstr "anslut till gästkonsolen"
+msgstr "Skjut in NMI till gästdomänen."
 
-#, fuzzy
 msgid "Input devices are not supported by this virtualization driver."
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Inmatningsenheter stödjs inte av denna virtualiseringsdrivrutin."
 
-#, fuzzy
 msgid "Input secret value is missing"
-msgstr "säkerhetsetikett saknas"
+msgstr "Hemligt värde för inmatning saknas"
 
 msgid "Insert the media"
-msgstr ""
+msgstr "Sätt in mediumet"
 
 msgid "Installed bhyve binary does not support UEFI loader"
-msgstr ""
+msgstr "Den installerade bhyve-binären stödjer inte UEFI-laddare"
 
 msgid "Installed bhyve binary does not support UTC clock"
 msgstr ""
