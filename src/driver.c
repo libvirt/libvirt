@@ -345,6 +345,11 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
     /* keepalive is handled at RPC level, driver implementations must always
      * return 0, to signal that direct/embedded use doesn't use keepalive */
     case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+    /* Support for close callbacks and remote event filtering are both features
+     * of the RPC protocol and thus normal drivers must not signal support
+     * for them. */
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
         *supported = 0;
         return true;
 
@@ -360,8 +365,6 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     case VIR_DRV_FEATURE_MIGRATION_DIRECT:
     case VIR_DRV_FEATURE_MIGRATION_V1:
-    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
-    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     default:
         return false;
     }
