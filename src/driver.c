@@ -353,7 +353,13 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
         *supported = 0;
         return true;
 
+    /* Limitation of string support in typed parameters was an RPC limitation.
+     * At this point everything supports them and thus also drivers need to
+     * always advertise this feature */
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+        *supported = 1;
+        return true;
+
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATION_V2:
