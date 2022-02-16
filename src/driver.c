@@ -342,6 +342,9 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
      * implementation must return 0, so that the return value properly reflects
      * whether we are going through the remote driver */
     case VIR_DRV_FEATURE_REMOTE:
+    /* keepalive is handled at RPC level, driver implementations must always
+     * return 0, to signal that direct/embedded use doesn't use keepalive */
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
         *supported = 0;
         return true;
 
@@ -357,7 +360,6 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     case VIR_DRV_FEATURE_MIGRATION_DIRECT:
     case VIR_DRV_FEATURE_MIGRATION_V1:
-    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
     case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
     case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     default:
