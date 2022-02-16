@@ -165,9 +165,9 @@ adminDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
     struct daemonAdmClientPrivate *priv =
         virNetServerClientGetPrivateData(client);
     int ret = -1;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->lock);
 
     VIR_DEBUG("priv=%p dmn=%p", priv, priv->dmn);
-    virMutexLock(&priv->lock);
 
     flags = args->flags;
     virCheckFlagsGoto(0, cleanup);
@@ -176,7 +176,6 @@ adminDispatchConnectOpen(virNetServer *server G_GNUC_UNUSED,
  cleanup:
     if (ret < 0)
         virNetMessageSaveError(rerr);
-    virMutexUnlock(&priv->lock);
     return ret;
 }
 
