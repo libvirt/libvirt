@@ -380,17 +380,15 @@ esxVI_CURL_Download(esxVI_CURL *curl, const char *url, char **content,
         range = g_strdup_printf("%llu-", offset);
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+        curl_easy_setopt(curl->handle, CURLOPT_RANGE, range);
+        curl_easy_setopt(curl->handle, CURLOPT_WRITEDATA, &buffer);
+        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0);
+        curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1);
 
-    curl_easy_setopt(curl->handle, CURLOPT_URL, url);
-    curl_easy_setopt(curl->handle, CURLOPT_RANGE, range);
-    curl_easy_setopt(curl->handle, CURLOPT_WRITEDATA, &buffer);
-    curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 0);
-    curl_easy_setopt(curl->handle, CURLOPT_HTTPGET, 1);
-
-    responseCode = esxVI_CURL_Perform(curl, url);
-
-    virMutexUnlock(&curl->lock);
+        responseCode = esxVI_CURL_Perform(curl, url);
+    }
 
     if (responseCode < 0) {
         return -1;
@@ -422,17 +420,15 @@ esxVI_CURL_Upload(esxVI_CURL *curl, const char *url, const char *content)
         return -1;
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_easy_setopt(curl->handle, CURLOPT_URL, url);
+        curl_easy_setopt(curl->handle, CURLOPT_RANGE, NULL);
+        curl_easy_setopt(curl->handle, CURLOPT_READDATA, &content);
+        curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1);
+        curl_easy_setopt(curl->handle, CURLOPT_INFILESIZE, strlen(content));
 
-    curl_easy_setopt(curl->handle, CURLOPT_URL, url);
-    curl_easy_setopt(curl->handle, CURLOPT_RANGE, NULL);
-    curl_easy_setopt(curl->handle, CURLOPT_READDATA, &content);
-    curl_easy_setopt(curl->handle, CURLOPT_UPLOAD, 1);
-    curl_easy_setopt(curl->handle, CURLOPT_INFILESIZE, strlen(content));
-
-    responseCode = esxVI_CURL_Perform(curl, url);
-
-    virMutexUnlock(&curl->lock);
+        responseCode = esxVI_CURL_Perform(curl, url);
+    }
 
     if (responseCode < 0) {
         return -1;
@@ -574,14 +570,12 @@ esxVI_SharedCURL_Add(esxVI_SharedCURL *shared, esxVI_CURL *curl)
         }
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_easy_setopt(curl->handle, CURLOPT_SHARE, shared->handle);
 
-    curl_easy_setopt(curl->handle, CURLOPT_SHARE, shared->handle);
-
-    curl->shared = shared;
-    ++shared->count;
-
-    virMutexUnlock(&curl->lock);
+        curl->shared = shared;
+        ++shared->count;
+    }
 
     return 0;
 }
@@ -606,14 +600,12 @@ esxVI_SharedCURL_Remove(esxVI_SharedCURL *shared, esxVI_CURL *curl)
         return -1;
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_easy_setopt(curl->handle, CURLOPT_SHARE, NULL);
 
-    curl_easy_setopt(curl->handle, CURLOPT_SHARE, NULL);
-
-    curl->shared = NULL;
-    --shared->count;
-
-    virMutexUnlock(&curl->lock);
+        curl->shared = NULL;
+        --shared->count;
+    }
 
     return 0;
 }
@@ -667,14 +659,12 @@ esxVI_MultiCURL_Add(esxVI_MultiCURL *multi, esxVI_CURL *curl)
 
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_multi_add_handle(multi->handle, curl->handle);
 
-    curl_multi_add_handle(multi->handle, curl->handle);
-
-    curl->multi = multi;
-    ++multi->count;
-
-    virMutexUnlock(&curl->lock);
+        curl->multi = multi;
+        ++multi->count;
+    }
 
     return 0;
 }
@@ -701,14 +691,12 @@ esxVI_MultiCURL_Remove(esxVI_MultiCURL *multi, esxVI_CURL *curl)
         return -1;
     }
 
-    virMutexLock(&curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&curl->lock) {
+        curl_multi_remove_handle(multi->handle, curl->handle);
 
-    curl_multi_remove_handle(multi->handle, curl->handle);
-
-    curl->multi = NULL;
-    --multi->count;
-
-    virMutexUnlock(&curl->lock);
+        curl->multi = NULL;
+        --multi->count;
+    }
 
     return 0;
 }
@@ -1232,18 +1220,16 @@ esxVI_Context_Execute(esxVI_Context *ctx, const char *methodName,
     if (esxVI_Response_Alloc(response) < 0)
         return -1;
 
-    virMutexLock(&ctx->curl->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&ctx->curl->lock) {
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_URL, ctx->url);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_RANGE, NULL);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_WRITEDATA, &buffer);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDS, request);
+        curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDSIZE, strlen(request));
 
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_URL, ctx->url);
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_RANGE, NULL);
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_WRITEDATA, &buffer);
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_UPLOAD, 0);
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDS, request);
-    curl_easy_setopt(ctx->curl->handle, CURLOPT_POSTFIELDSIZE, strlen(request));
-
-    (*response)->responseCode = esxVI_CURL_Perform(ctx->curl, ctx->url);
-
-    virMutexUnlock(&ctx->curl->lock);
+        (*response)->responseCode = esxVI_CURL_Perform(ctx->curl, ctx->url);
+    }
 
     if ((*response)->responseCode < 0)
         goto cleanup;
@@ -1872,13 +1858,14 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     esxVI_DynamicProperty *dynamicProperty = NULL;
     esxVI_UserSession *currentSession = NULL;
     g_autofree char *escapedPassword = NULL;
+    VIR_LOCK_GUARD lock = { NULL };
 
     if (!ctx->sessionLock) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no mutex"));
         return -1;
     }
 
-    virMutexLock(ctx->sessionLock);
+    lock = virLockGuardLock(ctx->sessionLock);
 
     if (!ctx->session) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid call, no session"));
@@ -1933,8 +1920,6 @@ esxVI_EnsureSession(esxVI_Context *ctx)
     result = 0;
 
  cleanup:
-    virMutexUnlock(ctx->sessionLock);
-
     esxVI_String_Free(&propertyNameList);
     esxVI_ObjectContent_Free(&sessionManager);
     esxVI_UserSession_Free(&currentSession);
