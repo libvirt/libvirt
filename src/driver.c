@@ -357,10 +357,14 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
      * At this point everything supports them and thus also drivers need to
      * always advertise this feature */
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    /* Feature flag exposes that the accidental switching of order of arguments
+     * in the public API trampoline virNetworkUpdate is known. Updated clients
+     * thus use the correct ordering with an updated server. All drivers must
+     * signal support for this feature. */
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
         *supported = 1;
         return true;
 
-    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:
