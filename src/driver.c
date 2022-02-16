@@ -362,10 +362,14 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
      * thus use the correct ordering with an updated server. All drivers must
      * signal support for this feature. */
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
+    /* The remote driver intercepts and always reports the feature since it was
+     * introduced. This means that all driver implementations should advertise
+     * it too as it works natively without RPC. Always enabling this will also
+     * prevent regressions when a driver is used in embedded mode */
+    case VIR_DRV_FEATURE_FD_PASSING:
         *supported = 1;
         return true;
 
-    case VIR_DRV_FEATURE_FD_PASSING:
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:
     case VIR_DRV_FEATURE_MIGRATION_P2P:
