@@ -333,10 +333,18 @@ virConnectValidateURIPath(const char *uriPath,
  */
 bool
 virDriverFeatureIsGlobal(virDrvFeature feat,
-                         int *supported G_GNUC_UNUSED)
+                         int *supported)
 
 {
     switch (feat) {
+    /* This is a special case where the generated remote driver dispatcher
+     * function intercepts this specific flag and returns '1'. Thus any local
+     * implementation must return 0, so that the return value properly reflects
+     * whether we are going through the remote driver */
+    case VIR_DRV_FEATURE_REMOTE:
+        *supported = 0;
+        return true;
+
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
     case VIR_DRV_FEATURE_FD_PASSING:
@@ -350,7 +358,6 @@ virDriverFeatureIsGlobal(virDrvFeature feat,
     case VIR_DRV_FEATURE_MIGRATION_DIRECT:
     case VIR_DRV_FEATURE_MIGRATION_V1:
     case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
-    case VIR_DRV_FEATURE_REMOTE:
     case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
     case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     default:
