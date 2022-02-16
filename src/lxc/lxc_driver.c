@@ -1621,10 +1621,17 @@ lxcConnectSupportsFeature(virConnectPtr conn, int feature)
         return supported;
 
     switch ((virDrvFeature) feature) {
+    case VIR_DRV_FEATURE_REMOTE:
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
     case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
-        return 1;
     case VIR_DRV_FEATURE_FD_PASSING:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Global feature %d should have already been handled"),
+                       feature);
+        return -1;
     case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
     case VIR_DRV_FEATURE_MIGRATION_DIRECT:
     case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
@@ -1633,10 +1640,6 @@ lxcConnectSupportsFeature(virConnectPtr conn, int feature)
     case VIR_DRV_FEATURE_MIGRATION_V1:
     case VIR_DRV_FEATURE_MIGRATION_V2:
     case VIR_DRV_FEATURE_MIGRATION_V3:
-    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
-    case VIR_DRV_FEATURE_REMOTE:
-    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
-    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
     case VIR_DRV_FEATURE_XML_MIGRATABLE:
     default:
         return 0;
