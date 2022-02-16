@@ -1528,6 +1528,7 @@ virStreamClass;
 
 # driver.h
 virConnectValidateURIPath;
+virDriverFeatureIsGlobal;
 virDriverShouldAutostart;
 virGetConnectInterface;
 virGetConnectNetwork;

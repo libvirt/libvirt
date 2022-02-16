@@ -1938,6 +1938,11 @@ openvzNodeGetCPUMap(virConnectPtr conn G_GNUC_UNUSED,
 static int
 openvzConnectSupportsFeature(virConnectPtr conn G_GNUC_UNUSED, int feature)
 {
+    int supported;
+
+    if (virDriverFeatureIsGlobal(feature, &supported))
+        return supported;
+
     switch ((virDrvFeature) feature) {
     case VIR_DRV_FEATURE_MIGRATION_PARAMS:
     case VIR_DRV_FEATURE_MIGRATION_V3:

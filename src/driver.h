@@ -131,3 +131,6 @@ int virSetConnectStorage(virConnectPtr conn);
 bool virConnectValidateURIPath(const char *uriPath,
                                const char *entityName,
                                bool privileged);
+
+bool virDriverFeatureIsGlobal(virDrvFeature feat,
+                              int *supported);

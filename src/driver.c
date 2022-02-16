@@ -316,3 +316,44 @@ virConnectValidateURIPath(const char *uriPath,
 
     return true;
 }
+
+
+/**
+ * virDriverFeatureIsGlobal:
+ * @feat: a VIR_DRV_FEATURE
+ * @supported: If a feature is globally handled
+ *
+ * Certain driver feature flags are really not for individual drivers to decide
+ * whether they implement them or not, but are rather global based on e.g.
+ * whether the RPC protocol supports it.
+ *
+ * This function returns 'true' and fills @supported if a feature is a global
+ * feature and the individual driver implementations don't decide whether
+ * they support it or not.
+ */
+bool
+virDriverFeatureIsGlobal(virDrvFeature feat,
+                         int *supported G_GNUC_UNUSED)
+
+{
+    switch (feat) {
+    case VIR_DRV_FEATURE_TYPED_PARAM_STRING:
+    case VIR_DRV_FEATURE_NETWORK_UPDATE_HAS_CORRECT_ORDER:
+    case VIR_DRV_FEATURE_FD_PASSING:
+    case VIR_DRV_FEATURE_MIGRATION_V2:
+    case VIR_DRV_FEATURE_MIGRATION_V3:
+    case VIR_DRV_FEATURE_MIGRATION_P2P:
+    case VIR_DRV_FEATURE_MIGRATE_CHANGE_PROTECTION:
+    case VIR_DRV_FEATURE_XML_MIGRATABLE:
+    case VIR_DRV_FEATURE_MIGRATION_OFFLINE:
+    case VIR_DRV_FEATURE_MIGRATION_PARAMS:
+    case VIR_DRV_FEATURE_MIGRATION_DIRECT:
+    case VIR_DRV_FEATURE_MIGRATION_V1:
+    case VIR_DRV_FEATURE_PROGRAM_KEEPALIVE:
+    case VIR_DRV_FEATURE_REMOTE:
+    case VIR_DRV_FEATURE_REMOTE_CLOSE_CALLBACK:
+    case VIR_DRV_FEATURE_REMOTE_EVENT_CALLBACK:
+    default:
+        return false;
+    }
+}
