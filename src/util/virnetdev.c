@@ -3568,12 +3568,10 @@ virNetDevReserveName(const char *name)
     idstr = name + strlen(virNetDevGenNames[type].prefix);
 
     if (virStrToLong_ui(idstr, NULL, 10, &id) >= 0) {
-        virMutexLock(&virNetDevGenNames[type].mutex);
+        VIR_LOCK_GUARD lock = virLockGuardLock(&virNetDevGenNames[type].mutex);
 
         if (virNetDevGenNames[type].lastID < (int)id)
             virNetDevGenNames[type].lastID = id;
-
-        virMutexUnlock(&virNetDevGenNames[type].mutex);
     }
 }
 
@@ -3599,7 +3597,6 @@ virNetDevReserveName(const char *name)
 int
 virNetDevGenerateName(char **ifname, virNetDevGenNameType type)
 {
-    int id;
     const char *prefix = virNetDevGenNames[type].prefix;
     double maxIDd = pow(10, IFNAMSIZ - 1 - strlen(prefix));
     int maxID = INT_MAX;
@@ -3617,16 +3614,15 @@ virNetDevGenerateName(char **ifname, virNetDevGenNameType type)
 
     do {
         g_autofree char *try = NULL;
+        int id = 0;
 
-        virMutexLock(&virNetDevGenNames[type].mutex);
+        VIR_WITH_OBJECT_LOCK_GUARD(&virNetDevGenNames[type].mutex) {
+            id = ++virNetDevGenNames[type].lastID;
 
-        id = ++virNetDevGenNames[type].lastID;
-
-        /* reset before overflow */
-        if (virNetDevGenNames[type].lastID >= maxID)
-            virNetDevGenNames[type].lastID = -1;
-
-        virMutexUnlock(&virNetDevGenNames[type].mutex);
+            /* reset before overflow */
+            if (virNetDevGenNames[type].lastID >= maxID)
+                virNetDevGenNames[type].lastID = -1;
+        }
 
         if (*ifname)
             try = g_strdup_printf(*ifname, id);
