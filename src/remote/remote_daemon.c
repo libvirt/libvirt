@@ -214,25 +214,8 @@ daemonSetupNetworking(virNetServer *srv,
     unsigned int tcp_min_ssf = 0;
 #endif /* !WITH_SASL */
     g_autoptr(virSystemdActivation) act = NULL;
-    virSystemdActivationMap actmap[] = {
-        { .name = DAEMON_NAME ".socket", .family = AF_UNIX, .path = sock_path },
-        { .name = DAEMON_NAME "-ro.socket", .family = AF_UNIX, .path = sock_path_ro },
-        { .name = DAEMON_NAME "-admin.socket", .family = AF_UNIX, .path = sock_path_adm },
-#ifdef WITH_IP
-        { .name = DAEMON_NAME "-tcp.socket", .family = AF_INET },
-        { .name = DAEMON_NAME "-tls.socket", .family = AF_INET },
-#endif /* ! WITH_IP */
-    };
 
-#ifdef WITH_IP
-    if ((actmap[3].port = virSocketAddrResolveService(config->tcp_port)) < 0)
-        return -1;
-
-    if ((actmap[4].port = virSocketAddrResolveService(config->tls_port)) < 0)
-        return -1;
-#endif /* ! WITH_IP */
-
-    if (virSystemdGetActivation(actmap, G_N_ELEMENTS(actmap), &act) < 0)
+    if (virSystemdGetActivation(&act) < 0)
         return -1;
 
 #ifdef WITH_IP

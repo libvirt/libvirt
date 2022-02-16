@@ -40,7 +40,7 @@
 # This can be a port number, or service name
 #
 # This setting is not required or honoured if using systemd socket
-# activation with systemd version >= 227
+# activation.
 #
 #tls_port = "16514"
 
@@ -48,7 +48,7 @@
 # This can be a port number, or service name
 #
 # This setting is not required or honoured if using systemd socket
-# activation with systemd version >= 227
+# activation.
 #
 #tcp_port = "16509"
 
@@ -117,7 +117,7 @@
 # Set the name of the directory in which sockets will be found/created.
 #
 # This setting is not required or honoured if using systemd socket
-# activation with systemd version >= 227
+# activation.
 #
 #unix_sock_dir = "@runstatedir@/libvirt"
 

@@ -986,10 +986,6 @@ int main(int argc, char **argv) {
      * saved state is present, therefore initialize from scratch here. */
     if (rv == 0) {
         g_autoptr(virSystemdActivation) act = NULL;
-        virSystemdActivationMap actmap[] = {
-            { .name = "virtlockd.socket", .family = AF_UNIX, .path = sock_file },
-            { .name = "virtlockd-admin.socket", .family = AF_UNIX, .path = admin_sock_file },
-        };
 
         if (godaemon) {
             if (chdir("/") < 0) {
@@ -1016,9 +1012,7 @@ int main(int argc, char **argv) {
             goto cleanup;
         }
 
-        if (virSystemdGetActivation(actmap,
-                                    G_N_ELEMENTS(actmap),
-                                    &act) < 0) {
+        if (virSystemdGetActivation(&act) < 0) {
             ret = VIR_DAEMON_ERR_NETWORK;
             goto cleanup;
         }

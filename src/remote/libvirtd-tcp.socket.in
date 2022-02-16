@@ -6,8 +6,6 @@ After=@service@.socket
 @deps@
 
 [Socket]
-# This must match the @sysconfdir@/libvirt/@service@.conf tcp_port setting
-# when using systemd version < 227
 ListenStream=16509
 Service=@service@.service
 

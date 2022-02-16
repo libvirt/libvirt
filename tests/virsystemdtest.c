@@ -513,7 +513,7 @@ testActivationCreateFDs(virNetSocket **sockUNIX,
 
 
 static int
-testActivation(bool useNames)
+testActivationFDNames(const void *opaque G_GNUC_UNUSED)
 {
     virNetSocket *sockUNIX;
     virNetSocket **sockIP;
@@ -522,7 +522,6 @@ testActivation(bool useNames)
     size_t i;
     char nfdstr[VIR_INT64_STR_BUFLEN];
     char pidstr[VIR_INT64_STR_BUFLEN];
-    virSystemdActivationMap map[2];
     int *fds = NULL;
     size_t nfds = 0;
     g_autoptr(virSystemdActivation) act = NULL;
@@ -544,21 +543,9 @@ testActivation(bool useNames)
 
     g_setenv("LISTEN_FDS", nfdstr, TRUE);
     g_setenv("LISTEN_PID", pidstr, TRUE);
+    g_setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), TRUE);
 
-    if (useNames)
-        g_setenv("LISTEN_FDNAMES", virBufferCurrentContent(&names), TRUE);
-    else
-        g_unsetenv("LISTEN_FDNAMES");
-
-    map[0].name = "demo-unix.socket";
-    map[0].family = AF_UNIX;
-    map[0].path = demo_socket_path;
-
-    map[1].name = "demo-ip.socket";
-    map[1].family = AF_INET;
-    map[1].port = virNetSocketGetPort(sockIP[0]);
-
-    if (virSystemdGetActivation(map, G_N_ELEMENTS(map), &act) < 0)
+    if (virSystemdGetActivation(&act) < 0)
         goto cleanup;
 
     if (act == NULL) {
@@ -617,7 +604,7 @@ testActivationEmpty(const void *opaque G_GNUC_UNUSED)
 
     g_unsetenv("LISTEN_FDS");
 
-    if (virSystemdGetActivation(NULL, 0, &act) < 0)
+    if (virSystemdGetActivation(&act) < 0)
         return -1;
 
     if (act != NULL) {
@@ -628,21 +615,6 @@ testActivationEmpty(const void *opaque G_GNUC_UNUSED)
 
     return 0;
 }
-
-
-static int
-testActivationFDNames(const void *opaque G_GNUC_UNUSED)
-{
-    return testActivation(true);
-}
-
-
-static int
-testActivationFDAddrs(const void *opaque G_GNUC_UNUSED)
-{
-    return testActivation(false);
-}
-
 
 static int
 mymain(void)
@@ -758,8 +730,6 @@ mymain(void)
         fcntl(STDERR_FILENO + 2, F_GETFL) == -1 && errno == EBADF &&
         fcntl(STDERR_FILENO + 3, F_GETFL) == -1 && errno == EBADF) {
         if (virTestRun("Test activation names", testActivationFDNames, NULL) < 0)
-            ret = -1;
-        if (virTestRun("Test activation addrs", testActivationFDAddrs, NULL) < 0)
             ret = -1;
     } else {
         VIR_INFO("Skipping activation tests as FD 3/4/5 is open");

@@ -788,98 +788,6 @@ virSystemdActivationInitFromNames(virSystemdActivation *act,
 }
 
 
-/*
- * Back compat for systemd < v227 which lacks LISTEN_FDNAMES.
- * Delete when min systemd is increased ie RHEL7 dropped
- */
-static int
-virSystemdActivationInitFromMap(virSystemdActivation *act,
-                                int nfds,
-                                virSystemdActivationMap *map,
-                                size_t nmap)
-{
-    int nextfd = STDERR_FILENO + 1;
-    size_t i;
-
-    while (nfds) {
-        virSocketAddr addr;
-        const char *name = NULL;
-
-        memset(&addr, 0, sizeof(addr));
-
-        addr.len = sizeof(addr.data);
-        if (getsockname(nextfd, &addr.data.sa, &addr.len) < 0) {
-            virReportSystemError(errno, "%s", _("Unable to get local socket name"));
-            goto error;
-        }
-
-        VIR_DEBUG("Got socket family %d for FD %d",
-                  addr.data.sa.sa_family, nextfd);
-
-        for (i = 0; i < nmap && !name; i++) {
-            if (map[i].name == NULL)
-                continue;
-
-            if (addr.data.sa.sa_family == AF_INET) {
-                if (map[i].family == AF_INET) {
-                    VIR_DEBUG("Expect %d got %d",
-                              map[i].port, ntohs(addr.data.inet4.sin_port));
-                    if (addr.data.inet4.sin_port == htons(map[i].port))
-                        name = map[i].name;
-                }
-            } else if (addr.data.sa.sa_family == AF_INET6) {
-                /* NB use of AF_INET here is correct. The "map" struct
-                 * only refers to AF_INET. The socket may be AF_INET
-                 * or AF_INET6
-                 */
-                if (map[i].family == AF_INET) {
-                    VIR_DEBUG("Expect %d got %d",
-                              map[i].port, ntohs(addr.data.inet6.sin6_port));
-                    if (addr.data.inet6.sin6_port == htons(map[i].port))
-                        name = map[i].name;
-                }
-#ifndef WIN32
-            } else if (addr.data.sa.sa_family == AF_UNIX) {
-                if (map[i].family == AF_UNIX) {
-                    VIR_DEBUG("Expect %s got %s", map[i].path, addr.data.un.sun_path);
-                    if (STREQLEN(map[i].path,
-                                 addr.data.un.sun_path,
-                                 sizeof(addr.data.un.sun_path)))
-                        name = map[i].name;
-                }
-#endif
-            } else {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Unexpected socket family %d"),
-                               addr.data.sa.sa_family);
-                goto error;
-            }
-        }
-
-        if (!name) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Cannot find name for FD %d socket family %d"),
-                           nextfd, addr.data.sa.sa_family);
-            goto error;
-        }
-
-        if (virSystemdActivationAddFD(act, name, nextfd) < 0)
-            goto error;
-
-        nfds--;
-        nextfd++;
-    }
-
-    return 0;
-
- error:
-    for (i = 0; i < nfds; i++) {
-        int fd = nextfd + i;
-        VIR_FORCE_CLOSE(fd);
-    }
-    return -1;
-}
-
 #ifndef WIN32
 
 /**
@@ -954,9 +862,7 @@ virSystemdGetListenFDs(void)
 #endif /* WIN32 */
 
 static virSystemdActivation *
-virSystemdActivationNew(virSystemdActivationMap *map,
-                        size_t nmap,
-                        int nfds)
+virSystemdActivationNew(int nfds)
 {
     g_autoptr(virSystemdActivation) act = g_new0(virSystemdActivation, 1);
     const char *fdnames;
@@ -966,13 +872,14 @@ virSystemdActivationNew(virSystemdActivationMap *map,
     act->fds = virHashNew(virSystemdActivationEntryFree);
 
     fdnames = getenv("LISTEN_FDNAMES");
-    if (fdnames) {
-        if (virSystemdActivationInitFromNames(act, nfds, fdnames) < 0)
-            return NULL;
-    } else {
-        if (virSystemdActivationInitFromMap(act, nfds, map, nmap) < 0)
-            return NULL;
+    if (!fdnames) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Missing LISTEN_FDNAMES env from systemd socket activation"));
+        return NULL;
     }
+
+    if (virSystemdActivationInitFromNames(act, nfds, fdnames) < 0)
+        return NULL;
 
     VIR_DEBUG("Created activation object for %d FDs", nfds);
     return g_steal_pointer(&act);
@@ -981,8 +888,6 @@ virSystemdActivationNew(virSystemdActivationMap *map,
 
 /**
  * virSystemdGetActivation:
- * @map: mapping of socket addresses to names
- * @nmap: number of entries in @map
  * @act: filled with allocated activation object
  *
  * Acquire an object for handling systemd activation.
@@ -995,9 +900,7 @@ virSystemdActivationNew(virSystemdActivationMap *map,
  * Returns: 0 on success, -1 on failure
  */
 int
-virSystemdGetActivation(virSystemdActivationMap *map,
-                        size_t nmap,
-                        virSystemdActivation **act)
+virSystemdGetActivation(virSystemdActivation **act)
 {
     int nfds = 0;
 
@@ -1010,7 +913,7 @@ virSystemdGetActivation(virSystemdActivationMap *map,
         return 0;
     }
 
-    *act = virSystemdActivationNew(map, nmap, nfds);
+    *act = virSystemdActivationNew(nfds);
     return 0;
 }
 

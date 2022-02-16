@@ -25,17 +25,6 @@
 
 typedef struct _virSystemdActivation virSystemdActivation;
 
-/*
- * Back compat for systemd < v227 which lacks LISTEN_FDNAMES.
- * Delete when min systemd is increased ie RHEL7 dropped
- */
-typedef struct _virSystemdActivationMap {
-    const char *name;
-    int family;
-    int port; /* if family == AF_INET/AF_INET6 */
-    const char *path; /* if family == AF_UNIX */
-} virSystemdActivationMap;
-
 char *virSystemdMakeScopeName(const char *name,
                               const char *drivername,
                               bool legacy_behaviour);
@@ -70,9 +59,7 @@ char *virSystemdGetMachineNameByPID(pid_t pid);
 
 char *virSystemdGetMachineUnitByPID(pid_t pid);
 
-int virSystemdGetActivation(virSystemdActivationMap *map,
-                            size_t nmap,
-                            virSystemdActivation **act);
+int virSystemdGetActivation(virSystemdActivation **act);
 
 bool virSystemdActivationHasName(virSystemdActivation *act,
                                  const char *name);
