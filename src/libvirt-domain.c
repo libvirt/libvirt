@@ -244,6 +244,18 @@ virDomainCreateXMLWithFiles(virConnectPtr conn, const char *xmlDesc,
     virCheckNonNullArgGoto(xmlDesc, error);
     virCheckReadOnlyGoto(conn->flags, error);
 
+    if (nfiles > 0) {
+        int rc;
+
+        if ((rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                           VIR_DRV_FEATURE_FD_PASSING)) <= 0) {
+            if (rc == 0)
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("fd passing is not supported by this connection"));
+            goto error;
+        }
+    }
+
     if (conn->driver->domainCreateXMLWithFiles) {
         virDomainPtr ret;
         ret = conn->driver->domainCreateXMLWithFiles(conn, xmlDesc,
@@ -6868,6 +6880,18 @@ virDomainCreateWithFiles(virDomainPtr domain, unsigned int nfiles,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+
+    if (nfiles > 0) {
+        int rc;
+
+        if ((rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
+                                           VIR_DRV_FEATURE_FD_PASSING)) <= 0) {
+            if (rc == 0)
+                virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                               _("fd passing is not supported by this connection"));
+            goto error;
+        }
+    }
 
     if (conn->driver->domainCreateWithFiles) {
         int ret;
