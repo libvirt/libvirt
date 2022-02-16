@@ -6860,11 +6860,12 @@ qemuDomainSnapshotWriteMetadata(virDomainObj *vm,
 static int
 qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
                                   virDomainDef *def,
-                                  const char *name,
+                                  virDomainMomentObj *snap,
                                   const char *op,
                                   bool try_all,
                                   int ndisks)
 {
+    virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     const char *qemuimgbin;
     size_t i;
     bool skipped = false;
@@ -6877,11 +6878,12 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
 
     for (i = 0; i < ndisks; i++) {
         g_autoptr(virCommand) cmd = virCommandNewArgList(qemuimgbin, "snapshot",
-                                                         op, name, NULL);
+                                                         op, snap->def->name, NULL);
         int format = virDomainDiskGetFormat(def->disks[i]);
 
         /* FIXME: we also need to handle LVM here */
-        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK)
+        if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
+            snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
             continue;
 
         if (!virStorageSourceIsLocalStorage(def->disks[i]->src)) {
@@ -6903,7 +6905,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
             } else if (STREQ(op, "-c") && i) {
                 /* We must roll back partial creation by deleting
                  * all earlier snapshots.  */
-                qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
                                                   "-d", false, i);
             }
             virReportError(VIR_ERR_OPERATION_INVALID,
@@ -6923,7 +6925,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
             } else if (STREQ(op, "-c") && i) {
                 /* We must roll back partial creation by deleting
                  * all earlier snapshots.  */
-                qemuDomainSnapshotForEachQcow2Raw(driver, def, name,
+                qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
                                                   "-d", false, i);
             }
             return -1;
@@ -6942,7 +6944,7 @@ qemuDomainSnapshotForEachQcow2(virQEMUDriver *driver,
                                const char *op,
                                bool try_all)
 {
-    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap->def->name,
+    return qemuDomainSnapshotForEachQcow2Raw(driver, def, snap,
                                              op, try_all, def->ndisks);
 }
 
