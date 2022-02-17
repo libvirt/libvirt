@@ -452,7 +452,8 @@ virDomainDefParserConfig libxlDomainDefParserConfig = {
     .domainPostParseCallback = libxlDomainDefPostParse,
     .domainValidateCallback = libxlDomainDefValidate,
 
-    .features = VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
+    .features = VIR_DOMAIN_DEF_FEATURE_USER_ALIAS |
+                VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                 VIR_DOMAIN_DEF_FEATURE_NET_MODEL_STRING,
 };
 
