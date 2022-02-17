@@ -5855,7 +5855,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         if (jobData) {
             priv->job.completed = g_steal_pointer(&jobData);
             priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
-            qemuDomainJobSetStatsType(jobData,
+            qemuDomainJobSetStatsType(priv->job.completed,
                                       QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
         }
 
