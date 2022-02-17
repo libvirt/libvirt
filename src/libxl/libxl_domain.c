@@ -811,7 +811,7 @@ libxlDomainSaveImageOpen(libxlDriverPrivate *driver,
                                         VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
         goto error;
 
-    *ret_def = def;
+    *ret_def = g_steal_pointer(&def);
     *ret_hdr = hdr;
 
     return fd;
