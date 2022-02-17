@@ -526,14 +526,11 @@ testActivationFDNames(const void *opaque G_GNUC_UNUSED)
     size_t nfds = 0;
     g_autoptr(virSystemdActivation) act = NULL;
     g_auto(virBuffer) names = VIR_BUFFER_INITIALIZER;
-    g_autofree char *demo_socket_path = NULL;
 
     virBufferAddLit(&names, "demo-unix.socket");
 
     if (testActivationCreateFDs(&sockUNIX, &sockIP, &nsockIP) < 0)
         return -1;
-
-    demo_socket_path = virNetSocketGetPath(sockUNIX);
 
     for (i = 0; i < nsockIP; i++)
         virBufferAddLit(&names, ":demo-ip.socket");
