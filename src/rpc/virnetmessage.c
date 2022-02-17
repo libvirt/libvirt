@@ -48,7 +48,7 @@ virNetMessage *virNetMessageNew(bool tracked)
 
 
 void
-virNetMessageClearPayload(virNetMessage *msg)
+virNetMessageClearFDs(virNetMessage *msg)
 {
     size_t i;
 
@@ -58,6 +58,13 @@ virNetMessageClearPayload(virNetMessage *msg)
     msg->donefds = 0;
     msg->nfds = 0;
     VIR_FREE(msg->fds);
+}
+
+
+void
+virNetMessageClearPayload(virNetMessage *msg)
+{
+    virNetMessageClearFDs(msg);
 
     msg->bufferOffset = 0;
     msg->bufferLength = 0;

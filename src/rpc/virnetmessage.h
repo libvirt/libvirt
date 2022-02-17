@@ -49,6 +49,7 @@ struct _virNetMessage {
 
 virNetMessage *virNetMessageNew(bool tracked);
 
+void virNetMessageClearFDs(virNetMessage *msg);
 void virNetMessageClearPayload(virNetMessage *msg);
 
 void virNetMessageClear(virNetMessage *);
