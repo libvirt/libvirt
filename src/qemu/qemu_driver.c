@@ -18556,10 +18556,26 @@ qemuDomainGetStatsDirtyRate(virQEMUDriver *driver,
                                 "dirtyrate.calc_period") < 0)
         return -1;
 
-    if ((info.status == VIR_DOMAIN_DIRTYRATE_MEASURED) &&
-        virTypedParamListAddLLong(params, info.dirtyRate,
-                                  "dirtyrate.megabytes_per_second") < 0)
+    if (virTypedParamListAddString(params,
+                                   qemuMonitorDirtyRateCalcModeTypeToString(info.mode),
+                                   "dirtyrate.calc_mode") < 0)
         return -1;
+
+    if (info.status == VIR_DOMAIN_DIRTYRATE_MEASURED) {
+        if (virTypedParamListAddLLong(params, info.dirtyRate,
+                                      "dirtyrate.megabytes_per_second") < 0)
+            return -1;
+
+        if (info.mode == QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_RING) {
+            size_t i;
+            for (i = 0; i < info.nvcpus; i++) {
+                if (virTypedParamListAddULLong(params, info.rates[i].value,
+                                               "dirtyrate.vcpu.%d.megabytes_per_second",
+                                               info.rates[i].idx) < 0)
+                    return -1;
+            }
+        }
+    }
 
     return 0;
 }

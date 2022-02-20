@@ -1553,6 +1553,12 @@ qemuMonitorStartDirtyRateCalc(qemuMonitor *mon,
                               int seconds,
                               qemuMonitorDirtyRateCalcMode mode);
 
+typedef struct _qemuMonitorDirtyRateVcpu qemuMonitorDirtyRateVcpu;
+struct _qemuMonitorDirtyRateVcpu {
+    int idx;                    /* virtual cpu index */
+    unsigned long long value;   /* virtual cpu dirty page rate in MB/s */
+};
+
 typedef struct _qemuMonitorDirtyRateInfo qemuMonitorDirtyRateInfo;
 struct _qemuMonitorDirtyRateInfo {
     int status;             /* the status of last dirtyrate calculation,
@@ -1560,6 +1566,10 @@ struct _qemuMonitorDirtyRateInfo {
     int calcTime;           /* the period of dirtyrate calculation */
     long long startTime;    /* the start time of dirtyrate calculation */
     long long dirtyRate;    /* the dirtyrate in MiB/s */
+    qemuMonitorDirtyRateCalcMode mode;  /* calculation mode used in
+                                           last measurement */
+    size_t nvcpus;  /* number of virtual cpu */
+    qemuMonitorDirtyRateVcpu *rates; /* array of dirty page rate */
 };
 
 int

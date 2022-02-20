@@ -8782,11 +8782,45 @@ VIR_ENUM_IMPL(qemuMonitorDirtyRateStatus,
               "measured");
 
 static int
+qemuMonitorJSONExtractVcpuDirtyRate(virJSONValue *data,
+                                    qemuMonitorDirtyRateInfo *info)
+{
+    size_t nvcpus;
+    size_t i;
+
+    nvcpus = virJSONValueArraySize(data);
+    info->nvcpus = nvcpus;
+    info->rates = g_new0(qemuMonitorDirtyRateVcpu, nvcpus);
+
+    for (i = 0; i < nvcpus; i++) {
+        virJSONValue *entry = virJSONValueArrayGet(data, i);
+        if (virJSONValueObjectGetNumberInt(entry, "id",
+                                           &info->rates[i].idx) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-dirty-rate reply was missing 'id' data"));
+            return -1;
+        }
+
+        if (virJSONValueObjectGetNumberUlong(entry, "dirty-rate",
+                                            &info->rates[i].value) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("query-dirty-rate reply was missing 'dirty-rate' data"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
 qemuMonitorJSONExtractDirtyRateInfo(virJSONValue *data,
                                     qemuMonitorDirtyRateInfo *info)
 {
     const char *statusstr;
+    const char *modestr;
     int status;
+    int mode;
+    virJSONValue *rates = NULL;
 
     if (!(statusstr = virJSONValueObjectGetString(data, "status"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -8821,6 +8855,25 @@ qemuMonitorJSONExtractDirtyRateInfo(virJSONValue *data,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("query-dirty-rate reply was missing 'calc-time' data"));
         return -1;
+    }
+
+    if ((modestr = virJSONValueObjectGetString(data, "mode"))) {
+        if ((mode = qemuMonitorDirtyRateCalcModeTypeFromString(modestr)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unknown dirty page rate calculation mode: %s"), modestr);
+            return -1;
+        }
+        info->mode = mode;
+    } else {
+        info->mode = QEMU_MONITOR_DIRTYRATE_CALC_MODE_PAGE_SAMPLING;
+    }
+
+    if ((rates = virJSONValueObjectGetArray(data, "vcpu-dirty-rate"))) {
+        if (qemuMonitorJSONExtractVcpuDirtyRate(rates, info) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("query-dirty-rate parsing 'vcpu-dirty-rate' in failure"));
+            return -1;
+        }
     }
 
     return 0;

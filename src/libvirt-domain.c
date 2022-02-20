@@ -11980,6 +11980,12 @@ virConnectGetDomainCapabilities(virConnectPtr conn,
  *     "dirtyrate.megabytes_per_second" - the calculated memory dirty rate in
  *                                        MiB/s as long long. It is produced
  *                                        only if the calc_status is measured.
+ *     "dirtyrate.calc_mode" - the calculation mode used last measurement, either
+ *                             of these 3 'page-sampling,dirty-bitmap,dirty-ring'
+ *                             values returned.
+ *     "dirtyrate.vcpu.<num>.megabytes_per_second" - the calculated memory dirty
+ *                                                   rate for a virtual cpu as
+ *                                                   unsigned long long.
  *
  * Note that entire stats groups or individual stat fields may be missing from
  * the output in case they are not supported by the given hypervisor, are not
