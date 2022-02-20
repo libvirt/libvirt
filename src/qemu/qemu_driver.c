@@ -20676,7 +20676,9 @@ qemuDomainStartDirtyRateCalc(virDomainPtr dom,
     qemuMonitorDirtyRateCalcMode mode = QEMU_MONITOR_DIRTYRATE_CALC_MODE_PAGE_SAMPLING;
     int ret = -1;
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING |
+                  VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP |
+                  VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING, -1);
 
     if (seconds < MIN_DIRTYRATE_CALC_PERIOD ||
         seconds > MAX_DIRTYRATE_CALC_PERIOD) {
@@ -20701,6 +20703,25 @@ qemuDomainStartDirtyRateCalc(virDomainPtr dom,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CALC_DIRTY_RATE)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("QEMU does not support calculating dirty page rate"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP) {
+        mode = QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_BITMAP;
+    } else if (flags & VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING) {
+        if (vm->def->features[VIR_DOMAIN_FEATURE_KVM] != VIR_TRISTATE_SWITCH_ON ||
+            vm->def->kvm_features->features[VIR_DOMAIN_KVM_DIRTY_RING] != VIR_TRISTATE_SWITCH_ON) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("dirty-ring calculation mode requires dirty-ring feature enabled."));
+            goto cleanup;
+        }
+        mode = QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_RING;
+    }
+
+    if (mode != QEMU_MONITOR_DIRTYRATE_CALC_MODE_PAGE_SAMPLING &&
+        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DIRTYRATE_MODE)) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                       _("QEMU does not support dirty page rate calculation mode."));
         goto cleanup;
     }
 
