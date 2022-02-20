@@ -1534,9 +1534,24 @@ qemuMonitorTransactionBackup(virJSONValue *actions,
                              const char *bitmap,
                              qemuMonitorTransactionBackupSyncMode syncmode);
 
+/**
+ * qemuMonitorDirtyRateCalcMode:
+ *
+ * Dirty page rate calculation mode used during measurement.
+ */
+typedef enum {
+    QEMU_MONITOR_DIRTYRATE_CALC_MODE_PAGE_SAMPLING = 0,
+    QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_BITMAP,
+    QEMU_MONITOR_DIRTYRATE_CALC_MODE_DIRTY_RING,
+    QEMU_MONITOR_DIRTYRATE_CALC_MODE_LAST,
+} qemuMonitorDirtyRateCalcMode;
+
+VIR_ENUM_DECL(qemuMonitorDirtyRateCalcMode);
+
 int
 qemuMonitorStartDirtyRateCalc(qemuMonitor *mon,
-                              int seconds);
+                              int seconds,
+                              qemuMonitorDirtyRateCalcMode mode);
 
 typedef struct _qemuMonitorDirtyRateInfo qemuMonitorDirtyRateInfo;
 struct _qemuMonitorDirtyRateInfo {
