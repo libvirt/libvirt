@@ -200,6 +200,7 @@
   <flag name='rbd-encryption'/>
   <flag name='sev-guest-kernel-hashes'/>
   <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>

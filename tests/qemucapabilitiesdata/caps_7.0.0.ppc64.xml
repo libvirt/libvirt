@@ -201,6 +201,7 @@
   <flag name='sev-guest-kernel-hashes'/>
   <flag name='device.json+hotplug'/>
   <flag name='calc-dirty-rate'/>
+  <flag name='dirtyrate-param.mode'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>
