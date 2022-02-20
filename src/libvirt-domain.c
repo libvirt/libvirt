@@ -13337,7 +13337,7 @@ virDomainGetMessages(virDomainPtr domain,
  * virDomainStartDirtyRateCalc:
  * @domain: a domain object
  * @seconds: specified calculating time in seconds
- * @flags: extra flags; not used yet, so callers should always pass 0
+ * @flags: bitwise-OR of supported virDomainDirtyRateCalcFlags
  *
  * Calculate the current domain's memory dirty rate in next @seconds.
  * The calculated dirty rate information is available by calling
@@ -13360,6 +13360,16 @@ virDomainStartDirtyRateCalc(virDomainPtr domain,
     conn = domain->conn;
 
     virCheckReadOnlyGoto(conn->flags, error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING,
+                             VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP,
+                             error);
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING,
+                             VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING,
+                             error);
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP,
+                             VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING,
+                             error);
 
     if (conn->driver->domainStartDirtyRateCalc) {
         int ret;
