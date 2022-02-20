@@ -14486,14 +14486,28 @@ static const vshCmdOptDef opts_domdirtyrate_calc[] = {
      .help = N_("calculate memory dirty rate within specified seconds, "
                 "the supported value range from 1 to 60, default to 1.")
     },
+    {.name = "mode",
+     .type = VSH_OT_STRING,
+     .completer = virshDomainDirtyRateCalcModeCompleter,
+     .help = N_("dirty page rate calculation mode, either of these 3 options "
+                "'page-sampling, dirty-bitmap, dirty-ring' can be specified.")
+    },
     {.name = NULL}
 };
+
+VIR_ENUM_IMPL(virshDomainDirtyRateCalcMode,
+              VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_LAST,
+              "page-sampling",
+              "dirty-bitmap",
+              "dirty-ring");
 
 static bool
 cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
     int seconds = 1; /* the default value is 1 */
+    const char *modestr = NULL;
+    unsigned int flags = 0;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -14501,7 +14515,33 @@ cmdDomDirtyRateCalc(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptInt(ctl, cmd, "seconds", &seconds) < 0)
         return false;
 
-    if (virDomainStartDirtyRateCalc(dom, seconds, 0) < 0)
+    if (vshCommandOptStringReq(ctl, cmd, "mode", &modestr) < 0)
+        return false;
+
+    if (modestr) {
+        int mode = virshDomainDirtyRateCalcModeTypeFromString(modestr);
+
+        if (mode < 0) {
+            vshError(ctl, _("Unknown calculation mode '%s'"), modestr);
+            return false;
+        }
+
+        switch ((virshDomainDirtyRateCalcMode) mode) {
+        case VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_PAGE_SAMPLING:
+            flags |= VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING;
+            break;
+        case VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_DIRTY_BITMAP:
+            flags |= VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP;
+            break;
+        case VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_DIRTY_RING:
+            flags |= VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING;
+            break;
+        case VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_LAST:
+            break;
+        }
+    }
+
+    if (virDomainStartDirtyRateCalc(dom, seconds, flags) < 0)
         return false;
 
     vshPrintExtra(ctl, _("Start to calculate domain's memory "

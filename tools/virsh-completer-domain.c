@@ -1150,3 +1150,22 @@ virshDomainNumatuneModeCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return ret;
 }
+
+
+char **
+virshDomainDirtyRateCalcModeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                      const vshCmd *cmd G_GNUC_UNUSED,
+                                      unsigned int flags)
+{
+    char **ret = NULL;
+    size_t i;
+
+    virCheckFlags(0, NULL);
+
+    ret = g_new0(char *, VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_LAST + 1);
+
+    for (i = 0; i < VIRSH_DOMAIN_DIRTYRATE_CALC_MODE_LAST; i++)
+        ret[i] = g_strdup(virshDomainDirtyRateCalcModeTypeToString(i));
+
+    return ret;
+}

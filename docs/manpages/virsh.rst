@@ -1717,13 +1717,16 @@ domdirtyrate-calc
 ::
 
    domdirtyrate-calc <domain> [--seconds <sec>]
+      --mode=[page-sampling | dirty-bitmap | dirty-ring]
 
 Calculate an active domain's memory dirty rate which may be expected by
 user in order to decide whether it's proper to be migrated out or not.
 The ``seconds`` parameter can be used to calculate dirty rate in a
 specific time which allows 60s at most now and would be default to 1s
-if missing. The calculated dirty rate information is available by calling
-'domstats --dirtyrate'.
+if missing. These three *page-sampling, dirty-bitmap, dirty-ring* modes
+are mutually exclusive and alternative when specify calculation mode,
+*page-sampling* is the default mode if missing. The calculated dirty
+rate information is available by calling 'domstats --dirtyrate'.
 
 
 domdisplay

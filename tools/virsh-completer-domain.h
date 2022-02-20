@@ -186,3 +186,7 @@ char **
 virshDomainNumatuneModeCompleter(vshControl *ctl,
                                  const vshCmd *cmd,
                                  unsigned int flags);
+char **
+virshDomainDirtyRateCalcModeCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);
