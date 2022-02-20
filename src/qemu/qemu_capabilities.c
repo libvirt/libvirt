@@ -663,6 +663,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "device.json+hotplug", /* QEMU_CAPS_DEVICE_JSON */
               "hvf", /* QEMU_CAPS_HVF */
               "virtio-mem-pci.prealloc", /* QEMU_CAPS_DEVICE_VIRTIO_MEM_PCI_PREALLOC */
+              "calc-dirty-rate", /* QEMU_CAPS_CALC_DIRTY_RATE */
     );
 
 
@@ -1229,6 +1230,7 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "set-action", QEMU_CAPS_SET_ACTION },
     { "query-dirty-rate", QEMU_CAPS_QUERY_DIRTY_RATE },
     { "sev-inject-launch-secret", QEMU_CAPS_SEV_INJECT_LAUNCH_SECRET },
+    { "calc-dirty-rate", QEMU_CAPS_CALC_DIRTY_RATE },
 };
 
 struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {

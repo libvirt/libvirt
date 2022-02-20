@@ -241,6 +241,7 @@
   <flag name='sev-inject-launch-secret'/>
   <flag name='device.json+hotplug'/>
   <flag name='virtio-mem-pci.prealloc'/>
+  <flag name='calc-dirty-rate'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

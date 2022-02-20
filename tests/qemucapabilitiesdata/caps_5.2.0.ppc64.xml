@@ -189,6 +189,7 @@
   <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
   <flag name='query-dirty-rate'/>
+  <flag name='calc-dirty-rate'/>
   <version>5002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>
