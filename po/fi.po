@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-01-10 08:58+0000\n"
-"PO-Revision-Date: 2022-01-19 17:16+0000\n"
+"PO-Revision-Date: 2022-02-20 19:16+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -3905,7 +3905,7 @@ msgid "Could not create harddisk, rc=%08x"
 msgstr ""
 
 msgid "Could not create log directory"
-msgstr ""
+msgstr "Logihakemiston luonti epäonnistui"
 
 msgid "Could not create monitor"
 msgstr "Monitorin luonti epäonnistui"
@@ -6667,7 +6667,7 @@ msgstr ""
 #. * Not much we can do on error here except log it.
 #.
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "Säikeen luominen toimialueen sulkemisen käsittelemiseen epäonnistui"
 
 #.
 #. * Not much we can do on error here except log it.
@@ -13545,7 +13545,7 @@ msgid "Returns a list of secrets"
 msgstr "Palauttaa salaisuuksien luettelon"
 
 msgid "Returns basic SEV information about the node."
-msgstr ""
+msgstr "Palauttaa SEV-perustietoja solmusta."
 
 #, fuzzy
 msgid "Returns basic information about a checkpoint."
@@ -31514,7 +31514,7 @@ msgid "node CPU stats not implemented on this platform"
 msgstr ""
 
 msgid "node SEV information"
-msgstr ""
+msgstr "solmun SEV-tiedot"
 
 msgid "node cpu info not implemented on this platform"
 msgstr ""
