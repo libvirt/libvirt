@@ -215,11 +215,11 @@
     </xsl:element>
   </xsl:template>
 
-  <xsl:template match="text()" mode="copy">
+  <xsl:template match="text()" mode="copy" priority="0">
     <xsl:value-of select="."/>
   </xsl:template>
 
-  <xsl:template match="node()" mode="copy">
+  <xsl:template match="*" mode="copy">
     <xsl:element name="{name()}">
       <xsl:copy-of select="./@*"/>
       <xsl:apply-templates mode="copy" />
