@@ -22,6 +22,20 @@ v8.1.0 (unreleased)
     It works on Intel machines as well as recent machines powered by Apple
     Silicon. QEMU 6.2.0 is needed for Apple Silicon support.
 
+  * qemu: Support mode option for dirtyrate calculation
+
+    Introduce ``virDomainDirtyRateCalcFlags`` as parameter of
+    ``virDomainStartDirtyRateCalc``, which is used to specify the mode of
+    dirty page rate calculation.
+
+    Add ``--mode`` option to ``virsh domdirtyrate-calc``, which can be
+    either of the following 3 options:
+    ``page-sampling, dirty-bitmap, dirty-ring``.
+
+    Add ``calc_mode`` field for dirtyrate statistics retured by
+    ``virsh domstats --dirtyrate``, also add ``vCPU dirtyrate`` if
+    ``dirty-ring`` mode was used in last measurement.
+
 * **Improvements**
 
   * packaging: sysconfig files no longer installed
