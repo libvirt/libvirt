@@ -151,3 +151,8 @@ virshDomainGetXML(vshControl *ctl,
                   xmlXPathContextPtr *ctxt)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4)
     ATTRIBUTE_NONNULL(5) G_GNUC_WARN_UNUSED_RESULT;
+
+VIR_ENUM_DECL(virshDomainBlockJob);
+
+const char *
+virshDomainBlockJobToString(int type);

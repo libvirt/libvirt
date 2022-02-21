@@ -2614,25 +2614,6 @@ static const vshCmdOptDef opts_blockjob[] = {
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshDomainBlockJob);
-VIR_ENUM_IMPL(virshDomainBlockJob,
-              VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
-              N_("Unknown job"),
-              N_("Block Pull"),
-              N_("Block Copy"),
-              N_("Block Commit"),
-              N_("Active Block Commit"),
-              N_("Backup"),
-);
-
-static const char *
-virshDomainBlockJobToString(int type)
-{
-    const char *str = virshDomainBlockJobTypeToString(type);
-    return str ? _(str) : _("Unknown job");
-}
-
-
 static bool
 virshBlockJobInfo(vshControl *ctl,
                   virDomainPtr dom,

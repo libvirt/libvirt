@@ -418,3 +418,22 @@ virshDomainGetXML(vshControl *ctl,
 
     return ret;
 }
+
+
+VIR_ENUM_IMPL(virshDomainBlockJob,
+              VIR_DOMAIN_BLOCK_JOB_TYPE_LAST,
+              N_("Unknown job"),
+              N_("Block Pull"),
+              N_("Block Copy"),
+              N_("Block Commit"),
+              N_("Active Block Commit"),
+              N_("Backup"),
+);
+
+
+const char *
+virshDomainBlockJobToString(int type)
+{
+    const char *str = virshDomainBlockJobTypeToString(type);
+    return str ? _(str) : _("Unknown job");
+}
