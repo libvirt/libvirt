@@ -111,6 +111,38 @@ static int qemuMonitorOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(qemuMonitor);
 
+VIR_ENUM_IMPL(qemuMonitorJob,
+              QEMU_MONITOR_JOB_TYPE_LAST,
+              "",
+              "commit",
+              "stream",
+              "mirror",
+              "backup",
+              "create",
+);
+
+VIR_ENUM_IMPL(qemuMonitorJobStatus,
+              QEMU_MONITOR_JOB_STATUS_LAST,
+              "",
+              "created",
+              "running",
+              "paused",
+              "ready",
+              "standby",
+              "waiting",
+              "pending",
+              "aborting",
+              "concluded",
+              "undefined",
+              "null",
+);
+
+VIR_ENUM_IMPL(qemuMonitorCPUProperty,
+              QEMU_MONITOR_CPU_PROPERTY_LAST,
+              "boolean",
+              "string",
+              "number",
+);
 
 VIR_ENUM_IMPL(qemuMonitorMigrationStatus,
               QEMU_MONITOR_MIGRATION_STATUS_LAST,
@@ -4471,6 +4503,14 @@ qemuMonitorTransactionBackup(virJSONValue *actions,
     return qemuMonitorJSONTransactionBackup(actions, device, jobname, target,
                                             bitmap, syncmode);
 }
+
+
+VIR_ENUM_IMPL(qemuMonitorDirtyRateCalcMode,
+              QEMU_MONITOR_DIRTYRATE_CALC_MODE_LAST,
+              "page-sampling",
+              "dirty-bitmap",
+              "dirty-ring",
+);
 
 
 int

@@ -53,30 +53,6 @@ VIR_LOG_INIT("qemu.qemu_monitor_json");
 
 #define LINE_ENDING "\r\n"
 
-VIR_ENUM_IMPL(qemuMonitorJob,
-              QEMU_MONITOR_JOB_TYPE_LAST,
-              "",
-              "commit",
-              "stream",
-              "mirror",
-              "backup",
-              "create");
-
-VIR_ENUM_IMPL(qemuMonitorJobStatus,
-              QEMU_MONITOR_JOB_STATUS_LAST,
-              "",
-              "created",
-              "running",
-              "paused",
-              "ready",
-              "standby",
-              "waiting",
-              "pending",
-              "aborting",
-              "concluded",
-              "undefined",
-              "null");
-
 static void qemuMonitorJSONHandleShutdown(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleReset(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleStop(qemuMonitor *mon, virJSONValue *data);
@@ -5347,11 +5323,6 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
 }
 
 
-VIR_ENUM_IMPL(qemuMonitorCPUProperty,
-              QEMU_MONITOR_CPU_PROPERTY_LAST,
-              "boolean", "string", "number",
-);
-
 static int
 qemuMonitorJSONParseCPUModelProperty(const char *key,
                                      virJSONValue *value,
@@ -8740,11 +8711,6 @@ qemuMonitorJSONGetCPUMigratable(qemuMonitor *mon,
                                   migratable);
 }
 
-VIR_ENUM_IMPL(qemuMonitorDirtyRateCalcMode,
-              QEMU_MONITOR_DIRTYRATE_CALC_MODE_LAST,
-              "page-sampling",
-              "dirty-bitmap",
-              "dirty-ring");
 
 int
 qemuMonitorJSONStartDirtyRateCalc(qemuMonitor *mon,
