@@ -354,6 +354,7 @@
 @SRCDIR@tools/virsh-checkpoint.c
 @SRCDIR@tools/virsh-completer-host.c
 @SRCDIR@tools/virsh-console.c
+@SRCDIR@tools/virsh-domain-event.c
 @SRCDIR@tools/virsh-domain-monitor.c
 @SRCDIR@tools/virsh-domain.c
 @SRCDIR@tools/virsh-edit.c

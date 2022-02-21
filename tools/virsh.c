@@ -45,6 +45,7 @@
 #include "virsh-checkpoint.h"
 #include "virsh-console.h"
 #include "virsh-domain.h"
+#include "virsh-domain-event.h"
 #include "virsh-domain-monitor.h"
 #include "virsh-host.h"
 #include "virsh-interface.h"
@@ -814,6 +815,7 @@ static const vshCmdDef virshCmds[] = {
 static const vshCmdGrp cmdGroups[] = {
     {VIRSH_CMD_GRP_DOM_MANAGEMENT, "domain", domManagementCmds},
     {VIRSH_CMD_GRP_DOM_MONITORING, "monitor", domMonitoringCmds},
+    {VIRSH_CMD_GRP_DOM_EVENTS, "events", domEventCmds},
     {VIRSH_CMD_GRP_HOST_AND_HV, "host", hostAndHypervisorCmds},
     {VIRSH_CMD_GRP_CHECKPOINT, "checkpoint", checkpointCmds},
     {VIRSH_CMD_GRP_IFACE, "interface", ifaceCmds},

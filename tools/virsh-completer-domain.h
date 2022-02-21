@@ -42,11 +42,6 @@ virshDomainDiskTargetCompleter(vshControl *ctl,
                                unsigned int flags);
 
 char **
-virshDomainEventNameCompleter(vshControl *ctl,
-                              const vshCmd *cmd,
-                              unsigned int flags);
-
-char **
 virshDomainInterfaceStateCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags);

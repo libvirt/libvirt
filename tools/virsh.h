@@ -41,6 +41,7 @@
 #define VIRSH_CMD_GRP_CHECKPOINT       "Checkpoint"
 #define VIRSH_CMD_GRP_DOM_MANAGEMENT   "Domain Management"
 #define VIRSH_CMD_GRP_DOM_MONITORING   "Domain Monitoring"
+#define VIRSH_CMD_GRP_DOM_EVENTS       "Domain Events"
 #define VIRSH_CMD_GRP_STORAGE_POOL     "Storage Pool"
 #define VIRSH_CMD_GRP_STORAGE_VOL      "Storage Volume"
 #define VIRSH_CMD_GRP_NETWORK          "Networking"

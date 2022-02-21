@@ -174,6 +174,7 @@ executable(
     'virsh-completer-volume.c',
     'virsh-console.c',
     'virsh-domain.c',
+    'virsh-domain-event.c',
     'virsh-domain-monitor.c',
     'virsh-host.c',
     'virsh-interface.c',

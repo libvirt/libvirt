@@ -358,25 +358,6 @@ virshDomainBlockjobBaseTopCompleter(vshControl *ctl,
 }
 
 char **
-virshDomainEventNameCompleter(vshControl *ctl G_GNUC_UNUSED,
-                              const vshCmd *cmd G_GNUC_UNUSED,
-                              unsigned int flags)
-{
-    size_t i = 0;
-    g_auto(GStrv) tmp = NULL;
-
-    virCheckFlags(0, NULL);
-
-    tmp = g_new0(char *, VIR_DOMAIN_EVENT_ID_LAST + 1);
-
-    for (i = 0; i < VIR_DOMAIN_EVENT_ID_LAST; i++)
-        tmp[i] = g_strdup(virshDomainEventCallbacks[i].name);
-
-    return g_steal_pointer(&tmp);
-}
-
-
-char **
 virshDomainInterfaceStateCompleter(vshControl *ctl,
                                    const vshCmd *cmd,
                                    unsigned int flags)
