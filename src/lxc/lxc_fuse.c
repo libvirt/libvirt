@@ -27,6 +27,7 @@
 
 #include "lxc_fuse.h"
 #include "lxc_cgroup.h"
+#include "lxc_conf.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virbuffer.h"

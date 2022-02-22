@@ -26,7 +26,7 @@
 # include <fuse.h>
 #endif
 
-#include "lxc_conf.h"
+#include "virconftypes.h"
 
 typedef struct virLXCFuse virLXCFuse;
 
