@@ -35,6 +35,19 @@ int virLXCCgroupSetup(virDomainDef *def,
                       virCgroup *cgroup,
                       virBitmap *nodemask);
 
+struct virLXCMeminfo {
+    unsigned long long memtotal;
+    unsigned long long memusage;
+    unsigned long long cached;
+    unsigned long long active_anon;
+    unsigned long long inactive_anon;
+    unsigned long long active_file;
+    unsigned long long inactive_file;
+    unsigned long long unevictable;
+    unsigned long long swaptotal;
+    unsigned long long swapusage;
+};
+
 int virLXCCgroupGetMeminfo(struct virLXCMeminfo *meminfo);
 
 int
