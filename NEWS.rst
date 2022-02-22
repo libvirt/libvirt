@@ -32,7 +32,7 @@ v8.1.0 (unreleased)
     either of the following 3 options:
     ``page-sampling, dirty-bitmap, dirty-ring``.
 
-    Add ``calc_mode`` field for dirtyrate statistics retured by
+    Add ``calc_mode`` field for dirtyrate statistics returned by
     ``virsh domstats --dirtyrate``, also add ``vCPU dirtyrate`` if
     ``dirty-ring`` mode was used in last measurement.
 
