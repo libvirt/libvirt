@@ -26,7 +26,11 @@
 #include <unistd.h>
 
 #if WITH_FUSE
-# define FUSE_USE_VERSION 26
+# if WITH_FUSE == 3
+#  define FUSE_USE_VERSION 31
+# else
+#  define FUSE_USE_VERSION 26
+# endif
 # include <fuse.h>
 # if FUSE_USE_VERSION >= 31
 #  include <fuse_lowlevel.h>

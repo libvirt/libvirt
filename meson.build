@@ -947,10 +947,16 @@ if dlopen_dep.found()
   conf.set('WITH_DLFCN_H', 1)
 endif
 
-fuse_version = '2.8.6'
-fuse_dep = dependency('fuse', version: '>=' + fuse_version, required: get_option('fuse'))
+fuse_version = '3.1.0'
+fuse_dep = dependency('fuse3', version: '>=' + fuse_version, required: false)
 if fuse_dep.found()
-  conf.set('WITH_FUSE', 1)
+  conf.set('WITH_FUSE', 3)
+else
+  fuse_version = '2.8.6'
+  fuse_dep = dependency('fuse', version: '>=' + fuse_version, required: get_option('fuse'))
+  if fuse_dep.found()
+    conf.set('WITH_FUSE', 1)
+  endif
 endif
 
 glib_version = '2.56.0'
