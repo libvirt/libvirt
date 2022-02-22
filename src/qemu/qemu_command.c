@@ -7369,8 +7369,9 @@ qemuBuildMemCommandLine(virCommand *cmd,
          * regular memory because -mem-path and -mem-prealloc are obsolete.
          * However, if domain has one or more NUMA nodes then there is no
          * default RAM and we mustn't generate the memory object. */
-        if (!virDomainNumaGetNodeCount(def->numa))
-            qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid);
+        if (!virDomainNumaGetNodeCount(def->numa) &&
+            qemuBuildMemCommandLineMemoryDefaultBackend(cmd, def, priv, defaultRAMid) < 0)
+            return -1;
     } else {
         /*
          * Add '-mem-path' (and '-mem-prealloc') parameter here if

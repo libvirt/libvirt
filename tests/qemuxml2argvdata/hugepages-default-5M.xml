@@ -1,0 +1,27 @@
+<domain type="kvm">
+  <name>NonExistentPageSize</name>
+  <uuid>21433e10-aea8-434a-8f81-55781c2e9035</uuid>
+  <memory unit="KiB">4194304</memory>
+  <currentMemory unit="KiB">4194304</currentMemory>
+  <memoryBacking>
+    <hugepages>
+      <page size="5" unit="MiB"/>
+    </hugepages>
+  </memoryBacking>
+  <vcpu placement="static">2</vcpu>
+  <os>
+    <type arch="x86_64" machine="pc">hvm</type>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <clock offset="utc"/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+  </devices>
+</domain>
