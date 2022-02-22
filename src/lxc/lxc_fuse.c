@@ -314,19 +314,19 @@ lxcSetupFuse(struct virLXCFuse **f,
 {
     int ret = -1;
     struct fuse_args args = FUSE_ARGS_INIT(0, NULL);
-    struct virLXCFuse *fuse = g_new0(virLXCFuse, 1);
+    g_autofree struct virLXCFuse *fuse = g_new0(virLXCFuse, 1);
 
     fuse->def = def;
 
     if (virMutexInit(&fuse->lock) < 0)
-        goto cleanup2;
+        return -1;
 
     fuse->mountpoint = g_strdup_printf("%s/%s.fuse/", LXC_STATE_DIR, def->name);
 
     if (g_mkdir_with_parents(fuse->mountpoint, 0777) < 0) {
         virReportSystemError(errno, _("Cannot create %s"),
                              fuse->mountpoint);
-        goto cleanup1;
+        goto error;
     }
 
     /* process name is libvirt_lxc */
@@ -334,29 +334,29 @@ lxcSetupFuse(struct virLXCFuse **f,
         fuse_opt_add_arg(&args, "-odirect_io") == -1 ||
         fuse_opt_add_arg(&args, "-oallow_other") == -1 ||
         fuse_opt_add_arg(&args, "-ofsname=libvirt") == -1)
-        goto cleanup1;
+        goto error;
 
     fuse->ch = fuse_mount(fuse->mountpoint, &args);
     if (fuse->ch == NULL)
-        goto cleanup1;
+        goto error;
 
     fuse->fuse = fuse_new(fuse->ch, &args, &lxcProcOper,
                           sizeof(lxcProcOper), fuse->def);
     if (fuse->fuse == NULL) {
-        fuse_unmount(fuse->mountpoint, fuse->ch);
-        goto cleanup1;
+        goto error;
     }
 
+    *f = g_steal_pointer(&fuse);
     ret = 0;
  cleanup:
     fuse_opt_free_args(&args);
-    *f = fuse;
     return ret;
- cleanup1:
+
+ error:
+    if (fuse->ch)
+        fuse_unmount(fuse->mountpoint, fuse->ch);
     g_free(fuse->mountpoint);
     virMutexDestroy(&fuse->lock);
- cleanup2:
-    g_free(fuse);
     goto cleanup;
 }
 
