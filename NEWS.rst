@@ -64,6 +64,25 @@ v8.1.0 (unreleased)
 
 * **Bug fixes**
 
+  * Remove unix sockets from filesystem when disabling a '.socket' systemd unit
+
+    The presence of the socket files is used by our remote driver to determine
+    which service to access. Since neiter systemd nor the daemons clean up the
+    socket file clients were running into problems when a modular deployment was
+    switched to monolithic ``libvirtd``.
+
+  * qemu: Fixes of fd passing during hotplug and hotunplug of chardevs
+
+    FDs used as chardev backing are now properly removed when hot-unplugging
+    a chardev from qemu and hotplugged chardevs now properly use ``virtlogd``
+    to handle the input and output from qemu.
+
+  * RPM: Run pre/post-install steps on ``daemon-driver-storage-core``
+
+    Previously the pre/post-install code was part of the meta-package which
+    installed all storage driver sub-packages thus a minimalistic install
+    of the storage driver didn't behave correctly.
+
 
 v8.0.0 (2022-01-14)
 ===================
