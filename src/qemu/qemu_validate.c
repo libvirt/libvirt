@@ -2792,6 +2792,15 @@ qemuValidateDomainDeviceDefVideo(const virDomainVideoDef *video,
         }
     }
 
+    if (video->type == VIR_DOMAIN_VIDEO_TYPE_VIRTIO) {
+        if (video->blob != VIR_TRISTATE_SWITCH_ABSENT &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_GPU_BLOB)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("this QEMU does not support 'blob' for virtio-gpu devices"));
+            return -1;
+        }
+    }
+
     if (video->type == VIR_DOMAIN_VIDEO_TYPE_RAMFB &&
         video->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",

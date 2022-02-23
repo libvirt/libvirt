@@ -629,16 +629,24 @@ qemuSetupVideoCgroup(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainVideoAccelDef *accel = def->accel;
+    int ret;
 
-    if (!accel)
+    if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (!accel->rendernode ||
-        !virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
-        return 0;
-
-    return qemuCgroupAllowDevicePath(vm, accel->rendernode,
-                                     VIR_CGROUP_DEVICE_RW, false);
+    if (accel && accel->rendernode) {
+        ret = qemuCgroupAllowDevicePath(vm, accel->rendernode,
+                                        VIR_CGROUP_DEVICE_RW, false);
+        if (ret != 0)
+            return ret;
+    }
+    if (def->blob == VIR_TRISTATE_SWITCH_ON) {
+        ret = qemuCgroupAllowDevicePath(vm, QEMU_DEV_UDMABUF,
+                                        VIR_CGROUP_DEVICE_RW, false);
+        if (ret != 0)
+            return ret;
+    }
+    return 0;
 }
 
 static int

@@ -2123,6 +2123,8 @@ mymain(void)
     DO_TEST("video-virtio-vga",
             QEMU_CAPS_DEVICE_VIRTIO_GPU,
             QEMU_CAPS_DEVICE_VIRTIO_VGA);
+    DO_TEST_CAPS_LATEST("video-virtio-blob-on");
+    DO_TEST_CAPS_LATEST("video-virtio-blob-off");
     DO_TEST_CAPS_LATEST("video-virtio-vga-gpu-gl");
     DO_TEST_CAPS_LATEST("video-bochs-display-device");
     DO_TEST_CAPS_LATEST("video-ramfb-display-device");

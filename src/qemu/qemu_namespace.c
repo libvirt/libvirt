@@ -518,6 +518,25 @@ qemuDomainSetupAllGraphics(virDomainObj *vm,
 
 
 static int
+qemuDomainSetupAllVideos(virDomainObj *vm,
+                         GSList **paths)
+{
+    size_t i;
+
+    VIR_DEBUG("Setting up video devices");
+    for (i = 0; i < vm->def->nvideos; i++) {
+        virDomainVideoDef *video = vm->def->videos[i];
+        if (video->blob == VIR_TRISTATE_SWITCH_ON) {
+            *paths = g_slist_prepend(*paths, g_strdup(QEMU_DEV_UDMABUF));
+            break;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuDomainSetupInput(virDomainInputDef *input,
                      GSList **paths)
 {
@@ -686,6 +705,9 @@ qemuDomainBuildNamespace(virQEMUDriverConfig *cfg,
         return -1;
 
     if (qemuDomainSetupAllGraphics(vm, &paths) < 0)
+        return -1;
+
+    if (qemuDomainSetupAllVideos(vm, &paths) < 0)
         return -1;
 
     if (qemuDomainSetupAllInputs(vm, &paths) < 0)
