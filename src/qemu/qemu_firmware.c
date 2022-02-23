@@ -1139,7 +1139,8 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         VIR_FREE(def->os.loader->nvramTemplate);
         def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
 
-        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
+        if (!def->os.loader->nvram)
+            qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
 
         VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
                   def->os.loader->path,
