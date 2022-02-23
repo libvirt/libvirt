@@ -7,7 +7,7 @@
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
-    <nvram>/usr/share/OVMF/OVMF_VARS.fd</nvram>
+    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>
   </os>

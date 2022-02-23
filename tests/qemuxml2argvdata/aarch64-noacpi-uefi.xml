@@ -6,7 +6,7 @@
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
   </os>
   <cpu mode='custom'>
     <model>cortex-a57</model>

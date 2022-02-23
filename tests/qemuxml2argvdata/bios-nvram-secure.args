@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -accel tcg \
 -global driver=cfi.pflash01,property=secure,value=on \
 -drive file=/usr/share/OVMF/OVMF_CODE.secboot.fd,if=pflash,format=raw,unit=0,readonly=on \
--drive file=/usr/share/OVMF/OVMF_VARS.fd,if=pflash,format=raw,unit=1 \
+-drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 1024 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \

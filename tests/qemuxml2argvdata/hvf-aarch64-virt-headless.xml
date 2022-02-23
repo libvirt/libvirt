@@ -7,7 +7,7 @@
   <os>
     <type arch='aarch64' machine='virt'>hvm</type>
     <loader readonly='yes' type='pflash'>/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/test_VARS.fd</nvram>
+    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
     <boot dev='hd'/>
   </os>
   <features>

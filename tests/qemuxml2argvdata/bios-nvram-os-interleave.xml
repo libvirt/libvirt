@@ -6,7 +6,7 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
-    <nvram>/usr/share/OVMF/OVMF_VARS.fd</nvram>
+    <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
     <type arch='x86_64' machine='pc'>hvm</type>
     <boot dev='hd'/>
     <bootmenu enable='yes'/>

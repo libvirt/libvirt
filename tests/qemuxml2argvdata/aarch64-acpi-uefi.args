@@ -15,7 +15,7 @@ QEMU_AUDIO_DRV=none \
 -accel tcg \
 -cpu cortex-a57 \
 -drive file=/usr/share/AAVMF/AAVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on \
--drive file=/var/lib/libvirt/qemu/nvram/guest_VARS.fd,if=pflash,format=raw,unit=1 \
+-drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 1024 \
 -realtime mlock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
