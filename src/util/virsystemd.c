@@ -360,6 +360,7 @@ int virSystemdCreateMachine(const char *name,
     g_autofree char *creatorname = NULL;
     g_autofree char *slicename = NULL;
     g_autofree char *scopename = NULL;
+    g_autofree char *servicename = NULL;
     static int hasCreateWithNetwork = 1;
 
     if ((rc = virSystemdHasMachined()) < 0)
@@ -369,6 +370,7 @@ int virSystemdCreateMachine(const char *name,
         return -1;
 
     creatorname = g_strdup_printf("libvirt-%s", drivername);
+    servicename = g_strdup_printf("virt%sd.service", drivername);
 
     if (partition) {
         if (!(slicename = virSystemdMakeSliceName(partition)))
@@ -440,11 +442,10 @@ int virSystemdCreateMachine(const char *name,
         gnicindexes = g_variant_new_fixed_array(G_VARIANT_TYPE("i"),
                                                 nicindexes, nnicindexes, sizeof(int));
         gprops = g_variant_new_parsed("[('Slice', <%s>),"
-                                      " ('After', <['libvirtd.service']>),"
-                                      " ('After', <['virt%sd.service']>),"
+                                      " ('After', <['libvirtd.service', %s]>),"
                                       " ('Before', <['virt-guest-shutdown.target']>)]",
                                       slicename,
-                                      drivername);
+                                      servicename);
         message = g_variant_new("(s@ayssus@ai@a(sv))",
                                 name,
                                 guuid,
@@ -490,11 +491,10 @@ int virSystemdCreateMachine(const char *name,
         guuid = g_variant_new_fixed_array(G_VARIANT_TYPE("y"),
                                           uuid, 16, sizeof(unsigned char));
         gprops = g_variant_new_parsed("[('Slice', <%s>),"
-                                      " ('After', <['libvirtd.service']>),"
-                                      " ('After', <['virt%sd.service']>),"
+                                      " ('After', <['libvirtd.service', %s]>),"
                                       " ('Before', <['virt-guest-shutdown.target']>)]",
                                       slicename,
-                                      drivername);
+                                      servicename);
         message = g_variant_new("(s@ayssus@a(sv))",
                                 name,
                                 guuid,
