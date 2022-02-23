@@ -14976,6 +14976,14 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
             if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
                 goto endjob;
         }
+
+        /* 'qemuDomainPrepareStorageSourceBlockdev' calls
+         * 'qemuDomainPrepareDiskSourceData' which propagates 'detect_zeroes'
+         * into the topmost virStorage source of the disk chain.
+         * Since 'mirror' has the ambition to replace it we need to propagate
+         * it into the mirror too. We do it directly as otherwise we'd need
+         * to modify all callers of 'qemuDomainPrepareStorageSourceBlockdev' */
+        mirror->detect_zeroes = disk->detect_zeroes;
     }
 
     /* If reusing an external image that includes a backing file but the user
