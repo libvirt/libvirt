@@ -760,11 +760,14 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     if (!(ret = virGetNWFilterBinding(conn, def->portdevname, def->filter)))
         goto cleanup;
 
+    virNWFilterReadLockFilterUpdates();
     if (virNWFilterInstantiateFilter(driver, def) < 0) {
+        virNWFilterUnlockFilterUpdates();
         virNWFilterBindingObjListRemove(driver->bindings, obj);
         g_clear_pointer(&ret, virObjectUnref);
         goto cleanup;
     }
+    virNWFilterUnlockFilterUpdates();
     virNWFilterBindingObjSave(obj, driver->bindingDir);
 
  cleanup:
@@ -801,7 +804,9 @@ nwfilterBindingDelete(virNWFilterBindingPtr binding)
     if (virNWFilterBindingDeleteEnsureACL(binding->conn, def) < 0)
         goto cleanup;
 
+    virNWFilterReadLockFilterUpdates();
     virNWFilterTeardownFilter(def);
+    virNWFilterUnlockFilterUpdates();
     virNWFilterBindingObjDelete(obj, driver->bindingDir);
     virNWFilterBindingObjListRemove(driver->bindings, obj);
 
