@@ -971,8 +971,6 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
 
@@ -1014,7 +1012,6 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
  cleanup:
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -1080,8 +1077,6 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(caps = virLXCDriverGetCapabilities(driver, false)))
         goto cleanup;
 
@@ -1138,7 +1133,6 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
  cleanup:
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
-    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 

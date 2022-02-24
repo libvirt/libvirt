@@ -2782,8 +2782,6 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
     int rv;
     g_autofree char *tlsAlias = NULL;
 
-    virNWFilterReadLockFilterUpdates();
-
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
                      VIR_MIGRATE_NON_SHARED_INC)) {
@@ -3103,7 +3101,6 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     qemuMigrationCookieFree(mig);
-    virNWFilterUnlockFilterUpdates();
     virErrorRestore(&origErr);
     return ret;
 

@@ -1606,8 +1606,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     if (flags & VIR_DOMAIN_START_RESET_NVRAM)
         start_flags |= VIR_QEMU_PROCESS_START_RESET_NVRAM;
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(def = virDomainDefParseString(xml, driver->xmlopt,
                                         NULL, parse_flags)))
         goto cleanup;
@@ -1661,7 +1659,6 @@ static virDomainPtr qemuDomainCreateXML(virConnectPtr conn,
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
     virObjectEventStateQueue(driver->domainEventState, event2);
-    virNWFilterUnlockFilterUpdates();
     return dom;
 }
 
@@ -5776,8 +5773,6 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (flags & VIR_DOMAIN_SAVE_RESET_NVRAM)
         reset_nvram = true;
 
-    virNWFilterReadLockFilterUpdates();
-
     fd = qemuSaveImageOpen(driver, NULL, path, &def, &data,
                            (flags & VIR_DOMAIN_SAVE_BYPASS_CACHE) != 0,
                            &wrapperFd, false, false);
@@ -5849,7 +5844,6 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (vm && ret < 0)
         qemuDomainRemoveInactiveJob(driver, vm);
     virDomainObjEndAPI(&vm);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -6403,8 +6397,6 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
                   VIR_DOMAIN_START_FORCE_BOOT |
                   VIR_DOMAIN_START_RESET_NVRAM, -1);
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
@@ -6433,7 +6425,6 @@ qemuDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -7815,8 +7806,6 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
     virDomainObj *vm = NULL;
     int ret = -1;
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
@@ -7839,7 +7828,6 @@ qemuDomainAttachDeviceFlags(virDomainPtr dom,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -7868,8 +7856,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
                   VIR_DOMAIN_AFFECT_CONFIG |
                   VIR_DOMAIN_DEVICE_MODIFY_FORCE, -1);
-
-    virNWFilterReadLockFilterUpdates();
 
     cfg = virQEMUDriverGetConfig(driver);
 
@@ -7947,7 +7933,6 @@ static int qemuDomainUpdateDeviceFlags(virDomainPtr dom,
     if (dev != dev_copy)
         virDomainDeviceDefFree(dev_copy);
     virDomainObjEndAPI(&vm);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -13654,8 +13639,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
     virDomainObj *vm = NULL;
     int ret = -1;
 
-    virNWFilterReadLockFilterUpdates();
-
     if (!(vm = qemuDomObjFromSnapshot(snapshot)))
         goto cleanup;
 
@@ -13666,7 +13649,6 @@ qemuDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
