@@ -3268,6 +3268,11 @@ struct remote_domain_event_memory_device_size_change_msg {
         remote_nonnull_string      alias;
         uint64_t                   size;
 };
+struct remote_domain_fd_associate_args {
+        remote_nonnull_domain      dom;
+        remote_nonnull_string      name;
+        u_int                      flags;
+};
 enum remote_procedure {
         REMOTE_PROC_CONNECT_OPEN = 1,
         REMOTE_PROC_CONNECT_CLOSE = 2,
@@ -3711,4 +3716,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SAVE_PARAMS = 440,
         REMOTE_PROC_DOMAIN_RESTORE_PARAMS = 441,
         REMOTE_PROC_DOMAIN_ABORT_JOB_FLAGS = 442,
+        REMOTE_PROC_DOMAIN_FD_ASSOCIATE = 443,
 };

@@ -7443,3 +7443,43 @@ remoteDispatchDomainGetMessages(virNetServer *server G_GNUC_UNUSED,
 
     return rv;
 }
+
+
+static int
+remoteDispatchDomainFdAssociate(virNetServer *server G_GNUC_UNUSED,
+                                virNetServerClient *client,
+                                virNetMessage *msg,
+                                struct virNetMessageError *rerr,
+                                remote_domain_fd_associate_args *args)
+{
+    virDomainPtr dom = NULL;
+    int *fds = NULL;
+    unsigned int nfds = 0;
+    int rv = -1;
+    virConnectPtr conn = remoteGetHypervisorConn(client);
+    size_t i;
+
+    if (!conn)
+        goto cleanup;
+
+    if (!(dom = get_nonnull_domain(conn, args->dom)))
+        goto cleanup;
+
+    fds = g_new0(int, msg->nfds);
+    for (i = 0; i < msg->nfds; i++) {
+        if ((fds[i] = virNetMessageDupFD(msg, i)) < 0)
+            goto cleanup;
+        nfds++;
+    }
+
+    if (virDomainFDAssociate(dom, args->name, nfds, fds, args->flags) < 0)
+        goto cleanup;
+
+    rv = 0;
+
+ cleanup:
+    if (rv < 0)
+        virNetMessageSaveError(rerr);
+    virObjectUnref(dom);
+    return rv;
+}

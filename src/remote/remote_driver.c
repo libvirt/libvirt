@@ -8198,6 +8198,32 @@ remoteDomainGetMessages(virDomainPtr domain,
     return rv;
 }
 
+
+static int
+remoteDomainFDAssociate(virDomainPtr domain,
+                        const char *name,
+                        unsigned int nfds,
+                        int *fds,
+                        unsigned int flags)
+{
+    remote_domain_fd_associate_args args;
+    struct private_data *priv = domain->conn->privateData;
+    VIR_LOCK_GUARD lock = remoteDriverLock(priv);
+
+    make_nonnull_domain(&args.dom, domain);
+    args.name = (char *)name;
+    args.flags = flags;
+
+    if (callFull(domain->conn, priv, 0, fds, nfds, NULL, NULL,
+                 REMOTE_PROC_DOMAIN_FD_ASSOCIATE,
+                 (xdrproc_t) xdr_remote_domain_fd_associate_args, (char *) &args,
+                 (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
+
+    return 0;
+}
+
+
 /* get_nonnull_domain and get_nonnull_network turn an on-wire
  * (name, uuid) pair into virDomainPtr or virNetworkPtr object.
  * These can return NULL if underlying memory allocations fail,
@@ -8638,6 +8664,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainGetMessages = remoteDomainGetMessages, /* 7.1.0 */
     .domainStartDirtyRateCalc = remoteDomainStartDirtyRateCalc, /* 7.2.0 */
     .domainSetLaunchSecurityState = remoteDomainSetLaunchSecurityState, /* 8.0.0 */
+    .domainFDAssociate = remoteDomainFDAssociate, /* 8.9.0 */
 };
 
 static virNetworkDriver network_driver = {

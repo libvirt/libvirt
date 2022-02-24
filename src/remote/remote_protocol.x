@@ -3929,6 +3929,12 @@ struct remote_domain_event_memory_device_size_change_msg {
     unsigned hyper size;
 };
 
+
+struct remote_domain_fd_associate_args {
+    remote_nonnull_domain dom;
+    remote_nonnull_string name;
+    unsigned int flags;
+};
 /*----- Protocol. -----*/
 
 /* Define the program number, protocol version and procedure numbers here. */
@@ -6961,5 +6967,11 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_ABORT_JOB_FLAGS = 442
+    REMOTE_PROC_DOMAIN_ABORT_JOB_FLAGS = 442,
+
+    /**
+     * @generate: none
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_FD_ASSOCIATE = 443
 };

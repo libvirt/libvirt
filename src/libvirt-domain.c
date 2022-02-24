@@ -13972,3 +13972,83 @@ virDomainStartDirtyRateCalc(virDomainPtr domain,
     virDispatchError(conn);
     return -1;
 }
+
+
+/**
+ * virDomainFDAssociate:
+ * @domain: a domain object
+ * @name: name for the file descriptor group
+ * @nfds: number of fds in @fds
+ * @fds: file descriptors to associate with domain
+ * @flags: optional flags; bitwise-OR of supported virDomainFDAssociateFlags
+ *
+ * Associate the FDs in @fd with @domain under @name. The FDs are associated as
+ * long as the connection used to associated exists and are disposed of
+ * afterwards. FD may still be kept open by the hypervisor for as long as it's
+ * needed.
+ *
+ * Security labelling (e.g. via the selinux) may be applied on the passed FDs
+ * when required for usage by the VM. By default libvirt does not restore the
+ * seclabels on the FDs afterwards to avoid keeping it open unnecessarily.
+ *
+ * Restoring of the security label can be requested by passing either
+ * VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_RESTORE for a best-effort attempt to restore
+ * the security label after use.
+ * Requesting the restore of security label will require that the file
+ * descriptors are kept open for the whole time they are used by the hypervisor,
+ * or other additional overhead.
+ *
+ * In certain cases usage of the fd group would imply read-only access. Passing
+ * VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_WRITABLE in @flags ensures that a writable
+ * security label is picked in case when the file represented by the fds may
+ * be used in write mode.
+ *
+ * Returns 0 on success, -1 on error.
+ *
+ * Since: 9.0.0
+ */
+int
+virDomainFDAssociate(virDomainPtr domain,
+                     const char *name,
+                     unsigned int nfds,
+                     int *fds,
+                     unsigned int flags)
+{
+    virConnectPtr conn;
+    int rc;
+
+    VIR_DOMAIN_DEBUG(domain,
+                     "name='%s', nfds=%u, fds=%p, flags=0x%x",
+                     name, nfds, fds, flags);
+
+    virResetLastError();
+
+    conn = domain->conn;
+
+    if ((rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn, VIR_DRV_FEATURE_FD_PASSING)) < 0)
+        goto error;
+
+    if (rc == 0) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("fd passing is not supported by this connection"));
+        goto error;
+    }
+
+    virCheckNonZeroArgGoto(nfds, error);
+    virCheckNonNullArgGoto(fds, error);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (!conn->driver->domainFDAssociate) {
+        virReportUnsupportedError();
+        goto error;
+    }
+
+    if ((rc = conn->driver->domainFDAssociate(domain, name, nfds, fds, flags)) < 0)
+        goto error;
+
+    return rc;
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
