@@ -99,7 +99,7 @@ void virNWFilterTechDriversShutdown(void)
 }
 
 
-virNWFilterTechDriver *
+static virNWFilterTechDriver *
 virNWFilterTechDriverForName(const char *name)
 {
     size_t i = 0;
@@ -791,7 +791,7 @@ virNWFilterInstantiateFilter(virNWFilterDriverState *driver,
 }
 
 
-int
+static int
 virNWFilterUpdateInstantiateFilter(virNWFilterDriverState *driver,
                                    virNWFilterBindingDef *binding,
                                    bool *skipIface)
