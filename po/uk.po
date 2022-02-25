@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-02-23 12:43+0000\n"
-"PO-Revision-Date: 2022-01-12 10:44+0000\n"
+"PO-Revision-Date: 2022-02-23 18:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -2217,7 +2217,7 @@ msgstr ""
 "вказувати одночасно"
 
 msgid "Both secret and the secret header are required"
-msgstr ""
+msgstr "Потрібен і ключ і заголовок ключа"
 
 msgid "Bounded"
 msgstr "Зв'язане"
@@ -3451,7 +3451,7 @@ msgstr "Не вдалося встановити MAC-адресу інтерфе
 
 #, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr ""
+msgstr "Не вдалося встановити інтерфейс MAC до %s для ifname %s vf %d"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -3467,7 +3467,7 @@ msgstr "Не вдалося встановити прапорці інтерфе
 
 #, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr ""
+msgstr "Не вдалося встановити інтерфейс vlanid до %d для ifname %s vf %d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Не можна визначати об'єм пам'яті, що перевищує максимальний"
@@ -10526,7 +10526,7 @@ msgstr "Free передано параметр некоректного типу
 
 #, c-format
 msgid "Invalid parameters: %d"
-msgstr ""
+msgstr "Некоректні параметри: %d"
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr ""
@@ -10740,6 +10740,8 @@ msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
 msgstr ""
+"Некоректне значення атрибута «%s» в елементі «%s»: «%s». Мало бути "
+"невід'ємне ціле значення"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -11258,7 +11260,7 @@ msgstr ""
 
 #, c-format
 msgid "Maximum supported number of ISA serial ports is '%d'"
-msgstr ""
+msgstr "Максимальний підтримуваний номер для послідовних портів ISA — «%d»"
 
 msgid "Media Registry is null"
 msgstr "Значення реєстру носіїв даних є порожнім"
@@ -11584,7 +11586,7 @@ msgid "Missing IP address in static host definition for network '%s'"
 msgstr "Не вистачає IP-адреси у визначення статичного вузла для мережі «%s»"
 
 msgid "Missing LISTEN_FDNAMES env from systemd socket activation"
-msgstr ""
+msgstr "Не вистачає середовища LISTEN_FDNAMES від активації сокета systemd"
 
 #, c-format
 msgid "Missing PVR information for CPU model %s"
@@ -13991,7 +13993,7 @@ msgid "QEMU does not support SEV guest"
 msgstr "у QEMU не передбачено підтримки гостьових систем SEV"
 
 msgid "QEMU does not support calculating dirty page rate"
-msgstr ""
+msgstr "У QEMU не передбачено підтримки обчислення частоти зіпсованих сторінок"
 
 #, c-format
 msgid "QEMU does not support device assignment mode '%s'"
@@ -13999,6 +14001,8 @@ msgstr "У QEMU не передбачено підтримки режиму пр
 
 msgid "QEMU does not support dirty page rate calculation mode."
 msgstr ""
+"У QEMU не передбачено підтримки режиму обчислення частоти зіпсованих "
+"сторінок."
 
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr ""
@@ -16461,7 +16465,7 @@ msgstr ""
 
 #, c-format
 msgid "Target serial model %s does not match source %s"
-msgstr ""
+msgstr "Модель послідовних пристроїв призначення %s не відповідає джерелу %s"
 
 #, c-format
 msgid "Target serial port %d does not match source %d"
@@ -16524,7 +16528,7 @@ msgstr "Таймер призначення %s не відповідає тай�
 
 #, c-format
 msgid "Target timer presence '%s' does not match source '%s'"
-msgstr ""
+msgstr "Наявність таймера призначення «%s» не відповідає джерелу, «%s»"
 
 #, c-format
 msgid "Target type '%s' cannot have an associated address"
@@ -17946,7 +17950,7 @@ msgid "Unable to find 'devices' cgroups controller mount"
 msgstr "Не вдалося знайти точку монтування контролера cgroup «devices»"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
-msgstr ""
+msgstr "Не вдалося знайти виконуваний файл «dnsmasq» в одному з каталогів $PATH"
 
 msgid "Unable to find 'memory' cgroups controller mount"
 msgstr "Не вдалося знайти точку монтування контролера cgroup «memory»"
@@ -19046,7 +19050,7 @@ msgstr ""
 "Не вдалося надіслати сигнал SIGTERM процесу з ідентифікатором %llu init"
 
 msgid "Unable to send a VF SETLINK request on this platform"
-msgstr ""
+msgstr "Неможливо надіслати запит VF SETLINK на цій платформі"
 
 msgid "Unable to send container continue message"
 msgstr "Не вдалося надіслати повідомлення щодо продовження контейнера"
@@ -19106,13 +19110,13 @@ msgid "Unable to set XATTR %s on %s"
 msgstr "Не вдалося встановити XATTR %s на %s"
 
 msgid "Unable to set a VF MAC on this platform"
-msgstr ""
+msgstr "Неможливо встановити VF MAC на цій платформі"
 
 msgid "Unable to set a VF VLAN on this platform"
-msgstr ""
+msgstr "Неможливо встановити VF VLAN на цій платформі"
 
 msgid "Unable to set a VF config on this platform"
-msgstr ""
+msgstr "Неможливо встановити налаштування VF на цій платформі"
 
 msgid "Unable to set agent close-on-exec flag"
 msgstr "Не вдалося встановити ознаку close-on-exec для агента"
@@ -19752,7 +19756,7 @@ msgstr "Невідомий тип кешування, «%s»"
 
 #, c-format
 msgid "Unknown calculation mode '%s'"
-msgstr ""
+msgstr "Невідомий режим обчислення «%s»"
 
 #, c-format
 msgid "Unknown cgroup controller '%s'"
@@ -19784,7 +19788,7 @@ msgstr "Невідоме джерело даних «%s»"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %s"
-msgstr ""
+msgstr "Невідомий режим обчислення частоти зіпсованих сторінок: %s"
 
 #, c-format
 msgid "Unknown dirty rate status: %s"
@@ -21086,6 +21090,7 @@ msgstr "адреса дискового пристрою"
 #, c-format
 msgid "address of type '%s' is supported only for hostdevs"
 msgstr ""
+"підтримку адрес типу «%s» передбачено лише для пристроїв основної системи"
 
 msgid "address source: 'lease' or 'agent'"
 msgstr "джерело адреси: «lease» або «agent»"
@@ -22632,7 +22637,7 @@ msgstr "не вдалося отримати RSS для домену"
 
 #, c-format
 msgid "cannot get cert distinguished name: %s"
-msgstr ""
+msgstr "не вдалося отримати характерну назву сертифіката: %s"
 
 msgid "cannot get children disk"
 msgstr "не вдалося отримати дочірній диск"
@@ -25091,6 +25096,8 @@ msgstr "каталог"
 
 msgid "direct FD passing supports only 1 file descriptor"
 msgstr ""
+"для безпосереднього передавання дескриптора файла передбачено підтримку лише "
+"1 дескриптора"
 
 msgid "direct migration"
 msgstr "безпосереднє перенесення"
@@ -25114,6 +25121,8 @@ msgid ""
 "dirty page rate calculation mode, either of these 3 options 'page-sampling, "
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
+"режим обчислення частоти зіпсованих сторінок, один із 3 варіантів: 'page-"
+"sampling, dirty-bitmap, dirty-ring'."
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr "кільце брудності має бути степенем 2 у діапазоні [1024, 65536]"
@@ -25126,7 +25135,7 @@ msgstr ""
 "призначення: «%d»"
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
-msgstr ""
+msgstr "для режиму обчислення dirty-ring слід увімкнути можливість dirty-ring."
 
 msgid "disable"
 msgstr "вимкнути"
@@ -26408,7 +26417,7 @@ msgstr "очікується значення"
 
 #, c-format
 msgid "expecting a value for value of type %s"
-msgstr ""
+msgstr "мало бути вказано значення для значення типу %s"
 
 #, c-format
 msgid "expecting absolute path: %s"
@@ -29353,7 +29362,7 @@ msgstr ""
 
 #, c-format
 msgid "invalid dmode: '0%o'"
-msgstr ""
+msgstr "некоректне значення dmode: «0%o»"
 
 msgid "invalid domain pointer in"
 msgstr "неправильний вказівник домену у"
@@ -29386,7 +29395,7 @@ msgid "invalid fd %d for %s"
 msgstr "некоректний дескриптор файла %d для %s"
 
 msgid "invalid file descriptor"
-msgstr ""
+msgstr "некоректний дескриптор файла"
 
 msgid "invalid flag"
 msgstr "некоректний прапорець"
@@ -29397,7 +29406,7 @@ msgstr "некоректне поєднання прапорців: (0x%x)"
 
 #, c-format
 msgid "invalid fmode: '0%o'"
-msgstr ""
+msgstr "некоректне значення fmode: «0%o»"
 
 msgid "invalid hasmanagedsave"
 msgstr "некоректне значення hasmanagedsave"
@@ -29733,7 +29742,7 @@ msgid "invalid use of command API"
 msgstr "некоректне використання програмного інтерфейсу команд"
 
 msgid "invalid use of conf API"
-msgstr ""
+msgstr "некоректне використання програмного інтерфейсу налаштувань"
 
 msgid "invalid use with no flags"
 msgstr "некоректне використання без прапорців"
@@ -29862,7 +29871,7 @@ msgid "is not active"
 msgstr "неактивне"
 
 msgid "isa-debug serial type only valid on x86 architecture"
-msgstr ""
+msgstr "тип послідовного порту isa-debug є чинним лише для архітектури x86"
 
 msgid "iscsi pool only supports 'chap' auth type"
 msgstr "для буферів iscsi передбачено підтримку лише розпізнавання «chap»"
@@ -31501,7 +31510,7 @@ msgstr "не вказано значення cssid для «%s»"
 
 #, c-format
 msgid "missing decode element in CPU model %s"
-msgstr ""
+msgstr "пропущено елемент decode у моделі процесора %s"
 
 #, c-format
 msgid "missing destination file for disk %s: %s"
@@ -34649,7 +34658,7 @@ msgstr ""
 "у даних відповіді query-cpu-model-comparison не міститься запису «result»"
 
 msgid "query-dirty-rate parsing 'vcpu-dirty-rate' in failure"
-msgstr ""
+msgstr "обробка query-dirty-rate «vcpu-dirty-rate» при помилці"
 
 msgid "query-dirty-rate reply was missing 'calc-time' data"
 msgstr "у відповіді query-dirty-rate пропущено дані «calc-time»"
@@ -34658,7 +34667,7 @@ msgid "query-dirty-rate reply was missing 'dirty-rate' data"
 msgstr "у відповіді query-dirty-rate пропущено дані «dirty-rate»"
 
 msgid "query-dirty-rate reply was missing 'id' data"
-msgstr ""
+msgstr "у відповіді query-dirty-rate пропущено дані «id»"
 
 msgid "query-dirty-rate reply was missing 'return' data"
 msgstr "у відповіді query-dirty-rate пропущено дані «return»"
@@ -34823,7 +34832,7 @@ msgid "rawio is only supported for scsi host device"
 msgstr "підтримку rawio передбачено лише для пристроїв scsi основної системи"
 
 msgid "re-initialize NVRAM from its pristine template"
-msgstr ""
+msgstr "повторно ініціалізувати NVRAM з її початкового шаблона"
 
 msgid "read I/O operations limit per second"
 msgstr "загальне обмеження дій з читання у діях на секунду"
@@ -36355,17 +36364,17 @@ msgstr ""
 "з прапорцем VIR_MIGRATE_POSTCOPY"
 
 msgid "swtpm didn't show up"
-msgstr ""
+msgstr "swtpm не показався"
 
 #, c-format
 msgid "swtpm died and reported: %s"
-msgstr ""
+msgstr "swtpm завершила роботу і повідомила: %s"
 
 msgid "swtpm died unexpectedly"
-msgstr ""
+msgstr "swtpm неочікувано завершила роботу"
 
 msgid "swtpm socket did not show up"
-msgstr ""
+msgstr "сокет swtpm не показався"
 
 #, c-format
 msgid "syntax: %s DEVICE [-g]|[-p]\n"
@@ -36471,7 +36480,7 @@ msgstr "Пристрій PCI системи призначення "
 
 #, c-format
 msgid "target port '%d' already allocated"
-msgstr ""
+msgstr "порт призначення «%d» вже розподілено"
 
 #, c-format
 msgid "target type must be specified for %s device"
@@ -36552,6 +36561,7 @@ msgstr ""
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
 msgstr ""
+"у цій основній системі не передбачено підтримки прискорювача «%s» у «%s»"
 
 msgid ""
 "the address family of a dhcp range must match the address family of the dhcp "
@@ -38317,7 +38327,7 @@ msgid "unexpectedly failed"
 msgstr "несподівано завершилося помилкою"
 
 msgid "unfiltered sgio is no longer supported"
-msgstr ""
+msgstr "подальшу підтримку нефільтрованого sgio припинено"
 
 #, c-format
 msgid "unimplemented parameter type %d"
@@ -39707,7 +39717,7 @@ msgstr "підтримки типу відео %s у libxl не передбач
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
-msgstr ""
+msgstr "для типу відео «%s» не передбачено підтримки декількох «heads»"
 
 #, c-format
 msgid "video type '%s' is only valid as primary video device"
@@ -39951,7 +39961,7 @@ msgstr ""
 
 #, c-format
 msgid "virtiofsd binary '%s' is not executable"
-msgstr ""
+msgstr "двійковий файл virtiofsd «%s» не є виконуваним"
 
 msgid "virtiofsd died unexpectedly"
 msgstr "virtiofsd неочікувано завершила роботу"
@@ -40003,7 +40013,7 @@ msgstr "підтримки групування vlan у пристроях ме�
 
 #, c-format
 msgid "vlanid out of range: %d"
-msgstr ""
+msgstr "vlanid поза припустимим діапазоном: %d"
 
 msgid "vmcoreinfo is not available with this QEMU binary"
 msgstr ""
