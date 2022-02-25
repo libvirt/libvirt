@@ -80,13 +80,13 @@
   # access to firmware's etc
   /usr/share/AAVMF/** r,
   /usr/share/bochs/** r,
-  /usr/share/edk2-ovmf/** r,
+  /usr/share/edk2-ovmf/** rk,
   /usr/share/kvm/** r,
   /usr/share/misc/sgabios.bin r,
   /usr/share/openbios/** r,
   /usr/share/openhackware/** r,
-  /usr/share/OVMF/** r,
-  /usr/share/ovmf/** r,
+  /usr/share/OVMF/** rk,
+  /usr/share/ovmf/** rk,
   /usr/share/proll/** r,
   /usr/share/qemu-efi/** r,
   /usr/share/qemu-kvm/** r,
@@ -248,3 +248,7 @@
   # /sys/bus/nd/devices
   / r, # harmless on any lsb compliant system
   /sys/bus/nd/devices/{,**/} r,
+
+  # required for QEMU accessing UEFI nvram variables
+  owner /var/lib/libvirt/qemu/nvram/*_VARS.fd rwk,
+  owner /var/lib/libvirt/qemu/nvram/*_VARS.ms.fd rwk,
