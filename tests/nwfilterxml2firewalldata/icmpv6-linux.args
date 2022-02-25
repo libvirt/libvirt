@@ -9,8 +9,8 @@ ip6tables \
 -m dscp \
 --dscp 2 \
 --icmpv6-type 12/11 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -23,8 +23,8 @@ ip6tables \
 -m dscp \
 --dscp 2 \
 --icmpv6-type 12/11 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -36,8 +36,8 @@ ip6tables \
 -m dscp \
 --dscp 33 \
 --icmpv6-type 255/255 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
 -w \
@@ -49,6 +49,6 @@ ip6tables \
 -m dscp \
 --dscp 33 \
 --icmpv6-type 255/255 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT

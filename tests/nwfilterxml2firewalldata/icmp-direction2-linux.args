@@ -3,24 +3,24 @@ iptables \
 -A FP-vnet0 \
 -p icmp \
 --icmp-type 8 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
 -A FJ-vnet0 \
 -p icmp \
 --icmp-type 0 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A HJ-vnet0 \
 -p icmp \
 --icmp-type 0 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \

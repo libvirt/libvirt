@@ -2,8 +2,8 @@ iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
--m state \
---state ESTABLISHED,RELATED \
+-m conntrack \
+--ctstate ESTABLISHED,RELATED \
 -m comment \
 --comment 'out: existing and related (ftp) connections' \
 -j RETURN
@@ -11,8 +11,8 @@ iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
--m state \
---state ESTABLISHED,RELATED \
+-m conntrack \
+--ctstate ESTABLISHED,RELATED \
 -m comment \
 --comment 'out: existing and related (ftp) connections' \
 -j RETURN
@@ -20,8 +20,8 @@ iptables \
 -w \
 -A FP-vnet0 \
 -p all \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'in: existing connections' \
 -j ACCEPT
@@ -30,8 +30,8 @@ iptables \
 -A FP-vnet0 \
 -p tcp \
 --dport 21:22 \
--m state \
---state NEW \
+-m conntrack \
+--ctstate NEW \
 -m comment \
 --comment 'in: ftp and ssh' \
 -j ACCEPT
@@ -39,8 +39,8 @@ iptables \
 -w \
 -A FP-vnet0 \
 -p icmp \
--m state \
---state NEW \
+-m conntrack \
+--ctstate NEW \
 -m comment \
 --comment 'in: icmp' \
 -j ACCEPT
@@ -49,8 +49,8 @@ iptables \
 -A FJ-vnet0 \
 -p udp \
 --dport 53 \
--m state \
---state NEW \
+-m conntrack \
+--ctstate NEW \
 -m comment \
 --comment 'out: DNS lookups' \
 -j RETURN
@@ -59,8 +59,8 @@ iptables \
 -A HJ-vnet0 \
 -p udp \
 --dport 53 \
--m state \
---state NEW \
+-m conntrack \
+--ctstate NEW \
 -m comment \
 --comment 'out: DNS lookups' \
 -j RETURN

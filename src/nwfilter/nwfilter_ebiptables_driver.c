@@ -88,8 +88,6 @@ static enum ctdirStatus iptables_ctdir_corrected;
 #define PRINT_IPT_ROOT_CHAIN(buf, prefix, ifname) \
     g_snprintf(buf, sizeof(buf), "%c%c-%s", prefix[0], prefix[1], ifname)
 
-static bool newMatchState;
-
 #define MATCH_PHYSDEV_IN_FW   "-m", "physdev", "--physdev-in"
 #define MATCH_PHYSDEV_OUT_FW  "-m", "physdev", "--physdev-is-bridged", "--physdev-out"
 #define MATCH_PHYSDEV_OUT_OLD_FW  "-m", "physdev", "--physdev-out"
@@ -1489,16 +1487,10 @@ _iptablesCreateRuleInstance(virFirewall *fw,
     }
 
     if (match && !skipMatch) {
-        if (newMatchState)
-            virFirewallRuleAddArgList(fw, fwrule,
-                                      "-m", "conntrack",
-                                      "--ctstate", match,
-                                      NULL);
-        else
-            virFirewallRuleAddArgList(fw, fwrule,
-                                      "-m", "state",
-                                      "--state", match,
-                                      NULL);
+        virFirewallRuleAddArgList(fw, fwrule,
+                                  "-m", "conntrack",
+                                  "--ctstate", match,
+                                  NULL);
     }
 
     if (defMatch && match != NULL && !skipMatch && !hasICMPType)
@@ -3669,69 +3661,12 @@ ebiptablesDriverProbeCtdir(void)
 
 
 static int
-ebiptablesDriverProbeStateMatchQuery(virFirewall *fw G_GNUC_UNUSED,
-                                     virFirewallLayer layer G_GNUC_UNUSED,
-                                     const char *const *lines,
-                                     void *opaque)
-{
-    unsigned long *version = opaque;
-    char *tmp;
-
-    if (!lines || !lines[0]) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("No output from iptables --version"));
-        return -1;
-    }
-
-    /*
-     * we expect output in the format
-     * 'iptables v1.4.16'
-     */
-    if (!(tmp = strchr(lines[0], 'v')) ||
-        virStringParseVersion(version, tmp + 1, true) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Cannot parse version string '%s'"),
-                       lines[0]);
-        return -1;
-    }
-
-    return 0;
-}
-
-
-static int
-ebiptablesDriverProbeStateMatch(void)
-{
-    unsigned long version;
-    g_autoptr(virFirewall) fw = virFirewallNew();
-
-    virFirewallStartTransaction(fw, 0);
-    virFirewallAddRuleFull(fw, VIR_FIREWALL_LAYER_IPV4,
-                           false, ebiptablesDriverProbeStateMatchQuery, &version,
-                           "--version", NULL);
-
-    if (virFirewallApply(fw) < 0)
-        return -1;
-
-    /*
-     * since version 1.4.16 '-m state --state ...' will be converted to
-     * '-m conntrack --ctstate ...'
-     */
-    if (version >= 1 * 1000000 + 4 * 1000 + 16)
-        newMatchState = true;
-
-    return 0;
-}
-
-static int
 ebiptablesDriverInit(bool privileged)
 {
     if (!privileged)
         return 0;
 
     ebiptablesDriverProbeCtdir();
-    if (ebiptablesDriverProbeStateMatch() < 0)
-        return -1;
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 

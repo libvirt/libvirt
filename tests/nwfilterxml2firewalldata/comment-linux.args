@@ -55,8 +55,8 @@ iptables \
 --dscp 34 \
 --sport 291:400 \
 --dport 564:1092 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'udp rule' \
 -j RETURN
@@ -69,8 +69,8 @@ iptables \
 --dscp 34 \
 --dport 291:400 \
 --sport 564:1092 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'udp rule' \
 -j ACCEPT
@@ -85,8 +85,8 @@ iptables \
 --dscp 34 \
 --sport 291:400 \
 --dport 564:1092 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'udp rule' \
 -j RETURN
@@ -99,8 +99,8 @@ ip6tables \
 --dscp 57 \
 --dport 32:33 \
 --sport 256:4369 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
@@ -115,8 +115,8 @@ ip6tables \
 --dscp 57 \
 --sport 32:33 \
 --dport 256:4369 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j ACCEPT
@@ -129,8 +129,8 @@ ip6tables \
 --dscp 57 \
 --dport 32:33 \
 --sport 256:4369 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
@@ -138,8 +138,8 @@ ip6tables \
 -w \
 -A FJ-vnet0 \
 -p udp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
@@ -147,8 +147,8 @@ ip6tables \
 -w \
 -A FP-vnet0 \
 -p udp \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j ACCEPT
@@ -156,8 +156,8 @@ ip6tables \
 -w \
 -A HJ-vnet0 \
 -p udp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
@@ -165,8 +165,8 @@ ip6tables \
 -w \
 -A FJ-vnet0 \
 -p sctp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
@@ -174,8 +174,8 @@ ip6tables \
 -w \
 -A FP-vnet0 \
 -p sctp \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j ACCEPT
@@ -183,8 +183,8 @@ ip6tables \
 -w \
 -A HJ-vnet0 \
 -p sctp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
@@ -192,8 +192,8 @@ ip6tables \
 -w \
 -A FJ-vnet0 \
 -p ah \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN
@@ -201,8 +201,8 @@ ip6tables \
 -w \
 -A FP-vnet0 \
 -p ah \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j ACCEPT
@@ -210,8 +210,8 @@ ip6tables \
 -w \
 -A HJ-vnet0 \
 -p ah \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN

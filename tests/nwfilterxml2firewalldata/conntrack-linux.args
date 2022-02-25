@@ -30,20 +30,20 @@ iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FP-vnet0 \
 -p all \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN

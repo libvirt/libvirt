@@ -55,8 +55,8 @@ iptables \
 --dscp 34 \
 --sport 291:400 \
 --dport 564:1092 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -67,8 +67,8 @@ iptables \
 --dscp 34 \
 --dport 291:400 \
 --sport 564:1092 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -81,8 +81,8 @@ iptables \
 --dscp 34 \
 --sport 291:400 \
 --dport 564:1092 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -93,8 +93,8 @@ ip6tables \
 --dscp 57 \
 --dport 32:33 \
 --sport 256:4369 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -107,8 +107,8 @@ ip6tables \
 --dscp 57 \
 --sport 32:33 \
 --dport 256:4369 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
 -w \
@@ -119,6 +119,6 @@ ip6tables \
 --dscp 57 \
 --dport 32:33 \
 --sport 256:4369 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN

@@ -3,66 +3,66 @@ iptables \
 -A FJ-vnet0 \
 -p tcp \
 --sport 22 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FP-vnet0 \
 -p tcp \
 --dport 22 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p tcp \
 --sport 22 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FJ-vnet0 \
 -p icmp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FP-vnet0 \
 -p icmp \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p icmp \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FJ-vnet0 \
 -p all \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \
 -A FP-vnet0 \
 -p all \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
 -A HJ-vnet0 \
 -p all \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 iptables \
 -w \

@@ -8,8 +8,8 @@ ip6tables \
 --destination a:b:c::d:e:f/128 \
 -m dscp \
 --dscp 2 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -19,8 +19,8 @@ ip6tables \
 --source a:b:c::d:e:f/128 \
 -m dscp \
 --dscp 2 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 ip6tables \
 -w \
@@ -32,8 +32,8 @@ ip6tables \
 --destination a:b:c::d:e:f/128 \
 -m dscp \
 --dscp 2 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -42,8 +42,8 @@ ip6tables \
 --destination a:b:c::/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -54,8 +54,8 @@ ip6tables \
 --source a:b:c::/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
 -w \
@@ -64,8 +64,8 @@ ip6tables \
 --destination a:b:c::/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -74,8 +74,8 @@ ip6tables \
 --destination ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN
 ip6tables \
 -w \
@@ -86,8 +86,8 @@ ip6tables \
 --source ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j ACCEPT
 ip6tables \
 -w \
@@ -96,6 +96,6 @@ ip6tables \
 --destination ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j RETURN

@@ -49,8 +49,8 @@ iptables \
 --destination 10.1.2.3/32 \
 -m dscp \
 --dscp 2 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j RETURN
@@ -61,8 +61,8 @@ iptables \
 --source 10.1.2.3/32 \
 -m dscp \
 --dscp 2 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j ACCEPT
@@ -75,8 +75,8 @@ iptables \
 --destination 10.1.2.3/32 \
 -m dscp \
 --dscp 2 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j RETURN
@@ -155,8 +155,8 @@ iptables \
 --destination 10.1.2.3/22 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j RETURN
@@ -169,8 +169,8 @@ iptables \
 --source 10.1.2.3/22 \
 -m dscp \
 --dscp 33 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j ACCEPT
@@ -181,8 +181,8 @@ iptables \
 --destination 10.1.2.3/22 \
 -m dscp \
 --dscp 33 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j RETURN

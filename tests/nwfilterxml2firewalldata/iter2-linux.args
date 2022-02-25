@@ -6,8 +6,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -17,8 +17,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --dport 80 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -28,8 +28,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -39,8 +39,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -50,8 +50,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --dport 90 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -61,8 +61,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -72,8 +72,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -83,8 +83,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --dport 80 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -94,8 +94,8 @@ iptables \
 -m dscp \
 --dscp 1 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -105,8 +105,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -116,8 +116,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 80 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -127,8 +127,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -138,8 +138,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -149,8 +149,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 80 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -160,8 +160,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -171,8 +171,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -182,8 +182,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 80 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -193,8 +193,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 80 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -204,8 +204,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -215,8 +215,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 90 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -226,8 +226,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -237,8 +237,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -248,8 +248,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 90 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -259,8 +259,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -270,8 +270,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -281,8 +281,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --dport 90 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -292,8 +292,8 @@ iptables \
 -m dscp \
 --dscp 2 \
 --sport 90 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -304,8 +304,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -316,8 +316,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -328,8 +328,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -340,8 +340,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -352,8 +352,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -364,8 +364,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -376,8 +376,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -388,8 +388,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -400,8 +400,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -412,8 +412,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -424,8 +424,8 @@ iptables \
 --dscp 3 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -436,8 +436,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -448,8 +448,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -460,8 +460,8 @@ iptables \
 --dscp 3 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -472,8 +472,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -484,8 +484,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -496,8 +496,8 @@ iptables \
 --dscp 3 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -508,8 +508,8 @@ iptables \
 --dscp 3 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -520,8 +520,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -532,8 +532,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -544,8 +544,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -556,8 +556,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -568,8 +568,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -580,8 +580,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -592,8 +592,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -604,8 +604,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -616,8 +616,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -628,8 +628,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -640,8 +640,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -652,8 +652,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -664,8 +664,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -676,8 +676,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -688,8 +688,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -700,8 +700,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -712,8 +712,8 @@ iptables \
 --dscp 3 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -724,8 +724,8 @@ iptables \
 --dscp 3 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -736,8 +736,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -748,8 +748,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -760,8 +760,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -772,8 +772,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -784,8 +784,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -796,8 +796,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -808,8 +808,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -820,8 +820,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -832,8 +832,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -844,8 +844,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -856,8 +856,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -868,8 +868,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -880,8 +880,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -892,8 +892,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -904,8 +904,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -916,8 +916,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -928,8 +928,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1080 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -940,8 +940,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1080 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -952,8 +952,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -964,8 +964,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -976,8 +976,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -988,8 +988,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1000,8 +1000,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1012,8 +1012,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1024,8 +1024,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1036,8 +1036,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1048,8 +1048,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1060,8 +1060,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1072,8 +1072,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1084,8 +1084,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1096,8 +1096,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1108,8 +1108,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1120,8 +1120,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1132,8 +1132,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1144,8 +1144,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1090 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1156,8 +1156,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1090 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1168,8 +1168,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1180,8 +1180,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1192,8 +1192,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1204,8 +1204,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1216,8 +1216,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1228,8 +1228,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1240,8 +1240,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1252,8 +1252,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1264,8 +1264,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1276,8 +1276,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1288,8 +1288,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1300,8 +1300,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1312,8 +1312,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1324,8 +1324,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1336,8 +1336,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1348,8 +1348,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1360,8 +1360,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1100 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1372,8 +1372,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1100 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1384,8 +1384,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1396,8 +1396,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1408,8 +1408,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1420,8 +1420,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1432,8 +1432,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1444,8 +1444,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1456,8 +1456,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1468,8 +1468,8 @@ iptables \
 --dscp 4 \
 --dport 80 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1480,8 +1480,8 @@ iptables \
 --dscp 4 \
 --sport 80 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1492,8 +1492,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1504,8 +1504,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1516,8 +1516,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1528,8 +1528,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1540,8 +1540,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1552,8 +1552,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1564,8 +1564,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1576,8 +1576,8 @@ iptables \
 --dscp 4 \
 --dport 90 \
 --sport 1110 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1588,8 +1588,8 @@ iptables \
 --dscp 4 \
 --sport 90 \
 --dport 1110 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1599,8 +1599,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1610,8 +1610,8 @@ iptables \
 --source 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1621,8 +1621,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1632,8 +1632,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1643,8 +1643,8 @@ iptables \
 --source 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1654,8 +1654,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1665,8 +1665,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1676,8 +1676,8 @@ iptables \
 --source 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1687,8 +1687,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1698,8 +1698,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1709,8 +1709,8 @@ iptables \
 --source 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1720,8 +1720,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1731,8 +1731,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1742,8 +1742,8 @@ iptables \
 --source 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1753,8 +1753,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1764,8 +1764,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1775,8 +1775,8 @@ iptables \
 --source 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1786,8 +1786,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1797,8 +1797,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1808,8 +1808,8 @@ iptables \
 --source 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1819,8 +1819,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1830,8 +1830,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1841,8 +1841,8 @@ iptables \
 --source 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1852,8 +1852,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1863,8 +1863,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1874,8 +1874,8 @@ iptables \
 --source 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1885,8 +1885,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 5 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1896,8 +1896,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1907,8 +1907,8 @@ iptables \
 --source 1.1.1.1 \
 -m dscp \
 --dscp 6 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1918,8 +1918,8 @@ iptables \
 --destination 1.1.1.1 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1929,8 +1929,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1940,8 +1940,8 @@ iptables \
 --source 2.2.2.2 \
 -m dscp \
 --dscp 6 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1951,8 +1951,8 @@ iptables \
 --destination 2.2.2.2 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1962,8 +1962,8 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
 iptables \
 -w \
@@ -1973,8 +1973,8 @@ iptables \
 --source 3.3.3.3 \
 -m dscp \
 --dscp 6 \
--m state \
---state ESTABLISHED \
+-m conntrack \
+--ctstate ESTABLISHED \
 -j ACCEPT
 iptables \
 -w \
@@ -1984,6 +1984,6 @@ iptables \
 --destination 3.3.3.3 \
 -m dscp \
 --dscp 6 \
--m state \
---state NEW,ESTABLISHED \
+-m conntrack \
+--ctstate NEW,ESTABLISHED \
 -j RETURN
