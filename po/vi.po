@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-01-10 08:58+0000\n"
+"POT-Creation-Date: 2022-02-23 12:43+0000\n"
 "PO-Revision-Date: 2015-03-05 01:32+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Vietnamese (http://www.transifex.com/projects/p/fedora/"
@@ -38,7 +38,6 @@ msgstr ""
 "  (nhập help <lệnh> để có thêm chi tiết về lệnh)\n"
 "\n"
 
-#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -290,7 +289,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
-#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  TÊN\n"
 
@@ -521,16 +519,6 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, fuzzy, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s thiếu thuộc tính 'type'"
@@ -1148,10 +1136,6 @@ msgstr ""
 msgid "'pool' and 'volume' must be specified together for 'pool' type source"
 msgstr ""
 
-#, c-format
-msgid "'queues' attribute must be positive number: %s"
-msgstr ""
-
 msgid "'queues' is only supported by virtio-scsi controller"
 msgstr ""
 
@@ -1164,14 +1148,6 @@ msgid ""
 "'restrictive' mode is required in memnode element when mode is 'restrictive' "
 "in memory element"
 msgstr ""
-
-#, c-format
-msgid "'rx_queue_size' attribute must be positive number: %s"
-msgstr ""
-
-#, fuzzy
-msgid "'sgio' is not supported for SCSI generic device yet "
-msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
 
 #, c-format
 msgid "'sibling_id %d' does not refer to a valid cell within NUMA 'cell id %d'"
@@ -1197,10 +1173,6 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 #, fuzzy
 msgid "'trim' algorithm not supported"
 msgstr "ái lực cpu không được hỗ trợ"
-
-#, c-format
-msgid "'tx_queue_size' attribute must be positive number: %s"
-msgstr ""
 
 msgid "'type' missing in reply of guest-get-fsinfo"
 msgstr ""
@@ -1282,7 +1254,6 @@ msgstr "thông tin giao diện trong XML"
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#. parse and modify the xml from the user
 msgid "(metadata_xml)"
 msgstr ""
 
@@ -1347,7 +1318,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
-#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -1945,6 +1915,9 @@ msgid ""
 "Both port and URI requested for disk migration while being mutually exclusive"
 msgstr ""
 
+msgid "Both secret and the secret header are required"
+msgstr ""
+
 msgid "Bounded"
 msgstr "Đã hạn chế"
 
@@ -2253,14 +2226,10 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "Gọi tới %s cho kiểu không mong đợi '%s'"
 
-#. nothing
 #, fuzzy, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "Gọi tới %s cho kiểu không mong đợi '%s'"
@@ -2518,10 +2487,6 @@ msgid "Cannot check address family on this platform"
 msgstr ""
 
 #, fuzzy, c-format
-msgid "Cannot check dnsmasq binary %s"
-msgstr "không thể thực thi tập tin nhị phân %s"
-
-#, fuzzy, c-format
 msgid "Cannot chown uniq path: %s"
 msgstr "không thể mở đường dẫn '%s'"
 
@@ -2711,10 +2676,6 @@ msgstr "không thể tìm thống kê cho thiết bị '%s'"
 #, fuzzy, c-format
 msgid "Cannot find byte stats for block device '%s'"
 msgstr "không thể tìm thống kê cho thiết bị '%s'"
-
-#, c-format
-msgid "Cannot find name for FD %d socket family %d"
-msgstr ""
 
 #, c-format
 msgid "Cannot find program %d version %d"
@@ -3159,13 +3120,13 @@ msgstr "không thể lấy ngữ cảnh tập tin '%s'"
 msgid "Cannot set interface MAC on '%s'"
 msgstr "không thể đặt chủ tập tin '%s'"
 
+#, c-format
+msgid "Cannot set interface MAC to %s for ifname %s vf %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
 msgstr "không thể đặt bắt đầu của '%s'"
-
-#, c-format
-msgid "Cannot set interface MAC/vlanid to %s/%d for ifname %s vf %d"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Cannot set interface MTU on '%s'"
@@ -3174,6 +3135,10 @@ msgstr "không thể đặt chủ tập tin '%s'"
 #, fuzzy, c-format
 msgid "Cannot set interface flags on '%s'"
 msgstr "không thể lấy cờ giao diện trên tap của macvtap"
+
+#, c-format
+msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
+msgstr ""
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Không thể đặt bộ nhớ lớn hơn bộ nhớ lớn nhất"
@@ -3453,7 +3418,6 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr ""
 
-#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -4693,7 +4657,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "Không thể lấy thông tin pool"
 
@@ -4791,10 +4754,6 @@ msgstr ""
 
 #, c-format
 msgid "Could not start 'slirp'. exitstatus: %d"
-msgstr ""
-
-#, c-format
-msgid "Could not start 'swtpm'. exitstatus: %d, error: %s"
 msgstr ""
 
 #, c-format
@@ -5580,7 +5539,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
-#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6804,27 +6762,17 @@ msgstr "Thất bại khi tạo %s"
 msgid "Failed to create thread for receiving migration data"
 msgstr "Thất bại khi tạo miền từ %s"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "Thất bại khi tạo miền từ %s"
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 msgid "Failed to create thread to handle domain death"
 msgstr ""
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Thất bại khi tạo miền từ %s"
 
-#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Thất bại khi tạo pool từ %s"
@@ -7417,7 +7365,6 @@ msgstr "Thất bại khi liệt kê các mạng hoạt động"
 msgid "Failed to list active pools"
 msgstr "Thất bại khi liệt kê các pool hoạt động"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list domains"
 msgstr "Liệt kê các miền hoạt động thất bại"
@@ -7434,30 +7381,24 @@ msgstr "Thất bại khi liệt kê các mạng không hoạt động"
 msgid "Failed to list inactive pools"
 msgstr "Thất bại khi liệt kê các pool không hoạt động"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list interfaces"
 msgstr "Thất bại khi liệt kê các giao diện hoạt động"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "Thất bại khi liệt kê các bộ lọc mạng"
 
-#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "Thất bại khi liệt kê các bộ lọc mạng"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list networks"
 msgstr "Thất bại khi liệt kê các bộ lọc mạng"
 
-#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "Thất bại khi liệt kê các thiết bị nút"
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list node secrets"
 msgstr "Thất bại khi liệt kê các bí mật"
@@ -7466,7 +7407,6 @@ msgstr "Thất bại khi liệt kê các bí mật"
 msgid "Failed to list persistent guests on $uri"
 msgstr "Thất bại khi liệt kê các bí mật"
 
-#. there was an error during the first or second call
 #, fuzzy
 msgid "Failed to list pools"
 msgstr "Thất bại khi liệt kê các pool hoạt động"
@@ -7490,7 +7430,6 @@ msgstr "Thất bại khi liệt kê các bí mật"
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
-#. there was an error during the call
 #, fuzzy
 msgid "Failed to list volumes"
 msgstr "Thất bại khi liệt kê các pool hoạt động"
@@ -8089,9 +8028,6 @@ msgstr "Thất bại khi tiếp tục miền %s"
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "Thất bại khi tiếp tục khách %s sau khi thất bại"
@@ -8742,63 +8678,10 @@ msgstr ""
 "Đĩa cứng bằng-tập-tin đầu tiên không có nguồn, không thể suy luận datastore "
 "và đường dẫn cho tập tin VMX"
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr ""
@@ -9589,10 +9472,6 @@ msgid "Invalid 'level' attribute in cache element for NUMA node %d"
 msgstr ""
 
 #, c-format
-msgid "Invalid 'removed' attribute for feature %s in model %s"
-msgstr ""
-
-#, c-format
 msgid "Invalid --with-loader-nvram list: %s"
 msgstr ""
 
@@ -9703,13 +9582,6 @@ msgstr "Tên hook không hợp lệ cho #%d"
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
 
-#, fuzzy
-msgid "Invalid TSC frequency"
-msgstr "tần số bộ đếm giờ không hợp lệ"
-
-msgid "Invalid TSC scaling attribute"
-msgstr ""
-
 #, c-format
 msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
@@ -9753,15 +9625,6 @@ msgstr ""
 msgid "Invalid address."
 msgstr "địa chỉ MAC không hợp lệ"
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 msgid "Invalid argument"
 msgstr "Tham số không hợp lệ"
 
@@ -9934,14 +9797,6 @@ msgstr ""
 msgid "Invalid disk read error policy: '%s'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid dns enable setting '%s' in network '%s'"
-msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
-
-#, c-format
-msgid "Invalid dns forwardPlainNames setting '%s' in network '%s'"
-msgstr ""
-
 #, fuzzy
 msgid "Invalid domain checkpoint"
 msgstr "con trỏ miền không hợp lệ trong"
@@ -9949,10 +9804,6 @@ msgstr "con trỏ miền không hợp lệ trong"
 #, fuzzy, c-format
 msgid "Invalid domain checkpoint: %s"
 msgstr "con trỏ miền không hợp lệ trong %s"
-
-#, c-format
-msgid "Invalid domain localOnly setting '%s' in network '%s'"
-msgstr ""
 
 #, fuzzy
 msgid "Invalid domain snapshot"
@@ -10055,10 +9906,6 @@ msgstr ""
 msgid "Invalid forwarder element, must contain at least one of addr or domain"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Invalid guest rx filters trust setting '%s' "
-msgstr "Bộ lọc mạng không hợp lệ: %s"
-
 #, c-format
 msgid "Invalid harddisk device name: %s"
 msgstr "Tên thiết bị đĩa cứng không hợp lệ: %s"
@@ -10083,9 +9930,6 @@ msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
 msgid "Invalid integer value '%s' in file '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 
-msgid "Invalid ip address prefix value"
-msgstr "Giá trị tiền tố địa chỉ ip không hợp lệ"
-
 #, fuzzy, c-format
 msgid "Invalid ipv6 setting '%s' in network '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
@@ -10109,10 +9953,6 @@ msgstr "hành động vòng đời %d không mong muốn"
 #, fuzzy, c-format
 msgid "Invalid lifecycle type '%s'."
 msgstr "Đường dẫn quan hệ '%s' không hợp lệ"
-
-#, fuzzy, c-format
-msgid "Invalid localPtr value '%s' in network '%s'"
-msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 
 #, c-format
 msgid "Invalid log destination '%s' for log output '%s'"
@@ -10147,13 +9987,6 @@ msgstr ""
 msgid "Invalid macTableManager setting '%s' in network port"
 msgstr ""
 
-#, c-format
-msgid "Invalid managed setting '%s' in network port"
-msgstr ""
-
-msgid "Invalid match attribute for CPU specification"
-msgstr "Thuộc tính khớp không hợp lệ với đặc điểm CPU"
-
 #, fuzzy, c-format
 msgid "Invalid match string '%s'"
 msgstr "Chuỗi nhà cung cấp CPU không hợp lệ '%s'"
@@ -10165,10 +9998,6 @@ msgstr ""
 #, c-format
 msgid "Invalid maxGrantFrames: %i"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Invalid memory core dump attribute value '%s'"
-msgstr "Nhãn bảo mật không hợp lệ '%s'"
 
 #, c-format
 msgid "Invalid message prog=%d type=%d serial=%u proc=%d"
@@ -10239,10 +10068,6 @@ msgid "Invalid network port pointer: %s"
 msgstr "Bộ lọc mạng không hợp lệ: %s"
 
 #, fuzzy, c-format
-msgid "Invalid network prt plug type '%s'"
-msgstr "Bộ lọc mạng không hợp lệ: %s"
-
-#, fuzzy, c-format
 msgid "Invalid node id %u "
 msgstr "uuid %s không hợp lệ"
 
@@ -10290,6 +10115,10 @@ msgstr "Tham số không hợp lệ cho virXPathULong()"
 #, fuzzy
 msgid "Invalid parameter type passed to free"
 msgstr "Tham số không hợp lệ cho virXPathNode()"
+
+#, c-format
+msgid "Invalid parameters: %d"
+msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr ""
@@ -10436,14 +10265,6 @@ msgid ""
 msgstr ""
 
 #, c-format
-msgid "Invalid trustGuestRxFilters setting '%s' in network '%s'"
-msgstr ""
-
-#, c-format
-msgid "Invalid trustGuestRxFilters setting '%s' in portgroup"
-msgstr ""
-
-#, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
 msgstr ""
 
@@ -10499,6 +10320,12 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative integer value"
+msgstr ""
+
+#, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
 
@@ -10537,10 +10364,6 @@ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 #, fuzzy
 msgid "Invalid value for timeout"
 msgstr "giá trị không hợp lệ của 'private'"
-
-#, c-format
-msgid "Invalid value in migratable attribute: '%s'"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Invalid value of %d for I/O weight"
@@ -10626,10 +10449,6 @@ msgstr ""
 #, fuzzy
 msgid "KVM device assignment is no longer supported on this system"
 msgstr "Ái lực CPU của tiến trình không được hỗ trợ trên nền tảng này"
-
-#, c-format
-msgid "KVM is not supported by '%s' on this host"
-msgstr ""
 
 #, fuzzy
 msgid "KVM is not supported on this platform"
@@ -11014,6 +10833,10 @@ msgstr "Bộ nhớ lớn nhất:"
 msgid "Maximum CPUs greater than specified machine type limit %u"
 msgstr ""
 
+#, c-format
+msgid "Maximum supported number of ISA serial ports is '%d'"
+msgstr ""
+
 msgid "Media Registry is null"
 msgstr ""
 
@@ -11247,9 +11070,6 @@ msgstr ""
 msgid "Missing 'link' attribute for NIC"
 msgstr "Thiếu thuộc tính 'sockets' trong tôpô CPU"
 
-msgid "Missing 'model' attribute in mediated device's <hostdev> element"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "Missing 'name' property in %s lookup"
 msgstr "Thiếu thuộc tính '%s'"
@@ -11329,6 +11149,9 @@ msgstr ""
 
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
+msgstr ""
+
+msgid "Missing LISTEN_FDNAMES env from systemd socket activation"
 msgstr ""
 
 #, fuzzy, c-format
@@ -12031,12 +11854,6 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 msgid "Name"
 msgstr "Tên"
 
@@ -13069,20 +12886,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13102,20 +12905,6 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr ""
@@ -13353,7 +13142,6 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
-#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "Không có tham số dòng lệnh qemu được chỉ định"
@@ -13686,9 +13474,15 @@ msgstr ""
 msgid "QEMU does not support SEV guest"
 msgstr "pool không hỗ trợ xóa pool"
 
+msgid "QEMU does not support calculating dirty page rate"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "QEMU does not support device assignment mode '%s'"
 msgstr "Kiểu thiết bị '%s' không được hỗ trợ"
+
+msgid "QEMU does not support dirty page rate calculation mode."
+msgstr ""
 
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr ""
@@ -14206,7 +14000,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "Các tác vụ khác đang chờ cho miền này"
 
-#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14739,9 +14532,6 @@ msgstr "Thời gian CPU:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "SATA không được hỗ trợ với binary QEMU này"
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 #, fuzzy
 msgid "Shared memory:\n"
 msgstr "Bộ nhớ đã dùng:"
@@ -14824,7 +14614,6 @@ msgstr "SATA không được hỗ trợ với binary QEMU này"
 msgid "Snapshot"
 msgstr "Danh sách Ảnh chụp nhanh"
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #, fuzzy, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "Cấu hình XML miền %s không thay đổi.\n"
@@ -15306,7 +15095,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
-#. title
 msgid "Target"
 msgstr ""
 
@@ -15900,6 +15688,10 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "Target serial model %s does not match source %s"
+msgstr ""
+
+#, c-format
 msgid "Target serial port %d does not match source %d"
 msgstr ""
 
@@ -15949,7 +15741,7 @@ msgid "Target timer %s does not match source %s"
 msgstr "Tên tập tin cấu hình mạng '%s' không khớp tên mạng '%s'"
 
 #, c-format
-msgid "Target timer presence %d does not match source %d"
+msgid "Target timer presence '%s' does not match source '%s'"
 msgstr ""
 
 #, fuzzy, c-format
@@ -16570,11 +16362,9 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
-#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
 
@@ -17023,10 +16813,6 @@ msgstr "không thể đóng %s"
 msgid "Unable to close disk children"
 msgstr "không thể đóng %s"
 
-#, fuzzy, c-format
-msgid "Unable to close file '%s'"
-msgstr "không thể đóng %s"
-
 msgid "Unable to close recursively all disks"
 msgstr ""
 
@@ -17360,6 +17146,9 @@ msgstr ""
 msgid "Unable to find 'devices' cgroups controller mount"
 msgstr ""
 
+msgid "Unable to find 'dnsmasq' binary in $PATH"
+msgstr ""
+
 msgid "Unable to find 'memory' cgroups controller mount"
 msgstr ""
 
@@ -17599,10 +17388,6 @@ msgstr "Thất bại khi lấy thông tin giao diện"
 msgid "Unable to get daemon logging outputs information"
 msgstr "Lấy thông tin ổ đĩa thất bại"
 
-#, fuzzy, c-format
-msgid "Unable to get device ID '%s'"
-msgstr "Không thể thiết lập lại thiết bị PCI %s: %s"
-
 #, fuzzy
 msgid "Unable to get device master from netlink on this platform"
 msgstr "thông tin nút không thực hiện trên nền tảng này"
@@ -17724,10 +17509,6 @@ msgstr "Không thể lấy các thông số bộ nhớ"
 #, fuzzy
 msgid "Unable to get memory stats"
 msgstr "Không thể lấy các thông số bộ nhớ"
-
-#, fuzzy, c-format
-msgid "Unable to get minor number of device '%s'"
-msgstr "Thất bại khi phá huỷ thiết bị nút '%s'"
 
 #, fuzzy
 msgid "Unable to get node cpu stats"
@@ -18565,6 +18346,9 @@ msgstr "Không thể thay đổi thư mục gốc"
 msgid "Unable to send SIGTERM to init pid %llu"
 msgstr ""
 
+msgid "Unable to send a VF SETLINK request on this platform"
+msgstr ""
+
 msgid "Unable to send container continue message"
 msgstr "Không thể gửi tin nhắn tiếp tục của bộ chứa"
 
@@ -18621,6 +18405,15 @@ msgstr "thông tin nút không thực hiện trên nền tảng này"
 #, fuzzy, c-format
 msgid "Unable to set XATTR %s on %s"
 msgstr "Không thể mở %s"
+
+msgid "Unable to set a VF MAC on this platform"
+msgstr ""
+
+msgid "Unable to set a VF VLAN on this platform"
+msgstr ""
+
+msgid "Unable to set a VF config on this platform"
+msgstr ""
 
 #, fuzzy
 msgid "Unable to set agent close-on-exec flag"
@@ -19151,10 +18944,6 @@ msgid "Unexpected signal received: %d"
 msgstr "kiểu giao diện không mong đợi %d"
 
 #, fuzzy, c-format
-msgid "Unexpected socket family %d"
-msgstr "kiểu mạng không mong đợi %d"
-
-#, fuzzy, c-format
 msgid "Unexpected state of feature '%s'"
 msgstr "chế độ lưu trữ không mong muốn cho '%s'"
 
@@ -19216,10 +19005,6 @@ msgstr "Kiểu mẫu không rõ '%s'"
 #, fuzzy, c-format
 msgid "Unknown LXC namespace source '%s'"
 msgstr "kiểu nguồn pci không rõ '%s'"
-
-#, c-format
-msgid "Unknown PCI device <driver name='%s'/> has been specified"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "Unknown PCI header type '%d' for device '%s'"
@@ -19285,6 +19070,10 @@ msgid "Unknown cache type '%s'"
 msgstr "kiểu xác thực không rõ '%s'"
 
 #, c-format
+msgid "Unknown calculation mode '%s'"
+msgstr ""
+
+#, c-format
 msgid "Unknown cgroup controller '%s'"
 msgstr "Bộ điều khiển cgroup '%s' không rõ"
 
@@ -19311,6 +19100,10 @@ msgstr "Phát hành không rõ: %s"
 #, fuzzy, c-format
 msgid "Unknown data source '%s'"
 msgstr "Chế độ nguồn không rõ '%s'"
+
+#, c-format
+msgid "Unknown dirty page rate calculation mode: %s"
+msgstr ""
 
 #, c-format
 msgid "Unknown dirty rate status: %s"
@@ -19344,7 +19137,6 @@ msgstr "Kiểu mẫu không rõ '%s'"
 msgid "Unknown error"
 msgstr "lỗi không rõ"
 
-#. should never happen (tm)
 #, fuzzy
 msgid "Unknown error value"
 msgstr "lỗi không rõ"
@@ -19372,14 +19164,6 @@ msgstr "kiểu chuyển hướng không rõ '%s'"
 #, fuzzy
 msgid "Unknown input device type"
 msgstr "kiểu thiết bị nhập không rõ '%s'"
-
-#, c-format
-msgid "Unknown interface <driver name='%s'> has been specified"
-msgstr ""
-
-#, c-format
-msgid "Unknown interface <driver txmode='%s'> has been specified"
-msgstr ""
 
 #, fuzzy
 msgid "Unknown invocation state"
@@ -20159,12 +19943,10 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr ""
@@ -20574,6 +20356,10 @@ msgstr ""
 msgid "address of disk device"
 msgstr "trình điều khiển của thiết bị đĩa"
 
+#, c-format
+msgid "address of type '%s' is supported only for hostdevs"
+msgstr ""
+
 msgid "address source: 'lease' or 'agent'"
 msgstr ""
 
@@ -20641,11 +20427,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 msgid "allocated netlink buffer is too small"
 msgstr ""
 
@@ -22061,6 +21842,10 @@ msgstr "không thể lấy ái lực CPU của tiến trình %d"
 msgid "cannot get RSS for domain"
 msgstr "không thể đọc cputime cho miền"
 
+#, c-format
+msgid "cannot get cert distinguished name: %s"
+msgstr ""
+
 #, fuzzy
 msgid "cannot get children disk"
 msgstr "không thể lấy giờ hiện tại"
@@ -22402,7 +22187,6 @@ msgstr "không thể mở đường dẫn '%s'"
 msgid "cannot open path '%s' in '%s'"
 msgstr "không thể mở đường dẫn '%s'"
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "không thể mở ổ '%s'"
@@ -22426,10 +22210,6 @@ msgstr "không thể phân tích tuyến %s"
 #, fuzzy, c-format
 msgid "cannot parse MAC address '%s' from file '%s'"
 msgstr "Không thể phân tích địa chỉ socket '%s': %s"
-
-#, fuzzy, c-format
-msgid "cannot parse cache mode '%s' for virtiofs"
-msgstr "không thể đặt chế độ của '%s' sang %04o"
 
 #, fuzzy, c-format
 msgid "cannot parse cpu sys stat '%s'"
@@ -22487,10 +22267,6 @@ msgstr "không thể phân tích vị trí bắt đầu thiết bị"
 #, c-format
 msgid "cannot parse rdp port %s"
 msgstr "không thể phân tích cổng rdp %s"
-
-#, c-format
-msgid "cannot parse sandbox mode '%s' for virtiofs"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
@@ -23089,6 +22865,9 @@ msgstr "thay đổi số CPU ảo"
 msgid "change of nodeset for running domain requires restrictive numa mode"
 msgstr ""
 
+msgid "change of nodeset for running domain requires strict numa mode"
+msgstr ""
+
 msgid "change the current directory"
 msgstr "thay đổi thư mục hiện tại"
 
@@ -23224,7 +23003,6 @@ msgstr "tên nhân bản"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "con thất bại khi tạo thư mục '%s'"
@@ -24513,6 +24291,9 @@ msgstr ""
 msgid "dir"
 msgstr ""
 
+msgid "direct FD passing supports only 1 file descriptor"
+msgstr ""
+
 msgid "direct migration"
 msgstr "di trú trực tiếp"
 
@@ -24529,12 +24310,20 @@ msgstr ""
 msgid "directory to switch to (default: home or else root)"
 msgstr "thư mục để chuyển sang (mặc định: home hoặc root)"
 
+msgid ""
+"dirty page rate calculation mode, either of these 3 options 'page-sampling, "
+"dirty-bitmap, dirty-ring' can be specified."
+msgstr ""
+
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr ""
 
 #, c-format
 msgid ""
 "dirty ring size of KVM feature '%s' differs: source: '%d', destination: '%d'"
+msgstr ""
+
+msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
 msgstr ""
 
 msgid "disable"
@@ -24828,10 +24617,6 @@ msgid "display the progress of migration"
 msgstr "Hiển thị thông tin phiên bản hệ thống."
 
 msgid "display the progress of save"
-msgstr ""
-
-#, c-format
-msgid "dnsmasq binary %s is not executable"
 msgstr ""
 
 #, c-format
@@ -25827,6 +25612,10 @@ msgstr "mong đợi một phân cách trong danh sách"
 msgid "expecting a value"
 msgstr "mong đợi một giá trị"
 
+#, c-format
+msgid "expecting a value for value of type %s"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "expecting absolute path: %s"
 msgstr "mong đợi một phân cách"
@@ -26769,10 +26558,6 @@ msgid "failed to parse the index of the VMX key '%s'"
 msgstr "Thất bại khi phân tính số nguyên dương từ '%s'"
 
 #, fuzzy, c-format
-msgid "failed to parse value of %s"
-msgstr "thất bại khi tìm tới cuối của %s"
-
-#, fuzzy, c-format
 msgid "failed to parse write_bps_device: '%s'"
 msgstr "Thất bại khi phân tích chế độ '%s'"
 
@@ -27192,18 +26977,12 @@ msgstr ""
 msgid "fd passing is not supported by this connection"
 msgstr "chức năng này không được hỗ trợ bởi trình điều khiển kết nối"
 
-msgid "fdset must be valid"
-msgstr ""
-
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
 
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "giá trị cấu hình %s sai dạng thức"
@@ -27256,10 +27035,6 @@ msgstr "tập tin chứa một mô tả ổ XML"
 
 msgid "file containing secret attributes in XML"
 msgstr "tập tin chứa các thuộc tính bí mật trong XML"
-
-#, c-format
-msgid "file descriptor %d has not been transferred"
-msgstr ""
 
 msgid "file format type raw,bochs,qcow,qcow2,qed,vmdk"
 msgstr ""
@@ -27814,7 +27589,6 @@ msgstr "Ảnh chụp miền %s đã tạo"
 msgid "handler failed to wait on condition"
 msgstr "thất bại khi đợi trên điều kiện"
 
-#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
 
@@ -28364,9 +28138,6 @@ msgstr "Miền không đang chạy"
 msgid "interface mac"
 msgstr "mac giao diện"
 
-msgid "interface misses the type attribute"
-msgstr "giao diện thiếu thuộc tính kiểu"
-
 msgid "interface mtu value is improper"
 msgstr "giá trị mtu của giao diện không thích hợp"
 
@@ -28377,25 +28148,6 @@ msgstr "tên giao diện"
 msgid "interface name %s does not fit into buffer "
 msgstr "tên giao diện %s không vừa bộ đệm"
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 msgid "interface name or MAC address"
 msgstr "tên giao diện hoặc địa chỉ MAC"
 
@@ -28674,10 +28426,6 @@ msgstr "con trỏ miền không hợp lệ trong"
 msgid "invalid XML length: %d"
 msgstr "độ dài XML không hợp lệ: %d"
 
-#, fuzzy, c-format
-msgid "invalid allowReboot value '%s'"
-msgstr "trạng thái miền không hợp lệ '%s'"
-
 #, c-format
 msgid "invalid ap-adapter value '%s' for '%s'"
 msgstr ""
@@ -28778,7 +28526,7 @@ msgid "invalid disk target '%s', partitions can't appear in disk targets"
 msgstr ""
 
 #, c-format
-msgid "invalid dmode: '%s'"
+msgid "invalid dmode: '0%o'"
 msgstr ""
 
 msgid "invalid domain pointer in"
@@ -28812,12 +28560,7 @@ msgstr "tuỳ chọn bộ lập lịch không hợp lệ: %s"
 msgid "invalid fd %d for %s"
 msgstr "uuid %s không hợp lệ"
 
-#, c-format
-msgid "invalid firmware feature enabled value '%s'"
-msgstr ""
-
-#, c-format
-msgid "invalid firmware feature name '%s'"
+msgid "invalid file descriptor"
 msgstr ""
 
 #, fuzzy
@@ -28829,7 +28572,7 @@ msgid "invalid flag combination: (0x%x)"
 msgstr "kết hợp cờ không hợp lệ: (0x%x)"
 
 #, c-format
-msgid "invalid fmode: '%s'"
+msgid "invalid fmode: '0%o'"
 msgstr ""
 
 msgid "invalid hasmanagedsave"
@@ -28933,16 +28676,6 @@ msgid ""
 "invalid mac address '%s' in 'unicast-table' array in query-rx-filter response"
 msgstr ""
 
-#, c-format
-msgid "invalid mac address check value: '%s'"
-msgstr ""
-
-#, c-format
-msgid ""
-"invalid mac address type value: '%s'. Valid values are \"generated\" and "
-"\"static\"."
-msgstr ""
-
 #, fuzzy, c-format
 msgid "invalid master key read, size=%zd"
 msgstr "Nhận được kích thước bộ nhớ không hợp lệ %d"
@@ -28950,9 +28683,6 @@ msgstr "Nhận được kích thước bộ nhớ không hợp lệ %d"
 #, fuzzy
 msgid "invalid microcode version"
 msgstr "con trỏ giao diện không hợp lệ trong"
-
-msgid "invalid migratability value for host CPU model"
-msgstr ""
 
 #, fuzzy
 msgid "invalid mode"
@@ -29036,14 +28766,6 @@ msgid ""
 "invalid number value for '%s' host CPU model property in QEMU capabilities "
 "cache"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "invalid or missing decode/guest attribute in CPU model %s"
-msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
-
-#, fuzzy, c-format
-msgid "invalid or missing decode/host attribute in CPU model %s"
-msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
 
 #, c-format
 msgid "invalid parent device '%s'"
@@ -29139,10 +28861,6 @@ msgstr ""
 msgid "invalid ssid value '%s' for '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 
-#, c-format
-msgid "invalid storage pool cow feature state '%s'"
-msgstr ""
-
 msgid "invalid storage pool pointer in"
 msgstr "con trỏ pool lưu trữ không hợp lệ trong"
 
@@ -29197,6 +28915,9 @@ msgstr "kích thước không hợp lệ cung cấp cho '%s'"
 msgid "invalid use of command API"
 msgstr ""
 
+msgid "invalid use of conf API"
+msgstr ""
+
 #, fuzzy
 msgid "invalid use with no flags"
 msgstr "đường dẫn netfs không hợp lệ (không có /): %s"
@@ -29217,17 +28938,7 @@ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
 
-#, fuzzy, c-format
-msgid "invalid value for 'managed': %s"
-msgstr "giá trị không hợp lệ của 'private'"
-
-msgid "invalid value for boot menu timeout"
-msgstr ""
-
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
-msgstr ""
-
-msgid "invalid value for rebootTimeout"
 msgstr ""
 
 msgid "invalid value for rebootTimeout, must be in range [-1,65535]"
@@ -29334,6 +29045,9 @@ msgstr "thông số profileid quá dài"
 #, fuzzy
 msgid "is not active"
 msgstr "không hoạt động"
+
+msgid "isa-debug serial type only valid on x86 architecture"
+msgstr ""
 
 msgid "iscsi pool only supports 'chap' auth type"
 msgstr ""
@@ -30805,9 +30519,6 @@ msgstr "thiếu thông tin đích cho thiết bị"
 msgid "missing <type> element in <capability> element"
 msgstr ""
 
-msgid "missing @managed attribute for <reservations/>"
-msgstr ""
-
 #, fuzzy
 msgid "missing CPU data architecture"
 msgstr "Thiếu kiến trúc CPU"
@@ -30918,9 +30629,6 @@ msgstr "thiếu thông tin nguồn cho thiết bị %s"
 msgid "missing blocker name in QEMU capabilities cache"
 msgstr ""
 
-msgid "missing boot device"
-msgstr "thiếu thiết bị khởi động"
-
 #, fuzzy
 msgid "missing capability name"
 msgstr "thiếu kiểu khả năng"
@@ -30972,6 +30680,10 @@ msgstr "thiếu Thời gian tạo từ ảnh chụp sẵn có"
 #, fuzzy, c-format
 msgid "missing cssid value for '%s'"
 msgstr "thiếu kiểu khả năng lưu trữ cho '%s'"
+
+#, c-format
+msgid "missing decode element in CPU model %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "missing destination file for disk %s: %s"
@@ -31542,10 +31254,6 @@ msgstr "thiếu backend cho kiểu pool %d"
 msgid "missing value for migration parameter '%s'"
 msgstr "thiếu thông tin nguồn cho thiết bị %s"
 
-#, fuzzy
-msgid "missing values for acceleration"
-msgstr "thiếu thông tin các thiết bị"
-
 msgid "missing vendor"
 msgstr "thiếu nhà cung cấp"
 
@@ -31653,15 +31361,6 @@ msgstr ""
 msgid "monitor failure"
 msgstr "không có đường dẫn bộ theo dõi"
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 msgid "monitor must not be NULL"
 msgstr "bộ theo dõi không được TRỐNG (NULL)"
 
@@ -31855,7 +31554,6 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "SSF %d đã thương lượng không đủ mạnh"
@@ -34110,10 +33808,16 @@ msgstr ""
 msgid "query-cpu-model-comparison reply data was missing 'result'"
 msgstr ""
 
+msgid "query-dirty-rate parsing 'vcpu-dirty-rate' in failure"
+msgstr ""
+
 msgid "query-dirty-rate reply was missing 'calc-time' data"
 msgstr ""
 
 msgid "query-dirty-rate reply was missing 'dirty-rate' data"
+msgstr ""
+
+msgid "query-dirty-rate reply was missing 'id' data"
 msgstr ""
 
 msgid "query-dirty-rate reply was missing 'return' data"
@@ -34266,6 +33970,9 @@ msgstr ""
 #, fuzzy
 msgid "rawio is only supported for scsi host device"
 msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
+
+msgid "re-initialize NVRAM from its pristine template"
+msgstr ""
 
 msgid "read I/O operations limit per second"
 msgstr ""
@@ -35159,15 +34866,6 @@ msgid "sgio is only supported for scsi host device"
 msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
 
 #, c-format
-msgid "sgio of shared disk '%s' conflicts with other active domains"
-msgstr ""
-
-#, c-format
-msgid ""
-"sgio of shared disk 'pool=%s' 'volume=%s' conflicts with other active domains"
-msgstr ""
-
-#, c-format
 msgid "shallow copy of disk '%s' into a raw file is not possible"
 msgstr ""
 
@@ -35770,9 +35468,18 @@ msgid ""
 "VIR_MIGRATE_POSTCOPY flag"
 msgstr ""
 
-#, fuzzy
-msgid "swtpm failed to start"
-msgstr "Thất bại khi bắt đầu pool %s"
+msgid "swtpm didn't show up"
+msgstr ""
+
+#, c-format
+msgid "swtpm died and reported: %s"
+msgstr ""
+
+msgid "swtpm died unexpectedly"
+msgstr ""
+
+msgid "swtpm socket did not show up"
+msgstr ""
 
 #, c-format
 msgid "syntax: %s DEVICE [-g]|[-p]\n"
@@ -35884,6 +35591,10 @@ msgid "target pci device "
 msgstr "kiểu thiết bị đích"
 
 #, c-format
+msgid "target port '%d' already allocated"
+msgstr ""
+
+#, c-format
 msgid "target type must be specified for %s device"
 msgstr "kiểu đích phải được ghi rõ cho thiết bị %s"
 
@@ -35952,6 +35663,10 @@ msgstr ""
 #, fuzzy
 msgid "the QEMU binary does not support the ISA panic device"
 msgstr "tuyến xen không hỗ trợ thiết bị nhập %s"
+
+#, c-format
+msgid "the accel '%s' is not supported by '%s' on this host"
+msgstr ""
 
 msgid ""
 "the address family of a dhcp range must match the address family of the dhcp "
@@ -36186,9 +35901,6 @@ msgstr "Thiết bị đĩa '%s' không hỗ trợ chụp ảnh"
 #, fuzzy
 msgid "this storage volume exists already"
 msgstr "mạng này đã tồn tại"
-
-msgid "this version of libxenlight does not support backend domain name"
-msgstr ""
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr ""
@@ -36841,7 +36553,6 @@ msgstr "không thể tạo uuid"
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #, fuzzy, c-format
 msgid "unable to fsync %s"
 msgstr "không thể đóng %s"
@@ -37611,22 +37322,6 @@ msgstr "chế độ hostdev không mong đợi %d"
 msgid "unexpected sysinfo type model %d"
 msgstr "mẫu âm thanh không mong đợi %d"
 
-#, c-format
-msgid "unexpected timer mode %d"
-msgstr "chế độ bộ đếm giờ không mong đợi %d"
-
-#, c-format
-msgid "unexpected timer name %d"
-msgstr "tên bộ đếm giờ không mong đợi %d"
-
-#, c-format
-msgid "unexpected timer tickpolicy %d"
-msgstr "tickpolicy bộ đếm giờ không mong đợi %d"
-
-#, c-format
-msgid "unexpected timer track %d"
-msgstr "theo dõi bộ đếm giờ không mong đợi %d"
-
 #, fuzzy
 msgid "unexpected transport in <domainbackup>"
 msgstr "định dạng mã hóa không mong đợi"
@@ -37678,6 +37373,9 @@ msgstr "kiểu mạng không mong đợi %d"
 msgid "unexpectedly failed"
 msgstr "kiểu miền không mong đợi %d"
 
+msgid "unfiltered sgio is no longer supported"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unimplemented parameter type %d"
 msgstr "kiểu mạng không mong đợi %d"
@@ -37685,8 +37383,6 @@ msgstr "kiểu mạng không mong đợi %d"
 msgid "unix"
 msgstr ""
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "không rõ"
 
@@ -37721,10 +37417,6 @@ msgstr "kiểu OS không rõ %s"
 msgid "unknown OS type '%s'"
 msgstr "kiểu OS không rõ %s"
 
-#, fuzzy, c-format
-msgid "unknown PM state value %s"
-msgstr "giá trị peerdns của dhcp không rõ %s"
-
 #, c-format
 msgid "unknown QEMU_AUDIO_DRV setting %s"
 msgstr ""
@@ -37748,18 +37440,6 @@ msgstr "kiểu khả năng máy chủ SCSI không rõ '%s' cho '%s'"
 #, c-format
 msgid "unknown SDL_AUDIODRIVER setting %s"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "unknown accel2d value '%s'"
-msgstr "chế độ truy cập không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown accel3d value '%s'"
-msgstr "chế độ truy cập không rõ '%s'"
-
-#, c-format
-msgid "unknown accessmode '%s'"
-msgstr "chế độ truy cập không rõ '%s'"
 
 #, c-format
 msgid "unknown address type '%s'"
@@ -37813,10 +37493,6 @@ msgid "unknown bonding mode %s"
 msgstr "chế độ gắn kết không rõ %s"
 
 #, c-format
-msgid "unknown boot device '%s'"
-msgstr "thiết bị khởi động không rõ '%s'"
-
-#, c-format
 msgid "unknown capability type '%d' for '%s'"
 msgstr "kiểu khả năng không rõ '%d' cho '%s'"
 
@@ -37868,10 +37544,6 @@ msgstr "kiểu thiết bị ký tự '%s' không rõ"
 msgid "unknown device type in '%s'"
 msgstr "kiểu thiết bị ký tự '%s' không rõ"
 
-#, c-format
-msgid "unknown dhcp peerdns value %s"
-msgstr "giá trị peerdns của dhcp không rõ %s"
-
 #, fuzzy, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "chế độ đệm đĩa không rõ '%s'"
@@ -37911,16 +37583,8 @@ msgstr "lỗi không rõ"
 msgid "unknown event type %s"
 msgstr "kiểu OS không rõ %s"
 
-#, c-format
-msgid "unknown filesystem type '%s'"
-msgstr "kiểu hệ thống tập tin không rõ '%s'"
-
 #, fuzzy, c-format
 msgid "unknown firmware value %s"
-msgstr "giá trị toàn màn hình không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown flock value '%s'"
 msgstr "giá trị toàn màn hình không rõ '%s'"
 
 #, c-format
@@ -37955,14 +37619,6 @@ msgid "unknown hostdev mode '%s'"
 msgstr "chế độ hostdev không rõ '%s'"
 
 #, fuzzy, c-format
-msgid "unknown hostdev model '%s'"
-msgstr "chế độ hostdev không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown hostdev rawio setting '%s'"
-msgstr "chế độ hostdev không rõ '%s'"
-
-#, fuzzy, c-format
 msgid "unknown hub device type '%s'"
 msgstr "kiểu thiết bị ký tự '%s' không rõ"
 
@@ -37987,24 +37643,12 @@ msgid "unknown inputvol storage vol type %d"
 msgstr "kiểu ổ lưu trữ %d không rõ"
 
 #, fuzzy, c-format
-msgid "unknown interface event_idx mode '%s'"
-msgstr "kiểu giao diện không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown interface ioeventfd mode '%s'"
-msgstr "kiểu giao diện không rõ '%s'"
-
-#, fuzzy, c-format
 msgid "unknown interface link state '%s'"
 msgstr "kiểu giao diện không rõ '%s'"
 
 #, c-format
 msgid "unknown interface startmode %s"
 msgstr "startmode của giao diện không rõ %s"
-
-#, c-format
-msgid "unknown interface type %s"
-msgstr "kiểu giao diện không rõ %s"
 
 #, fuzzy, c-format
 msgid "unknown interface type: '%s'"
@@ -38035,10 +37679,6 @@ msgid "unknown metadata type '%d'"
 msgstr "kiểu xác thực không rõ '%s'"
 
 #, fuzzy, c-format
-msgid "unknown migratable value for '%s' host CPU model property"
-msgstr "Giá trị không rõ '%s' cho thuộc tính 'type' của %s"
-
-#, fuzzy, c-format
 msgid "unknown migration parameter '%s'"
 msgstr "tên bộ đếm giờ không rõ '%s'"
 
@@ -38057,14 +37697,6 @@ msgstr "kiểu tuyến đĩa không rõ '%s'"
 #, fuzzy, c-format
 msgid "unknown mirror ready state %s"
 msgstr "startmode của giao diện không rõ %s"
-
-#, fuzzy, c-format
-msgid "unknown model '%s'"
-msgstr "mẫu âm thanh không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown multidevs '%s'"
-msgstr "kiểu không rõ '%s'"
 
 #, fuzzy, c-format
 msgid "unknown network device feature '%s'"
@@ -38094,24 +37726,12 @@ msgid "unknown partition type"
 msgstr "kiểu phân vùng không rõ"
 
 #, c-format
-msgid "unknown pci writeFiltering setting '%s'"
-msgstr ""
-
-#, c-format
 msgid "unknown pool format number %d"
 msgstr "số định dạng pool không rõ %d"
 
 #, c-format
 msgid "unknown pool format type %s"
 msgstr "kiểu định dạng pool không rõ %s"
-
-#, fuzzy, c-format
-msgid "unknown port isolated value '%s'"
-msgstr "giá trị hiện tại của bộ đếm giờ không rõ '%s'"
-
-#, fuzzy, c-format
-msgid "unknown posix lock value '%s'"
-msgstr "giá trị toàn màn hình không rõ '%s'"
 
 #, c-format
 msgid "unknown procedure: %d"
@@ -38164,10 +37784,6 @@ msgstr "kiểu sử dụng bí mật không rõ"
 #, c-format
 msgid "unknown secret usage type %s"
 msgstr "kiểu sử dụng bí mật không rõ %s"
-
-#, fuzzy, c-format
-msgid "unknown sgio mode '%s'"
-msgstr "mẫu âm thanh không rõ '%s'"
 
 #, fuzzy, c-format
 msgid "unknown smbios mode '%s'"
@@ -38238,10 +37854,6 @@ msgid "unknown timer name '%s'"
 msgstr "tên bộ đếm giờ không rõ '%s'"
 
 #, c-format
-msgid "unknown timer present value '%s'"
-msgstr "giá trị hiện tại của bộ đếm giờ không rõ '%s'"
-
-#, c-format
 msgid "unknown timer tickpolicy '%s'"
 msgstr "tickpolicy bộ đếm giờ không rõ '%s'"
 
@@ -38256,14 +37868,6 @@ msgstr "kiểu không rõ '%s'"
 #, fuzzy, c-format
 msgid "unknown type presented to host for character device: %s"
 msgstr "kiểu thiết bị ký tự không rõ: %s"
-
-#, fuzzy, c-format
-msgid "unknown value '%s' for <hostdev> attribute 'display'"
-msgstr "Giá trị không rõ '%s' cho xsd:boolean"
-
-#, fuzzy, c-format
-msgid "unknown value '%s' for <hostdev> attribute 'ramfb'"
-msgstr "Giá trị không rõ '%s' cho xsd:boolean"
 
 #, fuzzy, c-format
 msgid "unknown value '%s' in attribute 'usable'"
@@ -38327,10 +37931,6 @@ msgstr "mẫu watchdog không rõ '%s'"
 msgid "unknown write_policy value '%u'"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "unknown xattr value '%s'"
-msgstr "tên bộ đếm giờ không rõ '%s'"
-
 #, fuzzy
 msgid "unlimited"
 msgstr "không hạn chế"
@@ -38349,10 +37949,6 @@ msgstr "đã ngưng"
 
 msgid "unplug of device was rejected by the guest"
 msgstr ""
-
-#, fuzzy
-msgid "unpriv_sgio is not supported by this kernel"
-msgstr "Kỹ thuật SASL %s không được hỗ trợ bởi máy chủ"
 
 #, c-format
 msgid "unprocessed hole of size %lld already in the queue"
@@ -38573,28 +38169,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #, fuzzy, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "cờ không hỗ trợ (0x%x)"
@@ -39164,6 +38738,10 @@ msgid "video type %s is not supported by libxl"
 msgstr "Kiểu mạng %d không được hỗ trợ"
 
 #, c-format
+msgid "video type '%s' doesn't support multiple 'heads'"
+msgstr ""
+
+#, c-format
 msgid "video type '%s' is only valid as primary video device"
 msgstr ""
 
@@ -39402,6 +38980,10 @@ msgstr "chức năng này không được hỗ trợ bởi trình điều khiể
 msgid "virtiofs only supports passthrough accessmode"
 msgstr ""
 
+#, c-format
+msgid "virtiofsd binary '%s' is not executable"
+msgstr ""
+
 msgid "virtiofsd died unexpectedly"
 msgstr ""
 
@@ -39443,6 +39025,10 @@ msgstr ""
 #, fuzzy
 msgid "vlan trunking is not supported by SR-IOV network devices"
 msgstr "chức năng này không được hỗ trợ bởi trình điều khiển kết nối"
+
+#, c-format
+msgid "vlanid out of range: %d"
+msgstr ""
 
 #, fuzzy
 msgid "vmcoreinfo is not available with this QEMU binary"
@@ -39489,22 +39075,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "vnuma vnode %zu contains invalid pnode value '%s'"
 msgstr "Tên miền chứa dãy thoát không hợp lệ"
-
-#, fuzzy, c-format
-msgid "vnuma vnode %zu pnode '%s' too long for destination"
-msgstr "Tên cầu nối %s quá dài cho chỗ ghi"
-
-#, fuzzy, c-format
-msgid "vnuma vnode %zu size '%s' too long for destination"
-msgstr "Mẫu CPU %s quá dài cho chỗ ghi"
-
-#, fuzzy, c-format
-msgid "vnuma vnode %zu vcpus '%s' too long for destination"
-msgstr "Mẫu CPU %s quá dài cho chỗ ghi"
-
-#, fuzzy, c-format
-msgid "vnuma vnode %zu vdistances '%s' too long for destination"
-msgstr "Tên cầu nối %s quá dài cho chỗ ghi"
 
 #, fuzzy, c-format
 msgid "vnuma vnode invalid format '%s'"
@@ -39794,6 +39364,216 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <chuỗi>"
+
+#, fuzzy
+#~ msgid "'sgio' is not supported for SCSI generic device yet "
+#~ msgstr "Phương tiện tháo được không hỗ trợ cho thiết bị %s"
+
+#, fuzzy
+#~ msgid "Cannot check dnsmasq binary %s"
+#~ msgstr "không thể thực thi tập tin nhị phân %s"
+
+#, fuzzy
+#~ msgid "Invalid TSC frequency"
+#~ msgstr "tần số bộ đếm giờ không hợp lệ"
+
+#, fuzzy
+#~ msgid "Invalid dns enable setting '%s' in network '%s'"
+#~ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+
+#, fuzzy
+#~ msgid "Invalid guest rx filters trust setting '%s' "
+#~ msgstr "Bộ lọc mạng không hợp lệ: %s"
+
+#~ msgid "Invalid ip address prefix value"
+#~ msgstr "Giá trị tiền tố địa chỉ ip không hợp lệ"
+
+#, fuzzy
+#~ msgid "Invalid localPtr value '%s' in network '%s'"
+#~ msgstr "Giá trị không hợp lệ '%s' cho mục VMX '%s'"
+
+#~ msgid "Invalid match attribute for CPU specification"
+#~ msgstr "Thuộc tính khớp không hợp lệ với đặc điểm CPU"
+
+#, fuzzy
+#~ msgid "Invalid memory core dump attribute value '%s'"
+#~ msgstr "Nhãn bảo mật không hợp lệ '%s'"
+
+#, fuzzy
+#~ msgid "Invalid network prt plug type '%s'"
+#~ msgstr "Bộ lọc mạng không hợp lệ: %s"
+
+#, fuzzy
+#~ msgid "Unable to close file '%s'"
+#~ msgstr "không thể đóng %s"
+
+#, fuzzy
+#~ msgid "Unable to get device ID '%s'"
+#~ msgstr "Không thể thiết lập lại thiết bị PCI %s: %s"
+
+#, fuzzy
+#~ msgid "Unable to get minor number of device '%s'"
+#~ msgstr "Thất bại khi phá huỷ thiết bị nút '%s'"
+
+#, fuzzy
+#~ msgid "Unexpected socket family %d"
+#~ msgstr "kiểu mạng không mong đợi %d"
+
+#, fuzzy
+#~ msgid "cannot parse cache mode '%s' for virtiofs"
+#~ msgstr "không thể đặt chế độ của '%s' sang %04o"
+
+#, fuzzy
+#~ msgid "failed to parse value of %s"
+#~ msgstr "thất bại khi tìm tới cuối của %s"
+
+#~ msgid "interface misses the type attribute"
+#~ msgstr "giao diện thiếu thuộc tính kiểu"
+
+#, fuzzy
+#~ msgid "invalid allowReboot value '%s'"
+#~ msgstr "trạng thái miền không hợp lệ '%s'"
+
+#, fuzzy
+#~ msgid "invalid or missing decode/guest attribute in CPU model %s"
+#~ msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
+
+#, fuzzy
+#~ msgid "invalid or missing decode/host attribute in CPU model %s"
+#~ msgstr "Thiếu thuộc tính 'cores' trong tôpô CPU"
+
+#, fuzzy
+#~ msgid "invalid value for 'managed': %s"
+#~ msgstr "giá trị không hợp lệ của 'private'"
+
+#~ msgid "missing boot device"
+#~ msgstr "thiếu thiết bị khởi động"
+
+#, fuzzy
+#~ msgid "missing values for acceleration"
+#~ msgstr "thiếu thông tin các thiết bị"
+
+#, fuzzy
+#~ msgid "swtpm failed to start"
+#~ msgstr "Thất bại khi bắt đầu pool %s"
+
+#~ msgid "unexpected timer mode %d"
+#~ msgstr "chế độ bộ đếm giờ không mong đợi %d"
+
+#~ msgid "unexpected timer name %d"
+#~ msgstr "tên bộ đếm giờ không mong đợi %d"
+
+#~ msgid "unexpected timer tickpolicy %d"
+#~ msgstr "tickpolicy bộ đếm giờ không mong đợi %d"
+
+#~ msgid "unexpected timer track %d"
+#~ msgstr "theo dõi bộ đếm giờ không mong đợi %d"
+
+#, fuzzy
+#~ msgid "unknown PM state value %s"
+#~ msgstr "giá trị peerdns của dhcp không rõ %s"
+
+#, fuzzy
+#~ msgid "unknown accel2d value '%s'"
+#~ msgstr "chế độ truy cập không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown accel3d value '%s'"
+#~ msgstr "chế độ truy cập không rõ '%s'"
+
+#~ msgid "unknown accessmode '%s'"
+#~ msgstr "chế độ truy cập không rõ '%s'"
+
+#~ msgid "unknown boot device '%s'"
+#~ msgstr "thiết bị khởi động không rõ '%s'"
+
+#~ msgid "unknown dhcp peerdns value %s"
+#~ msgstr "giá trị peerdns của dhcp không rõ %s"
+
+#~ msgid "unknown filesystem type '%s'"
+#~ msgstr "kiểu hệ thống tập tin không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown flock value '%s'"
+#~ msgstr "giá trị toàn màn hình không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown hostdev model '%s'"
+#~ msgstr "chế độ hostdev không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown hostdev rawio setting '%s'"
+#~ msgstr "chế độ hostdev không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown interface event_idx mode '%s'"
+#~ msgstr "kiểu giao diện không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown interface ioeventfd mode '%s'"
+#~ msgstr "kiểu giao diện không rõ '%s'"
+
+#~ msgid "unknown interface type %s"
+#~ msgstr "kiểu giao diện không rõ %s"
+
+#, fuzzy
+#~ msgid "unknown migratable value for '%s' host CPU model property"
+#~ msgstr "Giá trị không rõ '%s' cho thuộc tính 'type' của %s"
+
+#, fuzzy
+#~ msgid "unknown model '%s'"
+#~ msgstr "mẫu âm thanh không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown multidevs '%s'"
+#~ msgstr "kiểu không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown port isolated value '%s'"
+#~ msgstr "giá trị hiện tại của bộ đếm giờ không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown posix lock value '%s'"
+#~ msgstr "giá trị toàn màn hình không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown sgio mode '%s'"
+#~ msgstr "mẫu âm thanh không rõ '%s'"
+
+#~ msgid "unknown timer present value '%s'"
+#~ msgstr "giá trị hiện tại của bộ đếm giờ không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unknown value '%s' for <hostdev> attribute 'display'"
+#~ msgstr "Giá trị không rõ '%s' cho xsd:boolean"
+
+#, fuzzy
+#~ msgid "unknown value '%s' for <hostdev> attribute 'ramfb'"
+#~ msgstr "Giá trị không rõ '%s' cho xsd:boolean"
+
+#, fuzzy
+#~ msgid "unknown xattr value '%s'"
+#~ msgstr "tên bộ đếm giờ không rõ '%s'"
+
+#, fuzzy
+#~ msgid "unpriv_sgio is not supported by this kernel"
+#~ msgstr "Kỹ thuật SASL %s không được hỗ trợ bởi máy chủ"
+
+#, fuzzy
+#~ msgid "vnuma vnode %zu pnode '%s' too long for destination"
+#~ msgstr "Tên cầu nối %s quá dài cho chỗ ghi"
+
+#, fuzzy
+#~ msgid "vnuma vnode %zu size '%s' too long for destination"
+#~ msgstr "Mẫu CPU %s quá dài cho chỗ ghi"
+
+#, fuzzy
+#~ msgid "vnuma vnode %zu vcpus '%s' too long for destination"
+#~ msgstr "Mẫu CPU %s quá dài cho chỗ ghi"
+
+#, fuzzy
+#~ msgid "vnuma vnode %zu vdistances '%s' too long for destination"
+#~ msgstr "Tên cầu nối %s quá dài cho chỗ ghi"
 
 #, fuzzy
 #~ msgid "Error while processing monitor IO"
