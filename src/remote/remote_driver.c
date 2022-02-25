@@ -105,9 +105,17 @@ enum {
 };
 
 
-static void remoteDriverLock(struct private_data *driver)
+/**
+ * remoteDriverLock:
+ * @driver: private data of the remote driver
+ *
+ * Locks the internal mutex of the private driver. Callers may optionally use
+ * the returned virLockGuard struct to automatically unlock the driver.
+ */
+static virLockGuard
+remoteDriverLock(struct private_data *driver)
 {
-    virMutexLock(&driver->lock);
+    return virLockGuardLock(&driver->lock);
 }
 
 static void remoteDriverUnlock(struct private_data *driver)
