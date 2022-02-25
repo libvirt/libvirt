@@ -49,8 +49,5 @@ int virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
 
 int virNWFilterTeardownFilter(virNWFilterBindingDef *binding);
 
-GHashTable *virNWFilterCreateVarHashmap(const char *macaddr,
-                                            const virNWFilterVarValue *value);
-
 int virNWFilterBuildAll(virNWFilterDriverState *driver,
                         bool newFilters);
