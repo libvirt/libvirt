@@ -9,13 +9,14 @@
 # simmon <simmon@nplob.com>, 2021, 2022.
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
+# Kim InSoo <simmon@nplob.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-02-23 12:43+0000\n"
-"PO-Revision-Date: 2022-01-20 13:46+0000\n"
-"Last-Translator: simmon <simmon@nplob.com>\n"
+"PO-Revision-Date: 2022-02-25 03:16+0000\n"
+"Last-Translator: Kim InSoo <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -2142,7 +2143,7 @@ msgstr ""
 "서 요청되었습니다"
 
 msgid "Both secret and the secret header are required"
-msgstr ""
+msgstr "비밀과 비밀 헤더가 모두 필요합니다"
 
 msgid "Bounded"
 msgstr "묶임"
