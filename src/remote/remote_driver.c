@@ -7978,12 +7978,10 @@ remoteStorageVolGetInfoFlags(virStorageVolPtr vol,
                              virStorageVolInfoPtr result,
                              unsigned int flags)
 {
-    int rv = -1;
     struct private_data *priv = vol->conn->privateData;
     remote_storage_vol_get_info_flags_args args;
     remote_storage_vol_get_info_flags_ret ret;
-
-    remoteDriverLock(priv);
+    VIR_LOCK_GUARD lock = remoteDriverLock(priv);
 
     make_nonnull_storage_vol(&args.vol, vol);
     args.flags = flags;
@@ -7994,18 +7992,14 @@ remoteStorageVolGetInfoFlags(virStorageVolPtr vol,
              (xdrproc_t)xdr_remote_storage_vol_get_info_flags_args,
              (char *)&args,
              (xdrproc_t)xdr_remote_storage_vol_get_info_flags_ret,
-             (char *)&ret) == -1) {
-        goto done;
-    }
+             (char *)&ret) == -1)
+        return -1;
 
     result->type = ret.type;
     result->capacity = ret.capacity;
     result->allocation = ret.allocation;
-    rv = 0;
 
- done:
-    remoteDriverUnlock(priv);
-    return rv;
+    return 0;
 }
 
 
@@ -8143,17 +8137,15 @@ remoteDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                                  unsigned int nkeys,
                                  unsigned int flags)
 {
-    int rv = -1;
     struct private_data *priv = domain->conn->privateData;
     remote_domain_authorized_ssh_keys_set_args args;
-
-    remoteDriverLock(priv);
+    VIR_LOCK_GUARD lock = remoteDriverLock(priv);
 
     if (nkeys > REMOTE_DOMAIN_AUTHORIZED_SSH_KEYS_MAX) {
         virReportError(VIR_ERR_RPC, "%s",
                        _("remoteDomainAuthorizedSSHKeysSet: "
                          "returned number of keys exceeds limit"));
-        goto cleanup;
+        return -1;
     }
 
     make_nonnull_domain(&args.dom, domain);
@@ -8164,15 +8156,10 @@ remoteDomainAuthorizedSSHKeysSet(virDomainPtr domain,
 
     if (call(domain->conn, priv, 0, REMOTE_PROC_DOMAIN_AUTHORIZED_SSH_KEYS_SET,
              (xdrproc_t) xdr_remote_domain_authorized_ssh_keys_set_args, (char *)&args,
-             (xdrproc_t) xdr_void, (char *) NULL) == -1) {
-        goto cleanup;
-    }
+             (xdrproc_t) xdr_void, (char *) NULL) == -1)
+        return -1;
 
-    rv = 0;
-
- cleanup:
-    remoteDriverUnlock(priv);
-    return rv;
+    return 0;
 }
 
 
