@@ -23,6 +23,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -31,6 +33,8 @@ iptables \
 --dport 80 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 iptables \
 -w \
@@ -39,6 +43,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \

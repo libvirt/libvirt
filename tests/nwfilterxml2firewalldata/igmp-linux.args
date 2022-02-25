@@ -9,6 +9,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -19,6 +21,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -31,6 +35,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -41,6 +47,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -53,6 +61,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 iptables \
 -w \
@@ -63,6 +73,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -73,6 +85,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -85,6 +99,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 iptables \
 -w \
@@ -95,4 +111,6 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN

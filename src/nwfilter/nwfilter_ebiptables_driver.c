@@ -64,17 +64,6 @@ VIR_LOG_INIT("nwfilter.nwfilter_ebiptables_driver");
 
 #define BRIDGE_NF_CALL_ALERT_INTERVAL  10 /* seconds */
 
-/*
- * --ctdir original vs. --ctdir reply's meaning was inverted in netfilter
- * at some point (Linux 2.6.39)
- */
-enum ctdirStatus {
-    CTDIR_STATUS_UNKNOWN    = 0,
-    CTDIR_STATUS_CORRECTED  = 1,
-    CTDIR_STATUS_OLD        = 2,
-};
-static enum ctdirStatus iptables_ctdir_corrected;
-
 #define PRINT_ROOT_CHAIN(buf, prefix, ifname) \
     g_snprintf(buf, sizeof(buf), "libvirt-%c-%s", prefix, ifname)
 #define PRINT_CHAIN(buf, prefix, ifname, suffix) \
@@ -1088,24 +1077,13 @@ iptablesEnforceDirection(virFirewall *fw,
                          bool directionIn,
                          virNWFilterRuleDef *rule)
 {
-    switch (iptables_ctdir_corrected) {
-    case CTDIR_STATUS_UNKNOWN:
-        /* could not be determined or s.th. is seriously wrong */
-        return;
-    case CTDIR_STATUS_CORRECTED:
-        directionIn = !directionIn;
-        break;
-    case CTDIR_STATUS_OLD:
-        break;
-    }
-
     if (rule->tt != VIR_NWFILTER_RULE_DIRECTION_INOUT)
         virFirewallRuleAddArgList(fw, fwrule,
                                   "-m", "conntrack",
                                   "--ctdir",
                                   (directionIn ?
-                                   "Original" :
-                                   "Reply"),
+                                   "Reply" :
+                                   "Original"),
                                   NULL);
 }
 
@@ -3633,40 +3611,11 @@ virNWFilterTechDriver ebiptables_driver = {
     .removeBasicRules    = ebtablesRemoveBasicRules,
 };
 
-static void
-ebiptablesDriverProbeCtdir(void)
-{
-    struct utsname utsname;
-    unsigned long thisversion;
-
-    iptables_ctdir_corrected = CTDIR_STATUS_UNKNOWN;
-
-    if (uname(&utsname) < 0) {
-        VIR_ERROR(_("Call to utsname failed: %d"), errno);
-        return;
-    }
-
-    /* following Linux lxr, the logic was inverted in 2.6.39 */
-    if (virStringParseVersion(&thisversion, utsname.release, true) < 0) {
-        VIR_ERROR(_("Could not determine kernel version from string %s"),
-                  utsname.release);
-        return;
-    }
-
-    if (thisversion >= 2 * 1000000 + 6 * 1000 + 39)
-        iptables_ctdir_corrected = CTDIR_STATUS_CORRECTED;
-    else
-        iptables_ctdir_corrected = CTDIR_STATUS_OLD;
-}
-
-
 static int
 ebiptablesDriverInit(bool privileged)
 {
     if (!privileged)
         return 0;
-
-    ebiptablesDriverProbeCtdir();
 
     ebiptables_driver.flags = TECHDRV_FLAG_INITIALIZED;
 

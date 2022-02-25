@@ -32,6 +32,8 @@ iptables \
 -p all \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -39,6 +41,8 @@ iptables \
 -p all \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -46,4 +50,6 @@ iptables \
 -p all \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN

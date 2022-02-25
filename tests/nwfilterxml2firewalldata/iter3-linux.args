@@ -8,6 +8,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -19,6 +21,8 @@ iptables \
 --dport 80 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -30,6 +34,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -41,6 +47,8 @@ iptables \
 --sport 90 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -52,6 +60,8 @@ iptables \
 --dport 90 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -63,6 +73,8 @@ iptables \
 --sport 90 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -74,6 +86,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -85,6 +99,8 @@ iptables \
 --dport 80 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -96,6 +112,8 @@ iptables \
 --sport 80 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -107,6 +125,8 @@ iptables \
 --sport 90 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -118,6 +138,8 @@ iptables \
 --dport 90 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -129,6 +151,8 @@ iptables \
 --sport 90 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -141,6 +165,8 @@ iptables \
 --dport 1100 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -153,6 +179,8 @@ iptables \
 --sport 1100 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -165,4 +193,6 @@ iptables \
 --dport 1100 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN

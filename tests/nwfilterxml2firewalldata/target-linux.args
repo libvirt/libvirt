@@ -51,6 +51,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j RETURN
@@ -63,6 +65,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j ACCEPT
@@ -77,6 +81,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'accept rule -- dir out' \
 -j RETURN
@@ -157,6 +163,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j RETURN
@@ -171,6 +179,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j ACCEPT
@@ -183,6 +193,8 @@ iptables \
 --dscp 33 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'accept rule -- dir in' \
 -j RETURN

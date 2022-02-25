@@ -57,6 +57,8 @@ iptables \
 --dport 564:1092 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -69,6 +71,8 @@ iptables \
 --sport 564:1092 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -83,6 +87,8 @@ iptables \
 --dport 564:1092 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 ip6tables \
 -w \
@@ -95,6 +101,8 @@ ip6tables \
 --sport 256:4369 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 ip6tables \
 -w \
@@ -109,6 +117,8 @@ ip6tables \
 --dport 256:4369 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 ip6tables \
 -w \
@@ -121,4 +131,6 @@ ip6tables \
 --sport 256:4369 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN

@@ -9,6 +9,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -19,6 +21,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 iptables \
 -w \
@@ -31,6 +35,8 @@ iptables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 iptables \
 -w \
@@ -43,6 +49,8 @@ iptables \
 --sport 100:1111 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -57,6 +65,8 @@ iptables \
 --dport 100:1111 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 iptables \
 -w \
@@ -69,6 +79,8 @@ iptables \
 --sport 100:1111 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -81,6 +93,8 @@ iptables \
 --sport 65535:65535 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 iptables \
 -w \
@@ -95,6 +109,8 @@ iptables \
 --dport 65535:65535 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 iptables \
 -w \
@@ -107,4 +123,6 @@ iptables \
 --sport 65535:65535 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN

@@ -9,6 +9,8 @@ ip6tables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 ip6tables \
 -w \
@@ -19,6 +21,8 @@ ip6tables \
 --dscp 2 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j ACCEPT
 ip6tables \
 -w \
@@ -31,6 +35,8 @@ ip6tables \
 --dscp 2 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j RETURN
 ip6tables \
 -w \
@@ -43,6 +49,8 @@ ip6tables \
 --sport 100:1111 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 ip6tables \
 -w \
@@ -57,6 +65,8 @@ ip6tables \
 --dport 100:1111 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 ip6tables \
 -w \
@@ -69,6 +79,8 @@ ip6tables \
 --sport 100:1111 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 ip6tables \
 -w \
@@ -81,6 +93,8 @@ ip6tables \
 --sport 65535:65535 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN
 ip6tables \
 -w \
@@ -95,6 +109,8 @@ ip6tables \
 --dport 65535:65535 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -j ACCEPT
 ip6tables \
 -w \
@@ -107,4 +123,6 @@ ip6tables \
 --sport 65535:65535 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -j RETURN

@@ -57,6 +57,8 @@ iptables \
 --dport 564:1092 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'udp rule' \
 -j RETURN
@@ -71,6 +73,8 @@ iptables \
 --sport 564:1092 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'udp rule' \
 -j ACCEPT
@@ -87,6 +91,8 @@ iptables \
 --dport 564:1092 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'udp rule' \
 -j RETURN
@@ -101,6 +107,8 @@ ip6tables \
 --sport 256:4369 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
@@ -117,6 +125,8 @@ ip6tables \
 --dport 256:4369 \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j ACCEPT
@@ -131,6 +141,8 @@ ip6tables \
 --sport 256:4369 \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'tcp/ipv6 rule' \
 -j RETURN
@@ -140,6 +152,8 @@ ip6tables \
 -p udp \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
@@ -149,6 +163,8 @@ ip6tables \
 -p udp \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j ACCEPT
@@ -158,6 +174,8 @@ ip6tables \
 -p udp \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment '`ls`;${COLUMNS};$(ls);"test";&'\''3   spaces'\''' \
 -j RETURN
@@ -167,6 +185,8 @@ ip6tables \
 -p sctp \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
@@ -176,6 +196,8 @@ ip6tables \
 -p sctp \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j ACCEPT
@@ -185,6 +207,8 @@ ip6tables \
 -p sctp \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'comment with lone '\'', `, ", `, \, $x, and two  spaces' \
 -j RETURN
@@ -194,6 +218,8 @@ ip6tables \
 -p ah \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN
@@ -203,6 +229,8 @@ ip6tables \
 -p ah \
 -m conntrack \
 --ctstate NEW,ESTABLISHED \
+-m conntrack \
+--ctdir Original \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j ACCEPT
@@ -212,6 +240,8 @@ ip6tables \
 -p ah \
 -m conntrack \
 --ctstate ESTABLISHED \
+-m conntrack \
+--ctdir Reply \
 -m comment \
 --comment 'tmp=`mktemp`; echo ${RANDOM} > ${tmp} ; cat < ${tmp}; rm -f ${tmp}' \
 -j RETURN
