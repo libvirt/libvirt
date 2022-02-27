@@ -15,7 +15,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-02-23 12:43+0000\n"
-"PO-Revision-Date: 2022-02-25 03:16+0000\n"
+"PO-Revision-Date: 2022-02-27 02:16+0000\n"
 "Last-Translator: Kim InSoo <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -24,7 +24,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11\n"
 
 msgid ""
 "\n"
@@ -3315,7 +3315,7 @@ msgstr "'%s'에서 연결장치 MAC을 설정 할 수 없음"
 
 #, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr ""
+msgstr "연결장치 MAC을 %s로(ifname %s vf %d를 위해) 설정 할 수 없습니다"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -3331,7 +3331,7 @@ msgstr "'%s'에서 연결장치 플래그를 설정 할 수 없음"
 
 #, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr ""
+msgstr "연결장치 vlanid를 %d로(ifname %s vf %d를 위해) 설정 할 수 없습니다"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "최대 메모리보다 더 높게 메모리를 설정할 수 없음"
@@ -10132,7 +10132,7 @@ msgstr "free에 잘못된 매개변수 유형이 전달되었습니다"
 
 #, c-format
 msgid "Invalid parameters: %d"
-msgstr ""
+msgstr "잘못된 매개변수: %d"
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "virtio ccw 주소에 대한 잘못된 부분적 지정"
@@ -10337,7 +10337,8 @@ msgstr "요소 '%s'의 특성 '%s'에 대한 잘못된 값: '%s'. 예상 정수 
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
-msgstr ""
+msgstr "속성 '%s'를 위해 잘못된 값(요소 '%s': '%s'에서). 예상되는 음수-가 아닌 정수 "
+"값"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -10829,7 +10830,7 @@ msgstr "지정된 머신 유형 제한 %u보다 큰 최대 CPU"
 
 #, c-format
 msgid "Maximum supported number of ISA serial ports is '%d'"
-msgstr ""
+msgstr "ISA 직렬(serial) 포트의 최대 지원 수는 '%d' 개 입니다"
 
 msgid "Media Registry is null"
 msgstr "미디어 레지스트리가 null입니다"
@@ -11135,7 +11136,7 @@ msgid "Missing IP address in static host definition for network '%s'"
 msgstr "네트워크 '%s'의 정적 호스트 정의에서 IP 주소가 누락되어 있음"
 
 msgid "Missing LISTEN_FDNAMES env from systemd socket activation"
-msgstr ""
+msgstr "systemd 소켓 활성화에서 누락된 LISTEN_FDNAMES env"
 
 #, c-format
 msgid "Missing PVR information for CPU model %s"
@@ -13400,14 +13401,14 @@ msgid "QEMU does not support SEV guest"
 msgstr "QEMU는 SEV 게스트를 지원하지 않습니다"
 
 msgid "QEMU does not support calculating dirty page rate"
-msgstr ""
+msgstr "QEMU는 오염 부분 비율 계산을 지원하지 않습니다"
 
 #, c-format
 msgid "QEMU does not support device assignment mode '%s'"
 msgstr "QEMU는 장치 할당 모드 '%s'을(를) 지원하지 않습니다"
 
 msgid "QEMU does not support dirty page rate calculation mode."
-msgstr ""
+msgstr "QEMI는 오염된 부분 비율 계산 방식을 지원하지 않습니다."
 
 msgid "QEMU does not support multiple listens for one graphics device."
 msgstr "QEMU는 하나의 그래픽 장치에 대한 다중 수신을 지원하지 않습니다."
@@ -15603,7 +15604,7 @@ msgstr ""
 
 #, c-format
 msgid "Target serial model %s does not match source %s"
-msgstr ""
+msgstr "대상 직렬(serial) 모델 %s는 원천 %s와 일치하지 않습니다"
 
 #, c-format
 msgid "Target serial port %d does not match source %d"
@@ -15657,7 +15658,7 @@ msgstr "대상 타이머 %s는 소스 %s와 일치하지 않습니다"
 
 #, c-format
 msgid "Target timer presence '%s' does not match source '%s'"
-msgstr ""
+msgstr "대상 타이머 존재 '%s'는 원천 '%s'와 일치하지 않습니다"
 
 #, c-format
 msgid "Target type '%s' cannot have an associated address"
@@ -17018,7 +17019,7 @@ msgid "Unable to find 'devices' cgroups controller mount"
 msgstr "'devices' cgroups 제어기 적재를 찾을 수 없습니다"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
-msgstr ""
+msgstr "$PATH에서 'dnsmasq' 바이너리를 찾을 수 없습니다"
 
 msgid "Unable to find 'memory' cgroups controller mount"
 msgstr "'메모리' cgroups 컨트롤러 마운트를 찾을 수 없습니다"
@@ -18097,7 +18098,7 @@ msgid "Unable to send SIGTERM to init pid %llu"
 msgstr "SIGTERM을 init pid %llu에 전송 할 수 없습니다"
 
 msgid "Unable to send a VF SETLINK request on this platform"
-msgstr ""
+msgstr "이와 같은 기술환경에서 VF SETLINK 요청을 전송 할 수 없습니다"
 
 msgid "Unable to send container continue message"
 msgstr "컨테이너 계속 메시지를 전송할 수 없음"
@@ -18157,13 +18158,13 @@ msgid "Unable to set XATTR %s on %s"
 msgstr "%s에서XATTR %s를 설정 할 수 없습니다"
 
 msgid "Unable to set a VF MAC on this platform"
-msgstr ""
+msgstr "이와 같은 기술 환경에서 VF MAC을 설정 할 수 없습니다"
 
 msgid "Unable to set a VF VLAN on this platform"
-msgstr ""
+msgstr "이와 같은 기술환경에서 VF VLAN을 설정 할 수 없습니다"
 
 msgid "Unable to set a VF config on this platform"
-msgstr ""
+msgstr "이와 같은 기술환경에서 VF config를 설정 할 수 없습니다"
 
 msgid "Unable to set agent close-on-exec flag"
 msgstr "에이전트 close-on-exec 플래그를 설정 할 수 없음"
@@ -18789,7 +18790,7 @@ msgstr "알 수 없는 캐시 유형 '%s'"
 
 #, c-format
 msgid "Unknown calculation mode '%s'"
-msgstr ""
+msgstr "알지 못하는 계산 방식 '%s'"
 
 #, c-format
 msgid "Unknown cgroup controller '%s'"
@@ -18821,7 +18822,7 @@ msgstr "알 수 없는 데이터 소스 '%s'"
 
 #, c-format
 msgid "Unknown dirty page rate calculation mode: %s"
-msgstr ""
+msgstr "알지 못하는 오염 부분 비율 계산 방식: %s"
 
 #, c-format
 msgid "Unknown dirty rate status: %s"
@@ -20064,7 +20065,7 @@ msgstr "디스크 장치의 주소"
 
 #, c-format
 msgid "address of type '%s' is supported only for hostdevs"
-msgstr ""
+msgstr "유형 '%s'의 주소는 hostdevs를 위해서만 지원됩니다"
 
 msgid "address source: 'lease' or 'agent'"
 msgstr "주소 소스: '리스' 또는 '에이전트'"
@@ -21513,7 +21514,7 @@ msgstr "도메인에 대한 RSS를 가져올 수 없습니다"
 
 #, c-format
 msgid "cannot get cert distinguished name: %s"
-msgstr ""
+msgstr "인증서 고유 이름을 가져 올 수 없습니다: %s"
 
 msgid "cannot get children disk"
 msgstr "자식 디스크를 얻을 수 없습니다"
@@ -23864,7 +23865,7 @@ msgid "dir"
 msgstr "디렉토리"
 
 msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
+msgstr "직접 FD 전달은 단 1개의 파일 설명자를 지원합니다"
 
 msgid "direct migration"
 msgstr "직접 이전"
@@ -23887,6 +23888,8 @@ msgid ""
 "dirty page rate calculation mode, either of these 3 options 'page-sampling, "
 "dirty-bitmap, dirty-ring' can be specified."
 msgstr ""
+"오염 부분 비율 계산 방식, 이들 3가지 선택('page-sampling, dirty-bitmap, "
+"dirty-ring') 중의 하나로 지정 될 수 있습니다."
 
 msgid "dirty ring must be power of 2 and ranges [1024, 65536]"
 msgstr "더티 링(dirty ring)은 2의 거듭제곱과 범위여야 합니다 [1024, 65536]"
@@ -23898,7 +23901,7 @@ msgstr ""
 "KVM 기능 '%s'의 더티 링(dirty ring) 크기는 다릅니다: 원천: '%d', 대상: '%d'"
 
 msgid "dirty-ring calculation mode requires dirty-ring feature enabled."
-msgstr ""
+msgstr "더티-링(dirty-ring) 계산 방식은 더티-링 기능이 활성화된 상태가 필요합니다."
 
 msgid "disable"
 msgstr "비활성화됨"
@@ -25133,7 +25136,7 @@ msgstr "값 예상하기"
 
 #, c-format
 msgid "expecting a value for value of type %s"
-msgstr ""
+msgstr "유형 %s의 값을 위해 예상되는 값"
 
 #, c-format
 msgid "expecting absolute path: %s"
@@ -27946,7 +27949,7 @@ msgstr "잘못된 디스크 대상 '%s', 파티션은 디스크 대상에 나타
 
 #, c-format
 msgid "invalid dmode: '0%o'"
-msgstr ""
+msgstr "잘못된 dmode: '0%o'"
 
 msgid "invalid domain pointer in"
 msgstr "잘못된 도메인 포인터"
@@ -27979,7 +27982,7 @@ msgid "invalid fd %d for %s"
 msgstr "잘못된 fd %d (%s를 위한)"
 
 msgid "invalid file descriptor"
-msgstr ""
+msgstr "잘못된 파일 설명자"
 
 msgid "invalid flag"
 msgstr "잘못된 플래그"
@@ -27990,7 +27993,7 @@ msgstr "잘못된 플래그 조합: (0x%x)"
 
 #, c-format
 msgid "invalid fmode: '0%o'"
-msgstr ""
+msgstr "유효하지 않는 fmode: '0%o'"
 
 msgid "invalid hasmanagedsave"
 msgstr "잘못된 hasmanagedsave"
@@ -28318,7 +28321,7 @@ msgid "invalid use of command API"
 msgstr "API 명령어의 잘못된 사용"
 
 msgid "invalid use of conf API"
-msgstr ""
+msgstr "conf API의 잘못된 사용"
 
 msgid "invalid use with no flags"
 msgstr "플래그가 없는 잘못된 사용"
@@ -28438,7 +28441,7 @@ msgid "is not active"
 msgstr "활성화 상태가 아닙니다"
 
 msgid "isa-debug serial type only valid on x86 architecture"
-msgstr ""
+msgstr "isa- 디버그 직렬 유형은 x86 구조에서만 유효합니다"
 
 msgid "iscsi pool only supports 'chap' auth type"
 msgstr "iscsi 풀은 'chap' 인증 유형만 지원합니다"
@@ -29959,7 +29962,7 @@ msgstr "'%s'에 대한 cssid 값이 없습니다"
 
 #, c-format
 msgid "missing decode element in CPU model %s"
-msgstr ""
+msgstr "CPU 모델 %s에서 누락된 디코드 요소"
 
 #, c-format
 msgid "missing destination file for disk %s: %s"
@@ -32937,7 +32940,7 @@ msgid "query-cpu-model-comparison reply data was missing 'result'"
 msgstr "쿼리 CPU 모델 비교 응답 데이터에 '결과'가 누락되었습니다"
 
 msgid "query-dirty-rate parsing 'vcpu-dirty-rate' in failure"
-msgstr ""
+msgstr "실패 요소에서 'vcpu-dirty-rate' 구문 분석하는 query-dirty-rate"
 
 msgid "query-dirty-rate reply was missing 'calc-time' data"
 msgstr "query-dirty-rate 응답에 'calc-time' 데이터가 누락되었습니다"
@@ -32946,7 +32949,7 @@ msgid "query-dirty-rate reply was missing 'dirty-rate' data"
 msgstr "query-dirty-rate 응답에 'dirty-rate' 데이터가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'id' data"
-msgstr ""
+msgstr "query-dirty-rate 응답은 'id' 자료가 누락되었습니다"
 
 msgid "query-dirty-rate reply was missing 'return' data"
 msgstr "query-dirty-rate 응답에 'return' 데이터가 누락되었습니다"
@@ -33098,7 +33101,7 @@ msgid "rawio is only supported for scsi host device"
 msgstr "rawio는 scsi 호스트 장치만 지원됩니다"
 
 msgid "re-initialize NVRAM from its pristine template"
-msgstr ""
+msgstr "이와 같은 원본 템플리트에서 NVRAM을 다시-초기화합니다"
 
 msgid "read I/O operations limit per second"
 msgstr "초당 읽기 I/O 작업 제한"
@@ -34534,17 +34537,17 @@ msgstr ""
 "요합니다"
 
 msgid "swtpm didn't show up"
-msgstr ""
+msgstr "swtpm은 나타나지 않습니다"
 
 #, c-format
 msgid "swtpm died and reported: %s"
-msgstr ""
+msgstr "swtpm은 죽었고 보고되었습니다: %s"
 
 msgid "swtpm died unexpectedly"
-msgstr ""
+msgstr "swtpm은 예상치 못하게 죽었습니다"
 
 msgid "swtpm socket did not show up"
-msgstr ""
+msgstr "swtpm 소켓은 나타나지 않았습니다"
 
 #, c-format
 msgid "syntax: %s DEVICE [-g]|[-p]\n"
@@ -34650,7 +34653,7 @@ msgstr "대상 PCI 장치 "
 
 #, c-format
 msgid "target port '%d' already allocated"
-msgstr ""
+msgstr "대상 포트 '%d'는 이미 할당 되었습니다"
 
 #, c-format
 msgid "target type must be specified for %s device"
@@ -34722,7 +34725,7 @@ msgstr "QEMU 바이너리는 ISA 패닉 장치를 지원하지 않습니다"
 
 #, c-format
 msgid "the accel '%s' is not supported by '%s' on this host"
-msgstr ""
+msgstr "이와 같은 호스트에서 '%s'에 의해 가속 '%s'는 지원되지 않습니다"
 
 msgid ""
 "the address family of a dhcp range must match the address family of the dhcp "
@@ -36446,7 +36449,7 @@ msgid "unexpectedly failed"
 msgstr "예상치 못하게 실패함"
 
 msgid "unfiltered sgio is no longer supported"
-msgstr ""
+msgstr "필터 되지 않은 sgio는 더 이상 지원되지 않습니다"
 
 #, c-format
 msgid "unimplemented parameter type %d"
@@ -37794,7 +37797,7 @@ msgstr "비디오 유형 %s는 libxl에서 지원되지 않습니다"
 
 #, c-format
 msgid "video type '%s' doesn't support multiple 'heads'"
-msgstr ""
+msgstr "비디오 유형 '%s'는 다중 'heads'를 지원하지 않습니다"
 
 #, c-format
 msgid "video type '%s' is only valid as primary video device"
@@ -38029,7 +38032,7 @@ msgstr "virtiofs는 통과 액세스 모드만 지원합니다"
 
 #, c-format
 msgid "virtiofsd binary '%s' is not executable"
-msgstr ""
+msgstr "virtiofsd 바이너리 '%s'는 실행 할 수 없습니다"
 
 msgid "virtiofsd died unexpectedly"
 msgstr "virtiofsd가 예기치 않게 사망했습니다"
@@ -38077,7 +38080,7 @@ msgstr "VLAN 트렁킹은 SR-IOV 네트워크 장치에서 지원되지 않습�
 
 #, c-format
 msgid "vlanid out of range: %d"
-msgstr ""
+msgstr "vlanid 범위를 벗어난: %d"
 
 msgid "vmcoreinfo is not available with this QEMU binary"
 msgstr "vmcoreinfo는 이 QEMU 바이너리와 함께 사용할 수 없습니다"
