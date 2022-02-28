@@ -114,7 +114,7 @@ lxcProcOpen(const char *path,
     if (STRNEQ(path, fuse_meminfo_path))
         return -ENOENT;
 
-    if ((fi->flags & 3) != O_RDONLY)
+    if ((fi->flags & O_ACCMODE) != O_RDONLY)
         return -EACCES;
 
     return 0;
