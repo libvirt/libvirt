@@ -5158,6 +5158,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     size_t i;
     bool ret_val = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    unsigned int queryflags = VIR_DOMAIN_AFFECT_CURRENT;
     bool current = vshCommandOptBool(cmd, "current");
     bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
@@ -5169,6 +5170,14 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
+
+    /* We cannot query both live and config at once, so settle
+       on current in that case.  If we are setting, then the two values should
+       match when we re-query; otherwise, we report the error later.  */
+    if (config && live)
+        queryflags = VIR_DOMAIN_AFFECT_CURRENT;
+    else
+        queryflags = flags;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
@@ -5188,12 +5197,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
     memset(params, 0, sizeof(*params) * nparams);
 
     if (flags || current) {
-        /* We cannot query both live and config at once, so settle
-           on current in that case.  If we are setting, then the
-           two values should match when we re-query; otherwise, we
-           report the error later.  */
-        if (virDomainGetSchedulerParametersFlags(dom, params, &nparams,
-                                                 ((live && config) ? 0 : flags)) == -1)
+        if (virDomainGetSchedulerParametersFlags(dom, params, &nparams, queryflags) == -1)
             goto cleanup;
     } else {
         if (virDomainGetSchedulerParameters(dom, params, &nparams) == -1)
@@ -5212,8 +5216,7 @@ cmdSchedinfo(vshControl *ctl, const vshCmd *cmd)
                                                      nupdates, flags) == -1)
                 goto cleanup;
 
-            if (virDomainGetSchedulerParametersFlags(dom, params, &nparams,
-                                                     ((live && config) ? 0 : flags)) == -1)
+            if (virDomainGetSchedulerParametersFlags(dom, params, &nparams, queryflags) == -1)
                 goto cleanup;
         } else {
             if (virDomainSetSchedulerParameters(dom, updates, nupdates) == -1)
