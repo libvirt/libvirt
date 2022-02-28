@@ -152,7 +152,6 @@ lxcProcReadMeminfo(char *hostpath,
     size_t n;
     struct virLXCMeminfo meminfo;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
-    virBuffer *new_meminfo = &buffer;
 
     if (virLXCCgroupGetMeminfo(&meminfo) < 0) {
         virErrorSetErrnoFromLastError();
@@ -180,12 +179,12 @@ lxcProcReadMeminfo(char *hostpath,
         if (STREQ(line, "MemTotal") &&
             (virMemoryLimitIsSet(def->mem.hard_limit) ||
              virDomainDefGetMemoryTotal(def))) {
-            virBufferAsprintf(new_meminfo, "MemTotal:       %8llu kB\n",
+            virBufferAsprintf(&buffer, "MemTotal:       %8llu kB\n",
                               meminfo.memtotal);
         } else if (STREQ(line, "MemFree") &&
                    (virMemoryLimitIsSet(def->mem.hard_limit) ||
                     virDomainDefGetMemoryTotal(def))) {
-            virBufferAsprintf(new_meminfo, "MemFree:        %8llu kB\n",
+            virBufferAsprintf(&buffer, "MemFree:        %8llu kB\n",
                               (meminfo.memtotal - meminfo.memusage));
         } else if (STREQ(line, "MemAvailable") &&
                    (virMemoryLimitIsSet(def->mem.hard_limit) ||
@@ -193,59 +192,59 @@ lxcProcReadMeminfo(char *hostpath,
             /* MemAvailable is actually MemFree + SRReclaimable +
                some other bits, but MemFree is the closest approximation
                we have */
-            virBufferAsprintf(new_meminfo, "MemAvailable:   %8llu kB\n",
+            virBufferAsprintf(&buffer, "MemAvailable:   %8llu kB\n",
                               (meminfo.memtotal - meminfo.memusage));
         } else if (STREQ(line, "Buffers")) {
-            virBufferAsprintf(new_meminfo, "Buffers:        %8d kB\n", 0);
+            virBufferAsprintf(&buffer, "Buffers:        %8d kB\n", 0);
         } else if (STREQ(line, "Cached")) {
-            virBufferAsprintf(new_meminfo, "Cached:         %8llu kB\n",
+            virBufferAsprintf(&buffer, "Cached:         %8llu kB\n",
                               meminfo.cached);
         } else if (STREQ(line, "Active")) {
-            virBufferAsprintf(new_meminfo, "Active:         %8llu kB\n",
+            virBufferAsprintf(&buffer, "Active:         %8llu kB\n",
                               (meminfo.active_anon + meminfo.active_file));
         } else if (STREQ(line, "Inactive")) {
-            virBufferAsprintf(new_meminfo, "Inactive:       %8llu kB\n",
+            virBufferAsprintf(&buffer, "Inactive:       %8llu kB\n",
                               (meminfo.inactive_anon + meminfo.inactive_file));
         } else if (STREQ(line, "Active(anon)")) {
-            virBufferAsprintf(new_meminfo, "Active(anon):   %8llu kB\n",
+            virBufferAsprintf(&buffer, "Active(anon):   %8llu kB\n",
                               meminfo.active_anon);
         } else if (STREQ(line, "Inactive(anon)")) {
-            virBufferAsprintf(new_meminfo, "Inactive(anon): %8llu kB\n",
+            virBufferAsprintf(&buffer, "Inactive(anon): %8llu kB\n",
                               meminfo.inactive_anon);
         } else if (STREQ(line, "Active(file)")) {
-            virBufferAsprintf(new_meminfo, "Active(file):   %8llu kB\n",
+            virBufferAsprintf(&buffer, "Active(file):   %8llu kB\n",
                               meminfo.active_file);
         } else if (STREQ(line, "Inactive(file)")) {
-            virBufferAsprintf(new_meminfo, "Inactive(file): %8llu kB\n",
+            virBufferAsprintf(&buffer, "Inactive(file): %8llu kB\n",
                               meminfo.inactive_file);
         } else if (STREQ(line, "Unevictable")) {
-            virBufferAsprintf(new_meminfo, "Unevictable:    %8llu kB\n",
+            virBufferAsprintf(&buffer, "Unevictable:    %8llu kB\n",
                               meminfo.unevictable);
         } else if (STREQ(line, "SwapTotal") &&
                    virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
-            virBufferAsprintf(new_meminfo, "SwapTotal:      %8llu kB\n",
+            virBufferAsprintf(&buffer, "SwapTotal:      %8llu kB\n",
                               (meminfo.swaptotal - meminfo.memtotal));
         } else if (STREQ(line, "SwapFree") &&
                    virMemoryLimitIsSet(def->mem.swap_hard_limit)) {
-            virBufferAsprintf(new_meminfo, "SwapFree:       %8llu kB\n",
+            virBufferAsprintf(&buffer, "SwapFree:       %8llu kB\n",
                               (meminfo.swaptotal - meminfo.memtotal -
                                meminfo.swapusage + meminfo.memusage));
         } else if (STREQ(line, "Slab")) {
-            virBufferAsprintf(new_meminfo, "Slab:           %8d kB\n", 0);
+            virBufferAsprintf(&buffer, "Slab:           %8d kB\n", 0);
         } else if (STREQ(line, "SReclaimable")) {
-            virBufferAsprintf(new_meminfo, "SReclaimable:   %8d kB\n", 0);
+            virBufferAsprintf(&buffer, "SReclaimable:   %8d kB\n", 0);
         } else if (STREQ(line, "SUnreclaim")) {
-            virBufferAsprintf(new_meminfo, "SUnreclaim:     %8d kB\n", 0);
+            virBufferAsprintf(&buffer, "SUnreclaim:     %8d kB\n", 0);
         } else {
             *ptr = ':';
-            virBufferAdd(new_meminfo, line, -1);
+            virBufferAdd(&buffer, line, -1);
         }
 
     }
-    res = strlen(virBufferCurrentContent(new_meminfo));
+    res = strlen(virBufferCurrentContent(&buffer));
     if (res > size)
         res = size;
-    memcpy(buf, virBufferCurrentContent(new_meminfo), res);
+    memcpy(buf, virBufferCurrentContent(&buffer), res);
 
     return res;
 }
