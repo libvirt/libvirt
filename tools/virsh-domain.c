@@ -4104,10 +4104,15 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
 
     /* We can emulate force boot, even for older servers that reject it.  */
     if (flags & VIR_DOMAIN_START_FORCE_BOOT) {
-        if ((nfds ?
-             virDomainCreateWithFiles(dom, nfds, fds, flags) :
-             virDomainCreateWithFlags(dom, flags)) == 0)
+        if (nfds > 0) {
+            rc = virDomainCreateWithFiles(dom, nfds, fds, flags);
+        } else {
+            rc = virDomainCreateWithFlags(dom, flags);
+        }
+
+        if (rc == 0)
             goto started;
+
         if (last_error->code != VIR_ERR_NO_SUPPORT &&
             last_error->code != VIR_ERR_INVALID_ARG) {
             vshReportError(ctl);
@@ -4128,9 +4133,15 @@ cmdStart(vshControl *ctl, const vshCmd *cmd)
     }
 
     /* Prefer older API unless we have to pass a flag.  */
-    if ((nfds ? virDomainCreateWithFiles(dom, nfds, fds, flags) :
-         (flags ? virDomainCreateWithFlags(dom, flags)
-          : virDomainCreate(dom))) < 0) {
+    if (nfds > 0) {
+        rc = virDomainCreateWithFiles(dom, nfds, fds, flags);
+    } else if (flags != 0) {
+        rc = virDomainCreateWithFlags(dom, flags);
+    } else {
+        rc = virDomainCreate(dom);
+    }
+
+    if (rc < 0) {
         vshError(ctl, _("Failed to start domain '%s'"), virDomainGetName(dom));
         return false;
     }
