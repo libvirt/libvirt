@@ -118,7 +118,7 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
     VIR_DEBUG("Starting job: %s", libxlDomainJobTypeToString(job));
     priv->job.active = job;
     priv->job.owner = virThreadSelfID();
-    priv->job.started = now;
+    priv->job.current->started = now;
     priv->job.current->jobType = VIR_DOMAIN_JOB_UNBOUNDED;
 
     return 0;
@@ -171,18 +171,18 @@ libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
     virDomainJobData *jobData = job->current;
     unsigned long long now;
 
-    if (!job->started)
+    if (!jobData->started)
         return 0;
 
     if (virTimeMillisNow(&now) < 0)
         return -1;
 
-    if (now < job->started) {
-        job->started = 0;
+    if (now < jobData->started) {
+        jobData->started = 0;
         return 0;
     }
 
-    jobData->timeElapsed = now - job->started;
+    jobData->timeElapsed = now - jobData->started;
     return 0;
 }
 
