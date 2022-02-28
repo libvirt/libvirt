@@ -103,8 +103,8 @@ static int lxcProcReaddir(const char *path, void *buf,
     return 0;
 }
 
-static int lxcProcOpen(const char *path G_GNUC_UNUSED,
-                       struct fuse_file_info *fi G_GNUC_UNUSED)
+static int lxcProcOpen(const char *path,
+                       struct fuse_file_info *fi)
 {
     if (STRNEQ(path, fuse_meminfo_path))
         return -ENOENT;
@@ -242,10 +242,10 @@ static int lxcProcReadMeminfo(char *hostpath, virDomainDef *def,
     return res;
 }
 
-static int lxcProcRead(const char *path G_GNUC_UNUSED,
-                       char *buf G_GNUC_UNUSED,
-                       size_t size G_GNUC_UNUSED,
-                       off_t offset G_GNUC_UNUSED,
+static int lxcProcRead(const char *path,
+                       char *buf,
+                       size_t size,
+                       off_t offset,
                        struct fuse_file_info *fi G_GNUC_UNUSED)
 {
     int res = -ENOENT;
