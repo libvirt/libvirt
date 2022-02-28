@@ -11659,30 +11659,203 @@ static const vshCmdOptDef opts_domdisplay[] = {
     {.name = NULL}
 };
 
+
+static char *
+virshGetOneDisplay(vshControl *ctl,
+                   const char *scheme,
+                   xmlXPathContext *ctxt)
+{
+    const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
+    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+    char *xpath = NULL;
+    char *listen_addr = NULL;
+    int port = 0;
+    int tls_port = 0;
+    char *type_conn = NULL;
+    char *sockpath = NULL;
+    char *passwd = NULL;
+    int tmp;
+    bool params = false;
+    virSocketAddr addr;
+
+    /* Create our XPATH lookup for the current display's port */
+    VIR_FREE(xpath);
+    xpath = g_strdup_printf(xpath_fmt, scheme, "@port");
+
+    /* Attempt to get the port number for the current graphics scheme */
+    tmp = virXPathInt(xpath, ctxt, &port);
+    VIR_FREE(xpath);
+
+    /* If there is no port number for this type, then jump to the next
+     * scheme */
+    if (tmp)
+        port = 0;
+
+    /* Create our XPATH lookup for TLS Port (automatically skipped
+     * for unsupported schemes */
+    xpath = g_strdup_printf(xpath_fmt, scheme, "@tlsPort");
+
+    /* Attempt to get the TLS port number */
+    tmp = virXPathInt(xpath, ctxt, &tls_port);
+    VIR_FREE(xpath);
+    if (tmp)
+        tls_port = 0;
+
+    /* Create our XPATH lookup for the current display's address */
+    xpath = g_strdup_printf(xpath_fmt, scheme, "@listen");
+
+    /* Attempt to get the listening addr if set for the current
+     * graphics scheme */
+    VIR_FREE(listen_addr);
+    listen_addr = virXPathString(xpath, ctxt);
+    VIR_FREE(xpath);
+
+    /* Create our XPATH lookup for the current spice type. */
+    xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@type");
+
+    /* Attempt to get the type of spice connection */
+    VIR_FREE(type_conn);
+    type_conn = virXPathString(xpath, ctxt);
+    VIR_FREE(xpath);
+
+    if (STREQ_NULLABLE(type_conn, "socket")) {
+        if (!sockpath) {
+            xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@socket");
+
+            sockpath = virXPathString(xpath, ctxt);
+
+            VIR_FREE(xpath);
+        }
+    }
+
+    if (!port && !tls_port && !sockpath)
+        goto cleanup;
+
+    if (!listen_addr) {
+        /* The subelement address - <listen address='xyz'/> -
+         * *should* have been automatically backfilled into its
+         * parent <graphics listen='xyz'> (which we just tried to
+         * retrieve into listen_addr above) but in some cases it
+         * isn't, so we also do an explicit check for the
+         * subelement (which, by the way, doesn't exist on libvirt
+         * < 0.9.4, so we really do need to check both places)
+         */
+        xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@address");
+
+        listen_addr = virXPathString(xpath, ctxt);
+        VIR_FREE(xpath);
+    } else {
+        /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
+         * listen_addr based on current URI. */
+        if (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
+            virSocketAddrIsWildcard(&addr)) {
+
+            virConnectPtr conn = ((virshControl *)(ctl->privData))->conn;
+            char *uriStr = virConnectGetURI(conn);
+            virURI *uri = NULL;
+
+            if (uriStr) {
+                uri = virURIParse(uriStr);
+                VIR_FREE(uriStr);
+            }
+
+            /* It's safe to free the listen_addr even if parsing of URI
+             * fails, if there is no listen_addr we will print "localhost". */
+            VIR_FREE(listen_addr);
+
+            if (uri) {
+                listen_addr = g_strdup(uri->server);
+                virURIFree(uri);
+            }
+        }
+    }
+
+    /* We can query this info for all the graphics types since we'll
+     * get nothing for the unsupported ones (just rdp for now).
+     * Also the parameter '--include-password' was already taken
+     * care of when getting the XML */
+
+    /* Create our XPATH lookup for the password */
+    xpath = g_strdup_printf(xpath_fmt, scheme, "@passwd");
+
+    /* Attempt to get the password */
+    VIR_FREE(passwd);
+    passwd = virXPathString(xpath, ctxt);
+    VIR_FREE(xpath);
+
+    /* Build up the full URI, starting with the scheme */
+    if (sockpath)
+        virBufferAsprintf(&buf, "%s+unix://", scheme);
+    else
+        virBufferAsprintf(&buf, "%s://", scheme);
+
+    /* There is no user, so just append password if there's any */
+    if (STREQ(scheme, "vnc") && passwd)
+        virBufferAsprintf(&buf, ":%s@", passwd);
+
+    /* Then host name or IP */
+    if (!listen_addr && !sockpath)
+        virBufferAddLit(&buf, "localhost");
+    else if (!sockpath && strchr(listen_addr, ':'))
+        virBufferAsprintf(&buf, "[%s]", listen_addr);
+    else if (sockpath)
+        virBufferAsprintf(&buf, "%s", sockpath);
+    else
+        virBufferAsprintf(&buf, "%s", listen_addr);
+
+    /* Free socket to prepare the pointer for the next iteration */
+    VIR_FREE(sockpath);
+
+    /* Add the port */
+    if (port) {
+        if (STREQ(scheme, "vnc")) {
+            /* VNC protocol handlers take their port number as
+             * 'port' - 5900 */
+            port -= 5900;
+        }
+
+        virBufferAsprintf(&buf, ":%d", port);
+    }
+
+    /* TLS Port */
+    if (tls_port) {
+        virBufferAsprintf(&buf,
+                          "?tls-port=%d",
+                          tls_port);
+        params = true;
+    }
+
+    if (STREQ(scheme, "spice") && passwd) {
+        virBufferAsprintf(&buf,
+                          "%spassword=%s",
+                          params ? "&" : "?",
+                          passwd);
+        params = true;
+    }
+
+ cleanup:
+    VIR_FREE(xpath);
+    VIR_FREE(type_conn);
+    VIR_FREE(sockpath);
+    VIR_FREE(passwd);
+    VIR_FREE(listen_addr);
+
+    return virBufferContentAndReset(&buf);
+}
+
+
 static bool
 cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(xmlDoc) xml = NULL;
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virshDomain) dom = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
-    char *xpath = NULL;
-    char *listen_addr = NULL;
-    int port, tls_port = 0;
-    char *type_conn = NULL;
-    char *sockpath = NULL;
-    char *passwd = NULL;
-    char *output = NULL;
     const char *scheme[] = { "vnc", "spice", "rdp", NULL };
     const char *type = NULL;
     int iter = 0;
-    int tmp;
     int flags = 0;
-    bool params = false;
     bool all = vshCommandOptBool(cmd, "all");
-    const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
-    virSocketAddr addr;
 
     VSH_EXCLUSIVE_OPTIONS("all", "type");
 
@@ -11705,169 +11878,16 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
     /* Attempt to grab our display info */
     for (iter = 0; scheme[iter] != NULL; iter++) {
+        g_autofree char *display = NULL;
+
         /* Particular scheme requested */
         if (!all && type && STRNEQ(type, scheme[iter]))
             continue;
 
-        /* Create our XPATH lookup for the current display's port */
-        VIR_FREE(xpath);
-        xpath = g_strdup_printf(xpath_fmt, scheme[iter], "@port");
-
-        /* Attempt to get the port number for the current graphics scheme */
-        tmp = virXPathInt(xpath, ctxt, &port);
-        VIR_FREE(xpath);
-
-        /* If there is no port number for this type, then jump to the next
-         * scheme */
-        if (tmp)
-            port = 0;
-
-        /* Create our XPATH lookup for TLS Port (automatically skipped
-         * for unsupported schemes */
-        xpath = g_strdup_printf(xpath_fmt, scheme[iter], "@tlsPort");
-
-        /* Attempt to get the TLS port number */
-        tmp = virXPathInt(xpath, ctxt, &tls_port);
-        VIR_FREE(xpath);
-        if (tmp)
-            tls_port = 0;
-
-        /* Create our XPATH lookup for the current display's address */
-        xpath = g_strdup_printf(xpath_fmt, scheme[iter], "@listen");
-
-        /* Attempt to get the listening addr if set for the current
-         * graphics scheme */
-        VIR_FREE(listen_addr);
-        listen_addr = virXPathString(xpath, ctxt);
-        VIR_FREE(xpath);
-
-        /* Create our XPATH lookup for the current spice type. */
-        xpath = g_strdup_printf(xpath_fmt, scheme[iter], "listen/@type");
-
-        /* Attempt to get the type of spice connection */
-        VIR_FREE(type_conn);
-        type_conn = virXPathString(xpath, ctxt);
-        VIR_FREE(xpath);
-
-        if (STREQ_NULLABLE(type_conn, "socket")) {
-            if (!sockpath) {
-                xpath = g_strdup_printf(xpath_fmt, scheme[iter], "listen/@socket");
-
-                sockpath = virXPathString(xpath, ctxt);
-
-                VIR_FREE(xpath);
-            }
-        }
-
-        if (!port && !tls_port && !sockpath)
+        if (!(display = virshGetOneDisplay(ctl, scheme[iter], ctxt)))
             continue;
 
-        if (!listen_addr) {
-            /* The subelement address - <listen address='xyz'/> -
-             * *should* have been automatically backfilled into its
-             * parent <graphics listen='xyz'> (which we just tried to
-             * retrieve into listen_addr above) but in some cases it
-             * isn't, so we also do an explicit check for the
-             * subelement (which, by the way, doesn't exist on libvirt
-             * < 0.9.4, so we really do need to check both places)
-             */
-            xpath = g_strdup_printf(xpath_fmt, scheme[iter], "listen/@address");
-
-            listen_addr = virXPathString(xpath, ctxt);
-            VIR_FREE(xpath);
-        } else {
-            /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
-             * listen_addr based on current URI. */
-            if (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
-                virSocketAddrIsWildcard(&addr)) {
-
-                virConnectPtr conn = ((virshControl *)(ctl->privData))->conn;
-                char *uriStr = virConnectGetURI(conn);
-                virURI *uri = NULL;
-
-                if (uriStr) {
-                    uri = virURIParse(uriStr);
-                    VIR_FREE(uriStr);
-                }
-
-                /* It's safe to free the listen_addr even if parsing of URI
-                 * fails, if there is no listen_addr we will print "localhost". */
-                VIR_FREE(listen_addr);
-
-                if (uri) {
-                    listen_addr = g_strdup(uri->server);
-                    virURIFree(uri);
-                }
-            }
-        }
-
-        /* We can query this info for all the graphics types since we'll
-         * get nothing for the unsupported ones (just rdp for now).
-         * Also the parameter '--include-password' was already taken
-         * care of when getting the XML */
-
-        /* Create our XPATH lookup for the password */
-        xpath = g_strdup_printf(xpath_fmt, scheme[iter], "@passwd");
-
-        /* Attempt to get the password */
-        VIR_FREE(passwd);
-        passwd = virXPathString(xpath, ctxt);
-        VIR_FREE(xpath);
-
-        /* Build up the full URI, starting with the scheme */
-        if (sockpath)
-            virBufferAsprintf(&buf, "%s+unix://", scheme[iter]);
-        else
-            virBufferAsprintf(&buf, "%s://", scheme[iter]);
-
-        /* There is no user, so just append password if there's any */
-        if (STREQ(scheme[iter], "vnc") && passwd)
-            virBufferAsprintf(&buf, ":%s@", passwd);
-
-        /* Then host name or IP */
-        if (!listen_addr && !sockpath)
-            virBufferAddLit(&buf, "localhost");
-        else if (!sockpath && strchr(listen_addr, ':'))
-            virBufferAsprintf(&buf, "[%s]", listen_addr);
-        else if (sockpath)
-            virBufferAsprintf(&buf, "%s", sockpath);
-        else
-            virBufferAsprintf(&buf, "%s", listen_addr);
-
-        /* Free socket to prepare the pointer for the next iteration */
-        VIR_FREE(sockpath);
-
-        /* Add the port */
-        if (port) {
-            if (STREQ(scheme[iter], "vnc")) {
-                /* VNC protocol handlers take their port number as
-                 * 'port' - 5900 */
-                port -= 5900;
-            }
-
-            virBufferAsprintf(&buf, ":%d", port);
-        }
-
-        /* TLS Port */
-        if (tls_port) {
-            virBufferAsprintf(&buf,
-                              "?tls-port=%d",
-                              tls_port);
-            params = true;
-        }
-
-        if (STREQ(scheme[iter], "spice") && passwd) {
-            virBufferAsprintf(&buf,
-                              "%spassword=%s",
-                              params ? "&" : "?",
-                              passwd);
-            params = true;
-        }
-
-        /* Print out our full URI */
-        VIR_FREE(output);
-        output = virBufferContentAndReset(&buf);
-        vshPrint(ctl, "%s", output);
+        vshPrint(ctl, "%s", display);
 
         /* We got what we came for so return successfully */
         ret = true;
@@ -11884,12 +11904,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     }
 
  cleanup:
-    VIR_FREE(xpath);
-    VIR_FREE(type_conn);
-    VIR_FREE(sockpath);
-    VIR_FREE(passwd);
-    VIR_FREE(listen_addr);
-    VIR_FREE(output);
     return ret;
 }
 
