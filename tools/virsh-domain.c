@@ -5313,6 +5313,7 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     const char *xmlfile = NULL;
     g_autofree char *xml = NULL;
     virshControl *priv = ctl->privData;
+    int rc;
 
     if (vshCommandOptStringReq(ctl, cmd, "file", &from) < 0)
         return false;
@@ -5333,9 +5334,13 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
         virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
         return false;
 
-    if (((flags || xml)
-         ? virDomainRestoreFlags(priv->conn, from, xml, flags)
-         : virDomainRestore(priv->conn, from)) < 0) {
+    if (flags || xml) {
+        rc = virDomainRestoreFlags(priv->conn, from, xml, flags);
+    } else {
+        rc = virDomainRestore(priv->conn, from);
+    }
+
+    if (rc < 0) {
         vshError(ctl, _("Failed to restore domain from %s"), from);
         return false;
     }
