@@ -4213,6 +4213,7 @@ doSave(void *opaque)
     unsigned int flags = 0;
     const char *xmlfile = NULL;
     g_autofree char *xml = NULL;
+    int rc;
 #ifndef WIN32
     sigset_t sigmask, oldsigmask;
 
@@ -4244,9 +4245,13 @@ doSave(void *opaque)
         goto out;
     }
 
-    if (((flags || xml)
-         ? virDomainSaveFlags(dom, to, xml, flags)
-         : virDomainSave(dom, to)) < 0) {
+    if (flags || xml) {
+        rc = virDomainSaveFlags(dom, to, xml, flags);
+    } else {
+        rc = virDomainSave(dom, to);
+    }
+
+    if (rc < 0) {
         vshError(ctl, _("Failed to save domain '%s' to %s"), name, to);
         goto out;
     }
