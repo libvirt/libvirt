@@ -117,6 +117,7 @@ lxcProcOpen(const char *path,
     if ((fi->flags & O_ACCMODE) != O_RDONLY)
         return -EACCES;
 
+    fi->direct_io = 1;
     return 0;
 }
 
@@ -329,7 +330,6 @@ lxcSetupFuse(struct virLXCFuse **f,
 
     /* process name is libvirt_lxc */
     if (fuse_opt_add_arg(&args, "libvirt_lxc") == -1 ||
-        fuse_opt_add_arg(&args, "-odirect_io") == -1 ||
         fuse_opt_add_arg(&args, "-oallow_other") == -1 ||
         fuse_opt_add_arg(&args, "-ofsname=libvirt") == -1)
         goto error;
