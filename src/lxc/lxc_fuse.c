@@ -152,6 +152,7 @@ lxcProcReadMeminfo(char *hostpath,
     size_t n;
     struct virLXCMeminfo meminfo;
     g_auto(virBuffer) buffer = VIR_BUFFER_INITIALIZER;
+    const char *new_meminfo = NULL;
 
     if (virLXCCgroupGetMeminfo(&meminfo) < 0) {
         virErrorSetErrnoFromLastError();
@@ -161,11 +162,6 @@ lxcProcReadMeminfo(char *hostpath,
     fp = fopen(hostpath, "r");
     if (fp == NULL) {
         virReportSystemError(errno, _("Cannot open %s"), hostpath);
-        return -errno;
-    }
-
-    if (fseek(fp, offset, SEEK_SET) < 0) {
-        virReportSystemError(errno, "%s", _("fseek failed"));
         return -errno;
     }
 
@@ -241,10 +237,18 @@ lxcProcReadMeminfo(char *hostpath,
         }
 
     }
-    res = strlen(virBufferCurrentContent(&buffer));
+
+    new_meminfo = virBufferCurrentContent(&buffer);
+    res = virBufferUse(&buffer);
+
+    if (offset > res)
+        return 0;
+
+    res -= offset;
+
     if (res > size)
         res = size;
-    memcpy(buf, virBufferCurrentContent(&buffer), res);
+    memcpy(buf, new_meminfo + offset, res);
 
     return res;
 }
