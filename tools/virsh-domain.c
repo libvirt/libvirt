@@ -11667,66 +11667,50 @@ virshGetOneDisplay(vshControl *ctl,
 {
     const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    char *xpath = NULL;
+    g_autofree char *xpathPort = NULL;
+    g_autofree char *xpathPortTLS = NULL;
+    g_autofree char *xpathListen = NULL;
+    g_autofree char *xpathType = NULL;
+    g_autofree char *xpathPasswd = NULL;
     g_autofree char *listen_addr = NULL;
     int port = 0;
     int tls_port = 0;
     g_autofree char *type_conn = NULL;
     g_autofree char *sockpath = NULL;
     g_autofree char *passwd = NULL;
-    int tmp;
     bool params = false;
 
-    /* Create our XPATH lookup for the current display's port */
-    VIR_FREE(xpath);
-    xpath = g_strdup_printf(xpath_fmt, scheme, "@port");
-
     /* Attempt to get the port number for the current graphics scheme */
-    tmp = virXPathInt(xpath, ctxt, &port);
-    VIR_FREE(xpath);
+    xpathPort = g_strdup_printf(xpath_fmt, scheme, "@port");
 
-    /* If there is no port number for this type, then jump to the next
-     * scheme */
-    if (tmp)
+    if (virXPathInt(xpathPort, ctxt, &port) < 0)
         port = 0;
 
-    /* Create our XPATH lookup for TLS Port (automatically skipped
-     * for unsupported schemes */
-    xpath = g_strdup_printf(xpath_fmt, scheme, "@tlsPort");
-
     /* Attempt to get the TLS port number */
-    tmp = virXPathInt(xpath, ctxt, &tls_port);
-    VIR_FREE(xpath);
-    if (tmp)
+    xpathPortTLS = g_strdup_printf(xpath_fmt, scheme, "@tlsPort");
+
+    if (virXPathInt(xpathPortTLS, ctxt, &tls_port) < 0)
         tls_port = 0;
 
-    /* Create our XPATH lookup for the current display's address */
-    xpath = g_strdup_printf(xpath_fmt, scheme, "@listen");
-
-    /* Attempt to get the listening addr if set for the current
-     * graphics scheme */
-    listen_addr = virXPathString(xpath, ctxt);
-    VIR_FREE(xpath);
-
-    /* Create our XPATH lookup for the current spice type. */
-    xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@type");
+    /* Attempt to get the listening addr if set for the current graphics scheme */
+    xpathListen = g_strdup_printf(xpath_fmt, scheme, "@listen");
+    listen_addr = virXPathString(xpathListen, ctxt);
 
     /* Attempt to get the type of spice connection */
-    type_conn = virXPathString(xpath, ctxt);
-    VIR_FREE(xpath);
+    xpathType = g_strdup_printf(xpath_fmt, scheme, "listen/@type");
+    type_conn = virXPathString(xpathType, ctxt);
 
     if (STREQ_NULLABLE(type_conn, "socket")) {
-        xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@socket");
+        g_autofree char *xpathSockpath = g_strdup_printf(xpath_fmt, scheme, "listen/@socket");
 
-        sockpath = virXPathString(xpath, ctxt);
-
-        VIR_FREE(xpath);
+        sockpath = virXPathString(xpathSockpath, ctxt);
     }
 
     if (!port && !tls_port && !sockpath)
-        goto cleanup;
+        return NULL;
 
     if (!listen_addr) {
+        g_autofree char *xpathListenAddress = NULL;
         /* The subelement address - <listen address='xyz'/> -
          * *should* have been automatically backfilled into its
          * parent <graphics listen='xyz'> (which we just tried to
@@ -11735,10 +11719,9 @@ virshGetOneDisplay(vshControl *ctl,
          * subelement (which, by the way, doesn't exist on libvirt
          * < 0.9.4, so we really do need to check both places)
          */
-        xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@address");
+        xpathListenAddress = g_strdup_printf(xpath_fmt, scheme, "listen/@address");
 
-        listen_addr = virXPathString(xpath, ctxt);
-        VIR_FREE(xpath);
+        listen_addr = virXPathString(xpathListenAddress, ctxt);
     } else {
         virSocketAddr addr;
 
@@ -11759,17 +11742,13 @@ virshGetOneDisplay(vshControl *ctl,
         }
     }
 
-    /* We can query this info for all the graphics types since we'll
+    /* Attempt to get the password.
+     * We can query this info for all the graphics types since we'll
      * get nothing for the unsupported ones (just rdp for now).
      * Also the parameter '--include-password' was already taken
      * care of when getting the XML */
-
-    /* Create our XPATH lookup for the password */
-    xpath = g_strdup_printf(xpath_fmt, scheme, "@passwd");
-
-    /* Attempt to get the password */
-    passwd = virXPathString(xpath, ctxt);
-    VIR_FREE(xpath);
+    xpathPasswd = g_strdup_printf(xpath_fmt, scheme, "@passwd");
+    passwd = virXPathString(xpathPasswd, ctxt);
 
     /* Build up the full URI, starting with the scheme */
     if (sockpath)
@@ -11817,9 +11796,6 @@ virshGetOneDisplay(vshControl *ctl,
                           passwd);
         params = true;
     }
-
- cleanup:
-    VIR_FREE(xpath);
 
     return virBufferContentAndReset(&buf);
 }
