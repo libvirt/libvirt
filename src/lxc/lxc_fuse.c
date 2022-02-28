@@ -148,7 +148,7 @@ lxcProcReadMeminfo(char *hostpath,
                    off_t offset)
 {
     int res;
-    FILE *fd = NULL;
+    FILE *fp = NULL;
     g_autofree char *line = NULL;
     size_t n;
     struct virLXCMeminfo meminfo;
@@ -160,21 +160,21 @@ lxcProcReadMeminfo(char *hostpath,
         return -errno;
     }
 
-    fd = fopen(hostpath, "r");
-    if (fd == NULL) {
+    fp = fopen(hostpath, "r");
+    if (fp == NULL) {
         virReportSystemError(errno, _("Cannot open %s"), hostpath);
         res = -errno;
         goto cleanup;
     }
 
-    if (fseek(fd, offset, SEEK_SET) < 0) {
+    if (fseek(fp, offset, SEEK_SET) < 0) {
         virReportSystemError(errno, "%s", _("fseek failed"));
         res = -errno;
         goto cleanup;
     }
 
     res = -1;
-    while (getline(&line, &n, fd) > 0) {
+    while (getline(&line, &n, fp) > 0) {
         char *ptr = strchr(line, ':');
         if (!ptr)
             continue;
@@ -251,7 +251,7 @@ lxcProcReadMeminfo(char *hostpath,
     memcpy(buf, virBufferCurrentContent(new_meminfo), res);
 
  cleanup:
-    VIR_FORCE_FCLOSE(fd);
+    VIR_FORCE_FCLOSE(fp);
     return res;
 }
 
