@@ -11864,17 +11864,17 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
 
     if (!virDomainIsActive(dom)) {
         vshError(ctl, _("Domain is not running"));
-        goto cleanup;
+        return false;
     }
 
     if (vshCommandOptBool(cmd, "include-password"))
         flags |= VIR_DOMAIN_XML_SECURE;
 
     if (vshCommandOptStringReq(ctl, cmd, "type", &type) < 0)
-        goto cleanup;
+        return false;
 
     if (virshDomainGetXMLFromDom(ctl, dom, flags, &xml, &ctxt) < 0)
-        goto cleanup;
+        return false;
 
     /* Attempt to grab our display info */
     for (iter = 0; scheme[iter] != NULL; iter++) {
@@ -11903,7 +11903,6 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, _("No graphical display found"));
     }
 
- cleanup:
     return ret;
 }
 
