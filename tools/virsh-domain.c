@@ -6721,8 +6721,12 @@ virshVcpuinfoPrintAffinity(vshControl *ctl,
             return -1;
         vshPrint(ctl, _("%s (out of %d)"), str, maxcpu);
     } else {
-        for (i = 0; i < maxcpu; i++)
-            vshPrint(ctl, "%c", VIR_CPU_USED(cpumap, i) ? 'y' : '-');
+        for (i = 0; i < maxcpu; i++) {
+            if (VIR_CPU_USED(cpumap, i))
+                vshPrint(ctl, "y");
+            else
+                vshPrint(ctl, "-");
+        }
     }
     vshPrint(ctl, "\n");
 
