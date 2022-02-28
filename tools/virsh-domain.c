@@ -11668,15 +11668,14 @@ virshGetOneDisplay(vshControl *ctl,
     const char *xpath_fmt = "string(/domain/devices/graphics[@type='%s']/%s)";
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     char *xpath = NULL;
-    char *listen_addr = NULL;
+    g_autofree char *listen_addr = NULL;
     int port = 0;
     int tls_port = 0;
-    char *type_conn = NULL;
-    char *sockpath = NULL;
-    char *passwd = NULL;
+    g_autofree char *type_conn = NULL;
+    g_autofree char *sockpath = NULL;
+    g_autofree char *passwd = NULL;
     int tmp;
     bool params = false;
-    virSocketAddr addr;
 
     /* Create our XPATH lookup for the current display's port */
     VIR_FREE(xpath);
@@ -11706,7 +11705,6 @@ virshGetOneDisplay(vshControl *ctl,
 
     /* Attempt to get the listening addr if set for the current
      * graphics scheme */
-    VIR_FREE(listen_addr);
     listen_addr = virXPathString(xpath, ctxt);
     VIR_FREE(xpath);
 
@@ -11714,18 +11712,15 @@ virshGetOneDisplay(vshControl *ctl,
     xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@type");
 
     /* Attempt to get the type of spice connection */
-    VIR_FREE(type_conn);
     type_conn = virXPathString(xpath, ctxt);
     VIR_FREE(xpath);
 
     if (STREQ_NULLABLE(type_conn, "socket")) {
-        if (!sockpath) {
-            xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@socket");
+        xpath = g_strdup_printf(xpath_fmt, scheme, "listen/@socket");
 
-            sockpath = virXPathString(xpath, ctxt);
+        sockpath = virXPathString(xpath, ctxt);
 
-            VIR_FREE(xpath);
-        }
+        VIR_FREE(xpath);
     }
 
     if (!port && !tls_port && !sockpath)
@@ -11745,28 +11740,22 @@ virshGetOneDisplay(vshControl *ctl,
         listen_addr = virXPathString(xpath, ctxt);
         VIR_FREE(xpath);
     } else {
+        virSocketAddr addr;
+
         /* If listen_addr is 0.0.0.0 or [::] we should try to parse URI and set
-         * listen_addr based on current URI. */
+         * listen_addr based on current URI. If that fails we'll print
+         * 'localhost' as the address as INADDR_ANY won't help the user. */
         if (virSocketAddrParse(&addr, listen_addr, AF_UNSPEC) > 0 &&
             virSocketAddrIsWildcard(&addr)) {
 
             virConnectPtr conn = ((virshControl *)(ctl->privData))->conn;
-            char *uriStr = virConnectGetURI(conn);
-            virURI *uri = NULL;
+            g_autofree char *uriStr = virConnectGetURI(conn);
+            g_autoptr(virURI) uri = NULL;
 
-            if (uriStr) {
-                uri = virURIParse(uriStr);
-                VIR_FREE(uriStr);
-            }
+            g_clear_pointer(&listen_addr, g_free);
 
-            /* It's safe to free the listen_addr even if parsing of URI
-             * fails, if there is no listen_addr we will print "localhost". */
-            VIR_FREE(listen_addr);
-
-            if (uri) {
+            if (uriStr && (uri = virURIParse(uriStr)))
                 listen_addr = g_strdup(uri->server);
-                virURIFree(uri);
-            }
         }
     }
 
@@ -11779,7 +11768,6 @@ virshGetOneDisplay(vshControl *ctl,
     xpath = g_strdup_printf(xpath_fmt, scheme, "@passwd");
 
     /* Attempt to get the password */
-    VIR_FREE(passwd);
     passwd = virXPathString(xpath, ctxt);
     VIR_FREE(xpath);
 
@@ -11802,9 +11790,6 @@ virshGetOneDisplay(vshControl *ctl,
         virBufferAsprintf(&buf, "%s", sockpath);
     else
         virBufferAsprintf(&buf, "%s", listen_addr);
-
-    /* Free socket to prepare the pointer for the next iteration */
-    VIR_FREE(sockpath);
 
     /* Add the port */
     if (port) {
@@ -11835,10 +11820,6 @@ virshGetOneDisplay(vshControl *ctl,
 
  cleanup:
     VIR_FREE(xpath);
-    VIR_FREE(type_conn);
-    VIR_FREE(sockpath);
-    VIR_FREE(passwd);
-    VIR_FREE(listen_addr);
 
     return virBufferContentAndReset(&buf);
 }
