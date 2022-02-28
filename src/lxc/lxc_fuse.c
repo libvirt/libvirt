@@ -126,7 +126,7 @@ lxcProcHostRead(char *path,
                 size_t size,
                 off_t offset)
 {
-    int fd;
+    VIR_AUTOCLOSE fd = -1;
     int res;
 
     fd = open(path, O_RDONLY);
@@ -136,7 +136,6 @@ lxcProcHostRead(char *path,
     if ((res = pread(fd, buf, size, offset)) < 0)
         res = -errno;
 
-    VIR_FORCE_CLOSE(fd);
     return res;
 }
 
@@ -148,7 +147,7 @@ lxcProcReadMeminfo(char *hostpath,
                    off_t offset)
 {
     int res;
-    FILE *fp = NULL;
+    g_autoptr(FILE) fp = NULL;
     g_autofree char *line = NULL;
     size_t n;
     struct virLXCMeminfo meminfo;
@@ -251,7 +250,6 @@ lxcProcReadMeminfo(char *hostpath,
     memcpy(buf, virBufferCurrentContent(new_meminfo), res);
 
  cleanup:
-    VIR_FORCE_FCLOSE(fp);
     return res;
 }
 
