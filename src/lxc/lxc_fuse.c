@@ -162,14 +162,12 @@ lxcProcReadMeminfo(char *hostpath,
     fp = fopen(hostpath, "r");
     if (fp == NULL) {
         virReportSystemError(errno, _("Cannot open %s"), hostpath);
-        res = -errno;
-        goto cleanup;
+        return -errno;
     }
 
     if (fseek(fp, offset, SEEK_SET) < 0) {
         virReportSystemError(errno, "%s", _("fseek failed"));
-        res = -errno;
-        goto cleanup;
+        return -errno;
     }
 
     res = -1;
@@ -249,7 +247,6 @@ lxcProcReadMeminfo(char *hostpath,
         res = size;
     memcpy(buf, virBufferCurrentContent(new_meminfo), res);
 
- cleanup:
     return res;
 }
 
