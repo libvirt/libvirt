@@ -3929,11 +3929,13 @@ cmdUndefine(vshControl *ctl, const vshCmd *cmd)
     /* No way to emulate deletion of just snapshot metadata
      * without support for the newer flags.  Oh well.  */
     if (has_snapshots_metadata) {
-        vshError(ctl,
-                 snapshots_metadata ?
-                 _("Unable to remove metadata of %d snapshots") :
-                 _("Refusing to undefine while %d snapshots exist"),
-                 has_snapshots_metadata);
+        if (snapshots_metadata)
+            vshError(ctl, _("Unable to remove metadata of %d snapshots"),
+                     has_snapshots_metadata);
+        else
+            vshError(ctl, _("Refusing to undefine while %d snapshots exist"),
+                     has_snapshots_metadata);
+
         goto cleanup;
     }
 
@@ -8401,9 +8403,11 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
             /* Compare original XML with edited.  Has it changed at all? */
             if (STREQ(desc, desc_edited)) {
-                vshPrintExtra(ctl, "%s",
-                              title ? _("Domain title not changed\n") :
-                                      _("Domain description not changed\n"));
+                if (title)
+                    vshPrintExtra(ctl, "%s", _("Domain title not changed\n"));
+                else
+                    vshPrintExtra(ctl, "%s", _("Domain description not changed\n"));
+
                 return true;
             }
 
@@ -8412,26 +8416,32 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {
-            vshError(ctl, "%s",
-                     title ? _("Failed to set new domain title") :
-                             _("Failed to set new domain description"));
+            if (title)
+                vshError(ctl, "%s", _("Failed to set new domain title"));
+            else
+                vshError(ctl, "%s", _("Failed to set new domain description"));
+
             return false;
         }
-        vshPrintExtra(ctl, "%s",
-                      title ? _("Domain title updated successfully") :
-                              _("Domain description updated successfully"));
+
+        if (title)
+            vshPrintExtra(ctl, "%s", _("Domain title updated successfully"));
+        else
+            vshPrintExtra(ctl, "%s", _("Domain description updated successfully"));
+
     } else {
         desc = virshGetDomainDescription(ctl, dom, title, queryflags);
         if (!desc)
             return false;
 
-        if (strlen(desc) > 0)
+        if (strlen(desc) > 0) {
             vshPrint(ctl, "%s", desc);
-        else
-            vshPrintExtra(ctl,
-                          title ? _("No title for domain: %s") :
-                                  _("No description for domain: %s"),
-                          virDomainGetName(dom));
+        } else {
+            if (title)
+                vshPrintExtra(ctl, _("No title for domain: %s"), virDomainGetName(dom));
+            else
+                vshPrintExtra(ctl, _("No description for domain: %s"), virDomainGetName(dom));
+        }
     }
 
     return true;
