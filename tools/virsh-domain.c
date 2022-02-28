@@ -8341,12 +8341,15 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     bool ret = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
+    unsigned int queryflags = 0;
 
     VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
     VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
 
-    if (config)
+    if (config) {
         flags |= VIR_DOMAIN_AFFECT_CONFIG;
+        queryflags |= VIR_DOMAIN_XML_INACTIVE;
+    }
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
 
@@ -8370,8 +8373,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
     if (edit || desc) {
         if (!desc) {
-                desc = virshGetDomainDescription(ctl, dom, title,
-                                           config?VIR_DOMAIN_XML_INACTIVE:0);
+                desc = virshGetDomainDescription(ctl, dom, title, queryflags);
                 if (!desc)
                     goto cleanup;
         }
@@ -8420,8 +8422,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                       title ? _("Domain title updated successfully") :
                               _("Domain description updated successfully"));
     } else {
-        desc = virshGetDomainDescription(ctl, dom, title,
-                                       config?VIR_DOMAIN_XML_INACTIVE:0);
+        desc = virshGetDomainDescription(ctl, dom, title, queryflags);
         if (!desc)
             goto cleanup;
 
