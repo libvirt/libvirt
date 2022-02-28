@@ -11678,7 +11678,6 @@ virshGetOneDisplay(vshControl *ctl,
     g_autofree char *type_conn = NULL;
     g_autofree char *sockpath = NULL;
     g_autofree char *passwd = NULL;
-    bool params = false;
 
     /* Attempt to get the port number for the current graphics scheme */
     xpathPort = g_strdup_printf(xpath_fmt, scheme, "@port");
@@ -11781,21 +11780,19 @@ virshGetOneDisplay(vshControl *ctl,
         virBufferAsprintf(&buf, ":%d", port);
     }
 
+    /* format the parameters part of the uri */
+    virBufferAddLit(&buf, "?");
+
     /* TLS Port */
     if (tls_port) {
-        virBufferAsprintf(&buf,
-                          "?tls-port=%d",
-                          tls_port);
-        params = true;
+        virBufferAsprintf(&buf, "tls-port=%d&", tls_port);
     }
 
     if (STREQ(scheme, "spice") && passwd) {
-        virBufferAsprintf(&buf,
-                          "%spassword=%s",
-                          params ? "&" : "?",
-                          passwd);
-        params = true;
+        virBufferAsprintf(&buf, "password=%s&", passwd);
     }
+
+    virBufferTrimLen(&buf, 1);
 
     return virBufferContentAndReset(&buf);
 }
