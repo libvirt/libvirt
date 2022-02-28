@@ -7601,7 +7601,7 @@ cmdIOThreadInfo(vshControl *ctl, const vshCmd *cmd)
 
         ignore_value(pinInfo = virBitmapDataFormat(info[i]->cpumap, info[i]->cpumaplen));
 
-        if (vshTableRowAppend(table, iothreadIdStr, pinInfo ? pinInfo : "", NULL) < 0)
+        if (vshTableRowAppend(table, iothreadIdStr, NULLSTR_EMPTY(pinInfo), NULL) < 0)
             goto cleanup;
     }
 
@@ -14211,7 +14211,7 @@ cmdDomFSInfo(vshControl *ctl, const vshCmd *cmd)
                                   info[i]->mountpoint,
                                   info[i]->name,
                                   info[i]->fstype,
-                                  targets ? targets : "",
+                                  NULLSTR_EMPTY(targets),
                                   NULL) < 0)
                 goto cleanup;
         }
