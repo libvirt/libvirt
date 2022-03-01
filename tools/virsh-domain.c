@@ -8336,7 +8336,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     g_autofree char *desc = NULL;
     const vshCmdOpt *opt = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    bool ret = false;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     unsigned int queryflags = 0;
 
@@ -8354,7 +8353,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         return false;
 
     if ((state = virshDomainState(ctl, dom, NULL)) < 0)
-        goto cleanup;
+        return false;
 
     if (title)
         type = VIR_DOMAIN_METADATA_TITLE;
@@ -8372,7 +8371,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         if (!desc) {
                 desc = virshGetDomainDescription(ctl, dom, title, queryflags);
                 if (!desc)
-                    goto cleanup;
+                    return false;
         }
 
         if (edit) {
@@ -8382,15 +8381,15 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
             /* Create and open the temporary file. */
             if (!(tmp = vshEditWriteToTempFile(ctl, desc)))
-                goto cleanup;
+                return false;
 
             /* Start the editor. */
             if (vshEditFile(ctl, tmp) == -1)
-                goto cleanup;
+                return false;
 
             /* Read back the edited file. */
             if (!(desc_edited = vshEditReadBackFile(ctl, tmp)))
-                goto cleanup;
+                return false;
 
             /* strip a possible newline at the end of file; some
              * editors enforce a newline, this makes editing the title
@@ -8405,8 +8404,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                 vshPrintExtra(ctl, "%s",
                               title ? _("Domain title not changed\n") :
                                       _("Domain description not changed\n"));
-                ret = true;
-                goto cleanup;
+                return true;
             }
 
             VIR_FREE(desc);
@@ -8417,7 +8415,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             vshError(ctl, "%s",
                      title ? _("Failed to set new domain title") :
                              _("Failed to set new domain description"));
-            goto cleanup;
+            return false;
         }
         vshPrintExtra(ctl, "%s",
                       title ? _("Domain title updated successfully") :
@@ -8425,7 +8423,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     } else {
         desc = virshGetDomainDescription(ctl, dom, title, queryflags);
         if (!desc)
-            goto cleanup;
+            return false;
 
         if (strlen(desc) > 0)
             vshPrint(ctl, "%s", desc);
@@ -8436,9 +8434,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                           virDomainGetName(dom));
     }
 
-    ret = true;
- cleanup:
-    return ret;
+    return true;
 }
 
 
