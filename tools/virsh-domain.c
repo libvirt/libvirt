@@ -9870,13 +9870,18 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
                              const vshCmd *cmd)
 {
     g_autofree char *fullcmd = cmdQemuMonitorCommandConcatCmd(ctl, cmd, NULL);
-    g_autoptr(virJSONValue) fullcmdjson = virJSONValueFromString(fullcmd);
+    g_autoptr(virJSONValue) fullcmdjson = NULL;
     g_autofree char *fullargs = NULL;
     g_autoptr(virJSONValue) fullargsjson = NULL;
     const vshCmdOpt *opt = NULL;
     const char *commandname = NULL;
     g_autoptr(virJSONValue) command = NULL;
     g_autoptr(virJSONValue) arguments = NULL;
+
+    if (!(fullcmdjson = virJSONValueFromString(fullcmd))) {
+        /* Reset the error before adding wrapping. */
+        vshResetLibvirtError();
+    }
 
     /* if we've got a JSON object, pass it through */
     if (virJSONValueIsObject(fullcmdjson))
@@ -9889,8 +9894,11 @@ cmdQemuMonitorCommandQMPWrap(vshControl *ctl,
         commandname = opt->data;
 
     /* now we process arguments similarly to how we've dealt with the full command */
-    if ((fullargs = cmdQemuMonitorCommandConcatCmd(ctl, cmd, opt)))
-        fullargsjson = virJSONValueFromString(fullargs);
+    if ((fullargs = cmdQemuMonitorCommandConcatCmd(ctl, cmd, opt)) &&
+        !(fullargsjson = virJSONValueFromString(fullargs))) {
+        /* Reset the error before adding wrapping. */
+        vshResetLibvirtError();
+    }
 
     /* for empty args or a valid JSON object we just use that */
     if (!fullargs || virJSONValueIsObject(fullargsjson)) {
