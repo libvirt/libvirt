@@ -4523,7 +4523,8 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
               actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
               actualType == VIR_DOMAIN_NET_TYPE_DIRECT ||
               actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-              actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER)) {
+              actualType == VIR_DOMAIN_NET_TYPE_VHOSTUSER ||
+              actualType == VIR_DOMAIN_NET_TYPE_VDPA)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("interface %s - multiqueue is not supported for network interfaces of type %s"),
                            macstr, virDomainNetTypeToString(actualType));

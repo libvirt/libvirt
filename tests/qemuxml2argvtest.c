@@ -1609,6 +1609,7 @@ mymain(void)
     DO_TEST_FAILURE("net-hostdev-fail",
                     QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST_CAPS_LATEST("net-vdpa");
+    DO_TEST_CAPS_LATEST("net-vdpa-multiqueue");
 
     DO_TEST("hostdev-pci-multifunction",
             QEMU_CAPS_KVM,
