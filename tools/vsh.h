@@ -341,6 +341,9 @@ void vshSaveLibvirtError(void);
 void vshSaveLibvirtHelperError(void);
 
 /* file handling */
+void vshEditUnlinkTempfile(char *file);
+typedef char vshTempFile;
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(vshTempFile, vshEditUnlinkTempfile);
 char *vshEditWriteToTempFile(vshControl *ctl, const char *doc);
 int vshEditFile(vshControl *ctl, const char *filename);
 char *vshEditReadBackFile(vshControl *ctl, const char *filename);

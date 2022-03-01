@@ -2378,34 +2378,47 @@ vshAskReedit(vshControl *ctl,
 #endif /* WIN32 */
 
 
+void
+vshEditUnlinkTempfile(char *file)
+{
+    if (!file)
+        return;
+
+    ignore_value(unlink(file));
+    g_free(file);
+}
+
+
 /* Common code for the edit / net-edit / pool-edit functions which follow. */
 char *
 vshEditWriteToTempFile(vshControl *ctl, const char *doc)
 {
-    g_autofree char *ret = NULL;
+    g_autofree char *filename = NULL;
+    g_autoptr(vshTempFile) ret = NULL;
     const char *tmpdir;
     VIR_AUTOCLOSE fd = -1;
 
     tmpdir = getenv("TMPDIR");
-    if (!tmpdir) tmpdir = "/tmp";
-    ret = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
-    fd = g_mkstemp_full(ret, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
+    if (!tmpdir)
+        tmpdir = "/tmp";
+    filename = g_strdup_printf("%s/virshXXXXXX.xml", tmpdir);
+    fd = g_mkstemp_full(filename, O_RDWR | O_CLOEXEC, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         vshError(ctl, _("g_mkstemp_full: failed to create temporary file: %s"),
                  g_strerror(errno));
         return NULL;
     }
 
+    ret = g_steal_pointer(&filename);
+
     if (safewrite(fd, doc, strlen(doc)) == -1) {
         vshError(ctl, _("write: %s: failed to write to temporary file: %s"),
                  ret, g_strerror(errno));
-        unlink(ret);
         return NULL;
     }
     if (VIR_CLOSE(fd) < 0) {
         vshError(ctl, _("close: %s: failed to write or close temporary file: %s"),
                  ret, g_strerror(errno));
-        unlink(ret);
         return NULL;
     }
 
