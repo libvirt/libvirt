@@ -8335,7 +8335,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
     int type;
     char *desc = NULL;
     char *desc_edited = NULL;
-    char *tmp = NULL;
     char *tmpstr;
     const vshCmdOpt *opt = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -8379,6 +8378,8 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
         }
 
         if (edit) {
+            g_autoptr(vshTempFile) tmp = NULL;
+
             /* Create and open the temporary file. */
             if (!(tmp = vshEditWriteToTempFile(ctl, desc)))
                 goto cleanup;
@@ -8439,10 +8440,6 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
  cleanup:
     VIR_FREE(desc_edited);
     VIR_FREE(desc);
-    if (tmp) {
-        unlink(tmp);
-        VIR_FREE(tmp);
-    }
     return ret;
 }
 
