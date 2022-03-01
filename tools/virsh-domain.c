@@ -9723,6 +9723,7 @@ static const vshCmdOptDef opts_qemu_monitor_command[] = {
     },
     {.name = "pass-fds",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("pass file descriptors N,M,... along with the command")
     },
