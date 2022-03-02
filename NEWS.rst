@@ -77,7 +77,7 @@ v8.1.0 (2022-03-01)
   * Remove unix sockets from filesystem when disabling a '.socket' systemd unit
 
     The presence of the socket files is used by our remote driver to determine
-    which service to access. Since neiter systemd nor the daemons clean up the
+    which service to access. Since neither systemd nor the daemons clean up the
     socket file clients were running into problems when a modular deployment was
     switched to monolithic ``libvirtd``.
 
