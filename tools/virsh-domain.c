@@ -8335,7 +8335,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
     int state;
     int type;
-    g_autofree char *desc = NULL;
+    g_autofree char *descArg = NULL;
     const vshCmdOpt *opt = NULL;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
@@ -8367,14 +8367,17 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
 
     virBufferTrim(&buf, " ");
 
-    desc = virBufferContentAndReset(&buf);
+    descArg = virBufferContentAndReset(&buf);
 
-    if (edit || desc) {
-        if (!desc) {
-                desc = virshGetDomainDescription(ctl, dom, title, queryflags);
-                if (!desc)
-                    return false;
-        }
+    if (edit || descArg) {
+        g_autofree char *descDom = NULL;
+        g_autofree char *descNew = NULL;
+
+        if (!(descDom = virshGetDomainDescription(ctl, dom, title, queryflags)))
+            return false;
+
+        if (!descArg)
+            descArg = g_strdup(descDom);
 
         if (edit) {
             g_autoptr(vshTempFile) tmp = NULL;
@@ -8382,7 +8385,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             char *tmpstr;
 
             /* Create and open the temporary file. */
-            if (!(tmp = vshEditWriteToTempFile(ctl, desc)))
+            if (!(tmp = vshEditWriteToTempFile(ctl, descArg)))
                 return false;
 
             /* Start the editor. */
@@ -8402,7 +8405,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                 *tmpstr = '\0';
 
             /* Compare original XML with edited.  Has it changed at all? */
-            if (STREQ(desc, desc_edited)) {
+            if (STREQ(descDom, desc_edited)) {
                 if (title)
                     vshPrintExtra(ctl, "%s", _("Domain title not changed\n"));
                 else
@@ -8411,11 +8414,12 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
                 return true;
             }
 
-            VIR_FREE(desc);
-            desc = g_steal_pointer(&desc_edited);
+            descNew = g_steal_pointer(&desc_edited);
+        } else {
+            descNew = g_steal_pointer(&descArg);
         }
 
-        if (virDomainSetMetadata(dom, type, desc, NULL, NULL, flags) < 0) {
+        if (virDomainSetMetadata(dom, type, descNew, NULL, NULL, flags) < 0) {
             if (title)
                 vshError(ctl, "%s", _("Failed to set new domain title"));
             else
@@ -8430,7 +8434,7 @@ cmdDesc(vshControl *ctl, const vshCmd *cmd)
             vshPrintExtra(ctl, "%s", _("Domain description updated successfully"));
 
     } else {
-        desc = virshGetDomainDescription(ctl, dom, title, queryflags);
+        g_autofree char *desc = virshGetDomainDescription(ctl, dom, title, queryflags);
         if (!desc)
             return false;
 
