@@ -352,7 +352,8 @@ static void init_sysfs(void)
     if (fakerootdir && STREQ(fakerootdir, newfakerootdir))
         return;
 
-    fakerootdir = newfakerootdir;
+    VIR_FREE(fakerootdir);
+    fakerootdir = g_strdup(newfakerootdir);
 
     mock = getenv("VIR_CGROUP_MOCK_MODE");
     if (mock) {
