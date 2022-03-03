@@ -1549,7 +1549,7 @@ sc_spacing-check:
 	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
 
 sc_mock-noinline:
-	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | $(RUNUTF8) xargs \
+	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | $(RUNUTF8) \
 	$(PYTHON) $(top_srcdir)/scripts/mock-noinline.py
 
 sc_header-ifdef:
