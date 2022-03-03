@@ -5977,7 +5977,7 @@ remoteDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
 
  done:
     if (rpc_outfiles) {
-        for (i = 0; rpc_noutfiles < i; i++) {
+        for (i = 0; i < rpc_noutfiles; i++) {
             VIR_FORCE_CLOSE(rpc_outfiles[i]);
         }
     }
