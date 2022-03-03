@@ -384,7 +384,7 @@ learnIPAddressThread(void *arg)
     struct bpf_program fp;
     struct pcap_pkthdr header;
     const u_char *packet;
-    struct ether_header *ether_hdr;
+    struct ether_header ether_hdr;
     struct ether_vlan_header *vlan_hdr;
     virNWFilterIPAddrLearnReq *req = arg;
     uint32_t vmaddr = 0, bcastaddr = 0;
@@ -506,13 +506,14 @@ learnIPAddressThread(void *arg)
         }
 
         if (header.len >= sizeof(struct ether_header)) {
-            ether_hdr = (struct ether_header*)packet;
+            /* Avoid alignment issues */
+            memcpy(&ether_hdr, packet, sizeof(struct ether_header));
 
-            switch (ntohs(ether_hdr->ether_type)) {
+            switch (ntohs(ether_hdr.ether_type)) {
 
             case ETHERTYPE_IP:
                 ethHdrSize = sizeof(struct ether_header);
-                etherType = ntohs(ether_hdr->ether_type);
+                etherType = ntohs(ether_hdr.ether_type);
                 break;
 
             case ETHERTYPE_VLAN:
@@ -528,7 +529,7 @@ learnIPAddressThread(void *arg)
                 continue;
             }
 
-            if (virMacAddrCmpRaw(&req->binding->mac, ether_hdr->ether_shost) == 0) {
+            if (virMacAddrCmpRaw(&req->binding->mac, ether_hdr.ether_shost) == 0) {
                 /* packets from the VM */
 
                 if (etherType == ETHERTYPE_IP &&
@@ -568,9 +569,9 @@ learnIPAddressThread(void *arg)
                     }
                 }
             } else if (virMacAddrCmpRaw(&req->binding->mac,
-                                        ether_hdr->ether_dhost) == 0 ||
+                                        ether_hdr.ether_dhost) == 0 ||
                        /* allow Broadcast replies from DHCP server */
-                       virMacAddrIsBroadcastRaw(ether_hdr->ether_dhost)) {
+                       virMacAddrIsBroadcastRaw(ether_hdr.ether_dhost)) {
                 /* packets to the VM */
                 if (etherType == ETHERTYPE_IP &&
                     (header.len >= ethHdrSize +
