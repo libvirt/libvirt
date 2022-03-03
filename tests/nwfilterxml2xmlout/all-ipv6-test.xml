@@ -7,6 +7,6 @@
     <all-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='a:b:c::' srcipmask='128' dscp='33'/>
   </rule>
   <rule action='accept' direction='in' priority='500'>
-    <all-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='::10.1.2.3' dscp='33'/>
+    <all-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='::ffff:10.1.2.3' dscp='33'/>
   </rule>
 </filter>

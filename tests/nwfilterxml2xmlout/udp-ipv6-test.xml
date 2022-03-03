@@ -7,6 +7,6 @@
     <udp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipmask='128' dscp='33' srcportstart='20' srcportend='21' dstportstart='100' dstportend='1111'/>
   </rule>
   <rule action='accept' direction='in' priority='500'>
-    <udp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='::10.1.2.3' dscp='63' srcportstart='255' srcportend='256' dstportstart='65535'/>
+    <udp-ipv6 srcmacaddr='01:02:03:04:05:06' srcipaddr='::ffff:10.1.2.3' dscp='63' srcportstart='255' srcportend='256' dstportstart='65535'/>
   </rule>
 </filter>

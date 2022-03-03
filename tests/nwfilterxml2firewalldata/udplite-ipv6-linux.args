@@ -71,7 +71,7 @@ ip6tables \
 -w \
 -A FJ-vnet0 \
 -p udplite \
---destination ::10.1.2.3/128 \
+--destination ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
 -m state \
@@ -83,7 +83,7 @@ ip6tables \
 -p udplite \
 -m mac \
 --mac-source 01:02:03:04:05:06 \
---source ::10.1.2.3/128 \
+--source ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
 -m state \
@@ -93,7 +93,7 @@ ip6tables \
 -w \
 -A HJ-vnet0 \
 -p udplite \
---destination ::10.1.2.3/128 \
+--destination ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
 -m state \

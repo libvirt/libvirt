@@ -13,7 +13,7 @@
   </rule>
   <rule action='accept' direction='in'>
      <icmpv6 srcmacaddr='1:2:3:4:5:6'
-             srcipaddr='::10.1.2.3' srcipmask='129'
+             srcipaddr='::ffff:10.1.2.3' srcipmask='129'
              dscp='33' type='256' code='256'/>
   </rule>
 </filter>

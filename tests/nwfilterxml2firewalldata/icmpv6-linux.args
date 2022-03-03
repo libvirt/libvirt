@@ -45,7 +45,7 @@ ip6tables \
 -p icmpv6 \
 -m mac \
 --mac-source 01:02:03:04:05:06 \
---source ::10.1.2.3/128 \
+--source ::ffff:10.1.2.3/128 \
 -m dscp \
 --dscp 33 \
 --icmpv6-type 255/255 \

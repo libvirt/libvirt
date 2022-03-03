@@ -19,8 +19,8 @@
   <rule action='accept' direction='out'>
      <ipv6 srcmacaddr='1:2:3:4:5:6' srcmacmask='ff:ff:ff:ff:ff:fe'
            dstmacaddr='aa:bb:cc:dd:ee:ff' dstmacmask='ff:ff:ff:ff:ff:80'
-           srcipaddr='::10.1.2.3' srcipmask='22'
-           dstipaddr='::10.1.2.3'
+           srcipaddr='::ffff:10.1.2.3' srcipmask='22'
+           dstipaddr='::ffff:10.1.2.3'
            dstipmask='ffff:ffff:ffff:ffff:ffff:ffff:ffff:8000'
            protocol='tcp'
            srcportstart='0x111' srcportend='400'
