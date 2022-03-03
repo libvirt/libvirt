@@ -4693,7 +4693,7 @@ qemuDispatchDomainMonitorCommandWithFiles(virNetServer *server G_GNUC_UNUSED,
                                           qemu_domain_monitor_command_with_files_ret *ret)
 {
     virDomainPtr dom = NULL;
-    int *infiles = NULL;
+    g_autofree int *infiles = NULL;
     unsigned int ninfiles = 0;
     int *outfiles = NULL;
     unsigned int noutfiles = 0;
@@ -4736,6 +4736,9 @@ qemuDispatchDomainMonitorCommandWithFiles(virNetServer *server G_GNUC_UNUSED,
         rv = 0;
 
  cleanup:
+    for (i = 0; i < ninfiles; i++)
+        VIR_FORCE_CLOSE(infiles[i]);
+
     for (i = 0; i < noutfiles; i++)
         VIR_FORCE_CLOSE(outfiles[i]);
 
