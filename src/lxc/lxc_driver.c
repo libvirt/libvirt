@@ -32,7 +32,7 @@
 #include <sys/stat.h>
 #include <poll.h>
 #include <unistd.h>
-#include <wait.h>
+#include <sys/wait.h>
 
 #include "virerror.h"
 #include "virlog.h"
