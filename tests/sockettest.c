@@ -371,12 +371,14 @@ mymain(void)
     DO_TEST_PARSE_AND_CHECK_FORMAT("127.2", "127.2.0.0", AF_INET, false);
     DO_TEST_PARSE_AND_CHECK_FORMAT("1.2.3", "1.2.0.3", AF_INET, true);
     DO_TEST_PARSE_AND_CHECK_FORMAT("1.2.3", "1.2.3.0", AF_INET, false);
+    DO_TEST_PARSE_AND_CHECK_FORMAT("::ffff:a01:203", "::ffff:10.1.2.3", AF_INET6, true);
 
     DO_TEST_PARSE_AND_FORMAT("::1", AF_UNSPEC, true);
     DO_TEST_PARSE_AND_FORMAT("::1", AF_INET, false);
     DO_TEST_PARSE_AND_FORMAT("::1", AF_INET6, true);
     DO_TEST_PARSE_AND_FORMAT("::1", AF_UNIX, false);
     DO_TEST_PARSE_AND_FORMAT("::fffe:0:0", AF_UNSPEC, true);
+    DO_TEST_PARSE_AND_FORMAT("::ffff:10.1.2.3", AF_UNSPEC, true);
 
     /* tests that specify a network that should contain the range */
     DO_TEST_RANGE("192.168.122.1", "192.168.122.1", "192.168.122.1", 24, 1, true);
