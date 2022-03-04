@@ -66,7 +66,6 @@ docs_html_in_files = [
   'remote',
   'securityprocess',
   'storage',
-  'strategy',
   'support',
   'testapi',
   'testsuites',
@@ -110,6 +109,7 @@ docs_rst_files = [
   'pci-addresses',
   'platforms',
   'programming-languages',
+  'strategy',
   'styleguide',
   'submitting-patches',
 ]
