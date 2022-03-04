@@ -274,7 +274,6 @@ storageStateInitialize(bool privileged,
         VIR_FREE(driver);
         return VIR_DRV_STATE_INIT_ERROR;
     }
-    storageDriverLock();
 
     if (!(driver->pools = virStoragePoolObjListNew()))
         goto error;
@@ -330,12 +329,9 @@ storageStateInitialize(bool privileged,
     if (!(driver->caps = virStorageBackendGetCapabilities()))
         goto error;
 
-    storageDriverUnlock();
-
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
-    storageDriverUnlock();
     storageStateCleanup();
     return VIR_DRV_STATE_INIT_ERROR;
 }
@@ -376,8 +372,6 @@ storageStateCleanup(void)
     if (!driver)
         return -1;
 
-    storageDriverLock();
-
     virObjectUnref(driver->caps);
     virObjectUnref(driver->storageEventState);
 
@@ -391,7 +385,6 @@ storageStateCleanup(void)
     VIR_FREE(driver->configDir);
     VIR_FREE(driver->autostartDir);
     VIR_FREE(driver->stateDir);
-    storageDriverUnlock();
     virMutexDestroy(&driver->lock);
     VIR_FREE(driver);
 
