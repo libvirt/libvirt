@@ -1400,8 +1400,6 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
                                _("guest unexpectedly quit"));
                 goto cleanup;
             }
-
-            resume = true;
         }
     }
 
