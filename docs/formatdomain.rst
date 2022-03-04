@@ -2620,13 +2620,14 @@ paravirtualized driver is specified via the ``disk`` element.
       Indicates the default behavior of the disk during disk snapshots:
       "``internal``" requires a file format such as qcow2 that can store both
       the snapshot and the data changes since the snapshot; "``external``" will
-      separate the snapshot from the live data; and "``no``" means the disk will
-      not participate in snapshots. Read-only disks default to "``no``", while
-      the default for other disks depends on the hypervisor's capabilities. Some
-      hypervisors allow a per-snapshot choice as well, during `domain snapshot
-      creation <formatsnapshot.html>`__. Not all snapshot modes are supported;
-      for example, enabling snapshots with a transient disk generally does not
-      make sense. :since:`Since 0.9.5`
+      separate the snapshot from the live data; "``no``" means the disk will
+      not participate in snapshots; and ``manual`` allows snapshotting done via
+      an unmanaged storage provider. Read-only disks default to "``no``", while
+      the default for other disks depends on the hypervisor's capabilities.
+      Some hypervisors allow a per-snapshot choice as well, during `domain
+      snapshot creation <formatsnapshot.html>`__. Not all snapshot modes are
+      supported; for example, enabling snapshots with a transient disk
+      generally does not make sense. :since:`Since 0.9.5`
 
 ``source``
    Representation of the disk ``source`` depends on the disk ``type`` attribute

@@ -8710,6 +8710,23 @@ testDomainSnapshotAlignDisks(virDomainObj *vm,
                              unsigned int flags)
 {
     virDomainSnapshotLocation align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+    size_t i;
+
+    for (i = 0; i < def->ndisks; i++) {
+        switch (def->disks[i].snapshot) {
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_LAST:
+            break;
+
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL:
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("'manual' snapshot mode is not supported by the test driver"));
+            return -1;
+        }
+    }
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY) {
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;

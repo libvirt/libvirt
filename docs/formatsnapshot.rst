@@ -124,6 +124,15 @@ The top-level ``domainsnapshot`` element may contain the following elements:
       corresponding domain disk, while others like qemu allow this field to
       override the domain default.
 
+      :since:`Since 8.2.0` the ``snapshot`` attribute supports the ``manual``
+      value which instructs the hypervisor to create the snapshot and keep a
+      synchronized state by pausing the VM which allows to snapshot disk
+      storage from outside of the hypervisor if the storage provider supports
+      it.  The caller is responsible for resuming a VM paused by requesting a
+      ``manual`` snapshot. When reverting such snapshot, the expectation is that
+      the storage is configured in a way where the hypervisor will see the
+      correct image state.
+
       :since:`Since 1.2.2` the ``disk`` element supports an optional attribute
       ``type`` if the ``snapshot`` attribute is set to ``external``. This
       attribute specifies the snapshot target storage type and allows to

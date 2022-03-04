@@ -312,6 +312,12 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                                   &def->memory,
                                   VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) < 0)
             return NULL;
+
+        if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'manual' memory snapshot mode not supported"));
+            return NULL;
+        }
     }
 
     if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {

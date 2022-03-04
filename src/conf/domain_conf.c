@@ -1408,6 +1408,7 @@ VIR_ENUM_IMPL(virDomainSnapshotLocation,
               "no",
               "internal",
               "external",
+              "manual",
 );
 
 /* Internal mapping: subset of block job types that can be present in

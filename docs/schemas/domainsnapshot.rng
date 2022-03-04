@@ -200,6 +200,9 @@
             <ref name="diskSourceNetwork"/>
           </choice>
         </group>
+        <attribute name="snapshot">
+          <value>manual</value>
+        </attribute>
       </choice>
     </element>
   </define>

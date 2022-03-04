@@ -757,6 +757,11 @@ qemuSnapshotPrepare(virDomainObj *vm,
             external++;
             break;
 
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL:
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("'manual' disk snapshot mode not yet implemented"));
+            return -1;
+
         case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
             /* Remember seeing a disk that has snapshot disabled */
             if (!virStorageSourceIsEmpty(dom_disk->src) &&
