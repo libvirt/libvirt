@@ -458,6 +458,9 @@ qemuSnapshotPrepareDiskExternalActive(virDomainObj *vm,
 {
     int actualType = virStorageSourceGetActualType(snapdisk->src);
 
+    if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL)
+        return 0;
+
     if (domdisk->device == VIR_DOMAIN_DISK_DEVICE_LUN) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("external active snapshots are not supported on scsi "
@@ -677,6 +680,7 @@ qemuSnapshotPrepareDiskInternal(virDomainDiskDef *disk,
 static int
 qemuSnapshotPrepare(virDomainObj *vm,
                     virDomainSnapshotDef *def,
+                    bool *has_manual,
                     unsigned int *flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -758,9 +762,9 @@ qemuSnapshotPrepare(virDomainObj *vm,
             break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_MANUAL:
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("'manual' disk snapshot mode not yet implemented"));
-            return -1;
+            *has_manual = true;
+            forbid_internal = true;
+            break;
 
         case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
             /* Remember seeing a disk that has snapshot disabled */
@@ -1341,6 +1345,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virDomainMomentObj *snap,
                                  virQEMUDriverConfig *cfg,
+                                 bool has_manual,
                                  unsigned int flags)
 {
     virObjectEvent *event;
@@ -1391,11 +1396,14 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     } else if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
         /* For full system external snapshots (those with memory), the guest
          * must pause (either by libvirt up front, or by qemu after
-         * _LIVE converges). */
-        if (memory)
+         * _LIVE converges). We don't want to unpause it though if user has
+         * elected to manually snapshot some disks */
+        if (memory && !has_manual)
             resume = true;
 
-        if (memory && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)) {
+        /* we need to pause the VM even when we aren't taking a memory snapshot
+         * when the user wants to manually snapshot some disks */
+        if (((memory || has_manual) && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)))  {
             if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SNAPSHOT,
                                     QEMU_ASYNC_JOB_SNAPSHOT) < 0)
                 goto cleanup;
@@ -1765,11 +1773,12 @@ qemuSnapshotCreate(virDomainObj *vm,
     virDomainMomentObj *snap = NULL;
     virDomainMomentObj *current = NULL;
     virDomainSnapshotPtr ret = NULL;
+    bool has_manual = false; /* user wants to manually snapshot some disks */
 
     if (qemuSnapshotCreateAlignDisks(vm, snapdef, driver, flags) < 0)
         return NULL;
 
-    if (qemuSnapshotPrepare(vm, snapdef, &flags) < 0)
+    if (qemuSnapshotPrepare(vm, snapdef, &has_manual, &flags) < 0)
         return NULL;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA) {
@@ -1790,7 +1799,7 @@ qemuSnapshotCreate(virDomainObj *vm,
         if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY ||
             virDomainSnapshotObjGetDef(snap)->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             /* external full system or disk snapshot */
-            if (qemuSnapshotCreateActiveExternal(driver, vm, snap, cfg, flags) < 0)
+            if (qemuSnapshotCreateActiveExternal(driver, vm, snap, cfg, has_manual, flags) < 0)
                 goto error;
         } else {
             /* internal full system */
