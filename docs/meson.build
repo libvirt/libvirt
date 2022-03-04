@@ -76,7 +76,6 @@ docs_html_in_files = [
   'testtck',
   'tlscerts',
   'uri',
-  'virshcmdref',
   'windows',
 ]
 
