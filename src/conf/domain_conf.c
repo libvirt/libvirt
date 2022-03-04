@@ -23568,6 +23568,8 @@ virDomainDiskDefFormat(virBuffer *buf,
     const char *device = virDomainDiskDeviceTypeToString(def->device);
     const char *bus = virDomainDiskBusTypeToString(def->bus);
     const char *sgio = virDomainDeviceSGIOTypeToString(def->sgio);
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
 
     if (!type || !def->src->type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -23590,39 +23592,35 @@ virDomainDiskDefFormat(virBuffer *buf,
         return -1;
     }
 
-    virBufferAsprintf(buf,
-                      "<disk type='%s' device='%s'",
-                      type, device);
+    virBufferAsprintf(&attrBuf, " type='%s' device='%s'", type, device);
 
     if (def->model) {
-        virBufferAsprintf(buf, " model='%s'",
+        virBufferAsprintf(&attrBuf, " model='%s'",
                           virDomainDiskModelTypeToString(def->model));
     }
 
     if (def->rawio) {
-        virBufferAsprintf(buf, " rawio='%s'",
+        virBufferAsprintf(&attrBuf, " rawio='%s'",
                           virTristateBoolTypeToString(def->rawio));
     }
 
     if (def->sgio)
-        virBufferAsprintf(buf, " sgio='%s'", sgio);
+        virBufferAsprintf(&attrBuf, " sgio='%s'", sgio);
 
     if (def->snapshot &&
         !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
           def->src->readonly))
-        virBufferAsprintf(buf, " snapshot='%s'",
+        virBufferAsprintf(&attrBuf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->snapshot));
-    virBufferAddLit(buf, ">\n");
-    virBufferAdjustIndent(buf, 2);
 
-    virDomainDiskDefFormatDriver(buf, def);
+    virDomainDiskDefFormatDriver(&childBuf, def);
 
     /* Format as child of <disk> if defined there; otherwise,
      * if defined as child of <source>, then format later */
     if (def->src->auth && def->diskElementAuth)
-        virStorageAuthDefFormat(buf, def->src->auth);
+        virStorageAuthDefFormat(&childBuf, def->src->auth);
 
-    if (virDomainDiskSourceFormat(buf, def->src, "source", def->startupPolicy,
+    if (virDomainDiskSourceFormat(&childBuf, def->src, "source", def->startupPolicy,
                                   true, flags,
                                   def->diskElementAuth, def->diskElementEnc,
                                   xmlopt) < 0)
@@ -23630,75 +23628,74 @@ virDomainDiskDefFormat(virBuffer *buf,
 
     /* Don't format backingStore to inactive XMLs until the code for
      * persistent storage of backing chains is ready. */
-    if (virDomainDiskBackingStoreFormat(buf, def->src, xmlopt, flags) < 0)
+    if (virDomainDiskBackingStoreFormat(&childBuf, def->src, xmlopt, flags) < 0)
         return -1;
 
-    virBufferEscapeString(buf, "<backenddomain name='%s'/>\n", def->domain_name);
+    virBufferEscapeString(&childBuf, "<backenddomain name='%s'/>\n", def->domain_name);
 
-    virDomainDiskGeometryDefFormat(buf, def);
-    virDomainDiskBlockIoDefFormat(buf, def);
+    virDomainDiskGeometryDefFormat(&childBuf, def);
+    virDomainDiskBlockIoDefFormat(&childBuf, def);
 
-    if (virDomainDiskDefFormatMirror(buf, def, flags, xmlopt) < 0)
+    if (virDomainDiskDefFormatMirror(&childBuf, def, flags, xmlopt) < 0)
         return -1;
 
-    virBufferAsprintf(buf, "<target dev='%s' bus='%s'",
+    virBufferAsprintf(&childBuf, "<target dev='%s' bus='%s'",
                       def->dst, bus);
     if ((def->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
          def->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
         def->tray_status != VIR_DOMAIN_DISK_TRAY_CLOSED)
-        virBufferAsprintf(buf, " tray='%s'",
+        virBufferAsprintf(&childBuf, " tray='%s'",
                           virDomainDiskTrayTypeToString(def->tray_status));
     if (def->bus == VIR_DOMAIN_DISK_BUS_USB &&
         def->removable != VIR_TRISTATE_SWITCH_ABSENT) {
-        virBufferAsprintf(buf, " removable='%s'",
+        virBufferAsprintf(&childBuf, " removable='%s'",
                           virTristateSwitchTypeToString(def->removable));
     }
     if (def->rotation_rate)
-        virBufferAsprintf(buf, " rotation_rate='%u'", def->rotation_rate);
-    virBufferAddLit(buf, "/>\n");
+        virBufferAsprintf(&childBuf, " rotation_rate='%u'", def->rotation_rate);
+    virBufferAddLit(&childBuf, "/>\n");
 
-    virDomainDiskDefFormatIotune(buf, def);
+    virDomainDiskDefFormatIotune(&childBuf, def);
 
     if (def->src->readonly)
-        virBufferAddLit(buf, "<readonly/>\n");
+        virBufferAddLit(&childBuf, "<readonly/>\n");
     if (def->src->shared)
-        virBufferAddLit(buf, "<shareable/>\n");
+        virBufferAddLit(&childBuf, "<shareable/>\n");
     if (def->transient) {
-        virBufferAddLit(buf, "<transient");
+        virBufferAddLit(&childBuf, "<transient");
         if (def->transientShareBacking == VIR_TRISTATE_BOOL_YES)
-            virBufferAddLit(buf, " shareBacking='yes'");
-        virBufferAddLit(buf, "/>\n");
+            virBufferAddLit(&childBuf, " shareBacking='yes'");
+        virBufferAddLit(&childBuf, "/>\n");
     }
-    virBufferEscapeString(buf, "<serial>%s</serial>\n", def->serial);
-    virBufferEscapeString(buf, "<wwn>%s</wwn>\n", def->wwn);
-    virBufferEscapeString(buf, "<vendor>%s</vendor>\n", def->vendor);
-    virBufferEscapeString(buf, "<product>%s</product>\n", def->product);
+    virBufferEscapeString(&childBuf, "<serial>%s</serial>\n", def->serial);
+    virBufferEscapeString(&childBuf, "<wwn>%s</wwn>\n", def->wwn);
+    virBufferEscapeString(&childBuf, "<vendor>%s</vendor>\n", def->vendor);
+    virBufferEscapeString(&childBuf, "<product>%s</product>\n", def->product);
 
     /* If originally found as a child of <disk>, then format thusly;
      * otherwise, will be formatted as child of <source> */
     if (def->src->encryption && def->diskElementEnc &&
-        virStorageEncryptionFormat(buf, def->src->encryption) < 0)
+        virStorageEncryptionFormat(&childBuf, def->src->encryption) < 0)
         return -1;
-    virDomainDeviceInfoFormat(buf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
+    virDomainDeviceInfoFormat(&childBuf, &def->info, flags | VIR_DOMAIN_DEF_FORMAT_ALLOW_BOOT);
 
-    if (virDomainDiskDefFormatPrivateData(buf, def, flags, xmlopt) < 0)
+    if (virDomainDiskDefFormatPrivateData(&childBuf, def, flags, xmlopt) < 0)
         return -1;
 
     /* format diskElementAuth and diskElementEnc into status XML to preserve
      * formatting */
     if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS) {
-        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) secretPlacementAttrBuf = VIR_BUFFER_INITIALIZER;
 
         if (def->diskElementAuth)
-            virBufferAddLit(&attrBuf, " auth='true'");
+            virBufferAddLit(&secretPlacementAttrBuf, " auth='true'");
         if (def->diskElementEnc)
-            virBufferAddLit(&attrBuf, " enc='true'");
+            virBufferAddLit(&secretPlacementAttrBuf, " enc='true'");
 
-        virXMLFormatElement(buf, "diskSecretsPlacement", &attrBuf, NULL);
+        virXMLFormatElement(&childBuf, "diskSecretsPlacement", &secretPlacementAttrBuf, NULL);
     }
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</disk>\n");
+    virXMLFormatElement(buf, "disk", &attrBuf, &childBuf);
     return 0;
 }
 
