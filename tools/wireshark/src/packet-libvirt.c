@@ -74,17 +74,17 @@ static gint ett_libvirt_stream_hole = -1;
 
 VIR_WARNINGS_NO_UNUSED_FUNCTION
 
-XDR_PRIMITIVE_DISSECTOR(int,     gint32,  int)
-XDR_PRIMITIVE_DISSECTOR(u_int,   guint32, uint)
-XDR_PRIMITIVE_DISSECTOR(short,   gint16,  int)
-XDR_PRIMITIVE_DISSECTOR(u_short, guint16, uint)
-XDR_PRIMITIVE_DISSECTOR(char,    gchar,   int)
-XDR_PRIMITIVE_DISSECTOR(u_char,  guchar,  uint)
-XDR_PRIMITIVE_DISSECTOR(hyper,   gint64,  int64)
-XDR_PRIMITIVE_DISSECTOR(u_hyper, guint64, uint64)
-XDR_PRIMITIVE_DISSECTOR(float,   gfloat,  float)
-XDR_PRIMITIVE_DISSECTOR(double,  gdouble, double)
-XDR_PRIMITIVE_DISSECTOR(bool,    bool_t,  boolean)
+XDR_PRIMITIVE_DISSECTOR(int,     gint32,   int)
+XDR_PRIMITIVE_DISSECTOR(u_int,   guint32,  uint)
+XDR_PRIMITIVE_DISSECTOR(short,   gint16,   int)
+XDR_PRIMITIVE_DISSECTOR(u_short, guint16,  uint)
+XDR_PRIMITIVE_DISSECTOR(char,    gchar,    int)
+XDR_PRIMITIVE_DISSECTOR(u_char,  guchar,   uint)
+XDR_PRIMITIVE_DISSECTOR(hyper,   quad_t,   int64)
+XDR_PRIMITIVE_DISSECTOR(u_hyper, u_quad_t, uint64)
+XDR_PRIMITIVE_DISSECTOR(float,   gfloat,   float)
+XDR_PRIMITIVE_DISSECTOR(double,  gdouble,  double)
+XDR_PRIMITIVE_DISSECTOR(bool,    bool_t,   boolean)
 
 VIR_WARNINGS_RESET
 
