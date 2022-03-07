@@ -597,6 +597,7 @@ mymain(void)
     DO_TEST_NOCAPS("smp");
     DO_TEST_NOCAPS("iothreads");
     DO_TEST_NOCAPS("iothreads-ids");
+    DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
     DO_TEST_NOCAPS("iothreads-ids-partial");
     DO_TEST_NOCAPS("cputune-iothreads");
     DO_TEST_NOCAPS("iothreads-disk");

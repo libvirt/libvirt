@@ -3482,6 +3482,9 @@ virDomainIOThreadIDDefNew(void)
 {
     virDomainIOThreadIDDef *def = g_new0(virDomainIOThreadIDDef, 1);
 
+    def->thread_pool_min = -1;
+    def->thread_pool_max = -1;
+
     return def;
 }
 
@@ -17009,7 +17012,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  *
  *     <iothreads>4</iothreads>
  *     <iothreadids>
- *       <iothread id='1'/>
+ *       <iothread id='1' thread_pool_min="0" thread_pool_max="60"/>
  *       <iothread id='3'/>
  *       <iothread id='5'/>
  *       <iothread id='7'/>
@@ -17023,6 +17026,16 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node)
     if (virXMLPropUInt(node, "id", 10,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                        &iothrid->iothread_id) < 0)
+        return NULL;
+
+    if (virXMLPropInt(node, "thread_pool_min", 10,
+                      VIR_XML_PROP_NONNEGATIVE,
+                      &iothrid->thread_pool_min, -1) < 0)
+        return NULL;
+
+    if (virXMLPropInt(node, "thread_pool_max", 10,
+                      VIR_XML_PROP_NONNEGATIVE,
+                      &iothrid->thread_pool_max, -1) < 0)
         return NULL;
 
     return g_steal_pointer(&iothrid);
@@ -27608,8 +27621,23 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
         return;
 
     for (i = 0; i < def->niothreadids; i++) {
-        virBufferAsprintf(&childrenBuf, "<iothread id='%u'/>\n",
-                          def->iothreadids[i]->iothread_id);
+        virDomainIOThreadIDDef *iothread = def->iothreadids[i];
+        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+        virBufferAsprintf(&attrBuf, " id='%u'",
+                          iothread->iothread_id);
+
+        if (iothread->thread_pool_min >= 0) {
+            virBufferAsprintf(&attrBuf, " thread_pool_min='%d'",
+                              iothread->thread_pool_min);
+        }
+
+        if (iothread->thread_pool_max >= 0) {
+            virBufferAsprintf(&attrBuf, " thread_pool_max='%d'",
+                              iothread->thread_pool_max);
+        }
+
+        virXMLFormatElement(&childrenBuf, "iothread", &attrBuf, NULL);
     }
 
     virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);

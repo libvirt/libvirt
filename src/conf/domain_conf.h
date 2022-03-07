@@ -2646,6 +2646,9 @@ struct _virDomainIOThreadIDDef {
     virBitmap *cpumask;
 
     virDomainThreadSchedParam sched;
+
+    int thread_pool_min;
+    int thread_pool_max;
 };
 
 void virDomainIOThreadIDDefFree(virDomainIOThreadIDDef *def);

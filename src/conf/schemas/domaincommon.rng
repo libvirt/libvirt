@@ -829,6 +829,16 @@
               <attribute name="id">
                 <ref name="unsignedInt"/>
               </attribute>
+              <optional>
+                <attribute name="thread_pool_min">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
+              <optional>
+                <attribute name="thread_pool_max">
+                  <ref name="unsignedInt"/>
+                </attribute>
+              </optional>
             </element>
           </zeroOrMore>
         </element>

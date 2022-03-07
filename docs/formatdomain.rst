@@ -675,7 +675,7 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
        <iothread id="2"/>
        <iothread id="4"/>
        <iothread id="6"/>
-       <iothread id="8"/>
+       <iothread id="8" thread_pool_min="2" thread_pool_max="32"/>
      </iothreadids>
      ...
    </domain>
@@ -696,6 +696,10 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
    any predefined ``id``. If there are more ``iothreadids`` defined than
    ``iothreads`` defined for the domain, then the ``iothreads`` value will be
    adjusted accordingly. :since:`Since 1.2.15`
+   The element has two optional attributes ``thread_pool_min`` and
+   ``thread_pool_max`` which allow setting lower and upper boundary for number
+   of worker threads for given IOThread. While the former can be value of zero,
+   the latter can't. :since:`Since 8.5.0`
 
 
 CPU Tuning
