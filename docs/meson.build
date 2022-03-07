@@ -78,7 +78,6 @@ docs_rst_files = [
   'contact',
   'contribute',
   'daemons',
-  'developer-tooling',
   'downloads',
   'drivers',
   'drvch',

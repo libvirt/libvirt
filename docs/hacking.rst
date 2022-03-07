@@ -72,7 +72,6 @@ This page only covers the very basics, so it's recommended that
 you also take a look at the following documents:
 
 -  `Programming languages <programming-languages.html>`__
--  `Developer tooling <developer-tooling.html>`__
 -  `Advanced test suite usage <advanced-tests.html>`__
 -  `Adoption of GLib APIs <glib-adoption.html>`__
 -  `Committer guidelines <committer-guidelines.html>`__

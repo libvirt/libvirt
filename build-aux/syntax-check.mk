@@ -921,7 +921,6 @@ http_sites += www.javvin.com
 # 404 links
 http_sites += publib.boulder.ibm.com
 http_sites += kerneltrap.org
-http_sites += valloric.github.io
 http_sites += www.microsoft.com
 http_sites += xenbits.xen.org
 http_sites += lovezutto.googlepages.com
