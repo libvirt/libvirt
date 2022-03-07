@@ -187,7 +187,7 @@
             </div>
           </xsl:if>
           <div id="conduct">
-            Participants in the libvirt project agree to abide by <a href="{$href_base}governance.html#codeofconduct">the project code of conduct</a>
+            Participants in the libvirt project agree to abide by <a href="{$href_base}governance.html#code-of-conduct">the project code of conduct</a>
           </div>
           <br class="clear"/>
         </div>
