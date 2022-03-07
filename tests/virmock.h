@@ -296,12 +296,14 @@
     do {} while (0)
 #endif
 
+#define VIR_MOCK_STRINGIFY_SYMBOL(name) #name
+
 #define VIR_MOCK_REAL_INIT(name) \
     do { \
         VIR_MOCK_REAL_INIT_MAIN(name, #name); \
         if (real_##name == NULL && \
             !(real_##name = dlsym(RTLD_NEXT, \
-                                  #name))) { \
+                                  VIR_MOCK_STRINGIFY_SYMBOL(name)))) { \
             fprintf(stderr, "Missing symbol '" #name "'\n"); \
             abort(); \
         } \
