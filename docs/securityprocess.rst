@@ -84,8 +84,6 @@ engineers on the security team.
 Branch fixing policy
 --------------------
 
-The libvirt community maintains one or more stable release branches at any given
-point in time. The security team will aim to publish fixes for GIT master (which
-will become the next major release) and each currently maintained stable release
-branch. The distro maintainers will be responsible for backporting the
+The security team will publish fixes for GIT master (which will become the next
+major release). The distro maintainers will be responsible for backporting the
 officially published fixes to other release branches where applicable.
