@@ -143,7 +143,7 @@
     <h2><a id="example">Examples</a></h2>
 
     <p>
-      Assuming a <a href="formatsecret.html#VolumeUsageType">
+      Assuming a <a href="formatsecret.html#usage-type-volume">
       <code>luks volume type secret</code></a> is already defined,
       a simple example specifying use of the <code>luks</code> format
       for either volume creation without a specific cipher being defined or
