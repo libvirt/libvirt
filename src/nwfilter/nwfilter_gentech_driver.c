@@ -744,9 +744,7 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverState *driver,
                                      bool *foundNewFilter)
 {
     int ifindex;
-    int rc;
-
-    virMutexLock(&updateMutex);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
 
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
@@ -756,20 +754,14 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverState *driver,
         /* interfaces / VMs can disappear during filter instantiation;
            don't mark it as an error */
         virResetLastError();
-        rc = 0;
-        goto cleanup;
+        return 0;
     }
 
-    rc = virNWFilterInstantiateFilterUpdate(driver, teardownOld,
-                                            binding,
-                                            ifindex,
-                                            useNewFilter,
-                                            false, foundNewFilter);
-
- cleanup:
-    virMutexUnlock(&updateMutex);
-
-    return rc;
+    return virNWFilterInstantiateFilterUpdate(driver, teardownOld,
+                                              binding,
+                                              ifindex,
+                                              useNewFilter,
+                                              false, foundNewFilter);
 }
 
 
@@ -780,9 +772,9 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
 {
     int rc;
     bool foundNewFilter = false;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
 
     virNWFilterReadLockFilterUpdates();
-    virMutexLock(&updateMutex);
 
     rc = virNWFilterInstantiateFilterUpdate(driver, true,
                                             binding, ifindex,
@@ -799,7 +791,6 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
     }
 
     virNWFilterUnlockFilterUpdates();
-    virMutexUnlock(&updateMutex);
 
     return rc;
 }
@@ -921,11 +912,9 @@ _virNWFilterTeardownFilter(const char *ifname)
 int
 virNWFilterTeardownFilter(virNWFilterBindingDef *binding)
 {
-    int ret;
-    virMutexLock(&updateMutex);
-    ret = _virNWFilterTeardownFilter(binding->portdevname);
-    virMutexUnlock(&updateMutex);
-    return ret;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
+
+    return _virNWFilterTeardownFilter(binding->portdevname);
 }
 
 enum {
