@@ -1,0 +1,22 @@
+# Generic git stuff
+**/.gitattributes export-ignore
+**/.gitignore export-ignore
+/.gitmodules export-ignore
+/.mailmap export-ignore
+
+# Project-specific git stuff
+/.gitpublish export-ignore
+/docs/gitdm export-ignore
+/docs/gitdm/** export-ignore
+/gitdm.config export-ignore
+
+# Code hosting stuff
+/.github export-ignore
+/.github/** export-ignore
+/.gitlab export-ignore
+/.gitlab/** export-ignore
+
+# CI stuff
+/.gitlab-ci.yml export-ignore
+/ci export-ignore
+/ci/** export-ignore
