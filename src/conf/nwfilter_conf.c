@@ -152,33 +152,6 @@ static const struct int_map chain_priorities[] = {
 
 
 /*
- * only one filter update allowed
- */
-static virRWLock updateLock;
-static bool initialized;
-
-void
-virNWFilterReadLockFilterUpdates(void)
-{
-    virRWLockRead(&updateLock);
-}
-
-
-void
-virNWFilterWriteLockFilterUpdates(void)
-{
-    virRWLockWrite(&updateLock);
-}
-
-
-void
-virNWFilterUnlockFilterUpdates(void)
-{
-    virRWLockUnlock(&updateLock);
-}
-
-
-/*
  * attribute names for the rules XML
  */
 static const char srcmacaddr_str[]    = "srcmacaddr";
@@ -3059,6 +3032,7 @@ virNWFilterDefFormat(const virNWFilterDef *def)
     return virBufferContentAndReset(&buf);
 }
 
+static bool initialized;
 static virNWFilterTriggerRebuildCallback rebuildCallback;
 static void *rebuildOpaque;
 
@@ -3074,9 +3048,6 @@ virNWFilterConfLayerInit(virNWFilterTriggerRebuildCallback cb,
 
     initialized = true;
 
-    if (virRWLockInit(&updateLock) < 0)
-        return -1;
-
     return 0;
 }
 
@@ -3086,8 +3057,6 @@ virNWFilterConfLayerShutdown(void)
 {
     if (!initialized)
         return;
-
-    virRWLockDestroy(&updateLock);
 
     initialized = false;
     rebuildCallback = NULL;

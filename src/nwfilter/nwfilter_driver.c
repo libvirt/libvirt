@@ -166,6 +166,7 @@ nwfilterStateCleanupLocked(void)
     /* free inactive nwfilters */
     virNWFilterObjListFree(driver->nwfilters);
 
+    virMutexDestroy(&driver->updateLock);
     g_clear_pointer(&driver, g_free);
 
     return 0;
@@ -211,6 +212,9 @@ nwfilterStateInitialize(bool privileged,
     driver = g_new0(virNWFilterDriverState, 1);
 
     driver->lockFD = -1;
+    if (virMutexInitRecursive(&driver->updateLock) < 0)
+        goto err_free_driverstate;
+
     driver->privileged = privileged;
 
     if (!(driver->nwfilters = virNWFilterObjListNew()))
@@ -323,11 +327,10 @@ nwfilterStateReload(void)
     virNWFilterLearnThreadsTerminate(true);
 
     VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
-        virNWFilterWriteLockFilterUpdates();
+        VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+            virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
+        }
 
-        virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
-
-        virNWFilterUnlockFilterUpdates();
 
         virNWFilterBuildAll(driver, false);
     }
@@ -538,16 +541,16 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
         return NULL;
     }
 
-    virNWFilterWriteLockFilterUpdates();
-
     if (!(def = virNWFilterDefParseString(xml, flags)))
         goto cleanup;
 
     if (virNWFilterDefineXMLFlagsEnsureACL(conn, def) < 0)
         goto cleanup;
 
-    if (!(obj = virNWFilterObjListAssignDef(driver->nwfilters, def)))
-        goto cleanup;
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+        if (!(obj = virNWFilterObjListAssignDef(driver->nwfilters, def)))
+            goto cleanup;
+    }
     def = NULL;
     objdef = virNWFilterObjGetDef(obj);
 
@@ -562,8 +565,6 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
     virNWFilterDefFree(def);
     if (obj)
         virNWFilterObjUnlock(obj);
-
-    virNWFilterUnlockFilterUpdates();
     return nwfilter;
 }
 
@@ -584,34 +585,33 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
     virNWFilterDef *def;
     int ret = -1;
 
-    virNWFilterWriteLockFilterUpdates();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+        if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
+            goto cleanup;
+        def = virNWFilterObjGetDef(obj);
 
-    if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
-        goto cleanup;
-    def = virNWFilterObjGetDef(obj);
+        if (virNWFilterUndefineEnsureACL(nwfilter->conn, def) < 0)
+            goto cleanup;
 
-    if (virNWFilterUndefineEnsureACL(nwfilter->conn, def) < 0)
-        goto cleanup;
+        if (virNWFilterObjTestUnassignDef(obj) < 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           "%s",
+                           _("nwfilter is in use"));
+            goto cleanup;
+        }
 
-    if (virNWFilterObjTestUnassignDef(obj) < 0) {
-        virReportError(VIR_ERR_OPERATION_INVALID,
-                       "%s",
-                       _("nwfilter is in use"));
-        goto cleanup;
+        if (virNWFilterDeleteDef(driver->configDir, def) < 0)
+            goto cleanup;
+
+        virNWFilterObjListRemove(driver->nwfilters, obj);
+        obj = NULL;
     }
-
-    if (virNWFilterDeleteDef(driver->configDir, def) < 0)
-        goto cleanup;
-
-    virNWFilterObjListRemove(driver->nwfilters, obj);
-    obj = NULL;
     ret = 0;
 
  cleanup:
     if (obj)
         virNWFilterObjUnlock(obj);
 
-    virNWFilterUnlockFilterUpdates();
     return ret;
 }
 
@@ -750,14 +750,14 @@ nwfilterBindingCreateXML(virConnectPtr conn,
     if (!(ret = virGetNWFilterBinding(conn, def->portdevname, def->filter)))
         goto cleanup;
 
-    virNWFilterReadLockFilterUpdates();
-    if (virNWFilterInstantiateFilter(driver, def) < 0) {
-        virNWFilterUnlockFilterUpdates();
-        virNWFilterBindingObjListRemove(driver->bindings, obj);
-        g_clear_pointer(&ret, virObjectUnref);
-        goto cleanup;
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+        if (virNWFilterInstantiateFilter(driver, def) < 0) {
+            virNWFilterBindingObjListRemove(driver->bindings, obj);
+            g_clear_pointer(&ret, virObjectUnref);
+            goto cleanup;
+        }
     }
-    virNWFilterUnlockFilterUpdates();
+
     virNWFilterBindingObjSave(obj, driver->bindingDir);
 
  cleanup:
@@ -794,9 +794,9 @@ nwfilterBindingDelete(virNWFilterBindingPtr binding)
     if (virNWFilterBindingDeleteEnsureACL(binding->conn, def) < 0)
         goto cleanup;
 
-    virNWFilterReadLockFilterUpdates();
-    virNWFilterTeardownFilter(def);
-    virNWFilterUnlockFilterUpdates();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->updateLock) {
+        virNWFilterTeardownFilter(def);
+    }
     virNWFilterBindingObjDelete(obj, driver->bindingDir);
     virNWFilterBindingObjListRemove(driver->bindings, obj);
 

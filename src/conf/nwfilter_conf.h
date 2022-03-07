@@ -552,15 +552,6 @@ virNWFilterDefParseString(const char *xml,
 virNWFilterDef *
 virNWFilterDefParseFile(const char *filename);
 
-void
-virNWFilterWriteLockFilterUpdates(void);
-
-void
-virNWFilterReadLockFilterUpdates(void);
-
-void
-virNWFilterUnlockFilterUpdates(void);
-
 typedef int (*virNWFilterTriggerRebuildCallback)(void *opaque);
 
 int

@@ -42,6 +42,9 @@ struct _virNWFilterDriverState {
     char *stateDir;
     char *configDir;
     char *bindingDir;
+
+    /* Recursive. Hold for filter changes, instantiation or deletion */
+    virMutex updateLock;
 };
 
 virNWFilterDef *

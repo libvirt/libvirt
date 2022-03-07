@@ -55,56 +55,10 @@ static virNWFilterTechDriver *filter_tech_drivers[] = {
     NULL
 };
 
-/*
- * Serializes instantiation of filters.
- *
- * When instantiating a filter, we need to resolve references
- * to other filters and acquire locks on them.
- *
- * We retain a lock on the referenced filter once found.
- * The order in which the locks are acquired depends on
- * the order in which filters reference each other.
- *
- * Filter A:
- *    Reference Filter C
- *    Reference Filter D
- *
- * Filter B:
- *    Reference Filter D
- *    Reference Filter C
- *
- * In one example, we lock A, C, D, in the other example
- * we lock A, D, C.
- *
- * Because C & D are locked in differing orders we are
- * once again at risk of deadlocks.
- *
- * There can be multiple levels of recursion, so it is
- * not viable to determine the lock order upfront, it
- * has to be done as we traverse the tree.
- *
- * Thus we serialize any code that needs to traverse
- * the filter references.
- *
- * This covers the following APIs:
- *
- *   virNWFilterDefineXML
- *   virNWFilterUndefine
- *   virNWFilterBindingCreate
- *   virNWFilterBindingDelete
- *
- * In addition to the asynchronous filter instantiation
- * triggered by the IP address learning backends.
- */
-static virMutex updateMutex;
-
 int virNWFilterTechDriversInit(bool privileged)
 {
     size_t i = 0;
     VIR_DEBUG("Initializing NWFilter technology drivers");
-    if (virMutexInitRecursive(&updateMutex) < 0)
-        return -1;
-
     while (filter_tech_drivers[i]) {
         if (!(filter_tech_drivers[i]->flags & TECHDRV_FLAG_INITIALIZED))
             filter_tech_drivers[i]->init(privileged);
@@ -122,7 +76,6 @@ void virNWFilterTechDriversShutdown(void)
             filter_tech_drivers[i]->shutdown();
         i++;
     }
-    virMutexDestroy(&updateMutex);
 }
 
 
@@ -744,7 +697,6 @@ virNWFilterInstantiateFilterInternal(virNWFilterDriverState *driver,
                                      bool *foundNewFilter)
 {
     int ifindex;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
 
     /* after grabbing the filter update lock check for the interface; if
        it's not there anymore its filters will be or are being removed
@@ -770,11 +722,9 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
                                  virNWFilterBindingDef *binding,
                                  int ifindex)
 {
-    int rc;
+    int rc = 0;
     bool foundNewFilter = false;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
-
-    virNWFilterReadLockFilterUpdates();
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->updateLock);
 
     rc = virNWFilterInstantiateFilterUpdate(driver, true,
                                             binding, ifindex,
@@ -789,8 +739,6 @@ virNWFilterInstantiateFilterLate(virNWFilterDriverState *driver,
             _virNWFilterTeardownFilter(binding->portdevname);
         }
     }
-
-    virNWFilterUnlockFilterUpdates();
 
     return rc;
 }
@@ -912,8 +860,6 @@ _virNWFilterTeardownFilter(const char *ifname)
 int
 virNWFilterTeardownFilter(virNWFilterBindingDef *binding)
 {
-    VIR_LOCK_GUARD lock = virLockGuardLock(&updateMutex);
-
     return _virNWFilterTeardownFilter(binding->portdevname);
 }
 
