@@ -1250,7 +1250,6 @@
     &lt;/dhcp&gt;
   &lt;/ip&gt;
   &lt;ip family="ipv6" address="fdXX:XXXX:XXXX:NNNN:: prefix="64"/&gt;
-  &lt;/ip&gt;
 &lt;/network&gt;</pre>
 
     <p>IPv6 NAT addressing has some caveats over the more straight
