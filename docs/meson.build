@@ -19,7 +19,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'bugs',
   'cgroups',
   'contact',
   'csharp',
@@ -84,6 +83,7 @@ docs_rst_files = [
   'auth',
   'bindings',
   'best-practices',
+  'bugs',
   'ci',
   'coding-style',
   'committer-guidelines',
