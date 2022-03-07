@@ -3477,6 +3477,15 @@ virDomainIOThreadIDArrayHasPin(virDomainDef *def)
 }
 
 
+static virDomainIOThreadIDDef *
+virDomainIOThreadIDDefNew(void)
+{
+    virDomainIOThreadIDDef *def = g_new0(virDomainIOThreadIDDef, 1);
+
+    return def;
+}
+
+
 void
 virDomainIOThreadIDDefFree(virDomainIOThreadIDDef *def)
 {
@@ -3540,7 +3549,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDef *def,
                            _("failed to populate iothreadids"));
             return -1;
         }
-        iothrid = g_new0(virDomainIOThreadIDDef, 1);
+        iothrid = virDomainIOThreadIDDefNew();
         iothrid->iothread_id = nxt;
         iothrid->autofill = true;
         def->iothreadids[def->niothreadids++] = g_steal_pointer(&iothrid);
@@ -17009,7 +17018,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
 static virDomainIOThreadIDDef *
 virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 {
-    g_autoptr(virDomainIOThreadIDDef) iothrid = g_new0(virDomainIOThreadIDDef, 1);
+    g_autoptr(virDomainIOThreadIDDef) iothrid = virDomainIOThreadIDDefNew();
 
     if (virXMLPropUInt(node, "id", 10,
                        VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
@@ -22932,8 +22941,7 @@ virDomainIOThreadIDAdd(virDomainDef *def,
 {
     virDomainIOThreadIDDef *iothrid = NULL;
 
-    iothrid = g_new0(virDomainIOThreadIDDef, 1);
-
+    iothrid = virDomainIOThreadIDDefNew();
     iothrid->iothread_id = iothread_id;
 
     VIR_APPEND_ELEMENT_COPY(def->iothreadids, def->niothreadids, iothrid);
