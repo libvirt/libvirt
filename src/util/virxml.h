@@ -38,6 +38,9 @@ typedef enum {
     VIR_XML_PROP_NONE = 0,
     VIR_XML_PROP_REQUIRED = 1 << 0, /* Attribute may not be absent */
     VIR_XML_PROP_NONZERO = 1 << 1, /* Attribute may not be zero */
+    VIR_XML_PROP_NONNEGATIVE = 1 << 2, /* Attribute may not be negative, makes
+                                          sense only for some virXMLProp*()
+                                          functions. */
 } virXMLPropFlags;
 
 

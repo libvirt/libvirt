@@ -643,6 +643,13 @@ virXMLPropInt(xmlNodePtr node,
         return -1;
     }
 
+    if ((flags & VIR_XML_PROP_NONNEGATIVE) && (val < 0)) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("Invalid value for attribute '%s' in element '%s': '%s'. Expected non-negative value"),
+                       name, node->name, tmp);
+        return -1;
+    }
+
     if ((flags & VIR_XML_PROP_NONZERO) && (val == 0)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("Invalid value for attribute '%s' in element '%s': Zero is not permitted"),
