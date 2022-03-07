@@ -25,7 +25,6 @@ docs_html_in_files = [
   'contribute',
   'csharp',
   'dbus',
-  'devguide',
   'docs',
   'downloads',
   'drivers',
