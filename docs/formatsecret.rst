@@ -251,8 +251,6 @@ processing to define the secret:
     UUID                                 Usage
    -----------------------------------------------------------
     718c71bd-67b5-4a2b-87ec-a24e8ca200dc  tls TLS_example
-   #
-
 
 A secret may also be defined via the
 `virSecretDefineXML <html/libvirt-libvirt-secret.html#virSecretDefineXML>`__
@@ -291,9 +289,6 @@ the steps to be taken. First create a vtpm-secret.xml file:
     UUID                                   Usage
    ----------------------------------------------------------------------------------------
     6dd3e4a5-1d76-44ce-961f-f119f5aad935   vtpm VTPM_example
-
-   #
-
 
 A secret may also be defined via the
 `virSecretDefineXML <html/libvirt-libvirt-secret.html#virSecretDefineXML>`__
