@@ -93,14 +93,6 @@ struct virNWFilterSnoopState {
     do { \
         virMutexUnlock(&virNWFilterSnoopState.snoopLock); \
     } while (0)
-# define virNWFilterSnoopActiveLock() \
-    do { \
-        virMutexLock(&virNWFilterSnoopState.activeLock); \
-    } while (0)
-# define virNWFilterSnoopActiveUnlock() \
-    do { \
-        virMutexUnlock(&virNWFilterSnoopState.activeLock); \
-    } while (0)
 
 # define VIR_IFKEY_LEN   ((VIR_UUID_STRING_BUFLEN) + (VIR_MAC_STRING_BUFLEN))
 
@@ -281,47 +273,35 @@ static char *
 virNWFilterSnoopActivate(virNWFilterSnoopReq *req)
 {
     g_autofree char *key = g_strdup_printf("%p-%d", req, req->ifindex);
-    char *ret = NULL;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.activeLock);
 
-    virNWFilterSnoopActiveLock();
+    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) < 0)
+        return NULL;
 
-    if (virHashAddEntry(virNWFilterSnoopState.active, key, (void *)0x1) == 0)
-        ret = g_steal_pointer(&key);
-
-    virNWFilterSnoopActiveUnlock();
-
-    return ret;
+    return g_steal_pointer(&key);
 }
 
 static void
 virNWFilterSnoopCancel(char **threadKey)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.activeLock);
+
     if (*threadKey == NULL)
         return;
 
-    virNWFilterSnoopActiveLock();
-
     ignore_value(virHashRemoveEntry(virNWFilterSnoopState.active, *threadKey));
     g_clear_pointer(threadKey, g_free);
-
-    virNWFilterSnoopActiveUnlock();
 }
 
 static bool
 virNWFilterSnoopIsActive(char *threadKey)
 {
-    void *entry;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.activeLock);
 
     if (threadKey == NULL)
         return false;
 
-    virNWFilterSnoopActiveLock();
-
-    entry = virHashLookup(virNWFilterSnoopState.active, threadKey);
-
-    virNWFilterSnoopActiveUnlock();
-
-    return entry != NULL;
+    return virHashLookup(virNWFilterSnoopState.active, threadKey) != NULL;
 }
 
 /*
@@ -2083,9 +2063,9 @@ virNWFilterDHCPSnoopShutdown(void)
 
     virNWFilterSnoopUnlock();
 
-    virNWFilterSnoopActiveLock();
-    g_clear_pointer(&virNWFilterSnoopState.active, g_hash_table_unref);
-    virNWFilterSnoopActiveUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&virNWFilterSnoopState.activeLock) {
+        g_clear_pointer(&virNWFilterSnoopState.active, g_hash_table_unref);
+    }
 }
 
 #else /* WITH_LIBPCAP */
