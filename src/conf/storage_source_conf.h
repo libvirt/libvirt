@@ -269,7 +269,7 @@ struct _virStorageSource {
     virObject parent;
 
     unsigned int id; /* backing chain identifier, 0 is unset */
-    int type; /* virStorageType */
+    virStorageType type;
     char *path;
     int protocol; /* virStorageNetProtocol */
     char *volume; /* volume name for remote storage */

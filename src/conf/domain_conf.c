@@ -8502,11 +8502,15 @@ virDomainStorageSourceParseBase(const char *type,
     src = virStorageSourceNew();
     src->type = VIR_STORAGE_TYPE_FILE;
 
-    if (type &&
-        (src->type = virStorageTypeFromString(type)) <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown storage source type '%s'"), type);
-        return NULL;
+    if (type) {
+        int tmp;
+        if ((tmp = virStorageTypeFromString(type)) <= 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("unknown storage source type '%s'"), type);
+            return NULL;
+        }
+
+        src->type = tmp;
     }
 
     if (format &&
@@ -9055,19 +9059,16 @@ virDomainDiskDefParseSourceXML(virDomainXMLOption *xmlopt,
 {
     g_autoptr(virStorageSource) src = virStorageSourceNew();
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
-    g_autofree char *type = NULL;
     xmlNodePtr tmp;
 
     ctxt->node = node;
 
-    src->type = VIR_STORAGE_TYPE_FILE;
-
-    if ((type = virXMLPropString(node, "type")) &&
-        (src->type = virStorageTypeFromString(type)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("unknown disk type '%s'"), type);
+    if (virXMLPropEnumDefault(node, "type",
+                              virStorageTypeFromString,
+                              VIR_XML_PROP_NONZERO,
+                              &src->type,
+                              VIR_STORAGE_TYPE_FILE) < 0)
         return NULL;
-    }
 
     if ((tmp = virXPathNode("./source[1]", ctxt))) {
         if (virDomainStorageSourceParse(tmp, ctxt, src, flags, xmlopt) < 0)

@@ -139,7 +139,6 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  virDomainXMLOption *xmlopt)
 {
     g_autofree char *snapshot = NULL;
-    g_autofree char *type = NULL;
     g_autofree char *driver = NULL;
     g_autofree char *name = NULL;
     g_autoptr(virStorageSource) src = virStorageSourceNew();
@@ -165,16 +164,19 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         }
     }
 
-    if ((type = virXMLPropString(node, "type"))) {
-        if ((src->type = virStorageTypeFromString(type)) <= 0 ||
-            src->type == VIR_STORAGE_TYPE_VOLUME ||
-            src->type == VIR_STORAGE_TYPE_DIR) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("unknown disk snapshot type '%s'"), type);
-            return -1;
-        }
-    } else {
-        src->type = VIR_STORAGE_TYPE_FILE;
+    if (virXMLPropEnumDefault(node, "type",
+                              virStorageTypeFromString,
+                              VIR_XML_PROP_NONZERO,
+                              &src->type,
+                              VIR_STORAGE_TYPE_FILE) < 0)
+        return -1;
+
+    if (src->type == VIR_STORAGE_TYPE_VOLUME ||
+        src->type == VIR_STORAGE_TYPE_DIR) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unsupported disk snapshot type '%s'"),
+                       virStorageTypeToString(src->type));
+        return -1;
     }
 
     if ((cur = virXPathNode("./source", ctxt)) &&
