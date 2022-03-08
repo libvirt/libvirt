@@ -34,7 +34,7 @@ testCompareXMLToXMLFiles(const char *inxml,
     g_autofree char *inXmlData = NULL;
     g_autofree char *outXmlData = NULL;
     g_autofree char *actual = NULL;
-    unsigned int parseflags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    unsigned int parseflags = 0;
     unsigned int formatflags = VIR_DOMAIN_SNAPSHOT_FORMAT_SECURE;
     bool cur = false;
     g_autoptr(virDomainSnapshotDef) def = NULL;

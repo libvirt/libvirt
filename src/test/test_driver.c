@@ -978,7 +978,6 @@ testParseDomainSnapshots(testDriver *privconn,
                                             privconn->xmlopt,
                                             NULL,
                                             &cur,
-                                            VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL |
                                             VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
         if (!def)
@@ -8777,7 +8776,7 @@ testDomainSnapshotCreateXML(virDomainPtr domain,
     virObjectEvent *event = NULL;
     bool update_current = true;
     bool redefine = flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE;
-    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    unsigned int parse_flags = 0;
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
     /*

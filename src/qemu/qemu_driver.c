@@ -347,7 +347,6 @@ qemuDomainSnapshotLoad(virDomainObj *vm,
     virDomainMomentObj *current = NULL;
     bool cur;
     unsigned int flags = (VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE |
-                          VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                           VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL);
     int ret = -1;
     int direrr;

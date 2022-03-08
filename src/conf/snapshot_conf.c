@@ -359,21 +359,15 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
 
     if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
         goto cleanup;
-    if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_DISKS) {
-        if (n)
-            def->disks = g_new0(virDomainSnapshotDiskDef, n);
-        def->ndisks = n;
-        for (i = 0; i < def->ndisks; i++) {
-            if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt, &def->disks[i],
-                                                 flags, xmlopt) < 0)
-                goto cleanup;
-        }
-        VIR_FREE(nodes);
-    } else if (n) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("unable to handle disk requests in snapshot"));
-        goto cleanup;
+    if (n)
+        def->disks = g_new0(virDomainSnapshotDiskDef, n);
+    def->ndisks = n;
+    for (i = 0; i < def->ndisks; i++) {
+        if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt, &def->disks[i],
+                                             flags, xmlopt) < 0)
+            goto cleanup;
     }
+    VIR_FREE(nodes);
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
         if (!current) {

@@ -5364,8 +5364,7 @@ vboxDomainSnapshotCreateXML(virDomainPtr dom,
     nsresult rc;
     resultCodeUnion result;
     virDomainSnapshotPtr ret = NULL;
-    unsigned int parse_flags = (VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
-                                VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
+    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
     g_autoptr(virDomainSnapshotDef) def = NULL;
 
     if (!data->vboxObj)
@@ -6783,7 +6782,6 @@ vboxDomainSnapshotDeleteMetadataOnly(virDomainSnapshotPtr snapshot)
     }
     def = virDomainSnapshotDefParseString(defXml,
                                           data->xmlopt, NULL, NULL,
-                                          VIR_DOMAIN_SNAPSHOT_PARSE_DISKS |
                                           VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE);
     if (!def) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

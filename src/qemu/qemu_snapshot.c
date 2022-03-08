@@ -1530,7 +1530,7 @@ qemuSnapshotCreateXMLParse(virDomainObj *vm,
                            unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    unsigned int parse_flags = VIR_DOMAIN_SNAPSHOT_PARSE_DISKS;
+    unsigned int parse_flags = 0;
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE)
         parse_flags |= VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE;
