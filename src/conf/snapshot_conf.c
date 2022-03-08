@@ -138,21 +138,20 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  unsigned int flags,
                                  virDomainXMLOption *xmlopt)
 {
-    int ret = -1;
-    char *snapshot = NULL;
-    char *type = NULL;
-    char *driver = NULL;
+    g_autofree char *snapshot = NULL;
+    g_autofree char *type = NULL;
+    g_autofree char *driver = NULL;
+    g_autofree char *name = NULL;
+    g_autoptr(virStorageSource) src = virStorageSourceNew();
     xmlNodePtr cur;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
 
     ctxt->node = node;
 
-    def->src = virStorageSourceNew();
-    def->name = virXMLPropString(node, "name");
-    if (!def->name) {
+    if (!(name = virXMLPropString(node, "name"))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("missing name from disk snapshot element"));
-        goto cleanup;
+        return -1;
     }
 
     snapshot = virXMLPropString(node, "snapshot");
@@ -162,59 +161,54 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk snapshot setting '%s'"),
                            snapshot);
-            goto cleanup;
+            return -1;
         }
     }
 
     if ((type = virXMLPropString(node, "type"))) {
-        if ((def->src->type = virStorageTypeFromString(type)) <= 0 ||
-            def->src->type == VIR_STORAGE_TYPE_VOLUME ||
-            def->src->type == VIR_STORAGE_TYPE_DIR) {
+        if ((src->type = virStorageTypeFromString(type)) <= 0 ||
+            src->type == VIR_STORAGE_TYPE_VOLUME ||
+            src->type == VIR_STORAGE_TYPE_DIR) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("unknown disk snapshot type '%s'"), type);
-            goto cleanup;
+            return -1;
         }
     } else {
-        def->src->type = VIR_STORAGE_TYPE_FILE;
+        src->type = VIR_STORAGE_TYPE_FILE;
     }
 
     if ((cur = virXPathNode("./source", ctxt)) &&
-        virDomainStorageSourceParse(cur, ctxt, def->src, flags, xmlopt) < 0)
-        goto cleanup;
+        virDomainStorageSourceParse(cur, ctxt, src, flags, xmlopt) < 0)
+        return -1;
 
     if ((driver = virXPathString("string(./driver/@type)", ctxt)) &&
-        (def->src->format = virStorageFileFormatTypeFromString(driver)) <= 0) {
+        (src->format = virStorageFileFormatTypeFromString(driver)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown disk snapshot driver '%s'"), driver);
-            goto cleanup;
+            return -1;
     }
 
     if (virParseScaledValue("./driver/metadata_cache/max_size", NULL,
                             ctxt,
-                            &def->src->metadataCacheMaxSize,
+                            &src->metadataCacheMaxSize,
                             1, ULLONG_MAX, false) < 0)
-        goto cleanup;
+        return -1;
 
     /* validate that the passed path is absolute */
-    if (virStorageSourceIsRelative(def->src)) {
+    if (virStorageSourceIsRelative(src)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("disk snapshot image path '%s' must be absolute"),
-                       def->src->path);
-        goto cleanup;
+                       src->path);
+        return -1;
     }
 
-    if (!def->snapshot && (def->src->path || def->src->format))
+    if (!def->snapshot && (src->path || src->format))
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
-    ret = 0;
- cleanup:
+    def->name = g_steal_pointer(&name);
+    def->src = g_steal_pointer(&src);
 
-    VIR_FREE(driver);
-    VIR_FREE(snapshot);
-    VIR_FREE(type);
-    if (ret < 0)
-        virDomainSnapshotDiskDefClear(def);
-    return ret;
+    return 0;
 }
 
 /* flags is bitwise-or of virDomainSnapshotParseFlags.
