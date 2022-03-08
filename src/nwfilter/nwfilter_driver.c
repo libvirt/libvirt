@@ -53,8 +53,6 @@ VIR_LOG_INIT("nwfilter.nwfilter_driver");
 
 static virNWFilterDriverState *driver;
 
-static int nwfilterStateCleanup(void);
-
 static int nwfilterStateReload(void);
 
 static virMutex driverMutex = VIR_MUTEX_INITIALIZER;
@@ -147,6 +145,51 @@ virNWFilterTriggerRebuildImpl(void *opaque)
     virNWFilterDriverState *nwdriver = opaque;
 
     return virNWFilterBuildAll(nwdriver, true);
+}
+
+
+static int
+nwfilterStateCleanupLocked(void)
+{
+    if (!driver)
+        return -1;
+
+    if (driver->privileged) {
+        virNWFilterConfLayerShutdown();
+        virNWFilterDHCPSnoopShutdown();
+        virNWFilterLearnShutdown();
+        virNWFilterIPAddrMapShutdown();
+        virNWFilterTechDriversShutdown();
+        nwfilterDriverRemoveDBusMatches();
+
+        if (driver->lockFD != -1)
+            virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
+
+        g_free(driver->stateDir);
+        g_free(driver->configDir);
+        g_free(driver->bindingDir);
+    }
+
+    virObjectUnref(driver->bindings);
+
+    /* free inactive nwfilters */
+    virNWFilterObjListFree(driver->nwfilters);
+
+    g_clear_pointer(&driver, g_free);
+
+    return 0;
+}
+
+/**
+ * nwfilterStateCleanup:
+ *
+ * Shutdown the nwfilter driver, it will stop all active nwfilters
+ */
+static int
+nwfilterStateCleanup(void)
+{
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
+    return nwfilterStateCleanupLocked();
 }
 
 
@@ -302,48 +345,6 @@ nwfilterStateReload(void)
     virNWFilterBuildAll(driver, false);
 
     nwfilterDriverUnlock();
-
-    return 0;
-}
-
-
-/**
- * nwfilterStateCleanup:
- *
- * Shutdown the nwfilter driver, it will stop all active nwfilters
- */
-static int
-nwfilterStateCleanup(void)
-{
-    if (!driver)
-        return -1;
-
-    if (driver->privileged) {
-        virNWFilterConfLayerShutdown();
-        virNWFilterDHCPSnoopShutdown();
-        virNWFilterLearnShutdown();
-        virNWFilterIPAddrMapShutdown();
-        virNWFilterTechDriversShutdown();
-
-        nwfilterDriverLock();
-
-        nwfilterDriverRemoveDBusMatches();
-
-        if (driver->lockFD != -1)
-            virPidFileRelease(driver->stateDir, "driver", driver->lockFD);
-
-        g_free(driver->stateDir);
-        g_free(driver->configDir);
-        g_free(driver->bindingDir);
-        nwfilterDriverUnlock();
-    }
-
-    virObjectUnref(driver->bindings);
-
-    /* free inactive nwfilters */
-    virNWFilterObjListFree(driver->nwfilters);
-
-    g_clear_pointer(&driver, g_free);
 
     return 0;
 }
