@@ -478,11 +478,15 @@ nwfilterLookupByName(virConnectPtr conn,
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn)
 {
+    int ret;
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    return virNWFilterObjListNumOfNWFilters(driver->nwfilters, conn,
-                                        virConnectNumOfNWFiltersCheckACL);
+    nwfilterDriverLock();
+    ret = virNWFilterObjListNumOfNWFilters(driver->nwfilters, conn,
+                                           virConnectNumOfNWFiltersCheckACL);
+    nwfilterDriverUnlock();
+    return ret;
 }
 
 
