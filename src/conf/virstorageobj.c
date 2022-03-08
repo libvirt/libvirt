@@ -66,15 +66,15 @@ struct _virStorageVolObjList {
     virObjectRWLockable parent;
 
     /* key string -> virStorageVolObj mapping
-     * for (1), lockless lookup-by-key */
+     * for (1), lookup-by-key */
     GHashTable *objsKey;
 
     /* name string -> virStorageVolObj mapping
-     * for (1), lockless lookup-by-name */
+     * for (1), lookup-by-name */
     GHashTable *objsName;
 
     /* path string -> virStorageVolObj mapping
-     * for (1), lockless lookup-by-path */
+     * for (1), lookup-by-path */
     GHashTable *objsPath;
 };
 
@@ -98,11 +98,11 @@ struct _virStoragePoolObjList {
     virObjectRWLockable parent;
 
     /* uuid string -> virStoragePoolObj mapping
-     * for (1), lockless lookup-by-uuid */
+     * for (1), lookup-by-uuid */
     GHashTable *objs;
 
     /* name string -> virStoragePoolObj mapping
-     * for (1), lockless lookup-by-name */
+     * for (1), lookup-by-name */
     GHashTable *objsName;
 };
 

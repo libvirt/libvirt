@@ -54,7 +54,7 @@ struct _virSecretObjList {
     virObjectRWLockable parent;
 
     /* uuid string -> virSecretObj  mapping
-     * for O(1), lockless lookup-by-uuid */
+     * for O(1), lookup-by-uuid */
     GHashTable *objs;
 };
 

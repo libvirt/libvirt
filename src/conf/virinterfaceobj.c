@@ -44,7 +44,7 @@ struct _virInterfaceObjList {
     virObjectRWLockable parent;
 
     /* name string -> virInterfaceObj  mapping
-     * for O(1), lockless lookup-by-name */
+     * for O(1), lookup-by-name */
     GHashTable *objsName;
 };
 

@@ -39,7 +39,7 @@ struct _virNWFilterBindingObjList {
     virObjectRWLockable parent;
 
     /* port dev name -> virNWFilterBindingObj  mapping
-     * for O(1), lockless lookup-by-port dev */
+     * for O(1), lookup-by-port dev */
     GHashTable *objs;
 };
 

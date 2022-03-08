@@ -46,11 +46,11 @@ struct _virDomainObjList {
     virObjectRWLockable parent;
 
     /* uuid string -> virDomainObj  mapping
-     * for O(1), lockless lookup-by-uuid */
+     * for O(1), lookup-by-uuid */
     GHashTable *objs;
 
     /* name -> virDomainObj mapping for O(1),
-     * lockless lookup-by-name */
+     * lookup-by-name */
     GHashTable *objsName;
 };
 
