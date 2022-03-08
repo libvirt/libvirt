@@ -49,37 +49,28 @@ static GHashTable *ipAddressMap;
 int
 virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 {
-    int ret = -1;
-    char *addrCopy;
+    g_autofree char *addrCopy = g_strdup(addr);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&ipAddressMapLock);
     virNWFilterVarValue *val;
 
-    addrCopy = g_strdup(addr);
-
-    virMutexLock(&ipAddressMapLock);
-
-    val = virHashLookup(ipAddressMap, ifname);
-    if (!val) {
-        val = virNWFilterVarValueCreateSimple(addrCopy);
-        if (!val)
-            goto cleanup;
-        addrCopy = NULL;
-        ret = virHashUpdateEntry(ipAddressMap, ifname, val);
-        if (ret < 0)
-            virNWFilterVarValueFree(val);
-        goto cleanup;
-    } else {
+    if ((val = virHashLookup(ipAddressMap, ifname)) != NULL) {
         if (virNWFilterVarValueAddValue(val, addrCopy) < 0)
-            goto cleanup;
+            return -1;
+
         addrCopy = NULL;
+        return 0;
     }
 
-    ret = 0;
+    if ((val = virNWFilterVarValueCreateSimple(addrCopy)) == NULL)
+        return -1;
 
- cleanup:
-    virMutexUnlock(&ipAddressMapLock);
-    VIR_FREE(addrCopy);
+    addrCopy = NULL;
+    if (virHashUpdateEntry(ipAddressMap, ifname, val) < 0) {
+        virNWFilterVarValueFree(val);
+        return -1;
+    }
 
-    return ret;
+    return 0;
 }
 
 /* Delete all or a specific IP address from an interface. After this
@@ -99,31 +90,28 @@ virNWFilterIPAddrMapAddIPAddr(const char *ifname, char *addr)
 int
 virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
 {
-    int ret = -1;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&ipAddressMapLock);
     virNWFilterVarValue *val = NULL;
 
-    virMutexLock(&ipAddressMapLock);
-
-    if (ipaddr != NULL) {
-        val = virHashLookup(ipAddressMap, ifname);
-        if (val) {
-            if (virNWFilterVarValueGetCardinality(val) == 1 &&
-                STREQ(ipaddr,
-                      virNWFilterVarValueGetNthValue(val, 0)))
-                goto remove_entry;
-            virNWFilterVarValueDelValue(val, ipaddr);
-            ret = virNWFilterVarValueGetCardinality(val);
-        }
-    } else {
- remove_entry:
+    if (!ipaddr) {
         /* remove whole entry */
         virHashRemoveEntry(ipAddressMap, ifname);
-        ret = 0;
+        return 0;
     }
 
-    virMutexUnlock(&ipAddressMapLock);
+    if (!(val = virHashLookup(ipAddressMap, ifname))) {
+        return -1;
+    }
 
-    return ret;
+    if (virNWFilterVarValueGetCardinality(val) == 1 &&
+        STREQ(ipaddr, virNWFilterVarValueGetNthValue(val, 0))) {
+        /* remove whole entry */
+        virHashRemoveEntry(ipAddressMap, ifname);
+        return 0;
+    }
+
+    virNWFilterVarValueDelValue(val, ipaddr);
+    return virNWFilterVarValueGetCardinality(val);
 }
 
 /* Get the list of IP addresses known to be in use by an interface
@@ -135,15 +123,9 @@ virNWFilterIPAddrMapDelIPAddr(const char *ifname, const char *ipaddr)
 virNWFilterVarValue *
 virNWFilterIPAddrMapGetIPAddr(const char *ifname)
 {
-    virNWFilterVarValue *res;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&ipAddressMapLock);
 
-    virMutexLock(&ipAddressMapLock);
-
-    res = virHashLookup(ipAddressMap, ifname);
-
-    virMutexUnlock(&ipAddressMapLock);
-
-    return res;
+    return virHashLookup(ipAddressMap, ifname);
 }
 
 int
