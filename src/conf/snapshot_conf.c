@@ -216,17 +216,12 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                           bool *current,
                           unsigned int flags)
 {
-    virDomainSnapshotDef *def = NULL;
-    virDomainSnapshotDef *ret = NULL;
-    xmlNodePtr *nodes = NULL;
-    xmlNodePtr inactiveDomNode = NULL;
+    g_autoptr(virDomainSnapshotDef) def = NULL;
+    g_autofree xmlNodePtr *diskNodes = NULL;
     size_t i;
     int n;
-    char *state = NULL;
-    int active;
-    char *tmp;
-    char *memorySnapshot = NULL;
-    char *memoryFile = NULL;
+    g_autofree char *memorySnapshot = NULL;
+    g_autofree char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
     virSaveCookieCallbacks *saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
     int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
@@ -240,18 +235,22 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("a redefined snapshot must have a name"));
-            goto cleanup;
+            return NULL;
         }
     }
 
     def->parent.description = virXPathString("string(./description)", ctxt);
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+        g_autofree char *state = NULL;
+        g_autofree char *domtype = NULL;
+        xmlNodePtr inactiveDomNode = NULL;
+
         if (virXPathLongLong("string(./creationTime)", ctxt,
                              &def->parent.creationTime) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("missing creationTime from existing snapshot"));
-            goto cleanup;
+            return NULL;
         }
 
         def->parent.parent_name = virXPathString("string(./parent/name)", ctxt);
@@ -263,14 +262,14 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
              */
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("missing state from existing snapshot"));
-            goto cleanup;
+            return NULL;
         }
         def->state = virDomainSnapshotStateTypeFromString(state);
         if (def->state <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Invalid state '%s' in domain snapshot XML"),
                            state);
-            goto cleanup;
+            return NULL;
         }
         offline = (def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF ||
                    def->state == VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT);
@@ -279,20 +278,19 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
          * lack domain/@type.  In that case, leave dom NULL, and
          * clients will have to decide between best effort
          * initialization or outright failure.  */
-        if ((tmp = virXPathString("string(./domain/@type)", ctxt))) {
+        if ((domtype = virXPathString("string(./domain/@type)", ctxt))) {
             xmlNodePtr domainNode = virXPathNode("./domain", ctxt);
 
-            VIR_FREE(tmp);
             if (!domainNode) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("missing domain in snapshot"));
-                goto cleanup;
+                return NULL;
             }
             def->parent.dom = virDomainDefParseNode(ctxt->node->doc, domainNode,
                                                     xmlopt, parseOpaque,
                                                     domainflags);
             if (!def->parent.dom)
-                goto cleanup;
+                return NULL;
         } else {
             VIR_WARN("parsing older snapshot that lacks domain");
         }
@@ -304,10 +302,10 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             def->parent.inactiveDom = virDomainDefParseNode(ctxt->node->doc, inactiveDomNode,
                                                             xmlopt, NULL, domainflags);
             if (!def->parent.inactiveDom)
-                goto cleanup;
+                return NULL;
         }
     } else if (virDomainXMLOptionRunMomentPostParse(xmlopt, &def->parent) < 0) {
-        goto cleanup;
+        return NULL;
     }
 
     memorySnapshot = virXPathString("string(./memory/@snapshot)", ctxt);
@@ -318,20 +316,20 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unknown memory snapshot setting '%s'"),
                            memorySnapshot);
-            goto cleanup;
+            return NULL;
         }
         if (memoryFile &&
             def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("memory filename '%s' requires external snapshot"),
                            memoryFile);
-            goto cleanup;
+            return NULL;
         }
         if (!memoryFile &&
             def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("external memory snapshots require a filename"));
-            goto cleanup;
+            return NULL;
         }
     } else if (memoryFile) {
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
@@ -345,7 +343,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("memory state cannot be saved with offline or "
                          "disk-only snapshot"));
-        goto cleanup;
+        return NULL;
     }
     def->memorysnapshotfile = g_steal_pointer(&memoryFile);
 
@@ -354,48 +352,40 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_XML_ERROR,
                        _("memory snapshot file path (%s) must be absolute"),
                        def->memorysnapshotfile);
-        goto cleanup;
+        return NULL;
     }
 
-    if ((n = virXPathNodeSet("./disks/*", ctxt, &nodes)) < 0)
-        goto cleanup;
+    if ((n = virXPathNodeSet("./disks/*", ctxt, &diskNodes)) < 0)
+        return NULL;
     if (n)
         def->disks = g_new0(virDomainSnapshotDiskDef, n);
     def->ndisks = n;
     for (i = 0; i < def->ndisks; i++) {
-        if (virDomainSnapshotDiskDefParseXML(nodes[i], ctxt, &def->disks[i],
+        if (virDomainSnapshotDiskDefParseXML(diskNodes[i], ctxt, &def->disks[i],
                                              flags, xmlopt) < 0)
-            goto cleanup;
+            return NULL;
     }
-    VIR_FREE(nodes);
 
     if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_INTERNAL) {
+        int active;
+
         if (!current) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("internal parse requested with NULL current"));
-            goto cleanup;
+            return NULL;
         }
         if (virXPathInt("string(./active)", ctxt, &active) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Could not find 'active' element"));
-            goto cleanup;
+            return NULL;
         }
         *current = active != 0;
     }
 
     if (!offline && virSaveCookieParse(ctxt, &def->cookie, saveCookie) < 0)
-        goto cleanup;
+        return NULL;
 
-    ret = g_steal_pointer(&def);
-
- cleanup:
-    VIR_FREE(state);
-    VIR_FREE(nodes);
-    VIR_FREE(memorySnapshot);
-    VIR_FREE(memoryFile);
-    virObjectUnref(def);
-
-    return ret;
+    return g_steal_pointer(&def);
 }
 
 virDomainSnapshotDef *
