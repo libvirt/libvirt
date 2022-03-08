@@ -26,17 +26,6 @@
 #include "moment_conf.h"
 #include "virenum.h"
 
-/* Items related to snapshot state */
-
-typedef enum {
-    VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT = 0,
-    VIR_DOMAIN_SNAPSHOT_LOCATION_NONE,
-    VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL,
-    VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
-
-    VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
-} virDomainSnapshotLocation;
-
 /**
  * This enum has to map all known domain states from the public enum
  * virDomainState, before adding one additional state possible only
@@ -139,5 +128,4 @@ int virDomainSnapshotRedefinePrep(virDomainObj *vm,
                                   virDomainXMLOption *xmlopt,
                                   unsigned int flags);
 
-VIR_ENUM_DECL(virDomainSnapshotLocation);
 VIR_ENUM_DECL(virDomainSnapshotState);

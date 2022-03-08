@@ -537,6 +537,18 @@ typedef enum {
 } virDomainMemoryAllocation;
 
 
+typedef enum {
+    VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT = 0,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_NONE,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL,
+    VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL,
+
+    VIR_DOMAIN_SNAPSHOT_LOCATION_LAST
+} virDomainSnapshotLocation;
+
+VIR_ENUM_DECL(virDomainSnapshotLocation);
+
+
 /* Stores the virtual disk configuration */
 struct _virDomainDiskDef {
     virStorageSource *src; /* non-NULL.  XXX Allow NULL for empty cdrom? */
@@ -581,7 +593,7 @@ struct _virDomainDiskDef {
     virTristateSwitch ioeventfd;
     virTristateSwitch event_idx;
     virTristateSwitch copy_on_read;
-    unsigned int snapshot; /* virDomainSnapshotLocation, snapshot_conf.h */
+    virDomainSnapshotLocation snapshot;
     virDomainStartupPolicy startupPolicy;
     bool transient;
     virTristateBool transientShareBacking;

@@ -1402,6 +1402,14 @@ VIR_ENUM_IMPL(virDomainIBS,
               "fixed-na",
 );
 
+VIR_ENUM_IMPL(virDomainSnapshotLocation,
+              VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
+              "default",
+              "no",
+              "internal",
+              "external",
+);
+
 /* Internal mapping: subset of block job types that can be present in
  * <mirror> XML (remaining types are not two-phase). */
 VIR_ENUM_DECL(virDomainBlockJob);
@@ -23608,7 +23616,7 @@ virDomainDiskDefFormat(virBuffer *buf,
     if (def->sgio)
         virBufferAsprintf(&attrBuf, " sgio='%s'", sgio);
 
-    if (def->snapshot &&
+    if (def->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
         !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
           def->src->readonly))
         virBufferAsprintf(&attrBuf, " snapshot='%s'",

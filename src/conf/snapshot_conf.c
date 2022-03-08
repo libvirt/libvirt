@@ -67,14 +67,6 @@ virDomainSnapshotOnceInit(void)
 
 VIR_ONCE_GLOBAL_INIT(virDomainSnapshot);
 
-VIR_ENUM_IMPL(virDomainSnapshotLocation,
-              VIR_DOMAIN_SNAPSHOT_LOCATION_LAST,
-              "default",
-              "no",
-              "internal",
-              "external",
-);
-
 /* virDomainSnapshotState is really virDomainState plus one extra state */
 VIR_ENUM_IMPL(virDomainSnapshotState,
               VIR_DOMAIN_SNAPSHOT_LAST,
