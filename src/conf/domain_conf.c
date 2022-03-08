@@ -3509,7 +3509,6 @@ virDomainIOThreadIDDefArrayInit(virDomainDef *def,
 {
     size_t i;
     ssize_t nxt = -1;
-    virDomainIOThreadIDDef *iothrid = NULL;
     g_autoptr(virBitmap) thrmap = NULL;
 
     /* Same value (either 0 or some number), then we have none to fill in or
@@ -3534,6 +3533,8 @@ virDomainIOThreadIDDefArrayInit(virDomainDef *def,
 
     /* Populate iothreadids[] using the set bit number from thrmap */
     while (def->niothreadids < iothreads) {
+        g_autoptr(virDomainIOThreadIDDef) iothrid = NULL;
+
         if ((nxt = virBitmapNextSetBit(thrmap, nxt)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to populate iothreadids"));
@@ -3542,7 +3543,7 @@ virDomainIOThreadIDDefArrayInit(virDomainDef *def,
         iothrid = g_new0(virDomainIOThreadIDDef, 1);
         iothrid->iothread_id = nxt;
         iothrid->autofill = true;
-        def->iothreadids[def->niothreadids++] = iothrid;
+        def->iothreadids[def->niothreadids++] = g_steal_pointer(&iothrid);
     }
 
     return 0;
