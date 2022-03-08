@@ -153,6 +153,8 @@ virDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
     virCheckDomainReturn(domain, -1);
     conn = domain->conn;
 
+    virCheckNonNullArgGoto(cmd, error);
+
     if (ninfiles > 0 || outfiles) {
         int rc;
         if ((rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
