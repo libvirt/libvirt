@@ -59,13 +59,7 @@ static virNWFilterTechDriver *filter_tech_drivers[] = {
  * Serializes instantiation of filters.
  *
  * When instantiating a filter, we need to resolve references
- * to other filters and acquire locks on them. The act of
- * looking up a filter requires traversing an array, locking
- * each filter in turn until we find the one we want.
- *
- * The mere act of finding a filter by name, while holding
- * a lock on another filter, introduces deadlocks due to
- * varying lock ordering.
+ * to other filters and acquire locks on them.
  *
  * We retain a lock on the referenced filter once found.
  * The order in which the locks are acquired depends on
