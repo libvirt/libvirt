@@ -119,8 +119,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
     virNetServerClient *client = opaque;
     daemonClientStream *stream;
     daemonClientPrivate *priv = virNetServerClientGetPrivateData(client);
-
-    virMutexLock(&priv->lock);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->lock);
 
     stream = priv->streams;
     while (stream) {
@@ -132,7 +131,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
     if (!stream) {
         VIR_WARN("event for client=%p stream st=%p, but missing stream state", client, st);
         virStreamEventRemoveCallback(st);
-        goto cleanup;
+        return;
     }
 
     VIR_DEBUG("st=%p events=%d EOF=%d closed=%d", st, events, stream->recvEOF, stream->closed);
@@ -142,7 +141,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         if (daemonStreamHandleWrite(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
-            goto cleanup;
+            return;
         }
     }
 
@@ -152,7 +151,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         if (daemonStreamHandleRead(client, stream) < 0) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
-            goto cleanup;
+            return;
         }
         /* If we detected EOF during read processing,
          * then clear hangup/error conditions, since
@@ -177,7 +176,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                 virNetMessageFree(msg);
                 daemonRemoveClientStream(client, stream);
                 virNetServerClientClose(client);
-                goto cleanup;
+                return;
             }
             break;
         case VIR_NET_ERROR:
@@ -187,7 +186,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
                 virNetMessageFree(msg);
                 daemonRemoveClientStream(client, stream);
                 virNetServerClientClose(client);
-                goto cleanup;
+                return;
             }
             break;
         }
@@ -206,7 +205,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         if (!(msg = virNetMessageNew(false))) {
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
-            goto cleanup;
+            return;
         }
         msg->cb = daemonStreamMessageFinished;
         msg->opaque = stream;
@@ -220,7 +219,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
             virNetMessageFree(msg);
             daemonRemoveClientStream(client, stream);
             virNetServerClientClose(client);
-            goto cleanup;
+            return;
         }
     }
 
@@ -263,7 +262,7 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
         daemonRemoveClientStream(client, stream);
         if (ret < 0)
             virNetServerClientClose(client);
-        goto cleanup;
+        return;
     }
 
     if (stream->closed) {
@@ -271,9 +270,6 @@ daemonStreamEvent(virStreamPtr st, int events, void *opaque)
     } else {
         daemonStreamUpdateEvents(stream);
     }
-
- cleanup:
-    virMutexUnlock(&priv->lock);
 }
 
 
@@ -460,13 +456,11 @@ int daemonAddClientStream(virNetServerClient *client,
     if (transmit)
         stream->tx = true;
 
-    virMutexLock(&priv->lock);
-    stream->next = priv->streams;
-    priv->streams = stream;
-
-    daemonStreamUpdateEvents(stream);
-
-    virMutexUnlock(&priv->lock);
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->lock) {
+        stream->next = priv->streams;
+        priv->streams = stream;
+        daemonStreamUpdateEvents(stream);
+    }
 
     return 0;
 }
