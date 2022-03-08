@@ -85,17 +85,6 @@ static int virQEMUConfigOnceInit(void)
 VIR_ONCE_GLOBAL_INIT(virQEMUConfig);
 
 
-static void
-qemuDriverLock(virQEMUDriver *driver)
-{
-    virMutexLock(&driver->lock);
-}
-static void
-qemuDriverUnlock(virQEMUDriver *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 #ifndef DEFAULT_LOADER_NVRAM
 # define DEFAULT_LOADER_NVRAM \
     "/usr/share/OVMF/OVMF_CODE.fd:/usr/share/OVMF/OVMF_VARS.fd:" \
@@ -1279,11 +1268,9 @@ virQEMUDriverConfigSetDefaults(virQEMUDriverConfig *cfg)
 
 virQEMUDriverConfig *virQEMUDriverGetConfig(virQEMUDriver *driver)
 {
-    virQEMUDriverConfig *conf;
-    qemuDriverLock(driver);
-    conf = virObjectRef(driver->config);
-    qemuDriverUnlock(driver);
-    return conf;
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
+
+    return virObjectRef(driver->config);
 }
 
 virDomainXMLOption *
@@ -1303,16 +1290,13 @@ virQEMUDriverCreateXMLConf(virQEMUDriver *driver,
 virCPUDef *
 virQEMUDriverGetHostCPU(virQEMUDriver *driver)
 {
-    virCPUDef *hostcpu;
+    virCPUDef *hostcpu = NULL;
 
-    qemuDriverLock(driver);
-
-    if (!driver->hostcpu)
-        driver->hostcpu = virCPUProbeHost(virArchFromHost());
-
-    hostcpu = driver->hostcpu;
-
-    qemuDriverUnlock(driver);
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        if (!driver->hostcpu)
+            driver->hostcpu = virCPUProbeHost(virArchFromHost());
+        hostcpu = driver->hostcpu;
+    }
 
     if (hostcpu)
         virCPUDefRef(hostcpu);
@@ -1389,32 +1373,27 @@ virCaps *virQEMUDriverCreateCapabilities(virQEMUDriver *driver)
  * Returns: a reference to a virCaps *instance or NULL
  */
 virCaps *virQEMUDriverGetCapabilities(virQEMUDriver *driver,
-                                        bool refresh)
+                                      bool refresh)
 {
-    virCaps *ret = NULL;
     if (refresh) {
         virCaps *caps = NULL;
         if ((caps = virQEMUDriverCreateCapabilities(driver)) == NULL)
             return NULL;
 
-        qemuDriverLock(driver);
-        virObjectUnref(driver->caps);
-        driver->caps = caps;
-    } else {
-        qemuDriverLock(driver);
-
-        if (driver->caps == NULL ||
-            driver->caps->nguests == 0) {
-            VIR_DEBUG("Capabilities didn't detect any guests. Forcing a "
-                      "refresh.");
-            qemuDriverUnlock(driver);
-            return virQEMUDriverGetCapabilities(driver, true);
+        VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+            virObjectUnref(driver->caps);
+            driver->caps = caps;
+            return virObjectRef(driver->caps);
         }
     }
 
-    ret = virObjectRef(driver->caps);
-    qemuDriverUnlock(driver);
-    return ret;
+    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
+        if (driver->caps && driver->caps->nguests > 0)
+            return virObjectRef(driver->caps);
+    }
+
+    VIR_DEBUG("Capabilities didn't detect any guests. Forcing a refresh.");
+    return virQEMUDriverGetCapabilities(driver, true);
 }
 
 
