@@ -57,15 +57,6 @@ static int nwfilterStateReload(void);
 
 static virMutex driverMutex = VIR_MUTEX_INITIALIZER;
 
-static void nwfilterDriverLock(void)
-{
-    virMutexLock(&driverMutex);
-}
-static void nwfilterDriverUnlock(void)
-{
-    virMutexUnlock(&driverMutex);
-}
-
 #ifdef WITH_FIREWALLD
 
 static void
@@ -204,6 +195,7 @@ nwfilterStateInitialize(bool privileged,
                         virStateInhibitCallback callback G_GNUC_UNUSED,
                         void *opaque G_GNUC_UNUSED)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
     GDBusConnection *sysbus = NULL;
 
     if (root != NULL) {
@@ -229,8 +221,6 @@ nwfilterStateInitialize(bool privileged,
 
     if (!privileged)
         return VIR_DRV_STATE_INIT_SKIPPED;
-
-    nwfilterDriverLock();
 
     driver->stateDir = g_strdup(RUNSTATEDIR "/libvirt/nwfilter");
 
@@ -290,13 +280,10 @@ nwfilterStateInitialize(bool privileged,
     if (virNWFilterBuildAll(driver, false) < 0)
         goto error;
 
-    nwfilterDriverUnlock();
-
     return VIR_DRV_STATE_INIT_COMPLETE;
 
  error:
-    nwfilterDriverUnlock();
-    nwfilterStateCleanup();
+    nwfilterStateCleanupLocked();
 
     return VIR_DRV_STATE_INIT_ERROR;
 
@@ -335,16 +322,15 @@ nwfilterStateReload(void)
     /* shut down all threads -- they will be restarted if necessary */
     virNWFilterLearnThreadsTerminate(true);
 
-    nwfilterDriverLock();
-    virNWFilterWriteLockFilterUpdates();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        virNWFilterWriteLockFilterUpdates();
 
-    virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
+        virNWFilterObjListLoadAllConfigs(driver->nwfilters, driver->configDir);
 
-    virNWFilterUnlockFilterUpdates();
+        virNWFilterUnlockFilterUpdates();
 
-    virNWFilterBuildAll(driver, false);
-
-    nwfilterDriverUnlock();
+        virNWFilterBuildAll(driver, false);
+    }
 
     return 0;
 }
@@ -422,13 +408,13 @@ static virNWFilterPtr
 nwfilterLookupByUUID(virConnectPtr conn,
                      const unsigned char *uuid)
 {
-    virNWFilterObj *obj;
+    virNWFilterObj *obj = NULL;
     virNWFilterDef *def;
     virNWFilterPtr nwfilter = NULL;
 
-    nwfilterDriverLock();
-    obj = nwfilterObjFromNWFilter(uuid);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        obj = nwfilterObjFromNWFilter(uuid);
+    }
 
     if (!obj)
         return NULL;
@@ -449,13 +435,13 @@ static virNWFilterPtr
 nwfilterLookupByName(virConnectPtr conn,
                      const char *name)
 {
-    virNWFilterObj *obj;
+    virNWFilterObj *obj = NULL;
     virNWFilterDef *def;
     virNWFilterPtr nwfilter = NULL;
 
-    nwfilterDriverLock();
-    obj = virNWFilterObjListFindByName(driver->nwfilters, name);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        obj = virNWFilterObjListFindByName(driver->nwfilters, name);
+    }
 
     if (!obj) {
         virReportError(VIR_ERR_NO_NWFILTER,
@@ -478,14 +464,15 @@ nwfilterLookupByName(virConnectPtr conn,
 static int
 nwfilterConnectNumOfNWFilters(virConnectPtr conn)
 {
-    int ret;
+    int ret = -1;
     if (virConnectNumOfNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    nwfilterDriverLock();
-    ret = virNWFilterObjListNumOfNWFilters(driver->nwfilters, conn,
-                                           virConnectNumOfNWFiltersCheckACL);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        ret = virNWFilterObjListNumOfNWFilters(driver->nwfilters, conn,
+                                               virConnectNumOfNWFiltersCheckACL);
+    }
+
     return ret;
 }
 
@@ -495,16 +482,17 @@ nwfilterConnectListNWFilters(virConnectPtr conn,
                              char **const names,
                              int maxnames)
 {
-    int nnames;
+    int nnames = -1;
 
     if (virConnectListNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    nwfilterDriverLock();
-    nnames = virNWFilterObjListGetNames(driver->nwfilters, conn,
-                                    virConnectListNWFiltersCheckACL,
-                                    names, maxnames);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        nnames = virNWFilterObjListGetNames(driver->nwfilters, conn,
+                                            virConnectListNWFiltersCheckACL,
+                                            names, maxnames);
+    }
+
     return nnames;
 }
 
@@ -514,17 +502,17 @@ nwfilterConnectListAllNWFilters(virConnectPtr conn,
                                 virNWFilterPtr **nwfilters,
                                 unsigned int flags)
 {
-    int ret;
+    int ret = -1;
 
     virCheckFlags(0, -1);
 
     if (virConnectListAllNWFiltersEnsureACL(conn) < 0)
         return -1;
 
-    nwfilterDriverLock();
-    ret = virNWFilterObjListExport(conn, driver->nwfilters, nwfilters,
-                                   virConnectListAllNWFiltersCheckACL);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        ret = virNWFilterObjListExport(conn, driver->nwfilters, nwfilters,
+                                       virConnectListAllNWFiltersCheckACL);
+    }
 
     return ret;
 }
@@ -535,6 +523,7 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
                        const char *xml,
                        unsigned int flags)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
     virNWFilterDef *def;
     virNWFilterObj *obj = NULL;
     virNWFilterDef *objdef;
@@ -549,7 +538,6 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
         return NULL;
     }
 
-    nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
 
     if (!(def = virNWFilterDefParseString(xml, flags)))
@@ -576,7 +564,6 @@ nwfilterDefineXMLFlags(virConnectPtr conn,
         virNWFilterObjUnlock(obj);
 
     virNWFilterUnlockFilterUpdates();
-    nwfilterDriverUnlock();
     return nwfilter;
 }
 
@@ -592,11 +579,11 @@ nwfilterDefineXML(virConnectPtr conn,
 static int
 nwfilterUndefine(virNWFilterPtr nwfilter)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&driverMutex);
     virNWFilterObj *obj;
     virNWFilterDef *def;
     int ret = -1;
 
-    nwfilterDriverLock();
     virNWFilterWriteLockFilterUpdates();
 
     if (!(obj = nwfilterObjFromNWFilter(nwfilter->uuid)))
@@ -625,7 +612,6 @@ nwfilterUndefine(virNWFilterPtr nwfilter)
         virNWFilterObjUnlock(obj);
 
     virNWFilterUnlockFilterUpdates();
-    nwfilterDriverUnlock();
     return ret;
 }
 
@@ -634,15 +620,15 @@ static char *
 nwfilterGetXMLDesc(virNWFilterPtr nwfilter,
                    unsigned int flags)
 {
-    virNWFilterObj *obj;
+    virNWFilterObj *obj = NULL;
     virNWFilterDef *def;
     char *ret = NULL;
 
     virCheckFlags(0, NULL);
 
-    nwfilterDriverLock();
-    obj = nwfilterObjFromNWFilter(nwfilter->uuid);
-    nwfilterDriverUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&driverMutex) {
+        obj = nwfilterObjFromNWFilter(nwfilter->uuid);
+    }
 
     if (!obj)
         return NULL;
