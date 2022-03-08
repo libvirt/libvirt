@@ -5521,7 +5521,7 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
 
     if (disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
         disk->src->readonly)
-        disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
 
     if (disk->src->type == VIR_STORAGE_TYPE_NETWORK &&
         disk->src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI) {
@@ -5536,7 +5536,7 @@ virDomainDiskDefPostParse(virDomainDiskDef *disk,
     /* vhost-user doesn't allow us to snapshot, disable snapshots by default */
     if (disk->src->type == VIR_STORAGE_TYPE_VHOST_USER &&
         disk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
-        disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        disk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
     }
 
     if (disk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE &&
@@ -23617,7 +23617,7 @@ virDomainDiskDefFormat(virBuffer *buf,
         virBufferAsprintf(&attrBuf, " sgio='%s'", sgio);
 
     if (def->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
-        !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
+        !(def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO &&
           def->src->readonly))
         virBufferAsprintf(&attrBuf, " snapshot='%s'",
                           virDomainSnapshotLocationTypeToString(def->snapshot));

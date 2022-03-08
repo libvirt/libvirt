@@ -692,7 +692,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
         virDomainSnapshotDiskDef *disk = &def->disks[i];
         virDomainDiskDef *dom_disk = vm->def->disks[i];
 
-        if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
+        if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NO &&
             qemuDomainDiskBlockJobIsActive(dom_disk))
             return -1;
 
@@ -757,7 +757,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
             external++;
             break;
 
-        case VIR_DOMAIN_SNAPSHOT_LOCATION_NONE:
+        case VIR_DOMAIN_SNAPSHOT_LOCATION_NO:
             /* Remember seeing a disk that has snapshot disabled */
             if (!virStorageSourceIsEmpty(dom_disk->src) &&
                 !dom_disk->src->readonly)
@@ -773,7 +773,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
     }
 
     if (!found_internal && !external &&
-        def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+        def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("nothing selected for snapshot"));
         return -1;
@@ -1657,7 +1657,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
             def->state = VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT;
         else
             def->state = VIR_DOMAIN_SNAPSHOT_SHUTOFF;
-        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
     } else if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
         def->state = virDomainObjGetState(vm, NULL);
         align_location = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
@@ -1665,7 +1665,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
         def->state = virDomainObjGetState(vm, NULL);
 
         if (virDomainObjIsActive(vm) &&
-            def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+            def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("internal snapshot of a running VM "
                              "must include the memory state"));
@@ -1673,7 +1673,7 @@ qemuSnapshotCreateAlignDisks(virDomainObj *vm,
         }
 
         if (def->state == VIR_DOMAIN_SNAPSHOT_SHUTOFF)
-            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
         else
             def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
     }

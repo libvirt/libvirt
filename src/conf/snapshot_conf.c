@@ -337,11 +337,11 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
         def->memory = (offline ?
-                       VIR_DOMAIN_SNAPSHOT_LOCATION_NONE :
+                       VIR_DOMAIN_SNAPSHOT_LOCATION_NO :
                        VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
     }
     if (offline && def->memory &&
-        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("memory state cannot be saved with offline or "
                          "disk-only snapshot"));
@@ -681,15 +681,15 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
         if (snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
             if (domdisk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
                 (!require_match ||
-                 domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
+                 domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)) {
                 snapdisk->snapshot = domdisk->snapshot;
             } else {
                 snapdisk->snapshot = default_snapshot;
             }
         } else if (require_match &&
                    snapdisk->snapshot != default_snapshot &&
-                   !(snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE &&
-                     domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)) {
+                   !(snapdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO &&
+                     domdisk->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("disk '%s' must use snapshot mode '%s'"),
                            snapdisk->name,
@@ -728,7 +728,7 @@ virDomainSnapshotAlignDisks(virDomainSnapshotDef *snapdef,
 
         /* Don't snapshot empty drives */
         if (virStorageSourceIsEmpty(domdef->disks[i]->src))
-            snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+            snapdisk->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
         else
             snapdisk->snapshot = domdef->disks[i]->snapshot;
 

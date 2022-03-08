@@ -6886,7 +6886,7 @@ qemuDomainSnapshotForEachQcow2Raw(virQEMUDriver *driver,
 
         /* FIXME: we also need to handle LVM here */
         if (def->disks[i]->device != VIR_DOMAIN_DISK_DEVICE_DISK ||
-            snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NONE)
+            snapdef->disks[i].snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_NO)
             continue;
 
         if (!virStorageSourceIsLocalStorage(def->disks[i]->src)) {

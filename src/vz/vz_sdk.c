@@ -4640,7 +4640,7 @@ prlsdkParseSnapshotTree(const char *treexml)
 
         def->parent.description = virXPathString("string(./Description)", ctxt);
 
-        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NONE;
+        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
         xmlstr = virXPathString("string(./@state)", ctxt);
         if (!xmlstr) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",

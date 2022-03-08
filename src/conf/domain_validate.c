@@ -317,7 +317,7 @@ virDomainDiskVhostUserValidate(const virDomainDiskDef *disk)
         return -1;
     }
 
-    if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NONE) {
+    if (disk->snapshot != VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only snapshot=no is supported with vhostuser disk"));
         return -1;
