@@ -160,8 +160,6 @@ The top-level ``domainsnapshot`` element may contain the following elements:
          sub-element can be used with same semantics as the identically named
          subelement of the domain definition disk's driver.
 
-   ``seclabel``
-
 ``creationTime``
 
    A readonly representation of the time this snapshot was created. The time is
