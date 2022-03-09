@@ -124,6 +124,17 @@ The top-level ``domainsnapshot`` element may contain the following elements:
       corresponding domain disk, while others like qemu allow this field to
       override the domain default.
 
+      :since:`Since 1.2.2` the ``disk`` element supports an optional attribute
+      ``type`` if the ``snapshot`` attribute is set to ``external``. This
+      attribute specifies the snapshot target storage type and allows to
+      overwrite the default ``file`` type. The ``type`` attribute along with
+      the format of the ``source`` sub-element is identical to the ``source``
+      element used in domain disk definitions. See the `disk devices
+      <formatdomain.html#elementsDisks>`__ section documentation for further
+      information. Libvirt currently supports the ``type`` element in the qemu
+      driver and supported values are ``file``, ``block`` and ``network`` with
+      a protocol of ``gluster`` :since:`(since 1.2.2)` .
+
       ``source``
 
          If the snapshot mode is external (whether specified or inherited),
@@ -150,17 +161,6 @@ The top-level ``domainsnapshot`` element may contain the following elements:
          subelement of the domain definition disk's driver.
 
    ``seclabel``
-
-      :since:`Since 1.2.2` the ``disk`` element supports an optional attribute
-      ``type`` if the ``snapshot`` attribute is set to ``external``. This
-      attribute specifies the snapshot target storage type and allows to
-      overwrite the default ``file`` type. The ``type`` attribute along with
-      the format of the ``source`` sub-element is identical to the ``source``
-      element used in domain disk definitions. See the `disk devices
-      <formatdomain.html#elementsDisks>`__ section documentation for further
-      information. Libvirt currently supports the ``type`` element in the qemu
-      driver and supported values are ``file``, ``block`` and ``network`` with
-      a protocol of ``gluster`` :since:`(since 1.2.2)` .
 
 ``creationTime``
 
