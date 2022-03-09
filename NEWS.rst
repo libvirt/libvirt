@@ -21,6 +21,9 @@ v8.2.0 (unreleased)
 
 * **Bug fixes**
 
+  * Both build and tests should now pass on Alpine Linux or any other
+    distribution with musl libc.
+
 
 v8.1.0 (2022-03-01)
 ===================
