@@ -55,19 +55,52 @@ static virNWFilterTechDriver *filter_tech_drivers[] = {
     NULL
 };
 
-/* Serializes instantiation of filters. This is necessary
- * to avoid lock ordering deadlocks. eg virNWFilterInstantiateFilterUpdate
- * will hold a lock on a virNWFilterObj *. This in turn invokes
- * virNWFilterDoInstantiate which invokes virNWFilterDetermineMissingVarsRec
- * which invokes virNWFilterObjListFindInstantiateFilter. This iterates over
- * every single virNWFilterObj *in the list. So if 2 threads try to
- * instantiate a filter in parallel, they'll both hold 1 lock at the top level
- * in virNWFilterInstantiateFilterUpdate which will cause the other thread
- * to deadlock in virNWFilterObjListFindInstantiateFilter.
+/*
+ * Serializes instantiation of filters.
  *
- * XXX better long term solution is to make virNWFilterObjList use a
- * hash table as is done for virDomainObjList. You can then get
- * lockless lookup of objects by name.
+ * When instantiating a filter, we need to resolve references
+ * to other filters and acquire locks on them. The act of
+ * looking up a filter requires traversing an array, locking
+ * each filter in turn until we find the one we want.
+ *
+ * The mere act of finding a filter by name, while holding
+ * a lock on another filter, introduces deadlocks due to
+ * varying lock ordering.
+ *
+ * We retain a lock on the referenced filter once found.
+ * The order in which the locks are acquired depends on
+ * the order in which filters reference each other.
+ *
+ * Filter A:
+ *    Reference Filter C
+ *    Reference Filter D
+ *
+ * Filter B:
+ *    Reference Filter D
+ *    Reference Filter C
+ *
+ * In one example, we lock A, C, D, in the other example
+ * we lock A, D, C.
+ *
+ * Because C & D are locked in differing orders we are
+ * once again at risk of deadlocks.
+ *
+ * There can be multiple levels of recursion, so it is
+ * not viable to determine the lock order upfront, it
+ * has to be done as we traverse the tree.
+ *
+ * Thus we serialize any code that needs to traverse
+ * the filter references.
+ *
+ * This covers the following APIs:
+ *
+ *   virNWFilterDefineXML
+ *   virNWFilterUndefine
+ *   virNWFilterBindingCreate
+ *   virNWFilterBindingDelete
+ *
+ * In addition to the asynchronous filter instantiation
+ * triggered by the IP address learning backends.
  */
 static virMutex updateMutex;
 
