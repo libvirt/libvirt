@@ -70,6 +70,7 @@ env = os.environ
 prepend(env, "LD_LIBRARY_PATH", os.path.join(here, "src"))
 prepend(env, "PKG_CONFIG_PATH", os.path.join(here, "src"))
 prepend(env, "PATH", os.path.join(here, "tools"))
+prepend(env, "PATH", os.path.join(here, "src"))
 
 # Ensure that any 3rd party apps using libvirt.so from the build tree get
 # files resolved to the build/source tree too. Typically useful for language
