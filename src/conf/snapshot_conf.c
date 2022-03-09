@@ -221,7 +221,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     size_t i;
     int n;
     g_autofree char *memorySnapshot = NULL;
-    g_autofree char *memoryFile = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
     virSaveCookieCallbacks *saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
     int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
@@ -309,7 +308,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     }
 
     memorySnapshot = virXPathString("string(./memory/@snapshot)", ctxt);
-    memoryFile = virXPathString("string(./memory/@file)", ctxt);
+    def->memorysnapshotfile = virXPathString("string(./memory/@file)", ctxt);
     if (memorySnapshot) {
         def->memory = virDomainSnapshotLocationTypeFromString(memorySnapshot);
         if (def->memory <= 0) {
@@ -318,20 +317,20 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                            memorySnapshot);
             return NULL;
         }
-        if (memoryFile &&
+        if (def->memorysnapshotfile &&
             def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("memory filename '%s' requires external snapshot"),
-                           memoryFile);
+                           def->memorysnapshotfile);
             return NULL;
         }
-        if (!memoryFile &&
+        if (!def->memorysnapshotfile &&
             def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("external memory snapshots require a filename"));
             return NULL;
         }
-    } else if (memoryFile) {
+    } else if (def->memorysnapshotfile) {
         def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
     } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
         def->memory = (offline ?
@@ -345,7 +344,6 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                          "disk-only snapshot"));
         return NULL;
     }
-    def->memorysnapshotfile = g_steal_pointer(&memoryFile);
 
     /* verify that memory path is absolute */
     if (def->memorysnapshotfile && !g_path_is_absolute(def->memorysnapshotfile)) {
