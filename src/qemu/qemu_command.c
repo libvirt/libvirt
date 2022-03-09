@@ -7441,9 +7441,15 @@ qemuBuildIOThreadCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->niothreadids; i++) {
         g_autoptr(virJSONValue) props = NULL;
-        g_autofree char *alias = g_strdup_printf("iothread%u", def->iothreadids[i]->iothread_id);
+        const virDomainIOThreadIDDef *iothread = def->iothreadids[i];
+        g_autofree char *alias = NULL;
 
-        if (qemuMonitorCreateObjectProps(&props, "iothread", alias, NULL) < 0)
+        alias = g_strdup_printf("iothread%u", iothread->iothread_id);
+
+        if (qemuMonitorCreateObjectProps(&props, "iothread", alias,
+                                         "k:thread-pool-min", iothread->thread_pool_min,
+                                         "k:thread-pool-max", iothread->thread_pool_max,
+                                         NULL) < 0)
             return -1;
 
         if (qemuBuildObjectCommandlineFromJSON(cmd, props, qemuCaps) < 0)

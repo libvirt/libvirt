@@ -2038,6 +2038,7 @@ mymain(void)
     DO_TEST("iothreads", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-ids-partial", QEMU_CAPS_OBJECT_IOTHREAD);
+    DO_TEST_CAPS_LATEST("iothreads-ids-pool-sizes");
     DO_TEST_FAILURE_NOCAPS("iothreads-nocap");
     DO_TEST("iothreads-disk", QEMU_CAPS_OBJECT_IOTHREAD);
     DO_TEST("iothreads-disk-virtio-ccw", QEMU_CAPS_OBJECT_IOTHREAD,
