@@ -18,6 +18,7 @@ docs_kbase_files = [
   'rpm-deployment',
   's390_protected_virt',
   'secureusage',
+  'snapshots',
   'systemtap',
   'virtiofs',
 ]
