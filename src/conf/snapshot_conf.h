@@ -51,7 +51,7 @@ G_STATIC_ASSERT((int)VIR_DOMAIN_SNAPSHOT_DISK_SNAPSHOT == VIR_DOMAIN_LAST);
 typedef struct _virDomainSnapshotDiskDef virDomainSnapshotDiskDef;
 struct _virDomainSnapshotDiskDef {
     char *name;     /* name matching the <target dev='...' of the domain */
-    int snapshot;   /* virDomainSnapshotLocation */
+    virDomainSnapshotLocation snapshot;
 
     /* details of wrapper external file. src is always non-NULL.
      * XXX optimize this to allow NULL for internal snapshots? */
@@ -70,7 +70,7 @@ struct _virDomainSnapshotDef {
     /* Additional public XML.  */
     int state; /* virDomainSnapshotState */
 
-    int memory; /* virDomainMemorySnapshot */
+    virDomainSnapshotLocation memory;
     char *memorysnapshotfile; /* memory state file when snapshot is external */
 
     size_t ndisks; /* should not exceed dom->ndisks */

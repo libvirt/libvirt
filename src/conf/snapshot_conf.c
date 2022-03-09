@@ -130,7 +130,6 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
                                  unsigned int flags,
                                  virDomainXMLOption *xmlopt)
 {
-    g_autofree char *snapshot = NULL;
     g_autofree char *driver = NULL;
     g_autofree char *name = NULL;
     g_autoptr(virStorageSource) src = virStorageSourceNew();
@@ -145,16 +144,12 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         return -1;
     }
 
-    snapshot = virXMLPropString(node, "snapshot");
-    if (snapshot) {
-        def->snapshot = virDomainSnapshotLocationTypeFromString(snapshot);
-        if (def->snapshot <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk snapshot setting '%s'"),
-                           snapshot);
-            return -1;
-        }
-    }
+    if (virXMLPropEnumDefault(node, "snapshot",
+                              virDomainSnapshotLocationTypeFromString,
+                              VIR_XML_PROP_NONZERO,
+                              &def->snapshot,
+                              VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) < 0)
+        return -1;
 
     if (virXMLPropEnumDefault(node, "type",
                               virStorageTypeFromString,
@@ -196,7 +191,8 @@ virDomainSnapshotDiskDefParseXML(xmlNodePtr node,
         return -1;
     }
 
-    if (!def->snapshot && (src->path || src->format))
+    if (def->snapshot == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
+        (src->path || src->format))
         def->snapshot = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
 
     def->name = g_steal_pointer(&name);
@@ -220,7 +216,7 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *diskNodes = NULL;
     size_t i;
     int n;
-    g_autofree char *memorySnapshot = NULL;
+    xmlNodePtr memoryNode = NULL;
     bool offline = !!(flags & VIR_DOMAIN_SNAPSHOT_PARSE_OFFLINE);
     virSaveCookieCallbacks *saveCookie = virDomainXMLOptionGetSaveCookie(xmlopt);
     int domainflags = VIR_DOMAIN_DEF_PARSE_INACTIVE |
@@ -307,16 +303,15 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
         return NULL;
     }
 
-    memorySnapshot = virXPathString("string(./memory/@snapshot)", ctxt);
-    def->memorysnapshotfile = virXPathString("string(./memory/@file)", ctxt);
-    if (memorySnapshot) {
-        def->memory = virDomainSnapshotLocationTypeFromString(memorySnapshot);
-        if (def->memory <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown memory snapshot setting '%s'"),
-                           memorySnapshot);
+    if ((memoryNode = virXPathNode("./memory", ctxt))) {
+        def->memorysnapshotfile = virXMLPropString(memoryNode, "file");
+
+        if (virXMLPropEnumDefault(memoryNode, "snapshot",
+                                  virDomainSnapshotLocationTypeFromString,
+                                  VIR_XML_PROP_NONZERO,
+                                  &def->memory,
+                                  VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) < 0)
             return NULL;
-        }
     }
 
     if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
