@@ -1863,6 +1863,7 @@ vshDebug(vshControl *ctl, int level, const char *format, ...)
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
+    fflush(stdout);
 }
 
 void
@@ -1878,6 +1879,7 @@ vshPrintExtra(vshControl *ctl, const char *format, ...)
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
+    fflush(stdout);
 }
 
 
@@ -1891,6 +1893,7 @@ vshPrint(vshControl *ctl G_GNUC_UNUSED, const char *format, ...)
     str = g_strdup_vprintf(format, ap);
     va_end(ap);
     fputs(str, stdout);
+    fflush(stdout);
 }
 
 
@@ -2938,6 +2941,7 @@ vshReadline(vshControl *ctl G_GNUC_UNUSED,
     int len;
 
     fputs(prompt, stdout);
+    fflush(stdout);
     r = fgets(line, sizeof(line), stdin);
     if (r == NULL) return NULL; /* EOF */
 
