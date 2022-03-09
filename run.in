@@ -43,6 +43,7 @@
 import os
 import os.path
 import random
+import signal
 import sys
 import subprocess
 
@@ -155,6 +156,13 @@ else:
     print("Temporarily stopping systemd units...")
     stopped_units = []
 
+    def sighandler(signum, frame):
+        raise OSError("Signal %d received, terminating" % signum)
+
+    signal.signal(signal.SIGHUP, sighandler)
+    signal.signal(signal.SIGTERM, sighandler)
+    signal.signal(signal.SIGQUIT, sighandler)
+
     try:
         for unit in try_stop_units:
             print(" > %s" % unit)
@@ -167,6 +175,8 @@ else:
         ret = subprocess.call(args, env=env)
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        print("%s" % e, file=sys.stderr)
     finally:
         print("Re-starting original systemd units...")
         stopped_units.reverse()
