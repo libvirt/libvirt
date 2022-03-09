@@ -132,8 +132,8 @@ The top-level ``domainsnapshot`` element may contain the following elements:
       element used in domain disk definitions. See the `disk devices
       <formatdomain.html#elementsDisks>`__ section documentation for further
       information. Libvirt currently supports the ``type`` element in the qemu
-      driver and supported values are ``file``, ``block`` and ``network`` with
-      a protocol of ``gluster`` :since:`(since 1.2.2)` .
+      driver and supported values are ``file``, ``block`` and ``network``
+      :since:`(since 1.2.2)`.
 
       ``source``
 
