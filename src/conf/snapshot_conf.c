@@ -317,27 +317,37 @@ virDomainSnapshotDefParse(xmlXPathContextPtr ctxt,
                            memorySnapshot);
             return NULL;
         }
-        if (def->memorysnapshotfile &&
-            def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("memory filename '%s' requires external snapshot"),
-                           def->memorysnapshotfile);
-            return NULL;
-        }
-        if (!def->memorysnapshotfile &&
-            def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("external memory snapshots require a filename"));
-            return NULL;
-        }
-    } else if (def->memorysnapshotfile) {
-        def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
-    } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
-        def->memory = (offline ?
-                       VIR_DOMAIN_SNAPSHOT_LOCATION_NO :
-                       VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL);
     }
-    if (offline && def->memory &&
+
+    if (def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT) {
+        if (def->memorysnapshotfile) {
+            def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL;
+        } else if (flags & VIR_DOMAIN_SNAPSHOT_PARSE_REDEFINE) {
+            if (offline) {
+                def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_NO;
+            } else {
+                def->memory = VIR_DOMAIN_SNAPSHOT_LOCATION_INTERNAL;
+            }
+        }
+    }
+
+    if (def->memorysnapshotfile &&
+        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("memory filename '%s' requires external snapshot"),
+                       def->memorysnapshotfile);
+        return NULL;
+    }
+
+    if (!def->memorysnapshotfile &&
+        def->memory == VIR_DOMAIN_SNAPSHOT_LOCATION_EXTERNAL) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("external memory snapshots require a filename"));
+        return NULL;
+    }
+
+    if (offline &&
+        def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_DEFAULT &&
         def->memory != VIR_DOMAIN_SNAPSHOT_LOCATION_NO) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("memory state cannot be saved with offline or "
