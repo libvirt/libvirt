@@ -883,7 +883,8 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
                                                     const char *host,
                                                     int port,
                                                     const char *socket,
-                                                    const char *tlsAlias)
+                                                    const char *tlsAlias,
+                                                    const char *tlsHostname)
 {
     g_autoptr(virStorageSource) copysrc = NULL;
 
@@ -910,6 +911,7 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
     }
 
     copysrc->tlsAlias = g_strdup(tlsAlias);
+    copysrc->tlsHostname = g_strdup(tlsHostname);
 
     copysrc->nodestorage = g_strdup_printf("migration-%s-storage", disk->dst);
     copysrc->nodeformat = g_strdup_printf("migration-%s-format", disk->dst);
@@ -931,6 +933,7 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
                                        unsigned long long mirror_speed,
                                        unsigned int mirror_shallow,
                                        const char *tlsAlias,
+                                       const char *tlsHostname,
                                        bool syncWrites)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
@@ -940,7 +943,8 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virQEMUDriver *driver,
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", disk->dst, host);
 
-    if (!(copysrc = qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(disk, host, port, socket, tlsAlias)))
+    if (!(copysrc = qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(disk, host, port, socket,
+                                                                        tlsAlias, tlsHostname)))
         return -1;
 
     /* Migration via blockdev-mirror was supported sooner than the auto-read-only
@@ -1025,6 +1029,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
                                   unsigned long long mirror_speed,
                                   bool mirror_shallow,
                                   const char *tlsAlias,
+                                  const char *tlsHostname,
                                   unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -1065,6 +1070,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
                                                     mirror_speed,
                                                     mirror_shallow,
                                                     tlsAlias,
+                                                    tlsHostname,
                                                     syncWrites);
     } else {
         rc = qemuMigrationSrcNBDStorageCopyDriveMirror(driver, vm, diskAlias,
@@ -1114,6 +1120,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
                                const char **migrate_disks,
                                virConnectPtr dconn,
                                const char *tlsAlias,
+                               const char *tlsHostname,
                                const char *nbdURI,
                                unsigned int flags)
 {
@@ -1136,6 +1143,11 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
         return -1;
     }
     mirror_speed <<= 20;
+
+    /* If qemu doesn't support overriding of TLS hostname for NBD connections
+     * we won't attempt it */
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME))
+        tlsHostname = NULL;
 
     /* steal NBD port and thus prevent its propagation back to destination */
     port = mig->nbd->port;
@@ -1185,7 +1197,7 @@ qemuMigrationSrcNBDStorageCopy(virQEMUDriver *driver,
         if (qemuMigrationSrcNBDStorageCopyOne(driver, vm, disk, host, port,
                                               socket,
                                               mirror_speed, mirror_shallow,
-                                              tlsAlias, flags) < 0)
+                                              tlsAlias, tlsHostname, flags) < 0)
             return -1;
 
         if (virDomainObjSave(vm, driver->xmlopt, cfg->stateDir) < 0) {
@@ -4138,6 +4150,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     if (storageMigration) {
         if (mig->nbd) {
             const char *host = "";
+            const char *tlsHostname = qemuMigrationParamsGetTLSHostname(migParams);
 
             if (spec->destType == MIGRATION_DEST_HOST ||
                 spec->destType == MIGRATION_DEST_CONNECT_HOST) {
@@ -4157,7 +4170,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                                priv->migMaxBandwidth,
                                                nmigrate_disks,
                                                migrate_disks,
-                                               dconn, tlsAlias,
+                                               dconn, tlsAlias, tlsHostname,
                                                nbdURI, flags) < 0) {
                 goto error;
             }

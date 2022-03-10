@@ -167,3 +167,6 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
 bool
 qemuMigrationCapsGet(virDomainObj *vm,
                      qemuMigrationCapability cap);
+
+const char *
+qemuMigrationParamsGetTLSHostname(qemuMigrationParams *migParams);

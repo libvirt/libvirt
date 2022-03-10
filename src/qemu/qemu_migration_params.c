@@ -1464,3 +1464,20 @@ qemuMigrationCapsGet(virDomainObj *vm,
 
     return enabled;
 }
+
+
+/**
+ * qemuMigrationParamsGetTLSHostname:
+ * @migParams: Migration params object
+ *
+ * Fetches the value of the QEMU_MIGRATION_PARAM_TLS_HOSTNAME parameter which is
+ * passed from the user as VIR_MIGRATE_PARAM_TLS_DESTINATION
+ */
+const char *
+qemuMigrationParamsGetTLSHostname(qemuMigrationParams *migParams)
+{
+    if (!migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].set)
+        return NULL;
+
+    return migParams->params[QEMU_MIGRATION_PARAM_TLS_HOSTNAME].value.s;
+}
