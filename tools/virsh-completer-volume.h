@@ -33,3 +33,9 @@ char **
 virshStorageVolKeyCompleter(vshControl *ctl,
                             const vshCmd *cmd,
                             unsigned int flags);
+
+
+char **
+virshStorageVolWipeAlgorithmCompleter(vshControl *ctl,
+                                      const vshCmd *cmd,
+                                      unsigned int flags);

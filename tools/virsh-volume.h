@@ -33,3 +33,5 @@ virStorageVolPtr virshCommandOptVolBy(vshControl *ctl, const vshCmd *cmd,
                          VIRSH_BYUUID | VIRSH_BYNAME)
 
 extern const vshCmdDef storageVolCmds[];
+
+VIR_ENUM_DECL(virshStorageVolWipeAlgorithm);

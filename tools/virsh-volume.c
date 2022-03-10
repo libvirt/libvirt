@@ -902,12 +902,12 @@ static const vshCmdOptDef opts_vol_wipe[] = {
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
     {.name = "algorithm",
      .type = VSH_OT_STRING,
+     .completer = virshStorageVolWipeAlgorithmCompleter,
      .help = N_("perform selected wiping algorithm")
     },
     {.name = NULL}
 };
 
-VIR_ENUM_DECL(virshStorageVolWipeAlgorithm);
 VIR_ENUM_IMPL(virshStorageVolWipeAlgorithm,
               VIR_STORAGE_VOL_WIPE_ALG_LAST,
               "zero", "nnsa", "dod", "bsi", "gutmann", "schneier",
