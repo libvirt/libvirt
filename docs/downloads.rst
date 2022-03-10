@@ -27,8 +27,7 @@ Libvirt
     - `libvirt <https://libvirt.org/sources/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt>`__
     - `issues <https://gitlab.com/libvirt/libvirt/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt>`__
+    - `github <https://github.com/libvirt/libvirt>`__
     - `api ref <html/index.html>`__
       `changes <news.html>`__
 
@@ -49,40 +48,35 @@ Language bindings
     - `libvirt <https://libvirt.org/sources/csharp/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-csharp>`__
     - `issues <https://gitlab.com/libvirt/libvirt-csharp/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-csharp.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-csharp>`__
+    - `github <https://github.com/libvirt/libvirt-csharp>`__
     -
 
   * - Go
     - `libvirt <https://libvirt.org/go/libvirt>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-go-module>`__
     - `issues <https://gitlab.com/libvirt/libvirt-go-module/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-go-module.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-go-module>`__
+    - `github <https://github.com/libvirt/libvirt-go-module>`__
     - `api ref <https://pkg.go.dev/libvirt.org/go/libvirt>`__
 
   * - Java
     - `libvirt <https://libvirt.org/sources/java/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-java>`__
     - `issues <https://gitlab.com/libvirt/libvirt-java/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-java.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-java>`__
+    - `github <https://github.com/libvirt/libvirt-java>`__
     -
 
   * - OCaml
     - `libvirt <https://libvirt.org/sources/ocaml/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-ocaml>`__
     - `issues <https://gitlab.com/libvirt/libvirt-ocaml/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-ocaml.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-ocaml>`__
+    - `github <https://github.com/libvirt/libvirt-ocaml>`__
     -
 
   * - Perl (Sys::Virt)
     - `cpan <https://metacpan.org/release/Sys-Virt/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-perl>`__
     - `issues <https://gitlab.com/libvirt/libvirt-perl/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-perl.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-perl>`__
+    - `github <https://github.com/libvirt/libvirt-perl>`__
     - `api ref <https://metacpan.org/release/Sys-Virt/>`__
       `changes <https://libvirt.org/git/?p=libvirt-perl.git;a=blob;f=Changes;hb=HEAD>`__
 
@@ -90,8 +84,7 @@ Language bindings
     - `libvirt <https://libvirt.org/sources/php/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-php>`__
     - `issues <https://gitlab.com/libvirt/libvirt-php/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-php.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-php>`__
+    - `github <https://github.com/libvirt/libvirt-php>`__
     -
 
   * - Python
@@ -99,24 +92,21 @@ Language bindings
       `pypi <https://pypi.python.org/pypi/libvirt-python>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-python>`__
     - `issues <https://gitlab.com/libvirt/libvirt-python/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-python.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-python>`__
+    - `github <https://github.com/libvirt/libvirt-python>`__
     -
 
   * - Ruby
     - `libvirt <https://libvirt.org/sources/ruby/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-ruby>`__
     - `issues <https://gitlab.com/libvirt/libvirt-ruby/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-ruby.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-ruby>`__
+    - `github <https://github.com/libvirt/libvirt-ruby>`__
     -
 
   * - Rust
     - `crates.io <https://crates.io/crates/virt>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-rust>`__
     - `issues <https://gitlab.com/libvirt/libvirt-rust/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-rust.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-rust>`__
+    - `github <https://github.com/libvirt/libvirt-rust>`__
     - `api ref <https://docs.rs/virt>`__
 
 Integration modules
@@ -136,64 +126,56 @@ Integration modules
     - `libvirt <https://libvirt.org/sources/glib/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-glib>`__
     - `issues <https://gitlab.com/libvirt/libvirt-glib/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-glib.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-glib>`__
+    - `github <https://github.com/libvirt/libvirt-glib>`__
     -
 
   * - Go XML
     - `libvirt <https://libvirt.org/go/libvirtxml>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-go-xml-module>`__
     - `issues <https://gitlab.com/libvirt/libvirt-go-xml-module/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-go-xml-module.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-go-xml-module>`__
+    - `github <https://github.com/libvirt/libvirt-go-xml-module>`__
     - `api ref <https://pkg.go.dev/libvirt.org/go/libvirtxml>`__
 
   * - D-Bus
     - `libvirt <https://libvirt.org/sources/dbus/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-dbus>`__
     - `issues <https://gitlab.com/libvirt/libvirt-dbus/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-dbus.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-dbus>`__
+    - `github <https://github.com/libvirt/libvirt-dbus>`__
     -
 
   * - Console Proxy
     - `libvirt <https://libvirt.org/sources/consoleproxy/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-console-proxy>`__
     - `issues <https://gitlab.com/libvirt/libvirt-console-proxy/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-console-proxy.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-console-proxy>`__
+    - `github <https://github.com/libvirt/libvirt-console-proxy>`__
     -
 
   * - CIM provider
     - `libvirt <https://libvirt.org/sources/CIM/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-cim>`__
     - `issues <https://gitlab.com/libvirt/libvirt-cim/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-cim.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-cim>`__
+    - `github <https://github.com/libvirt/libvirt-cim>`__
     -
 
   * - CIM utils
     - `libvirt <https://libvirt.org/sources/CIM/>`__
     - `gitlab <https://gitlab.com/libvirt/libcmpiutil>`__
     - `issues <https://gitlab.com/libvirt/libcmpiutil/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libcmpiutil.git;a=summary>`__
-      `github <https://github.com/libvirt/libcmpiutil>`__
+    - `github <https://github.com/libvirt/libcmpiutil>`__
     -
 
   * - SNMP
     - `libvirt <https://libvirt.org/sources/snmp/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-snmp>`__
     - `issues <https://gitlab.com/libvirt/libvirt-snmp/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-snmp.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-snmp>`__
+    - `github <https://github.com/libvirt/libvirt-snmp>`__
     -
 
   * - Application Sandbox
     - `libvirt <https://libvirt.org/sources/sandbox/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-sandbox>`__
     - `issues <https://gitlab.com/libvirt/libvirt-sandbox/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-sandbox.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-sandbox>`__
+    - `github <https://github.com/libvirt/libvirt-sandbox>`__
     -
 
 Testing
@@ -212,29 +194,25 @@ Testing
     - `libvirt <https://libvirt.org/sources/tck/>`__
     - `gitlab <https://gitlab.com/libvirt/libvirt-tck>`__
     - `issues <https://gitlab.com/libvirt/libvirt-tck/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-tck.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-tck>`__
+    - `github <https://github.com/libvirt/libvirt-tck>`__
 
   * - Test API
     -
     - `gitlab <https://gitlab.com/libvirt/libvirt-test-API>`__
     - `issues <https://gitlab.com/libvirt/libvirt-test-API/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-test-API.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-test-API>`__
+    - `github <https://github.com/libvirt/libvirt-test-API>`__
 
   * - Continuous Integration Config
     -
     - `gitlab <https://gitlab.com/libvirt/libvirt-ci>`__
     - `issues <https://gitlab.com/libvirt/libvirt-ci/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-ci.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-ci>`__
+    - `github <https://github.com/libvirt/libvirt-ci>`__
 
   * - CIM Test
     -
     - `gitlab <https://gitlab.com/libvirt/cimtest>`__
     - `issues <https://gitlab.com/libvirt/cimtest/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=cimtest.git;a=summary>`__
-      `github <https://github.com/libvirt/cimtest>`__
+    - `github <https://github.com/libvirt/cimtest>`__
 
 Documentation
 ~~~~~~~~~~~~~
@@ -250,26 +228,22 @@ Documentation
   * - Publican Brand
     - `gitlab <https://gitlab.com/libvirt/libvirt-publican>`__
     - `issues <https://gitlab.com/libvirt/libvirt-publican/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-publican.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-publican>`__
+    - `github <https://github.com/libvirt/libvirt-publican>`__
 
   * - App Development Guide
     - `gitlab <https://gitlab.com/libvirt/libvirt-appdev-guide>`__
     - `issues <https://gitlab.com/libvirt/libvirt-appdev-guide/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-appdev-guide.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-appdev-guide>`__
+    - `github <https://github.com/libvirt/libvirt-appdev-guide>`__
 
   * - App Development Guide Python
     - `gitlab <https://gitlab.com/libvirt/libvirt-appdev-guide-python>`__
     - `issues <https://gitlab.com/libvirt/libvirt-appdev-guide-python/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-appdev-guide-python.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-appdev-guide-python>`__
+    - `github <https://github.com/libvirt/libvirt-appdev-guide-python>`__
 
   * - virsh Command Reference
     - `gitlab <https://gitlab.com/libvirt/libvirt-virshcmdref>`__
     - `issues <https://gitlab.com/libvirt/libvirt-virshcmdref/-/issues>`__
-    - `libvirt <https://libvirt.org/git/?p=libvirt-virshcmdref.git;a=summary>`__
-      `github <https://github.com/libvirt/libvirt-virshcmdref>`__
+    - `github <https://github.com/libvirt/libvirt-virshcmdref>`__
 
 Primary download site
 ---------------------
