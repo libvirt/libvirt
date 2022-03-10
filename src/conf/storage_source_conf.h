@@ -358,6 +358,9 @@ struct _virStorageSource {
     char *tlsAlias;
     char *tlsCertdir;
 
+    /* TLS hostname override */
+    char *tlsHostname;
+
     bool detected; /* true if this entry was not provided by the user */
 
     unsigned int debugLevel;

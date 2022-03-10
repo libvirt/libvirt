@@ -827,6 +827,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->compat = g_strdup(src->compat);
     def->tlsAlias = g_strdup(src->tlsAlias);
     def->tlsCertdir = g_strdup(src->tlsCertdir);
+    def->tlsHostname = g_strdup(src->tlsHostname);
     def->query = g_strdup(src->query);
 
     if (src->sliceStorage)
@@ -1137,6 +1138,7 @@ virStorageSourceClear(virStorageSource *def)
 
     VIR_FREE(def->tlsAlias);
     VIR_FREE(def->tlsCertdir);
+    VIR_FREE(def->tlsHostname);
 
     VIR_FREE(def->ssh_user);
 
