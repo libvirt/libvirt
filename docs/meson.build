@@ -55,7 +55,6 @@ docs_html_in_files = [
   'python',
   'remote',
   'storage',
-  'testsuites',
   'tlscerts',
   'uri',
   'windows',
@@ -111,6 +110,7 @@ docs_rst_files = [
   'submitting-patches',
   'support',
   'testapi',
+  'testsuites',
   'testtck',
 ]
 
