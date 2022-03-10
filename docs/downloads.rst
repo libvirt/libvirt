@@ -314,24 +314,31 @@ GIT source repository
 ---------------------
 
 All modules maintained by the libvirt project have their primary source
-available in the `project GIT server <https://libvirt.org/git/>`__. Each module
-can be cloned anonymously using:
+available in the `libvirt group on GitLab <https://gitlab.com/libvirt.org/>`__.
+Each module can be cloned anonymously using:
+
+::
+
+   git clone https://gitlab.com/libvirt/[module name].git
+
+In addition to this primary repository, there are mirrored read-only git
+repositories on GitHub:
+
+::
+
+   https://github.com/libvirt/
+
+And there are also read-only mirrors on libvirt.org:
 
 ::
 
    git clone https://libvirt.org/git/[module name].git
 
-In addition to this primary repository, there are the following read-only git
-repositories which mirror the master one. Note that we currently do not use the
-full set of features on these mirrors (e.g. pull requests on GitHub, so please
-don't use them). All patch review and discussion only occurs on the
-`libvir-list <contact.html>`__ mailing list. Also note that some repositories
-listed below allow HTTP checkouts too.
+Note that for most repositories, development happens via merge requests
+on GitLab. However, for the main `libvirt.git` repository all patch review and
+discussion only occurs on the `libvir-list <contact.html>`__ mailing list.
 
-::
-
-   https://github.com/libvirt/
-   https://gitlab.com/libvirt/
+The GitHub repository is read-only and pull requests and issues there are ignored.
 
 Signing keys
 ------------
