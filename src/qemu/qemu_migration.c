@@ -1035,7 +1035,7 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuBlockJobData *job = NULL;
-    char *diskAlias = NULL;
+    g_autofree char *diskAlias = NULL;
     const char *jobname = NULL;
     const char *sourcename = NULL;
     bool persistjob = false;
@@ -1044,10 +1044,10 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
     int ret = -1;
 
     if (!(diskAlias = qemuAliasDiskDriveFromDisk(disk)))
-        goto cleanup;
+        return -1;
 
     if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_COPY, diskAlias)))
-        goto cleanup;
+        return -1;
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
         jobname = diskAlias;
@@ -1079,17 +1079,13 @@ qemuMigrationSrcNBDStorageCopyOne(virQEMUDriver *driver,
                                                        mirror_shallow);
     }
 
-    if (rc < 0)
-        goto cleanup;
+    if (rc == 0) {
+        diskPriv->migrating = true;
+        qemuBlockJobStarted(job, vm);
+        ret = 0;
+    }
 
-    diskPriv->migrating = true;
-    qemuBlockJobStarted(job, vm);
-
-    ret = 0;
-
- cleanup:
     qemuBlockJobStartupFinalize(vm, job);
-    VIR_FREE(diskAlias);
     return ret;
 }
 
