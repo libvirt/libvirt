@@ -321,13 +321,6 @@ can be cloned anonymously using:
 
    git clone https://libvirt.org/git/[module name].git
 
-The ``git://`` protocol is also available if desired, but ``https://`` is
-encouraged, since it is more reliable when faced with strict firewalls.
-
-::
-
-   git clone git://libvirt.org/[module name].git
-
 In addition to this primary repository, there are the following read-only git
 repositories which mirror the master one. Note that we currently do not use the
 full set of features on these mirrors (e.g. pull requests on GitHub, so please
