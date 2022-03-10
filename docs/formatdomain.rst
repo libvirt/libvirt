@@ -1406,15 +1406,15 @@ In case no restrictions need to be put on CPU model and its features, a simpler
       expected. :since:`Since 3.2.0 and QEMU 2.9.0` this mode works the way it
       was designed and it is indicated by the ``fallback`` attribute set to
       ``forbid`` in the host-model CPU definition advertised in `domain
-      capabilities XML <formatdomaincaps.html#elementsCPU>`__. When ``fallback``
-      attribute is set to ``allow`` in the domain capabilities XML, it is
-      recommended to use ``custom`` mode with just the CPU model from the host
-      capabilities XML. :since:`Since 1.2.11` PowerISA allows processors to run
-      VMs in binary compatibility mode supporting an older version of ISA.
-      Libvirt on PowerPC architecture uses the ``host-model`` to signify a guest
-      mode CPU running in binary compatibility mode. Example: When a user needs
-      a power7 VM to run in compatibility mode on a Power8 host, this can be
-      described in XML as follows :
+      capabilities XML <formatdomaincaps.html#cpu-configuration>`__. When
+      ``fallback`` attribute is set to ``allow`` in the domain capabilities
+      XML, it is recommended to use ``custom`` mode with just the CPU model
+      from the host capabilities XML. :since:`Since 1.2.11` PowerISA allows
+      processors to run VMs in binary compatibility mode supporting an older
+      version of ISA.  Libvirt on PowerPC architecture uses the ``host-model``
+      to signify a guest mode CPU running in binary compatibility mode.
+      Example: When a user needs a power7 VM to run in compatibility mode on a
+      Power8 host, this can be described in XML as follows :
 
       ::
 
@@ -2902,7 +2902,7 @@ paravirtualized driver is specified via the ``disk`` element.
    This element describes the backing store used by the disk specified by
    sibling ``source`` element. :since:`Since 1.2.4.` If the hypervisor driver
    does not support the
-   `backingStoreInput <formatdomaincaps.html#featureBackingStoreInput>`__ (
+   `backingStoreInput <formatdomaincaps.html#backingstoreinput>`__ (
    :since:`Since 5.10.0` ) domain feature the ``backingStore`` is ignored on
    input and only used for output to describe the detected backing chains of
    running domains. If ``backingStoreInput`` is supported the ``backingStore``
