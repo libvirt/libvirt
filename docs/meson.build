@@ -29,7 +29,6 @@ docs_html_in_files = [
   'drvlxc',
   'drvnodedev',
   'drvopenvz',
-  'drvremote',
   'drvsecret',
   'drvtest',
   'drvvbox',
