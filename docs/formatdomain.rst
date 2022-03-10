@@ -2653,7 +2653,9 @@ paravirtualized driver is specified via the ``disk`` element.
       be enabled by setting the ``tls`` attribute to ``yes``. For the QEMU
       hypervisor, usage of a TLS environment can also be globally controlled on
       the host by the ``nbd_tls`` and ``nbd_tls_x509_cert_dir`` in
-      /etc/libvirt/qemu.conf. ('tls' :since:`Since 4.5.0` )
+      /etc/libvirt/qemu.conf. ('tls' :since:`Since 4.5.0` ) :since:`Since 8.2.0`
+      the optional attribute ``tlsHostname`` can be used to override the
+      expected host name of the NBD server used for TLS certificate verification.
 
       For protocols ``http`` and ``https`` an optional attribute ``query``
       specifies the query string. ( :since:`Since 6.2.0` )

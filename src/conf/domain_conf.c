@@ -8301,6 +8301,8 @@ virDomainDiskSourceNetworkParse(xmlNodePtr node,
                                &src->haveTLS) < 0)
         return -1;
 
+    src->tlsHostname = virXMLPropString(node, "tlsHostname");
+
     if (flags & VIR_DOMAIN_DEF_PARSE_STATUS) {
         int value;
         if (virXMLPropInt(node, "tlsFromConfig", 10, VIR_XML_PROP_NONE,
@@ -23052,6 +23054,7 @@ virDomainDiskSourceFormatNetwork(virBuffer *attrBuf,
           src->tlsFromConfig))
         virBufferAsprintf(attrBuf, " tls='%s'",
                           virTristateBoolTypeToString(src->haveTLS));
+    virBufferEscapeString(attrBuf, " tlsHostname='%s'", src->tlsHostname);
     if (flags & VIR_DOMAIN_DEF_FORMAT_STATUS)
         virBufferAsprintf(attrBuf, " tlsFromConfig='%d'", src->tlsFromConfig);
 

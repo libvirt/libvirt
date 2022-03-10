@@ -2071,6 +2071,9 @@
             <ref name="virYesNo"/>
           </attribute>
         </optional>
+        <optional>
+          <attribute name="tlsHostname"/>
+        </optional>
         <ref name="diskSourceCommon"/>
         <ref name="diskSourceNetworkHost"/>
         <optional>
