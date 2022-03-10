@@ -1620,7 +1620,7 @@ exclude_file_name_regexp--sc_prohibit_newline_at_end_of_diagnostic = \
   ^src/rpc/gendispatch\.pl$$
 
 exclude_file_name_regexp--sc_prohibit_nonreentrant = \
-  ^((po|tests|examples)/|docs/.*(py|js|html\.in)|run.in$$|tools/wireshark/util/genxdrstub\.pl|tools/virt-login-shell\.c$$)
+  ^((po|tests|examples)/|docs/.*(py|js|html\.in|.rst)|run.in$$|tools/wireshark/util/genxdrstub\.pl|tools/virt-login-shell\.c$$)
 
 exclude_file_name_regexp--sc_prohibit_select = \
 	^build-aux/syntax-check\.mk$$
