@@ -19,6 +19,12 @@ v8.2.0 (unreleased)
 
 * **Improvements**
 
+  * qemu: ``VIR_MIGRATE_PARAM_TLS_DESTINATION`` now works with non-shared storage migration
+
+    The setting now also applies to the NBD connections for non-shared storage
+    migration allowing migration to proceed even when the user expects certificate
+    name not to match.
+
 * **Bug fixes**
 
   * Both build and tests should now pass on Alpine Linux or any other
