@@ -227,8 +227,6 @@ qemuBlockJobUnregister(qemuBlockJobData *job,
  * @disk: disk definition
  *
  * Start/associate a new blockjob with @disk.
- *
- * Returns 0 on success and -1 on failure.
  */
 qemuBlockJobData *
 qemuBlockJobDiskNew(virDomainObj *vm,
