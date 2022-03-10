@@ -57,7 +57,6 @@ docs_html_in_files = [
   'python',
   'remote',
   'storage',
-  'testapi',
   'testsuites',
   'testtck',
   'tlscerts',
@@ -112,6 +111,7 @@ docs_rst_files = [
   'styleguide',
   'submitting-patches',
   'support',
+  'testapi',
 ]
 
 # list of web targets to build for docs/web rule
