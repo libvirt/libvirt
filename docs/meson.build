@@ -20,7 +20,6 @@ docs_assets = [
 docs_html_in_files = [
   '404',
   'cgroups',
-  'contact',
   'csharp',
   'dbus',
   'docs',
@@ -81,6 +80,7 @@ docs_rst_files = [
   'coding-style',
   'committer-guidelines',
   'compiling',
+  'contact',
   'contribute',
   'daemons',
   'developer-tooling',
