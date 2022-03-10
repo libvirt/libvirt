@@ -243,6 +243,7 @@
   <flag name='virtio-mem-pci.prealloc'/>
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
