@@ -4862,6 +4862,21 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         }
     }
 
+    if (src->tlsHostname) {
+        if (actualType != VIR_STORAGE_TYPE_NETWORK ||
+            src->protocol != VIR_STORAGE_NET_PROTOCOL_NBD) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'tlsHostname' field is supported only with NBD disks"));
+            return -1;
+        }
+
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("'tlsHostname' field is not supported by this QEMU"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

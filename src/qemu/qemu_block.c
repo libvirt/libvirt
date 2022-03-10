@@ -843,6 +843,7 @@ qemuBlockStorageSourceGetNBDProps(virStorageSource *src,
 {
     g_autoptr(virJSONValue) serverprops = NULL;
     const char *tlsAlias = src->tlsAlias;
+    const char *tlsHostname = src->tlsHostname;
     virJSONValue *ret = NULL;
 
     if (src->nhosts != 1) {
@@ -856,13 +857,16 @@ qemuBlockStorageSourceGetNBDProps(virStorageSource *src,
     if (!serverprops)
         return NULL;
 
-    if (onlytarget)
+    if (onlytarget) {
         tlsAlias = NULL;
+        tlsHostname = NULL;
+    }
 
     if (virJSONValueObjectAdd(&ret,
                               "a:server", &serverprops,
                               "S:export", src->path,
                               "S:tls-creds", tlsAlias,
+                              "S:tls-hostname", tlsHostname,
                               NULL) < 0)
         return NULL;
 
