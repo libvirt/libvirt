@@ -4166,7 +4166,8 @@ or:
       specifies the device API which determines how the host's vfio driver will
       expose the device to the guest. Currently, ``model='vfio-pci'``,
       ``model='vfio-ccw'`` ( :since:`Since 4.4.0` ) and ``model='vfio-ap'`` (
-      :since:`Since 4.9.0` ) is supported. `MDEV <drvnodedev.html#MDEV>`__
+      :since:`Since 4.9.0` ) is supported.
+      `MDEV <drvnodedev.html#mediated-devices-mdevs>`__
       section provides more information about mediated devices as well as how to
       create mediated devices on the host. :since:`Since 4.6.0 (QEMU 2.12)` an
       optional ``display`` attribute may be used to enable or disable support
