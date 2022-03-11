@@ -314,7 +314,7 @@ GIT source repository
 ---------------------
 
 All modules maintained by the libvirt project have their primary source
-available in the `libvirt group on GitLab <https://gitlab.com/libvirt.org/>`__.
+available in the `libvirt group on GitLab <https://gitlab.com/libvirt/>`__.
 Each module can be cloned anonymously using:
 
 ::
