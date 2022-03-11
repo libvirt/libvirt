@@ -500,7 +500,7 @@ virshDomainInterfaceSourceModeCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     virCheckFlags(0, NULL);
 
-    ret = g_new0(char *, VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST);
+    ret = g_new0(char *, VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST + 1);
 
     for (i = 0; i < VIRSH_DOMAIN_INTERFACE_SOURCE_MODE_LAST; i++)
         ret[i] = g_strdup(virshDomainInterfaceSourceModeTypeToString(i));
