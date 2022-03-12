@@ -58,6 +58,33 @@
 
 
 /**
+ * virshEnumComplete:
+ * @last: The number of element in enum (pass VIR_XXX_LAST)
+ * @intToStr: integer to string conversion (pass virXXXTypeToString)
+ *
+ * Convenient function to generate completions across all values
+ * of given enum. The enum, or values we want to generate, must
+ * start at 0 and be continuous until @last.
+ *
+ * Returns: string list of completions.
+ */
+char **
+virshEnumComplete(unsigned int last,
+                  const char *(*intToStr)(int))
+{
+    char **ret = NULL;
+    size_t i;
+
+    ret = g_new0(char *, last + 1);
+
+    for (i = 0; i < last; i++)
+        ret[i] = g_strdup(intToStr(i));
+
+    return ret;
+}
+
+
+/**
  * virshCommaStringListComplete:
  * @input: user input so far
  * @options: ALL options available for argument

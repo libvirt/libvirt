@@ -33,6 +33,10 @@
 #include "virsh-completer-volume.h"
 
 char **
+virshEnumComplete(unsigned int last,
+                  const char *(*intToStr)(int));
+
+char **
 virshCommaStringListComplete(const char *input,
                              const char **options);
 
