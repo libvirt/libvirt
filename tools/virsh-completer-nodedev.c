@@ -91,17 +91,14 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
 {
     g_auto(GStrv) tmp = NULL;
     const char *cap_str = NULL;
-    size_t i = 0;
 
     virCheckFlags(0, NULL);
 
     if (vshCommandOptStringQuiet(ctl, cmd, "cap", &cap_str) < 0)
         return NULL;
 
-    tmp = g_new0(char *, VIR_NODE_DEV_CAP_LAST + 1);
-
-    for (i = 0; i < VIR_NODE_DEV_CAP_LAST; i++)
-        tmp[i] = g_strdup(virNodeDevCapTypeToString(i));
+    tmp = virshEnumComplete(VIR_NODE_DEV_CAP_LAST,
+                            virNodeDevCapTypeToString);
 
     return virshCommaStringListComplete(cap_str, (const char **)tmp);
 }

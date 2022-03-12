@@ -175,15 +175,8 @@ virshNodeSuspendTargetCompleter(vshControl *ctl G_GNUC_UNUSED,
                                 const vshCmd *cmd G_GNUC_UNUSED,
                                 unsigned int flags)
 {
-    char **ret = NULL;
-    size_t i;
-
     virCheckFlags(0, NULL);
 
-    ret = g_new0(char *, VIR_NODE_SUSPEND_TARGET_LAST + 1);
-
-    for (i = 0; i < VIR_NODE_SUSPEND_TARGET_LAST; i++)
-        ret[i] = g_strdup(virshNodeSuspendTargetTypeToString(i));
-
-    return ret;
+    return virshEnumComplete(VIR_NODE_SUSPEND_TARGET_LAST,
+                             virshNodeSuspendTargetTypeToString);
 }
