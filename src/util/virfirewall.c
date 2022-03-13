@@ -486,6 +486,7 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
     size_t i;
     const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
     g_autoptr(virCommand) cmd = NULL;
+    g_autofree char *cmdStr = NULL;
     int status;
     g_autofree char *error = NULL;
 
@@ -501,6 +502,9 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
     for (i = 0; i < rule->argsLen; i++)
         virCommandAddArg(cmd, rule->args[i]);
 
+    cmdStr = virCommandToString(cmd, false);
+    VIR_INFO("Applying rule '%s'", NULLSTR(cmdStr));
+
     virCommandSetOutputBuffer(cmd, output);
     virCommandSetErrorBuffer(cmd, &error);
 
@@ -511,10 +515,9 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
         if (ignoreErrors) {
             VIR_DEBUG("Ignoring error running command");
         } else {
-            g_autofree char *args = virCommandToString(cmd, false);
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("Failed to apply firewall rules %s: %s"),
-                           NULLSTR(args), NULLSTR(error));
+                           NULLSTR(cmdStr), NULLSTR(error));
             VIR_FREE(*output);
             return -1;
         }
@@ -531,10 +534,6 @@ virFirewallApplyRule(virFirewall *firewall,
 {
     g_autofree char *output = NULL;
     g_auto(GStrv) lines = NULL;
-    g_autofree char *str
-        = virFirewallRuleToString(virFirewallLayerCommandTypeToString(rule->layer), rule);
-
-    VIR_INFO("Applying rule '%s'", NULLSTR(str));
 
     if (rule->ignoreErrors)
         ignoreErrors = rule->ignoreErrors;
