@@ -95,31 +95,6 @@ networkGetDriver(void)
 }
 
 
-static dnsmasqCaps *
-networkGetDnsmasqCaps(virNetworkDriverState *driver)
-{
-    VIR_LOCK_GUARD lock = virLockGuardLock(&driver->lock);
-    return virObjectRef(driver->dnsmasqCaps);
-}
-
-
-static int
-networkDnsmasqCapsRefresh(virNetworkDriverState *driver)
-{
-    dnsmasqCaps *caps;
-
-    if (!(caps = dnsmasqCapsNewFromBinary()))
-        return -1;
-
-    VIR_WITH_MUTEX_LOCK_GUARD(&driver->lock) {
-        virObjectUnref(driver->dnsmasqCaps);
-        driver->dnsmasqCaps = caps;
-    }
-
-    return 0;
-}
-
-
 extern virXMLNamespace networkDnsmasqXMLNamespace;
 
 typedef struct _networkDnsmasqXmlNsDef networkDnsmasqXmlNsDef;
