@@ -137,6 +137,7 @@ src/lxc/lxc_hostdev.c
 src/lxc/lxc_native.c
 src/lxc/lxc_process.c
 src/network/bridge_driver.c
+src/network/bridge_driver_conf.c
 src/network/bridge_driver_linux.c
 src/network/leaseshelper.c
 src/node_device/node_device_driver.c

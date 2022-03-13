@@ -27,18 +27,9 @@
 #include "virnetworkobj.h"
 #include "object_event.h"
 
-/* Main driver state */
-struct _virNetworkDriverState {
-    virMutex lock;
-
-    /* Read-only */
-    bool privileged;
-
-    /* pid file FD, ensures two copies of the driver can't use the same root */
-    int lockFD;
-
-    /* Immutable pointer, self-locking APIs */
-    virNetworkObjList *networks;
+typedef struct _virNetworkDriverConfig virNetworkDriverConfig;
+struct _virNetworkDriverConfig {
+    virObject parent;
 
     /* Immutable pointers, Immutable objects */
     char *networkConfigDir;
@@ -46,6 +37,27 @@ struct _virNetworkDriverState {
     char *stateDir;
     char *pidDir;
     char *dnsmasqStateDir;
+};
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(virNetworkDriverConfig, virObjectUnref);
+
+/* Main driver state */
+typedef struct _virNetworkDriverState virNetworkDriverState;
+struct _virNetworkDriverState {
+    virMutex lock;
+
+    /* Read-only */
+    bool privileged;
+
+    /* Require lock to get reference on 'config',
+     * then lockless thereafter */
+    virNetworkDriverConfig *config;
+
+    /* pid file FD, ensures two copies of the driver can't use the same root */
+    int lockFD;
+
+    /* Immutable pointer, self-locking APIs */
+    virNetworkObjList *networks;
 
     /* Require lock to get a reference on the object,
      * lockless access thereafter
@@ -58,7 +70,10 @@ struct _virNetworkDriverState {
     virNetworkXMLOption *xmlopt;
 };
 
-typedef struct _virNetworkDriverState virNetworkDriverState;
+virNetworkDriverConfig *
+virNetworkDriverConfigNew(bool privileged);
+virNetworkDriverConfig *
+virNetworkDriverGetConfig(virNetworkDriverState *driver);
 
 dnsmasqCaps *
 networkGetDnsmasqCaps(virNetworkDriverState *driver);
