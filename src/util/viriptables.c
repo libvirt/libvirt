@@ -163,10 +163,7 @@ iptablesInput(virFirewall *fw,
               int action,
               int tcp)
 {
-    char portstr[32];
-
-    g_snprintf(portstr, sizeof(portstr), "%d", port);
-    portstr[sizeof(portstr) - 1] = '\0';
+    g_autofree char *portstr = g_strdup_printf("%d", port);
 
     virFirewallAddRule(fw, layer,
                        "--table", "filter",
@@ -187,10 +184,7 @@ iptablesOutput(virFirewall *fw,
                int action,
                int tcp)
 {
-    char portstr[32];
-
-    g_snprintf(portstr, sizeof(portstr), "%d", port);
-    portstr[sizeof(portstr) - 1] = '\0';
+    g_autofree char *portstr = g_strdup_printf("%d", port);
 
     virFirewallAddRule(fw, layer,
                        "--table", "filter",
@@ -1028,10 +1022,7 @@ iptablesOutputFixUdpChecksum(virFirewall *fw,
                              int port,
                              int action)
 {
-    char portstr[32];
-
-    g_snprintf(portstr, sizeof(portstr), "%d", port);
-    portstr[sizeof(portstr) - 1] = '\0';
+    g_autofree char *portstr = g_strdup_printf("%d", port);
 
     virFirewallAddRule(fw, VIR_FIREWALL_LAYER_IPV4,
                        "--table", "mangle",
