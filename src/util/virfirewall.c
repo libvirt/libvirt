@@ -523,16 +523,6 @@ virFirewallApplyRuleDirect(virFirewallRule *rule,
 }
 
 
-static int G_GNUC_UNUSED
-virFirewallApplyRuleFirewallD(virFirewallRule *rule,
-                              bool ignoreErrors,
-                              char **output)
-{
-    /* wrapper necessary because virFirewallRule is a private struct */
-    return virFirewallDApplyRule(rule->layer, rule->args, rule->argsLen, ignoreErrors, output);
-}
-
-
 static int
 virFirewallApplyRule(virFirewall *firewall,
                      virFirewallRule *rule,
