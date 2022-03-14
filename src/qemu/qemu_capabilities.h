@@ -648,6 +648,9 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_IOMMU_BOOT_BYPASS, /* virtio-iommu.boot-bypass */
     QEMU_CAPS_VIRTIO_NET_RSS, /* virtio-net rss feature */
 
+    /* 430 */
+    QEMU_CAPS_CHARDEV_QEMU_VDAGENT, /* -chardev qemu-vdagent */
+
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;
 

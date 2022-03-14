@@ -236,6 +236,7 @@
   <flag name='memory-backend-file.prealloc-threads'/>
   <flag name='virtio-iommu-pci'/>
   <flag name='virtio-net.rss'/>
+  <flag name='chardev.qemu-vdagent'/>
   <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
