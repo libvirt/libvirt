@@ -948,38 +948,55 @@ qemuNamespaceMknodOne(qemuNamespaceMknodItem *data)
     }
 
     if (isLink) {
-        VIR_DEBUG("Creating symlink %s -> %s", data->file, data->target);
+        g_autoptr(GError) gerr = NULL;
+        g_autofree char *target = NULL;
 
-        /* First, unlink the symlink target. Symlinks change and
-         * therefore we have no guarantees that pre-existing
-         * symlink is still valid. */
-        if (unlink(data->file) < 0 &&
-            errno != ENOENT) {
-            virReportSystemError(errno,
-                                 _("Unable to remove symlink %s"),
-                                 data->file);
-            goto cleanup;
-        }
-
-        if (symlink(data->target, data->file) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to create symlink %s (pointing to %s)"),
-                                 data->file, data->target);
-            goto cleanup;
+        if ((target = g_file_read_link(data->file, &gerr)) &&
+            STREQ(target, data->target)) {
+            VIR_DEBUG("Skipping symlink %s -> %s which exists and points to correct target",
+                      data->file, data->target);
         } else {
-            delDevice = true;
+            VIR_DEBUG("Creating symlink %s -> %s", data->file, data->target);
+
+            /* First, unlink the symlink target. Symlinks change and
+             * therefore we have no guarantees that pre-existing
+             * symlink is still valid. */
+            if (unlink(data->file) < 0 &&
+                errno != ENOENT) {
+                virReportSystemError(errno,
+                                     _("Unable to remove symlink %s"),
+                                     data->file);
+                goto cleanup;
+            }
+
+            if (symlink(data->target, data->file) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create symlink %s (pointing to %s)"),
+                                     data->file, data->target);
+                goto cleanup;
+            } else {
+                delDevice = true;
+            }
         }
     } else if (isDev) {
-        VIR_DEBUG("Creating dev %s (%d,%d)",
-                  data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
-        unlink(data->file);
-        if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
-            virReportSystemError(errno,
-                                 _("Unable to create device %s"),
-                                 data->file);
-            goto cleanup;
+        GStatBuf sb;
+
+        if (g_lstat(data->file, &sb) >= 0 &&
+            sb.st_rdev == data->sb.st_rdev) {
+            VIR_DEBUG("Skipping dev %s (%d,%d) which exists and has correct MAJ:MIN",
+                       data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
         } else {
-            delDevice = true;
+            VIR_DEBUG("Creating dev %s (%d,%d)",
+                      data->file, major(data->sb.st_rdev), minor(data->sb.st_rdev));
+            unlink(data->file);
+            if (mknod(data->file, data->sb.st_mode, data->sb.st_rdev) < 0) {
+                virReportSystemError(errno,
+                                     _("Unable to create device %s"),
+                                     data->file);
+                goto cleanup;
+            } else {
+                delDevice = true;
+            }
         }
     } else if (isReg || isDir) {
         /* We are not cleaning up disks on virDomainDetachDevice
