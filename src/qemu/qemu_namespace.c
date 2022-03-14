@@ -1364,6 +1364,7 @@ qemuNamespaceUnlinkPaths(virDomainObj *vm,
         if (STRPREFIX(path, QEMU_DEVPREFIX)) {
             GStrv mount;
             bool inSubmount = false;
+            const char *const *devices = (const char *const *)cfg->cgroupDeviceACL;
 
             for (mount = devMountsPath; *mount; mount++) {
                 if (STREQ(*mount, "/dev"))
@@ -1375,8 +1376,16 @@ qemuNamespaceUnlinkPaths(virDomainObj *vm,
                 }
             }
 
-            if (!inSubmount)
-                unlinkPaths = g_slist_prepend(unlinkPaths, g_strdup(path));
+            if (inSubmount)
+                continue;
+
+            if (!devices)
+                devices = defaultDeviceACL;
+
+            if (g_strv_contains(devices, path))
+                continue;
+
+            unlinkPaths = g_slist_prepend(unlinkPaths, g_strdup(path));
         }
     }
 
