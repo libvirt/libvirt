@@ -17,11 +17,11 @@
 {
   "return": {
     "qemu": {
-      "micro": 92,
-      "minor": 2,
-      "major": 6
+      "micro": 0,
+      "minor": 0,
+      "major": 7
     },
-    "package": "v7.0.0-rc2"
+    "package": "v7.0.0"
   },
   "id": "libvirt-2"
 }
@@ -5120,16 +5120,16 @@
       "tag": "type",
       "variants": [
         {
-          "case": "gtk",
-          "type": "358"
-        },
-        {
           "case": "curses",
           "type": "360"
         },
         {
           "case": "egl-headless",
           "type": "361"
+        },
+        {
+          "case": "dbus",
+          "type": "362"
         },
         {
           "case": "default",
@@ -10499,6 +10499,10 @@
           "type": "518"
         },
         {
+          "case": "dbus",
+          "type": "519"
+        },
+        {
           "case": "vc",
           "type": "520"
         },
@@ -11757,9 +11761,6 @@
           "name": "none"
         },
         {
-          "name": "gtk"
-        },
-        {
           "name": "sdl"
         },
         {
@@ -11770,17 +11771,20 @@
         },
         {
           "name": "spice-app"
+        },
+        {
+          "name": "dbus"
         }
       ],
       "meta-type": "enum",
       "values": [
         "default",
         "none",
-        "gtk",
         "sdl",
         "egl-headless",
         "curses",
-        "spice-app"
+        "spice-app",
+        "dbus"
       ]
     },
     {
@@ -16068,6 +16072,9 @@
           "name": "qemu-vdagent"
         },
         {
+          "name": "dbus"
+        },
+        {
           "name": "vc"
         },
         {
@@ -16097,6 +16104,7 @@
         "spicevmc",
         "spiceport",
         "qemu-vdagent",
+        "dbus",
         "vc",
         "ringbuf",
         "memory"
@@ -16198,6 +16206,16 @@
         {
           "name": "data",
           "type": "617"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
+      "name": "519",
+      "members": [
+        {
+          "name": "data",
+          "type": "618"
         }
       ],
       "meta-type": "object"
@@ -18461,6 +18479,26 @@
       "meta-type": "object"
     },
     {
+      "name": "618",
+      "members": [
+        {
+          "name": "logfile",
+          "default": null,
+          "type": "str"
+        },
+        {
+          "name": "logappend",
+          "default": null,
+          "type": "bool"
+        },
+        {
+          "name": "name",
+          "type": "str"
+        }
+      ],
+      "meta-type": "object"
+    },
+    {
       "name": "619",
       "members": [
         {
@@ -20364,10 +20402,6 @@
       "parent": "pci-device"
     },
     {
-      "name": "virtio-crypto-device",
-      "parent": "virtio-device"
-    },
-    {
       "name": "isa-applesmc",
       "parent": "isa-device"
     },
@@ -20380,48 +20414,52 @@
       "parent": "vhost-user-input-pci-base-type"
     },
     {
+      "name": "usb-redir",
+      "parent": "usb-device"
+    },
+    {
       "name": "floppy-bus",
       "parent": "bus"
     },
     {
-      "name": "Denverton-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "virtio-crypto-device",
+      "parent": "virtio-device"
     },
     {
       "name": "chardev-testdev",
       "parent": "chardev"
     },
     {
-      "name": "usb-wacom-tablet",
-      "parent": "usb-device"
-    },
-    {
-      "name": "Icelake-Server-v1-x86_64-cpu",
+      "name": "Denverton-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "chardev-stdio",
-      "parent": "chardev-fd"
     },
     {
       "name": "pci-ipmi-bt",
       "parent": "pci-device"
     },
     {
+      "name": "chardev-stdio",
+      "parent": "chardev-fd"
+    },
+    {
+      "name": "usb-wacom-tablet",
+      "parent": "usb-device"
+    },
+    {
       "name": "filter-buffer",
       "parent": "netfilter"
     },
     {
-      "name": "secondary-vga",
-      "parent": "pci-vga"
+      "name": "Icelake-Server-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "ich9-usb-uhci6",
       "parent": "pci-uhci-usb"
     },
     {
-      "name": "usb-redir",
-      "parent": "usb-device"
+      "name": "secondary-vga",
+      "parent": "pci-vga"
     },
     {
       "name": "kvm-pit",
@@ -20452,12 +20490,12 @@
       "parent": "confidential-guest-support"
     },
     {
-      "name": "core2duo-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "ich9-usb-uhci5",
       "parent": "pci-uhci-usb"
+    },
+    {
+      "name": "core2duo-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pcm3680_pci",
@@ -20620,10 +20658,6 @@
       "parent": "pci-host-bridge"
     },
     {
-      "name": "virtio-scsi-pci",
-      "parent": "virtio-scsi-pci-base"
-    },
-    {
       "name": "virtio-input-host-pci",
       "parent": "virtio-input-host-pci-base-type"
     },
@@ -20744,8 +20778,8 @@
       "parent": "virtio-device"
     },
     {
-      "name": "xenfv-4.2-machine",
-      "parent": "generic-pc-machine"
+      "name": "virtio-scsi-pci",
+      "parent": "virtio-scsi-pci-base"
     },
     {
       "name": "ipmi-bmc-extern",
@@ -20856,10 +20890,6 @@
       "parent": "pr-manager"
     },
     {
-      "name": "virtio-scsi-device",
-      "parent": "virtio-scsi-common"
-    },
-    {
       "name": "pc-i440fx-2.10-machine",
       "parent": "generic-pc-machine"
     },
@@ -20872,20 +20902,16 @@
       "parent": "pci-device"
     },
     {
-      "name": "xen-pci-passthrough",
-      "parent": "pci-device"
-    },
-    {
-      "name": "Haswell-IBRS-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "virtio-scsi-device",
+      "parent": "virtio-scsi-common"
     },
     {
       "name": "pxb-pcie",
       "parent": "pci-device"
     },
     {
-      "name": "cpu-cluster",
-      "parent": "device"
+      "name": "Haswell-IBRS-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "vhost-user-i2c-pci",
@@ -20896,7 +20922,7 @@
       "parent": "object"
     },
     {
-      "name": "xen-backend",
+      "name": "cpu-cluster",
       "parent": "device"
     },
     {
@@ -20904,16 +20930,16 @@
       "parent": "sys-bus-device"
     },
     {
-      "name": "Haswell-v3-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "i82557a",
+      "parent": "pci-device"
     },
     {
       "name": "vhost-user-scsi-pci-non-transitional",
       "parent": "vhost-user-scsi-pci-base"
     },
     {
-      "name": "i82557a",
-      "parent": "pci-device"
+      "name": "vmmouse",
+      "parent": "isa-device"
     },
     {
       "name": "chardev-udp",
@@ -20932,8 +20958,8 @@
       "parent": "virtio-scsi-pci-base"
     },
     {
-      "name": "vmmouse",
-      "parent": "isa-device"
+      "name": "Haswell-v3-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "migration",
@@ -20976,8 +21002,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "vhost-vsock-device",
-      "parent": "vhost-vsock-common"
+      "name": "chardev-dbus",
+      "parent": "chardev-socket"
     },
     {
       "name": "Broadwell-v2-x86_64-cpu",
@@ -20996,10 +21022,6 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "Skylake-Server-v5-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "ib700",
       "parent": "isa-device"
     },
@@ -21008,7 +21030,7 @@
       "parent": "x86-iommu"
     },
     {
-      "name": "Nehalem-v2-x86_64-cpu",
+      "name": "Skylake-Server-v5-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -21016,16 +21038,16 @@
       "parent": "virtio-9p-pci-base"
     },
     {
-      "name": "igd-passthrough-i440FX",
-      "parent": "i440FX"
+      "name": "Nehalem-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "memory-backend-file",
       "parent": "memory-backend"
     },
     {
-      "name": "xen-disk",
-      "parent": "xen-block"
+      "name": "vhost-vsock-device",
+      "parent": "vhost-vsock-common"
     },
     {
       "name": "isa-pcspk",
@@ -21036,24 +21058,20 @@
       "parent": "vhost-scsi-common"
     },
     {
-      "name": "usb-tablet",
-      "parent": "usb-hid"
+      "name": "sd-card",
+      "parent": "device"
     },
     {
       "name": "sysbus-ahci",
       "parent": "sys-bus-device"
     },
     {
-      "name": "sd-card",
-      "parent": "device"
+      "name": "usb-tablet",
+      "parent": "usb-hid"
     },
     {
       "name": "pc-q35-4.0.1-machine",
       "parent": "generic-pc-machine"
-    },
-    {
-      "name": "IvyBridge-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
     },
     {
       "name": "virtio-blk-pci-non-transitional",
@@ -21064,12 +21082,16 @@
       "parent": "device"
     },
     {
-      "name": "ne2k_pci",
-      "parent": "pci-device"
+      "name": "IvyBridge-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "isabus-bridge",
       "parent": "sys-bus-device"
+    },
+    {
+      "name": "ne2k_pci",
+      "parent": "pci-device"
     },
     {
       "name": "usb-bus",
@@ -21088,16 +21110,8 @@
       "parent": "accel"
     },
     {
-      "name": "i82551",
-      "parent": "pci-device"
-    },
-    {
       "name": "virtio-balloon-pci",
       "parent": "virtio-balloon-pci-base"
-    },
-    {
-      "name": "Cascadelake-Server-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
     },
     {
       "name": "virtio-gpu-device",
@@ -21106,6 +21120,10 @@
     {
       "name": "e1000",
       "parent": "e1000-base"
+    },
+    {
+      "name": "Cascadelake-Server-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "athlon-v1-x86_64-cpu",
@@ -21124,8 +21142,8 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "xen-apic",
-      "parent": "apic-common"
+      "name": "i82551",
+      "parent": "pci-device"
     },
     {
       "name": "EPYC-v1-x86_64-cpu",
@@ -21160,12 +21178,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "mioe3680_pci",
-      "parent": "pci-device"
-    },
-    {
       "name": "vhost-user-backend",
       "parent": "object"
+    },
+    {
+      "name": "mioe3680_pci",
+      "parent": "pci-device"
     },
     {
       "name": "vmxnet3",
@@ -21204,24 +21222,24 @@
       "parent": "smbus-device"
     },
     {
-      "name": "virtio-serial-device",
-      "parent": "virtio-device"
+      "name": "dbus-display",
+      "parent": "object"
+    },
+    {
+      "name": "vhost-user-gpu-pci",
+      "parent": "vhost-user-gpu-pci-base-type"
     },
     {
       "name": "virtio-serial-pci",
       "parent": "virtio-serial-pci-base"
     },
     {
+      "name": "virtio-serial-device",
+      "parent": "virtio-device"
+    },
+    {
       "name": "Denverton-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "xen-bridge",
-      "parent": "sys-bus-device"
-    },
-    {
-      "name": "vhost-user-gpu-pci",
-      "parent": "vhost-user-gpu-pci-base-type"
     },
     {
       "name": "iothread",
@@ -21244,12 +21262,12 @@
       "parent": "pci-device"
     },
     {
-      "name": "pentium3-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "kvm-i8259",
       "parent": "pic-common"
+    },
+    {
+      "name": "pentium3-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "isa-serial",
@@ -21312,15 +21330,7 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "xen-cdrom",
-      "parent": "xen-block"
-    },
-    {
       "name": "Cooperlake-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
-      "name": "EPYC-v3-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -21332,12 +21342,16 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "sgx-epc",
-      "parent": "device"
+      "name": "EPYC-v3-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "scsi-cd",
       "parent": "scsi-disk-base"
+    },
+    {
+      "name": "sgx-epc",
+      "parent": "device"
     },
     {
       "name": "gpex-root",
@@ -21408,16 +21422,12 @@
       "parent": "pci-vga"
     },
     {
-      "name": "i440FX",
-      "parent": "pci-device"
-    },
-    {
       "name": "qio-channel-buffer",
       "parent": "qio-channel"
     },
     {
-      "name": "xen-bus",
-      "parent": "bus"
+      "name": "i440FX",
+      "parent": "pci-device"
     },
     {
       "name": "Penryn-v1-x86_64-cpu",
@@ -21436,16 +21446,16 @@
       "parent": "virtio-device"
     },
     {
-      "name": "Icelake-Server-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "pc-i440fx-3.1-machine",
+      "parent": "generic-pc-machine"
     },
     {
       "name": "pci-serial-4x",
       "parent": "pci-device"
     },
     {
-      "name": "pc-i440fx-3.1-machine",
-      "parent": "generic-pc-machine"
+      "name": "Icelake-Server-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "sga",
@@ -21516,11 +21526,11 @@
       "parent": "usb-device"
     },
     {
-      "name": "IvyBridge-x86_64-cpu",
+      "name": "SandyBridge-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "SandyBridge-v1-x86_64-cpu",
+      "name": "IvyBridge-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -21584,10 +21594,6 @@
       "parent": "bus"
     },
     {
-      "name": "xen-pvdevice",
-      "parent": "pci-device"
-    },
-    {
       "name": "ide-hd",
       "parent": "ide-device"
     },
@@ -21620,12 +21626,12 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "e1000-82544gc",
-      "parent": "e1000-base"
-    },
-    {
       "name": "chardev-spiceport",
       "parent": "chardev-spice"
+    },
+    {
+      "name": "e1000-82544gc",
+      "parent": "e1000-base"
     },
     {
       "name": "tls-creds-x509",
@@ -21660,16 +21666,16 @@
       "parent": "isa-device"
     },
     {
-      "name": "pvrdma",
-      "parent": "pci-device"
-    },
-    {
       "name": "qemu64-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
       "name": "Skylake-Server-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
+    },
+    {
+      "name": "chardev-braille",
+      "parent": "chardev"
     },
     {
       "name": "pc-q35-4.1-machine",
@@ -21704,12 +21710,12 @@
       "parent": "isa-device"
     },
     {
-      "name": "qio-channel-websock",
-      "parent": "qio-channel"
-    },
-    {
       "name": "megasas",
       "parent": "megasas-base"
+    },
+    {
+      "name": "qio-channel-websock",
+      "parent": "qio-channel"
     },
     {
       "name": "virtio-iommu-pci",
@@ -21720,20 +21726,16 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "vmcoreinfo",
-      "parent": "device"
-    },
-    {
       "name": "Icelake-Client-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "tpci200",
-      "parent": "pci-device"
+      "name": "vmcoreinfo",
+      "parent": "device"
     },
     {
-      "name": "chardev-braille",
-      "parent": "chardev"
+      "name": "tpci200",
+      "parent": "pci-device"
     },
     {
       "name": "rocker",
@@ -21766,10 +21768,6 @@
     {
       "name": "qemu-console",
       "parent": "object"
-    },
-    {
-      "name": "chardev-socket",
-      "parent": "chardev"
     },
     {
       "name": "clock",
@@ -21808,20 +21806,20 @@
       "parent": "device"
     },
     {
-      "name": "Skylake-Server-IBRS-x86_64-cpu",
+      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "virtio-pmem",
-      "parent": "virtio-device"
+      "name": "chardev-socket",
+      "parent": "chardev"
     },
     {
       "name": "nvme-bus",
       "parent": "bus"
     },
     {
-      "name": "xen-sysbus",
-      "parent": "bus"
+      "name": "virtconsole",
+      "parent": "virtserialport"
     },
     {
       "name": "virtio-net-pci-non-transitional",
@@ -21840,12 +21838,12 @@
       "parent": "scsi-disk-base"
     },
     {
-      "name": "Cascadelake-Server-noTSX-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "usb-kbd",
       "parent": "usb-hid"
+    },
+    {
+      "name": "lsi53c810",
+      "parent": "lsi53c895a"
     },
     {
       "name": "isa-fdc",
@@ -21872,24 +21870,24 @@
       "parent": "object"
     },
     {
-      "name": "Westmere-v2-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "ccid-card-emulated",
+      "parent": "ccid-card"
     },
     {
       "name": "pc-q35-2.9-machine",
       "parent": "generic-pc-machine"
     },
     {
-      "name": "Skylake-Client-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "virtio-pmem",
+      "parent": "virtio-device"
     },
     {
       "name": "tpm-tis",
       "parent": "isa-device"
     },
     {
-      "name": "virtconsole",
-      "parent": "virtserialport"
+      "name": "Skylake-Server-IBRS-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "hyperv-testdev",
@@ -21912,8 +21910,8 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "ccid-card-emulated",
-      "parent": "ccid-card"
+      "name": "Westmere-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "pc-q35-5.1-machine",
@@ -21928,8 +21926,8 @@
       "parent": "virtio-input-hid-device"
     },
     {
-      "name": "lsi53c810",
-      "parent": "lsi53c895a"
+      "name": "Skylake-Client-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "ioh3420",
@@ -22032,10 +22030,6 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "virtio-net-pci-transitional",
-      "parent": "virtio-net-pci-base"
-    },
-    {
       "name": "vhost-vsock-pci",
       "parent": "vhost-vsock-pci-base"
     },
@@ -22044,8 +22038,8 @@
       "parent": "device"
     },
     {
-      "name": "vhost-user-blk-pci-transitional",
-      "parent": "vhost-user-blk-pci-base"
+      "name": "virtio-net-pci-transitional",
+      "parent": "virtio-net-pci-base"
     },
     {
       "name": "irq",
@@ -22072,8 +22066,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "xenfv-3.1-machine",
-      "parent": "generic-pc-machine"
+      "name": "vhost-user-blk-pci-transitional",
+      "parent": "vhost-user-blk-pci-base"
     },
     {
       "name": "coreduo-x86_64-cpu",
@@ -22160,20 +22154,16 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "kvmvapic",
-      "parent": "sys-bus-device"
-    },
-    {
       "name": "Nehalem-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "nvme-ns",
-      "parent": "device"
+      "name": "kvmvapic",
+      "parent": "sys-bus-device"
     },
     {
-      "name": "authz-simple",
-      "parent": "authz"
+      "name": "nvme-ns",
+      "parent": "device"
     },
     {
       "name": "Icelake-Server-v6-x86_64-cpu",
@@ -22192,8 +22182,8 @@
       "parent": "vhost-user-blk-pci-base"
     },
     {
-      "name": "xen-accel",
-      "parent": "accel"
+      "name": "authz-simple",
+      "parent": "authz"
     },
     {
       "name": "fw_cfg_io",
@@ -22312,16 +22302,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "xen-sysdev",
-      "parent": "sys-bus-device"
-    },
-    {
       "name": "Haswell-noTSX-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "chardev-null",
-      "parent": "chardev"
     },
     {
       "name": "pci-serial",
@@ -22352,10 +22334,6 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "qio-channel-rdma",
-      "parent": "qio-channel"
-    },
-    {
       "name": "ne2k_isa",
       "parent": "isa-device"
     },
@@ -22376,12 +22354,12 @@
       "parent": "virtio-gpu-base"
     },
     {
-      "name": "pentium-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
       "name": "hda-duplex",
       "parent": "hda-audio"
+    },
+    {
+      "name": "pentium-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "amd-iommu-iommu-memory-region",
@@ -22396,16 +22374,12 @@
       "parent": "pci-device"
     },
     {
-      "name": "Cooperlake-v1-x86_64-cpu",
+      "name": "Nehalem-IBRS-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
       "name": "Cascadelake-Server-v3-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "vhost-user-rng-pci",
-      "parent": "vhost-user-rng-pci-base"
     },
     {
       "name": "cfi.pflash01",
@@ -22416,8 +22390,12 @@
       "parent": "virtio-device"
     },
     {
-      "name": "isa-parallel",
-      "parent": "isa-device"
+      "name": "chardev-null",
+      "parent": "chardev"
+    },
+    {
+      "name": "Cooperlake-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "Skylake-Server-x86_64-cpu",
@@ -22428,16 +22406,16 @@
       "parent": "generic-pc-machine"
     },
     {
-      "name": "Nehalem-IBRS-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "isa-parallel",
+      "parent": "isa-device"
     },
     {
       "name": "pentium2-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
-      "name": "xen-platform",
-      "parent": "pci-device"
+      "name": "vhost-user-rng-pci",
+      "parent": "vhost-user-rng-pci-base"
     },
     {
       "name": "isa-vga",
@@ -22476,20 +22454,20 @@
       "parent": "rng-backend"
     },
     {
-      "name": "Cascadelake-Server-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "qxl-vga",
+      "parent": "pci-qxl"
     },
     {
       "name": "i82558b",
       "parent": "pci-device"
     },
     {
-      "name": "ivshmem-doorbell",
-      "parent": "ivshmem-common"
+      "name": "Cascadelake-Server-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
-      "name": "qxl-vga",
-      "parent": "pci-qxl"
+      "name": "ivshmem-doorbell",
+      "parent": "ivshmem-common"
     },
     {
       "name": "PIIX3-xen",
@@ -22672,8 +22650,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "kvm64-v1-x86_64-cpu",
-      "parent": "x86_64-cpu"
+      "name": "pcie-root-port",
+      "parent": "pcie-root-port-base"
     },
     {
       "name": "IDE",
@@ -22684,8 +22662,8 @@
       "parent": "x86_64-cpu"
     },
     {
-      "name": "pcie-root-port",
-      "parent": "pcie-root-port-base"
+      "name": "kvm64-v1-x86_64-cpu",
+      "parent": "x86_64-cpu"
     },
     {
       "name": "mptsas1068",
@@ -22696,16 +22674,12 @@
       "parent": "scsi-disk-base"
     },
     {
-      "name": "xenpv-machine",
-      "parent": "machine"
+      "name": "chardev-spicevmc",
+      "parent": "chardev-spice"
     },
     {
       "name": "Snowridge-v1-x86_64-cpu",
       "parent": "x86_64-cpu"
-    },
-    {
-      "name": "chardev-spicevmc",
-      "parent": "chardev-spice"
     },
     {
       "name": "q35-pcihost",
@@ -22772,15 +22746,15 @@
       "parent": "virtio-device"
     },
     {
+      "name": "SandyBridge-v2-x86_64-cpu",
+      "parent": "x86_64-cpu"
+    },
+    {
       "name": "nvme-subsys",
       "parent": "device"
     },
     {
       "name": "Haswell-noTSX-IBRS-x86_64-cpu",
-      "parent": "x86_64-cpu"
-    },
-    {
-      "name": "SandyBridge-v2-x86_64-cpu",
       "parent": "x86_64-cpu"
     },
     {
@@ -24536,6 +24510,11 @@
     {
       "default-value": false,
       "name": "smm-compat",
+      "type": "bool"
+    },
+    {
+      "default-value": false,
+      "name": "x-not-migrate-acpi-index",
       "type": "bool"
     },
     {
@@ -29179,13 +29158,6 @@
       "default-ram-id": "pc.ram"
     },
     {
-      "hotpluggable-cpus": false,
-      "name": "xenpv",
-      "numa-mem-supported": false,
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
       "hotpluggable-cpus": true,
       "name": "pc-i440fx-6.2",
       "numa-mem-supported": false,
@@ -29282,16 +29254,6 @@
       "cpu-max": 288,
       "deprecated": false,
       "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "xenfv-3.1",
-      "numa-mem-supported": true,
-      "default-cpu-type": "qemu64-x86_64-cpu",
-      "cpu-max": 128,
-      "deprecated": false,
-      "default-ram-id": "pc.ram",
-      "alias": "xenfv"
     },
     {
       "hotpluggable-cpus": true,
@@ -29579,15 +29541,6 @@
       "numa-mem-supported": true,
       "default-cpu-type": "qemu64-x86_64-cpu",
       "cpu-max": 288,
-      "deprecated": false,
-      "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "xenfv-4.2",
-      "numa-mem-supported": true,
-      "default-cpu-type": "qemu64-x86_64-cpu",
-      "cpu-max": 128,
       "deprecated": false,
       "default-ram-id": "pc.ram"
     },
@@ -32038,41 +31991,6 @@
     {
       "parameters": [
         {
-          "name": "timeout",
-          "help": "Request timeout in seconds (default 0 = no timeout)",
-          "type": "number"
-        },
-        {
-          "name": "initiator-name",
-          "help": "Initiator iqn name to use when connecting",
-          "type": "string"
-        },
-        {
-          "name": "header-digest",
-          "help": "HeaderDigest setting. {CRC32C|CRC32C-NONE|NONE-CRC32C|NONE}",
-          "type": "string"
-        },
-        {
-          "name": "password-secret",
-          "help": "ID of the secret providing password for CHAP authentication to target",
-          "type": "string"
-        },
-        {
-          "name": "password",
-          "help": "password for CHAP authentication to target",
-          "type": "string"
-        },
-        {
-          "name": "user",
-          "help": "username for CHAP authentication to target",
-          "type": "string"
-        }
-      ],
-      "option": "iscsi"
-    },
-    {
-      "parameters": [
-        {
           "name": "rendernode",
           "type": "string"
         },
@@ -32202,6 +32120,41 @@
         }
       ],
       "option": "spice"
+    },
+    {
+      "parameters": [
+        {
+          "name": "timeout",
+          "help": "Request timeout in seconds (default 0 = no timeout)",
+          "type": "number"
+        },
+        {
+          "name": "initiator-name",
+          "help": "Initiator iqn name to use when connecting",
+          "type": "string"
+        },
+        {
+          "name": "header-digest",
+          "help": "HeaderDigest setting. {CRC32C|CRC32C-NONE|NONE-CRC32C|NONE}",
+          "type": "string"
+        },
+        {
+          "name": "password-secret",
+          "help": "ID of the secret providing password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "password",
+          "help": "password for CHAP authentication to target",
+          "type": "string"
+        },
+        {
+          "name": "user",
+          "help": "username for CHAP authentication to target",
+          "type": "string"
+        }
+      ],
+      "option": "iscsi"
     },
     {
       "parameters": [
@@ -37594,13 +37547,6 @@
       "default-ram-id": "pc.ram"
     },
     {
-      "hotpluggable-cpus": false,
-      "name": "xenpv",
-      "numa-mem-supported": false,
-      "cpu-max": 1,
-      "deprecated": false
-    },
-    {
       "hotpluggable-cpus": true,
       "name": "pc-i440fx-6.2",
       "numa-mem-supported": false,
@@ -37697,16 +37643,6 @@
       "cpu-max": 288,
       "deprecated": false,
       "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "xenfv-3.1",
-      "numa-mem-supported": true,
-      "default-cpu-type": "qemu64-x86_64-cpu",
-      "cpu-max": 128,
-      "deprecated": false,
-      "default-ram-id": "pc.ram",
-      "alias": "xenfv"
     },
     {
       "hotpluggable-cpus": true,
@@ -37994,15 +37930,6 @@
       "numa-mem-supported": true,
       "default-cpu-type": "qemu64-x86_64-cpu",
       "cpu-max": 288,
-      "deprecated": false,
-      "default-ram-id": "pc.ram"
-    },
-    {
-      "hotpluggable-cpus": true,
-      "name": "xenfv-4.2",
-      "numa-mem-supported": true,
-      "default-cpu-type": "qemu64-x86_64-cpu",
-      "cpu-max": 128,
       "deprecated": false,
       "default-ram-id": "pc.ram"
     },
