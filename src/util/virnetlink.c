@@ -1114,7 +1114,8 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
                          unsigned int protocol)
 {
     size_t i;
-    int r, ret = -1;
+    int r = -1;
+    int ret = -1;
     virNetlinkEventSrvPrivate *srv = NULL;
 
     if (protocol >= MAX_LINKS)
@@ -1132,24 +1133,25 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
 
     VIR_DEBUG("adding client: %d.", nextWatch);
 
-    r = 0;
     /* first try to re-use deleted free slots */
     for (i = 0; i < srv->handlesCount; i++) {
         if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_DELETED) {
             r = i;
-            goto addentry;
+            break;
         }
     }
-    /* Resize the eventLoop array if needed */
-    if (srv->handlesCount == srv->handlesAlloc) {
-        VIR_DEBUG("Used %zu handle slots, adding at least %d more",
-                  srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
-        VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
-                     srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT);
-    }
-    r = srv->handlesCount++;
 
- addentry:
+    if (r < 0) {
+        /* Resize the eventLoop array if needed */
+        if (srv->handlesCount == srv->handlesAlloc) {
+            VIR_DEBUG("Used %zu handle slots, adding at least %d more",
+                      srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
+            VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
+                         srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT);
+        }
+        r = srv->handlesCount++;
+    }
+
     srv->handles[r].watch    = nextWatch;
     srv->handles[r].handleCB = handleCB;
     srv->handles[r].removeCB = removeCB;
