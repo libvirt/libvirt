@@ -40,8 +40,8 @@ Alternatively, if supported by the particular volume format and driver,
 automatically generate a secret value at the time of volume creation, and store
 it using the specified ``uuid``.
 
-"qcow" format
-~~~~~~~~~~~~~
+``qcow`` format
+~~~~~~~~~~~~~~~
 
 :since:`Since 4.5.0,` encryption formats ``default`` and ``qcow`` may no longer
 be used to create an encrypted volume. Usage of qcow encrypted volumes in QEMU
@@ -49,8 +49,8 @@ began phasing out in QEMU 2.3 and by QEMU 2.9 creation of a qcow encrypted
 volume via qemu-img required usage of secret objects, but that support was not
 added to libvirt.
 
-"luks" format
-~~~~~~~~~~~~~
+``luks`` format
+~~~~~~~~~~~~~~~
 
 The ``luks`` format is specific to a luks encrypted volume and the secret is
 used in order to either encrypt during volume creation or decrypt the volume for
@@ -94,8 +94,8 @@ initialization vector generation.
       An optional hash algorithm such as 'md5', 'sha1', 'sha256', etc. Support
       of the specific ivgen hash algorithm is hypervisor dependent.
 
-"luks2" format
-~~~~~~~~~~~~~~
+``luks2`` format
+~~~~~~~~~~~~~~~~
 
 The ``luks2`` format is currently supported only by the ``librbd`` engine, and
 can only be applied to RBD network disks (RBD images). Since the ``librbd``
