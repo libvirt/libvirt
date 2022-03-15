@@ -40,9 +40,6 @@ Alternatively, if supported by the particular volume format and driver,
 automatically generate a secret value at the time of volume creation, and store
 it using the specified ``uuid``.
 
-"default" format
-~~~~~~~~~~~~~~~~
-
 "qcow" format
 ~~~~~~~~~~~~~
 
