@@ -210,34 +210,6 @@ specific message ID values
 Examples
 --------
 
-For example setting up the following:
-
-::
-
-   export LIBVIRT_DEBUG=1
-   export LIBVIRT_LOG_OUTPUTS="1:file:virsh.log"
-
-and then running virsh will accumulate the logs in the ``virsh.log`` file in a
-way similar to:
-
-::
-
-   14:29:04.771: debug : virInitialize:278 : register drivers
-   14:29:04.771: debug : virRegisterDriver:618 : registering Test as driver 0
-
-the messages are timestamped, there is also the level recorded, if debug the
-name of the function is also printed and then the formatted message. This should
-be sufficient to at least get a precise idea of what is happening and where
-things are going wrong, allowing to then put the correct breakpoints when
-running under a debugger.
-
-To activate full debug of the libvirt entry points, utility functions and the
-QEMU/KVM driver, set:
-
-::
-
-   log_filters="1:libvirt 1:util 1:qemu"
-   log_outputs="1:file:/var/log/libvirt/libvirtd.log"
-
-in libvirtd.conf and restart the daemon will allow to gather a copious amount of
-debugging traces for the operations done in those areas.
+Examples with useful log settings along with more information on how to properly
+configure logging for various situations can be found in the
+`logging knowledge base article <kbase/debuglogs.html>`__.
