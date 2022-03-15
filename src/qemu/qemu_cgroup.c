@@ -630,8 +630,7 @@ qemuSetupRNGCgroup(virDomainObj *vm,
         virDomainAuditCgroupPath(vm, priv->cgroup, "allow",
                                  rng->source.file,
                                  "rw", rv);
-        if (rv < 0 &&
-            !virLastErrorIsSystemErrno(ENOENT))
+        if (rv < 0)
             return -1;
     }
 
@@ -657,8 +656,7 @@ qemuTeardownRNGCgroup(virDomainObj *vm,
         virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
                                  rng->source.file,
                                  "rw", rv);
-        if (rv < 0 &&
-            !virLastErrorIsSystemErrno(ENOENT))
+        if (rv < 0)
             return -1;
     }
 
