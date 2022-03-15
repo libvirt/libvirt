@@ -87,6 +87,20 @@ x86_64-almalinux-8-container:
     NAME: almalinux-8
 
 
+x86_64-alpine-314-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: alpine-314
+
+
+x86_64-alpine-edge-container:
+  extends: .container_job
+  allow_failure: true
+  variables:
+    NAME: alpine-edge
+
+
 x86_64-centos-stream-8-container:
   extends: .container_job
   allow_failure: false
@@ -398,6 +412,24 @@ x86_64-almalinux-8-clang:
     CC: clang
     NAME: almalinux-8
     RPM: skip
+
+
+x86_64-alpine-314:
+  extends: .native_build_job
+  needs:
+    - x86_64-alpine-314-container
+  allow_failure: false
+  variables:
+    NAME: alpine-314
+
+
+x86_64-alpine-edge:
+  extends: .native_build_job
+  needs:
+    - x86_64-alpine-edge-container
+  allow_failure: true
+  variables:
+    NAME: alpine-edge
 
 
 x86_64-centos-stream-8:
