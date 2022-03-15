@@ -75,6 +75,26 @@ qemuCgroupAllowDevicePath(virDomainObj *vm,
 
 
 static int
+qemuCgroupDenyDevicePath(virDomainObj *vm,
+                         const char *path,
+                         int perms,
+                         bool ignoreEacces)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int ret;
+
+    VIR_DEBUG("Deny path %s, perms: %s",
+              path, virCgroupGetDevicePermsString(perms));
+
+    ret = virCgroupDenyDevicePath(priv->cgroup, path, perms, ignoreEacces);
+
+    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path,
+                             virCgroupGetDevicePermsString(perms), ret);
+    return ret;
+}
+
+
+static int
 qemuSetupImagePathCgroup(virDomainObj *vm,
                          const char *path,
                          bool readonly)
@@ -199,10 +219,8 @@ qemuTeardownImageCgroup(virDomainObj *vm,
 
         if (!hasNVMe &&
             !qemuDomainNeedsVFIO(vm->def)) {
-            ret = virCgroupDenyDevicePath(priv->cgroup, QEMU_DEV_VFIO, perms, true);
-            virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                     QEMU_DEV_VFIO,
-                                     virCgroupGetDevicePermsString(perms), ret);
+            ret = qemuCgroupDenyDevicePath(vm, QEMU_DEV_VFIO, perms, true);
+
             if (ret < 0)
                 return -1;
         }
@@ -218,23 +236,16 @@ qemuTeardownImageCgroup(virDomainObj *vm,
 
     if (!hasPR &&
         virFileExists(QEMU_DEVICE_MAPPER_CONTROL_PATH)) {
-        VIR_DEBUG("Disabling device mapper control");
-        ret = virCgroupDenyDevicePath(priv->cgroup,
-                                      QEMU_DEVICE_MAPPER_CONTROL_PATH,
-                                      perms, true);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                 QEMU_DEVICE_MAPPER_CONTROL_PATH,
-                                 virCgroupGetDevicePermsString(perms), ret);
+        ret = qemuCgroupDenyDevicePath(vm, QEMU_DEVICE_MAPPER_CONTROL_PATH,
+                                       perms, true);
+
         if (ret < 0)
             return ret;
     }
 
     VIR_DEBUG("Deny path %s", path);
 
-    ret = virCgroupDenyDevicePath(priv->cgroup, path, perms, true);
-
-    virDomainAuditCgroupPath(vm, priv->cgroup, "deny", path,
-                             virCgroupGetDevicePermsString(perms), ret);
+    ret = qemuCgroupDenyDevicePath(vm, path, perms, true);
 
     /* If you're looking for a counter part to
      * qemuSetupImagePathCgroup you're at the right place.
@@ -305,7 +316,6 @@ qemuTeardownChrSourceCgroup(virDomainObj *vm,
                             virDomainChrSourceDef *source)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int ret;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
@@ -315,12 +325,8 @@ qemuTeardownChrSourceCgroup(virDomainObj *vm,
 
     VIR_DEBUG("Process path '%s' for device", source->data.file.path);
 
-    ret = virCgroupDenyDevicePath(priv->cgroup, source->data.file.path,
-                                  VIR_CGROUP_DEVICE_RW, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                             source->data.file.path, "rw", ret);
-
-    return ret;
+    return qemuCgroupDenyDevicePath(vm, source->data.file.path,
+                                    VIR_CGROUP_DEVICE_RW, false);
 }
 
 
@@ -378,7 +384,6 @@ qemuTeardownInputCgroup(virDomainObj *vm,
                         virDomainInputDef *dev)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int ret = 0;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
@@ -386,14 +391,12 @@ qemuTeardownInputCgroup(virDomainObj *vm,
     switch (dev->type) {
     case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
     case VIR_DOMAIN_INPUT_TYPE_EVDEV:
-        VIR_DEBUG("Process path '%s' for input device", dev->source.evdev);
-        ret = virCgroupDenyDevicePath(priv->cgroup, dev->source.evdev,
-                                      VIR_CGROUP_DEVICE_RWM, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny", dev->source.evdev, "rwm", ret);
+        return qemuCgroupDenyDevicePath(vm, dev->source.evdev,
+                                        VIR_CGROUP_DEVICE_RWM, false);
         break;
     }
 
-    return ret;
+    return 0;
 }
 
 
@@ -453,7 +456,6 @@ qemuTeardownHostdevCgroup(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autofree char *path = NULL;
-    int rv;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
@@ -471,25 +473,16 @@ qemuTeardownHostdevCgroup(virDomainObj *vm,
     if (qemuDomainGetHostdevPath(dev, &path, NULL) < 0)
         return -1;
 
-    if (path) {
-        VIR_DEBUG("Cgroup deny %s", path);
-        rv = virCgroupDenyDevicePath(priv->cgroup, path,
-                                     VIR_CGROUP_DEVICE_RWM, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup,
-                                 "deny", path, "rwm", rv);
-        if (rv < 0)
-            return -1;
+    if (path &&
+        qemuCgroupDenyDevicePath(vm, path, VIR_CGROUP_DEVICE_RWM, false) < 0) {
+        return -1;
     }
 
     if (qemuHostdevNeedsVFIO(dev) &&
-        !qemuDomainNeedsVFIO(vm->def)) {
-        VIR_DEBUG("Cgroup deny " QEMU_DEV_VFIO);
-        rv = virCgroupDenyDevicePath(priv->cgroup, QEMU_DEV_VFIO,
-                                     VIR_CGROUP_DEVICE_RWM, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                 QEMU_DEV_VFIO, "rwm", rv);
-        if (rv < 0)
-            return -1;
+        !qemuDomainNeedsVFIO(vm->def) &&
+        qemuCgroupDenyDevicePath(vm, QEMU_DEV_VFIO,
+                                 VIR_CGROUP_DEVICE_RWM, false) < 0) {
+        return -1;
     }
 
     return 0;
@@ -519,7 +512,6 @@ qemuTeardownMemoryDevicesCgroup(virDomainObj *vm,
                                 virDomainMemoryDef *mem)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int rv;
 
     if (mem->model != VIR_DOMAIN_MEMORY_MODEL_NVDIMM &&
         mem->model != VIR_DOMAIN_MEMORY_MODEL_VIRTIO_PMEM)
@@ -528,11 +520,8 @@ qemuTeardownMemoryDevicesCgroup(virDomainObj *vm,
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    rv = virCgroupDenyDevicePath(priv->cgroup, mem->nvdimmPath,
-                                 VIR_CGROUP_DEVICE_RWM, false);
-    virDomainAuditCgroupPath(vm, priv->cgroup,
-                             "deny", mem->nvdimmPath, "rwm", rv);
-    return rv;
+    return qemuCgroupDenyDevicePath(vm, mem->nvdimmPath,
+                                    VIR_CGROUP_DEVICE_RWM, false);
 }
 
 
@@ -612,21 +601,14 @@ qemuTeardownRNGCgroup(virDomainObj *vm,
                       virDomainRNGDef *rng)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int rv;
 
     if (!virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_DEVICES))
         return 0;
 
-    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM) {
-        VIR_DEBUG("Tearing down Cgroup ACL for RNG device");
-        rv = virCgroupDenyDevicePath(priv->cgroup,
-                                     rng->source.file,
-                                     VIR_CGROUP_DEVICE_RW, false);
-        virDomainAuditCgroupPath(vm, priv->cgroup, "deny",
-                                 rng->source.file,
-                                 "rw", rv);
-        if (rv < 0)
-            return -1;
+    if (rng->backend == VIR_DOMAIN_RNG_BACKEND_RANDOM &&
+        qemuCgroupDenyDevicePath(vm, rng->source.file,
+                                 VIR_CGROUP_DEVICE_RW, false) < 0) {
+        return -1;
     }
 
     return 0;
