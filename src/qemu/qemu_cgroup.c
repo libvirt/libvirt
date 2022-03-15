@@ -81,7 +81,18 @@ qemuCgroupDenyDevicePath(virDomainObj *vm,
                          bool ignoreEacces)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
+    const char *const *deviceACL = (const char *const *)cfg->cgroupDeviceACL;
     int ret;
+
+    if (!deviceACL)
+        deviceACL = defaultDeviceACL;
+
+    if (g_strv_contains(deviceACL, path)) {
+        VIR_DEBUG("Skipping deny of path %s in CGroups because it's in cgroupDeviceACL",
+                  path);
+        return 0;
+    }
 
     VIR_DEBUG("Deny path %s, perms: %s",
               path, virCgroupGetDevicePermsString(perms));
