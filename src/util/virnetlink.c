@@ -799,18 +799,6 @@ virNetlinkGetErrorCode(struct nlmsghdr *resp, unsigned int recvbuflen)
 }
 
 
-static void
-virNetlinkEventServerLock(virNetlinkEventSrvPrivate *driver)
-{
-    virMutexLock(&driver->lock);
-}
-
-static void
-virNetlinkEventServerUnlock(virNetlinkEventSrvPrivate *driver)
-{
-    virMutexUnlock(&driver->lock);
-}
-
 /**
  * virNetlinkEventRemoveClientPrimitive:
  *
@@ -869,25 +857,23 @@ virNetlinkEventCallback(int watch,
         return;
     }
 
-    virNetlinkEventServerLock(srv);
-
     VIR_DEBUG("dispatching to max %d clients, called from event watch %d",
               (int)srv->handlesCount, watch);
 
-    for (i = 0; i < srv->handlesCount; i++) {
-        if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
-            continue;
+    VIR_WITH_MUTEX_LOCK_GUARD(&srv->lock) {
+        for (i = 0; i < srv->handlesCount; i++) {
+            if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
+                continue;
 
-        VIR_DEBUG("dispatching client %zu.", i);
+            VIR_DEBUG("dispatching client %zu.", i);
 
-        (srv->handles[i].handleCB)(msg, length, &peer, &handled,
-                                   srv->handles[i].opaque);
+            (srv->handles[i].handleCB)(msg, length, &peer, &handled,
+                                       srv->handles[i].opaque);
+        }
     }
 
     if (!handled)
         VIR_DEBUG("event not handled.");
-
-    virNetlinkEventServerUnlock(srv);
 }
 
 /**
@@ -916,20 +902,20 @@ virNetlinkEventServiceStop(unsigned int protocol)
     if (!server[protocol])
         return 0;
 
-    virNetlinkEventServerLock(srv);
-    nl_close(srv->netlinknh);
-    virNetlinkFree(srv->netlinknh);
-    virEventRemoveHandle(srv->eventwatch);
+    VIR_WITH_MUTEX_LOCK_GUARD(&srv->lock) {
+        nl_close(srv->netlinknh);
+        virNetlinkFree(srv->netlinknh);
+        virEventRemoveHandle(srv->eventwatch);
 
-    /* free any remaining clients on the list */
-    for (i = 0; i < srv->handlesCount; i++) {
-        if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_VALID)
-            virNetlinkEventRemoveClientPrimitive(i, protocol);
+        /* free any remaining clients on the list */
+        for (i = 0; i < srv->handlesCount; i++) {
+            if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_VALID)
+                virNetlinkEventRemoveClientPrimitive(i, protocol);
+        }
+
+        server[protocol] = NULL;
+        VIR_FREE(srv->handles);
     }
-
-    server[protocol] = NULL;
-    VIR_FREE(srv->handles);
-    virNetlinkEventServerUnlock(srv);
 
     virMutexDestroy(&srv->lock);
     VIR_FREE(srv);
@@ -1036,53 +1022,52 @@ virNetlinkEventServiceStart(unsigned int protocol, unsigned int groups)
         return -1;
     }
 
-    virNetlinkEventServerLock(srv);
+    VIR_WITH_MUTEX_LOCK_GUARD(&srv->lock) {
+        /* Allocate a new socket and get fd */
+        if (!(srv->netlinknh = virNetlinkCreateSocket(protocol)))
+            goto error;
 
-    /* Allocate a new socket and get fd */
-    if (!(srv->netlinknh = virNetlinkCreateSocket(protocol)))
-        goto error_locked;
+        fd = nl_socket_get_fd(srv->netlinknh);
+        if (fd < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("cannot get netlink socket fd"));
+            goto error;
+        }
 
-    fd = nl_socket_get_fd(srv->netlinknh);
-    if (fd < 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot get netlink socket fd"));
-        goto error_server;
+        if (groups && nl_socket_add_membership(srv->netlinknh, groups) < 0) {
+            virReportSystemError(errno,
+                                 "%s", _("cannot add netlink membership"));
+            goto error;
+        }
+
+        if (nl_socket_set_nonblocking(srv->netlinknh)) {
+            virReportSystemError(errno, "%s",
+                                 _("cannot set netlink socket nonblocking"));
+            goto error;
+        }
+
+        if ((srv->eventwatch = virEventAddHandle(fd,
+                                                 VIR_EVENT_HANDLE_READABLE,
+                                                 virNetlinkEventCallback,
+                                                 srv, NULL)) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Failed to add netlink event handle watch"));
+            goto error;
+        }
+
+        srv->netlinkfd = fd;
+        VIR_DEBUG("netlink event listener on fd: %i running", fd);
+
+        ret = 0;
+        server[protocol] = srv;
+
+ error:
+        if (ret < 0 && srv->netlinknh) {
+            nl_close(srv->netlinknh);
+            virNetlinkFree(srv->netlinknh);
+        }
     }
 
-    if (groups && nl_socket_add_membership(srv->netlinknh, groups) < 0) {
-        virReportSystemError(errno,
-                             "%s", _("cannot add netlink membership"));
-        goto error_server;
-    }
-
-    if (nl_socket_set_nonblocking(srv->netlinknh)) {
-        virReportSystemError(errno, "%s",
-                             _("cannot set netlink socket nonblocking"));
-        goto error_server;
-    }
-
-    if ((srv->eventwatch = virEventAddHandle(fd,
-                                             VIR_EVENT_HANDLE_READABLE,
-                                             virNetlinkEventCallback,
-                                             srv, NULL)) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Failed to add netlink event handle watch"));
-        goto error_server;
-    }
-
-    srv->netlinkfd = fd;
-    VIR_DEBUG("netlink event listener on fd: %i running", fd);
-
-    ret = 0;
-    server[protocol] = srv;
-
- error_server:
-    if (ret < 0) {
-        nl_close(srv->netlinknh);
-        virNetlinkFree(srv->netlinknh);
-    }
- error_locked:
-    virNetlinkEventServerUnlock(srv);
     if (ret < 0) {
         virMutexDestroy(&srv->lock);
         VIR_FREE(srv);
@@ -1129,45 +1114,44 @@ virNetlinkEventAddClient(virNetlinkEventHandleCallback handleCB,
         return -1;
     }
 
-    virNetlinkEventServerLock(srv);
+    VIR_WITH_MUTEX_LOCK_GUARD(&srv->lock) {
+        VIR_DEBUG("adding client: %d.", nextWatch);
 
-    VIR_DEBUG("adding client: %d.", nextWatch);
-
-    /* first try to re-use deleted free slots */
-    for (i = 0; i < srv->handlesCount; i++) {
-        if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_DELETED) {
-            r = i;
-            break;
+        /* first try to re-use deleted free slots */
+        for (i = 0; i < srv->handlesCount; i++) {
+            if (srv->handles[i].deleted == VIR_NETLINK_HANDLE_DELETED) {
+                r = i;
+                break;
+            }
         }
+
+        if (r < 0) {
+            /* Resize the eventLoop array if needed */
+            if (srv->handlesCount == srv->handlesAlloc) {
+                VIR_DEBUG("Used %zu handle slots, adding at least %d more",
+                          srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
+                VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
+                             srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT);
+            }
+            r = srv->handlesCount++;
+        }
+
+        srv->handles[r].watch    = nextWatch;
+        srv->handles[r].handleCB = handleCB;
+        srv->handles[r].removeCB = removeCB;
+        srv->handles[r].opaque   = opaque;
+        srv->handles[r].deleted  = VIR_NETLINK_HANDLE_VALID;
+        if (macaddr)
+            virMacAddrSet(&srv->handles[r].macaddr, macaddr);
+        else
+            virMacAddrSetRaw(&srv->handles[r].macaddr,
+                             (unsigned char[VIR_MAC_BUFLEN]){0, 0, 0, 0, 0, 0});
+
+        ret = nextWatch++;
+
+        VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
     }
 
-    if (r < 0) {
-        /* Resize the eventLoop array if needed */
-        if (srv->handlesCount == srv->handlesAlloc) {
-            VIR_DEBUG("Used %zu handle slots, adding at least %d more",
-                      srv->handlesAlloc, NETLINK_EVENT_ALLOC_EXTENT);
-            VIR_RESIZE_N(srv->handles, srv->handlesAlloc,
-                         srv->handlesCount, NETLINK_EVENT_ALLOC_EXTENT);
-        }
-        r = srv->handlesCount++;
-    }
-
-    srv->handles[r].watch    = nextWatch;
-    srv->handles[r].handleCB = handleCB;
-    srv->handles[r].removeCB = removeCB;
-    srv->handles[r].opaque   = opaque;
-    srv->handles[r].deleted  = VIR_NETLINK_HANDLE_VALID;
-    if (macaddr)
-        virMacAddrSet(&srv->handles[r].macaddr, macaddr);
-    else
-        virMacAddrSetRaw(&srv->handles[r].macaddr,
-                         (unsigned char[VIR_MAC_BUFLEN]){0, 0, 0, 0, 0, 0});
-
-    VIR_DEBUG("added client to loop slot: %d. with macaddr ptr=%p", r, macaddr);
-
-    ret = nextWatch++;
-
-    virNetlinkEventServerUnlock(srv);
     return ret;
 }
 
@@ -1189,7 +1173,6 @@ virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
                             unsigned int protocol)
 {
     size_t i;
-    int ret = -1;
     virNetlinkEventSrvPrivate *srv = NULL;
 
     if (protocol >= MAX_LINKS)
@@ -1204,28 +1187,25 @@ virNetlinkEventRemoveClient(int watch, const virMacAddr *macaddr,
         return -1;
     }
 
-    virNetlinkEventServerLock(srv);
+    VIR_WITH_MUTEX_LOCK_GUARD(&srv->lock) {
+        for (i = 0; i < srv->handlesCount; i++) {
+            if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
+                continue;
 
-    for (i = 0; i < srv->handlesCount; i++) {
-        if (srv->handles[i].deleted != VIR_NETLINK_HANDLE_VALID)
-            continue;
+            if ((watch && srv->handles[i].watch == watch) ||
+                (!watch &&
+                 virMacAddrCmp(macaddr, &srv->handles[i].macaddr) == 0)) {
 
-        if ((watch && srv->handles[i].watch == watch) ||
-            (!watch &&
-             virMacAddrCmp(macaddr, &srv->handles[i].macaddr) == 0)) {
-
-            VIR_DEBUG("removed client: %d by %s.",
-                      srv->handles[i].watch, watch ? "index" : "mac");
-            virNetlinkEventRemoveClientPrimitive(i, protocol);
-            ret = 0;
-            goto cleanup;
+                VIR_DEBUG("removed client: %d by %s.",
+                          srv->handles[i].watch, watch ? "index" : "mac");
+                virNetlinkEventRemoveClientPrimitive(i, protocol);
+                return 0;
+            }
         }
     }
     VIR_DEBUG("no client found to remove.");
 
- cleanup:
-    virNetlinkEventServerUnlock(srv);
-    return ret;
+    return -1;
 }
 
 #else
