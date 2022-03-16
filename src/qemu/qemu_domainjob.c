@@ -189,17 +189,18 @@ qemuDomainObjInitJob(qemuDomainJobObj *job,
     memset(job, 0, sizeof(*job));
     job->cb = cb;
 
-    if (!(job->privateData = job->cb->allocJobPrivate()))
+    if (virCondInit(&job->cond) < 0)
         return -1;
 
-    if (virCondInit(&job->cond) < 0) {
-        job->cb->freeJobPrivate(job->privateData);
+    if (virCondInit(&job->asyncCond) < 0) {
+        virCondDestroy(&job->cond);
         return -1;
     }
 
-    if (virCondInit(&job->asyncCond) < 0) {
-        job->cb->freeJobPrivate(job->privateData);
+    if (job->cb &&
+        !(job->privateData = job->cb->allocJobPrivate())) {
         virCondDestroy(&job->cond);
+        virCondDestroy(&job->asyncCond);
         return -1;
     }
 
