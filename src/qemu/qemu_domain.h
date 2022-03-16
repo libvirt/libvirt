@@ -443,6 +443,36 @@ struct _qemuDomainXmlNsEnvTuple {
     char *value;
 };
 
+
+typedef enum {
+    QEMU_DOMAIN_XML_NS_OVERRIDE_NONE,
+    QEMU_DOMAIN_XML_NS_OVERRIDE_STRING,
+    QEMU_DOMAIN_XML_NS_OVERRIDE_SIGNED,
+    QEMU_DOMAIN_XML_NS_OVERRIDE_UNSIGNED,
+    QEMU_DOMAIN_XML_NS_OVERRIDE_BOOL,
+    QEMU_DOMAIN_XML_NS_OVERRIDE_REMOVE,
+
+    QEMU_DOMAIN_XML_NS_OVERRIDE_LAST
+} qemuDomainXmlNsOverrideType;
+VIR_ENUM_DECL(qemuDomainXmlNsOverride);
+
+typedef struct _qemuDomainXmlNsOverrideProperty qemuDomainXmlNsOverrideProperty;
+struct _qemuDomainXmlNsOverrideProperty {
+    char *name;
+    qemuDomainXmlNsOverrideType type;
+    char *value;
+    virJSONValue *json;
+};
+
+typedef struct _qemuDomainXmlNsDeviceOverride qemuDomainXmlNsDeviceOverride;
+struct _qemuDomainXmlNsDeviceOverride {
+    char *alias;
+
+    size_t nfrontend;
+    qemuDomainXmlNsOverrideProperty *frontend;
+};
+
+
 typedef struct _qemuDomainXmlNsDef qemuDomainXmlNsDef;
 struct _qemuDomainXmlNsDef {
     char **args;
@@ -458,6 +488,9 @@ struct _qemuDomainXmlNsDef {
      * starting the VM to avoid any form of errors in the parser or when
      * changing qemu versions. The knob is mainly for development/CI purposes */
     char *deprecationBehavior;
+
+    size_t ndeviceOverride;
+    qemuDomainXmlNsDeviceOverride *deviceOverride;
 };
 
 

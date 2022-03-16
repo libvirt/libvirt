@@ -81,6 +81,9 @@
           <ref name="qemudeprecation"/>
         </optional>
         <optional>
+          <ref name="qemuoverride"/>
+        </optional>
+        <optional>
           <ref name="lxcsharens"/>
         </optional>
         <optional>
@@ -7557,6 +7560,45 @@
           <value>crash</value>
         </choice>
       </attribute>
+    </element>
+  </define>
+
+  <define name="qemuoverrideproperty">
+    <element name="property" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <attribute name="name"/>
+      <attribute name="type">
+        <choice>
+          <value>string</value>
+          <value>signed</value>
+          <value>unsigned</value>
+          <value>bool</value>
+          <value>remove</value>
+        </choice>
+      </attribute>
+      <optional>
+        <attribute name="value"/>
+      </optional>
+    </element>
+  </define>
+
+  <define name="qemuoverride">
+    <element name="override" ns="http://libvirt.org/schemas/domain/qemu/1.0">
+      <interleave>
+        <zeroOrMore>
+          <element name="device">
+            <attribute name="alias"/>
+            <interleave>
+              <optional>
+                <element name="frontend">
+                  <zeroOrMore>
+                    <ref name="qemuoverrideproperty"/>
+                  </zeroOrMore>
+                </element>
+              </optional>
+            </interleave>
+          </element>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
 

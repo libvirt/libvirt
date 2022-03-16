@@ -3181,6 +3181,23 @@ qemuDomainXmlNsDefFree(qemuDomainXmlNsDef *def)
 
     g_free(def->deprecationBehavior);
 
+    for (i = 0; i < def->ndeviceOverride; i++) {
+        size_t j;
+        g_free(def->deviceOverride[i].alias);
+
+        for (j = 0; j < def->deviceOverride[i].nfrontend; j++) {
+            qemuDomainXmlNsOverrideProperty *prop = def->deviceOverride[i].frontend + j;
+
+            g_free(prop->name);
+            g_free(prop->value);
+            virJSONValueFree(prop->json);
+        }
+
+        g_free(def->deviceOverride[i].frontend);
+    }
+
+    g_free(def->deviceOverride);
+
     g_free(def);
 }
 
@@ -3319,6 +3336,159 @@ qemuDomainDefNamespaceParseCaps(qemuDomainXmlNsDef *nsdef,
     return 0;
 }
 
+VIR_ENUM_IMPL(qemuDomainXmlNsOverride,
+              QEMU_DOMAIN_XML_NS_OVERRIDE_LAST,
+              "",
+              "string",
+              "signed",
+              "unsigned",
+              "bool",
+              "remove",
+             );
+
+
+static int
+qemuDomainDefNamespaceParseOverrideProperties(qemuDomainXmlNsOverrideProperty *props,
+                                              xmlNodePtr *propnodes,
+                                              size_t npropnodes)
+{
+    size_t i;
+
+    for (i = 0; i < npropnodes; i++) {
+        qemuDomainXmlNsOverrideProperty *prop = props + i;
+        unsigned long long ull;
+        long long ll;
+        bool b;
+
+        if (!(prop->name = virXMLPropString(propnodes[i], "name"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing 'name' attribute for qemu:property"));
+            return -1;
+        }
+
+        if (STREQ(prop->name, "id")) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("property with name 'id' can't be overriden"));
+            return -1;
+        }
+
+        if (virXMLPropEnum(propnodes[i], "type",
+                           qemuDomainXmlNsOverrideTypeFromString,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &prop->type) < 0)
+            return -1;
+
+        if (!(prop->value = virXMLPropString(propnodes[i], "value"))) {
+            if (prop->type != QEMU_DOMAIN_XML_NS_OVERRIDE_REMOVE) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("missing 'value' attribute for 'qemu:property'"));
+                return -1;
+            }
+        }
+
+        switch (prop->type) {
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_STRING:
+            prop->json = virJSONValueNewString(g_strdup(prop->value));
+            break;
+
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_SIGNED:
+            if (virStrToLong_ll(prop->value, NULL, 10, &ll) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid value '%s' of 'value' attribute of 'qemu:property'"),
+                               prop->value);
+                return -1;
+            }
+            prop->json = virJSONValueNewNumberLong(ll);
+            break;
+
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_UNSIGNED:
+            if (virStrToLong_ullp(prop->value, NULL, 10, &ull) < 0) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid value '%s' of 'value' attribute of 'qemu:property'"),
+                               prop->value);
+                return -1;
+            }
+            prop->json = virJSONValueNewNumberUlong(ull);
+            break;
+
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_BOOL:
+            if (STRNEQ(prop->value, "true") && STRNEQ(prop->value, "false")) {
+                virReportError(VIR_ERR_XML_ERROR,
+                               _("invalid value '%s' of 'value' attribute of 'qemu:property'"),
+                               prop->value);
+                return -1;
+            }
+
+            b = STREQ(prop->value, "true");
+            prop->json = virJSONValueNewBoolean(b);
+            break;
+
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_REMOVE:
+            if (prop->value) {
+                virReportError(VIR_ERR_XML_ERROR, "%s",
+                               _("setting 'value' attribute of 'qemu:property' doesn't make sense with 'remove' type"));
+                return -1;
+            }
+            break;
+
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_NONE:
+        case QEMU_DOMAIN_XML_NS_OVERRIDE_LAST:
+            virReportEnumRangeError(qemuDomainXmlNsOverrideType, prop->type);
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
+qemuDomainDefNamespaceParseDeviceOverride(qemuDomainXmlNsDef *nsdef,
+                                          xmlXPathContextPtr ctxt)
+{
+    g_autofree xmlNodePtr *devicenodes = NULL;
+    ssize_t ndevicenodes;
+    size_t i;
+
+    if ((ndevicenodes = virXPathNodeSet("./qemu:override/qemu:device", ctxt, &devicenodes)) < 0)
+        return -1;
+
+    if (ndevicenodes == 0)
+        return 0;
+
+    nsdef->deviceOverride = g_new0(qemuDomainXmlNsDeviceOverride, ndevicenodes);
+    nsdef->ndeviceOverride = ndevicenodes;
+
+    for (i = 0; i < ndevicenodes; i++) {
+        qemuDomainXmlNsDeviceOverride *n = nsdef->deviceOverride + i;
+        g_autofree xmlNodePtr *propnodes = NULL;
+        ssize_t npropnodes;
+        VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+        ctxt->node = devicenodes[i];
+
+        if (!(n->alias = virXMLPropString(devicenodes[i], "alias"))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("missing 'alias' attribute for qemu:device"));
+            return -1;
+        }
+
+        if ((npropnodes = virXPathNodeSet("./qemu:frontend/qemu:property", ctxt, &propnodes)) < 0)
+            return -1;
+
+        if (npropnodes == 0)
+            continue;
+
+        n->frontend = g_new0(qemuDomainXmlNsOverrideProperty, npropnodes);
+        n->nfrontend = npropnodes;
+
+        if (qemuDomainDefNamespaceParseOverrideProperties(n->frontend, propnodes, npropnodes) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
 
 static int
 qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
@@ -3331,6 +3501,7 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
 
     if (qemuDomainDefNamespaceParseCommandlineArgs(nsdata, ctxt) < 0 ||
         qemuDomainDefNamespaceParseCommandlineEnv(nsdata, ctxt) < 0 ||
+        qemuDomainDefNamespaceParseDeviceOverride(nsdata, ctxt) < 0 ||
         qemuDomainDefNamespaceParseCaps(nsdata, ctxt) < 0)
         goto cleanup;
 
@@ -3386,6 +3557,52 @@ qemuDomainDefNamespaceFormatXMLCaps(virBuffer *buf,
 }
 
 
+static void
+qemuDomainDefNamespaceFormatXMLOverrideProperties(virBuffer *buf,
+                                                  qemuDomainXmlNsOverrideProperty *props,
+                                                  size_t nprops)
+{
+    size_t i;
+
+    for (i = 0; i < nprops; i++) {
+        g_auto(virBuffer) propAttrBuf = VIR_BUFFER_INITIALIZER;
+        qemuDomainXmlNsOverrideProperty *prop = props + i;
+
+        virBufferEscapeString(&propAttrBuf, " name='%s'", prop->name);
+        virBufferAsprintf(&propAttrBuf, " type='%s'",
+                          qemuDomainXmlNsOverrideTypeToString(prop->type));
+        virBufferEscapeString(&propAttrBuf, " value='%s'", prop->value);
+
+        virXMLFormatElement(buf, "qemu:property", &propAttrBuf, NULL);
+    }
+}
+
+
+static void
+qemuDomainDefNamespaceFormatXMLOverride(virBuffer *buf,
+                                        qemuDomainXmlNsDef *xmlns)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    for (i = 0; i < xmlns->ndeviceOverride; i++) {
+        qemuDomainXmlNsDeviceOverride *device = xmlns->deviceOverride + i;
+        g_auto(virBuffer) deviceAttrBuf = VIR_BUFFER_INITIALIZER;
+        g_auto(virBuffer) deviceChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
+        g_auto(virBuffer) frontendChildBuf = VIR_BUFFER_INIT_CHILD(&deviceChildBuf);
+
+        virBufferEscapeString(&deviceAttrBuf, " alias='%s'", device->alias);
+
+        qemuDomainDefNamespaceFormatXMLOverrideProperties(&frontendChildBuf, device->frontend, device->nfrontend);
+        virXMLFormatElement(&deviceChildBuf, "qemu:frontend", NULL, &frontendChildBuf);
+
+        virXMLFormatElement(&childBuf, "qemu:device", &deviceAttrBuf, &deviceChildBuf);
+    }
+
+    virXMLFormatElement(buf, "qemu:override", NULL, &childBuf);
+}
+
+
 static int
 qemuDomainDefNamespaceFormatXML(virBuffer *buf,
                                 void *nsdata)
@@ -3394,6 +3611,7 @@ qemuDomainDefNamespaceFormatXML(virBuffer *buf,
 
     qemuDomainDefNamespaceFormatXMLCommandline(buf, cmd);
     qemuDomainDefNamespaceFormatXMLCaps(buf, cmd);
+    qemuDomainDefNamespaceFormatXMLOverride(buf, cmd);
 
     virBufferEscapeString(buf, "<qemu:deprecation behavior='%s'/>\n",
                           cmd->deprecationBehavior);
