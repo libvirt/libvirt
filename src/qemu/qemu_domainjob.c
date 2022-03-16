@@ -239,8 +239,10 @@ qemuDomainObjResetAsyncJob(qemuDomainJobObj *job)
     job->abortJob = false;
     VIR_FREE(job->error);
     g_clear_pointer(&job->current, virDomainJobDataFree);
-    job->cb->resetJobPrivate(job->privateData);
     job->apiFlags = 0;
+
+    if (job->cb)
+        job->cb->resetJobPrivate(job->privateData);
 }
 
 int
@@ -258,7 +260,8 @@ qemuDomainObjRestoreJob(virDomainObj *obj,
     job->privateData = g_steal_pointer(&priv->job.privateData);
     job->apiFlags = priv->job.apiFlags;
 
-    if (!(priv->job.privateData = priv->job.cb->allocJobPrivate()))
+    if (priv->job.cb &&
+        !(priv->job.privateData = priv->job.cb->allocJobPrivate()))
         return -1;
     job->cb = priv->job.cb;
 
@@ -270,16 +273,15 @@ qemuDomainObjRestoreJob(virDomainObj *obj,
 void
 qemuDomainObjClearJob(qemuDomainJobObj *job)
 {
-    if (!job->cb)
-        return;
-
     qemuDomainObjResetJob(job);
     qemuDomainObjResetAsyncJob(job);
-    g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
     g_clear_pointer(&job->current, virDomainJobDataFree);
     g_clear_pointer(&job->completed, virDomainJobDataFree);
     virCondDestroy(&job->cond);
     virCondDestroy(&job->asyncCond);
+
+    if (job->cb)
+        g_clear_pointer(&job->privateData, job->cb->freeJobPrivate);
 }
 
 bool
@@ -1228,7 +1230,8 @@ qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
     if (priv->job.asyncJob != QEMU_ASYNC_JOB_NONE)
         virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
 
-    if (priv->job.cb->formatJob(&childBuf, &priv->job, vm) < 0)
+    if (priv->job.cb &&
+        priv->job.cb->formatJob(&childBuf, &priv->job, vm) < 0)
         return -1;
 
     virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
@@ -1288,7 +1291,8 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
         return -1;
     }
 
-    if (priv->job.cb->parseJob(ctxt, job, vm) < 0)
+    if (priv->job.cb &&
+        priv->job.cb->parseJob(ctxt, job, vm) < 0)
         return -1;
 
     return 0;
