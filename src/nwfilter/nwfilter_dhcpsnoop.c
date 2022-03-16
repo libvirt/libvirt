@@ -85,15 +85,6 @@ struct virNWFilterSnoopState {
     virMutex             activeLock; /* protects Active */
 };
 
-# define virNWFilterSnoopLock() \
-    do { \
-        virMutexLock(&virNWFilterSnoopState.snoopLock); \
-    } while (0)
-# define virNWFilterSnoopUnlock() \
-    do { \
-        virMutexUnlock(&virNWFilterSnoopState.snoopLock); \
-    } while (0)
-
 # define VIR_IFKEY_LEN   ((VIR_UUID_STRING_BUFLEN) + (VIR_MAC_STRING_BUFLEN))
 
 typedef struct _virNWFilterSnoopReq virNWFilterSnoopReq;
@@ -147,7 +138,7 @@ struct _virNWFilterSnoopReq {
 
 /*
  * Note about lock-order:
- * 1st: virNWFilterSnoopLock()
+ * 1st: virNWFilterSnoopState.snoopLock
  * 2nd: virNWFilterSnoopReqLock(req)
  *
  * Rationale: Former protects the SnoopReqs hash, latter its contents
@@ -620,15 +611,12 @@ virNWFilterSnoopReqRelease(void *req0)
 static virNWFilterSnoopReq *
 virNWFilterSnoopReqGetByIFKey(const char *ifkey)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
     virNWFilterSnoopReq *req;
-
-    virNWFilterSnoopLock();
 
     req = virHashLookup(virNWFilterSnoopState.snoopReqs, ifkey);
     if (req)
         virNWFilterSnoopReqGet(req);
-
-    virNWFilterSnoopUnlock();
 
     return req;
 }
@@ -640,10 +628,10 @@ virNWFilterSnoopReqGetByIFKey(const char *ifkey)
 static void
 virNWFilterSnoopReqPut(virNWFilterSnoopReq *req)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
+
     if (!req)
         return;
-
-    virNWFilterSnoopLock();
 
     if (!!g_atomic_int_dec_and_test(&req->refctr)) {
         /*
@@ -660,8 +648,6 @@ virNWFilterSnoopReqPut(virNWFilterSnoopReq *req)
                                             req->ifkey));
         }
     }
-
-    virNWFilterSnoopUnlock();
 }
 
 /*
@@ -1460,20 +1446,19 @@ virNWFilterDHCPSnoopThread(void *req0)
     } /* while (!error) */
 
     /* protect IfNameToKey */
-    virNWFilterSnoopLock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&virNWFilterSnoopState.snoopLock) {
+        /* protect req->binding->portdevname & req->threadkey */
+        virNWFilterSnoopReqLock(req);
 
-    /* protect req->binding->portdevname & req->threadkey */
-    virNWFilterSnoopReqLock(req);
+        virNWFilterSnoopCancel(&req->threadkey);
 
-    virNWFilterSnoopCancel(&req->threadkey);
+        ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
+                                        req->binding->portdevname));
 
-    ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
-                                    req->binding->portdevname));
+        g_clear_pointer(&req->binding->portdevname, g_free);
 
-    g_clear_pointer(&req->binding->portdevname, g_free);
-
-    virNWFilterSnoopReqUnlock(req);
-    virNWFilterSnoopUnlock();
+        virNWFilterSnoopReqUnlock(req);
+    }
 
  cleanup:
     virThreadPoolFree(worker);
@@ -1556,7 +1541,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
         goto exit_snoopreqput;
     }
 
-    virNWFilterSnoopLock();
+    virMutexLock(&virNWFilterSnoopState.snoopLock);
 
     if (virHashAddEntry(virNWFilterSnoopState.ifnameToKey,
                         req->binding->portdevname,
@@ -1621,7 +1606,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
 
     virNWFilterSnoopReqUnlock(req);
 
-    virNWFilterSnoopUnlock();
+    virMutexUnlock(&virNWFilterSnoopState.snoopLock);
 
     /* do not 'put' the req -- the thread will do this */
 
@@ -1634,7 +1619,7 @@ virNWFilterDHCPSnoopReq(virNWFilterTechDriver *techdriver,
  exit_rem_ifnametokey:
     virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey, binding->portdevname);
  exit_snoopunlock:
-    virNWFilterSnoopUnlock();
+    virMutexUnlock(&virNWFilterSnoopState.snoopLock);
  exit_snoopreqput:
     if (!threadPuts)
         virNWFilterSnoopReqPut(req);
@@ -1695,23 +1680,19 @@ virNWFilterSnoopLeaseFileWrite(int lfd, const char *ifkey,
 static void
 virNWFilterSnoopLeaseFileSave(virNWFilterSnoopIPLease *ipl)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
     virNWFilterSnoopReq *req = ipl->snoopReq;
-
-    virNWFilterSnoopLock();
 
     if (virNWFilterSnoopState.leaseFD < 0)
         virNWFilterSnoopLeaseFileOpen();
     if (virNWFilterSnoopLeaseFileWrite(virNWFilterSnoopState.leaseFD,
                                        req->ifkey, ipl) < 0)
-        goto error;
+        return;
 
     /* keep dead leases at < ~95% of file size */
     if (g_atomic_int_add(&virNWFilterSnoopState.wLeases, 1) >=
         g_atomic_int_get(&virNWFilterSnoopState.nLeases) * 20)
         virNWFilterSnoopLeaseFileLoad();   /* load & refresh lease file */
-
- error:
-    virNWFilterSnoopUnlock();
 }
 
 /*
@@ -1830,9 +1811,7 @@ virNWFilterSnoopLeaseFileLoad(void)
     time_t now;
     FILE *fp;
     int ln = 0, tmp;
-
-    /* protect the lease file */
-    virNWFilterSnoopLock();
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
 
     fp = fopen(LEASEFILE, "r");
     time(&now);
@@ -1892,8 +1871,6 @@ virNWFilterSnoopLeaseFileLoad(void)
     VIR_FORCE_FCLOSE(fp);
 
     virNWFilterSnoopLeaseFileRefresh();
-
-    virNWFilterSnoopUnlock();
 }
 
 /*
@@ -1953,11 +1930,11 @@ virNWFilterSnoopRemAllReqIter(const void *payload,
 static void
 virNWFilterSnoopEndThreads(void)
 {
-    virNWFilterSnoopLock();
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
+
     virHashRemoveSet(virNWFilterSnoopState.snoopReqs,
                      virNWFilterSnoopRemAllReqIter,
                      NULL);
-    virNWFilterSnoopUnlock();
 }
 
 int
@@ -1996,18 +1973,17 @@ virNWFilterDHCPSnoopInit(void)
 void
 virNWFilterDHCPSnoopEnd(const char *ifname)
 {
+    VIR_LOCK_GUARD lock = virLockGuardLock(&virNWFilterSnoopState.snoopLock);
     char *ifkey = NULL;
 
-    virNWFilterSnoopLock();
-
     if (!virNWFilterSnoopState.snoopReqs)
-        goto cleanup;
+        return;
 
     if (ifname) {
         ifkey = (char *)virHashLookup(virNWFilterSnoopState.ifnameToKey,
                                       ifname);
         if (!ifkey)
-            goto cleanup;
+            return;
 
         ignore_value(virHashRemoveEntry(virNWFilterSnoopState.ifnameToKey,
                                         ifname));
@@ -2020,7 +1996,7 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
         if (!req) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("ifkey \"%s\" has no req"), ifkey);
-            goto cleanup;
+            return;
         }
 
         /* protect req->binding->portdevname & req->threadkey */
@@ -2044,9 +2020,6 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
 
         virNWFilterSnoopLeaseFileLoad();
     }
-
- cleanup:
-    virNWFilterSnoopUnlock();
 }
 
 void
@@ -2055,13 +2028,11 @@ virNWFilterDHCPSnoopShutdown(void)
     virNWFilterSnoopEndThreads();
     virNWFilterSnoopJoinThreads();
 
-    virNWFilterSnoopLock();
-
-    virNWFilterSnoopLeaseFileClose();
-    g_clear_pointer(&virNWFilterSnoopState.ifnameToKey, g_hash_table_unref);
-    g_clear_pointer(&virNWFilterSnoopState.snoopReqs, g_hash_table_unref);
-
-    virNWFilterSnoopUnlock();
+    VIR_WITH_MUTEX_LOCK_GUARD(&virNWFilterSnoopState.snoopLock) {
+        virNWFilterSnoopLeaseFileClose();
+        g_clear_pointer(&virNWFilterSnoopState.ifnameToKey, g_hash_table_unref);
+        g_clear_pointer(&virNWFilterSnoopState.snoopReqs, g_hash_table_unref);
+    }
 
     VIR_WITH_MUTEX_LOCK_GUARD(&virNWFilterSnoopState.activeLock) {
         g_clear_pointer(&virNWFilterSnoopState.active, g_hash_table_unref);
