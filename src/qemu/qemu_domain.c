@@ -3353,25 +3353,19 @@ static void
 qemuDomainDefNamespaceFormatXMLCommandline(virBuffer *buf,
                                            qemuDomainXmlNsDef *cmd)
 {
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     GStrv n;
     size_t i;
 
-    if (!cmd->args && !cmd->num_env)
-        return;
-
-    virBufferAddLit(buf, "<qemu:commandline>\n");
-    virBufferAdjustIndent(buf, 2);
-
     for (n = cmd->args; n && *n; n++)
-        virBufferEscapeString(buf, "<qemu:arg value='%s'/>\n", *n);
+        virBufferEscapeString(&childBuf, "<qemu:arg value='%s'/>\n", *n);
     for (i = 0; i < cmd->num_env; i++) {
-        virBufferAsprintf(buf, "<qemu:env name='%s'", cmd->env[i].name);
-        virBufferEscapeString(buf, " value='%s'", cmd->env[i].value);
-        virBufferAddLit(buf, "/>\n");
+        virBufferAsprintf(&childBuf, "<qemu:env name='%s'", cmd->env[i].name);
+        virBufferEscapeString(&childBuf, " value='%s'", cmd->env[i].value);
+        virBufferAddLit(&childBuf, "/>\n");
     }
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</qemu:commandline>\n");
+    virXMLFormatElement(buf, "qemu:commandline", NULL, &childBuf);
 }
 
 
@@ -3379,22 +3373,16 @@ static void
 qemuDomainDefNamespaceFormatXMLCaps(virBuffer *buf,
                                     qemuDomainXmlNsDef *xmlns)
 {
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     GStrv n;
 
-    if (!xmlns->capsadd && !xmlns->capsdel)
-        return;
-
-    virBufferAddLit(buf, "<qemu:capabilities>\n");
-    virBufferAdjustIndent(buf, 2);
-
     for (n = xmlns->capsadd; n && *n; n++)
-        virBufferEscapeString(buf, "<qemu:add capability='%s'/>\n", *n);
+        virBufferEscapeString(&childBuf, "<qemu:add capability='%s'/>\n", *n);
 
     for (n = xmlns->capsdel; n && *n; n++)
-        virBufferEscapeString(buf, "<qemu:del capability='%s'/>\n", *n);
+        virBufferEscapeString(&childBuf, "<qemu:del capability='%s'/>\n", *n);
 
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</qemu:capabilities>\n");
+    virXMLFormatElement(buf, "qemu:capabilities", NULL, &childBuf);
 }
 
 
