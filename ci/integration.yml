@@ -1,4 +1,4 @@
-.tests:
+.integration_tests:
   stage: integration_tests
   before_script:
     - mkdir "$SCRATCH_DIR"
@@ -43,7 +43,7 @@
 
 
 centos-stream-8-tests:
-  extends: .tests
+  extends: .integration_tests
   needs:
     - x86_64-centos-stream-8
     - project: libvirt/libvirt-perl
@@ -57,7 +57,7 @@ centos-stream-8-tests:
     - redhat-vm-host
 
 centos-stream-9-tests:
-  extends: .tests
+  extends: .integration_tests
   needs:
     - x86_64-centos-stream-9
     - project: libvirt/libvirt-perl
@@ -71,7 +71,7 @@ centos-stream-9-tests:
     - redhat-vm-host
 
 fedora-34-tests:
-  extends: .tests
+  extends: .integration_tests
   needs:
     - x86_64-fedora-34
     - project: libvirt/libvirt-perl
@@ -85,7 +85,7 @@ fedora-34-tests:
     - redhat-vm-host
 
 fedora-35-tests:
-  extends: .tests
+  extends: .integration_tests
   needs:
     - x86_64-fedora-35
     - project: libvirt/libvirt-perl
