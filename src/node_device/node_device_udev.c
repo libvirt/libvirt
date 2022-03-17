@@ -2035,7 +2035,7 @@ mdevctlHandlerThread(void *opaque G_GNUC_UNUSED)
     VIR_LOCK_GUARD lock = virLockGuardLock(&priv->mdevctlLock);
 
     if (nodeDeviceUpdateMediatedDevices() < 0)
-        VIR_WARN("mdevctl failed to updated mediated devices");
+        VIR_WARN("mdevctl failed to update mediated devices");
 }
 
 
