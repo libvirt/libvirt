@@ -1440,6 +1440,10 @@ udevRemoveOneDeviceSysPath(const char *path)
     }
     virNodeDeviceObjEndAPI(&obj);
 
+    /* cannot check for mdev_types since they have already been removed */
+    if (nodeDeviceUpdateMediatedDevices() < 0)
+        VIR_WARN("mdevctl failed to update mediated devices");
+
     virObjectEventStateQueue(driver->nodeDeviceEventState, event);
     return 0;
 }
@@ -1507,6 +1511,7 @@ udevAddOneDevice(struct udev_device *device)
     bool persistent = false;
     bool autostart = false;
     bool is_mdev;
+    bool has_mdev_types = false;
 
     def = g_new0(virNodeDeviceDef, 1);
 
@@ -1562,7 +1567,11 @@ udevAddOneDevice(struct udev_device *device)
         event = virNodeDeviceEventUpdateNew(objdef->name);
 
     virNodeDeviceObjSetActive(obj, true);
+    has_mdev_types = virNodeDeviceObjHasCap(obj, VIR_NODE_DEV_CAP_MDEV_TYPES);
     virNodeDeviceObjEndAPI(&obj);
+
+    if (has_mdev_types && nodeDeviceUpdateMediatedDevices() < 0)
+        VIR_WARN("mdevctl failed to update mediated devices");
 
     ret = 0;
 
