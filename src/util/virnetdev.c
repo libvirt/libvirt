@@ -3616,7 +3616,7 @@ virNetDevGenerateName(char **ifname, virNetDevGenNameType type)
         g_autofree char *try = NULL;
         int id = 0;
 
-        VIR_WITH_OBJECT_LOCK_GUARD(&virNetDevGenNames[type].mutex) {
+        VIR_WITH_MUTEX_LOCK_GUARD(&virNetDevGenNames[type].mutex) {
             id = ++virNetDevGenNames[type].lastID;
 
             /* reset before overflow */
