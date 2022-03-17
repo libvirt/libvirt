@@ -5309,10 +5309,9 @@ qemuMonitorJSONGetCPUDefinitions(qemuMonitor *mon,
             if (g_strv_length(cpu->blockers) == 0) {
                 cpu->usable = VIR_DOMCAPS_CPU_USABLE_YES;
                 g_clear_pointer(&cpu->blockers, g_strfreev);
-                continue;
+            } else {
+                cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
             }
-
-            cpu->usable = VIR_DOMCAPS_CPU_USABLE_NO;
         }
 
         if (virJSONValueObjectHasKey(child, "deprecated") &&
