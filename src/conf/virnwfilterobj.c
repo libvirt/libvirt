@@ -380,8 +380,8 @@ struct virNWFilterObjListData {
 
 
 static void
-virNWFilterObjListCount(void *payload,
-                        void *key G_GNUC_UNUSED,
+virNWFilterObjListCount(void *key G_GNUC_UNUSED,
+                        void *payload,
                         void *opaque)
 {
     virNWFilterObj *obj = payload;
@@ -417,8 +417,8 @@ struct virNWFilterNameData {
 
 
 static void
-virNWFilterObjListCopyNames(void *payload,
-                            void *key G_GNUC_UNUSED,
+virNWFilterObjListCopyNames(void *key G_GNUC_UNUSED,
+                            void *payload,
                             void *opaque)
 {
     virNWFilterObj *obj = payload;
@@ -460,15 +460,15 @@ struct virNWFilterListData {
 
 
 static void
-virNWFilterObjListCollectIterator(void *payload,
-                                  void *key G_GNUC_UNUSED,
+virNWFilterObjListCollectIterator(void *key G_GNUC_UNUSED,
+                                  void *payload,
                                   void *opaque)
 {
     struct virNWFilterListData *data = opaque;
     virNWFilterObj *obj = payload;
 
     virNWFilterObjLock(obj);
-    data->filters[data->nfilters++] = payload;
+    data->filters[data->nfilters++] = obj;
 }
 
 
