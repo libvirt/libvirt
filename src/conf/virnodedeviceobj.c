@@ -58,7 +58,6 @@ static virClass *virNodeDeviceObjClass;
 static virClass *virNodeDeviceObjListClass;
 static void virNodeDeviceObjDispose(void *opaque);
 static void virNodeDeviceObjListDispose(void *opaque);
-static bool virNodeDeviceObjHasCap(const virNodeDeviceObj *obj, int type);
 
 static int
 virNodeDeviceObjOnceInit(void)
@@ -684,7 +683,7 @@ virNodeDeviceObjListGetParentHost(virNodeDeviceObjList *devs,
 }
 
 
-static bool
+bool
 virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
                        int type)
 {

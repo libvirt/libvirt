@@ -86,6 +86,10 @@ int
 virNodeDeviceObjListGetParentHost(virNodeDeviceObjList *devs,
                                   virNodeDeviceDef *def);
 
+bool
+virNodeDeviceObjHasCap(const virNodeDeviceObj *obj,
+                       int type);
+
 virNodeDeviceObjList *
 virNodeDeviceObjListNew(void);
 
