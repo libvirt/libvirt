@@ -40,6 +40,10 @@
     paths:
       - logs
     when: on_failure
+  rules:
+    - if: '$LIBVIRT_CI_INTEGRATION'
+      when: on_success
+    - when: never
 
 
 centos-stream-8-tests:
