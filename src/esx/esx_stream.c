@@ -198,8 +198,8 @@ esxStreamTransfer(esxStreamPrivate *priv, bool blocking)
 static int
 esxStreamSend(virStreamPtr stream, const char *data, size_t nbytes)
 {
+    int result = -1;
     esxStreamPrivate *priv = stream->privateData;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->curl->lock);
 
     if (nbytes == 0)
         return 0;
@@ -214,29 +214,33 @@ esxStreamSend(virStreamPtr stream, const char *data, size_t nbytes)
         return -1;
     }
 
-    priv->buffer = (char *)data;
-    priv->buffer_size = nbytes;
-    priv->buffer_used = nbytes;
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->curl->lock) {
+        priv->buffer = (char *)data;
+        priv->buffer_size = nbytes;
+        priv->buffer_used = nbytes;
 
-    if (stream->flags & VIR_STREAM_NONBLOCK) {
-        if (esxStreamTransfer(priv, false) < 0)
-            return -1;
-
-        if (priv->buffer_used >= priv->buffer_size)
-            return -2;
-    } else /* blocking */ {
-        do {
-            int status = esxStreamTransfer(priv, true);
-
-            if (status < 0)
+        if (stream->flags & VIR_STREAM_NONBLOCK) {
+            if (esxStreamTransfer(priv, false) < 0)
                 return -1;
 
-            if (status > 0)
-                break;
-        } while (priv->buffer_used > 0);
+            if (priv->buffer_used >= priv->buffer_size)
+                return -2;
+        } else /* blocking */ {
+            do {
+                int status = esxStreamTransfer(priv, true);
+
+                if (status < 0)
+                    return -1;
+
+                if (status > 0)
+                    break;
+            } while (priv->buffer_used > 0);
+        }
+
+        result = priv->buffer_size - priv->buffer_used;
     }
 
-    return priv->buffer_size - priv->buffer_used;
+    return result;
 }
 
 static int
@@ -245,8 +249,8 @@ esxStreamRecvFlags(virStreamPtr stream,
                    size_t nbytes,
                    unsigned int flags)
 {
+    int result = -1;
     esxStreamPrivate *priv = stream->privateData;
-    VIR_LOCK_GUARD lock = virLockGuardLock(&priv->curl->lock);
 
     virCheckFlags(0, -1);
 
@@ -263,40 +267,44 @@ esxStreamRecvFlags(virStreamPtr stream,
         return -1;
     }
 
-    priv->buffer = data;
-    priv->buffer_size = nbytes;
-    priv->buffer_used = 0;
+    VIR_WITH_MUTEX_LOCK_GUARD(&priv->curl->lock) {
+        priv->buffer = data;
+        priv->buffer_size = nbytes;
+        priv->buffer_used = 0;
 
-    if (priv->backlog_used > 0) {
-        if (priv->buffer_size > priv->backlog_used)
-            priv->buffer_used = priv->backlog_used;
-        else
-            priv->buffer_used = priv->buffer_size;
+        if (priv->backlog_used > 0) {
+            if (priv->buffer_size > priv->backlog_used)
+                priv->buffer_used = priv->backlog_used;
+            else
+                priv->buffer_used = priv->buffer_size;
 
-        memcpy(priv->buffer, priv->backlog, priv->buffer_used);
-        memmove(priv->backlog, priv->backlog + priv->buffer_used,
-                priv->backlog_used - priv->buffer_used);
+            memcpy(priv->buffer, priv->backlog, priv->buffer_used);
+            memmove(priv->backlog, priv->backlog + priv->buffer_used,
+                    priv->backlog_used - priv->buffer_used);
 
-        priv->backlog_used -= priv->buffer_used;
-    } else if (stream->flags & VIR_STREAM_NONBLOCK) {
-        if (esxStreamTransfer(priv, false) < 0)
-            return -1;
-
-        if (priv->buffer_used <= 0)
-            return -2;
-    } else /* blocking */ {
-        do {
-            int status = esxStreamTransfer(priv, true);
-
-            if (status < 0)
+            priv->backlog_used -= priv->buffer_used;
+        } else if (stream->flags & VIR_STREAM_NONBLOCK) {
+            if (esxStreamTransfer(priv, false) < 0)
                 return -1;
 
-            if (status > 0)
-                break;
-        } while (priv->buffer_used < priv->buffer_size);
+            if (priv->buffer_used <= 0)
+                return -2;
+        } else /* blocking */ {
+            do {
+                int status = esxStreamTransfer(priv, true);
+
+                if (status < 0)
+                    return -1;
+
+                if (status > 0)
+                    break;
+            } while (priv->buffer_used < priv->buffer_size);
+        }
+
+        result = priv->buffer_used;
     }
 
-    return priv->buffer_used;
+    return result;
 }
 
 static int
