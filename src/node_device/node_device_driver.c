@@ -1669,8 +1669,10 @@ removeMissingPersistentMdev(virNodeDeviceObj *obj,
         return false;
 
     for (i = 0; i < data->ndefs; i++) {
-        /* OK, this mdev is still defined by mdevctl */
-        if (STREQ(data->defs[i]->name, def->name))
+        /* OK, this mdev is still defined by mdevctl
+         * AND the parent object has not changed. */
+        if (STREQ(data->defs[i]->name, def->name) &&
+            STREQ(data->defs[i]->parent, def->parent))
             return false;
     }
 
