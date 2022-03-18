@@ -237,7 +237,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(priv->mon, &actions);
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
 
  relabel:
     for (next = relabelimages; next; next = next->next) {
@@ -524,7 +524,7 @@ qemuCheckpointCreate(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
     rc = qemuMonitorTransaction(qemuDomainGetMonitor(vm), &actions);
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0) {
         qemuCheckpointRollbackMetadata(vm, chk);
         return NULL;
@@ -629,7 +629,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     checkpoint = virGetDomainCheckpoint(domain, chk->def->name);
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndJob(vm);
 
     return checkpoint;
 }
@@ -736,7 +736,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     if (rc == 0)
         rc = qemuMonitorTransaction(priv->mon, &mergeactions);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto endjob;
 
@@ -748,7 +748,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
 
     rc = qemuMonitorTransaction(priv->mon, &cleanupactions);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto endjob;
 
@@ -768,7 +768,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     ret = 0;
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndJob(vm);
     return ret;
 }
 
@@ -921,6 +921,6 @@ qemuCheckpointDelete(virDomainObj *vm,
     }
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndJob(vm);
     return ret;
 }

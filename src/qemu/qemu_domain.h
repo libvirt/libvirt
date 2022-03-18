@@ -61,10 +61,6 @@ typedef void (*qemuDomainCleanupCallback)(virQEMUDriver *driver,
 
 #define QEMU_DOMAIN_MASTER_KEY_LEN 32  /* 32 bytes for 256 bit random key */
 
-void
-qemuDomainObjSaveStatus(virQEMUDriver *driver,
-                        virDomainObj *obj);
-
 void qemuDomainSaveStatus(virDomainObj *obj);
 void qemuDomainSaveConfig(virDomainObj *obj);
 
@@ -500,8 +496,7 @@ qemuMonitor *qemuDomainGetMonitor(virDomainObj *vm)
 void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
                                virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-void qemuDomainObjExitMonitor(virQEMUDriver *driver,
-                              virDomainObj *obj)
+void qemuDomainObjExitMonitor(virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
                                    virDomainObj *obj,

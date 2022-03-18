@@ -208,21 +208,17 @@ int qemuDomainObjBeginJobNowait(virQEMUDriver *driver,
                                 qemuDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuDomainObjEndJob(virQEMUDriver *driver,
-                         virDomainObj *obj);
+void qemuDomainObjEndJob(virDomainObj *obj);
 void qemuDomainObjEndAgentJob(virDomainObj *obj);
-void qemuDomainObjEndAsyncJob(virQEMUDriver *driver,
-                              virDomainObj *obj);
+void qemuDomainObjEndAsyncJob(virDomainObj *obj);
 void qemuDomainObjAbortAsyncJob(virDomainObj *obj);
-void qemuDomainObjSetJobPhase(virQEMUDriver *driver,
-                              virDomainObj *obj,
+void qemuDomainObjSetJobPhase(virDomainObj *obj,
                               int phase);
 void qemuDomainObjSetAsyncJobMask(virDomainObj *obj,
                                   unsigned long long allowedJobs);
 int qemuDomainObjRestoreJob(virDomainObj *obj,
                             qemuDomainJobObj *job);
-void qemuDomainObjDiscardAsyncJob(virQEMUDriver *driver,
-                                  virDomainObj *obj);
+void qemuDomainObjDiscardAsyncJob(virDomainObj *obj);
 void qemuDomainObjReleaseAsyncJob(virDomainObj *obj);
 
 int qemuDomainJobDataUpdateTime(virDomainJobData *jobData)

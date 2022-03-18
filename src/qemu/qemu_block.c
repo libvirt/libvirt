@@ -326,7 +326,7 @@ qemuBlockNodeNamesDetect(virQEMUDriver *driver,
     data = qemuMonitorQueryNamedBlockNodes(qemuDomainGetMonitor(vm));
     blockstats = qemuMonitorQueryBlockstats(qemuDomainGetMonitor(vm));
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
 
     if (!data || !blockstats)
         return -1;
@@ -2133,7 +2133,7 @@ qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriver *driver,
     if (ret == 0)
         ret = qemuMonitorBlockdevDel(qemuDomainGetMonitor(vm), src->nodestorage);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
 
     return ret;
 }
@@ -2712,7 +2712,7 @@ qemuBlockStorageSourceCreateGeneric(virDomainObj *vm,
 
     rc = qemuMonitorBlockdevCreate(priv->mon, job->name, &props);
 
-    qemuDomainObjExitMonitor(priv->driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto cleanup;
 
@@ -2859,7 +2859,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
 
     rc = qemuBlockStorageSourceAttachApplyStorageDeps(priv->mon, data);
 
-    qemuDomainObjExitMonitor(priv->driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto cleanup;
 
@@ -2874,7 +2874,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
     if (rc == 0)
         rc = qemuBlockStorageSourceAttachApplyFormatDeps(priv->mon, data);
 
-    qemuDomainObjExitMonitor(priv->driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto cleanup;
 
@@ -2893,7 +2893,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
 
     rc = qemuBlockStorageSourceAttachApplyFormat(priv->mon, data);
 
-    qemuDomainObjExitMonitor(priv->driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         goto cleanup;
 
@@ -2905,7 +2905,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
         qemuDomainObjEnterMonitorAsync(priv->driver, vm, asyncJob) == 0) {
 
         qemuBlockStorageSourceAttachRollback(priv->mon, data);
-        qemuDomainObjExitMonitor(priv->driver, vm);
+        qemuDomainObjExitMonitor(vm);
     }
 
     return ret;
@@ -3033,7 +3033,7 @@ qemuBlockGetNamedNodeData(virDomainObj *vm,
 
     blockNamedNodeData = qemuMonitorBlockGetNamedNodeData(priv->mon, supports_flat);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
 
     if (!blockNamedNodeData)
         return NULL;
@@ -3391,7 +3391,7 @@ qemuBlockReopenFormat(virDomainObj *vm,
 
     rc = qemuBlockReopenFormatMon(priv->mon, src);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         return -1;
 

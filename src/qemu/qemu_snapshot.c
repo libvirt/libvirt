@@ -322,7 +322,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     }
 
     ret = qemuMonitorCreateSnapshot(priv->mon, snap->def->name);
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (ret < 0)
         goto cleanup;
 
@@ -875,7 +875,7 @@ qemuSnapshotDiskCleanup(qemuSnapshotDiskData *data,
 
                     qemuBlockStorageSourceAttachRollback(qemuDomainGetMonitor(vm),
                                                          data[i].crdata->srcdata[0]);
-                    qemuDomainObjExitMonitor(driver, vm);
+                    qemuDomainObjExitMonitor(vm);
                 }
             }
 
@@ -1024,7 +1024,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
         rc = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm),
                                                dd->crdata->srcdata[0]);
 
-        qemuDomainObjExitMonitor(driver, vm);
+        qemuDomainObjExitMonitor(vm);
         if (rc < 0)
             return -1;
     } else {
@@ -1281,7 +1281,7 @@ qemuSnapshotDiskCreate(qemuSnapshotDiskContext *snapctxt)
 
     rc = qemuMonitorTransaction(priv->mon, &snapctxt->actions);
 
-    qemuDomainObjExitMonitor(driver, snapctxt->vm);
+    qemuDomainObjExitMonitor(snapctxt->vm);
 
     for (i = 0; i < snapctxt->ndd; i++) {
         qemuSnapshotDiskData *dd = snapctxt->dd + i;
@@ -1887,7 +1887,7 @@ qemuSnapshotCreateXML(virDomainPtr domain,
         snapshot = qemuSnapshotCreate(vm, domain, def, driver, cfg, flags);
     }
 
-    qemuDomainObjEndAsyncJob(driver, vm);
+    qemuDomainObjEndAsyncJob(vm);
 
     return snapshot;
 }
@@ -2322,7 +2322,7 @@ qemuSnapshotRevert(virDomainObj *vm,
     }
 
  endjob:
-    qemuProcessEndJob(driver, vm);
+    qemuProcessEndJob(vm);
 
     return ret;
 }
@@ -2454,7 +2454,7 @@ qemuSnapshotDelete(virDomainObj *vm,
     }
 
  endjob:
-    qemuDomainObjEndJob(driver, vm);
+    qemuDomainObjEndJob(vm);
 
     return ret;
 }

@@ -294,7 +294,7 @@ Design patterns
          goto error;
      }
      ...start qemu job...
-     qemuDomainObjExitMonitor(driver, obj);
+     qemuDomainObjExitMonitor(obj);
 
      while (!finished) {
          if (qemuDomainObjEnterMonitorAsync(driver, obj,
@@ -303,7 +303,7 @@ Design patterns
              goto error;
          }
          ...monitor job progress...
-         qemuDomainObjExitMonitor(driver, obj);
+         qemuDomainObjExitMonitor(obj);
 
          virObjectUnlock(obj);
          sleep(aWhile);

@@ -889,7 +889,7 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
 
     if (xbzrleCacheSize_old)
         migParams->params[xbzrle].set = true;
@@ -1098,7 +1098,7 @@ qemuMigrationParamsFetch(virQEMUDriver *driver,
 
     rc = qemuMonitorGetMigrationParams(priv->mon, &jsonParams);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         return -1;
 
@@ -1399,7 +1399,7 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
 
     rc = qemuMonitorGetMigrationCapabilities(priv->mon, &caps);
 
-    qemuDomainObjExitMonitor(driver, vm);
+    qemuDomainObjExitMonitor(vm);
     if (rc < 0)
         return -1;
 
@@ -1432,7 +1432,7 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
 
         rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
 
-        qemuDomainObjExitMonitor(driver, vm);
+        qemuDomainObjExitMonitor(vm);
 
         if (rc < 0) {
             virResetLastError();

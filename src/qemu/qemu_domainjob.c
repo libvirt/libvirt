@@ -703,8 +703,7 @@ qemuDomainJobDataToParams(virDomainJobData *jobData,
 
 
 void
-qemuDomainObjSetJobPhase(virQEMUDriver *driver,
-                         virDomainObj *obj,
+qemuDomainObjSetJobPhase(virDomainObj *obj,
                          int phase)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
@@ -727,7 +726,7 @@ qemuDomainObjSetJobPhase(virQEMUDriver *driver,
 
     priv->job.phase = phase;
     priv->job.asyncOwner = me;
-    qemuDomainObjSaveStatus(driver, obj);
+    qemuDomainSaveStatus(obj);
 }
 
 void
@@ -743,14 +742,14 @@ qemuDomainObjSetAsyncJobMask(virDomainObj *obj,
 }
 
 void
-qemuDomainObjDiscardAsyncJob(virQEMUDriver *driver, virDomainObj *obj)
+qemuDomainObjDiscardAsyncJob(virDomainObj *obj)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
     if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
         qemuDomainObjResetJob(&priv->job);
     qemuDomainObjResetAsyncJob(&priv->job);
-    qemuDomainObjSaveStatus(driver, obj);
+    qemuDomainSaveStatus(obj);
 }
 
 void
@@ -926,7 +925,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     }
 
     if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveStatus(driver, obj);
+        qemuDomainSaveStatus(obj);
 
     return 0;
 
@@ -1134,7 +1133,7 @@ qemuDomainObjBeginJobNowait(virQEMUDriver *driver,
  * earlier qemuDomainBeginJob() call
  */
 void
-qemuDomainObjEndJob(virQEMUDriver *driver, virDomainObj *obj)
+qemuDomainObjEndJob(virDomainObj *obj)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
     qemuDomainJob job = priv->job.active;
@@ -1148,7 +1147,7 @@ qemuDomainObjEndJob(virQEMUDriver *driver, virDomainObj *obj)
 
     qemuDomainObjResetJob(&priv->job);
     if (qemuDomainTrackJob(job))
-        qemuDomainObjSaveStatus(driver, obj);
+        qemuDomainSaveStatus(obj);
     /* We indeed need to wake up ALL threads waiting because
      * grabbing a job requires checking more variables. */
     virCondBroadcast(&priv->job.cond);
@@ -1174,7 +1173,7 @@ qemuDomainObjEndAgentJob(virDomainObj *obj)
 }
 
 void
-qemuDomainObjEndAsyncJob(virQEMUDriver *driver, virDomainObj *obj)
+qemuDomainObjEndAsyncJob(virDomainObj *obj)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
@@ -1185,7 +1184,7 @@ qemuDomainObjEndAsyncJob(virQEMUDriver *driver, virDomainObj *obj)
               obj, obj->def->name);
 
     qemuDomainObjResetAsyncJob(&priv->job);
-    qemuDomainObjSaveStatus(driver, obj);
+    qemuDomainSaveStatus(obj);
     virCondBroadcast(&priv->job.asyncCond);
 }
 

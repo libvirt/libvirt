@@ -69,8 +69,7 @@ int qemuProcessBeginJob(virQEMUDriver *driver,
                         virDomainObj *vm,
                         virDomainJobOperation operation,
                         unsigned long apiFlags);
-void qemuProcessEndJob(virQEMUDriver *driver,
-                       virDomainObj *vm);
+void qemuProcessEndJob(virDomainObj *vm);
 
 typedef enum {
     VIR_QEMU_PROCESS_START_COLD         = 1 << 0,
