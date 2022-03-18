@@ -1987,6 +1987,15 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
         }
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_CHARDEV_QEMU_VDAGENT)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("chardev '%s' not supported in this QEMU binary"),
+                           virDomainChrTypeToString(def->type));
+            return -1;
+        }
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_PTY:
@@ -1997,7 +2006,6 @@ qemuValidateDomainChrSourceDef(const virDomainChrSourceDef *def,
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
     }

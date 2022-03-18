@@ -1422,8 +1422,27 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
                           dev->data.spiceport.channel);
         break;
 
-    case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+        virBufferAsprintf(&buf, "qemu-vdagent,id=%s,name=vdagent",
+                          charAlias);
+        if (dev->data.qemuVdagent.clipboard != VIR_TRISTATE_BOOL_ABSENT)
+            virBufferAsprintf(&buf, ",clipboard=%s",
+                              virTristateSwitchTypeToString(dev->data.qemuVdagent.clipboard));
+        switch (dev->data.qemuVdagent.mouse) {
+            case VIR_DOMAIN_MOUSE_MODE_CLIENT:
+                virBufferAddLit(&buf, ",mouse=on");
+                break;
+            case VIR_DOMAIN_MOUSE_MODE_SERVER:
+                virBufferAddLit(&buf, ",mouse=off");
+                break;
+            case VIR_DOMAIN_MOUSE_MODE_DEFAULT:
+            case VIR_DOMAIN_MOUSE_MODE_LAST:
+            default:
+                break;
+        }
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
     default:
         break;

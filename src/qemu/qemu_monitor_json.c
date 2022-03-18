@@ -6820,11 +6820,37 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
 
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT: {
+        virTristateBool mouse = VIR_TRISTATE_BOOL_ABSENT;
+        switch (chr->data.qemuVdagent.mouse) {
+            case VIR_DOMAIN_MOUSE_MODE_CLIENT:
+                mouse = VIR_TRISTATE_BOOL_YES;
+                break;
+            case VIR_DOMAIN_MOUSE_MODE_SERVER:
+                mouse = VIR_TRISTATE_BOOL_NO;
+                break;
+            case VIR_DOMAIN_MOUSE_MODE_DEFAULT:
+                break;
+            case VIR_DOMAIN_MOUSE_MODE_LAST:
+            default:
+                virReportEnumRangeError(virDomainMouseMode,
+                                        chr->data.qemuVdagent.mouse);
+                return NULL;
+        }
+        backendType = "qemu-vdagent";
+
+        if (virJSONValueObjectAdd(&backendData,
+                                  "T:clipboard", chr->data.qemuVdagent.clipboard,
+                                  "T:mouse", mouse,
+                                  NULL) < 0)
+            return NULL;
+        break;
+    }
+
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
-    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Hotplug unsupported for char device type '%s'"),
                        virDomainChrTypeToString(chr->type));

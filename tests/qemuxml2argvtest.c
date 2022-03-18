@@ -1710,6 +1710,8 @@ mymain(void)
     DO_TEST("channel-spicevmc",
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
+    DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
     DO_TEST("channel-virtio-default",
             QEMU_CAPS_SPICE);
     DO_TEST_NOCAPS("channel-virtio-unix");

@@ -1467,6 +1467,8 @@ mymain(void)
                   QEMU_CAPS_DEVICE_PL011,
                   QEMU_CAPS_DEVICE_VIRTIO_RNG,
                   QEMU_CAPS_OBJECT_RNG_RANDOM);
+    DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
+    DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
 
  cleanup:
     if (getenv("LIBVIRT_SKIP_CLEANUP") == NULL)
