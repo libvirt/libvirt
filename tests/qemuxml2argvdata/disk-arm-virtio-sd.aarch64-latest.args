@@ -35,7 +35,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-armtest/.config \
 -drive file=/arm-sd.qcow2,format=qcow2,if=sd,index=0 \
 -blockdev '{"driver":"file","filename":"/arm-virtio.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
--device virtio-blk-device,drive=libvirt-1-format,id=virtio-disk0 \
+-device '{"driver":"virtio-blk-device","drive":"libvirt-1-format","id":"virtio-disk0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

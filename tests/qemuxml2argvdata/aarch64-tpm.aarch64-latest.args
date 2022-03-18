@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
 -boot strict=on \
 -chardev socket,id=chrtpm,path=/dev/test \
 -tpmdev emulator,id=tpm-tpm0,chardev=chrtpm \
--device tpm-tis-device,tpmdev=tpm-tpm0,id=tpm0 \
+-device '{"driver":"tpm-tis-device","tpmdev":"tpm-tpm0","id":"tpm0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
