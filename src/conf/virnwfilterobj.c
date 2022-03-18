@@ -386,7 +386,7 @@ virNWFilterObjListCount(void *key G_GNUC_UNUSED,
 {
     virNWFilterObj *obj = payload;
     struct virNWFilterObjListData *data = opaque;
-    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&obj->lock);
 
     if (data->filter(data->conn, obj->def))
         data->count++;
@@ -423,7 +423,7 @@ virNWFilterObjListCopyNames(void *key G_GNUC_UNUSED,
 {
     virNWFilterObj *obj = payload;
     struct virNWFilterNameData *data = opaque;
-    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
+    VIR_LOCK_GUARD lock = virLockGuardLock(&obj->lock);
 
     if (data->filter &&
         !data->filter(data->conn, obj->def))
