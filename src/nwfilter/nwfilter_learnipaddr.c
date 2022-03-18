@@ -143,36 +143,39 @@ static bool threadsTerminate;
 int
 virNWFilterLockIface(const char *ifname)
 {
-    VIR_LOCK_GUARD lock = virLockGuardLock(&ifaceMapLock);
-    virNWFilterIfaceLock *ifaceLock = virHashLookup(ifaceLockMap, ifname);
+    virNWFilterIfaceLock *ifaceLock = NULL;
 
-    if (!ifaceLock) {
-        ifaceLock = g_new0(virNWFilterIfaceLock, 1);
+    VIR_WITH_MUTEX_LOCK_GUARD(&ifaceMapLock) {
+        ifaceLock = virHashLookup(ifaceLockMap, ifname);
 
-        if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("mutex initialization failed"));
-            g_free(ifaceLock);
-            return -1;
+        if (!ifaceLock) {
+            ifaceLock = g_new0(virNWFilterIfaceLock, 1);
+
+            if (virMutexInitRecursive(&ifaceLock->lock) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("mutex initialization failed"));
+                g_free(ifaceLock);
+                return -1;
+            }
+
+            if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("interface name %s does not fit into buffer"),
+                               ifaceLock->ifname);
+                g_free(ifaceLock);
+                return -1;
+            }
+
+            while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
+                g_free(ifaceLock);
+                return -1;
+            }
+
+            ifaceLock->refctr = 0;
         }
 
-        if (virStrcpyStatic(ifaceLock->ifname, ifname) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("interface name %s does not fit into buffer"),
-                           ifaceLock->ifname);
-            g_free(ifaceLock);
-            return -1;
-        }
-
-        while (virHashAddEntry(ifaceLockMap, ifname, ifaceLock)) {
-            g_free(ifaceLock);
-            return -1;
-        }
-
-        ifaceLock->refctr = 0;
+        ifaceLock->refctr++;
     }
-
-    ifaceLock->refctr++;
 
     virMutexLock(&ifaceLock->lock);
 
