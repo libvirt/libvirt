@@ -715,6 +715,7 @@ VIR_ENUM_IMPL(virDomainChr,
               "spicevmc",
               "spiceport",
               "nmdm",
+              "qemu-vdagent",
 );
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol,
@@ -2702,6 +2703,7 @@ virDomainChrSourceDefGetPath(virDomainChrSourceDef *chr)
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         return NULL;
     }
@@ -2811,6 +2813,11 @@ virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
         dest->data.spiceport.channel = g_strdup(src->data.spiceport.channel);
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+        dest->data.qemuVdagent.clipboard = src->data.qemuVdagent.clipboard;
+        dest->data.qemuVdagent.mouse = src->data.qemuVdagent.mouse;
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
@@ -2891,6 +2898,10 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
         return src->data.spicevmc == tgt->data.spicevmc;
+
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+        return src->data.qemuVdagent.clipboard == tgt->data.qemuVdagent.clipboard &&
+            src->data.qemuVdagent.mouse == tgt->data.qemuVdagent.mouse;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -11220,6 +11231,33 @@ virDomainChrSourceDefParseLog(virDomainChrSourceDef *def,
 }
 
 
+static int
+virDomainChrSourceDefParseQemuVdagent(virDomainChrSourceDef *def,
+                                      xmlNodePtr source,
+                                      xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr cur;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+
+    ctxt->node = source;
+    if ((cur = virXPathNode("./clipboard", ctxt))) {
+        if (virXMLPropTristateBool(cur, "copypaste",
+                                   VIR_XML_PROP_REQUIRED,
+                                   &def->data.qemuVdagent.clipboard) < 0)
+            return -1;
+    }
+    if ((cur = virXPathNode("./mouse", ctxt))) {
+        if (virXMLPropEnum(cur, "mode",
+                           virDomainMouseModeTypeFromString,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &def->data.qemuVdagent.mouse) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
 /* Parse the source half of the XML definition for a character device,
  * where node is the first element of node->children of the parent
  * element.  def->type must already be valid.
@@ -11299,6 +11337,12 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
         case VIR_DOMAIN_CHR_TYPE_NMDM:
             def->data.nmdm.master = virXMLPropString(sources[0], "master");
             def->data.nmdm.slave = virXMLPropString(sources[0], "slave");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+            if (virDomainChrSourceDefParseQemuVdagent(def, sources[0], ctxt) < 0)
+                goto error;
+
             break;
 
         case VIR_DOMAIN_CHR_TYPE_LAST:
@@ -24996,6 +25040,22 @@ virDomainChrSourceDefFormat(virBuffer *buf,
         /* nada */
         break;
 
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+        if (def->data.qemuVdagent.mouse != VIR_DOMAIN_MOUSE_MODE_DEFAULT ||
+            def->data.qemuVdagent.clipboard != VIR_TRISTATE_BOOL_ABSENT) {
+            virBufferAddLit(buf, "<source>\n");
+            virBufferAdjustIndent(buf, 2);
+            if (def->data.qemuVdagent.clipboard != VIR_TRISTATE_BOOL_ABSENT)
+                virBufferEscapeString(buf, "<clipboard copypaste='%s'/>\n",
+                                      virTristateBoolTypeToString(def->data.qemuVdagent.clipboard));
+            if (def->data.qemuVdagent.mouse != VIR_DOMAIN_MOUSE_MODE_DEFAULT)
+                virBufferEscapeString(buf, "<mouse mode='%s'/>\n",
+                                      virDomainMouseModeTypeToString(def->data.qemuVdagent.mouse));
+            virBufferAdjustIndent(buf, -2);
+            virBufferAddLit(buf, "</source>\n");
+        }
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_FILE:
@@ -25081,7 +25141,6 @@ virDomainChrSourceDefFormat(virBuffer *buf,
         virBufferEscapeString(buf, "<source channel='%s'/>\n",
                               def->data.spiceport.channel);
         break;
-
     }
 
     if (def->logfile) {
@@ -25210,7 +25269,6 @@ virDomainChrTargetDefFormat(virBuffer *buf,
 
     return 0;
 }
-
 
 static int
 virDomainChrDefFormat(virBuffer *buf,

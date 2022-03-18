@@ -920,6 +920,7 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
     case VIR_DOMAIN_CHR_TYPE_VC:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
 

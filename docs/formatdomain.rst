@@ -6608,6 +6608,29 @@ types have different ``target`` attributes.
    ``name='com.redhat.spice.0'``. The optional ``address`` element can tie the
    channel to a particular ``type='virtio-serial'`` controller. :since:`Since
    0.8.8`
+``qemu-vdagent``
+   Paravirtualized qemu vdagent channel. This channel implements the SPICE
+   vdagent protocol, but is handled internally by qemu and therefore does not
+   require a SPICE graphics device. Like the spicevmc channel, the ``target``
+   element must be present, with attribute ``type='virtio'``; an optional
+   attribute ``name`` controls how the guest will have access to the channel,
+   and defaults to ``name='com.redhat.spice.0'``. The optional ``address``
+   element can tie the channel to a particular ``type='virtio-serial'``
+   controller. Certain vdagent protocol features can by enabled or disabled
+   using the ``source`` element.
+
+   Copy & Paste functionality is set by the ``clipboard`` element. It is
+   disabled by default, and can be enabled by setting the ``copypaste``
+   property to ``yes``. This allows the guest's clipboard to be synchronized
+   with the qemu clipboard manager. This can enable copy and paste between a
+   guest and a client when using a VNC `graphics device <#elementsGraphics>`__
+   (when using a VNC client that supports the copy/paste feature) or other
+   graphics types that support the qemu clipboard manager.
+
+   Mouse mode is set by the ``mouse`` element, setting its ``mode`` attribute
+   to one of ``server`` or ``client``. If no mode is specified, the qemu
+   default will be used (client mode).
+   :since:`Since 8.2.0`
 
 :anchor:`<a id="elementsCharHostInterface"/>`
 

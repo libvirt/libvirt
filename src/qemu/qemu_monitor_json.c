@@ -6824,6 +6824,7 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         virReportError(VIR_ERR_OPERATION_FAILED,
                        _("Hotplug unsupported for char device type '%s'"),
                        virDomainChrTypeToString(chr->type));

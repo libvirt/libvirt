@@ -1241,6 +1241,7 @@ typedef enum {
     VIR_DOMAIN_CHR_TYPE_SPICEVMC,
     VIR_DOMAIN_CHR_TYPE_SPICEPORT,
     VIR_DOMAIN_CHR_TYPE_NMDM,
+    VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT,
 
     VIR_DOMAIN_CHR_TYPE_LAST
 } virDomainChrType;
@@ -1268,6 +1269,13 @@ struct _virDomainChrSourceReconnectDef {
     unsigned int timeout;
 };
 
+typedef enum {
+    VIR_DOMAIN_MOUSE_MODE_DEFAULT = 0,
+    VIR_DOMAIN_MOUSE_MODE_SERVER,
+    VIR_DOMAIN_MOUSE_MODE_CLIENT,
+
+    VIR_DOMAIN_MOUSE_MODE_LAST
+} virDomainMouseMode;
 
 /* The host side information for a character device.  */
 struct _virDomainChrSourceDef {
@@ -1309,6 +1317,10 @@ struct _virDomainChrSourceDef {
         struct {
             char *channel;
         } spiceport;
+        struct {
+            virDomainMouseMode mouse;
+            virTristateBool clipboard;
+        } qemuVdagent;
     } data;
     char *logfile;
     virTristateSwitch logappend;
@@ -1844,14 +1856,6 @@ typedef enum {
 
     VIR_DOMAIN_GRAPHICS_SPICE_ZLIB_COMPRESSION_LAST
 } virDomainGraphicsSpiceZlibCompression;
-
-typedef enum {
-    VIR_DOMAIN_MOUSE_MODE_DEFAULT = 0,
-    VIR_DOMAIN_MOUSE_MODE_SERVER,
-    VIR_DOMAIN_MOUSE_MODE_CLIENT,
-
-    VIR_DOMAIN_MOUSE_MODE_LAST
-} virDomainMouseMode;
 
 typedef enum {
     VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_DEFAULT = 0,

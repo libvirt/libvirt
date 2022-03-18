@@ -1423,6 +1423,7 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
     case VIR_DOMAIN_CHR_TYPE_LAST:
     default:
         break;
@@ -1506,6 +1507,7 @@ qemuBuildChardevCommand(virCommand *cmd,
     case VIR_DOMAIN_CHR_TYPE_UDP:
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
@@ -8641,6 +8643,7 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_NMDM:
+    case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("vhost-user type '%s' not supported"),

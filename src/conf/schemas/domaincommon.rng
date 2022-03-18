@@ -4009,23 +4009,10 @@
               </element>
             </optional>
             <optional>
-              <element name="clipboard">
-                <attribute name="copypaste">
-                  <ref name="virYesNo"/>
-                </attribute>
-                <empty/>
-              </element>
+              <ref name="clipboard"/>
             </optional>
             <optional>
-              <element name="mouse">
-                <attribute name="mode">
-                  <choice>
-                    <value>server</value>
-                    <value>client</value>
-                  </choice>
-                </attribute>
-                <empty/>
-              </element>
+              <ref name="mousemode"/>
             </optional>
             <optional>
               <element name="filetransfer">
@@ -4114,6 +4101,25 @@
     </element>
   </define>
 
+  <define name="clipboard">
+    <element name="clipboard">
+      <attribute name="copypaste">
+        <ref name="virYesNo"/>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
+  <define name="mousemode">
+    <element name="mouse">
+      <attribute name="mode">
+        <choice>
+          <value>server</value>
+          <value>client</value>
+        </choice>
+      </attribute>
+      <empty/>
+    </element>
+  </define>
   <define name="listenElements">
     <zeroOrMore>
       <element name="listen">
@@ -4514,6 +4520,7 @@
       <value>spicevmc</value>
       <value>spiceport</value>
       <value>nmdm</value>
+      <value>qemu-vdagent</value>
     </choice>
   </define>
 
@@ -4599,9 +4606,17 @@
         <optional>
           <ref name="reconnect"/>
         </optional>
-        <zeroOrMore>
-          <ref name="devSeclabel"/>
-        </zeroOrMore>
+        <interleave>
+          <zeroOrMore>
+            <ref name="devSeclabel"/>
+          </zeroOrMore>
+          <optional>
+            <ref name="clipboard"/>
+          </optional>
+          <optional>
+            <ref name="mousemode"/>
+          </optional>
+        </interleave>
       </element>
     </zeroOrMore>
     <optional>
