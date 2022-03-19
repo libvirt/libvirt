@@ -15,13 +15,14 @@
 # Florian H. <postfuerflo@gmail.com>, 2016
 # Fabian Affolter <mail@fabian-affolter.ch>, 2020.
 # Christian Kirbach <christian.kirbach@gmail.com>, 2021.
+# Tom Wieczorek <tom@bibbu.net>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-02-23 12:43+0000\n"
-"PO-Revision-Date: 2021-07-22 13:07+0000\n"
-"Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
+"PO-Revision-Date: 2022-03-19 09:16+0000\n"
+"Last-Translator: Tom Wieczorek <tom@bibbu.net>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/de/>\n"
 "Language: de\n"
@@ -29,7 +30,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.7.2\n"
+"X-Generator: Weblate 4.11.2\n"
 
 msgid ""
 "\n"
@@ -10489,8 +10490,8 @@ msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr ""
-"Unzulässige Angabe einer MAC-Adsesse '%s' in der Netzwerk '%s' IPv6 "
-"statischen Host Definition "
+"Unzulässige Angabe einer MAC-Adresse '%s' in der statischen IPv6 Host "
+"Definition des Netzwerks '%s'"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
