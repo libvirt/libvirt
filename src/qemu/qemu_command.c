@@ -232,13 +232,45 @@ qemuBuildNetdevCommandlineFromJSON(virCommand *cmd,
 }
 
 
+static void
+qemuBuildDeviceCommandlineHandleOverrides(virJSONValue *props,
+                                          qemuDomainXmlNsDef *nsdef)
+{
+    const char *alias = virJSONValueObjectGetString(props, "id");
+    size_t i;
+
+    for (i = 0; i < nsdef->ndeviceOverride; i++) {
+        qemuDomainXmlNsDeviceOverride *dev = nsdef->deviceOverride + i;
+        size_t j;
+
+        if (STRNEQ(alias, dev->alias))
+            continue;
+
+        for (j = 0; j < dev->nfrontend; j++) {
+            qemuDomainXmlNsOverrideProperty *prop = dev->frontend + j;
+
+            virJSONValueObjectRemoveKey(props, prop->name, NULL);
+            if (prop->json) {
+                g_autoptr(virJSONValue) copy = virJSONValueCopy(prop->json);
+
+                virJSONValueObjectAppend(props, prop->name, &copy);
+            }
+        }
+    }
+}
+
+
 static int
 qemuBuildDeviceCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
-                                   const virDomainDef *def G_GNUC_UNUSED,
+                                   const virDomainDef *def,
                                    virQEMUCaps *qemuCaps)
 {
+    qemuDomainXmlNsDef *nsdef = def->namespaceData;
     g_autofree char *arg = NULL;
+
+    if (nsdef && nsdef->ndeviceOverride > 0)
+        qemuBuildDeviceCommandlineHandleOverrides(props, nsdef);
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_JSON)) {
         if (!(arg = virJSONValueToString(props, false)))
