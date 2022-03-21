@@ -186,6 +186,7 @@
   <flag name='input-linux'/>
   <flag name='query-display-options'/>
   <flag name='virtio-blk.queue-size'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>5000000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900241</microcodeVersion>

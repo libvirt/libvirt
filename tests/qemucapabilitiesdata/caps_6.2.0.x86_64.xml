@@ -241,6 +241,7 @@
   <flag name='sev-inject-launch-secret'/>
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>

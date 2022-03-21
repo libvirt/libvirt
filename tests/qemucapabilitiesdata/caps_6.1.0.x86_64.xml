@@ -239,6 +239,7 @@
   <flag name='rbd-encryption'/>
   <flag name='sev-inject-launch-secret'/>
   <flag name='calc-dirty-rate'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

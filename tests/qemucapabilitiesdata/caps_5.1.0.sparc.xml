@@ -90,6 +90,7 @@
   <flag name='rotation-rate'/>
   <flag name='input-linux'/>
   <flag name='query-display-options'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>0</microcodeVersion>

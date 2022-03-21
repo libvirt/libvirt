@@ -202,6 +202,7 @@
   <flag name='device.json+hotplug'/>
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>

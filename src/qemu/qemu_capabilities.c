@@ -668,6 +668,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 425 */
               "blockdev.nbd.tls-hostname", /* QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME */
+              "memory-backend-file.prealloc-threads", /* QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS */
     );
 
 
@@ -1766,6 +1767,7 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendFile[] =
      * released qemu versions. */
     { "x-use-canonical-path-for-ramblock-id", QEMU_CAPS_X_USE_CANONICAL_PATH_FOR_RAMBLOCK_ID },
     { "reserve", QEMU_CAPS_MEMORY_BACKEND_RESERVE },
+    { "prealloc-threads", QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS },
 };
 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] = {

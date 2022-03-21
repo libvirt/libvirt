@@ -201,6 +201,7 @@
   <flag name='sev-guest-kernel-hashes'/>
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
+  <flag name='memory-backend-file.prealloc-threads'/>
   <version>6002000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900244</microcodeVersion>
