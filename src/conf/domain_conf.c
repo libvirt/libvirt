@@ -88,6 +88,7 @@ VIR_ENUM_IMPL(virDomainTaint,
               "custom-ga-command",
               "custom-hypervisor-feature",
               "deprecated-config",
+              "custom-device",
 );
 
 VIR_ENUM_IMPL(virDomainTaintMessage,
@@ -105,6 +106,7 @@ VIR_ENUM_IMPL(virDomainTaintMessage,
               N_("custom guest agent control commands issued"),
               N_("hypervisor feature autodetection override"),
               N_("use of deprecated configuration settings"),
+              N_("custom device configuration"),
 );
 
 VIR_ENUM_IMPL(virDomainVirt,

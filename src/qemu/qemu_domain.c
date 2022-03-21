@@ -6712,6 +6712,9 @@ void qemuDomainObjCheckTaint(virQEMUDriver *driver,
             qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_ARGV, logCtxt);
         if (qemuxmlns->capsadd || qemuxmlns->capsdel)
             custom_hypervisor_feat = true;
+
+        if (qemuxmlns->ndeviceOverride > 0)
+            qemuDomainObjTaint(driver, obj, VIR_DOMAIN_TAINT_CUSTOM_DEVICE, logCtxt);
     }
 
     if (custom_hypervisor_feat ||
