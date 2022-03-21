@@ -899,6 +899,7 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
     if (!(pidfile = qemuTPMEmulatorPidFileBuildPath(cfg->swtpmStateDir, shortName)))
         return -1;
 
+    virCommandDoAsyncIO(cmd);
     virCommandDaemonize(cmd);
     virCommandSetPidFile(cmd, pidfile);
     virCommandSetErrorFD(cmd, &errfd);
