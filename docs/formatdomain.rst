@@ -1004,7 +1004,7 @@ Memory Backing
        <locked/>
        <source type="file|anonymous|memfd"/>
        <access mode="shared|private"/>
-       <allocation mode="immediate|ondemand"/>
+       <allocation mode="immediate|ondemand" threads='8'/>
        <discard/>
      </memoryBacking>
      ...
@@ -1053,8 +1053,10 @@ influence how virtual memory pages are backed by host pages.
    Using the ``mode`` attribute, specify if the memory is to be "shared" or
    "private". This can be overridden per numa node by ``memAccess``.
 ``allocation``
-   Using the ``mode`` attribute, specify when to allocate the memory by
-   supplying either "immediate" or "ondemand".
+   Using the optional ``mode`` attribute, specify when to allocate the memory by
+   supplying either "immediate" or "ondemand". :since:`Since 8.2.0` it is
+   possible to set the number of threads that hypervisor uses to allocate
+   memory via ``threads`` attribute.
 ``discard``
    When set and supported by hypervisor the memory content is discarded just
    before guest shuts down (or when DIMM module is unplugged). Please note that

@@ -740,12 +740,19 @@
             </optional>
             <optional>
               <element name="allocation">
-                <attribute name="mode">
-                  <choice>
-                    <value>immediate</value>
-                    <value>ondemand</value>
-                  </choice>
-                </attribute>
+                <optional>
+                  <attribute name="mode">
+                    <choice>
+                      <value>immediate</value>
+                      <value>ondemand</value>
+                    </choice>
+                  </attribute>
+                </optional>
+                <optional>
+                  <attribute name="threads">
+                    <ref name="unsignedInt"/>
+                  </attribute>
+                </optional>
               </element>
             </optional>
             <optional>

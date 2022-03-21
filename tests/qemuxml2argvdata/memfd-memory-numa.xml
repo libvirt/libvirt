@@ -10,7 +10,7 @@
     </hugepages>
     <source type='memfd'/>
     <access mode='shared'/>
-    <allocation mode='immediate'/>
+    <allocation mode='immediate' threads='8'/>
   </memoryBacking>
   <vcpu placement='static'>8</vcpu>
   <numatune>

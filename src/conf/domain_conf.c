@@ -18915,6 +18915,13 @@ virDomainDefParseMemory(virDomainDef *def,
         VIR_FREE(tmp);
     }
 
+    if (virXPathUInt("string(./memoryBacking/allocation/@threads)",
+                     ctxt, &def->mem.allocation_threads) == -2) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("Failed to parse memory allocation threads"));
+        return -1;
+    }
+
     if (virXPathNode("./memoryBacking/hugepages", ctxt)) {
         /* hugepages will be used */
         if ((n = virXPathNodeSet("./memoryBacking/hugepages/page", ctxt, &nodes)) < 0) {
@@ -27465,6 +27472,7 @@ virDomainMemorybackingFormat(virBuffer *buf,
                              const virDomainMemtune *mem)
 {
     g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+    g_auto(virBuffer) allocAttrBuf = VIR_BUFFER_INITIALIZER;
 
     if (mem->nhugepages)
         virDomainHugepagesFormat(&childBuf, mem->hugepages, mem->nhugepages);
@@ -27479,8 +27487,13 @@ virDomainMemorybackingFormat(virBuffer *buf,
         virBufferAsprintf(&childBuf, "<access mode='%s'/>\n",
                           virDomainMemoryAccessTypeToString(mem->access));
     if (mem->allocation)
-        virBufferAsprintf(&childBuf, "<allocation mode='%s'/>\n",
+        virBufferAsprintf(&allocAttrBuf, " mode='%s'",
                           virDomainMemoryAllocationTypeToString(mem->allocation));
+    if (mem->allocation_threads > 0)
+        virBufferAsprintf(&allocAttrBuf, " threads='%u'", mem->allocation_threads);
+
+    virXMLFormatElement(&childBuf, "allocation", &allocAttrBuf, NULL);
+
     if (mem->discard)
         virBufferAddLit(&childBuf, "<discard/>\n");
 

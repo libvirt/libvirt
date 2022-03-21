@@ -2702,6 +2702,7 @@ struct _virDomainMemtune {
     int source; /* enum virDomainMemorySource */
     int access; /* enum virDomainMemoryAccess */
     int allocation; /* enum virDomainMemoryAllocation */
+    unsigned int allocation_threads;
 
     virTristateBool discard;
 };
