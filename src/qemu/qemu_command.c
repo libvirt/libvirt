@@ -3806,7 +3806,10 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
             return -1;
     } else {
         if (!priv->memPrealloc &&
-            virJSONValueObjectAdd(&props, "B:prealloc", prealloc, NULL) < 0)
+            virJSONValueObjectAdd(&props,
+                                  "B:prealloc", prealloc,
+                                  "p:prealloc-threads", def->mem.allocation_threads,
+                                  NULL) < 0)
             return -1;
     }
 

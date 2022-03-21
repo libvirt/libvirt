@@ -16,7 +16,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -m size=14680064k,slots=16,maxmem=1099511627776k \
 -overcommit mem-lock=off \
 -smp 8,sockets=1,dies=1,cores=8,threads=1 \
--object '{"qom-type":"memory-backend-memfd","id":"ram-node0","hugetlb":true,"hugetlbsize":2097152,"share":true,"prealloc":true,"size":15032385536,"host-nodes":[3],"policy":"preferred"}' \
+-object '{"qom-type":"memory-backend-memfd","id":"ram-node0","hugetlb":true,"hugetlbsize":2097152,"share":true,"prealloc":true,"prealloc-threads":8,"size":15032385536,"host-nodes":[3],"policy":"preferred"}' \
 -numa node,nodeid=0,cpus=0-7,memdev=ram-node0 \
 -uuid 126f2720-6f8e-45ab-a886-ec9277079a67 \
 -display none \
@@ -29,7 +29,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-instance-00000092/.config \
 -no-acpi \
 -boot strict=on \
 -device '{"driver":"piix3-usb-uhci","id":"usb","bus":"pci.0","addr":"0x1.0x2"}' \
--object '{"qom-type":"memory-backend-file","id":"memnvdimm0","mem-path":"/tmp/nvdimm","share":true,"prealloc":true,"size":536870912,"host-nodes":[3],"policy":"preferred"}' \
+-object '{"qom-type":"memory-backend-file","id":"memnvdimm0","mem-path":"/tmp/nvdimm","share":true,"prealloc":true,"prealloc-threads":8,"size":536870912,"host-nodes":[3],"policy":"preferred"}' \
 -device '{"driver":"nvdimm","node":0,"memdev":"memnvdimm0","id":"nvdimm0","slot":0}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
