@@ -580,6 +580,63 @@ reconfigure libvirtd.
 
 *DO NOT* use in production.
 
+Overriding properties of QEMU devices
+-------------------------------------
+
+For development or testing the ``<qemu:override>`` tag allows to override
+specific properties of devices instantiated by libvirt.
+
+The ``<qemu:device>`` sub-element groups overrides for a device identified via
+the ``alias`` attribute. The alias corresponds to the ``<alias name=''>``
+property of a device. It's strongly recommended to use user-specified aliases
+for devices with overriden properties.
+
+Sub element ``<qemu:frontend>`` encapsulates all overrides of properties for the
+device frontend and overrides what libvirt formats via ``-device``.
+:since:`Since 8.2.0`.
+
+The individual properties are overriden by a ``<qemu:property>`` element. The
+``name`` specifies the name of the property to override. In case when libvirt
+doesn't configure the property a property with the name is added to the
+commandline. The ``type`` attribute specifies a type of the argument used. The
+type must correspond with the type that is expected by QEMU. Supported values
+for the type attribute are: ``string``, ``number``, ``bool`` (allowed values for
+``bool`` are ``true`` and ``false``) and ``remove``. The ``remove`` type is
+special and instructs libvirt to remove the property without replacement.
+
+The overrides are applied only to initial device configuration passed to QEMU
+via the commandline. Later hotplug operations will not apply any modifications.
+
+Configuring override for a device alias which is not used or attempting to
+remove a device property which is not formatted by libvirt will cause failure
+to startup the VM.
+
+*Note:* The libvirt project doesn't guarantee any form of compatibility and
+stability of devices with overriden properties. The domain is tainted when
+such configuration is used.
+
+Example:
+
+::
+
+   <domain type='kvm' xmlns:qemu='http://libvirt.org/schemas/domain/qemu/1.0'>
+     <name>testvm</name>
+
+      [...]
+
+     <qemu:override>
+       <qemu:device alias='ua-devalias'>
+         <qemu:frontend>
+           <qemu:property name='propname1' type='string' value='test'/>
+           <qemu:property name='propname2' type='unsigned' value='123'/>
+           <qemu:property name='propname2' type='signed' value='-123'/>
+           <qemu:property name='propname3' type='bool' value='false'/>
+           <qemu:property name='propname4' type='remove'/>
+         </qemu:frontend>
+       </qemu:device>
+     </qemu:override>
+   </domain>
+
 Example domain XML config
 -------------------------
 
