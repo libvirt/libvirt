@@ -25,6 +25,13 @@ v8.2.0 (unreleased)
     migration allowing migration to proceed even when the user expects certificate
     name not to match.
 
+  * qemu: Allow overrides of device properties via the qemu namespace
+
+    Users wishing to override or modify properties of devices configured by
+    libvirt can use the ``<qemu:deviceOverride>`` QEMU namespace element to
+    specify the overrides instead of relying on the argv passthrough of the
+    ``-set`` qemu commandline option which no longer works with new qemu.
+
 * **Bug fixes**
 
   * Both build and tests should now pass on Alpine Linux or any other
