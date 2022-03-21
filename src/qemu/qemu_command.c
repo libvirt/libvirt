@@ -235,6 +235,7 @@ qemuBuildNetdevCommandlineFromJSON(virCommand *cmd,
 static int
 qemuBuildDeviceCommandlineFromJSON(virCommand *cmd,
                                    virJSONValue *props,
+                                   const virDomainDef *def G_GNUC_UNUSED,
                                    virQEMUCaps *qemuCaps)
 {
     g_autofree char *arg = NULL;
@@ -2327,6 +2328,7 @@ qemuBuildZPCIDevProps(virDomainDeviceInfo *dev)
 static int
 qemuCommandAddExtDevice(virCommand *cmd,
                         virDomainDeviceInfo *dev,
+                        const virDomainDef *def,
                         virQEMUCaps *qemuCaps)
 {
     if (dev->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_PCI ||
@@ -2340,7 +2342,7 @@ qemuCommandAddExtDevice(virCommand *cmd,
         if (!(devprops = qemuBuildZPCIDevProps(dev)))
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
             return -1;
     }
 
@@ -2383,6 +2385,7 @@ qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
                                                     unsigned int bootindexB,
                                                     const char *backendA,
                                                     const char *backendB,
+                                                    const virDomainDef *def,
                                                     virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -2396,7 +2399,7 @@ qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -2447,6 +2450,7 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
                                                                 bootindexB,
                                                                 backendA,
                                                                 backendB,
+                                                                def,
                                                                 qemuCaps) < 0)
             return -1;
     } else {
@@ -2596,13 +2600,13 @@ qemuBuildDiskCommandLine(virCommand *cmd,
         !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
 
-    if (qemuCommandAddExtDevice(cmd, &disk->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &disk->info, def, qemuCaps) < 0)
         return -1;
 
     if (!(devprops = qemuBuildDiskDeviceProps(def, disk, qemuCaps)))
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -2690,13 +2694,13 @@ qemuBuildVHostUserFsCommandLine(virCommand *cmd,
     if (qemuBuildChardevCommand(cmd, chrsrc, chardev_alias, priv->qemuCaps) < 0)
         return -1;
 
-    if (qemuCommandAddExtDevice(cmd, &fs->info, priv->qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &fs->info, def, priv->qemuCaps) < 0)
         return -1;
 
     if (!(devprops = qemuBuildVHostUserFsDevProps(fs, def, chardev_alias, priv)))
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, priv->qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, priv->qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -2773,7 +2777,7 @@ qemuBuildFSDevCmd(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(devprops, def, &fs->info) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -2793,7 +2797,7 @@ qemuBuildFSDevCommandLine(virCommand *cmd,
         return -1;
     virCommandAddArg(cmd, fsdevstr);
 
-    if (qemuCommandAddExtDevice(cmd, &fs->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &fs->info, def, qemuCaps) < 0)
         return -1;
 
     if (qemuBuildFSDevCmd(cmd, def, fs, qemuCaps) < 0)
@@ -3421,10 +3425,10 @@ qemuBuildControllersByTypeCommandLine(virCommand *cmd,
         if (!props)
             continue;
 
-        if (qemuCommandAddExtDevice(cmd, &cont->info, qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &cont->info, def, qemuCaps) < 0)
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
             return -1;
     }
 
@@ -4385,13 +4389,13 @@ qemuBuildWatchdogCommandLine(virCommand *cmd,
     if (!def->watchdog)
         return 0;
 
-    if (qemuCommandAddExtDevice(cmd, &def->watchdog->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &def->watchdog->info, def, qemuCaps) < 0)
         return -1;
 
     if (!(props = qemuBuildWatchdogDevProps(def, watchdog)))
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps))
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps))
         return -1;
 
     /* qemu doesn't have a 'dump' action; we tell qemu to 'pause', then
@@ -4437,10 +4441,10 @@ qemuBuildMemballoonCommandLine(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &def->memballoon->info) < 0)
         return -1;
 
-    if (qemuCommandAddExtDevice(cmd, &def->memballoon->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &def->memballoon->info, def, qemuCaps) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -4586,7 +4590,7 @@ qemuBuildInputCommandLine(virCommand *cmd,
     for (i = 0; i < def->ninputs; i++) {
         virDomainInputDef *input = def->inputs[i];
 
-        if (qemuCommandAddExtDevice(cmd, &input->info, qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &input->info, def, qemuCaps) < 0)
             return -1;
 
         if (input->type == VIR_DOMAIN_INPUT_TYPE_EVDEV) {
@@ -4619,7 +4623,7 @@ qemuBuildInputCommandLine(virCommand *cmd,
             }
 
             if (props &&
-                qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+                qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
                 return -1;
         }
     }
@@ -4690,7 +4694,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &sound->info) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -4723,7 +4727,7 @@ qemuBuildSoundCodecCmd(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -4746,7 +4750,7 @@ qemuBuildSoundCommandLine(virCommand *cmd,
         if (sound->model == VIR_DOMAIN_SOUND_MODEL_PCSPK) {
             virCommandAddArgList(cmd, "-soundhw", "pcspk", NULL);
         } else {
-            if (qemuCommandAddExtDevice(cmd, &sound->info, qemuCaps) < 0)
+            if (qemuCommandAddExtDevice(cmd, &sound->info, def, qemuCaps) < 0)
                 return -1;
 
             if (qemuBuildSoundDevCmd(cmd, def, sound, qemuCaps) < 0)
@@ -4870,7 +4874,7 @@ qemuBuildDeviceVideoCmd(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &video->info) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -4908,7 +4912,7 @@ qemuBuildVideoCommandLine(virCommand *cmd,
                 return -1;
         }
 
-        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, priv->qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &def->videos[i]->info, def, priv->qemuCaps) < 0)
             return -1;
 
         if (qemuBuildDeviceVideoCmd(cmd, def, video, priv->qemuCaps) < 0)
@@ -5038,7 +5042,7 @@ qemuBuildHubDevCmd(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &dev->info) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -5363,7 +5367,7 @@ qemuBuildHostdevSCSICommandLine(virCommand *cmd,
     if (!(devprops = qemuBuildSCSIHostdevDevProps(def, hostdev, backendAlias)))
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -5394,7 +5398,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
             if (!(devprops = qemuBuildUSBHostdevDevProps(def, hostdev, qemuCaps)))
                 return -1;
 
-            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
                 return -1;
             break;
 
@@ -5404,13 +5408,13 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
            if (hostdev->info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_UNASSIGNED)
                continue;
 
-            if (qemuCommandAddExtDevice(cmd, hostdev->info, qemuCaps) < 0)
+            if (qemuCommandAddExtDevice(cmd, hostdev->info, def, qemuCaps) < 0)
                 return -1;
 
             if (!(devprops = qemuBuildPCIHostdevDevProps(def, hostdev)))
                 return -1;
 
-            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
                 return -1;
             break;
 
@@ -5439,7 +5443,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
                                                                    vhostfdName)))
                     return -1;
 
-                if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+                if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
                     return -1;
             }
 
@@ -5462,7 +5466,7 @@ qemuBuildHostdevCommandLine(virCommand *cmd,
             if (!(devprops = qemuBuildHostdevMediatedDevProps(def, hostdev)))
                 return -1;
 
-            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
                 return -1;
             break;
 
@@ -5735,13 +5739,13 @@ qemuBuildRNGCommandLine(virCommand *cmd,
             return -1;
 
         /* add the device */
-        if (qemuCommandAddExtDevice(cmd, &rng->info, qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &rng->info, def, qemuCaps) < 0)
             return -1;
 
         if (!(devprops = qemuBuildRNGDevProps(def, rng, qemuCaps)))
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
             return -1;
     }
 
@@ -6081,7 +6085,7 @@ qemuBuildVMGenIDCommandLine(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -6407,7 +6411,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
                                   NULL) < 0)
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
             return -1;
 
         return 0;
@@ -7733,7 +7737,7 @@ qemuBuildMemoryDeviceCommandLine(virCommand *cmd,
         if (!(props = qemuBuildMemoryDeviceProps(cfg, priv, def, def->mems[i])))
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, priv->qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, priv->qemuCaps) < 0)
             return -1;
     }
 
@@ -8887,15 +8891,15 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
      *   New way: -netdev type=tap,id=netdev1 -device e1000,id=netdev1
      */
     if (qemuDomainSupportsNicdev(def, net)) {
-        if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &net->info, def, qemuCaps) < 0)
             goto cleanup;
 
         if (!(nicprops = qemuBuildNicDevProps(def, net, net->driver.virtio.queues, qemuCaps)))
             goto cleanup;
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, nicprops, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, nicprops, def, qemuCaps) < 0)
             goto cleanup;
     } else if (!requireNicdev) {
-        if (qemuCommandAddExtDevice(cmd, &net->info, qemuCaps) < 0)
+        if (qemuCommandAddExtDevice(cmd, &net->info, def, qemuCaps) < 0)
             goto cleanup;
 
         if (!(nic = qemuBuildLegacyNicStr(net)))
@@ -9058,7 +9062,7 @@ qemuBuildSmartcardCommandLine(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -9228,10 +9232,10 @@ qemuBuildShmemCommandLine(virCommand *cmd,
     if (!devProps)
         return -1;
 
-    if (qemuCommandAddExtDevice(cmd, &shmem->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &shmem->info, def, qemuCaps) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devProps, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devProps, def, qemuCaps) < 0)
         return -1;
 
     if (shmem->server.enabled) {
@@ -9288,7 +9292,7 @@ qemuBuildChrDeviceCommandLine(virCommand *cmd,
     if (!(props = qemuBuildChrDeviceProps(def, chr, qemuCaps)))
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -9572,7 +9576,7 @@ qemuBuildRedirdevCommandLine(virCommand *cmd,
         if (!(devprops = qemuBuildRedirdevDevProps(def, redirdev)))
             return -1;
 
-        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+        if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
             return -1;
     }
 
@@ -9674,7 +9678,7 @@ qemuBuildTPMDevCmd(virCommand *cmd,
     if (qemuBuildDeviceAddressProps(props, def, &tpm->info) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -9795,6 +9799,7 @@ qemuBuildTPMCommandLine(virCommand *cmd,
 static int
 qemuBuildTPMProxyCommandLine(virCommand *cmd,
                              virDomainTPMDef *tpm,
+                             const virDomainDef *def,
                              virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -9806,7 +9811,7 @@ qemuBuildTPMProxyCommandLine(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -9822,7 +9827,7 @@ qemuBuildTPMsCommandLine(virCommand *cmd,
 
     for (i = 0; i < def->ntpms; i++) {
         if (def->tpms[i]->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
-            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i], priv->qemuCaps) < 0)
+            if (qemuBuildTPMProxyCommandLine(cmd, def->tpms[i], def, priv->qemuCaps) < 0)
                 return -1;
         } else if (qemuBuildTPMCommandLine(cmd, def, def->tpms[i], priv) < 0) {
             return -1;
@@ -9924,7 +9929,7 @@ qemuBuildVMCoreInfoCommandLine(virCommand *cmd,
                               NULL) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
         return -1;
 
     return 0;
@@ -9957,7 +9962,7 @@ qemuBuildPanicCommandLine(virCommand *cmd,
                     return -1;
             }
 
-            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, qemuCaps) < 0)
+            if (qemuBuildDeviceCommandlineFromJSON(cmd, props, def, qemuCaps) < 0)
                 return -1;
 
             break;
@@ -10286,10 +10291,10 @@ qemuBuildVsockCommandLine(virCommand *cmd,
     virCommandPassFD(cmd, priv->vhostfd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
     priv->vhostfd = -1;
 
-    if (qemuCommandAddExtDevice(cmd, &vsock->info, qemuCaps) < 0)
+    if (qemuCommandAddExtDevice(cmd, &vsock->info, def, qemuCaps) < 0)
         return -1;
 
-    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, qemuCaps) < 0)
+    if (qemuBuildDeviceCommandlineFromJSON(cmd, devprops, def, qemuCaps) < 0)
         return -1;
 
     return 0;
