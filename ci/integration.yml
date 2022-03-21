@@ -2,6 +2,8 @@
   stage: integration_tests
   before_script:
     - mkdir "$SCRATCH_DIR"
+    - sudo sh -c "echo DefaultLimitCORE=infinity >> /etc/systemd/system.conf" # Explicitly allow storing cores globally
+    - sudo systemctl daemon-reexec # need to reexec systemd after changing config
     - sudo dnf install -y libvirt-rpms/* libvirt-perl-rpms/*
     - sudo pip3 install --prefix=/usr avocado-framework
     - source /etc/os-release  # in order to query the vendor-provided variables
@@ -31,6 +33,7 @@
   after_script:
     - test "$CI_JOB_STATUS" = "success" && exit 0;
     - test -e "$SCRATCH_DIR"/avocado && sudo mv "$SCRATCH_DIR"/avocado/latest/test-results logs/avocado;
+    - sudo coredumpctl info --no-pager > logs/coredumpctl.txt
     - sudo mv /var/log/libvirt logs/libvirt
     - sudo chown -R $(whoami):$(whoami) logs
   variables:
