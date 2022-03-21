@@ -739,6 +739,13 @@ qemuValidateDomainDefMemory(const virDomainDef *def,
         return -1;
     }
 
+    if (mem->allocation_threads > 0 &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("preallocation threads are unsupported with this QEMU"));
+        return -1;
+    }
+
     if (mem->source == VIR_DOMAIN_MEMORY_SOURCE_ANONYMOUS) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("hugepages are not allowed with anonymous "
