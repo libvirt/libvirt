@@ -36,6 +36,9 @@
     - sudo coredumpctl info --no-pager > logs/coredumpctl.txt
     - sudo mv /var/log/libvirt logs/libvirt
     - sudo chown -R $(whoami):$(whoami) logs
+      # rename all Avocado stderr/stdout logs to *.log so that GitLab's web UI doesn't mangle the MIME type
+    - find logs/avocado/ -type f ! -name "*.log" -exec
+        sh -c 'DIR=$(dirname {}); NAME=$(basename {}); mv $DIR/$NAME{,.log}' \;
   variables:
     SCRATCH_DIR: "/tmp/scratch"
   artifacts:
