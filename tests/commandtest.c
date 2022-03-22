@@ -1041,8 +1041,8 @@ static int test27(const void *unused G_GNUC_UNUSED)
     int buf2fd;
     size_t buflen = 1024 * 128;
     g_autofree char *buffer0 = NULL;
-    g_autofree char *buffer1 = NULL;
-    g_autofree char *buffer2 = NULL;
+    g_autofree unsigned char *buffer1 = NULL;
+    g_autofree unsigned char *buffer2 = NULL;
     g_autofree char *outactual = NULL;
     g_autofree char *erractual = NULL;
     g_autofree char *outexpect = NULL;
@@ -1055,8 +1055,8 @@ static int test27(const void *unused G_GNUC_UNUSED)
         "END STDERR\n"
 
     buffer0 = g_new0(char, buflen);
-    buffer1 = g_new0(char, buflen);
-    buffer2 = g_new0(char, buflen);
+    buffer1 = g_new0(unsigned char, buflen);
+    buffer2 = g_new0(unsigned char, buflen);
 
     memset(buffer0, 'H', buflen - 2);
     buffer0[buflen - 2] = '\n';
@@ -1075,8 +1075,8 @@ static int test27(const void *unused G_GNUC_UNUSED)
     errexpect = g_strdup_printf(TEST27_ERREXPECT_TEMP,
                                 buffer0, buffer1, buffer2);
 
-    buf1fd = virCommandSetSendBuffer(cmd, (unsigned char *) g_steal_pointer(&buffer1), buflen - 1);
-    buf2fd = virCommandSetSendBuffer(cmd, (unsigned char *) g_steal_pointer(&buffer2), buflen - 1);
+    buf1fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&buffer1), buflen - 1);
+    buf2fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&buffer2), buflen - 1);
 
     virCommandAddArg(cmd, "--readfd");
     virCommandAddArgFormat(cmd, "%d", buf1fd);
