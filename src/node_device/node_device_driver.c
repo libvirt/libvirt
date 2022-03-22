@@ -1072,14 +1072,10 @@ static bool
 matchDeviceAddress(virNodeDeviceObj *obj,
                    const void *opaque)
 {
-    g_autofree char *addr = NULL;
-    bool want = false;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
+    g_autofree char *addr = nodeDeviceObjFormatAddress(obj);
 
-    virObjectLock(obj);
-    addr = nodeDeviceObjFormatAddress(obj);
-    want = STREQ_NULLABLE(addr, opaque);
-    virObjectUnlock(obj);
-    return want;
+    return STREQ_NULLABLE(addr, opaque);
 }
 
 
