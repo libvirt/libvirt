@@ -58,29 +58,18 @@ static int checkoutput(const char *testname)
 {
     int ret = -1;
     g_autofree char *expectname = NULL;
-    g_autofree char *expectlog = NULL;
     g_autofree char *actualname = NULL;
     g_autofree char *actuallog = NULL;
 
     expectname = g_strdup_printf("%s/commanddata/%s.log", abs_srcdir, testname);
     actualname = g_strdup_printf("%s/commandhelper.log", abs_builddir);
 
-    if (virFileReadAll(expectname, 1024*64, &expectlog) < 0) {
-        fprintf(stderr, "cannot read %s\n", expectname);
-        goto cleanup;
-    }
-
     if (virFileReadAll(actualname, 1024*64, &actuallog) < 0) {
         fprintf(stderr, "cannot read %s\n", actualname);
         goto cleanup;
     }
 
-    if (STRNEQ(expectlog, actuallog)) {
-        virTestDifference(stderr, expectlog, actuallog);
-        goto cleanup;
-    }
-
-    ret = 0;
+    ret = virTestCompareToFile(actuallog, expectname);
 
  cleanup:
     if (actualname)
@@ -1292,6 +1281,7 @@ mymain(void)
      * since we're about to reset 'environ' */
     ignore_value(virTestGetDebug());
     ignore_value(virTestGetVerbose());
+    ignore_value(virTestGetRegenerate());
 
     /* Make sure to not leak fd's */
     virinitret = virInitialize();
