@@ -132,7 +132,7 @@ void virCommandSetWorkingDirectory(virCommand *cmd,
                                    const char *pwd) ATTRIBUTE_NONNULL(2);
 
 int virCommandSetSendBuffer(virCommand *cmd,
-                            unsigned char *buffer,
+                            unsigned char **buffer,
                             size_t buflen)
     ATTRIBUTE_NONNULL(2);
 

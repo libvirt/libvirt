@@ -1075,8 +1075,8 @@ static int test27(const void *unused G_GNUC_UNUSED)
     errexpect = g_strdup_printf(TEST27_ERREXPECT_TEMP,
                                 buffer0, buffer1, buffer2);
 
-    buf1fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&buffer1), buflen - 1);
-    buf2fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&buffer2), buflen - 1);
+    buf1fd = virCommandSetSendBuffer(cmd, &buffer1, buflen - 1);
+    buf2fd = virCommandSetSendBuffer(cmd, &buffer2, buflen - 1);
 
     virCommandAddArg(cmd, "--readfd");
     virCommandAddArgFormat(cmd, "%d", buf1fd);

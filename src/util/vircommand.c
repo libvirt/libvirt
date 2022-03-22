@@ -1699,10 +1699,10 @@ virCommandFreeSendBuffers(virCommand *cmd)
  */
 int
 virCommandSetSendBuffer(virCommand *cmd,
-                        unsigned char *buffer,
+                        unsigned char **buffer,
                         size_t buflen)
 {
-    g_autofree unsigned char *localbuf = g_steal_pointer(&buffer);
+    g_autofree unsigned char *localbuf = g_steal_pointer(buffer);
     int pipefd[2] = { -1, -1 };
     size_t i;
 
@@ -2901,7 +2901,7 @@ int virCommandHandshakeNotify(virCommand *cmd)
 #else /* WIN32 */
 int
 virCommandSetSendBuffer(virCommand *cmd,
-                        unsigned char *buffer G_GNUC_UNUSED,
+                        unsigned char **buffer G_GNUC_UNUSED,
                         size_t buflen G_GNUC_UNUSED)
 {
     if (virCommandHasError(cmd))

@@ -265,7 +265,7 @@ qemuTPMSetupEncryption(const unsigned char *secretuuid,
                                  &secret, &secret_len) < 0)
         return -1;
 
-    *fd = virCommandSetSendBuffer(cmd, g_steal_pointer(&secret), secret_len);
+    *fd = virCommandSetSendBuffer(cmd, &secret, secret_len);
     return 0;
 }
 
