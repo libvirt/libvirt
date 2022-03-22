@@ -457,13 +457,11 @@ networkUpdateState(virNetworkObj *obj,
     g_autoptr(dnsmasqCaps) dnsmasq_caps = networkGetDnsmasqCaps(driver);
     virMacMap *macmap;
     g_autofree char *macMapFile = NULL;
-    int ret = -1;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
 
-    virObjectLock(obj);
-    if (!virNetworkObjIsActive(obj)) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (!virNetworkObjIsActive(obj))
+        return 0;
+
     def = virNetworkObjGetDef(obj);
 
     switch ((virNetworkForwardType) def->forward.type) {
@@ -477,10 +475,10 @@ networkUpdateState(virNetworkObj *obj,
 
         if (!(macMapFile = virMacMapFileName(driver->dnsmasqStateDir,
                                              def->bridge)))
-            goto cleanup;
+            return -1;
 
         if (!(macmap = virMacMapNew(macMapFile)))
-            goto cleanup;
+            return -1;
 
         virNetworkObjSetMacMap(obj, macmap);
 
@@ -509,7 +507,7 @@ networkUpdateState(virNetworkObj *obj,
     case VIR_NETWORK_FORWARD_LAST:
     default:
         virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-        goto cleanup;
+        return -1;
     }
 
     virNetworkObjPortForEach(obj, networkUpdatePort, obj);
@@ -525,10 +523,7 @@ networkUpdateState(virNetworkObj *obj,
         virNetworkObjSetDnsmasqPid(obj, dnsmasqPid);
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnlock(obj);
-    return ret;
+    return 0;
 }
 
 
@@ -536,19 +531,19 @@ static int
 networkAutostartConfig(virNetworkObj *obj,
                        void *opaque)
 {
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
     virNetworkDriverState *driver = opaque;
-    int ret = -1;
 
-    virObjectLock(obj);
-    if (virNetworkObjIsAutostart(obj) &&
-        !virNetworkObjIsActive(obj) &&
-        networkStartNetwork(driver, obj) < 0)
-        goto cleanup;
+    if (!virNetworkObjIsAutostart(obj))
+        return 0;
 
-    ret = 0;
- cleanup:
-    virObjectUnlock(obj);
-    return ret;
+    if (virNetworkObjIsActive(obj))
+        return 0;
+
+    if (networkStartNetwork(driver, obj) >= 0)
+        return 0;
+
+    return -1;
 }
 
 
@@ -1650,11 +1645,10 @@ static int
 networkRefreshDaemonsHelper(virNetworkObj *obj,
                             void *opaque)
 {
-    virNetworkDef *def;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
     virNetworkDriverState *driver = opaque;
+    virNetworkDef *def = virNetworkObjGetDef(obj);
 
-    virObjectLock(obj);
-    def = virNetworkObjGetDef(obj);
     if (virNetworkObjIsActive(obj)) {
         switch ((virNetworkForwardType) def->forward.type) {
         case VIR_NETWORK_FORWARD_NONE:
@@ -1679,12 +1673,10 @@ networkRefreshDaemonsHelper(virNetworkObj *obj,
         case VIR_NETWORK_FORWARD_LAST:
         default:
             virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-            goto cleanup;
+            return 0;
         }
     }
 
- cleanup:
-    virObjectUnlock(obj);
     return 0;
 }
 
@@ -1706,10 +1698,9 @@ static int
 networkReloadFirewallRulesHelper(virNetworkObj *obj,
                                  void *opaque G_GNUC_UNUSED)
 {
-    virNetworkDef *def;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
+    virNetworkDef *def = virNetworkObjGetDef(obj);
 
-    virObjectLock(obj);
-    def = virNetworkObjGetDef(obj);
     if (virNetworkObjIsActive(obj)) {
         switch ((virNetworkForwardType) def->forward.type) {
         case VIR_NETWORK_FORWARD_NONE:
@@ -1735,12 +1726,10 @@ networkReloadFirewallRulesHelper(virNetworkObj *obj,
         case VIR_NETWORK_FORWARD_LAST:
         default:
             virReportEnumRangeError(virNetworkForwardType, def->forward.type);
-            goto cleanup;
+            return 0;
         }
     }
 
- cleanup:
-    virObjectUnlock(obj);
     return 0;
 }
 

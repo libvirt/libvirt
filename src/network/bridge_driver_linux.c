@@ -87,9 +87,9 @@ static int
 networkHasRunningNetworksWithFWHelper(virNetworkObj *obj,
                                 void *opaque)
 {
+    VIR_LOCK_GUARD lock = virObjectLockGuard(obj);
     bool *activeWithFW = opaque;
 
-    virObjectLock(obj);
     if (virNetworkObjIsActive(obj)) {
         virNetworkDef *def = virNetworkObjGetDef(obj);
 
@@ -110,8 +110,6 @@ networkHasRunningNetworksWithFWHelper(virNetworkObj *obj,
             break;
         }
     }
-
-    virObjectUnlock(obj);
 
     /*
      * terminate ForEach early once we find an active network that
