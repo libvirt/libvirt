@@ -336,27 +336,29 @@ mymain(void)
 {
     int ret = 0;
 
+#define SCHEMAS_PATH "src/conf/schemas/"
+
 #define DO_TEST(sch, ent) \
     if (testSchemaEntries((sch), (ent), G_N_ELEMENTS(ent)) < 0) \
         ret = -1;
 
-    DO_TEST("docs/schemas/capability.rng", schemaCapability);
-    DO_TEST("docs/schemas/domain.rng", schemaDomain);
-    DO_TEST("docs/schemas/domaincaps.rng", schemaDomainCaps);
-    DO_TEST("docs/schemas/domainbackup.rng", schemaDomainBackup);
-    DO_TEST("docs/schemas/domaincheckpoint.rng", schemaDomainCheckpoint);
-    DO_TEST("docs/schemas/domainsnapshot.rng", schemaDomainSnapshot);
-    DO_TEST("docs/schemas/interface.rng", schemaInterface);
-    DO_TEST("docs/schemas/network.rng", schemaNetwork);
-    DO_TEST("docs/schemas/networkport.rng", schemaNetworkport);
-    DO_TEST("docs/schemas/nodedev.rng", schemaNodedev);
-    DO_TEST("docs/schemas/nwfilter.rng", schemaNwfilter);
-    DO_TEST("docs/schemas/nwfilterbinding.rng", schemaNwfilterbinding);
-    DO_TEST("docs/schemas/secret.rng", schemaSecret);
-    DO_TEST("docs/schemas/storagepoolcaps.rng", schemaStoragepoolcaps);
-    DO_TEST("docs/schemas/storagepool.rng", schemaStoragePool);
-    DO_TEST("docs/schemas/storagevol.rng", schemaStorageVol);
-    DO_TEST("docs/schemas/cpu.rng", schemaCpu);
+    DO_TEST(SCHEMAS_PATH "capability.rng", schemaCapability);
+    DO_TEST(SCHEMAS_PATH "domain.rng", schemaDomain);
+    DO_TEST(SCHEMAS_PATH "domaincaps.rng", schemaDomainCaps);
+    DO_TEST(SCHEMAS_PATH "domainbackup.rng", schemaDomainBackup);
+    DO_TEST(SCHEMAS_PATH "domaincheckpoint.rng", schemaDomainCheckpoint);
+    DO_TEST(SCHEMAS_PATH "domainsnapshot.rng", schemaDomainSnapshot);
+    DO_TEST(SCHEMAS_PATH "interface.rng", schemaInterface);
+    DO_TEST(SCHEMAS_PATH "network.rng", schemaNetwork);
+    DO_TEST(SCHEMAS_PATH "networkport.rng", schemaNetworkport);
+    DO_TEST(SCHEMAS_PATH "nodedev.rng", schemaNodedev);
+    DO_TEST(SCHEMAS_PATH "nwfilter.rng", schemaNwfilter);
+    DO_TEST(SCHEMAS_PATH "nwfilterbinding.rng", schemaNwfilterbinding);
+    DO_TEST(SCHEMAS_PATH "secret.rng", schemaSecret);
+    DO_TEST(SCHEMAS_PATH "storagepoolcaps.rng", schemaStoragepoolcaps);
+    DO_TEST(SCHEMAS_PATH "storagepool.rng", schemaStoragePool);
+    DO_TEST(SCHEMAS_PATH "storagevol.rng", schemaStorageVol);
+    DO_TEST(SCHEMAS_PATH "cpu.rng", schemaCpu);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

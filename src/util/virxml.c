@@ -1099,7 +1099,7 @@ virXMLParseHelper(int domcode,
 
     if (validate && schemafile != NULL) {
         g_autofree char *schema = virFileFindResource(schemafile,
-                                                      abs_top_srcdir "/docs/schemas",
+                                                      abs_top_srcdir "/src/conf/schemas",
                                                       PKGDATADIR "/schemas");
         if (!schema ||
             (virXMLValidateAgainstSchema(schema, xml) < 0))

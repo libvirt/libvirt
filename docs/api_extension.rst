@@ -73,7 +73,7 @@ The first task is to define the public API. If the new API involves an
 XML extension, you have to enhance the RelaxNG schema and document the
 new elements or attributes:
 
-``docs/schemas/domaincommon.rng         docs/formatdomain.html.in``
+``src/conf/schemas/domaincommon.rng         docs/formatdomain.html.in``
 
 If the API extension involves a new function, you have to add a
 declaration in the public header, and arrange to export the function

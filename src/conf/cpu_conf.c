@@ -345,7 +345,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
         g_autofree char *schemafile = NULL;
 
         if (!(schemafile = virFileFindResource("cpu.rng",
-                                               abs_top_srcdir "/docs/schemas",
+                                               abs_top_srcdir "/src/conf/schemas",
                                                PKGDATADIR "/schemas")))
             return -1;
 

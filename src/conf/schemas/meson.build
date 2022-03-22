@@ -1,4 +1,4 @@
-docs_schema_files = [
+schema_files = [
   'basictypes.rng',
   'capability.rng',
   'cpu.rng',
@@ -24,4 +24,4 @@ docs_schema_files = [
   'storagevol.rng',
 ]
 
-install_data(docs_schema_files, install_dir: pkgdatadir / 'schemas')
+install_data(schema_files, install_dir: pkgdatadir / 'schemas')
