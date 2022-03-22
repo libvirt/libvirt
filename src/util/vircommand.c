@@ -1693,6 +1693,9 @@ virCommandFreeSendBuffers(virCommand *cmd)
  * @buffer is always stolen regardless of the return value. This function
  * doesn't raise a libvirt error, but rather propagates the error via virCommand.
  * Thus callers don't need to take a special action if -1 is returned.
+ *
+ * When the @cmd is daemonized via virCommandDaemonize() remember to request
+ * asynchronous IO via virCommandDoAsyncIO().
  */
 int
 virCommandSetSendBuffer(virCommand *cmd,
