@@ -25,6 +25,7 @@
 #include <sys/stat.h>
 #ifndef WIN32
 # include <sys/wait.h>
+# include <poll.h>
 #endif
 #include <fcntl.h>
 
@@ -1156,6 +1157,101 @@ test28(const void *unused G_GNUC_UNUSED)
 
 
 static int
+test29(const void *unused G_GNUC_UNUSED)
+{
+    g_autoptr(virCommand) cmd = virCommandNew(abs_builddir "/commandhelper");
+    g_autofree char *pidfile = virPidFileBuildPath(abs_builddir, "commandhelper");
+    pid_t pid;
+    int buffd;
+    VIR_AUTOCLOSE outfd = -1;
+    size_t buflen = 1024 * 10;
+    g_autofree unsigned char *buffer = NULL;
+    g_autofree char *outactual = NULL;
+    g_autofree char *outexpect = NULL;
+    size_t i;
+    size_t outactuallen = 0;
+    int ret = -1;
+
+    if (!pidfile)
+        return -1;
+
+    buffer = g_new0(unsigned char, buflen + 1);
+    for (i = 0; i < buflen; i++) {
+        buffer[i] = 'a' + i % ('z' - 'a' + 1);
+    }
+    buffer[buflen] = '\0';
+
+    outexpect = g_strdup_printf("BEGIN STDOUT\n%sEND STDOUT\n", buffer);
+
+    buffd = virCommandSetSendBuffer(cmd, &buffer, buflen);
+
+    virCommandAddArg(cmd, "--close-stdin");
+    virCommandAddArg(cmd, "--check-daemonize");
+    virCommandAddArg(cmd, "--readfd");
+    virCommandAddArgFormat(cmd, "%d", buffd);
+
+    virCommandSetOutputFD(cmd, &outfd);
+    virCommandSetPidFile(cmd, pidfile);
+    virCommandDaemonize(cmd);
+    virCommandDoAsyncIO(cmd);
+
+    if (virCommandRun(cmd, NULL) < 0) {
+        fprintf(stderr, "Cannot run child %s\n", virGetLastErrorMessage());
+        goto cleanup;
+    }
+
+    if (virPidFileReadPath(pidfile, &pid) < 0) {
+        fprintf(stderr, "cannot read pidfile: %s\n", pidfile);
+        goto cleanup;
+    }
+
+    while (1) {
+        char buf[1024] = { 0 };
+        struct pollfd pfd = {.fd = outfd, .events = POLLIN, .revents = 0};
+        int rc = 0;
+
+        rc = poll(&pfd, 1, 1000);
+        if (rc < 0) {
+            if (errno == EINTR)
+                continue;
+
+            fprintf(stderr, "poll() returned errno = %d\n", errno);
+            goto cleanup;
+        }
+
+        if (pfd.revents & POLLIN) {
+            rc = read(outfd, buf, sizeof(buf));
+            if (rc < 0) {
+                fprintf(stderr, "cannot read from output pipe: errno=%d\n", errno);
+                goto cleanup;
+            }
+
+            outactual = g_renew(char, outactual, outactuallen + rc + 1);
+            memcpy(outactual + outactuallen, buf, rc);
+            outactuallen += rc;
+            outactual[outactuallen] = '\0';
+        } else if (pfd.revents & POLLERR ||
+                   pfd.revents & POLLHUP) {
+            break;
+        }
+    }
+
+    if (STRNEQ_NULLABLE(outactual, outexpect)) {
+        virTestDifference(stderr, outexpect, outactual);
+        goto cleanup;
+    }
+
+    ret = checkoutput("test29");
+
+ cleanup:
+    if (pidfile)
+        unlink(pidfile);
+
+    return ret;
+}
+
+
+static int
 mymain(void)
 {
     int ret = 0;
@@ -1252,6 +1348,7 @@ mymain(void)
     DO_TEST(test26);
     DO_TEST(test27);
     DO_TEST(test28);
+    DO_TEST(test29);
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
