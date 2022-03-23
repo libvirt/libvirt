@@ -2350,25 +2350,28 @@ qemuSnapshotDelete(virDomainObj *vm,
                 }
             }
         }
-    } else if (snap->nchildren) {
-        rep.dir = cfg->snapshotDir;
-        rep.parent = snap->parent;
-        rep.vm = vm;
-        rep.err = 0;
-        rep.xmlopt = driver->xmlopt;
-        rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
-        virDomainMomentForEachChild(snap,
-                                    qemuSnapshotChildrenReparent,
-                                    &rep);
-        if (rep.err < 0)
-            goto endjob;
-        virDomainMomentMoveChildren(snap, snap->parent);
-    }
 
-    if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
-        virDomainMomentDropChildren(snap);
-        ret = 0;
+        if (flags & VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY) {
+            virDomainMomentDropChildren(snap);
+            ret = 0;
+        } else {
+            ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+        }
     } else {
+        if (snap->nchildren) {
+            rep.dir = cfg->snapshotDir;
+            rep.parent = snap->parent;
+            rep.vm = vm;
+            rep.err = 0;
+            rep.xmlopt = driver->xmlopt;
+            rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
+            virDomainMomentForEachChild(snap,
+                                        qemuSnapshotChildrenReparent,
+                                        &rep);
+            if (rep.err < 0)
+                goto endjob;
+            virDomainMomentMoveChildren(snap, snap->parent);
+        }
         ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
     }
 
