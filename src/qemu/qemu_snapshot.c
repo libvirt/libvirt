@@ -2281,6 +2281,36 @@ qemuSnapshotChildrenReparent(void *payload,
 }
 
 
+static int
+qemuSnapshotDeleteSingle(virDomainObj *vm,
+                         virDomainMomentObj *snap,
+                         bool metadata_only)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    if (snap->nchildren) {
+        virQEMUMomentReparent rep;
+
+        rep.dir = cfg->snapshotDir;
+        rep.parent = snap->parent;
+        rep.vm = vm;
+        rep.err = 0;
+        rep.xmlopt = driver->xmlopt;
+        rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
+        virDomainMomentForEachChild(snap,
+                                    qemuSnapshotChildrenReparent,
+                                    &rep);
+        if (rep.err < 0)
+            return -1;
+        virDomainMomentMoveChildren(snap, snap->parent);
+    }
+
+    return qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+}
+
+
 int
 qemuSnapshotDelete(virDomainObj *vm,
                    virDomainSnapshotPtr snapshot,
@@ -2290,7 +2320,6 @@ qemuSnapshotDelete(virDomainObj *vm,
     int ret = -1;
     virDomainMomentObj *snap = NULL;
     virQEMUMomentRemove rem;
-    virQEMUMomentReparent rep;
     bool metadata_only = !!(flags & VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY);
     int external = 0;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
@@ -2358,21 +2387,7 @@ qemuSnapshotDelete(virDomainObj *vm,
             ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
         }
     } else {
-        if (snap->nchildren) {
-            rep.dir = cfg->snapshotDir;
-            rep.parent = snap->parent;
-            rep.vm = vm;
-            rep.err = 0;
-            rep.xmlopt = driver->xmlopt;
-            rep.writeMetadata = qemuDomainSnapshotWriteMetadata;
-            virDomainMomentForEachChild(snap,
-                                        qemuSnapshotChildrenReparent,
-                                        &rep);
-            if (rep.err < 0)
-                goto endjob;
-            virDomainMomentMoveChildren(snap, snap->parent);
-        }
-        ret = qemuDomainSnapshotDiscard(driver, vm, snap, true, metadata_only);
+        ret = qemuSnapshotDeleteSingle(vm, snap, metadata_only);
     }
 
  endjob:
