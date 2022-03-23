@@ -9817,6 +9817,76 @@ cmdDomSetLaunchSecState(vshControl * ctl, const vshCmd * cmd)
     return ret;
 }
 
+
+/*
+ * "dom-fd-associate" command
+ */
+static const vshCmdInfo info_dom_fd_associate[] = {
+    {.name = "help",
+     .data = N_("associate a FD with a domain")
+    },
+    {.name = "desc",
+     .data = N_("associate a FD with a domain")
+    },
+    {.name = NULL}
+};
+
+static const vshCmdOptDef opts_dom_fd_associate[] = {
+    VIRSH_COMMON_OPT_DOMAIN_FULL(0),
+    {.name = "name",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
+     .help = N_("name of the FD group")
+    },
+    {.name = "pass-fds",
+     .type = VSH_OT_DATA,
+     .flags = VSH_OFLAG_REQ,
+     .completer = virshCompleteEmpty,
+     .help = N_("file descriptors N,M,... to associate")
+    },
+    {.name = "seclabel-writable",
+     .type = VSH_OT_BOOL,
+     .help = N_("use seclabels allowing writes")
+    },
+    {.name = "seclabel-restore",
+     .type = VSH_OT_BOOL,
+     .help = N_("try to restore security label after use if possible")
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDomFdAssociate(vshControl *ctl, const vshCmd *cmd)
+{
+    g_autoptr(virshDomain) dom = NULL;
+    const char *name = NULL;
+    unsigned int flags = 0;
+    g_autofree int *fds = NULL;
+    size_t nfds = 0;
+
+    if (vshCommandOptBool(cmd, "seclabel-writable"))
+        flags |= VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_WRITABLE;
+
+    if (vshCommandOptBool(cmd, "seclabel-restore"))
+        flags |= VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_RESTORE;
+
+    if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringReq(ctl, cmd, "name", &name) < 0)
+        return false;
+
+    if (virshFetchPassFdsList(ctl, cmd, &nfds, &fds) < 0)
+        return false;
+
+    if (virDomainFDAssociate(dom, name, nfds, fds, flags) < 0)
+        return false;
+
+    return true;
+}
+
+
 /*
  * "qemu-monitor-command" command
  */
@@ -14416,6 +14486,12 @@ const vshCmdDef domManagementCmds[] = {
      .handler = cmdDomDirtyRateCalc,
      .opts = opts_domdirtyrate_calc,
      .info = info_domdirtyrate_calc,
+     .flags = 0
+    },
+    {.name = "dom-fd-associate",
+     .handler = cmdDomFdAssociate,
+     .opts = opts_dom_fd_associate,
+     .info = info_dom_fd_associate,
      .flags = 0
     },
     {.name = NULL}

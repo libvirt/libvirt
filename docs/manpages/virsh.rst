@@ -5225,6 +5225,25 @@ If *--print-xml* is specified, the XML that would be used to change media is
 printed instead of changing the media.
 
 
+dom-fd-associate
+----------------
+
+**Syntax:**
+
+::
+
+    dom-fd-associate domain --name FDGROUPNAME --pass-fds M,N,....
+        [--seclabel-writable] [--seclabel-restore]
+
+Associate one or more fds described via *--pass-fds* argument to *domain* as
+*--name*. The lifetime of the passed fd group is the same as the connection, thus
+exitting virsh un-registers them afterwards.
+
+By default security labels are applied if needed but they are not restored after
+use to avoid keeping them open unnecessarily. Best-effort security label restore
+may be requested by using the *--seclabel-restore* flag.
+
+
 NODEDEV COMMANDS
 ================
 
