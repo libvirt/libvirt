@@ -8405,17 +8405,17 @@ qemuBuildGraphicsSPICECommandLine(virQEMUDriverConfig *cfg,
 
     if (graphics->data.spice.mousemode) {
         switch (graphics->data.spice.mousemode) {
-        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
+        case VIR_DOMAIN_MOUSE_MODE_SERVER:
             virBufferAddLit(&opt, "agent-mouse=off,");
             break;
-        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
+        case VIR_DOMAIN_MOUSE_MODE_CLIENT:
             virBufferAddLit(&opt, "agent-mouse=on,");
             break;
-        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT:
+        case VIR_DOMAIN_MOUSE_MODE_DEFAULT:
             break;
-        case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST:
+        case VIR_DOMAIN_MOUSE_MODE_LAST:
         default:
-            virReportEnumRangeError(virDomainGraphicsSpiceMouseMode,
+            virReportEnumRangeError(virDomainMouseMode,
                                     graphics->data.spice.mousemode);
             return -1;
         }

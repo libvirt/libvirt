@@ -997,8 +997,8 @@ VIR_ENUM_IMPL(virDomainGraphicsSpiceZlibCompression,
               "always",
 );
 
-VIR_ENUM_IMPL(virDomainGraphicsSpiceMouseMode,
-              VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST,
+VIR_ENUM_IMPL(virDomainMouseMode,
+              VIR_DOMAIN_MOUSE_MODE_LAST,
               "default",
               "server",
               "client",
@@ -12703,7 +12703,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
 
     if ((cur = virXPathNode("./mouse", ctxt))) {
         if (virXMLPropEnum(cur, "mode",
-                           virDomainGraphicsSpiceMouseModeTypeFromString,
+                           virDomainMouseModeTypeFromString,
                            VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
                            &def->data.spice.mousemode) < 0)
             return -1;
@@ -26616,7 +26616,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
                               virDomainGraphicsSpiceStreamingModeTypeToString(def->data.spice.streaming));
         if (def->data.spice.mousemode)
             virBufferAsprintf(buf, "<mouse mode='%s'/>\n",
-                              virDomainGraphicsSpiceMouseModeTypeToString(def->data.spice.mousemode));
+                              virDomainMouseModeTypeToString(def->data.spice.mousemode));
         if (def->data.spice.copypaste)
             virBufferAsprintf(buf, "<clipboard copypaste='%s'/>\n",
                               virTristateBoolTypeToString(def->data.spice.copypaste));

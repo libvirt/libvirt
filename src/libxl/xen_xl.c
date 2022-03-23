@@ -361,11 +361,9 @@ xenParseXLSpice(virConf *conf, virDomainDef *def)
                                  &val, 0) < 0)
                 goto cleanup;
             if (val) {
-                graphics->data.spice.mousemode =
-                    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT;
+                graphics->data.spice.mousemode = VIR_DOMAIN_MOUSE_MODE_CLIENT;
             } else {
-                graphics->data.spice.mousemode =
-                    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER;
+                graphics->data.spice.mousemode = VIR_DOMAIN_MOUSE_MODE_SERVER;
             }
 
             if (xenConfigGetBool(conf, "spice_clipboard_sharing", &val, 0) < 0)
@@ -1691,11 +1689,11 @@ xenFormatXLSpice(virConf *conf, virDomainDef *def)
 
             if (graphics->data.spice.mousemode) {
                 switch (graphics->data.spice.mousemode) {
-                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER:
+                case VIR_DOMAIN_MOUSE_MODE_SERVER:
                     if (xenConfigSetInt(conf, "spiceagent_mouse", 0) < 0)
                         return -1;
                     break;
-                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT:
+                case VIR_DOMAIN_MOUSE_MODE_CLIENT:
                     if (xenConfigSetInt(conf, "spiceagent_mouse", 1) < 0)
                         return -1;
                     /*
@@ -1705,11 +1703,11 @@ xenFormatXLSpice(virConf *conf, virDomainDef *def)
                     if (xenConfigSetInt(conf, "spicevdagent", 1) < 0)
                         return -1;
                     break;
-                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT:
+                case VIR_DOMAIN_MOUSE_MODE_DEFAULT:
                     break;
-                case VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST:
+                case VIR_DOMAIN_MOUSE_MODE_LAST:
                 default:
-                    virReportEnumRangeError(virDomainGraphicsSpiceMouseMode,
+                    virReportEnumRangeError(virDomainMouseMode,
                                             graphics->data.spice.mousemode);
                     return -1;
                 }

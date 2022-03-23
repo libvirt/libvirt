@@ -1846,12 +1846,12 @@ typedef enum {
 } virDomainGraphicsSpiceZlibCompression;
 
 typedef enum {
-    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_DEFAULT = 0,
-    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_SERVER,
-    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_CLIENT,
+    VIR_DOMAIN_MOUSE_MODE_DEFAULT = 0,
+    VIR_DOMAIN_MOUSE_MODE_SERVER,
+    VIR_DOMAIN_MOUSE_MODE_CLIENT,
 
-    VIR_DOMAIN_GRAPHICS_SPICE_MOUSE_MODE_LAST
-} virDomainGraphicsSpiceMouseMode;
+    VIR_DOMAIN_MOUSE_MODE_LAST
+} virDomainMouseMode;
 
 typedef enum {
     VIR_DOMAIN_GRAPHICS_SPICE_STREAMING_MODE_DEFAULT = 0,
@@ -1930,7 +1930,7 @@ struct _virDomainGraphicsDef {
             int tlsPort;
             bool portReserved;
             bool tlsPortReserved;
-            virDomainGraphicsSpiceMouseMode mousemode;
+            virDomainMouseMode mousemode;
             char *keymap;
             virDomainGraphicsAuthDef auth;
             bool autoport;
@@ -3996,7 +3996,7 @@ VIR_ENUM_DECL(virDomainGraphicsSpiceImageCompression);
 VIR_ENUM_DECL(virDomainGraphicsSpiceJpegCompression);
 VIR_ENUM_DECL(virDomainGraphicsSpiceZlibCompression);
 VIR_ENUM_DECL(virDomainGraphicsSpiceStreamingMode);
-VIR_ENUM_DECL(virDomainGraphicsSpiceMouseMode);
+VIR_ENUM_DECL(virDomainMouseMode);
 VIR_ENUM_DECL(virDomainGraphicsVNCSharePolicy);
 VIR_ENUM_DECL(virDomainHyperv);
 VIR_ENUM_DECL(virDomainKVM);
