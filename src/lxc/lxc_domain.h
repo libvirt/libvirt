@@ -25,6 +25,7 @@
 #include "lxc_conf.h"
 #include "lxc_monitor.h"
 #include "virenum.h"
+#include "domain_job.h"
 
 
 typedef enum {
@@ -53,23 +54,9 @@ struct _lxcDomainDef {
 };
 
 
-/* Only 1 job is allowed at any time
- * A job includes *all* lxc.so api, even those just querying
- * information, not merely actions */
-
-enum virLXCDomainJob {
-    LXC_JOB_NONE = 0,      /* Always set to 0 for easy if (jobActive) conditions */
-    LXC_JOB_QUERY,         /* Doesn't change any state */
-    LXC_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
-    LXC_JOB_MODIFY,        /* May change state */
-    LXC_JOB_LAST
-};
-VIR_ENUM_DECL(virLXCDomainJob);
-
-
 struct virLXCDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
-    enum virLXCDomainJob active;        /* Currently running job */
+    virDomainJob active;                /* Currently running job */
     int owner;                          /* Thread which set current job */
 };
 
@@ -96,7 +83,7 @@ extern virDomainDefParserConfig virLXCDriverDomainDefParserConfig;
 int
 virLXCDomainObjBeginJob(virLXCDriver *driver,
                        virDomainObj *obj,
-                       enum virLXCDomainJob job)
+                       virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void

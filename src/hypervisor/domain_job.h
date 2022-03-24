@@ -21,8 +21,8 @@
 
 
 /* Only 1 job is allowed at any time
- * A job includes *all* monitor commands, even those just querying
- * information, not merely actions */
+ * A job includes *all* monitor commands / hypervisor.so api,
+ * even those just querying information, not merely actions */
 typedef enum {
     VIR_JOB_NONE = 0,  /* Always set to 0 for easy if (jobActive) conditions */
     VIR_JOB_QUERY,         /* Doesn't change any state */
