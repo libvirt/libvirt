@@ -552,6 +552,24 @@ virXMLPropTristateBool(xmlNodePtr node,
 }
 
 
+/* Same as virXMLPropTristateBoolAllowDefault, but will accept the
+ * value 'default' and convert it to VIR_TRISTATE_BOOL_ABSENT instead
+ * of rejecting it with an error. Should only be used for backwards
+ * compatibility reasons, and specifically to parse XML files where a
+ * property having value VIR_TRISTATE_BOOL_ABSENT has historically
+ * resulted in it being formatted with value 'default' instead of
+ * being omitted entirely */
+int
+virXMLPropTristateBoolAllowDefault(xmlNodePtr node,
+                                   const char* name,
+                                   virXMLPropFlags flags,
+                                   virTristateBool *result)
+{
+    return virXMLPropEnumInternal(node, name, virTristateBoolTypeFromString,
+                                  flags, result, VIR_TRISTATE_BOOL_ABSENT);
+}
+
+
 /**
  * virXMLPropTristateSwitch:
  * @node: XML dom node pointer

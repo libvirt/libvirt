@@ -104,6 +104,13 @@ virXMLPropTristateBool(xmlNodePtr node,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
 
 int
+virXMLPropTristateBoolAllowDefault(xmlNodePtr node,
+                                   const char *name,
+                                   virXMLPropFlags flags,
+                                   virTristateBool *result)
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(4);
+
+int
 virXMLPropTristateSwitch(xmlNodePtr node,
                          const char *name,
                          virXMLPropFlags flags,
