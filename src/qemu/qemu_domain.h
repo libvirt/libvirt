@@ -500,7 +500,7 @@ void qemuDomainObjExitMonitor(virDomainObj *obj)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 int qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
                                    virDomainObj *obj,
-                                   qemuDomainAsyncJob asyncJob)
+                                   virDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 
@@ -892,7 +892,7 @@ void qemuDomainVcpuPersistOrder(virDomainDef *def)
 
 int qemuDomainCheckMonitor(virQEMUDriver *driver,
                            virDomainObj *vm,
-                           qemuDomainAsyncJob asyncJob);
+                           virDomainAsyncJob asyncJob);
 
 bool qemuDomainSupportsVideoVga(const virDomainVideoDef *video,
                                 virQEMUCaps *qemuCaps);

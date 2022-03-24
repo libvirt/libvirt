@@ -850,7 +850,7 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (asyncJob == QEMU_ASYNC_JOB_NONE) {
+    if (asyncJob == VIR_ASYNC_JOB_NONE) {
         if (!virBitmapIsAllClear(migParams->caps)) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("Migration capabilities can only be set by "
@@ -1165,7 +1165,7 @@ qemuMigrationParamsCheck(virQEMUDriver *driver,
     qemuMigrationParty party;
     size_t i;
 
-    if (asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT)
+    if (asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
         party = QEMU_MIGRATION_SOURCE;
     else
         party = QEMU_MIGRATION_DESTINATION;

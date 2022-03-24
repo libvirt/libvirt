@@ -19,6 +19,7 @@ hypervisor_lib = static_library(
   ],
   include_directories: [
     conf_inc_dir,
+    util_inc_dir,
   ],
 )
 

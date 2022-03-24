@@ -192,7 +192,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
 
     actions = virJSONValueNewArray();
 
-    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         return -1;
 
     for (i = 0; i < chkdef->ndisks; i++) {
@@ -229,7 +229,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
             goto relabel;
 
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
-            qemuBlockReopenReadWrite(vm, src, QEMU_ASYNC_JOB_NONE) < 0)
+            qemuBlockReopenReadWrite(vm, src, VIR_ASYNC_JOB_NONE) < 0)
             goto relabel;
 
         relabelimages = g_slist_prepend(relabelimages, src);
@@ -244,7 +244,7 @@ qemuCheckpointDiscardBitmaps(virDomainObj *vm,
         virStorageSource *src = next->data;
 
         if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN))
-            ignore_value(qemuBlockReopenReadOnly(vm, src, QEMU_ASYNC_JOB_NONE));
+            ignore_value(qemuBlockReopenReadOnly(vm, src, VIR_ASYNC_JOB_NONE));
 
         ignore_value(qemuDomainStorageSourceAccessAllow(driver, vm, src,
                                                         true, false, false));
@@ -417,7 +417,7 @@ qemuCheckpointRedefineValidateBitmaps(virDomainObj *vm,
     if (virDomainObjCheckActive(vm) < 0)
         return -1;
 
-    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+    if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         return -1;
 
     for (i = 0; i < chkdef->ndisks; i++) {
@@ -607,7 +607,7 @@ qemuCheckpointCreateXML(virDomainPtr domain,
     /* Unlike snapshots, the RNG schema already ensured a sane filename. */
 
     /* We are going to modify the domain below. */
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         return NULL;
 
     if (redefine) {
@@ -658,13 +658,13 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
     size_t i;
     int ret = -1;
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!(nodedataMerge = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+    if (!(nodedataMerge = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         goto endjob;
 
     /* enumerate disks relevant for the checkpoint which are also present in the
@@ -741,7 +741,7 @@ qemuCheckpointGetXMLDescUpdateSize(virDomainObj *vm,
         goto endjob;
 
     /* now do a final refresh */
-    if (!(nodedataStats = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_NONE)))
+    if (!(nodedataStats = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
         goto endjob;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -852,7 +852,7 @@ qemuCheckpointDelete(virDomainObj *vm,
                   VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!metadata_only) {

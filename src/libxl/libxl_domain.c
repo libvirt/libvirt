@@ -38,6 +38,7 @@
 #include "xen_common.h"
 #include "driver.h"
 #include "domain_validate.h"
+#include "domain_job.h"
 
 #define VIR_FROM_THIS VIR_FROM_LIBXL
 

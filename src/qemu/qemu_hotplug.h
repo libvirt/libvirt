@@ -33,13 +33,13 @@ int qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
 
 void qemuDomainDelTLSObjects(virQEMUDriver *driver,
                              virDomainObj *vm,
-                             qemuDomainAsyncJob asyncJob,
+                             virDomainAsyncJob asyncJob,
                              const char *secAlias,
                              const char *tlsAlias);
 
 int qemuDomainAddTLSObjects(virQEMUDriver *driver,
                             virDomainObj *vm,
-                            qemuDomainAsyncJob asyncJob,
+                            virDomainAsyncJob asyncJob,
                             virJSONValue **secProps,
                             virJSONValue **tlsProps);
 
@@ -61,7 +61,7 @@ int qemuDomainAttachDeviceDiskLive(virQEMUDriver *driver,
 int qemuDomainAttachDiskGeneric(virQEMUDriver *driver,
                                 virDomainObj *vm,
                                 virDomainDiskDef *disk,
-                                qemuDomainAsyncJob asyncJob);
+                                virDomainAsyncJob asyncJob);
 
 int qemuDomainAttachNetDevice(virQEMUDriver *driver,
                               virDomainObj *vm,
@@ -164,11 +164,11 @@ unsigned long long qemuDomainGetUnplugTimeout(virDomainObj *vm) G_GNUC_NO_INLINE
 
 int qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
                                  virDomainObj *vm,
-                                 qemuDomainAsyncJob asyncJob);
+                                 virDomainAsyncJob asyncJob);
 
 int qemuHotplugRemoveDBusVMState(virQEMUDriver *driver,
                                  virDomainObj *vm,
-                                 qemuDomainAsyncJob asyncJob);
+                                 virDomainAsyncJob asyncJob);
 
 int qemuDomainChangeMemoryRequestedSize(virQEMUDriver *driver,
                                         virDomainObj *vm,

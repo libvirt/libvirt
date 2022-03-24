@@ -6,6 +6,58 @@
 #pragma once
 
 #include "internal.h"
+#include "virenum.h"
+
+/* Only 1 job is allowed at any time
+ * A job includes *all* monitor commands, even those just querying
+ * information, not merely actions */
+typedef enum {
+    VIR_JOB_NONE = 0,  /* Always set to 0 for easy if (jobActive) conditions */
+    VIR_JOB_QUERY,         /* Doesn't change any state */
+    VIR_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
+    VIR_JOB_SUSPEND,       /* Suspends (stops vCPUs) the domain */
+    VIR_JOB_MODIFY,        /* May change state */
+    VIR_JOB_ABORT,         /* Abort current async job */
+    VIR_JOB_MIGRATION_OP,  /* Operation influencing outgoing migration */
+
+    /* The following two items must always be the last items before JOB_LAST */
+    VIR_JOB_ASYNC,         /* Asynchronous job */
+    VIR_JOB_ASYNC_NESTED,  /* Normal job within an async job */
+
+    VIR_JOB_LAST
+} virDomainJob;
+VIR_ENUM_DECL(virDomainJob);
+
+
+/* Currently only QEMU driver uses agent jobs */
+typedef enum {
+    VIR_AGENT_JOB_NONE = 0,    /* No agent job. */
+    VIR_AGENT_JOB_QUERY,       /* Does not change state of domain */
+    VIR_AGENT_JOB_MODIFY,      /* May change state of domain */
+
+    VIR_AGENT_JOB_LAST
+} virDomainAgentJob;
+VIR_ENUM_DECL(virDomainAgentJob);
+
+
+/* Async job consists of a series of jobs that may change state. Independent
+ * jobs that do not change state (and possibly others if explicitly allowed by
+ * current async job) are allowed to be run even if async job is active.
+ * Currently supported by QEMU only. */
+typedef enum {
+    VIR_ASYNC_JOB_NONE = 0,
+    VIR_ASYNC_JOB_MIGRATION_OUT,
+    VIR_ASYNC_JOB_MIGRATION_IN,
+    VIR_ASYNC_JOB_SAVE,
+    VIR_ASYNC_JOB_DUMP,
+    VIR_ASYNC_JOB_SNAPSHOT,
+    VIR_ASYNC_JOB_START,
+    VIR_ASYNC_JOB_BACKUP,
+
+    VIR_ASYNC_JOB_LAST
+} virDomainAsyncJob;
+VIR_ENUM_DECL(virDomainAsyncJob);
+
 
 typedef enum {
     VIR_DOMAIN_JOB_STATUS_NONE = 0,

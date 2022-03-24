@@ -565,7 +565,7 @@ qemuBlockJobRefreshJobs(virQEMUDriver *driver,
         job->reconnected = true;
 
         if (job->newstate != -1)
-            qemuBlockJobUpdate(vm, job, QEMU_ASYNC_JOB_NONE);
+            qemuBlockJobUpdate(vm, job, VIR_ASYNC_JOB_NONE);
         /* 'job' may be invalid after this update */
     }
 
@@ -839,7 +839,7 @@ qemuBlockJobEventProcessLegacy(virQEMUDriver *driver,
 static void
 qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriver *driver,
                                              virDomainObj *vm,
-                                             qemuDomainAsyncJob asyncJob,
+                                             virDomainAsyncJob asyncJob,
                                              virStorageSource *chain)
 {
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
@@ -942,7 +942,7 @@ qemuBlockJobClearConfigChain(virDomainObj *vm,
 static int
 qemuBlockJobProcessEventCompletedPullBitmaps(virDomainObj *vm,
                                              qemuBlockJobData *job,
-                                             qemuDomainAsyncJob asyncJob)
+                                             virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
@@ -992,7 +992,7 @@ static void
 qemuBlockJobProcessEventCompletedPull(virQEMUDriver *driver,
                                       virDomainObj *vm,
                                       qemuBlockJobData *job,
-                                      qemuDomainAsyncJob asyncJob)
+                                      virDomainAsyncJob asyncJob)
 {
     virStorageSource *base = NULL;
     virStorageSource *baseparent = NULL;
@@ -1106,7 +1106,7 @@ qemuBlockJobDeleteImages(virQEMUDriver *driver,
 static int
 qemuBlockJobProcessEventCompletedCommitBitmaps(virDomainObj *vm,
                                                qemuBlockJobData *job,
-                                               qemuDomainAsyncJob asyncJob)
+                                               virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
@@ -1168,7 +1168,7 @@ static void
 qemuBlockJobProcessEventCompletedCommit(virQEMUDriver *driver,
                                         virDomainObj *vm,
                                         qemuBlockJobData *job,
-                                        qemuDomainAsyncJob asyncJob)
+                                        virDomainAsyncJob asyncJob)
 {
     virStorageSource *baseparent = NULL;
     virDomainDiskDef *cfgdisk = NULL;
@@ -1258,7 +1258,7 @@ static void
 qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriver *driver,
                                               virDomainObj *vm,
                                               qemuBlockJobData *job,
-                                              qemuDomainAsyncJob asyncJob)
+                                              virDomainAsyncJob asyncJob)
 {
     virStorageSource *baseparent = NULL;
     virDomainDiskDef *cfgdisk = NULL;
@@ -1329,7 +1329,7 @@ qemuBlockJobProcessEventCompletedActiveCommit(virQEMUDriver *driver,
 static int
 qemuBlockJobProcessEventCompletedCopyBitmaps(virDomainObj *vm,
                                              qemuBlockJobData *job,
-                                             qemuDomainAsyncJob asyncJob)
+                                             virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(GHashTable) blockNamedNodeData = NULL;
@@ -1366,7 +1366,7 @@ static void
 qemuBlockJobProcessEventConcludedCopyPivot(virQEMUDriver *driver,
                                            virDomainObj *vm,
                                            qemuBlockJobData *job,
-                                           qemuDomainAsyncJob asyncJob)
+                                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     VIR_DEBUG("copy job '%s' on VM '%s' pivoted", job->name, vm->def->name);
@@ -1402,7 +1402,7 @@ static void
 qemuBlockJobProcessEventConcludedCopyAbort(virQEMUDriver *driver,
                                            virDomainObj *vm,
                                            qemuBlockJobData *job,
-                                           qemuDomainAsyncJob asyncJob)
+                                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
@@ -1438,7 +1438,7 @@ static void
 qemuBlockJobProcessEventFailedActiveCommit(virQEMUDriver *driver,
                                            virDomainObj *vm,
                                            qemuBlockJobData *job,
-                                           qemuDomainAsyncJob asyncJob)
+                                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDiskDef *disk = job->disk;
@@ -1470,7 +1470,7 @@ static void
 qemuBlockJobProcessEventConcludedCreate(virQEMUDriver *driver,
                                         virDomainObj *vm,
                                         qemuBlockJobData *job,
-                                        qemuDomainAsyncJob asyncJob)
+                                        virDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
 
@@ -1511,7 +1511,7 @@ static void
 qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
                                         virDomainObj *vm,
                                         qemuBlockJobData *job,
-                                        qemuDomainAsyncJob asyncJob,
+                                        virDomainAsyncJob asyncJob,
                                         qemuBlockjobState newstate,
                                         unsigned long long progressCurrent,
                                         unsigned long long progressTotal)
@@ -1547,7 +1547,7 @@ static void
 qemuBlockJobEventProcessConcludedTransition(qemuBlockJobData *job,
                                             virQEMUDriver *driver,
                                             virDomainObj *vm,
-                                            qemuDomainAsyncJob asyncJob,
+                                            virDomainAsyncJob asyncJob,
                                             unsigned long long progressCurrent,
                                             unsigned long long progressTotal)
 {
@@ -1607,7 +1607,7 @@ static void
 qemuBlockJobEventProcessConcluded(qemuBlockJobData *job,
                                   virQEMUDriver *driver,
                                   virDomainObj *vm,
-                                  qemuDomainAsyncJob asyncJob)
+                                  virDomainAsyncJob asyncJob)
 {
     qemuMonitorJobInfo **jobinfo = NULL;
     size_t njobinfo = 0;
@@ -1688,7 +1688,7 @@ static void
 qemuBlockJobEventProcess(virQEMUDriver *driver,
                          virDomainObj *vm,
                          qemuBlockJobData *job,
-                         qemuDomainAsyncJob asyncJob)
+                         virDomainAsyncJob asyncJob)
 
 {
     switch ((qemuBlockjobState) job->newstate) {

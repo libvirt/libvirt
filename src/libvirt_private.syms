@@ -1577,10 +1577,15 @@ virDomainDriverSetupPersistentDefBlkioParams;
 
 
 # hypervisor/domain_job.h
+virDomainAgentJobTypeToString;
+virDomainAsyncJobTypeFromString;
+virDomainAsyncJobTypeToString;
 virDomainJobDataCopy;
 virDomainJobDataFree;
 virDomainJobDataInit;
 virDomainJobStatusToType;
+virDomainJobTypeFromString;
+virDomainJobTypeToString;
 
 
 # hypervisor/virclosecallbacks.h

@@ -9,6 +9,38 @@
 #include "domain_job.h"
 
 
+VIR_ENUM_IMPL(virDomainJob,
+              VIR_JOB_LAST,
+              "none",
+              "query",
+              "destroy",
+              "suspend",
+              "modify",
+              "abort",
+              "migration operation",
+              "none",   /* async job is never stored in job.active */
+              "async nested",
+);
+
+VIR_ENUM_IMPL(virDomainAgentJob,
+              VIR_AGENT_JOB_LAST,
+              "none",
+              "query",
+              "modify",
+);
+
+VIR_ENUM_IMPL(virDomainAsyncJob,
+              VIR_ASYNC_JOB_LAST,
+              "none",
+              "migration out",
+              "migration in",
+              "save",
+              "dump",
+              "snapshot",
+              "start",
+              "backup",
+);
+
 virDomainJobData *
 virDomainJobDataInit(virDomainJobDataPrivateDataCallbacks *cb)
 {

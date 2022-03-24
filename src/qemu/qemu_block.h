@@ -47,7 +47,7 @@ qemuBlockNodeNameGetBackingChain(virJSONValue *namednodesdata,
 int
 qemuBlockNodeNamesDetect(virQEMUDriver *driver,
                          virDomainObj *vm,
-                         qemuDomainAsyncJob asyncJob);
+                         virDomainAsyncJob asyncJob);
 
 GHashTable *
 qemuBlockGetNodeData(virJSONValue *data);
@@ -143,7 +143,7 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
 int
 qemuBlockStorageSourceDetachOneBlockdev(virQEMUDriver *driver,
                                         virDomainObj *vm,
-                                        qemuDomainAsyncJob asyncJob,
+                                        virDomainAsyncJob asyncJob,
                                         virStorageSource *src);
 
 struct _qemuBlockStorageSourceChainData {
@@ -213,7 +213,7 @@ qemuBlockStorageSourceCreate(virDomainObj *vm,
                              virStorageSource *backingStore,
                              virStorageSource *chain,
                              qemuBlockStorageSourceAttachData *data,
-                             qemuDomainAsyncJob asyncJob);
+                             virDomainAsyncJob asyncJob);
 
 int
 qemuBlockStorageSourceCreateDetectSize(GHashTable *blockNamedNodeData,
@@ -233,7 +233,7 @@ qemuBlockNamedNodeDataGetBitmapByName(GHashTable *blockNamedNodeData,
 
 GHashTable *
 qemuBlockGetNamedNodeData(virDomainObj *vm,
-                          qemuDomainAsyncJob asyncJob);
+                          virDomainAsyncJob asyncJob);
 
 int
 qemuBlockGetBitmapMergeActions(virStorageSource *topsrc,
@@ -272,11 +272,11 @@ qemuBlockReopenFormatMon(qemuMonitor *mon,
 int
 qemuBlockReopenReadWrite(virDomainObj *vm,
                          virStorageSource *src,
-                         qemuDomainAsyncJob asyncJob);
+                         virDomainAsyncJob asyncJob);
 int
 qemuBlockReopenReadOnly(virDomainObj *vm,
                         virStorageSource *src,
-                        qemuDomainAsyncJob asyncJob);
+                        virDomainAsyncJob asyncJob);
 
 bool
 qemuBlockStorageSourceNeedsStorageSliceLayer(const virStorageSource *src);

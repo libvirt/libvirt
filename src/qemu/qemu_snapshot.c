@@ -304,7 +304,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
          * domain. Thus we stop and start CPUs ourselves.
          */
         if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SAVE,
-                                QEMU_ASYNC_JOB_SNAPSHOT) < 0)
+                                VIR_ASYNC_JOB_SNAPSHOT) < 0)
             goto cleanup;
 
         resume = true;
@@ -316,7 +316,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     }
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
-                                       QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
+                                       VIR_ASYNC_JOB_SNAPSHOT) < 0) {
         resume = false;
         goto cleanup;
     }
@@ -333,7 +333,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        QEMU_ASYNC_JOB_SNAPSHOT, 0);
+                        VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
     }
@@ -342,7 +342,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     if (resume && virDomainObjIsActive(vm) &&
         qemuProcessStartCPUs(driver, vm,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
-                             QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
+                             VIR_ASYNC_JOB_SNAPSHOT) < 0) {
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
@@ -863,7 +863,7 @@ static void
 qemuSnapshotDiskCleanup(qemuSnapshotDiskData *data,
                         size_t ndata,
                         virDomainObj *vm,
-                        qemuDomainAsyncJob asyncJob)
+                        virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -922,7 +922,7 @@ struct _qemuSnapshotDiskContext {
 
     /* needed for automatic cleanup of 'dd' */
     virDomainObj *vm;
-    qemuDomainAsyncJob asyncJob;
+    virDomainAsyncJob asyncJob;
 };
 
 typedef struct _qemuSnapshotDiskContext qemuSnapshotDiskContext;
@@ -931,7 +931,7 @@ typedef struct _qemuSnapshotDiskContext qemuSnapshotDiskContext;
 qemuSnapshotDiskContext *
 qemuSnapshotDiskContextNew(size_t ndisks,
                            virDomainObj *vm,
-                           qemuDomainAsyncJob asyncJob)
+                           virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -1008,7 +1008,7 @@ qemuSnapshotDiskPrepareOneBlockdev(virQEMUDriver *driver,
                                    virQEMUDriverConfig *cfg,
                                    bool reuse,
                                    GHashTable *blockNamedNodeData,
-                                   qemuDomainAsyncJob asyncJob)
+                                   virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virStorageSource) terminator = NULL;
@@ -1165,7 +1165,7 @@ qemuSnapshotDiskPrepareActiveExternal(virDomainObj *vm,
                                       virDomainMomentObj *snap,
                                       bool reuse,
                                       GHashTable *blockNamedNodeData,
-                                      qemuDomainAsyncJob asyncJob)
+                                      virDomainAsyncJob asyncJob)
 {
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
     size_t i;
@@ -1319,7 +1319,7 @@ qemuSnapshotCreateActiveExternalDisks(virDomainObj *vm,
                                       virDomainMomentObj *snap,
                                       GHashTable *blockNamedNodeData,
                                       unsigned int flags,
-                                      qemuDomainAsyncJob asyncJob)
+                                      virDomainAsyncJob asyncJob)
 {
     bool reuse = (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT) != 0;
     g_autoptr(qemuSnapshotDiskContext) snapctxt = NULL;
@@ -1371,7 +1371,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE) {
         int frozen;
 
-        if (qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) < 0)
+        if (qemuDomainObjBeginAgentJob(driver, vm, VIR_AGENT_JOB_MODIFY) < 0)
             goto cleanup;
 
         if (virDomainObjCheckActive(vm) < 0) {
@@ -1405,7 +1405,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
          * when the user wants to manually snapshot some disks */
         if (((memory || has_manual) && !(flags & VIR_DOMAIN_SNAPSHOT_CREATE_LIVE)))  {
             if (qemuProcessStopCPUs(driver, vm, VIR_DOMAIN_PAUSED_SNAPSHOT,
-                                    QEMU_ASYNC_JOB_SNAPSHOT) < 0)
+                                    VIR_ASYNC_JOB_SNAPSHOT) < 0)
                 goto cleanup;
 
             if (!virDomainObjIsActive(vm)) {
@@ -1420,7 +1420,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
      * migration step as qemu deactivates bitmaps after migration so the result
      * would be wrong */
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, QEMU_ASYNC_JOB_SNAPSHOT)))
+        !(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_SNAPSHOT)))
         goto cleanup;
 
     /* do the memory snapshot if necessary */
@@ -1434,8 +1434,8 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
         /* allow the migration job to be cancelled or the domain to be paused */
         qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
-                                          JOB_MASK(QEMU_JOB_SUSPEND) |
-                                          JOB_MASK(QEMU_JOB_MIGRATION_OP)));
+                                          JOB_MASK(VIR_JOB_SUSPEND) |
+                                          JOB_MASK(VIR_JOB_MIGRATION_OP)));
 
         if ((compressed = qemuSaveImageGetCompressionProgram(cfg->snapshotImageFormat,
                                                              &compressor,
@@ -1458,7 +1458,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
         if ((ret = qemuSaveImageCreate(driver, vm, snapdef->memorysnapshotfile,
                                        data, compressor, 0,
-                                       QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+                                       VIR_ASYNC_JOB_SNAPSHOT)) < 0)
             goto cleanup;
 
         /* the memory image was created, remove it on errors */
@@ -1473,7 +1473,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
 
     if ((ret = qemuSnapshotCreateActiveExternalDisks(vm, snap,
                                                      blockNamedNodeData, flags,
-                                                     QEMU_ASYNC_JOB_SNAPSHOT)) < 0)
+                                                     VIR_ASYNC_JOB_SNAPSHOT)) < 0)
         goto cleanup;
 
     /* the snapshot is complete now */
@@ -1481,7 +1481,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
         event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_STOPPED,
                                          VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT);
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        QEMU_ASYNC_JOB_SNAPSHOT, 0);
+                        VIR_ASYNC_JOB_SNAPSHOT, 0);
         virDomainAuditStop(vm, "from-snapshot");
         resume = false;
         thaw = false;
@@ -1503,7 +1503,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     if (resume && virDomainObjIsActive(vm) &&
         qemuProcessStartCPUs(driver, vm,
                              VIR_DOMAIN_RUNNING_UNPAUSED,
-                             QEMU_ASYNC_JOB_SNAPSHOT) < 0) {
+                             VIR_ASYNC_JOB_SNAPSHOT) < 0) {
         event = virDomainEventLifecycleNewFromObj(vm,
                                          VIR_DOMAIN_EVENT_SUSPENDED,
                                          VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR);
@@ -1517,7 +1517,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     }
 
     if (thaw &&
-        qemuDomainObjBeginAgentJob(driver, vm, QEMU_AGENT_JOB_MODIFY) >= 0 &&
+        qemuDomainObjBeginAgentJob(driver, vm, VIR_AGENT_JOB_MODIFY) >= 0 &&
         virDomainObjIsActive(vm)) {
         /* report error only on an otherwise successful snapshot */
         if (qemuSnapshotFSThaw(vm, ret == 0) < 0)
@@ -1889,11 +1889,11 @@ qemuSnapshotCreateXML(virDomainPtr domain,
      * a regular job, so we need to set the job mask to disallow query as
      * 'savevm' blocks the monitor. External snapshot will then modify the
      * job mask appropriately. */
-    if (qemuDomainObjBeginAsyncJob(driver, vm, QEMU_ASYNC_JOB_SNAPSHOT,
+    if (qemuDomainObjBeginAsyncJob(driver, vm, VIR_ASYNC_JOB_SNAPSHOT,
                                    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT, flags) < 0)
         return NULL;
 
-    qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_NONE);
+    qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_NONE);
 
     if (flags & VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE) {
         snapshot = qemuSnapshotRedefine(vm, domain, def, driver, cfg, flags);
@@ -2067,7 +2067,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
         /* Transitions 5, 6, 8, 9 */
         qemuProcessStop(driver, vm,
                         VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        QEMU_ASYNC_JOB_START, 0);
+                        VIR_ASYNC_JOB_START, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -2092,7 +2092,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
 
     rc = qemuProcessStart(snapshot->domain->conn, driver, vm,
                           cookie ? cookie->cpu : NULL,
-                          QEMU_ASYNC_JOB_START, NULL, -1, NULL, snap,
+                          VIR_ASYNC_JOB_START, NULL, -1, NULL, snap,
                           VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                           start_flags);
     virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2125,7 +2125,7 @@ qemuSnapshotRevertActive(virDomainObj *vm,
         }
         rc = qemuProcessStartCPUs(driver, vm,
                                   VIR_DOMAIN_RUNNING_FROM_SNAPSHOT,
-                                  QEMU_ASYNC_JOB_START);
+                                  VIR_ASYNC_JOB_START);
         if (rc < 0)
             return -1;
     }
@@ -2188,7 +2188,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
     if (virDomainObjIsActive(vm)) {
         /* Transitions 4, 7 */
         qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT,
-                        QEMU_ASYNC_JOB_START, 0);
+                        VIR_ASYNC_JOB_START, 0);
         virDomainAuditStop(vm, "from-snapshot");
         detail = VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT;
         event = virDomainEventLifecycleNewFromObj(vm,
@@ -2215,7 +2215,7 @@ qemuSnapshotRevertInactive(virDomainObj *vm,
         start_flags |= paused ? VIR_QEMU_PROCESS_START_PAUSED : 0;
 
         rc = qemuProcessStart(snapshot->domain->conn, driver, vm, NULL,
-                              QEMU_ASYNC_JOB_START, NULL, -1, NULL, NULL,
+                              VIR_ASYNC_JOB_START, NULL, -1, NULL, NULL,
                               VIR_NETDEV_VPORT_PROFILE_OP_CREATE,
                               start_flags);
         virDomainAuditStart(vm, "from-snapshot", rc >= 0);
@@ -2394,7 +2394,7 @@ qemuSnapshotDelete(virDomainObj *vm,
                   VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY |
                   VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY, -1);
 
-    if (qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         return -1;
 
     if (!(snap = qemuSnapObjFromSnapshot(vm, snapshot)))

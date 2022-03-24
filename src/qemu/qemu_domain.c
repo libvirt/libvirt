@@ -210,7 +210,7 @@ qemuDomainFormatJobPrivate(virBuffer *buf,
 {
     qemuDomainJobPrivate *priv = job->privateData;
 
-    if (job->asyncJob == QEMU_ASYNC_JOB_MIGRATION_OUT) {
+    if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
         if (qemuDomainObjPrivateXMLFormatNBDMigration(buf, vm) < 0)
             return -1;
 
@@ -284,7 +284,7 @@ qemuDomainObjPrivateXMLParseJobNBD(virDomainObj *vm,
         return -1;
 
     if (n > 0) {
-        if (priv->job.asyncJob != QEMU_ASYNC_JOB_MIGRATION_OUT) {
+        if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT) {
             VIR_WARN("Found disks marked for migration but we were not "
                      "migrating");
             n = 0;
@@ -5858,11 +5858,11 @@ qemuDomainSaveConfig(virDomainObj *obj)
 static int
 qemuDomainObjEnterMonitorInternal(virQEMUDriver *driver,
                                   virDomainObj *obj,
-                                  qemuDomainAsyncJob asyncJob)
+                                  virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
-    if (asyncJob != QEMU_ASYNC_JOB_NONE) {
+    if (asyncJob != VIR_ASYNC_JOB_NONE) {
         int ret;
         if ((ret = qemuDomainObjBeginNestedJob(driver, obj, asyncJob)) < 0)
             return ret;
@@ -5878,7 +5878,7 @@ qemuDomainObjEnterMonitorInternal(virQEMUDriver *driver,
     } else if (priv->job.owner != virThreadSelfID()) {
         VIR_WARN("Entering a monitor without owning a job. "
                  "Job %s owner %s (%llu)",
-                 qemuDomainJobTypeToString(priv->job.active),
+                 virDomainJobTypeToString(priv->job.active),
                  priv->job.ownerAPI, priv->job.owner);
     }
 
@@ -5918,7 +5918,7 @@ qemuDomainObjExitMonitor(virDomainObj *obj)
     if (!hasRefs)
         priv->mon = NULL;
 
-    if (priv->job.active == QEMU_JOB_ASYNC_NESTED)
+    if (priv->job.active == VIR_JOB_ASYNC_NESTED)
         qemuDomainObjEndJob(obj);
 }
 
@@ -5926,7 +5926,7 @@ void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
                                virDomainObj *obj)
 {
     ignore_value(qemuDomainObjEnterMonitorInternal(driver, obj,
-                                                   QEMU_ASYNC_JOB_NONE));
+                                                   VIR_ASYNC_JOB_NONE));
 }
 
 /*
@@ -5935,7 +5935,7 @@ void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
  * To be called immediately before any QEMU monitor API call.
  * Must have already either called qemuDomainObjBeginJob()
  * and checked that the VM is still active, with asyncJob of
- * QEMU_ASYNC_JOB_NONE; or already called qemuDomainObjBeginAsyncJob,
+ * VIR_ASYNC_JOB_NONE; or already called qemuDomainObjBeginAsyncJob,
  * with the same asyncJob.
  *
  * Returns 0 if job was started, in which case this must be followed with
@@ -5946,7 +5946,7 @@ void qemuDomainObjEnterMonitor(virQEMUDriver *driver,
 int
 qemuDomainObjEnterMonitorAsync(virQEMUDriver *driver,
                                virDomainObj *obj,
-                               qemuDomainAsyncJob asyncJob)
+                               virDomainAsyncJob asyncJob)
 {
     return qemuDomainObjEnterMonitorInternal(driver, obj, asyncJob);
 }
@@ -7135,7 +7135,7 @@ qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
  * qemuDomainRemoveInactiveJob:
  *
  * Just like qemuDomainRemoveInactive but it tries to grab a
- * QEMU_JOB_MODIFY first. Even though it doesn't succeed in
+ * VIR_JOB_MODIFY first. Even though it doesn't succeed in
  * grabbing the job the control carries with
  * qemuDomainRemoveInactive call.
  */
@@ -7145,7 +7145,7 @@ qemuDomainRemoveInactiveJob(virQEMUDriver *driver,
 {
     bool haveJob;
 
-    haveJob = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) >= 0;
+    haveJob = qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) >= 0;
 
     qemuDomainRemoveInactive(driver, vm);
 
@@ -7166,7 +7166,7 @@ qemuDomainRemoveInactiveJobLocked(virQEMUDriver *driver,
 {
     bool haveJob;
 
-    haveJob = qemuDomainObjBeginJob(driver, vm, QEMU_JOB_MODIFY) >= 0;
+    haveJob = qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) >= 0;
 
     qemuDomainRemoveInactiveLocked(driver, vm);
 
@@ -10071,7 +10071,7 @@ qemuDomainVcpuPersistOrder(virDomainDef *def)
 int
 qemuDomainCheckMonitor(virQEMUDriver *driver,
                        virDomainObj *vm,
-                       qemuDomainAsyncJob asyncJob)
+                       virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret;

@@ -186,7 +186,7 @@ To acquire the QEMU monitor lock as part of an asynchronous job
 
   These functions are for use inside an asynchronous job; the caller
   must check for a return of -1 (VM not running, so nothing to exit).
-  Helper functions may also call this with QEMU_ASYNC_JOB_NONE when
+  Helper functions may also call this with VIR_ASYNC_JOB_NONE when
   used from a sync job (such as when first starting a domain).
 
 
@@ -220,7 +220,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
+     qemuDomainObjBeginJob(obj, VIR_JOB_TYPE);
 
      ...do work...
 
@@ -236,7 +236,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginJob(obj, QEMU_JOB_TYPE);
+     qemuDomainObjBeginJob(obj, VIR_JOB_TYPE);
 
      ...do prep work...
 
@@ -259,7 +259,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginAgentJob(obj, QEMU_AGENT_JOB_TYPE);
+     qemuDomainObjBeginAgentJob(obj, VIR_AGENT_JOB_TYPE);
 
      ...do prep work...
 
@@ -283,13 +283,13 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
+     qemuDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
      qemuDomainObjSetAsyncJobMask(obj, allowedJobs);
 
      ...do prep work...
 
      if (qemuDomainObjEnterMonitorAsync(driver, obj,
-                                        QEMU_ASYNC_JOB_TYPE) < 0) {
+                                        VIR_ASYNC_JOB_TYPE) < 0) {
          /* domain died in the meantime */
          goto error;
      }
@@ -298,7 +298,7 @@ Design patterns
 
      while (!finished) {
          if (qemuDomainObjEnterMonitorAsync(driver, obj,
-                                            QEMU_ASYNC_JOB_TYPE) < 0) {
+                                            VIR_ASYNC_JOB_TYPE) < 0) {
              /* domain died in the meantime */
              goto error;
          }
@@ -323,7 +323,7 @@ Design patterns
 
      obj = qemuDomObjFromDomain(dom);
 
-     qemuDomainObjBeginAsyncJob(obj, QEMU_ASYNC_JOB_TYPE);
+     qemuDomainObjBeginAsyncJob(obj, VIR_ASYNC_JOB_TYPE);
 
      ...do prep work...
 

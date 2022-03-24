@@ -73,14 +73,14 @@ The sequence of calling qemuMigrationJob* helper methods is as follows:
 - The first API of a migration protocol (Prepare or Perform/Begin depending on
   migration type and version) has to start migration job and keep it active:
 
-      qemuMigrationJobStart(driver, vm, QEMU_JOB_MIGRATION_{IN,OUT});
+      qemuMigrationJobStart(driver, vm, VIR_JOB_MIGRATION_{IN,OUT});
       qemuMigrationJobSetPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
       ...do work...
       qemuMigrationJobContinue(vm);
 
 - All consequent phases except for the last one have to keep the job active:
 
-      if (!qemuMigrationJobIsActive(vm, QEMU_JOB_MIGRATION_{IN,OUT}))
+      if (!qemuMigrationJobIsActive(vm, VIR_JOB_MIGRATION_{IN,OUT}))
           return;
       qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
       ...do work...
@@ -88,7 +88,7 @@ The sequence of calling qemuMigrationJob* helper methods is as follows:
 
 - The last migration phase finally finishes the migration job:
 
-      if (!qemuMigrationJobIsActive(vm, QEMU_JOB_MIGRATION_{IN,OUT}))
+      if (!qemuMigrationJobIsActive(vm, VIR_JOB_MIGRATION_{IN,OUT}))
           return;
       qemuMigrationJobStartPhase(driver, vm, QEMU_MIGRATION_PHASE_*);
       ...do work...

@@ -210,7 +210,7 @@ qemuMigrationSrcToFile(virQEMUDriver *driver,
                        virDomainObj *vm,
                        int fd,
                        virCommand *compressor,
-                       qemuDomainAsyncJob asyncJob)
+                       virDomainAsyncJob asyncJob)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
 
 int
@@ -220,7 +220,7 @@ qemuMigrationSrcCancel(virQEMUDriver *driver,
 int
 qemuMigrationAnyFetchStats(virQEMUDriver *driver,
                            virDomainObj *vm,
-                           qemuDomainAsyncJob asyncJob,
+                           virDomainAsyncJob asyncJob,
                            virDomainJobData *jobData,
                            char **error);
 
@@ -248,7 +248,7 @@ int
 qemuMigrationDstRun(virQEMUDriver *driver,
                     virDomainObj *vm,
                     const char *uri,
-                    qemuDomainAsyncJob asyncJob);
+                    virDomainAsyncJob asyncJob);
 
 void
 qemuMigrationAnyPostcopyFailed(virQEMUDriver *driver,
@@ -257,5 +257,5 @@ qemuMigrationAnyPostcopyFailed(virQEMUDriver *driver,
 int
 qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
                                  virDomainObj *vm,
-                                 qemuDomainAsyncJob asyncJob,
+                                 virDomainAsyncJob asyncJob,
                                  virDomainJobData *jobData);
