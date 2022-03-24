@@ -1127,8 +1127,8 @@ parallels_sdk_dep = dependency('parallels-sdk', version: '>=' + parallels_sdk_ve
 pciaccess_version = '0.10.0'
 pciaccess_dep = dependency('pciaccess', version: '>=' + pciaccess_version, required: get_option('pciaccess'))
 
-rbd_dep = cc.find_library('rbd', required: false)
-rados_dep = cc.find_library('rados', required: false)
+rbd_dep = cc.find_library('rbd', required: get_option('storage_rbd'))
+rados_dep = cc.find_library('rados', required: get_option('storage_rbd'))
 if rbd_dep.found() and not cc.has_function('rbd_get_features', dependencies: rbd_dep)
   rbd_dep = dependency('', required: false)
 endif
