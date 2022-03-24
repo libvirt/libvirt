@@ -191,8 +191,9 @@ test_file_wrapper_lib = static_library(
   dependencies: [ tests_dep ],
 )
 
+tests_deps = []
 foreach mock : mock_libs
-  shared_library(
+  tests_deps += shared_library(
     mock['name'],
     mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
     override_options: [
@@ -215,7 +216,7 @@ endforeach
 # Must not link to any libvirt modules - libc only otherwise external
 # libraries might unexpectedly leak file descriptors into commandhelper
 # invalidating the test logic assumptions.
-executable(
+tests_deps += executable(
   'commandhelper',
   [ 'commandhelper.c' ],
   dependencies: [
@@ -227,7 +228,7 @@ executable(
 )
 
 # This is a fake SSH we use from virnetsockettest
-executable(
+tests_deps += executable(
   'ssh',
   [ 'ssh.c' ],
   dependencies: [
@@ -592,7 +593,7 @@ foreach data : tests
     # default meson timeout
     timeout = 30
   endif
-  test(data['name'], test_bin, env: tests_env, timeout: timeout)
+  test(data['name'], test_bin, env: tests_env, timeout: timeout, depends: tests_deps)
 endforeach
 
 
