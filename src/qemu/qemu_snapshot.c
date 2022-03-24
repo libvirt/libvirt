@@ -1433,7 +1433,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
                                   QEMU_DOMAIN_JOB_STATS_TYPE_SAVEDUMP);
 
         /* allow the migration job to be cancelled or the domain to be paused */
-        qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
+        qemuDomainObjSetAsyncJobMask(vm, (VIR_JOB_DEFAULT_MASK |
                                           JOB_MASK(VIR_JOB_SUSPEND) |
                                           JOB_MASK(VIR_JOB_MIGRATION_OP)));
 
@@ -1466,7 +1466,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
             memory_unlink = true;
 
         /* forbid any further manipulation */
-        qemuDomainObjSetAsyncJobMask(vm, QEMU_JOB_DEFAULT_MASK);
+        qemuDomainObjSetAsyncJobMask(vm, VIR_JOB_DEFAULT_MASK);
     }
 
     /* the domain is now paused if a memory snapshot was requested */

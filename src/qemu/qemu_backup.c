@@ -795,7 +795,7 @@ qemuBackupBegin(virDomainObj *vm,
                                    VIR_DOMAIN_JOB_OPERATION_BACKUP, flags) < 0)
         return -1;
 
-    qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
+    qemuDomainObjSetAsyncJobMask(vm, (VIR_JOB_DEFAULT_MASK |
                                       JOB_MASK(VIR_JOB_SUSPEND) |
                                       JOB_MASK(VIR_JOB_MODIFY)));
     qemuDomainJobSetStatsType(priv->job.current,

@@ -8,6 +8,18 @@
 #include "internal.h"
 #include "virenum.h"
 
+#define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
+#define VIR_JOB_DEFAULT_MASK \
+    (JOB_MASK(VIR_JOB_QUERY) | \
+     JOB_MASK(VIR_JOB_DESTROY) | \
+     JOB_MASK(VIR_JOB_ABORT))
+
+/* Jobs which have to be tracked in domain state XML. */
+#define VIR_DOMAIN_TRACK_JOBS \
+    (JOB_MASK(VIR_JOB_DESTROY) | \
+     JOB_MASK(VIR_JOB_ASYNC))
+
+
 /* Only 1 job is allowed at any time
  * A job includes *all* monitor commands, even those just querying
  * information, not merely actions */

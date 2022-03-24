@@ -22,17 +22,6 @@
 #include "qemu_monitor.h"
 #include "domain_job.h"
 
-#define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
-#define QEMU_JOB_DEFAULT_MASK \
-    (JOB_MASK(VIR_JOB_QUERY) | \
-     JOB_MASK(VIR_JOB_DESTROY) | \
-     JOB_MASK(VIR_JOB_ABORT))
-
-/* Jobs which have to be tracked in domain state XML. */
-#define QEMU_DOMAIN_TRACK_JOBS \
-    (JOB_MASK(VIR_JOB_DESTROY) | \
-     JOB_MASK(VIR_JOB_ASYNC))
-
 
 typedef enum {
     QEMU_DOMAIN_JOB_STATS_TYPE_NONE = 0,

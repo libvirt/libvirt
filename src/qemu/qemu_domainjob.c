@@ -204,7 +204,7 @@ qemuDomainObjResetAsyncJob(qemuDomainJobObj *job)
     g_clear_pointer(&job->asyncOwnerAPI, g_free);
     job->asyncStarted = 0;
     job->phase = 0;
-    job->mask = QEMU_JOB_DEFAULT_MASK;
+    job->mask = VIR_JOB_DEFAULT_MASK;
     job->abortJob = false;
     VIR_FREE(job->error);
     g_clear_pointer(&job->current, virDomainJobDataFree);
@@ -256,7 +256,7 @@ qemuDomainObjClearJob(qemuDomainJobObj *job)
 bool
 qemuDomainTrackJob(virDomainJob job)
 {
-    return (QEMU_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
+    return (VIR_DOMAIN_TRACK_JOBS & JOB_MASK(job)) != 0;
 }
 
 

@@ -3657,7 +3657,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
         priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
         priv->job.asyncStarted = now;
 
-        qemuDomainObjSetAsyncJobMask(vm, (QEMU_JOB_DEFAULT_MASK |
+        qemuDomainObjSetAsyncJobMask(vm, (VIR_JOB_DEFAULT_MASK |
                                           JOB_MASK(VIR_JOB_SUSPEND) |
                                           JOB_MASK(VIR_JOB_MODIFY)));
 
@@ -3682,7 +3682,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
         return -1;
 
     /* In case any special handling is added for job type that has been ignored
-     * before, QEMU_DOMAIN_TRACK_JOBS (from qemu_domain.h) needs to be updated
+     * before, VIR_DOMAIN_TRACK_JOBS (from qemu_domain.h) needs to be updated
      * for the job to be properly tracked in domain state XML.
      */
     switch (job->active) {

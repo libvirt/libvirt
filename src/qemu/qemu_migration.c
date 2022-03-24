@@ -6107,7 +6107,7 @@ qemuMigrationJobStart(virQEMUDriver *driver,
         mask = VIR_JOB_NONE;
     } else {
         op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT;
-        mask = QEMU_JOB_DEFAULT_MASK |
+        mask = VIR_JOB_DEFAULT_MASK |
                JOB_MASK(VIR_JOB_SUSPEND) |
                JOB_MASK(VIR_JOB_MIGRATION_OP);
     }
