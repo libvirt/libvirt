@@ -28,23 +28,10 @@
 #include "virenum.h"
 #include "domain_job.h"
 
-/* Only 1 job is allowed at any time
- * A job includes *all* libxl.so api, even those just querying
- * information, not merely actions */
-enum libxlDomainJob {
-    LIBXL_JOB_NONE = 0,      /* Always set to 0 for easy if (jobActive) conditions */
-    LIBXL_JOB_QUERY,         /* Doesn't change any state */
-    LIBXL_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
-    LIBXL_JOB_MODIFY,        /* May change state */
-
-    LIBXL_JOB_LAST
-};
-VIR_ENUM_DECL(libxlDomainJob);
-
 
 struct libxlDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
-    enum libxlDomainJob active;         /* Currently running job */
+    virDomainJob active;                /* Currently running job */
     int owner;                          /* Thread which set current job */
     virDomainJobData *current;        /* Statistics for the current job */
 };
@@ -76,7 +63,7 @@ libxlDomainObjPrivateInitCtx(virDomainObj *vm);
 int
 libxlDomainObjBeginJob(libxlDriverPrivate *driver,
                        virDomainObj *obj,
-                       enum libxlDomainJob job)
+                       virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void

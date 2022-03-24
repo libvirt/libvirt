@@ -44,14 +44,6 @@
 
 VIR_LOG_INIT("libxl.libxl_domain");
 
-VIR_ENUM_IMPL(libxlDomainJob,
-              LIBXL_JOB_LAST,
-              "none",
-              "query",
-              "destroy",
-              "modify",
-);
-
 
 static int
 libxlDomainObjInitJob(libxlDomainObjPrivate *priv)
@@ -71,7 +63,7 @@ libxlDomainObjResetJob(libxlDomainObjPrivate *priv)
 {
     struct libxlDomainJobObj *job = &priv->job;
 
-    job->active = LIBXL_JOB_NONE;
+    job->active = VIR_JOB_NONE;
     job->owner = 0;
 }
 
@@ -97,7 +89,7 @@ libxlDomainObjFreeJob(libxlDomainObjPrivate *priv)
 int
 libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
                        virDomainObj *obj,
-                       enum libxlDomainJob job)
+                       virDomainJob job)
 {
     libxlDomainObjPrivate *priv = obj->privateData;
     unsigned long long now;
@@ -109,14 +101,14 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
 
     while (priv->job.active) {
         VIR_DEBUG("Wait normal job condition for starting job: %s",
-                  libxlDomainJobTypeToString(job));
+                  virDomainJobTypeToString(job));
         if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0)
             goto error;
     }
 
     libxlDomainObjResetJob(priv);
 
-    VIR_DEBUG("Starting job: %s", libxlDomainJobTypeToString(job));
+    VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
     priv->job.active = job;
     priv->job.owner = virThreadSelfID();
     priv->job.current->started = now;
@@ -127,9 +119,9 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
  error:
     VIR_WARN("Cannot start job (%s) for domain %s;"
              " current job is (%s) owned by (%d)",
-             libxlDomainJobTypeToString(job),
+             virDomainJobTypeToString(job),
              obj->def->name,
-             libxlDomainJobTypeToString(priv->job.active),
+             virDomainJobTypeToString(priv->job.active),
              priv->job.owner);
 
     if (errno == ETIMEDOUT)
@@ -157,10 +149,10 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
                      virDomainObj *obj)
 {
     libxlDomainObjPrivate *priv = obj->privateData;
-    enum libxlDomainJob job = priv->job.active;
+    virDomainJob job = priv->job.active;
 
     VIR_DEBUG("Stopping job: %s",
-              libxlDomainJobTypeToString(job));
+              virDomainJobTypeToString(job));
 
     libxlDomainObjResetJob(priv);
     virCondSignal(&priv->job.cond);
@@ -510,7 +502,7 @@ libxlDomainShutdownThread(void *opaque)
         goto cleanup;
     }
 
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (xl_reason == LIBXL_SHUTDOWN_REASON_POWEROFF) {
@@ -639,7 +631,7 @@ libxlDomainDeathThread(void *opaque)
         goto cleanup;
     }
 
-    if (libxlDomainObjBeginJob(driver, vm, LIBXL_JOB_MODIFY) < 0)
+    if (libxlDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, VIR_DOMAIN_SHUTOFF_DESTROYED);
