@@ -245,6 +245,7 @@
   <flag name='dirtyrate-param.mode'/>
   <flag name='blockdev.nbd.tls-hostname'/>
   <flag name='memory-backend-file.prealloc-threads'/>
+  <flag name='x86-cpu.tsc-clear-on-reset'/>
   <version>6002050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>

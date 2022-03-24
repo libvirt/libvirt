@@ -28849,6 +28849,10 @@
     {
       "name": "sse4_1",
       "type": "bool"
+    },
+    {
+      "name": "tsc-clear-on-reset",
+      "type": "bool"
     }
   ],
   "id": "libvirt-41"
