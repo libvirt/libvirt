@@ -384,8 +384,11 @@ virNetworkPortDefFormatBuf(virBuffer *buf,
             break;
 
         case VIR_NETWORK_PORT_PLUG_TYPE_HOSTDEV_PCI:
-            virBufferAsprintf(buf, " managed='%s'>\n",
-                              def->plug.hostdevpci.managed ? "yes" : "no");
+            if (def->plug.hostdevpci.managed) {
+                virBufferAsprintf(buf, " managed='%s'",
+                                  virTristateBoolTypeToString(def->plug.hostdevpci.managed));
+            }
+            virBufferAddLit(buf, ">\n");
             virBufferAdjustIndent(buf, 2);
             if (def->plug.hostdevpci.driver)
                 virBufferEscapeString(buf, "<driver name='%s'/>\n",
