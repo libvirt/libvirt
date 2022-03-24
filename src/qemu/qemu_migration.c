@@ -5482,31 +5482,31 @@ qemuMigrationSrcPerform(virQEMUDriver *driver,
                                           cookiein, cookieinlen,
                                           cookieout, cookieoutlen,
                                           flags, dname, resource, v3proto);
-    } else {
-        if (dconnuri) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           "%s", _("Unexpected dconnuri parameter with non-peer2peer migration"));
-            return -1;
-        }
-
-        if (v3proto) {
-            return qemuMigrationSrcPerformPhase(driver, conn, vm, persist_xml, uri,
-                                                graphicsuri,
-                                                nmigrate_disks, migrate_disks,
-                                                migParams,
-                                                cookiein, cookieinlen,
-                                                cookieout, cookieoutlen,
-                                                flags, resource, nbdURI);
-        } else {
-            return qemuMigrationSrcPerformJob(driver, conn, vm, xmlin, persist_xml, NULL,
-                                              uri, graphicsuri, listenAddress,
-                                              nmigrate_disks, migrate_disks, nbdPort,
-                                              nbdURI, migParams,
-                                              cookiein, cookieinlen,
-                                              cookieout, cookieoutlen, flags,
-                                              dname, resource, v3proto);
-        }
     }
+
+    if (dconnuri) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       "%s", _("Unexpected dconnuri parameter with non-peer2peer migration"));
+        return -1;
+    }
+
+    if (v3proto) {
+        return qemuMigrationSrcPerformPhase(driver, conn, vm, persist_xml, uri,
+                                            graphicsuri,
+                                            nmigrate_disks, migrate_disks,
+                                            migParams,
+                                            cookiein, cookieinlen,
+                                            cookieout, cookieoutlen,
+                                            flags, resource, nbdURI);
+    }
+
+    return qemuMigrationSrcPerformJob(driver, conn, vm, xmlin, persist_xml, NULL,
+                                      uri, graphicsuri, listenAddress,
+                                      nmigrate_disks, migrate_disks, nbdPort,
+                                      nbdURI, migParams,
+                                      cookiein, cookieinlen,
+                                      cookieout, cookieoutlen, flags,
+                                      dname, resource, v3proto);
 }
 
 static int
