@@ -1688,10 +1688,10 @@ nodeStateCleanup(void)
 
     priv = driver->privateData;
     if (priv) {
-        virObjectLock(priv);
-        priv->threadQuit = true;
-        virCondSignal(&priv->threadCond);
-        virObjectUnlock(priv);
+        VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+            priv->threadQuit = true;
+            virCondSignal(&priv->threadCond);
+        }
         if (priv->initThread) {
             virThreadJoin(priv->initThread);
             g_clear_pointer(&priv->initThread, g_free);
@@ -1807,24 +1807,21 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
 
     /* continue rather than break from the loop on non-fatal errors */
     while (1) {
-        virObjectLock(priv);
-        while (!priv->dataReady && !priv->threadQuit) {
-            if (virCondWait(&priv->threadCond, &priv->parent.lock)) {
-                virReportSystemError(errno, "%s",
-                                     _("handler failed to wait on condition"));
-                virObjectUnlock(priv);
-                return;
+        VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+            while (!priv->dataReady && !priv->threadQuit) {
+                if (virCondWait(&priv->threadCond, &priv->parent.lock)) {
+                    virReportSystemError(errno, "%s",
+                                         _("handler failed to wait on condition"));
+                    return;
+                }
             }
-        }
 
-        if (priv->threadQuit) {
-            virObjectUnlock(priv);
-            return;
-        }
+            if (priv->threadQuit)
+                return;
 
-        errno = 0;
-        device = udev_monitor_receive_device(priv->udev_monitor);
-        virObjectUnlock(priv);
+            errno = 0;
+            device = udev_monitor_receive_device(priv->udev_monitor);
+        }
 
         if (!device) {
             if (errno == 0) {
@@ -1848,9 +1845,9 @@ udevEventHandleThread(void *opaque G_GNUC_UNUSED)
             /* Trying to move the reset of the @priv->dataReady flag to
              * after the udev_monitor_receive_device wouldn't help much
              * due to event mgmt and scheduler timing. */
-            virObjectLock(priv);
-            priv->dataReady = false;
-            virObjectUnlock(priv);
+            VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+                priv->dataReady = false;
+            }
 
             continue;
         }
@@ -1873,8 +1870,7 @@ udevEventHandleCallback(int watch G_GNUC_UNUSED,
                         void *data G_GNUC_UNUSED)
 {
     udevEventData *priv = driver->privateData;
-
-    virObjectLock(priv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(priv);
 
     if (!udevEventMonitorSanityCheck(priv, fd))
         priv->threadQuit = true;
@@ -1882,7 +1878,6 @@ udevEventHandleCallback(int watch G_GNUC_UNUSED,
         priv->dataReady = true;
 
     virCondSignal(&priv->threadCond);
-    virObjectUnlock(priv);
 }
 
 
@@ -1897,18 +1892,17 @@ udevGetDMIData(virNodeDevCapSystem *syscap)
     virNodeDevCapSystemHardware *hardware = &syscap->hardware;
     virNodeDevCapSystemFirmware *firmware = &syscap->firmware;
 
-    virObjectLock(priv);
-    udev = udev_monitor_get_udev(priv->udev_monitor);
+    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+        udev = udev_monitor_get_udev(priv->udev_monitor);
 
-    device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
-    if (device == NULL) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to get udev device for syspath '%s'"),
-                       DMI_DEVPATH);
-        virObjectUnlock(priv);
-        return;
+        device = udev_device_new_from_syspath(udev, DMI_DEVPATH);
+        if (device == NULL) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to get udev device for syspath '%s'"),
+                           DMI_DEVPATH);
+            return;
+        }
     }
-    virObjectUnlock(priv);
 
     if (udevGetStringSysfsAttr(device, "product_name",
                                &syscap->product_name) < 0)
@@ -2002,12 +1996,12 @@ nodeStateInitializeEnumerate(void *opaque)
     return;
 
  error:
-    virObjectLock(priv);
-    ignore_value(virEventRemoveHandle(priv->watch));
-    priv->watch = -1;
-    priv->threadQuit = true;
-    virCondSignal(&priv->threadCond);
-    virObjectUnlock(priv);
+    VIR_WITH_OBJECT_LOCK_GUARD(priv) {
+        ignore_value(virEventRemoveHandle(priv->watch));
+        priv->watch = -1;
+        priv->threadQuit = true;
+        virCondSignal(&priv->threadCond);
+    }
 
     goto cleanup;
 }
