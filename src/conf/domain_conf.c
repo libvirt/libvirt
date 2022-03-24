@@ -14025,23 +14025,31 @@ virDomainVideoAccelDefParseXML(xmlNodePtr node)
 {
     g_autofree virDomainVideoAccelDef *def = NULL;
     g_autofree char *rendernode = NULL;
+    virTristateBool accel3d;
+    virTristateBool accel2d;
 
     rendernode = virXMLPropString(node, "rendernode");
+    if (virXMLPropTristateBool(node, "accel3d",
+                               VIR_XML_PROP_NONE, &accel3d) < 0)
+        return NULL;
+    if (virXMLPropTristateBool(node, "accel2d",
+                               VIR_XML_PROP_NONE, &accel2d) < 0)
+        return NULL;
+
+    if (!rendernode &&
+        accel3d == VIR_TRISTATE_BOOL_ABSENT &&
+        accel2d == VIR_TRISTATE_BOOL_ABSENT) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                _("missing values for acceleration"));
+        return NULL;
+    }
 
     def = g_new0(virDomainVideoAccelDef, 1);
 
-    if (virXMLPropTristateBool(node, "accel3d",
-                               VIR_XML_PROP_NONE,
-                               &def->accel3d) < 0)
-        return NULL;
-
-    if (virXMLPropTristateBool(node, "accel2d",
-                               VIR_XML_PROP_NONE,
-                               &def->accel2d) < 0)
-        return NULL;
-
     if (rendernode)
         def->rendernode = virFileSanitizePath(rendernode);
+    def->accel3d = accel3d;
+    def->accel2d = accel2d;
 
     return g_steal_pointer(&def);
 }
