@@ -20379,6 +20379,72 @@ qemuDomainStartDirtyRateCalc(virDomainPtr dom,
 }
 
 
+static void
+qemuDomainFDHashCloseConnect(virDomainObj *vm,
+                             virConnectPtr conn)
+{
+    qemuDomainObjPrivate *priv = QEMU_DOMAIN_PRIVATE(vm);
+    virStorageSourceFDTuple *data;
+    GHashTableIter htitr;
+
+    if (!priv->fds)
+        return;
+
+    g_hash_table_iter_init(&htitr, priv->fds);
+
+    while (g_hash_table_iter_next(&htitr, NULL, (void **) &data)) {
+        if (data->conn == conn)
+            g_hash_table_iter_remove(&htitr);
+    }
+}
+
+
+static int
+qemuDomainFDAssociate(virDomainPtr domain,
+                      const char *name,
+                      unsigned int nfds,
+                      int *fds,
+                      unsigned int flags)
+{
+    virDomainObj *vm = NULL;
+    qemuDomainObjPrivate *priv;
+    virStorageSourceFDTuple *new;
+    int ret = -1;
+
+    virCheckFlags(VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_RESTORE |
+                  VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_WRITABLE, -1);
+
+    if (nfds == 0)
+        return 0;
+
+    if (!(vm = qemuDomainObjFromDomain(domain)))
+        return -1;
+
+    if (virDomainFdAssociateEnsureACL(domain->conn, vm->def))
+        goto cleanup;
+
+    priv = vm->privateData;
+
+    new = virStorageSourceFDTupleNew();
+    new->fds = fds;
+    new->nfds = nfds;
+    new->conn = domain->conn;
+
+    new->writable = flags & VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_WRITABLE;
+    new->tryRestoreLabel = flags & VIR_DOMAIN_FD_ASSOCIATE_SECLABEL_RESTORE;
+
+    virCloseCallbacksDomainAdd(vm, domain->conn, qemuDomainFDHashCloseConnect);
+
+    g_hash_table_insert(priv->fds, g_strdup(name), new);
+
+    ret = 0;
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
 static virHypervisorDriver qemuHypervisorDriver = {
     .name = QEMU_DRIVER_NAME,
     .connectURIProbe = qemuConnectURIProbe,
@@ -20627,6 +20693,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetMessages = qemuDomainGetMessages, /* 7.1.0 */
     .domainStartDirtyRateCalc = qemuDomainStartDirtyRateCalc, /* 7.2.0 */
     .domainSetLaunchSecurityState = qemuDomainSetLaunchSecurityState, /* 8.0.0 */
+    .domainFDAssociate = qemuDomainFDAssociate, /* 9.0.0 */
 };
 
 

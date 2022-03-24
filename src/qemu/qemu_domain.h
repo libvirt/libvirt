@@ -253,6 +253,9 @@ struct _qemuDomainObjPrivate {
     pid_t schedCoreChildFD;
 
     GSList *threadContextAliases; /* List of IDs of thread-context objects */
+
+    /* named file descriptor groups associated with the VM */
+    GHashTable *fds;
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

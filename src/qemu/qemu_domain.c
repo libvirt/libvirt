@@ -1869,6 +1869,7 @@ qemuDomainObjPrivateFree(void *data)
     qemuDomainMasterKeyFree(priv);
 
     g_clear_pointer(&priv->blockjobs, g_hash_table_unref);
+    g_clear_pointer(&priv->fds, g_hash_table_unref);
 
     /* This should never be non-NULL if we get here, but just in case... */
     if (priv->eventThread) {
@@ -1896,6 +1897,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
         return NULL;
 
     priv->blockjobs = virHashNew(virObjectUnref);
+    priv->fds = virHashNew(g_object_unref);
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;
