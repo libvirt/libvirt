@@ -3106,7 +3106,8 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
                                              ctxt) == 1;
 
-    qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &priv->allowReboot);
+    if (qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &priv->allowReboot) < 0)
+        goto error;
 
     qemuDomainObjPrivateXMLParsePR(ctxt, &priv->prDaemonRunning);
 
