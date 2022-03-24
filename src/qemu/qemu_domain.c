@@ -2859,9 +2859,12 @@ qemuDomainObjPrivateXMLParseAllowReboot(xmlXPathContextPtr ctxt,
 {
     xmlNodePtr node = virXPathNode("./allowReboot", ctxt);
 
-    return virXMLPropTristateBool(node, "value",
-                                  VIR_XML_PROP_NONE,
-                                  allowReboot);
+    /* Allow value='default' as the input here, because old versions
+     * of libvirt produced that output and we need to be able to read
+     * it back to correctly handle running guests on daemon upgrade */
+    return virXMLPropTristateBoolAllowDefault(node, "value",
+                                              VIR_XML_PROP_NONE,
+                                              allowReboot);
 }
 
 
