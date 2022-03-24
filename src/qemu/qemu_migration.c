@@ -4286,9 +4286,10 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     rc = qemuMigrationSrcWaitForCompletion(driver, vm,
                                            QEMU_ASYNC_JOB_MIGRATION_OUT,
                                            dconn, waitFlags);
-    if (rc == -2) {
+    if (rc == -2)
         goto error;
-    } else if (rc == -1) {
+
+    if (rc == -1) {
         /* QEMU reported failed migration, nothing to cancel anymore */
         cancel = false;
         goto error;
@@ -4326,9 +4327,10 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         rc = qemuMigrationSrcWaitForCompletion(driver, vm,
                                                QEMU_ASYNC_JOB_MIGRATION_OUT,
                                                dconn, waitFlags);
-        if (rc == -2) {
+        if (rc == -2)
             goto error;
-        } else if (rc == -1) {
+
+        if (rc == -1) {
             /* QEMU reported failed migration, nothing to cancel anymore */
             cancel = false;
             goto error;
@@ -6189,8 +6191,8 @@ qemuMigrationDstErrorInit(virQEMUDriver *driver)
     driver->migrationErrors = virHashAtomicNew(qemuMigrationDstErrorFree);
     if (driver->migrationErrors)
         return 0;
-    else
-        return -1;
+
+    return -1;
 }
 
 /**

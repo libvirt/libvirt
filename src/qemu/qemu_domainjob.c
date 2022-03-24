@@ -153,8 +153,8 @@ qemuDomainAsyncJobPhaseFromString(qemuDomainAsyncJob job,
 
     if (STREQ(phase, "none"))
         return 0;
-    else
-        return -1;
+
+    return -1;
 }
 
 

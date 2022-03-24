@@ -8700,8 +8700,8 @@ qemuProcessRefreshBlockjobs(virQEMUDriver *driver,
 
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return qemuBlockJobRefreshJobs(driver, vm);
-    else
-        return qemuProcessRefreshLegacyBlockjobs(driver, vm);
+
+    return qemuProcessRefreshLegacyBlockjobs(driver, vm);
 }
 
 

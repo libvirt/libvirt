@@ -583,13 +583,13 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
                                      _("missing existing file for disk %s: %s"),
                                      snapdisk->name, snapdisk->src->path);
                 return -1;
-            } else {
-                if (snapdisk->src->type == VIR_STORAGE_TYPE_BLOCK) {
-                    virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                                   _("block device snapshot target '%s' doesn't exist"),
-                                   snapdisk->src->path);
-                    return -1;
-                }
+            }
+
+            if (snapdisk->src->type == VIR_STORAGE_TYPE_BLOCK) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("block device snapshot target '%s' doesn't exist"),
+                               snapdisk->src->path);
+                return -1;
             }
         } else {
             /* at this point VIR_STORAGE_TYPE_DIR was already rejected */
