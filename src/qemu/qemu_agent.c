@@ -679,9 +679,9 @@ qemuAgentNotifyClose(qemuAgent *agent)
 
     VIR_DEBUG("agent=%p", agent);
 
-    virObjectLock(agent);
-    qemuAgentNotifyCloseLocked(agent);
-    virObjectUnlock(agent);
+    VIR_WITH_OBJECT_LOCK_GUARD(agent) {
+        qemuAgentNotifyCloseLocked(agent);
+    }
 }
 
 
@@ -692,16 +692,15 @@ void qemuAgentClose(qemuAgent *agent)
 
     VIR_DEBUG("agent=%p", agent);
 
-    virObjectLock(agent);
+    VIR_WITH_OBJECT_LOCK_GUARD(agent) {
+        if (agent->socket) {
+            qemuAgentUnregister(agent);
+            g_clear_pointer(&agent->socket, g_object_unref);
+            agent->fd = -1;
+        }
 
-    if (agent->socket) {
-        qemuAgentUnregister(agent);
-        g_clear_pointer(&agent->socket, g_object_unref);
-        agent->fd = -1;
+        qemuAgentNotifyCloseLocked(agent);
     }
-
-    qemuAgentNotifyCloseLocked(agent);
-    virObjectUnlock(agent);
 
     virObjectUnref(agent);
 }
@@ -1125,7 +1124,7 @@ qemuAgentMakeStringsArray(const char **strings, unsigned int len)
 void qemuAgentNotifyEvent(qemuAgent *agent,
                           qemuAgentEvent event)
 {
-    virObjectLock(agent);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(agent);
 
     VIR_DEBUG("agent=%p event=%d await_event=%d", agent, event, agent->await_event);
     if (agent->await_event == event) {
@@ -1136,8 +1135,6 @@ void qemuAgentNotifyEvent(qemuAgent *agent,
             virCondSignal(&agent->notify);
         }
     }
-
-    virObjectUnlock(agent);
 }
 
 VIR_ENUM_DECL(qemuAgentShutdownMode);
