@@ -2205,9 +2205,10 @@ void
 qemuDomainObjPrivateXMLFormatAllowReboot(virBuffer *buf,
                                          virTristateBool allowReboot)
 {
-    virBufferAsprintf(buf, "<allowReboot value='%s'/>\n",
-                      virTristateBoolTypeToString(allowReboot));
-
+    if (allowReboot) {
+        virBufferAsprintf(buf, "<allowReboot value='%s'/>\n",
+                          virTristateBoolTypeToString(allowReboot));
+    }
 }
 
 
