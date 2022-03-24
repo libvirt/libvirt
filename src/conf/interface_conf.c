@@ -233,7 +233,7 @@ virInterfaceDefParseDhcp(virInterfaceProtocolDef *def,
     def->dhcp = 1;
     def->peerdns = -1;
 
-    if (virXMLPropTristateBool(dhcp, "peerdns", VIR_XML_PROP_NONZERO, &peerdns) < 0)
+    if (virXMLPropTristateBool(dhcp, "peerdns", VIR_XML_PROP_NONE, &peerdns) < 0)
         return -1;
 
     if (peerdns != VIR_TRISTATE_BOOL_ABSENT) {

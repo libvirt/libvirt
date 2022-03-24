@@ -7868,7 +7868,7 @@ virSecurityLabelDefParseXML(xmlXPathContextPtr ctxt,
         seclabel->type == VIR_DOMAIN_SECLABEL_NONE)
         seclabel->relabel = false;
 
-    if (virXMLPropTristateBool(ctxt->node, "relabel", VIR_XML_PROP_NONZERO, &relabel) < 0)
+    if (virXMLPropTristateBool(ctxt->node, "relabel", VIR_XML_PROP_NONE, &relabel) < 0)
         return NULL;
 
     virTristateBoolToBool(relabel, &seclabel->relabel);
@@ -8085,7 +8085,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
             seclabels[i]->model = g_steal_pointer(&model);
         }
 
-        if (virXMLPropTristateBool(list[i], "relabel", VIR_XML_PROP_NONZERO, &t) < 0)
+        if (virXMLPropTristateBool(list[i], "relabel", VIR_XML_PROP_NONE, &t) < 0)
             goto error;
 
         seclabels[i]->relabel = true;
@@ -8094,7 +8094,7 @@ virSecurityDeviceLabelDefParseXML(virSecurityDeviceLabelDef ***seclabels_rtn,
         /* labelskip is only parsed on live images */
         seclabels[i]->labelskip = false;
         if (!(flags & VIR_DOMAIN_DEF_PARSE_INACTIVE)) {
-            if (virXMLPropTristateBool(list[i], "labelskip", VIR_XML_PROP_NONZERO, &t) < 0)
+            if (virXMLPropTristateBool(list[i], "labelskip", VIR_XML_PROP_NONE, &t) < 0)
                 goto error;
 
             virTristateBoolToBool(t, &seclabels[i]->labelskip);
