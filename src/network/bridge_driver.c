@@ -3991,7 +3991,7 @@ networkAllocatePort(virNetworkObj *obj,
         }
         port->plug.hostdevpci.addr = dev->device.pci;
         port->plug.hostdevpci.driver = netdef->forward.driverName;
-        port->plug.hostdevpci.managed = netdef->forward.managed;
+        port->plug.hostdevpci.managed = virTristateBoolFromBool(netdef->forward.managed);
 
         if (port->virtPortProfile) {
             /* make sure type is supported for hostdev connections */
