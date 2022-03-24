@@ -224,7 +224,7 @@ chDomainCreateXML(virConnectPtr conn,
                                    NULL)))
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED) < 0)
@@ -258,7 +258,7 @@ chDomainCreateWithFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainCreateWithFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     ret = virCHProcessStart(driver, vm, VIR_DOMAIN_RUNNING_BOOTED);
@@ -397,7 +397,7 @@ chDomainShutdownFlags(virDomainPtr dom,
     if (virDomainShutdownFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -453,7 +453,7 @@ chDomainReboot(virDomainPtr dom, unsigned int flags)
     if (virDomainRebootEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -502,7 +502,7 @@ chDomainSuspend(virDomainPtr dom)
     if (virDomainSuspendEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -547,7 +547,7 @@ chDomainResume(virDomainPtr dom)
     if (virDomainResumeEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -601,7 +601,7 @@ chDomainDestroyFlags(virDomainPtr dom, unsigned int flags)
     if (virDomainDestroyFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_DESTROY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_DESTROY) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -1221,7 +1221,7 @@ chDomainPinVcpuFlags(virDomainPtr dom,
     if (virDomainPinVcpuFlagsEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
@@ -1358,7 +1358,7 @@ chDomainPinEmulator(virDomainPtr dom,
     if (virDomainPinEmulatorEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
@@ -1629,7 +1629,7 @@ chDomainSetNumaParameters(virDomainPtr dom,
         }
     }
 
-    if (virCHDomainObjBeginJob(vm, CH_JOB_MODIFY) < 0)
+    if (virCHDomainObjBeginJob(vm, VIR_JOB_MODIFY) < 0)
         goto cleanup;
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)

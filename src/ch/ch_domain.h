@@ -24,27 +24,15 @@
 #include "ch_monitor.h"
 #include "virchrdev.h"
 #include "vircgroup.h"
+#include "domain_job.h"
 
 /* Give up waiting for mutex after 30 seconds */
 #define CH_JOB_WAIT_TIME (1000ull * 30)
 
-/* Only 1 job is allowed at any time
- * A job includes *all* ch.so api, even those just querying
- * information, not merely actions */
-
-enum virCHDomainJob {
-    CH_JOB_NONE = 0,      /* Always set to 0 for easy if (jobActive) conditions */
-    CH_JOB_QUERY,         /* Doesn't change any state */
-    CH_JOB_DESTROY,       /* Destroys the domain (cannot be masked out) */
-    CH_JOB_MODIFY,        /* May change state */
-    CH_JOB_LAST
-};
-VIR_ENUM_DECL(virCHDomainJob);
-
 
 struct virCHDomainJobObj {
     virCond cond;                       /* Use to coordinate jobs */
-    enum virCHDomainJob active;        /* Currently running job */
+    virDomainJob active;                /* Currently running job */
     int owner;                          /* Thread which set current job */
 };
 
@@ -82,7 +70,7 @@ extern virDomainXMLPrivateDataCallbacks virCHDriverPrivateDataCallbacks;
 extern virDomainDefParserConfig virCHDriverDomainDefParserConfig;
 
 int
-virCHDomainObjBeginJob(virDomainObj *obj, enum virCHDomainJob job)
+virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void
