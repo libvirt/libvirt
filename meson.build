@@ -1013,7 +1013,7 @@ else
 endif
 
 libparted_version = '1.8.0'
-libparted_dep = dependency('libparted', version: '>=' + libparted_version, required: false)
+libparted_dep = dependency('libparted', version: '>=' + libparted_version, required: get_option('storage_disk'))
 
 libpcap_version = '1.5.0'
 if not get_option('libpcap').disabled()
