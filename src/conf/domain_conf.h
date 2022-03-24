@@ -2409,6 +2409,14 @@ typedef enum {
 } virDomainTimerModeType;
 
 typedef enum {
+    VIR_DOMAIN_TIMER_REBOOT_MODE_DEFAULT = 0,
+    VIR_DOMAIN_TIMER_REBOOT_MODE_KEEP,
+    VIR_DOMAIN_TIMER_REBOOT_MODE_CLEAR,
+
+    VIR_DOMAIN_TIMER_REBOOT_MODE_LAST
+} virDomainTimerRebootModeType;
+
+typedef enum {
     VIR_DOMAIN_CPU_PLACEMENT_MODE_STATIC = 0,
     VIR_DOMAIN_CPU_PLACEMENT_MODE_AUTO,
 
@@ -2439,6 +2447,7 @@ struct _virDomainTimerDef {
     /* frequency & mode are only valid for name='tsc' */
     unsigned long long frequency; /* in Hz, unspecified = 0 */
     int mode;   /* enum virDomainTimerModeType */
+    virDomainTimerRebootModeType reboot;
 };
 
 typedef enum {
@@ -4033,6 +4042,7 @@ VIR_ENUM_DECL(virDomainClockBasis);
 VIR_ENUM_DECL(virDomainTimerName);
 VIR_ENUM_DECL(virDomainTimerTrack);
 VIR_ENUM_DECL(virDomainTimerTickpolicy);
+VIR_ENUM_DECL(virDomainTimerRebootMode);
 VIR_ENUM_DECL(virDomainTimerMode);
 VIR_ENUM_DECL(virDomainCpuPlacementMode);
 

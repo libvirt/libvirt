@@ -1293,6 +1293,14 @@
             </attribute>
           </optional>
           <optional>
+            <attribute name="on_reboot">
+              <choice>
+                <value>clear</value>
+                <value>keep</value>
+              </choice>
+            </attribute>
+          </optional>
+          <optional>
             <attribute name="mode">
               <choice>
                 <value>auto</value>

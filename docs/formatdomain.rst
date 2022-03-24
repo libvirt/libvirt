@@ -2243,6 +2243,10 @@ Windows, however, expects it to be in so called 'localtime'.
    ``frequency``
       The ``frequency`` attribute is an unsigned integer specifying the
       frequency at which ``name="tsc"`` runs.
+   ``on_reboot``
+      The ``on_reboot`` attribute controls how the ``name="tsc"`` timer behaves
+      when the VM is reset, and can be "default", "clear" or "keep". The reset
+      behavior of other timers is hardcoded, and depends on the type of timer.
    ``mode``
       The ``mode`` attribute controls how the ``name="tsc"`` timer is managed,
       and can be "auto", "native", "emulate", "paravirt", or "smpsafe". Other

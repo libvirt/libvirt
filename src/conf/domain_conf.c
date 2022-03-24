@@ -1217,6 +1217,13 @@ VIR_ENUM_IMPL(virDomainTimerMode,
               "smpsafe",
 );
 
+VIR_ENUM_IMPL(virDomainTimerRebootMode,
+              VIR_DOMAIN_TIMER_REBOOT_MODE_LAST,
+              "default",
+              "keep",
+              "clear",
+);
+
 VIR_ENUM_IMPL(virDomainStartupPolicy,
               VIR_DOMAIN_STARTUP_POLICY_LAST,
               "default",
@@ -12079,6 +12086,11 @@ virDomainTimerDefParseXML(xmlNodePtr node,
             goto error;
         }
     }
+
+    if (virXMLPropEnum(node, "on_reboot",
+                       virDomainTimerRebootModeTypeFromString,
+                       VIR_XML_PROP_NONZERO, &def->reboot) < 0)
+        goto error;
 
     catchup = virXPathNode("./catchup", ctxt);
     if (catchup != NULL) {
@@ -26157,6 +26169,11 @@ virDomainTimerDefFormat(virBuffer *buf,
         if (def->mode) {
             virBufferAsprintf(&timerAttr, " mode='%s'",
                               virDomainTimerModeTypeToString(def->mode));
+        }
+
+        if (def->reboot) {
+            virBufferAsprintf(&timerAttr, " on_reboot='%s'",
+                              virDomainTimerRebootModeTypeToString(def->mode));
         }
     }
 
