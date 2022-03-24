@@ -602,11 +602,10 @@ vboxDomainSave(virDomainPtr dom, const char *path G_GNUC_UNUSED)
 static int vboxConnectGetVersion(virConnectPtr conn, unsigned long *version)
 {
     struct _vboxDriver *data = conn->privateData;
-    VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(data);
 
-    virObjectLock(data);
+    VIR_DEBUG("%s: in vboxGetVersion", conn->driver->name);
     *version = data->version;
-    virObjectUnlock(data);
 
     return 0;
 }
@@ -664,16 +663,12 @@ vboxConnectGetMaxVcpus(virConnectPtr conn, const char *type G_GNUC_UNUSED)
 static char *vboxConnectGetCapabilities(virConnectPtr conn)
 {
     struct _vboxDriver *data = conn->privateData;
-    char *ret = NULL;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(data);
 
     if (!data->vboxObj)
-        return ret;
+        return NULL;
 
-    virObjectLock(data);
-    ret = virCapabilitiesFormatXML(data->caps);
-    virObjectUnlock(data);
-
-    return ret;
+    return virCapabilitiesFormatXML(data->caps);
 }
 
 static int vboxConnectListDomains(virConnectPtr conn, int *ids, int nids)
@@ -7568,13 +7563,13 @@ vboxNodeGetFreePages(virConnectPtr conn,
                      unsigned int flags)
 {
     struct _vboxDriver *driver = conn->privateData;
-    int lastCell;
+    int lastCell = -1;
 
     virCheckFlags(0, -1);
 
-    virObjectLock(driver);
-    lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
-    virObjectUnlock(driver);
+    VIR_WITH_OBJECT_LOCK_GUARD(driver) {
+        lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
+    }
 
     return virHostMemGetFreePages(npages, pages, startCell,
                                   cellCount, lastCell, counts);
@@ -7590,14 +7585,14 @@ vboxNodeAllocPages(virConnectPtr conn G_GNUC_UNUSED,
                    unsigned int flags)
 {
     struct _vboxDriver *driver = conn->privateData;
-    int lastCell;
+    int lastCell = -1;
     bool add = !(flags & VIR_NODE_ALLOC_PAGES_SET);
 
     virCheckFlags(VIR_NODE_ALLOC_PAGES_SET, -1);
 
-    virObjectLock(driver);
-    lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
-    virObjectUnlock(driver);
+    VIR_WITH_OBJECT_LOCK_GUARD(driver) {
+        lastCell = virCapabilitiesHostNUMAGetMaxNode(driver->caps->host.numa);
+    }
 
     return virHostMemAllocPages(npages, pageSizes, pageCounts,
                                 startCell, cellCount, lastCell, add);
