@@ -204,7 +204,6 @@ int
 virPortAllocatorAcquire(const virPortAllocatorRange *range,
                         unsigned short *port)
 {
-    int ret = -1;
     size_t i;
     virPortAllocator *pa = virPortAllocatorGet();
 
@@ -213,44 +212,39 @@ virPortAllocatorAcquire(const virPortAllocatorRange *range,
     if (!pa)
         return -1;
 
-    virObjectLock(pa);
+    VIR_WITH_OBJECT_LOCK_GUARD(pa) {
+        for (i = range->start; i <= range->end; i++) {
+            bool used = false, v6used = false;
 
-    for (i = range->start; i <= range->end && !*port; i++) {
-        bool used = false, v6used = false;
+            if (virBitmapIsBitSet(pa->bitmap, i))
+                continue;
 
-        if (virBitmapIsBitSet(pa->bitmap, i))
-            continue;
+            if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
+                virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
+                return -1;
 
-        if (virPortAllocatorBindToPort(&v6used, i, AF_INET6) < 0 ||
-            virPortAllocatorBindToPort(&used, i, AF_INET) < 0)
-            goto cleanup;
-
-        if (!used && !v6used) {
-            /* Add port to bitmap of reserved ports */
-            if (virBitmapSetBit(pa->bitmap, i) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("Failed to reserve port %zu"), i);
-                goto cleanup;
+            if (!used && !v6used) {
+                /* Add port to bitmap of reserved ports */
+                if (virBitmapSetBit(pa->bitmap, i) < 0) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR,
+                                   _("Failed to reserve port %zu"), i);
+                    return -1;
+                }
+                *port = i;
+                return 0;
             }
-            *port = i;
-            ret = 0;
         }
     }
 
-    if (*port == 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Unable to find an unused port in range '%s' (%d-%d)"),
-                       range->name, range->start, range->end);
-    }
- cleanup:
-    virObjectUnlock(pa);
-    return ret;
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("Unable to find an unused port in range '%s' (%d-%d)"),
+                   range->name, range->start, range->end);
+    return -1;
 }
 
 int
 virPortAllocatorRelease(unsigned short port)
 {
-    int ret = -1;
     virPortAllocator *pa = virPortAllocatorGet();
 
     if (!pa)
@@ -259,25 +253,21 @@ virPortAllocatorRelease(unsigned short port)
     if (!port)
         return 0;
 
-    virObjectLock(pa);
-
-    if (virBitmapClearBit(pa->bitmap, port) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to release port %d"),
-                       port);
-        goto cleanup;
+    VIR_WITH_OBJECT_LOCK_GUARD(pa) {
+        if (virBitmapClearBit(pa->bitmap, port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to release port %d"),
+                           port);
+            return -1;
+        }
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnlock(pa);
-    return ret;
+    return 0;
 }
 
 int
 virPortAllocatorSetUsed(unsigned short port)
 {
-    int ret = -1;
     virPortAllocator *pa = virPortAllocatorGet();
 
     if (!pa)
@@ -286,17 +276,14 @@ virPortAllocatorSetUsed(unsigned short port)
     if (!port)
         return 0;
 
-    virObjectLock(pa);
-
-    if (virBitmapIsBitSet(pa->bitmap, port) ||
-        virBitmapSetBit(pa->bitmap, port) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("Failed to reserve port %d"), port);
-        goto cleanup;
+    VIR_WITH_OBJECT_LOCK_GUARD(pa) {
+        if (virBitmapIsBitSet(pa->bitmap, port) ||
+            virBitmapSetBit(pa->bitmap, port) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("Failed to reserve port %d"), port);
+            return -1;
+        }
     }
 
-    ret = 0;
- cleanup:
-    virObjectUnlock(pa);
-    return ret;
+    return 0;
 }
