@@ -9486,7 +9486,7 @@ virDomainMigrateStartPostCopy(virDomainPtr domain,
  * The reference can be released once the object is no longer required
  * by calling virDomainFree().
  *
- * The return value from this method is a positive integer identifier
+ * The return value from this method is a non-negative integer identifier
  * for the callback. To unregister a callback, this callback ID should
  * be passed to the virConnectDomainEventDeregisterAny() method.
  *
