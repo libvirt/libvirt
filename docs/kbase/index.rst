@@ -55,7 +55,7 @@ Usage
 `Memory devices <memorydevices.html>`__
    Memory devices and their use
 
-`Snapshots <snapshots.html>`
+`Snapshots <snapshots.html>`__
     Details about snapshotting a VM
 
 
