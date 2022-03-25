@@ -6862,7 +6862,7 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
     if (virXMLPropTristateBool(node, "autoAddress", VIR_XML_PROP_NONE,
                                &autoAddress) < 0)
         return -1;
-    usbsrc->autoAddress = autoAddress == VIR_TRISTATE_BOOL_YES;
+    virTristateBoolToBool(autoAddress, &usbsrc->autoAddress);
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized */
@@ -12504,7 +12504,7 @@ virDomainGraphicsDefParseXMLSDL(virDomainGraphicsDef *def,
                                &fullscreen) < 0)
         return -1;
 
-    def->data.sdl.fullscreen = fullscreen == VIR_TRISTATE_BOOL_YES;
+    virTristateBoolToBool(fullscreen, &def->data.sdl.fullscreen);
     def->data.sdl.xauth = virXMLPropString(node, "xauth");
     def->data.sdl.display = virXMLPropString(node, "display");
 
@@ -12573,7 +12573,7 @@ virDomainGraphicsDefParseXMLDesktop(virDomainGraphicsDef *def,
                                &fullscreen) < 0)
         return -1;
 
-    def->data.desktop.fullscreen = fullscreen == VIR_TRISTATE_BOOL_YES;
+    virTristateBoolToBool(fullscreen, &def->data.desktop.fullscreen);
     def->data.desktop.display = virXMLPropString(node, "display");
 
     return 0;
@@ -12609,7 +12609,7 @@ virDomainGraphicsDefParseXMLSpice(virDomainGraphicsDef *def,
     if (virXMLPropTristateBool(node, "autoport", VIR_XML_PROP_NONE,
                                &autoport) < 0)
         return -1;
-    def->data.spice.autoport = autoport == VIR_TRISTATE_BOOL_YES;
+    virTristateBoolToBool(autoport, &def->data.spice.autoport);
 
     def->data.spice.defaultMode = VIR_DOMAIN_GRAPHICS_SPICE_CHANNEL_MODE_ANY;
     if (virXMLPropEnum(node, "defaultMode",
@@ -14407,7 +14407,7 @@ virDomainRedirFilterUSBDevDefParseXML(xmlNodePtr node)
     if (virXMLPropTristateBool(node, "allow", VIR_XML_PROP_REQUIRED, &allow) < 0)
         return NULL;
 
-    def->allow = allow == VIR_TRISTATE_BOOL_YES;
+    virTristateBoolToBool(allow, &def->allow);
 
     return g_steal_pointer(&def);
 }
@@ -18084,7 +18084,7 @@ virDomainVcpuParse(virDomainDef *def,
                                        VIR_XML_PROP_REQUIRED, &state) < 0)
                 return -1;
 
-            vcpu->online = state == VIR_TRISTATE_BOOL_YES;
+            virTristateBoolToBool(state, &vcpu->online);
 
             if (virXMLPropTristateBool(nodes[i], "hotpluggable",
                                        VIR_XML_PROP_NONE,
