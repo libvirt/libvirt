@@ -217,7 +217,7 @@ struct _virFileWrapperFd {
  *
  * OS note: only for linux, on other OS this is a no-op.
  */
-static void
+static int
 virFileWrapperSetPipeSize(int fd)
 {
     int sz;
@@ -230,21 +230,24 @@ virFileWrapperSetPipeSize(int fd)
             continue; /* retry with half the size */
         }
         if (rv < 0) {
-            break;
+            virReportSystemError(errno, "%s",
+                                 _("unable to set pipe size"));
+            return -1;
         }
         VIR_DEBUG("fd %d pipe size adjusted to %d", fd, sz);
-        return;
+        return 0;
     }
 
     VIR_WARN("unable to set pipe size, data transfer might be slow: %s",
              g_strerror(errno));
+    return 0;
 }
 
 # else /* !__linux__ */
-static void
+static int
 virFileWrapperSetPipeSize(int fd G_GNUC_UNUSED)
 {
-    return;
+    return 0;
 }
 # endif /* !__linux__ */
 
@@ -323,14 +326,15 @@ virFileWrapperFdNew(int *fd, const char *name, unsigned int flags)
     if (virPipe(pipefd) < 0)
         goto error;
 
+    if (virFileWrapperSetPipeSize(pipefd[output]) < 0)
+        goto error;
+
     if (!(iohelper_path = virFileFindResource("libvirt_iohelper",
                                               abs_top_builddir "/src",
                                               LIBEXECDIR)))
         goto error;
 
     ret->cmd = virCommandNewArgList(iohelper_path, name, NULL);
-
-    virFileWrapperSetPipeSize(pipefd[output]);
 
     if (output) {
         virCommandSetInputFD(ret->cmd, pipefd[0]);
