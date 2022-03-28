@@ -202,7 +202,7 @@ struct _virFileWrapperFd {
 
 #ifndef WIN32
 
-#ifdef __linux__
+# ifdef __linux__
 
 /**
  * virFileWrapperSetPipeSize:
@@ -240,13 +240,13 @@ virFileWrapperSetPipeSize(int fd)
              g_strerror(errno));
 }
 
-#else /* !__linux__ */
+# else /* !__linux__ */
 static void
 virFileWrapperSetPipeSize(int fd G_GNUC_UNUSED)
 {
     return;
 }
-#endif /* !__linux__ */
+# endif /* !__linux__ */
 
 
 /**
