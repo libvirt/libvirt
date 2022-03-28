@@ -869,9 +869,11 @@ virDoesGroupExist(const char *name)
 
 
 
-/* Work around an incompatibility of OS X 10.11: getgrouplist
+/* Work around an incompatibility of macOS: getgrouplist
    accepts int *, not gid_t *, and int and gid_t differ in sign.  */
+# ifdef __APPLE__
 VIR_WARNINGS_NO_POINTER_SIGN
+# endif
 
 /* Compute the list of primary and supplementary groups associated
  * with @uid, and including @gid in the list (unless it is -1),
@@ -934,7 +936,9 @@ virGetGroupList(uid_t uid, gid_t gid, gid_t **list)
     return ret;
 }
 
+# ifdef __APPLE__
 VIR_WARNINGS_RESET
+# endif
 
 
 /* Set the real and effective uid and gid to the given values, as well
