@@ -26949,34 +26949,30 @@ static void
 virDomainLoaderDefFormat(virBuffer *buf,
                          virDomainLoaderDef *loader)
 {
-    const char *readonly = virTristateBoolTypeToString(loader->readonly);
-    const char *secure = virTristateBoolTypeToString(loader->secure);
-    const char *type = virDomainLoaderTypeToString(loader->type);
+    g_auto(virBuffer) loaderAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) loaderChildBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) nvramAttrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) nvramChildBuf = VIR_BUFFER_INITIALIZER;
 
-    virBufferAddLit(buf, "<loader");
+    if (loader->readonly != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(&loaderAttrBuf, " readonly='%s'",
+                          virTristateBoolTypeToString(loader->readonly));
 
-    if (loader->readonly)
-        virBufferAsprintf(buf, " readonly='%s'", readonly);
-
-    if (loader->secure)
-        virBufferAsprintf(buf, " secure='%s'", secure);
+    if (loader->secure != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(&loaderAttrBuf, " secure='%s'",
+                          virTristateBoolTypeToString(loader->secure));
 
     if (loader->type != VIR_DOMAIN_LOADER_TYPE_NONE)
-        virBufferAsprintf(buf, " type='%s'", type);
+        virBufferAsprintf(&loaderAttrBuf, " type='%s'",
+                          virDomainLoaderTypeToString(loader->type));
 
-    if (loader->path)
-        virBufferEscapeString(buf, ">%s</loader>\n", loader->path);
-    else
-        virBufferAddLit(buf, "/>\n");
+    virBufferEscapeString(&loaderChildBuf, "%s", loader->path);
 
-    if (loader->nvram || loader->nvramTemplate) {
-        virBufferAddLit(buf, "<nvram");
-        virBufferEscapeString(buf, " template='%s'", loader->nvramTemplate);
-        if (loader->nvram)
-            virBufferEscapeString(buf, ">%s</nvram>\n", loader->nvram);
-        else
-            virBufferAddLit(buf, "/>\n");
-    }
+    virXMLFormatElementInternal(buf, "loader", &loaderAttrBuf, &loaderChildBuf, false, false);
+
+    virBufferEscapeString(&nvramAttrBuf, " template='%s'", loader->nvramTemplate);
+    virBufferEscapeString(&nvramChildBuf, "%s", loader->nvram);
+    virXMLFormatElementInternal(buf, "nvram", &nvramAttrBuf, &nvramChildBuf, false, false);
 }
 
 static void
