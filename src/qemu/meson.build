@@ -130,12 +130,36 @@ if conf.has('WITH_QEMU')
     ],
   }
 
-  virt_conf_files += files('qemu.conf')
+  qemu_user_group_conf = configuration_data({
+    'QEMU_USER': qemu_user,
+    'QEMU_GROUP': qemu_group,
+  })
+  qemu_conf = configure_file(
+    input: 'qemu.conf.in',
+    output: 'qemu.conf',
+    configuration: qemu_user_group_conf,
+  )
+
+  qemu_user_group_hack_conf = configuration_data({
+    'QEMU_USER': qemu_user,
+    'QEMU_GROUP': qemu_group,
+    # This hack is necessary because the output file is going to be
+    # used as input for another configure_file() call later, which
+    # will take care of substituting @CONFIG@ with useful data
+    'CONFIG': '@CONFIG@',
+  })
+  test_libvirtd_qemu_aug_tmp = configure_file(
+    input: 'test_libvirtd_qemu.aug.in',
+    output: 'test_libvirtd_qemu.aug.tmp',
+    configuration: qemu_user_group_hack_conf,
+  )
+
+  virt_conf_files += qemu_conf
   virt_aug_files += files('libvirtd_qemu.aug')
   virt_test_aug_files += {
     'name': 'test_libvirtd_qemu.aug',
-    'aug': files('test_libvirtd_qemu.aug.in'),
-    'conf': files('qemu.conf'),
+    'aug': test_libvirtd_qemu_aug_tmp,
+    'conf': qemu_conf,
     'test_name': 'libvirtd_qemu',
     'test_srcdir': meson.current_source_dir(),
     'test_builddir': meson.current_build_dir(),
