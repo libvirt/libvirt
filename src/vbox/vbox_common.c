@@ -975,27 +975,27 @@ vboxSetBootDeviceOrder(virDomainDef *def, struct _vboxDriver *data,
     PRUint32 maxBootPosition = 0;
     size_t i = 0;
 
-    VIR_DEBUG("def->os.type             %s", virDomainOSTypeToString(def->os.type));
-    VIR_DEBUG("def->os.arch             %s", virArchToString(def->os.arch));
-    VIR_DEBUG("def->os.machine          %s", def->os.machine);
-    VIR_DEBUG("def->os.nBootDevs        %zu", def->os.nBootDevs);
-    VIR_DEBUG("def->os.bootDevs[0]      %d", def->os.bootDevs[0]);
-    VIR_DEBUG("def->os.bootDevs[1]      %d", def->os.bootDevs[1]);
-    VIR_DEBUG("def->os.bootDevs[2]      %d", def->os.bootDevs[2]);
-    VIR_DEBUG("def->os.bootDevs[3]      %d", def->os.bootDevs[3]);
-    VIR_DEBUG("def->os.init             %s", def->os.init);
-    VIR_DEBUG("def->os.kernel           %s", def->os.kernel);
-    VIR_DEBUG("def->os.initrd           %s", def->os.initrd);
-    VIR_DEBUG("def->os.cmdline          %s", def->os.cmdline);
-    VIR_DEBUG("def->os.root             %s", def->os.root);
+    VIR_DEBUG("def->os.type %s", virDomainOSTypeToString(def->os.type));
+    VIR_DEBUG("def->os.arch %s", virArchToString(def->os.arch));
+    VIR_DEBUG("def->os.machine %s", def->os.machine);
+    VIR_DEBUG("def->os.nBootDevs %zu", def->os.nBootDevs);
+    VIR_DEBUG("def->os.bootDevs[0] %d", def->os.bootDevs[0]);
+    VIR_DEBUG("def->os.bootDevs[1] %d", def->os.bootDevs[1]);
+    VIR_DEBUG("def->os.bootDevs[2] %d", def->os.bootDevs[2]);
+    VIR_DEBUG("def->os.bootDevs[3] %d", def->os.bootDevs[3]);
+    VIR_DEBUG("def->os.init %s", def->os.init);
+    VIR_DEBUG("def->os.kernel %s", def->os.kernel);
+    VIR_DEBUG("def->os.initrd %s", def->os.initrd);
+    VIR_DEBUG("def->os.cmdline %s", def->os.cmdline);
+    VIR_DEBUG("def->os.root %s", def->os.root);
     if (def->os.loader) {
-        VIR_DEBUG("def->os.loader->path     %s", def->os.loader->path);
+        VIR_DEBUG("def->os.loader->path %s", def->os.loader->path);
         VIR_DEBUG("def->os.loader->readonly %d", def->os.loader->readonly);
-        VIR_DEBUG("def->os.loader->type     %d", def->os.loader->type);
-        VIR_DEBUG("def->os.loader->nvram    %s", def->os.loader->nvram);
+        VIR_DEBUG("def->os.loader->type %d", def->os.loader->type);
+        VIR_DEBUG("def->os.loader->nvram %s", def->os.loader->nvram);
     }
-    VIR_DEBUG("def->os.bootloader       %s", def->os.bootloader);
-    VIR_DEBUG("def->os.bootloaderArgs   %s", def->os.bootloaderArgs);
+    VIR_DEBUG("def->os.bootloader %s", def->os.bootloader);
+    VIR_DEBUG("def->os.bootloaderArgs %s", def->os.bootloaderArgs);
 
     gVBoxAPI.UIVirtualBox.GetSystemProperties(data->vboxObj, &systemProperties);
     if (systemProperties) {
