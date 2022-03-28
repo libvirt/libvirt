@@ -396,11 +396,10 @@ static int
 qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                  virQEMUCaps *qemuCaps)
 {
-    virDomainTimerDef *timer;
     size_t i;
 
     for (i = 0; i < def->clock.ntimers; i++) {
-        timer = def->clock.timers[i];
+        virDomainTimerDef *timer = def->clock.timers[i];
 
         switch ((virDomainTimerNameType)timer->name) {
         case VIR_DOMAIN_TIMER_NAME_PLATFORM:
@@ -410,22 +409,18 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
             return -1;
 
         case VIR_DOMAIN_TIMER_NAME_TSC:
-            if (!ARCH_IS_X86(def->os.arch) && timer->present == VIR_TRISTATE_BOOL_YES)
-                goto no_support;
-
-            if (timer->reboot != VIR_DOMAIN_TIMER_REBOOT_MODE_DEFAULT &&
-                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_X86_CPU_TSC_CLEAR_ON_RESET)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("Configuring the '%s' timer to reset on reboot is not supported with this QEMU binary"),
-                               virDomainTimerNameTypeToString(timer->name));
-                return -1;
-            }
-            break;
-
         case VIR_DOMAIN_TIMER_NAME_KVMCLOCK:
         case VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK:
-            if (!ARCH_IS_X86(def->os.arch) && timer->present == VIR_TRISTATE_BOOL_YES)
-                goto no_support;
+            if (!ARCH_IS_X86(def->os.arch) && timer->present == VIR_TRISTATE_BOOL_YES) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Configuring the '%s' timer is not supported "
+                                 "for virtType=%s arch=%s machine=%s guests"),
+                               virDomainTimerNameTypeToString(timer->name),
+                               virDomainVirtTypeToString(def->virtType),
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
+            }
             break;
 
         case VIR_DOMAIN_TIMER_NAME_LAST:
@@ -504,7 +499,14 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
             if (def->virtType != VIR_DOMAIN_VIRT_KVM ||
                 !qemuDomainIsARMVirt(def)) {
-                goto no_support;
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Configuring the '%s' timer is not supported "
+                                 "for virtType=%s arch=%s machine=%s guests"),
+                               virDomainTimerNameTypeToString(timer->name),
+                               virDomainVirtTypeToString(def->virtType),
+                               virArchToString(def->os.arch),
+                               def->os.machine);
+                return -1;
             }
             if (timer->present == VIR_TRISTATE_BOOL_NO) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -538,15 +540,6 @@ qemuValidateDomainDefClockTimers(const virDomainDef *def,
     }
 
     return 0;
-
- no_support:
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("Configuring the '%s' timer is not supported for virtType=%s arch=%s machine=%s guests"),
-                   virDomainTimerNameTypeToString(timer->name),
-                   virDomainVirtTypeToString(def->virtType),
-                   virArchToString(def->os.arch),
-                   def->os.machine);
-    return -1;
 }
 
 

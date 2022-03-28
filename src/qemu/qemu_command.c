@@ -6616,17 +6616,6 @@ qemuBuildCpuCommandLine(virCommand *cmd,
         case VIR_DOMAIN_TIMER_NAME_TSC:
             if (timer->frequency > 0)
                 virBufferAsprintf(&buf, ",tsc-frequency=%llu", timer->frequency);
-            switch (timer->reboot) {
-            case VIR_DOMAIN_TIMER_REBOOT_MODE_CLEAR:
-                virBufferAddLit(&buf, ",tsc-clear-on-reset=on");
-                break;
-            case VIR_DOMAIN_TIMER_REBOOT_MODE_KEEP:
-                virBufferAddLit(&buf, ",tsc-clear-on-reset=off");
-                break;
-            case VIR_DOMAIN_TIMER_REBOOT_MODE_DEFAULT:
-            case VIR_DOMAIN_TIMER_REBOOT_MODE_LAST:
-                break;
-            }
             break;
         case VIR_DOMAIN_TIMER_NAME_ARMVTIMER:
             switch (timer->tickpolicy) {

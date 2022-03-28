@@ -669,7 +669,6 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 425 */
               "blockdev.nbd.tls-hostname", /* QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME */
               "memory-backend-file.prealloc-threads", /* QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS */
-              "x86-cpu.tsc-clear-on-reset", /* QEMU_CAPS_X86_CPU_TSC_CLEAR_ON_RESET */
     );
 
 
@@ -1778,7 +1777,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMemoryBackendMemfd[] 
 static struct virQEMUCapsStringFlags virQEMUCapsObjectPropsMaxCPU[] = {
     { "unavailable-features", QEMU_CAPS_CPU_UNAVAILABLE_FEATURES },
     { "kvm-no-adjvtime", QEMU_CAPS_CPU_KVM_NO_ADJVTIME },
-    { "tsc-clear-on-reset", QEMU_CAPS_X86_CPU_TSC_CLEAR_ON_RESET },
     { "migratable", QEMU_CAPS_CPU_MIGRATABLE },
 };
 
