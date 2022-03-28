@@ -323,6 +323,13 @@ virXMLValidatorFree(virXMLValidator *validator);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virXMLValidator, virXMLValidatorFree);
 
 void
+virXMLFormatElementInternal(virBuffer *buf,
+                            const char *name,
+                            virBuffer *attrBuf,
+                            virBuffer *childBuf,
+                            bool allowEmpty,
+                            bool childNewline);
+void
 virXMLFormatElement(virBuffer *buf,
                     const char *name,
                     virBuffer *attrBuf,

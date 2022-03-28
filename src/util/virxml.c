@@ -1609,21 +1609,48 @@ virXMLValidatorFree(virXMLValidator *validator)
 }
 
 
-/* same as virXMLFormatElement but outputs an empty element if @attrBuf and
- * @childBuf are both empty */
+/**
+ * virXMLFormatElementInternal
+ * @buf: the parent buffer where the element will be placed
+ * @name: the name of the element
+ * @attrBuf: buffer with attributes for element, may be NULL
+ * @childBuf: buffer with child elements, may be NULL
+ * @allowEmpty: Format empty element if @attrBuf and @childBuf are empty
+ * @childNewline: Add a newline after the opening element before formatting @childBuf
+ *
+ * Helper to format element where attributes or child elements
+ * are optional and may not be formatted.  If both @attrBuf and
+ * @childBuf are NULL or are empty buffers the element is not
+ * formatted.
+ *
+ * Passing false for @childNewline allows to format elements where we directly
+ * output a value without subelements.
+ *
+ * Both passed buffers are always consumed and freed.
+ */
 void
-virXMLFormatElementEmpty(virBuffer *buf,
-                         const char *name,
-                         virBuffer *attrBuf,
-                         virBuffer *childBuf)
+virXMLFormatElementInternal(virBuffer *buf,
+                            const char *name,
+                            virBuffer *attrBuf,
+                            virBuffer *childBuf,
+                            bool allowEmpty,
+                            bool childNewline)
 {
+    if (!allowEmpty) {
+        if ((!attrBuf || virBufferUse(attrBuf) == 0) &&
+            (!childBuf || virBufferUse(childBuf) == 0))
+            return;
+    }
+
     virBufferAsprintf(buf, "<%s", name);
 
     if (attrBuf && virBufferUse(attrBuf) > 0)
         virBufferAddBuffer(buf, attrBuf);
 
     if (childBuf && virBufferUse(childBuf) > 0) {
-        virBufferAddLit(buf, ">\n");
+        virBufferAddLit(buf, ">");
+        if (childNewline)
+            virBufferAddLit(buf, "\n");
         virBufferAddBuffer(buf, childBuf);
         virBufferAsprintf(buf, "</%s>\n", name);
     } else {
@@ -1632,6 +1659,17 @@ virXMLFormatElementEmpty(virBuffer *buf,
 
     virBufferFreeAndReset(attrBuf);
     virBufferFreeAndReset(childBuf);
+}
+
+/* same as virXMLFormatElement but outputs an empty element if @attrBuf and
+ * @childBuf are both empty */
+void
+virXMLFormatElementEmpty(virBuffer *buf,
+                         const char *name,
+                         virBuffer *attrBuf,
+                         virBuffer *childBuf)
+{
+    virXMLFormatElementInternal(buf, name, attrBuf, childBuf, true, true);
 }
 
 
@@ -1655,11 +1693,7 @@ virXMLFormatElement(virBuffer *buf,
                     virBuffer *attrBuf,
                     virBuffer *childBuf)
 {
-    if ((!attrBuf || virBufferUse(attrBuf) == 0) &&
-        (!childBuf || virBufferUse(childBuf) == 0))
-        return;
-
-    virXMLFormatElementEmpty(buf, name, attrBuf, childBuf);
+    virXMLFormatElementInternal(buf, name, attrBuf, childBuf, false, true);
 }
 
 
