@@ -2182,7 +2182,7 @@ elsif ($mode eq "client") {
             }
 
             if ($mode eq "aclheader") {
-                print "extern $ret $apiname(" . join(", ", @argdecls) . ");\n";
+                print "extern $ret $apiname(" . join(", ", @argdecls) . ") G_GNUC_WARN_UNUSED_RESULT;\n";
             } else {
                 my @argvars;
                 push @argvars, "mgr";
