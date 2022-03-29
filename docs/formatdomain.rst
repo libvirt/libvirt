@@ -1489,12 +1489,12 @@ In case no restrictions need to be put on CPU model and its features, a simpler
    The ``topology`` element specifies requested topology of virtual CPU provided
    to the guest. Four attributes, ``sockets``, ``dies``, ``cores``, and
    ``threads``, accept non-zero positive integer values. They refer to the
-   number of CPU sockets per NUMA node, number of dies per socket, number of
-   cores per die, and number of threads per core, respectively. The ``dies``
-   attribute is optional and will default to 1 if omitted, while the other
-   attributes are all mandatory. Hypervisors may require that the maximum number
-   of vCPUs specified by the ``cpus`` element equals to the number of vcpus
-   resulting from the topology.
+   total number of CPU sockets, number of dies per socket, number of cores per
+   die, and number of threads per core, respectively. The ``dies`` attribute is
+   optional and will default to 1 if omitted, while the other attributes are all
+   mandatory. Hypervisors may require that the maximum number of vCPUs specified
+   by the ``cpus`` element equals to the number of vcpus resulting from the
+   topology.
 ``feature``
    The ``cpu`` element can contain zero or more ``feature`` elements used to
    fine-tune features provided by the selected CPU model. The list of known

@@ -51,7 +51,10 @@
       <dt><code>topology</code></dt>
       <dd>This element embodies the host internal topology. Management
       applications may want to learn this information when orchestrating new
-      guests - e.g. due to reduce inter-NUMA node transfers.</dd>
+      guests - e.g. due to reduce inter-NUMA node transfers. Note that the
+      <code>sockets</code> value reported here is per-NUMA-node; this is in
+      contrast to the value given in domain definitions, which is interpreted
+      as a total number of sockets for the domain.</dd>
 
       <dt><code>secmodel</code></dt>
       <dd>To find out default security labels for different security models you
