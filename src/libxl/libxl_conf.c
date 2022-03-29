@@ -1775,10 +1775,9 @@ libxlDriverConfigInit(libxlDriverConfig *cfg)
     uint64_t free_mem;
 
     if (g_mkdir_with_parents(cfg->logDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create log dir '%s': %s"),
-                       cfg->logDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create log dir '%s'"),
+                             cfg->logDir);
         return -1;
     }
 

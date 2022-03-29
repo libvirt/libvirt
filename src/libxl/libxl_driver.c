@@ -721,38 +721,33 @@ libxlStateInitialize(bool privileged,
 
     libxl_driver->config = cfg;
     if (g_mkdir_with_parents(cfg->stateDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create state dir '%s': %s"),
-                       cfg->stateDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create state dir '%s'"),
+                             cfg->stateDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->libDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create lib dir '%s': %s"),
-                       cfg->libDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create lib dir '%s'"),
+                             cfg->libDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->saveDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create save dir '%s': %s"),
-                       cfg->saveDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create save dir '%s'"),
+                             cfg->saveDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->autoDumpDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create dump dir '%s': %s"),
-                       cfg->autoDumpDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create dump dir '%s'"),
+                             cfg->autoDumpDir);
         goto error;
     }
     if (g_mkdir_with_parents(cfg->channelDir, 0777) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("failed to create channel dir '%s': %s"),
-                       cfg->channelDir,
-                       g_strerror(errno));
+        virReportSystemError(errno,
+                             _("failed to create channel dir '%s'"),
+                             cfg->channelDir);
         goto error;
     }
 
