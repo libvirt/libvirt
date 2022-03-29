@@ -2135,14 +2135,15 @@ pkgconfig_files = [
   'libvirt-admin.pc.in',
 ]
 
-pkgconfig_conf = configuration_data()
-pkgconfig_conf.set('VERSION', meson.project_version())
-pkgconfig_conf.set('datadir', datadir)
-pkgconfig_conf.set('datarootdir', datadir)
-pkgconfig_conf.set('exec_prefix', prefix)
-pkgconfig_conf.set('includedir', includedir)
-pkgconfig_conf.set('libdir', libdir)
-pkgconfig_conf.set('prefix', prefix)
+pkgconfig_conf = configuration_data({
+  'VERSION': meson.project_version(),
+  'datadir': datadir,
+  'datarootdir': datadir,
+  'exec_prefix': prefix,
+  'includedir': includedir,
+  'libdir': libdir,
+  'prefix': prefix,
+})
 
 pkgconfig_dir = libdir / 'pkgconfig'
 
@@ -2165,8 +2166,9 @@ if git
     'mingw-libvirt.spec.in',
   ]
 
-  spec_conf = configuration_data()
-  spec_conf.set('VERSION', meson.project_version())
+  spec_conf = configuration_data({
+    'VERSION': meson.project_version(),
+  })
 
   foreach file : spec_files
     configure_file(
@@ -2180,8 +2182,9 @@ if git
                         env: runutf8, check: true)
   authors_file = 'AUTHORS.rst.in'
 
-  authors_conf = configuration_data()
-  authors_conf.set('contributorslist', authors.stdout())
+  authors_conf = configuration_data({
+    'contributorslist': authors.stdout(),
+  })
 
   configure_file(
     input: authors_file,
@@ -2209,9 +2212,11 @@ configure_file(output: 'meson-config.h', configuration: conf)
 
 
 # generate run helper
-run_conf = configuration_data()
-run_conf.set('abs_builddir', meson.build_root())
-run_conf.set('abs_top_builddir', meson.build_root())
+run_conf = configuration_data({
+  'abs_builddir': meson.build_root(),
+  'abs_top_builddir': meson.build_root(),
+})
+
 configure_file(
   input: 'run.in',
   output: '@BASENAME@',

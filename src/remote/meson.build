@@ -240,8 +240,9 @@ if conf.has('WITH_REMOTE')
       runstatedir / 'libvirt' / 'common',
     ]
 
-    logrotate_conf = configuration_data()
-    logrotate_conf.set('localstatedir', localstatedir)
+    logrotate_conf = configuration_data({
+      'localstatedir': localstatedir,
+    })
 
     foreach name : logrotate_files
       log_file = configure_file(

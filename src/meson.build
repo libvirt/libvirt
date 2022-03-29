@@ -698,20 +698,23 @@ endforeach
 foreach data : virt_daemon_confs
   capitalize_args = [ '-c', 'print("@0@".capitalize())'.format(data['name']) ]
   name_uc = run_command(python3_prog, capitalize_args, check: true, env: runutf8).stdout().strip()
-  daemon_conf = configuration_data()
-  daemon_conf.set('runstatedir', runstatedir)
-  daemon_conf.set('sbindir', sbindir)
-  daemon_conf.set('sysconfdir', sysconfdir)
-  daemon_conf.set('DAEMON_NAME', data['name'])
-  daemon_conf.set('DAEMON_NAME_UC', name_uc)
-  # to silence meson warning about missing 'CONFIG' in the configuration_data
-  daemon_conf.set('CONFIG', '@CONFIG@')
+
   if conf.has('WITH_POLKIT')
-    daemon_conf.set('default_auth', 'polkit')
+    default_auth = 'polkit'
   else
-    daemon_conf.set('default_auth', 'none')
+    default_auth = 'none'
   endif
 
+  daemon_conf = configuration_data({
+    'runstatedir': runstatedir,
+    'sbindir': sbindir,
+    'sysconfdir': sysconfdir,
+    'DAEMON_NAME': data['name'],
+    'DAEMON_NAME_UC': name_uc,
+    'default_auth': default_auth,
+    # to silence meson warning about missing 'CONFIG' in the configuration_data
+    'CONFIG': '@CONFIG@',
+  })
 
   if data.get('with_ip', false)
     conf_in = libvirtd_conf_tmp
@@ -783,19 +786,22 @@ if conf.has('WITH_LIBVIRTD')
     )
 
     foreach unit : virt_daemon_units
-      unit_conf = configuration_data()
-      unit_conf.set('runstatedir', runstatedir)
-      unit_conf.set('sbindir', sbindir)
-      unit_conf.set('sysconfdir', sysconfdir)
-      unit_conf.set('name', unit['name'])
-      unit_conf.set('service', unit['service'])
-      unit_conf.set('sockprefix', unit['sockprefix'])
-      unit_conf.set('deps', unit.get('deps', ''))
       if conf.has('WITH_POLKIT')
-        unit_conf.set('mode', '0666')
+        mode = '0666'
       else
-        unit_conf.set('mode', '0600')
+        mode = '0600'
       endif
+
+      unit_conf = configuration_data({
+        'runstatedir': runstatedir,
+        'sbindir': sbindir,
+        'sysconfdir': sysconfdir,
+        'name': unit['name'],
+        'service': unit['service'],
+        'sockprefix': unit['sockprefix'],
+        'deps': unit.get('deps', ''),
+        'mode': mode,
+      })
 
       configure_file(
         input: unit['service_in'],
@@ -829,15 +835,17 @@ if conf.has('WITH_LIBVIRTD')
   # Generate openrc init files
   if init_script == 'openrc'
     foreach init : openrc_init_files
-      init_conf = configuration_data()
-      init_conf.set('sbindir', sbindir)
-      init_conf.set('runstatedir', runstatedir)
       if conf.has('WITH_FIREWALLD')
         need_firewalld = 'need firewalld'
       else
         need_firewalld = ''
       endif
-      init_conf.set('NEED_FIREWALLD', need_firewalld)
+
+      init_conf = configuration_data({
+        'sbindir': sbindir,
+        'runstatedir': runstatedir,
+        'NEED_FIREWALLD': need_firewalld,
+      })
 
       init_file = configure_file(
         input: init['in_file'],
@@ -1010,10 +1018,11 @@ run_pkg_config_files = [
   'libvirt.pc.in',
 ]
 
-run_pkg_config_conf = configuration_data()
-run_pkg_config_conf.set('VERSION', meson.project_version())
-run_pkg_config_conf.set('abs_top_builddir', meson.build_root())
-run_pkg_config_conf.set('abs_top_srcdir', meson.source_root())
+run_pkg_config_conf = configuration_data({
+  'VERSION': meson.project_version(),
+  'abs_top_builddir': meson.build_root(),
+  'abs_top_srcdir': meson.source_root(),
+})
 
 foreach file : run_pkg_config_files
   configure_file(

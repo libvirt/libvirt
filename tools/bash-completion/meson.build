@@ -4,8 +4,9 @@ completion_commands = [
 ]
 
 foreach command : completion_commands
-  completion_conf = configuration_data()
-  completion_conf.set('command', command)
+  completion_conf = configuration_data({
+    'command': command,
+  })
   completion = configure_file(
     input: 'vsh.in',
     output: command,

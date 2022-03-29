@@ -1,8 +1,9 @@
 i18n = import('i18n')
 
-potfiles_conf = configuration_data()
-potfiles_conf.set('SRCDIR', '')
-potfiles_conf.set('BUILDDIR', '')
+potfiles_conf = configuration_data({
+  'SRCDIR': '',
+  'BUILDDIR': '',
+})
 
 potfiles = configure_file(
   input: 'POTFILES.in',

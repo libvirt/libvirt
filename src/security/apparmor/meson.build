@@ -5,11 +5,12 @@ apparmor_gen_profiles = [
   'usr.sbin.virtxend',
 ]
 
-apparmor_gen_profiles_conf = configuration_data()
-apparmor_gen_profiles_conf.set('sysconfdir', sysconfdir)
-apparmor_gen_profiles_conf.set('sbindir', sbindir)
-apparmor_gen_profiles_conf.set('runstatedir', runstatedir)
-apparmor_gen_profiles_conf.set('libexecdir', libexecdir)
+apparmor_gen_profiles_conf = configuration_data({
+  'sysconfdir': sysconfdir,
+  'sbindir': sbindir,
+  'runstatedir': runstatedir,
+  'libexecdir': libexecdir,
+})
 
 apparmor_dir = sysconfdir / 'apparmor.d'
 

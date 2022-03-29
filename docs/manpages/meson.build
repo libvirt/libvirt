@@ -84,10 +84,11 @@ foreach name : keyname_list
   }
 endforeach
 
-docs_man_conf = configuration_data()
-docs_man_conf.set('SYSCONFDIR', sysconfdir)
-docs_man_conf.set('RUNSTATEDIR', runstatedir)
-docs_man_conf.set('VERSION', meson.project_version())
+docs_man_conf = configuration_data({
+  'SYSCONFDIR': sysconfdir,
+  'RUNSTATEDIR': runstatedir,
+  'VERSION': meson.project_version(),
+})
 
 foreach data : docs_man_files
   rst_in_file = '@0@.rst'.format(data['name'])

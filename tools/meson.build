@@ -231,16 +231,17 @@ if conf.has('WITH_REMOTE')
   )
 endif
 
-tools_conf = configuration_data()
-tools_conf.set('PACKAGE', meson.project_name())
-tools_conf.set('VERSION', meson.project_version())
-tools_conf.set('bindir', bindir)
-tools_conf.set('libexecdir', libexecdir)
-tools_conf.set('localedir', localedir)
-tools_conf.set('localstatedir', localstatedir)
-tools_conf.set('sbindir', sbindir)
-tools_conf.set('schemadir', pkgdatadir / 'schemas')
-tools_conf.set('sysconfdir', sysconfdir)
+tools_conf = configuration_data({
+  'PACKAGE': meson.project_name(),
+  'VERSION': meson.project_version(),
+  'bindir': bindir,
+  'libexecdir': libexecdir,
+  'localedir': localedir,
+  'localstatedir': localstatedir,
+  'sbindir': sbindir,
+  'schemadir': pkgdatadir / 'schemas',
+  'sysconfdir': sysconfdir,
+})
 
 configure_file(
   input: 'virt-xml-validate.in',
