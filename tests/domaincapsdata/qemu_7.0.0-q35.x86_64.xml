@@ -56,6 +56,7 @@
       <feature policy='require' name='invtsc'/>
       <feature policy='require' name='amd-ssbd'/>
       <feature policy='require' name='virt-ssbd'/>
+      <feature policy='require' name='tsc-scale'/>
       <feature policy='require' name='svme-addr-chk'/>
       <feature policy='require' name='rdctl-no'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>

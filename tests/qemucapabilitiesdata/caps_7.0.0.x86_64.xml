@@ -245,10 +245,10 @@
   <flag name='dirtyrate-param.mode'/>
   <flag name='blockdev.nbd.tls-hostname'/>
   <flag name='memory-backend-file.prealloc-threads'/>
-  <version>6002050</version>
+  <version>6002092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
-  <package>v6.2.0-2347-gd9ccf33f94</package>
+  <package>v7.0.0-rc2</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -335,6 +335,7 @@
     <property name='vmx-mwait-exit' type='boolean' value='false'/>
     <property name='vmx-pml' type='boolean' value='false'/>
     <property name='vmx-nmi-exit' type='boolean' value='false'/>
+    <property name='amx-tile' type='boolean' value='false'/>
     <property name='vmx-invept-single-context-noglobals' type='boolean' value='false'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='rsba' type='boolean' value='false'/>
@@ -367,6 +368,7 @@
     <property name='smap' type='boolean' value='true' migratable='yes'/>
     <property name='pfthreshold' type='boolean' value='false'/>
     <property name='vmx-invpcid-exit' type='boolean' value='false'/>
+    <property name='amx-int8' type='boolean' value='false'/>
     <property name='x2apic' type='boolean' value='true' migratable='yes'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='avx512vnni' type='boolean' value='false'/>
@@ -413,6 +415,7 @@
     <property name='cldemote' type='boolean' value='false'/>
     <property name='sgx-tokenkey' type='boolean' value='false'/>
     <property name='vmx-ept' type='boolean' value='false'/>
+    <property name='xfd' type='boolean' value='false'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
     <property name='pge' type='boolean' value='true' migratable='yes'/>
@@ -517,7 +520,7 @@
     <property name='bmi1' type='boolean' value='true' migratable='yes'/>
     <property name='bmi2' type='boolean' value='true' migratable='yes'/>
     <property name='kvm-pv-unhalt' type='boolean' value='true' migratable='yes'/>
-    <property name='tsc-scale' type='boolean' value='false'/>
+    <property name='tsc-scale' type='boolean' value='true' migratable='yes'/>
     <property name='topoext' type='boolean' value='false'/>
     <property name='amd-stibp' type='boolean' value='true' migratable='yes'/>
     <property name='vmx-preemption-timer' type='boolean' value='false'/>
@@ -546,6 +549,7 @@
     <property name='xstore' type='boolean' value='false'/>
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
+    <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
@@ -952,6 +956,35 @@
   </cpu>
   <cpu type='kvm' name='IvyBridge' typename='IvyBridge-x86_64-cpu' usable='no'>
     <blocker name='erms'/>
+  </cpu>
+  <cpu type='kvm' name='Icelake-Server-v6' typename='Icelake-Server-v6-x86_64-cpu' usable='no'>
+    <blocker name='pcid'/>
+    <blocker name='erms'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='pku'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='la57'/>
+    <blocker name='fsrm'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512f'/>
+    <blocker name='pku'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='taa-no'/>
   </cpu>
   <cpu type='kvm' name='Icelake-Server-v5' typename='Icelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
@@ -1587,6 +1620,7 @@
   <machine type='kvm' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='xenpv' maxCpus='1'/>
   <machine type='kvm' name='pc-i440fx-6.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
@@ -1597,6 +1631,7 @@
   <machine type='kvm' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-6.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='xenfv-3.1' alias='xenfv' hotplugCpus='yes' maxCpus='128' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='x-remote' maxCpus='1'/>
@@ -1628,6 +1663,7 @@
   <machine type='kvm' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='kvm' name='xenfv-4.2' hotplugCpus='yes' maxCpus='128' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram'/>
   <machine type='kvm' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='kvm' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
@@ -1722,6 +1758,7 @@
     <property name='vmx-mwait-exit' type='boolean' value='false'/>
     <property name='vmx-pml' type='boolean' value='false'/>
     <property name='vmx-nmi-exit' type='boolean' value='false'/>
+    <property name='amx-tile' type='boolean' value='false'/>
     <property name='vmx-invept-single-context-noglobals' type='boolean' value='false'/>
     <property name='pn' type='boolean' value='false'/>
     <property name='rsba' type='boolean' value='false'/>
@@ -1754,6 +1791,7 @@
     <property name='smap' type='boolean' value='true' migratable='yes'/>
     <property name='pfthreshold' type='boolean' value='false'/>
     <property name='vmx-invpcid-exit' type='boolean' value='false'/>
+    <property name='amx-int8' type='boolean' value='false'/>
     <property name='x2apic' type='boolean' value='false'/>
     <property name='avx512vbmi' type='boolean' value='false'/>
     <property name='avx512vnni' type='boolean' value='false'/>
@@ -1800,6 +1838,7 @@
     <property name='cldemote' type='boolean' value='false'/>
     <property name='sgx-tokenkey' type='boolean' value='false'/>
     <property name='vmx-ept' type='boolean' value='false'/>
+    <property name='xfd' type='boolean' value='false'/>
     <property name='kvm-mmu' type='boolean' value='false'/>
     <property name='sse4.2' type='boolean' value='true' migratable='yes'/>
     <property name='pge' type='boolean' value='true' migratable='yes'/>
@@ -1933,6 +1972,7 @@
     <property name='xstore' type='boolean' value='false'/>
     <property name='rtm' type='boolean' value='false'/>
     <property name='kvm-hint-dedicated' type='boolean' value='false'/>
+    <property name='amx-bf16' type='boolean' value='false'/>
     <property name='lmce' type='boolean' value='false'/>
     <property name='perfctr-nb' type='boolean' value='false'/>
     <property name='rdrand' type='boolean' value='true' migratable='yes'/>
@@ -2490,6 +2530,47 @@
     <blocker name='tsc-deadline'/>
     <blocker name='avx'/>
     <blocker name='f16c'/>
+  </cpu>
+  <cpu type='tcg' name='Icelake-Server-v6' typename='Icelake-Server-v6-x86_64-cpu' usable='no'>
+    <blocker name='fma'/>
+    <blocker name='pcid'/>
+    <blocker name='x2apic'/>
+    <blocker name='tsc-deadline'/>
+    <blocker name='avx'/>
+    <blocker name='f16c'/>
+    <blocker name='avx2'/>
+    <blocker name='invpcid'/>
+    <blocker name='avx512f'/>
+    <blocker name='avx512dq'/>
+    <blocker name='rdseed'/>
+    <blocker name='avx512ifma'/>
+    <blocker name='avx512cd'/>
+    <blocker name='sha-ni'/>
+    <blocker name='avx512bw'/>
+    <blocker name='avx512vl'/>
+    <blocker name='avx512vbmi'/>
+    <blocker name='avx512vbmi2'/>
+    <blocker name='gfni'/>
+    <blocker name='vaes'/>
+    <blocker name='vpclmulqdq'/>
+    <blocker name='avx512vnni'/>
+    <blocker name='avx512bitalg'/>
+    <blocker name='avx512-vpopcntdq'/>
+    <blocker name='rdpid'/>
+    <blocker name='fsrm'/>
+    <blocker name='spec-ctrl'/>
+    <blocker name='arch-capabilities'/>
+    <blocker name='ssbd'/>
+    <blocker name='3dnowprefetch'/>
+    <blocker name='wbnoinvd'/>
+    <blocker name='xsavec'/>
+    <blocker name='xsaves'/>
+    <blocker name='rdctl-no'/>
+    <blocker name='ibrs-all'/>
+    <blocker name='skip-l1dfl-vmentry'/>
+    <blocker name='mds-no'/>
+    <blocker name='pschange-mc-no'/>
+    <blocker name='taa-no'/>
   </cpu>
   <cpu type='tcg' name='Icelake-Server-v5' typename='Icelake-Server-v5-x86_64-cpu' usable='no'>
     <blocker name='fma'/>
@@ -3645,6 +3726,7 @@
   <machine type='tcg' name='pc-q35-5.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.12' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='xenpv' maxCpus='1'/>
   <machine type='tcg' name='pc-i440fx-6.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-4.2' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.5' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
@@ -3655,6 +3737,7 @@
   <machine type='tcg' name='pc-i440fx-2.2' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-2.7' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-6.1' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='xenfv-3.1' alias='xenfv' hotplugCpus='yes' maxCpus='128' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.4' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-2.10' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='x-remote' maxCpus='1'/>
@@ -3686,6 +3769,7 @@
   <machine type='tcg' name='pc-q35-3.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-6.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-q35-4.0' hotplugCpus='yes' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
+  <machine type='tcg' name='xenfv-4.2' hotplugCpus='yes' maxCpus='128' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='microvm' maxCpus='288' defaultCPU='qemu64-x86_64-cpu' defaultRAMid='microvm.ram'/>
   <machine type='tcg' name='pc-i440fx-2.3' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
   <machine type='tcg' name='pc-i440fx-4.0' hotplugCpus='yes' maxCpus='255' defaultCPU='qemu64-x86_64-cpu' numaMemSupported='yes' defaultRAMid='pc.ram'/>
