@@ -4,7 +4,10 @@
   <selfctime>0</selfctime>
   <selfvers>0</selfvers>
   <flag name='kvm'/>
+  <flag name='sdl'/>
   <flag name='hda-duplex'/>
+  <flag name='ccid-emulated'/>
+  <flag name='ccid-passthru'/>
   <flag name='virtio-tx-alg'/>
   <flag name='piix3-usb-uhci'/>
   <flag name='piix4-usb-uhci'/>
@@ -12,6 +15,7 @@
   <flag name='ich9-usb-ehci1'/>
   <flag name='vt82c686b-usb-uhci'/>
   <flag name='pci-ohci'/>
+  <flag name='usb-redir'/>
   <flag name='usb-hub'/>
   <flag name='ich9-ahci'/>
   <flag name='virtio-blk-pci.scsi'/>
@@ -25,8 +29,10 @@
   <flag name='blockio'/>
   <flag name='disable-s3'/>
   <flag name='disable-s4'/>
+  <flag name='usb-redir.filter'/>
   <flag name='ide-drive.wwn'/>
   <flag name='scsi-disk.wwn'/>
+  <flag name='seccomp-sandbox'/>
   <flag name='vnc'/>
   <flag name='VGA'/>
   <flag name='cirrus-vga'/>
@@ -123,12 +129,14 @@
   <flag name='machine.pseries.cap-hpt-max-page-size'/>
   <flag name='machine.pseries.cap-htm'/>
   <flag name='usb-storage.werror'/>
+  <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
   <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
   <flag name='machine.pseries.cap-nested-hv'/>
+  <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='nvdimm.unarmed'/>
   <flag name='scsi-disk.device_id'/>
@@ -160,6 +168,7 @@
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
   <flag name='pcie-root-port.hotplug'/>
+  <flag name='aio.io_uring'/>
   <flag name='machine.pseries.cap-cfpc'/>
   <flag name='machine.pseries.cap-sbbc'/>
   <flag name='machine.pseries.cap-ibs'/>
@@ -172,6 +181,7 @@
   <flag name='spapr-tpm-proxy'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
+  <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
@@ -202,11 +212,12 @@
   <flag name='device.json+hotplug'/>
   <flag name='calc-dirty-rate'/>
   <flag name='dirtyrate-param.mode'/>
+  <flag name='blockdev.nbd.tls-hostname'/>
   <flag name='memory-backend-file.prealloc-threads'/>
-  <version>6002050</version>
+  <version>6002092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>42900243</microcodeVersion>
-  <package>v6.2.0-886-g6621441db5</package>
+  <package>v7.0.0-rc2</package>
   <arch>ppc64</arch>
   <cpu type='kvm' name='default' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc' typename='604-powerpc64-cpu'/>
@@ -268,8 +279,6 @@
   <cpu type='kvm' name='stretch' typename='603e_v4.1-powerpc64-cpu'/>
   <cpu type='kvm' name='603e' typename='603e_v4.1-powerpc64-cpu'/>
   <cpu type='kvm' name='vanilla' typename='603-powerpc64-cpu'/>
-  <cpu type='kvm' name='601v' typename='601_v2-powerpc64-cpu'/>
-  <cpu type='kvm' name='601' typename='601_v2-powerpc64-cpu'/>
   <cpu type='kvm' name='mpc8560' typename='mpc8560_v21-powerpc64-cpu'/>
   <cpu type='kvm' name='mpc8555e' typename='mpc8555e_v11-powerpc64-cpu'/>
   <cpu type='kvm' name='mpc8555' typename='mpc8555_v11-powerpc64-cpu'/>
@@ -370,7 +379,6 @@
   <cpu type='kvm' name='7445_v3.2'/>
   <cpu type='kvm' name='mpc8545_v20'/>
   <cpu type='kvm' name='603p'/>
-  <cpu type='kvm' name='601_v0'/>
   <cpu type='kvm' name='7400_v2.1'/>
   <cpu type='kvm' name='7455_v3.2'/>
   <cpu type='kvm' name='603e_v1.2'/>
@@ -382,7 +390,6 @@
   <cpu type='kvm' name='mpc8545_v21'/>
   <cpu type='kvm' name='mpc8379e'/>
   <cpu type='kvm' name='mpc8349e'/>
-  <cpu type='kvm' name='601_v1'/>
   <cpu type='kvm' name='7400_v2.2'/>
   <cpu type='kvm' name='7455_v3.3'/>
   <cpu type='kvm' name='603e_v1.3'/>
@@ -393,7 +400,6 @@
   <cpu type='kvm' name='mpc8572e'/>
   <cpu type='kvm' name='mpc8543e_v20'/>
   <cpu type='kvm' name='750fx_v2.1'/>
-  <cpu type='kvm' name='602'/>
   <cpu type='kvm' name='mpc8555e_v10'/>
   <cpu type='kvm' name='7451_v2.10'/>
   <cpu type='kvm' name='750l_v2.2'/>
@@ -582,7 +588,6 @@
   <cpu type='kvm' name='7445_v3.4'/>
   <cpu type='kvm' name='7445_v2.1'/>
   <cpu type='kvm' name='g2hip4'/>
-  <cpu type='kvm' name='601_v2'/>
   <cpu type='kvm' name='7400_v1.0'/>
   <cpu type='kvm' name='7455_v3.4'/>
   <cpu type='kvm' name='603e_v1.4'/>
@@ -734,8 +739,6 @@
   <cpu type='tcg' name='stretch' typename='603e_v4.1-powerpc64-cpu'/>
   <cpu type='tcg' name='603e' typename='603e_v4.1-powerpc64-cpu'/>
   <cpu type='tcg' name='vanilla' typename='603-powerpc64-cpu'/>
-  <cpu type='tcg' name='601v' typename='601_v2-powerpc64-cpu'/>
-  <cpu type='tcg' name='601' typename='601_v2-powerpc64-cpu'/>
   <cpu type='tcg' name='mpc8560' typename='mpc8560_v21-powerpc64-cpu'/>
   <cpu type='tcg' name='mpc8555e' typename='mpc8555e_v11-powerpc64-cpu'/>
   <cpu type='tcg' name='mpc8555' typename='mpc8555_v11-powerpc64-cpu'/>
@@ -836,7 +839,6 @@
   <cpu type='tcg' name='7445_v3.2'/>
   <cpu type='tcg' name='mpc8545_v20'/>
   <cpu type='tcg' name='603p'/>
-  <cpu type='tcg' name='601_v0'/>
   <cpu type='tcg' name='7400_v2.1'/>
   <cpu type='tcg' name='7455_v3.2'/>
   <cpu type='tcg' name='603e_v1.2'/>
@@ -848,7 +850,6 @@
   <cpu type='tcg' name='mpc8545_v21'/>
   <cpu type='tcg' name='mpc8379e'/>
   <cpu type='tcg' name='mpc8349e'/>
-  <cpu type='tcg' name='601_v1'/>
   <cpu type='tcg' name='7400_v2.2'/>
   <cpu type='tcg' name='7455_v3.3'/>
   <cpu type='tcg' name='603e_v1.3'/>
@@ -859,7 +860,6 @@
   <cpu type='tcg' name='mpc8572e'/>
   <cpu type='tcg' name='mpc8543e_v20'/>
   <cpu type='tcg' name='750fx_v2.1'/>
-  <cpu type='tcg' name='602'/>
   <cpu type='tcg' name='mpc8555e_v10'/>
   <cpu type='tcg' name='7451_v2.10'/>
   <cpu type='tcg' name='750l_v2.2'/>
@@ -1047,7 +1047,6 @@
   <cpu type='tcg' name='7445_v3.4'/>
   <cpu type='tcg' name='7445_v2.1'/>
   <cpu type='tcg' name='g2hip4'/>
-  <cpu type='tcg' name='601_v2'/>
   <cpu type='tcg' name='7400_v1.0'/>
   <cpu type='tcg' name='7455_v3.4'/>
   <cpu type='tcg' name='603e_v1.4'/>

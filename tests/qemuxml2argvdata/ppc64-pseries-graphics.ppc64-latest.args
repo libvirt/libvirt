@@ -44,4 +44,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x5"}' \
 -object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
 -device '{"driver":"virtio-rng-pci","rng":"objrng0","id":"rng0","bus":"pci.0","addr":"0x6"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

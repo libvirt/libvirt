@@ -34,4 +34,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
 -device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

@@ -31,4 +31,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-default-video-type-p/.config \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -vnc 127.0.0.1:0,audiodev=audio1 \
 -device '{"driver":"VGA","id":"video0","vgamem_mb":16,"bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

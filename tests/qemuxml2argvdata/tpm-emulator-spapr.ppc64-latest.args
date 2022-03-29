@@ -41,4 +41,5 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-TPM-VM/.config \
 -device '{"driver":"tpm-spapr","tpmdev":"tpm-tpm0","id":"tpm0","reg":20480}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -global spapr-nvram.reg=0x4000 \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
