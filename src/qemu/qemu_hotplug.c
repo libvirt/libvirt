@@ -1386,6 +1386,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
+        queueSize = net->driver.virtio.queues;
+        if (!queueSize)
+            queueSize = 1;
         if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
             goto cleanup;
         adjustmemlock = true;

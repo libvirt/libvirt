@@ -4346,6 +4346,10 @@ qemuBuildHostNetProps(virDomainNetDef *net,
         if (virJSONValueObjectAdd(&netprops, "s:type", "vhost-vdpa", NULL) < 0 ||
             virJSONValueObjectAppendString(netprops, "vhostdev", vdpadev) < 0)
             return NULL;
+
+        if (net->driver.virtio.queues > 1 &&
+            virJSONValueObjectAppendNumberUlong(netprops, "queues", net->driver.virtio.queues) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
