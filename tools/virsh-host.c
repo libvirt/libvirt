@@ -488,7 +488,7 @@ cmdAllocpages(vshControl *ctl, const vshCmd *cmd)
     if (cellno && vshCommandOptInt(ctl, cmd, "cellno", &startCell) < 0)
         return false;
 
-    if (vshCommandOptScaledInt(ctl, cmd, "pagesize", &tmp, 1024, UINT_MAX) < 0)
+    if (vshCommandOptScaledInt(ctl, cmd, "pagesize", &tmp, 1024, UINT_MAX * 1024ULL) < 0)
         return false;
     pageSizes[0] = VIR_DIV_UP(tmp, 1024);
 

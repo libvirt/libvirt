@@ -42,7 +42,7 @@ virshPagesizeNodeToString(xmlNodePtr node)
     unit = virXMLPropString(node, "unit");
     if (virStrToLong_ull(pagesize, NULL, 10, &byteval) < 0)
         return NULL;
-    if (virScaleInteger(&byteval, unit, 1024, UINT_MAX) < 0)
+    if (virScaleInteger(&byteval, unit, 1024, ULLONG_MAX) < 0)
         return NULL;
     size = vshPrettyCapacity(byteval, &suffix);
     ret = g_strdup_printf("%.0f%s", size, suffix);
