@@ -10,13 +10,14 @@
 # SeongHyun Jo <caelus9536@gmail.com>, 2021.
 # jason lee <ppark5237@gmail.com>, 2021.
 # Kim InSoo <simmon@nplob.com>, 2022.
+# 김인수 <simmon@nplob.com>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-03-28 11:25+0000\n"
-"PO-Revision-Date: 2022-02-27 02:16+0000\n"
-"Last-Translator: Kim InSoo <simmon@nplob.com>\n"
+"PO-Revision-Date: 2022-03-30 08:23+0000\n"
+"Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
 "Language: ko\n"
@@ -24,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11\n"
+"X-Generator: Weblate 4.11.2\n"
 
 msgid ""
 "\n"
@@ -1269,10 +1270,10 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-users의 응답에서 'login-time'이 누락"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "'manual' 메모리 스냅샷 방식은 지원되지 않습니다"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
-msgstr ""
+msgstr "테스트 드라이버에 의해 'manual' 스냅샷 방식은 지원되지 않습니다"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sector'는 virtio-scsi 제어기에서만 지원됩니다"
@@ -1375,10 +1376,10 @@ msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "'tftp' 통신규약은 이 QEMU 바이너리에서 지원하지 않습니다"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
-msgstr ""
+msgstr "이와 같은 QEMU에 의해 'tlsHostname' 부분은 지원되지 않습니다"
 
 msgid "'tlsHostname' field is supported only with NBD disks"
-msgstr ""
+msgstr "'tlsHostname' 부분은 NBD 디스크에서만 지원됩니다"
 
 msgid "'trim' algorithm not supported"
 msgstr "'trim' 알고리즘을 지원하지 않습니다"
@@ -7725,7 +7726,7 @@ msgid "Failed to parse memory"
 msgstr "메모리 구문 분석 실패"
 
 msgid "Failed to parse memory allocation threads"
-msgstr ""
+msgstr "메모리 할당 쓰레드 구문 분석에 실패함"
 
 msgid "Failed to parse memory slot count"
 msgstr "메모리 슬롯 수를 구문 분석하지 못했습니다"
@@ -8675,10 +8676,10 @@ msgstr "펌웨어 항목에는 값 또는 '파일' 속성이 있어야 합니다
 
 #, c-format
 msgid "Firmware flash mode value '%s' unexpected"
-msgstr ""
+msgstr "펌웨어 플래쉬 방식 값 '%s'가 예상되지 않음"
 
 msgid "Firmware flash mode value was malformed"
-msgstr ""
+msgstr "펌웨어 플래쉬 방식 값이 잘못되었습니다"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -20269,7 +20270,7 @@ msgstr ""
 "%s"
 
 msgid "at most 1 fd can be passed to qemu along with a command"
-msgstr ""
+msgstr "최대 1개의 fd를 명령과 함께 qemu에 전달 될 수 있습니다"
 
 msgid "at most one CPU cache element may be specified"
 msgstr "최대 하나의 CPU 캐시 요소를 지정할 수 있습니다"
@@ -23525,7 +23526,7 @@ msgid "custom configuration parameters specified"
 msgstr "사용자 지정 구성 매개변수 지정됨"
 
 msgid "custom device configuration"
-msgstr ""
+msgstr "사용자 정의 장치 구성"
 
 msgid "custom device tree blob used"
 msgstr "사용된 사용자 지정 장치 트리 blob"
@@ -27579,7 +27580,7 @@ msgstr "인터페이스 이름"
 
 #, c-format
 msgid "interface name %s does not fit into buffer"
-msgstr ""
+msgstr "연결장치 이름 %s는 버퍼에 맞지 않습니다"
 
 msgid "interface name or MAC address"
 msgstr "인터페이스 이름 또는 MAC 주소"
@@ -28352,7 +28353,7 @@ msgstr "장치 '%s'의 매개변수 '%s'에 대한 값 '%s'가 잘못되었습�
 
 #, c-format
 msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
-msgstr ""
+msgstr "'qemu:property'의 'value' 속성 값 '%s'가 잘못되었습니다"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr "부트 메뉴 시간초과에 잘못된 값, [0,65535] 범위 안에 있어야 합니다"
@@ -29699,7 +29700,7 @@ msgid "missing 'DateTime' element"
 msgstr "누락된 'DateTime' 요소"
 
 msgid "missing 'alias' attribute for qemu:device"
-msgstr ""
+msgstr "qemu를 위해 누락된 'alias' 속성:device"
 
 #, c-format
 msgid "missing 'architecture' in '%s'"
@@ -29759,7 +29760,7 @@ msgid ""
 msgstr "QEMU 기능 캐시에서 호스트 CPU 모델 속성에 대한 '이름' 속성 누락"
 
 msgid "missing 'name' attribute for qemu:property"
-msgstr ""
+msgstr "qemu를 위해 누락된 'name' 속성:property"
 
 msgid "missing 'namespace' attribute to disk source"
 msgstr "디스크 소스에 대한 '네임스페이스' 속성 누락"
@@ -29818,7 +29819,7 @@ msgid ""
 msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '사용자' 또는 '그룹' 속성이 없습니다"
 
 msgid "missing 'value' attribute for 'qemu:property'"
-msgstr ""
+msgstr "'qemu:property'를 위해 누락된 'value' 속성"
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr "HyperV 기능 'vendor_id'에 대한 '값' 속성이 없습니다"
@@ -32323,7 +32324,7 @@ msgid "partial string to autocomplete"
 msgstr "자동 완성할 부분 문자열"
 
 msgid "pass file descriptors N,M,... along with the command"
-msgstr ""
+msgstr "명령과 함께 파일 설명자 N,M,...을 전달합니다"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "파일 설명자 N,M,...을 게스트에게 전달"
@@ -32692,7 +32693,7 @@ msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "메타 데이터를 사전 할당 (전체 할당 대신 qcow2에 대해)"
 
 msgid "preallocation threads are unsupported with this QEMU"
-msgstr ""
+msgstr "사전 할당된 쓰레드는 이와 같은 QEMU와 함께 지원되지 않습니다"
 
 msgid "prefix too long"
 msgstr "접두사가 너무 깁니다"
@@ -32809,7 +32810,7 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "네트워크 %s의 DNS TXT 레코드 이름 '%s'에 금지된 문자가 있습니다"
 
 msgid "property with name 'id' can't be overriden"
-msgstr ""
+msgstr "이름 'id'인 속성은 재정의 할 수 없습니다"
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -33902,7 +33903,7 @@ msgstr "virsh를 실행하는 호스트의 시간으로 설정"
 msgid ""
 "setting 'value' attribute of 'qemu:property' doesn't make sense with "
 "'remove' type"
-msgstr ""
+msgstr "'qemu:property'의 'value' 속성 설정은 'remove' 유형에서 의미가 없습니다"
 
 msgid "setting ACPI S3 not supported"
 msgstr "ACPI S3 설정이 지원되지 않음"
@@ -37204,7 +37205,7 @@ msgstr "지원되지 않는 디스크 드라이버 %s"
 
 #, c-format
 msgid "unsupported disk snapshot type '%s'"
-msgstr ""
+msgstr "지원되지 않는 디스크 스냅샷 유형 '%s'"
 
 msgid "unsupported disk type"
 msgstr "지원하지 않는 디스크 형식"
