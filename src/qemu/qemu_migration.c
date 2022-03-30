@@ -2190,7 +2190,7 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
               vm->def->name, conn,
               virDomainAsyncJobTypeToString(priv->job.asyncJob),
-              virDomainAsyncJobPhaseToString(priv->job.asyncJob,
+              qemuDomainAsyncJobPhaseToString(priv->job.asyncJob,
                                               priv->job.phase));
 
     if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))

@@ -119,9 +119,9 @@ struct _qemuDomainJobObj {
 void qemuDomainJobSetStatsType(virDomainJobData *jobData,
                                qemuDomainJobStatsType type);
 
-const char *virDomainAsyncJobPhaseToString(virDomainAsyncJob job,
+const char *qemuDomainAsyncJobPhaseToString(virDomainAsyncJob job,
                                             int phase);
-int virDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
+int qemuDomainAsyncJobPhaseFromString(virDomainAsyncJob job,
                                       const char *phase);
 
 void qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
