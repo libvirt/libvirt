@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-03-28 11:25+0000\n"
-"PO-Revision-Date: 2022-02-23 18:14+0000\n"
+"PO-Revision-Date: 2022-03-28 13:06+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.11.2\n"
 
 msgid ""
 "\n"
@@ -1324,10 +1324,12 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «login-time»"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "підтримки створення знімків пам'яті у режимі «manual» не передбачено"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
 msgstr ""
+"підтримки створення знімків у режимі «manual» у тестовому драйвері не "
+"передбачено"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "підтримку «max_sectors» передбачено лише для контролерів virtio-scsi"
@@ -1432,10 +1434,10 @@ msgstr ""
 "Підтримку протоколу «tftp» у цьому виконуваному файлі QEMU не передбачено"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
-msgstr ""
+msgstr "у цьому QEMU не передбачено підтримки поля «tlsHostname»"
 
 msgid "'tlsHostname' field is supported only with NBD disks"
-msgstr ""
+msgstr "підтримку поля «tlsHostname» передбачено лише для дисків NBD"
 
 msgid "'trim' algorithm not supported"
 msgstr "підтримки алгоритму «trim» не передбачено"
@@ -8030,7 +8032,7 @@ msgid "Failed to parse memory"
 msgstr "Не вдалося обробити значення об'єму пам'яті"
 
 msgid "Failed to parse memory allocation threads"
-msgstr ""
+msgstr "Не вдалося обробити потоки розподілу пам'яті"
 
 msgid "Failed to parse memory slot count"
 msgstr "Не вдалося обробити кількість слотів пам'яті"
@@ -9010,10 +9012,10 @@ msgstr "Запис мікропрограми має містити або зн�
 
 #, c-format
 msgid "Firmware flash mode value '%s' unexpected"
-msgstr ""
+msgstr "Неочікуване значення режиму запису мікропрограми. «%s»"
 
 msgid "Firmware flash mode value was malformed"
-msgstr ""
+msgstr "Помилкове форматування значення режиму запису мікропрограми"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -21302,7 +21304,7 @@ msgstr ""
 "%s"
 
 msgid "at most 1 fd can be passed to qemu along with a command"
-msgstr ""
+msgstr "з командою qemu можна передати не більше 1 дескриптора файла"
 
 msgid "at most one CPU cache element may be specified"
 msgstr "можна вказувати не більше одного елемента кешу процесора"
@@ -24744,7 +24746,7 @@ msgid "custom configuration parameters specified"
 msgstr "вказано нетипові параметри налаштовування"
 
 msgid "custom device configuration"
-msgstr ""
+msgstr "нетипові налаштування пристрою"
 
 msgid "custom device tree blob used"
 msgstr "використано нетипові двійкові дані ієрархії пристроїв"
@@ -28983,7 +28985,7 @@ msgstr "назва інтерфейсу"
 
 #, c-format
 msgid "interface name %s does not fit into buffer"
-msgstr ""
+msgstr "назва інтерфейсу %s не вписується до буфера"
 
 msgid "interface name or MAC address"
 msgstr "назва інтерфейсу або MAC-адреса"
@@ -29772,7 +29774,7 @@ msgstr "некоректне значення, «%s», параметра «%s»
 
 #, c-format
 msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
-msgstr ""
+msgstr "некоректне значення «%s» атрибуту «value» «qemu:property»"
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -31235,7 +31237,7 @@ msgid "missing 'DateTime' element"
 msgstr "пропущено елемент «DateTime»"
 
 msgid "missing 'alias' attribute for qemu:device"
-msgstr ""
+msgstr "пропущено атрибут «alias» для qemu:device"
 
 #, c-format
 msgid "missing 'architecture' in '%s'"
@@ -31299,7 +31301,7 @@ msgstr ""
 "(model) процесора основної системи"
 
 msgid "missing 'name' attribute for qemu:property"
-msgstr ""
+msgstr "пропущено атрибут «name» qemu:property"
 
 msgid "missing 'namespace' attribute to disk source"
 msgstr "не вказано атрибута «namespace» джерела диска"
@@ -31360,7 +31362,7 @@ msgstr ""
 "пропущено атрибут «user» і «group» у резервному визначенні JSON для тому NFS"
 
 msgid "missing 'value' attribute for 'qemu:property'"
-msgstr ""
+msgstr "пропущено атрибут «value» «qemu:property»"
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr "пропущено атрибут «value» для можливості HyperV «vendor_id»"
@@ -33987,7 +33989,7 @@ msgid "partial string to autocomplete"
 msgstr "частковий рядок для автодоповнення"
 
 msgid "pass file descriptors N,M,... along with the command"
-msgstr ""
+msgstr "передати дескриптори файлів N,M,... разом із командою"
 
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "передати дескриптори файлів N, M,... гостьовій системі"
@@ -34398,6 +34400,7 @@ msgstr ""
 
 msgid "preallocation threads are unsupported with this QEMU"
 msgstr ""
+"у цьому QEMU не передбачено підтримки потоків попереднього розподілу пам'яті"
 
 msgid "prefix too long"
 msgstr "префікс є надто довгим"
@@ -34516,7 +34519,7 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "заборонений символ у назві запису TXT DNS «%s» мережі %s"
 
 msgid "property with name 'id' can't be overriden"
-msgstr ""
+msgstr "не можна перевизначати властивість із назвою «id»"
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -35684,6 +35687,8 @@ msgid ""
 "setting 'value' attribute of 'qemu:property' doesn't make sense with "
 "'remove' type"
 msgstr ""
+"встановлення атрибуту «value» для «qemu:property» не має сенсу із типом "
+"«remove»"
 
 msgid "setting ACPI S3 not supported"
 msgstr "підтримки встановлення S3 ACPI не передбачено"
@@ -39083,7 +39088,7 @@ msgstr "непідтримуваний драйвер диска, %s"
 
 #, c-format
 msgid "unsupported disk snapshot type '%s'"
-msgstr ""
+msgstr "непідтримуваний тип знімка диска «%s»"
 
 msgid "unsupported disk type"
 msgstr "непідтримуваний тип диска"
