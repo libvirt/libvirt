@@ -3368,7 +3368,7 @@ qemuDomainDefNamespaceParseOverrideProperties(qemuDomainXmlNsOverrideProperty *p
 
         if (STREQ(prop->name, "id")) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("property with name 'id' can't be overriden"));
+                           _("property with name 'id' can't be overridden"));
             return -1;
         }
 

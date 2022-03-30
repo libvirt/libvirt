@@ -642,7 +642,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DIRTYRATE_MODE , /* calc-dirty-rate accepts mode parameter */
 
     /* 425 */
-    QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME, /* tls hostname can be overriden for NBD clients */
+    QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME, /* tls hostname can be overridden for NBD clients */
     QEMU_CAPS_MEMORY_BACKEND_PREALLOC_THREADS, /* -object memory-backend-*.prealloc-threads */
 
     QEMU_CAPS_LAST /* this must always be the last item */

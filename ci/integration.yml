@@ -62,7 +62,7 @@ centos-stream-8-tests:
   variables:
     # needed by libvirt-gitlab-executor
     DISTRO: centos-stream-8
-    # can be overriden in forks to set a different runner tag
+    # can be overridden in forks to set a different runner tag
     LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
@@ -78,7 +78,7 @@ centos-stream-9-tests:
   variables:
     # needed by libvirt-gitlab-executor
     DISTRO: centos-stream-9
-    # can be overriden in forks to set a different runner tag
+    # can be overridden in forks to set a different runner tag
     LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
@@ -94,7 +94,7 @@ fedora-34-tests:
   variables:
     # needed by libvirt-gitlab-executor
     DISTRO: fedora-34
-    # can be overriden in forks to set a different runner tag
+    # can be overridden in forks to set a different runner tag
     LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
@@ -110,7 +110,7 @@ fedora-35-tests:
   variables:
     # needed by libvirt-gitlab-executor
     DISTRO: fedora-35
-    # can be overriden in forks to set a different runner tag
+    # can be overridden in forks to set a different runner tag
     LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
