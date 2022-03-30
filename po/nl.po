@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2015-02-26 09:23+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Dutch (http://www.transifex.com/projects/p/fedora/language/"
@@ -1080,6 +1080,12 @@ msgstr ""
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr ""
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "vhost-net wordt alleen ondersteund voor virtio netwerk interfaces"
@@ -1178,6 +1184,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "SATA wordt niet ondersteund met dit QEMU binaire programma"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2263,10 +2275,6 @@ msgstr ""
 msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "Aanroep naar '%s' gaf iets terug, verwacht een leeg resultaat"
 
-#, fuzzy, c-format
-msgid "Call to utsname failed: %d"
-msgstr "operatie mislukte: %s"
-
 #, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "Aanroepen van %s vanuit '%s' mislukte"
@@ -3033,10 +3041,6 @@ msgstr "kan video ram '%s' niet ontleden"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "kan video ram '%s' niet ontleden"
 
 #, c-format
 msgid ""
@@ -3916,10 +3920,6 @@ msgstr ""
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Kan domein niet vernietigen: %s"
-
-#, fuzzy, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Kan UUID niet ontleden uit tekenreeks '%s'"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7388,10 +7388,6 @@ msgstr "Blok naam %s ontleden mislukte"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Bouwen van pool %s mislukte"
-
 msgid "Failed to list active domains"
 msgstr "Het tonen van actieve domeinen mislukte"
 
@@ -7732,6 +7728,9 @@ msgstr "Positief geheel getal ontleden uit '%s' mislukte"
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "Ontleden mode '%s' mislukte"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8709,6 +8708,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12467,9 +12473,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "Fout bij openen van bestand %s"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 #, fuzzy
 msgid "No per-CPU stats available"
@@ -20762,6 +20765,9 @@ msgid ""
 "%s"
 msgstr ""
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -24131,6 +24137,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -27512,10 +27521,6 @@ msgstr "station hotplug wordt niet ondersteund"
 msgid "fs format %s is not supported"
 msgstr "Netwerk type %d wordt niet ondersteund."
 
-#, fuzzy
-msgid "fseek failed"
-msgstr "sockpair mislukte"
-
 msgid "fully-qualified path of disk"
 msgstr ""
 
@@ -28339,8 +28344,8 @@ msgid "interface name"
 msgstr "interface naam"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "interface naam %s past niet in buffer"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "interface naam of MAC adres"
@@ -29126,6 +29131,10 @@ msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "Ongeldige waarde '%s' voor VMX ingang '%s'"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -30595,6 +30604,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "ontbrekend root element"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "Ontbrekende CPU architectuur"
@@ -30649,6 +30661,9 @@ msgstr "domein toestand ontbreekt"
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
 #, fuzzy
@@ -30707,6 +30722,9 @@ msgstr "Ontbrekend bron service attribuut voor karakter apparaat"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -33370,6 +33388,9 @@ msgstr "ontleed fout"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 
@@ -33751,6 +33772,9 @@ msgstr "vhost-net wordt alleen ondersteund voor virtio netwerk interfaces"
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr ""
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "profileid parameter is te lang"
@@ -33871,6 +33895,9 @@ msgstr "versie komt niet overeen (actueel %x, verwacht %x)"
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
+msgstr ""
+
+msgid "property with name 'id' can't be overriden"
 msgstr ""
 
 #, c-format
@@ -35008,6 +35035,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 #, fuzzy
@@ -36849,9 +36881,6 @@ msgstr ""
 msgid "unable to handle agent type: %s"
 msgstr "kan monitor type niet afhandelen: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr ""
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "kan monitor type niet afhandelen: %s"
@@ -37775,18 +37804,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "onbekende schijf io mode '%s'"
 
 #, fuzzy, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "onbekend schijf type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "onbekend schijf bus type '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "onbekend schijf type '%s'"
-
-#, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "onbekende timer present waarde '%s'"
 
@@ -37883,10 +37900,6 @@ msgstr "onbekend interface type '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "onbekend adres type '%s'"
-
-#, fuzzy, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "onbekend geheugen ballon model '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38344,6 +38357,10 @@ msgstr "Niet-ondersteund schijf apparaat type '%s'"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "niet-ondersteund schijf type %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "unsupported disk type"
@@ -39589,6 +39606,44 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s] <tekenreeks>"
+
+#, fuzzy
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "operatie mislukte: %s"
+
+#, fuzzy
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "kan video ram '%s' niet ontleden"
+
+#, fuzzy
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Kan UUID niet ontleden uit tekenreeks '%s'"
+
+#, fuzzy
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Bouwen van pool %s mislukte"
+
+#, fuzzy
+#~ msgid "fseek failed"
+#~ msgstr "sockpair mislukte"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "interface naam %s past niet in buffer"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "onbekend schijf type '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "onbekend schijf bus type '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "onbekend schijf type '%s'"
+
+#, fuzzy
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "onbekend geheugen ballon model '%s'"
 
 #, fuzzy
 #~ msgid "'queues' attribute must be positive number: %s"

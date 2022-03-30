@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2015-03-03 07:52+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (http://www.transifex.com/projects/p/fedora/language/"
@@ -1071,6 +1071,12 @@ msgstr ""
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr ""
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr ""
 
@@ -1164,6 +1170,12 @@ msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
+msgstr ""
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
 msgstr ""
 
 msgid "'trim' algorithm not supported"
@@ -2220,10 +2232,6 @@ msgstr ""
 msgid "Call to '%s' returned something, expecting an empty result"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Call to utsname failed: %d"
-msgstr "неуспела радња: %s"
-
 #, c-format
 msgid "Calling %s from '%s' failed"
 msgstr ""
@@ -2954,10 +2962,6 @@ msgstr "не могу да рашчланим место почетка уређ
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "не могу да рашчланим место почетка уређаја"
 
 #, c-format
 msgid ""
@@ -3812,10 +3816,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Неуспело уништавање домена %s"
-
-#, fuzzy, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "не могу да одредим максималне vcpus за домен"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7178,10 +7178,6 @@ msgstr "Неуспело укидање дефиниције складишта 
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "неуспела изградња складишта %s"
-
 msgid "Failed to list active domains"
 msgstr "Неуспело исписивање активних домена"
 
@@ -7528,6 +7524,9 @@ msgstr "Неуспело враћање домена из %s"
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "Неуспело рашчлањивање режима „%s“"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8496,6 +8495,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12132,9 +12138,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "не постоји датотека подешавања за %s"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr ""
@@ -20136,6 +20139,9 @@ msgid ""
 "%s"
 msgstr ""
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -23418,6 +23424,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -26784,9 +26793,6 @@ msgstr "Врста мреже %d није подржана"
 msgid "fs format %s is not supported"
 msgstr "Врста мреже %d није подржана"
 
-msgid "fseek failed"
-msgstr ""
-
 msgid "fully-qualified path of disk"
 msgstr ""
 
@@ -27579,7 +27585,7 @@ msgid "interface name"
 msgstr "име мреже"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
+msgid "interface name %s does not fit into buffer"
 msgstr ""
 
 #, fuzzy
@@ -28360,6 +28366,10 @@ msgstr ""
 
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
 msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -29784,6 +29794,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "недостаје root елемент"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr ""
@@ -29838,6 +29851,9 @@ msgstr ""
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
 #, fuzzy
@@ -29896,6 +29912,9 @@ msgstr "Недостаје особина изворног сервиса за �
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -32488,6 +32507,9 @@ msgstr "грешка у рашчлањивању"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 
@@ -32863,6 +32885,9 @@ msgstr ""
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr ""
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 msgid "prefix too long"
 msgstr ""
 
@@ -32978,6 +33003,9 @@ msgstr "неусаглашеност верзије (добијено %x, оче
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
+msgstr ""
+
+msgid "property with name 'id' can't be overriden"
 msgstr ""
 
 #, c-format
@@ -34088,6 +34116,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 #, fuzzy
@@ -35904,9 +35937,6 @@ msgstr ""
 msgid "unable to handle agent type: %s"
 msgstr ""
 
-msgid "unable to handle disk requests in snapshot"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "Не могу да изменим највећу количину меморије"
@@ -36830,18 +36860,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "непознат „%s“ уређај за покретање"
 
 #, fuzzy, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "непознат „%s“ уређај за покретање"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "непозната врста ауторизације %s"
-
-#, fuzzy, c-format
-msgid "unknown disk type '%s'"
-msgstr "непозната врста „%s“"
-
-#, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "непознат „%s“ уређај за покретање"
 
@@ -36939,10 +36957,6 @@ msgstr "непозната врста ауторизације %s"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "непозната врста ауторизације %s"
-
-#, fuzzy, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "непознат „%s“ уређај за покретање"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -37401,6 +37415,10 @@ msgstr "извор уређаја диска"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "магистрала за унос %s није подржана"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "unsupported disk type"
@@ -38620,6 +38638,38 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <ниска>"
+
+#, fuzzy
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "неуспела радња: %s"
+
+#, fuzzy
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "не могу да рашчланим место почетка уређаја"
+
+#, fuzzy
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "не могу да одредим максималне vcpus за домен"
+
+#, fuzzy
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "неуспела изградња складишта %s"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "непознат „%s“ уређај за покретање"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "непозната врста ауторизације %s"
+
+#, fuzzy
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "непозната врста „%s“"
+
+#, fuzzy
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "непознат „%s“ уређај за покретање"
 
 #, fuzzy
 #~ msgid "Invalid TSC frequency"

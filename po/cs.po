@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1251,6 +1251,12 @@ msgstr "v odpovědi guest-get-vcpus chybí 'logical-id'"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "v odpovědi quest-get-users chybí 'login-time'"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sectors' je podporováno pouze řadičem virtio-scsi"
 
@@ -1348,6 +1354,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "VxHS protokol není touto binárkou QEMU podporován"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 msgid "'trim' algorithm not supported"
 msgstr "algoritmus „trim“ není podporován"
@@ -2453,10 +2465,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "Volání „%s“ něco vrátilo, očekáván prázdný výsledek"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "Volání do utsname se nezdařilo: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "Volání %s z „%s“ se nezdařilo"
 
@@ -3204,10 +3212,6 @@ msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
 "Nedaří se zpracovat atribut uuid (nikde se neopakující identifikátor) prvku "
 "<address> (adresa)"
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "Nedaří se zpracovat řetězec verze „%s“"
 
 #, c-format
 msgid ""
@@ -4074,10 +4078,6 @@ msgstr "Nedaří se zrušit serializaci položky pull odpovědi"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Nepodařilo se zlikvidovat doménu: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Nedaří se zjistit verzi ovladače z řetězce %s"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7453,10 +7453,6 @@ msgstr "Nepodařilo se získat zámek: %s"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Nepodařilo se vynutit ukončení procesu %lld: %s"
-
 msgid "Failed to list active domains"
 msgstr "Nepodařilo se vypsat aktivní domény"
 
@@ -7789,6 +7785,9 @@ msgstr "Nepodařilo se zpracovat pořadové číslo rozhraní z „%s“"
 
 msgid "Failed to parse memory"
 msgstr "Nepodařilo se zpracovat paměť"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 msgid "Failed to parse memory slot count"
 msgstr "Nepodařilo se zpracovat počet paměťových slotů"
@@ -8737,6 +8736,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12441,9 +12447,6 @@ msgstr "Žádný síťový soket přiřazený klientovi"
 #, c-format
 msgid "No open log file %s"
 msgstr "Žádný otevřený soubor záznamu událostí %s"
-
-msgid "No output from iptables --version"
-msgstr "Žádný výstup z iptables --version"
 
 msgid "No per-CPU stats available"
 msgstr "Statistiky pro jednotlivé procesory nejsou k dispozici"
@@ -20537,6 +20540,9 @@ msgstr ""
 "na řádku %d: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr "je možné zadat nejvýše jeden prvek mezipaměti procesoru"
 
@@ -23875,6 +23881,9 @@ msgstr "uživatelsky určený název zařízení rozhraní"
 msgid "custom configuration parameters specified"
 msgstr ""
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr ""
 
@@ -27188,9 +27197,6 @@ msgstr "ovladač souborového systému %s není podporován"
 msgid "fs format %s is not supported"
 msgstr "formát souborového systému %s není podporován"
 
-msgid "fseek failed"
-msgstr "fseek se nezdařilo"
-
 msgid "fully-qualified path of disk"
 msgstr "úplný popis umístění disku"
 
@@ -28010,8 +28016,8 @@ msgid "interface name"
 msgstr "název rozhraní"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "název rozhraní %s se nevejde do vyrovnávací paměti"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "název nebo MAC adresa rozhraní"
@@ -28799,6 +28805,10 @@ msgstr "neplatná hodnota „%s“ pro parametr stěhování „%s“"
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "neplatná hodnota „%s“ pro parametr „%s“ zařízení „%s“"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -30197,6 +30207,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "chybí prvek 'DateTime'"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "Chybí architektura procesoru"
@@ -30258,6 +30271,9 @@ msgstr ""
 "v mezipaměti schopností QEMU chybí atribut 'name' (název) pro vlastnost "
 "model procesoru hostitele"
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "chybí název zdroje disku"
@@ -30313,6 +30329,9 @@ msgstr "chybí atribut „usage“ pro souborový systém v operační paměti"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -32898,6 +32917,9 @@ msgstr "chyba vyhodnocovače"
 msgid "partial string to autocomplete"
 msgstr "část řetězce pro automatické doplnění"
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "předat popisovače souborů N,M,... hostovi"
 
@@ -33288,6 +33310,9 @@ msgstr "předpřidělení je podporované pouze pro holý svazek"
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "předpřidělit metadata (pro qcow2 namísto plného přidělení)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "předpona (prefix) je příliš dlouhá"
 
@@ -33402,6 +33427,9 @@ msgstr "neshoda programu v události (skutečný 0x%x, očekáváno 0x%x)"
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "nepovolený znak v názvu DNS záznamu TXT „%s“ sítě %s"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34529,6 +34557,11 @@ msgstr "nastavit práh pro block-treshold událost pro blokové zařízení"
 
 msgid "set to the time of the host running virsh"
 msgstr "nastavit na čas hostitele, na kterém je spuštěné virsh"
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
+msgstr ""
 
 msgid "setting ACPI S3 not supported"
 msgstr "nastavení ACPI S3 není podporováno"
@@ -36414,9 +36447,6 @@ msgstr "nedaří se získat prostřednictvím procfs uid a gid pro PID %d"
 msgid "unable to handle agent type: %s"
 msgstr "nedaří se ošetřit typ monitoru: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "nedaří se obsloužit požadavky na disk v zachyceném stavu"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "nedaří se ošetřit typ monitoru: %s"
@@ -37316,18 +37346,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "neznámý ovladač zachyceného stavu disku „%s“"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "neznámé nastavení zachyceného stavu disku „%s“"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "neznámý typ zachyceného stavu disku „%s“"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "neznámý typ disku '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "neznámá hodnota formátu ovladače „%s“"
 
@@ -37422,10 +37440,6 @@ msgstr "neznámý typ rozhraní „%s“"
 #, c-format
 msgid "unknown ip address type '%s'"
 msgstr "neznámý typ IP adresy „%s“"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "neznámé nastavení zachyceného stavu paměti „%s“"
 
 #, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -37879,6 +37893,10 @@ msgstr "nepodporované diskové zařízení"
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr "nepodporovaný ovladač disku %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "nepodporovaný typ disku"
@@ -39139,6 +39157,42 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "Volání do utsname se nezdařilo: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "Nedaří se zpracovat řetězec verze „%s“"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Nedaří se zjistit verzi ovladače z řetězce %s"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Nepodařilo se vynutit ukončení procesu %lld: %s"
+
+#~ msgid "No output from iptables --version"
+#~ msgstr "Žádný výstup z iptables --version"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek se nezdařilo"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "název rozhraní %s se nevejde do vyrovnávací paměti"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "nedaří se obsloužit požadavky na disk v zachyceném stavu"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "neznámé nastavení zachyceného stavu disku „%s“"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "neznámý typ zachyceného stavu disku „%s“"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "neznámý typ disku '%s'"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "neznámé nastavení zachyceného stavu paměti „%s“"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "je třeba, aby atribut 'queues' bylo kladné číslo: %s"

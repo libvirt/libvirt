@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2022-02-23 18:14+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1323,6 +1323,12 @@ msgstr "у відповіді guest-get-vcpus пропущено «logical-id»"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "у відповіді guest-get-users пропущено «login-time»"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "підтримку «max_sectors» передбачено лише для контролерів virtio-scsi"
 
@@ -1424,6 +1430,12 @@ msgstr "«target» посилається на вузол NUMA, якого не 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr ""
 "Підтримку протоколу «tftp» у цьому виконуваному файлі QEMU не передбачено"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 msgid "'trim' algorithm not supported"
 msgstr "підтримки алгоритму «trim» не передбачено"
@@ -2579,10 +2591,6 @@ msgstr ""
 "порожній результат"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "Виклик utsname зазнав невдачі: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "Спроба виклику %s від «%s» зазнала невдачі"
 
@@ -3336,10 +3344,6 @@ msgstr "Не вдалося обробити статистичні дані щ�
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "Не вдалося обробити атрибут uuid елемента <address>"
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "Не вдалося обробити рядок версії, «%s»"
 
 #, c-format
 msgid ""
@@ -4261,10 +4265,6 @@ msgstr "Не вдалося десеріалізувати запис надси
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Не вдалося знищити домен: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Не вдалося визначити версію ядра за рядком %s"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7694,10 +7694,6 @@ msgstr "Не вдалося визначити стан блокування: %s
 msgid "Failed to kill process %lld"
 msgstr "Не вдалося вбити процес %lld"
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Не вдалося вбити процес %lld: %s"
-
 msgid "Failed to list active domains"
 msgstr "Не вдалося побудувати список активних доменів"
 
@@ -8032,6 +8028,9 @@ msgstr "Не вдалося обробити індекс інтерфейсу �
 
 msgid "Failed to parse memory"
 msgstr "Не вдалося обробити значення об'єму пам'яті"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 msgid "Failed to parse memory slot count"
 msgstr "Не вдалося обробити кількість слотів пам'яті"
@@ -9008,6 +9007,13 @@ msgstr "У записі мікропрограми пропущено атриб
 
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr "Запис мікропрограми має містити або значення або атрибут «file»"
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
+msgstr ""
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -12819,9 +12825,6 @@ msgstr "Немає сокета мережі, пов'язаного із клі�
 #, c-format
 msgid "No open log file %s"
 msgstr "Немає відкритого файла журналу %s"
-
-msgid "No output from iptables --version"
-msgstr "Не отримано даних у відповідь на команду iptables --version"
 
 msgid "No per-CPU stats available"
 msgstr "Статистичні дані щодо окремих процесорів недоступні"
@@ -17950,7 +17953,8 @@ msgid "Unable to find 'devices' cgroups controller mount"
 msgstr "Не вдалося знайти точку монтування контролера cgroup «devices»"
 
 msgid "Unable to find 'dnsmasq' binary in $PATH"
-msgstr "Не вдалося знайти виконуваний файл «dnsmasq» в одному з каталогів $PATH"
+msgstr ""
+"Не вдалося знайти виконуваний файл «dnsmasq» в одному з каталогів $PATH"
 
 msgid "Unable to find 'memory' cgroups controller mount"
 msgstr "Не вдалося знайти точку монтування контролера cgroup «memory»"
@@ -21296,6 +21300,9 @@ msgid ""
 msgstr ""
 "у рядку %d: %s%s\n"
 "%s"
+
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
 
 msgid "at most one CPU cache element may be specified"
 msgstr "можна вказувати не більше одного елемента кешу процесора"
@@ -24736,6 +24743,9 @@ msgstr "нетипова альтернативна назва пристрою 
 msgid "custom configuration parameters specified"
 msgstr "вказано нетипові параметри налаштовування"
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr "використано нетипові двійкові дані ієрархії пристроїв"
 
@@ -28080,9 +28090,6 @@ msgstr "підтримки драйвера файлової системи %s �
 msgid "fs format %s is not supported"
 msgstr "підтримки формату файлової системи %s не передбачено"
 
-msgid "fseek failed"
-msgstr "помилка fseek"
-
 msgid "fully-qualified path of disk"
 msgstr "шлях до диска повністю"
 
@@ -28975,8 +28982,8 @@ msgid "interface name"
 msgstr "назва інтерфейсу"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "назву інтерфейсу %s не можна розмістити у буфері "
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "назва інтерфейсу або MAC-адреса"
@@ -29762,6 +29769,10 @@ msgstr "некоректне значення «%s» для параметра �
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "некоректне значення, «%s», параметра «%s» пристрою «%s»"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -31223,6 +31234,9 @@ msgstr "не вказано «%s» у «config» з cloud-hypervisor"
 msgid "missing 'DateTime' element"
 msgstr "пропущено елемент «DateTime»"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "пропущено «architecture» у «%s»"
@@ -31284,6 +31298,9 @@ msgstr ""
 "у кеші можливостей QEMU не вистачає атрибута «name» для властивості моделі "
 "(model) процесора основної системи"
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 msgid "missing 'namespace' attribute to disk source"
 msgstr "не вказано атрибута «namespace» джерела диска"
 
@@ -31341,6 +31358,9 @@ msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
 msgstr ""
 "пропущено атрибут «user» і «group» у резервному визначенні JSON для тому NFS"
+
+msgid "missing 'value' attribute for 'qemu:property'"
+msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
 msgstr "пропущено атрибут «value» для можливості HyperV «vendor_id»"
@@ -33966,6 +33986,9 @@ msgstr "помилка розбору"
 msgid "partial string to autocomplete"
 msgstr "частковий рядок для автодоповнення"
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "передати дескриптори файлів N, M,... гостьовій системі"
 
@@ -34373,6 +34396,9 @@ msgstr ""
 "попередньо отримати місце для метаданих (для qcow2 замість отримання місця "
 "для всіх даних)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "префікс є надто довгим"
 
@@ -34488,6 +34514,9 @@ msgstr "невідповідність програм у події (маємо 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "заборонений символ у назві запису TXT DNS «%s» мережі %s"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -35650,6 +35679,11 @@ msgstr ""
 
 msgid "set to the time of the host running virsh"
 msgstr "встановити час для вузла, на якому запущено virsh"
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
+msgstr ""
 
 msgid "setting ACPI S3 not supported"
 msgstr "підтримки встановлення S3 ACPI не передбачено"
@@ -37600,9 +37634,6 @@ msgstr "Не вдалося обробити uid і gid для PID %d за до�
 msgid "unable to handle agent type: %s"
 msgstr "керування типом агента неможливе: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "неможливо обробити запити до диска у знімку"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "керування типом монітора неможливе: %s"
@@ -38501,18 +38532,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "невідомий драйвер диска знімків, «%s»"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "невідомий параметр знімка диска «%s»"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "невідомий тип знімка диска, «%s»"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "невідомий тип диска «%s»"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "невідоме значення формату драйвера, «%s»"
 
@@ -38607,10 +38626,6 @@ msgstr "невідомий тип інтерфейсу: «%s»"
 #, c-format
 msgid "unknown ip address type '%s'"
 msgstr "невідомий тип ip-адреси, «%s»"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "невідомий параметр знімка пам'яті, «%s»"
 
 #, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -39065,6 +39080,10 @@ msgstr "непідтримуваний пристрій диска"
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr "непідтримуваний драйвер диска, %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "непідтримуваний тип диска"
@@ -40371,6 +40390,42 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "Виклик utsname зазнав невдачі: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "Не вдалося обробити рядок версії, «%s»"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Не вдалося визначити версію ядра за рядком %s"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Не вдалося вбити процес %lld: %s"
+
+#~ msgid "No output from iptables --version"
+#~ msgstr "Не отримано даних у відповідь на команду iptables --version"
+
+#~ msgid "fseek failed"
+#~ msgstr "помилка fseek"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "назву інтерфейсу %s не можна розмістити у буфері "
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "неможливо обробити запити до диска у знімку"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "невідомий параметр знімка диска «%s»"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "невідомий тип знімка диска, «%s»"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "невідомий тип диска «%s»"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "невідомий параметр знімка пам'яті, «%s»"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "значенням атрибута «queues» має бути додатне число: %s"

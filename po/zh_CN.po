@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1235,6 +1235,12 @@ msgstr "guest-get-vcpus 回复中缺少 'logical-id'"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-vcpus 回复中缺少 'logical-id'"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "只有 virtio-scsi 支持 'queues'"
@@ -1332,6 +1338,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制中不支持 SATA"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2404,10 +2416,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "调用 '%s' 返回结果，应为空结果。"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "调用 utsname 失败：%d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "从 '%s' 调用 %s 失败"
 
@@ -3160,10 +3168,6 @@ msgstr "无法解析用户统计 '%s'"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "无法解析版本字符串 '%s'"
 
 #, c-format
 msgid ""
@@ -4016,10 +4020,6 @@ msgstr "无法反序列化 pull 响应项目"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "无法删除域：%s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "无法从字符串 %s 确定内核版本"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7370,10 +7370,6 @@ msgstr "查询锁失败"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "杀死进程 %lld 失败：%s"
-
 msgid "Failed to list active domains"
 msgstr "列出活跃的域失败"
 
@@ -7704,6 +7700,9 @@ msgstr "从 '%s' 中解析正整数失败"
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "解析端口号失败"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8647,6 +8646,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12329,9 +12335,6 @@ msgstr "网络 '%s' 没有关联的接口或者桥接"
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "无法打开日志文件：%s"
-
-msgid "No output from iptables --version"
-msgstr "iptables --version 没有任何输出结果"
 
 msgid "No per-CPU stats available"
 msgstr "没有可用的每个 CPU 统计数据"
@@ -20421,6 +20424,9 @@ msgstr ""
 "在行 %d: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -23740,6 +23746,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -27074,9 +27083,6 @@ msgstr "不支持 fs 驱动程序 %s"
 msgid "fs format %s is not supported"
 msgstr "不支持 fs 格式 %s"
 
-msgid "fseek failed"
-msgstr "fseek 失败"
-
 msgid "fully-qualified path of disk"
 msgstr "磁盘的完全限定路径"
 
@@ -27886,8 +27892,8 @@ msgid "interface name"
 msgstr "接口名称"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "接口名称 %s 不适用于缓存"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "MAC 地址的接口名称"
@@ -28661,6 +28667,10 @@ msgstr "设备  '%s' 参数 '%s' 的无效值 '%s'"
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "设备  '%s' 参数 '%s' 的无效值 '%s'"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr "boot 菜单超时的无效值，必须在 [0,65535] 范围内"
@@ -30072,6 +30082,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "缺少根元素"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "缺少 CPU 架构"
@@ -30131,6 +30144,9 @@ msgid ""
 "cache"
 msgstr "QEMU 功能 XML 中缺少机器名称"
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "缺少磁盘源名称"
@@ -30186,6 +30202,9 @@ msgstr "RAM 文件系统缺少 'usage' 属性"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 #, fuzzy
@@ -32802,6 +32821,9 @@ msgstr "语法错误"
 msgid "partial string to autocomplete"
 msgstr "需要自动补全的命令名片断"
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "向虚拟机传递文件描述符 N、M......"
 
@@ -33185,6 +33207,9 @@ msgstr "原始类型卷不支持元数据预分配"
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "预先分配的元数据（用于 qcow2 而不是整个分配）"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset 名称太长"
@@ -33305,6 +33330,9 @@ msgstr "程序不匹配（实际为 %x，应为 %x）"
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "网络 %s 的 DNS TXT 记录名称 '%s' 中的禁用字符"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34433,6 +34461,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36279,9 +36312,6 @@ msgstr "从 '%s' 中解析 uid 和 gid 失败"
 msgid "unable to handle agent type: %s"
 msgstr "无法处理监控程序类型：%s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "无法处理快照中的磁盘请求"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "无法处理监控程序类型：%s"
@@ -37192,18 +37222,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "未知磁盘快照驱动程序 '%s'"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "未知磁盘快照设置 '%s'"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "未知磁盘快照类型 '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "未知磁盘类型 '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "未知驱动程序格式值 '%s'"
 
@@ -37300,10 +37318,6 @@ msgstr "未知接口类型 '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "未知地址类型 '%s'"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "未知磁盘快照驱动程序 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -37757,6 +37771,10 @@ msgstr "不支持的磁盘设备"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "不支持的磁盘类型 %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "不支持的磁盘类型"
@@ -38994,6 +39012,42 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "调用 utsname 失败：%d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "无法解析版本字符串 '%s'"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "无法从字符串 %s 确定内核版本"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "杀死进程 %lld 失败：%s"
+
+#~ msgid "No output from iptables --version"
+#~ msgstr "iptables --version 没有任何输出结果"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek 失败"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "接口名称 %s 不适用于缓存"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "无法处理快照中的磁盘请求"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "未知磁盘快照设置 '%s'"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "未知磁盘快照类型 '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "未知磁盘类型 '%s'"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "未知磁盘快照驱动程序 '%s'"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "'queues' 属性必须是正数：%s"

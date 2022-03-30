@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1154,6 +1154,12 @@ msgstr "'logical-id', guest-get-vcpus-ന്റെ മറുപടിയില�
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "'logical-id', guest-get-vcpus-ന്റെ മറുപടിയില്‍ ലഭ്യമല്ല"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "virtio-scsi കണ്ട്രോളറിനു് മാത്രമേ 'queues' പിന്തുണയ്ക്കുന്നുള്ളൂ"
@@ -1253,6 +1259,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "ഈ QEMU ബൈനറി സാറ്റയെ പിന്തുണക്കില്ല"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2354,10 +2366,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "'%s'-ലേക്കുള്ള കോളില്‍ എന്തോ തിരികെ ലഭിച്ചു്, പ്രതീക്ഷിച്ചതു് കാലി ശൂന്യം"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "utsname-ലേക്കുള്ള കോള്‍ പരാജയപ്പെട്ടു: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "%s-നെ ലഭ്യമാക്കുന്നു, '%s'-ല്‍ നിന്നും ലഭ്യമാക്കുന്നു"
 
@@ -3118,10 +3126,6 @@ msgstr "ഉപയോക്താവിന്റെ '%s' stat പാഴ്സ് 
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "ഉപയോക്താവിന്റെ '%s' stat പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
 
 #, c-format
 msgid ""
@@ -3986,10 +3990,6 @@ msgstr "വലി-പ്രതികരണം (പുള്‍ റെസ്പ�
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "ഡൊമെയിന്‍ നശിപ്പിയ്ക്കുവാനായില്ല: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "%s സ്ട്രിങിനുള്ള കേര്‍ണല്‍ പതിപ്പു് കണ്ടുപിടിയ്ക്കുവാനായില്ല"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7405,10 +7405,6 @@ msgstr "പൂട്ട് അന്വേഷിയ്ക്കുന്നത�
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "%lld പ്രക്രിയ ഇല്ലാതാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
-
 msgid "Failed to list active domains"
 msgstr "സജീവമായ ഡൊമെയിനുകള്‍ ലിസ്റ്റ് ചെയ്യുന്നതില്‍ പരാജയം"
 
@@ -7739,6 +7735,9 @@ msgstr "'%s'-ല്‍ നിന്നും പോസിറ്റീവ് ഇ�
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "പോര്‍ട്ട് നംബര്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പിശക്"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8697,6 +8696,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12432,9 +12438,6 @@ msgstr "നെറ്റ്‌വര്‍ക്ക് '%s'ന് അനുബന
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "%s ലോഗ് ഫയല്‍ തുറക്കുവാന്‍ സാധ്യമല്ല"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr "ഒരോ സിപിയുവിനും ഉള്ള സ്ഥിതി ലഭ്യമല്ല"
@@ -20633,6 +20636,9 @@ msgstr ""
 "വരി %d ല്‍: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -23993,6 +23999,9 @@ msgstr ""
 msgid "custom configuration parameters specified"
 msgstr ""
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr ""
 
@@ -27349,9 +27358,6 @@ msgstr "fs ഡ്രൈവര്‍ %s പിന്തുണയ്ക്കു�
 msgid "fs format %s is not supported"
 msgstr "fs ശൈലി %s 'name' പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid "fseek failed"
-msgstr "fseek പരാജയപ്പെട്ടു"
-
 msgid "fully-qualified path of disk"
 msgstr "ഡിസ്ക്കിന്റെ മുഴുവന്‍ വഴി"
 
@@ -28168,8 +28174,8 @@ msgid "interface name"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര്"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറിനു ചേരില്ല"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "ഇന്റര്‍ഫെയിസ് പേര് അല്ലെങ്കില്‍ MAC വിലാസം"
@@ -28950,6 +28956,10 @@ msgstr "തെറ്റായ മൂല്ല്യം '%s' - VMX എന്‍�
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "'%2$s' പരാമീറ്ററിനു് '%1$s' എന്ന അസാധുവായ തരം, പ്രതീക്ഷിച്ചതു് '%3$s'"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 #, fuzzy
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -30364,6 +30374,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "റൂട്ട് എലമെന്റ് ലഭ്യമല്ല"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "അറിയാത്ത സി.പി.യു മോഡല്‍"
@@ -30424,6 +30437,9 @@ msgid ""
 "cache"
 msgstr ""
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "ഡിസ്ക് ശ്രോതസ്സിനുള്ള നാമം ലഭ്യമല്ല"
@@ -30481,6 +30497,9 @@ msgstr "RAM ഫയല്‍സിസ്റ്റത്തില്‍ 'usage' �
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 #, fuzzy
@@ -33121,6 +33140,9 @@ msgstr "പാഴ്സറിലുളള പിശക് "
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "N,M,... എന്നിങ്ങനെയുള്ള ഫയല്‍ വിശദീകരണങ്ങള്‍ ഗസ്റ്റിനു് നല്‍കുക"
 
@@ -33503,6 +33525,9 @@ msgstr "raw തരത്തിലുള്ള വോള്യത്തിനു�
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "പ്രിഅലോക്കേറ്റ് മെറ്റാഡേറ്റാ (പൂര്‍ണ്ണ അലോക്കേഷനു് പകരം qcow2)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset നാമം വളരെ വലുതു്"
@@ -33624,6 +33649,9 @@ msgstr "പ്രോഗ്രാം പൊരുത്തക്കേടു് (
 #, fuzzy, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "'%s' എന്ന പേരുള്ള DNS TXT-ല്‍ ആവശ്യമുള്ള മൂല്ല്യം ലഭ്യമല്ല, നെറ്റ്‌വര്‍ക്ക് %s-ല്‍"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34759,6 +34787,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36629,9 +36662,6 @@ msgstr "'%s'-ല്‍ നിന്നും uid, gid പാഴ്സ് ചെ�
 msgid "unable to handle agent type: %s"
 msgstr "മോണിറ്റര്‍ രീതി കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "സ്നാപ്പ്ഷോട്ടില്‍ ഡിസ്ക് ആവശ്യങ്ങള്‍ കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "മോണിറ്റര്‍ രീതി കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല: %s"
@@ -37544,18 +37574,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് സജ്ജീകരണം '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "അപരിചിതമായ ഡ്രൈവര്‍ ഫോര്‍മാറ്റ് മൂല്ല്യം '%s'"
 
@@ -37652,10 +37670,6 @@ msgstr "അപരിചിതമായ ഇന്റര്‍ഫെയിസ് �
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "അപരിചിതമായ വിലാസ തരം '%s'"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "അപരിചിതമായ മെമ്മറി സ്നാപ്പോഷോട്ട് സജ്ജീകരണം '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38109,6 +38123,10 @@ msgstr "പിന്തുണയ്ക്കാത്ത ഡിസ്ക് ഡ�
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "പിന്തുണയ്ക്കാത്ത ഡിസ്ക് തരം %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "unsupported disk type"
@@ -39350,6 +39368,41 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "utsname-ലേക്കുള്ള കോള്‍ പരാജയപ്പെട്ടു: %d"
+
+#, fuzzy
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "ഉപയോക്താവിന്റെ '%s' stat പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "%s സ്ട്രിങിനുള്ള കേര്‍ണല്‍ പതിപ്പു് കണ്ടുപിടിയ്ക്കുവാനായില്ല"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "%lld പ്രക്രിയ ഇല്ലാതാക്കുന്നതില്‍ പരാജയപ്പെട്ടു: %s"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek പരാജയപ്പെട്ടു"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "%s എന്ന ഇന്റര്‍ഫേസ് പേര് ബഫറിനു ചേരില്ല"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "സ്നാപ്പ്ഷോട്ടില്‍ ഡിസ്ക് ആവശ്യങ്ങള്‍ കൈകാര്യം ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് സജ്ജീകരണം '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "അപരിചിതമായ മെമ്മറി സ്നാപ്പോഷോട്ട് സജ്ജീകരണം '%s'"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "'queues' വിശേഷത പോസിറ്റീവ് അക്കമായിരിയ്ക്കണം: %s"

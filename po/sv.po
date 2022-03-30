@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2022-02-15 08:56+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1287,6 +1287,12 @@ msgstr "”logical-id” saknas i svaret på guest-get-vcpus"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "”login-time” saknas i svaret på guest-get-users"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "”max_sectors” stödjs endast av styrenheten virtio-scsi"
 
@@ -1386,6 +1392,12 @@ msgstr "”target” refererar till en NUMA-nod som inte finns"
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "protokollet ”tftp” stödjs inte med denna QEMU-binär"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 msgid "'trim' algorithm not supported"
 msgstr "algoritmen ”trim” stödjs inte"
@@ -2489,10 +2501,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "Anrop av ”%s” returnerade något, ett tomt resultat förväntades"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "Anrop av utsname misslyckades: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "Anrop av %s från ”%s” misslyckades"
 
@@ -3225,10 +3233,6 @@ msgstr "Kan inte tolka användarstatus ”%s”"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "Kan inte tolka attributet uuid i elementet <address>"
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "Kan inte tolka versionssträngen ”%s”"
 
 #, c-format
 msgid ""
@@ -4107,10 +4111,6 @@ msgstr "Kunde inte avserialisera posten med dragsvar"
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Kunde inte förstöra domänen: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Kunde inte avgöra kärnversion från strängen %s"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7476,10 +7476,6 @@ msgstr "Misslyckades med att fråga om låset: %s"
 msgid "Failed to kill process %lld"
 msgstr "Misslyckades med att döda process %lld"
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Misslyckades med att döda process %lld: %s"
-
 msgid "Failed to list active domains"
 msgstr "Misslyckades att lista aktiva domäner"
 
@@ -7809,6 +7805,9 @@ msgstr "Misslyckades med att tolka gränssnittsindexet från ”%s”"
 
 msgid "Failed to parse memory"
 msgstr "Misslyckades med att tolka minnet"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 msgid "Failed to parse memory slot count"
 msgstr "Misslyckades med att tolka fackantalet"
@@ -8776,6 +8775,13 @@ msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 "Posten för fast programvara måste antingen ha ett värde eller ett attribut "
 "”file”"
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
+msgstr ""
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -12421,9 +12427,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "Misslyckades att öppna filen ”%s”"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr ""
@@ -20447,6 +20450,9 @@ msgid ""
 "%s"
 msgstr ""
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -23715,6 +23721,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -27049,9 +27058,6 @@ msgstr ""
 msgid "fs format %s is not supported"
 msgstr ""
 
-msgid "fseek failed"
-msgstr ""
-
 msgid "fully-qualified path of disk"
 msgstr ""
 
@@ -27850,7 +27856,7 @@ msgid "interface name"
 msgstr "Gränssnitt %s startat\n"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
+msgid "interface name %s does not fit into buffer"
 msgstr ""
 
 msgid "interface name or MAC address"
@@ -28629,6 +28635,10 @@ msgstr "Felaktigt värde för tidsgräns"
 
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
 msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -30038,6 +30048,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "Saknat ”target”-element för hyra"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "Saknad CPU-arkitektur"
@@ -30092,6 +30105,9 @@ msgstr ""
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
 #, fuzzy
@@ -30150,6 +30166,9 @@ msgstr "Källtjänstattribut saknas för teckenenhet"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -32742,6 +32761,9 @@ msgstr "avläsningsfel"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 
@@ -33115,6 +33137,9 @@ msgstr ""
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr ""
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "parametern profileid är för lång"
@@ -33231,6 +33256,9 @@ msgstr "versioner matchar inte (aktuell %x, förväntad %x)"
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
+msgstr ""
+
+msgid "property with name 'id' can't be overriden"
 msgstr ""
 
 #, c-format
@@ -34334,6 +34362,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36135,9 +36168,6 @@ msgstr ""
 msgid "unable to handle agent type: %s"
 msgstr "Kan inte vänta på föräldraprocessen"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr ""
-
 #, fuzzy, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "kan inte skapa körkatalogen %s: %s"
@@ -37060,18 +37090,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "okänt disk-IO-läge ”%s”"
 
 #, fuzzy, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "okänd disktyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "okänd diskbusstyp ”%s”"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "okänd disktyp ”%s”"
-
-#, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "okän gränssnittstyp ”%s”"
 
@@ -37167,10 +37185,6 @@ msgstr "okänd gränssnittstyp: ”%s”"
 #, c-format
 msgid "unknown ip address type '%s'"
 msgstr "okänd ip-adresstyp ”%s”"
-
-#, fuzzy, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "okända åtkomstläge ”%s”"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -37630,6 +37644,10 @@ msgstr "Diskenhettypen ”%s” stödjs inte"
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr "diskdrivrutinen %s stödjs inte"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "disktypen stödjs inte"
@@ -38837,6 +38855,33 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "Anrop av utsname misslyckades: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "Kan inte tolka versionssträngen ”%s”"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Kunde inte avgöra kärnversion från strängen %s"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Misslyckades med att döda process %lld: %s"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "okänd disktyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "okänd diskbusstyp ”%s”"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "okänd disktyp ”%s”"
+
+#, fuzzy
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "okända åtkomstläge ”%s”"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "attributet ”queues” måste vara ett positivt tal: %s"

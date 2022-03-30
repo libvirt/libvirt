@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1193,6 +1193,12 @@ msgstr "guest-get-vcpus இன் பதிலளிப்பில் 'logical-
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-vcpus இன் பதிலளிப்பில் 'logical-id' இல்லை"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "virtio-scsi controller மட்டுமே 'max_sectors' ஐ ஆதரிக்கும்"
 
@@ -1298,6 +1304,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "இந்த QEMU binary உடன் SATA துணைபுரியவில்லை"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2420,10 +2432,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "'%s'க்கான அழைப்பு ஏதோ ஒன்றை வழங்கியுள்ளது, எதிர்பார்ப்பது ஒரு வெற்று முடிவு"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "utsname க்கான அழைப்பு தோல்வியடைந்தது: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "'%s' இலிருந்து %s ஐ அழைத்தல் தோல்வி"
 
@@ -3186,10 +3194,6 @@ msgstr "பயனர் புள்ளிவிவரம் '%s' ஐப் ப�
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "பதிபு சரம் '%s' ஐப் பாகுபடுத்த முடியவில்லை"
 
 #, c-format
 msgid ""
@@ -4056,10 +4060,6 @@ msgstr "இழுத்தல் பதிலளிப்பு உருப்�
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "டொமைனை அழிக்க முடியவில்லை: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "சரம் %s இலிருந்து கெர்னல் பதிப்பைத் தீர்மானிக்க முடியவில்லை"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7487,10 +7487,6 @@ msgstr "லாக்கை வினவுவதில் தொல்வி"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "செயலாக்கம் %lld ஐ முடிப்பது தோல்வியடைந்தது: %s"
-
 msgid "Failed to list active domains"
 msgstr "செயலிலுள்ள செயற்களங்களை பட்டியலிட முடியவில்லை"
 
@@ -7821,6 +7817,9 @@ msgstr "'%s' இல் இருந்து நேர்க்குறி ம�
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "முனைய எண்ணைப் பாகுபடுத்துவது தோல்வி"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8771,6 +8770,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12524,9 +12530,6 @@ msgstr "பிணையம் '%s' இல் இணைந்த இடைமு�
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "பதிவுக் கோப்பு %s ஐத் திறக்க இயலவில்லை"
-
-msgid "No output from iptables --version"
-msgstr "iptables --version இலிருந்து வெளியீடு இல்லை"
 
 msgid "No per-CPU stats available"
 msgstr "ஒரு CPU க்கான புள்ளிவிவரம் கிடைக்கவில்லை"
@@ -20740,6 +20743,9 @@ msgstr ""
 "வரி %d இல்: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -24098,6 +24104,9 @@ msgstr ""
 msgid "custom configuration parameters specified"
 msgstr ""
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr ""
 
@@ -27454,9 +27463,6 @@ msgstr "fs இயக்கி %s ஆதரிக்கப்படாது"
 msgid "fs format %s is not supported"
 msgstr "fs வடிவமைப்பு %s ஆதரிக்கப்படாது"
 
-msgid "fseek failed"
-msgstr "fseek தோல்வியடைந்தது"
-
 msgid "fully-qualified path of disk"
 msgstr "வட்டின் முழு தகுதியான பாதை"
 
@@ -28271,8 +28277,8 @@ msgid "interface name"
 msgstr "இடைமுகப் பெயர்"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "இடைமுகம் %s ஆனது பஃபருக்குள் பொருந்தவில்லை"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "MAC முகவரி அல்லது இடைமுகப் பெயர்"
@@ -29055,6 +29061,10 @@ msgstr "VMX உள்ளீடு '%s' க்கு தவறான மதிப
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "அளவுரு '%s' க்கு தவறான வகை '%s', எதிர்பார்த்தது '%s'"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -30476,6 +30486,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "ரூட் உருப்படி விடுபட்டுள்ளது"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "CPU கட்டமைப்பு விடுபட்டுள்ளது"
@@ -30537,6 +30550,9 @@ msgid ""
 "cache"
 msgstr "QEMU திறப்பாடுகள் தேக்ககத்தில் கணினி பெயர் இல்லை"
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "வட்டு மூலத்திற்கான பெயர் இல்லை"
@@ -30594,6 +30610,9 @@ msgstr "RAM கோப்பு முறைமைக்கு 'usage' பண்�
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 #, fuzzy
@@ -33224,6 +33243,9 @@ msgstr "பிரிப்பு பிழை"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "கோப்பு விளக்கிகள் N,M,... ஐ விருந்தினருக்கு அனுப்பு"
 
@@ -33610,6 +33632,9 @@ msgstr "அசல் வகை பிரிவகங்களுக்கு ம
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "மீத்தரவை முன்னொதுக்கம் செய் (முழு ஒதுக்கத்திற்குப் பதிலாக qcow2 க்கு மட்டும்)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset பெயர் மிக நீளமாக உள்ளது"
@@ -33734,6 +33759,9 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr ""
 "பிணையம் %s இன் '%s' என்ற பெயர் கொண்ட பதிவில் DNS TXT இல் உள்ள தேவையான மதிப்பு பண்புரு "
 "விடுபட்டுள்ளது"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34874,6 +34902,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36759,9 +36792,6 @@ msgstr "'%s' இலிருந்து uid மற்றும் gid ஐப்
 msgid "unable to handle agent type: %s"
 msgstr "மானிட்டர் பாதை கையாள முடியவில்லை: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "ஸ்னாப்ஷாட்டில் வட்டு கோரிக்கையை கையாள முடியவில்லை"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "மானிட்டர் பாதை கையாள முடியவில்லை: %s"
@@ -37676,18 +37706,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் இயக்கி '%s'"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் அமைவு '%s'"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் வகை '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "தெரியாத வட்டு வகை '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "தெரியாத இயக்கி வடிவ மதிப்பு '%s'"
 
@@ -37784,10 +37802,6 @@ msgstr "தெரியாத முகப்பு வகை '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "தெரியாத முகவரி வகை '%s'"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "தெரியாத நினைவக ஸ்னாப்ஷாட் அமைவு '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38243,6 +38257,10 @@ msgstr "ஆதரிக்கப்படாத வட்டு சாதனம�
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "துணைபுரியாத வட்டு வகை %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "ஆதரிக்கப்படாத வட்டு வகை"
@@ -39488,6 +39506,42 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "utsname க்கான அழைப்பு தோல்வியடைந்தது: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "பதிபு சரம் '%s' ஐப் பாகுபடுத்த முடியவில்லை"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "சரம் %s இலிருந்து கெர்னல் பதிப்பைத் தீர்மானிக்க முடியவில்லை"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "செயலாக்கம் %lld ஐ முடிப்பது தோல்வியடைந்தது: %s"
+
+#~ msgid "No output from iptables --version"
+#~ msgstr "iptables --version இலிருந்து வெளியீடு இல்லை"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek தோல்வியடைந்தது"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "இடைமுகம் %s ஆனது பஃபருக்குள் பொருந்தவில்லை"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "ஸ்னாப்ஷாட்டில் வட்டு கோரிக்கையை கையாள முடியவில்லை"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் அமைவு '%s'"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் வகை '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "தெரியாத வட்டு வகை '%s'"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "தெரியாத நினைவக ஸ்னாப்ஷாட் அமைவு '%s'"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "'queues' பண்புரு ஒரு நேர்க்குறி எண்ணாக இருக்க வேண்டும்: %s"

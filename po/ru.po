@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2020-09-29 12:11+0000\n"
 "Last-Translator: Olesya Gerasimenko <gammaray@basealt.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1305,6 +1305,12 @@ msgstr "Ответ guest-get-vcpus не содержит «logical-id»"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "Ответ guest-get-users не содержит «login-time»"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "«max_sectors» поддерживается только контроллером virtio-scsi"
 
@@ -1404,6 +1410,12 @@ msgstr "«target» ссылается на несуществующий узел
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает протокол «tftp»"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 msgid "'trim' algorithm not supported"
 msgstr "алгоритм «trim» не поддерживается"
@@ -2530,10 +2542,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "Вызов «%s» должен вернуть пустой результат"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "Ошибка вызова utsname: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "Ошибка вызова %s из «%s»"
 
@@ -3278,10 +3286,6 @@ msgstr "Не удалось обработать статистику польз
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "Не удалось обработать атрибут uuid элемента <address>"
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "Не удалось обработать строку версии «%s»"
 
 #, c-format
 msgid ""
@@ -4167,10 +4171,6 @@ msgstr "Не удалось выполнить десериализацию эл
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Не удалось разрушить домен: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Не удалось получить версию ядра из строки %s"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7531,10 +7531,6 @@ msgstr "Не удалось запросить блокировку: %s"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Не удалось остановить процесс %lld: %s"
-
 msgid "Failed to list active domains"
 msgstr "Не удалось получить список активных доменов"
 
@@ -7866,6 +7862,9 @@ msgstr "Не удалось извлечь индекс интерфейса и�
 
 msgid "Failed to parse memory"
 msgstr "Не удалось разобрать память"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 msgid "Failed to parse memory slot count"
 msgstr "Не удалось разобрать количество слотов памяти"
@@ -8823,6 +8822,13 @@ msgstr "В записи микропрограммы отсутствует ат
 msgid "Firmware entry must have either value or 'file' attribute"
 msgstr ""
 "В записи микропрограммы должно иметься либо значение, либо атрибут «file»"
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
+msgstr ""
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -12561,9 +12567,6 @@ msgstr "C клиентом не связан ни один сетевой сок
 #, c-format
 msgid "No open log file %s"
 msgstr "Нет открытого файла журнала %s"
-
-msgid "No output from iptables --version"
-msgstr "Нет получено данных в ответ на команду iptables --version"
 
 msgid "No per-CPU stats available"
 msgstr "Статистика по индивидуальным процессорам недоступна"
@@ -20766,6 +20769,9 @@ msgstr ""
 "в строке %d: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr "можно указать не более одного элемента кэша процессора"
 
@@ -24147,6 +24153,9 @@ msgstr "пользовательское альтернативное назва
 msgid "custom configuration parameters specified"
 msgstr ""
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr ""
 
@@ -27409,9 +27418,6 @@ msgstr "Драйвер %s не поддерживается"
 msgid "fs format %s is not supported"
 msgstr "Формат файловых систем %s не поддерживается"
 
-msgid "fseek failed"
-msgstr "сбой fseek"
-
 msgid "fully-qualified path of disk"
 msgstr "полный путь к диску"
 
@@ -28276,8 +28282,8 @@ msgid "interface name"
 msgstr "имя интерфейса"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "имя интерфейса %s не помещается в буфер"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "имя интерфейса или MAC-адрес"
@@ -29061,6 +29067,10 @@ msgstr "недопустимое значение «%s» для параметр
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "недопустимое значение «%s» для параметра «%s» устройства «%s»"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
 msgstr ""
@@ -30475,6 +30485,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "отсутствует элемент «DateTime»"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "отсутствует «architecture» в «%s»"
@@ -30534,6 +30547,9 @@ msgstr ""
 "отсутствует атрибут «name» свойства модели процессора основной системы в "
 "кэше возможностей QEMU"
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 msgid "missing 'namespace' attribute to disk source"
 msgstr "отсутствует атрибут «namespace» источника диска"
 
@@ -30588,6 +30604,9 @@ msgstr "отсутствует атрибут «usage» файловой сис�
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -33168,6 +33187,9 @@ msgstr "ошибка разбора"
 msgid "partial string to autocomplete"
 msgstr "неполная строка для автодополнения"
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 "список разделенных запятыми файловых дескрипторов для передачи гостевой "
@@ -33571,6 +33593,9 @@ msgstr ""
 "предварительно выделить место для метаданных (для qcow2 вместо полного "
 "распределения)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 msgid "prefix too long"
 msgstr "слишком длинный префикс"
 
@@ -33687,6 +33712,9 @@ msgstr "несоответствие программ в событии (фак�
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "недопустимый символ в имени записи TXT DNS «%s» сети %s"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34812,6 +34840,11 @@ msgstr ""
 
 msgid "set to the time of the host running virsh"
 msgstr "выставить время по времени узла, на котором был запущен virsh"
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
+msgstr ""
 
 msgid "setting ACPI S3 not supported"
 msgstr "настройка ACPI S3 не поддерживается"
@@ -36716,9 +36749,6 @@ msgstr "не удалось получить UID и GID для PID %d с пом�
 msgid "unable to handle agent type: %s"
 msgstr "не удалось обработать тип агента: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "в пределах снимка запросы к диску не обрабатываются"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "ошибка обработки типа монитора: %s"
@@ -37617,18 +37647,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "неизвестный драйвер снимка диска: «%s»"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "неизвестный параметр снимка диска  «%s»"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "неизвестный тип снимка диска «%s»"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "неизвестный тип диска «%s»"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "неизвестный формат драйвера: «%s»"
 
@@ -37723,10 +37741,6 @@ msgstr "неизвестный тип интерфейса: «%s»"
 #, c-format
 msgid "unknown ip address type '%s'"
 msgstr "неизвестный тип IP-адреса «%s»"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "неизвестный параметр снимка памяти: «%s»"
 
 #, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38182,6 +38196,10 @@ msgstr "неподдерживаемое дисковое устройство"
 #, c-format
 msgid "unsupported disk driver %s"
 msgstr "неподдерживаемый драйвер диска %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "неподдерживаемый тип диска"
@@ -39464,6 +39482,42 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "Ошибка вызова utsname: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "Не удалось обработать строку версии «%s»"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Не удалось получить версию ядра из строки %s"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Не удалось остановить процесс %lld: %s"
+
+#~ msgid "No output from iptables --version"
+#~ msgstr "Нет получено данных в ответ на команду iptables --version"
+
+#~ msgid "fseek failed"
+#~ msgstr "сбой fseek"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "имя интерфейса %s не помещается в буфер"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "в пределах снимка запросы к диску не обрабатываются"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "неизвестный параметр снимка диска  «%s»"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "неизвестный тип снимка диска «%s»"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "неизвестный тип диска «%s»"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "неизвестный параметр снимка памяти: «%s»"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "Атрибут «queues» должен быть положительным целым числом: %s"

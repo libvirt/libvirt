@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2021-06-28 06:04+0000\n"
 "Last-Translator: Nathan <nathan95@live.it>\n"
 "Language-Team: Italian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1142,6 +1142,12 @@ msgstr "'logical-id' mancante nella risposta di guest-get-vcpus"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "'login-time' mancante nella risposta di guest-get-users"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sectors' è supportato solo da controller virtio-scsi"
 
@@ -1236,6 +1242,12 @@ msgstr ""
 
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "Il protocollo 'tftp' non è supportato con questo binario di QEMU"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 msgid "'trim' algorithm not supported"
 msgstr "Algoritmo 'trim' non supportato"
@@ -2311,10 +2323,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr ""
 "La chiamata a '%s' ha restituito qualcosa, non previsto alcun risultato"
 
-#, c-format
-msgid "Call to utsname failed: %d"
-msgstr "Chiamata a utsname fallita: %d"
-
 #, fuzzy, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "salvataggio dominio '%s' in '%s': apertura fallita"
@@ -3074,10 +3082,6 @@ msgstr "impossibile analizzare video ram '%s'"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "Errore nel parsing dell'attributo 'uuid' di <address>"
-
-#, fuzzy, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "impossibile analizzare video ram '%s'"
 
 #, c-format
 msgid ""
@@ -3950,10 +3954,6 @@ msgstr ""
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "Impossibile distruggere il dominio: %s"
-
-#, fuzzy, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "Errore nel parsing dell'UUID nella stringa '%s'"
 
 #, fuzzy, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7355,10 +7355,6 @@ msgstr "Impossibile definire il pool %s"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "Impossibile creare il pool %s"
-
 msgid "Failed to list active domains"
 msgstr "Impossibile elencare i domini attivi"
 
@@ -7704,6 +7700,9 @@ msgstr "Errore nel parsing di un valore intero da '%s'"
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "Impossibile eseguire il parsing della modalità '%s'"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8678,6 +8677,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12387,9 +12393,6 @@ msgstr ""
 #, c-format
 msgid "No open log file %s"
 msgstr "Nessun file di log %s"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr ""
@@ -20624,6 +20627,9 @@ msgid ""
 "%s"
 msgstr ""
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -24020,6 +24026,9 @@ msgstr ""
 msgid "custom configuration parameters specified"
 msgstr ""
 
+msgid "custom device configuration"
+msgstr ""
+
 msgid "custom device tree blob used"
 msgstr ""
 
@@ -27410,10 +27419,6 @@ msgstr "non è supportato il collegamento a caldo dell'unità"
 msgid "fs format %s is not supported"
 msgstr "Tipo di rete %d non supportata"
 
-#, fuzzy
-msgid "fseek failed"
-msgstr "sockpair fallita"
-
 msgid "fully-qualified path of disk"
 msgstr ""
 
@@ -28234,8 +28239,8 @@ msgid "interface name"
 msgstr "l'interfaccia non ha un nome"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "nome interfaccia %s non adatto per il buffer"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 #, fuzzy
 msgid "interface name or MAC address"
@@ -29025,6 +29030,10 @@ msgstr "stato '%s' del dominio non valido"
 
 #, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
+msgstr ""
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
 msgstr ""
 
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -30476,6 +30485,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "elemento radice mancante"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "Architettura CPU mancante"
@@ -30530,6 +30542,9 @@ msgstr "stato del dominio mancante"
 msgid ""
 "missing 'name' attribute for a host CPU model property in QEMU capabilities "
 "cache"
+msgstr ""
+
+msgid "missing 'name' attribute for qemu:property"
 msgstr ""
 
 #, fuzzy
@@ -30588,6 +30603,9 @@ msgstr "Attributo servizio sergente mancante per il dispositivo a caratteri"
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 msgid "missing 'value' attribute for HyperV feature 'vendor_id'"
@@ -33238,6 +33256,9 @@ msgstr "errore del parser"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 
@@ -33621,6 +33642,9 @@ msgstr "vhost-net è supportato solo per interfacce di rete virtio"
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr ""
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "parametro profileid troppo lungo"
@@ -33740,6 +33764,9 @@ msgstr "discordanza della versione (attuale %x, previsto %x)"
 
 #, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
+msgstr ""
+
+msgid "property with name 'id' can't be overriden"
 msgstr ""
 
 #, c-format
@@ -34881,6 +34908,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 #, fuzzy
@@ -36716,9 +36748,6 @@ msgstr ""
 msgid "unable to handle agent type: %s"
 msgstr "impossibile gestire il tipo di monitor: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr ""
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "impossibile gestire il tipo di monitor: %s"
@@ -37641,18 +37670,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "modalità io disco '%s' sconosciuta"
 
 #, fuzzy, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "tipo di disco sconosciuto '%s'"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "tipo di bus del disco '%s' sconosciuto"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "tipo di disco sconosciuto '%s'"
-
-#, fuzzy, c-format
 msgid "unknown driver format value '%s'"
 msgstr "valore '%s' del timer sconosciuto"
 
@@ -37749,10 +37766,6 @@ msgstr "tipo di interfaccia sconosciuta '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "tipo indirizzo '%s' sconosciuto"
-
-#, fuzzy, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "modello balloon della memoria '%s' sconosciuto"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38209,6 +38222,10 @@ msgstr "dispositivo di disco non supportato"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "tipo di configurazione %s non supportata"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "tipo di disco non supportato"
@@ -39448,6 +39465,43 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "[--%s <string>]"
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "Chiamata a utsname fallita: %d"
+
+#, fuzzy
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "impossibile analizzare video ram '%s'"
+
+#, fuzzy
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "Errore nel parsing dell'UUID nella stringa '%s'"
+
+#, fuzzy
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "Impossibile creare il pool %s"
+
+#, fuzzy
+#~ msgid "fseek failed"
+#~ msgstr "sockpair fallita"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "nome interfaccia %s non adatto per il buffer"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "tipo di disco sconosciuto '%s'"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "tipo di bus del disco '%s' sconosciuto"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "tipo di disco sconosciuto '%s'"
+
+#, fuzzy
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "modello balloon della memoria '%s' sconosciuto"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "L'attributo 'queues' deve essere un intero positivo: %s"

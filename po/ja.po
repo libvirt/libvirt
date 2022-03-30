@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2021-12-18 10:16+0000\n"
 "Last-Translator: Yasuhiko Kamata <belphegor@belbel.or.jp>\n"
 "Language-Team: Japanese <https://translate.fedoraproject.org/projects/"
@@ -1183,6 +1183,12 @@ msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr "guest-get-vcpus の応答に 'logical-id' がありません"
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "'max_sectors' は virtio-scsi コントローラでのみサポートされます"
 
@@ -1287,6 +1293,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "SATA はこの QEMU バイナリーでサポートされません"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2401,10 +2413,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr "'%s' への呼び出しが何かを返しました、空の結果が期待されます"
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "utsname の呼び出しに失敗しました: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "%s を '%s' から呼び出すことに失敗しました"
 
@@ -3171,10 +3179,6 @@ msgstr "user 統計情報 '%s' を構文解析できません"
 
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr ""
-
-#, fuzzy, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "user 統計情報 '%s' を構文解析できません"
 
 #, c-format
 msgid ""
@@ -4043,10 +4047,6 @@ msgstr "取り出し応答項目をシリアライズ解除できませんでし
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "ドメインを強制停止できません: %s"
-
-#, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "文字列 %s からカーネルバージョンを決定できませんでした"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7492,10 +7492,6 @@ msgstr "ロックの問い合わせに失敗しました"
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "プロセス %lld のキルに失敗しました: %s"
-
 msgid "Failed to list active domains"
 msgstr "動作中のドメインの一覧表示に失敗しました"
 
@@ -7830,6 +7826,9 @@ msgstr "'%s' から正の整数値を構文解析できませんでした"
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "ポート番号の構文解析に失敗しました"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8795,6 +8794,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12592,9 +12598,6 @@ msgstr ""
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "ログファイル %s を開けません"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr "利用可能な CPU ごとの統計がありません"
@@ -20846,6 +20849,9 @@ msgstr ""
 "%d 行目: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -24226,6 +24232,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -27610,9 +27619,6 @@ msgstr "ファイルシステムドライバー %s がサポートされませ�
 msgid "fs format %s is not supported"
 msgstr "ファイルシステム形式 %s がサポートされません"
 
-msgid "fseek failed"
-msgstr "fseek に失敗しました"
-
 msgid "fully-qualified path of disk"
 msgstr "ディスクの完全修飾パス"
 
@@ -28438,8 +28444,8 @@ msgid "interface name"
 msgstr "インターフェース名"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "インターフェース名 %s がバッファーの中に収まりません"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "インターフェイス名または MAC アドレス"
@@ -29229,6 +29235,10 @@ msgstr "無効な値 '%s' が VMX エントリー '%s' にあります"
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr ""
 "無効な形式 '%s' がパラメーター '%s' に対してありました、 '%s' が期待されます"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 #, fuzzy
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -30657,6 +30667,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "root 要素がありません"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "CPU アーキテクチャーがありません"
@@ -30717,6 +30730,9 @@ msgid ""
 "cache"
 msgstr ""
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "ディスクソースの名前がありません"
@@ -30774,6 +30790,9 @@ msgstr "RAM ファイルシステムに対して 'usage' 属性がありませ�
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 #, fuzzy
@@ -33449,6 +33468,9 @@ msgstr "構文解析エラー"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr ""
 
@@ -33835,6 +33857,9 @@ msgstr "事前割り当ては生タイプのボリュームにしか対応して
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "事前割り当てメタデータ (完全割り当ての代わりに qcow2 向け)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset 名が長すぎます"
@@ -33958,6 +33983,9 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr ""
 "'%s' という名前の DNS TXT レコード (ネットワーク %s) において必須の value 属"
 "性がありません"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -35093,6 +35121,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36981,9 +37014,6 @@ msgstr "'%s' から uid と gid を構文解析できませんでした"
 msgid "unable to handle agent type: %s"
 msgstr "次のモニター種別を処理できません: %s"
 
-msgid "unable to handle disk requests in snapshot"
-msgstr "スナップショットにあるディスク要求を処理できません"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "次のモニター種別を処理できません: %s"
@@ -37900,18 +37930,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "不明なディスクスナップショットドライバー '%s'"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "不明なディスクスナップショット設定 '%s' です"
-
-#, fuzzy, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "不明なディスクスナップショットドライバー '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "不明なディスク形式 '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "不明なドライバー形式値 '%s'"
 
@@ -38008,10 +38026,6 @@ msgstr "不明なインターフェイス形式 '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "不明なアドレス形式 '%s'"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "不明なメモリースナップショット設定 '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -38469,6 +38483,10 @@ msgstr "サポートされないディスクデバイス形式 '%s' です"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "サポートされないディスク形式 %s です"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 #, fuzzy
 msgid "unsupported disk type"
@@ -39731,6 +39749,41 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "utsname の呼び出しに失敗しました: %d"
+
+#, fuzzy
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "user 統計情報 '%s' を構文解析できません"
+
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "文字列 %s からカーネルバージョンを決定できませんでした"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "プロセス %lld のキルに失敗しました: %s"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek に失敗しました"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "インターフェース名 %s がバッファーの中に収まりません"
+
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "スナップショットにあるディスク要求を処理できません"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "不明なディスクスナップショット設定 '%s' です"
+
+#, fuzzy
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "不明なディスクスナップショットドライバー '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "不明なディスク形式 '%s'"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "不明なメモリースナップショット設定 '%s'"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "'queues' 属性は正の整数である必要があります: %s"

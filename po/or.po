@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-02-23 12:43+0000\n"
+"POT-Creation-Date: 2022-03-28 11:25+0000\n"
 "PO-Revision-Date: 2015-02-27 04:59+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Oriya (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1217,6 +1217,12 @@ msgstr ""
 msgid "'login-time' missing in reply of guest-get-users"
 msgstr ""
 
+msgid "'manual' memory snapshot mode not supported"
+msgstr ""
+
+msgid "'manual' snapshot mode is not supported by the test driver"
+msgstr ""
+
 #, fuzzy
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "ଏହି QEMU virtio scsi ନିୟନ୍ତ୍ରକକୁ ସହାୟତା କରିନଥାଏ"
@@ -1317,6 +1323,12 @@ msgstr ""
 #, fuzzy
 msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "SATA ଏହି QEMU ଦ୍ୱିମିକ ସହିତ ସମର୍ଥିତ ନୁହଁ"
+
+msgid "'tlsHostname' field is not supported by this QEMU"
+msgstr ""
+
+msgid "'tlsHostname' field is supported only with NBD disks"
+msgstr ""
 
 #, fuzzy
 msgid "'trim' algorithm not supported"
@@ -2401,10 +2413,6 @@ msgid "Call to '%s' returned something, expecting an empty result"
 msgstr ""
 
 #, c-format
-msgid "Call to utsname failed: %d"
-msgstr "utsname ର ଡାକରା ବିଫଳ ହୋଇଛି: %d"
-
-#, c-format
 msgid "Calling %s from '%s' failed"
 msgstr "%s କୁ '%s'ରୁ ଡାକିବା ବିଫଳ ହୋଇଛି"
 
@@ -3149,10 +3157,6 @@ msgstr "ବ୍ୟବହାରକାରୀ ସ୍ଥିତି '%s' କୁ ବି�
 #, fuzzy
 msgid "Cannot parse uuid attribute of element <address>"
 msgstr "<Machine> 'uuid' ବିଶେଷତାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
-
-#, c-format
-msgid "Cannot parse version string '%s'"
-msgstr "ସଂସ୍କରଣ ବାକ୍ୟଖଣ୍ଡ '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
 
 #, c-format
 msgid ""
@@ -4018,10 +4022,6 @@ msgstr "ପୁଲ ଉତ୍ତର ବସ୍ତୁଗୁଡ଼ିକୁ ଦେଖ
 #, c-format
 msgid "Could not destroy domain: %s"
 msgstr "ଡମେନକୁ ନଷ୍ଟ କରାଯାଇପାରିଲା ନାହିଁ: %s"
-
-#, fuzzy, c-format
-msgid "Could not determine kernel version from string %s"
-msgstr "ବାକ୍ୟଖଣ୍ଡ '%s' ରୁ UUID କୁ ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
 
 #, c-format
 msgid "Could not dlsym %s from '%s': %s"
@@ -7389,10 +7389,6 @@ msgstr "ଲକ୍‌ ଅନୁସନ୍ଧାନ କରିବାରେ ବିଫ
 msgid "Failed to kill process %lld"
 msgstr ""
 
-#, c-format
-msgid "Failed to kill process %lld: %s"
-msgstr "%lld କାର୍ଯ୍ୟକୁ ବନ୍ଦ କରିବାରେ ବିଫଳ: %s"
-
 msgid "Failed to list active domains"
 msgstr "ସକ୍ରିୟ ପରିସର ମାନଙ୍କୁ ସୂଚୀବଦ୍ଧ କରିବାରେ ବିଫଳ"
 
@@ -7724,6 +7720,9 @@ msgstr "'%s' ରୁ ଯୁକ୍ତାତ୍ମକ ଗଣନ ସଂଖ୍ୟା 
 #, fuzzy
 msgid "Failed to parse memory"
 msgstr "ପୋର୍ଟ ସଂଖ୍ୟାକୁ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ"
+
+msgid "Failed to parse memory allocation threads"
+msgstr ""
 
 #, fuzzy
 msgid "Failed to parse memory slot count"
@@ -8675,6 +8674,13 @@ msgid "Firmware entry is missing 'name' attribute"
 msgstr ""
 
 msgid "Firmware entry must have either value or 'file' attribute"
+msgstr ""
+
+#, c-format
+msgid "Firmware flash mode value '%s' unexpected"
+msgstr ""
+
+msgid "Firmware flash mode value was malformed"
 msgstr ""
 
 msgid ""
@@ -12367,9 +12373,6 @@ msgstr "ନେଟୱର୍କ '%s' ରେ କୌଣସି ସମ୍ପୃକ୍�
 #, fuzzy, c-format
 msgid "No open log file %s"
 msgstr "ଲଗ ଫାଇଲ  %s କୁ ଖୋଲିବାରେ ଅସମର୍ଥ"
-
-msgid "No output from iptables --version"
-msgstr ""
 
 msgid "No per-CPU stats available"
 msgstr "CPU ପ୍ରତି କୌଣସି ପରିସଂଖ୍ୟାନ ଉପଲବ୍ଧ ନାହିଁ"
@@ -20474,6 +20477,9 @@ msgstr ""
 "ଧାଡ଼ି %d ରେ: %s%s\n"
 "%s"
 
+msgid "at most 1 fd can be passed to qemu along with a command"
+msgstr ""
+
 msgid "at most one CPU cache element may be specified"
 msgstr ""
 
@@ -23803,6 +23809,9 @@ msgid "custom alias name of interface device"
 msgstr ""
 
 msgid "custom configuration parameters specified"
+msgstr ""
+
+msgid "custom device configuration"
 msgstr ""
 
 msgid "custom device tree blob used"
@@ -27138,9 +27147,6 @@ msgstr "fs ଡ୍ରାଇଭର %s ସମର୍ଥିତ ନୁହଁ"
 msgid "fs format %s is not supported"
 msgstr "fs ଶୈଳୀ %s ସମର୍ଥିତ ନୁହଁ"
 
-msgid "fseek failed"
-msgstr "fseek ବିଫଳ ହୋଇଛି"
-
 msgid "fully-qualified path of disk"
 msgstr "ଡିସ୍କର ସମ୍ପୂର୍ଣ୍ଣ ଭାବେ ନିପୁଣ ପଥ"
 
@@ -27950,8 +27956,8 @@ msgid "interface name"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ ନାମ"
 
 #, c-format
-msgid "interface name %s does not fit into buffer "
-msgstr "ଅନ୍ତରାପୃଷ୍ଠ  ନାମ %s ବଫରରେ ଖାପ ଖାଇନଥାଏ"
+msgid "interface name %s does not fit into buffer"
+msgstr ""
 
 msgid "interface name or MAC address"
 msgstr "ଅନ୍ତରାପୃଷ୍ଠ ନାମ ଅଥବା MAC ଠିକଣା"
@@ -28728,6 +28734,10 @@ msgstr "VMX ନିବେଶ '%s' ପାଇଁ ଅବୈଧ ମୂଲ୍ୟ '%s'"
 #, fuzzy, c-format
 msgid "invalid value '%s' for parameter '%s' of device '%s'"
 msgstr "ଅବୈଧ ପ୍ରକାର '%s' ପ୍ରାଚଳ '%s' ପାଇଁ, '%s' ଆଶାକରାଯାଇଥିଲା"
+
+#, c-format
+msgid "invalid value '%s' of 'value' attribute of 'qemu:property'"
+msgstr ""
 
 #, fuzzy
 msgid "invalid value for boot menu timeout, must be in range [0,65535]"
@@ -30134,6 +30144,9 @@ msgstr ""
 msgid "missing 'DateTime' element"
 msgstr "ଅନୁପସ୍ଥିତ ମୂଖ୍ୟ ଚାଳକ ଉପାଦାନ"
 
+msgid "missing 'alias' attribute for qemu:device"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "missing 'architecture' in '%s'"
 msgstr "ଅନୁପସ୍ଥିତ CPU ସଂରଚନା"
@@ -30192,6 +30205,9 @@ msgid ""
 "cache"
 msgstr ""
 
+msgid "missing 'name' attribute for qemu:property"
+msgstr ""
+
 #, fuzzy
 msgid "missing 'namespace' attribute to disk source"
 msgstr "ଡିସ୍କ ଉତ୍ସ ପାଇଁ ନାମ ନାହିଁ"
@@ -30247,6 +30263,9 @@ msgstr "RAM ଫାଇଲତନ୍ତ୍ର ପାଇଁ  ଅନୁପସ୍ଥ�
 
 msgid ""
 "missing 'user' or 'group' attribute in JSON backing definition for NFS volume"
+msgstr ""
+
+msgid "missing 'value' attribute for 'qemu:property'"
 msgstr ""
 
 #, fuzzy
@@ -32874,6 +32893,9 @@ msgstr "ବିଶ୍ଳେଷଣ ତୃଟି"
 msgid "partial string to autocomplete"
 msgstr ""
 
+msgid "pass file descriptors N,M,... along with the command"
+msgstr ""
+
 msgid "pass file descriptors N,M,... to the guest"
 msgstr "ଅତିଥି ମଧ୍ଯକୁ ଫାଇଲ ବର୍ଣ୍ଣନାକାରୀ N,M,... ଇତ୍ୟାଦିମାନଙ୍କୁ ପଠାନ୍ତୁ"
 
@@ -33253,6 +33275,9 @@ msgstr "ram ଗୁଣ କେବଳ qxl ର ପ୍ରକାର ପାଇଁ ସ�
 msgid "preallocate metadata (for qcow2 instead of full allocation)"
 msgstr "ପୂର୍ବରୁ ବଣ୍ଟିତ ଅଧିତଥ୍ୟ (qcow2 ପାଇଁ ସମ୍ପୂର୍ଣ୍ଣ ବଣ୍ଟନ ବ୍ୟତିତ)"
 
+msgid "preallocation threads are unsupported with this QEMU"
+msgstr ""
+
 #, fuzzy
 msgid "prefix too long"
 msgstr "ipset ନାମ ଟି ଅତ୍ଯଧିକ ବଡ଼ ଅଟେ"
@@ -33373,6 +33398,9 @@ msgstr "ପ୍ରଗ୍ରାମ ମେଳ ଖାଉନାହିଁ (ପ୍ର�
 #, fuzzy, c-format
 msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "ନେଟୱର୍କ %s ର '%s' ନାମକ DNS TXT  ବିବରଣୀରେ ମୂଲ୍ୟ ଗୁଣ ଅନୁପସ୍ଥିତ"
+
+msgid "property with name 'id' can't be overriden"
+msgstr ""
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -34504,6 +34532,11 @@ msgid "set threshold for block-threshold event for a block device"
 msgstr ""
 
 msgid "set to the time of the host running virsh"
+msgstr ""
+
+msgid ""
+"setting 'value' attribute of 'qemu:property' doesn't make sense with "
+"'remove' type"
 msgstr ""
 
 msgid "setting ACPI S3 not supported"
@@ -36349,10 +36382,6 @@ msgstr "'%s' ରୁ uid ଏବଂ gid କୁବିଶ୍ଳେଷଣ କରି�
 msgid "unable to handle agent type: %s"
 msgstr "ପ୍ରଦର୍ଶିକା ପ୍ରକାରକୁ ନିୟନ୍ତ୍ରଣ କରିବାରେ ଅସମର୍ଥ: %s"
 
-#, fuzzy
-msgid "unable to handle disk requests in snapshot"
-msgstr "ଆଶୁଚିତ୍ରର XML ବର୍ଣ୍ଣନା ପାଇବାରେ ଅସମର୍ଥ"
-
 #, c-format
 msgid "unable to handle monitor type: %s"
 msgstr "ପ୍ରଦର୍ଶିକା ପ୍ରକାରକୁ ନିୟନ୍ତ୍ରଣ କରିବାରେ ଅସମର୍ଥ: %s"
@@ -37265,18 +37294,6 @@ msgid "unknown disk snapshot driver '%s'"
 msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ସଂରଚନା ଡ୍ରାଇଭର '%s'"
 
 #, c-format
-msgid "unknown disk snapshot setting '%s'"
-msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ସଂରଚନା '%s'"
-
-#, c-format
-msgid "unknown disk snapshot type '%s'"
-msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ପ୍ରକାର '%s'"
-
-#, c-format
-msgid "unknown disk type '%s'"
-msgstr "ଅଜଣା ଡିସ୍କ ପ୍ରକାର '%s'"
-
-#, c-format
 msgid "unknown driver format value '%s'"
 msgstr "ଅଜଣା ଡ୍ରାଇଭର ଶୈଳୀ ମୂଲ୍ୟ '%s'"
 
@@ -37373,10 +37390,6 @@ msgstr "ଅଜଣା ଅନ୍ତରାପୃଷ୍ଠ ପ୍ରକାର '%s'"
 #, fuzzy, c-format
 msgid "unknown ip address type '%s'"
 msgstr "ଅଜଣା ଠିକଣା ପ୍ରକାର '%s'"
-
-#, c-format
-msgid "unknown memory snapshot setting '%s'"
-msgstr "ଅଜଣା ସ୍ମୃତିସ୍ଥାନ ଆଶୁଚିତ୍ର ସଂରଚନା '%s'"
 
 #, fuzzy, c-format
 msgid "unknown memoryBacking/access/mode '%s'"
@@ -37829,6 +37842,10 @@ msgstr "ଅସମର୍ଥିତ ଡିସ୍କ ଉପକରଣ"
 #, fuzzy, c-format
 msgid "unsupported disk driver %s"
 msgstr "ଅସମର୍ଥିତ ଡିସ୍କ ପ୍ରକାର %s"
+
+#, c-format
+msgid "unsupported disk snapshot type '%s'"
+msgstr ""
 
 msgid "unsupported disk type"
 msgstr "ଅସମର୍ଥିତ ଡିସ୍କ ପ୍ରକାର"
@@ -39068,6 +39085,41 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "Call to utsname failed: %d"
+#~ msgstr "utsname ର ଡାକରା ବିଫଳ ହୋଇଛି: %d"
+
+#~ msgid "Cannot parse version string '%s'"
+#~ msgstr "ସଂସ୍କରଣ ବାକ୍ୟଖଣ୍ଡ '%s' କୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ନାହିଁ"
+
+#, fuzzy
+#~ msgid "Could not determine kernel version from string %s"
+#~ msgstr "ବାକ୍ୟଖଣ୍ଡ '%s' ରୁ UUID କୁ ବିଶ୍ଳେଷଣ କରିପାରିଲା ନାହିଁ"
+
+#~ msgid "Failed to kill process %lld: %s"
+#~ msgstr "%lld କାର୍ଯ୍ୟକୁ ବନ୍ଦ କରିବାରେ ବିଫଳ: %s"
+
+#~ msgid "fseek failed"
+#~ msgstr "fseek ବିଫଳ ହୋଇଛି"
+
+#~ msgid "interface name %s does not fit into buffer "
+#~ msgstr "ଅନ୍ତରାପୃଷ୍ଠ  ନାମ %s ବଫରରେ ଖାପ ଖାଇନଥାଏ"
+
+#, fuzzy
+#~ msgid "unable to handle disk requests in snapshot"
+#~ msgstr "ଆଶୁଚିତ୍ରର XML ବର୍ଣ୍ଣନା ପାଇବାରେ ଅସମର୍ଥ"
+
+#~ msgid "unknown disk snapshot setting '%s'"
+#~ msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ସଂରଚନା '%s'"
+
+#~ msgid "unknown disk snapshot type '%s'"
+#~ msgstr "ଅଜଣା ଡିସ୍କ ଆଶୁଚିତ୍ର ପ୍ରକାର '%s'"
+
+#~ msgid "unknown disk type '%s'"
+#~ msgstr "ଅଜଣା ଡିସ୍କ ପ୍ରକାର '%s'"
+
+#~ msgid "unknown memory snapshot setting '%s'"
+#~ msgstr "ଅଜଣା ସ୍ମୃତିସ୍ଥାନ ଆଶୁଚିତ୍ର ସଂରଚନା '%s'"
 
 #~ msgid "'queues' attribute must be positive number: %s"
 #~ msgstr "'queues' ଗୁଣ ନିଶ୍ଚିତ ଭାବରେ ଏକ ଯୁକ୍ତାତ୍ମକ ସଂଖ୍ୟା ହୋଇଥିବା ଉଚିତ: %s"
