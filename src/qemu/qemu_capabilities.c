@@ -919,7 +919,7 @@ static char *
 virQEMUCapsFindBinaryForArch(virArch hostarch,
                              virArch guestarch)
 {
-    char *ret = NULL;
+    char *binary;
     const char *archstr;
     virArch target;
 
@@ -928,24 +928,24 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
      * to avoid using qemu-system-arm (and thus TCG) instead */
     if (hostarch == VIR_ARCH_AARCH64 && guestarch == VIR_ARCH_ARMV7L) {
         archstr = virQEMUCapsArchToString(hostarch);
-        if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-            return ret;
+        if ((binary = virQEMUCapsFindBinary("qemu-system-%s", archstr)))
+            return binary;
     }
 
     /* First attempt: try the guest architecture as it is */
     archstr = virQEMUCapsArchToString(guestarch);
-    if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-        return ret;
+    if ((binary = virQEMUCapsFindBinary("qemu-system-%s", archstr)))
+        return binary;
 
     /* Second attempt: try looking up by target instead */
     target = virQEMUCapsFindTarget(hostarch, guestarch);
     if (target != guestarch) {
         archstr = virQEMUCapsArchToString(target);
-        if ((ret = virQEMUCapsFindBinary("qemu-system-%s", archstr)) != NULL)
-            return ret;
+        if ((binary = virQEMUCapsFindBinary("qemu-system-%s", archstr)))
+            return binary;
     }
 
-    return ret;
+    return NULL;
 }
 
 
