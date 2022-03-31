@@ -915,9 +915,9 @@ virQEMUCapsFindBinary(const char *format,
     return ret;
 }
 
-static char *
-virQEMUCapsFindBinaryForArch(virArch hostarch,
-                             virArch guestarch)
+char *
+virQEMUCapsGetDefaultEmulator(virArch hostarch,
+                              virArch guestarch)
 {
     char *binary;
     const char *archstr;
@@ -953,14 +953,6 @@ virQEMUCapsFindBinaryForArch(virArch hostarch,
     }
 
     return NULL;
-}
-
-
-char *
-virQEMUCapsGetDefaultEmulator(virArch hostarch,
-                              virArch guestarch)
-{
-    return virQEMUCapsFindBinaryForArch(hostarch, guestarch);
 }
 
 
