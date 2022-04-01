@@ -23,6 +23,12 @@ v8.2.0 (unreleased)
     which need to be done outside of libvirt e.g. when 'vhost-user-blk' is used
     to back the disk.
 
+  * Introduce memory allocation threads
+
+    When starting a QEMU guest, libvirt can now instruct QEMU to allocate
+    guest's memory in parallel. This may be handy when guest has large amounts
+    of memory.
+
 * **Improvements**
 
   * qemu: ``VIR_MIGRATE_PARAM_TLS_DESTINATION`` now works with non-shared storage migration
@@ -43,10 +49,55 @@ v8.2.0 (unreleased)
     Passing FDs allows users wanting to experiment with qemu driven by libvirt
     use commands like ``add-fd`` properly.
 
+  * libxl: Turn on user aliases
+
+    Users can now use so called user aliases for XEN domains.
+
+  * Implement support for FUSE3
+
+    The LXC driver uses fuse to overwrite some lines in ``/proc/meminfo``
+    inside containers so that they see correct amount of memory given to them.
+    The code was changed so that both ``fuse`` and ``fuse3`` are supported.
+
+  * Improve domain save/restore throughput
+
+    Code that's handling save or restore of QEMU domains was changed resulting
+    in better performance of I/O and thus shortening time needed for the operation.
+
 * **Bug fixes**
 
   * Both build and tests should now pass on Alpine Linux or any other
     distribution with musl libc.
+
+  * virsh: Fix integer overflow in allocpages
+
+    On hosts which support hugepages larger than 1GiB ``virsh allocpages``
+    failed to accept them because of an integer overflow. This is now fixed.
+
+  * qemu: Fix segmentation fault in virDomainUndefineFlags
+
+    When a domain without any ``<loader/>`` was being undefined, libvirt has
+    crashed. This is now fixed.
+
+  * lxc: Fix unaligned reads of /proc/meminfo within a container
+
+    When /proc/meminfo was read in chunks smaller than the entire file, libvirt
+    would produce mangled output. While porting the code to FUSE3 this area was
+    reworked and the file can now be read with any granularity.
+
+  * qemu: Be less aggressive around cgroup_device_acl
+
+    A basic set of devices common to every domain can be set in ``qemu.conf``
+    via cgroup_device_acl knob. Devices from this set are allowed in CGroup and
+    created in domain private namespace for every domain. However, upon device
+    hotunplug it may have had happened that libvirt mistakenly denied a device
+    from this set and/or removed it from the namespace. For instance,
+    /dev/urandom was removed and denied in CGroup on RNG hotunplug.
+
+  * nodedev: trigger mdev device definition update on udev add and remove
+
+    When nodedev objects are added and removed mdev device definitions are
+    updated to report correct associated parent.
 
 
 v8.1.0 (2022-03-01)
