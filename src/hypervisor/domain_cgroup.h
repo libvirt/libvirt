@@ -98,8 +98,7 @@ virDomainCgroupSetupCpusetCpus(virCgroup *cgroup,
                                virBitmap *cpumask);
 int
 virDomainCgroupSetupGlobalCpuCgroup(virDomainObj *vm,
-                                    virCgroup *cgroup,
-                                    virBitmap *autoNodeset);
+                                    virCgroup *cgroup);
 int
 virDomainCgroupRemoveCgroup(virDomainObj *vm,
                             virCgroup *cgroup,

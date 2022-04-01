@@ -526,8 +526,7 @@ virCHProcessStart(virCHDriver *driver,
 
     VIR_DEBUG("Setting global CPU cgroup (if required)");
     if (virDomainCgroupSetupGlobalCpuCgroup(vm,
-                                            priv->cgroup,
-                                            priv->autoNodeset) < 0)
+                                            priv->cgroup) < 0)
         goto cleanup;
 
     VIR_DEBUG("Setting vCPU tuning/settings");
