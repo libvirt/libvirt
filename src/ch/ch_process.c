@@ -254,7 +254,8 @@ virCHProcessSetupPid(virDomainObj *vm,
         virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
 
         if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
-            mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+            (mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT ||
+             mem_mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) &&
             virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                                 priv->autoNodeset,
                                                 &mem_mask, -1) < 0)

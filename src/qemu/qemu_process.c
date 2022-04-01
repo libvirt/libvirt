@@ -2646,7 +2646,8 @@ qemuProcessSetupPid(virDomainObj *vm,
         virCgroupHasController(priv->cgroup, VIR_CGROUP_CONTROLLER_CPUSET)) {
 
         if (virDomainNumatuneGetMode(vm->def->numa, -1, &mem_mode) == 0 &&
-            mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+            (mem_mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT ||
+             mem_mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) &&
             virDomainNumatuneMaybeFormatNodeset(vm->def->numa,
                                                 priv->autoNodeset,
                                                 &mem_mask, -1) < 0)
@@ -3162,7 +3163,8 @@ static int qemuProcessHook(void *data)
         goto cleanup;
 
     if (virDomainNumatuneGetMode(h->vm->def->numa, -1, &mode) == 0) {
-        if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        if ((mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT ||
+             mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) &&
             h->cfg->cgroupControllers & (1 << VIR_CGROUP_CONTROLLER_CPUSET) &&
             virCgroupControllerAvailable(VIR_CGROUP_CONTROLLER_CPUSET)) {
             /* Use virNuma* API iff necessary. Once set and child is exec()-ed,

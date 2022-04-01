@@ -811,7 +811,8 @@ static int virLXCControllerSetupResourceLimits(virLXCController *ctrl)
     virDomainNumatuneMemMode mode;
 
     if (virDomainNumatuneGetMode(ctrl->def->numa, -1, &mode) == 0) {
-        if (mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT &&
+        if ((mode == VIR_DOMAIN_NUMATUNE_MEM_STRICT ||
+             mode == VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE) &&
             virCgroupControllerAvailable(VIR_CGROUP_CONTROLLER_CPUSET)) {
             /* Use virNuma* API iff necessary. Once set and child is exec()-ed,
              * there's no way for us to change it. Rely on cgroups (if available
