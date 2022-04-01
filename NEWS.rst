@@ -17,6 +17,12 @@ v8.2.0 (unreleased)
 
 * **New features**
 
+  * qemu: Introduce ``manual`` disk snapshot mode
+
+    This new mode allows users to synchronize libvirt snapshots with snapshots
+    which need to be done outside of libvirt e.g. when 'vhost-user-blk' is used
+    to back the disk.
+
 * **Improvements**
 
   * qemu: ``VIR_MIGRATE_PARAM_TLS_DESTINATION`` now works with non-shared storage migration
@@ -31,6 +37,11 @@ v8.2.0 (unreleased)
     libvirt can use the ``<qemu:deviceOverride>`` QEMU namespace element to
     specify the overrides instead of relying on the argv passthrough of the
     ``-set`` qemu commandline option which no longer works with new qemu.
+
+  * qemu: Allow passing file descriptors to ``virsh qemu-monitor-command``
+
+    Passing FDs allows users wanting to experiment with qemu driven by libvirt
+    use commands like ``add-fd`` properly.
 
 * **Bug fixes**
 
