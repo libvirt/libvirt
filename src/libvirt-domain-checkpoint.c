@@ -248,7 +248,7 @@ virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
  * @checkpoints: pointer to variable to store the array containing checkpoint
  *               object, or NULL if the list is not required (just returns
  *               number of checkpoints)
- * @flags: bitwise-OR of supported virDomainCheckpoinListFlags
+ * @flags: bitwise-OR of supported virDomainCheckpointListFlags
  *
  * Collect the list of domain checkpoints for the given domain and allocate
  * an array to store those objects.
