@@ -1292,10 +1292,9 @@ virshSnapshotListCollect(vshControl *ctl, virDomainPtr dom,
     if (filter_fallback) {
         /* Older API didn't filter on status or location, but the
          * information is available in domain XML.  */
-        if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS))
-            orig_flags |= VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS;
-        if (!(orig_flags & VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION))
-            orig_flags |= VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION;
+        orig_flags |= VIR_DOMAIN_SNAPSHOT_FILTERS_STATUS;
+        orig_flags |= VIR_DOMAIN_SNAPSHOT_FILTERS_LOCATION;
+
         for (i = 0; i < snaplist->nsnaps; i++) {
             switch (virshSnapshotFilter(ctl, snaplist->snaps[i].snap,
                                         orig_flags)) {
