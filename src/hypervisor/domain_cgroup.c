@@ -603,10 +603,8 @@ virDomainCgroupSetupGlobalCpuCgroup(virDomainObj *vm,
                                             autoNodeset, &mem_mask, -1) < 0)
         return -1;
 
-    if (period || quota) {
-        if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
-            return -1;
-    }
+    if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
+        return -1;
 
     return 0;
 }

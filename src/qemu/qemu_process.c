@@ -2695,8 +2695,7 @@ qemuProcessSetupPid(virDomainObj *vm,
 
         }
 
-        if ((period || quota) &&
-            virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
+        if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
             goto cleanup;
 
         /* Move the thread to the sub dir */

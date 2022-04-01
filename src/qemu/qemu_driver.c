@@ -8929,9 +8929,6 @@ static int
 qemuSetGlobalBWLive(virCgroup *cgroup, unsigned long long period,
                     long long quota)
 {
-    if (period == 0 && quota == 0)
-        return 0;
-
     if (virDomainCgroupSetupVcpuBW(cgroup, period, quota) < 0)
         return -1;
 
@@ -9110,9 +9107,6 @@ qemuSetVcpusBWLive(virDomainObj *vm, virCgroup *cgroup,
 {
     size_t i;
 
-    if (period == 0 && quota == 0)
-        return 0;
-
     if (!qemuDomainHasVcpuPids(vm))
         return 0;
 
@@ -9141,9 +9135,6 @@ qemuSetEmulatorBandwidthLive(virCgroup *cgroup,
 {
     g_autoptr(virCgroup) cgroup_emulator = NULL;
 
-    if (period == 0 && quota == 0)
-        return 0;
-
     if (virCgroupNewThread(cgroup, VIR_CGROUP_THREAD_EMULATOR, 0,
                            false, &cgroup_emulator) < 0)
         return -1;
@@ -9160,9 +9151,6 @@ qemuSetIOThreadsBWLive(virDomainObj *vm, virCgroup *cgroup,
                        unsigned long long period, long long quota)
 {
     size_t i;
-
-    if (period == 0 && quota == 0)
-        return 0;
 
     if (!vm->def->niothreadids)
         return 0;
