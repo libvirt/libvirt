@@ -46,3 +46,8 @@ char **
 virshDomainVirtTypeCompleter(vshControl *ctl,
                              const vshCmd *cmd,
                              unsigned int flags);
+
+char **
+virshArchCompleter(vshControl *ctl,
+                   const vshCmd *cmd,
+                   unsigned int flags);

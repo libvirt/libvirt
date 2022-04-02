@@ -86,6 +86,7 @@ static const vshCmdOptDef opts_domcapabilities[] = {
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .completer = virshArchCompleter,
      .help = N_("domain architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
@@ -1312,6 +1313,7 @@ static const vshCmdInfo info_cpu_models[] = {
 static const vshCmdOptDef opts_cpu_models[] = {
     {.name = "arch",
      .type = VSH_OT_DATA,
+     .completer = virshArchCompleter,
      .flags = VSH_OFLAG_REQ,
      .help = N_("architecture")
     },
@@ -1588,6 +1590,7 @@ static const vshCmdOptDef opts_hypervisor_cpu_compare[] = {
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .completer = virshArchCompleter,
      .help = N_("CPU architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
@@ -1698,6 +1701,7 @@ static const vshCmdOptDef opts_hypervisor_cpu_baseline[] = {
     },
     {.name = "arch",
      .type = VSH_OT_STRING,
+     .completer = virshArchCompleter,
      .help = N_("CPU architecture (/domain/os/type/@arch)"),
     },
     {.name = "machine",
