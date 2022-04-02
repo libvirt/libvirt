@@ -36,3 +36,7 @@ char **
 virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
                                        const vshCmd *cmd,
                                        unsigned int flags);
+
+char **virshNodeDevicePCIBackendCompleter(vshControl *ctl,
+                                          const vshCmd *cmd,
+                                          unsigned int flags);

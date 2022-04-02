@@ -23,6 +23,7 @@
 #include "virsh-completer-nodedev.h"
 #include "virsh-util.h"
 #include "conf/node_device_conf.h"
+#include "conf/domain_conf.h"
 #include "viralloc.h"
 #include "virsh-nodedev.h"
 #include "virsh.h"
@@ -101,4 +102,16 @@ virshNodeDeviceCapabilityNameCompleter(vshControl *ctl,
                             virNodeDevCapTypeToString);
 
     return virshCommaStringListComplete(cap_str, (const char **)tmp);
+}
+
+
+char **
+virshNodeDevicePCIBackendCompleter(vshControl *ctl G_GNUC_UNUSED,
+                                   const vshCmd *cmd G_GNUC_UNUSED,
+                                   unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return virshEnumComplete(VIR_DOMAIN_HOSTDEV_PCI_BACKEND_TYPE_LAST,
+                             virDomainHostdevSubsysPCIBackendTypeToString);
 }

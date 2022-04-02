@@ -19,6 +19,7 @@
  */
 
 #include <config.h>
+#include "virsh-completer-nodedev.h"
 #include "virsh-nodedev.h"
 #include "virsh-util.h"
 
@@ -613,6 +614,7 @@ static const vshCmdOptDef opts_node_device_detach[] = {
     },
     {.name = "driver",
      .type = VSH_OT_STRING,
+     .completer = virshNodeDevicePCIBackendCompleter,
      .help = N_("pci device assignment backend driver (e.g. 'vfio' or 'kvm')")
     },
     {.name = NULL}
