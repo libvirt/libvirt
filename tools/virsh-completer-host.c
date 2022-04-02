@@ -27,6 +27,7 @@
 #include "virxml.h"
 #include "virutil.h"
 #include "virsh-host.h"
+#include "conf/domain_conf.h"
 
 static char *
 virshPagesizeNodeToString(xmlNodePtr node)
@@ -179,4 +180,16 @@ virshNodeSuspendTargetCompleter(vshControl *ctl G_GNUC_UNUSED,
 
     return virshEnumComplete(VIR_NODE_SUSPEND_TARGET_LAST,
                              virshNodeSuspendTargetTypeToString);
+}
+
+
+char **
+virshDomainVirtTypeCompleter(vshControl *ctl G_GNUC_UNUSED,
+                             const vshCmd *cmd G_GNUC_UNUSED,
+                             unsigned int flags)
+{
+    virCheckFlags(0, NULL);
+
+    return virshEnumComplete(VIR_DOMAIN_VIRT_LAST,
+                             virDomainVirtTypeToString);
 }
