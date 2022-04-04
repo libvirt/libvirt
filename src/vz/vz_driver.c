@@ -2018,53 +2018,43 @@ vzConnectRegisterCloseCallback(virConnectPtr conn,
                                virFreeCallback freecb)
 {
     struct _vzConn *privconn = conn->privateData;
-    int ret = -1;
 
     if (virConnectRegisterCloseCallbackEnsureACL(conn) < 0)
         return -1;
 
-    virObjectLock(privconn->driver);
+    VIR_WITH_OBJECT_LOCK_GUARD(privconn->driver) {
+        if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != NULL) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("A close callback is already registered"));
+            return -1;
+        }
 
-    if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != NULL) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("A close callback is already registered"));
-        goto cleanup;
+        virConnectCloseCallbackDataRegister(privconn->closeCallback, conn, cb,
+                                            opaque, freecb);
     }
 
-    virConnectCloseCallbackDataRegister(privconn->closeCallback, conn, cb,
-                                        opaque, freecb);
-    ret = 0;
-
- cleanup:
-    virObjectUnlock(privconn->driver);
-
-    return ret;
+    return 0;
 }
 
 static int
 vzConnectUnregisterCloseCallback(virConnectPtr conn, virConnectCloseFunc cb)
 {
     struct _vzConn *privconn = conn->privateData;
-    int ret = -1;
 
     if (virConnectUnregisterCloseCallbackEnsureACL(conn) < 0)
         return -1;
 
-    virObjectLock(privconn->driver);
+    VIR_WITH_OBJECT_LOCK_GUARD(privconn->driver) {
+        if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != cb) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("A different callback was requested"));
+            return -1;
+        }
 
-    if (virConnectCloseCallbackDataGetCallback(privconn->closeCallback) != cb) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("A different callback was requested"));
-        goto cleanup;
+        virConnectCloseCallbackDataUnregister(privconn->closeCallback, cb);
     }
 
-    virConnectCloseCallbackDataUnregister(privconn->closeCallback, cb);
-    ret = 0;
-
- cleanup:
-    virObjectUnlock(privconn->driver);
-
-    return ret;
+    return 0;
 }
 
 static int vzDomainSetMemoryFlags(virDomainPtr domain, unsigned long memory,
@@ -3795,9 +3785,9 @@ vzConnectGetAllDomainStats(virConnectPtr conn,
         virDomainStatsRecordPtr tmp;
         virDomainObj *dom = doms[i];
 
-        virObjectLock(dom);
-        tmp = vzDomainGetAllStats(conn, dom);
-        virObjectUnlock(dom);
+        VIR_WITH_OBJECT_LOCK_GUARD(dom) {
+            tmp = vzDomainGetAllStats(conn, dom);
+        }
 
         if (!tmp)
             goto cleanup;
