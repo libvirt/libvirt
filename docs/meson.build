@@ -18,7 +18,6 @@ docs_assets = [
 ]
 
 docs_html_in_files = [
-  'docs',
   'formatcaps',
   'formatnetwork',
   'formatnode',
@@ -51,6 +50,7 @@ docs_rst_files = [
   'csharp',
   'daemons',
   'dbus',
+  'docs',
   'downloads',
   'drivers',
   'drvbhyve',

@@ -105,8 +105,8 @@
 }
 
 #index.document,
-#docs.document,
 #hvsupport.document,
+#documentation.document,
 #knowledge-base.document
 {
     width: inherit;
@@ -397,6 +397,7 @@ h6:hover > a.headerlink {
 }
 
 div.panel,
+#documentation .section,
 #knowledge-base .section
 {
     width: 24%;
@@ -406,6 +407,7 @@ div.panel,
 }
 
 div.panel h2,
+#documentation .section h1,
 #knowledge-base .section h1 {
     margin-top: 0px;
     padding: 0.5em;
@@ -423,13 +425,10 @@ div.panel h2,
     height: 300px;
 }
 
+#documentation.document > h1,
 #knowledge-base.document > h1 {
     text-align: center;
     padding: 1em;
-}
-
-#docs.document h1 {
-    visibility: hidden;
 }
 
 br.clear {
@@ -485,11 +484,13 @@ br.clear {
 }
 
 div.panel dd,
+#documentation dd,
 #knowledge-base dd {
     font-size: smaller;
 }
 
 div.panel a,
+#documentation a,
 #knowledge-base a {
     text-decoration: none;
 }
@@ -497,6 +498,9 @@ div.panel a,
 div.panel ul,
 div.panel p,
 div.panel dl,
+#documentation ul,
+#documentation p,
+#documentation dl,
 #knowledge-base ul,
 #knowledge-base p,
 #knowledge-base dl {
@@ -505,16 +509,19 @@ div.panel dl,
 }
 
 div.panel ul,
+#documentation ul,
 #knowledge-base ul {
     margin-left: 1em;
 }
 
 div.panel dt,
+#documentation dt,
 #knowledge-base dt {
     margin: 0px;
 }
 
 div.panel dd,
+#documentation dd,
 #knowledge-base dd {
     margin: 0px;
     margin-bottom: 1em;
