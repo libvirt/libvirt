@@ -122,7 +122,6 @@ if conf.has('WITH_QEMU')
   mock_libs += [
     { 'name': 'qemucaps2xmlmock' },
     { 'name': 'qemucpumock' },
-    { 'name': 'qemuhotplugmock' },
     { 'name': 'qemuxml2argvmock' },
     { 'name': 'virhostidmock' },
   ]
@@ -193,6 +192,7 @@ if conf.has('WITH_QEMU')
 
   mock_libs += [
     { 'name': 'qemucapsprobemock', 'link_with': [ test_qemu_driver_lib ] },
+    { 'name': 'qemuhotplugmock', 'link_with': [ test_utils_qemu_lib, test_utils_lib ] },
   ]
 else
   test_qemu_driver_lib = []
