@@ -19,7 +19,6 @@ docs_assets = [
 
 docs_html_in_files = [
   '404',
-  'csharp',
   'docs',
   'formatcaps',
   'formatdomaincaps',
@@ -52,6 +51,7 @@ docs_rst_files = [
   'compiling',
   'contact',
   'contribute',
+  'csharp',
   'daemons',
   'dbus',
   'downloads',
