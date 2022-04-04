@@ -692,7 +692,7 @@ cpuTestUpdateLiveCompare(virArch arch,
         if ((cmp == 0 &&
              featAct->policy == VIR_CPU_FEATURE_REQUIRE &&
              featExp->policy == VIR_CPU_FEATURE_DISABLE) ||
-            (cmp < 0 &&
+            (cmp < 0 && featAct &&
              featAct->policy == VIR_CPU_FEATURE_REQUIRE) ||
             (cmp > 0 &&
              featExp->policy == VIR_CPU_FEATURE_DISABLE)) {
