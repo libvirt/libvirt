@@ -254,13 +254,12 @@ virSecurityManagerPostFork(virSecurityManager *mgr)
 int
 virSecurityManagerTransactionStart(virSecurityManager *mgr)
 {
-    int ret = 0;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    virObjectLock(mgr);
-    if (mgr->drv->transactionStart)
-        ret = mgr->drv->transactionStart(mgr);
-    virObjectUnlock(mgr);
-    return ret;
+    if (!mgr->drv->transactionStart)
+        return 0;
+
+    return mgr->drv->transactionStart(mgr);
 }
 
 
@@ -291,13 +290,12 @@ virSecurityManagerTransactionCommit(virSecurityManager *mgr,
                                     pid_t pid,
                                     bool lock)
 {
-    int ret = 0;
+    VIR_LOCK_GUARD lockguard = virObjectLockGuard(mgr);
 
-    virObjectLock(mgr);
-    if (mgr->drv->transactionCommit)
-        ret = mgr->drv->transactionCommit(mgr, pid, lock);
-    virObjectUnlock(mgr);
-    return ret;
+    if (!mgr->drv->transactionCommit)
+        return 0;
+
+    return mgr->drv->transactionCommit(mgr, pid, lock);
 }
 
 
@@ -310,10 +308,10 @@ virSecurityManagerTransactionCommit(virSecurityManager *mgr,
 void
 virSecurityManagerTransactionAbort(virSecurityManager *mgr)
 {
-    virObjectLock(mgr);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
     if (mgr->drv->transactionAbort)
         mgr->drv->transactionAbort(mgr);
-    virObjectUnlock(mgr);
 }
 
 
@@ -341,32 +339,28 @@ virSecurityManagerGetDriver(virSecurityManager *mgr)
 const char *
 virSecurityManagerGetDOI(virSecurityManager *mgr)
 {
-    if (mgr->drv->getDOI) {
-        const char *ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->getDOI(mgr);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->getDOI) {
+        virReportUnsupportedError();
+        return NULL;
     }
 
-    virReportUnsupportedError();
-    return NULL;
+    return mgr->drv->getDOI(mgr);
 }
 
 
 const char *
 virSecurityManagerGetModel(virSecurityManager *mgr)
 {
-    if (mgr->drv->getModel) {
-        const char *ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->getModel(mgr);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->getModel) {
+        virReportUnsupportedError();
+        return NULL;
     }
 
-    virReportUnsupportedError();
-    return NULL;
+    return mgr->drv->getModel(mgr);
 }
 
 
@@ -375,15 +369,12 @@ const char *
 virSecurityManagerGetBaseLabel(virSecurityManager *mgr,
                                int virtType)
 {
-    if (mgr->drv->getBaseLabel) {
-        const char *ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->getBaseLabel(mgr, virtType);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return NULL;
+    if (!mgr->drv->getBaseLabel)
+        return NULL;
+
+    return mgr->drv->getBaseLabel(mgr, virtType);
 }
 
 
@@ -425,16 +416,14 @@ virSecurityManagerRestoreImageLabel(virSecurityManager *mgr,
                                    virStorageSource *src,
                                    virSecurityDomainImageLabelFlags flags)
 {
-    if (mgr->drv->domainRestoreSecurityImageLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, src, flags);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityImageLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityImageLabel(mgr, vm, src, flags);
 }
 
 
@@ -464,15 +453,12 @@ virSecurityManagerMoveImageMetadata(virSecurityManager *mgr,
                                     virStorageSource *src,
                                     virStorageSource *dst)
 {
-    if (mgr->drv->domainMoveImageMetadata) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainMoveImageMetadata(mgr, pid, src, dst);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainMoveImageMetadata)
+        return 0;
+
+    return mgr->drv->domainMoveImageMetadata(mgr, pid, src, dst);
 }
 
 
@@ -480,16 +466,14 @@ int
 virSecurityManagerSetDaemonSocketLabel(virSecurityManager *mgr,
                                        virDomainDef *vm)
 {
-    if (mgr->drv->domainSetSecurityDaemonSocketLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityDaemonSocketLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityDaemonSocketLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityDaemonSocketLabel(mgr, vm);
 }
 
 
@@ -497,16 +481,14 @@ int
 virSecurityManagerSetSocketLabel(virSecurityManager *mgr,
                                  virDomainDef *vm)
 {
-    if (mgr->drv->domainSetSecuritySocketLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecuritySocketLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecuritySocketLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecuritySocketLabel(mgr, vm);
 }
 
 
@@ -514,16 +496,14 @@ int
 virSecurityManagerClearSocketLabel(virSecurityManager *mgr,
                                    virDomainDef *vm)
 {
-    if (mgr->drv->domainClearSecuritySocketLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainClearSecuritySocketLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainClearSecuritySocketLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainClearSecuritySocketLabel(mgr, vm);
 }
 
 
@@ -544,16 +524,14 @@ virSecurityManagerSetImageLabel(virSecurityManager *mgr,
                                 virStorageSource *src,
                                 virSecurityDomainImageLabelFlags flags)
 {
-    if (mgr->drv->domainSetSecurityImageLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityImageLabel(mgr, vm, src, flags);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityImageLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityImageLabel(mgr, vm, src, flags);
 }
 
 
@@ -563,16 +541,14 @@ virSecurityManagerRestoreHostdevLabel(virSecurityManager *mgr,
                                       virDomainHostdevDef *dev,
                                       const char *vroot)
 {
-    if (mgr->drv->domainRestoreSecurityHostdevLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityHostdevLabel(mgr, vm, dev, vroot);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityHostdevLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityHostdevLabel(mgr, vm, dev, vroot);
 }
 
 
@@ -582,16 +558,14 @@ virSecurityManagerSetHostdevLabel(virSecurityManager *mgr,
                                   virDomainHostdevDef *dev,
                                   const char *vroot)
 {
-    if (mgr->drv->domainSetSecurityHostdevLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityHostdevLabel(mgr, vm, dev, vroot);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityHostdevLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityHostdevLabel(mgr, vm, dev, vroot);
 }
 
 
@@ -600,15 +574,12 @@ virSecurityManagerSetSavedStateLabel(virSecurityManager *mgr,
                                      virDomainDef *vm,
                                      const char *savefile)
 {
-    if (mgr->drv->domainSetSavedStateLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainSetSavedStateLabel)
+        return 0;
+
+    return mgr->drv->domainSetSavedStateLabel(mgr, vm, savefile);
 }
 
 
@@ -617,15 +588,12 @@ virSecurityManagerRestoreSavedStateLabel(virSecurityManager *mgr,
                                          virDomainDef *vm,
                                          const char *savefile)
 {
-    if (mgr->drv->domainRestoreSavedStateLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainRestoreSavedStateLabel)
+        return 0;
+
+    return mgr->drv->domainRestoreSavedStateLabel(mgr, vm, savefile);
 }
 
 
@@ -713,16 +681,14 @@ virSecurityManagerReserveLabel(virSecurityManager *mgr,
                                virDomainDef *vm,
                                pid_t pid)
 {
-    if (mgr->drv->domainReserveSecurityLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainReserveSecurityLabel(mgr, vm, pid);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainReserveSecurityLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainReserveSecurityLabel(mgr, vm, pid);
 }
 
 
@@ -730,16 +696,14 @@ int
 virSecurityManagerReleaseLabel(virSecurityManager *mgr,
                                virDomainDef *vm)
 {
-    if (mgr->drv->domainReleaseSecurityLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainReleaseSecurityLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainReleaseSecurityLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainReleaseSecurityLabel(mgr, vm);
 }
 
 
@@ -857,18 +821,15 @@ virSecurityManagerSetAllLabel(virSecurityManager *mgr,
                               bool chardevStdioLogd,
                               bool migrated)
 {
-    if (mgr->drv->domainSetSecurityAllLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityAllLabel(mgr, vm, incomingPath,
-                                                  chardevStdioLogd,
-                                                  migrated);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityAllLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityAllLabel(mgr, vm, incomingPath,
+                                               chardevStdioLogd, migrated);
 }
 
 
@@ -878,17 +839,15 @@ virSecurityManagerRestoreAllLabel(virSecurityManager *mgr,
                                   bool migrated,
                                   bool chardevStdioLogd)
 {
-    if (mgr->drv->domainRestoreSecurityAllLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated,
-                                                      chardevStdioLogd);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityAllLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityAllLabel(mgr, vm, migrated,
+                                                   chardevStdioLogd);
 }
 
 int
@@ -897,16 +856,14 @@ virSecurityManagerGetProcessLabel(virSecurityManager *mgr,
                                   pid_t pid,
                                   virSecurityLabelPtr sec)
 {
-    if (mgr->drv->domainGetSecurityProcessLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainGetSecurityProcessLabel(mgr, vm, pid, sec);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainGetSecurityProcessLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainGetSecurityProcessLabel(mgr, vm, pid, sec);
 }
 
 
@@ -914,16 +871,14 @@ int
 virSecurityManagerSetProcessLabel(virSecurityManager *mgr,
                                   virDomainDef *vm)
 {
-    if (mgr->drv->domainSetSecurityProcessLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityProcessLabel(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityProcessLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityProcessLabel(mgr, vm);
 }
 
 
@@ -957,12 +912,10 @@ virSecurityManagerVerify(virSecurityManager *mgr,
     if (secdef == NULL || secdef->model == NULL)
         return 0;
 
-    if (mgr->drv->domainSecurityVerify) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSecurityVerify(mgr, def);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_WITH_OBJECT_LOCK_GUARD(mgr) {
+        if (mgr->drv->domainSecurityVerify) {
+            return mgr->drv->domainSecurityVerify(mgr, def);
+        }
     }
 
     virReportUnsupportedError();
@@ -975,16 +928,14 @@ virSecurityManagerSetImageFDLabel(virSecurityManager *mgr,
                                   virDomainDef *vm,
                                   int fd)
 {
-    if (mgr->drv->domainSetSecurityImageFDLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityImageFDLabel(mgr, vm, fd);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityImageFDLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityImageFDLabel(mgr, vm, fd);
 }
 
 
@@ -993,16 +944,14 @@ virSecurityManagerSetTapFDLabel(virSecurityManager *mgr,
                                 virDomainDef *vm,
                                 int fd)
 {
-    if (mgr->drv->domainSetSecurityTapFDLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityTapFDLabel(mgr, vm, fd);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityTapFDLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityTapFDLabel(mgr, vm, fd);
 }
 
 
@@ -1010,16 +959,14 @@ char *
 virSecurityManagerGetMountOptions(virSecurityManager *mgr,
                                   virDomainDef *vm)
 {
-    if (mgr->drv->domainGetSecurityMountOptions) {
-        char *ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainGetSecurityMountOptions(mgr, vm);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainGetSecurityMountOptions) {
+        virReportUnsupportedError();
+        return NULL;
     }
 
-    virReportUnsupportedError();
-    return NULL;
+    return mgr->drv->domainGetSecurityMountOptions(mgr, vm);
 }
 
 
@@ -1059,15 +1006,12 @@ virSecurityManagerDomainSetPathLabel(virSecurityManager *mgr,
                                      const char *path,
                                      bool allowSubtree)
 {
-    if (mgr->drv->domainSetPathLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetPathLabel(mgr, vm, path, allowSubtree);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainSetPathLabel)
+        return 0;
+
+    return mgr->drv->domainSetPathLabel(mgr, vm, path, allowSubtree);
 }
 
 
@@ -1088,15 +1032,12 @@ virSecurityManagerDomainSetPathLabelRO(virSecurityManager *mgr,
                                        virDomainDef *vm,
                                        const char *path)
 {
-    if (mgr->drv->domainSetPathLabelRO) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetPathLabelRO(mgr, vm, path);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainSetPathLabelRO)
+        return 0;
+
+    return mgr->drv->domainSetPathLabelRO(mgr, vm, path);
 }
 
 /**
@@ -1115,15 +1056,12 @@ virSecurityManagerDomainRestorePathLabel(virSecurityManager *mgr,
                                          virDomainDef *vm,
                                          const char *path)
 {
-    if (mgr->drv->domainRestorePathLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestorePathLabel(mgr, vm, path);
-        virObjectUnlock(mgr);
-        return ret;
-    }
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    return 0;
+    if (!mgr->drv->domainRestorePathLabel)
+        return 0;
+
+    return mgr->drv->domainRestorePathLabel(mgr, vm, path);
 }
 
 
@@ -1143,16 +1081,14 @@ virSecurityManagerSetMemoryLabel(virSecurityManager *mgr,
                                      virDomainDef *vm,
                                      virDomainMemoryDef *mem)
 {
-    if (mgr->drv->domainSetSecurityMemoryLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityMemoryLabel(mgr, vm, mem);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityMemoryLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityMemoryLabel(mgr, vm, mem);
 }
 
 
@@ -1171,16 +1107,14 @@ virSecurityManagerRestoreMemoryLabel(virSecurityManager *mgr,
                                         virDomainDef *vm,
                                         virDomainMemoryDef *mem)
 {
-    if (mgr->drv->domainRestoreSecurityMemoryLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityMemoryLabel(mgr, vm, mem);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityMemoryLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityMemoryLabel(mgr, vm, mem);
 }
 
 
@@ -1189,16 +1123,14 @@ virSecurityManagerSetInputLabel(virSecurityManager *mgr,
                                 virDomainDef *vm,
                                 virDomainInputDef *input)
 {
-    if (mgr->drv->domainSetSecurityInputLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityInputLabel(mgr, vm, input);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityInputLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityInputLabel(mgr, vm, input);
 }
 
 
@@ -1207,16 +1139,14 @@ virSecurityManagerRestoreInputLabel(virSecurityManager *mgr,
                                     virDomainDef *vm,
                                     virDomainInputDef *input)
 {
-    if (mgr->drv->domainRestoreSecurityInputLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityInputLabel(mgr, vm, input);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityInputLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityInputLabel(mgr, vm, input);
 }
 
 
@@ -1226,17 +1156,15 @@ virSecurityManagerSetChardevLabel(virSecurityManager *mgr,
                                   virDomainChrSourceDef *dev_source,
                                   bool chardevStdioLogd)
 {
-    if (mgr->drv->domainSetSecurityChardevLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityChardevLabel(mgr, def, dev_source,
-                                                      chardevStdioLogd);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainSetSecurityChardevLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainSetSecurityChardevLabel(mgr, def, dev_source,
+                                                   chardevStdioLogd);
 }
 
 
@@ -1246,17 +1174,15 @@ virSecurityManagerRestoreChardevLabel(virSecurityManager *mgr,
                                       virDomainChrSourceDef *dev_source,
                                       bool chardevStdioLogd)
 {
-    if (mgr->drv->domainRestoreSecurityChardevLabel) {
-        int ret;
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityChardevLabel(mgr, def, dev_source,
-                                                          chardevStdioLogd);
-        virObjectUnlock(mgr);
-        return ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
+
+    if (!mgr->drv->domainRestoreSecurityChardevLabel) {
+        virReportUnsupportedError();
+        return -1;
     }
 
-    virReportUnsupportedError();
-    return -1;
+    return mgr->drv->domainRestoreSecurityChardevLabel(mgr, def, dev_source,
+                                                       chardevStdioLogd);
 }
 
 
@@ -1264,17 +1190,12 @@ int
 virSecurityManagerSetTPMLabels(virSecurityManager *mgr,
                                virDomainDef *vm)
 {
-    int ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    if (mgr->drv->domainSetSecurityTPMLabels) {
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityTPMLabels(mgr, vm);
-        virObjectUnlock(mgr);
+    if (!mgr->drv->domainSetSecurityTPMLabels)
+        return 0;
 
-        return ret;
-    }
-
-    return 0;
+    return mgr->drv->domainSetSecurityTPMLabels(mgr, vm);
 }
 
 
@@ -1282,17 +1203,12 @@ int
 virSecurityManagerRestoreTPMLabels(virSecurityManager *mgr,
                                    virDomainDef *vm)
 {
-    int ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    if (mgr->drv->domainRestoreSecurityTPMLabels) {
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm);
-        virObjectUnlock(mgr);
+    if (!mgr->drv->domainRestoreSecurityTPMLabels)
+        return 0;
 
-        return ret;
-    }
-
-    return 0;
+    return mgr->drv->domainRestoreSecurityTPMLabels(mgr, vm);
 }
 
 
@@ -1301,17 +1217,12 @@ virSecurityManagerSetNetdevLabel(virSecurityManager *mgr,
                                  virDomainDef *vm,
                                  virDomainNetDef *net)
 {
-    int ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    if (mgr->drv->domainSetSecurityNetdevLabel) {
-        virObjectLock(mgr);
-        ret = mgr->drv->domainSetSecurityNetdevLabel(mgr, vm, net);
-        virObjectUnlock(mgr);
+    if (!mgr->drv->domainSetSecurityNetdevLabel)
+        return 0;
 
-        return ret;
-    }
-
-    return 0;
+    return mgr->drv->domainSetSecurityNetdevLabel(mgr, vm, net);
 }
 
 
@@ -1320,17 +1231,12 @@ virSecurityManagerRestoreNetdevLabel(virSecurityManager *mgr,
                                      virDomainDef *vm,
                                      virDomainNetDef *net)
 {
-    int ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(mgr);
 
-    if (mgr->drv->domainRestoreSecurityNetdevLabel) {
-        virObjectLock(mgr);
-        ret = mgr->drv->domainRestoreSecurityNetdevLabel(mgr, vm, net);
-        virObjectUnlock(mgr);
+    if (!mgr->drv->domainRestoreSecurityNetdevLabel)
+        return 0;
 
-        return ret;
-    }
-
-    return 0;
+    return mgr->drv->domainRestoreSecurityNetdevLabel(mgr, vm, net);
 }
 
 
