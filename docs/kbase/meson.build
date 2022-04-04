@@ -20,6 +20,7 @@ docs_kbase_files = [
   'secureusage',
   'snapshots',
   'systemtap',
+  'tlscerts',
   'virtiofs',
 ]
 

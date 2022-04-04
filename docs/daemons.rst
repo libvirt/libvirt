@@ -100,7 +100,7 @@ optionally, one or two TCP sockets:
   with full read-write privileges. A connection to this socket gives the
   client privileges that are equivalent to having a root shell. Access control
   can be enforced either through validation of `x509 certificates
-  <tlscerts.html>`__, and/or by enabling an `authentication mechanism
+  <kbase/tlscerts.html>`__, and/or by enabling an `authentication mechanism
   <auth.html>`__.
 
 NB, some distros will use ``/run`` instead of ``/var/run``.

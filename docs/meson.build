@@ -109,7 +109,6 @@ docs_rst_files = [
   'testapi',
   'testsuites',
   'testtck',
-  'tlscerts',
 ]
 
 # list of web targets to build for docs/web rule

@@ -61,7 +61,7 @@ Remote libvirt supports a range of transports:
       <dd><a href="https://en.wikipedia.org/wiki/Transport_Layer_Security" title="Transport Layer Security">TLS</a>
  1.0 (SSL 3.1) authenticated and encrypted TCP/IP socket, usually
  listening on a public port number.  To use this you will need to
- <a href="tlscerts.html" title="Generating TLS certificates">generate client and
+ <a href="kbase/tlscerts.html" title="Generating TLS certificates">generate client and
  server certificates</a>.
  The standard port is 16514.
  </dd>

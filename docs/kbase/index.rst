@@ -19,6 +19,9 @@ Usage
    Examination of the security protections used for QEMU and how they need
    configuring to allow use of QEMU passthrough with host files/devices.
 
+`TLS certificates <tlscerts.html>`__
+   Generate and deploy x509 certificates for TLS.
+
 `RPM deployment <rpm-deployment.html>`__
    Explanation of the different RPM packages and illustration of which to
    pick for installation
