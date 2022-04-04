@@ -23,7 +23,6 @@ docs_html_in_files = [
   'formatnode',
   'formatnwfilter',
   'index',
-  'internals',
   'remote',
   'storage',
   'uri',

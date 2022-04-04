@@ -4,6 +4,7 @@ docs_kbase_internals_files = [
   'incremental-backup',
   'locking',
   'migration',
+  'overview',
   'rpc',
 ]
 
