@@ -435,6 +435,7 @@ qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
     if (priv->agent)
         qemuAgentNotifyEvent(priv->agent, QEMU_AGENT_EVENT_RESET);
 
+    qemuDomainSetFakeReboot(vm, false);
     qemuDomainSaveStatus(vm);
 
  unlock:
