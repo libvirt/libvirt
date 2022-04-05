@@ -18,7 +18,6 @@ docs_assets = [
 ]
 
 docs_html_in_files = [
-  '404',
   'docs',
   'formatcaps',
   'formatnetwork',
@@ -132,7 +131,6 @@ docs_timestamp = run_command(
 ).stdout().strip()
 
 site_xsl = files('site.xsl')
-subsite_xsl = files('subsite.xsl')
 page_xsl = files('page.xsl')
 newapi_xsl = files('newapi.xsl')
 
@@ -218,7 +216,6 @@ docs_rst2html5_gen = generator(
 
 # html_xslt_gen config
 
-html_xslt_gen_xslt = site_xsl
 html_xslt_gen_install_dir = docs_html_dir
 
 html_xslt_gen = []
@@ -249,6 +246,12 @@ html_xslt_gen += {
   'name': 'acl',
   'source': 'docs' / 'acl.html.in',
   'depends': aclperms_gen,
+}
+
+html_xslt_gen += {
+  'name': '404',
+  'source': 'docs' / '404.html.in',
+  'href_base': '/',
 }
 
 hvsupport_html_in = custom_target(
@@ -302,8 +305,9 @@ foreach data : html_xslt_gen
       '--stringparam', 'pagesrc', data.get('source', ''),
       '--stringparam', 'builddir', meson.build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
+      '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',
-      html_xslt_gen_xslt,
+      site_xsl,
       '@INPUT@',
     ],
     depends: data.get('depends', []),

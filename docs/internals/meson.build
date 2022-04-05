@@ -5,7 +5,6 @@ internals_in_files = [
   'rpc',
 ]
 
-html_xslt_gen_xslt = subsite_xsl
 html_xslt_gen_install_dir = docs_html_dir / 'internals'
 html_xslt_gen = []
 
@@ -13,6 +12,7 @@ foreach name : internals_in_files
   html_xslt_gen += {
     'name': name,
     'source': 'docs' / 'internals' / name + '.html.in',
+    'href_base': '../'
   }
 endforeach
 
@@ -32,8 +32,9 @@ foreach data : html_xslt_gen
       '--stringparam', 'pagesrc', data.get('source', ''),
       '--stringparam', 'builddir', meson.build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
+      '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',
-      html_xslt_gen_xslt,
+      site_xsl,
       '@INPUT@',
     ],
     depends: data.get('depends', []),

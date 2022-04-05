@@ -1,4 +1,3 @@
-html_xslt_gen_xslt = subsite_xsl
 html_xslt_gen_install_dir = docs_html_dir / 'manpages'
 html_xslt_gen = []
 
@@ -130,6 +129,7 @@ foreach data : docs_man_files
     'name': data['name'],
     'file': html_in,
     'source': 'docs' / 'manpages' / rst_in_file,
+    'href_base': '../',
   }
 endforeach
 
@@ -149,8 +149,9 @@ foreach data : html_xslt_gen
       '--stringparam', 'pagesrc', data.get('source', ''),
       '--stringparam', 'builddir', meson.build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
+      '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',
-      html_xslt_gen_xslt,
+      site_xsl,
       '@INPUT@',
     ],
     depends: data.get('depends', []),

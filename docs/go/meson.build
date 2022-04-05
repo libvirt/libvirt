@@ -3,7 +3,6 @@ docs_go_files = [
   'libvirtxml',
 ]
 
-html_xslt_gen_xslt = subsite_xsl
 html_xslt_gen_install_dir = docs_html_dir / 'go'
 html_xslt_gen = []
 
@@ -14,6 +13,7 @@ foreach name : docs_go_files
     'name': name,
     'file': docs_rst2html5_gen.process(rst_file),
     'source': 'docs' / 'go' / rst_file,
+    'href_base': '../',
   }
 endforeach
 
@@ -33,8 +33,9 @@ foreach data : html_xslt_gen
       '--stringparam', 'pagesrc', data.get('source', ''),
       '--stringparam', 'builddir', meson.build_root(),
       '--stringparam', 'timestamp', docs_timestamp,
+      '--stringparam', 'href_base', data.get('href_base', ''),
       '--nonet',
-      html_xslt_gen_xslt,
+      site_xsl,
       '@INPUT@',
     ],
     depends: data.get('depends', []),
