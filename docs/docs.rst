@@ -157,9 +157,6 @@ Project development
 `RPC protocol & APIs <internals/rpc.html>`__
    RPC protocol information and API / dispatch guide
 
-`Lock managers <internals/locking.html>`__
-   Use lock managers to protect disk content
-
 `Functional testing <testsuites.html>`__
    Testing libvirt with
    `TCK test suite <testtck.html>`__ and

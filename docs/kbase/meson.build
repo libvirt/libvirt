@@ -36,7 +36,6 @@ foreach name : docs_kbase_files
   }
 endforeach
 
-# keep the XSLT processing code block in sync with docs/meson.build
 
 # --- begin of XSLT processing ---
 

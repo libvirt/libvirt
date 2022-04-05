@@ -91,3 +91,6 @@ Internals
 
 `Event loop and worker pool <internals/eventloop.html>`__
    Libvirt's event loop and worker pool mode
+
+`Lock managers <internals/locking.html>`__
+   Use lock managers to protect disk content

@@ -1,5 +1,4 @@
 internals_in_files = [
-  'locking',
   'rpc',
 ]
 
