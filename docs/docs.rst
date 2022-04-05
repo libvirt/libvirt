@@ -157,9 +157,6 @@ Project development
 `Event loop and worker pool <internals/eventloop.html>`__
    Libvirt's event loop and worker pool mode
 
-`Spawning commands <internals/command.html>`__
-   Spawning commands from libvirt driver code
-
 `RPC protocol & APIs <internals/rpc.html>`__
    RPC protocol information and API / dispatch guide
 

@@ -1,4 +1,5 @@
 docs_kbase_internals_files = [
+  'command',
   'incremental-backup',
   'migration',
 ]

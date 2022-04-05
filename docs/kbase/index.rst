@@ -85,3 +85,6 @@ Internals
 `VM migration internals <internals/migration.html>`__
    VM migration implementation details, complementing the info in
    `migration <../migration.html>`__
+
+`Spawning commands <internals/command.html>`__
+   Spawning commands from libvirt driver code
