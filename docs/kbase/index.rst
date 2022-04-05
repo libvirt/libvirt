@@ -62,8 +62,8 @@ Usage
     Details about snapshotting a VM
 
 
-Internals / Debugging
----------------------
+Debugging
+---------
 
 `Debug logs <debuglogs.html>`__
   Configuration of logging and tips on how to file a good bug report.
@@ -71,13 +71,17 @@ Internals / Debugging
 `Systemtap <systemtap.html>`__
    Explanation of how to use systemtap for libvirt tracing.
 
+`Capturing core dumps for QEMU <qemu-core-dump.html>`__
+   How to configure libvirt to enable capture of core dumps from
+   QEMU virtual machines
+
+
+Internals
+---------
+
 `Incremental backup internals <incrementalbackupinternals.html>`__
    Incremental backup implementation details relevant for users
 
 `VM migration internals <migrationinternals.html>`__
    VM migration implementation details, complementing the info in
    `migration <../migration.html>`__
-
-`Capturing core dumps for QEMU <qemu-core-dump.html>`__
-   How to configure libvirt to enable capture of core dumps from
-   QEMU virtual machines
