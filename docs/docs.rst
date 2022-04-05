@@ -154,9 +154,6 @@ Project development
 `API extensions <api_extension.html>`__
    Adding new public libvirt APIs
 
-`RPC protocol & APIs <internals/rpc.html>`__
-   RPC protocol information and API / dispatch guide
-
 `Functional testing <testsuites.html>`__
    Testing libvirt with
    `TCK test suite <testtck.html>`__ and

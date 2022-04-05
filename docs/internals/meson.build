@@ -1,5 +1,4 @@
 internals_in_files = [
-  'rpc',
 ]
 
 html_xslt_gen_install_dir = docs_html_dir / 'internals'

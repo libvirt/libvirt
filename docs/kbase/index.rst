@@ -94,3 +94,6 @@ Internals
 
 `Lock managers <internals/locking.html>`__
    Use lock managers to protect disk content
+
+`RPC protocol & APIs <internals/rpc.html>`__
+   RPC protocol information and API / dispatch guide

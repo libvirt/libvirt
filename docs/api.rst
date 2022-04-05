@@ -219,7 +219,7 @@ Daemon and Remote Access
 
 Access to libvirt drivers is primarily handled by the libvirtd daemon
 through the `remote <remote.html>`__ driver via an
-`RPC <internals/rpc.html>`__. Some hypervisors do support client-side
+`RPC <kbase/internals/rpc.html>`__. Some hypervisors do support client-side
 connections and responses, such as Test, OpenVZ, VMware, VirtualBox
 (vbox), ESX, Hyper-V, Xen, and Virtuozzo. The libvirtd daemon service is
 started on the host at system boot time and can also be restarted at any
