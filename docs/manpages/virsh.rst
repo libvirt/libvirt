@@ -5198,10 +5198,9 @@ guests via <hostdev> passthrough.  This is reversed with
 ``nodedev-reattach``, and is done automatically for managed devices.
 
 Different backend drivers expect the device to be bound to different
-dummy devices. For example, QEMU's "kvm" backend driver (the default)
-expects the device to be bound to pci-stub, but its "vfio" backend
-driver expects the device to be bound to vfio-pci. The *--driver*
-parameter can be used to specify the desired backend driver.
+dummy devices. For example, QEMU's "vfio" backend driver expects the
+device to be bound to vfio-pci. The *--driver* parameter can be used
+to specify the desired backend driver.
 
 
 nodedev-dumpxml
