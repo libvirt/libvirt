@@ -79,9 +79,9 @@ Debugging
 Internals
 ---------
 
-`Incremental backup internals <incrementalbackupinternals.html>`__
+`Incremental backup internals <internals/incremental-backup.html>`__
    Incremental backup implementation details relevant for users
 
-`VM migration internals <migrationinternals.html>`__
+`VM migration internals <internals/migration.html>`__
    VM migration implementation details, complementing the info in
    `migration <../migration.html>`__

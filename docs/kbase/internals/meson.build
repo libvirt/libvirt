@@ -1,38 +1,20 @@
-docs_kbase_files = [
-  'backing_chains',
-  'debuglogs',
-  'domainstatecapture',
-  'index',
-  'kvm-realtime',
-  'launch_security_sev',
-  'live_full_disk_backup',
-  'locking-lockd',
-  'locking',
-  'locking-sanlock',
-  'memorydevices',
-  'merging_disk_image_chains',
-  'qemu-core-dump',
-  'qemu-passthrough-security',
-  'rpm-deployment',
-  's390_protected_virt',
-  'secureusage',
-  'snapshots',
-  'systemtap',
-  'tlscerts',
-  'virtiofs',
+docs_kbase_internals_files = [
+  'incremental-backup',
+  'migration',
 ]
 
-html_xslt_gen_install_dir = docs_html_dir / 'kbase'
+
+html_xslt_gen_install_dir = docs_html_dir / 'kbase' / 'internals'
 html_xslt_gen = []
 
-foreach name : docs_kbase_files
+foreach name : docs_kbase_internals_files
   rst_file = '@0@.rst'.format(name)
 
   html_xslt_gen += {
     'name': name,
     'file': docs_rst2html5_gen.process(rst_file),
-    'source': 'docs' / 'kbase' / rst_file,
-    'href_base': '../',
+    'source': 'docs' / 'kbase' / 'internals' / rst_file,
+    'href_base': '../../',
   }
 endforeach
 
@@ -71,5 +53,3 @@ endforeach
 html_xslt_gen = []
 
 # --- end of XSLT processing ---
-
-subdir('internals')
