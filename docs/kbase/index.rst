@@ -88,3 +88,6 @@ Internals
 
 `Spawning commands <internals/command.html>`__
    Spawning commands from libvirt driver code
+
+`Event loop and worker pool <internals/eventloop.html>`__
+   Libvirt's event loop and worker pool mode

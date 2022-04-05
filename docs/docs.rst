@@ -154,9 +154,6 @@ Project development
 `API extensions <api_extension.html>`__
    Adding new public libvirt APIs
 
-`Event loop and worker pool <internals/eventloop.html>`__
-   Libvirt's event loop and worker pool mode
-
 `RPC protocol & APIs <internals/rpc.html>`__
    RPC protocol information and API / dispatch guide
 

@@ -1,5 +1,6 @@
 docs_kbase_internals_files = [
   'command',
+  'eventloop',
   'incremental-backup',
   'migration',
 ]
