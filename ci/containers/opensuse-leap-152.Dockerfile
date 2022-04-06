@@ -21,7 +21,6 @@ RUN zypper update -y && \
            cyrus-sasl-devel \
            device-mapper-devel \
            diffutils \
-           dnsmasq \
            dwarves \
            ebtables \
            fuse-devel \

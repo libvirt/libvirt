@@ -21,7 +21,6 @@ RUN apk update && \
         curl-dev \
         cyrus-sasl-dev \
         diffutils \
-        dnsmasq \
         eudev-dev \
         fuse-dev \
         gcc \

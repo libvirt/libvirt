@@ -27,7 +27,6 @@ exec "$@"' > /usr/bin/nosync && \
         cpp \
         cppi \
         diffutils \
-        dnsmasq \
         dwarves \
         ebtables \
         firewalld-filesystem \

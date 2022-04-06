@@ -31,7 +31,6 @@ exec "$@"' > /usr/bin/nosync && \
         cyrus-sasl-devel \
         device-mapper-devel \
         diffutils \
-        dnsmasq \
         dwarves \
         ebtables \
         firewalld-filesystem \

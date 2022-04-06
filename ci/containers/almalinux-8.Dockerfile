@@ -22,7 +22,6 @@ RUN dnf update -y && \
         cyrus-sasl-devel \
         device-mapper-devel \
         diffutils \
-        dnsmasq \
         dwarves \
         ebtables \
         firewalld-filesystem \

@@ -21,7 +21,6 @@ RUN apk update && \
         curl-dev \
         cyrus-sasl-dev \
         diffutils \
-        dnsmasq \
         eudev-dev \
         fuse-dev \
         gcc \
@@ -62,6 +61,7 @@ RUN apk update && \
         python3 \
         qemu-img \
         readline-dev \
+        rpcgen \
         samurai \
         sed \
         util-linux-dev \

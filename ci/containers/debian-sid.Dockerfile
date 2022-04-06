@@ -20,7 +20,6 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
             codespell \
             cpp \
             diffutils \
-            dnsmasq-base \
             dwarves \
             ebtables \
             flake8 \
