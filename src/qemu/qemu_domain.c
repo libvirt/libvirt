@@ -11828,7 +11828,7 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     g_autofree char *format = NULL;
-    g_autofree char *main = NULL;
+    g_autofree char *main_log = NULL;
     g_autoptr(DIR) dir = NULL;
     struct dirent *entry;
     int rc;
@@ -11840,13 +11840,13 @@ qemuDomainRemoveLogs(virQEMUDriver *driver,
     if (virDirOpen(&dir, cfg->logDir) < 0)
         return -1;
 
-    main = g_strdup_printf("%s.log", name);
+    main_log = g_strdup_printf("%s.log", name);
     format = g_strdup_printf("%s.log.%%u", name);
 
     while ((rc = virDirRead(dir, &entry, cfg->logDir)) > 0) {
         unsigned int u;
 
-        if (STREQ(entry->d_name, main) ||
+        if (STREQ(entry->d_name, main_log) ||
             sscanf(entry->d_name, format, &u) == 1) {
             g_autofree char *path = NULL;
 
