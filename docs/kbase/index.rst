@@ -86,6 +86,10 @@ Internals
    VM migration implementation details, complementing the info in
    `migration <../migration.html>`__
 
+`API call flow overview <internals/overview.html>`__
+   Overview of how an API call is handled by the ``libvirt`` library and passed
+   over RPC to the daemon.
+
 `Spawning commands <internals/command.html>`__
    Spawning commands from libvirt driver code
 
