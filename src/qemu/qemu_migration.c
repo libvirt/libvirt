@@ -3040,8 +3040,7 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
         VIR_DEBUG("Received no lockstate");
     }
 
-    if (incoming->deferredURI &&
-        qemuMigrationDstRun(driver, vm, incoming->deferredURI,
+    if (qemuMigrationDstRun(driver, vm, incoming->uri,
                             VIR_ASYNC_JOB_MIGRATION_IN) < 0)
         goto stopjob;
 

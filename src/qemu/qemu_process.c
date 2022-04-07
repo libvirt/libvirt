@@ -4559,8 +4559,7 @@ qemuProcessIncomingDefFree(qemuProcessIncomingDef *inc)
         return;
 
     g_free(inc->address);
-    g_free(inc->launchURI);
-    g_free(inc->deferredURI);
+    g_free(inc->uri);
     g_free(inc);
 }
 
@@ -4589,14 +4588,9 @@ qemuProcessIncomingDefNew(virQEMUCaps *qemuCaps,
 
     inc->address = g_strdup(listenAddress);
 
-    inc->launchURI = qemuMigrationDstGetURI(migrateFrom, fd);
-    if (!inc->launchURI)
+    inc->uri = qemuMigrationDstGetURI(migrateFrom, fd);
+    if (!inc->uri)
         goto error;
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_INCOMING_DEFER)) {
-        inc->deferredURI = inc->launchURI;
-        inc->launchURI = g_strdup("defer");
-    }
 
     inc->fd = fd;
     inc->path = path;
@@ -7373,12 +7367,11 @@ qemuProcessLaunch(virConnectPtr conn,
     unsigned long long maxMemLock = 0;
 
     VIR_DEBUG("conn=%p driver=%p vm=%p name=%s if=%d asyncJob=%d "
-              "incoming.launchURI=%s incoming.deferredURI=%s "
+              "incoming.uri=%s "
               "incoming.fd=%d incoming.path=%s "
               "snapshot=%p vmop=%d flags=0x%x",
               conn, driver, vm, vm->def->name, vm->def->id, asyncJob,
-              NULLSTR(incoming ? incoming->launchURI : NULL),
-              NULLSTR(incoming ? incoming->deferredURI : NULL),
+              NULLSTR(incoming ? incoming->uri : NULL),
               incoming ? incoming->fd : -1,
               NULLSTR(incoming ? incoming->path : NULL),
               snapshot, vmop, flags);
@@ -7429,7 +7422,7 @@ qemuProcessLaunch(virConnectPtr conn,
     VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(driver,
                                      vm,
-                                     incoming ? incoming->launchURI : NULL,
+                                     incoming ? "defer" : NULL,
                                      snapshot, vmop,
                                      false,
                                      qemuCheckFips(vm),
@@ -7856,8 +7849,7 @@ qemuProcessStart(virConnectPtr conn,
     relabel = true;
 
     if (incoming) {
-        if (incoming->deferredURI &&
-            qemuMigrationDstRun(driver, vm, incoming->deferredURI, asyncJob) < 0)
+        if (qemuMigrationDstRun(driver, vm, incoming->uri, asyncJob) < 0)
             goto stop;
     } else {
         /* Refresh state of devices from QEMU. During migration this happens

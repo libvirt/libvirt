@@ -52,8 +52,7 @@ void qemuProcessReconnectAll(virQEMUDriver *driver);
 typedef struct _qemuProcessIncomingDef qemuProcessIncomingDef;
 struct _qemuProcessIncomingDef {
     char *address; /* address where QEMU is supposed to listen */
-    char *launchURI; /* used as a parameter for -incoming command line option */
-    char *deferredURI; /* used when calling migrate-incoming QMP command */
+    char *uri; /* used when calling migrate-incoming QMP command */
     int fd; /* for fd:N URI */
     const char *path; /* path associated with fd */
 };
