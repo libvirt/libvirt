@@ -348,7 +348,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "e1000", /* QEMU_CAPS_DEVICE_E1000 */
               "virtio-net", /* QEMU_CAPS_DEVICE_VIRTIO_NET */
               "gic-version", /* QEMU_CAPS_MACH_VIRT_GIC_VERSION */
-              "incoming-defer", /* QEMU_CAPS_INCOMING_DEFER */
+              "incoming-defer", /* X_QEMU_CAPS_INCOMING_DEFER */
               "virtio-gpu", /* QEMU_CAPS_DEVICE_VIRTIO_GPU */
 
               /* 200 */
@@ -1207,7 +1207,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
     { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
-    { "migrate-incoming", QEMU_CAPS_INCOMING_DEFER },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },

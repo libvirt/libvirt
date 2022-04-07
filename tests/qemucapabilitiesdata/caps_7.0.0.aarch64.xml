@@ -75,7 +75,6 @@
   <flag name='e1000'/>
   <flag name='virtio-net'/>
   <flag name='gic-version'/>
-  <flag name='incoming-defer'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-keyboard'/>
   <flag name='virtio-mouse'/>

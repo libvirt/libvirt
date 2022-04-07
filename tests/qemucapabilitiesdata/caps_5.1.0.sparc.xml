@@ -26,7 +26,6 @@
   <flag name='iothread'/>
   <flag name='migrate-rdma'/>
   <flag name='migration-event'/>
-  <flag name='incoming-defer'/>
   <flag name='chardev-file-append'/>
   <flag name='vserport-change-event'/>
   <flag name='spice-gl'/>

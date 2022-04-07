@@ -37,7 +37,6 @@
   <flag name='dea-key-wrap'/>
   <flag name='migration-event'/>
   <flag name='virtio-net'/>
-  <flag name='incoming-defer'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-gpu.virgl'/>
   <flag name='virtio-keyboard'/>
