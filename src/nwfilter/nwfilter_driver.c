@@ -173,7 +173,8 @@ nwfilterStateCleanupLocked(void)
     /* free inactive nwfilters */
     virNWFilterObjListFree(driver->nwfilters);
 
-    virMutexDestroy(&driver->updateLock);
+    if (driver->updateLockInitialized)
+        virMutexDestroy(&driver->updateLock);
     g_clear_pointer(&driver, g_free);
 
     return 0;
@@ -222,6 +223,7 @@ nwfilterStateInitialize(bool privileged,
     if (virMutexInitRecursive(&driver->updateLock) < 0)
         goto err_free_driverstate;
 
+    driver->updateLockInitialized = true;
     driver->privileged = privileged;
 
     if (!(driver->nwfilters = virNWFilterObjListNew()))
