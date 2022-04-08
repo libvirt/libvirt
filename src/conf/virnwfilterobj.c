@@ -110,6 +110,9 @@ virNWFilterObjFree(virNWFilterObj *obj)
 void
 virNWFilterObjListFree(virNWFilterObjList *nwfilters)
 {
+    if (!nwfilters)
+        return;
+
     g_hash_table_unref(nwfilters->objs);
     g_hash_table_unref(nwfilters->objsName);
     g_free(nwfilters);
