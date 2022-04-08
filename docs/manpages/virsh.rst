@@ -2017,7 +2017,8 @@ inbound or outbound bandwidth. *average,peak,burst,floor* is the same as
 in command *attach-interface*.  Values for *average*, *peak* and *floor*
 are expressed in kilobytes per second, while *burst* is expressed in kilobytes
 in a single burst at *peak* speed as described in the Network XML
-documentation at `https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`__.
+documentation at
+`https://libvirt.org/formatnetwork.html#quality-of-service <https://libvirt.org/formatnetwork.html#quality-of-service>`__.
 
 To clear inbound or outbound settings, use *--inbound* or *--outbound*
 respectfully with average value of zero.
@@ -4824,7 +4825,7 @@ specified.  The other two *peak* and *burst* are optional, so
 are expressed in kilobytes per second, while *burst* is expressed in
 kilobytes in a single burst at *peak* speed as described in the
 Network XML documentation at
-`https://libvirt.org/formatnetwork.html#elementQoS <https://libvirt.org/formatnetwork.html#elementQoS>`__.
+`https://libvirt.org/formatnetwork.html#quality-of-service <https://libvirt.org/formatnetwork.html#quality-of-service>`__.
 
 ``--managed`` is usable only for *hostdev* type and tells libvirt
 that the interface should be managed, which means detached and reattached

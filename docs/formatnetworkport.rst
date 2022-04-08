@@ -78,7 +78,7 @@ The following elements are common to one or more of the plug types listed later
    This part of the network port XML provides setting quality of service.
    Incoming and outgoing traffic can be shaped independently. The ``bandwidth``
    element and its child elements are described in the
-   `QoS <formatnetwork.html#elementQoS>`__ section of the Network XML. In
+   `QoS <formatnetwork.html#quality-of-service>`__ section of the Network XML. In
    addition the ``classID`` attribute may exist to provide the ID of the traffic
    shaping class that is active.
 ``rxfilters``

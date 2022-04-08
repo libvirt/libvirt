@@ -5542,7 +5542,7 @@ Quality of service
 
 This part of interface XML provides setting quality of service. Incoming and
 outgoing traffic can be shaped independently. The ``bandwidth`` element and its
-child elements are described in the `QoS <formatnetwork.html#elementQoS>`__
+child elements are described in the `QoS <formatnetwork.html#quality-of-service>`__
 section of the Network XML.
 
 :anchor:`<a id="elementVlanTag"/>`
@@ -5746,7 +5746,7 @@ address of the other end of a point-to-point network device :since:`(since
 :since:`Since 1.2.12` route elements can also be added to define IP routes to
 add in the guest. The attributes of this element are described in the
 documentation for the ``route`` element in `network
-definitions <formatnetwork.html#elementsStaticroute>`__. This is used by the LXC
+definitions <formatnetwork.html#static-routes>`__. This is used by the LXC
 driver.
 
 ::
