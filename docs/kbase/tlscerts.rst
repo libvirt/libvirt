@@ -89,7 +89,7 @@ clients. There are two distinct checks involved:
 -  The server should know that only permitted clients are connecting. This can
    be done based on client's IP address, or on client's IP address and client's
    certificate. Checking done by the server. May be enabled and disabled in the
-   `libvirtd.conf file <remote.html#Remote_libvirtd_configuration>`__.
+   `libvirtd.conf file <remote.html#libvirtd-configuration-file>`__.
 
 For full certificate checking you will need to have certificates issued by a
 recognised `Certificate Authority
@@ -99,7 +99,7 @@ CA, you can set up your own CA and tell your server(s) and clients to trust
 certificates issues by your own CA. Follow the instructions in the next section.
 
 Be aware that the `default configuration for
-libvirtd <remote.html#Remote_libvirtd_configuration>`__ allows any client to
+libvirtd <remote.html#libvirtd-configuration-file>`__ allows any client to
 connect provided they have a valid certificate issued by the CA for their own IP
 address. You may want to change this to make it less (or more) permissive,
 depending on your needs.
