@@ -1860,9 +1860,13 @@ virNWFilterDHCPSnoopInit(void)
 
     VIR_DEBUG("Initializing DHCP snooping");
 
-    if (virMutexInitRecursive(&virNWFilterSnoopState.snoopLock) < 0 ||
-        virMutexInit(&virNWFilterSnoopState.activeLock) < 0)
+    if (virMutexInitRecursive(&virNWFilterSnoopState.snoopLock) < 0)
         return -1;
+
+    if (virMutexInit(&virNWFilterSnoopState.activeLock) < 0) {
+        virMutexDestroy(&virNWFilterSnoopState.snoopLock);
+        return -1;
+    }
 
     virNWFilterSnoopState.ifnameToKey = virHashNew(NULL);
     virNWFilterSnoopState.active = virHashNew(NULL);
@@ -1938,6 +1942,9 @@ virNWFilterDHCPSnoopEnd(const char *ifname)
 void
 virNWFilterDHCPSnoopShutdown(void)
 {
+    if (!virNWFilterSnoopState.snoopReqs)
+        return;
+
     virNWFilterSnoopEndThreads();
     virNWFilterSnoopJoinThreads();
 
@@ -1947,9 +1954,13 @@ virNWFilterDHCPSnoopShutdown(void)
         g_clear_pointer(&virNWFilterSnoopState.snoopReqs, g_hash_table_unref);
     }
 
+    virMutexDestroy(&virNWFilterSnoopState.snoopLock);
+
     VIR_WITH_MUTEX_LOCK_GUARD(&virNWFilterSnoopState.activeLock) {
         g_clear_pointer(&virNWFilterSnoopState.active, g_hash_table_unref);
     }
+
+    virMutexDestroy(&virNWFilterSnoopState.activeLock);
 }
 
 #else /* WITH_LIBPCAP */
