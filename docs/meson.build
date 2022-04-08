@@ -18,7 +18,6 @@ docs_assets = [
 ]
 
 docs_html_in_files = [
-  'formatcaps',
   'formatnetwork',
   'formatnode',
   'index',
@@ -69,6 +68,7 @@ docs_rst_files = [
   'firewall',
   'format',
   'formatbackup',
+  'formatcaps',
   'formatcheckpoint',
   'formatdomain',
   'formatdomaincaps',
