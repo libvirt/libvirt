@@ -210,18 +210,17 @@ nwfilterStateInitialize(bool privileged,
     if (root != NULL) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
                        _("Driver does not support embedded mode"));
-        return -1;
+        return VIR_DRV_STATE_INIT_ERROR;
     }
 
-    if (virGDBusHasSystemBus() &&
-        !(sysbus = virGDBusGetSystemBus()))
+    if (virGDBusHasSystemBus() && !(sysbus = virGDBusGetSystemBus()))
         return VIR_DRV_STATE_INIT_ERROR;
 
     driver = g_new0(virNWFilterDriverState, 1);
 
     driver->lockFD = -1;
     if (virMutexInitRecursive(&driver->updateLock) < 0)
-        goto err_free_driverstate;
+        goto error;
 
     driver->updateLockInitialized = true;
     driver->privileged = privileged;
@@ -248,18 +247,19 @@ nwfilterStateInitialize(bool privileged,
         goto error;
 
     if (virNWFilterIPAddrMapInit() < 0)
-        goto err_free_driverstate;
+        goto error;
+
     if (virNWFilterLearnInit() < 0)
-        goto err_exit_ipaddrmapshutdown;
+        goto error;
+
     if (virNWFilterDHCPSnoopInit() < 0)
-        goto err_exit_learnshutdown;
+        goto error;
 
     if (virNWFilterTechDriversInit(privileged) < 0)
-        goto err_dhcpsnoop_shutdown;
+        goto error;
 
-    if (virNWFilterConfLayerInit(virNWFilterTriggerRebuildImpl,
-                                 driver) < 0)
-        goto err_techdrivers_shutdown;
+    if (virNWFilterConfLayerInit(virNWFilterTriggerRebuildImpl, driver) < 0)
+        goto error;
 
     /*
      * startup the DBus late so we don't get a reload signal while
@@ -297,22 +297,6 @@ nwfilterStateInitialize(bool privileged,
 
  error:
     nwfilterStateCleanupLocked();
-
-    return VIR_DRV_STATE_INIT_ERROR;
-
- err_techdrivers_shutdown:
-    virNWFilterTechDriversShutdown();
- err_dhcpsnoop_shutdown:
-    virNWFilterDHCPSnoopShutdown();
- err_exit_learnshutdown:
-    virNWFilterLearnShutdown();
- err_exit_ipaddrmapshutdown:
-    virNWFilterIPAddrMapShutdown();
-
- err_free_driverstate:
-    virNWFilterObjListFree(driver->nwfilters);
-    g_clear_pointer(&driver, g_free);
-
     return VIR_DRV_STATE_INIT_ERROR;
 }
 
