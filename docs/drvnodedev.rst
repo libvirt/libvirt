@@ -143,7 +143,7 @@ A device capable of creating mediated devices will include a nested capability
 ``mdev_types`` which enumerates all supported mdev types on the physical device,
 along with the type attributes available through sysfs. A detailed description
 of the XML format for the ``mdev_types`` capability can be found
-`here <formatnode.html#MDEVTypesCap>`__.
+`here <formatnode.html#mdev-types-capability>`__.
 
 The following example shows how we might represent an NVIDIA GPU device that
 supports mediated devices. See below for more info on
@@ -187,7 +187,7 @@ present on Linux-based systems (kernel version v2.6.26 is the first one to
 expose VPD via sysfs which Libvirt relies on). Reading the VPD contents requires
 root privileges, therefore, ``virsh nodedev-dumpxml`` must be executed
 accordingly. A description of the XML format for the ``vpd`` capability can be
-found `here <formatnode.html#VPDCap>`__.
+found `here <formatnode.html#vpd-capability>`__.
 
 The following example shows a VPD representation for a device that exposes the
 VPD capability with read-only and read-write fields. Among other things, the VPD
