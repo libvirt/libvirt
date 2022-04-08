@@ -77,12 +77,19 @@ static unsigned int reloadID;
 static void
 nwfilterDriverRemoveDBusMatches(void)
 {
-    GDBusConnection *sysbus;
+    GDBusConnection *sysbus = virGDBusGetSystemBus();
 
-    sysbus = virGDBusGetSystemBus();
-    if (sysbus) {
+    if (!sysbus)
+        return;
+
+    if (restartID != 0) {
         g_dbus_connection_signal_unsubscribe(sysbus, restartID);
+        restartID = 0;
+    }
+
+    if (reloadID != 0) {
         g_dbus_connection_signal_unsubscribe(sysbus, reloadID);
+        reloadID = 0;
     }
 }
 
