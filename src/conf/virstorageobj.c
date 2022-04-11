@@ -636,14 +636,18 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
 
     virObjectRWLockWrite(volumes);
 
-    if (!(volobj = virStorageVolObjNew()))
-        goto error;
-
     if (!voldef->key || !voldef->name || !voldef->target.path ||
         g_hash_table_contains(volumes->objsKey, voldef->key) ||
         g_hash_table_contains(volumes->objsName, voldef->name) ||
-        g_hash_table_contains(volumes->objsPath, voldef->target.path))
-        goto error;
+        g_hash_table_contains(volumes->objsPath, voldef->target.path)) {
+        virObjectRWUnlock(volumes);
+        return -1;
+    }
+
+    if (!(volobj = virStorageVolObjNew())) {
+        virObjectRWUnlock(volumes);
+        return -1;
+    }
 
     g_hash_table_insert(volumes->objsKey, g_strdup(voldef->key), volobj);
     virObjectRef(volobj);
@@ -655,14 +659,10 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
     virObjectRef(volobj);
 
     volobj->voldef = voldef;
-    virObjectRWUnlock(volumes);
-    virStorageVolObjEndAPI(&volobj);
-    return 0;
 
- error:
     virStorageVolObjEndAPI(&volobj);
     virObjectRWUnlock(volumes);
-    return -1;
+    return 0;
 }
 
 
