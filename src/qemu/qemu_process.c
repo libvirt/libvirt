@@ -3994,6 +3994,7 @@ qemuProcessVNCAllocatePorts(virQEMUDriver *driver,
         if (virPortAllocatorAcquire(driver->remotePorts, &port) < 0)
             return -1;
         graphics->data.vnc.port = port;
+        graphics->data.vnc.portReserved = true;
     }
 
     if (graphics->data.vnc.websocket == -1) {
@@ -8261,9 +8262,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     for (i = 0; i < vm->def->ngraphics; ++i) {
         virDomainGraphicsDef *graphics = vm->def->graphics[i];
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
-            if (graphics->data.vnc.autoport) {
-                virPortAllocatorRelease(graphics->data.vnc.port);
-            } else if (graphics->data.vnc.portReserved) {
+            if (graphics->data.vnc.portReserved) {
                 virPortAllocatorRelease(graphics->data.vnc.port);
                 graphics->data.vnc.portReserved = false;
             }
