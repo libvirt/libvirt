@@ -125,16 +125,10 @@ VIR_ONCE_GLOBAL_INIT(virStorageVolObj);
 static virStorageVolObj *
 virStorageVolObjNew(void)
 {
-    virStorageVolObj *obj;
-
     if (virStorageVolObjInitialize() < 0)
         return NULL;
 
-    if (!(obj = virObjectLockableNew(virStorageVolObjClass)))
-        return NULL;
-
-    virObjectLock(obj);
-    return obj;
+    return virObjectLockableNew(virStorageVolObjClass);
 }
 
 
@@ -637,6 +631,8 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
         virObjectRWUnlock(volumes);
         return -1;
     }
+
+    virObjectLock(volobj);
 
     g_hash_table_insert(volumes->objsKey, g_strdup(voldef->key), volobj);
     virObjectRef(volobj);
