@@ -139,17 +139,6 @@ virStorageVolObjNew(void)
 
 
 static void
-virStorageVolObjEndAPI(virStorageVolObj **obj)
-{
-    if (!*obj)
-        return;
-
-    virObjectUnlock(*obj);
-    g_clear_pointer(obj, virObjectUnref);
-}
-
-
-static void
 virStorageVolObjDispose(void *opaque)
 {
     virStorageVolObj *obj = opaque;
@@ -660,7 +649,8 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
 
     volobj->voldef = voldef;
 
-    virStorageVolObjEndAPI(&volobj);
+    virObjectUnlock(volobj);
+    virObjectUnref(volobj);
     virObjectRWUnlock(volumes);
     return 0;
 }
@@ -689,8 +679,8 @@ virStoragePoolObjRemoveVol(virStoragePoolObj *obj,
     g_hash_table_remove(volumes->objsKey, voldef->key);
     g_hash_table_remove(volumes->objsName, voldef->name);
     g_hash_table_remove(volumes->objsPath, voldef->target.path);
-    virStorageVolObjEndAPI(&volobj);
-
+    virObjectUnlock(volobj);
+    virObjectUnref(volobj);
     virObjectRWUnlock(volumes);
 }
 
