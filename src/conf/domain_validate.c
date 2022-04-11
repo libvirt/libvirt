@@ -651,6 +651,43 @@ virDomainDiskDefValidate(const virDomainDef *def,
         }
     }
 
+    /* Validate IotuneParse */
+    if ((disk->blkdeviotune.total_bytes_sec &&
+         disk->blkdeviotune.read_bytes_sec) ||
+        (disk->blkdeviotune.total_bytes_sec &&
+         disk->blkdeviotune.write_bytes_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((disk->blkdeviotune.total_iops_sec &&
+         disk->blkdeviotune.read_iops_sec) ||
+        (disk->blkdeviotune.total_iops_sec &&
+         disk->blkdeviotune.write_iops_sec)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((disk->blkdeviotune.total_bytes_sec_max &&
+         disk->blkdeviotune.read_bytes_sec_max) ||
+        (disk->blkdeviotune.total_bytes_sec_max &&
+         disk->blkdeviotune.write_bytes_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write bytes_sec_max cannot be set at the same time"));
+        return -1;
+    }
+
+    if ((disk->blkdeviotune.total_iops_sec_max &&
+         disk->blkdeviotune.read_iops_sec_max) ||
+        (disk->blkdeviotune.total_iops_sec_max &&
+         disk->blkdeviotune.write_iops_sec_max)) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("total and read/write iops_sec_max cannot be set at the same time"));
+        return -1;
+    }
+
     /* Reject disks with a bus type that is not compatible with the
      * given address type. The function considers only buses that are
      * handled in common code. For other bus types it's not possible
