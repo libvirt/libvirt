@@ -915,23 +915,20 @@ cmdEvent(vshControl *ctl, const vshCmd *cmd)
         return false;
     }
 
-    if (eventName)
-        data = g_new0(virshDomEventData, 1);
-    else
-        data = g_new0(virshDomEventData, G_N_ELEMENTS(virshDomainEventCallbacks));
+    data = g_new0(virshDomEventData, G_N_ELEMENTS(virshDomainEventCallbacks));
 
     for (i = 0; i < G_N_ELEMENTS(virshDomainEventCallbacks); i++) {
         if (eventName &&
             STRNEQ(eventName, virshDomainEventCallbacks[i].name))
             continue;
 
-        data[i].event = i;
-        data[i].ctl = ctl;
-        data[i].loop = loop;
-        data[i].count = &count;
-        data[i].timestamp = timestamp;
-        data[i].cb = &virshDomainEventCallbacks[i];
-        data[i].id = -1;
+        data[ndata].event = i;
+        data[ndata].ctl = ctl;
+        data[ndata].loop = loop;
+        data[ndata].count = &count;
+        data[ndata].timestamp = timestamp;
+        data[ndata].cb = &virshDomainEventCallbacks[i];
+        data[ndata].id = -1;
         ndata++;
     }
 
