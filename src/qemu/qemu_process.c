@@ -4002,6 +4002,7 @@ qemuProcessVNCAllocatePorts(virQEMUDriver *driver,
             return -1;
         graphics->data.vnc.websocket = port;
         graphics->data.vnc.websocketGenerated = true;
+        graphics->data.vnc.websocketReserved = true;
     }
 
     return 0;
@@ -8268,12 +8269,13 @@ void qemuProcessStop(virQEMUDriver *driver,
                 virPortAllocatorRelease(graphics->data.vnc.port);
                 graphics->data.vnc.portReserved = false;
             }
-            if (graphics->data.vnc.websocketGenerated) {
+            if (graphics->data.vnc.websocketReserved) {
                 virPortAllocatorRelease(graphics->data.vnc.websocket);
+                graphics->data.vnc.websocketReserved = false;
+            }
+            if (graphics->data.vnc.websocketGenerated) {
                 graphics->data.vnc.websocketGenerated = false;
                 graphics->data.vnc.websocket = -1;
-            } else if (graphics->data.vnc.websocketReserved) {
-                virPortAllocatorRelease(graphics->data.vnc.websocket);
             }
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
