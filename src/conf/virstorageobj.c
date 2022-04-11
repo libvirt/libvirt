@@ -521,8 +521,8 @@ virStoragePoolObjRemove(virStoragePoolObjList *pools,
     virObjectUnlock(obj);
     virObjectRWLockWrite(pools);
     virObjectLock(obj);
-    virHashRemoveEntry(pools->objs, uuidstr);
-    virHashRemoveEntry(pools->objsName, obj->def->name);
+    g_hash_table_remove(pools->objs, uuidstr);
+    g_hash_table_remove(pools->objsName, obj->def->name);
     virObjectUnref(obj);
     virObjectRWUnlock(pools);
 }
@@ -621,9 +621,9 @@ virStoragePoolObjClearVols(virStoragePoolObj *obj)
     if (!obj->volumes)
         return;
 
-    virHashRemoveAll(obj->volumes->objsKey);
-    virHashRemoveAll(obj->volumes->objsName);
-    virHashRemoveAll(obj->volumes->objsPath);
+    g_hash_table_remove_all(obj->volumes->objsKey);
+    g_hash_table_remove_all(obj->volumes->objsName);
+    g_hash_table_remove_all(obj->volumes->objsPath);
 }
 
 
@@ -639,21 +639,19 @@ virStoragePoolObjAddVol(virStoragePoolObj *obj,
     if (!(volobj = virStorageVolObjNew()))
         goto error;
 
-    if (virHashAddEntry(volumes->objsKey, voldef->key, volobj) < 0)
+    if (!voldef->key || !voldef->name || !voldef->target.path ||
+        g_hash_table_contains(volumes->objsKey, voldef->key) ||
+        g_hash_table_contains(volumes->objsName, voldef->name) ||
+        g_hash_table_contains(volumes->objsPath, voldef->target.path))
         goto error;
+
+    g_hash_table_insert(volumes->objsKey, g_strdup(voldef->key), volobj);
     virObjectRef(volobj);
 
-    if (virHashAddEntry(volumes->objsName, voldef->name, volobj) < 0) {
-        virHashRemoveEntry(volumes->objsKey, voldef->key);
-        goto error;
-    }
+    g_hash_table_insert(volumes->objsName, g_strdup(voldef->name), volobj);
     virObjectRef(volobj);
 
-    if (virHashAddEntry(volumes->objsPath, voldef->target.path, volobj) < 0) {
-        virHashRemoveEntry(volumes->objsKey, voldef->key);
-        virHashRemoveEntry(volumes->objsName, voldef->name);
-        goto error;
-    }
+    g_hash_table_insert(volumes->objsPath, g_strdup(voldef->target.path), volobj);
     virObjectRef(volobj);
 
     volobj->voldef = voldef;
@@ -688,9 +686,9 @@ virStoragePoolObjRemoveVol(virStoragePoolObj *obj,
 
     virObjectRef(volobj);
     virObjectLock(volobj);
-    virHashRemoveEntry(volumes->objsKey, voldef->key);
-    virHashRemoveEntry(volumes->objsName, voldef->name);
-    virHashRemoveEntry(volumes->objsPath, voldef->target.path);
+    g_hash_table_remove(volumes->objsKey, voldef->key);
+    g_hash_table_remove(volumes->objsName, voldef->name);
+    g_hash_table_remove(volumes->objsPath, voldef->target.path);
     virStorageVolObjEndAPI(&volobj);
 
     virObjectRWUnlock(volumes);
@@ -1582,15 +1580,18 @@ virStoragePoolObjListAdd(virStoragePoolObjList *pools,
         goto error;
 
     virUUIDFormat((*def)->uuid, uuidstr);
-    if (virHashAddEntry(pools->objs, uuidstr, obj) < 0)
+
+    if (!(*def)->name ||
+        g_hash_table_contains(pools->objs, uuidstr) ||
+        g_hash_table_contains(pools->objsName, (*def)->name))
         goto error;
+
+    g_hash_table_insert(pools->objs, g_strdup(uuidstr), obj);
     virObjectRef(obj);
 
-    if (virHashAddEntry(pools->objsName, (*def)->name, obj) < 0) {
-        virHashRemoveEntry(pools->objs, uuidstr);
-        goto error;
-    }
+    g_hash_table_insert(pools->objsName, g_strdup((*def)->name), obj);
     virObjectRef(obj);
+
     obj->def = g_steal_pointer(def);
     virObjectRWUnlock(pools);
     return obj;
