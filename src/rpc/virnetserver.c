@@ -960,13 +960,19 @@ virNetServerHasClients(virNetServer *srv)
 void
 virNetServerProcessClients(virNetServer *srv)
 {
-    size_t i;
-    virNetServerClient *client;
+    size_t i = 0;
 
-    virObjectLock(srv);
+    while (true) {
+        virNetServerClient *client;
+        bool removed = false;
 
- reprocess:
-    for (i = 0; i < srv->nclients; i++) {
+        virObjectLock(srv);
+
+        if (i >= srv->nclients) {
+            virObjectUnlock(srv);
+            return;
+        }
+
         client = srv->clients[i];
         virObjectLock(client);
         if (virNetServerClientWantCloseLocked(client))
@@ -974,24 +980,26 @@ virNetServerProcessClients(virNetServer *srv)
 
         if (virNetServerClientIsClosedLocked(client)) {
             VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
+            removed = true;
 
             /* Update server authentication tracking */
             virNetServerSetClientAuthCompletedLocked(srv, client);
-            virObjectUnlock(client);
-
             virNetServerCheckLimits(srv);
+        }
 
+        virObjectUnlock(client);
+
+        if (removed) {
+            i = 0;
             virObjectUnlock(srv);
             virObjectUnref(client);
-            virObjectLock(srv);
-
-            goto reprocess;
-        } else {
-            virObjectUnlock(client);
+            continue;
         }
-    }
 
-    virObjectUnlock(srv);
+        i++;
+
+        virObjectUnlock(srv);
+    }
 }
 
 
