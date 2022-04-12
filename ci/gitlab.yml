@@ -93,6 +93,13 @@ x86_64-alpine-314-container:
     NAME: alpine-314
 
 
+x86_64-alpine-315-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: alpine-315
+
+
 x86_64-alpine-edge-container:
   extends: .container_job
   allow_failure: true
@@ -413,6 +420,15 @@ x86_64-alpine-314:
   allow_failure: false
   variables:
     NAME: alpine-314
+
+
+x86_64-alpine-315:
+  extends: .native_build_job
+  needs:
+    - x86_64-alpine-315-container
+  allow_failure: false
+  variables:
+    NAME: alpine-315
 
 
 x86_64-alpine-edge:
