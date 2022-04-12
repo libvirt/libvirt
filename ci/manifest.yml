@@ -189,12 +189,6 @@ targets:
 
   freebsd-13: x86_64
 
-  opensuse-leap-152:
-    jobs:
-      - arch: x86_64
-        variables:
-          RPM: skip
-
   opensuse-leap-153:
     jobs:
       - arch: x86_64

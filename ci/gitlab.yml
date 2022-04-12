@@ -163,13 +163,6 @@ x86_64-fedora-rawhide-container:
     NAME: fedora-rawhide
 
 
-x86_64-opensuse-leap-152-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: opensuse-leap-152
-
-
 x86_64-opensuse-leap-153-container:
   extends: .container_job
   allow_failure: false
@@ -552,16 +545,6 @@ x86_64-fedora-rawhide-clang:
   variables:
     CC: clang
     NAME: fedora-rawhide
-    RPM: skip
-
-
-x86_64-opensuse-leap-152:
-  extends: .native_build_job
-  needs:
-    - x86_64-opensuse-leap-152-container
-  allow_failure: false
-  variables:
-    NAME: opensuse-leap-152
     RPM: skip
 
 
