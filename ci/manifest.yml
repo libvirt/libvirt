@@ -189,12 +189,6 @@ targets:
 
   freebsd-13: x86_64
 
-  freebsd-current:
-    jobs:
-      - arch: x86_64
-        allow-failure: true
-        builds: False
-
   opensuse-leap-152:
     jobs:
       - arch: x86_64
