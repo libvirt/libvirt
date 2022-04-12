@@ -425,8 +425,8 @@ div.panel h2,
     height: 300px;
 }
 
-#documentation.document > h1,
-#knowledge-base.document > h1 {
+#documentation > h1,
+#knowledge-base > h1 {
     text-align: center;
     padding: 1em;
 }
