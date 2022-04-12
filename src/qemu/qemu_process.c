@@ -4071,9 +4071,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriver *driver,
             return -1;
 
         graphics->data.spice.port = port;
-
-        if (!graphics->data.spice.autoport)
-            graphics->data.spice.portReserved = true;
+        graphics->data.spice.portReserved = true;
     }
 
     if (needTLSPort || graphics->data.spice.tlsPort == -1) {
@@ -4088,9 +4086,7 @@ qemuProcessSPICEAllocatePorts(virQEMUDriver *driver,
             return -1;
 
         graphics->data.spice.tlsPort = tlsPort;
-
-        if (!graphics->data.spice.autoport)
-            graphics->data.spice.tlsPortReserved = true;
+        graphics->data.spice.tlsPortReserved = true;
     }
 
     return 0;
@@ -8279,19 +8275,14 @@ void qemuProcessStop(virQEMUDriver *driver,
             }
         }
         if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-            if (graphics->data.spice.autoport) {
+            if (graphics->data.spice.portReserved) {
                 virPortAllocatorRelease(graphics->data.spice.port);
-                virPortAllocatorRelease(graphics->data.spice.tlsPort);
-            } else {
-                if (graphics->data.spice.portReserved) {
-                    virPortAllocatorRelease(graphics->data.spice.port);
-                    graphics->data.spice.portReserved = false;
-                }
+                graphics->data.spice.portReserved = false;
+            }
 
-                if (graphics->data.spice.tlsPortReserved) {
-                    virPortAllocatorRelease(graphics->data.spice.tlsPort);
-                    graphics->data.spice.tlsPortReserved = false;
-                }
+            if (graphics->data.spice.tlsPortReserved) {
+                virPortAllocatorRelease(graphics->data.spice.tlsPort);
+                graphics->data.spice.tlsPortReserved = false;
             }
         }
     }
