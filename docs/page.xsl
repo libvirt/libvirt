@@ -120,9 +120,15 @@
       <body onload="pageload()">
         <div id="body">
           <xsl:choose>
+            <!-- docutils-0.16 and older use a div as container for contents -->
             <xsl:when test="html:html/html:body/html:div/@class='document'">
               <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
             </xsl:when>
+            <!-- docutils-0.17 adopted use of the 'main' semantic container -->
+            <xsl:when test="html:html/html:body/html:main">
+              <xsl:apply-templates select="/html:html/html:body/*" mode="content"/>
+            </xsl:when>
+            <!-- for our older html-only files -->
             <xsl:otherwise>
               <div class="document">
                 <xsl:if test="html:html/html:body/@id">

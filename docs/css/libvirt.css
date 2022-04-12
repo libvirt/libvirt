@@ -95,6 +95,7 @@
     margin-right: 1em;
 }
 
+main,
 .document {
     margin-left: auto;
     margin-right: auto;
@@ -104,9 +105,13 @@
     width: 70em;
 }
 
+main#index,
 #index.document,
+main#hvsupport,
 #hvsupport.document,
+main#documentation,
 #documentation.document,
+main#knowledge-base,
 #knowledge-base.document
 {
     width: inherit;
@@ -397,7 +402,9 @@ h6:hover > a.headerlink {
 }
 
 div.panel,
+#documentation section,
 #documentation .section,
+#knowledge-base section,
 #knowledge-base .section
 {
     width: 24%;
@@ -407,7 +414,9 @@ div.panel,
 }
 
 div.panel h2,
+#documentation section h2,
 #documentation .section h1,
+#knowledge-base section h2,
 #knowledge-base .section h1 {
     margin-top: 0px;
     padding: 0.5em;
