@@ -7343,7 +7343,7 @@ qemuDomainRemoveInactive(virQEMUDriver *driver,
  * lock on driver->domains in order to call the remove obj
  * from locked list method.
  */
-static void
+void
 qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
                                virDomainObj *vm)
 {
@@ -7355,49 +7355,6 @@ qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
     qemuDomainRemoveInactiveCommon(driver, vm);
 
     virDomainObjListRemoveLocked(driver->domains, vm);
-}
-
-/**
- * qemuDomainRemoveInactiveJob:
- *
- * Just like qemuDomainRemoveInactive but it tries to grab a
- * VIR_JOB_MODIFY first. Even though it doesn't succeed in
- * grabbing the job the control carries with
- * qemuDomainRemoveInactive call.
- */
-void
-qemuDomainRemoveInactiveJob(virQEMUDriver *driver,
-                            virDomainObj *vm)
-{
-    bool haveJob;
-
-    haveJob = qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) >= 0;
-
-    qemuDomainRemoveInactive(driver, vm);
-
-    if (haveJob)
-        qemuDomainObjEndJob(vm);
-}
-
-
-/**
- * qemuDomainRemoveInactiveJobLocked:
- *
- * Similar to qemuDomainRemoveInactiveJob, except that the caller must
- * also hold the lock @driver->domains
- */
-void
-qemuDomainRemoveInactiveJobLocked(virQEMUDriver *driver,
-                                  virDomainObj *vm)
-{
-    bool haveJob;
-
-    haveJob = qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) >= 0;
-
-    qemuDomainRemoveInactiveLocked(driver, vm);
-
-    if (haveJob)
-        qemuDomainObjEndJob(vm);
 }
 
 

@@ -8973,14 +8973,10 @@ qemuProcessReconnect(void *opaque)
         driver->inhibitCallback(true, driver->inhibitOpaque);
 
  cleanup:
-    if (jobStarted) {
-        if (!virDomainObjIsActive(obj))
-            qemuDomainRemoveInactive(driver, obj);
+    if (jobStarted)
         qemuDomainObjEndJob(obj);
-    } else {
-        if (!virDomainObjIsActive(obj))
-            qemuDomainRemoveInactiveJob(driver, obj);
-    }
+    if (!virDomainObjIsActive(obj))
+        qemuDomainRemoveInactive(driver, obj);
     virDomainObjEndAPI(&obj);
     virIdentitySetCurrent(NULL);
     return;
@@ -9052,7 +9048,7 @@ qemuProcessReconnectHelper(virDomainObj *obj,
          */
         qemuProcessStop(src->driver, obj, VIR_DOMAIN_SHUTOFF_FAILED,
                         VIR_ASYNC_JOB_NONE, 0);
-        qemuDomainRemoveInactiveJobLocked(src->driver, obj);
+        qemuDomainRemoveInactiveLocked(src->driver, obj);
 
         virDomainObjEndAPI(&obj);
         g_clear_object(&data->identity);

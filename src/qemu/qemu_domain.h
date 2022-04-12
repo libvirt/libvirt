@@ -672,6 +672,10 @@ int qemuDomainSnapshotDiscardAllMetadata(virQEMUDriver *driver,
 void qemuDomainRemoveInactive(virQEMUDriver *driver,
                               virDomainObj *vm);
 
+void
+qemuDomainRemoveInactiveLocked(virQEMUDriver *driver,
+                               virDomainObj *vm);
+
 void qemuDomainSetFakeReboot(virDomainObj *vm,
                              bool value);
 
@@ -1035,12 +1039,6 @@ qemuDomainDiskBlockJobIsSupported(virDomainObj *vm,
 int
 qemuDomainDefNumaCPUsRectify(virDomainDef *def,
                              virQEMUCaps *qemuCaps);
-
-void qemuDomainRemoveInactiveJob(virQEMUDriver *driver,
-                                 virDomainObj *vm);
-
-void qemuDomainRemoveInactiveJobLocked(virQEMUDriver *driver,
-                                       virDomainObj *vm);
 
 int virQEMUFileOpenAs(uid_t fallback_uid,
                       gid_t fallback_gid,

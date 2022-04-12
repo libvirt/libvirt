@@ -3100,7 +3100,7 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
             virPortAllocatorRelease(priv->nbdPort);
         priv->nbdPort = 0;
         virDomainObjRemoveTransientDef(vm);
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
     virObjectEventStateQueue(driver->domainEventState, event);
@@ -3517,7 +3517,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
             vm->persistent = 0;
         }
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
     }
 
  cleanup:
@@ -5342,7 +5342,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
             vm->persistent = 0;
         }
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
     }
 
     virErrorRestore(&orig_err);
@@ -5416,7 +5416,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
     }
 
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
 
     return ret;
 }
@@ -5877,7 +5877,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     qemuMigrationJobFinish(vm);
     if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactiveJob(driver, vm);
+        qemuDomainRemoveInactive(driver, vm);
 
  cleanup:
     g_clear_pointer(&jobData, virDomainJobDataFree);
