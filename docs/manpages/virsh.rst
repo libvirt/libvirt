@@ -2505,6 +2505,10 @@ not available for statistical purposes.
   calculation.
 * ``dirtyrate.megabytes_per_second`` - the calculated memory dirty
   rate in MiB/s.
+* ``dirtyrate.calc_mode`` - the calculation mode used last measurement
+  (``page-sampling``/``dirty-bitmap``/``dirty-ring``)
+* ``dirtyrate.vcpu.<num>.megabytes_per_second`` - the calculated memory dirty
+  rate for a virtual cpu in MiB/s
 
 
 Selecting a specific statistics groups doesn't guarantee that the
