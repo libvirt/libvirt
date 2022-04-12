@@ -97,13 +97,9 @@ VIR_ONCE_GLOBAL_INIT(virNetServer);
 unsigned long long
 virNetServerNextClientID(virNetServer *srv)
 {
-    unsigned long long val;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    val = srv->next_client_id++;
-    virObjectUnlock(srv);
-
-    return val;
+    return srv->next_client_id++;
 }
 
 
@@ -208,13 +204,13 @@ virNetServerDispatchNewMessage(virNetServerClient *client,
     VIR_DEBUG("server=%p client=%p message=%p",
               srv, client, msg);
 
-    virObjectLock(srv);
-    prog = virNetServerGetProgramLocked(srv, msg);
-    /* we can unlock @srv since @prog can only become invalid in case
-     * of disposing @srv, but let's grab a ref first to ensure nothing
-     * disposes of it before we use it. */
-    virObjectRef(srv);
-    virObjectUnlock(srv);
+    VIR_WITH_OBJECT_LOCK_GUARD(srv) {
+        prog = virNetServerGetProgramLocked(srv, msg);
+        /* we can unlock @srv since @prog can only become invalid in case
+         * of disposing @srv, but let's grab a ref first to ensure nothing
+         * disposes of it before we use it. */
+        virObjectRef(srv);
+    }
 
     if (virThreadPoolGetMaxWorkers(srv->workers) > 0)  {
         virNetServerJob *job;
@@ -304,35 +300,28 @@ int
 virNetServerAddClient(virNetServer *srv,
                       virNetServerClient *client)
 {
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     if (virNetServerClientInit(client) < 0)
-        goto error;
+        return -1;
 
     VIR_EXPAND_N(srv->clients, srv->nclients, 1);
     srv->clients[srv->nclients-1] = virObjectRef(client);
 
-    virObjectLock(client);
-    if (virNetServerClientIsAuthPendingLocked(client))
-        virNetServerTrackPendingAuthLocked(srv);
-    virObjectUnlock(client);
+    VIR_WITH_OBJECT_LOCK_GUARD(client) {
+        if (virNetServerClientIsAuthPendingLocked(client))
+            virNetServerTrackPendingAuthLocked(srv);
+    }
 
     virNetServerCheckLimits(srv);
 
-    virNetServerClientSetDispatcher(client,
-                                    virNetServerDispatchNewMessage,
-                                    srv);
+    virNetServerClientSetDispatcher(client, virNetServerDispatchNewMessage, srv);
 
     if (virNetServerClientInitKeepAlive(client, srv->keepaliveInterval,
                                         srv->keepaliveCount) < 0)
-        goto error;
+        return -1;
 
-    virObjectUnlock(srv);
     return 0;
-
- error:
-    virObjectUnlock(srv);
-    return -1;
 }
 
 
@@ -565,65 +554,62 @@ virNetServerPreExecRestart(virNetServer *srv)
     g_autoptr(virJSONValue) clients = virJSONValueNewArray();
     g_autoptr(virJSONValue) services = virJSONValueNewArray();
     size_t i;
-
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     if (virJSONValueObjectAppendNumberUint(object, "min_workers",
                                            virThreadPoolGetMinWorkers(srv->workers)) < 0)
-        goto error;
+        return NULL;
+
     if (virJSONValueObjectAppendNumberUint(object, "max_workers",
                                            virThreadPoolGetMaxWorkers(srv->workers)) < 0)
-        goto error;
+        return NULL;
+
     if (virJSONValueObjectAppendNumberUint(object, "priority_workers",
                                            virThreadPoolGetPriorityWorkers(srv->workers)) < 0)
-        goto error;
+        return NULL;
 
     if (virJSONValueObjectAppendNumberUint(object, "max_clients", srv->nclients_max) < 0)
-        goto error;
+        return NULL;
+
     if (virJSONValueObjectAppendNumberUint(object, "max_anonymous_clients",
                                            srv->nclients_unauth_max) < 0)
-        goto error;
+        return NULL;
 
     if (virJSONValueObjectAppendNumberUint(object, "keepaliveInterval", srv->keepaliveInterval) < 0)
-        goto error;
+        return NULL;
+
     if (virJSONValueObjectAppendNumberUint(object, "keepaliveCount", srv->keepaliveCount) < 0)
-        goto error;
+        return NULL;
 
     if (virJSONValueObjectAppendNumberUlong(object, "next_client_id",
                                             srv->next_client_id) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < srv->nservices; i++) {
         g_autoptr(virJSONValue) child = NULL;
         if (!(child = virNetServerServicePreExecRestart(srv->services[i])))
-            goto error;
+            return NULL;
 
         if (virJSONValueArrayAppend(services, &child) < 0)
-            goto error;
+            return NULL;
     }
 
     if (virJSONValueObjectAppend(object, "services", &services) < 0)
-        goto error;
+        return NULL;
 
     for (i = 0; i < srv->nclients; i++) {
         g_autoptr(virJSONValue) child = NULL;
         if (!(child = virNetServerClientPreExecRestart(srv->clients[i])))
-            goto error;
+            return NULL;
 
         if (virJSONValueArrayAppend(clients, &child) < 0)
-            goto error;
+            return NULL;
     }
 
     if (virJSONValueObjectAppend(object, "clients", &clients) < 0)
-        goto error;
-
-    virObjectUnlock(srv);
+        return NULL;
 
     return g_steal_pointer(&object);
-
- error:
-    virObjectUnlock(srv);
-    return NULL;
 }
 
 
@@ -631,16 +617,12 @@ int
 virNetServerAddService(virNetServer *srv,
                        virNetServerService *svc)
 {
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     VIR_EXPAND_N(srv->services, srv->nservices, 1);
     srv->services[srv->nservices-1] = virObjectRef(svc);
 
-    virNetServerServiceSetDispatcher(svc,
-                                     virNetServerDispatchNewClient,
-                                     srv);
-
-    virObjectUnlock(srv);
+    virNetServerServiceSetDispatcher(svc, virNetServerDispatchNewClient, srv);
     return 0;
 }
 
@@ -795,12 +777,10 @@ int
 virNetServerAddProgram(virNetServer *srv,
                        virNetServerProgram *prog)
 {
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     VIR_EXPAND_N(srv->programs, srv->nprograms, 1);
     srv->programs[srv->nprograms-1] = virObjectRef(prog);
-
-    virObjectUnlock(srv);
     return 0;
 }
 
@@ -846,13 +826,12 @@ void
 virNetServerSetClientAuthenticated(virNetServer *srv,
                                    virNetServerClient *client)
 {
-    virObjectLock(srv);
-    virObjectLock(client);
+    VIR_LOCK_GUARD server_lock = virObjectLockGuard(srv);
+    VIR_LOCK_GUARD client_lock = virObjectLockGuard(srv);
+
     virNetServerClientSetAuthLocked(client, VIR_NET_SERVER_SERVICE_AUTH_NONE);
     virNetServerSetClientAuthCompletedLocked(srv, client);
     virNetServerCheckLimits(srv);
-    virObjectUnlock(client);
-    virObjectUnlock(srv);
 }
 
 
@@ -871,9 +850,9 @@ void
 virNetServerUpdateServices(virNetServer *srv,
                            bool enabled)
 {
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
+
     virNetServerUpdateServicesLocked(srv, enabled);
-    virObjectUnlock(srv);
 }
 
 
@@ -904,22 +883,20 @@ virNetServerDispose(void *obj)
 void
 virNetServerClose(virNetServer *srv)
 {
-    size_t i;
-
     if (!srv)
         return;
 
-    virObjectLock(srv);
+    VIR_WITH_OBJECT_LOCK_GUARD(srv) {
+        size_t i;
 
-    for (i = 0; i < srv->nservices; i++)
-        virNetServerServiceClose(srv->services[i]);
+        for (i = 0; i < srv->nservices; i++)
+            virNetServerServiceClose(srv->services[i]);
 
-    for (i = 0; i < srv->nclients; i++)
-        virNetServerClientClose(srv->clients[i]);
+        for (i = 0; i < srv->nclients; i++)
+            virNetServerClientClose(srv->clients[i]);
 
-    virThreadPoolStop(srv->workers);
-
-    virObjectUnlock(srv);
+        virThreadPoolStop(srv->workers);
+    }
 }
 
 
@@ -947,13 +924,9 @@ virNetServerTrackCompletedAuthLocked(virNetServer *srv)
 bool
 virNetServerHasClients(virNetServer *srv)
 {
-    bool ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = !!srv->nclients;
-    virObjectUnlock(srv);
-
-    return ret;
+    return !!srv->nclients;
 }
 
 
@@ -963,42 +936,37 @@ virNetServerProcessClients(virNetServer *srv)
     size_t i = 0;
 
     while (true) {
+        VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
         virNetServerClient *client;
         bool removed = false;
 
-        virObjectLock(srv);
-
         if (i >= srv->nclients) {
-            virObjectUnlock(srv);
             return;
         }
 
         client = srv->clients[i];
-        virObjectLock(client);
-        if (virNetServerClientWantCloseLocked(client))
-            virNetServerClientCloseLocked(client);
 
-        if (virNetServerClientIsClosedLocked(client)) {
-            VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
-            removed = true;
+        VIR_WITH_OBJECT_LOCK_GUARD(client) {
+            if (virNetServerClientWantCloseLocked(client))
+                virNetServerClientCloseLocked(client);
 
-            /* Update server authentication tracking */
-            virNetServerSetClientAuthCompletedLocked(srv, client);
-            virNetServerCheckLimits(srv);
+            if (virNetServerClientIsClosedLocked(client)) {
+                VIR_DELETE_ELEMENT(srv->clients, i, srv->nclients);
+                removed = true;
+
+                /* Update server authentication tracking */
+                virNetServerSetClientAuthCompletedLocked(srv, client);
+                virNetServerCheckLimits(srv);
+            }
         }
-
-        virObjectUnlock(client);
 
         if (removed) {
             i = 0;
-            virObjectUnlock(srv);
             virObjectUnref(client);
             continue;
         }
 
         i++;
-
-        virObjectUnlock(srv);
     }
 }
 
@@ -1019,7 +987,7 @@ virNetServerGetThreadPoolParameters(virNetServer *srv,
                                     size_t *nPrioWorkers,
                                     size_t *jobQueueDepth)
 {
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     *minWorkers = virThreadPoolGetMinWorkers(srv->workers);
     *maxWorkers = virThreadPoolGetMaxWorkers(srv->workers);
@@ -1028,7 +996,6 @@ virNetServerGetThreadPoolParameters(virNetServer *srv,
     *nPrioWorkers = virThreadPoolGetPriorityWorkers(srv->workers);
     *jobQueueDepth = virThreadPoolGetJobQueueDepth(srv->workers);
 
-    virObjectUnlock(srv);
     return 0;
 }
 
@@ -1039,66 +1006,46 @@ virNetServerSetThreadPoolParameters(virNetServer *srv,
                                     long long int maxWorkers,
                                     long long int prioWorkers)
 {
-    int ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = virThreadPoolSetParameters(srv->workers, minWorkers,
-                                     maxWorkers, prioWorkers);
-    virObjectUnlock(srv);
-
-    return ret;
+    return virThreadPoolSetParameters(srv->workers, minWorkers,
+                                      maxWorkers, prioWorkers);
 }
 
 
 size_t
 virNetServerGetMaxClients(virNetServer *srv)
 {
-    size_t ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = srv->nclients_max;
-    virObjectUnlock(srv);
-
-    return ret;
+    return srv->nclients_max;
 }
 
 
 size_t
 virNetServerGetCurrentClients(virNetServer *srv)
 {
-    size_t ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = srv->nclients;
-    virObjectUnlock(srv);
-
-    return ret;
+    return srv->nclients;
 }
 
 
 size_t
 virNetServerGetMaxUnauthClients(virNetServer *srv)
 {
-    size_t ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = srv->nclients_unauth_max;
-    virObjectUnlock(srv);
-
-    return ret;
+    return srv->nclients_unauth_max;
 }
 
 
 size_t
 virNetServerGetCurrentUnauthClients(virNetServer *srv)
 {
-    size_t ret;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
-    virObjectLock(srv);
-    ret = srv->nclients_unauth;
-    virObjectUnlock(srv);
-
-    return ret;
+    return srv->nclients_unauth;
 }
 
 
@@ -1106,17 +1053,15 @@ bool
 virNetServerNeedsAuth(virNetServer *srv,
                       int auth)
 {
-    bool ret = false;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
     size_t i;
 
-    virObjectLock(srv);
     for (i = 0; i < srv->nservices; i++) {
         if (virNetServerServiceGetAuth(srv->services[i]) == auth)
-            ret = true;
+            return true;
     }
-    virObjectUnlock(srv);
 
-    return ret;
+    return false;
 }
 
 
@@ -1127,8 +1072,7 @@ virNetServerGetClients(virNetServer *srv,
     size_t i;
     size_t nclients = 0;
     virNetServerClient **list = NULL;
-
-    virObjectLock(srv);
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
 
     for (i = 0; i < srv->nclients; i++) {
         virNetServerClient *client = virObjectRef(srv->clients[i]);
@@ -1136,8 +1080,6 @@ virNetServerGetClients(virNetServer *srv,
     }
 
     *clts = g_steal_pointer(&list);
-
-    virObjectUnlock(srv);
 
     return nclients;
 }
@@ -1147,23 +1089,17 @@ virNetServerClient *
 virNetServerGetClient(virNetServer *srv,
                       unsigned long long id)
 {
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
     size_t i;
-    virNetServerClient *ret = NULL;
-
-    virObjectLock(srv);
 
     for (i = 0; i < srv->nclients; i++) {
         virNetServerClient *client = srv->clients[i];
         if (virNetServerClientGetID(client) == id)
-            ret = virObjectRef(client);
+            return virObjectRef(client);
     }
 
-    virObjectUnlock(srv);
-
-    if (!ret)
-        virReportError(VIR_ERR_NO_CLIENT,
-                       _("No client with matching ID '%llu'"), id);
-    return ret;
+    virReportError(VIR_ERR_NO_CLIENT, _("No client with matching ID '%llu'"), id);
+    return NULL;
 }
 
 
@@ -1172,13 +1108,9 @@ virNetServerSetClientLimits(virNetServer *srv,
                             long long int maxClients,
                             long long int maxClientsUnauth)
 {
-    int ret = -1;
-    size_t max, max_unauth;
-
-    virObjectLock(srv);
-
-    max = maxClients >= 0 ? maxClients : srv->nclients_max;
-    max_unauth = maxClientsUnauth >= 0 ?
+    VIR_LOCK_GUARD lock = virObjectLockGuard(srv);
+    size_t max = maxClients >= 0 ? maxClients : srv->nclients_max;
+    size_t max_unauth = maxClientsUnauth >= 0 ?
         maxClientsUnauth : srv->nclients_unauth_max;
 
     if (max < max_unauth) {
@@ -1186,7 +1118,7 @@ virNetServerSetClientLimits(virNetServer *srv,
                        _("The overall maximum number of clients must be "
                          "greater than the maximum number of clients waiting "
                          "for authentication"));
-        goto cleanup;
+        return -1;
     }
 
     if (maxClients >= 0)
@@ -1197,10 +1129,7 @@ virNetServerSetClientLimits(virNetServer *srv,
 
     virNetServerCheckLimits(srv);
 
-    ret = 0;
- cleanup:
-    virObjectUnlock(srv);
-    return ret;
+    return 0;
 }
 
 
@@ -1226,30 +1155,24 @@ virNetServerGetTLSContext(virNetServer *srv)
 int
 virNetServerUpdateTlsFiles(virNetServer *srv)
 {
-    int ret = -1;
-    virNetTLSContext *ctxt = NULL;
     bool privileged = geteuid() == 0;
+    virNetTLSContext *ctxt = virNetServerGetTLSContext(srv);
 
-    ctxt = virNetServerGetTLSContext(srv);
     if (!ctxt) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("no tls service found, unable to update tls files"));
         return -1;
     }
 
-    virObjectLock(srv);
-    virObjectLock(ctxt);
-
-    if (virNetTLSContextReloadForServer(ctxt, !privileged)) {
-        VIR_DEBUG("failed to reload server's tls context");
-        goto cleanup;
+    VIR_WITH_OBJECT_LOCK_GUARD(srv) {
+        VIR_WITH_OBJECT_LOCK_GUARD(ctxt) {
+            if (virNetTLSContextReloadForServer(ctxt, !privileged)) {
+                VIR_DEBUG("failed to reload server's tls context");
+                return -1;
+            }
+        }
     }
 
     VIR_DEBUG("update tls files success");
-    ret = 0;
-
- cleanup:
-    virObjectUnlock(ctxt);
-    virObjectUnlock(srv);
-    return ret;
+    return 0;
 }
