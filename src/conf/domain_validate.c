@@ -2382,9 +2382,34 @@ virDomainAudioDefValidate(const virDomainDef *def,
 }
 
 static int
+virDomainGraphicsDefListensValidate(const virDomainGraphicsDef *def)
+{
+    size_t i;
+
+    for (i = 0; i < def->nListens; i++) {
+        if (def->listens[i].type == VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NETWORK &&
+            !def->listens[i].network) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("'network' attribute is required for "
+                             "listen type 'network'"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+static int
 virDomainGraphicsDefValidate(const virDomainDef *def,
                              const virDomainGraphicsDef *graphics)
 {
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC ||
+        graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE ||
+        graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_RDP) {
+        if (virDomainGraphicsDefListensValidate(graphics) < 0)
+            return -1;
+    }
+
     if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
         return virDomainEnsureAudioID(def, graphics->data.vnc.audioId);
 
