@@ -2,7 +2,7 @@
 Internal drivers
 ================
 
--  `Hypervisor drivers <#hypervisor-drivers>`__
+-  `Hypervisor drivers`_
 -  `Storage drivers <storage.html>`__
 -  `Node device driver <drvnodedev.html>`__
 -  `Secret driver <drvsecret.html>`__
