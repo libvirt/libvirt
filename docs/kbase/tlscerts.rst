@@ -58,7 +58,7 @@ If you are unsure how to create TLS certificates, skip to the next section.
    * - ``$HOME/.pki/libvirt/clientcert.pem``
      - Installed on the client
      - Client's certificate signed by the CA
-       (`more info <#Remote_TLS_client_certificates>`__)
+       (see `Issuing client certificates`_)
      - Distinguished Name (DN) can be checked against an access control list
        (``tls_allowed_dn_list``).
 
@@ -279,9 +279,8 @@ this on a company / organisation policy. For example:
 
    C=GB,ST=London,L=London,O=Libvirt Project,CN=name_of_client
 
-The process is the same as for `setting up the server
-certificate <#Remote_TLS_server_certificates>`__ so here we just briefly cover
-the steps.
+The process is the same as for `Issuing server certificates`_ so here we just
+briefly cover the steps.
 
 #. Make a private key:
 
