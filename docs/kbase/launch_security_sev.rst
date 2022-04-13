@@ -362,7 +362,7 @@ Checking SEV from within the guest
 ==================================
 
 After making the necessary adjustments discussed in
-`Configuration <#Configuration>`__, the VM should now boot successfully
+`VM Configuration`_, the VM should now boot successfully
 with SEV enabled. You can then verify that the guest has SEV enabled by
 running:
 
