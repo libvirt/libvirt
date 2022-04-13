@@ -59,8 +59,7 @@ PCI host devices
 
 ``capability``
    When used as top level element, the supported values for the ``type``
-   attribute are ``pci`` and ``phys_function`` (see `SR-IOV
-   below <#SRIOVCap>`__).
+   attribute are ``pci`` and ``phys_function`` (see `SR-IOV capability`_ below).
 
 ::
 
@@ -103,9 +102,10 @@ multiple devices called virtual functions (VFs) sharing their configuration with
 the underlying PF. Despite the SR-IOV specification, the amount of VFs that can
 be created on a PF varies among manufacturers.
 
-Suppose the NIC `above <#PCI>`__ was also SR-IOV capable, it would also include
-a nested ``<capability>`` element enumerating all virtual functions available on
-the physical device (physical port) like in the example below.
+Suppose the NIC above in `PCI host devices`_ was also SR-IOV capable, it would
+also include a nested ``<capability>`` element enumerating all virtual
+functions available on the physical device (physical port) like in the example
+below.
 
 ::
 
@@ -146,8 +146,8 @@ of the XML format for the ``mdev_types`` capability can be found
 `here <formatnode.html#MDEVTypesCap>`__.
 
 The following example shows how we might represent an NVIDIA GPU device that
-supports mediated devices. See below for `more information about mediated
-devices <#MDEV>`__.
+supports mediated devices. See below for more info on
+`Mediated devices (MDEVs)`_.
 
 ::
 
@@ -281,7 +281,7 @@ covers the following features:
 
 Because mediated devices are instantiated from vendor specific templates, simply
 called 'types', information describing these types is contained within the
-parent device's capabilities (see the example in `PCI host devices <#PCI>`__).
+parent device's capabilities (see the example in `PCI host devices`_).
 To list all devices capable of creating mediated devices, the following command
 can be used.
 
