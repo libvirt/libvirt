@@ -234,8 +234,9 @@ The libvirt client `applications <apps.html>`__ use a `URI <uri.html>`__
 to obtain the ``virConnectPtr``. The ``virConnectPtr`` keeps track of
 the driver connection plus a variety of other connections (network,
 interface, storage, etc.). The ``virConnectPtr`` is then used as a
-parameter to other virtualization `functions <#Functions>`__. Depending
-upon the driver being used, calls will be routed through the remote
+parameter to other virtualization functions
+(see `Functions and Naming Conventions`_).
+Depending upon the driver being used, calls will be routed through the remote
 driver to the libvirtd daemon. The daemon will reference the connection
 specific driver in order to retrieve the requested information and then
 pass back status and/or data through the connection back to the
