@@ -192,7 +192,8 @@ This is an example to boot into Fedora 25 installation:
        </devices>
    </domain>
 
-Please refer to the `UEFI <#uefi>`__ section for a more detailed explanation.
+Please refer to the `Using UEFI bootrom, VNC, and USB tablet`_ section for a
+more detailed explanation.
 
 Guest usage / management
 ------------------------
@@ -306,7 +307,8 @@ not have spaces or they will be tokenized incorrectly.
 Using UEFI bootrom, VNC, and USB tablet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:since:`Since 3.2.0` , in addition to `grub-bhyve <#grubbhyve>`__, non-FreeBSD
+:since:`Since 3.2.0` , in addition to
+`Using grub2-bhyve or Alternative Bootloaders`_, non-FreeBSD
 guests could be also booted using an UEFI boot ROM, provided both guest OS and
 installed ``bhyve(1)`` version support UEFI. To use that, ``loader`` should be
 specified in the ``os`` section:
