@@ -59,8 +59,8 @@ Define the secret and set the passphrase as follows:
    # virsh secret-define volume-secret.xml
    Secret 0a81f5b2-8403-7b23-c8d6-21ccc2f80d6f created
 
-See `virsh secret-set-value <#settingSecrets>`__ on how to set the value of the
-secret.
+See `Setting secret values in virsh`_ on how to set the value of the secret
+using ``virsh secret-set-value``.
 
 The volume type secret can be supplied either in volume XML during creation of a
 `storage volume <formatstorage.html#StorageVol>`__ in order to provide the
@@ -82,8 +82,8 @@ to decrypt the volume, :since:`since 2.1.0` . An example follows:
    # virsh secret-define luks-secret.xml
    Secret f52a81b2-424e-490c-823d-6bd4235bc57 created
 
-See `virsh secret-set-value <#settingSecrets>`__ on how to set the value of the
-secret.
+See `Setting secret values in virsh`_ on how to set the value of the secret
+using ``virsh secret-set-value``.
 
 The volume type secret can be supplied in domain XML for a luks storage volume
 `encryption <formatstorageencryption.html>`__ as follows:
@@ -128,8 +128,8 @@ secret value in order to define the chosen secret pass phrase.
    -----------------------------------------------------------
     1b40a534-8301-45d5-b1aa-11894ebb1735 cephx ceph_example
 
-See `virsh secret-set-value <#settingSecrets>`__ on how to set the value of the
-secret.
+See `Setting secret values in virsh`_ on how to set the value of the secret
+using ``virsh secret-set-value``.
 
 The ceph secret can then be used by UUID or by the usage name via the ``<auth>``
 element in a domain's `<disk> <formatdomain.html#elementsDisks>`__ element as
@@ -203,8 +203,8 @@ must match the password used in the iSCSI authentication configuration file.
     c4dbe20b-b1a3-4ac1-b6e6-2ac97852ebb6 iscsi libvirtiscsi
 
 
-See `virsh secret-set-value <#settingSecrets>`__ on how to set the value of the
-secret.
+See `Setting secret values in virsh`_ on how to set the value of the secret
+using ``virsh secret-set-value``.
 
 The iSCSI secret can then be used by UUID or by the usage name via the
 ``<auth>`` element in a domain's `<disk> <formatdomain.html#elementsDisks>`__
