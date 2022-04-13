@@ -137,9 +137,8 @@ aarch64 architecture
 mach-virt (virt) machine type
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This machine type mostly behaves the same as the `q35 machine
-type <#q35-machine-type>`__, so you can just refer to that section for
-information.
+This machine type mostly behaves the same as the `q35 machine type`_,
+so you can just refer to that section for information.
 
 The only difference worth mentioning is that using legacy PCI for ``mach-virt``
 guests is extremely uncommon, so you'll probably never need to add controllers
