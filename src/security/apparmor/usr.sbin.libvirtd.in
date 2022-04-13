@@ -58,6 +58,7 @@ profile libvirtd @sbindir@/libvirtd flags=(attach_disconnected) {
   ptrace (read,trace) peer=dnsmasq,
   ptrace (read,trace) peer=/usr/sbin/dnsmasq,
   ptrace (read,trace) peer=libvirt-*,
+  ptrace (read,trace) peer=swtpm,
 
   signal (send) peer=dnsmasq,
   signal (send) peer=/usr/sbin/dnsmasq,

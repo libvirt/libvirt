@@ -180,7 +180,7 @@
   audit deny /{var/,}run/qemu/*/*.so w,
 
   # swtpm
-  /{usr/,}bin/swtpm rmix,
+  /{usr/,}bin/swtpm rmpix,
   /usr/{lib,lib64}/libswtpm_libtpms.so mr,
   /usr/lib/@{multiarch}/libswtpm_libtpms.so mr,
 
@@ -226,6 +226,7 @@
   unix (send, receive) type=stream addr=none peer=(label=libvirtd),
   unix (send, receive) type=stream addr=none peer=(label=/usr/sbin/libvirtd),
   unix (send, receive) type=stream addr=none peer=(label=virtqemud),
+  unix (send, receive) type=stream addr=none peer=(label=swtpm),
 
   # for gathering information about available host resources
   /sys/devices/system/cpu/ r,
