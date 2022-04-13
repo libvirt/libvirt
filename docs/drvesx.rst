@@ -119,13 +119,12 @@ The driver understands the extra parameters shown below.
 |                 |                             | the server's SSL            |
 |                 |                             | certificate. The default    |
 |                 |                             | value is 0. See the         |
-|                 |                             | `Certificates for           |
-|                 |                             | HTTPS <#certificates>`__    |
+|                 |                             | `Certificates for HTTPS`_   |
 |                 |                             | section for details.        |
 +-----------------+-----------------------------+-----------------------------+
 | ``auto_answer`` | ``0`` or ``1``              | If set to 1, the driver     |
 |                 |                             | answers all                 |
-|                 |                             | `questions <#questions>`__  |
+|                 |                             | `Questions blocking tasks`_ |
 |                 |                             | with the default answer. If |
 |                 |                             | set to 0, questions are     |
 |                 |                             | reported as errors. The     |
@@ -183,7 +182,7 @@ error like this one:
 
 Where are two ways to solve this problem:
 
--  Use the ``no_verify=1`` `extra parameter <#extraparams>`__ to disable server
+-  Use the ``no_verify=1`` `Extra parameters`_ to disable server
    certificate verification.
 -  Generate new SSL certificates signed by a CA known to your client computer
    and replace the original ones on your ESX server. See the section *Replace a
@@ -193,13 +192,13 @@ Where are two ways to solve this problem:
 Connection problems
 ~~~~~~~~~~~~~~~~~~~
 
-There are also other causes for connection problems than the `HTTPS
-certificate <#certificates>`__ related ones.
+There are also other causes for connection problems than those related to
+`Certificates for HTTPS`_ .
 
 -  As stated before the ESX driver doesn't need the `remote transport
    mechanism <remote.html>`__ provided by the remote driver and libvirtd, nor
    does the ESX driver support it. Therefore, using an URI including a transport
-   in the scheme won't work. Only `URIs as described <#uriformat>`__ are
+   in the scheme won't work. Only URIs as described in `URI Format`_ are
    supported by the ESX driver. Here's a collection of possible error messages:
 
    ::
@@ -257,8 +256,8 @@ answer a question, libvirt doesn't have an API for something like this.
 The VI API provides the ``AnswerVM()`` method to programmatically answer a
 questions. So the driver has two options how to handle such a situation: either
 answer the questions with the default answer or report the question as an error
-and cancel the blocked task if possible. The `auto_answer <#uriformat>`__ query
-parameter controls the answering behavior.
+and cancel the blocked task if possible. The ``auto_answer`` query
+parameter (see `URI Format`_) controls the answering behavior.
 
 Specialities in the domain XML config
 -------------------------------------
@@ -275,7 +274,7 @@ will complain if this restrictions are violated.
 -  Number of virtual CPU has to be 1 or a multiple of 2. :since:`Since 4.10.0`
    any number of vCPUs is supported.
 -  Valid MAC address prefixes are ``00:0c:29`` and ``00:50:56``. :since:`Since
-   0.7.6` arbitrary `MAC addresses <#macaddresses>`__ are supported.
+   0.7.6` arbitrary `MAC addresses`_ are supported.
 
 Datastore references
 ~~~~~~~~~~~~~~~~~~~~
