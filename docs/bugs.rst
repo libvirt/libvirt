@@ -1,6 +1,3 @@
-.. role:: anchor(raw)
-   :format: html
-
 =============
 Bug reporting
 =============
@@ -78,8 +75,6 @@ Linux Distribution specific bug reports
 -  Finally, if you are a contributor to another Linux distribution and would
    like to have your procedure for filing bugs mentioned here, please mail the
    libvirt development list.
-
-:anchor:`<a id="quality"/>`
 
 How to file high quality bug reports
 ------------------------------------

@@ -1,4 +1,4 @@
-<!-- See https://libvirt.org/bugs.html#quality for guidance -->
+<!-- See https://libvirt.org/bugs.html#how-to-file-high-quality-bug-reports -->
 
 ## Software environment
  - Operating system:
