@@ -207,13 +207,3 @@ connections on both IPv4 and IPv6 protocols. If a client has an IPv6 address
 configured and the DNS address resolved for a service is reachable over IPv6,
 then an IPv6 connection will be made, otherwise IPv4 will be used. In summary it
 should just 'do the right thing(tm)'.
-
-Limitations
------------
-
--  Fine-grained authentication: libvirt in general, but in particular the remote
-   case should support more fine-grained authentication for operations, rather
-   than just read-write/read-only as at present.
-
-Please come and discuss these issues and more on `the mailing
-list <https://www.redhat.com/mailman/listinfo/libvir-list>`__.
