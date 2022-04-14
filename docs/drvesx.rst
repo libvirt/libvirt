@@ -231,9 +231,8 @@ There are also other causes for connection problems than those related to
       error: Cannot access CA certificate '/etc/pki/CA/cacert.pem': No such file or directory
 
    Don't let this error message confuse you. Setting up certificates as
-   described on the `remote transport
-   mechanism <remote.html#Remote_certificates>`__ page does not help, as this is
-   not a certificate related problem.
+   described on the `tls certificates <kbase/tlscerts.html>`__ page does not
+   help, as this is not a certificate related problem.
 
    To fix this problem you need to update your libvirt to 0.7.0 or newer. You
    may also see this error when you use a libvirt version that contains the ESX
