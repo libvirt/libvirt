@@ -19,7 +19,6 @@ docs_assets = [
 
 docs_html_in_files = [
   'index',
-  'uri',
 ]
 
 docs_rst_files = [
@@ -106,6 +105,7 @@ docs_rst_files = [
   'testapi',
   'testsuites',
   'testtck',
+  'uri',
   'windows',
 ]
 
