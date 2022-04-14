@@ -52,7 +52,7 @@ the project will look at CentOS, Debian, Fedora, openSUSE, RHEL, SLES and
 Ubuntu LTS. Other distros will be assumed to ship similar software versions.
 
 For FreeBSD, decisions will be made based on the contents of the ports tree;
-for macOS, `HomeBrew`_ will be used, although `MacPorts`_ is expected to carry
+for macOS, `Homebrew`_ will be used, although `MacPorts`_ is expected to carry
 similar versions.
 
 Windows
@@ -78,7 +78,7 @@ If a hypervisor is not commonly shipped directly by any distro listed above,
 or until the vendor discontinues support, whichever comes first.
 
 
-.. _HomeBrew: https://brew.sh/
+.. _Homebrew: https://brew.sh/
 .. _MacPorts: https://www.macports.org/
 .. _Repology: https://repology.org/
 .. _hypervisor drivers: drivers.html
