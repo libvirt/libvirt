@@ -99,40 +99,6 @@ if host_machine.system() == 'linux'
   ]
 endif
 
-if conf.has('WITH_BHYVE')
-  mock_libs += [
-    { 'name': 'bhyveargv2xmlmock' },
-    { 'name': 'bhyvexml2argvmock' },
-  ]
-endif
-
-if conf.has('WITH_LIBXL')
-  mock_libs += [
-    { 'name': 'xlmock', 'sources': [ 'libxlmock.c' ], 'deps': [ libxl_dep ] },
-  ]
-endif
-
-if conf.has('WITH_NSS')
-  mock_libs += [
-    { 'name': 'nssmock' },
-  ]
-endif
-
-if conf.has('WITH_QEMU')
-  mock_libs += [
-    { 'name': 'qemucaps2xmlmock' },
-    { 'name': 'qemucpumock' },
-    { 'name': 'qemuxml2argvmock' },
-    { 'name': 'virhostidmock' },
-  ]
-endif
-
-if conf.has('WITH_SECDRIVER_SELINUX')
-  mock_libs += [
-    { 'name': 'securityselinuxhelper' },
-  ]
-endif
-
 
 # build libraries used by tests
 
@@ -154,6 +120,10 @@ if conf.has('WITH_LIBXL')
     link_whole: [ libxl_driver_imp ],
     link_with: [ libvirt_lib ],
   )
+
+  mock_libs += [
+    { 'name': 'xlmock', 'sources': [ 'libxlmock.c' ], 'deps': [ libxl_dep ] },
+  ]
 else
   test_utils_xen_lib = []
   test_xen_driver_lib = []
@@ -191,8 +161,12 @@ if conf.has('WITH_QEMU')
   )
 
   mock_libs += [
+    { 'name': 'qemucaps2xmlmock' },
     { 'name': 'qemucapsprobemock', 'link_with': [ test_qemu_driver_lib ] },
+    { 'name': 'qemucpumock' },
     { 'name': 'qemuhotplugmock', 'link_with': [ test_utils_qemu_lib, test_utils_lib ] },
+    { 'name': 'qemuxml2argvmock' },
+    { 'name': 'virhostidmock' },
   ]
 else
   test_qemu_driver_lib = []
@@ -207,24 +181,6 @@ test_file_wrapper_lib = static_library(
 )
 
 tests_deps = []
-foreach mock : mock_libs
-  tests_deps += shared_library(
-    mock['name'],
-    mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
-    override_options: [
-     'b_asneeded=false',
-     'b_lundef=false',
-    ],
-    dependencies: [
-      tests_dep,
-      mock.get('deps', []),
-    ],
-    link_with: [
-      libvirt_lib,
-      mock.get('link_with', []),
-    ],
-  )
-endforeach
 
 # build helpers used by tests
 
@@ -382,6 +338,11 @@ if conf.has('WITH_BHYVE')
     { 'name': 'bhyvexml2argvtest', 'link_with': [ bhyve_driver_impl ] },
     { 'name': 'bhyvexml2xmltest', 'link_with': [ bhyve_driver_impl ] },
   ]
+
+  mock_libs += [
+    { 'name': 'bhyveargv2xmlmock' },
+    { 'name': 'bhyvexml2argvmock' },
+  ]
 endif
 
 if conf.has('WITH_ESX')
@@ -442,6 +403,10 @@ if conf.has('WITH_NSS')
       'include': [ nss_inc_dir ],
       'link_with': [ nss_libvirt_guest_impl ],
     },
+  ]
+
+  mock_libs += [
+    { 'name': 'nssmock' },
   ]
 endif
 
@@ -521,6 +486,10 @@ if conf.has('WITH_SECDRIVER_SELINUX')
       ]
     endif
   endif
+
+  mock_libs += [
+    { 'name': 'securityselinuxhelper' },
+  ]
 endif
 
 if conf.has('WITH_STORAGE')
@@ -570,6 +539,25 @@ if conf.has('WITH_YAJL')
     { 'name': 'virmacmaptest' },
   ]
 endif
+
+foreach mock : mock_libs
+  tests_deps += shared_library(
+    mock['name'],
+    mock.get('sources', [ '@0@.c'.format(mock['name']) ]),
+    override_options: [
+     'b_asneeded=false',
+     'b_lundef=false',
+    ],
+    dependencies: [
+      tests_dep,
+      mock.get('deps', []),
+    ],
+    link_with: [
+      libvirt_lib,
+      mock.get('link_with', []),
+    ],
+  )
+endforeach
 
 foreach data : tests
   test_sources = '@0@.c'.format(data['name'])
