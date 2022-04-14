@@ -1,6 +1,3 @@
-.. role:: anchor(raw)
-   :format: html
-
 ==================
 Project governance
 ==================
@@ -12,8 +9,6 @@ Anyone with an interest in the project can join the community, contributing to
 the ongoing development of the project's work. This pages describes how that
 participation takes place and how contributors earn merit, and thus influence,
 within the community.
-
-:anchor:`<a id="codeofconduct"/>`
 
 Code of conduct
 ---------------
