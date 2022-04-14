@@ -67,7 +67,7 @@ to libvirt. If you have ideas for other contributions feel free to follow them.
    have, or run into trouble with managing an existing deployment. While some
    users may be able to contact a software vendor to obtain support, it is
    common to rely on community help forums such as `libvirt users mailing
-   list <contact.html#email>`__, or sites such as
+   list <contact.html#mailing-lists>`__, or sites such as
    `stackoverflow. <https://stackoverflow.com/questions/tagged/libvirt>`__
    People who are familiar with libvirt and have ability & desire to help other
    users are encouraged to participate in these help forums.
@@ -82,10 +82,10 @@ for communication between contributors:
 Mailing lists
 ~~~~~~~~~~~~~
 
-The project has a number of `mailing lists <contact.html#email>`__ for general
-communication between contributors. In general any design discussions and review
-of contributions will take place on the mailing lists, so it is important for
-all contributors to follow the traffic.
+The project has a number of `mailing lists <contact.html#mailing-lists>`__ for
+general communication between contributors. In general any design discussions
+and review of contributions will take place on the mailing lists, so it is
+important for all contributors to follow the traffic.
 
 Instant messaging / chat
 ~~~~~~~~~~~~~~~~~~~~~~~~

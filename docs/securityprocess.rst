@@ -35,8 +35,8 @@ format in the `libvirt-security-notice GIT
 repository <https://gitlab.com/libvirt/libvirt-security-notice>`__ and
 `published online <https://security.libvirt.org>`__ in text, HTML and XML
 formats. Security notices are published on the `libvirt-announce mailing
-list <https://libvirt.org/contact.html#email>`__ when any embargo is lifted, or
-as soon as triaged if already public knowledge.
+list <https://libvirt.org/contact.html#mailing-lists>`__ when any embargo is
+lifted, or as soon as triaged if already public knowledge.
 
 Security team
 -------------

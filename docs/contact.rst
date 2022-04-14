@@ -1,6 +1,3 @@
-.. role:: anchor(raw)
-   :format: html
-
 ===================================
 Contacting the project contributors
 ===================================
@@ -16,8 +13,6 @@ has `a dedicated process for handling (potential) security
 issues <securityprocess.html>`__ that should be used instead. So if your issue
 has security implications, ignore the rest of this page and follow the `security
 process <securityprocess.html>`__ instead.
-
-:anchor:`<a id="email"/>`
 
 Mailing lists
 -------------
@@ -78,10 +73,8 @@ discussion. Wherever possible, please generate the patches by using
 regarding developing libvirt and/or contributing is available on our
 `Contributor Guidelines <hacking.html>`__ page.
 
-:anchor:`<a id="irc"/>`
-
-IRC discussion
---------------
+IRC
+---
 
 Some of the libvirt developers may be found on IRC on the `OFTC
 IRC <https://oftc.net>`__ network. Use the settings:
