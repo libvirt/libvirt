@@ -63,10 +63,10 @@ See `Setting secret values in virsh`_ on how to set the value of the secret
 using ``virsh secret-set-value``.
 
 The volume type secret can be supplied either in volume XML during creation of a
-`storage volume <formatstorage.html#StorageVol>`__ in order to provide the
-passphrase to encrypt the volume or in domain XML `disk
-device <formatdomain.html#elementsDisks>`__ in order to provide the passphrase
-to decrypt the volume, :since:`since 2.1.0` . An example follows:
+`storage volume <formatstorage.html#storage-volume-xml>`__ in order to provide
+the passphrase to encrypt the volume or in domain XML
+`disk device <formatdomain.html#elementsDisks>`__ in order to provide the
+passphrase to decrypt the volume, :since:`since 2.1.0` . An example follows:
 
 ::
 
