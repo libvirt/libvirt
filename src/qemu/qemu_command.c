@@ -6542,11 +6542,6 @@ qemuBuildCpuModelArgStr(virQEMUDriver *driver,
          */
         if (ARCH_IS_PPC64(def->os.arch)) {
             virBufferAddLit(buf, "host");
-            if (cpu->model &&
-                !(qemuDomainIsPSeries(def) &&
-                  virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT))) {
-                virBufferAsprintf(buf, ",compat=%s", cpu->model);
-            }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("unexpected host-model CPU for %s architecture"),
@@ -7118,8 +7113,7 @@ qemuBuildMachineCommandLine(virCommand *cmd,
 
     if (cpu && cpu->model &&
         cpu->mode == VIR_CPU_MODE_HOST_MODEL &&
-        qemuDomainIsPSeries(def) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT)) {
+        qemuDomainIsPSeries(def)) {
         virBufferAsprintf(&buf, ",max-cpu-compat=%s", cpu->model);
     }
 
