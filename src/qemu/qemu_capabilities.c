@@ -5174,7 +5174,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_PPC64:
     case VIR_ARCH_PPC64LE:
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT);
         break;
 
     case VIR_ARCH_S390:
