@@ -105,7 +105,6 @@
   <flag name='virtio-net.tx_queue_size'/>
   <flag name='chardev-reconnect'/>
   <flag name='virtio-blk.num-queues'/>
-  <flag name='machine.pseries.resize-hpt'/>
   <flag name='spapr-vty'/>
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>

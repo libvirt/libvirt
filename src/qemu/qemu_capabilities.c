@@ -5171,11 +5171,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACH_VIRT_GIC_VERSION);
         break;
 
-    case VIR_ARCH_PPC64:
-    case VIR_ARCH_PPC64LE:
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT);
-        break;
-
     case VIR_ARCH_S390:
     case VIR_ARCH_S390X:
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_AES_KEY_WRAP);
@@ -5209,6 +5204,8 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
     case VIR_ARCH_PARISC:
     case VIR_ARCH_PARISC64:
     case VIR_ARCH_PPCLE:
+    case VIR_ARCH_PPC64:
+    case VIR_ARCH_PPC64LE:
     case VIR_ARCH_UNICORE32:
     case VIR_ARCH_XTENSA:
     case VIR_ARCH_XTENSAEB:
