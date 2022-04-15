@@ -1875,23 +1875,34 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
 
 #else
 int
-virProcessGetStatInfo(unsigned long long *cpuTime G_GNUC_UNUSED,
-                      int *lastCpu G_GNUC_UNUSED,
-                      long *vm_rss G_GNUC_UNUSED,
+virProcessGetStatInfo(unsigned long long *cpuTime,
+                      int *lastCpu,
+                      long *vm_rss,
                       pid_t pid G_GNUC_UNUSED,
                       pid_t tid G_GNUC_UNUSED)
 {
-    errno = ENOSYS;
-    return -1;
+    /* We don't have a way to collect this information on non-Linux
+     * platforms, so just report neutral values */
+    if (cpuTime)
+        *cpuTime = 0;
+    if (lastCpu)
+        *lastCpu = 0;
+    if (vm_rss)
+        *vm_rss = 0;
+
+    return 0;
 }
 
 int
-virProcessGetSchedInfo(unsigned long long *cpuWait G_GNUC_UNUSED,
+virProcessGetSchedInfo(unsigned long long *cpuWait,
                        pid_t pid G_GNUC_UNUSED,
                        pid_t tid G_GNUC_UNUSED)
 {
-    virReportSystemError(ENOSYS, "%s",
-                         _("scheduler information is not supported on this platform"));
-    return -1;
+    /* We don't have a way to collect this information on non-Linux
+     * platforms, so just report neutral values */
+    if (cpuWait)
+        *cpuWait = 0;
+
+    return 0;
 }
 #endif /* __linux__ */
