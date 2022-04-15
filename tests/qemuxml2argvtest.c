@@ -2194,10 +2194,6 @@ mymain(void)
     DO_TEST("pseries-cpu-compat", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST("pseries-machine-max-cpu-compat",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_MACHINE_PSERIES_MAX_CPU_COMPAT,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE);
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
