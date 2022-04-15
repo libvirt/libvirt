@@ -425,7 +425,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES, /* virtio-blk-*.num-queues */
 
     /* 270 */
-    QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT, /* -machine pseries,resize-hpt */
+    X_QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT, /* -machine pseries,resize-hpt */
     QEMU_CAPS_DEVICE_VMCOREINFO, /* -device vmcoreinfo */
     QEMU_CAPS_DEVICE_SPAPR_VTY, /* -device spapr-vty */
     QEMU_CAPS_DEVICE_SCLPLMCONSOLE, /* -device sclplmconsole */

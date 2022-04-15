@@ -450,7 +450,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-blk.num-queues", /* QEMU_CAPS_VIRTIO_BLK_NUM_QUEUES */
 
               /* 270 */
-              "machine.pseries.resize-hpt", /* QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
+              "machine.pseries.resize-hpt", /* X_QEMU_CAPS_MACHINE_PSERIES_RESIZE_HPT */
               "vmcoreinfo", /* QEMU_CAPS_DEVICE_VMCOREINFO */
               "spapr-vty", /* QEMU_CAPS_DEVICE_SPAPR_VTY */
               "sclplmconsole", /* QEMU_CAPS_DEVICE_SCLPLMCONSOLE */
