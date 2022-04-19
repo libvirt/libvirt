@@ -485,7 +485,7 @@ virDomainCgroupConnectCgroup(const char *prefix,
                              bool privileged,
                              char *machineName)
 {
-    if (privileged)
+    if (!privileged)
         return 0;
 
     if (!virCgroupAvailable())
