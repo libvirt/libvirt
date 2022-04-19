@@ -91,11 +91,11 @@ In virt-install use the ``--connect=``\ *URI* option:
 xen:///system URI
 -----------------
 
-*This section describes a feature which is new in libvirt > 0.2.3. For libvirt ≤
-0.2.3 use* `Legacy: "xen"`_ *URI*.
-
 To access a Xen hypervisor running on the local machine use the URI
 ``xen:///system``.
+
+Historically libvirt 0.2.2 and previous versions required to use the name
+``"xen"`` to refer to the Xen hypervisor.
 
 qemu:///... QEMU and KVM URIs
 -----------------------------
@@ -418,13 +418,3 @@ The test driver is a dummy hypervisor for test purposes. The URIs supported are:
    the driver.
 -  ``test:///path/to/host/definitions`` connects to a set of host definitions
    held in the named file.
-
-Other & legacy URI formats
---------------------------
-
-Legacy: ``"xen"``
-~~~~~~~~~~~~~~~~~
-
-Another legacy URI is to specify name as the string ``"xen"``. This will
-continue to refer to the Xen hypervisor. However you should prefer a full
-`xen:///system URI`_ in all future code.
