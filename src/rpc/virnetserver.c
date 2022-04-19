@@ -827,7 +827,7 @@ virNetServerSetClientAuthenticated(virNetServer *srv,
                                    virNetServerClient *client)
 {
     VIR_LOCK_GUARD server_lock = virObjectLockGuard(srv);
-    VIR_LOCK_GUARD client_lock = virObjectLockGuard(srv);
+    VIR_LOCK_GUARD client_lock = virObjectLockGuard(client);
 
     virNetServerClientSetAuthLocked(client, VIR_NET_SERVER_SERVICE_AUTH_NONE);
     virNetServerSetClientAuthCompletedLocked(srv, client);
