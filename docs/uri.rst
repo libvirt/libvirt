@@ -88,8 +88,11 @@ In virt-install use the ``--connect=``\ *URI* option:
 
    virt-install --connect=test:///default [other options]
 
+Local hypervisor URIs
+---------------------
+
 xen:///system URI
------------------
+~~~~~~~~~~~~~~~~~
 
 To access a Xen hypervisor running on the local machine use the URI
 ``xen:///system``.
@@ -98,7 +101,7 @@ Historically libvirt 0.2.2 and previous versions required to use the name
 ``"xen"`` to refer to the Xen hypervisor.
 
 qemu:///... QEMU and KVM URIs
------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To use QEMU support in libvirt you must be running the ``libvirtd`` daemon
 (named ``libvirt_qemud`` in releases prior to 0.3.0). The purpose of this daemon
@@ -119,6 +122,16 @@ domain socket(s) that it listens on in the various different modes).
 
 KVM URIs are identical. You select between qemu, qemu accelerated and KVM guests
 in the `guest XML as described here <format.html#KVM1>`__.
+
+test:///... Test URIs
+~~~~~~~~~~~~~~~~~~~~~
+
+The test driver is a dummy hypervisor for test purposes. The URIs supported are:
+
+-  ``test:///default`` connects to a default set of host definitions built into
+   the driver.
+-  ``test:///path/to/host/definitions`` connects to a set of host definitions
+   held in the named file.
 
 Remote URIs
 -----------
@@ -408,13 +421,3 @@ parameter values must be
 |                         |                         | ``                      |
 |                         |                         | sshauth=privkey,agent`` |
 +-------------------------+-------------------------+-------------------------+
-
-test:///... Test URIs
----------------------
-
-The test driver is a dummy hypervisor for test purposes. The URIs supported are:
-
--  ``test:///default`` connects to a default set of host definitions built into
-   the driver.
--  ``test:///path/to/host/definitions`` connects to a set of host definitions
-   held in the named file.
