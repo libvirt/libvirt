@@ -51,12 +51,14 @@ outside the allowed alias character set, no alias lookup will be attempted.
 Default URI choice
 ------------------
 
-If the URI passed to ``virConnectOpen*`` is NULL, then libvirt will use the
-following logic to determine what URI to use.
+If the URI passed to ``virConnectOpen*`` is NULL or empty string, then libvirt
+will use the following logic to determine what URI to use.
 
 #. The environment variable ``LIBVIRT_DEFAULT_URI``
 #. The client configuration file ``uri_default`` parameter
 #. Probe each hypervisor in turn until one that works is found
+
+Historically an empty URI was equivalent to ``xen:///system``.
 
 Specifying URIs to virsh, virt-manager and virt-install
 -------------------------------------------------------
@@ -419,25 +421,6 @@ The test driver is a dummy hypervisor for test purposes. The URIs supported are:
 
 Other & legacy URI formats
 --------------------------
-
-NULL and empty string URIs
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Libvirt allows you to pass a ``NULL`` pointer to ``virConnectOpen*``. Empty
-string (``""``) acts in the same way. Traditionally this has meant “connect to
-the local Xen hypervisor”. However in future this may change to mean “connect to
-the best available hypervisor”.
-
-The theory is that if, for example, Xen is unavailable but the machine is
-running an OpenVZ kernel, then we should not try to connect to the Xen
-hypervisor since that is obviously the wrong thing to do.
-
-In any case applications linked to libvirt can continue to pass ``NULL`` as a
-default choice, but should always allow the user to override the URI, either by
-constructing one or by allowing the user to type a URI in directly (if that is
-appropriate). If your application wishes to connect specifically to a Xen
-hypervisor, then for future proofing it should choose a full
-`xen:///system URI`_.
 
 Legacy: ``"xen"``
 ~~~~~~~~~~~~~~~~~
