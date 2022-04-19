@@ -7484,7 +7484,7 @@ qemuMonitorJSONGetMemoryDeviceInfo(qemuMonitor *mon,
         meminfo = g_new0(qemuMonitorMemoryDeviceInfo, 1);
 
         /* dimm memory devices */
-        if (STREQ(type, "dimm")) {
+        if (STREQ(type, "dimm") || STREQ(type, "nvdimm")) {
             if (virJSONValueObjectGetNumberUlong(dimminfo, "addr",
                                                  &meminfo->address) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
