@@ -197,16 +197,7 @@ static virConnectAuth virConnectAuthDefault = {
     NULL,
 };
 
-/*
- * virConnectAuthPtrDefault
- *
- * A default implementation of the authentication callbacks. This
- * implementation is suitable for command line based tools. It will
- * prompt for username, passwords, realm and one time keys as needed.
- * It will print on STDOUT, and read from STDIN. If this is not
- * suitable for the application's needs an alternative implementation
- * should be provided.
- */
+/* Explanation in the header file */
 virConnectAuthPtr virConnectAuthPtrDefault = &virConnectAuthDefault;
 
 static bool virGlobalError;
