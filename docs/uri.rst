@@ -168,8 +168,11 @@ Some examples:
    — Connect to a remote host using a ssh connection with the libssh driver and
    use a different known_hosts file.
 
-Extra parameters
-~~~~~~~~~~~~~~~~
+Transport configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The remote driver supports multiple transport protocols and approaches which are
+configurable via the URI.
 
 Extra parameters can be added to remote URIs as part of the query string (the
 part following ``?``). Remote URIs understand the extra parameters shown
@@ -177,247 +180,226 @@ below. Any others are passed unmodified through to the back end. Note that
 parameter values must be
 `URI-escaped <http://xmlsoft.org/html/libxml-uri.html#xmlURIEscapeStr>`__.
 
-+-------------------------+-------------------------+-------------------------+
-| Name                    | Transports              | Meaning                 |
-+=========================+=========================+=========================+
-| ``name``                | *any transport*         | The name passed to the  |
-|                         |                         | remote virConnectOpen   |
-|                         |                         | function. The name is   |
-|                         |                         | normally formed by      |
-|                         |                         | removing transport,     |
-|                         |                         | hostname, port number,  |
-|                         |                         | username and extra      |
-|                         |                         | parameters from the     |
-|                         |                         | remote URI, but in      |
-|                         |                         | certain very complex    |
-|                         |                         | cases it may be better  |
-|                         |                         | to supply the name      |
-|                         |                         | explicitly.             |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``name=qemu:///system`` |
-+-------------------------+-------------------------+-------------------------+
-| ``tls_priority``        | tls                     | A valid GNUTLS priority |
-|                         |                         | string                  |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``tls_priorit           |
-|                         |                         | y=NORMAL:-VERS-SSL3.0`` |
-+-------------------------+-------------------------+-------------------------+
-| ``mode``                | unix, ssh, libssh,      | ``auto``                |
-|                         | libssh2                 |    automatically        |
-|                         |                         |    determine the daemon |
-|                         |                         | ``direct``              |
-|                         |                         |    connect to           |
-|                         |                         |    per-driver daemons   |
-|                         |                         | ``legacy``              |
-|                         |                         |    connect to libvirtd  |
-|                         |                         |                         |
-|                         |                         | Can also be set in      |
-|                         |                         | ``libvirt.conf`` as     |
-|                         |                         | ``remote_mode``         |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``mode=direct``         |
-+-------------------------+-------------------------+-------------------------+
-| ``proxy``               | auto, netcat, native    | ``auto``                |
-|                         |                         |    try native, fallback |
-|                         |                         |    to netcat            |
-|                         |                         | ``netcat``              |
-|                         |                         |    only use netcat      |
-|                         |                         | ``native``              |
-|                         |                         |    only use native      |
-|                         |                         |                         |
-|                         |                         | Can also be set in      |
-|                         |                         | ``libvirt.conf`` as     |
-|                         |                         | ``remote_proxy``        |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``proxy=native``        |
-+-------------------------+-------------------------+-------------------------+
-| ``command``             | ssh, ext                | The external command.   |
-|                         |                         | For ext transport this  |
-|                         |                         | is required. For ssh    |
-|                         |                         | the default is ``ssh``. |
-|                         |                         | The PATH is searched    |
-|                         |                         | for the command.        |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``command               |
-|                         |                         | =/opt/openssh/bin/ssh`` |
-+-------------------------+-------------------------+-------------------------+
-| ``socket``              | unix, ssh, libssh2,     | The path to the Unix    |
-|                         | libssh                  | domain socket, which    |
-|                         |                         | overrides the           |
-|                         |                         | compiled-in default.    |
-|                         |                         | For ssh transport, this |
-|                         |                         | is passed to the remote |
-|                         |                         | netcat command (see     |
-|                         |                         | next).                  |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``                      |
-|                         |                         | socket=/opt/libvirt/run |
-|                         |                         | /libvirt/libvirt-sock`` |
-+-------------------------+-------------------------+-------------------------+
-| ``netcat``              | ssh, libssh2, libssh    | The name of the netcat  |
-|                         |                         | command on the remote   |
-|                         |                         | machine. The default is |
-|                         |                         | ``nc``. This is not     |
-|                         |                         | permitted when using    |
-|                         |                         | the ``native`` proxy    |
-|                         |                         | mode. For ssh           |
-|                         |                         | transport, libvirt      |
-|                         |                         | constructs an ssh       |
-|                         |                         | command which looks     |
-|                         |                         | like:                   |
-|                         |                         |                         |
-|                         |                         | ``command -p port``     |
-|                         |                         | ``[-l username]``       |
-|                         |                         | ``hostname`` or         |
-|                         |                         |                         |
-|                         |                         | ``netcat -U socket``    |
-|                         |                         |                         |
-|                         |                         | where *port*,           |
-|                         |                         | *username*, *hostname*  |
-|                         |                         | can be specified as     |
-|                         |                         | part of the remote URI, |
-|                         |                         | and *command*, *netcat* |
-|                         |                         | and *socket* come from  |
-|                         |                         | extra parameters (or    |
-|                         |                         | sensible defaults).     |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``netc                  |
-|                         |                         | at=/opt/netcat/bin/nc`` |
-+-------------------------+-------------------------+-------------------------+
-| ``keyfile``             | ssh, libssh2, libssh    | The name of the private |
-|                         |                         | key file to use to      |
-|                         |                         | authentication to the   |
-|                         |                         | remote machine. If this |
-|                         |                         | option is not used the  |
-|                         |                         | default keys are used.  |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``keyfile=/             |
-|                         |                         | root/.ssh/example_key`` |
-+-------------------------+-------------------------+-------------------------+
-| ``no_verify``           | ssh, tls                | SSH: If set to a        |
-|                         |                         | non-zero value, this    |
-|                         |                         | disables client's       |
-|                         |                         | strict host key         |
-|                         |                         | checking making it      |
-|                         |                         | auto-accept new host    |
-|                         |                         | keys. Existing host     |
-|                         |                         | keys will still be      |
-|                         |                         | validated.              |
-|                         |                         | TLS: If set to a        |
-|                         |                         | non-zero value, this    |
-|                         |                         | disables client checks  |
-|                         |                         | of the server's         |
-|                         |                         | certificate. Note that  |
-|                         |                         | to disable server       |
-|                         |                         | checks of the client's  |
-|                         |                         | certificate or IP       |
-|                         |                         | address you must        |
-|                         |                         | `change the libvirtd    |
-|                         |                         | conf                    |
-|                         |                         | iguration <#Remote_libv |
-|                         |                         | irtd_configuration>`__. |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``no_verify=1``         |
-+-------------------------+-------------------------+-------------------------+
-| ``no_tty``              | ssh                     | If set to a non-zero    |
-|                         |                         | value, this stops ssh   |
-|                         |                         | from asking for a       |
-|                         |                         | password if it cannot   |
-|                         |                         | log in to the remote    |
-|                         |                         | machine automatically   |
-|                         |                         | (eg. using ssh-agent    |
-|                         |                         | etc.). Use this when    |
-|                         |                         | you don't have access   |
-|                         |                         | to a terminal - for     |
-|                         |                         | example in graphical    |
-|                         |                         | programs which use      |
-|                         |                         | libvirt.                |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example: ``no_tty=1``   |
-+-------------------------+-------------------------+-------------------------+
-| ``pkipath``             | tls                     | Specifies x509          |
-|                         |                         | certificates path for   |
-|                         |                         | the client. If any of   |
-|                         |                         | the CA certificate,     |
-|                         |                         | client certificate, or  |
-|                         |                         | client key is missing,  |
-|                         |                         | the connection will     |
-|                         |                         | fail with a fatal       |
-|                         |                         | error.                  |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``pk                    |
-|                         |                         | ipath=/tmp/pki/client`` |
-+-------------------------+-------------------------+-------------------------+
-| ``known_hosts``         | libssh2, libssh         | Path to the known_hosts |
-|                         |                         | file to verify the host |
-|                         |                         | key against. LibSSH2    |
-|                         |                         | and libssh support      |
-|                         |                         | OpenSSH-style           |
-|                         |                         | known_hosts files,      |
-|                         |                         | although LibSSH2 does   |
-|                         |                         | not support all key     |
-|                         |                         | types, so using files   |
-|                         |                         | created by the OpenSSH  |
-|                         |                         | binary may result into  |
-|                         |                         | truncating the          |
-|                         |                         | known_hosts file. Thus, |
-|                         |                         | with LibSSH2 it's       |
-|                         |                         | recommended to use the  |
-|                         |                         | default known_hosts     |
-|                         |                         | file is located in      |
-|                         |                         | libvirt's client local  |
-|                         |                         | configuration directory |
-|                         |                         | e.g.:                   |
-|                         |                         | ~/.conf                 |
-|                         |                         | ig/libvirt/known_hosts. |
-|                         |                         | Note: Use absolute      |
-|                         |                         | paths.                  |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``known_hosts=/         |
-|                         |                         | root/.ssh/known_hosts`` |
-+-------------------------+-------------------------+-------------------------+
-| ``known_hosts_verify``  | libssh2, libssh         | If set to ``normal``    |
-|                         |                         | (default), then the     |
-|                         |                         | user will be asked to   |
-|                         |                         | accept new host keys.   |
-|                         |                         | If set to ``auto``, new |
-|                         |                         | host keys will be       |
-|                         |                         | auto-accepted, but      |
-|                         |                         | existing host keys will |
-|                         |                         | still be validated. If  |
-|                         |                         | set to ``ignore``, this |
-|                         |                         | disables client's       |
-|                         |                         | strict host key         |
-|                         |                         | checking.               |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``know                  |
-|                         |                         | n_hosts_verify=ignore`` |
-+-------------------------+-------------------------+-------------------------+
-| ``sshauth``             | libssh2, libssh         | A comma separated list  |
-|                         |                         | of authentication       |
-|                         |                         | methods to use. Default |
-|                         |                         | (is                     |
-|                         |                         | "agent,privkey,password |
-|                         |                         | ,keyboard-interactive". |
-|                         |                         | The order of the        |
-|                         |                         | methods is preserved.   |
-|                         |                         | Some methods may        |
-|                         |                         | require additional      |
-|                         |                         | parameters.             |
-+-------------------------+-------------------------+-------------------------+
-|                         |                         | Example:                |
-|                         |                         | ``                      |
-|                         |                         | sshauth=privkey,agent`` |
-+-------------------------+-------------------------+-------------------------+
+All transports support the following parameters:
+
+  ``name``
+
+    The name passed to the remote ``virConnectOpen`` function. The name is
+    normally formed by removing transport, hostname, port number, username and
+    extra parameters from the remote URI, but in certain very complex cases it
+    may be better to supply the name explicitly.
+
+    **Example:** ``name=qemu:///system``
+
+``ssh`` transport
+^^^^^^^^^^^^^^^^^
+
+The ``ssh`` transport uses the standard SSH protocol via the system installed
+binary.
+
+Supported extra parameters:
+
+  ``mode``
+    See the info on the `mode parameter`_.
+  ``proxy``
+    See the info on the `proxy parameter`_.
+  ``command``
+    Path to the ``ssh`` binary to use.
+
+    **Example:** ``command=/opt/openssh/bin/ssh``
+  ``socket``
+    See the info on the `socket parameter`_.
+  ``netcat``
+    See the info on the `netcat parameter`_.
+  ``keyfile``
+    See the info on the `keyfile parameter`_.
+  ``no_verify``
+    If set to a non-zero value, this disables client's strict host key checking
+    making it auto-accept new host keys. Existing host keys will still be
+    validated.
+
+    **Example:** ``no_verify=1``
+  ``no_tty``
+    If set to a non-zero value, this stops ssh from asking for a password if it
+    cannot log in to the remote machine automatically (eg. using ssh-agent
+    etc.). Use this when you don't have access to a terminal - for example in
+    graphical programs which use libvirt.
+
+    **Example:** ``no_tty=1``
+
+``libssh`` and ``libssh2`` transport
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Same as the ``ssh`` transport but the SSH client is handled directly by using
+either ``libssh`` or ``libssh2`` to handle the SSH protocol without spawning an
+extra process.
+
+Supported extra parameters:
+
+  ``mode``
+    See the info on the `mode parameter`_.
+  ``proxy``
+    See the info on the `proxy parameter`_.
+  ``socket``
+    See the info on the `socket parameter`_.
+  ``netcat``
+    See the info on the `netcat parameter`_.
+  ``keyfile``
+    See the info on the `keyfile parameter`_.
+  ``known_hosts``
+    Path to the known_hosts file to verify the host key against. LibSSH2 and
+    libssh support OpenSSH-style known_hosts files, although LibSSH2 does not
+    support all key types, so using files created by the OpenSSH binary may
+    result into truncating the known_hosts file. Thus, with LibSSH2 it's
+    recommended to use the default known_hosts file is located in libvirt's
+    client local configuration directory e.g.: ~/.conf ig/libvirt/known_hosts.
+
+    *Note:* Use absolute paths.
+
+    **Example:** ``known_hosts=/root/.ssh/known_hosts``
+
+  ``known_hosts_verify``
+    If set to ``normal`` (default), then the user will be asked to accept new
+    host keys.  If set to ``auto``, new host keys will be auto-accepted, but
+    existing host keys will still be validated. If set to ``ignore``, this
+    disables client's strict host key checking.
+
+    **Example:** ``known_hosts_verify=ignore``
+
+  ``sshauth``
+    A comma separated list of authentication methods to use. Default (is
+    "agent,privkey,password ,keyboard-interactive".  The order of the methods
+    is preserved.  Some methods may require additional parameters.
+
+    **Example:** ``sshauth=privkey,agent``
+
+``tls`` transport
+^^^^^^^^^^^^^^^^^
+
+This transport uses a TCP connection to the socket. The data is encrypted using
+TLS to ensure security. Note that TLS certificates must be setup for this to
+work.
+
+Supported extra parameters:
+
+  ``tls_priority``
+    A valid GNUTLS priority string.
+
+    **Example:** ``tls_priority=NORMAL:-VERS-SSL3.0``
+
+  ``no_verify``
+    If set to a non-zero value, this disables client checks of the server's
+    certificate. Note that to disable server checks of the client's certificate
+    or IP address you must `change the libvirtd configuration
+    <#Remote_libvirtd_configuration>`__
+
+    **Example:** ``no_verify=1``
+
+  ``pkipath``
+
+    Specifies x509 certificates path for the client. If any of the CA
+    certificate, client certificate, or client key is missing, the connection
+    will fail with a fatal error.
+
+    **Example:** ``pkipath=/tmp/pki/client``
+
+``unix`` transport
+^^^^^^^^^^^^^^^^^^
+
+This transport uses an unix domain socket is used to connect to the daemon.
+This is the most common case. In most cases no extra parameters are needed.
+
+Supported extra parameters:
+
+  ``mode``
+    See the info on the `mode parameter`_.
+  ``socket``
+    See the info on the `socket parameter`_.
+
+``ext`` transport
+^^^^^^^^^^^^^^^^^
+
+The ``ext`` transport invokes the user specified command to transport the
+libvirt RPC protocol to the destination. The command must be able to handle
+the proper connection. Standard input/output is used for the communication.
+
+Supported extra parameters:
+
+  ``command``
+    The external command launched to tunnel the data to the destination.
+
+``tcp`` transport
+^^^^^^^^^^^^^^^^^
+
+The ``tcp`` transport uses plain unencrypted TCP connection to libvirt. This
+is insecure and should not be used. This transport has no additional arguments.
+
+Common extra parameters
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Certain extra parameters are shared between multiple protocols. See the list of
+transport protocols above for specific usage.
+
+``mode`` parameter
+^^^^^^^^^^^^^^^^^^
+
+Controls whether to connect to per-driver daemons or libvirtd.
+
+Supported values:
+
+  ``auto``
+    automatically determine the daemon
+  ``direct``
+    connect to per-driver daemons
+  ``legacy``
+    connect to libvirtd
+
+Default is ``auto``. Can also be set in ``libvirt.conf`` as ``remote_mode``.
+
+**Example:** ``mode=direct``
+
+``proxy`` parameter
+^^^^^^^^^^^^^^^^^^^
+
+Controls which proxy binary is used on the remote side of connection to connect
+to the daemon.
+
+Supported values:
+
+  ``auto``
+    try native, fallback to netcat
+  ``netcat``
+    only use netcat
+  ``native``
+    use the libvirt native proxy binary
+
+Default is ``auto``. Can also be set in ``libvirt.conf`` as ``remote_proxy``.
+
+**Example:** ``proxy=native``
+
+``socket`` parameter
+^^^^^^^^^^^^^^^^^^^^
+
+The path to the Unix domain socket, which overrides the compiled-in default.
+This may be passed to the remote proxy command (See. `proxy parameter`).
+
+**Example:** ``socket=/opt/libvirt/run/libvirt/libvirt-sock``
+
+``netcat`` parameter
+^^^^^^^^^^^^^^^^^^^^
+The name of the netcat command on the remote machine. The default is ``nc``.
+This is not permitted when using the ``native`` proxy mode.
+
+The command used here is used on the remote side of the connection as:
+
+  ``netcat -U socket``
+
+**Example:** ``netcat=/opt/netcat/bin/nc``
+
+``keyfile`` parameter
+^^^^^^^^^^^^^^^^^^^^^
+
+The name of the private key file to use to authentication to the remote
+machine. If this option is not used the default keys are used.
+
+**Example:** ``keyfile=/root/.ssh/example_key``
