@@ -31,8 +31,8 @@ extern "C" {
 # endif
 
 typedef enum {
-    VIR_DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT = 0,
-    VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP     = (1 << 0), /* cmd is in HMP */
+    VIR_DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT = 0, /* (Since: v0.8.8) */
+    VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP     = (1 << 0), /* cmd is in HMP (Since: v0.8.8) */
 } virDomainQemuMonitorCommandFlags;
 
 int virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
@@ -51,11 +51,11 @@ virDomainPtr virDomainQemuAttach(virConnectPtr domain,
                                  unsigned int flags);
 
 typedef enum {
-    VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK,
-    VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK,
-    VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT,
-    VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT,
-    VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN = 60,
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK, /* (Since: v0.10.0) */
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK, /* (Since: v0.10.0) */
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_DEFAULT = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT, /* (Since: v0.10.0) */
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_NOWAIT = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT, /* (Since: v0.10.0) */
+    VIR_DOMAIN_QEMU_AGENT_COMMAND_SHUTDOWN = 60, /* (Since: v1.2.15) */
 } virDomainQemuAgentCommandTimeoutValues;
 
 char *virDomainQemuAgentCommand(virDomainPtr domain, const char *cmd,
@@ -85,10 +85,10 @@ typedef void (*virConnectDomainQemuMonitorEventCallback)(virConnectPtr conn,
 
 
 typedef enum {
-    /* Event filter is a regex rather than a literal string */
+    /* Event filter is a regex rather than a literal string (Since: v1.2.3) */
     VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX = (1 << 0),
 
-    /* Event filter is case insensitive */
+    /* Event filter is case insensitive (Since: v1.2.3) */
     VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_NOCASE = (1 << 1),
 } virConnectDomainQemuMonitorEventRegisterFlags;
 
