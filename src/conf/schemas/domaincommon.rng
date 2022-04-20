@@ -1995,7 +1995,7 @@
           <ref name="diskSourceNetworkProtocolHTTPCookies"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
-        </interleave>
+      </interleave>
     </element>
   </define>
 
