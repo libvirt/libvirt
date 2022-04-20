@@ -1236,9 +1236,7 @@ qemuDomainStorageSourceHasAuth(virStorageSource *src)
 {
     if (!virStorageSourceIsEmpty(src) &&
         virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
-        src->auth &&
-        (src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI ||
-         src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD))
+        src->auth)
         return true;
 
     return false;
