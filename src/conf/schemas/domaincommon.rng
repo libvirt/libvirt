@@ -1995,6 +1995,9 @@
           <ref name="diskSourceNetworkProtocolHTTPCookies"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -2020,6 +2023,9 @@
           <ref name="diskSourceNetworkProtocolHTTPCookies"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -2042,6 +2048,9 @@
           <ref name="diskSourceNetworkProtocolSSLVerify"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
@@ -2061,6 +2070,9 @@
           <ref name="encryption"/>
         </optional>
         <ref name="diskSourceNetworkProtocolPropsCommon"/>
+        <optional>
+          <ref name="diskAuth"/>
+        </optional>
       </interleave>
     </element>
   </define>
