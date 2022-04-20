@@ -59,6 +59,8 @@ VIR_LOG_INIT("libvirt-lxc");
  * the setns() system call.
  *
  * Returns the number of opened file descriptors, or -1 on error
+ *
+ * Since: v1.0.2
  */
 int
 virDomainLxcOpenNamespace(virDomainPtr domain,
@@ -115,6 +117,8 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
  * the caller to switch back to its current namespace later
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v1.0.2
  */
 int
 virDomainLxcEnterNamespace(virDomainPtr domain,
@@ -182,6 +186,8 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
  * exec() has yet been performed.
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v1.0.4
  */
 int
 virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
@@ -283,6 +289,8 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
  * with the container @domain.
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v2.0.0
  */
 int virDomainLxcEnterCGroup(virDomainPtr domain,
                             unsigned int flags)
