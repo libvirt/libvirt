@@ -322,6 +322,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-aio-io_uring");
     DO_TEST_NOCAPS("disk-cdrom");
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
+    DO_TEST_CAPS_LATEST("disk-cdrom-network");
     DO_TEST("disk-cdrom-bus-other", QEMU_CAPS_DEVICE_USB_STORAGE);
     DO_TEST_NOCAPS("disk-floppy");
     DO_TEST("disk-usb-device", QEMU_CAPS_DEVICE_USB_STORAGE);

@@ -30,10 +30,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -blockdev '{"driver":"ftp","url":"ftp://host.name:21/url/path/file.iso","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw","file":"libvirt-3-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.0","unit":0,"drive":"libvirt-3-format","id":"ide0-0-0","bootindex":1}' \
--blockdev '{"driver":"ftps","url":"ftps://host.name:990/url/path/file.iso","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-object '{"qom-type":"secret","id":"libvirt-2-storage-auth-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
+-blockdev '{"driver":"ftps","url":"ftps://host.name:990/url/path/file.iso","username":"testuser","password-secret":"libvirt-2-storage-auth-secret0","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-2-format","read-only":true,"driver":"raw","file":"libvirt-2-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.0","unit":1,"drive":"libvirt-2-format","id":"ide0-0-1"}' \
--blockdev '{"driver":"https","url":"https://host.name:443/url/path/file.iso?test=val","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-object '{"qom-type":"secret","id":"libvirt-1-storage-auth-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
+-blockdev '{"driver":"https","url":"https://host.name:443/url/path/file.iso?test=val","username":"testuser","password-secret":"libvirt-1-storage-auth-secret0","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":true,"driver":"raw","file":"libvirt-1-storage"}' \
 -device '{"driver":"ide-cd","bus":"ide.1","unit":0,"drive":"libvirt-1-format","id":"ide0-1-0"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
