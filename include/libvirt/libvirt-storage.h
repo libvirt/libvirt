@@ -414,6 +414,8 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool);
  *
  * Used to cast the event specific callback into the generic one
  * for use for virConnectStoragePoolEventRegisterAny()
+ *
+ * Since: v2.0.0
  */
 # define VIR_STORAGE_POOL_EVENT_CALLBACK(cb)((virConnectStoragePoolEventGenericCallback)(cb))
 

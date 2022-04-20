@@ -156,6 +156,8 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev);
  *
  * Used to cast the event specific callback into the generic one
  * for use for virConnectNodeDeviceEventRegisterAny()
+ *
+ * Since: v2.2.0
  */
 # define VIR_NODE_DEVICE_EVENT_CALLBACK(cb)((virConnectNodeDeviceEventGenericCallback)(cb))
 

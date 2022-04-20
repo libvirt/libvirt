@@ -313,6 +313,8 @@ typedef enum {
  *
  * Macro represents proportional weight of the scheduler used on the
  * host cpu, when using the posix scheduler, as a ullong.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_CPU_SHARES "cpu_shares"
 
@@ -321,6 +323,8 @@ typedef enum {
  *
  * Macro represents the enforcement period for a quota, in microseconds,
  * for whole domain, when using the posix scheduler, as a ullong.
+ *
+ * Since: v1.3.3
  */
 # define VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD "global_period"
 
@@ -329,6 +333,8 @@ typedef enum {
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * whole domain, when using the posix scheduler, as an llong.
+ *
+ * Since: v1.3.3
  */
 # define VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA "global_quota"
 
@@ -337,6 +343,8 @@ typedef enum {
  *
  * Macro represents the enforcement period for a quota, in microseconds,
  * for vcpus only, when using the posix scheduler, as a ullong.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_VCPU_PERIOD "vcpu_period"
 
@@ -345,6 +353,8 @@ typedef enum {
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * vcpus only, when using the posix scheduler, as an llong.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_VCPU_QUOTA "vcpu_quota"
 
@@ -354,6 +364,8 @@ typedef enum {
  * Macro represents the enforcement period for a quota in microseconds,
  * when using the posix scheduler, for all emulator activity not tied to
  * vcpus, as a ullong.
+ *
+ * Since: v0.10.0
  */
 # define VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD "emulator_period"
 
@@ -363,6 +375,8 @@ typedef enum {
  * Macro represents the maximum bandwidth to be used within a period for
  * all emulator activity not tied to vcpus, when using the posix scheduler,
  * as an llong.
+ *
+ * Since: v0.10.0
  */
 # define VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA "emulator_quota"
 
@@ -371,6 +385,8 @@ typedef enum {
  *
  * Macro represents the enforcement period for a quota, in microseconds,
  * for IOThreads only, when using the posix scheduler, as a ullong.
+ *
+ * Since: v2.2.0
  */
 # define VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD "iothread_period"
 
@@ -379,6 +395,8 @@ typedef enum {
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * IOThreads only, when using the posix scheduler, as an llong.
+ *
+ * Since: v2.2.0
  */
 # define VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA "iothread_quota"
 
@@ -387,6 +405,8 @@ typedef enum {
  *
  * Macro represents the relative weight,  when using the credit
  * scheduler, as a uint.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_WEIGHT "weight"
 
@@ -395,6 +415,8 @@ typedef enum {
  *
  * Macro represents the maximum scheduler cap, when using the credit
  * scheduler, as a uint.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_CAP "cap"
 
@@ -403,6 +425,8 @@ typedef enum {
  *
  * Macro represents the scheduler reservation value, when using the
  * allocation scheduler, as an llong.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_RESERVATION "reservation"
 
@@ -411,6 +435,8 @@ typedef enum {
  *
  * Macro represents the scheduler limit value, when using the
  * allocation scheduler, as an llong.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_LIMIT "limit"
 
@@ -419,6 +445,8 @@ typedef enum {
  *
  * Macro represents the scheduler shares value, when using the
  * allocation scheduler, as an int.
+ *
+ * Since: v0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_SHARES "shares"
 
@@ -477,6 +505,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro providing the field length of parameter names when using
  * virDomainBlockStatsFlags().
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
@@ -485,6 +515,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total number of read bytes of the
  * block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_BYTES "rd_bytes"
 
@@ -493,6 +525,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total read requests of the
  * block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_REQ "rd_operations"
 
@@ -501,6 +535,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total time spend on cache reads in
  * nano-seconds of the block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES "rd_total_times"
 
@@ -509,6 +545,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total number of write bytes of the
  * block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES "wr_bytes"
 
@@ -517,6 +555,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total write requests of the
  * block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_REQ "wr_operations"
 
@@ -525,6 +565,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total time spend on cache writes in
  * nano-seconds of the block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES "wr_total_times"
 
@@ -533,6 +575,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total flush requests of the
  * block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ "flush_operations"
 
@@ -541,6 +585,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * Macro represents the total time spend on cache flushing in
  * nano-seconds of the block device, as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES "flush_total_times"
 
@@ -548,6 +594,8 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * VIR_DOMAIN_BLOCK_STATS_ERRS:
  *
  * In Xen this returns the mysterious 'oo_req', as an llong.
+ *
+ * Since: v0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_ERRS "errs"
 
@@ -876,6 +924,8 @@ typedef enum {
  * required to transmit migration data.
  *
  * This field may not be used when VIR_MIGRATE_TUNNELLED flag is set.
+ *
+ * Since: v1.1.0
  */
 # define VIR_MIGRATE_PARAM_URI               "migrate_uri"
 
@@ -886,6 +936,8 @@ typedef enum {
  * destination host as VIR_TYPED_PARAM_STRING. Omitting this parameter keeps
  * the domain name the same. This field is only allowed to be used with
  * hypervisors that support domain renaming during migration.
+ *
+ * Since: v1.1.0
  */
 # define VIR_MIGRATE_PARAM_DEST_NAME         "destination_name"
 
@@ -905,6 +957,8 @@ typedef enum {
  * Omitting this parameter keeps the original domain configuration. Using this
  * field with hypervisors that do not support changing domain configuration
  * during migration will result in a failure.
+ *
+ * Since: v1.1.0
  */
 # define VIR_MIGRATE_PARAM_DEST_XML          "destination_xml"
 
@@ -920,6 +974,8 @@ typedef enum {
  * Omitting this parameter keeps the original domain persistent configuration.
  * Using this field with hypervisors that do not support changing domain
  * configuration during migration will result in a failure.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_PERSIST_XML  "persistent_xml"
 
@@ -930,6 +986,8 @@ typedef enum {
  * be used for migration as VIR_TYPED_PARAM_ULLONG. If set to 0 or omitted,
  * libvirt will choose a suitable default. Some hypervisors do not support this
  * feature and will return an error if this field is used and is not 0.
+ *
+ * Since: v1.1.0
  */
 # define VIR_MIGRATE_PARAM_BANDWIDTH         "bandwidth"
 
@@ -939,6 +997,8 @@ typedef enum {
  * virDomainMigrate* params field: the maximum bandwidth (in MiB/s) that will
  * be used for post-copy phase of a migration as VIR_TYPED_PARAM_ULLONG. If set
  * to 0 or omitted, post-copy migration speed will not be limited.
+ *
+ * Since: v5.1.0
  */
 # define VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY "bandwidth.postcopy"
 
@@ -960,6 +1020,8 @@ typedef enum {
  * parameters are "tlsPort" and "tlsSubject". For example,
  *
  *      spice://target.host.com:1234/?tlsPort=4567
+ *
+ * Since: v1.1.0
  */
 # define VIR_MIGRATE_PARAM_GRAPHICS_URI      "graphics_uri"
 
@@ -971,6 +1033,8 @@ typedef enum {
  * addresses are accepted as well as hostnames (the resolving is done on
  * destination). Some hypervisors do not support this feature and will return
  * an error if this field is used.
+ *
+ * Since: v1.1.4
  */
 # define VIR_MIGRATE_PARAM_LISTEN_ADDRESS    "listen_address"
 
@@ -980,6 +1044,8 @@ typedef enum {
  * virDomainMigrate* params multiple field: The multiple values that list
  * the block devices to be migrated. At the moment this is only supported
  * by the QEMU driver but not for the tunnelled migration.
+ *
+ * Since: v1.2.17
  */
 # define VIR_MIGRATE_PARAM_MIGRATE_DISKS    "migrate_disks"
 
@@ -990,6 +1056,8 @@ typedef enum {
  * for incoming disks migration. Type is VIR_TYPED_PARAM_INT. If set to 0 or
  * omitted, libvirt will choose a suitable default. At the moment this is only
  * supported by the QEMU driver.
+ *
+ * Since: v1.3.3
  */
 # define VIR_MIGRATE_PARAM_DISKS_PORT    "disks_port"
 
@@ -1003,6 +1071,8 @@ typedef enum {
  * currently only supported by the QEMU driver.  UNIX URI is only usable if the
  * management application makes sure that socket created with this name on the
  * destination will be reachable from the source under the same exact path.
+ *
+ * Since: v6.8.0
  */
 # define VIR_MIGRATE_PARAM_DISKS_URI    "disks_uri"
 
@@ -1013,6 +1083,8 @@ typedef enum {
  * compress migration traffic. Supported compression methods: xbzrle, mt.
  * The parameter may be specified multiple times if more than one method
  * should be used.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION    "compression"
 
@@ -1022,6 +1094,8 @@ typedef enum {
  * virDomainMigrate* params field: the level of compression for multithread
  * compression as VIR_TYPED_PARAM_INT. Accepted values are in range 0-9.
  * 0 is no compression, 1 is maximum speed and 9 is maximum compression.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL    "compression.mt.level"
 
@@ -1030,6 +1104,8 @@ typedef enum {
  *
  * virDomainMigrate* params field: the number of compression threads for
  * multithread compression as VIR_TYPED_PARAM_INT.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS "compression.mt.threads"
 
@@ -1038,6 +1114,8 @@ typedef enum {
  *
  * virDomainMigrate* params field: the number of decompression threads for
  * multithread compression as VIR_TYPED_PARAM_INT.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS "compression.mt.dthreads"
 
@@ -1046,6 +1124,8 @@ typedef enum {
  *
  * virDomainMigrate* params field: the size of page cache for xbzrle
  * compression as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE "compression.xbzrle.cache"
 
@@ -1055,6 +1135,8 @@ typedef enum {
  * virDomainMigrate* params field: the initial percentage guest CPUs are
  * throttled to when auto-convergence decides migration is not converging.
  * As VIR_TYPED_PARAM_INT.
+ *
+ * Since: v2.0.0
  */
 # define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL    "auto_converge.initial"
 
@@ -1065,6 +1147,8 @@ typedef enum {
  * VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL whenever the hypervisor decides
  * the current rate is not enough to ensure convergence of the migration.
  * As VIR_TYPED_PARAM_INT.
+ *
+ * Since: v2.0.0
  */
 # define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT  "auto_converge.increment"
 
@@ -1073,6 +1157,8 @@ typedef enum {
  *
  * virDomainMigrate* params field: number of connections used during parallel
  * migration. As VIR_TYPED_PARAM_INT.
+ *
+ * Since: v5.2.0
  */
 # define VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS     "parallel.connections"
 
@@ -1087,6 +1173,8 @@ typedef enum {
  * the destination hostname and the expected certificate's hostname is known,
  * this parameter can be used to pass this expected hostname when starting
  * the migration.
+ *
+ * Since: v6.0.0
  */
 # define VIR_MIGRATE_PARAM_TLS_DESTINATION          "tls.destination"
 
@@ -1349,18 +1437,24 @@ int                     virDomainGetState       (virDomainPtr domain,
  * VIR_DOMAIN_CPU_STATS_CPUTIME:
  * cpu usage (sum of both vcpu and hypervisor usage) in nanoseconds,
  * as a ullong
+ *
+ * Since: v0.9.10
  */
 # define VIR_DOMAIN_CPU_STATS_CPUTIME "cpu_time"
 
 /**
  * VIR_DOMAIN_CPU_STATS_USERTIME:
  * cpu time charged to user instructions in nanoseconds, as a ullong
+ *
+ * Since: v0.9.11
  */
 # define VIR_DOMAIN_CPU_STATS_USERTIME "user_time"
 
 /**
  * VIR_DOMAIN_CPU_STATS_SYSTEMTIME:
  * cpu time charged to system instructions in nanoseconds, as a ullong
+ *
+ * Since: v0.9.11
  */
 # define VIR_DOMAIN_CPU_STATS_SYSTEMTIME "system_time"
 
@@ -1368,6 +1462,8 @@ int                     virDomainGetState       (virDomainPtr domain,
  * VIR_DOMAIN_CPU_STATS_VCPUTIME:
  * vcpu usage in nanoseconds (cpu_time excluding hypervisor time),
  * as a ullong
+ *
+ * Since: v0.9.13
  */
 # define VIR_DOMAIN_CPU_STATS_VCPUTIME "vcpu_time"
 
@@ -1396,6 +1492,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  *
  * Macro for the Blkio tunable weight: it represents the io weight
  * the guest can use, as a uint.
+ *
+ * Since: v0.9.0
  */
 
 # define VIR_DOMAIN_BLKIO_WEIGHT "weight"
@@ -1406,6 +1504,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * Macro for the blkio tunable weight_device: it represents the
  * per-device weight, as a string.  The string is parsed as a
  * series of /path/to/device,weight elements, separated by ','.
+ *
+ * Since: v0.9.8
  */
 
 # define VIR_DOMAIN_BLKIO_DEVICE_WEIGHT "device_weight"
@@ -1417,6 +1517,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * the number of reading the block device per second, as a string. The
  * string is parsed as a series of /path/to/device, read_iops elements,
  * separated by ','.
+ *
+ * Since: v1.2.2
  */
 
 # define VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS "device_read_iops_sec"
@@ -1429,6 +1531,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * the number of writing the block device per second, as a string. The
  * string is parsed as a series of /path/to/device, write_iops elements,
  * separated by ','.
+ *
+ * Since: v1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS "device_write_iops_sec"
 
@@ -1440,6 +1544,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * the bytes of reading the block device per second, as a string. The
  * string is parsed as a series of /path/to/device, read_bps elements,
  * separated by ','.
+ *
+ * Since: v1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_READ_BPS "device_read_bytes_sec"
 
@@ -1451,6 +1557,8 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * the number of reading the block device per second, as a string. The
  * string is parsed as a series of /path/to/device, write_bps elements,
  * separated by ','.
+ *
+ * Since: v1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS "device_write_bytes_sec"
 
@@ -1469,6 +1577,8 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * VIR_DOMAIN_MEMORY_PARAM_UNLIMITED:
  *
  * Macro providing the virMemoryParameter value that indicates "unlimited"
+ *
+ * Since: v0.8.8
  */
 
 # define VIR_DOMAIN_MEMORY_PARAM_UNLIMITED 9007199254740991LL /* = INT64_MAX >> 10 */
@@ -1478,6 +1588,8 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Macro for the memory tunable hard_limit: it represents the maximum memory
  * the guest can use, as a ullong.
+ *
+ * Since: v0.8.5
  */
 
 # define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
@@ -1487,6 +1599,8 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Macro for the memory tunable soft_limit: it represents the memory upper
  * limit enforced during memory contention, as a ullong.
+ *
+ * Since: v0.8.5
  */
 
 # define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
@@ -1496,6 +1610,8 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Macro for the memory tunable min_guarantee: it represents the minimum
  * memory guaranteed to be reserved for the guest, as a ullong.
+ *
+ * Since: v0.8.5
  */
 
 # define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
@@ -1506,6 +1622,8 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * Macro for the swap tunable swap_hard_limit: it represents the maximum swap
  * plus memory the guest can use, as a ullong. This limit has to be more than
  * VIR_DOMAIN_MEMORY_HARD_LIMIT.
+ *
+ * Since: v0.8.5
  */
 
 # define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"
@@ -1553,6 +1671,8 @@ typedef enum {
  *
  * Macro for typed parameter name that lists the numa nodeset of a
  * domain, as a string.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_NUMA_NODESET "numa_nodeset"
 
@@ -1561,6 +1681,8 @@ typedef enum {
  *
  * Macro for typed parameter name that lists the numa mode of a domain,
  * as an int containing a virDomainNumatuneMemMode value.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_NUMA_MODE "numa_mode"
 
@@ -1683,6 +1805,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_IN_AVERAGE:
  *
  * Macro represents the inbound average of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_AVERAGE "inbound.average"
 
@@ -1690,6 +1814,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_IN_PEAK:
  *
  * Macro represents the inbound peak of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_PEAK "inbound.peak"
 
@@ -1697,6 +1823,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_IN_BURST:
  *
  * Macro represents the inbound burst of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_BURST "inbound.burst"
 
@@ -1704,6 +1832,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_IN_FLOOR:
  *
  * Macro represents the inbound floor of NIC bandwidth, as a uint.
+ *
+ * Since: v1.2.19
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_FLOOR "inbound.floor"
 
@@ -1711,6 +1841,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE:
  *
  * Macro represents the outbound average of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE "outbound.average"
 
@@ -1718,6 +1850,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_OUT_PEAK:
  *
  * Macro represents the outbound peak of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_PEAK "outbound.peak"
 
@@ -1725,6 +1859,8 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  * VIR_DOMAIN_BANDWIDTH_OUT_BURST:
  *
  * Macro represents the outbound burst of NIC bandwidth, as a uint.
+ *
+ * Since: v0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_BURST "outbound.burst"
 
@@ -2030,6 +2166,8 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * will cause more CPU time to be allocated the guest. A value set too
  * small will not provide enough cycles for the guest to process data.
  * The polling interval is not available for statistical purposes.
+ *
+ * Since: v4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_MAX_NS "poll_max_ns"
 
@@ -2040,6 +2178,8 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * use to grow its polling interval up to the poll_max_ns value. A value
  * of 0 (zero) allows the hypervisor to choose its own value. The algorithm
  * to use for adjustment is hypervisor specific.
+ *
+ * Since: v4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_GROW "poll_grow"
 
@@ -2051,6 +2191,8 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * the poll_max_ns value. A value of 0 (zero) allows the hypervisor to
  * choose its own value. The algorithm to use for adjustment is hypervisor
  * specific.
+ *
+ * Since: v4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_SHRINK "poll_shrink"
 
@@ -2068,6 +2210,8 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It sets the bit (CPU usable) of the related cpu in cpumap.
+ *
+ * Since: v0.1.4
  */
 
 # define VIR_USE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] |= (1 << ((cpu) % 8)))
@@ -2079,6 +2223,8 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It resets the bit (CPU not usable) of the related cpu in cpumap.
+ *
+ * Since: v0.1.4
  */
 
 # define VIR_UNUSE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] &= ~(1 << ((cpu) % 8)))
@@ -2090,6 +2236,8 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * This macro can be used in conjunction with virNodeGetCPUMap() API.
  * It returns non-zero if the bit of the related CPU is set.
+ *
+ * Since: v1.0.0
  */
 
 # define VIR_CPU_USED(cpumap, cpu) ((cpumap)[(cpu) / 8] & (1 << ((cpu) % 8)))
@@ -2101,6 +2249,8 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It returns the length (in bytes) required to store the complete
  * CPU map between a single virtual & all physical CPUs of a domain.
+ *
+ * Since: v0.1.4
  */
 
 # define VIR_CPU_MAPLEN(cpu) (((cpu) + 7) / 8)
@@ -2122,6 +2272,8 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * This macro is to be used in conjunction with virDomainGetVcpus() API.
  * VIR_CPU_USABLE macro returns a non-zero value (true) if the cpu
  * is usable by the vcpu, and 0 otherwise.
+ *
+ * Since: v0.1.4
  */
 
 # define VIR_CPU_USABLE(cpumaps, maplen, vcpu, cpu) \
@@ -2140,6 +2292,8 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * virDomainPinVcpu() APIs. VIR_COPY_CPUMAP macro extracts the cpumap of
  * the specified vcpu from cpumaps array and copies it into cpumap to be used
  * later by virDomainPinVcpu() API.
+ *
+ * Since: v0.1.4
  */
 # define VIR_COPY_CPUMAP(cpumaps, maplen, vcpu, cpumap) \
     memcpy(cpumap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen)
@@ -2154,6 +2308,8 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * This macro is to be used in conjunction with virDomainGetVcpus() and
  * virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the
  * cpumap of the specified vcpu from cpumaps array.
+ *
+ * Since: v0.1.4
  */
 # define VIR_GET_CPUMAP(cpumaps, maplen, vcpu) (&((cpumaps)[(vcpu) * (maplen)]))
 
@@ -2244,6 +2400,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * which can be used to measure the usage of cache (bytes) by
  * applications running on the platform. It corresponds to the
  * "perf.cmt" field in the *Stats APIs.
+ *
+ * Since: v1.3.3
  */
 # define VIR_PERF_PARAM_CMT "cmt"
 
@@ -2254,6 +2412,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * which can be used to monitor total system bandwidth (bytes/s)
  * from one level of cache to another. It corresponds to the
  * "perf.mbmt" field in the *Stats APIs.
+ *
+ * Since: v1.3.5
 
  */
 # define VIR_PERF_PARAM_MBMT "mbmt"
@@ -2265,6 +2425,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * which can be used to monitor the amount of data (bytes/s) sent
  * through the memory controller on the socket. It corresponds to
  * the "perf.mbml" field in the *Stats APIs.
+ *
+ * Since: v1.3.5
  */
 # define VIR_PERF_PARAM_MBML "mbml"
 
@@ -2275,6 +2437,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * event which can be used to measure the count of cache misses by
  * applications running on the platform. It corresponds to the
  * "perf.cache_misses" field in the *Stats APIs.
+ *
+ * Since: v2.3.0
  */
 # define VIR_PERF_PARAM_CACHE_MISSES "cache_misses"
 
@@ -2285,6 +2449,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of cache hits
  * by applications running on the platform. It corresponds to the
  * "perf.cache_references" field in the *Stats APIs.
+ *
+ * Since: v2.3.0
  */
 # define VIR_PERF_PARAM_CACHE_REFERENCES "cache_references"
 
@@ -2295,6 +2461,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * event which can be used to measure the count of instructions
  * by applications running on the platform. It corresponds to the
  * "perf.instructions" field in the *Stats APIs.
+ *
+ * Since: v2.3.0
  */
 # define VIR_PERF_PARAM_INSTRUCTIONS "instructions"
 
@@ -2305,6 +2473,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * describing the total/elapsed cpu cycles. This can be used to measure
  * how many cpu cycles one instruction needs.
  * It corresponds to the "perf.cpu_cycles" field in the *Stats APIs.
+ *
+ * Since: v2.3.0
  */
 # define VIR_PERF_PARAM_CPU_CYCLES "cpu_cycles"
 
@@ -2315,6 +2485,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of branch instructions
  * by applications running on the platform. It corresponds to the
  * "perf.branch_instructions" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_BRANCH_INSTRUCTIONS "branch_instructions"
 
@@ -2325,6 +2497,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of branch misses
  * by applications running on the platform. It corresponds to the
  * "perf.branch_misses" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_BRANCH_MISSES "branch_misses"
 
@@ -2335,6 +2509,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of bus cycles
  * by applications running on the platform. It corresponds to the
  * "perf.bus_cycles" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_BUS_CYCLES "bus_cycles"
 
@@ -2346,6 +2522,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * in the frontend of the instruction processor pipeline by applications
  * running on the platform. It corresponds to the
  * "perf.stalled_cycles_frontend" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_FRONTEND "stalled_cycles_frontend"
 
@@ -2357,6 +2535,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * in the backend of the instruction processor pipeline by application
  * running on the platform. It corresponds to the
  * "perf.stalled_cycles_backend" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_BACKEND "stalled_cycles_backend"
 
@@ -2368,6 +2548,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * cycles not affected by CPU frequency scaling by applications
  * running on the platform. It corresponds to the
  * "perf.ref_cpu_cycles" field in the *Stats APIs.
+ *
+ * Since: v3.0.0
  */
 # define VIR_PERF_PARAM_REF_CPU_CYCLES "ref_cpu_cycles"
 
@@ -2379,6 +2561,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * clock time by applications running on the platform. It
  * corresponds to the "perf.cpu_clock" field in the *Stats
  * APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_CPU_CLOCK "cpu_clock"
 
@@ -2390,6 +2574,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * clock time by applications running on the platform. It
  * corresponds to the "perf.task_clock" field in the *Stats
  * APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_TASK_CLOCK "task_clock"
 
@@ -2400,6 +2586,9 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
 * perf event which can be used to measure the count of page
 * faults by applications running on the platform. It corresponds
 * to the "perf.page_faults" field in the *Stats APIs.
+*
+* Since: v3.2.0
+*
 */
 # define VIR_PERF_PARAM_PAGE_FAULTS "page_faults"
 
@@ -2410,6 +2599,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of context
  * switches by applications running on the platform. It corresponds
  * to the "perf.context_switches" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_CONTEXT_SWITCHES "context_switches"
 
@@ -2420,6 +2611,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of cpu
  * migrations by applications running on the platform. It corresponds
  * to the "perf.cpu_migrations" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_CPU_MIGRATIONS "cpu_migrations"
 
@@ -2430,6 +2623,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of minor page
  * faults by applications running on the platform. It corresponds
  * to the "perf.page_faults_min" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MIN  "page_faults_min"
 
@@ -2440,6 +2635,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of major page
  * faults by applications running on the platform. It corresponds
  * to the "perf.page_faults_maj" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MAJ  "page_faults_maj"
 
@@ -2450,6 +2647,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of alignment
  * faults by applications running on the platform. It corresponds
  * to the "perf.alignment_faults" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_ALIGNMENT_FAULTS  "alignment_faults"
 
@@ -2460,6 +2659,8 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * perf event which can be used to measure the count of emulation
  * faults by applications running on the platform. It corresponds
  * to the "perf.emulation_faults" field in the *Stats APIs.
+ *
+ * Since: v3.2.0
  */
 # define VIR_PERF_PARAM_EMULATION_FAULTS  "emulation_faults"
 
@@ -2633,6 +2834,8 @@ typedef enum {
  * allowing a subsequent change of bandwidth via
  * virDomainBlockJobSetSpeed().  The actual speed can be determined
  * with virDomainGetBlockJobInfo().
+ *
+ * Since: v1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_BANDWIDTH "bandwidth"
 
@@ -2644,6 +2847,8 @@ typedef enum {
  * restrict this to be a power of two or fall within a certain
  * range. Specifying 0 is the same as omitting this parameter, to
  * request the hypervisor default.
+ *
+ * Since: v1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_GRANULARITY "granularity"
 
@@ -2653,6 +2858,8 @@ typedef enum {
  * how much data in bytes can be in flight between source and destination,
  * as an unsigned long long. Specifying 0 is the same as omitting this
  * parameter, to request the hypervisor default.
+ *
+ * Since: v1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_BUF_SIZE "buf-size"
 
@@ -2694,6 +2901,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the total
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC "total_bytes_sec"
 
@@ -2702,6 +2911,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the read
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC "read_bytes_sec"
 
@@ -2710,6 +2921,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the write
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC "write_bytes_sec"
 
@@ -2718,6 +2931,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the total
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC "total_iops_sec"
 
@@ -2726,6 +2941,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the read
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC "read_iops_sec"
 
@@ -2733,6 +2950,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC:
  * Macro for the BlockIoTune tunable weight: it represents the write
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC "write_iops_sec"
 
@@ -2741,6 +2960,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the maximum total
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX "total_bytes_sec_max"
 
@@ -2749,6 +2970,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the maximum read
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX "read_bytes_sec_max"
 
@@ -2757,6 +2980,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the maximum write
  * bytes per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX "write_bytes_sec_max"
 
@@ -2765,6 +2990,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the maximum
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX "total_iops_sec_max"
 
@@ -2773,6 +3000,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the maximum read
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX "read_iops_sec_max"
 
@@ -2780,6 +3009,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX:
  * Macro for the BlockIoTune tunable weight: it represents the maximum write
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX "write_iops_sec_max"
 
@@ -2788,6 +3019,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by total_bytes_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH "total_bytes_sec_max_length"
 
@@ -2796,6 +3029,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by read_bytes_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH "read_bytes_sec_max_length"
 
@@ -2804,6 +3039,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by write_bytes_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH "write_bytes_sec_max_length"
 
@@ -2812,6 +3049,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by total_iops_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH "total_iops_sec_max_length"
 
@@ -2820,6 +3059,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by read_iops_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH "read_iops_sec_max_length"
 
@@ -2828,6 +3069,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  *
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by write_iops_sec_max, as a ullong.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH "write_iops_sec_max_length"
 
@@ -2835,6 +3078,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC:
  * Macro for the BlockIoTune tunable weight: it represents the size
  * I/O operations per second permitted through a block device, as a ullong.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC "size_iops_sec"
 
@@ -2842,6 +3087,8 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME:
  * Macro for the BlockIoTune tunable weight: it represents a group name to
  * allow sharing of I/O throttling quota between multiple drives, as a string.
+ *
+ * Since: v3.0.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME "group_name"
 
@@ -2923,6 +3170,8 @@ typedef enum {
  * VIR_KEYCODE_SET_RFB:
  *
  * Compatibility alias for VIR_KEYCODE_SET_QNUM, which replaced it since 4.2.0.
+ *
+ * Since: v0.9.5
  */
 # define VIR_KEYCODE_SET_RFB VIR_KEYCODE_SET_QNUM
 
@@ -2930,6 +3179,8 @@ typedef enum {
  * VIR_DOMAIN_SEND_KEY_MAX_KEYS:
  *
  * Maximum number of keycodes that can be sent in one virDomainSendKey() call.
+ *
+ * Since: v0.9.3
  */
 # define VIR_DOMAIN_SEND_KEY_MAX_KEYS  16
 
@@ -3404,6 +3655,8 @@ typedef enum {
  * virDomainGetJobStats field: the operation which started the job as
  * VIR_TYPED_PARAM_INT. The values correspond to the items in
  * virDomainJobOperation enum.
+ *
+ * Since: v3.3.0
  */
 # define VIR_DOMAIN_JOB_OPERATION                "operation"
 
@@ -3414,6 +3667,8 @@ typedef enum {
  * job, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to timeElapsed field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_TIME_ELAPSED             "time_elapsed"
 
@@ -3424,6 +3679,8 @@ typedef enum {
  * migration job NOT including the time required to transfer control
  * flow from the source host to the destination host,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.15
  */
 # define VIR_DOMAIN_JOB_TIME_ELAPSED_NET         "time_elapsed_net"
 
@@ -3434,6 +3691,8 @@ typedef enum {
  * jobs, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to timeRemaining field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_TIME_REMAINING           "time_remaining"
 
@@ -3444,6 +3703,8 @@ typedef enum {
  * during migration, as VIR_TYPED_PARAM_ULLONG. The real computed downtime
  * between the time guest CPUs were paused and the time they were resumed
  * is reported for completed migration.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DOWNTIME                 "downtime"
 
@@ -3453,6 +3714,8 @@ typedef enum {
  * virDomainGetJobStats field: real measured downtime (ms) NOT including
  * the time required to transfer control flow from the source host to the
  * destination host, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.15
  */
 # define VIR_DOMAIN_JOB_DOWNTIME_NET             "downtime_net"
 
@@ -3462,6 +3725,8 @@ typedef enum {
  * virDomainGetJobStats field: total time in milliseconds spent preparing
  * the migration in the 'setup' phase before the iterations begin, as
  * VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_JOB_SETUP_TIME               "setup_time"
 
@@ -3477,6 +3742,8 @@ typedef enum {
  * VIR_DOMAIN_JOB_DATA_PROCESSED + VIR_DOMAIN_JOB_DATA_REMAINING.
  *
  * This field corresponds to dataTotal field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_TOTAL               "data_total"
 
@@ -3487,6 +3754,8 @@ typedef enum {
  * beginning of the job, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to dataProcessed field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_PROCESSED           "data_processed"
 
@@ -3497,6 +3766,8 @@ typedef enum {
  * transferred, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to dataRemaining field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_REMAINING           "data_remaining"
 
@@ -3507,6 +3778,8 @@ typedef enum {
  * tracking guest memory progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to memTotal field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_TOTAL             "memory_total"
 
@@ -3517,6 +3790,8 @@ typedef enum {
  * tracking guest memory progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to memProcessed field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_PROCESSED         "memory_processed"
 
@@ -3527,6 +3802,8 @@ typedef enum {
  * tracking guest memory progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to memRemaining field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_REMAINING         "memory_remaining"
 
@@ -3539,6 +3816,8 @@ typedef enum {
  *
  * The most common example of such pages are zero pages, i.e., pages filled
  * with zero bytes.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_CONSTANT          "memory_constant"
 
@@ -3549,6 +3828,8 @@ typedef enum {
  * any kind of compression (i.e., pages which were not filled with a constant
  * byte and which could not be compressed) transferred since the beginning
  * of the migration job, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_NORMAL            "memory_normal"
 
@@ -3559,6 +3840,8 @@ typedef enum {
  * as VIR_TYPED_PARAM_ULLONG.
  *
  * See VIR_DOMAIN_JOB_MEMORY_NORMAL for more details.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES      "memory_normal_bytes"
 
@@ -3567,6 +3850,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: network throughput used while migrating
  * memory in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_JOB_MEMORY_BPS               "memory_bps"
 
@@ -3575,6 +3860,8 @@ typedef enum {
  * virDomainGetJobStats field: number of memory pages dirtied by the guest
  * per second, as VIR_TYPED_PARAM_ULLONG. This statistics makes sense only
  * when live migration is running.
+ *
+ * Since: v1.3.1
  */
 # define VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE        "memory_dirty_rate"
 
@@ -3586,6 +3873,8 @@ typedef enum {
  * convert other page based statistics, such as
  * VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE or VIR_DOMAIN_JOB_COMPRESSION_PAGES
  * to bytes.
+ *
+ * Since: v3.9.0
  */
 # define VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE         "memory_page_size"
 
@@ -3597,6 +3886,8 @@ typedef enum {
  * when memory starts to be transferred and the value is increased by one
  * every time a new iteration is started to transfer memory pages dirtied
  * since the last iteration.
+ *
+ * Since: v1.3.1
  */
 # define VIR_DOMAIN_JOB_MEMORY_ITERATION         "memory_iteration"
 
@@ -3607,6 +3898,8 @@ typedef enum {
  * destination host during post-copy migration, as VIR_TYPED_PARAM_ULLONG.
  * This counter is incremented whenever the migrated domain tries to access
  * a memory page which has not been transferred from the source host yet.
+ *
+ * Since: v5.0.0
  */
 # define VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS     "memory_postcopy_requests"
 
@@ -3617,6 +3910,8 @@ typedef enum {
  * tracking guest disk progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to fileTotal field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_TOTAL               "disk_total"
 
@@ -3627,6 +3922,8 @@ typedef enum {
  * tracking guest disk progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to fileProcessed field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_PROCESSED           "disk_processed"
 
@@ -3637,6 +3934,8 @@ typedef enum {
  * tracking guest disk progress, as VIR_TYPED_PARAM_ULLONG.
  *
  * This field corresponds to fileRemaining field in virDomainJobInfo.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_REMAINING           "disk_remaining"
 
@@ -3645,6 +3944,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: network throughput used while migrating
  * disks in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_JOB_DISK_BPS                 "disk_bps"
 
@@ -3654,6 +3955,8 @@ typedef enum {
  * virDomainGetJobStats field: size of the cache (in bytes) used for
  * compressing repeatedly transferred memory pages during live migration,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_CACHE        "compression_cache"
 
@@ -3662,6 +3965,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: number of compressed bytes transferred
  * since the beginning of migration, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_BYTES        "compression_bytes"
 
@@ -3670,6 +3975,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: number of compressed pages transferred
  * since the beginning of migration, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_PAGES        "compression_pages"
 
@@ -3679,6 +3986,8 @@ typedef enum {
  * virDomainGetJobStats field: number of repeatedly changing pages that
  * were not found in compression cache and thus could not be compressed,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES "compression_cache_misses"
 
@@ -3689,6 +3998,8 @@ typedef enum {
  * were found in compression cache but were sent uncompressed because
  * the result of compression was larger than the original page as a whole,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW     "compression_overflow"
 
@@ -3698,6 +4009,8 @@ typedef enum {
  * virDomainGetJobStats field: current percentage guest CPUs are throttled
  * to when auto-convergence decided migration was not converging, as
  * VIR_TYPED_PARAM_INT.
+ *
+ * Since: v2.0.0
  */
 # define VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE  "auto_converge_throttle"
 
@@ -3706,6 +4019,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: Present only in statistics for a completed job.
  * Successful completion of the job as VIR_TYPED_PARAM_BOOLEAN.
+ *
+ * Since: v6.0.0
  */
 # define VIR_DOMAIN_JOB_SUCCESS "success"
 
@@ -3714,6 +4029,8 @@ typedef enum {
  *
  * virDomainGetJobStats field: Present only in statistics for a completed job.
  * Optional error message for a failed job.
+ *
+ * Since: v6.3.0
  */
 # define VIR_DOMAIN_JOB_ERRMSG "errmsg"
 
@@ -3722,6 +4039,8 @@ typedef enum {
  * VIR_DOMAIN_JOB_DISK_TEMP_USED:
  * virDomainGetJobStats field: current usage of temporary disk space for the
  * job in bytes as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v6.0.0
  */
 # define VIR_DOMAIN_JOB_DISK_TEMP_USED "disk_temp_used"
 
@@ -3729,6 +4048,8 @@ typedef enum {
  * VIR_DOMAIN_JOB_DISK_TEMP_TOTAL:
  * virDomainGetJobStats field: possible total temporary disk space for the
  * job in bytes as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v6.0.0
  */
 # define VIR_DOMAIN_JOB_DISK_TEMP_TOTAL "disk_temp_total"
 
@@ -4284,6 +4605,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents formatted pinning for one vcpu specified by id which is
  * appended to the parameter name, for example "cputune.vcpupin1",
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPUPIN "cputune.vcpupin%u"
 
@@ -4292,6 +4615,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents formatted pinning for emulator process,
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN "cputune.emulatorpin"
 
@@ -4301,6 +4626,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents formatted pinning for one IOThread specified by id which is
  * appended to the parameter name, for example "cputune.iothreadpin1",
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v1.2.14
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN "cputune.iothreadpin%u"
 
@@ -4309,6 +4636,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents proportional weight of the scheduler used on the
  * host cpu, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES "cputune.cpu_shares"
 
@@ -4317,6 +4646,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the enforcement period for a quota, in microseconds,
  * for whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.3.3
  */
 # define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD "cputune.global_period"
 
@@ -4325,6 +4656,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ *
+ * Since: v1.3.3
  */
 # define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA "cputune.global_quota"
 
@@ -4333,6 +4666,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the enforcement period for a quota, in microseconds,
  * for vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPU_PERIOD "cputune.vcpu_period"
 
@@ -4341,6 +4676,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPU_QUOTA "cputune.vcpu_quota"
 
@@ -4350,6 +4687,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the enforcement period for a quota in microseconds,
  * when using the posix scheduler, for all emulator activity not tied to
  * vcpus, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATOR_PERIOD "cputune.emulator_period"
 
@@ -4359,6 +4698,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the maximum bandwidth to be used within a period for
  * all emulator activity not tied to vcpus, when using the posix scheduler,
  * as an VIR_TYPED_PARAM_LLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATOR_QUOTA "cputune.emulator_quota"
 
@@ -4367,6 +4708,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the enforcement period for a quota, in microseconds, for
  * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.2.0
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_PERIOD "cputune.iothread_period"
 
@@ -4375,6 +4718,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the maximum bandwidth to be used within a period for
  * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
+ *
+ * Since: v2.2.0
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_QUOTA "cputune.iothread_quota"
 
@@ -4383,6 +4728,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the name of guest disk for which the values are updated,
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_DISK "blkdeviotune.disk"
 
@@ -4391,6 +4738,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the total throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC "blkdeviotune.total_bytes_sec"
 
@@ -4399,6 +4748,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the read throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC "blkdeviotune.read_bytes_sec"
 
@@ -4407,6 +4758,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the write throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC "blkdeviotune.write_bytes_sec"
 
@@ -4415,6 +4768,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the total I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC "blkdeviotune.total_iops_sec"
 
@@ -4423,6 +4778,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the read I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC "blkdeviotune.read_iops_sec"
 
@@ -4431,6 +4788,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the write I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC "blkdeviotune.write_iops_sec"
 
@@ -4439,6 +4798,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the total throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX "blkdeviotune.total_bytes_sec_max"
 
@@ -4447,6 +4808,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the read throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX "blkdeviotune.read_bytes_sec_max"
 
@@ -4455,6 +4818,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the write throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX "blkdeviotune.write_bytes_sec_max"
 
@@ -4463,6 +4828,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the total maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX "blkdeviotune.total_iops_sec_max"
 
@@ -4471,6 +4838,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the read maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX "blkdeviotune.read_iops_sec_max"
 
@@ -4479,6 +4848,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the write maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX "blkdeviotune.write_iops_sec_max"
 
@@ -4487,6 +4858,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the size maximum I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC "blkdeviotune.size_iops_sec"
 
@@ -4495,6 +4868,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * Macro represents the group name to be used,
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v3.0.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME "blkdeviotune.group_name"
 
@@ -4504,6 +4879,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.total_bytes_sec_max,
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH "blkdeviotune.total_bytes_sec_max_length"
 
@@ -4513,6 +4890,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.read_bytes_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX_LENGTH "blkdeviotune.read_bytes_sec_max_length"
 
@@ -4522,6 +4901,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.write_bytes_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX_LENGTH "blkdeviotune.write_bytes_sec_max_length"
 
@@ -4531,6 +4912,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.total_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX_LENGTH "blkdeviotune.total_iops_sec_max_length"
 
@@ -4540,6 +4923,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.read_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX_LENGTH "blkdeviotune.read_iops_sec_max_length"
 
@@ -4549,6 +4934,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the length in seconds allowed for a burst period
  * for the blkdeviotune.write_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX_LENGTH "blkdeviotune.write_iops_sec_max_length"
 
@@ -4701,6 +5088,8 @@ typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPt
  *
  * Used to cast the event specific callback into the generic one
  * for use for virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.8.0
  */
 # define VIR_DOMAIN_EVENT_CALLBACK(cb) ((virConnectDomainEventGenericCallback)(cb))
 
@@ -4886,18 +5275,28 @@ typedef enum {
  *
  * Macro providing the field length of virSchedParameter.  Provided
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
- * preferred value since 0.9.2.
+ * preferred value
+ *
+ * Since: v0.2.3
  */
 # define VIR_DOMAIN_SCHED_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
+
+/**
+ * _virSchedParameter:
+ *
+ * Since: v0.2.3
+ */
+# define _virSchedParameter _virTypedParameter
 
 /**
  * virSchedParameter:
  *
  * a virSchedParameter is the set of scheduler parameters.
  * Provided for backwards compatibility; virTypedParameter is the
- * preferred alias since 0.9.2.
+ * preferred alias.
+ *
+ * Since: v0.9.2
  */
-# define _virSchedParameter _virTypedParameter
 typedef struct _virTypedParameter virSchedParameter;
 
 /**
@@ -4930,18 +5329,28 @@ typedef enum {
  *
  * Macro providing the field length of virBlkioParameter.  Provided
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
- * preferred value since 0.9.2.
+ * preferred value.
+ *
+ * Since: v0.9.0
  */
 # define VIR_DOMAIN_BLKIO_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
+
+/**
+ * _virBlkioParameter:
+ *
+ * Since: v0.9.0
+ */
+# define _virBlkioParameter _virTypedParameter
 
 /**
  * virBlkioParameter:
  *
  * a virBlkioParameter is the set of blkio parameters.
  * Provided for backwards compatibility; virTypedParameter is the
- * preferred alias since 0.9.2.
+ * preferred alias.
+ *
+ * Since: v0.9.2
  */
-# define _virBlkioParameter _virTypedParameter
 typedef struct _virTypedParameter virBlkioParameter;
 
 /**
@@ -4974,18 +5383,28 @@ typedef enum {
  *
  * Macro providing the field length of virMemoryParameter.  Provided
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
- * preferred value since 0.9.2.
+ * preferred value.
+ *
+ * Since: v0.8.5
  */
 # define VIR_DOMAIN_MEMORY_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
+
+/**
+ * _virMemoryParameter:
+ *
+ * Since: v0.8.5
+ */
+# define _virMemoryParameter _virTypedParameter
 
 /**
  * virMemoryParameter:
  *
  * a virMemoryParameter is the set of scheduler parameters.
  * Provided for backwards compatibility; virTypedParameter is the
- * preferred alias since 0.9.2.
+ * preferred alias.
+ *
+ * Since: v0.9.2
  */
-# define _virMemoryParameter _virTypedParameter
 typedef struct _virTypedParameter virMemoryParameter;
 
 /**
@@ -5101,6 +5520,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  *
  * Macro represents the launch measurement of the SEV guest,
  * as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v4.5.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
 
@@ -5110,6 +5531,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  *
  * Macro represents the API major version of the SEV host,
  * as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR "sev-api-major"
 
@@ -5118,6 +5541,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  *
  * Macro represents the API minor version of the SEV guest,
  * as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR "sev-api-minor"
 
@@ -5126,6 +5551,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  *
  * Macro represents the build ID of the SEV host,
  * as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID "sev-build-id"
 
@@ -5134,6 +5561,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  *
  * Macro represents the policy of the SEV guest,
  * as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY "sev-policy"
 
@@ -5145,6 +5574,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * the SEV firmware to recover the plain text of the launch secret. See
  * section "6.6 LAUNCH_SECRET" in the SEV API specification for a detailed
  * description of the secret header.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER "sev-secret-header"
 
@@ -5155,6 +5586,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * base64-encoded VIR_TYPED_PARAM_STRING containing an encrypted launch
  * secret. The secret is created by the domain owner after the SEV launch
  * measurement is retrieved and verified.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET "sev-secret"
 
@@ -5164,6 +5597,8 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * A macro used to represent the physical address within the guest's memory
  * where the secret will be set, as VIR_TYPED_PARAM_ULLONG. If not specified,
  * the address will be determined by the hypervisor.
+ *
+ * Since: v8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS "sev-secret-set-address"
 

@@ -120,6 +120,8 @@ int                     virSecretFree           (virSecretPtr secret);
  *
  * Used to cast the event specific callback into the generic one
  * for use for virConnectSecretEventRegisterAny()
+ *
+ * Since: v3.0.0
  */
 # define VIR_SECRET_EVENT_CALLBACK(cb)((virConnectSecretEventGenericCallback)(cb))
 

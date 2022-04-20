@@ -283,6 +283,8 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  *
  * Used to cast the event specific callback into the generic one
  * for use for virConnectNetworkEventRegisterAny()
+ *
+ * Since: v1.2.1
  */
 # define VIR_NETWORK_EVENT_CALLBACK(cb) ((virConnectNetworkEventGenericCallback)(cb))
 
@@ -402,6 +404,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_IN_AVERAGE:
  *
  * Macro represents the inbound average of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_AVERAGE "inbound.average"
 
@@ -409,6 +413,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_IN_PEAK:
  *
  * Macro represents the inbound peak of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_PEAK "inbound.peak"
 
@@ -416,6 +422,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_IN_BURST:
  *
  * Macro represents the inbound burst of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_BURST "inbound.burst"
 
@@ -423,6 +431,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_IN_FLOOR:
  *
  * Macro represents the inbound floor of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_FLOOR "inbound.floor"
 
@@ -430,6 +440,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_OUT_AVERAGE:
  *
  * Macro represents the outbound average of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_AVERAGE "outbound.average"
 
@@ -437,6 +449,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_OUT_PEAK:
  *
  * Macro represents the outbound peak of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_PEAK "outbound.peak"
 
@@ -444,6 +458,8 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  * VIR_NETWORK_PORT_BANDWIDTH_OUT_BURST:
  *
  * Macro represents the outbound burst of NIC bandwidth, as a uint.
+ *
+ * Since: v5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_BURST "outbound.burst"
 

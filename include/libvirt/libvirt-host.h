@@ -80,6 +80,8 @@ typedef virStream *virStreamPtr;
  *
  * Macro providing the maximum length of the virSecurityLabel label string.
  * Note that this value is based on that used by Labeled NFS.
+ *
+ * Since: v0.6.1
  */
 # define VIR_SECURITY_LABEL_BUFLEN (4096 + 1)
 
@@ -108,6 +110,8 @@ typedef virSecurityLabel *virSecurityLabelPtr;
  * VIR_SECURITY_MODEL_BUFLEN:
  *
  * Macro providing the maximum length of the virSecurityModel model string.
+ *
+ * Since: v0.6.1
  */
 # define VIR_SECURITY_MODEL_BUFLEN (256 + 1)
 
@@ -115,6 +119,8 @@ typedef virSecurityLabel *virSecurityLabelPtr;
  * VIR_SECURITY_DOI_BUFLEN:
  *
  * Macro providing the maximum length of the virSecurityModel doi string.
+ *
+ * Since: v0.6.1
  */
 # define VIR_SECURITY_DOI_BUFLEN (256 + 1)
 
@@ -176,6 +182,8 @@ struct _virNodeInfo {
  * VIR_NODE_CPU_STATS_FIELD_LENGTH:
  *
  * Macro providing the field length of virNodeCPUStats
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_FIELD_LENGTH 80
 
@@ -193,6 +201,8 @@ typedef enum {
  *
  * Macro for the cumulative CPU time which was spent by the kernel,
  * since the node booting up (in nanoseconds).
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_KERNEL "kernel"
 
@@ -201,6 +211,8 @@ typedef enum {
  *
  * The cumulative CPU time which was spent by user processes,
  * since the node booting up (in nanoseconds).
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_USER "user"
 
@@ -209,6 +221,8 @@ typedef enum {
  *
  * The cumulative idle CPU time,
  * since the node booting up (in nanoseconds).
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_IDLE "idle"
 
@@ -217,6 +231,8 @@ typedef enum {
  *
  * The cumulative I/O wait CPU time,
  * since the node booting up (in nanoseconds).
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_IOWAIT "iowait"
 
@@ -225,6 +241,8 @@ typedef enum {
  *
  * The cumulative interrupt CPU time,
  * since the node booting up (in nanoseconds).
+ *
+ * Since: v1.2.2
  */
 # define VIR_NODE_CPU_STATS_INTR "intr"
 
@@ -234,6 +252,8 @@ typedef enum {
  * The CPU utilization of a node.
  * The usage value is in percent and 100% represents all CPUs of
  * the node.
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_CPU_STATS_UTILIZATION "utilization"
 
@@ -254,6 +274,8 @@ struct _virNodeCPUStats {
  * VIR_NODE_MEMORY_STATS_FIELD_LENGTH:
  *
  * Macro providing the field length of virNodeMemoryStats
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_MEMORY_STATS_FIELD_LENGTH 80
 
@@ -271,6 +293,8 @@ typedef enum {
  *
  * Macro for the total memory of specified cell:
  * it represents the maximum memory.
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_MEMORY_STATS_TOTAL "total"
 
@@ -280,6 +304,8 @@ typedef enum {
  * Macro for the free memory of specified cell:
  * On Linux, it includes buffer and cached memory, in case of
  * VIR_NODE_MEMORY_STATS_ALL_CELLS.
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_MEMORY_STATS_FREE "free"
 
@@ -288,6 +314,8 @@ typedef enum {
  *
  * Macro for the buffer memory: On Linux, it is only returned in case of
  * VIR_NODE_MEMORY_STATS_ALL_CELLS.
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_MEMORY_STATS_BUFFERS "buffers"
 
@@ -296,6 +324,8 @@ typedef enum {
  *
  * Macro for the cached memory: On Linux, it is only returned in case of
  * VIR_NODE_MEMORY_STATS_ALL_CELLS.
+ *
+ * Since: v0.9.3
  */
 # define VIR_NODE_MEMORY_STATS_CACHED "cached"
 
@@ -317,6 +347,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many present pages
  * to scan before the shared memory service goes to sleep.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_TO_SCAN      "shm_pages_to_scan"
 
@@ -325,6 +357,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many milliseconds
  * the shared memory service should sleep before next scan.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_SLEEP_MILLISECS    "shm_sleep_millisecs"
 
@@ -333,6 +367,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many the shared
  * memory pages are being used.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_SHARED       "shm_pages_shared"
 
@@ -341,6 +377,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many sites are
  * sharing the pages i.e. how much saved.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_SHARING      "shm_pages_sharing"
 
@@ -349,6 +387,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many pages unique
  * but repeatedly checked for merging.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_UNSHARED     "shm_pages_unshared"
 
@@ -357,6 +397,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many pages changing
  * too fast to be placed in a tree.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_PAGES_VOLATILE     "shm_pages_volatile"
 
@@ -365,6 +407,8 @@ struct _virNodeMemoryStats {
  *
  * Macro for typed parameter that represents how many times all
  * mergeable areas have been scanned.
+ *
+ * Since: v0.10.2
  */
 # define VIR_NODE_MEMORY_SHARED_FULL_SCANS         "shm_full_scans"
 
@@ -377,6 +421,8 @@ struct _virNodeMemoryStats {
  * memory area of same NUMA node are merged; When its value is 1,
  * pages from all nodes can be merged. Other values are reserved
  * for future use.
+ *
+ * Since: v1.0.0
  */
 # define VIR_NODE_MEMORY_SHARED_MERGE_ACROSS_NODES "shm_merge_across_nodes"
 
@@ -406,6 +452,8 @@ int virNodeGetCPUMap(virConnectPtr conn,
  *
  * This macro is to calculate the total number of CPUs supported
  * but not necessary active in the host.
+ *
+ * Since: v0.1.4
  */
 
 
@@ -445,6 +493,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  * VIR_NODE_SEV_PDH:
  *
  * Macro represents the Platform Diffie-Hellman key, as VIR_TYPED_PARAMS_STRING.
+ *
+ * Since: v4.5.0
  */
 # define VIR_NODE_SEV_PDH "pdh"
 
@@ -454,6 +504,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  * Macro represents the platform certificate chain that includes the platform
  * endorsement key (PEK), owner certificate authority (OCD) and chip
  * endorsement key (CEK), as VIR_TYPED_PARAMS_STRING.
+ *
+ * Since: v4.5.0
  */
 # define VIR_NODE_SEV_CERT_CHAIN "cert-chain"
 
@@ -461,6 +513,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  * VIR_NODE_SEV_CBITPOS:
  *
  * Macro represents the CBit Position used by hypervisor when SEV is enabled.
+ *
+ * Since: v4.5.0
  */
 # define VIR_NODE_SEV_CBITPOS "cbitpos"
 
@@ -469,6 +523,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  *
  * Macro represents the number of bits we lose in physical address space
  * when SEV is enabled in the guest.
+ *
+ * Since: v4.5.0
  */
 # define VIR_NODE_SEV_REDUCED_PHYS_BITS "reduced-phys-bits"
 
@@ -477,6 +533,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  *
  * Macro represents the number of SEV guests that can
  * be run on the host, as a VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_NODE_SEV_MAX_GUESTS "max-guests"
 
@@ -485,6 +543,8 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
  *
  * Macro represents the number of SEV-ES guests that can
  * be run on the host, as a VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v8.0.0
  */
 # define VIR_NODE_SEV_MAX_ES_GUESTS "max-es-guests"
 
@@ -581,6 +641,8 @@ VIR_EXPORT_VAR virConnectAuthPtr virConnectAuthPtrDefault;
  *
  * This macro provides the length of the buffer required
  * for virDomainGetUUID()
+ *
+ * Since: v0.2.0
  */
 
 # define VIR_UUID_BUFLEN (16)
@@ -590,6 +652,8 @@ VIR_EXPORT_VAR virConnectAuthPtr virConnectAuthPtrDefault;
  *
  * This macro provides the length of the buffer required
  * for virDomainGetUUIDString()
+ *
+ * Since: v0.2.0
  */
 
 # define VIR_UUID_STRING_BUFLEN (36+1)
@@ -616,6 +680,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_USER_NAME:
  *
  * The operating system user name as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_USER_NAME "user-name"
 
@@ -623,6 +689,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_UNIX_USER_ID:
  *
  * The UNIX user ID as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_UNIX_USER_ID "unix-user-id"
 
@@ -630,6 +698,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_GROUP_NAME:
  *
  * The operating system group name as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_GROUP_NAME "group-name"
 
@@ -637,6 +707,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_UNIX_GROUP_ID:
  *
  * The UNIX group ID as VIR_TYPED_PARAM_ULLONG.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_UNIX_GROUP_ID "unix-group-id"
 
@@ -644,6 +716,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_PROCESS_ID:
  *
  * The operating system process ID as VIR_TYPED_PARAM_LLONG.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_PROCESS_ID "process-id"
 
@@ -655,6 +729,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * The units the time is measured in vary according to the
  * host operating system. On Linux this is usually clock
  * ticks (as reported in /proc/$PID/stat field 22).
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_PROCESS_TIME "process-time"
 
@@ -662,6 +738,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_SASL_USER_NAME:
  *
  * The SASL authenticated username as VIR_TYPED_PARAM_STRING
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_SASL_USER_NAME "sasl-user-name"
 
@@ -669,6 +747,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME:
  *
  * The TLS x509 certificate distinguished named as VIR_TYPED_PARAM_STRING
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_X509_DISTINGUISHED_NAME "x509-distinguished-name"
 
@@ -676,6 +756,8 @@ int                     virConnectClose         (virConnectPtr conn);
  * VIR_CONNECT_IDENTITY_SELINUX_CONTEXT:
  *
  * The application's SELinux context as VIR_TYPED_PARAM_STRING.
+ *
+ * Since: v5.8.0
  */
 # define VIR_CONNECT_IDENTITY_SELINUX_CONTEXT "selinux-context"
 
