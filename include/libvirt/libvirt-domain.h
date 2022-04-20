@@ -32,6 +32,9 @@
  * virDomain:
  *
  * a virDomain is a private structure representing a domain.
+ *
+ * Since: v0.0.1
+ *
  */
 typedef struct _virDomain virDomain;
 
@@ -40,6 +43,9 @@ typedef struct _virDomain virDomain;
  *
  * a virDomainPtr is pointer to a virDomain private structure, this is the
  * type used to reference a domain in the API.
+ *
+ * Since: v0.0.1
+ *
  */
 typedef virDomain *virDomainPtr;
 
@@ -47,6 +53,9 @@ typedef virDomain *virDomainPtr;
  * virDomainState:
  *
  * A domain may be in different states at a given point in time
+ *
+ * Since: v0.0.1
+ *
  */
 typedef enum {
     VIR_DOMAIN_NOSTATE = 0,     /* no state */
@@ -69,6 +78,12 @@ typedef enum {
 # endif
 } virDomainState;
 
+/**
+ * virDomainNostateReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_NOSTATE_UNKNOWN = 0,
 
@@ -77,6 +92,12 @@ typedef enum {
 # endif
 } virDomainNostateReason;
 
+/**
+ * virDomainRunningReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_RUNNING_UNKNOWN = 0,
     VIR_DOMAIN_RUNNING_BOOTED = 1,          /* normal startup from boot */
@@ -96,6 +117,12 @@ typedef enum {
 # endif
 } virDomainRunningReason;
 
+/**
+ * virDomainBlockedReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_BLOCKED_UNKNOWN = 0,     /* the reason is unknown */
 
@@ -104,6 +131,12 @@ typedef enum {
 # endif
 } virDomainBlockedReason;
 
+/**
+ * virDomainPausedReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_PAUSED_UNKNOWN = 0,      /* the reason is unknown */
     VIR_DOMAIN_PAUSED_USER = 1,         /* paused on user request */
@@ -125,6 +158,12 @@ typedef enum {
 # endif
 } virDomainPausedReason;
 
+/**
+ * virDomainShutdownReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown */
     VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request */
@@ -134,6 +173,12 @@ typedef enum {
 # endif
 } virDomainShutdownReason;
 
+/**
+ * virDomainShutoffReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SHUTOFF_UNKNOWN = 0,     /* the reason is unknown */
     VIR_DOMAIN_SHUTOFF_SHUTDOWN = 1,    /* normal shutdown */
@@ -151,6 +196,12 @@ typedef enum {
 # endif
 } virDomainShutoffReason;
 
+/**
+ * virDomainCrashedReason:
+ *
+ * Since: v0.9.2
+ *
+ */
 typedef enum {
     VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason */
     VIR_DOMAIN_CRASHED_PANICKED = 1,    /* domain panicked */
@@ -160,6 +211,12 @@ typedef enum {
 # endif
 } virDomainCrashedReason;
 
+/**
+ * virDomainPMSuspendedReason:
+ *
+ * Since: v0.9.11
+ *
+ */
 typedef enum {
     VIR_DOMAIN_PMSUSPENDED_UNKNOWN = 0,
 
@@ -168,6 +225,12 @@ typedef enum {
 # endif
 } virDomainPMSuspendedReason;
 
+/**
+ * virDomainPMSuspendedDiskReason:
+ *
+ * Since: v1.0.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_PMSUSPENDED_DISK_UNKNOWN = 0,
 
@@ -180,6 +243,9 @@ typedef enum {
  * virDomainControlState:
  *
  * Current state of a control interface to the domain.
+ *
+ * Since: v0.9.3
+ *
  */
 typedef enum {
     VIR_DOMAIN_CONTROL_OK = 0,       /* operational, ready to accept commands */
@@ -200,6 +266,9 @@ typedef enum {
  * virDomainControlErrorReason:
  *
  * Reason for the error state.
+ *
+ * Since: v1.2.14
+ *
  */
 typedef enum {
     VIR_DOMAIN_CONTROL_ERROR_REASON_NONE = 0,     /* server didn't provide a
@@ -221,6 +290,9 @@ typedef enum {
  *
  * Structure filled in by virDomainGetControlInfo and providing details about
  * current state of control interface to a domain.
+ *
+ * Since: v0.9.3
+ *
  */
 typedef struct _virDomainControlInfo virDomainControlInfo;
 struct _virDomainControlInfo {
@@ -236,6 +308,9 @@ struct _virDomainControlInfo {
  * virDomainControlInfoPtr:
  *
  * Pointer to virDomainControlInfo structure.
+ *
+ * Since: v0.9.3
+ *
  */
 typedef virDomainControlInfo *virDomainControlInfoPtr;
 
@@ -256,6 +331,9 @@ typedef virDomainControlInfo *virDomainControlInfoPtr;
  * (whether or not it is running).
  *
  * These enums should not conflict with those of virTypedParameterFlags.
+ *
+ * Since: v0.9.2
+ *
  */
 typedef enum {
     VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state.  */
@@ -265,12 +343,14 @@ typedef enum {
 } virDomainModificationImpact;
 
 /**
- * virDomainInfoPtr:
+ * virDomainInfo:
  *
  * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting
  * runtime information for a given active Domain
+ *
+ * Since: v0.0.1
+ *
  */
-
 typedef struct _virDomainInfo virDomainInfo;
 
 struct _virDomainInfo {
@@ -285,6 +365,9 @@ struct _virDomainInfo {
  * virDomainInfoPtr:
  *
  * a virDomainInfoPtr is a pointer to a virDomainInfo structure.
+ *
+ * Since: v0.0.1
+ *
  */
 
 typedef virDomainInfo *virDomainInfoPtr;
@@ -294,6 +377,9 @@ typedef virDomainInfo *virDomainInfoPtr;
  *
  * Flags OR'ed together to provide specific behaviour when creating a
  * Domain.
+ *
+ * Since: v0.0.1
+ *
  */
 typedef enum {
     VIR_DOMAIN_NONE               = 0,      /* Default behavior */
@@ -473,7 +559,7 @@ int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
                                               unsigned int flags);
 
 /**
- * virDomainBlockStats:
+ * virDomainBlockStatsStruct:
  *
  * Block device stats for virDomainBlockStats.
  *
@@ -481,6 +567,9 @@ int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
  * that the hypervisor does not support that statistic.
  *
  * NB. Here 'long long' means 64 bit integer.
+ *
+ * Since: v0.3.3
+ *
  */
 typedef struct _virDomainBlockStats virDomainBlockStatsStruct;
 
@@ -496,6 +585,9 @@ struct _virDomainBlockStats {
  * virDomainBlockStatsPtr:
  *
  * A pointer to a virDomainBlockStats structure
+ *
+ * Since: v0.3.2
+ *
  */
 typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 
@@ -600,7 +692,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 # define VIR_DOMAIN_BLOCK_STATS_ERRS "errs"
 
 /**
- * virDomainInterfaceStats:
+ * virDomainInterfaceStatsStruct:
  *
  * Network interface stats for virDomainInterfaceStats.
  *
@@ -608,6 +700,9 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * that the hypervisor does not support that statistic.
  *
  * NB. Here 'long long' means 64 bit integer.
+ *
+ * Since: v0.3.3
+ *
  */
 typedef struct _virDomainInterfaceStats virDomainInterfaceStatsStruct;
 
@@ -626,11 +721,19 @@ struct _virDomainInterfaceStats {
  * virDomainInterfaceStatsPtr:
  *
  * A pointer to a virDomainInterfaceStats structure
+ *
+ * Since: v0.3.2
+ *
  */
 typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 
 /**
+ * virDomainMemoryStatTags:
+ *
  * Memory Statistics Tags:
+ *
+ * Since: v0.7.5
+ *
  */
 typedef enum {
     /* The total amount of data read from swap space (in kB). */
@@ -708,6 +811,12 @@ typedef enum {
 # endif
 } virDomainMemoryStatTags;
 
+/**
+ * virDomainMemoryStatStruct:
+ *
+ * Since: v0.7.5
+ *
+ */
 typedef struct _virDomainMemoryStat virDomainMemoryStatStruct;
 
 struct _virDomainMemoryStat {
@@ -715,10 +824,23 @@ struct _virDomainMemoryStat {
     unsigned long long val;
 };
 
+/**
+ * virDomainMemoryStatPtr:
+ *
+ * Since: v0.7.5
+ *
+ */
 typedef virDomainMemoryStatStruct *virDomainMemoryStatPtr;
 
 
-/* Domain core dump flags. */
+/**
+ * virDomainCoreDumpFlags:
+ *
+ * Domain core dump flags.
+ *
+ * Since: v0.7.5
+ *
+ */
 typedef enum {
     VIR_DUMP_CRASH        = (1 << 0), /* crash after dump */
     VIR_DUMP_LIVE         = (1 << 1), /* live dump */
@@ -731,6 +853,9 @@ typedef enum {
  * virDomainCoreDumpFormat:
  *
  * Values for specifying different formats of domain core dumps.
+ *
+ * Since: v1.2.3
+ *
  */
 typedef enum {
     VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,          /* dump guest memory in raw format */
@@ -751,7 +876,14 @@ typedef enum {
 # endif
 } virDomainCoreDumpFormat;
 
-/* Domain migration flags. */
+/**
+ * virDomainMigrateFlags:
+ *
+ * Domain migration flags.
+ *
+ * Since: v0.3.2
+ *
+ */
 typedef enum {
     /* Do not pause the domain during migration. The domain's memory will
      * be transferred to the destination host while the domain is running.
@@ -1224,7 +1356,14 @@ int virDomainMigrateSetCompressionCache(virDomainPtr domain,
                                         unsigned long long cacheSize,
                                         unsigned int flags);
 
-/* Domain migration speed flags. */
+/**
+ * virDomainMigrateMaxSpeedFlags:
+ *
+ * Domain migration speed flags.
+ *
+ * Since: v5.1.0
+ *
+ */
 typedef enum {
     /* Set or get maximum speed of post-copy migration. */
     VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY = (1 << 0),
@@ -1287,6 +1426,12 @@ virDomainPtr            virDomainLookupByUUID   (virConnectPtr conn,
 virDomainPtr            virDomainLookupByUUIDString     (virConnectPtr conn,
                                                          const char *uuid);
 
+/**
+ * virDomainShutdownFlagValues:
+ *
+ * Since: v0.9.10
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SHUTDOWN_DEFAULT        = 0,        /* hypervisor choice */
     VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event */
@@ -1300,6 +1445,12 @@ int                     virDomainShutdown       (virDomainPtr domain);
 int                     virDomainShutdownFlags  (virDomainPtr domain,
                                                  unsigned int flags);
 
+/**
+ * virDomainRebootFlagValues:
+ *
+ * Since: v0.9.10
+ *
+ */
 typedef enum {
     VIR_DOMAIN_REBOOT_DEFAULT        = 0,        /* hypervisor choice */
     VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event */
@@ -1321,6 +1472,9 @@ int                     virDomainDestroy        (virDomainPtr domain);
  *
  * Flags used to provide specific behaviour to the
  * virDomainDestroyFlags() function
+ *
+ * Since: v0.9.4
+ *
  */
 typedef enum {
     VIR_DOMAIN_DESTROY_DEFAULT   = 0,      /* Default behavior - could lead to data loss!! */
@@ -1350,9 +1504,13 @@ int                     virDomainPMWakeup       (virDomainPtr domain,
 
 /**
  * virDomainSaveRestoreFlags:
+ *
  * Flags for use in virDomainSaveFlags(), virDomainManagedSave(),
  * virDomainRestoreFlags(), and virDomainSaveImageDefineXML().  Not all
  * flags apply to all these functions.
+ *
+ * Since: v0.9.4
+ *
  */
 typedef enum {
     VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution */
@@ -1636,7 +1794,14 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
                                      virTypedParameterPtr params,
                                      int *nparams, unsigned int flags);
 
-/* Memory size modification flags. */
+/**
+ * virDomainMemoryModFlags:
+ *
+ * Memory size modification flags.
+ *
+ * Since: v1.0.0
+ *
+ */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_MEM_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
@@ -1654,6 +1819,9 @@ typedef enum {
  * virDomainNumatuneMemMode:
  * Representation of the various modes in the <numatune> element of
  * a domain.
+ *
+ * Since: v0.9.9
+ *
  */
 typedef enum {
     VIR_DOMAIN_NUMATUNE_MEM_STRICT      = 0,
@@ -1717,7 +1885,12 @@ int                     virDomainSetMemoryStatsPeriod (virDomainPtr domain,
 int                     virDomainGetMaxVcpus    (virDomainPtr domain);
 int                     virDomainGetSecurityLabel (virDomainPtr domain,
                                                    virSecurityLabelPtr seclabel);
-
+/**
+ * virDomainGetHostnameFlags:
+ *
+ * Since: v6.1.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_GET_HOSTNAME_LEASE = (1 << 0), /* Parse DHCP lease file */
     VIR_DOMAIN_GET_HOSTNAME_AGENT = (1 << 1), /* Query qemu guest agent */
@@ -1728,6 +1901,12 @@ char *                  virDomainGetHostname    (virDomainPtr domain,
 int                     virDomainGetSecurityLabelList (virDomainPtr domain,
                                                        virSecurityLabelPtr* seclabels);
 
+/**
+ * virDomainMetadataType:
+ *
+ * Since: v0.9.10
+ *
+ */
 typedef enum {
     VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> */
     VIR_DOMAIN_METADATA_TITLE       = 1, /* Operate on <title> */
@@ -1755,12 +1934,15 @@ virDomainGetMetadata(virDomainPtr domain,
 /*
  * XML domain description
  */
+
 /**
  * virDomainXMLFlags:
  *
  * Flags available for virDomainGetXMLDesc
+ *
+ * Since: v0.3.3
+ *
  */
-
 typedef enum {
     VIR_DOMAIN_XML_SECURE       = (1 << 0), /* dump security sensitive information too */
     VIR_DOMAIN_XML_INACTIVE     = (1 << 1), /* dump inactive domain information */
@@ -1768,6 +1950,12 @@ typedef enum {
     VIR_DOMAIN_XML_MIGRATABLE   = (1 << 3), /* dump XML suitable for migration */
 } virDomainXMLFlags;
 
+/**
+ * virDomainSaveImageXMLFlags:
+ *
+ * Since: v5.1.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SAVE_IMAGE_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too */
 } virDomainSaveImageXMLFlags;
@@ -1886,6 +2074,9 @@ int                     virDomainBlockPeek (virDomainPtr dom,
  * virDomainBlockResizeFlags:
  *
  * Flags available for virDomainBlockResize().
+ *
+ * Since: v0.9.11
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1 << 0, /* size in bytes instead of KiB */
@@ -1919,8 +2110,18 @@ int                     virDomainBlockResize (virDomainPtr dom,
  *       * capacity: logical size from qcow2 header
  *       * allocation: highest qcow extent written for an active domain
  *       * physical: size of the block device container
+ *
+ * Since: v0.8.1
+ *
  */
 typedef struct _virDomainBlockInfo virDomainBlockInfo;
+
+/**
+ * virDomainBlockInfoPtr:
+ *
+ * Since: v0.8.1
+ *
+ */
 typedef virDomainBlockInfo *virDomainBlockInfoPtr;
 struct _virDomainBlockInfo {
     unsigned long long capacity;   /* logical size in bytes of the
@@ -1947,8 +2148,14 @@ int                     virDomainMemoryStats (virDomainPtr dom,
                                               unsigned int nr_stats,
                                               unsigned int flags);
 
-/* Memory peeking flags. */
-
+/**
+ * virDomainMemoryFlags:
+ *
+ * Memory peeking flags.
+ *
+ * Since: v0.4.4
+ *
+ */
 typedef enum {
     VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses */
     VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses */
@@ -1960,6 +2167,12 @@ int                     virDomainMemoryPeek (virDomainPtr dom,
                                              void *buffer,
                                              unsigned int flags);
 
+/**
+ * virDomainDefineFlags:
+ *
+ * Since: v1.2.12
+ *
+ */
 typedef enum {
     VIR_DOMAIN_DEFINE_VALIDATE = (1 << 0), /* Validate the XML document against schema */
 } virDomainDefineFlags;
@@ -1975,6 +2188,12 @@ virDomainPtr            virDomainDefineXMLFlags (virConnectPtr conn,
                                                  unsigned int flags);
 int                     virDomainUndefine       (virDomainPtr domain);
 
+/**
+ * virDomainUndefineFlagsValues:
+ *
+ * Since: v0.9.4
+ *
+ */
 typedef enum {
     VIR_DOMAIN_UNDEFINE_MANAGED_SAVE       = (1 << 0), /* Also remove any
                                                           managed save */
@@ -2004,6 +2223,8 @@ int                     virConnectListDefinedDomains (virConnectPtr conn,
  * Flags used to tune which domains are listed by virConnectListAllDomains().
  * Note that these flags come in groups; if all bits from a group are 0,
  * then that group is not used to filter results.
+ *
+ * Since: v0.9.13
  */
 typedef enum {
     VIR_CONNECT_LIST_DOMAINS_ACTIVE         = 1 << 0,
@@ -2048,9 +2269,13 @@ int                     virDomainSetAutostart   (virDomainPtr domain,
                                                  int autostart);
 
 /**
- * virVcpuInfo: structure for information about a virtual CPU in a domain.
+ * virVcpuState:
+ *
+ * structure for information about a virtual CPU in a domain.
+ *
+ * Since: v0.1.4
+ *
  */
-
 typedef enum {
     VIR_VCPU_OFFLINE    = 0,    /* the virtual CPU is offline */
     VIR_VCPU_RUNNING    = 1,    /* the virtual CPU is running */
@@ -2061,11 +2286,23 @@ typedef enum {
 # endif
 } virVcpuState;
 
+/**
+ * virVcpuHostCpuState:
+ *
+ * Since: v6.10.0
+ *
+ */
 typedef enum {
     VIR_VCPU_INFO_CPU_OFFLINE     = -1, /* the vCPU is offline */
     VIR_VCPU_INFO_CPU_UNAVAILABLE = -2, /* the hypervisor does not expose real CPU information */
 } virVcpuHostCpuState;
 
+/**
+ * virVcpuInfo:
+ *
+ * Since: v0.1.4
+ *
+ */
 typedef struct _virVcpuInfo virVcpuInfo;
 struct _virVcpuInfo {
     unsigned int number;        /* virtual CPU number */
@@ -2073,9 +2310,23 @@ struct _virVcpuInfo {
     unsigned long long cpuTime; /* CPU time used, in nanoseconds */
     int cpu;                    /* real CPU number, or one of the values from virVcpuHostCpuState */
 };
+
+/**
+ * virVcpuInfoPtr:
+ *
+ * Since: v0.1.4
+ *
+ */
 typedef virVcpuInfo *virVcpuInfoPtr;
 
-/* Flags for controlling virtual CPU hot-plugging.  */
+/**
+ * virDomainVcpuFlags:
+ *
+ * Flags for controlling virtual CPU hot-plugging.
+ *
+ * Since: v1.0.0
+ *
+ */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_VCPU_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
@@ -2123,11 +2374,22 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
                                                      unsigned int flags);
 
 /**
- * virIOThreadInfo:
+ * virDomainIOThreadInfo:
  *
  * The data structure for information about all IOThreads in a domain
+ *
+ * Since: v1.2.14
+ *
  */
 typedef struct _virDomainIOThreadInfo virDomainIOThreadInfo;
+
+
+/**
+ * virDomainIOThreadInfoPtr:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef virDomainIOThreadInfo *virDomainIOThreadInfoPtr;
 struct _virDomainIOThreadInfo {
     unsigned int iothread_id;          /* IOThread ID */
@@ -2314,6 +2576,12 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
 # define VIR_GET_CPUMAP(cpumaps, maplen, vcpu) (&((cpumaps)[(vcpu) * (maplen)]))
 
 
+/**
+ * virDomainDeviceModifyFlags:
+ *
+ * Since: v1.0.0
+ *
+ */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_DEVICE_MODIFY_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
@@ -2338,7 +2606,20 @@ int virDomainUpdateDeviceFlags(virDomainPtr domain,
 int virDomainDetachDeviceAlias(virDomainPtr domain,
                                const char *alias, unsigned int flags);
 
+/**
+ * virDomainStatsRecord:
+ *
+ * Since: v1.2.8
+ *
+ */
 typedef struct _virDomainStatsRecord virDomainStatsRecord;
+
+/**
+ * virDomainStatsRecordPtr:
+ *
+ * Since: v1.2.8
+ *
+ */
 typedef virDomainStatsRecord *virDomainStatsRecordPtr;
 struct _virDomainStatsRecord {
     virDomainPtr dom;
@@ -2346,6 +2627,12 @@ struct _virDomainStatsRecord {
     int nparams;
 };
 
+/**
+ * virDomainStatsTypes:
+ *
+ * Since: v1.2.8
+ *
+ */
 typedef enum {
     VIR_DOMAIN_STATS_STATE = (1 << 0), /* return domain state */
     VIR_DOMAIN_STATS_CPU_TOTAL = (1 << 1), /* return domain CPU info */
@@ -2359,6 +2646,12 @@ typedef enum {
     VIR_DOMAIN_STATS_DIRTYRATE = (1 << 9), /* return domain dirty rate info */
 } virDomainStatsTypes;
 
+/**
+ * virConnectGetAllDomainStatsFlags:
+ *
+ * Since: v1.2.8
+ *
+ */
 typedef enum {
     VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE = VIR_CONNECT_LIST_DOMAINS_ACTIVE,
     VIR_CONNECT_GET_ALL_DOMAINS_STATS_INACTIVE = VIR_CONNECT_LIST_DOMAINS_INACTIVE,
@@ -2681,6 +2974,9 @@ int virDomainSetPerfEvents(virDomainPtr dom,
  * virDomainBlockJobType:
  *
  * Describes various possible block jobs.
+ *
+ * Since: v0.9.4
+ *
  */
 typedef enum {
     /* Placeholder */
@@ -2716,6 +3012,9 @@ typedef enum {
  * VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC: Request only, do not wait for completion
  * VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT: Pivot to new file when ending a copy or
  *                                   active commit job
+ *
+ * Since: v0.9.12
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1 << 0,
@@ -2725,15 +3024,35 @@ typedef enum {
 int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
                            unsigned int flags);
 
-/* Flags for use with virDomainGetBlockJobInfo */
+/**
+ * virDomainBlockJobInfoFlags:
+ *
+ * Flags for use with virDomainGetBlockJobInfo
+ *
+ * Since: v1.2.9
+ *
+ */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES = 1 << 0, /* bandwidth in bytes/s
                                                            instead of MiB/s */
 } virDomainBlockJobInfoFlags;
 
-/* An iterator for monitoring block job operations */
+/**
+ * virDomainBlockJobCursor:
+ *
+ * An iterator for monitoring block job operations
+ *
+ * Since: v0.9.4
+ *
+ */
 typedef unsigned long long virDomainBlockJobCursor;
 
+/**
+ * virDomainBlockJobInfo:
+ *
+ * Since: v0.9.4
+ *
+ */
 typedef struct _virDomainBlockJobInfo virDomainBlockJobInfo;
 struct _virDomainBlockJobInfo {
     int type; /* virDomainBlockJobType */
@@ -2748,13 +3067,27 @@ struct _virDomainBlockJobInfo {
     virDomainBlockJobCursor cur;
     virDomainBlockJobCursor end;
 };
+
+/**
+ * virDomainBlockJobInfoPtr:
+ *
+ * Since: v0.9.4
+ *
+ */
 typedef virDomainBlockJobInfo *virDomainBlockJobInfoPtr;
 
 int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
                              virDomainBlockJobInfoPtr info,
                              unsigned int flags);
 
-/* Flags for use with virDomainBlockJobSetSpeed */
+/**
+ * virDomainBlockJobSetSpeedFlags:
+ *
+ * Flags for use with virDomainBlockJobSetSpeed
+ *
+ * Since: v1.2.9
+ *
+ */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES = 1 << 0, /* bandwidth in bytes/s
                                                             instead of MiB/s */
@@ -2763,8 +3096,15 @@ typedef enum {
 int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
                               unsigned long bandwidth, unsigned int flags);
 
-/* Flags for use with virDomainBlockPull (values chosen to be a subset
- * of the flags for virDomainBlockRebase) */
+/**
+ * virDomainBlockPullFlags:
+ *
+ * Flags for use with virDomainBlockPull (values chosen to be a subset of the
+ * flags for virDomainBlockRebase)
+ *
+ * Since: v1.2.9
+ *
+ */
 typedef enum {
     VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES = 1 << 6, /* bandwidth in bytes/s
                                                        instead of MiB/s */
@@ -2777,6 +3117,9 @@ int virDomainBlockPull(virDomainPtr dom, const char *disk,
  * virDomainBlockRebaseFlags:
  *
  * Flags available for virDomainBlockRebase().
+ *
+ * Since: v0.9.12
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_REBASE_SHALLOW   = 1 << 0, /* Limit copy to top of source
@@ -2802,6 +3145,9 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
  * virDomainBlockCopyFlags:
  *
  * Flags available for virDomainBlockCopy().
+ *
+ * Since: v1.2.8
+ *
  */
 typedef enum {
     /* Limit copy to top of source backing chain */
@@ -2873,6 +3219,9 @@ int virDomainBlockCopy(virDomainPtr dom, const char *disk,
  * virDomainBlockCommitFlags:
  *
  * Flags available for virDomainBlockCommit().
+ *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_COMMIT_SHALLOW = 1 << 0, /* NULL base means next backing
@@ -3109,6 +3458,9 @@ virDomainGetBlockIoTune(virDomainPtr dom,
  * virDomainDiskErrorCode:
  *
  * Disk I/O error.
+ *
+ * Since: v0.9.10
+ *
  */
 typedef enum {
     VIR_DOMAIN_DISK_ERROR_NONE      = 0, /* no error */
@@ -3123,8 +3475,17 @@ typedef enum {
 /**
  * virDomainDiskError:
  *
+ * Since: v0.9.10
+ *
  */
 typedef struct _virDomainDiskError virDomainDiskError;
+
+/**
+ * virDomainDiskErrorPtr:
+ *
+ * Since: v0.9.10
+ *
+ */
 typedef virDomainDiskError *virDomainDiskErrorPtr;
 
 struct _virDomainDiskError {
@@ -3143,6 +3504,9 @@ int virDomainGetDiskErrors(virDomainPtr dom,
  * virKeycodeSet:
  *
  * Enum to specify which keycode mapping is in use for virDomainSendKey().
+ *
+ * Since: v0.9.3
+ *
  */
 typedef enum {
     VIR_KEYCODE_SET_LINUX          = 0,
@@ -3191,7 +3555,9 @@ int virDomainSendKey(virDomainPtr domain,
                      int nkeycodes,
                      unsigned int flags);
 
-/*
+/**
+ * virDomainProcessSignal:
+ *
  * These just happen to match Linux signal numbers. The numbers
  * will be mapped to whatever the SIGNUM is in the guest OS in
  * question by the agent delivering the signal. The names are
@@ -3200,6 +3566,9 @@ int virDomainSendKey(virDomainPtr domain,
  * Do not rely on all values matching Linux though. It is possible
  * this enum might be extended with new signals which have no
  * mapping in Linux.
+ *
+ * Since: v1.0.1
+ *
  */
 typedef enum {
     VIR_DOMAIN_PROCESS_SIGNAL_NOP        =  0, /* No constant in POSIX/Linux */
@@ -3300,6 +3669,9 @@ virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
  * virDomainEventType:
  *
  * a virDomainEventType is emitted during domain lifecycle events
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_DEFINED = 0,
@@ -3321,6 +3693,9 @@ typedef enum {
  * virDomainEventDefinedDetailType:
  *
  * Details on the cause of a 'defined' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file */
@@ -3337,6 +3712,9 @@ typedef enum {
  * virDomainEventUndefinedDetailType:
  *
  * Details on the cause of an 'undefined' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file */
@@ -3351,6 +3729,9 @@ typedef enum {
  * virDomainEventStartedDetailType:
  *
  * Details on the cause of a 'started' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot */
@@ -3368,6 +3749,9 @@ typedef enum {
  * virDomainEventSuspendedDetailType:
  *
  * Details on the cause of a 'suspended' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0,   /* Normal suspend due to admin pause */
@@ -3389,6 +3773,9 @@ typedef enum {
  * virDomainEventResumedDetailType:
  *
  * Details on the cause of a 'resumed' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause */
@@ -3406,6 +3793,9 @@ typedef enum {
  * virDomainEventStoppedDetailType:
  *
  * Details on the cause of a 'stopped' lifecycle event
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0,  /* Normal shutdown */
@@ -3426,6 +3816,9 @@ typedef enum {
  * virDomainEventShutdownDetailType:
  *
  * Details on the cause of a 'shutdown' lifecycle event
+ *
+ * Since: v0.9.8
+ *
  */
 typedef enum {
     /* Guest finished shutdown sequence */
@@ -3448,6 +3841,9 @@ typedef enum {
  * virDomainEventPMSuspendedDetailType:
  *
  * Details on the cause of a 'pmsuspended' lifecycle event
+ *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY = 0, /* Guest was PM suspended to memory */
@@ -3462,6 +3858,9 @@ typedef enum {
  * virDomainEventCrashedDetailType:
  *
  * Details on the cause of a 'crashed' lifecycle event
+ *
+ * Since: v1.1.1
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0, /* Guest was panicked */
@@ -3476,6 +3875,9 @@ typedef enum {
  * virDomainMemoryFailureRecipientType:
  *
  * Recipient of a memory failure event.
+ *
+ * Since: v6.9.0
+ *
  */
 typedef enum {
     /* memory failure at hypersivor memory address space */
@@ -3494,6 +3896,9 @@ typedef enum {
  * virDomainMemoryFailureActionType:
  *
  * Action of a memory failure event.
+ *
+ * Since: v6.9.0
+ *
  */
 typedef enum {
     /* the memory failure could be ignored. This will only be the case for
@@ -3519,6 +3924,12 @@ typedef enum {
 } virDomainMemoryFailureActionType;
 
 
+/**
+ * virDomainMemoryFailureFlags:
+ *
+ * Since: v6.9.0
+ *
+ */
 typedef enum {
     /* whether a memory failure event is action-required or action-optional
      * (e.g. a failure during memory scrub). */
@@ -3561,6 +3972,12 @@ int virDomainIsActive(virDomainPtr dom);
 int virDomainIsPersistent(virDomainPtr dom);
 int virDomainIsUpdated(virDomainPtr dom);
 
+/**
+ * virDomainJobType:
+ *
+ * Since: v0.7.7
+ *
+ */
 typedef enum {
     VIR_DOMAIN_JOB_NONE      = 0, /* No job is active */
     VIR_DOMAIN_JOB_BOUNDED   = 1, /* Job with a finite completion time */
@@ -3574,7 +3991,20 @@ typedef enum {
 # endif
 } virDomainJobType;
 
+/**
+ * virDomainJobInfo:
+ *
+ * Since: v0.7.7
+ *
+ */
 typedef struct _virDomainJobInfo virDomainJobInfo;
+
+/**
+ * virDomainJobInfoPtr:
+ *
+ * Since: v0.7.7
+ *
+ */
 typedef virDomainJobInfo *virDomainJobInfoPtr;
 struct _virDomainJobInfo {
     /* One of virDomainJobType */
@@ -3615,6 +4045,9 @@ struct _virDomainJobInfo {
  *
  * Flags OR'ed together to provide specific behavior when querying domain
  * job statistics.
+ *
+ * Since: v1.2.9
+ *
  */
 typedef enum {
     VIR_DOMAIN_JOB_STATS_COMPLETED = 1 << 0, /* return stats of a recently
@@ -3632,6 +4065,12 @@ int virDomainGetJobStats(virDomainPtr domain,
                          unsigned int flags);
 int virDomainAbortJob(virDomainPtr dom);
 
+/**
+ * virDomainJobOperation:
+ *
+ * Since: v3.3.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_JOB_OPERATION_UNKNOWN = 0,
     VIR_DOMAIN_JOB_OPERATION_START = 1,
@@ -4088,6 +4527,9 @@ typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
  * virDomainEventWatchdogAction:
  *
  * The action that is to be taken due to the watchdog device firing
+ *
+ * Since: v0.8.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_WATCHDOG_NONE = 0, /* No action, watchdog ignored */
@@ -4123,6 +4565,9 @@ typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
  * virDomainEventIOErrorAction:
  *
  * The action that is to be taken due to an IO error occurring
+ *
+ * Since: v0.8.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored */
@@ -4186,6 +4631,9 @@ typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
  * virDomainEventGraphicsPhase:
  *
  * The phase of the graphics client connection
+ *
+ * Since: v0.8.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0,  /* Initial socket connection established */
@@ -4201,6 +4649,9 @@ typedef enum {
  * virDomainEventGraphicsAddressType:
  *
  * The type of address for the connection
+ *
+ * Since: v0.8.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address */
@@ -4214,9 +4665,11 @@ typedef enum {
 
 
 /**
- * virDomainEventGraphicsAddress:
+ * _virDomainEventGraphicsAddress:
  *
  * The data structure containing connection address details
+ *
+ * Since: v1.0.0
  *
  */
 struct _virDomainEventGraphicsAddress {
@@ -4224,12 +4677,26 @@ struct _virDomainEventGraphicsAddress {
     char *node;               /* Address of node (eg IP address, or UNIX path) */
     char *service;            /* Service name/number (eg TCP port, or NULL) */
 };
+
+/**
+ * virDomainEventGraphicsAddress:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef struct _virDomainEventGraphicsAddress virDomainEventGraphicsAddress;
+
+/**
+ * virDomainEventGraphicsAddressPtr:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
 
 
 /**
- * virDomainEventGraphicsSubjectIdentity:
+ * _virDomainEventGraphicsSubjectIdentity:
  *
  * The data structure representing a single identity
  *
@@ -4240,7 +4707,21 @@ struct _virDomainEventGraphicsSubjectIdentity {
     char *type;     /* Type of identity */
     char *name;     /* Identity value */
 };
+
+/**
+ * virDomainEventGraphicsSubjectIdentity:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef struct _virDomainEventGraphicsSubjectIdentity virDomainEventGraphicsSubjectIdentity;
+
+/**
+ * virDomainEventGraphicsSubjectIdentityPtr:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIdentityPtr;
 
 
@@ -4251,12 +4732,29 @@ typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIden
  *
  * A subject will have zero or more identities. The types of
  * identity differ according to the authentication scheme
+ *
+ * Since: v0.8.0
+ *
  */
 struct _virDomainEventGraphicsSubject {
     int nidentity;                                /* Number of identities in array*/
     virDomainEventGraphicsSubjectIdentityPtr identities; /* Array of identities for subject */
 };
+
+/**
+ * virDomainEventGraphicsSubject:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef struct _virDomainEventGraphicsSubject virDomainEventGraphicsSubject;
+
+/**
+ * virDomainEventGraphicsSubjectPtr:
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
 
 
@@ -4288,6 +4786,9 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
  *
  * Tracks status of a virDomainBlockPull(), virDomainBlockRebase(),
  * virDomainBlockCopy(), or virDomainBlockCommit() operation
+ *
+ * Since: v0.9.4
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0,
@@ -4335,6 +4836,9 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
  * virConnectDomainEventDiskChangeReason:
  *
  * The reason describing why this callback is called
+ *
+ * Since: v0.9.7
+ *
  */
 typedef enum {
     /* Removable media changed to empty according to startup policy as source
@@ -4381,6 +4885,9 @@ typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
  * virDomainEventTrayChangeReason:
  *
  * The reason describing why the callback was called
+ *
+ * Since: v0.9.11
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0,
@@ -4965,6 +5472,12 @@ typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
                                                      void *opaque);
 
 
+/**
+ * virConnectDomainEventAgentLifecycleState:
+ *
+ * Since: v1.2.11
+ *
+ */
 typedef enum {
     VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED = 1, /* agent connected */
     VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED = 2, /* agent disconnected */
@@ -4974,6 +5487,12 @@ typedef enum {
 # endif
 } virConnectDomainEventAgentLifecycleState;
 
+/**
+ * virConnectDomainEventAgentLifecycleReason:
+ *
+ * Since: v1.2.11
+ *
+ */
 typedef enum {
     VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN = 0, /* unknown state change reason */
     VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED = 1, /* state changed due to domain start */
@@ -5100,6 +5619,9 @@ typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPt
  * An enumeration of supported eventId parameters for
  * virConnectDomainEventRegisterAny().  Each event id determines which
  * signature of callback function will be used.
+ *
+ * Since: v0.8.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback */
@@ -5154,9 +5676,10 @@ int virConnectDomainEventDeregisterAny(virConnectPtr conn,
 
 
 /**
- * virDomainConsoleFlags
+ * virDomainConsoleFlags:
  *
- * Since 0.9.10
+ * Since: v0.9.11
+ *
  */
 typedef enum {
 
@@ -5173,9 +5696,9 @@ int virDomainOpenConsole(virDomainPtr dom,
                          unsigned int flags);
 
 /**
- * virDomainChannelFlags
+ * virDomainChannelFlags:
  *
- * Since 1.0.2
+ * Since: v1.0.2
  */
 typedef enum {
     VIR_DOMAIN_CHANNEL_FORCE = (1 << 0), /* abort a (possibly) active channel
@@ -5188,6 +5711,12 @@ int virDomainOpenChannel(virDomainPtr dom,
                          virStreamPtr st,
                          unsigned int flags);
 
+/**
+ * virDomainOpenGraphicsFlags:
+ *
+ * Since: v0.9.7
+ *
+ */
 typedef enum {
     VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = (1 << 0),
 } virDomainOpenGraphicsFlags;
@@ -5223,9 +5752,20 @@ int virDomainFSThaw(virDomainPtr dom,
  *
  * The data structure containing mounted file systems within a guset
  *
+ * Since: v1.2.11
+ *
+ *
  */
 typedef struct _virDomainFSInfo virDomainFSInfo;
+
+/**
+ * virDomainFSInfoPtr:
+ *
+ * Since: v1.2.11
+ *
+ */
 typedef virDomainFSInfo *virDomainFSInfoPtr;
+
 struct _virDomainFSInfo {
     char *mountpoint; /* path to mount point */
     char *name;       /* device name in the guest (e.g. "sda1") */
@@ -5244,7 +5784,12 @@ int virDomainGetTime(virDomainPtr dom,
                      long long *seconds,
                      unsigned int *nseconds,
                      unsigned int flags);
-
+/**
+ * virDomainSetTimeFlags:
+ *
+ * Since: v1.2.5
+ *
+ */
 typedef enum {
     VIR_DOMAIN_TIME_SYNC = (1 << 0), /* Re-sync domain time from domain's RTC */
 } virDomainSetTimeFlags;
@@ -5258,8 +5803,10 @@ int virDomainSetTime(virDomainPtr dom,
  * virSchedParameterType:
  *
  * A scheduler parameter field type.  Provided for backwards
- * compatibility; virTypedParameterType is the preferred enum since
- * 0.9.2.
+ * compatibility; virTypedParameterType is the preferred enum
+ *
+ * Since: v0.2.3
+ *
  */
 typedef enum {
     VIR_DOMAIN_SCHED_FIELD_INT     = VIR_TYPED_PARAM_INT,
@@ -5295,7 +5842,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.9.2
+ * Since: v0.2.3
  */
 typedef struct _virTypedParameter virSchedParameter;
 
@@ -5305,6 +5852,9 @@ typedef struct _virTypedParameter virSchedParameter;
  * a virSchedParameterPtr is a pointer to a virSchedParameter structure.
  * Provided for backwards compatibility; virTypedParameterPtr is the
  * preferred alias since 0.9.2.
+ *
+ * Since: v0.2.3
+ *
  */
 typedef virSchedParameter *virSchedParameterPtr;
 
@@ -5312,8 +5862,10 @@ typedef virSchedParameter *virSchedParameterPtr;
  * virBlkioParameterType:
  *
  * A blkio parameter field type.  Provided for backwards
- * compatibility; virTypedParameterType is the preferred enum since
- * 0.9.2.
+ * compatibility; virTypedParameterType is the preferred enum
+ *
+ * Since: v0.9.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_BLKIO_PARAM_INT     = VIR_TYPED_PARAM_INT,
@@ -5349,7 +5901,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.9.2
+ * Since: v0.9.0
  */
 typedef struct _virTypedParameter virBlkioParameter;
 
@@ -5358,7 +5910,10 @@ typedef struct _virTypedParameter virBlkioParameter;
  *
  * a virBlkioParameterPtr is a pointer to a virBlkioParameter structure.
  * Provided for backwards compatibility; virTypedParameterPtr is the
- * preferred alias since 0.9.2.
+ * preferred alias.
+ *
+ * Since: v0.9.0
+ *
  */
 typedef virBlkioParameter *virBlkioParameterPtr;
 
@@ -5366,8 +5921,10 @@ typedef virBlkioParameter *virBlkioParameterPtr;
  * virMemoryParameterType:
  *
  * A memory parameter field type.  Provided for backwards
- * compatibility; virTypedParameterType is the preferred enum since
- * 0.9.2.
+ * compatibility; virTypedParameterType is the preferred enum
+ *
+ * Since: v0.8.5
+ *
  */
 typedef enum {
     VIR_DOMAIN_MEMORY_PARAM_INT     = VIR_TYPED_PARAM_INT,
@@ -5403,7 +5960,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.9.2
+ * Since: v0.8.5
  */
 typedef struct _virTypedParameter virMemoryParameter;
 
@@ -5412,10 +5969,19 @@ typedef struct _virTypedParameter virMemoryParameter;
  *
  * a virMemoryParameterPtr is a pointer to a virMemoryParameter structure.
  * Provided for backwards compatibility; virTypedParameterPtr is the
- * preferred alias since 0.9.2.
+ * preferred alias.
+ *
+ * Since: v0.8.5
+ *
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
+/**
+ * virDomainInterfaceAddressesSource:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef enum {
     VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE = 0, /* Parse DHCP lease file */
     VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT = 1, /* Query qemu guest agent */
@@ -5426,7 +5992,20 @@ typedef enum {
 # endif
 } virDomainInterfaceAddressesSource;
 
+/**
+ * virDomainIPAddress:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef struct _virDomainInterfaceIPAddress virDomainIPAddress;
+
+/**
+ * virDomainIPAddressPtr:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef virDomainIPAddress *virDomainIPAddressPtr;
 struct _virDomainInterfaceIPAddress {
     int type;                /* virIPAddrType */
@@ -5434,7 +6013,20 @@ struct _virDomainInterfaceIPAddress {
     unsigned int prefix;     /* IP address prefix */
 };
 
+/**
+ * virDomainInterface:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef struct _virDomainInterface virDomainInterface;
+
+/**
+ * virDomainInterfacePtr:
+ *
+ * Since: v1.2.14
+ *
+ */
 typedef virDomainInterface *virDomainInterfacePtr;
 struct _virDomainInterface {
     char *name;                     /* interface name */
@@ -5450,6 +6042,12 @@ int virDomainInterfaceAddresses(virDomainPtr dom,
 
 void virDomainInterfaceFree(virDomainInterfacePtr iface);
 
+/**
+ * virDomainSetUserPasswordFlags:
+ *
+ * Since: v1.2.16
+ *
+ */
 typedef enum {
     VIR_DOMAIN_PASSWORD_ENCRYPTED = 1 << 0, /* the password is already encrypted */
 } virDomainSetUserPasswordFlags;
@@ -5483,6 +6081,12 @@ int virDomainSetBlockThreshold(virDomainPtr domain,
                                unsigned long long threshold,
                                unsigned int flags);
 
+/**
+ * virDomainLifecycle:
+ *
+ * Since: v3.9.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_LIFECYCLE_POWEROFF = 0,
     VIR_DOMAIN_LIFECYCLE_REBOOT = 1,
@@ -5493,6 +6097,12 @@ typedef enum {
 # endif
 } virDomainLifecycle;
 
+/**
+ * virDomainLifecycleAction:
+ *
+ * Since: v3.9.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY = 0,
     VIR_DOMAIN_LIFECYCLE_ACTION_RESTART = 1,
@@ -5612,6 +6222,12 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
                                     int nparams,
                                     unsigned int flags);
 
+/**
+ * virDomainGuestInfoTypes:
+ *
+ * Since: v5.7.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_GUEST_INFO_USERS = (1 << 0), /* return active users */
     VIR_DOMAIN_GUEST_INFO_OS = (1 << 1), /* return OS information */
@@ -5628,6 +6244,12 @@ int virDomainGetGuestInfo(virDomainPtr domain,
                           int *nparams,
                           unsigned int flags);
 
+/**
+ * virDomainAgentResponseTimeoutValues:
+ *
+ * Since: v5.10.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK = -2,
     VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT = -1,
@@ -5638,6 +6260,12 @@ int virDomainAgentSetResponseTimeout(virDomainPtr domain,
                                      int timeout,
                                      unsigned int flags);
 
+/**
+ * virDomainBackupBeginFlags:
+ *
+ * Since: v6.0.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL = (1 << 0), /* reuse separately
                                                           provided images */
@@ -5656,6 +6284,12 @@ int virDomainAuthorizedSSHKeysGet(virDomainPtr domain,
                                   char ***keys,
                                   unsigned int flags);
 
+/**
+ * virDomainAuthorizedSSHKeysSetFlags:
+ *
+ * Since: v6.10.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND = (1 << 0), /* don't truncate file, just append */
     VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE = (1 << 1), /* remove keys, instead of adding them */
@@ -5668,6 +6302,12 @@ int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
                                   unsigned int nkeys,
                                   unsigned int flags);
 
+/**
+ * virDomainMessageType:
+ *
+ * Since: v7.1.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_MESSAGE_DEPRECATION = (1 << 0),
     VIR_DOMAIN_MESSAGE_TAINTING = (1 << 1),
@@ -5681,6 +6321,9 @@ int virDomainGetMessages(virDomainPtr domain,
  * virDomainDirtyRateStatus:
  *
  * Details on the cause of a dirty rate calculation status.
+ *
+ * Since: v7.2.0
+ *
  */
 typedef enum {
     VIR_DOMAIN_DIRTYRATE_UNSTARTED = 0, /* the dirtyrate calculation has
@@ -5700,6 +6343,9 @@ typedef enum {
  *
  * Flags OR'ed together to provide specific behaviour when calculating dirty page
  * rate for a Domain
+ *
+ *
+ * Since: v8.1.0
  *
  */
 typedef enum {

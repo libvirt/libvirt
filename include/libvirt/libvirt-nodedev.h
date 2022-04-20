@@ -32,6 +32,9 @@
  * virNodeDevice:
  *
  * A virNodeDevice contains a node (host) device details.
+ *
+ * Since: v0.5.0
+ *
  */
 
 typedef struct _virNodeDevice virNodeDevice;
@@ -43,6 +46,9 @@ typedef struct _virNodeDevice virNodeDevice;
  * one via virNodeDeviceLookupByName, or virNodeDeviceCreate.  Be sure
  * to call virNodeDeviceFree when done using a virNodeDevicePtr obtained
  * from any of the above functions to avoid leaking memory.
+ *
+ * Since: v0.5.0
+ *
  */
 
 typedef virNodeDevice *virNodeDevicePtr;
@@ -57,11 +63,15 @@ int                     virNodeListDevices      (virConnectPtr conn,
                                                  char **const names,
                                                  int maxnames,
                                                  unsigned int flags);
-/*
- * virConnectListAllNodeDevices:
+/**
+ * virConnectListAllNodeDeviceFlags:
  *
  * Flags used to filter either by capability or active state, the
- * returned node devices. */
+ * returned node devices.
+ *
+ * Since: v0.10.2
+ *
+ */
 typedef enum {
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability */
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       = 1 << 1,  /* PCI device */
@@ -167,6 +177,9 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev);
  * An enumeration of supported eventId parameters for
  * virConnectNodeDeviceEventRegisterAny(). Each event id determines which
  * signature of callback function will be used.
+ *
+ * Since: v2.2.0
+ *
  */
 typedef enum {
     VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback */
@@ -214,6 +227,9 @@ int virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
  *
  * a virNodeDeviceEventLifecycleType is emitted during node device
  * lifecycle events
+ *
+ * Since: v2.2.0
+ *
  */
 typedef enum {
     VIR_NODE_DEVICE_EVENT_CREATED = 0,

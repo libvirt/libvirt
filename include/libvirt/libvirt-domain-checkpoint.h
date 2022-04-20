@@ -34,6 +34,9 @@
  * a domain.  A checkpoint is useful for tracking which portions of the
  * domain disks have been altered since a point in time, but by itself does
  * not allow reverting back to that point in time.
+ *
+ * Since: v5.2.0
+ *
  */
 typedef struct _virDomainCheckpoint virDomainCheckpoint;
 
@@ -43,6 +46,9 @@ typedef struct _virDomainCheckpoint virDomainCheckpoint;
  * A virDomainCheckpointPtr is pointer to a virDomainCheckpoint
  * private structure, and is the type used to reference a domain
  * checkpoint in the API.
+ *
+ * Since: v5.2.0
+ *
  */
 typedef virDomainCheckpoint *virDomainCheckpointPtr;
 
@@ -50,6 +56,12 @@ const char *virDomainCheckpointGetName(virDomainCheckpointPtr checkpoint);
 virDomainPtr virDomainCheckpointGetDomain(virDomainCheckpointPtr checkpoint);
 virConnectPtr virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint);
 
+/**
+ * virDomainCheckpointCreateFlags:
+ *
+ * Since: v5.6.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
                                                             metadata */
@@ -65,7 +77,12 @@ typedef enum {
 virDomainCheckpointPtr virDomainCheckpointCreateXML(virDomainPtr domain,
                                                     const char *xmlDesc,
                                                     unsigned int flags);
-
+/**
+ * virDomainCheckpointXMLFlags:
+ *
+ * Since: v5.6.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_XML_SECURE    = (1 << 0), /* Include sensitive data */
     VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN = (1 << 1), /* Suppress <domain>
@@ -86,7 +103,11 @@ char *virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
  * flag (1<<0) depends on which function it is passed to; but serves
  * to toggle the per-call default of whether the listing is shallow or
  * recursive.  Remaining bits come in groups; if all bits from a group
- * are 0, then that group is not used to filter results.  */
+ * are 0, then that group is not used to filter results.
+ *
+ * Since: v5.6.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_LIST_ROOTS       = (1 << 0), /* Filter by checkpoints
                                                           with no parents, when
@@ -123,7 +144,14 @@ virDomainCheckpointPtr virDomainCheckpointLookupByName(virDomainPtr domain,
 virDomainCheckpointPtr virDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
                                                     unsigned int flags);
 
-/* Delete a checkpoint */
+/**
+ * virDomainCheckpointDeleteFlags:
+ *
+ * Delete a checkpoint
+ *
+ * Since: v5.6.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN      = (1 << 0), /* Also delete children */
     VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata */

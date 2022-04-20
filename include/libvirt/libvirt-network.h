@@ -27,6 +27,12 @@
 #  error "Don't include this file directly, only use libvirt/libvirt.h"
 # endif
 
+/**
+ * virNetworkXMLFlags:
+ *
+ * Since: v0.9.10
+ *
+ */
 typedef enum {
     VIR_NETWORK_XML_INACTIVE = (1 << 0), /* dump inactive network information */
 } virNetworkXMLFlags;
@@ -35,6 +41,9 @@ typedef enum {
  * virNetwork:
  *
  * a virNetwork is a private structure representing a virtual network.
+ *
+ * Since: v0.2.0
+ *
  */
 typedef struct _virNetwork virNetwork;
 
@@ -43,6 +52,9 @@ typedef struct _virNetwork virNetwork;
  *
  * a virNetworkPtr is pointer to a virNetwork private structure, this is the
  * type used to reference a virtual network in the API.
+ *
+ * Since: v0.2.0
+ *
  */
 typedef virNetwork *virNetworkPtr;
 
@@ -51,6 +63,9 @@ typedef virNetwork *virNetworkPtr;
  *
  * a virNetworkPort is a private structure representing a virtual network
  * port
+ *
+ * Since: v5.5.0
+ *
  */
 typedef struct _virNetworkPort virNetworkPort;
 
@@ -59,6 +74,9 @@ typedef struct _virNetworkPort virNetworkPort;
  *
  * a virNetworkPortPtr is pointer to a virNetworkPort private structure,
  * this is the type used to reference a virtual network port in the API.
+ *
+ * Since: v5.5.0
+ *
  */
 typedef virNetworkPort *virNetworkPortPtr;
 
@@ -82,11 +100,14 @@ int                     virConnectNumOfDefinedNetworks  (virConnectPtr conn);
 int                     virConnectListDefinedNetworks   (virConnectPtr conn,
                                                          char **const names,
                                                          int maxnames);
-/*
- * virConnectListAllNetworks:
+/**
+ * virConnectListAllNetworksFlags:
  *
  * Flags used to filter the returned networks. Flags in each group
  * are exclusive attributes of a network.
+ *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_CONNECT_LIST_NETWORKS_INACTIVE      = 1 << 0,
@@ -112,7 +133,12 @@ virNetworkPtr           virNetworkLookupByUUID          (virConnectPtr conn,
                                                          const unsigned char *uuid);
 virNetworkPtr           virNetworkLookupByUUIDString    (virConnectPtr conn,
                                                          const char *uuid);
-
+/**
+ * virNetworkCreateFlags:
+ *
+ * Since: v7.8.0
+ *
+ */
 typedef enum {
     VIR_NETWORK_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
 } virNetworkCreateFlags;
@@ -125,7 +151,12 @@ virNetworkPtr           virNetworkCreateXML     (virConnectPtr conn,
 virNetworkPtr           virNetworkCreateXMLFlags(virConnectPtr conn,
                                                  const char *xmlDesc,
                                                  unsigned int flags);
-
+/**
+ * virNetworkDefineFlags:
+ *
+ * Since: v7.7.0
+ *
+ */
 typedef enum {
     VIR_NETWORK_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
 } virNetworkDefineFlags;
@@ -150,6 +181,8 @@ int                     virNetworkUndefine      (virNetworkPtr network);
  * describes which type of update to perform on a <network>
  * definition.
  *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid) */
@@ -167,6 +200,8 @@ typedef enum {
  *
  * describes which section of a <network> definition the provided
  * xml should be applied to.
+ *
+ * Since: v0.10.2
  *
  */
 typedef enum {
@@ -192,6 +227,9 @@ typedef enum {
  * virNetworkUpdateFlags:
  *
  * Flags to control options for virNetworkUpdate()
+ *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_NETWORK_UPDATE_AFFECT_CURRENT = 0,      /* affect live if network is active,
@@ -246,6 +284,9 @@ int virNetworkIsPersistent(virNetworkPtr net);
  * virNetworkEventLifecycleType:
  *
  * a virNetworkEventLifecycleType is emitted during network lifecycle events
+ *
+ * Since: v1.2.1
+ *
  */
 typedef enum {
     VIR_NETWORK_EVENT_DEFINED = 0,
@@ -294,6 +335,9 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  * An enumeration of supported eventId parameters for
  * virConnectNetworkEventRegisterAny().  Each event id determines which
  * signature of callback function will be used.
+ *
+ * Since: v1.2.1
+ *
  */
 typedef enum {
     VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback */
@@ -308,6 +352,12 @@ typedef enum {
 # endif
 } virNetworkEventID;
 
+/**
+ * virIPAddrType:
+ *
+ * Since: v1.2.6
+ *
+ */
 typedef enum {
     VIR_IP_ADDR_TYPE_IPV4,
     VIR_IP_ADDR_TYPE_IPV6,
@@ -317,7 +367,20 @@ typedef enum {
 # endif
 } virIPAddrType;
 
+/**
+ * virNetworkDHCPLease:
+ *
+ * Since: v1.2.6
+ *
+ */
 typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
+
+/**
+ * virNetworkDHCPLeasePtr:
+ *
+ * Since: v1.2.6
+ *
+ */
 typedef virNetworkDHCPLease *virNetworkDHCPLeasePtr;
 struct _virNetworkDHCPLease {
     char *iface;                /* Network interface name */
@@ -374,6 +437,12 @@ virNetworkPortPtr
 virNetworkPortLookupByUUIDString(virNetworkPtr net,
                                  const char *uuidstr);
 
+/**
+ * virNetworkPortCreateFlags:
+ *
+ * Since: v5.5.0
+ *
+ */
 typedef enum {
     VIR_NETWORK_PORT_CREATE_RECLAIM = (1 << 0), /* reclaim existing used resources */
     VIR_NETWORK_PORT_CREATE_VALIDATE = (1 << 1), /* Validate the XML document against schema */

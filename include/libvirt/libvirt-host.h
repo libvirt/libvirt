@@ -33,6 +33,9 @@
  *
  * a virConnect is a private structure representing a connection to
  * the Hypervisor.
+ *
+ * Since: v0.0.1
+ *
  */
 typedef struct _virConnect virConnect;
 
@@ -41,6 +44,9 @@ typedef struct _virConnect virConnect;
  *
  * a virConnectPtr is pointer to a virConnect private structure, this is the
  * type used to reference a connection to the Hypervisor in the API.
+ *
+ * Since: v0.0.1
+ *
  */
 typedef virConnect *virConnectPtr;
 
@@ -49,6 +55,9 @@ typedef virConnect *virConnectPtr;
  *
  * Flags to indicate which system-wide sleep state the host must be
  * transitioned to.
+ *
+ * Since: v0.9.8
+ *
  */
 typedef enum {
     VIR_NODE_SUSPEND_TARGET_MEM     = 0,
@@ -64,6 +73,9 @@ typedef enum {
  * virStream:
  *
  * a virStream is a private structure representing a data stream.
+ *
+ * Since: v0.7.2
+ *
  */
 typedef struct _virStream virStream;
 
@@ -72,6 +84,9 @@ typedef struct _virStream virStream;
  *
  * a virStreamPtr is pointer to a virStream private structure, this is the
  * type used to reference a data stream in the API.
+ *
+ * Since: v0.7.2
+ *
  */
 typedef virStream *virStreamPtr;
 
@@ -91,6 +106,9 @@ typedef virStream *virStreamPtr;
  * a virSecurityLabel is a structure filled by virDomainGetSecurityLabel(),
  * providing the security label and associated attributes for the specified
  * domain.
+ *
+ * Since: v0.6.1
+ *
  */
 typedef struct _virSecurityLabel virSecurityLabel;
 
@@ -103,6 +121,9 @@ struct _virSecurityLabel {
  * virSecurityLabelPtr:
  *
  * a virSecurityLabelPtr is a pointer to a virSecurityLabel.
+ *
+ * Since: v0.6.1
+ *
  */
 typedef virSecurityLabel *virSecurityLabelPtr;
 
@@ -130,6 +151,9 @@ typedef virSecurityLabel *virSecurityLabelPtr;
  * a virSecurityModel is a structure filled by virNodeGetSecurityModel(),
  * providing the per-hypervisor security model and DOI attributes for the
  * specified domain.
+ *
+ * Since: v0.6.1
+ *
  */
 typedef struct _virSecurityModel virSecurityModel;
 
@@ -142,6 +166,9 @@ struct _virSecurityModel {
  * virSecurityModelPtr:
  *
  * a virSecurityModelPtr is a pointer to a virSecurityModel.
+ *
+ * Since: v0.6.1
+ *
  */
 typedef virSecurityModel *virSecurityModelPtr;
 
@@ -149,7 +176,7 @@ typedef virSecurityModel *virSecurityModelPtr;
 /* data types related to virNodePtr */
 
 /**
- * virNodeInfoPtr:
+ * virNodeInfo:
  *
  * a virNodeInfo is a structure filled by virNodeGetInfo() and providing
  * the information for the Node.
@@ -157,8 +184,9 @@ typedef virSecurityModel *virSecurityModelPtr;
  * Note that the information in this struct is not guaranteed to be an
  * accurate relection of the system hardware. See the virNodeGetInfo()
  * API documentation for further guidance.
+ *
+ * Since: v0.1.0
  */
-
 typedef struct _virNodeInfo virNodeInfo;
 
 struct _virNodeInfo {
@@ -188,9 +216,12 @@ struct _virNodeInfo {
 # define VIR_NODE_CPU_STATS_FIELD_LENGTH 80
 
 /**
- * VIR_NODE_CPU_STATS_ALL_CPUS:
+ * virNodeGetCPUStatsAllCPUs:
  *
  * Value for specifying request for the total CPU time/utilization
+ *
+ * Since: v0.9.8
+ *
  */
 typedef enum {
     VIR_NODE_CPU_STATS_ALL_CPUS = -1,
@@ -262,6 +293,9 @@ typedef enum {
  *
  * a virNodeCPUStats is a structure filled by virNodeGetCPUStats()
  * providing information about the CPU stats of the node.
+ *
+ * Since: v0.9.3
+ *
  */
 typedef struct _virNodeCPUStats virNodeCPUStats;
 
@@ -280,9 +314,12 @@ struct _virNodeCPUStats {
 # define VIR_NODE_MEMORY_STATS_FIELD_LENGTH 80
 
 /**
- * VIR_NODE_MEMORY_STATS_ALL_CELLS:
+ * virNodeGetMemoryStatsAllCells:
  *
  * Value for specifying request for the total memory of all cells.
+ *
+ * Since: v0.9.8
+ *
  */
 typedef enum {
     VIR_NODE_MEMORY_STATS_ALL_CELLS = -1,
@@ -334,6 +371,9 @@ typedef enum {
  *
  * a virNodeMemoryStats is a structure filled by virNodeGetMemoryStats()
  * providing information about the memory of the node.
+ *
+ * Since: v0.9.3
+ *
  */
 typedef struct _virNodeMemoryStats virNodeMemoryStats;
 
@@ -463,6 +503,9 @@ int virNodeGetCPUMap(virConnectPtr conn,
  * virNodeInfoPtr:
  *
  * a virNodeInfoPtr is a pointer to a virNodeInfo structure.
+ *
+ * Since: v0.1.0
+ *
  */
 
 typedef virNodeInfo *virNodeInfoPtr;
@@ -471,6 +514,9 @@ typedef virNodeInfo *virNodeInfoPtr;
  * virNodeCPUStatsPtr:
  *
  * a virNodeCPUStatsPtr is a pointer to a virNodeCPUStats structure.
+ *
+ * Since: v0.9.3
+ *
  */
 
 typedef virNodeCPUStats *virNodeCPUStatsPtr;
@@ -479,6 +525,9 @@ typedef virNodeCPUStats *virNodeCPUStatsPtr;
  * virNodeMemoryStatsPtr:
  *
  * a virNodeMemoryStatsPtr is a pointer to a virNodeMemoryStats structure.
+ *
+ * Since: v0.9.3
+ *
  */
 
 typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
@@ -554,16 +603,24 @@ int virNodeGetSEVInfo (virConnectPtr conn,
                        unsigned int flags);
 
 /**
- * virConnectFlags
+ * virConnectFlags:
  *
  * Flags when opening a connection to a hypervisor
+ *
+ * Since: v0.4.1
+ *
  */
 typedef enum {
     VIR_CONNECT_RO         = (1 << 0),  /* A readonly connection */
     VIR_CONNECT_NO_ALIASES = (1 << 1),  /* Don't try to resolve URI aliases */
 } virConnectFlags;
 
-
+/**
+ * virConnectCredentialType:
+ *
+ * Since: v0.4.1
+ *
+ */
 typedef enum {
     VIR_CRED_USERNAME = 1,     /* Identity to act as */
     VIR_CRED_AUTHNAME = 2,     /* Identify to authorize as */
@@ -589,7 +646,20 @@ struct _virConnectCredential {
     unsigned int resultlen; /* Length of the result */
 };
 
+/**
+ * virConnectCredential:
+ *
+ * Since: v0.4.1
+ *
+ */
 typedef struct _virConnectCredential virConnectCredential;
+
+/**
+ * virConnectCredentialPtr:
+ *
+ * Since: v0.4.1
+ *
+ */
 typedef virConnectCredential *virConnectCredentialPtr;
 
 
@@ -618,8 +688,20 @@ struct _virConnectAuth {
     void *cbdata;
 };
 
-
+/**
+ * virConnectAuth:
+ *
+ * Since: v0.4.1
+ *
+ */
 typedef struct _virConnectAuth virConnectAuth;
+
+/**
+ * virConnectAuthPtr:
+ *
+ * Since: v0.4.1
+ *
+ */
 typedef virConnectAuth *virConnectAuthPtr;
 
 /*
@@ -850,6 +932,12 @@ int virConnectIsAlive(virConnectPtr conn);
  * CPU specification API
  */
 
+/**
+ * virCPUCompareResult:
+ *
+ * Since: v0.7.5
+ *
+ */
 typedef enum {
     VIR_CPU_COMPARE_ERROR           = -1,
     VIR_CPU_COMPARE_INCOMPATIBLE    = 0,
@@ -861,6 +949,12 @@ typedef enum {
 # endif
 } virCPUCompareResult;
 
+/**
+ * virConnectCompareCPUFlags:
+ *
+ * Since: v1.2.6
+ *
+ */
 typedef enum {
     VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE = (1 << 0), /* treat incompatible
                                                              CPUs as failure */
@@ -885,9 +979,12 @@ int virConnectGetCPUModelNames(virConnectPtr conn,
                                unsigned int flags);
 
 /**
- * virConnectBaselineCPUFlags
+ * virConnectBaselineCPUFlags:
  *
  * Flags when getting XML description of a computed CPU
+ *
+ * Since: v1.1.2
+ *
  */
 typedef enum {
     VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features */
@@ -915,7 +1012,12 @@ int virNodeGetFreePages(virConnectPtr conn,
                         unsigned int cellcount,
                         unsigned long long *counts,
                         unsigned int flags);
-
+/**
+ * virNodeAllocPagesFlags:
+ *
+ * Since: v1.2.9
+ *
+ */
 typedef enum {
     VIR_NODE_ALLOC_PAGES_ADD = 0, /* Add @pageCounts to the pages pool. This
                                      can be used only to size up the pool. */

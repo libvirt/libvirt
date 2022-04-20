@@ -34,6 +34,9 @@
  * a virEventHandleType is used similar to POLLxxx FD events, but is specific
  * to libvirt. A client app must translate to, and from POLL events when using
  * this construct.
+ *
+ * Since: v0.5.0
+ *
  */
 typedef enum {
     VIR_EVENT_HANDLE_READABLE  = (1 << 0),

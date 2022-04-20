@@ -34,6 +34,9 @@
  * a domain.  A snapshot captures the state of the domain at a point in
  * time, with the intent that the guest can be reverted back to that
  * state at a later time.
+ *
+ * Since: v0.8.0
+ *
  */
 typedef struct _virDomainSnapshot virDomainSnapshot;
 
@@ -42,6 +45,9 @@ typedef struct _virDomainSnapshot virDomainSnapshot;
  *
  * A virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
  * and is the type used to reference a domain snapshot in the API.
+ *
+ * Since: v0.8.0
+ *
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
 
@@ -49,6 +55,12 @@ const char *virDomainSnapshotGetName(virDomainSnapshotPtr snapshot);
 virDomainPtr virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot);
 virConnectPtr virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot);
 
+/**
+ * virDomainSnapshotCreateFlags:
+ *
+ * Since: v0.9.5
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
                                                           metadata */
@@ -79,7 +91,12 @@ typedef enum {
 virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
                                                 const char *xmlDesc,
                                                 unsigned int flags);
-
+/**
+ * virDomainSnapshotXMLFlags:
+ *
+ * Since: v5.1.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too */
 } virDomainSnapshotXMLFlags;
@@ -98,7 +115,11 @@ char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
  * of flag (1<<0) depends on which function it is passed to; but serves
  * to toggle the per-call default of whether the listing is shallow or
  * recursive.  Remaining bits come in groups; if all bits from a group are
- * 0, then that group is not used to filter results.  */
+ * 0, then that group is not used to filter results.
+ *
+ * Since: v0.9.5
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_ROOTS       = (1 << 0), /* Filter by snapshots
                                                         with no parents, when
@@ -194,6 +215,12 @@ int virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
 int virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
                                  unsigned int flags);
 
+/**
+ * virDomainSnapshotRevertFlags:
+ *
+ * Since: v0.9.5
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert */
     VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert */
@@ -208,7 +235,14 @@ typedef enum {
 int virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
                               unsigned int flags);
 
-/* Delete a snapshot */
+/**
+ * virDomainSnapshotDeleteFlags:
+ *
+ * Delete a snapshot
+ *
+ * Since: v0.8.0
+ *
+ */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN      = (1 << 0), /* Also delete children */
     VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata */

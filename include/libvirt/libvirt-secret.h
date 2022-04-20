@@ -33,10 +33,26 @@
  *
  * A virSecret stores a secret value (e.g. a passphrase or encryption key)
  * and associated metadata.
+ *
+ * Since: v0.7.1
+ *
  */
 typedef struct _virSecret virSecret;
+
+/**
+ * virSecretPtr:
+ *
+ * Since: v0.7.1
+ *
+ */
 typedef virSecret *virSecretPtr;
 
+/**
+ * virSecretUsageType:
+ *
+ * Since: v0.7.1
+ *
+ */
 typedef enum {
     VIR_SECRET_USAGE_TYPE_NONE = 0,
     VIR_SECRET_USAGE_TYPE_VOLUME = 1,
@@ -61,11 +77,14 @@ int                     virConnectListSecrets   (virConnectPtr conn,
                                                  char **uuids,
                                                  int maxuuids);
 
-/*
- * virConnectListAllSecrets:
+/**
+ * virConnectListAllSecretsFlags:
  *
  * Flags used to filter the returned secrets. Flags in each group
  * are exclusive attributes of a secret.
+ *
+ * Since: v0.10.2
+ *
  */
 typedef enum {
     VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
@@ -88,7 +107,12 @@ virSecretPtr            virSecretLookupByUUIDString(virConnectPtr conn,
 virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
                                                int usageType,
                                                const char *usageID);
-
+/**
+ * virSecretDefineFlags:
+ *
+ * Since: v7.7.0
+ *
+ */
 typedef enum {
     VIR_SECRET_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
 } virSecretDefineFlags;
@@ -131,6 +155,9 @@ int                     virSecretFree           (virSecretPtr secret);
  * An enumeration of supported eventId parameters for
  * virConnectSecretEventRegisterAny(). Each event id determines which
  * signature of callback function will be used.
+ *
+ * Since: v3.0.0
+ *
  */
 typedef enum {
     VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback */
@@ -178,6 +205,9 @@ int virConnectSecretEventDeregisterAny(virConnectPtr conn,
  *
  * a virSecretEventLifecycleType is emitted during secret
  * lifecycle events
+ *
+ * Since: v3.0.0
+ *
  */
 typedef enum {
     VIR_SECRET_EVENT_DEFINED = 0,

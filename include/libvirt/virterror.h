@@ -34,6 +34,9 @@ extern "C" {
  * virErrorLevel:
  *
  * Indicates the level of an error
+ *
+ * Since: v0.1.0
+ *
  */
 typedef enum {
     VIR_ERR_NONE = 0,
@@ -46,6 +49,9 @@ typedef enum {
  *
  * Indicates where an error may have come from.  This should remain
  * stable, with all additions placed at the end since libvirt 0.1.0.
+ *
+ * Since: v0.1.0
+ *
  */
 typedef enum {
     VIR_FROM_NONE = 0,
@@ -152,9 +158,19 @@ typedef enum {
  * The conn, dom and net fields should be used with extreme care.
  * Reference counts are not incremented so the underlying objects
  * may be deleted without notice after the error has been delivered.
+ *
+ * Since: v0.1.0
+ *
  */
 
 typedef struct _virError virError;
+
+/**
+ * virErrorPtr:
+ *
+ * Since: v0.1.0
+ *
+ */
 typedef virError *virErrorPtr;
 struct _virError {
     int         code;   /* The error code, a virErrorNumber */
@@ -205,6 +221,9 @@ struct _virError {
  *     break;
  * default:
  * }
+ *
+ * Since: v0.1.0
+ *
  */
 typedef enum {
     VIR_ERR_OK = 0,
