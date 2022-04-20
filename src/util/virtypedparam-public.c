@@ -127,6 +127,8 @@ virTypedParameterAssignFromStr(virTypedParameterPtr param,
  *
  * Returns pointer to the parameter or NULL if it does not exist in @params.
  * This function does not raise an error, even when returning NULL.
+ *
+ * Since: v1.0.2
  */
 virTypedParameterPtr
 virTypedParamsGet(virTypedParameterPtr params,
@@ -176,6 +178,8 @@ virTypedParamsGet(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetInt(virTypedParameterPtr params,
@@ -212,6 +216,8 @@ virTypedParamsGetInt(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetUInt(virTypedParameterPtr params,
@@ -248,6 +254,8 @@ virTypedParamsGetUInt(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetLLong(virTypedParameterPtr params,
@@ -284,6 +292,8 @@ virTypedParamsGetLLong(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetULLong(virTypedParameterPtr params,
@@ -320,6 +330,8 @@ virTypedParamsGetULLong(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetDouble(virTypedParameterPtr params,
@@ -356,6 +368,8 @@ virTypedParamsGetDouble(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetBoolean(virTypedParameterPtr params,
@@ -394,6 +408,8 @@ virTypedParamsGetBoolean(virTypedParameterPtr params,
  *
  * Returns 1 on success, 0 when the parameter does not exist in @params, or
  * -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsGetString(virTypedParameterPtr params,
@@ -433,6 +449,8 @@ virTypedParamsGetString(virTypedParameterPtr params,
  * if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddInt(virTypedParameterPtr *params,
@@ -479,6 +497,8 @@ virTypedParamsAddInt(virTypedParameterPtr *params,
  * error if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddUInt(virTypedParameterPtr *params,
@@ -525,6 +545,8 @@ virTypedParamsAddUInt(virTypedParameterPtr *params,
  * error if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddLLong(virTypedParameterPtr *params,
@@ -571,6 +593,8 @@ virTypedParamsAddLLong(virTypedParameterPtr *params,
  * error if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddULLong(virTypedParameterPtr *params,
@@ -617,6 +641,8 @@ virTypedParamsAddULLong(virTypedParameterPtr *params,
  * error if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddDouble(virTypedParameterPtr *params,
@@ -663,6 +689,8 @@ virTypedParamsAddDouble(virTypedParameterPtr *params,
  * error if the parameter already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddBoolean(virTypedParameterPtr *params,
@@ -711,6 +739,8 @@ virTypedParamsAddBoolean(virTypedParameterPtr *params,
  * already exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddString(virTypedParameterPtr *params,
@@ -757,6 +787,8 @@ virTypedParamsAddString(virTypedParameterPtr *params,
  * key @name.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.2.17
  */
 int
 virTypedParamsAddStringList(virTypedParameterPtr *params,
@@ -802,6 +834,8 @@ virTypedParamsAddStringList(virTypedParameterPtr *params,
  * exists in @params.
  *
  * Returns 0 on success, -1 on error.
+ *
+ * Since: v1.0.2
  */
 int
 virTypedParamsAddFromString(virTypedParameterPtr *params,
@@ -840,6 +874,8 @@ virTypedParamsAddFromString(virTypedParameterPtr *params,
  * is not freed; use virTypedParamsFree if you want it to be freed too.
  *
  * Returns nothing.
+ *
+ * Since: v1.0.2
  */
 void
 virTypedParamsClear(virTypedParameterPtr params,
@@ -866,6 +902,8 @@ virTypedParamsClear(virTypedParameterPtr params,
  * @params.
  *
  * Returns nothing.
+ *
+ * Since: v1.0.2
  */
 void
 virTypedParamsFree(virTypedParameterPtr params,
