@@ -240,11 +240,8 @@ typedef enum {
  *
  */
 typedef enum {
-    VIR_STORAGE_VOL_USE_ALLOCATION = 0,
-
-    /* Return the physical size in allocation */
-    VIR_STORAGE_VOL_GET_PHYSICAL = 1 << 0,
-
+    VIR_STORAGE_VOL_USE_ALLOCATION = 0, /* (Since: v3.0.0) */
+    VIR_STORAGE_VOL_GET_PHYSICAL = 1 << 0, /* Return the physical size in allocation (Since: v3.0.0) */
 } virStorageVolInfoFlags;
 
 /**
