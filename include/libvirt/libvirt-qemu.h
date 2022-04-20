@@ -30,6 +30,11 @@
 extern "C" {
 # endif
 
+/**
+ * virDomainQemuMonitorCommandFlags:
+ *
+ * Since: v0.8.8
+ */
 typedef enum {
     VIR_DOMAIN_QEMU_MONITOR_COMMAND_DEFAULT = 0, /* (Since: v0.8.8) */
     VIR_DOMAIN_QEMU_MONITOR_COMMAND_HMP     = (1 << 0), /* cmd is in HMP (Since: v0.8.8) */
@@ -50,6 +55,11 @@ virDomainPtr virDomainQemuAttach(virConnectPtr domain,
                                  unsigned int pid_value,
                                  unsigned int flags);
 
+/**
+ * virDomainQemuAgentCommandTimeoutValues:
+ *
+ * Since: v0.10.0
+ */
 typedef enum {
     VIR_DOMAIN_QEMU_AGENT_COMMAND_MIN = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK, /* (Since: v0.10.0) */
     VIR_DOMAIN_QEMU_AGENT_COMMAND_BLOCK = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK, /* (Since: v0.10.0) */
@@ -84,6 +94,11 @@ typedef void (*virConnectDomainQemuMonitorEventCallback)(virConnectPtr conn,
                                                          void *opaque);
 
 
+/**
+ * virConnectDomainQemuMonitorEventRegisterFlags:
+ *
+ * Since: v1.2.3
+ */
 typedef enum {
     /* Event filter is a regex rather than a literal string (Since: v1.2.3) */
     VIR_CONNECT_DOMAIN_QEMU_MONITOR_EVENT_REGISTER_REGEX = (1 << 0),
