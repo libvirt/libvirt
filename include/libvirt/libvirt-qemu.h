@@ -84,6 +84,8 @@ char *virDomainQemuAgentCommand(virDomainPtr domain, const char *cmd,
  *
  * The callback signature to use when registering for a qemu monitor
  * event with virConnectDomainQemuMonitorEventRegister().
+ *
+ * Since: v1.2.3
  */
 typedef void (*virConnectDomainQemuMonitorEventCallback)(virConnectPtr conn,
                                                          virDomainPtr dom,
