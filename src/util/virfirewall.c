@@ -461,14 +461,14 @@ void virFirewallStartRollback(virFirewall *firewall,
 }
 
 
-static char *
-virFirewallRuleToString(virFirewallRule *rule)
+char *
+virFirewallRuleToString(const char *cmd,
+                        virFirewallRule *rule)
 {
-    const char *bin = virFirewallLayerCommandTypeToString(rule->layer);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
     size_t i;
 
-    virBufferAdd(&buf, bin, -1);
+    virBufferAdd(&buf, cmd, -1);
     for (i = 0; i < rule->argsLen; i++) {
         virBufferAddLit(&buf, " ");
         virBufferAdd(&buf, rule->args[i], -1);
@@ -476,6 +476,7 @@ virFirewallRuleToString(virFirewallRule *rule)
 
     return virBufferContentAndReset(&buf);
 }
+
 
 static int
 virFirewallApplyRuleDirect(virFirewallRule *rule,
@@ -529,8 +530,10 @@ virFirewallApplyRule(virFirewall *firewall,
                      bool ignoreErrors)
 {
     g_autofree char *output = NULL;
-    g_autofree char *str = virFirewallRuleToString(rule);
     g_auto(GStrv) lines = NULL;
+    g_autofree char *str
+        = virFirewallRuleToString(virFirewallLayerCommandTypeToString(rule->layer), rule);
+
     VIR_INFO("Applying rule '%s'", NULLSTR(str));
 
     if (rule->ignoreErrors)

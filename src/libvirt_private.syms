@@ -2352,6 +2352,7 @@ virFirewallRuleAddArgFormat;
 virFirewallRuleAddArgList;
 virFirewallRuleAddArgSet;
 virFirewallRuleGetArgCount;
+virFirewallRuleToString;
 virFirewallStartRollback;
 virFirewallStartTransaction;
 

@@ -89,6 +89,9 @@ void virFirewallRuleAddArgList(virFirewall *firewall,
 
 size_t virFirewallRuleGetArgCount(virFirewallRule *rule);
 
+char *virFirewallRuleToString(const char *cmd,
+                              virFirewallRule *rule);
+
 typedef enum {
     /* Ignore all errors when applying rules, so no
      * rollback block will be required */
