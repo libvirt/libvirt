@@ -3514,7 +3514,8 @@ qemuDomainDefNamespaceParse(xmlXPathContextPtr ctxt,
 
     if (nsdata->args || nsdata->num_env > 0 ||
         nsdata->capsadd || nsdata->capsdel ||
-        nsdata->deprecationBehavior)
+        nsdata->deprecationBehavior ||
+        nsdata->ndeviceOverride > 0)
         *data = g_steal_pointer(&nsdata);
 
     ret = 0;
