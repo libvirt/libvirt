@@ -42,7 +42,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-encryptdisk/.config \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-2-format","id":"virtio-disk2"}' \
 -object '{"qom-type":"secret","id":"libvirt-1-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
 -blockdev '{"driver":"rbd","pool":"pool","image":"image2","server":[{"host":"mon1.example.org","port":"6321"},{"host":"mon2.example.org","port":"6322"},{"host":"mon3.example.org","port":"6322"}],"encrypt":{"format":"luks2","key-secret":"libvirt-1-format-encryption-secret0"},"node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
--blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"vmdk","file":"libvirt-1-storage"}' \
 -device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x6","drive":"libvirt-1-format","id":"virtio-disk3"}' \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x3"}' \

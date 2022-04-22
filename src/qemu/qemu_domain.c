@@ -5012,6 +5012,12 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                 switch ((virStorageEncryptionFormatType) src->encryption->format) {
                     case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS:
                     case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
+                        if (src->format != VIR_STORAGE_FILE_QCOW2 &&
+                            src->format != VIR_STORAGE_FILE_RAW) {
+                            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                           _("encryption is supported only with 'raw' and 'qcow2' image format"));
+                            return -1;
+                        }
                         break;
 
                     case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2:
@@ -5033,6 +5039,13 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RBD_ENCRYPTION)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("librbd encryption is not supported by this QEMU binary"));
+                    return -1;
+                }
+
+                if (actualType != VIR_STORAGE_TYPE_NETWORK &&
+                    src->protocol != VIR_STORAGE_NET_PROTOCOL_RBD) {
+                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                                   _("librbd encryption is supported only with RBD backed disks"));
                     return -1;
                 }
                 break;
