@@ -132,6 +132,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  * VIR_THREADPOOL_WORKERS_MIN:
  * Macro for the threadpool minWorkers limit: represents the bottom limit to
  * number of active workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_WORKERS_MIN "minWorkers"
@@ -142,6 +144,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  * number of active workers in threadpool, as VIR_TYPED_PARAM_UINT.
  * The value of this limit has to be greater than VIR_THREADPOOL_WORKERS_MIN
  * at all times.
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_WORKERS_MAX "maxWorkers"
@@ -150,6 +154,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  * VIR_THREADPOOL_WORKERS_PRIORITY:
  * Macro for the threadpool nPrioWorkers attribute: represents the current number
  * of active priority workers in threadpool, as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_WORKERS_PRIORITY "prioWorkers"
@@ -161,6 +167,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_WORKERS_FREE "freeWorkers"
@@ -172,6 +180,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_WORKERS_CURRENT "nWorkers"
@@ -183,6 +193,8 @@ virAdmServerPtr virAdmConnectLookupServer(virAdmConnectPtr conn,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_THREADPOOL_JOB_QUEUE_DEPTH "jobQueueDepth"
@@ -233,6 +245,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_READONLY "readonly"
@@ -244,6 +258,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_SOCKET_ADDR "sock_addr"
@@ -255,6 +271,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_SASL_USER_NAME "sasl_user_name"
@@ -267,6 +285,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_X509_DISTINGUISHED_NAME "tls_x509_dname"
@@ -279,6 +299,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_UNIX_USER_ID "unix_user_id"
@@ -291,6 +313,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_UNIX_USER_NAME "unix_user_name"
@@ -303,6 +327,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_UNIX_GROUP_ID "unix_group_id"
@@ -315,6 +341,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_UNIX_GROUP_NAME "unix_group_name"
@@ -327,6 +355,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_UNIX_PROCESS_ID "unix_process_id"
@@ -339,6 +369,8 @@ virAdmServerLookupClient(virAdmServerPtr srv,
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_CLIENT_INFO_SELINUX_CONTEXT "selinux_context"
@@ -356,6 +388,8 @@ int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
  * VIR_SERVER_CLIENTS_MAX:
  * Macro for per-server nclients_max limit: represents the upper limit to
  * number of clients connected to the server, as uint.
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_SERVER_CLIENTS_MAX "nclients_max"
@@ -367,6 +401,8 @@ int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_SERVER_CLIENTS_CURRENT "nclients"
@@ -376,6 +412,8 @@ int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
  * Macro for per-server nclients_unauth_max limit: represents the upper limit
  * to number of clients connected to the server, but not authenticated yet,
  * as VIR_TYPED_PARAM_UINT.
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_SERVER_CLIENTS_UNAUTH_MAX "nclients_unauth_max"
@@ -388,6 +426,8 @@ int virAdmClientClose(virAdmClientPtr client, unsigned int flags);
  *
  * NOTE: This attribute is read-only and any attempt to set it will be denied
  * by daemon
+ *
+ * Since: v2.0.0
  */
 
 # define VIR_SERVER_CLIENTS_UNAUTH_CURRENT "nclients_unauth"
