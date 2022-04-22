@@ -870,9 +870,6 @@ void qemuDomainSecretInfoDestroy(qemuDomainSecretInfo *secinfo);
 void qemuDomainSecretDiskDestroy(virDomainDiskDef *disk)
     ATTRIBUTE_NONNULL(1);
 
-bool qemuDomainStorageSourceHasAuth(virStorageSource *src)
-    ATTRIBUTE_NONNULL(1);
-
 qemuDomainSecretInfo *
 qemuDomainSecretInfoTLSNew(qemuDomainObjPrivate *priv,
                            const char *srcAlias,

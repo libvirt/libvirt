@@ -1231,18 +1231,6 @@ qemuDomainSecretDiskDestroy(virDomainDiskDef *disk)
 }
 
 
-bool
-qemuDomainStorageSourceHasAuth(virStorageSource *src)
-{
-    if (!virStorageSourceIsEmpty(src) &&
-        virStorageSourceGetActualType(src) == VIR_STORAGE_TYPE_NETWORK &&
-        src->auth)
-        return true;
-
-    return false;
-}
-
-
 static qemuDomainSecretInfo *
 qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivate *priv,
                                             virStorageSource *src,
@@ -1277,13 +1265,12 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
                                      const char *aliasformat)
 {
     qemuDomainStorageSourcePrivate *srcPriv;
-    bool hasAuth = qemuDomainStorageSourceHasAuth(src);
     bool hasEnc = src->encryption && src->encryption->nsecrets > 0;
 
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (!hasAuth && !hasEnc && src->ncookies == 0)
+    if (!src->auth && !hasEnc && src->ncookies == 0)
         return 0;
 
     if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
@@ -1291,7 +1278,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
 
     srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
 
-    if (hasAuth) {
+    if (src->auth) {
         virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
 
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
@@ -5663,7 +5650,7 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDef *hostdev,
     if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
         hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
         scsisrc->protocol != VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI ||
-        !qemuDomainStorageSourceHasAuth(iscsisrc->src))
+        !iscsisrc->src->auth)
         return 0;
 
     if (!(priv = qemuDomainStorageSourcePrivateFetch(iscsisrc->src)))
