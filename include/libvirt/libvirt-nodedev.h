@@ -35,7 +35,6 @@
  *
  * Since: v0.5.0
  */
-
 typedef struct _virNodeDevice virNodeDevice;
 
 /**
@@ -48,7 +47,6 @@ typedef struct _virNodeDevice virNodeDevice;
  *
  * Since: v0.5.0
  */
-
 typedef virNodeDevice *virNodeDevicePtr;
 
 

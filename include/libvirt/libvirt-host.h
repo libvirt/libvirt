@@ -482,8 +482,6 @@ int virNodeGetCPUMap(virConnectPtr conn,
  *
  * Since: v0.1.4
  */
-
-
 # define VIR_NODEINFO_MAXCPUS(nodeinfo) ((nodeinfo).nodes*(nodeinfo).sockets*(nodeinfo).cores*(nodeinfo).threads)
 
 /**
@@ -493,7 +491,6 @@ int virNodeGetCPUMap(virConnectPtr conn,
  *
  * Since: v0.1.0
  */
-
 typedef virNodeInfo *virNodeInfoPtr;
 
 /**
@@ -503,7 +500,6 @@ typedef virNodeInfo *virNodeInfoPtr;
  *
  * Since: v0.9.3
  */
-
 typedef virNodeCPUStats *virNodeCPUStatsPtr;
 
 /**
@@ -513,7 +509,6 @@ typedef virNodeCPUStats *virNodeCPUStatsPtr;
  *
  * Since: v0.9.3
  */
-
 typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
 
 
@@ -704,7 +699,6 @@ VIR_EXPORT_VAR virConnectAuthPtr virConnectAuthPtrDefault;
  *
  * Since: v0.2.0
  */
-
 # define VIR_UUID_BUFLEN (16)
 
 /**
@@ -715,7 +709,6 @@ VIR_EXPORT_VAR virConnectAuthPtr virConnectAuthPtrDefault;
  *
  * Since: v0.2.0
  */
-
 # define VIR_UUID_STRING_BUFLEN (36+1)
 
 

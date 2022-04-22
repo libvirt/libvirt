@@ -159,7 +159,6 @@ typedef enum {
  *
  * Since: v0.1.0
  */
-
 typedef struct _virError virError;
 
 /**

@@ -350,7 +350,6 @@ struct _virDomainInfo {
  *
  * Since: v0.0.1
  */
-
 typedef virDomainInfo *virDomainInfoPtr;
 
 /**
@@ -1618,7 +1617,6 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  *
  * Since: v0.9.0
  */
-
 # define VIR_DOMAIN_BLKIO_WEIGHT "weight"
 
 /**
@@ -1630,7 +1628,6 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  *
  * Since: v0.9.8
  */
-
 # define VIR_DOMAIN_BLKIO_DEVICE_WEIGHT "device_weight"
 
 /**
@@ -1643,7 +1640,6 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  *
  * Since: v1.2.2
  */
-
 # define VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS "device_read_iops_sec"
 
 
@@ -1703,7 +1699,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Since: v0.8.8
  */
-
 # define VIR_DOMAIN_MEMORY_PARAM_UNLIMITED 9007199254740991LL /* = INT64_MAX >> 10 */
 
 /**
@@ -1714,7 +1709,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Since: v0.8.5
  */
-
 # define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
 
 /**
@@ -1725,7 +1719,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Since: v0.8.5
  */
-
 # define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
 
 /**
@@ -1736,7 +1729,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Since: v0.8.5
  */
-
 # define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
 
 /**
@@ -1748,7 +1740,6 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Since: v0.8.5
  */
-
 # define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"
 
 /* Set memory tunables for the domain */
@@ -2421,7 +2412,6 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * Since: v0.1.4
  */
-
 # define VIR_USE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] |= (1 << ((cpu) % 8)))
 
 /**
@@ -2434,7 +2424,6 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * Since: v0.1.4
  */
-
 # define VIR_UNUSE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] &= ~(1 << ((cpu) % 8)))
 
 /**
@@ -2447,7 +2436,6 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * Since: v1.0.0
  */
-
 # define VIR_CPU_USED(cpumap, cpu) ((cpumap)[(cpu) / 8] & (1 << ((cpu) % 8)))
 
 /**
@@ -2460,7 +2448,6 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  *
  * Since: v0.1.4
  */
-
 # define VIR_CPU_MAPLEN(cpu) (((cpu) + 7) / 8)
 
 
@@ -2483,7 +2470,6 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  *
  * Since: v0.1.4
  */
-
 # define VIR_CPU_USABLE(cpumaps, maplen, vcpu, cpu) \
     VIR_CPU_USED(VIR_GET_CPUMAP(cpumaps, maplen, vcpu), cpu)
 
@@ -2648,7 +2634,6 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * "perf.mbmt" field in the *Stats APIs.
  *
  * Since: v1.3.5
-
  */
 # define VIR_PERF_PARAM_MBMT "mbmt"
 
