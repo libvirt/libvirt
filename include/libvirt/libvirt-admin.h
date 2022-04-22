@@ -37,6 +37,8 @@ extern "C" {
  *
  * a virAdmConnect is a private structure representing a connection to
  * libvirt daemon.
+ *
+ * Since: v2.0.0
  */
 typedef struct _virAdmConnect virAdmConnect;
 
@@ -45,6 +47,8 @@ typedef struct _virAdmConnect virAdmConnect;
  *
  * a virAdmServer is a private structure and client-side representation of
  * a remote server object
+ *
+ * Since: v2.0.0
  */
 typedef struct _virAdmServer virAdmServer;
 
@@ -53,6 +57,8 @@ typedef struct _virAdmServer virAdmServer;
  *
  * a virAdmClient is a private structure and client-side representation of
  * a remote server's client object (as server sees clients connected to it)
+ *
+ * Since: v2.0.0
  */
 typedef struct _virAdmClient virAdmClient;
 
@@ -62,6 +68,8 @@ typedef struct _virAdmClient virAdmClient;
  * a virAdmConnectPtr is pointer to a virAdmConnect private structure,
  * this is the type used to reference a connection to the daemon
  * in the API.
+ *
+ * Since: v2.0.0
  */
 typedef virAdmConnect *virAdmConnectPtr;
 
@@ -71,6 +79,8 @@ typedef virAdmConnect *virAdmConnectPtr;
  * a virAdmServerPtr is a pointer to a virAdmServer structure,
  * this is the type used to reference client-side representation of a
  * remote server object throughout all the APIs.
+ *
+ * Since: v2.0.0
  */
 typedef virAdmServer *virAdmServerPtr;
 
@@ -80,6 +90,8 @@ typedef virAdmServer *virAdmServerPtr;
  * a virAdmClientPtr is a pointer to a virAdmClient structure,
  * this is the type used to reference client-side representation of a
  * client object throughout all the APIs.
+ *
+ * Since: v2.0.0
  */
 typedef virAdmClient *virAdmClientPtr;
 
@@ -216,6 +228,11 @@ long long virAdmClientGetTimestamp(virAdmClientPtr client);
 int virAdmClientGetTransport(virAdmClientPtr client);
 int virAdmClientFree(virAdmClientPtr client);
 
+/**
+ * virClientTransport:
+ *
+ * Since: v2.0.0
+ */
 typedef enum {
     VIR_CLIENT_TRANS_UNIX = 0, /* connection via UNIX socket (Since: v2.0.0) */
     VIR_CLIENT_TRANS_TCP,      /* connection via unencrypted TCP socket (Since: v2.0.0) */
