@@ -2178,6 +2178,25 @@ class docBuilder:
         self.scanModules()
         self.scanVersions()
 
+    # Fetch tags from the comment. Only 'Since' supported at the moment.
+    # Return the tags and the original comment without the tags.
+    def retrieve_comment_tags(self, name: str, comment: str) -> (str, str):
+        since = ""
+        if comment is not None:
+            comment_match = re.search(r"\(?Since: v?(\d+\.\d+\.\d+\.?\d?)\)?",
+                                      comment)
+            if comment_match:
+                # Remove Since tag from the comment
+                (start, end) = comment_match.span()
+                comment = comment[:start] + comment[end:]
+                comment = comment.strip()
+                # Only the version
+                since = comment_match.group(1)
+
+        if since == "":
+            self.warning("Missing 'Since' tag for: " + name)
+        return (since, comment)
+
     def modulename_file(self, file):
         module = os.path.basename(file)
         if module[-2:] == '.h':
@@ -2211,7 +2230,15 @@ class docBuilder:
             if info[2] is not None and info[2] != '':
                 output.write(" type='%s'" % info[2])
             if info[1] is not None and info[1] != '':
-                output.write(" info='%s'" % escape(info[1]))
+                # Search for 'Since' version tag
+                (since, comment) = self.retrieve_comment_tags(name, info[1])
+                if len(since) > 0:
+                    output.write(" version='%s'" % escape(since))
+                if len(comment) > 0:
+                    output.write(" info='%s'" % escape(comment))
+            else:
+                self.warning("Missing docstring for enum: " + name)
+
         output.write("/>\n")
 
     def serialize_macro(self, output, name):
