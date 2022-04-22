@@ -292,7 +292,7 @@ int                     virConnectListDefinedStoragePools(virConnectPtr conn,
  * Note that these flags come in groups; if all bits from a group are 0,
  * then that group is not used to filter results.
  *
- * Since: v1.0.0
+ * Since: v0.10.2
  */
 typedef enum {
     VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE      = 1 << 0,

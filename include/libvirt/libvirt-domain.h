@@ -1755,7 +1755,7 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
  *
  * Memory size modification flags.
  *
- * Since: v1.0.0
+ * Since: v0.9.0
  */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
@@ -2264,7 +2264,7 @@ typedef virVcpuInfo *virVcpuInfoPtr;
  *
  * Flags for controlling virtual CPU hot-plugging.
  *
- * Since: v1.0.0
+ * Since: v0.8.5
  */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
@@ -2511,7 +2511,7 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
 /**
  * virDomainDeviceModifyFlags:
  *
- * Since: v1.0.0
+ * Since: v0.7.7
  */
 typedef enum {
     /* See virDomainModificationImpact for these flags.  */
