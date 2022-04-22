@@ -120,6 +120,8 @@ int virAdmConnectGetLibVersion(virAdmConnectPtr conn,
  * @opaque: opaque client data
  *
  * A callback to be registered, in case a connection was closed.
+ *
+ * Since: v2.0.0
  */
 typedef void (*virAdmConnectCloseFunc)(virAdmConnectPtr conn,
                                        int reason,
