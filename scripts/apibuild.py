@@ -2266,11 +2266,15 @@ class docBuilder:
             output.write(" string='%s'" % strValue)
         else:
             output.write(" raw='%s'" % escape(rawValue))
+
+        (since, comment) = self.retrieve_comment_tags(name, desc)
+        if len(since) > 0:
+            output.write(" version='%s'" % escape(since))
         output.write(">\n")
 
-        if desc is not None and desc != "":
-            output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
-            self.indexString(name, desc)
+        if comment is not None and comment != "":
+            output.write("      <info><![CDATA[%s]]></info>\n" % (comment))
+            self.indexString(name, comment)
         for arg in args:
             (name, desc) = arg
             if desc is not None and desc != "":
