@@ -473,9 +473,43 @@ virDomainDiskVhostUserValidate(const virDomainDiskDef *disk)
 static int
 virDomainDiskDefValidateSourceChainOne(const virStorageSource *src)
 {
+    virStorageType actualType = virStorageSourceGetActualType(src);
+
     if (src->type == VIR_STORAGE_TYPE_NETWORK && src->auth) {
         virStorageAuthDef *authdef = src->auth;
         int actUsage;
+
+        if (actualType != VIR_STORAGE_TYPE_NETWORK) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("authentication is supported only for network backed disks"));
+            return -1;
+        }
+
+        switch ((virStorageNetProtocol) src->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("authentication is not supported for protocol '%s'"),
+                           virStorageNetProtocolTypeToString(src->protocol));
+            return -1;
+
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            break;
+        }
 
         if ((actUsage = virSecretUsageTypeFromString(authdef->secrettype)) < 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
