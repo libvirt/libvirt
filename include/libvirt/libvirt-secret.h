@@ -51,12 +51,12 @@ typedef virSecret *virSecretPtr;
  * Since: v0.7.1
  */
 typedef enum {
-    VIR_SECRET_USAGE_TYPE_NONE = 0,
-    VIR_SECRET_USAGE_TYPE_VOLUME = 1,
-    VIR_SECRET_USAGE_TYPE_CEPH = 2,
-    VIR_SECRET_USAGE_TYPE_ISCSI = 3,
-    VIR_SECRET_USAGE_TYPE_TLS = 4,
-    VIR_SECRET_USAGE_TYPE_VTPM = 5,
+    VIR_SECRET_USAGE_TYPE_NONE = 0, /* (Since: v0.7.1) */
+    VIR_SECRET_USAGE_TYPE_VOLUME = 1, /* (Since: v0.7.1) */
+    VIR_SECRET_USAGE_TYPE_CEPH = 2, /* (Since: v0.9.7) */
+    VIR_SECRET_USAGE_TYPE_ISCSI = 3, /* (Since: v1.0.4) */
+    VIR_SECRET_USAGE_TYPE_TLS = 4, /* (Since: v2.3.0) */
+    VIR_SECRET_USAGE_TYPE_VTPM = 5, /* (Since: v5.6.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_SECRET_USAGE_TYPE_LAST
@@ -64,6 +64,8 @@ typedef enum {
      * NB: this enum value will increase over time as new usage types are
      * added to the libvirt API. It reflects the last usage type supported
      * by this version of the libvirt API.
+     *
+     * Since: v0.9.7
      */
 # endif
 } virSecretUsageType;
@@ -84,13 +86,13 @@ int                     virConnectListSecrets   (virConnectPtr conn,
  */
 typedef enum {
     VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
-                                                       stored persistently */
-    VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 1 << 1,
+                                                       stored persistently (Since: v0.10.2) */
+    VIR_CONNECT_LIST_SECRETS_NO_EPHEMERAL = 1 << 1, /* (Since: v0.10.2) */
 
     VIR_CONNECT_LIST_SECRETS_PRIVATE      = 1 << 2, /* not revealed to any caller
                                                        of libvirt, nor to any other
-                                                       node */
-    VIR_CONNECT_LIST_SECRETS_NO_PRIVATE   = 1 << 3,
+                                                       node (Since: v0.10.2) */
+    VIR_CONNECT_LIST_SECRETS_NO_PRIVATE   = 1 << 3, /* (Since: v0.10.2) */
 } virConnectListAllSecretsFlags;
 
 int                     virConnectListAllSecrets(virConnectPtr conn,
@@ -109,7 +111,7 @@ virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
  * Since: v7.7.0
  */
 typedef enum {
-    VIR_SECRET_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+    VIR_SECRET_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
 } virSecretDefineFlags;
 
 virSecretPtr            virSecretDefineXML      (virConnectPtr conn,
@@ -154,8 +156,8 @@ int                     virSecretFree           (virSecretPtr secret);
  * Since: v3.0.0
  */
 typedef enum {
-    VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback */
-    VIR_SECRET_EVENT_ID_VALUE_CHANGED = 1, /* virConnectSecretEventGenericCallback */
+    VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback (Since: v3.0.0) */
+    VIR_SECRET_EVENT_ID_VALUE_CHANGED = 1, /* virConnectSecretEventGenericCallback (Since: v3.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_SECRET_EVENT_ID_LAST
@@ -163,6 +165,8 @@ typedef enum {
      * NB: this enum value will increase over time as new events are
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
+     *
+     * Since: v3.0.0
      */
 # endif
 } virSecretEventID;
@@ -203,11 +207,11 @@ int virConnectSecretEventDeregisterAny(virConnectPtr conn,
  * Since: v3.0.0
  */
 typedef enum {
-    VIR_SECRET_EVENT_DEFINED = 0,
-    VIR_SECRET_EVENT_UNDEFINED = 1,
+    VIR_SECRET_EVENT_DEFINED = 0, /* (Since: v3.0.0) */
+    VIR_SECRET_EVENT_UNDEFINED = 1, /* (Since: v3.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_SECRET_EVENT_LAST
+    VIR_SECRET_EVENT_LAST /* (Since: v3.0.0) */
 # endif
 } virSecretEventLifecycleType;
 

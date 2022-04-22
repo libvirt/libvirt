@@ -57,12 +57,12 @@ typedef virConnect *virConnectPtr;
  * Since: v0.9.8
  */
 typedef enum {
-    VIR_NODE_SUSPEND_TARGET_MEM     = 0,
-    VIR_NODE_SUSPEND_TARGET_DISK    = 1,
-    VIR_NODE_SUSPEND_TARGET_HYBRID  = 2,
+    VIR_NODE_SUSPEND_TARGET_MEM     = 0, /* (Since: v0.9.8) */
+    VIR_NODE_SUSPEND_TARGET_DISK    = 1, /* (Since: v0.9.8) */
+    VIR_NODE_SUSPEND_TARGET_HYBRID  = 2, /* (Since: v0.9.8) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_NODE_SUSPEND_TARGET_LAST /* This constant is subject to change */
+    VIR_NODE_SUSPEND_TARGET_LAST /* This constant is subject to change (Since: v0.9.8) */
 # endif
 } virNodeSuspendTarget;
 
@@ -214,7 +214,7 @@ struct _virNodeInfo {
  * Since: v0.9.8
  */
 typedef enum {
-    VIR_NODE_CPU_STATS_ALL_CPUS = -1,
+    VIR_NODE_CPU_STATS_ALL_CPUS = -1, /* (Since: v0.9.3) */
 } virNodeGetCPUStatsAllCPUs;
 
 /**
@@ -310,7 +310,7 @@ struct _virNodeCPUStats {
  * Since: v0.9.8
  */
 typedef enum {
-    VIR_NODE_MEMORY_STATS_ALL_CELLS = -1,
+    VIR_NODE_MEMORY_STATS_ALL_CELLS = -1, /* (Since: v0.9.3) */
 } virNodeGetMemoryStatsAllCells;
 
 /**
@@ -589,8 +589,8 @@ int virNodeGetSEVInfo (virConnectPtr conn,
  * Since: v0.4.1
  */
 typedef enum {
-    VIR_CONNECT_RO         = (1 << 0),  /* A readonly connection */
-    VIR_CONNECT_NO_ALIASES = (1 << 1),  /* Don't try to resolve URI aliases */
+    VIR_CONNECT_RO         = (1 << 0),  /* A readonly connection (Since: v0.4.1) */
+    VIR_CONNECT_NO_ALIASES = (1 << 1),  /* Don't try to resolve URI aliases (Since: v0.9.7) */
 } virConnectFlags;
 
 /**
@@ -599,18 +599,18 @@ typedef enum {
  * Since: v0.4.1
  */
 typedef enum {
-    VIR_CRED_USERNAME = 1,     /* Identity to act as */
-    VIR_CRED_AUTHNAME = 2,     /* Identify to authorize as */
-    VIR_CRED_LANGUAGE = 3,     /* RFC 1766 languages, comma separated */
-    VIR_CRED_CNONCE = 4,       /* client supplies a nonce */
-    VIR_CRED_PASSPHRASE = 5,   /* Passphrase secret */
-    VIR_CRED_ECHOPROMPT = 6,   /* Challenge response */
-    VIR_CRED_NOECHOPROMPT = 7, /* Challenge response */
-    VIR_CRED_REALM = 8,        /* Authentication realm */
-    VIR_CRED_EXTERNAL = 9,     /* Externally managed credential */
+    VIR_CRED_USERNAME = 1,     /* Identity to act as (Since: v0.4.1) */
+    VIR_CRED_AUTHNAME = 2,     /* Identify to authorize as (Since: v0.4.1) */
+    VIR_CRED_LANGUAGE = 3,     /* RFC 1766 languages, comma separated (Since: v0.4.1) */
+    VIR_CRED_CNONCE = 4,       /* client supplies a nonce (Since: v0.4.1) */
+    VIR_CRED_PASSPHRASE = 5,   /* Passphrase secret (Since: v0.4.1) */
+    VIR_CRED_ECHOPROMPT = 6,   /* Challenge response (Since: v0.4.1) */
+    VIR_CRED_NOECHOPROMPT = 7, /* Challenge response (Since: v0.4.1) */
+    VIR_CRED_REALM = 8,        /* Authentication realm (Since: v0.4.1) */
+    VIR_CRED_EXTERNAL = 9,     /* Externally managed credential (Since: v0.4.1) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_CRED_LAST              /* More may be added - expect the unexpected */
+    VIR_CRED_LAST              /* More may be added - expect the unexpected (Since: v0.9.10) */
 # endif
 } virConnectCredentialType;
 
@@ -909,13 +909,13 @@ int virConnectIsAlive(virConnectPtr conn);
  * Since: v0.7.5
  */
 typedef enum {
-    VIR_CPU_COMPARE_ERROR           = -1,
-    VIR_CPU_COMPARE_INCOMPATIBLE    = 0,
-    VIR_CPU_COMPARE_IDENTICAL       = 1,
-    VIR_CPU_COMPARE_SUPERSET        = 2,
+    VIR_CPU_COMPARE_ERROR           = -1, /* (Since: v0.7.5) */
+    VIR_CPU_COMPARE_INCOMPATIBLE    = 0, /* (Since: v0.7.5) */
+    VIR_CPU_COMPARE_IDENTICAL       = 1, /* (Since: v0.7.5) */
+    VIR_CPU_COMPARE_SUPERSET        = 2, /* (Since: v0.7.5) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_CPU_COMPARE_LAST
+    VIR_CPU_COMPARE_LAST /* (Since: v0.9.10) */
 # endif
 } virCPUCompareResult;
 
@@ -926,9 +926,9 @@ typedef enum {
  */
 typedef enum {
     VIR_CONNECT_COMPARE_CPU_FAIL_INCOMPATIBLE = (1 << 0), /* treat incompatible
-                                                             CPUs as failure */
+                                                             CPUs as failure (Since: v1.2.6) */
     VIR_CONNECT_COMPARE_CPU_VALIDATE_XML = (1 << 1), /* validate the xml
-                                                        document */
+                                                        document (Since: v6.9.0) */
 } virConnectCompareCPUFlags;
 
 int virConnectCompareCPU(virConnectPtr conn,
@@ -955,8 +955,8 @@ int virConnectGetCPUModelNames(virConnectPtr conn,
  * Since: v1.1.2
  */
 typedef enum {
-    VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features */
-    VIR_CONNECT_BASELINE_CPU_MIGRATABLE = (1 << 1),  /* filter out non-migratable features */
+    VIR_CONNECT_BASELINE_CPU_EXPAND_FEATURES  = (1 << 0),  /* show all features (Since: v1.1.2) */
+    VIR_CONNECT_BASELINE_CPU_MIGRATABLE = (1 << 1),  /* filter out non-migratable features (Since: v1.2.14) */
 } virConnectBaselineCPUFlags;
 
 char *virConnectBaselineCPU(virConnectPtr conn,
@@ -987,10 +987,10 @@ int virNodeGetFreePages(virConnectPtr conn,
  */
 typedef enum {
     VIR_NODE_ALLOC_PAGES_ADD = 0, /* Add @pageCounts to the pages pool. This
-                                     can be used only to size up the pool. */
+                                     can be used only to size up the pool. (Since: v1.2.9) */
     VIR_NODE_ALLOC_PAGES_SET = (1 << 0), /* Don't add @pageCounts, instead set
                                             passed number of pages. This can be
-                                            used to free allocated pages. */
+                                            used to free allocated pages. (Since: v1.2.9) */
 } virNodeAllocPagesFlags;
 
 int virNodeAllocPages(virConnectPtr conn,

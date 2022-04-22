@@ -65,8 +65,8 @@ int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
  * Since: v0.10.2
  */
 typedef enum {
-    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0,
-    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1,
+    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1, /* (Since: v0.10.2) */
 } virConnectListAllInterfacesFlags;
 
 int                     virConnectListAllInterfaces (virConnectPtr conn,
@@ -87,7 +87,7 @@ const char*             virInterfaceGetMACString  (virInterfacePtr iface);
  * Since: v0.7.3
  */
 typedef enum {
-    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information */
+    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information (Since: v0.7.3) */
 } virInterfaceXMLFlags;
 
 /**
@@ -96,7 +96,7 @@ typedef enum {
  * Since: v7.7.0
  */
 typedef enum {
-    VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+    VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
 } virInterfaceDefineFlags;
 
 char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,

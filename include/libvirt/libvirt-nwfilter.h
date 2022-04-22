@@ -93,7 +93,7 @@ virNWFilterPtr          virNWFilterLookupByUUIDString (virConnectPtr conn,
  * Since: v7.7.0
  */
 typedef enum {
-    VIR_NWFILTER_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+    VIR_NWFILTER_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
 } virNWFilterDefineFlags;
 
 /*
@@ -126,7 +126,7 @@ int                     virNWFilterFree         (virNWFilterPtr nwfilter);
  * Since: v7.8.0
  */
 typedef enum {
-    VIR_NWFILTER_BINDING_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
+    VIR_NWFILTER_BINDING_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.8.0) */
 } virNWFilterBindingCreateFlags;
 
 const char*             virNWFilterGetName       (virNWFilterPtr nwfilter);

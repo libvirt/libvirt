@@ -34,7 +34,7 @@
  * Since: v0.7.2
  */
 typedef enum {
-    VIR_STREAM_NONBLOCK = (1 << 0),
+    VIR_STREAM_NONBLOCK = (1 << 0), /* (Since: v0.7.2) */
 } virStreamFlags;
 
 virStreamPtr virStreamNew(virConnectPtr conn,
@@ -55,7 +55,7 @@ int virStreamRecv(virStreamPtr st,
  * Since: v3.4.0
  */
 typedef enum {
-    VIR_STREAM_RECV_STOP_AT_HOLE = (1 << 0),
+    VIR_STREAM_RECV_STOP_AT_HOLE = (1 << 0), /* (Since: v3.4.0) */
 } virStreamRecvFlagsValues;
 
 int virStreamRecvFlags(virStreamPtr st,
@@ -245,10 +245,10 @@ int virStreamSparseRecvAll(virStreamPtr stream,
  * Since: v0.7.2
  */
 typedef enum {
-    VIR_STREAM_EVENT_READABLE  = (1 << 0),
-    VIR_STREAM_EVENT_WRITABLE  = (1 << 1),
-    VIR_STREAM_EVENT_ERROR     = (1 << 2),
-    VIR_STREAM_EVENT_HANGUP    = (1 << 3),
+    VIR_STREAM_EVENT_READABLE  = (1 << 0), /* (Since: v0.7.2) */
+    VIR_STREAM_EVENT_WRITABLE  = (1 << 1), /* (Since: v0.7.2) */
+    VIR_STREAM_EVENT_ERROR     = (1 << 2), /* (Since: v0.7.2) */
+    VIR_STREAM_EVENT_HANGUP    = (1 << 3), /* (Since: v0.7.2) */
 } virStreamEventType;
 
 

@@ -38,10 +38,10 @@
  * Since: v0.5.0
  */
 typedef enum {
-    VIR_EVENT_HANDLE_READABLE  = (1 << 0),
-    VIR_EVENT_HANDLE_WRITABLE  = (1 << 1),
-    VIR_EVENT_HANDLE_ERROR     = (1 << 2),
-    VIR_EVENT_HANDLE_HANGUP    = (1 << 3),
+    VIR_EVENT_HANDLE_READABLE  = (1 << 0), /* (Since: v0.5.0) */
+    VIR_EVENT_HANDLE_WRITABLE  = (1 << 1), /* (Since: v0.5.0) */
+    VIR_EVENT_HANDLE_ERROR     = (1 << 2), /* (Since: v0.5.0) */
+    VIR_EVENT_HANDLE_HANGUP    = (1 << 3), /* (Since: v0.5.0) */
 } virEventHandleType;
 
 /**
