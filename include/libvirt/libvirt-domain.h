@@ -1758,12 +1758,10 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
  * Since: v0.9.0
  */
 typedef enum {
-    /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_MEM_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
     VIR_DOMAIN_MEM_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
     VIR_DOMAIN_MEM_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
-    /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_MEM_MAXIMUM = (1 << 2), /* affect Max rather than current */
 } virDomainMemoryModFlags;
 
@@ -2267,12 +2265,10 @@ typedef virVcpuInfo *virVcpuInfoPtr;
  * Since: v0.8.5
  */
 typedef enum {
-    /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_VCPU_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
     VIR_DOMAIN_VCPU_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
     VIR_DOMAIN_VCPU_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
-    /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count */
     VIR_DOMAIN_VCPU_GUEST   = (1 << 3), /* Modify state of the cpu in the guest */
     VIR_DOMAIN_VCPU_HOTPLUGGABLE = (1 << 4), /* Make vcpus added hot(un)pluggable */
@@ -2514,12 +2510,10 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * Since: v0.7.7
  */
 typedef enum {
-    /* See virDomainModificationImpact for these flags.  */
     VIR_DOMAIN_DEVICE_MODIFY_CURRENT = VIR_DOMAIN_AFFECT_CURRENT,
     VIR_DOMAIN_DEVICE_MODIFY_LIVE    = VIR_DOMAIN_AFFECT_LIVE,
     VIR_DOMAIN_DEVICE_MODIFY_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG,
 
-    /* Additionally, these flags may be bitwise-OR'd in.  */
     VIR_DOMAIN_DEVICE_MODIFY_FORCE = (1 << 2), /* Forcibly modify device
                                                   (ex. force eject a cdrom) */
 } virDomainDeviceModifyFlags;

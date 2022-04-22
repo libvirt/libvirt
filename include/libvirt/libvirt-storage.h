@@ -304,7 +304,6 @@ typedef enum {
     VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART     = 1 << 4,
     VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART  = 1 << 5,
 
-    /* List pools by type */
     VIR_CONNECT_LIST_STORAGE_POOLS_DIR           = 1 << 6,
     VIR_CONNECT_LIST_STORAGE_POOLS_FS            = 1 << 7,
     VIR_CONNECT_LIST_STORAGE_POOLS_NETFS         = 1 << 8,
