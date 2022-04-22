@@ -2297,9 +2297,11 @@ class docBuilder:
 
     def serialize_typedef(self, output, name):
         id = self.idx.typedefs[name]
+        (since, comment) = self.retrieve_comment_tags(name, id.extra)
+        version_tag = len(since) > 0 and f" version='{since}'" or ""
         if id.info[0:7] == 'struct ':
-            output.write("    <struct name='%s' file='%s' type='%s'" % (
-                name, self.modulename_file(id.header), id.info))
+            output.write("    <struct name='%s' file='%s' type='%s'%s" % (
+                name, self.modulename_file(id.header), id.info, version_tag))
             name = id.info[7:]
             if (name in self.idx.structs and
                     isinstance(self.idx.structs[name].info, (list, tuple))):
@@ -2322,12 +2324,11 @@ class docBuilder:
             else:
                 output.write("/>\n")
         else:
-            output.write("    <typedef name='%s' file='%s' type='%s'" % (
-                         name, self.modulename_file(id.header), id.info))
+            output.write("    <typedef name='%s' file='%s' type='%s'%s" % (
+                         name, self.modulename_file(id.header), id.info, version_tag))
             try:
-                desc = id.extra
-                if desc is not None and desc != "":
-                    output.write(">\n      <info><![CDATA[%s]]></info>\n" % (desc))
+                if comment is not None and comment != "":
+                    output.write(">\n      <info><![CDATA[%s]]></info>\n" % (comment))
                     output.write("    </typedef>\n")
                 else:
                     output.write("/>\n")
