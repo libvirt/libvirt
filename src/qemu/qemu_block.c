@@ -882,7 +882,7 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
     g_autoptr(virJSONValue) servers = NULL;
     virJSONValue *ret = NULL;
     g_autoptr(virJSONValue) encrypt = NULL;
-    const char *encformat;
+    const char *encformat = NULL;
     const char *username = NULL;
     g_autoptr(virJSONValue) authmodes = NULL;
     const char *keysecret = NULL;
@@ -911,16 +911,10 @@ qemuBlockStorageSourceGetRBDProps(virStorageSource *src,
                 break;
 
             case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("librbd encryption engine only supports luks/luks2 formats"));
-                return NULL;
-
             case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
             case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
             default:
-                virReportEnumRangeError(virStorageEncryptionFormatType,
-                                        src->encryption->format);
-                return NULL;
+                break;
         }
 
         if (virJSONValueObjectAdd(&encrypt,
