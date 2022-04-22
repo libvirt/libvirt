@@ -36,7 +36,6 @@
  * not allow reverting back to that point in time.
  *
  * Since: v5.2.0
- *
  */
 typedef struct _virDomainCheckpoint virDomainCheckpoint;
 
@@ -48,7 +47,6 @@ typedef struct _virDomainCheckpoint virDomainCheckpoint;
  * checkpoint in the API.
  *
  * Since: v5.2.0
- *
  */
 typedef virDomainCheckpoint *virDomainCheckpointPtr;
 
@@ -60,7 +58,6 @@ virConnectPtr virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint);
  * virDomainCheckpointCreateFlags:
  *
  * Since: v5.6.0
- *
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
@@ -81,7 +78,6 @@ virDomainCheckpointPtr virDomainCheckpointCreateXML(virDomainPtr domain,
  * virDomainCheckpointXMLFlags:
  *
  * Since: v5.6.0
- *
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_XML_SECURE    = (1 << 0), /* Include sensitive data */
@@ -106,7 +102,6 @@ char *virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
  * are 0, then that group is not used to filter results.
  *
  * Since: v5.6.0
- *
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_LIST_ROOTS       = (1 << 0), /* Filter by checkpoints
@@ -150,7 +145,6 @@ virDomainCheckpointPtr virDomainCheckpointGetParent(virDomainCheckpointPtr check
  * Delete a checkpoint
  *
  * Since: v5.6.0
- *
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN      = (1 << 0), /* Also delete children */

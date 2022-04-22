@@ -36,7 +36,6 @@
  * this construct.
  *
  * Since: v0.5.0
- *
  */
 typedef enum {
     VIR_EVENT_HANDLE_READABLE  = (1 << 0),

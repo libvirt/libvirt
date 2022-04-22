@@ -32,7 +32,6 @@
  * virStreamFlags:
  *
  * Since: v0.7.2
- *
  */
 typedef enum {
     VIR_STREAM_NONBLOCK = (1 << 0),
@@ -54,7 +53,6 @@ int virStreamRecv(virStreamPtr st,
  * virStreamRecvFlagsValues:
  *
  * Since: v3.4.0
- *
  */
 typedef enum {
     VIR_STREAM_RECV_STOP_AT_HOLE = (1 << 0),
@@ -245,7 +243,6 @@ int virStreamSparseRecvAll(virStreamPtr stream,
  * virStreamEventType:
  *
  * Since: v0.7.2
- *
  */
 typedef enum {
     VIR_STREAM_EVENT_READABLE  = (1 << 0),

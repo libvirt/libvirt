@@ -34,7 +34,6 @@
  * a virStoragePool is a private structure representing a storage pool
  *
  * Since: v0.4.1
- *
  */
 typedef struct _virStoragePool virStoragePool;
 
@@ -45,7 +44,6 @@ typedef struct _virStoragePool virStoragePool;
  * type used to reference a storage pool in the API.
  *
  * Since: v0.4.1
- *
  */
 typedef virStoragePool *virStoragePoolPtr;
 
@@ -54,7 +52,6 @@ typedef virStoragePool *virStoragePoolPtr;
  * virStoragePoolState:
  *
  * Since: v0.4.1
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_INACTIVE = 0, /* Not running */
@@ -72,7 +69,6 @@ typedef enum {
  * virStoragePoolBuildFlags:
  *
  * Since: v0.4.1
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch */
@@ -86,7 +82,6 @@ typedef enum {
  * virStoragePoolDeleteFlags:
  *
  * Since: v0.4.1
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
@@ -97,7 +92,6 @@ typedef enum {
  * virStoragePoolCreateFlags:
  *
  * Since: v1.3.1
- *
  */
 typedef enum {
     /* Create the pool but do not perform pool build */
@@ -121,7 +115,6 @@ typedef enum {
  * virStoragePoolInfo:
  *
  * Since: v0.4.1
- *
  */
 typedef struct _virStoragePoolInfo virStoragePoolInfo;
 
@@ -136,7 +129,6 @@ struct _virStoragePoolInfo {
  * virStoragePoolInfoPtr:
  *
  * Since: v0.4.1
- *
  */
 typedef virStoragePoolInfo *virStoragePoolInfoPtr;
 
@@ -147,7 +139,6 @@ typedef virStoragePoolInfo *virStoragePoolInfoPtr;
  * a virStorageVol is a private structure representing a storage volume
  *
  * Since: v0.4.1
- *
  */
 typedef struct _virStorageVol virStorageVol;
 
@@ -158,7 +149,6 @@ typedef struct _virStorageVol virStorageVol;
  * type used to reference a storage volume in the API.
  *
  * Since: v0.4.1
- *
  */
 typedef virStorageVol *virStorageVolPtr;
 
@@ -167,7 +157,6 @@ typedef virStorageVol *virStorageVolPtr;
  * virStorageVolType:
  *
  * Since: v0.4.1
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes */
@@ -187,7 +176,6 @@ typedef enum {
  * virStorageVolDeleteFlags:
  *
  * Since: v0.4.1
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) */
@@ -199,7 +187,6 @@ typedef enum {
  * virStorageVolWipeAlgorithm:
  *
  * Since: v0.9.10
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes */
@@ -237,7 +224,6 @@ typedef enum {
  * virStorageVolInfoFlags:
  *
  * Since: v3.0.0
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_USE_ALLOCATION = 0, /* (Since: v3.0.0) */
@@ -248,7 +234,6 @@ typedef enum {
  * virStorageVolInfo:
  *
  * Since: v0.4.1
- *
  */
 typedef struct _virStorageVolInfo virStorageVolInfo;
 
@@ -263,7 +248,6 @@ struct _virStorageVolInfo {
  * virStorageVolInfoPtr:
  *
  * Since: v0.4.1
- *
  */
 typedef virStorageVolInfo *virStorageVolInfoPtr;
 
@@ -271,7 +255,6 @@ typedef virStorageVolInfo *virStorageVolInfoPtr;
  * virStorageXMLFlags:
  *
  * Since: v0.9.13
- *
  */
 typedef enum {
     VIR_STORAGE_XML_INACTIVE    = (1 << 0), /* dump inactive pool/volume information */
@@ -310,7 +293,6 @@ int                     virConnectListDefinedStoragePools(virConnectPtr conn,
  * then that group is not used to filter results.
  *
  * Since: v1.0.0
- *
  */
 typedef enum {
     VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE      = 1 << 0,
@@ -366,7 +348,6 @@ virStoragePoolPtr       virStoragePoolLookupByTargetPath(virConnectPtr conn,
  * virStoragePoolDefineFlags:
  *
  * Since: v7.7.0
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
@@ -445,7 +426,6 @@ const char*             virStorageVolGetKey             (virStorageVolPtr vol);
  * virStorageVolCreateFlags:
  *
  * Since: v1.0.1
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0,
@@ -463,7 +443,6 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
  * virStorageVolDownloadFlags:
  *
  * Since: v3.4.0
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM = 1 << 0, /* Use sparse stream */
@@ -479,7 +458,6 @@ int                     virStorageVolDownload           (virStorageVolPtr vol,
  * virStorageVolUploadFlags:
  *
  * Since: v3.4.0
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM = 1 << 0,  /* Use sparse stream */
@@ -514,7 +492,6 @@ char *                  virStorageVolGetPath            (virStorageVolPtr vol);
  * virStorageVolResizeFlags:
  *
  * Since: v0.9.10
- *
  */
 typedef enum {
     VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size */
@@ -547,7 +524,6 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool);
  * signature of callback function will be used.
  *
  * Since: v2.0.0
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE = 0, /* virConnectStoragePoolEventLifecycleCallback */
@@ -597,7 +573,6 @@ int virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
  * lifecycle events
  *
  * Since: v2.0.0
- *
  */
 typedef enum {
     VIR_STORAGE_POOL_EVENT_DEFINED = 0,

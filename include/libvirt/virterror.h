@@ -36,7 +36,6 @@ extern "C" {
  * Indicates the level of an error
  *
  * Since: v0.1.0
- *
  */
 typedef enum {
     VIR_ERR_NONE = 0,
@@ -51,7 +50,6 @@ typedef enum {
  * stable, with all additions placed at the end since libvirt 0.1.0.
  *
  * Since: v0.1.0
- *
  */
 typedef enum {
     VIR_FROM_NONE = 0,
@@ -160,7 +158,6 @@ typedef enum {
  * may be deleted without notice after the error has been delivered.
  *
  * Since: v0.1.0
- *
  */
 
 typedef struct _virError virError;
@@ -169,7 +166,6 @@ typedef struct _virError virError;
  * virErrorPtr:
  *
  * Since: v0.1.0
- *
  */
 typedef virError *virErrorPtr;
 struct _virError {
@@ -223,7 +219,6 @@ struct _virError {
  * }
  *
  * Since: v0.1.0
- *
  */
 typedef enum {
     VIR_ERR_OK = 0,

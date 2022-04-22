@@ -35,7 +35,6 @@
  * and associated metadata.
  *
  * Since: v0.7.1
- *
  */
 typedef struct _virSecret virSecret;
 
@@ -43,7 +42,6 @@ typedef struct _virSecret virSecret;
  * virSecretPtr:
  *
  * Since: v0.7.1
- *
  */
 typedef virSecret *virSecretPtr;
 
@@ -51,7 +49,6 @@ typedef virSecret *virSecretPtr;
  * virSecretUsageType:
  *
  * Since: v0.7.1
- *
  */
 typedef enum {
     VIR_SECRET_USAGE_TYPE_NONE = 0,
@@ -84,7 +81,6 @@ int                     virConnectListSecrets   (virConnectPtr conn,
  * are exclusive attributes of a secret.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_CONNECT_LIST_SECRETS_EPHEMERAL    = 1 << 0, /* kept in memory, never
@@ -111,7 +107,6 @@ virSecretPtr            virSecretLookupByUsage(virConnectPtr conn,
  * virSecretDefineFlags:
  *
  * Since: v7.7.0
- *
  */
 typedef enum {
     VIR_SECRET_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
@@ -157,7 +152,6 @@ int                     virSecretFree           (virSecretPtr secret);
  * signature of callback function will be used.
  *
  * Since: v3.0.0
- *
  */
 typedef enum {
     VIR_SECRET_EVENT_ID_LIFECYCLE = 0, /* virConnectSecretEventLifecycleCallback */
@@ -207,7 +201,6 @@ int virConnectSecretEventDeregisterAny(virConnectPtr conn,
  * lifecycle events
  *
  * Since: v3.0.0
- *
  */
 typedef enum {
     VIR_SECRET_EVENT_DEFINED = 0,

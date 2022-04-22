@@ -31,7 +31,6 @@
  * virNetworkXMLFlags:
  *
  * Since: v0.9.10
- *
  */
 typedef enum {
     VIR_NETWORK_XML_INACTIVE = (1 << 0), /* dump inactive network information */
@@ -43,7 +42,6 @@ typedef enum {
  * a virNetwork is a private structure representing a virtual network.
  *
  * Since: v0.2.0
- *
  */
 typedef struct _virNetwork virNetwork;
 
@@ -54,7 +52,6 @@ typedef struct _virNetwork virNetwork;
  * type used to reference a virtual network in the API.
  *
  * Since: v0.2.0
- *
  */
 typedef virNetwork *virNetworkPtr;
 
@@ -65,7 +62,6 @@ typedef virNetwork *virNetworkPtr;
  * port
  *
  * Since: v5.5.0
- *
  */
 typedef struct _virNetworkPort virNetworkPort;
 
@@ -76,7 +72,6 @@ typedef struct _virNetworkPort virNetworkPort;
  * this is the type used to reference a virtual network port in the API.
  *
  * Since: v5.5.0
- *
  */
 typedef virNetworkPort *virNetworkPortPtr;
 
@@ -107,7 +102,6 @@ int                     virConnectListDefinedNetworks   (virConnectPtr conn,
  * are exclusive attributes of a network.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_CONNECT_LIST_NETWORKS_INACTIVE      = 1 << 0,
@@ -137,7 +131,6 @@ virNetworkPtr           virNetworkLookupByUUIDString    (virConnectPtr conn,
  * virNetworkCreateFlags:
  *
  * Since: v7.8.0
- *
  */
 typedef enum {
     VIR_NETWORK_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
@@ -155,7 +148,6 @@ virNetworkPtr           virNetworkCreateXMLFlags(virConnectPtr conn,
  * virNetworkDefineFlags:
  *
  * Since: v7.7.0
- *
  */
 typedef enum {
     VIR_NETWORK_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */
@@ -182,7 +174,6 @@ int                     virNetworkUndefine      (virNetworkPtr network);
  * definition.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid) */
@@ -202,7 +193,6 @@ typedef enum {
  * xml should be applied to.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_NETWORK_SECTION_NONE              =  0, /* (invalid) */
@@ -229,7 +219,6 @@ typedef enum {
  * Flags to control options for virNetworkUpdate()
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_NETWORK_UPDATE_AFFECT_CURRENT = 0,      /* affect live if network is active,
@@ -286,7 +275,6 @@ int virNetworkIsPersistent(virNetworkPtr net);
  * a virNetworkEventLifecycleType is emitted during network lifecycle events
  *
  * Since: v1.2.1
- *
  */
 typedef enum {
     VIR_NETWORK_EVENT_DEFINED = 0,
@@ -337,7 +325,6 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  * signature of callback function will be used.
  *
  * Since: v1.2.1
- *
  */
 typedef enum {
     VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback */
@@ -356,7 +343,6 @@ typedef enum {
  * virIPAddrType:
  *
  * Since: v1.2.6
- *
  */
 typedef enum {
     VIR_IP_ADDR_TYPE_IPV4,
@@ -371,7 +357,6 @@ typedef enum {
  * virNetworkDHCPLease:
  *
  * Since: v1.2.6
- *
  */
 typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
 
@@ -379,7 +364,6 @@ typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
  * virNetworkDHCPLeasePtr:
  *
  * Since: v1.2.6
- *
  */
 typedef virNetworkDHCPLease *virNetworkDHCPLeasePtr;
 struct _virNetworkDHCPLease {
@@ -441,7 +425,6 @@ virNetworkPortLookupByUUIDString(virNetworkPtr net,
  * virNetworkPortCreateFlags:
  *
  * Since: v5.5.0
- *
  */
 typedef enum {
     VIR_NETWORK_PORT_CREATE_RECLAIM = (1 << 0), /* reclaim existing used resources */

@@ -33,7 +33,6 @@
  * a virInterface is a private structure representing a virtual interface.
  *
  * Since: v0.6.4
- *
  */
 typedef struct _virInterface virInterface;
 
@@ -44,7 +43,6 @@ typedef struct _virInterface virInterface;
  * type used to reference a virtual interface in the API.
  *
  * Since: v0.6.4
- *
  */
 typedef virInterface *virInterfacePtr;
 
@@ -65,7 +63,6 @@ int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
  * Flags used to filter the returned interfaces.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0,
@@ -88,7 +85,6 @@ const char*             virInterfaceGetMACString  (virInterfacePtr iface);
  * virInterfaceXMLFlags:
  *
  * Since: v0.7.3
- *
  */
 typedef enum {
     VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information */
@@ -98,7 +94,6 @@ typedef enum {
  * virInterfaceDefineFlags:
  *
  * Since: v7.7.0
- *
  */
 typedef enum {
     VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema */

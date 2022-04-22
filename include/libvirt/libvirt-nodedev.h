@@ -34,7 +34,6 @@
  * A virNodeDevice contains a node (host) device details.
  *
  * Since: v0.5.0
- *
  */
 
 typedef struct _virNodeDevice virNodeDevice;
@@ -48,7 +47,6 @@ typedef struct _virNodeDevice virNodeDevice;
  * from any of the above functions to avoid leaking memory.
  *
  * Since: v0.5.0
- *
  */
 
 typedef virNodeDevice *virNodeDevicePtr;
@@ -70,7 +68,6 @@ int                     virNodeListDevices      (virConnectPtr conn,
  * returned node devices.
  *
  * Since: v0.10.2
- *
  */
 typedef enum {
     VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability */
@@ -179,7 +176,6 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev);
  * signature of callback function will be used.
  *
  * Since: v2.2.0
- *
  */
 typedef enum {
     VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback */
@@ -229,7 +225,6 @@ int virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
  * lifecycle events
  *
  * Since: v2.2.0
- *
  */
 typedef enum {
     VIR_NODE_DEVICE_EVENT_CREATED = 0,
