@@ -111,6 +111,17 @@ ignored_functions = {
     "virErrorCopyNew": "private",
 }
 
+# The version in the .sym file might different from
+# the real version that the function was introduced.
+# This dict's value is the correct version, as it should
+# be in the docstrings.
+ignored_function_versions = {
+    'virDomainSetBlockThreshold': '3.2.0',
+    'virAdmServerUpdateTlsFiles': '6.2.0',
+    'virDomainBlockPeek': '0.4.3',
+    'virDomainMemoryPeek': '0.4.3',
+}
+
 ignored_macros = {
     "_virSchedParameter": "backward compatibility macro for virTypedParameter",
     "_virBlkioParameter": "backward compatibility macro for virTypedParameter",
@@ -2185,8 +2196,10 @@ class docBuilder:
         self.scanVersions()
 
     # Fetch tags from the comment. Only 'Since' supported at the moment.
-    # Return the tags and the original comment without the tags.
-    def retrieve_comment_tags(self, name: str, comment: str) -> (str, str):
+    # For functions, since tags are on Return comments.
+    # Return the tags and the original comments, but without the tags.
+    def retrieve_comment_tags(self, name: str, comment: str,
+                              return_comment="") -> (str, str, str):
         since = ""
         if comment is not None:
             comment_match = re.search(r"\(?Since: v?(\d+\.\d+\.\d+\.?\d?)\)?",
@@ -2199,9 +2212,20 @@ class docBuilder:
                 # Only the version
                 since = comment_match.group(1)
 
+        if since == "" and return_comment is not None:
+            return_match = re.search(r"\(?Since: v?(\d+\.\d+\.\d+\.?\d?)\)?",
+                                     return_comment)
+            if return_match:
+                # Remove Since tag from the comment
+                (start, end) = return_match.span()
+                return_comment = return_comment[:start] + return_comment[end:]
+                return_comment = return_comment.strip()
+                # Only the version
+                since = return_match.group(1)
+
         if since == "":
             self.warning("Missing 'Since' tag for: " + name)
-        return (since, comment)
+        return (since, comment, return_comment)
 
     def modulename_file(self, file):
         module = os.path.basename(file)
@@ -2237,7 +2261,7 @@ class docBuilder:
                 output.write(" type='%s'" % info[2])
             if info[1] is not None and info[1] != '':
                 # Search for 'Since' version tag
-                (since, comment) = self.retrieve_comment_tags(name, info[1])
+                (since, comment, _) = self.retrieve_comment_tags(name, info[1])
                 if len(since) > 0:
                     output.write(" version='%s'" % escape(since))
                 if len(comment) > 0:
@@ -2267,7 +2291,7 @@ class docBuilder:
         else:
             output.write(" raw='%s'" % escape(rawValue))
 
-        (since, comment) = self.retrieve_comment_tags(name, desc)
+        (since, comment, _) = self.retrieve_comment_tags(name, desc)
         if len(since) > 0:
             output.write(" version='%s'" % escape(since))
         output.write(">\n")
@@ -2301,7 +2325,7 @@ class docBuilder:
 
     def serialize_typedef(self, output, name):
         id = self.idx.typedefs[name]
-        (since, comment) = self.retrieve_comment_tags(name, id.extra)
+        (since, comment, _) = self.retrieve_comment_tags(name, id.extra)
         version_tag = len(since) > 0 and f" version='{since}'" or ""
         if id.info[0:7] == 'struct ':
             output.write("    <struct name='%s' file='%s' type='%s'%s" % (
@@ -2353,6 +2377,12 @@ class docBuilder:
         if name == debugsym and not quiet:
             print("=>", id)
 
+        (ret, params, desc) = id.info
+        return_comment = (ret is not None and ret[1] is not None) and ret[1] or ""
+        (since, comment, return_comment) = self.retrieve_comment_tags(name, desc, return_comment)
+        # Simple way to avoid setting empty version
+        version_tag = len(since) > 0 and f" version='{since}'" or ""
+
         # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
         if id.type == "function":
             ver = self.versions[name]
@@ -2362,9 +2392,10 @@ class docBuilder:
                 name, self.modulename_file(id.header),
                 self.modulename_file(id.module), self.versions[name]))
         else:
-            output.write("    <functype name='%s' file='%s' module='%s'>\n" % (
+            output.write("    <functype name='%s' file='%s' module='%s'%s>\n" % (
                 name, self.modulename_file(id.header),
-                self.modulename_file(id.module)))
+                self.modulename_file(id.module),
+                version_tag))
         #
         # Processing of conditionals modified by Bill 1/1/05
         #
@@ -2375,19 +2406,33 @@ class docBuilder:
                     apstr = apstr + " &amp;&amp; "
                 apstr = apstr + cond
             output.write("      <cond>%s</cond>\n" % (apstr))
+
         try:
-            (ret, params, desc) = id.info
-            output.write("      <info><![CDATA[%s]]></info>\n" % (desc))
+            # For functions, we get the since version from .syms files.
+            # This is an extra check to see that docstrings are correct
+            # and to avoid wrong versions in the .sym files too.
+            ver = name in self.versions and self.versions[name] or None
+            if len(since) > 0 and ver is not None and since != ver:
+                if name in ignored_function_versions:
+                    allowedver = ignored_function_versions[name]
+                    if allowedver != since:
+                        self.warning(f"Function {name} has allowed version {allowedver} but docstring says {since}")
+                else:
+                    self.warning(f"Function {name} has symversion {ver} but docstring says {since}")
+
+            output.write("      <info><![CDATA[%s]]></info>\n" % (comment))
             self.indexString(name, desc)
+
             if ret[0] is not None:
                 if ret[0] == "void":
                     output.write("      <return type='void'/>\n")
-                elif (ret[1] is None or ret[1] == '') and name not in ignored_functions:
+                elif (return_comment == '') and name not in ignored_functions:
                     self.error("Missing documentation for return of function `%s'" % name)
                 else:
                     output.write("      <return type='%s' info='%s'/>\n" % (
-                        ret[0], escape(ret[1])))
+                        ret[0], escape(return_comment)))
                     self.indexString(name, ret[1])
+
             for param in params:
                 if param[0] == 'void':
                     continue
