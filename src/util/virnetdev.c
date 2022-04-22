@@ -1682,7 +1682,8 @@ virNetDevSetVfConfig(const char *ifname,
 {
     int ret = -1;
 
-    if ((ret = virNetDevSetVfMac(ifname, vf, macaddr, allowRetry)) < 0)
+    if (macaddr &&
+        (ret = virNetDevSetVfMac(ifname, vf, macaddr, allowRetry)) < 0)
         return ret;
     if ((ret = virNetDevSetVfVlan(ifname, vf, vlanid)) < 0)
         return ret;
@@ -2365,7 +2366,7 @@ virNetDevSetNetConfig(const char *linkdev, int vf,
         }
     }
 
-    if (adminMAC) {
+    if (adminMAC || vlanTag) {
         /* Set vlanTag and admin MAC using an RTM_SETLINK request sent to
          * PFdevname+VF#, if mac != NULL this will set the "admin MAC" via
          * the PF, *not* the actual VF MAC - the admin MAC only takes
