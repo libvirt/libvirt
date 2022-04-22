@@ -1243,19 +1243,6 @@ qemuDomainStorageSourceHasAuth(virStorageSource *src)
 }
 
 
-static bool
-qemuDomainDiskHasEncryptionSecret(virStorageSource *src)
-{
-    if (!virStorageSourceIsEmpty(src) && src->encryption &&
-        (src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS ||
-         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2) &&
-        src->encryption->nsecrets > 0)
-        return true;
-
-    return false;
-}
-
-
 static qemuDomainSecretInfo *
 qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivate *priv,
                                             virStorageSource *src,
@@ -1291,7 +1278,10 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
 {
     qemuDomainStorageSourcePrivate *srcPriv;
     bool hasAuth = qemuDomainStorageSourceHasAuth(src);
-    bool hasEnc = qemuDomainDiskHasEncryptionSecret(src);
+    bool hasEnc = src->encryption && src->encryption->nsecrets > 0;
+
+    if (virStorageSourceIsEmpty(src))
+        return 0;
 
     if (!hasAuth && !hasEnc && src->ncookies == 0)
         return 0;
