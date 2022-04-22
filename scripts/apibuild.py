@@ -1145,6 +1145,12 @@ class CParser:
     def parseTypedef(self, token):
         if token is None:
             return None
+
+        # With typedef enum types, we can have comments parsed before the
+        # enum themselves. The parsing of enum values does clear the
+        # self.comment variable. So we store it here for later.
+        typedef_comment = self.comment
+
         token = self.parseType(token)
         if token is None:
             self.error("parsing typedef")
@@ -1168,7 +1174,7 @@ class CParser:
                                        "struct", type)
                         base_type = "struct " + name
                     else:
-                        # TODO report missing or misformatted comments
+                        self.comment = typedef_comment
                         info = self.parseTypeComment(name, 1)
                         self.index_add(name, self.filename, not self.is_header,
                                        "typedef", type, info)
