@@ -1642,7 +1642,9 @@ virNetDevSetVfMac(const char *ifname, int vf,
     };
 
     if (macaddr == NULL || allowRetry == NULL) {
-        virReportError(EINVAL, "%s", _("Invalid parameters: %d"));
+        virReportError(EINVAL,
+                       _("Invalid parameters macaddr=%p allowRetry=%p"),
+                       macaddr, allowRetry);
         return -EINVAL;
     }
 
