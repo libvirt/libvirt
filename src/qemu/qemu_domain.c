@@ -4821,25 +4821,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         return -1;
     }
 
-    if ((src->format == VIR_STORAGE_FILE_QCOW ||
-         src->format == VIR_STORAGE_FILE_QCOW2) &&
-        src->encryption &&
-        (src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
-         src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("old qcow/qcow2 encryption is not supported"));
-            return -1;
-    }
-
-    if (src->format == VIR_STORAGE_FILE_QCOW2 &&
-        src->encryption &&
-        src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_LUKS)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("LUKS encrypted QCOW2 images are not supported by this QEMU"));
-        return -1;
-    }
-
     if (src->format == VIR_STORAGE_FILE_FAT &&
         actualType != VIR_STORAGE_TYPE_VOLUME &&
         actualType != VIR_STORAGE_TYPE_DIR) {
@@ -5019,6 +5000,13 @@ qemuDomainValidateStorageSource(virStorageSource *src,
     }
 
     if (src->encryption) {
+        if (src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT ||
+            src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_QCOW) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("old qcow/qcow2 encryption is not supported"));
+            return -1;
+        }
+
         switch (src->encryption->engine) {
             case VIR_STORAGE_ENCRYPTION_ENGINE_QEMU:
                 switch ((virStorageEncryptionFormatType) src->encryption->format) {
@@ -5040,37 +5028,28 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                 }
 
                 break;
+
             case VIR_STORAGE_ENCRYPTION_ENGINE_LIBRBD:
                 if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_RBD_ENCRYPTION)) {
                     virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                    _("librbd encryption is not supported by this QEMU binary"));
                     return -1;
                 }
-
-                switch ((virStorageEncryptionFormatType) src->encryption->format) {
-                    case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS:
-                    case VIR_STORAGE_ENCRYPTION_FORMAT_LUKS2:
-                        break;
-
-                    case VIR_STORAGE_ENCRYPTION_FORMAT_QCOW:
-                        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                       _("librbd encryption engine only supports luks/luks2 formats"));
-                        return -1;
-
-                    case VIR_STORAGE_ENCRYPTION_FORMAT_DEFAULT:
-                    case VIR_STORAGE_ENCRYPTION_FORMAT_LAST:
-                    default:
-                        virReportEnumRangeError(virStorageEncryptionFormatType,
-                                                src->encryption->format);
-                        return -1;
-                }
-
                 break;
+
             case VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT:
             case VIR_STORAGE_ENCRYPTION_ENGINE_LAST:
                 virReportEnumRangeError(virStorageEncryptionEngine,
                                         src->encryption->engine);
                 return -1;
+        }
+
+        if (src->format == VIR_STORAGE_FILE_QCOW2 &&
+            src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_LUKS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("LUKS encrypted QCOW2 images are not supported by this QEMU"));
+            return -1;
         }
     }
 
