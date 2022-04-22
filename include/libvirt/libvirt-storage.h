@@ -201,11 +201,11 @@ typedef enum {
     VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
                                               Bruce Schneier in "Applied
                                               Cryptography" (1996) */
-    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random data */
 
-    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random data */
 
-    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random */
+    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random data */
 
     VIR_STORAGE_VOL_WIPE_ALG_TRIM = 9, /* 1-pass, trim all data on the
                                           volume by using TRIM or DISCARD */
