@@ -733,15 +733,18 @@ class CParser:
             line = line.replace('*', '', 1)
         return line
 
-    def cleanupComment(self):
-        if not isinstance(self.comment, str):
-            return
-        # remove the leading * on multi-line comments
-        lines = self.comment.splitlines(True)
+    def cleanup_code_comment(self, comment: str) -> str:
+        if not isinstance(comment, str) or comment == "":
+            return ""
+
+        lines = comment.splitlines(True)
         com = ""
         for line in lines:
             com = com + self.strip_lead_star(line)
-        self.comment = com.strip()
+        return com.strip()
+
+    def cleanupComment(self):
+        self.comment = self.cleanup_code_comment(self.comment)
 
     def parseComment(self, token):
         com = token[1]
