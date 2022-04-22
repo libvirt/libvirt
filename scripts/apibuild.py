@@ -733,11 +733,17 @@ class CParser:
             line = line.replace('*', '', 1)
         return line
 
-    def cleanup_code_comment(self, comment: str) -> str:
+    def cleanup_code_comment(self, comment: str, type_name="") -> str:
         if not isinstance(comment, str) or comment == "":
             return ""
 
         lines = comment.splitlines(True)
+
+        # If type_name is provided, check and remove header of
+        # the comment block.
+        if type_name != "" and f"{type_name}:" in lines[0]:
+            del lines[0]
+
         com = ""
         for line in lines:
             com = com + self.strip_lead_star(line)
@@ -1941,10 +1947,14 @@ class CParser:
             if token is None or token[0] != 'name':
                 return token
 
+        variable_comment = None
         if token[1] == 'typedef':
             token = self.token()
             return self.parseTypedef(token)
         else:
+            # Store block of comment that might be from variable as
+            # the code uses self.comment a lot and it would lose it.
+            variable_comment = self.comment
             token = self.parseType(token)
             type_orig = self.type
         if token is None or token[0] != "name":
@@ -1990,8 +2000,11 @@ class CParser:
                                        not self.is_header, "struct",
                                        self.struct_fields)
                     else:
+                        # Just to use the cleanupComment function.
+                        variable_comment = self.cleanup_code_comment(variable_comment, self.name)
+                        info = (type, variable_comment)
                         self.index_add(self.name, self.filename,
-                                       not self.is_header, "variable", type)
+                                       not self.is_header, "variable", info)
                     break
                 elif token[1] == "(":
                     token = self.token()
@@ -2368,12 +2381,16 @@ class docBuilder:
 
     def serialize_variable(self, output, name):
         id = self.idx.variables[name]
-        if id.info is not None:
-            output.write("    <variable name='%s' file='%s' type='%s'/>\n" % (
-                name, self.modulename_file(id.header), id.info))
+        (type, comment) = id.info
+        (since, comment, _) = self.retrieve_comment_tags(name, comment)
+        version_tag = len(since) > 0 and f" version='{since}'" or ""
+        output.write("    <variable name='%s' file='%s' type='%s'%s" % (
+            name, self.modulename_file(id.header), type, version_tag))
+        if len(comment) == 0:
+            output.write("/>\n")
         else:
-            output.write("    <variable name='%s' file='%s'/>\n" % (
-                name, self.modulename_file(id.header)))
+            output.write(">\n      <info><![CDATA[%s]]></info>\n" % (comment))
+            output.write("    </variable>\n")
 
     def serialize_function(self, output, name):
         id = self.idx.functions[name]
