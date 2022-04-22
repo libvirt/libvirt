@@ -205,12 +205,12 @@ int virAdmClientGetTransport(virAdmClientPtr client);
 int virAdmClientFree(virAdmClientPtr client);
 
 typedef enum {
-    VIR_CLIENT_TRANS_UNIX = 0, /* connection via UNIX socket */
-    VIR_CLIENT_TRANS_TCP,      /* connection via unencrypted TCP socket */
-    VIR_CLIENT_TRANS_TLS,      /* connection via encrypted TCP socket */
+    VIR_CLIENT_TRANS_UNIX = 0, /* connection via UNIX socket (Since: v2.0.0) */
+    VIR_CLIENT_TRANS_TCP,      /* connection via unencrypted TCP socket (Since: v2.0.0) */
+    VIR_CLIENT_TRANS_TLS,      /* connection via encrypted TCP socket (Since: v2.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_CLIENT_TRANS_LAST
+    VIR_CLIENT_TRANS_LAST /* (Since: v2.0.0) */
 # endif
 } virClientTransport;
 
