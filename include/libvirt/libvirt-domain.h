@@ -3950,6 +3950,8 @@ typedef enum {
  * A callback function to be registered, and called when a domain event occurs
  *
  * Returns 0 (the return value is currently ignored)
+ *
+ * Since: v0.5.0
  */
 typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              virDomainPtr dom,
@@ -4496,6 +4498,8 @@ typedef enum {
  * have a customization with extra parameters, often with @opaque being
  * passed in a different parameter position; use VIR_DOMAIN_EVENT_CALLBACK()
  * when registering an appropriate handler.
+ *
+ * Since: v0.8.0
  */
 typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -4510,6 +4514,8 @@ typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_RTC_CHANGE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.8.0
  */
 typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
@@ -4547,6 +4553,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_WATCHDOG with virConnectDomainEventRegisterAny()
  *
+ * Since: v0.8.0
  */
 typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4582,6 +4589,8 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.8.0
  */
 typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -4609,6 +4618,7 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * Otherwise, @reason will be "", although future strings may be added
  * if determination of other error types becomes possible.
  *
+ * Since: v0.8.1
  */
 typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4752,6 +4762,8 @@ typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_GRAPHICS with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.8.0
  */
 typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4804,6 +4816,8 @@ typedef enum {
  * was registered using the newer type of VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2,
  * then @disk will contain the device target shorthand (the <target
  * dev='...'/> sub-element, such as "vda").
+ *
+ * Since: v0.9.4
  */
 typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4857,6 +4871,8 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DISK_CHANGE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.9.7
  */
 typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
                                                         virDomainPtr dom,
@@ -4894,6 +4910,8 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_TRAY_CHANGE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.9.11
  */
 typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
                                                         virDomainPtr dom,
@@ -4913,6 +4931,8 @@ typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMWAKEUP with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.9.11
  */
 typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4931,6 +4951,8 @@ typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMSUSPEND with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.9.11
  */
 typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
@@ -4947,6 +4969,8 @@ typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v0.10.0
  */
 typedef void (*virConnectDomainEventBalloonChangeCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4965,6 +4989,8 @@ typedef void (*virConnectDomainEventBalloonChangeCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK with virConnectDomainEventRegisterAny()
+ *
+ * Since: v1.0.0
  */
 typedef void (*virConnectDomainEventPMSuspendDiskCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4982,6 +5008,8 @@ typedef void (*virConnectDomainEventPMSuspendDiskCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED with virConnectDomainEventRegisterAny()
+ *
+ * Since: v1.1.1
  */
 typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4999,6 +5027,8 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DEVICE_ADDED with virConnectDomainEventRegisterAny()
+ *
+ * Since: v1.2.15
  */
 typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
                                                          virDomainPtr dom,
@@ -5018,6 +5048,8 @@ typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED with
  * virConnectDomainEventRegisterAny().
+ *
+ * Since: v1.3.4
  */
 typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr conn,
                                                                  virDomainPtr dom,
@@ -5036,6 +5068,8 @@ typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr c
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_METADATA_CHANGE with virConnectDomainEventRegisterAny().
+ *
+ * Since: v3.0.0
  */
 typedef void (*virConnectDomainEventMetadataChangeCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5059,6 +5093,8 @@ typedef void (*virConnectDomainEventMetadataChangeCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION with
  * virConnectDomainEventRegisterAny().
+ *
+ * Since: v1.3.2
  */
 typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr conn,
                                                                 virDomainPtr dom,
@@ -5083,6 +5119,8 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_JOB_COMPLETED with
  * virConnectDomainEventRegisterAny().
+ *
+ * Since: v1.3.3
  */
 typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
                                                           virDomainPtr dom,
@@ -5448,6 +5486,8 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_TUNABLE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v1.2.9
  */
 typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -5498,6 +5538,8 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v1.2.11
  */
 typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5527,6 +5569,8 @@ typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD with virConnectDomainEventRegisterAny()
+ *
+ * Since: v3.2.0
  */
 typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5552,6 +5596,8 @@ typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
  *
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE with virConnectDomainEventRegisterAny()
+ *
+ * Since: v6.9.0
  */
 typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -5576,6 +5622,8 @@ typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE with
  * virConnectDomainEventRegisterAny().
+ *
+ * Since: v7.9.0
  */
 typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPtr conn,
                                                                     virDomainPtr dom,

@@ -35,6 +35,8 @@ VIR_LOG_INIT("libvirt.secret");
  * counter on the connection is not increased by this call.
  *
  * Returns the virConnectPtr or NULL in case of failure.
+ *
+ * Since: v0.7.1
  */
 virConnectPtr
 virSecretGetConnect(virSecretPtr secret)
@@ -56,6 +58,8 @@ virSecretGetConnect(virSecretPtr secret)
  * Fetch number of currently defined secrets.
  *
  * Returns the number currently defined secrets.
+ *
+ * Since: v0.7.1
  */
 int
 virConnectNumOfSecrets(virConnectPtr conn)
@@ -116,6 +120,8 @@ virConnectNumOfSecrets(virConnectPtr conn)
  * have an extra allocated element set to NULL but not included in the return count,
  * to make iteration easier.  The caller is responsible for calling
  * virSecretFree() on each array element, then calling free() on @secrets.
+ *
+ * Since: v0.10.2
  */
 int
 virConnectListAllSecrets(virConnectPtr conn,
@@ -160,6 +166,8 @@ virConnectListAllSecrets(virConnectPtr conn,
  * virConnectListAllSecrets().
  *
  * Returns the number of UUIDs provided in the array, or -1 on failure.
+ *
+ * Since: v0.7.1
  */
 int
 virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
@@ -202,6 +210,8 @@ virConnectListSecrets(virConnectPtr conn, char **uuids, int maxuuids)
  *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
+ *
+ * Since: v0.7.1
  */
 virSecretPtr
 virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -243,6 +253,8 @@ virSecretLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
+ *
+ * Since: v0.7.1
  */
 virSecretPtr
 virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
@@ -285,6 +297,8 @@ virSecretLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  *
  * Returns a new secret object or NULL in case of failure.  If the
  * secret cannot be found, then VIR_ERR_NO_SECRET error is raised.
+ *
+ * Since: v0.7.1
  */
 virSecretPtr
 virSecretLookupByUsage(virConnectPtr conn,
@@ -332,6 +346,8 @@ virSecretLookupByUsage(virConnectPtr conn,
  * secret object is no longer needed.
  *
  * Returns a secret on success, NULL on failure.
+ *
+ * Since: v0.7.1
  */
 virSecretPtr
 virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
@@ -370,6 +386,8 @@ virSecretDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
  *
  * Returns 0 on success with the uuid buffer being filled, or
  * -1 upon failure.
+ *
+ * Since: v0.7.1
  */
 int
 virSecretGetUUID(virSecretPtr secret, unsigned char *uuid)
@@ -400,6 +418,8 @@ virSecretGetUUID(virSecretPtr secret, unsigned char *uuid)
  * UUID see RFC4122.
  *
  * Returns -1 in case of error, 0 in case of success
+ *
+ * Since: v0.7.1
  */
 int
 virSecretGetUUIDString(virSecretPtr secret, char *buf)
@@ -432,6 +452,8 @@ virSecretGetUUIDString(virSecretPtr secret, char *buf)
  *
  * Returns a positive integer identifying the type of object,
  * or -1 upon error.
+ *
+ * Since: v0.7.1
  */
 int
 virSecretGetUsageType(virSecretPtr secret)
@@ -461,6 +483,8 @@ virSecretGetUsageType(virSecretPtr secret)
  *
  * Returns a string identifying the object using the secret,
  * or NULL upon error
+ *
+ * Since: v0.7.1
  */
 const char *
 virSecretGetUsageID(virSecretPtr secret)
@@ -484,6 +508,8 @@ virSecretGetUsageID(virSecretPtr secret)
  *
  * Returns the XML document on success, NULL on failure.  The caller must
  * free() the XML.
+ *
+ * Since: v0.7.1
  */
 char *
 virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
@@ -524,6 +550,8 @@ virSecretGetXMLDesc(virSecretPtr secret, unsigned int flags)
  * Sets the value of a secret.
  *
  * Returns 0 on success, -1 on failure.
+ *
+ * Since: v0.7.1
  */
 int
 virSecretSetValue(virSecretPtr secret, const unsigned char *value,
@@ -569,6 +597,8 @@ virSecretSetValue(virSecretPtr secret, const unsigned char *value,
  *
  * Returns the secret value on success, NULL on failure.  The caller must
  * free() the secret value.
+ *
+ * Since: v0.7.1
  */
 unsigned char *
 virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
@@ -610,6 +640,8 @@ virSecretGetValue(virSecretPtr secret, size_t *value_size, unsigned int flags)
  * virSecretPtr object.
  *
  * Returns 0 on success, -1 on failure.
+ *
+ * Since: v0.7.1
  */
 int
 virSecretUndefine(virSecretPtr secret)
@@ -657,6 +689,8 @@ virSecretUndefine(virSecretPtr secret)
  * increment the reference count.
  *
  * Returns 0 in case of success, -1 in case of failure.
+ *
+ * Since: v0.7.1
  */
 int
 virSecretRef(virSecretPtr secret)
@@ -679,6 +713,8 @@ virSecretRef(virSecretPtr secret)
  * Release the secret handle. The underlying secret continues to exist.
  *
  * Returns 0 on success, or -1 on error
+ *
+ * Since: v0.7.1
  */
 int
 virSecretFree(virSecretPtr secret)
@@ -728,6 +764,8 @@ virSecretFree(virSecretPtr secret)
  * be passed to the virConnectSecretEventDeregisterAny() method.
  *
  * Returns a callback identifier on success, -1 on failure.
+ *
+ * Since: v3.0.0
  */
 int
 virConnectSecretEventRegisterAny(virConnectPtr conn,
@@ -794,6 +832,8 @@ virConnectSecretEventRegisterAny(virConnectPtr conn,
  * value obtained from a previous virConnectSecretEventRegisterAny() method.
  *
  * Returns 0 on success, -1 on failure.
+ *
+ * Since: v3.0.0
  */
 int
 virConnectSecretEventDeregisterAny(virConnectPtr conn,

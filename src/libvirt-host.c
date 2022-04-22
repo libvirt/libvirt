@@ -47,6 +47,8 @@ VIR_LOG_INIT("libvirt.host");
  * the reference count.
  *
  * Returns 0 in case of success, -1 in case of failure
+ *
+ * Since: v0.6.0
  */
 int
 virConnectRef(virConnectPtr conn)
@@ -85,6 +87,8 @@ virConnectRef(virConnectPtr conn)
  * on a connection if the application is not trustworthy.
  *
  * Returns: 0 if the identity change was accepted, -1 on error
+ *
+ * Since: v5.8.0
  */
 int
 virConnectSetIdentity(virConnectPtr conn,
@@ -149,6 +153,8 @@ virConnectSupportsFeature(virConnectPtr conn, int feature)
  * hypervisor, use virConnectGetCapabilities().
  *
  * Returns NULL in case of error, a static zero terminated string otherwise.
+ *
+ * Since: v0.0.3
  */
 const char *
 virConnectGetType(virConnectPtr conn)
@@ -180,6 +186,8 @@ virConnectGetType(virConnectPtr conn)
  * Returns -1 in case of error, 0 otherwise. if the version can't be
  *    extracted by lack of capacities returns 0 and @hvVer is 0, otherwise
  *    @hvVer value is major * 1,000,000 + minor * 1,000 + release
+ *
+ * Since: v0.0.3
  */
 int
 virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
@@ -216,6 +224,8 @@ virConnectGetVersion(virConnectPtr conn, unsigned long *hvVer)
  *
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer have
  *      the format major * 1,000,000 + minor * 1,000 + release.
+ *
+ * Since: v0.7.3
  */
 int
 virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
@@ -256,6 +266,8 @@ virConnectGetLibVersion(virConnectPtr conn, unsigned long *libVer)
  *
  * Returns the hostname which must be freed by the caller, or
  * NULL if there was an error.
+ *
+ * Since: v0.3.0
  */
 char *
 virConnectGetHostname(virConnectPtr conn)
@@ -295,6 +307,8 @@ virConnectGetHostname(virConnectPtr conn)
  *
  * Returns the URI string which must be freed by the caller, or
  * NULL if there was an error.
+ *
+ * Since: v0.3.0
  */
 char *
 virConnectGetURI(virConnectPtr conn)
@@ -329,6 +343,8 @@ virConnectGetURI(virConnectPtr conn)
  *
  * Returns the XML string which must be freed by the caller, or
  * NULL if there was an error.
+ *
+ * Since: v0.8.8
  */
 char *
 virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
@@ -367,6 +383,8 @@ virConnectGetSysinfo(virConnectPtr conn, unsigned int flags)
  * for "<vcpu max='...'>" in its output instead.
  *
  * Returns the maximum of virtual CPU or -1 in case of error.
+ *
+ * Since: v0.2.1
  */
 int
 virConnectGetMaxVcpus(virConnectPtr conn,
@@ -416,6 +434,8 @@ virConnectGetMaxVcpus(virConnectPtr conn,
  * in a more accurate representation.
  *
  * Returns 0 in case of success and -1 in case of failure.
+ *
+ * Since: v0.1.0
  */
 int
 virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
@@ -452,6 +472,8 @@ virNodeGetInfo(virConnectPtr conn, virNodeInfoPtr info)
  * Returns NULL in case of error, or an XML string
  * defining the capabilities.
  * The client must free the returned string after use.
+ *
+ * Since: v0.2.1
  */
 char *
 virConnectGetCapabilities(virConnectPtr conn)
@@ -532,6 +554,8 @@ virConnectGetCapabilities(virConnectPtr conn)
  *     represents all CPUs on the server.
  *
  * Returns -1 in case of error, 0 in case of success.
+ *
+ * Since: v0.9.3
  */
 int
 virNodeGetCPUStats(virConnectPtr conn,
@@ -619,6 +643,8 @@ virNodeGetCPUStats(virConnectPtr conn,
  *     The cached memory usage.(KB)
  *
  * Returns -1 in case of error, 0 in case of success.
+ *
+ * Since: v0.9.3
  */
 int
 virNodeGetMemoryStats(virConnectPtr conn,
@@ -666,6 +692,8 @@ virNodeGetMemoryStats(virConnectPtr conn,
  * function the returned value is in bytes. Divide by 1024 as necessary.
  *
  * Returns the available free memory in bytes or 0 in case of error
+ *
+ * Since: v0.3.3
  */
 unsigned long long
 virNodeGetFreeMemory(virConnectPtr conn)
@@ -712,6 +740,8 @@ virNodeGetFreeMemory(virConnectPtr conn)
  * Returns 0 on success (i.e., the node will be suspended after a short
  * delay), -1 on failure (the operation is not supported, or an attempted
  * suspend is already underway).
+ *
+ * Since: v0.9.8
  */
 int
 virNodeSuspendForDuration(virConnectPtr conn,
@@ -765,6 +795,8 @@ virNodeSuspendForDuration(virConnectPtr conn,
  * example.
  *
  * Returns 0 in case of success, and -1 in case of failure.
+ *
+ * Since: v0.10.2
  */
 int
 virNodeGetMemoryParameters(virConnectPtr conn,
@@ -829,6 +861,8 @@ virNodeGetMemoryParameters(virConnectPtr conn,
  * This function may require privileged access to the hypervisor.
  *
  * Returns 0 in case of success, -1 in case of failure.
+ *
+ * Since: v0.10.2
  */
 int
 virNodeSetMemoryParameters(virConnectPtr conn,
@@ -877,6 +911,8 @@ virNodeSetMemoryParameters(virConnectPtr conn,
  * string if the driver has not activated a security model.
  *
  * Returns 0 in case of success, -1 in case of failure
+ *
+ * Since: v0.6.1
  */
 int
 virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
@@ -920,6 +956,8 @@ virNodeGetSecurityModel(virConnectPtr conn, virSecurityModelPtr secmodel)
  * whichever is smaller.
  *
  * Returns the number of entries filled in freeMems, or -1 in case of error.
+ *
+ * Since: v0.3.3
  */
 int
 virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
@@ -958,6 +996,8 @@ virNodeGetCellsFreeMemory(virConnectPtr conn, unsigned long long *freeMems,
  * Determine if the connection to the hypervisor is encrypted
  *
  * Returns 1 if encrypted, 0 if not encrypted, -1 on error
+ *
+ * Since: v0.7.3
  */
 int
 virConnectIsEncrypted(virConnectPtr conn)
@@ -993,6 +1033,8 @@ virConnectIsEncrypted(virConnectPtr conn)
  * to eavesdropping (eg a UNIX domain socket, or pipe)
  *
  * Returns 1 if secure, 0 if not secure, -1 on error
+ *
+ * Since: v0.7.3
  */
 int
 virConnectIsSecure(virConnectPtr conn)
@@ -1035,6 +1077,8 @@ virConnectIsSecure(virConnectPtr conn)
  * (instead of VIR_CPU_COMPARE_INCOMPATIBLE) and the error will use the
  * VIR_ERR_CPU_INCOMPATIBLE code with a message providing more details about
  * the incompatibility.
+ *
+ * Since: v0.7.5
  */
 int
 virConnectCompareCPU(virConnectPtr conn,
@@ -1091,6 +1135,8 @@ virConnectCompareCPU(virConnectPtr conn,
  * VIR_CPU_COMPARE_INCOMPATIBLE) and the error will use the
  * VIR_ERR_CPU_INCOMPATIBLE code with a message providing more details about
  * the incompatibility.
+ *
+ * Since: v4.4.0
  */
 int
 virConnectCompareHypervisorCPU(virConnectPtr conn,
@@ -1153,6 +1199,8 @@ virConnectCompareHypervisorCPU(virConnectPtr conn,
  *
  * Returns -1 on error, number of elements in @models on success (0 means
  * libvirt accepts any CPU model).
+ *
+ * Since: v1.1.3
  */
 int
 virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
@@ -1209,6 +1257,8 @@ virConnectGetCPUModelNames(virConnectPtr conn, const char *arch, char ***models,
  * CPU will not include features that block migration.
  *
  * Returns XML description of the computed CPU (caller frees) or NULL on error.
+ *
+ * Since: v0.7.7
  */
 char *
 virConnectBaselineCPU(virConnectPtr conn,
@@ -1278,6 +1328,8 @@ virConnectBaselineCPU(virConnectPtr conn,
  * CPU will not include features that block migration.
  *
  * Returns XML description of the computed CPU (caller frees) or NULL on error.
+ *
+ * Since: v4.4.0
  */
 char *
 virConnectBaselineHypervisorCPU(virConnectPtr conn,
@@ -1351,6 +1403,8 @@ virConnectBaselineHypervisorCPU(virConnectPtr conn,
  *
  * Returns -1 on error, 0 on success, 1 when remote party doesn't support
  * keepalive messages.
+ *
+ * Since: v0.9.8
  */
 int
 virConnectSetKeepAlive(virConnectPtr conn,
@@ -1388,6 +1442,8 @@ virConnectSetKeepAlive(virConnectPtr conn,
  * over a channel (TCP or UNIX socket) which is not closed.
  *
  * Returns 1 if alive, 0 if dead, -1 on error
+ *
+ * Since: v0.9.8
  */
 int
 virConnectIsAlive(virConnectPtr conn)
@@ -1434,6 +1490,8 @@ virConnectIsAlive(virConnectPtr conn)
  * context.
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v0.10.0
  */
 int
 virConnectRegisterCloseCallback(virConnectPtr conn,
@@ -1471,6 +1529,8 @@ virConnectRegisterCloseCallback(virConnectPtr conn,
  * registration, it will be invoked
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v0.10.0
  */
 int
 virConnectUnregisterCloseCallback(virConnectPtr conn,
@@ -1513,6 +1573,8 @@ virConnectUnregisterCloseCallback(virConnectPtr conn,
  *
  * Returns number of CPUs present on the host node,
  * or -1 if there was an error.
+ *
+ * Since: v1.0.0
  */
 int
 virNodeGetCPUMap(virConnectPtr conn,
@@ -1599,6 +1661,8 @@ virNodeGetCPUMap(virConnectPtr conn,
  *    Page size=1073741824 count=0 bytes=0
  *
  * Returns: the number of entries filled in @counts or -1 in case of error.
+ *
+ * Since: v1.2.6
  */
 int
 virNodeGetFreePages(virConnectPtr conn,
@@ -1669,6 +1733,8 @@ virNodeGetFreePages(virConnectPtr conn,
  *
  * Returns: the number of nodes successfully adjusted or -1 in
  * case of an error.
+ *
+ * Since: v1.2.9
  */
 int
 virNodeAllocPages(virConnectPtr conn,
@@ -1722,6 +1788,8 @@ virNodeAllocPages(virConnectPtr conn,
  * responsible for freeing @params.
  *
  * Returns 0 in case of success, and -1 in case of failure.
+ *
+ * Since: v4.5.0
  */
 int
 virNodeGetSEVInfo(virConnectPtr conn,

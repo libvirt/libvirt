@@ -202,6 +202,8 @@ typedef enum {
  * have a customization with extra parameters, often with @opaque being
  * passed in a different parameter position; use
  * VIR_NODE_DEVICE_EVENT_CALLBACK() when registering an appropriate handler.
+ *
+ * Since: v2.2.0
  */
 typedef void (*virConnectNodeDeviceEventGenericCallback)(virConnectPtr conn,
                                                          virNodeDevicePtr dev,
@@ -251,6 +253,8 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE with
  * virConnectNodeDeviceEventRegisterAny()
+ *
+ * Since: v2.2.0
  */
 typedef void (*virConnectNodeDeviceEventLifecycleCallback)(virConnectPtr conn,
                                                            virNodeDevicePtr dev,

@@ -98,6 +98,8 @@ int virStreamRecvHole(virStreamPtr,
  *
  * Returns the number of bytes filled, 0 upon end
  * of file, or -1 upon error
+ *
+ * Since: v0.7.2
  */
 typedef int (*virStreamSourceFunc)(virStreamPtr st,
                                    char *data,
@@ -136,6 +138,8 @@ int virStreamSendAll(virStreamPtr st,
  *
  * Returns 0 on success,
  *        -1 upon error
+ *
+ * Since: v3.4.0
  */
 typedef int (*virStreamSourceHoleFunc)(virStreamPtr st,
                                        int *inData,
@@ -162,6 +166,8 @@ typedef int (*virStreamSourceHoleFunc)(virStreamPtr st,
  *
  * Returns 0 on success,
  *        -1 upon error.
+ *
+ * Since: v3.4.0
  */
 typedef int (*virStreamSourceSkipFunc)(virStreamPtr st,
                                        long long length,
@@ -199,6 +205,8 @@ int virStreamSparseSendAll(virStreamPtr st,
  *
  * Returns the number of bytes consumed or -1 upon
  * error
+ *
+ * Since: v0.7.2
  */
 typedef int (*virStreamSinkFunc)(virStreamPtr st,
                                  const char *data,
@@ -229,6 +237,8 @@ int virStreamRecvAll(virStreamPtr st,
  *
  * Returns 0 on success,
  *        -1 upon error
+ *
+ * Since: v3.4.0
  */
 typedef int (*virStreamSinkHoleFunc)(virStreamPtr st,
                                      long long length,
@@ -261,6 +271,8 @@ typedef enum {
  *
  * Callback for receiving stream events. The callback will
  * be invoked once for each event which is pending.
+ *
+ * Since: v0.7.2
  */
 typedef void (*virStreamEventCallback)(virStreamPtr stream, int events, void *opaque);
 

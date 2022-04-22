@@ -300,6 +300,8 @@ typedef enum {
  *
  * The callback signature to use when registering for an event of type
  * VIR_NETWORK_EVENT_ID_LIFECYCLE with virConnectNetworkEventRegisterAny()
+ *
+ * Since: v1.2.1
  */
 typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
                                                         virNetworkPtr net,
@@ -398,6 +400,8 @@ int virNetworkGetDHCPLeases(virNetworkPtr network,
  * have a customization with extra parameters, often with @opaque being
  * passed in a different parameter position; use VIR_NETWORK_EVENT_CALLBACK()
  * when registering an appropriate handler.
+ *
+ * Since: v1.2.1
  */
 typedef void (*virConnectNetworkEventGenericCallback)(virConnectPtr conn,
                                                       virNetworkPtr net,

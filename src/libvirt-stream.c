@@ -52,6 +52,8 @@ VIR_LOG_INIT("libvirt.stream");
  * VIR_STREAM_NONBLOCK for flags, otherwise pass 0.
  *
  * Returns the new stream, or NULL upon error
+ *
+ * Since: v0.7.2
  */
 virStreamPtr
 virStreamNew(virConnectPtr conn,
@@ -85,6 +87,8 @@ virStreamNew(virConnectPtr conn,
  * the caller no longer needs the reference to this object.
  *
  * Returns 0 in case of success, -1 in case of failure
+ *
+ * Since: v0.7.2
  */
 int
 virStreamRef(virStreamPtr stream)
@@ -163,6 +167,8 @@ virStreamRef(virStreamPtr stream)
  *
  * Returns -2 if the outgoing transmit buffers are full &
  * the stream is marked as non-blocking.
+ *
+ * Since: v0.7.2
  */
 int
 virStreamSend(virStreamPtr stream,
@@ -258,6 +264,8 @@ virStreamSend(virStreamPtr stream,
  *
  * Returns -2 if there is no data pending to be read & the
  * stream is marked as non-blocking.
+ *
+ * Since: v0.7.2
  */
 int
 virStreamRecv(virStreamPtr stream,
@@ -345,6 +353,8 @@ virStreamRecv(virStreamPtr stream,
  *
  * Returns -3 if there is a hole in stream and caller requested
  * to stop at a hole.
+ *
+ * Since: v3.4.0
  */
 int
 virStreamRecvFlags(virStreamPtr stream,
@@ -412,6 +422,8 @@ virStreamRecvFlags(virStreamPtr stream,
  *
  * Returns 0 on success,
  *        -1 error
+ *
+ * Since: v3.4.0
  */
 int
 virStreamSendHole(virStreamPtr stream,
@@ -455,6 +467,8 @@ virStreamSendHole(virStreamPtr stream,
  *
  * Returns 0 on success,
  *        -1 on error or when there's currently no hole in the stream
+ *
+ * Since: v3.4.0
  */
 int
 virStreamRecvHole(virStreamPtr stream,
@@ -577,6 +591,8 @@ virStreamInData(virStreamPtr stream,
  * Returns -1 upon any error, with virStreamAbort() already
  * having been called,  so the caller need only call
  * virStreamFree().
+ *
+ * Since: v0.7.2
  */
 int
 virStreamSendAll(virStreamPtr stream,
@@ -706,6 +722,8 @@ virStreamSendAll(virStreamPtr stream,
  * Returns -1 upon any error, with virStreamAbort() already
  * having been called,  so the caller need only call
  * virStreamFree().
+ *
+ * Since: v3.4.0
  */
 int virStreamSparseSendAll(virStreamPtr stream,
                            virStreamSourceFunc handler,
@@ -845,6 +863,8 @@ int virStreamSparseSendAll(virStreamPtr stream,
  * Returns -1 upon any error, with virStreamAbort() already
  * having been called,  so the caller need only call
  * virStreamFree()
+ *
+ * Since: v0.7.2
  */
 int
 virStreamRecvAll(virStreamPtr stream,
@@ -958,6 +978,8 @@ virStreamRecvAll(virStreamPtr stream,
  *
  * Returns -1 upon any error, with virStreamAbort() already
  * having been called, so the caller need only call virStreamFree().
+ *
+ * Since: v3.4.0
  */
 int
 virStreamSparseRecvAll(virStreamPtr stream,
@@ -1051,6 +1073,8 @@ virStreamSparseRecvAll(virStreamPtr stream,
  * to integrate into an event loop
  *
  * Returns 0 on success, -1 upon error
+ *
+ * Since: v0.7.2
  */
 int
 virStreamEventAddCallback(virStreamPtr stream,
@@ -1094,6 +1118,8 @@ virStreamEventAddCallback(virStreamPtr stream,
  * is guaranteed to succeed if a callback is already registered
  *
  * Returns 0 on success, -1 if no callback is registered
+ *
+ * Since: v0.7.2
  */
 int
 virStreamEventUpdateCallback(virStreamPtr stream,
@@ -1129,6 +1155,8 @@ virStreamEventUpdateCallback(virStreamPtr stream,
  * Remove an event callback from the stream
  *
  * Returns 0 on success, -1 on error
+ *
+ * Since: v0.7.2
  */
 int
 virStreamEventRemoveCallback(virStreamPtr stream)
@@ -1173,6 +1201,8 @@ virStreamEventRemoveCallback(virStreamPtr stream)
  * beforehand.
  *
  * Returns 0 on success, -1 upon error
+ *
+ * Since: v0.7.2
  */
 int
 virStreamFinish(virStreamPtr stream)
@@ -1215,6 +1245,8 @@ virStreamFinish(virStreamPtr stream)
  * beforehand.
  *
  * Returns 0 on success, -1 upon error
+ *
+ * Since: v0.7.2
  */
 int
 virStreamAbort(virStreamPtr stream)
@@ -1259,6 +1291,8 @@ virStreamAbort(virStreamPtr stream)
  * the virStreamAbort function should be called first.
  *
  * Returns 0 upon success, or -1 on error
+ *
+ * Since: v0.7.2
  */
 int
 virStreamFree(virStreamPtr stream)

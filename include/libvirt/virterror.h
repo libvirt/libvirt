@@ -360,6 +360,8 @@ typedef enum {
  * @error:  the error being raised.
  *
  * Signature of a function to use when there is an error raised by the library.
+ *
+ * Since: v0.1.0
  */
 typedef void (*virErrorFunc) (void *userData, virErrorPtr error);
 

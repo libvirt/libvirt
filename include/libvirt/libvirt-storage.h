@@ -559,6 +559,8 @@ typedef enum {
  * have a customization with extra parameters, often with @opaque being
  * passed in a different parameter position; use
  * VIR_STORAGE_POOL_EVENT_CALLBACK() when registering an appropriate handler.
+ *
+ * Since: v2.0.0
  */
 typedef void (*virConnectStoragePoolEventGenericCallback)(virConnectPtr conn,
                                                           virStoragePoolPtr pool,
@@ -610,6 +612,8 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE with
  * virConnectStoragePoolEventRegisterAny()
+ *
+ * Since: v2.0.0
  */
 typedef void (*virConnectStoragePoolEventLifecycleCallback)(virConnectPtr conn,
                                                             virStoragePoolPtr pool,

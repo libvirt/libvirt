@@ -650,6 +650,8 @@ typedef virConnectCredential *virConnectCredentialPtr;
  * If an interaction cannot be filled, fill in NULL and 0.
  *
  * Returns 0 if all interactions were filled, or -1 upon error
+ *
+ * Since: v0.4.1
  */
 typedef int (*virConnectAuthCallbackPtr)(virConnectCredentialPtr cred,
                                          unsigned int ncred,
@@ -841,6 +843,8 @@ int virConnectSetKeepAlive(virConnectPtr conn,
  *
  * A callback function to be registered, and called when the connection
  * is closed.
+ *
+ * Since: v0.10.0
  */
 typedef void (*virConnectCloseFunc)(virConnectPtr conn,
                                     int reason,

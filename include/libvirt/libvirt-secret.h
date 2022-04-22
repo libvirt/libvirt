@@ -182,6 +182,8 @@ typedef enum {
  * have a customization with extra parameters, often with @opaque being
  * passed in a different parameter position; use
  * VIR_SECRET_EVENT_CALLBACK() when registering an appropriate handler.
+ *
+ * Since: v3.0.0
  */
 typedef void (*virConnectSecretEventGenericCallback)(virConnectPtr conn,
                                                      virSecretPtr secret,
@@ -229,6 +231,8 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_SECRET_EVENT_ID_LIFECYCLE with
  * virConnectSecretEventRegisterAny()
+ *
+ * Since: v3.0.0
  */
 typedef void (*virConnectSecretEventLifecycleCallback)(virConnectPtr conn,
                                                        virSecretPtr secret,
