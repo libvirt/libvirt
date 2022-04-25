@@ -4125,12 +4125,13 @@ restore
 ::
 
    restore state-file [--bypass-cache] [--xml file]
-      [{--running | --paused}] [--reset-nvram]
+      [{--running | --paused}] [--reset-nvram] [--parallel] [--parallel-channels]
 
 Restores a domain from a ``virsh save`` state file. See *save* for more info.
 
 If *--bypass-cache* is specified, the restore will avoid the file system
-cache, although this may slow down the operation.
+cache. Depending on the specific scenario this may slow down or speed up
+the operation.
 
 *--xml* ``file`` is usually omitted, but can be used to supply an
 alternative XML file for use on the restored guest with changes only
@@ -4145,6 +4146,10 @@ domain should be started in.
 
 If *--reset-nvram* is specified, any existing NVRAM file will be deleted
 and re-initialized from its pristine template.
+
+*--parallel* option will cause the save data to be loaded using the number
+of parallel IO channels specified with *--parallel-channels*. Parallel
+channels will help speed up large restore operations.
 
 ``Note``: To avoid corrupting file system contents within the domain, you
 should not reuse the saved state file for a second ``restore`` unless you

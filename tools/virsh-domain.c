@@ -5666,6 +5666,14 @@ static const vshCmdOptDef opts_restore[] = {
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when restoring")
     },
+    {.name = "parallel",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable parallel restore")
+    },
+    {.name = "parallel-channels",
+     .type = VSH_OT_INT,
+     .help = N_("number of IO channels to use for parallel restore")
+    },
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
@@ -5695,13 +5703,16 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     const char *xmlfile = NULL;
     g_autofree char *xml = NULL;
     virshControl *priv = ctl->privData;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    int nchannels = 1;
     int rc;
-
-    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
-        return false;
 
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
+    if (vshCommandOptBool(cmd, "parallel"))
+        flags |= VIR_DOMAIN_SAVE_PARALLEL;
     if (vshCommandOptBool(cmd, "running"))
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
@@ -5709,15 +5720,35 @@ cmdRestore(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "reset-nvram"))
         flags |= VIR_DOMAIN_SAVE_RESET_NVRAM;
 
+    if (vshCommandOptString(ctl, cmd, "file", &from) < 0)
+        return false;
+    if (from &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_SAVE_PARAM_FILE, from) < 0)
+        return false;
+
     if (vshCommandOptString(ctl, cmd, "xml", &xmlfile) < 0)
         return false;
 
     if (xmlfile &&
         virFileReadAll(xmlfile, VSH_MAX_XML_FILE, &xml) < 0)
         return false;
+    if (xml &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
+        return false;
+
+    if (flags & VIR_DOMAIN_SAVE_PARALLEL) {
+        if ((rc = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
+            return false;
+
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
+            return false;
+    }
 
     if (flags || xml) {
-        rc = virDomainRestoreFlags(priv->conn, from, xml, flags);
+        rc = virDomainRestoreParams(priv->conn, params, nparams, flags);
     } else {
         rc = virDomainRestore(priv->conn, from);
     }
