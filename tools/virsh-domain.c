@@ -2481,18 +2481,17 @@ cmdBlockcopy(vshControl *ctl, const vshCmd *cmd)
         if (!xmlstr) {
             g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
             g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-            g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+            g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(&buf);
 
             if (blockdev) {
                 virBufferAddLit(&attrBuf, " type='block'");
-                virBufferAddLit(&childBuf, "<source dev=");
+                virBufferEscapeString(&childBuf, "<source dev='%s'/>\n", dest);
             } else {
-                virBufferAddLit(&buf, " type='file'");
-                virBufferAddLit(&childBuf, "<source file=");
+                virBufferAddLit(&attrBuf, " type='file'");
+                virBufferEscapeString(&childBuf, "<source file='%s'/>\n", dest);
             }
 
-            virBufferEscapeString(&buf, "'%s'/>\n", dest);
-            virBufferEscapeString(&buf, "<driver type='%s'/>\n", format);
+            virBufferEscapeString(&childBuf, "<driver type='%s'/>\n", format);
             virXMLFormatElement(&buf, "disk", &attrBuf, &childBuf);
             xmlstr = virBufferContentAndReset(&buf);
         }
