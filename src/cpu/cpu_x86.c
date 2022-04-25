@@ -3309,14 +3309,20 @@ virCPUx86DataIsIdentical(const virCPUData *a,
     if (!a || !b)
         return VIR_CPU_COMPARE_ERROR;
 
-    if (a->arch != b->arch)
+    if (a->arch != b->arch) {
+        VIR_DEBUG("incompatible architecture a:%u b:%u", a->arch, b->arch);
         return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
 
-    if (!((adata = &a->data.x86) && (bdata = &b->data.x86)))
+    if (!((adata = &a->data.x86) && (bdata = &b->data.x86))) {
+        VIR_DEBUG("missing x86 data: a:%p b:%p", adata, bdata);
         return VIR_CPU_COMPARE_ERROR;
+    }
 
-    if (adata->len != bdata->len)
+    if (adata->len != bdata->len) {
+        VIR_DEBUG("unequal length a:%zu b:%zu", adata->len, bdata->len);
         return VIR_CPU_COMPARE_INCOMPATIBLE;
+    }
 
     for (i = 0; i < adata->len; ++i) {
         bool found = false;
@@ -3330,8 +3336,10 @@ virCPUx86DataIsIdentical(const virCPUData *a,
             break;
         }
 
-        if (!found)
+        if (!found) {
+            VIR_DEBUG("mismatched data");
             return VIR_CPU_COMPARE_INCOMPATIBLE;
+        }
     }
 
     return VIR_CPU_COMPARE_IDENTICAL;
