@@ -1327,6 +1327,13 @@ virHostCPUGetCPUID(void)
         return NULL;
     }
 
+    /* Userspace invokes KVM_GET_SUPPORTED_CPUID by passing a kvm_cpuid2 structure
+     * with the 'nent' field indicating the number of entries in the variable-size
+     * array 'entries'.  If the number of entries is too low to describe the cpu
+     * capabilities, an error (E2BIG) is returned.  If the number is too high,
+     * the 'nent' field is adjusted and an error (ENOMEM) is returned.  If the
+     * number is just right, the 'nent' field is adjusted to the number of valid
+     * entries in the 'entries' array, which is then filled. */
     for (i = 1; i < INT32_MAX; i *= 2) {
         g_autofree struct kvm_cpuid2 *kvm_cpuid = NULL;
         kvm_cpuid = g_malloc0(sizeof(struct kvm_cpuid2) +
