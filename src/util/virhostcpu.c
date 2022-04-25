@@ -1345,7 +1345,7 @@ virHostCPUGetCPUIDFilterVolatile(struct kvm_cpuid2 *kvm_cpuid)
 struct kvm_cpuid2 *
 virHostCPUGetCPUID(void)
 {
-    size_t i;
+    size_t alloc_size;
     VIR_AUTOCLOSE fd = open(KVM_DEVICE, O_RDONLY);
 
     if (fd < 0) {
@@ -1360,16 +1360,26 @@ virHostCPUGetCPUID(void)
      * the 'nent' field is adjusted and an error (ENOMEM) is returned.  If the
      * number is just right, the 'nent' field is adjusted to the number of valid
      * entries in the 'entries' array, which is then filled. */
-    for (i = 1; i < INT32_MAX; i *= 2) {
+    for (alloc_size = 1; alloc_size < INT32_MAX; alloc_size *= 2) {
         g_autofree struct kvm_cpuid2 *kvm_cpuid = NULL;
+
         kvm_cpuid = g_malloc0(sizeof(struct kvm_cpuid2) +
-                              sizeof(struct kvm_cpuid_entry2) * i);
-        kvm_cpuid->nent = i;
+                              sizeof(struct kvm_cpuid_entry2) * alloc_size);
+        kvm_cpuid->nent = alloc_size;
 
         if (ioctl(fd, KVM_GET_SUPPORTED_CPUID, kvm_cpuid) == 0) {
             virHostCPUGetCPUIDFilterVolatile(kvm_cpuid);
             return g_steal_pointer(&kvm_cpuid);
         }
+
+        /* enlarge the buffer and try again */
+        if (errno == E2BIG) {
+            VIR_DEBUG("looping %zu", alloc_size);
+            continue;
+        }
+
+        /* we fail on any other error code to prevent pointless looping */
+        break;
     }
 
     virReportSystemError(errno, "%s", _("Cannot read host CPUID"));
