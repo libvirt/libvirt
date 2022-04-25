@@ -1232,7 +1232,7 @@ blockcopy
       [--shallow] [--reuse-external] [bandwidth]
       [--wait [--async] [--verbose]] [{--pivot | --finish}]
       [--timeout seconds] [granularity] [buf-size] [--bytes]
-      [--transient-job] [--synchronous-writes]
+      [--transient-job] [--synchronous-writes] [--print-xml]
 
 Copy a disk backing image chain to a destination.  Either *dest* as
 the destination file name, or *--xml* with the name of an XML file containing
@@ -1297,6 +1297,8 @@ to be propagated both to the original image and to the destination of the copy
 so that it's guaranteed that the job converges if the destination storage is
 slower. This may impact performance of writes while the blockjob is running.
 
+If *--print-xml* is specified, then the XML used to start the block copy job
+is printed instead of starting the job.
 
 blockjob
 --------
