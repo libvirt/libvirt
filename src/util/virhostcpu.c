@@ -1316,6 +1316,32 @@ virHostCPUGetMSR(unsigned long index,
 }
 
 
+/**
+ * virHostCPUGetCPUIDFilterVolatile:
+ *
+ * Filters the 'kvm_cpuid2' struct and removes data which may change depending
+ * on the CPU core this was run on.
+ *
+ * Currently filtered fields:
+ * - local APIC ID
+ */
+static void
+virHostCPUGetCPUIDFilterVolatile(struct kvm_cpuid2 *kvm_cpuid)
+{
+    size_t i;
+
+    for (i = 0; i < kvm_cpuid->nent; ++i) {
+        struct kvm_cpuid_entry2 *entry = &kvm_cpuid->entries[i];
+
+        /* filter out local apic id */
+        if (entry->function == 0x01 && entry->index == 0x00)
+            entry->ebx &= 0x00ffffff;
+        if (entry->function == 0x0b)
+            entry->edx &= 0xffffff00;
+    }
+}
+
+
 struct kvm_cpuid2 *
 virHostCPUGetCPUID(void)
 {
@@ -1341,15 +1367,7 @@ virHostCPUGetCPUID(void)
         kvm_cpuid->nent = i;
 
         if (ioctl(fd, KVM_GET_SUPPORTED_CPUID, kvm_cpuid) == 0) {
-            /* filter out local apic id */
-            for (i = 0; i < kvm_cpuid->nent; ++i) {
-                struct kvm_cpuid_entry2 *entry = &kvm_cpuid->entries[i];
-                if (entry->function == 0x01 && entry->index == 0x00)
-                    entry->ebx &= 0x00ffffff;
-                if (entry->function == 0x0b)
-                    entry->edx &= 0xffffff00;
-            }
-
+            virHostCPUGetCPUIDFilterVolatile(kvm_cpuid);
             return g_steal_pointer(&kvm_cpuid);
         }
     }
