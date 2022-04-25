@@ -77,7 +77,7 @@ virNetSASLContext *saslCtxt = NULL;
 virNetServerProgram *remoteProgram = NULL;
 virNetServerProgram *qemuProgram = NULL;
 
-volatile bool driversInitialized = false;
+volatile gint driversInitialized = 0;
 
 static void daemonErrorHandler(void *opaque G_GNUC_UNUSED,
                                virErrorPtr err G_GNUC_UNUSED)
@@ -453,8 +453,13 @@ static void daemonReloadHandlerThread(void *opaque G_GNUC_UNUSED)
     VIR_INFO("Reloading configuration on SIGHUP");
     virHookCall(VIR_HOOK_DRIVER_DAEMON, "-",
                 VIR_HOOK_DAEMON_OP_RELOAD, SIGHUP, "SIGHUP", NULL, NULL);
-    if (virStateReload() < 0)
+
+    if (virStateReload() < 0) {
         VIR_WARN("Error while reloading drivers");
+    }
+
+    /* Drivers are initialized again. */
+    g_atomic_int_set(&driversInitialized, 1);
 }
 
 static void daemonReloadHandler(virNetDaemon *dmn G_GNUC_UNUSED,
@@ -463,7 +468,7 @@ static void daemonReloadHandler(virNetDaemon *dmn G_GNUC_UNUSED,
 {
     virThread thr;
 
-    if (!driversInitialized) {
+    if (!g_atomic_int_compare_and_exchange(&driversInitialized, 1, 0)) {
         VIR_WARN("Drivers are not initialized, reload ignored");
         return;
     }
@@ -474,6 +479,10 @@ static void daemonReloadHandler(virNetDaemon *dmn G_GNUC_UNUSED,
          * Not much we can do on error here except log it.
          */
         VIR_ERROR(_("Failed to create thread to handle daemon restart"));
+
+        /* Drivers were initialized at the beginning, otherwise we wouldn't
+         * even get here. */
+        g_atomic_int_set(&driversInitialized, 1);
     }
 }
 
@@ -607,7 +616,7 @@ static void daemonRunStateInit(void *opaque)
         goto cleanup;
     }
 
-    driversInitialized = true;
+    g_atomic_int_set(&driversInitialized, 1);
 
     virNetDaemonSetShutdownCallbacks(dmn,
                                      virStateShutdownPrepare,
@@ -1212,10 +1221,9 @@ int main(int argc, char **argv) {
  cleanup:
     virNetlinkEventServiceStopAll();
 
-    if (driversInitialized) {
+    if (g_atomic_int_compare_and_exchange(&driversInitialized, 1, 0)) {
         /* NB: Possible issue with timing window between driversInitialized
          * setting if virNetlinkEventServerStart fails */
-        driversInitialized = false;
         virStateCleanup();
     }
 
