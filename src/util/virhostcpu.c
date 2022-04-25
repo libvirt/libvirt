@@ -1324,11 +1324,13 @@ virHostCPUGetMSR(unsigned long index,
  *
  * Currently filtered fields:
  * - local APIC ID
+ * - topology ids and information on AMD cpus
  */
 static void
 virHostCPUGetCPUIDFilterVolatile(struct kvm_cpuid2 *kvm_cpuid)
 {
     size_t i;
+    bool isAMD = false;
 
     for (i = 0; i < kvm_cpuid->nent; ++i) {
         struct kvm_cpuid_entry2 *entry = &kvm_cpuid->entries[i];
@@ -1338,6 +1340,47 @@ virHostCPUGetCPUIDFilterVolatile(struct kvm_cpuid2 *kvm_cpuid)
             entry->ebx &= 0x00ffffff;
         if (entry->function == 0x0b)
             entry->edx &= 0xffffff00;
+
+        /* Match AMD hosts */
+        if (entry->function == 0x00 && entry->index == 0x00 &&
+            entry->ebx == 0x68747541 && /* Auth */
+            entry->edx == 0x69746e65 && /* enti */
+            entry->ecx == 0x444d4163)   /* cAMD */
+            isAMD = true;
+
+        /* AMD APIC ID and topology information:
+         *
+         * Leaf 0x8000001e
+         *
+         * CPUID Fn8000_001E_EAX Extended APIC ID
+         *  31:0 ExtendedApicId: extended APIC ID.
+         *
+         * CPUID Fn8000_001E_EBX Compute Unit Identifiers
+         *  31:10 Reserved.
+         *  9:8   CoresPerComputeUnit: cores per compute unit.
+         *        The number of cores per compute unit is CoresPerComputeUnit+1.
+         *  7:0   ComputeUnitId: compute unit ID. Identifies the processor compute unit ID.
+         *
+         * CPUID Fn8000_001E_ECX Node Identifiers
+         *  31:11 Reserved.
+         *  10:8  NodesPerProcessor. Specifies the number of nodes per processor.
+         *          000b      1  node per processor
+         *          001b      2  nodes per processor
+         *          111b-010b Reserved
+         *  7:0   NodeId. Specifies the node ID.
+         *
+         * CPUID Fn8000_001E_EDX Reserved
+         *  31:0 Reserved.
+         *
+         * For libvirt none of this information seems to be interesting, thus
+         * we clear all of it including reserved bits for future-proofing.
+         */
+        if (isAMD && entry->function == 0x8000001e) {
+            entry->eax = 0x00;
+            entry->ebx = 0x00;
+            entry->ecx = 0x00;
+            entry->edx = 0x00;
+        }
     }
 }
 
