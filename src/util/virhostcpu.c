@@ -1360,7 +1360,7 @@ virHostCPUGetCPUID(void)
      * the 'nent' field is adjusted and an error (ENOMEM) is returned.  If the
      * number is just right, the 'nent' field is adjusted to the number of valid
      * entries in the 'entries' array, which is then filled. */
-    for (alloc_size = 1; alloc_size < INT32_MAX; alloc_size *= 2) {
+    for (alloc_size = 64; alloc_size <= 65536; alloc_size *= 2) {
         g_autofree struct kvm_cpuid2 *kvm_cpuid = NULL;
 
         kvm_cpuid = g_malloc0(sizeof(struct kvm_cpuid2) +
