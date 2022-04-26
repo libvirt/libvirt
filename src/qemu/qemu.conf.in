@@ -952,3 +952,19 @@
 # DO NOT use in production.
 #
 #deprecation_behavior = "none"
+
+# If this is set then QEMU and its threads will run in a separate scheduling
+# group meaning no other process will share Hyper Threads of a single core with
+# QEMU. Each QEMU has its own group.
+#
+# Possible options are:
+# "none"     - (default) neither QEMU or any of its helper processes are placed
+#              into separate scheduling group
+# "vcpus"    - only QEMU vCPU threads are placed into a separate scheduling group,
+#              emulator threads and helper processes remain outside of the group
+# "emulator" - only QEMU and its threads (emulator + vCPUs) are placed into
+#              separate scheduling group, helper proccesses remain outside of
+#              the group
+# "full"    -  both QEMU and its helper processes are placed into separate
+#              scheduling group
+#sched_core = "none"

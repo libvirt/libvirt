@@ -66,6 +66,14 @@ VIR_LOG_INIT("qemu.qemu_conf");
 #define QEMU_MIGRATION_PORT_MIN 49152
 #define QEMU_MIGRATION_PORT_MAX 49215
 
+VIR_ENUM_IMPL(virQEMUSchedCore,
+              QEMU_SCHED_CORE_LAST,
+              "none",
+              "vcpus",
+              "emulator",
+              "full");
+
+
 static virClass *virQEMUDriverConfigClass;
 static void virQEMUDriverConfigDispose(void *obj);
 
@@ -629,6 +637,7 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
     g_auto(GStrv) hugetlbfs = NULL;
     g_autofree char *stdioHandler = NULL;
     g_autofree char *corestr = NULL;
+    g_autofree char *schedCore = NULL;
     size_t i;
 
     if (virConfGetValueStringList(conf, "hugetlbfs_mount", true,
@@ -704,6 +713,35 @@ virQEMUDriverConfigLoadProcessEntry(virQEMUDriverConfig *cfg,
                            stdioHandler);
             return -1;
         }
+    }
+
+    if (virConfGetValueString(conf, "sched_core", &schedCore) < 0)
+        return -1;
+    if (schedCore) {
+        int val = virQEMUSchedCoreTypeFromString(schedCore);
+
+        if (val < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unknown sched_core value %s"),
+                           schedCore);
+            return -1;
+        }
+
+        if (val != QEMU_SCHED_CORE_NONE) {
+            int rv = virProcessSchedCoreAvailable();
+
+            if (rv < 0) {
+                virReportSystemError(errno, "%s",
+                                     _("Unable to detect SCHED_CORE"));
+                return -1;
+            } else if (rv == 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("SCHED_CORE not supported by kernel"));
+                return -1;
+            }
+        }
+
+        cfg->schedCore = val;
     }
 
     return 0;

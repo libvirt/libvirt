@@ -44,6 +44,17 @@
 
 #define QEMU_DRIVER_NAME "QEMU"
 
+typedef enum {
+    QEMU_SCHED_CORE_NONE = 0,
+    QEMU_SCHED_CORE_VCPUS,
+    QEMU_SCHED_CORE_EMULATOR,
+    QEMU_SCHED_CORE_FULL,
+
+    QEMU_SCHED_CORE_LAST
+} virQEMUSchedCore;
+
+VIR_ENUM_DECL(virQEMUSchedCore);
+
 typedef struct _virQEMUDriver virQEMUDriver;
 
 typedef struct _virQEMUDriverConfig virQEMUDriverConfig;
@@ -216,6 +227,8 @@ struct _virQEMUDriverConfig {
     char **capabilityfilters;
 
     char *deprecationBehavior;
+
+    virQEMUSchedCore schedCore;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virQEMUDriverConfig, virObjectUnref);

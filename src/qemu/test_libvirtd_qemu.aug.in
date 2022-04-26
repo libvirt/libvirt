@@ -116,3 +116,4 @@ module Test_libvirtd_qemu =
     { "1" = "capname" }
 }
 { "deprecation_behavior" = "none" }
+{ "sched_core" = "none" }
