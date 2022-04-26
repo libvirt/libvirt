@@ -56,6 +56,10 @@
 # include <windows.h>
 #endif
 
+#ifdef __linux__
+# include <sys/prctl.h>
+#endif
+
 #include "virprocess.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -1885,3 +1889,123 @@ virProcessGetSchedInfo(unsigned long long *cpuWait,
     return 0;
 }
 #endif /* __linux__ */
+
+#ifdef __linux__
+# ifndef PR_SCHED_CORE
+/* Copied from linux/prctl.h */
+#  define PR_SCHED_CORE             62
+#  define PR_SCHED_CORE_GET         0
+#  define PR_SCHED_CORE_CREATE      1 /* create unique core_sched cookie */
+#  define PR_SCHED_CORE_SHARE_TO    2 /* push core_sched cookie to pid */
+#  define PR_SCHED_CORE_SHARE_FROM  3 /* pull core_sched cookie to pid */
+# endif
+
+/* Unfortunately, kernel-headers forgot to export these. */
+# ifndef PR_SCHED_CORE_SCOPE_THREAD
+#  define PR_SCHED_CORE_SCOPE_THREAD 0
+#  define PR_SCHED_CORE_SCOPE_THREAD_GROUP 1
+#  define PR_SCHED_CORE_SCOPE_PROCESS_GROUP 2
+# endif
+
+/**
+ * virProcessSchedCoreAvailable:
+ *
+ * Check whether kernel supports Core Scheduling (CONFIG_SCHED_CORE), i.e. only
+ * a defined set of PIDs/TIDs can run on sibling Hyper Threads at the same
+ * time.
+ *
+ * Returns: 1 if Core Scheduling is available,
+ *          0 if Core Scheduling is NOT available,
+ *         -1 otherwise.
+ */
+int
+virProcessSchedCoreAvailable(void)
+{
+    unsigned long cookie = 0;
+    int rc;
+
+    /* Let's just see if we can get our own sched cookie, and if yes we can
+     * safely assume CONFIG_SCHED_CORE kernel is available. */
+    rc = prctl(PR_SCHED_CORE, PR_SCHED_CORE_GET, 0,
+               PR_SCHED_CORE_SCOPE_THREAD, &cookie);
+
+    return rc == 0 ? 1 : errno == EINVAL ? 0 : -1;
+}
+
+/**
+ * virProcessSchedCoreCreate:
+ *
+ * Creates a new trusted group for the caller process.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise, with errno set.
+ */
+int
+virProcessSchedCoreCreate(void)
+{
+    /* pid = 0 (3rd argument) means the calling process. */
+    return prctl(PR_SCHED_CORE, PR_SCHED_CORE_CREATE, 0,
+                 PR_SCHED_CORE_SCOPE_THREAD_GROUP, 0);
+}
+
+/**
+ * virProcessSchedCoreShareFrom:
+ * @pid: PID to share group with
+ *
+ * Places the current caller process into the trusted group of @pid.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise, with errno set.
+ */
+int
+virProcessSchedCoreShareFrom(pid_t pid)
+{
+    return prctl(PR_SCHED_CORE, PR_SCHED_CORE_SHARE_FROM, pid,
+                 PR_SCHED_CORE_SCOPE_THREAD, 0);
+}
+
+/**
+ * virProcessSchedCoreShareTo:
+ * @pid: PID to share group with
+ *
+ * Places foreign @pid into the trusted group of the current caller process.
+ *
+ * Returns: 0 on success,
+ *         -1 otherwise, with errno set.
+ */
+int
+virProcessSchedCoreShareTo(pid_t pid)
+{
+    return prctl(PR_SCHED_CORE, PR_SCHED_CORE_SHARE_TO, pid,
+                 PR_SCHED_CORE_SCOPE_THREAD, 0);
+}
+
+#else /* !__linux__ */
+
+int
+virProcessSchedCoreAvailable(void)
+{
+    return 0;
+}
+
+int
+virProcessSchedCoreCreate(void)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virProcessSchedCoreShareFrom(pid_t pid G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+
+int
+virProcessSchedCoreShareTo(pid_t pid G_GNUC_UNUSED)
+{
+    errno = ENOSYS;
+    return -1;
+}
+#endif /* !__linux__ */

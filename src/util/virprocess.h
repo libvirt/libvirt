@@ -204,3 +204,11 @@ int virProcessGetStatInfo(unsigned long long *cpuTime,
 int virProcessGetSchedInfo(unsigned long long *cpuWait,
                            pid_t pid,
                            pid_t tid);
+
+int virProcessSchedCoreAvailable(void);
+
+int virProcessSchedCoreCreate(void);
+
+int virProcessSchedCoreShareFrom(pid_t pid);
+
+int virProcessSchedCoreShareTo(pid_t pid);
