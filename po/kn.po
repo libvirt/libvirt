@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-03-28 11:25+0000\n"
+"POT-Creation-Date: 2022-04-21 15:30+0000\n"
 "PO-Revision-Date: 2015-02-27 07:08+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Kannada (http://www.transifex.com/projects/p/libvirt/language/"
@@ -40,6 +40,7 @@ msgstr ""
 "\n"
 "  (ಗುಂಪಿನಲ್ಲಿನ ಆದೇಶದ ಬಗೆಗಿನ ವಿವರಗಳಿಗಾಗಿ help <group> ಅನ್ನು ಸೂಚಿಸಿ)\n"
 
+#. Print the description only if it's not empty.
 msgid ""
 "\n"
 "  DESCRIPTION\n"
@@ -340,6 +341,7 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
+#. true if 'arg' works instead of '--opt arg'
 msgid "  NAME\n"
 msgstr "  NAME\n"
 
@@ -578,6 +580,16 @@ msgstr "ಈ QEMU ಬೈನರಿಯಲ್ಲಿ %s ಗೆ ಬೆಂಬಲವಿ�
 msgid "%s object has invalid dynamic type"
 msgstr "%s ವಸ್ತುವು ಅಮಾನ್ಯವಾದ ಕ್ರಿಯಾತ್ಮಕ ಬಗೆಯನ್ನು ಹೊಂದಿದೆ"
 
+#.
+#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
+#. * enumeration values).
+#. *
+#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
+#.
+#.
+#. * Macros to implement managed objects
+#.
+#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #, c-format
 msgid "%s object is missing the required '%s' property"
 msgstr "%s ವಸ್ತುವಿನಲ್ಲಿ ಅಗತ್ಯವಿರುವ '%s' ಗುಣವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
@@ -824,9 +836,9 @@ msgstr ""
 msgid "%s: expected an unsigned integer for '%s' parameter"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "%s: failed to communicate with bridge helper: %s%s"
-msgstr "%s: ದಾಖಲೆ ಕಡತಕ್ಕೆ ಬರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "%s: failed to communicate with bridge helper: %s"
+msgstr ""
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -1377,6 +1389,7 @@ msgstr "(ಸಂಪರ್ಕಸಾಧನ_ವಿವರಣೆ)"
 msgid "(libxl_migration_cookie)"
 msgstr "(qemu_migration_cookie)"
 
+#. parse and modify the xml from the user
 #, fuzzy
 msgid "(metadata_xml)"
 msgstr "ಮೆಟಾಡೇಟಾ:"
@@ -1440,6 +1453,7 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr "(volume_definition)"
 
+#. Capacity related information isn't available
 msgid "-"
 msgstr "-"
 
@@ -2389,10 +2403,14 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
+#.
+#. * Macros to implement dynamic dispatched functions
+#.
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr "%s ಗೆ ಅನಿರೀಕ್ಷಿತವಾದ ಕರೆಯ ಬಗೆಯು '%s' ಆಗಿದೆ"
 
+#. nothing
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
 msgstr "%s ಗೆ ಅನಿರೀಕ್ಷಿತವಾದ ಕರೆಯ ಬಗೆಯು '%s' ಆಗಿದೆ, '%s' ಅನ್ನು ನಿರೀಕ್ಷಿಸಲಾಗಿದೆ"
@@ -3586,6 +3604,7 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr "%s ಡೊಮೇನ್‌ಗಾಗಿ ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ಗಳು ಅಸ್ಥಿರವಾದ ಸಂಬಂಧಗಳನ್ನು ಹೊಂದಿವೆ"
 
+#. All bytes up to and including the checksum byte should add up to 0.
 msgid "Checksum validation has failed"
 msgstr ""
 
@@ -4813,6 +4832,7 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
+#. Something went wrong retrieving pool info, cope with it
 msgid "Could not retrieve pool information"
 msgstr "ಪೂಲ್‌ನ ಮಾಹಿತಿಯನ್ನು ಮರಳಿ ಪಡೆಯಲಾಗಿಲ್ಲ"
 
@@ -5698,6 +5718,7 @@ msgstr ""
 "ಡೊಮೇನ್ %d ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಹೊಂದಿದೆ. --mac ಅನ್ನು ಬಳಸಿಕೊಂಡು ಯಾವುದನ್ನು ಕಳಚಬೇಕು "
 "ಎನ್ನುವುದನ್ನು ಸೂಚಿಸಿ"
 
+#. this is the 2nd match, so it's ambiguous
 #, c-format
 msgid ""
 "Domain has multiple interfaces matching MAC address %s. You must use detach-"
@@ -6930,17 +6951,27 @@ msgstr "%s ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂ�
 msgid "Failed to create thread for receiving migration data"
 msgstr "ಆತಿಥೇಯವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ತ್ರೆಡ್‌ ಅನ್ನು ರಚಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle daemon restart"
 msgstr "ಆತಿಥೇಯವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ತ್ರೆಡ್‌ ಅನ್ನು ರಚಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 msgid "Failed to create thread to handle domain death"
 msgstr ""
 
+#.
+#. * Not much we can do on error here except log it.
+#.
 #, fuzzy
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ಆತಿಥೇಯವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ತ್ರೆಡ್‌ ಅನ್ನು ರಚಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
 
+#. Not much else can be done
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ಆತಿಥೇಯವನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಲು ತ್ರೆಡ್‌ ಅನ್ನು ರಚಿಸಲು ವಿಫಲಗೊಂಡಿದೆ"
@@ -7505,6 +7536,7 @@ msgstr "ಸಕ್ರಿಯ ಜಾಲಬಂಧಗಳ ಪಟ್ಟಿಯನ್ನ�
 msgid "Failed to list active pools"
 msgstr "ಸಕ್ರಿಯ ಪೂಲ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the first or second call
 msgid "Failed to list domains"
 msgstr "ಡೊಮೇನ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -7520,22 +7552,28 @@ msgstr "ನಿಷ್ಕ್ರಿಯ ಜಾಲಬಂಧಗಳ ಪಟ್ಟಿಯ�
 msgid "Failed to list inactive pools"
 msgstr "ನಿಷ್ಕ್ರಿಯ ಪೂಲ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the first or second call
 msgid "Failed to list interfaces"
 msgstr "ಸಂಪರ್ಕಸಾಧನಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the call
 #, fuzzy
 msgid "Failed to list network filter bindings"
 msgstr "ಜಾಲಬಂಧ ಫಿಲ್ಟರುಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the call
 msgid "Failed to list network filters"
 msgstr "ಜಾಲಬಂಧ ಫಿಲ್ಟರುಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the first or second call
 msgid "Failed to list networks"
 msgstr "ಜಾಲಬಂಧಗಳ ಪಟ್ಟಿಯನ್ನು ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the call
 msgid "Failed to list node devices"
 msgstr "ನೋಡ್ ಸಾಧನಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the call
 msgid "Failed to list node secrets"
 msgstr "ನೋಡ್ ಸೀಕ್ರೆಟ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -7543,6 +7581,7 @@ msgstr "ನೋಡ್ ಸೀಕ್ರೆಟ್‌ಗಳನ್ನು ಪಟ್ಟ�
 msgid "Failed to list persistent guests on $uri"
 msgstr "$uri ನಲ್ಲಿ ಸ್ಥಿರ ಅತಿಥಿಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the first or second call
 msgid "Failed to list pools"
 msgstr "ಪೂಲ್‌ಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -7563,6 +7602,7 @@ msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 "libxenlight ನೊಂದಿಗೆ '%d' ಡೊಮೇನ್‌ಗಾಗಿ vcpus ಅನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. there was an error during the call
 msgid "Failed to list volumes"
 msgstr "ಪರಿಮಾಣಗಳನ್ನು ಪಟ್ಟಿ ಮಾಡುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
@@ -8154,6 +8194,9 @@ msgstr "libxenlight ನೊಂದಿಗೆ '%d' ಡೊಮೇನ್‌ ಅನ್�
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
+#. Hm, we already know we are in error here.  We don't want to
+#. * overwrite the previous error, though, so we just throw something
+#. * to the logs and hope for the best
 #, c-format
 msgid "Failed to resume guest %s after failure"
 msgstr "ವಿಫಲತೆಯ ನಂತರ ಅತಿಥಿ %s ಅನ್ನು ಪುನರಾರಂಭಗೊಳಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -8806,10 +8849,63 @@ msgstr ""
 "ಮೊದಲ ಕಡತ-ಆಧರಿತವಾದ ಹಾರ್ಡುಡಿಸ್ಕ್‍ ಯಾವುದೆ ಆಕರವನ್ನು ಹೊಂದಿಲ್ಲ, ದತ್ತಶೇಖರಣೆಯನ್ನು ಮತ್ತು VMX "
 "ಕಡತಕ್ಕಾಗಿ ಮಾರ್ಗವನ್ನು ತರ್ಕಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
 
+#. Macros to help dealing with flag requirements.
+#. *
+#. * VIR_REQUIRE_FLAG_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @RET: Return value.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_REQUIRE_FLAG_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag that is required by first flag.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Check whether required flag is set.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if required flag is not set.
+#.
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive flags.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_RET:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @RET: Return value.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
+#. *
+#. * VIR_EXCLUSIVE_FLAGS_GOTO:
+#. *
+#. * @FLAG1: First flag to be checked.
+#. * @FLAG2: Second flag to be checked.
+#. * @LABEL: Label to jump to.
+#. *
+#. * Reject mutually exclusive API flags.  The checked flags are compared
+#. * with flags variable.
+#. *
+#. * Returns nothing.  Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, fuzzy, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
 msgstr "--%s ಮತ್ತು --%s ಆಯ್ಕೆಗಳು ಎರಡೂ ಪರಸ್ಪರ ಪ್ರತ್ಯೇಕವಾಗಿರುತ್ತವೆ"
@@ -9067,6 +9163,10 @@ msgstr "ಡೊಮೇನ್‌ನ ಆತಿಥೇಯದ ಹೆಸರನ್ನು 
 msgid "Gets statistics about one or more (or all) domains"
 msgstr ""
 
+#, c-format
+msgid "Global feature %d should have already been handled"
+msgstr ""
+
 msgid "Got empty feature list from resctrl"
 msgstr ""
 
@@ -9112,10 +9212,6 @@ msgstr ""
 #, fuzzy
 msgid "HTM configuration is not supported by this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ nvram ಸಾಧನಕ್ಕೆ ಬೆಂಬಲವಿಲ್ಲ"
-
-#, fuzzy
-msgid "HTP resizing is not supported by this QEMU binary"
-msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ discard ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
 
 #, c-format
 msgid "HTTP response code %d for call to '%s'"
@@ -9333,7 +9429,19 @@ msgid "IOMMU device: '%s' is only supported with ARM Virt machines"
 msgstr ""
 
 #, c-format
+msgid "IOMMU device: '%s' is only supported with Q35 and ARM Virt machines"
+msgstr ""
+
+#, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
+msgstr ""
+
+#, c-format
+msgid "IOMMU device: '%s' needs a PCI address"
+msgstr ""
+
+#, c-format
+msgid "IOMMU device: '%s' requires ACPI"
 msgstr ""
 
 msgid "IOMMU eim requires interrupt remapping to be enabled"
@@ -9785,6 +9893,15 @@ msgstr "ಅಮಾನ್ಯವಾದ ಬಗೆ '%s',  '%s' ನಿಯತಾಂಕ�
 msgid "Invalid address."
 msgstr "ಅಸಿಂಧುವಾದ ವಿಳಾಸ."
 
+#.
+#. * Don't check for *selectSet != NULL here because selectSet is a list
+#. * and might contain items already. This function appends to selectSet.
+#.
+#. optional
+#. optional
+#. nothing
+#. nothing
+#. nothing
 msgid "Invalid argument"
 msgstr "ಅಮಾನ್ಯವಾದ ಆರ್ಗ್ಯುಮೆಂಟ್"
 
@@ -12057,6 +12174,12 @@ msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ SATAಗೆ ಬೆಂಬಲ
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
+#. Output old style header
+#. We only get here if the --details option was selected.
+#. Insert the header into table
+#. The old output format
+#. We only get here if the --details option was selected.
+#. Insert the header into table
 msgid "Name"
 msgstr "ಹೆಸರು"
 
@@ -13115,6 +13238,20 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
+#. Macros to help dealing with required options.
+#. VSH_REQUIRE_OPTION_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable).
+#. * @NAME2: String containing the name of required option.
+#. * @EXPR2: Expression to validate the variable (boolean variable).
+#. *
+#. * Check if required command options in virsh was set.  Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Option --%s is required by option --%s"
 msgstr ""
@@ -13134,6 +13271,20 @@ msgstr "ಆಯ್ಕೆಯ ಆರ್ಗ್ಯುಮೆಂಟ್ ಖಾಲಿ ಇ
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
+#. Macros to help dealing with mutually exclusive options.
+#. VSH_EXCLUSIVE_OPTIONS_EXPR:
+#. *
+#. * @NAME1: String containing the name of the option.
+#. * @EXPR1: Expression to validate the variable (boolean variable)
+#. * @NAME2: String containing the name of the option.
+#. * @EXPR2: Expression to validate the variable (boolean variable)
+#. *
+#. * Reject mutually exclusive command options in virsh. Use the
+#. * provided expression to check the variables.
+#. *
+#. * This helper does an early return and therefore it has to be called
+#. * before anything that would require cleanup.
+#.
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
 msgstr "--%s ಮತ್ತು --%s ಆಯ್ಕೆಗಳು ಎರಡೂ ಪರಸ್ಪರ ಪ್ರತ್ಯೇಕವಾಗಿರುತ್ತವೆ"
@@ -13378,6 +13529,7 @@ msgstr "ಪಾರ್ಸ್ ಮಾಡಲಾದ JSON ಪ್ರತಿಕ್ರಿ�
 msgid "Partition path '%s' must start with '/'"
 msgstr "ವಿಭಾಗ ಮಾರ್ಗ '%s' ಎನ್ನುವುದು '/' ಇಂದ ಆರಂಭಗೊಳ್ಳಬೇಕು"
 
+#. warn users that the --base64 option passed from command line is wrong
 #, fuzzy
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr "ಯಾವುದೆ qemu ಆದೇಶ-ಸಾಲಿನ ಆರ್ಗ್ಯುಮೆಂಟ್ ಅನ್ನು ಸೂಚಿಸಲಾಗಿಲ್ಲ"
@@ -14256,6 +14408,7 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr "S4 ಸ್ಥಿತಿಯನ್ನು ಈ ಡೊಮೈನಿಗಾಗಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ"
 
+#. Denied
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
 msgstr ""
@@ -14806,6 +14959,9 @@ msgstr "CPU ಸಮಯ:"
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr "ಸ್ಪೈಸ್ ಗ್ರಾಫಿಕ್ಸುಗಳು ಈ QEMU ಇಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
+#. XXX: Need to sort the returned params once new parameter
+#. * fields not of shared memory are added.
+#.
 msgid "Shared memory:\n"
 msgstr "ಹಂಚಲಾದ ಮೆಮೊರಿ:\n"
 
@@ -14885,6 +15041,7 @@ msgstr "ಈ QEMU ಬೈನರಿಯೊಂದಿಗೆ SATAಗೆ ಬೆಂಬಲ
 msgid "Snapshot"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್‌ ಪಟ್ಟಿ"
 
+#. Depending on flags, we re-edit even if XML is unchanged.
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
 msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ %s XML ಸಂರಚನೆಯನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ.\n"
@@ -15388,6 +15545,7 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr "%s ಖಾಲಿ ಇರುವಂತಿಲ್ಲ"
 
+#. title
 msgid "Target"
 msgstr "ಗುರಿ"
 
@@ -16275,6 +16433,10 @@ msgid ""
 msgstr ""
 
 #, c-format
+msgid "The device at PCI address %s needs to be an integrated device (bus=0)"
+msgstr ""
+
+#, c-format
 msgid ""
 "The device at PCI address %s requires hotplug capability, but the PCI "
 "controller with index='%d' doesn't support hotplug"
@@ -16692,9 +16854,11 @@ msgstr "ಸಾಕೆಟ್ ಅನ್ನು ದೋಷದ ಸ್ಥಿತಿಯಲ
 msgid "Try again?"
 msgstr ""
 
+#. Better leak than crash
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr "ಇನ್ನೂ ಸಹ ಬಳಸಲಾಗುತ್ತಿರುವ MultiCURL ವಸ್ತುವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ"
 
+#. Better leak than crash
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr "ಇನ್ನೂ ಸಹ ಬಳಸಲಾಗುತ್ತಿರುವ SharedCURL ವಸ್ತುವನ್ನು ಮುಕ್ತಗೊಳಿಸಲು ಪ್ರಯತ್ನಿಸಲಾಗುತ್ತಿದೆ"
 
@@ -19382,6 +19546,7 @@ msgstr "ಅಜ್ಞಾತ ಫಾರ್ವಾರ್ಡ್ ಬಗೆ %d, '%s' ಜ
 msgid "Unknown error"
 msgstr "ಗೊತ್ತಿರದ ದೋಷ"
 
+#. should never happen (tm)
 msgid "Unknown error value"
 msgstr "ಗೊತ್ತಿರದ ದೋಷದ ಮೌಲ್ಯ"
 
@@ -20181,10 +20346,12 @@ msgstr "ಸಂದೇಶ"
 msgid "Video adapters are not supported int containers."
 msgstr "ಸ್ಪೈಸ್ ಗ್ರಾಫಿಕ್ಸುಗಳು ಈ QEMU ಇಂದ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr "libvirt %s ನ Virsh ಆಜ್ಞಾಸಾಲಿನ ಉಪಕರಣ\n"
 
+#. FIXME - list a copyright blurb, as in GNU programs?
 #, fuzzy, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
 msgstr "libvirt %s ನ Virsh ಆಜ್ಞಾಸಾಲಿನ ಉಪಕರಣ\n"
@@ -20667,6 +20834,11 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr "ಹೊಸ ಸಾಮರ್ಥ್ಯವನ್ನು ಚದುರಿಸು ಬದಲು ಅದನ್ನು ನಿಯೋಜಿಸು"
 
+#.
+#. * we need to use an intermediary pointer to @data as compilers may sometimes
+#. * complain about @data not being a pointer type:
+#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
+#.
 msgid "allocated netlink buffer is too small"
 msgstr "ನಿಗದಿಪಡಿಸಲಾದ ನೆಟ್‌ಲಿಂಕ್ ಬಫರ್ ಬಹಳ ಚಿಕ್ಕದಾಗಿದೆ"
 
@@ -22437,6 +22609,7 @@ msgstr "ಮಾರ್ಗ '%s' ಅನ್ನು ತೆರೆಯುಲು ಸಾಧ�
 msgid "cannot open path '%s' in '%s'"
 msgstr "ಮಾರ್ಗ '%s' ಅನ್ನು ತೆರೆಯುಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ"
 
+#. A dangling symlink now implies a TOCTTOU race; report it.
 #, c-format
 msgid "cannot open volume '%s'"
 msgstr "ಪರಿಮಾಣ '%s' ಅನ್ನು ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -23249,6 +23422,7 @@ msgstr "ತದ್ರೂಪಿನ ಹೆಸರು"
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
+#. in case of EACCES, the parent will retry
 #, c-format
 msgid "child failed to create directory '%s'"
 msgstr "ಚೈಲ್ಡ್‌ನಿಂದ '%s' ಕೋಶವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲವಾಗಿದೆ"
@@ -26123,9 +26297,9 @@ msgstr "%s ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ಅಳಿಸ�
 msgid "failed to create a new XML namespace"
 msgstr "XML ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to create channel dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create channel dir '%s'"
+msgstr ""
 
 msgid "failed to create connection to CH socket"
 msgstr ""
@@ -26138,9 +26312,9 @@ msgstr "ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿ
 msgid "failed to create directory '%s'"
 msgstr "'%s' ಕೋಶವನ್ನು ನಿರ್ಮಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to create dump dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create dump dir '%s'"
+msgstr ""
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
@@ -26160,17 +26334,17 @@ msgstr "ಒಳಗೊಳ್ಳಿಸುವ ಕಡತವನ್ನು ರಚಿಸ�
 msgid "failed to create json"
 msgstr "%s ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to create lib dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create lib dir '%s'"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "failed to create libssh channel: %s"
 msgstr "ssh ಚಾನಲ್‌ ಅನ್ನು ತೆರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
 
-#, fuzzy, c-format
-msgid "failed to create log dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create log dir '%s'"
+msgstr ""
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -26182,9 +26356,9 @@ msgstr ""
 msgid "failed to create profile"
 msgstr "ಪ್ರೊಫೈಲ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to create save dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create save dir '%s'"
+msgstr ""
 
 msgid "failed to create socket"
 msgstr "ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -26197,9 +26371,9 @@ msgstr "'%s' ಗಾಗಿ ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವ�
 msgid "failed to create socketpair"
 msgstr "ಸಾಕೆಟ್ ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
-#, fuzzy, c-format
-msgid "failed to create state dir '%s': %s"
-msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+#, c-format
+msgid "failed to create state dir '%s'"
+msgstr ""
 
 msgid "failed to create the RADOS cluster"
 msgstr "RADOS ಕ್ಲಸ್ಟರ್ ಅನ್ನು ರಚಿಸುಸವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
@@ -27218,6 +27392,9 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
+#. parse inbound and outbound which are in the format of
+#. * 'average,peak,burst,floor', in which peak and burst are optional,
+#. * thus 'average,,burst' and 'average,peak' are also legal.
 #, fuzzy, c-format
 msgid "field '%s' is malformed"
 msgstr "ಸಂರಚನಾ ಮೌಲ್ಯ %s ವು ತಪ್ಪಾಗಿದೆ"
@@ -27819,6 +27996,7 @@ msgstr "ಸ್ನ್ಯಾಪ್‌ಶಾಟ್ ಅನ್ನು ರಚಿಸಿ�
 msgid "handler failed to wait on condition"
 msgstr "ನಿಬಂಧನೆಯಲ್ಲಿ ಕಾಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ"
 
+#. caller's error
 msgid "hash lookup resulted in NULL pointer"
 msgstr "ಹ್ಯಾಶ್ ಲುಕ್ಅಪ್ NULL ಸೂಚಕಕ್ಕೆ ಕಾರಣವಾಗುತ್ತದೆ"
 
@@ -28380,6 +28558,25 @@ msgstr "ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು"
 msgid "interface name %s does not fit into buffer"
 msgstr ""
 
+#.
+#. * virsh-interface.c: Commands to manage host interface
+#. *
+#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
+#. *
+#. * This library is free software; you can redistribute it and/or
+#. * modify it under the terms of the GNU Lesser General Public
+#. * License as published by the Free Software Foundation; either
+#. * version 2.1 of the License, or (at your option) any later version.
+#. *
+#. * This library is distributed in the hope that it will be useful,
+#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
+#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#. * Lesser General Public License for more details.
+#. *
+#. * You should have received a copy of the GNU Lesser General Public
+#. * License along with this library.  If not, see
+#. * <http://www.gnu.org/licenses/>.
+#.
 msgid "interface name or MAC address"
 msgstr "ಸಂಪರ್ಕಸಾಧನದ ಹೆಸರು ಅಥವ MAC ವಿಳಾಸ"
 
@@ -31473,6 +31670,10 @@ msgstr "ಆತಿಥೇಯಕ್ಕಾಗಿ ಹೆಸರು ಕಾಣಿಸು�
 msgid "missing value for migration parameter '%s'"
 msgstr "%s ನಲ್ಲಿ ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
+#, fuzzy
+msgid "missing values for acceleration"
+msgstr "ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
+
 msgid "missing vendor"
 msgstr "ಮಾರಾಟಗಾರ ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
@@ -31578,6 +31779,15 @@ msgstr "ವಿವರಣೆಯ ಬದಲಿಗೆ ಶೀರ್ಷಿಕೆಯನ�
 msgid "monitor failure"
 msgstr "ಮಾನಿಟರ್ ಮಾರ್ಗವಿಲ್ಲ"
 
+#. *
+#. * QEMU_CHECK_MONITOR_FULL:
+#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
+#. * @exit: statement that is used to exit the function
+#. *
+#. * This macro checks that the monitor is valid for given operation and exits
+#. * the function if not. The macro also adds a debug statement regarding the
+#. * monitor.
+#.
 msgid "monitor must not be NULL"
 msgstr "ಮೇಲ್ವಿಚಾರಕವು NULL ಆಗಿರಬಾರದು"
 
@@ -31778,6 +31988,7 @@ msgstr "rawio ಸಾಮರ್ಥ್ಯದ ಅಗತ್ಯವಿದೆ"
 msgid "negative size requires --shrink"
 msgstr ""
 
+#. 56 is good for Kerberos
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
 msgstr "ನೇಗೋಶಿಯೇಟ್ ಮಾಡಲಾದ SSF %d ಸಾಕಷ್ಟು ದೃಢವಾಗಿಲ್ಲ"
@@ -33469,8 +33680,8 @@ msgstr "ಡಿಸ್ಕ್ ಚಾಲಕ %s ಗೆ ಬೆಂಬಲವಿಲ್ಲ
 msgid "pci device %s is not a PCI-Express device"
 msgstr "ಸಾಧನ %s ವು ಒಂದು PCI ಸಾಧನವಾಗಿಲ್ಲ"
 
-msgid "pci device assignment backend driver (e.g. 'vfio' or 'kvm')"
-msgstr "pci ಸಾಧನ ನಿಯೋಜನಾ ಬ್ಯಾಕೆಂಡ್ ಚಾಲಕ (ಉದಾ. 'vfio' ಅಥವ 'kvm')"
+msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
+msgstr ""
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33894,7 +34105,7 @@ msgstr ""
 "'%s' ಹೆಸರಿನ (%s ಜಾಲಬಂಧದ) DNS TXT ರೆಕಾರ್ಡಿನಲ್ಲಿನ ಅಗತ್ಯವಾದ ಮೌಲ್ಯದ ಗುಣವೈಶಿಷ್ಟ್ಯವು "
 "ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
-msgid "property with name 'id' can't be overriden"
+msgid "property with name 'id' can't be overridden"
 msgstr ""
 
 #, c-format
@@ -34390,6 +34601,9 @@ msgstr ""
 "ಸಂಬಂಧಿಸಿದ ಎಲ್ಲಾ ಶೇಖರಣಾ ಪರಿಮಾಣಗಳನ್ನು ತೆಗೆದುಹಾಕು (ವಿರಾಮ ಚಿಹ್ನೆಯಿಂದ ಪ್ರತ್ಯೇಕಿಸಲಾದ "
 "ಗುರಿಗಳು ಮತ್ತು ಆಕರ ಮಾರ್ಗಗಳ ಪಟ್ಟಿ) (domblklist ಅನ್ನು ನೋಡಿ)"
 
+msgid "remove domain logs"
+msgstr ""
+
 msgid "remove domain managed state file"
 msgstr "ಡೊಮೇನ್ ನಿರ್ವಹಿಸಲಾದ ಸ್ಥಿತಿ ಕಡತವನ್ನು ತೆಗೆದುಹಾಕು"
 
@@ -34803,9 +35017,6 @@ msgstr "ಡೊಮೇನ್‌ '%s' ಅನ್ನು ' %s' ಗೆ ಉಳಿಸಲ�
 #, fuzzy
 msgid "sbbc configuration is not supported by this QEMU binary"
 msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ discard ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
-
-msgid "scheduler information is not supported on this platform"
-msgstr ""
 
 #, fuzzy, c-format
 msgid "scheme and host are mandatory vz migration URI: %s"
@@ -36862,6 +37073,7 @@ msgstr "ಮ್ಯೂಟೆಕ್ಸನ್ನು ಪ್ರಾರಂಭಿಸಲ�
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
+#. fdatasync() may fail on some special FDs, e.g. pipes
 #, c-format
 msgid "unable to fsync %s"
 msgstr "%s ಅನ್ನು fsync ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ"
@@ -37120,6 +37332,9 @@ msgstr "'%s' ನ ಮಾಲಿಕತ್ವವನ್ನು %d ಗೆ ಹೊಂದ�
 #, c-format
 msgid "unable to set ownership of '%s' to user %d:%d"
 msgstr "'%s' ನ ಮಾಲಿಕತ್ವವನ್ನು ಬಳಕೆದಾರ %d ಗೆ ಹೊಂದಿಸಲಾಗಿಲ್ಲ:%d"
+
+msgid "unable to set pipe size"
+msgstr ""
 
 #, c-format
 msgid "unable to set security context '%s'"
@@ -37675,6 +37890,8 @@ msgstr "ಅನ್ವಯಿದೆ ಇರುವ ನಿಯತಾಂಕದ ಬಗೆ
 msgid "unix"
 msgstr ""
 
+#. Something went wrong retrieving a volume path, cope with it
+#. Something went wrong retrieving volume info, cope with it
 msgid "unknown"
 msgstr "ಅಜ್ಞಾತ"
 
@@ -38444,6 +38661,28 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
+#. *
+#. * virCheckFlags:
+#. * @supported: an OR'ed set of supported flags
+#. * @retval: return value in case unsupported flags were passed
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Exits the caller function if unsupported flags were
+#. * passed to it.
+#.
+#. *
+#. * virCheckFlagsGoto:
+#. * @supported: an OR'ed set of supported flags
+#. * @label: label to jump to on error
+#. *
+#. * To avoid memory leaks this macro has to be used before any non-trivial
+#. * code which could possibly allocate some memory.
+#. *
+#. * Returns nothing. Jumps to a label if unsupported flags were
+#. * passed to it.
+#.
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
 msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಫ್ಲಾಗ್‌ಗಳು (0x%lx), %s ಕ್ರಿಯೆಯಲ್ಲಿ"
@@ -39148,6 +39387,12 @@ msgstr "ಬೆಂಬಲವಿಲ್ಲದ ಡಿಸ್ಕ್‍ ವಿಳಾಸ�
 msgid "virtio non-transitional model not supported for this qemu"
 msgstr "vport ಕಾರ್ಯಾಚರಣೆ '%s' ಅನ್ನು host%d ಕ್ಕಾಗಿ ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ"
 
+msgid "virtio rss hash report is not supported with this QEMU binary"
+msgstr ""
+
+msgid "virtio rss is not supported with this QEMU binary"
+msgstr ""
+
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
 msgstr ""
@@ -39647,6 +39892,41 @@ msgstr ""
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
 
+#, fuzzy
+#~ msgid "%s: failed to communicate with bridge helper: %s%s"
+#~ msgstr "%s: ದಾಖಲೆ ಕಡತಕ್ಕೆ ಬರೆಯುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "HTP resizing is not supported by this QEMU binary"
+#~ msgstr "ಈ QEMU ಬೈನರಿಯಿಂದ discard ಗೆ ಬೆಂಬಲವಿಲ್ಲ"
+
+#, fuzzy
+#~ msgid "failed to create channel dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "failed to create dump dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "failed to create lib dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "failed to create log dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "failed to create save dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#, fuzzy
+#~ msgid "failed to create state dir '%s': %s"
+#~ msgstr "'%s' ಅನ್ನು ರಚಿಸುವಲ್ಲಿ ವಿಫಲಗೊಂಡಿದೆ: %s"
+
+#~ msgid "pci device assignment backend driver (e.g. 'vfio' or 'kvm')"
+#~ msgstr "pci ಸಾಧನ ನಿಯೋಜನಾ ಬ್ಯಾಕೆಂಡ್ ಚಾಲಕ (ಉದಾ. 'vfio' ಅಥವ 'kvm')"
+
 #~ msgid "Call to utsname failed: %d"
 #~ msgstr "utsname ಅನ್ನು ಕಾಲ್‌ ಮಾಡುವಿಕೆಯು ವಿಫಲಗೊಂಡಿದೆ: %d"
 
@@ -39830,10 +40110,6 @@ msgstr "{[--%s] <string>}..."
 
 #~ msgid "missing boot device"
 #~ msgstr "ಬೂಟ್‌ ಸಾಧನವು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
-
-#, fuzzy
-#~ msgid "missing values for acceleration"
-#~ msgstr "ಹೆಸರಿನ ಮಾಹಿತಿಯು ಕಾಣಿಸುತ್ತಿಲ್ಲ"
 
 #~ msgid "sgio of shared disk '%s' conflicts with other active domains"
 #~ msgstr "ಹಂಚಲಾದ ಡಿಸ್ಕ್ '%s' ನ sgio ಸಕ್ರಿಯವಾದ ಡೊಮೇನ್‌ಗಳೊಂದಿಗೆ ಘರ್ಷಿಸುತ್ತದೆ"
