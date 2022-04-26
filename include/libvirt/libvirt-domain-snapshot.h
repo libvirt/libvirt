@@ -123,8 +123,6 @@ typedef enum {
                                                         not just children, when
                                                         listing a snapshot */
 
-    /* For historical reasons, groups do not use contiguous bits.  */
-
     VIR_DOMAIN_SNAPSHOT_LIST_LEAVES      = (1 << 2), /* Filter by snapshots
                                                         with no children */
     VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES   = (1 << 3), /* Filter by snapshots

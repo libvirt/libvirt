@@ -2148,8 +2148,6 @@ typedef enum {
     VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA = (1 << 4), /* If last use of domain,
                                                             then also remove any
                                                             checkpoint metadata */
-
-    /* Future undefine control flags should come here. */
 } virDomainUndefineFlagsValues;
 
 
