@@ -6140,7 +6140,7 @@ qemuBuildClockArgStr(virDomainClockDef *def)
     size_t i;
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
 
-    switch (def->offset) {
+    switch ((virDomainClockOffsetType) def->offset) {
     case VIR_DOMAIN_CLOCK_OFFSET_UTC:
         virBufferAddLit(&buf, "base=utc");
         break;
@@ -6190,6 +6190,14 @@ qemuBuildClockArgStr(virDomainClockDef *def)
         virBufferAsprintf(&buf, "base=%s", thenstr);
     }   break;
 
+    case VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE: {
+        g_autoptr(GDateTime) then = g_date_time_new_from_unix_utc(def->data.starttime);
+        g_autofree char *thenstr = g_date_time_format(then, "%Y-%m-%dT%H:%M:%S");
+
+        virBufferAsprintf(&buf, "base=%s", thenstr);
+    }   break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_LAST:
     default:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("unsupported clock offset '%s'"),

@@ -1213,6 +1213,7 @@ mymain(void)
     DO_TEST("kvmclock", QEMU_CAPS_KVM);
     DO_TEST("clock-timer-hyperv-rtc", QEMU_CAPS_KVM);
     DO_TEST_NOCAPS("clock-realtime");
+    DO_TEST_CAPS_LATEST("clock-absolute");
 
     DO_TEST_CAPS_LATEST("controller-usb-order");
 
