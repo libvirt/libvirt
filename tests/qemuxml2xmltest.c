@@ -276,6 +276,7 @@ mymain(void)
     DO_TEST_NOCAPS("clock-timer-hyperv-rtc");
     DO_TEST_CAPS_ARCH_LATEST("clock-timer-armvtimer", "aarch64");
     DO_TEST_NOCAPS("clock-realtime");
+    DO_TEST_CAPS_LATEST("clock-absolute");
 
     DO_TEST_NOCAPS("cpu-eoi-disabled");
     DO_TEST_NOCAPS("cpu-eoi-enabled");

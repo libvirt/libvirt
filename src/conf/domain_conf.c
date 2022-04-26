@@ -1172,6 +1172,7 @@ VIR_ENUM_IMPL(virDomainClockOffset,
               "localtime",
               "variable",
               "timezone",
+              "absolute",
 );
 
 VIR_ENUM_IMPL(virDomainClockBasis,
@@ -19459,6 +19460,15 @@ virDomainDefClockParse(virDomainDef *def,
             return -1;
         }
         break;
+
+    case VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE:
+        if (virXPathULongLong("number(./clock/@start)", ctxt,
+                              &def->clock.data.starttime) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("missing 'start' attribute for clock with offset='absolute'"));
+            return -1;
+        }
+        break;
     }
 
     if ((n = virXPathNodeSet("./clock/timer", ctxt, &nodes)) < 0)
@@ -26262,6 +26272,9 @@ virDomainClockDefFormat(virBuffer *buf,
         break;
     case VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE:
         virBufferEscapeString(&clockAttr, " timezone='%s'", def->data.timezone);
+        break;
+    case VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE:
+        virBufferAsprintf(&clockAttr, " start='%llu'", def->data.starttime);
         break;
     }
 

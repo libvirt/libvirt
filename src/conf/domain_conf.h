@@ -2453,6 +2453,7 @@ typedef enum {
     VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME = 1,
     VIR_DOMAIN_CLOCK_OFFSET_VARIABLE = 2,
     VIR_DOMAIN_CLOCK_OFFSET_TIMEZONE = 3,
+    VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE = 4,
 
     VIR_DOMAIN_CLOCK_OFFSET_LAST
 } virDomainClockOffsetType;
@@ -2487,6 +2488,9 @@ struct _virDomainClockDef {
         /* Timezone name, when
          * offset == VIR_DOMAIN_CLOCK_OFFSET_LOCALTIME */
         char *timezone;
+
+        /* absolute clock start time for VIR_DOMAIN_CLOCK_OFFSET_ABSOLUTE */
+        unsigned long long starttime;
     } data;
 
     size_t ntimers;

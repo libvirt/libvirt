@@ -1252,6 +1252,14 @@
               </attribute>
             </optional>
           </group>
+          <group>
+            <attribute name="offset">
+              <value>absolute</value>
+            </attribute>
+            <attribute name="start">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </group>
         </choice>
         <zeroOrMore>
           <ref name="timer"/>

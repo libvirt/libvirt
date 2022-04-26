@@ -2170,6 +2170,11 @@ Windows, however, expects it to be in so called 'localtime'.
       the RTC adjustments are lost at each reboot. :since:`Since 0.7.7`
       :since:`Since 0.9.11` the ``basis`` attribute can be either 'utc'
       (default) or 'localtime'.
+   ``absolute``
+      The guest clock will be always set to the value of the ``start``
+      attribute at startup of the domain. The ``start`` attribute takes an
+      epoch timestamp.
+      :since:`Since 8.4.0`.
 
    A ``clock`` may have zero or more ``timer`` sub-elements. :since:`Since
    0.8.0`
