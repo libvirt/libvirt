@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-04-21 15:30+0000\n"
-"PO-Revision-Date: 2022-03-30 08:23+0000\n"
+"PO-Revision-Date: 2022-04-26 14:28+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.12\n"
 
 msgid ""
 "\n"
@@ -955,7 +955,7 @@ msgstr "%s: '%s' 매개변수에 부호 없는 정수가 필요합니다"
 
 #, c-format
 msgid "%s: failed to communicate with bridge helper: %s"
-msgstr ""
+msgstr "%s: 브릿지 도우미와 통신하는데 실패함: %s"
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -2030,9 +2030,8 @@ msgstr "알수없는 스텁 드라이버 (stub driver)를 사용하려고 시도
 msgid ""
 "Attribute migratable is only allowed for 'host-passthrough' / 'maximum' CPU "
 "mode"
-msgstr ""
-"migratable (이주가능) 속성은 오직 'host-passthrough' 또는 'maximum' CPU (최"
-"대 CPU) 모드에서만 가능합니다"
+msgstr "이주가능 속성은 오직 'host-passthrough' 또는 'maximum' CPU 방식에서만 "
+"가능합니다"
 
 msgid "Attribute mode is only allowed for guest CPU"
 msgstr "모드 속성은 게스트 CPU에 대해서만 허용됨"
@@ -2218,8 +2217,7 @@ msgid "Build a given pool."
 msgstr "주어진 풀을 만드십시오."
 
 msgid "Bus 0 must be PCI for integrated PIIX3 USB or IDE controllers"
-msgstr ""
-"완전한 PIIX3 USB 또는 IDE 컨트롤러를 위해 Bus 0은 무조건 PCI가 되어야합니다"
+msgstr "Bus0는 통합된 PIIX3 USB 또는 IDE 제어기를 위한 PCI여야 합니다"
 
 msgid "Busy"
 msgstr "바쁨"
@@ -2237,9 +2235,7 @@ msgstr ""
 
 #, c-format
 msgid "CHS translation mode can only be set for 'ide' bus not '%s'"
-msgstr ""
-"실린더-헤드-섹터 (CHS) 변형 방법은 오직 'ide' 통신방법시스템에서만 설정 가능"
-"하며, '%s'에서는 불가합니다"
+msgstr "CHS 번역 방식은 'ide' bus만 설정 할 수 있으며, '%s'는 아닙니다"
 
 #, c-format
 msgid "CPU %d in cpulist '%s' exceed the maxcpu %d"
@@ -2447,7 +2443,7 @@ msgstr ""
 
 #, c-format
 msgid "Cache allocation of size %llu is not divisible by granularity %llu"
-msgstr "크기 %llu의 캐쉬 할당은 입상도 %llu 로써는 나눌 수 없습니다"
+msgstr "세분화된 %llu에 의해 크기 %llu의 캐쉬 할당은 나눠 질 수 없습니다"
 
 #, c-format
 msgid ""
@@ -3754,7 +3750,7 @@ msgid "Compressed data:"
 msgstr "압축된 데이터:"
 
 msgid "Compressed migration is not supported by QEMU binary"
-msgstr "압축된 이전(migration)은 QEMU 바이너리에서는 지원되지 않음"
+msgstr "압축된 이전은 QEMU 바이너리에서는 지원되지 않음"
 
 msgid "Compressed pages:"
 msgstr "압축된 페이지:"
@@ -9037,7 +9033,7 @@ msgstr "하나 이상의(또는 모든) 도메인에 대한 통계를 가져옵�
 
 #, c-format
 msgid "Global feature %d should have already been handled"
-msgstr ""
+msgstr "전역 기능 %d가 이미 처리되어져 있어야 합니다"
 
 msgid "Got empty feature list from resctrl"
 msgstr "resctrl에서 빈 기능 목록이 있습니다"
@@ -9296,7 +9292,7 @@ msgstr "IOMMU 장치: '%s'은(는) ARM Virt 시스템에서만 지원됩니다"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 and ARM Virt machines"
-msgstr ""
+msgstr "IOMMU 장치: '%s'은 Q35와 암(ARM) 가상 장비에서만 지원됩니다"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
@@ -9304,11 +9300,11 @@ msgstr "IOMMU 장치: '%s'은(는) Q35 시스템에서만 지원됩니다"
 
 #, c-format
 msgid "IOMMU device: '%s' needs a PCI address"
-msgstr ""
+msgstr "IOMMU 장치: '%s'는 PCI 주소가 필요합니다"
 
 #, c-format
 msgid "IOMMU device: '%s' requires ACPI"
-msgstr ""
+msgstr "IOMMU 장치: '%s'는 ACPI가 필요합니다"
 
 msgid "IOMMU eim requires interrupt remapping to be enabled"
 msgstr "IOMMU eim을 사용하려면 인터럽트 재매핑이 필요합니다"
@@ -16046,7 +16042,7 @@ msgstr "PCI 주소 %s의 장치에 인식할 수 없는 연결 유형 플래그 
 
 #, c-format
 msgid "The device at PCI address %s needs to be an integrated device (bus=0)"
-msgstr ""
+msgstr "PCI 주소 %s에 있는 장치는 통합된 장치로 되어야 합니다 (bus=0)"
 
 #, c-format
 msgid ""
@@ -25582,7 +25578,7 @@ msgstr "새 XML 네임스페이스를 만들지 못했습니다"
 
 #, c-format
 msgid "failed to create channel dir '%s'"
-msgstr ""
+msgstr "채널 디렉토리 '%s'를 생성하는데 실패하였습니다"
 
 msgid "failed to create connection to CH socket"
 msgstr "CH 소켓에 대한 연결을 생성하지 못했습니다"
@@ -25596,7 +25592,7 @@ msgstr "디렉터리 '%s' 생성 실패"
 
 #, c-format
 msgid "failed to create dump dir '%s'"
-msgstr ""
+msgstr "덤프 디렉토리 '%s'를 생성하는데 실패했습니다"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
@@ -25617,7 +25613,7 @@ msgstr "json 생성에 실패"
 
 #, c-format
 msgid "failed to create lib dir '%s'"
-msgstr ""
+msgstr "lib 디렉토리 '%s'를 생성하는데 실패했습니다"
 
 #, c-format
 msgid "failed to create libssh channel: %s"
@@ -25625,7 +25621,7 @@ msgstr "libssh 채널을 작성하지 못했습니다: %s"
 
 #, c-format
 msgid "failed to create log dir '%s'"
-msgstr ""
+msgstr "로그 디렉토리 '%s'를 생성하는데 실패했습니다"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -25639,7 +25635,7 @@ msgstr "프로파일 생성 실패"
 
 #, c-format
 msgid "failed to create save dir '%s'"
-msgstr ""
+msgstr "저장 디렉토리 '%s'를 생성하는데 실패했습니다"
 
 msgid "failed to create socket"
 msgstr "소켓 생성 실패"
@@ -25653,7 +25649,7 @@ msgstr "socketpair 생성에 실패"
 
 #, c-format
 msgid "failed to create state dir '%s'"
-msgstr ""
+msgstr "상태 디렉토리 '%s'를 생성하는데 실패했습니다"
 
 msgid "failed to create the RADOS cluster"
 msgstr "RADOS 클러스터 생성 실패"
@@ -32621,7 +32617,7 @@ msgid "pci device %s is not a PCI-Express device"
 msgstr "pci 장치 %s는 PCI-Express 장치가 아닙니다"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
-msgstr ""
+msgstr "pci 장치 할당 백엔드 드라이버 (예: 'vfio' 또는 'xen')"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -33021,7 +33017,7 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "네트워크 %s의 DNS TXT 레코드 이름 '%s'에 금지된 문자가 있습니다"
 
 msgid "property with name 'id' can't be overridden"
-msgstr ""
+msgstr "이름 'id'를 갖는 특성은 재지정 할 수 없습니다"
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -33501,7 +33497,7 @@ msgstr ""
 "조)"
 
 msgid "remove domain logs"
-msgstr ""
+msgstr "도메인 로그를 제거합니다"
 
 msgid "remove domain managed state file"
 msgstr "도메인 관리 상태 파일 제거"
@@ -36163,7 +36159,7 @@ msgid "unable to set ownership of '%s' to user %d:%d"
 msgstr "'%s'의 소유권을 사용자 %d로 이전할 수 없음: %d"
 
 msgid "unable to set pipe size"
-msgstr ""
+msgstr "파이프 크기 설정을 할 수 없습니다"
 
 #, c-format
 msgid "unable to set security context '%s'"
@@ -38189,10 +38185,10 @@ msgid "virtio non-transitional model not supported for this qemu"
 msgstr "이 qemu에 대해 virtio 비전이적 모델이 지원되지 않습니다"
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtio rss 해쉬 보고는 이와 같은 QEMU 바이너리를 지원하지 않습니다"
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtio rss는 이와 같은 QEMU 바이너리를 지원하지 않습니다"
 
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
