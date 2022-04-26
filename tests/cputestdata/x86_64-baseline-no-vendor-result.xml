@@ -1,3 +1,4 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='allow'>cpu64-rhel6</model>
+  <model fallback='allow'>kvm64</model>
+  <feature policy='require' name='lahf_lm'/>
 </cpu>

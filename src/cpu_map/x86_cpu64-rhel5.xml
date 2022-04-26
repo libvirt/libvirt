@@ -1,6 +1,6 @@
 <cpus>
   <model name='cpu64-rhel5'>
-    <decode host='on' guest='on'/>
+    <decode host='off' guest='off'/>
     <feature name='apic'/>
     <feature name='clflush'/>
     <feature name='cmov'/>
