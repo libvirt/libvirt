@@ -1956,6 +1956,27 @@ virCPUx86Compare(virCPUDef *host,
 }
 
 
+static int
+virCPUx86CompareCandidateFeatureList(virCPUDef *cpuCurrent,
+                                     virCPUDef *cpuCandidate)
+{
+    size_t current = cpuCurrent->nfeatures;
+    size_t candidate = cpuCandidate->nfeatures;
+
+    if (candidate < current) {
+        VIR_DEBUG("%s is better than %s: %zu < %zu",
+                  cpuCandidate->model, cpuCurrent->model,
+                  candidate, current);
+        return 1;
+    }
+
+    VIR_DEBUG("%s is not better than %s: %zu >= %zu",
+              cpuCandidate->model, cpuCurrent->model,
+              candidate, current);
+    return 0;
+}
+
+
 /*
  * Checks whether a candidate model is a better fit for the CPU data than the
  * current model.
@@ -2024,15 +2045,7 @@ x86DecodeUseCandidate(virCPUx86Model *current,
         }
     }
 
-    if (cpuCurrent->nfeatures > cpuCandidate->nfeatures) {
-        VIR_DEBUG("%s results in shorter feature list than %s",
-                  cpuCandidate->model, cpuCurrent->model);
-        return 1;
-    }
-
-    VIR_DEBUG("%s does not result in shorter feature list than %s",
-              cpuCandidate->model, cpuCurrent->model);
-    return 0;
+    return virCPUx86CompareCandidateFeatureList(cpuCurrent, cpuCandidate);
 }
 
 
