@@ -323,8 +323,8 @@ typedef virDomainControlInfo *virDomainControlInfoPtr;
 typedef enum {
     VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state. (Since: v0.9.2)  */
     VIR_DOMAIN_AFFECT_LIVE    = 1 << 0, /* Affect running domain state. (Since: v0.9.2)  */
-    VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state.  */
-    /* 1 << 2 is reserved for virTypedParameterFlags (Since: v0.9.2) */
+    VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state. (Since: v0.9.2) */
+    /* 1 << 2 is reserved for virTypedParameterFlags */
 } virDomainModificationImpact;
 
 /**
