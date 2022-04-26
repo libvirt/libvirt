@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-04-21 15:30+0000\n"
-"PO-Revision-Date: 2022-03-28 13:06+0000\n"
+"PO-Revision-Date: 2022-04-26 14:28+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.11.2\n"
+"X-Generator: Weblate 4.12\n"
 
 msgid ""
 "\n"
@@ -991,7 +991,7 @@ msgstr ""
 
 #, c-format
 msgid "%s: failed to communicate with bridge helper: %s"
-msgstr ""
+msgstr "%s: не вдалося обмінятися даними із допоміжним засобом містка: %s"
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -9387,7 +9387,7 @@ msgstr "Отримує статистичні дані щодо одного а�
 
 #, c-format
 msgid "Global feature %d should have already been handled"
-msgstr ""
+msgstr "Загальна можливість %d вже має оброблятися"
 
 msgid "Got empty feature list from resctrl"
 msgstr "Від resctrl отримано порожній список можливостей"
@@ -9667,6 +9667,8 @@ msgstr "Пристрій IOMMU: підтримку «%s» передбачено
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 and ARM Virt machines"
 msgstr ""
+"Пристрій IOMMU: підтримку «%s» реалізовано лише з віртуальними машинами Q35 "
+"і ARM"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
@@ -9674,11 +9676,11 @@ msgstr "Пристрій IOMMU: підтримку «%s» передбачено
 
 #, c-format
 msgid "IOMMU device: '%s' needs a PCI address"
-msgstr ""
+msgstr "Пристрій IOMMU: «%s» потребує адреси PCI"
 
 #, c-format
 msgid "IOMMU device: '%s' requires ACPI"
-msgstr ""
+msgstr "Пристрій IOMMU: «%s» потребує ACPI"
 
 msgid "IOMMU eim requires interrupt remapping to be enabled"
 msgstr "eim IOMMU потребує вмикання зміни прив'язки переривань"
@@ -16938,7 +16940,7 @@ msgstr ""
 
 #, c-format
 msgid "The device at PCI address %s needs to be an integrated device (bus=0)"
-msgstr ""
+msgstr "Пристрій із адресоюt PCI %s має бути інтегрованим пристроєм (bus=0)"
 
 #, c-format
 msgid ""
@@ -26866,7 +26868,7 @@ msgstr "не вдалося створити простір назв XML"
 
 #, c-format
 msgid "failed to create channel dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог каналу «%s»"
 
 msgid "failed to create connection to CH socket"
 msgstr "не вдалося створити з'єднання із сокетом CH"
@@ -26880,7 +26882,7 @@ msgstr "Не вдалося створити каталог «%s»"
 
 #, c-format
 msgid "failed to create dump dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог дампу «%s»"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
@@ -26901,7 +26903,7 @@ msgstr "не вдалося створити код json"
 
 #, c-format
 msgid "failed to create lib dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог бібліотеки «%s»"
 
 #, c-format
 msgid "failed to create libssh channel: %s"
@@ -26909,7 +26911,7 @@ msgstr "не вдалося створити канал libssh: %s"
 
 #, c-format
 msgid "failed to create log dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог журналу «%s»"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -26923,7 +26925,7 @@ msgstr "не вдалося створити профіль"
 
 #, c-format
 msgid "failed to create save dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог збереження «%s»"
 
 msgid "failed to create socket"
 msgstr "не вдалось створити сокет"
@@ -26937,7 +26939,7 @@ msgstr "не вдалося створити пару сокетів"
 
 #, c-format
 msgid "failed to create state dir '%s'"
-msgstr ""
+msgstr "не вдалося створити каталог стану «%s»"
 
 msgid "failed to create the RADOS cluster"
 msgstr "не вдалося створити кластер RADOS"
@@ -34290,7 +34292,7 @@ msgid "pci device %s is not a PCI-Express device"
 msgstr "пристрій pci %s не є пристроєм PCI-Express"
 
 msgid "pci device assignment backend driver (e.g. 'vfio' or 'xen')"
-msgstr ""
+msgstr "драйвер обробки призначення пристроїв pci (наприклад «vfio» або «xen»)"
 
 msgid ""
 "pci-expander-bus controllers are only supported on 440fx-based machinetypes"
@@ -34729,7 +34731,7 @@ msgid "prohibited character in DNS TXT record name '%s' of network %s"
 msgstr "заборонений символ у назві запису TXT DNS «%s» мережі %s"
 
 msgid "property with name 'id' can't be overridden"
-msgstr ""
+msgstr "властивість із назвою «id» не можна перевизначати"
 
 #, c-format
 msgid "protocol '%s' accepts only one host"
@@ -35257,7 +35259,7 @@ msgstr ""
 "відокремлених комами) (див. domblklist)"
 
 msgid "remove domain logs"
-msgstr ""
+msgstr "вилучити журнал домену"
 
 msgid "remove domain managed state file"
 msgstr "вилучити файл позначення стану керування доменом"
@@ -38036,7 +38038,7 @@ msgid "unable to set ownership of '%s' to user %d:%d"
 msgstr "не вдалось змінити власника «%s» на %d:%d"
 
 msgid "unable to set pipe size"
-msgstr ""
+msgstr "не вдалося встановити розмір каналу"
 
 #, c-format
 msgid "unable to set security context '%s'"
@@ -40113,9 +40115,11 @@ msgstr "підтримки неперехідних моделей virtio для
 
 msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr ""
+"підтримки звітування щодо хешу RSS virtio у цьому виконуваному файлі QEMU не "
+"передбачено"
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "підтримки RSS virtio у цьому виконуваному файлі QEMU не передбачено"
 
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
