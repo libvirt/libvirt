@@ -26,4 +26,4 @@ build_task:
     - meson setup build
     - meson dist -C build --no-tests
     - meson compile -C build
-    - meson test -C build --no-suite syntax-check
+    - meson test -C build --no-suite syntax-check --print-errorlogs
