@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc-i440fx-4.0,usb=off,dump-guest-core=off \
 -accel tcg \
--cpu EPYC,acpi=on,ss=on,monitor=on,hypervisor=on,erms=on,mpx=on,pcommit=on,clwb=on,pku=on,la57=on,3dnowext=on,3dnow=on,npt=on,vme=off,fma=off,avx=off,f16c=off,rdrand=off,avx2=off,rdseed=off,sha-ni=off,xsavec=off,fxsr-opt=off,misalignsse=off,3dnowprefetch=off,osvw=off,topoext=off,nrip-save=off \
+-cpu Opteron_G3,acpi=on,ss=on,pclmulqdq=on,monitor=on,ssse3=on,sse4.1=on,sse4.2=on,movbe=on,aes=on,xsave=on,hypervisor=on,arat=on,fsgsbase=on,bmi1=on,smep=on,bmi2=on,erms=on,mpx=on,adx=on,smap=on,pcommit=on,clflushopt=on,clwb=on,pku=on,la57=on,xsaveopt=on,xgetbv1=on,mmxext=on,pdpe1gb=on,3dnowext=on,3dnow=on,cr8legacy=on,npt=on,misalignsse=off \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \

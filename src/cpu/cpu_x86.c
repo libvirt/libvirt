@@ -1956,23 +1956,57 @@ virCPUx86Compare(virCPUDef *host,
 }
 
 
+/* Base penalty for disabled features. */
+#define BASE_PENALTY 2
+
 static int
 virCPUx86CompareCandidateFeatureList(virCPUDef *cpuCurrent,
                                      virCPUDef *cpuCandidate)
 {
     size_t current = cpuCurrent->nfeatures;
+    size_t enabledCurrent = current;
+    size_t disabledCurrent = 0;
     size_t candidate = cpuCandidate->nfeatures;
+    size_t enabled = candidate;
+    size_t disabled = 0;
 
-    if (candidate < current) {
-        VIR_DEBUG("%s is better than %s: %zu < %zu",
+    if (cpuCandidate->type != VIR_CPU_TYPE_HOST) {
+        size_t i;
+        int penalty = BASE_PENALTY;
+
+        for (i = 0; i < enabledCurrent; i++) {
+            if (cpuCurrent->features[i].policy == VIR_CPU_FEATURE_DISABLE) {
+                enabledCurrent--;
+                disabledCurrent += penalty;
+                penalty++;
+            }
+        }
+        current = enabledCurrent + disabledCurrent;
+
+        penalty = BASE_PENALTY;
+        for (i = 0; i < enabled; i++) {
+            if (cpuCandidate->features[i].policy == VIR_CPU_FEATURE_DISABLE) {
+                enabled--;
+                disabled += penalty;
+                penalty++;
+            }
+        }
+        candidate = enabled + disabled;
+    }
+
+    if (candidate < current ||
+        (candidate == current && disabled < disabledCurrent)) {
+        VIR_DEBUG("%s is better than %s: %zu (%zu, %zu) < %zu (%zu, %zu)",
                   cpuCandidate->model, cpuCurrent->model,
-                  candidate, current);
+                  candidate, enabled, disabled,
+                  current, enabledCurrent, disabledCurrent);
         return 1;
     }
 
-    VIR_DEBUG("%s is not better than %s: %zu >= %zu",
+    VIR_DEBUG("%s is not better than %s: %zu (%zu, %zu) >= %zu (%zu, %zu)",
               cpuCandidate->model, cpuCurrent->model,
-              candidate, current);
+              candidate, enabled, disabled,
+              current, enabledCurrent, disabledCurrent);
     return 0;
 }
 

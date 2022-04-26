@@ -13,7 +13,7 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
 -machine pc,usb=off,dump-guest-core=off \
 -accel kvm \
--cpu Penryn,sse4.1=off,sse4.2=off,popcnt=off,aes=off \
+-cpu Conroe,cx16=on,sse4.1=off,sse4.2=off,popcnt=off,aes=off \
 -m 214 \
 -overcommit mem-lock=off \
 -smp 6,sockets=6,cores=1,threads=1 \

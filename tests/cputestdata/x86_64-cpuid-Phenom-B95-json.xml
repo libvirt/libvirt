@@ -1,22 +1,25 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>Opteron_G3</model>
+  <model fallback='forbid'>athlon</model>
   <vendor>AMD</vendor>
-  <feature policy='require' name='vme'/>
+  <feature policy='require' name='mca'/>
+  <feature policy='require' name='clflush'/>
+  <feature policy='require' name='pni'/>
+  <feature policy='require' name='cx16'/>
   <feature policy='require' name='x2apic'/>
+  <feature policy='require' name='popcnt'/>
   <feature policy='require' name='hypervisor'/>
-  <feature policy='require' name='mmxext'/>
+  <feature policy='require' name='syscall'/>
   <feature policy='require' name='fxsr_opt'/>
   <feature policy='require' name='pdpe1gb'/>
-  <feature policy='require' name='3dnowext'/>
-  <feature policy='require' name='3dnow'/>
+  <feature policy='require' name='lm'/>
+  <feature policy='require' name='lahf_lm'/>
   <feature policy='require' name='cmp_legacy'/>
   <feature policy='require' name='cr8legacy'/>
+  <feature policy='require' name='abm'/>
+  <feature policy='require' name='sse4a'/>
+  <feature policy='require' name='misalignsse'/>
   <feature policy='require' name='3dnowprefetch'/>
   <feature policy='require' name='osvw'/>
   <feature policy='require' name='npt'/>
   <feature policy='require' name='nrip-save'/>
-  <feature policy='disable' name='nx'/>
-  <feature policy='disable' name='rdtscp'/>
-  <feature policy='disable' name='svm'/>
-  <feature policy='disable' name='monitor'/>
 </cpu>

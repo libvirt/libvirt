@@ -1,14 +1,15 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='allow'>Cooperlake</model>
+  <model fallback='allow'>Cascadelake-Server</model>
   <vendor>Intel</vendor>
   <feature policy='require' name='ss'/>
   <feature policy='require' name='hypervisor'/>
   <feature policy='require' name='tsc_adjust'/>
-  <feature policy='require' name='mpx'/>
   <feature policy='require' name='umip'/>
+  <feature policy='require' name='pku'/>
+  <feature policy='require' name='stibp'/>
+  <feature policy='require' name='arch-capabilities'/>
   <feature policy='require' name='xsaves'/>
-  <feature policy='disable' name='avx512-bf16'/>
-  <feature policy='disable' name='mds-no'/>
-  <feature policy='disable' name='pschange-mc-no'/>
-  <feature policy='disable' name='taa-no'/>
+  <feature policy='require' name='rdctl-no'/>
+  <feature policy='require' name='ibrs-all'/>
+  <feature policy='require' name='skip-l1dfl-vmentry'/>
 </cpu>

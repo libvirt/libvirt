@@ -1,6 +1,7 @@
 <cpu mode='custom' match='exact'>
-  <model fallback='forbid'>core2duo</model>
+  <model fallback='forbid'>n270</model>
   <vendor>Intel</vendor>
+  <feature policy='require' name='pse36'/>
   <feature policy='require' name='ds'/>
   <feature policy='require' name='acpi'/>
   <feature policy='require' name='ss'/>
@@ -14,6 +15,6 @@
   <feature policy='require' name='xtpr'/>
   <feature policy='require' name='pdcm'/>
   <feature policy='require' name='movbe'/>
+  <feature policy='require' name='lm'/>
   <feature policy='require' name='lahf_lm'/>
-  <feature policy='disable' name='syscall'/>
 </cpu>

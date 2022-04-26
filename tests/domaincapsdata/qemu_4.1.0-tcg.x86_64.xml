@@ -36,36 +36,43 @@
       </enum>
     </mode>
     <mode name='host-model' supported='yes'>
-      <model fallback='forbid'>EPYC-IBPB</model>
+      <model fallback='forbid'>Opteron_G3</model>
       <vendor>AMD</vendor>
       <feature policy='require' name='acpi'/>
       <feature policy='require' name='ss'/>
+      <feature policy='require' name='pclmuldq'/>
       <feature policy='require' name='monitor'/>
+      <feature policy='require' name='ssse3'/>
+      <feature policy='require' name='sse4.1'/>
+      <feature policy='require' name='sse4.2'/>
+      <feature policy='require' name='movbe'/>
+      <feature policy='require' name='aes'/>
+      <feature policy='require' name='xsave'/>
+      <feature policy='require' name='rdrand'/>
       <feature policy='require' name='hypervisor'/>
+      <feature policy='require' name='arat'/>
+      <feature policy='require' name='fsgsbase'/>
+      <feature policy='require' name='bmi1'/>
+      <feature policy='require' name='smep'/>
+      <feature policy='require' name='bmi2'/>
       <feature policy='require' name='erms'/>
       <feature policy='require' name='mpx'/>
+      <feature policy='require' name='adx'/>
+      <feature policy='require' name='smap'/>
       <feature policy='require' name='pcommit'/>
+      <feature policy='require' name='clflushopt'/>
       <feature policy='require' name='clwb'/>
       <feature policy='require' name='pku'/>
       <feature policy='require' name='la57'/>
+      <feature policy='require' name='xsaveopt'/>
+      <feature policy='require' name='xgetbv1'/>
+      <feature policy='require' name='mmxext'/>
+      <feature policy='require' name='pdpe1gb'/>
       <feature policy='require' name='3dnowext'/>
       <feature policy='require' name='3dnow'/>
+      <feature policy='require' name='cr8legacy'/>
       <feature policy='require' name='npt'/>
-      <feature policy='disable' name='vme'/>
-      <feature policy='disable' name='fma'/>
-      <feature policy='disable' name='avx'/>
-      <feature policy='disable' name='f16c'/>
-      <feature policy='disable' name='avx2'/>
-      <feature policy='disable' name='rdseed'/>
-      <feature policy='disable' name='sha-ni'/>
-      <feature policy='disable' name='xsavec'/>
-      <feature policy='disable' name='fxsr_opt'/>
       <feature policy='disable' name='misalignsse'/>
-      <feature policy='disable' name='3dnowprefetch'/>
-      <feature policy='disable' name='osvw'/>
-      <feature policy='disable' name='topoext'/>
-      <feature policy='disable' name='ibpb'/>
-      <feature policy='disable' name='nrip-save'/>
     </mode>
     <mode name='custom' supported='yes'>
       <model usable='yes'>qemu64</model>
