@@ -217,4 +217,9 @@ int virCommandRunNul(virCommand *cmd,
                      virCommandRunNulFunc func,
                      void *data);
 
+void virCommandSetRunAlone(virCommand *cmd);
+
+void virCommandSetRunAmong(virCommand *cmd,
+                           pid_t pid);
+
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virCommand, virCommandFree);

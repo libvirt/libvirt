@@ -148,6 +148,13 @@ struct _virCommand {
 #endif
     int mask;
 
+    /* schedCore values:
+     *  0: no core scheduling
+     * >0: copy scheduling group from PID
+     * -1: create new scheduling group
+     */
+    pid_t schedCore;
+
     virCommandSendBuffer *sendBuffers;
     size_t numSendBuffers;
 };
@@ -434,6 +441,22 @@ virCommandHandshakeChild(virCommand *cmd)
 static int
 virExecCommon(virCommand *cmd, gid_t *groups, int ngroups)
 {
+    /* Do this before dropping capabilities. */
+    if (cmd->schedCore == -1 &&
+        virProcessSchedCoreCreate() < 0) {
+        virReportSystemError(errno, "%s",
+                             _("Unable to set SCHED_CORE"));
+        return -1;
+    }
+
+    if (cmd->schedCore > 0 &&
+        virProcessSchedCoreShareFrom(cmd->schedCore) < 0) {
+        virReportSystemError(errno,
+                             _("Unable to run among %llu"),
+                             (unsigned long long) cmd->schedCore);
+        return -1;
+    }
+
     if (cmd->uid != (uid_t)-1 || cmd->gid != (gid_t)-1 ||
         cmd->capabilities || (cmd->flags & VIR_EXEC_CLEAR_CAPS)) {
         VIR_DEBUG("Setting child uid:gid to %d:%d with caps %llx",
@@ -3388,3 +3411,43 @@ virCommandRunNul(virCommand *cmd G_GNUC_UNUSED,
     return -1;
 }
 #endif /* WIN32 */
+
+/**
+ * virCommandSetRunAlone:
+ *
+ * Create new trusted group when running the command. In other words, the
+ * process won't be scheduled to run on a core among with processes from
+ * another, untrusted group.
+ */
+void
+virCommandSetRunAlone(virCommand *cmd)
+{
+    if (virCommandHasError(cmd))
+        return;
+
+    cmd->schedCore = -1;
+}
+
+/**
+ * virCommandSetRunAmong:
+ * @pid: pid from a trusted group
+ *
+ * When spawning the command place it into the trusted group of @pid so that
+ * these two processes can run on Hyper Threads of a single core at the same
+ * time.
+ */
+void
+virCommandSetRunAmong(virCommand *cmd,
+                      pid_t pid)
+{
+    if (virCommandHasError(cmd))
+        return;
+
+    if (pid <= 0) {
+        VIR_DEBUG("invalid pid value: %lld", (long long) pid);
+        cmd->has_error = -1;
+        return;
+    }
+
+    cmd->schedCore = pid;
+}
