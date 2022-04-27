@@ -19861,6 +19861,11 @@ qemuGetSEVInfoToParams(virQEMUCaps *qemuCaps,
                                 VIR_NODE_SEV_CERT_CHAIN, sev->cert_chain) < 0)
         goto cleanup;
 
+    if ((sev->cpu0_id != NULL) &&
+       (virTypedParamsAddString(&sevParams, &n, &maxpar,
+                                VIR_NODE_SEV_CPU0_ID, sev->cpu0_id) < 0))
+        goto cleanup;
+
     if (virTypedParamsAddUInt(&sevParams, &n, &maxpar,
                               VIR_NODE_SEV_CBITPOS, sev->cbitpos) < 0)
         goto cleanup;

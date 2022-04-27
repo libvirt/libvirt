@@ -6400,6 +6400,7 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
     virJSONValue *caps;
     const char *pdh = NULL;
     const char *cert_chain = NULL;
+    const char *cpu0_id = NULL;
     unsigned int cbitpos;
     unsigned int reduced_phys_bits;
     g_autoptr(virSEVCapability) capability = NULL;
@@ -6456,6 +6457,11 @@ qemuMonitorJSONGetSEVCapabilities(qemuMonitor *mon,
     capability->pdh = g_strdup(pdh);
 
     capability->cert_chain = g_strdup(cert_chain);
+
+    cpu0_id = virJSONValueObjectGetString(caps, "cpu0-id");
+    if (cpu0_id != NULL) {
+        capability->cpu0_id = g_strdup(cpu0_id);
+    }
 
     capability->cbitpos = cbitpos;
     capability->reduced_phys_bits = reduced_phys_bits;

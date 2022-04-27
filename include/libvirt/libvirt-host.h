@@ -538,6 +538,17 @@ typedef virNodeMemoryStats *virNodeMemoryStatsPtr;
 # define VIR_NODE_SEV_CERT_CHAIN "cert-chain"
 
 /**
+ * VIR_NODE_SEV_CPU0_ID:
+ *
+ * Macro represents the unique ID of CPU0 (socket 0) needed to retrieve
+ * the signed CEK of the CPU from AMD's Key Distribution Service (KDS),
+ * as VIR_TYPED_PARAMS_STRING.
+ *
+ * Since: 8.4.0
+ */
+# define VIR_NODE_SEV_CPU0_ID "cpu0-id"
+
+/**
  * VIR_NODE_SEV_CBITPOS:
  *
  * Macro represents the CBit Position used by hypervisor when SEV is enabled.

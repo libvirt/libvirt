@@ -601,6 +601,10 @@ virDomainCapsFeatureSEVFormat(virBuffer *buf,
                           sev->max_guests);
         virBufferAsprintf(buf, "<maxESGuests>%d</maxESGuests>\n",
                           sev->max_es_guests);
+        if (sev->cpu0_id != NULL) {
+            virBufferAsprintf(buf, "<cpu0Id>%s</cpu0Id>\n",
+                              sev->cpu0_id);
+        }
         virBufferAdjustIndent(buf, -2);
         virBufferAddLit(buf, "</sev>\n");
     }

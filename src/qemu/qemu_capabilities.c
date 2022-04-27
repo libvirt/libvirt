@@ -1957,6 +1957,9 @@ virQEMUCapsSEVInfoCopy(virSEVCapability **dst,
 
     tmp->pdh = g_strdup(src->pdh);
     tmp->cert_chain = g_strdup(src->cert_chain);
+    if (src->cpu0_id != NULL) {
+        tmp->cpu0_id = g_strdup(src->cpu0_id);
+    }
 
     tmp->cbitpos = src->cbitpos;
     tmp->reduced_phys_bits = src->reduced_phys_bits;
@@ -4693,6 +4696,11 @@ virQEMUCapsFormatSEVInfo(virQEMUCaps *qemuCaps, virBuffer *buf)
     virBufferEscapeString(buf, "<pdh>%s</pdh>\n", sev->pdh);
     virBufferEscapeString(buf, "<certChain>%s</certChain>\n",
                           sev->cert_chain);
+    if (sev->cpu0_id != NULL) {
+        virBufferEscapeString(buf, "<cpu0Id>%s</cpu0Id>\n",
+                              sev->cpu0_id);
+    }
+
     virBufferAdjustIndent(buf, -2);
     virBufferAddLit(buf, "</sev>\n");
 }
@@ -6478,6 +6486,10 @@ virQEMUCapsFillDomainFeatureSEVCaps(virQEMUCaps *qemuCaps,
 
     domCaps->sev->pdh = g_strdup(cap->pdh);
     domCaps->sev->cert_chain = g_strdup(cap->cert_chain);
+    if (cap->cpu0_id != NULL) {
+        domCaps->sev->cpu0_id = g_strdup(cap->cpu0_id);
+    }
+
     domCaps->sev->cbitpos = cap->cbitpos;
     domCaps->sev->reduced_phys_bits = cap->reduced_phys_bits;
     domCaps->sev->max_guests = cap->max_guests;

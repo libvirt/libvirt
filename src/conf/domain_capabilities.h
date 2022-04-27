@@ -185,6 +185,7 @@ typedef struct _virSEVCapability virSEVCapability;
 struct _virSEVCapability {
     char *pdh;
     char *cert_chain;
+    char *cpu0_id;
     unsigned int cbitpos;
     unsigned int reduced_phys_bits;
     unsigned int max_guests;
