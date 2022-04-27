@@ -15,6 +15,11 @@ v8.3.0 (unreleased)
 
 * **Removed features**
 
+  * qemu: Remove support for QEMU < 3.1
+
+    In accordance with our platform support policy, the oldest supported QEMU
+    version is now bumped from 2.11 to 3.1.
+
 * **New features**
 
   * qemu: Introduce support for virtio-iommu
