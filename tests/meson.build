@@ -39,8 +39,23 @@ tests_env = [
   'abs_top_srcdir=@0@'.format(meson.source_root()),
   'LC_ALL=C',
   'LIBVIRT_AUTOSTART=0',
-  'G_DEBUG=fatal-warnings',
 ]
+
+
+# On macOS when BROKEN_POLL is set for GLib, our tests will
+# periodically trigger a warning:
+#
+#  (process:50880): GLib-WARNING **: 02:54:15.272: poll(2) failed due to: Bad file descriptor.
+#
+# Our code is inherantly racy, calling g_source_destroy which
+# removes the FD from the event thread poll asynchronously
+# but we close the FD immediately after g_source_destroy returns.
+#
+# With poll() this results in POLLNVAL, but with select() it
+# generates the BADF error on macOS
+if host_machine.system() != 'darwin'
+  tests_env += ['G_DEBUG=fatal-warnings']
+endif
 
 if use_expensive_tests
   tests_env += 'VIR_TEST_EXPENSIVE=1'

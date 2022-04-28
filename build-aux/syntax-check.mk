@@ -1712,7 +1712,7 @@ exclude_file_name_regexp--sc_prohibit_backslash_alignment = \
   ^build-aux/syntax-check\.mk$$
 
 exclude_file_name_regexp--sc_prohibit_select = \
-  ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c$$
+  ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c|tests/meson\.build$$
 
 exclude_file_name_regexp--sc_prohibit_config_h_in_headers = \
   ^config\.h$$
