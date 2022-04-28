@@ -158,8 +158,7 @@ int qemuExtVhostUserGPUStart(virQEMUDriver *driver,
             virCommandAddArgFormat(cmd, "--render-node=%s", video->accel->rendernode);
     }
 
-    if (qemuSecurityStartVhostUserGPU(driver, vm, cmd,
-                                      &exitstatus, &cmdret) < 0)
+    if (qemuSecurityCommandRun(driver, vm, cmd, -1, -1, &exitstatus, &cmdret) < 0)
         goto error;
 
     if (cmdret < 0 || exitstatus != 0) {

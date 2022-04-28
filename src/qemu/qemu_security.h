@@ -87,12 +87,6 @@ int qemuSecurityRestoreNetdevLabel(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    virDomainNetDef *net);
 
-int qemuSecurityStartVhostUserGPU(virQEMUDriver *driver,
-                                  virDomainObj *vm,
-                                  virCommand *cmd,
-                                  int *exitstatus,
-                                  int *cmdret);
-
 int qemuSecurityStartTPMEmulator(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virCommand *cmd,
