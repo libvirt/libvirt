@@ -1228,19 +1228,32 @@ virDomainDefDuplicateDiskInfoValidate(const virDomainDef *def)
 }
 
 static int
-virDomainDefDuplicateHostdevInfoValidate(const virDomainDef *def)
+virDomainDefHostdevValidate(const virDomainDef *def)
 {
     size_t i;
     size_t j;
+    bool ramfbEnabled = false;
 
     for (i = 0; i < def->nhostdevs; i++) {
+        virDomainHostdevDef *dev = def->hostdevs[i];
+
         for (j = i + 1; j < def->nhostdevs; j++) {
-            if (virDomainHostdevMatch(def->hostdevs[i],
+            if (virDomainHostdevMatch(dev,
                                       def->hostdevs[j])) {
                 virReportError(VIR_ERR_XML_ERROR, "%s",
                     _("Hostdev already exists in the domain configuration"));
                 return -1;
             }
+        }
+
+        if (dev->source.subsys.type == VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_MDEV &&
+            dev->source.subsys.u.mdev.ramfb == VIR_TRISTATE_SWITCH_ON) {
+            if (ramfbEnabled) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Only one vgpu device can have 'ramfb' enabled"));
+                return -1;
+            }
+            ramfbEnabled = true;
         }
     }
 
@@ -1698,7 +1711,7 @@ virDomainDefValidateInternal(const virDomainDef *def,
     if (virDomainDefDuplicateDiskInfoValidate(def) < 0)
         return -1;
 
-    if (virDomainDefDuplicateHostdevInfoValidate(def) < 0)
+    if (virDomainDefHostdevValidate(def) < 0)
         return -1;
 
     if (virDomainDefDuplicateDriveAddressesValidate(def) < 0)
