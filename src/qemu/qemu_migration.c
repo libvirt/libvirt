@@ -2487,7 +2487,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
 {
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    char *xml = NULL;
+    g_autofree char *xml = NULL;
     virDomainAsyncJob asyncJob;
 
     if (cfg->migrateTLSForce &&
@@ -2532,10 +2532,8 @@ qemuMigrationSrcBegin(virConnectPtr conn,
          * place.
          */
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                 qemuMigrationSrcCleanup) < 0) {
-            VIR_FREE(xml);
+                                 qemuMigrationSrcCleanup) < 0)
             goto endjob;
-        }
         qemuMigrationJobContinue(vm);
     } else {
         goto endjob;
@@ -2543,7 +2541,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
 
  cleanup:
     virDomainObjEndAPI(&vm);
-    return xml;
+    return g_steal_pointer(&xml);
 
  endjob:
     if (flags & VIR_MIGRATE_CHANGE_PROTECTION)
