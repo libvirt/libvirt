@@ -1197,6 +1197,9 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
  * now, VIR_DOMAIN_SAVE_PARAM_FILE is required but this requirement may
  * be lifted in the future.
  *
+ * See VIR_DOMAIN_SAVE_PARAM_* for detailed description of accepted
+ * restore parameters.
+ *
  * Returns 0 in case of success and -1 in case of failure.
  *
  * Since: 8.4.0

@@ -1655,6 +1655,7 @@ typedef enum {
     VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused (Since: 0.9.5) */
     VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running (Since: 0.9.5) */
     VIR_DOMAIN_SAVE_RESET_NVRAM  = 1 << 3, /* Re-initialize NVRAM from template (Since: 8.1.0) */
+    VIR_DOMAIN_SAVE_PARALLEL     = 1 << 4, /* Save and restore using parallel channels (Since: 10.6.0) */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,
@@ -1711,6 +1712,16 @@ int                     virDomainRestoreParams  (virConnectPtr conn,
  * Since: 11.2.0
  */
 # define VIR_DOMAIN_SAVE_PARAM_IMAGE_FORMAT     "image_format"
+
+/*
+ * VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS:
+ *
+ * an optional parameter used to specify the number of IO channels to use
+ * during parallel save. As VIR_TYPED_PARAM_INT.
+ *
+ * Since: 11.2.0
+ */
+# define VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS     "parallel.channels"
 
 
 /* See below for virDomainSaveImageXMLFlags */
