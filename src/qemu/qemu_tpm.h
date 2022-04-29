@@ -23,22 +23,27 @@
 #include "vircommand.h"
 
 int qemuExtTPMInitPaths(virQEMUDriver *driver,
-                        virDomainDef *def)
+                        virDomainDef *def,
+                        virDomainTPMDef *tpm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
     G_GNUC_WARN_UNUSED_RESULT;
 
 int qemuExtTPMPrepareHost(virQEMUDriver *driver,
-                          virDomainDef *def)
+                          virDomainDef *def,
+                          virDomainTPMDef *tpm)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
-void qemuExtTPMCleanupHost(virDomainDef *def)
+void qemuExtTPMCleanupHost(virDomainTPMDef *tpm)
     ATTRIBUTE_NONNULL(1);
 
 int qemuExtTPMStart(virQEMUDriver *driver,
                     virDomainObj *vm,
+                    virDomainTPMDef *def,
                     bool incomingMigration)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2)
+    ATTRIBUTE_NONNULL(3)
     G_GNUC_WARN_UNUSED_RESULT;
 
 void qemuExtTPMStop(virQEMUDriver *driver,

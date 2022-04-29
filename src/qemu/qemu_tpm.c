@@ -971,86 +971,59 @@ qemuTPMEmulatorStart(virQEMUDriver *driver,
 
 int
 qemuExtTPMInitPaths(virQEMUDriver *driver,
-                    virDomainDef *def)
+                    virDomainDef *def,
+                    virDomainTPMDef *tpm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    size_t i;
 
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        return qemuTPMEmulatorInitPaths(def->tpms[i],
-                                        cfg->swtpmStorageDir,
-                                        cfg->swtpmLogDir,
-                                        def->name,
-                                        def->uuid);
-    }
-
-    return 0;
+    return qemuTPMEmulatorInitPaths(tpm,
+                                    cfg->swtpmStorageDir,
+                                    cfg->swtpmLogDir,
+                                    def->name,
+                                    def->uuid);
 }
 
 
 int
 qemuExtTPMPrepareHost(virQEMUDriver *driver,
-                      virDomainDef *def)
+                      virDomainDef *def,
+                      virDomainTPMDef *tpm)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = virDomainDefGetShortName(def);
-    size_t i;
 
     if (!shortName)
         return -1;
 
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        return qemuTPMEmulatorPrepareHost(def->tpms[i], cfg->swtpmLogDir,
-                                          cfg->swtpm_user,
-                                          cfg->swtpm_group,
-                                          cfg->swtpmStateDir, cfg->user,
-                                          shortName);
-    }
-
-    return 0;
+    return qemuTPMEmulatorPrepareHost(tpm,
+                                      cfg->swtpmLogDir,
+                                      cfg->swtpm_user,
+                                      cfg->swtpm_group,
+                                      cfg->swtpmStateDir,
+                                      cfg->user,
+                                      shortName);
 }
 
 
 void
-qemuExtTPMCleanupHost(virDomainDef *def)
+qemuExtTPMCleanupHost(virDomainTPMDef *tpm)
 {
-    size_t i;
-
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        qemuTPMEmulatorCleanupHost(def->tpms[i]);
-    }
+    qemuTPMEmulatorCleanupHost(tpm);
 }
 
 
 int
 qemuExtTPMStart(virQEMUDriver *driver,
                 virDomainObj *vm,
+                virDomainTPMDef *tpm,
                 bool incomingMigration)
 {
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
-    size_t i;
 
     if (!shortName)
         return -1;
 
-    for (i = 0; i < vm->def->ntpms; i++) {
-        if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        return qemuTPMEmulatorStart(driver, vm, shortName, vm->def->tpms[i],
-                                    incomingMigration);
-    }
-
-    return 0;
+    return qemuTPMEmulatorStart(driver, vm, shortName, tpm, incomingMigration);
 }
 
 
@@ -1060,20 +1033,12 @@ qemuExtTPMStop(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = virDomainDefGetShortName(vm->def);
-    size_t i;
 
     if (!shortName)
         return;
 
-    for (i = 0; i < vm->def->ntpms; i++) {
-        if (vm->def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
-        qemuSecurityCleanupTPMEmulator(driver, vm);
-    }
-
-    return;
+    qemuTPMEmulatorStop(cfg->swtpmStateDir, shortName);
+    qemuSecurityCleanupTPMEmulator(driver, vm);
 }
 
 
@@ -1084,18 +1049,12 @@ qemuExtTPMSetupCgroup(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autofree char *shortName = virDomainDefGetShortName(def);
-    size_t i;
 
     if (!shortName)
         return -1;
 
-    for (i = 0; i < def->ntpms; i++) {
-        if (def->tpms[i]->type != VIR_DOMAIN_TPM_TYPE_EMULATOR)
-            continue;
-
-        if (qemuExtTPMEmulatorSetupCgroup(cfg->swtpmStateDir, shortName, cgroup) < 0)
-            return -1;
-    }
+    if (qemuExtTPMEmulatorSetupCgroup(cfg->swtpmStateDir, shortName, cgroup) < 0)
+        return -1;
 
     return 0;
 }
