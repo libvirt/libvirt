@@ -673,22 +673,47 @@ qemuBlockStorageSourceGetSshProps(virStorageSource *src)
 
 static virJSONValue *
 qemuBlockStorageSourceGetFileProps(virStorageSource *src,
-                                   bool onlytarget)
+                                   bool onlytarget,
+                                   virTristateBool *autoReadOnly,
+                                   virTristateBool *readOnly)
 {
+    const char *path = src->path;
     const char *iomode = NULL;
     const char *prManagerAlias = NULL;
     virJSONValue *ret = NULL;
 
     if (!onlytarget) {
+        qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
         if (src->pr)
             prManagerAlias = src->pr->mgralias;
 
         if (src->iomode != VIR_DOMAIN_DISK_IO_DEFAULT)
             iomode = virDomainDiskIoTypeToString(src->iomode);
+
+        if (srcpriv && srcpriv->fdpass) {
+            path = qemuFDPassGetPath(srcpriv->fdpass);
+
+            /* when passing a FD to qemu via the /dev/fdset mechanism qemu
+             * fetches the appropriate FD from the fdset by checking that it has
+             * the correct accessmode. Now with 'auto-read-only' in effect qemu
+             * wants to use a read-only FD first. If the user didn't pass multiple
+             * FDs the feature will not work regardless, so we'll disable it. */
+            if (src->fdtuple->nfds == 1) {
+                *autoReadOnly = VIR_TRISTATE_BOOL_ABSENT;
+
+                /* now we setup the normal readonly flag. If user requested write
+                 * access honour it */
+                if (src->fdtuple->writable)
+                    *readOnly = VIR_TRISTATE_BOOL_NO;
+                else
+                    *readOnly = virTristateBoolFromBool(src->readonly);
+            }
+        }
     }
 
     ignore_value(virJSONValueObjectAdd(&ret,
-                                       "s:filename", src->path,
+                                       "s:filename", path,
                                        "S:aio", iomode,
                                        "S:pr-manager", prManagerAlias,
                                        NULL) < 0);
@@ -818,7 +843,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
             driver = "file";
         }
 
-        if (!(fileprops = qemuBlockStorageSourceGetFileProps(src, onlytarget)))
+        if (!(fileprops = qemuBlockStorageSourceGetFileProps(src, onlytarget, &aro, &ro)))
             return NULL;
         break;
 

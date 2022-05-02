@@ -2147,6 +2147,25 @@ qemuBuildBlockStorageSourceAttachDataCommandline(virCommand *cmd,
 
 
 static int
+qemuBuildDiskSourceCommandLineFDs(virCommand *cmd,
+                                  virDomainDiskDef *disk)
+{
+    virStorageSource *n;
+
+    for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(n);
+
+        if (!srcpriv || !srcpriv->fdpass)
+            continue;
+
+        qemuFDPassTransferCommand(srcpriv->fdpass, cmd);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuBuildDiskSourceCommandLine(virCommand *cmd,
                                virDomainDiskDef *disk,
                                virQEMUCaps *qemuCaps)
@@ -2162,6 +2181,9 @@ qemuBuildDiskSourceCommandLine(virCommand *cmd,
     } else if (!qemuDiskBusIsSD(disk->bus)) {
         if (virStorageSourceIsEmpty(disk->src))
             return 0;
+
+        if (qemuBuildDiskSourceCommandLineFDs(cmd, disk) < 0)
+            return -1;
 
         if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src)))
             return -1;
