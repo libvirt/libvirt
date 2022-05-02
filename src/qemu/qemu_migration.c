@@ -2164,10 +2164,10 @@ qemuMigrationDstRun(virQEMUDriver *driver,
 static void
 qemuMigrationSrcCleanup(virDomainObj *vm,
                         virConnectPtr conn,
-                        void *opaque)
+                        void *opaque G_GNUC_UNUSED)
 {
-    virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
