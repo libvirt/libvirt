@@ -27,6 +27,8 @@
 
 typedef struct _bhyveDomainObjPrivate bhyveDomainObjPrivate;
 struct _bhyveDomainObjPrivate {
+    struct _bhyveConn *driver;
+
     virDomainPCIAddressSet *pciaddrs;
     bool persistentAddrs;
 
