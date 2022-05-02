@@ -25,8 +25,7 @@
 typedef struct _virCloseCallbacks virCloseCallbacks;
 
 typedef void (*virCloseCallback)(virDomainObj *vm,
-                                 virConnectPtr conn,
-                                 void *opaque);
+                                 virConnectPtr conn);
 
 virCloseCallbacks *
 virCloseCallbacksNew(void);
@@ -52,5 +51,4 @@ virCloseCallbacksGetConn(virCloseCallbacks *closeCallbacks,
 void
 virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
                      virConnectPtr conn,
-                     virDomainObjList *domains,
-                     void *opaque);
+                     virDomainObjList *domains);

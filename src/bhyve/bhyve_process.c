@@ -56,8 +56,7 @@ VIR_LOG_INIT("bhyve.bhyve_process");
 
 static void
 bhyveProcessAutoDestroy(virDomainObj *vm,
-                        virConnectPtr conn G_GNUC_UNUSED,
-                        void *opaque G_GNUC_UNUSED)
+                        virConnectPtr conn G_GNUC_UNUSED)
 {
     bhyveDomainObjPrivate *priv = vm->privateData;
     struct _bhyveConn *driver = priv->driver;

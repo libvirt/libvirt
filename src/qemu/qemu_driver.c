@@ -1170,7 +1170,7 @@ static int qemuConnectClose(virConnectPtr conn)
     virQEMUDriver *driver = conn->privateData;
 
     /* Get rid of callbacks registered for this conn */
-    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains, driver);
+    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains);
 
     conn->privateData = NULL;
 

@@ -169,7 +169,7 @@ static int lxcConnectClose(virConnectPtr conn)
 {
     virLXCDriver *driver = conn->privateData;
 
-    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains, driver);
+    virCloseCallbacksRun(driver->closeCallbacks, conn, driver->domains);
     conn->privateData = NULL;
     return 0;
 }

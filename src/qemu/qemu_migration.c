@@ -2163,8 +2163,7 @@ qemuMigrationDstRun(virQEMUDriver *driver,
  */
 static void
 qemuMigrationSrcCleanup(virDomainObj *vm,
-                        virConnectPtr conn,
-                        void *opaque G_GNUC_UNUSED)
+                        virConnectPtr conn)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;

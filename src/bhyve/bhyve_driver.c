@@ -207,7 +207,7 @@ bhyveConnectClose(virConnectPtr conn)
 {
     struct _bhyveConn *privconn = conn->privateData;
 
-    virCloseCallbacksRun(privconn->closeCallbacks, conn, privconn->domains, privconn);
+    virCloseCallbacksRun(privconn->closeCallbacks, conn, privconn->domains);
     conn->privateData = NULL;
 
     return 0;

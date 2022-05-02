@@ -62,8 +62,7 @@ VIR_LOG_INIT("lxc.lxc_process");
 
 static void
 lxcProcessAutoDestroy(virDomainObj *dom,
-                      virConnectPtr conn,
-                      void *opaque G_GNUC_UNUSED)
+                      virConnectPtr conn)
 {
     virObjectEvent *event = NULL;
     virLXCDomainObjPrivate *priv = dom->privateData;

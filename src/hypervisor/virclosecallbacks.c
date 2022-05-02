@@ -284,8 +284,7 @@ virCloseCallbacksGetForConn(virCloseCallbacks *closeCallbacks,
 void
 virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
                      virConnectPtr conn,
-                     virDomainObjList *domains,
-                     void *opaque)
+                     virDomainObjList *domains)
 {
     virCloseCallbacksList *list;
     size_t i;
@@ -329,7 +328,7 @@ virCloseCallbacksRun(virCloseCallbacks *closeCallbacks,
          *
          * Call the callback function and end the API usage. */
         virObjectUnref(vm);
-        list->entries[i].callback(vm, conn, opaque);
+        list->entries[i].callback(vm, conn);
         virDomainObjEndAPI(&vm);
     }
     VIR_FREE(list->entries);
