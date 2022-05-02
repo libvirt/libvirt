@@ -63,15 +63,14 @@ VIR_LOG_INIT("lxc.lxc_process");
 static void
 lxcProcessAutoDestroy(virDomainObj *dom,
                       virConnectPtr conn,
-                      void *opaque)
+                      void *opaque G_GNUC_UNUSED)
 {
-    virLXCDriver *driver = opaque;
     virObjectEvent *event = NULL;
-    virLXCDomainObjPrivate *priv;
+    virLXCDomainObjPrivate *priv = dom->privateData;
+    virLXCDriver *driver = priv->driver;
 
     VIR_DEBUG("driver=%p dom=%s conn=%p", driver, dom->def->name, conn);
 
-    priv = dom->privateData;
     VIR_DEBUG("Killing domain");
     virLXCProcessStop(driver, dom, VIR_DOMAIN_SHUTOFF_DESTROYED);
     virDomainAuditStop(dom, "destroyed");
