@@ -143,7 +143,7 @@ virLXCDomainObjEndJob(virLXCDriver *driver G_GNUC_UNUSED,
 
 
 static void *
-virLXCDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
+virLXCDomainObjPrivateAlloc(void *opaque)
 {
     virLXCDomainObjPrivate *priv = g_new0(virLXCDomainObjPrivate, 1);
 
@@ -151,6 +151,8 @@ virLXCDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         g_free(priv);
         return NULL;
     }
+
+    priv->driver = opaque;
 
     return priv;
 }

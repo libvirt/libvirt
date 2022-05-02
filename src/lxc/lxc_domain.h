@@ -63,6 +63,7 @@ struct virLXCDomainJobObj {
 
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
 struct _virLXCDomainObjPrivate {
+    virLXCDriver *driver;
     virLXCMonitor *monitor;
     bool doneStopEvent;
     int stopReason;
