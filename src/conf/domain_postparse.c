@@ -885,6 +885,15 @@ virDomainDeviceDefPostParseCheckFeatures(virDomainDeviceDef *dev,
         return -1;
     }
 
+    if (dev->type == VIR_DOMAIN_DEVICE_DISK &&
+        dev->data.disk->src->fdgroup &&
+        UNSUPPORTED(VIR_DOMAIN_DEF_FEATURE_DISK_FD)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("driver does not support FD passing for disk '%s'"),
+                       dev->data.disk->dst);
+        return -1;
+    }
+
     return 0;
 }
 #undef UNSUPPORTED

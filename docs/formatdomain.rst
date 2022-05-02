@@ -2701,6 +2701,14 @@ paravirtualized driver is specified via the ``disk`` element.
    ``file``
       The ``file`` attribute specifies the fully-qualified path to the file
       holding the disk. :since:`Since 0.0.3`
+
+      :since:`Since 9.0.0` a new optional attribute ``fdgroup`` can be added
+      instructing to access the disk via file descriptiors associated to the
+      domain object via the ``virDomainFDAssociate()`` API rather than opening
+      the files. The files do not necessarily have to be accessible by libvirt
+      via the filesystem. The filename passed via ``file`` can still be used
+      to generate paths to write into image metadata when doing block operations
+      but libvirt will not access these natively.
    ``block``
       The ``dev`` attribute specifies the fully-qualified path to the host
       device to serve as the disk. :since:`Since 0.0.3`

@@ -289,6 +289,7 @@ struct _virStorageSource {
     unsigned int id; /* backing chain identifier, 0 is unset */
     virStorageType type;
     char *path;
+    char *fdgroup; /* name of group of file descriptors the user wishes to use instead of 'path' */
     int protocol; /* virStorageNetProtocol */
     char *volume; /* volume name for remote storage */
     char *snapshot; /* for storage systems supporting internal snapshots */

@@ -1,0 +1,40 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/path/to/blah' fdgroup='testgroup2'/>
+      <target dev='vde' bus='virtio'/>
+    </disk>
+    <disk type='file' device='disk'>
+      <driver name='qemu' type='qcow2'/>
+      <source file='/var/lib/libvirt/images/rhel7.1484071880' fdgroup='testgroup5'/>
+      <backingStore type='file'>
+        <format type='qcow2'/>
+        <source file='/var/lib/libvirt/images/rhel7.1484071877' fdgroup='testgroup6'/>
+        <backingStore type='file'>
+          <format type='qcow2'/>
+          <source file='/var/lib/libvirt/images/rhel7.1484071876'/>
+          <backingStore/>
+        </backingStore>
+      </backingStore>
+      <target dev='vdf' bus='virtio'/>
+    </disk>
+    <controller type='usb'/>
+    <controller type='pci' model='pci-root'/>
+    <memballoon model='virtio'/>
+  </devices>
+</domain>

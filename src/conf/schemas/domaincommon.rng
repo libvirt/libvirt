@@ -1806,6 +1806,9 @@
                 <ref name="vmwarePath"/>
               </choice>
             </attribute>
+            <optional>
+              <attribute name="fdgroup"/>
+            </optional>
           </optional>
           <ref name="diskSourceCommon"/>
           <optional>

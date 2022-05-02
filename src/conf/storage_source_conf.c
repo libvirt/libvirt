@@ -817,6 +817,7 @@ virStorageSourceCopy(const virStorageSource *src,
     def->drv = NULL;
 
     def->path = g_strdup(src->path);
+    def->fdgroup = g_strdup(src->fdgroup);
     def->volume = g_strdup(src->volume);
     def->relPath = g_strdup(src->relPath);
     def->backingStoreRaw = g_strdup(src->backingStoreRaw);
@@ -1123,6 +1124,7 @@ virStorageSourceClear(virStorageSource *def)
         return;
 
     VIR_FREE(def->path);
+    VIR_FREE(def->fdgroup);
     VIR_FREE(def->volume);
     VIR_FREE(def->snapshot);
     VIR_FREE(def->configFile);
