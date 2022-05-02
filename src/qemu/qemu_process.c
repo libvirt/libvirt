@@ -8374,10 +8374,10 @@ void qemuProcessStop(virQEMUDriver *driver,
 static void
 qemuProcessAutoDestroy(virDomainObj *dom,
                        virConnectPtr conn,
-                       void *opaque)
+                       void *opaque G_GNUC_UNUSED)
 {
-    virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv = dom->privateData;
+    virQEMUDriver *driver = priv->driver;
     virObjectEvent *event = NULL;
     unsigned int stopFlags = 0;
 
