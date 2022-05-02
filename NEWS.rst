@@ -8,10 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v8.3.0 (unreleased)
+v8.3.0 (2022-05-02)
 ===================
-
-* **Security**
 
 * **Removed features**
 
@@ -25,11 +23,6 @@ v8.3.0 (unreleased)
   * qemu: Introduce support for virtio-iommu
 
     This IOMMU device can be used with both Q35 and ARM virt guests.
-
-* **Improvements**
-
-* **Bug fixes**
-
 
 v8.2.0 (2022-04-01)
 ===================
