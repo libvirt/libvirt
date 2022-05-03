@@ -906,7 +906,6 @@ mymain(void)
     DO_TEST("panic-no-address", QEMU_CAPS_DEVICE_PANIC);
     DO_TEST_CAPS_ARCH_LATEST("panic-pseries", "ppc64");
 
-    DO_TEST_NOCAPS("disk-backing-chains");
     DO_TEST_NOCAPS("disk-backing-chains-index");
     DO_TEST_NOCAPS("disk-backing-chains-noindex");
 
