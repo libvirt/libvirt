@@ -2239,6 +2239,10 @@ mymain(void)
                                               QEMU_CPU_DEF_POWER8);
     DO_TEST_CAPS_LATEST_PPC64_HOSTCPU("pseries-cpu-compat-power9",
                                       QEMU_CPU_DEF_POWER9);
+    DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE("pseries-cpu-compat-power10",
+                                              QEMU_CPU_DEF_POWER9);
+    DO_TEST_CAPS_LATEST_PPC64_HOSTCPU("pseries-cpu-compat-power10",
+                                      QEMU_CPU_DEF_POWER10);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 

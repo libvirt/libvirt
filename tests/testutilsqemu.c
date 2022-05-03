@@ -22,6 +22,7 @@ static virCPUDef *cpuDefault;
 static virCPUDef *cpuHaswell;
 static virCPUDef *cpuPower8;
 static virCPUDef *cpuPower9;
+static virCPUDef *cpuPower10;
 
 
 static const char *qemu_emulators[VIR_ARCH_LAST] = {
@@ -308,6 +309,7 @@ qemuTestGetCPUDef(qemuTestCPUDef d)
     case QEMU_CPU_DEF_HASWELL: return cpuHaswell;
     case QEMU_CPU_DEF_POWER8: return cpuPower8;
     case QEMU_CPU_DEF_POWER9: return cpuPower9;
+    case QEMU_CPU_DEF_POWER10: return cpuPower10;
     }
 
     return NULL;
@@ -391,6 +393,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virCPUDefFree(cpuHaswell);
     virCPUDefFree(cpuPower8);
     virCPUDefFree(cpuPower9);
+    virCPUDefFree(cpuPower10);
 }
 
 
@@ -581,7 +584,8 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     if (!(cpuDefault = virCPUDefCopy(&cpuDefaultData)) ||
         !(cpuHaswell = virCPUDefCopy(&cpuHaswellData)) ||
         !(cpuPower8 = virCPUDefCopy(&cpuPower8Data)) ||
-        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)))
+        !(cpuPower9 = virCPUDefCopy(&cpuPower9Data)) ||
+        !(cpuPower10 = virCPUDefCopy(&cpuPower10Data)))
         return -1;
 
     if (virMutexInit(&driver->lock) < 0)

@@ -1286,6 +1286,7 @@ mymain(void)
     DO_TEST("smartcard-controller", QEMU_CAPS_CCID_EMULATED);
 
     DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-compat-power9", "ppc64");
+    DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-compat-power10", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-compat", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-exact", "ppc64");
 
