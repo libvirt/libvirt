@@ -39,7 +39,11 @@
           <source file='/tmp/image2'/>
           <backingStore type='file'>
             <format type='qcow2'/>
-            <source file='/tmp/image3.qcow'/>
+            <source file='/tmp/image3.qcow'>
+              <seclabel model='selinux' relabel='yes'>
+                <label>system_u:system_r:public_content_t:s0</label>
+              </seclabel>
+            </source>
             <backingStore type='file'>
               <format type='qcow2'/>
               <source file='/tmp/image4.qcow'/>
