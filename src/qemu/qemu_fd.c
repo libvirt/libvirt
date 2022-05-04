@@ -177,14 +177,14 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
  * Pass the fds in @fdpass to a commandline object @cmd. @fdpass may be NULL
  * in which case this is a no-op.
  */
-void
+int
 qemuFDPassTransferCommand(qemuFDPass *fdpass,
                           virCommand *cmd)
 {
     size_t i;
 
     if (!fdpass)
-        return;
+        return 0;
 
     for (i = 0; i < fdpass->nfds; i++) {
         virCommandPassFD(cmd, fdpass->fds[i].fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
@@ -206,6 +206,8 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
 
         fdpass->fds[i].fd = -1;
     }
+
+    return 0;
 }
 
 
@@ -265,18 +267,20 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
  * Simulate as if @fdpass was passed via monitor for callers which don't
  * actually wish to test that code path.
  */
-void
+int
 qemuFDPassTransferMonitorFake(qemuFDPass *fdpass)
 {
 
     if (!fdpass)
-        return;
+        return 0;
 
     if (fdpass->useFDSet) {
         fdpass->path = g_strdup_printf("/dev/fdset/monitor-fake");
     } else {
         fdpass->path = g_strdup(fdpass->fds[0].opaque);
     }
+
+    return 0;
 }
 
 

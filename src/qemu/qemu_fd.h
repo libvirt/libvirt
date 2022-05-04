@@ -39,7 +39,7 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
                 int *fd,
                 const char *suffix);
 
-void
+int
 qemuFDPassTransferCommand(qemuFDPass *fdpass,
                           virCommand *cmd);
 
@@ -47,7 +47,7 @@ int
 qemuFDPassTransferMonitor(qemuFDPass *fdpass,
                           qemuMonitor *mon);
 
-void
+int
 qemuFDPassTransferMonitorFake(qemuFDPass *fdpass);
 
 void

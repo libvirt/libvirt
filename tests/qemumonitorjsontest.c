@@ -743,8 +743,12 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
         chrdev.source = chr;
         ignore_value(testQemuPrepareHostBackendChardevOne(&dev, chr, NULL));
-        qemuFDPassTransferMonitorFake(charpriv->sourcefd);
-        qemuFDPassTransferMonitorFake(charpriv->logfd);
+        if (qemuFDPassTransferMonitorFake(charpriv->sourcefd) < 0)
+            ret = -1;
+
+        if (qemuFDPassTransferMonitorFake(charpriv->logfd) < 0)
+            ret = -1;
+
         CHECK("file", false,
               "{'id':'alias','backend':{'type':'file','data':{'out':'/dev/fdset/monitor-fake',"
                                                              "'append':true,"
