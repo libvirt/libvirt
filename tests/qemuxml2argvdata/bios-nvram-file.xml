@@ -1,0 +1,23 @@
+<domain type='qemu'>
+  <name>test-bios</name>
+  <uuid>362d1fc1-df7d-193e-5c18-49a71bd1da66</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <currentMemory unit='KiB'>1048576</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+    <nvram type='file'>
+      <source file='/var/lib/libvirt/nvram/guest_VARS.fd'/>
+    </nvram>
+    <boot dev='hd'/>
+    <bootmenu enable='yes'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <clock offset='utc'/>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+  </devices>
+</domain>

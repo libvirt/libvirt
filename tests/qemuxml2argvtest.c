@@ -1209,6 +1209,10 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_CAPS_LATEST("bios-nvram-template");
+    DO_TEST_CAPS_LATEST("bios-nvram-network-iscsi");
+    DO_TEST_CAPS_VER_PARSE_ERROR("bios-nvram-network-iscsi", "4.1.0");
+    DO_TEST_CAPS_LATEST("bios-nvram-network-nbd");
+    DO_TEST_CAPS_LATEST("bios-nvram-file");
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
     DO_TEST_NOCAPS("q35-acpi-uefi");
