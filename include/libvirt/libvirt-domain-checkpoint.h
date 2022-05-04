@@ -35,7 +35,7 @@
  * domain disks have been altered since a point in time, but by itself does
  * not allow reverting back to that point in time.
  *
- * Since: v5.2.0
+ * Since: 5.2.0
  */
 typedef struct _virDomainCheckpoint virDomainCheckpoint;
 
@@ -46,7 +46,7 @@ typedef struct _virDomainCheckpoint virDomainCheckpoint;
  * private structure, and is the type used to reference a domain
  * checkpoint in the API.
  *
- * Since: v5.2.0
+ * Since: 5.2.0
  */
 typedef virDomainCheckpoint *virDomainCheckpointPtr;
 
@@ -57,17 +57,17 @@ virConnectPtr virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint);
 /**
  * virDomainCheckpointCreateFlags:
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
-                                                            metadata (Since: v5.6.0) */
+                                                            metadata (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_CREATE_QUIESCE     = (1 << 1), /* use guest agent to
                                                             quiesce all mounted
                                                             file systems within
-                                                            the domain (Since: v5.6.0) */
+                                                            the domain (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_CREATE_REDEFINE_VALIDATE  = (1 << 2),   /* validate disk data state
-                                                                     when redefining a checkpoint (Since: v6.10.0) */
+                                                                     when redefining a checkpoint (Since: 6.10.0) */
 } virDomainCheckpointCreateFlags;
 
 /* Create a checkpoint using the current VM state. */
@@ -77,14 +77,14 @@ virDomainCheckpointPtr virDomainCheckpointCreateXML(virDomainPtr domain,
 /**
  * virDomainCheckpointXMLFlags:
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 typedef enum {
-    VIR_DOMAIN_CHECKPOINT_XML_SECURE    = (1 << 0), /* Include sensitive data (Since: v5.6.0) */
+    VIR_DOMAIN_CHECKPOINT_XML_SECURE    = (1 << 0), /* Include sensitive data (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_XML_NO_DOMAIN = (1 << 1), /* Suppress <domain>
-                                                       subelement (Since: v5.6.0) */
+                                                       subelement (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_XML_SIZE      = (1 << 2), /* Include dynamic
-                                                       per-<disk> size (Since: v5.6.0) */
+                                                       per-<disk> size (Since: 5.6.0) */
 } virDomainCheckpointXMLFlags;
 
 /* Dump the XML of a checkpoint */
@@ -101,23 +101,23 @@ char *virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
  * recursive.  Remaining bits come in groups; if all bits from a group
  * are 0, then that group is not used to filter results.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 typedef enum {
     VIR_DOMAIN_CHECKPOINT_LIST_ROOTS       = (1 << 0), /* Filter by checkpoints
                                                           with no parents, when
-                                                          listing a domain (Since: v5.6.0) */
+                                                          listing a domain (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_LIST_DESCENDANTS = (1 << 0), /* List all descendants,
                                                           not just children, when
-                                                          listing a checkpoint (Since: v5.6.0) */
+                                                          listing a checkpoint (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_LIST_TOPOLOGICAL = (1 << 1), /* Ensure parents occur
                                                           before children in
-                                                          the resulting list (Since: v5.6.0) */
+                                                          the resulting list (Since: 5.6.0) */
 
     VIR_DOMAIN_CHECKPOINT_LIST_LEAVES      = (1 << 2), /* Filter by checkpoints
-                                                          with no children (Since: v5.6.0) */
+                                                          with no children (Since: 5.6.0) */
     VIR_DOMAIN_CHECKPOINT_LIST_NO_LEAVES   = (1 << 3), /* Filter by checkpoints
-                                                          that have children (Since: v5.6.0) */
+                                                          that have children (Since: 5.6.0) */
 } virDomainCheckpointListFlags;
 
 /* Get all checkpoint objects for this domain */
@@ -144,12 +144,12 @@ virDomainCheckpointPtr virDomainCheckpointGetParent(virDomainCheckpointPtr check
  *
  * Delete a checkpoint
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 typedef enum {
-    VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN      = (1 << 0), /* Also delete children (Since: v5.6.0) */
-    VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata (Since: v5.6.0) */
-    VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY = (1 << 2), /* Delete just children (Since: v5.6.0) */
+    VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN      = (1 << 0), /* Also delete children (Since: 5.6.0) */
+    VIR_DOMAIN_CHECKPOINT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata (Since: 5.6.0) */
+    VIR_DOMAIN_CHECKPOINT_DELETE_CHILDREN_ONLY = (1 << 2), /* Delete just children (Since: 5.6.0) */
 } virDomainCheckpointDeleteFlags;
 
 int virDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,

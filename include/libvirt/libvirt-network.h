@@ -30,10 +30,10 @@
 /**
  * virNetworkXMLFlags:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_NETWORK_XML_INACTIVE = (1 << 0), /* dump inactive network information (Since: v0.9.10) */
+    VIR_NETWORK_XML_INACTIVE = (1 << 0), /* dump inactive network information (Since: 0.9.10) */
 } virNetworkXMLFlags;
 
 /**
@@ -41,7 +41,7 @@ typedef enum {
  *
  * a virNetwork is a private structure representing a virtual network.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 typedef struct _virNetwork virNetwork;
 
@@ -51,7 +51,7 @@ typedef struct _virNetwork virNetwork;
  * a virNetworkPtr is pointer to a virNetwork private structure, this is the
  * type used to reference a virtual network in the API.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 typedef virNetwork *virNetworkPtr;
 
@@ -61,7 +61,7 @@ typedef virNetwork *virNetworkPtr;
  * a virNetworkPort is a private structure representing a virtual network
  * port
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 typedef struct _virNetworkPort virNetworkPort;
 
@@ -71,7 +71,7 @@ typedef struct _virNetworkPort virNetworkPort;
  * a virNetworkPortPtr is pointer to a virNetworkPort private structure,
  * this is the type used to reference a virtual network port in the API.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 typedef virNetworkPort *virNetworkPortPtr;
 
@@ -101,17 +101,17 @@ int                     virConnectListDefinedNetworks   (virConnectPtr conn,
  * Flags used to filter the returned networks. Flags in each group
  * are exclusive attributes of a network.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_CONNECT_LIST_NETWORKS_INACTIVE      = 1 << 0, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NETWORKS_ACTIVE        = 1 << 1, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_INACTIVE      = 1 << 0, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_ACTIVE        = 1 << 1, /* (Since: 0.10.2) */
 
-    VIR_CONNECT_LIST_NETWORKS_PERSISTENT    = 1 << 2, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NETWORKS_TRANSIENT     = 1 << 3, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_PERSISTENT    = 1 << 2, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_TRANSIENT     = 1 << 3, /* (Since: 0.10.2) */
 
-    VIR_CONNECT_LIST_NETWORKS_AUTOSTART     = 1 << 4, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART  = 1 << 5, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_AUTOSTART     = 1 << 4, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NETWORKS_NO_AUTOSTART  = 1 << 5, /* (Since: 0.10.2) */
 } virConnectListAllNetworksFlags;
 
 int                     virConnectListAllNetworks       (virConnectPtr conn,
@@ -130,10 +130,10 @@ virNetworkPtr           virNetworkLookupByUUIDString    (virConnectPtr conn,
 /**
  * virNetworkCreateFlags:
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 typedef enum {
-    VIR_NETWORK_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.8.0) */
+    VIR_NETWORK_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.8.0) */
 } virNetworkCreateFlags;
 
 /*
@@ -147,10 +147,10 @@ virNetworkPtr           virNetworkCreateXMLFlags(virConnectPtr conn,
 /**
  * virNetworkDefineFlags:
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 typedef enum {
-    VIR_NETWORK_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
+    VIR_NETWORK_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.7.0) */
 } virNetworkDefineFlags;
 
 /*
@@ -173,16 +173,16 @@ int                     virNetworkUndefine      (virNetworkPtr network);
  * describes which type of update to perform on a <network>
  * definition.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_COMMAND_MODIFY    = 1, /* modify an existing element (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_COMMAND_DELETE    = 2, /* delete an existing element (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_COMMAND_ADD_LAST  = 3, /* add an element at end of list (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST = 4, /* add an element at start of list (Since: v0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_MODIFY    = 1, /* modify an existing element (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_DELETE    = 2, /* delete an existing element (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_ADD_LAST  = 3, /* add an element at end of list (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_ADD_FIRST = 4, /* add an element at start of list (Since: 0.10.2) */
 # ifdef VIR_ENUM_SENTINELS
-    VIR_NETWORK_UPDATE_COMMAND_LAST /* (Since: v0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_LAST /* (Since: 0.10.2) */
 # endif
 } virNetworkUpdateCommand;
 
@@ -192,24 +192,24 @@ typedef enum {
  * describes which section of a <network> definition the provided
  * xml should be applied to.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_NETWORK_SECTION_NONE              =  0, /* (invalid (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_BRIDGE            =  1, /* <bridge> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_DOMAIN            =  2, /* <domain> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_IP                =  3, /* <ip> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_IP_DHCP_HOST      =  4, /* <ip>/<dhcp>/<host> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_IP_DHCP_RANGE     =  5, /* <ip>/<dhcp>/<range> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_FORWARD           =  6, /* <forward> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_FORWARD_INTERFACE =  7, /* <forward>/<interface> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_FORWARD_PF        =  8, /* <forward>/<pf> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_PORTGROUP         =  9, /* <portgroup> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_DNS_HOST          = 10, /* <dns>/<host> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_DNS_TXT           = 11, /* <dns>/<txt> (Since: v0.10.2) */
-    VIR_NETWORK_SECTION_DNS_SRV           = 12, /* <dns>/<srv> (Since: v0.10.2) */
+    VIR_NETWORK_SECTION_NONE              =  0, /* (invalid (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_BRIDGE            =  1, /* <bridge> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_DOMAIN            =  2, /* <domain> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_IP                =  3, /* <ip> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_IP_DHCP_HOST      =  4, /* <ip>/<dhcp>/<host> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_IP_DHCP_RANGE     =  5, /* <ip>/<dhcp>/<range> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_FORWARD           =  6, /* <forward> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_FORWARD_INTERFACE =  7, /* <forward>/<interface> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_FORWARD_PF        =  8, /* <forward>/<pf> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_PORTGROUP         =  9, /* <portgroup> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_DNS_HOST          = 10, /* <dns>/<host> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_DNS_TXT           = 11, /* <dns>/<txt> (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_DNS_SRV           = 12, /* <dns>/<srv> (Since: 0.10.2) */
 # ifdef VIR_ENUM_SENTINELS
-    VIR_NETWORK_SECTION_LAST /* (Since: v0.10.2) */
+    VIR_NETWORK_SECTION_LAST /* (Since: 0.10.2) */
 # endif
 } virNetworkUpdateSection;
 
@@ -218,13 +218,13 @@ typedef enum {
  *
  * Flags to control options for virNetworkUpdate()
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
     VIR_NETWORK_UPDATE_AFFECT_CURRENT = 0,      /* affect live if network is active,
-                                                   config if it's not active (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_AFFECT_LIVE    = 1 << 0, /* affect live state of network only (Since: v0.10.2) */
-    VIR_NETWORK_UPDATE_AFFECT_CONFIG  = 1 << 1, /* affect persistent config only (Since: v0.10.2) */
+                                                   config if it's not active (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_AFFECT_LIVE    = 1 << 0, /* affect live state of network only (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_AFFECT_CONFIG  = 1 << 1, /* affect persistent config only (Since: 0.10.2) */
 } virNetworkUpdateFlags;
 
 /*
@@ -274,16 +274,16 @@ int virNetworkIsPersistent(virNetworkPtr net);
  *
  * a virNetworkEventLifecycleType is emitted during network lifecycle events
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 typedef enum {
-    VIR_NETWORK_EVENT_DEFINED = 0, /* (Since: v1.2.1) */
-    VIR_NETWORK_EVENT_UNDEFINED = 1, /* (Since: v1.2.1) */
-    VIR_NETWORK_EVENT_STARTED = 2, /* (Since: v1.2.1) */
-    VIR_NETWORK_EVENT_STOPPED = 3, /* (Since: v1.2.1) */
+    VIR_NETWORK_EVENT_DEFINED = 0, /* (Since: 1.2.1) */
+    VIR_NETWORK_EVENT_UNDEFINED = 1, /* (Since: 1.2.1) */
+    VIR_NETWORK_EVENT_STARTED = 2, /* (Since: 1.2.1) */
+    VIR_NETWORK_EVENT_STOPPED = 3, /* (Since: 1.2.1) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_NETWORK_EVENT_LAST /* (Since: v1.2.1) */
+    VIR_NETWORK_EVENT_LAST /* (Since: 1.2.1) */
 # endif
 } virNetworkEventLifecycleType;
 
@@ -301,7 +301,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_NETWORK_EVENT_ID_LIFECYCLE with virConnectNetworkEventRegisterAny()
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
                                                         virNetworkPtr net,
@@ -315,7 +315,7 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  * Used to cast the event specific callback into the generic one
  * for use for virConnectNetworkEventRegisterAny()
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 # define VIR_NETWORK_EVENT_CALLBACK(cb) ((virConnectNetworkEventGenericCallback)(cb))
 
@@ -326,10 +326,10 @@ typedef void (*virConnectNetworkEventLifecycleCallback)(virConnectPtr conn,
  * virConnectNetworkEventRegisterAny().  Each event id determines which
  * signature of callback function will be used.
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 typedef enum {
-    VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback (Since: v1.2.1) */
+    VIR_NETWORK_EVENT_ID_LIFECYCLE = 0,       /* virConnectNetworkEventLifecycleCallback (Since: 1.2.1) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_NETWORK_EVENT_ID_LAST
@@ -338,7 +338,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      *
-     * Since: v1.2.1
+     * Since: 1.2.1
      */
 # endif
 } virNetworkEventID;
@@ -346,28 +346,28 @@ typedef enum {
 /**
  * virIPAddrType:
  *
- * Since: v1.2.6
+ * Since: 1.2.6
  */
 typedef enum {
-    VIR_IP_ADDR_TYPE_IPV4, /* (Since: v1.2.6) */
-    VIR_IP_ADDR_TYPE_IPV6, /* (Since: v1.2.6) */
+    VIR_IP_ADDR_TYPE_IPV4, /* (Since: 1.2.6) */
+    VIR_IP_ADDR_TYPE_IPV6, /* (Since: 1.2.6) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_IP_ADDR_TYPE_LAST /* (Since: v1.2.6) */
+    VIR_IP_ADDR_TYPE_LAST /* (Since: 1.2.6) */
 # endif
 } virIPAddrType;
 
 /**
  * virNetworkDHCPLease:
  *
- * Since: v1.2.6
+ * Since: 1.2.6
  */
 typedef struct _virNetworkDHCPLease virNetworkDHCPLease;
 
 /**
  * virNetworkDHCPLeasePtr:
  *
- * Since: v1.2.6
+ * Since: 1.2.6
  */
 typedef virNetworkDHCPLease *virNetworkDHCPLeasePtr;
 struct _virNetworkDHCPLease {
@@ -401,7 +401,7 @@ int virNetworkGetDHCPLeases(virNetworkPtr network,
  * passed in a different parameter position; use VIR_NETWORK_EVENT_CALLBACK()
  * when registering an appropriate handler.
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 typedef void (*virConnectNetworkEventGenericCallback)(virConnectPtr conn,
                                                       virNetworkPtr net,
@@ -430,11 +430,11 @@ virNetworkPortLookupByUUIDString(virNetworkPtr net,
 /**
  * virNetworkPortCreateFlags:
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 typedef enum {
-    VIR_NETWORK_PORT_CREATE_RECLAIM = (1 << 0), /* reclaim existing used resources (Since: v5.5.0) */
-    VIR_NETWORK_PORT_CREATE_VALIDATE = (1 << 1), /* Validate the XML document against schema (Since: v7.8.0) */
+    VIR_NETWORK_PORT_CREATE_RECLAIM = (1 << 0), /* reclaim existing used resources (Since: 5.5.0) */
+    VIR_NETWORK_PORT_CREATE_VALIDATE = (1 << 1), /* Validate the XML document against schema (Since: 7.8.0) */
 } virNetworkPortCreateFlags;
 
 virNetworkPortPtr
@@ -463,7 +463,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the inbound average of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_AVERAGE "inbound.average"
 
@@ -472,7 +472,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the inbound peak of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_PEAK "inbound.peak"
 
@@ -481,7 +481,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the inbound burst of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_BURST "inbound.burst"
 
@@ -490,7 +490,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the inbound floor of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_IN_FLOOR "inbound.floor"
 
@@ -499,7 +499,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the outbound average of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_AVERAGE "outbound.average"
 
@@ -508,7 +508,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the outbound peak of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_PEAK "outbound.peak"
 
@@ -517,7 +517,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Macro represents the outbound burst of NIC bandwidth, as a uint.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 # define VIR_NETWORK_PORT_BANDWIDTH_OUT_BURST "outbound.burst"
 

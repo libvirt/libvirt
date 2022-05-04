@@ -35,7 +35,7 @@
  * time, with the intent that the guest can be reverted back to that
  * state at a later time.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef struct _virDomainSnapshot virDomainSnapshot;
 
@@ -45,7 +45,7 @@ typedef struct _virDomainSnapshot virDomainSnapshot;
  * A virDomainSnapshotPtr is pointer to a virDomainSnapshot private structure,
  * and is the type used to reference a domain snapshot in the API.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef virDomainSnapshot *virDomainSnapshotPtr;
 
@@ -56,32 +56,32 @@ virConnectPtr virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot);
 /**
  * virDomainSnapshotCreateFlags:
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_CREATE_REDEFINE    = (1 << 0), /* Restore or alter
-                                                          metadata (Since: v0.9.5) */
+                                                          metadata (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_CREATE_CURRENT     = (1 << 1), /* With redefine, make
-                                                          snapshot current (Since: v0.9.5) */
+                                                          snapshot current (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_CREATE_NO_METADATA = (1 << 2), /* Make snapshot without
-                                                          remembering it (Since: v0.9.5) */
+                                                          remembering it (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_CREATE_HALT        = (1 << 3), /* Stop running guest
-                                                          after snapshot (Since: v0.9.5) */
+                                                          after snapshot (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_CREATE_DISK_ONLY   = (1 << 4), /* disk snapshot, not
-                                                          full system (Since: v0.9.5) */
+                                                          full system (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_CREATE_REUSE_EXT   = (1 << 5), /* reuse any existing
-                                                          external files (Since: v0.9.10) */
+                                                          external files (Since: 0.9.10) */
     VIR_DOMAIN_SNAPSHOT_CREATE_QUIESCE     = (1 << 6), /* use guest agent to
                                                           quiesce all mounted
                                                           file systems within
-                                                          the domain (Since: v0.9.10) */
+                                                          the domain (Since: 0.9.10) */
     VIR_DOMAIN_SNAPSHOT_CREATE_ATOMIC      = (1 << 7), /* atomically avoid
-                                                          partial changes (Since: v0.9.11) */
+                                                          partial changes (Since: 0.9.11) */
     VIR_DOMAIN_SNAPSHOT_CREATE_LIVE        = (1 << 8), /* create the snapshot
                                                           while the guest is
-                                                          running (Since: v1.0.1) */
+                                                          running (Since: 1.0.1) */
     VIR_DOMAIN_SNAPSHOT_CREATE_VALIDATE    = (1 << 9), /* validate the XML
-                                                          against the schema (Since: v5.6.0) */
+                                                          against the schema (Since: 5.6.0) */
 } virDomainSnapshotCreateFlags;
 
 /* Take a snapshot of the current VM state */
@@ -91,10 +91,10 @@ virDomainSnapshotPtr virDomainSnapshotCreateXML(virDomainPtr domain,
 /**
  * virDomainSnapshotXMLFlags:
  *
- * Since: v5.1.0
+ * Since: 5.1.0
  */
 typedef enum {
-    VIR_DOMAIN_SNAPSHOT_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too (Since: v5.1.0) */
+    VIR_DOMAIN_SNAPSHOT_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too (Since: 5.1.0) */
 } virDomainSnapshotXMLFlags;
 
 /* Dump the XML of a snapshot */
@@ -113,48 +113,48 @@ char *virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
  * recursive.  Remaining bits come in groups; if all bits from a group are
  * 0, then that group is not used to filter results.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 typedef enum {
     VIR_DOMAIN_SNAPSHOT_LIST_ROOTS       = (1 << 0), /* Filter by snapshots
                                                         with no parents, when
-                                                        listing a domain (Since: v0.9.5) */
+                                                        listing a domain (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_LIST_DESCENDANTS = (1 << 0), /* List all descendants,
                                                         not just children, when
-                                                        listing a snapshot (Since: v0.9.7) */
+                                                        listing a snapshot (Since: 0.9.7) */
 
     VIR_DOMAIN_SNAPSHOT_LIST_LEAVES      = (1 << 2), /* Filter by snapshots
-                                                        with no children (Since: v0.9.7) */
+                                                        with no children (Since: 0.9.7) */
     VIR_DOMAIN_SNAPSHOT_LIST_NO_LEAVES   = (1 << 3), /* Filter by snapshots
-                                                        that have children (Since: v0.9.13) */
+                                                        that have children (Since: 0.9.13) */
 
     VIR_DOMAIN_SNAPSHOT_LIST_METADATA    = (1 << 1), /* Filter by snapshots
-                                                        which have metadata (Since: v0.9.5) */
+                                                        which have metadata (Since: 0.9.5) */
     VIR_DOMAIN_SNAPSHOT_LIST_NO_METADATA = (1 << 4), /* Filter by snapshots
-                                                        with no metadata (Since: v0.9.13) */
+                                                        with no metadata (Since: 0.9.13) */
 
     VIR_DOMAIN_SNAPSHOT_LIST_INACTIVE    = (1 << 5), /* Filter by snapshots
                                                         taken while guest was
-                                                        shut off (Since: v1.0.1) */
+                                                        shut off (Since: 1.0.1) */
     VIR_DOMAIN_SNAPSHOT_LIST_ACTIVE      = (1 << 6), /* Filter by snapshots
                                                         taken while guest was
                                                         active, and with
-                                                        memory state (Since: v1.0.1) */
+                                                        memory state (Since: 1.0.1) */
     VIR_DOMAIN_SNAPSHOT_LIST_DISK_ONLY   = (1 << 7), /* Filter by snapshots
                                                         taken while guest was
                                                         active, but without
-                                                        memory state (Since: v1.0.1) */
+                                                        memory state (Since: 1.0.1) */
 
     VIR_DOMAIN_SNAPSHOT_LIST_INTERNAL    = (1 << 8), /* Filter by snapshots
                                                         stored internal to
-                                                        disk images (Since: v1.0.1) */
+                                                        disk images (Since: 1.0.1) */
     VIR_DOMAIN_SNAPSHOT_LIST_EXTERNAL    = (1 << 9), /* Filter by snapshots
                                                         that use files external
-                                                        to disk images (Since: v1.0.1) */
+                                                        to disk images (Since: 1.0.1) */
 
     VIR_DOMAIN_SNAPSHOT_LIST_TOPOLOGICAL = (1 << 10), /* Ensure parents occur
                                                          before children in
-                                                         the resulting list (Since: v5.2.0) */
+                                                         the resulting list (Since: 5.2.0) */
 } virDomainSnapshotListFlags;
 
 /* Return the number of snapshots for this domain */
@@ -211,13 +211,13 @@ int virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
 /**
  * virDomainSnapshotRevertFlags:
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 typedef enum {
-    VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert (Since: v0.9.5) */
-    VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert (Since: v0.9.5) */
-    VIR_DOMAIN_SNAPSHOT_REVERT_FORCE   = 1 << 2, /* Allow risky reverts (Since: v0.9.7) */
-    VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM = 1 << 3, /* Re-initialize NVRAM from template (Since: v8.1.0) */
+    VIR_DOMAIN_SNAPSHOT_REVERT_RUNNING = 1 << 0, /* Run after revert (Since: 0.9.5) */
+    VIR_DOMAIN_SNAPSHOT_REVERT_PAUSED  = 1 << 1, /* Pause after revert (Since: 0.9.5) */
+    VIR_DOMAIN_SNAPSHOT_REVERT_FORCE   = 1 << 2, /* Allow risky reverts (Since: 0.9.7) */
+    VIR_DOMAIN_SNAPSHOT_REVERT_RESET_NVRAM = 1 << 3, /* Re-initialize NVRAM from template (Since: 8.1.0) */
 } virDomainSnapshotRevertFlags;
 
 /* Revert the domain to a point-in-time snapshot.  The
@@ -232,12 +232,12 @@ int virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
  *
  * Delete a snapshot
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN      = (1 << 0), /* Also delete children (Since: v0.8.0) */
-    VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata (Since: v0.9.5) */
-    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY = (1 << 2), /* Delete just children (Since: v0.9.5) */
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN      = (1 << 0), /* Also delete children (Since: 0.8.0) */
+    VIR_DOMAIN_SNAPSHOT_DELETE_METADATA_ONLY = (1 << 1), /* Delete just metadata (Since: 0.9.5) */
+    VIR_DOMAIN_SNAPSHOT_DELETE_CHILDREN_ONLY = (1 << 2), /* Delete just children (Since: 0.9.5) */
 } virDomainSnapshotDeleteFlags;
 
 int virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,

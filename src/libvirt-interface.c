@@ -37,7 +37,7 @@ VIR_LOG_INIT("libvirt.interface");
  *
  * Returns the virConnectPtr or NULL in case of failure.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 virConnectPtr
 virInterfaceGetConnect(virInterfacePtr iface)
@@ -79,7 +79,7 @@ virInterfaceGetConnect(virInterfacePtr iface)
  * to make iteration easier.  The caller is responsible for calling
  * virStorageInterfaceFree() on each array element, then calling free() on @ifaces.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virConnectListAllInterfaces(virConnectPtr conn,
@@ -120,7 +120,7 @@ virConnectListAllInterfaces(virConnectPtr conn,
  *
  * Returns the number of active interfaces found or -1 in case of error
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virConnectNumOfInterfaces(virConnectPtr conn)
@@ -165,7 +165,7 @@ virConnectNumOfInterfaces(virConnectPtr conn)
  * all currently active interfaces were listed if the return is less than
  * @maxnames. The client must call free() on each returned name.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
@@ -202,7 +202,7 @@ virConnectListInterfaces(virConnectPtr conn, char **const names, int maxnames)
  *
  * Returns the number of defined interface found or -1 in case of error
  *
- * Since: v0.7.0
+ * Since: 0.7.0
  */
 int
 virConnectNumOfDefinedInterfaces(virConnectPtr conn)
@@ -247,7 +247,7 @@ virConnectNumOfDefinedInterfaces(virConnectPtr conn)
  * guaranteed that all currently defined interfaces were listed if the return
  * is less than @maxnames.  The client must call free() on each returned name.
  *
- * Since: v0.7.0
+ * Since: 0.7.0
  */
 int
 virConnectListDefinedInterfaces(virConnectPtr conn,
@@ -291,7 +291,7 @@ virConnectListDefinedInterfaces(virConnectPtr conn,
  * Returns a new interface object or NULL in case of failure.  If the
  * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 virInterfacePtr
 virInterfaceLookupByName(virConnectPtr conn, const char *name)
@@ -332,7 +332,7 @@ virInterfaceLookupByName(virConnectPtr conn, const char *name)
  * Returns a new interface object or NULL in case of failure.  If the
  * interface cannot be found, then VIR_ERR_NO_INTERFACE error is raised.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 virInterfacePtr
 virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
@@ -369,7 +369,7 @@ virInterfaceLookupByMACString(virConnectPtr conn, const char *macstr)
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * its lifetime will be the same as the interface object.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 const char *
 virInterfaceGetName(virInterfacePtr iface)
@@ -395,7 +395,7 @@ virInterfaceGetName(virInterfacePtr iface)
  * format) or NULL, the string need not be deallocated its lifetime
  * will be the same as the interface object.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 const char *
 virInterfaceGetMACString(virInterfacePtr iface)
@@ -428,7 +428,7 @@ virInterfaceGetMACString(virInterfacePtr iface)
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 char *
 virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
@@ -481,7 +481,7 @@ virInterfaceGetXMLDesc(virInterfacePtr iface, unsigned int flags)
  *
  * Returns NULL in case of error, a pointer to the interface otherwise
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 virInterfacePtr
 virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
@@ -529,7 +529,7 @@ virInterfaceDefineXML(virConnectPtr conn, const char *xml, unsigned int flags)
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virInterfaceUndefine(virInterfacePtr iface)
@@ -574,7 +574,7 @@ virInterfaceUndefine(virInterfacePtr iface)
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
@@ -623,7 +623,7 @@ virInterfaceCreate(virInterfacePtr iface, unsigned int flags)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
@@ -671,7 +671,7 @@ virInterfaceDestroy(virInterfacePtr iface, unsigned int flags)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virInterfaceRef(virInterfacePtr iface)
@@ -696,7 +696,7 @@ virInterfaceRef(virInterfacePtr iface)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 int
 virInterfaceFree(virInterfacePtr iface)
@@ -729,7 +729,7 @@ virInterfaceFree(virInterfacePtr iface)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 int
 virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
@@ -771,7 +771,7 @@ virInterfaceChangeBegin(virConnectPtr conn, unsigned int flags)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 int
 virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
@@ -813,7 +813,7 @@ virInterfaceChangeCommit(virConnectPtr conn, unsigned int flags)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 int
 virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
@@ -850,7 +850,7 @@ virInterfaceChangeRollback(virConnectPtr conn, unsigned int flags)
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 int
 virInterfaceIsActive(virInterfacePtr iface)

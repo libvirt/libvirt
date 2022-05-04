@@ -70,7 +70,7 @@ static virEventRemoveTimeoutFunc removeTimeoutImpl;
  * Returns -1 if the file handle cannot be registered, otherwise a handle
  * watch number to be used for updating and unregistering for events.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 int
 virEventAddHandle(int fd,
@@ -97,7 +97,7 @@ virEventAddHandle(int fd,
  *
  * Will not fail if fd exists.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 void
 virEventUpdateHandle(int watch, int events)
@@ -117,7 +117,7 @@ virEventUpdateHandle(int watch, int events)
  *
  * Returns -1 if the file handle was not registered, 0 upon success.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 int
 virEventRemoveHandle(int watch)
@@ -146,7 +146,7 @@ virEventRemoveHandle(int watch)
  * Returns -1 if the timer cannot be registered, a positive
  * integer timer id upon success.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 int
 virEventAddTimeout(int timeout,
@@ -175,7 +175,7 @@ virEventAddTimeout(int timeout,
  *
  * Will not fail if timer exists.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 void
 virEventUpdateTimeout(int timer, int timeout)
@@ -195,7 +195,7 @@ virEventUpdateTimeout(int timer, int timeout)
  *
  * Returns -1 if the timer was not registered, 0 upon success.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 int
 virEventRemoveTimeout(int timer)
@@ -245,7 +245,7 @@ virEventRemoveTimeout(int timer)
  * to stop running the event loop immediately after closing
  * the connection.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 void virEventRegisterImpl(virEventAddHandleFunc addHandle,
                           virEventUpdateHandleFunc updateHandle,
@@ -315,7 +315,7 @@ int virEventRequireImpl(void)
  *
  * Returns 0 on success, -1 on failure.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 int virEventRegisterDefaultImpl(void)
 {
@@ -352,7 +352,7 @@ int virEventRegisterDefaultImpl(void)
  *
  * Returns 0 on success, -1 on failure.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 int virEventRunDefaultImpl(void)
 {

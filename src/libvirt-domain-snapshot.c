@@ -36,7 +36,7 @@ VIR_LOG_INIT("libvirt.domain-snapshot");
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * as its lifetime will be the same as the snapshot object.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 const char *
 virDomainSnapshotGetName(virDomainSnapshotPtr snapshot)
@@ -61,7 +61,7 @@ virDomainSnapshotGetName(virDomainSnapshotPtr snapshot)
  *
  * Returns the domain or NULL.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 virDomainPtr
 virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot)
@@ -86,7 +86,7 @@ virDomainSnapshotGetDomain(virDomainSnapshotPtr snapshot)
  *
  * Returns the connection or NULL.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 virConnectPtr
 virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
@@ -220,7 +220,7 @@ virDomainSnapshotGetConnect(virDomainSnapshotPtr snapshot)
  * Returns an (opaque) new virDomainSnapshotPtr on success or NULL on
  * failure.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virDomainSnapshotPtr
 virDomainSnapshotCreateXML(virDomainPtr domain,
@@ -280,7 +280,7 @@ virDomainSnapshotCreateXML(virDomainPtr domain,
  * Returns a 0 terminated UTF-8 encoded XML instance or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 char *
 virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
@@ -335,7 +335,7 @@ virDomainSnapshotGetXMLDesc(virDomainSnapshotPtr snapshot,
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
@@ -401,7 +401,7 @@ virDomainSnapshotNum(virDomainPtr domain, unsigned int flags)
  * Returns the number of domain snapshots found or -1 in case of error.
  * The caller is responsible to call free() for each member of the array.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
@@ -491,7 +491,7 @@ virDomainSnapshotListNames(virDomainPtr domain, char **names, int nameslen,
  * for calling virDomainSnapshotFree() on each array element, then calling
  * free() on @snaps.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 int
 virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
@@ -542,7 +542,7 @@ virDomainListAllSnapshots(virDomainPtr domain, virDomainSnapshotPtr **snaps,
  *
  * Returns the number of domain snapshots found or -1 in case of error.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 int
 virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
@@ -610,7 +610,7 @@ virDomainSnapshotNumChildren(virDomainSnapshotPtr snapshot, unsigned int flags)
  * Returns the number of domain snapshots found or -1 in case of error.
  * The caller is responsible to call free() for each member of the array.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 int
 virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
@@ -683,7 +683,7 @@ virDomainSnapshotListChildrenNames(virDomainSnapshotPtr snapshot,
  * for calling virDomainSnapshotFree() on each array element, then calling
  * free() on @snaps.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 int
 virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
@@ -729,7 +729,7 @@ virDomainSnapshotListAllChildren(virDomainSnapshotPtr snapshot,
  * domain snapshot cannot be found, then the VIR_ERR_NO_DOMAIN_SNAPSHOT
  * error is raised.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virDomainSnapshotPtr
 virDomainSnapshotLookupByName(virDomainPtr domain,
@@ -771,7 +771,7 @@ virDomainSnapshotLookupByName(virDomainPtr domain,
  *
  * Returns 1 if such snapshot exists, 0 if it doesn't, -1 on error.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
@@ -813,7 +813,7 @@ virDomainHasCurrentSnapshot(virDomainPtr domain, unsigned int flags)
  * current domain snapshot cannot be found, then the VIR_ERR_NO_DOMAIN_SNAPSHOT
  * error is raised.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virDomainSnapshotPtr
 virDomainSnapshotCurrent(virDomainPtr domain,
@@ -857,7 +857,7 @@ virDomainSnapshotCurrent(virDomainPtr domain,
  * given snapshot is a root (no parent), then the VIR_ERR_NO_DOMAIN_SNAPSHOT
  * error is raised.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 virDomainSnapshotPtr
 virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
@@ -897,7 +897,7 @@ virDomainSnapshotGetParent(virDomainSnapshotPtr snapshot,
  *
  * Returns 1 if current, 0 if not current, or -1 on error.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 int
 virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
@@ -938,7 +938,7 @@ virDomainSnapshotIsCurrent(virDomainSnapshotPtr snapshot,
  * Returns 1 if the snapshot has metadata, 0 if the snapshot exists without
  * help from libvirt, or -1 on error.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 int
 virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
@@ -1019,7 +1019,7 @@ virDomainSnapshotHasMetadata(virDomainSnapshotPtr snapshot,
  *
  * Returns 0 if the creation is successful, -1 on error.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
@@ -1078,7 +1078,7 @@ virDomainRevertToSnapshot(virDomainSnapshotPtr snapshot,
  * Returns 0 if the selected snapshot(s) were successfully deleted,
  * -1 on error.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
@@ -1130,7 +1130,7 @@ virDomainSnapshotDelete(virDomainSnapshotPtr snapshot,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 int
 virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
@@ -1155,7 +1155,7 @@ virDomainSnapshotRef(virDomainSnapshotPtr snapshot)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virDomainSnapshotFree(virDomainSnapshotPtr snapshot)

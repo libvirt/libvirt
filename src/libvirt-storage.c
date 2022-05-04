@@ -38,7 +38,7 @@ VIR_LOG_INIT("libvirt.storage");
  *
  * Returns the virConnectPtr or NULL in case of failure.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virConnectPtr
 virStoragePoolGetConnect(virStoragePoolPtr pool)
@@ -107,7 +107,7 @@ virStoragePoolGetConnect(virStoragePoolPtr pool)
  * for calling virStoragePoolFree() on each array element, then calling
  * free() on @pools.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virConnectListAllStoragePools(virConnectPtr conn,
@@ -148,7 +148,7 @@ virConnectListAllStoragePools(virConnectPtr conn,
  *
  * Returns the number of pools found, or -1 on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virConnectNumOfStoragePools(virConnectPtr conn)
@@ -194,7 +194,7 @@ virConnectNumOfStoragePools(virConnectPtr conn)
  * that all currently active pools were listed if the return is less than
  * @maxnames. The client must call free() on each returned name.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virConnectListStoragePools(virConnectPtr conn,
@@ -233,7 +233,7 @@ virConnectListStoragePools(virConnectPtr conn,
  *
  * Returns the number of pools found, or -1 on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virConnectNumOfDefinedStoragePools(virConnectPtr conn)
@@ -279,7 +279,7 @@ virConnectNumOfDefinedStoragePools(virConnectPtr conn)
  * guaranteed that all currently defined pools were listed if the return
  * is less than @maxnames.  The client must call free() on each returned name.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virConnectListDefinedStoragePools(virConnectPtr conn,
@@ -331,7 +331,7 @@ virConnectListDefinedStoragePools(virConnectPtr conn,
  * containing a source document appropriate to the given pool
  * type for each discovered source.
  *
- * Since: v0.4.5
+ * Since: 0.4.5
  */
 char *
 virConnectFindStoragePoolSources(virConnectPtr conn,
@@ -376,7 +376,7 @@ virConnectFindStoragePoolSources(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolLookupByName(virConnectPtr conn,
@@ -417,7 +417,7 @@ virStoragePoolLookupByName(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolLookupByUUID(virConnectPtr conn,
@@ -458,7 +458,7 @@ virStoragePoolLookupByUUID(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolLookupByUUIDString(virConnectPtr conn,
@@ -498,7 +498,7 @@ virStoragePoolLookupByUUIDString(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolLookupByVolume(virStorageVolPtr vol)
@@ -539,7 +539,7 @@ virStoragePoolLookupByVolume(virStorageVolPtr vol)
  *
  * Returns a virStoragePoolPtr object, or NULL if no matching pool is found
  *
- * Since: v4.1.0
+ * Since: 4.1.0
  */
 virStoragePoolPtr
 virStoragePoolLookupByTargetPath(virConnectPtr conn,
@@ -582,7 +582,7 @@ virStoragePoolLookupByTargetPath(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolCreateXML(virConnectPtr conn,
@@ -627,7 +627,7 @@ virStoragePoolCreateXML(virConnectPtr conn,
  *
  * Returns a virStoragePoolPtr object, or NULL if creation failed
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStoragePoolPtr
 virStoragePoolDefineXML(virConnectPtr conn,
@@ -670,7 +670,7 @@ virStoragePoolDefineXML(virConnectPtr conn,
  *
  * Returns 0 on success, or -1 upon failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolBuild(virStoragePoolPtr pool,
@@ -710,7 +710,7 @@ virStoragePoolBuild(virStoragePoolPtr pool,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolUndefine(virStoragePoolPtr pool)
@@ -750,7 +750,7 @@ virStoragePoolUndefine(virStoragePoolPtr pool)
  *
  * Returns 0 on success, or -1 if it could not be started
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolCreate(virStoragePoolPtr pool,
@@ -794,7 +794,7 @@ virStoragePoolCreate(virStoragePoolPtr pool,
  *
  * Returns 0 on success, or -1 if it could not be destroyed
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolDestroy(virStoragePoolPtr pool)
@@ -836,7 +836,7 @@ virStoragePoolDestroy(virStoragePoolPtr pool)
  *
  * Returns 0 on success, or -1 if it could not be obliterate
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolDelete(virStoragePoolPtr pool,
@@ -877,7 +877,7 @@ virStoragePoolDelete(virStoragePoolPtr pool,
  *
  * Returns 0 on success, or -1 if it could not be free'd.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolFree(virStoragePoolPtr pool)
@@ -911,7 +911,7 @@ virStoragePoolFree(virStoragePoolPtr pool)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.0
+ * Since: 0.6.0
  */
 int
 virStoragePoolRef(virStoragePoolPtr pool)
@@ -938,7 +938,7 @@ virStoragePoolRef(virStoragePoolPtr pool)
  *
  * Returns 0 if the volume list was refreshed, -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolRefresh(virStoragePoolPtr pool,
@@ -978,7 +978,7 @@ virStoragePoolRefresh(virStoragePoolPtr pool,
  *
  * Returns the name of the pool, or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 const char*
 virStoragePoolGetName(virStoragePoolPtr pool)
@@ -1002,7 +1002,7 @@ virStoragePoolGetName(virStoragePoolPtr pool)
  *
  * Returns 0 on success, or -1 on error;
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolGetUUID(virStoragePoolPtr pool,
@@ -1034,7 +1034,7 @@ virStoragePoolGetUUID(virStoragePoolPtr pool,
  *
  * Returns 0 on success, or -1 on error;
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolGetUUIDString(virStoragePoolPtr pool,
@@ -1066,7 +1066,7 @@ virStoragePoolGetUUIDString(virStoragePoolPtr pool,
  *
  * Returns 0 on success, or -1 on failure.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolGetInfo(virStoragePoolPtr pool,
@@ -1112,7 +1112,7 @@ virStoragePoolGetInfo(virStoragePoolPtr pool,
  *
  * Returns a XML document (caller frees), or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 char *
 virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
@@ -1152,7 +1152,7 @@ virStoragePoolGetXMLDesc(virStoragePoolPtr pool,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolGetAutostart(virStoragePoolPtr pool,
@@ -1194,7 +1194,7 @@ virStoragePoolGetAutostart(virStoragePoolPtr pool,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolSetAutostart(virStoragePoolPtr pool,
@@ -1244,7 +1244,7 @@ virStoragePoolSetAutostart(virStoragePoolPtr pool,
  * for calling virStorageVolFree() on each array element, then calling
  * free() on @vols.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virStoragePoolListAllVolumes(virStoragePoolPtr pool,
@@ -1282,7 +1282,7 @@ virStoragePoolListAllVolumes(virStoragePoolPtr pool,
  *
  * Returns the number of storage pools, or -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
@@ -1323,7 +1323,7 @@ virStoragePoolNumOfVolumes(virStoragePoolPtr pool)
  *
  * Returns the number of names fetched, or -1 on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStoragePoolListVolumes(virStoragePoolPtr pool,
@@ -1364,7 +1364,7 @@ virStoragePoolListVolumes(virStoragePoolPtr pool,
  *
  * Returns the virConnectPtr or NULL in case of failure.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virConnectPtr
 virStorageVolGetConnect(virStorageVolPtr vol)
@@ -1392,7 +1392,7 @@ virStorageVolGetConnect(virStorageVolPtr vol)
  *
  * Returns a storage volume, or NULL if not found / error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStorageVolPtr
 virStorageVolLookupByName(virStoragePoolPtr pool,
@@ -1434,7 +1434,7 @@ virStorageVolLookupByName(virStoragePoolPtr pool,
  *
  * Returns a storage volume, or NULL if not found / error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStorageVolPtr
 virStorageVolLookupByKey(virConnectPtr conn,
@@ -1476,7 +1476,7 @@ virStorageVolLookupByKey(virConnectPtr conn,
  *
  * Returns a storage volume, or NULL if not found / error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStorageVolPtr
 virStorageVolLookupByPath(virConnectPtr conn,
@@ -1514,7 +1514,7 @@ virStorageVolLookupByPath(virConnectPtr conn,
  *
  * Returns the volume name, or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 const char*
 virStorageVolGetName(virStorageVolPtr vol)
@@ -1539,7 +1539,7 @@ virStorageVolGetName(virStorageVolPtr vol)
  *
  * Returns the volume key, or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 const char*
 virStorageVolGetKey(virStorageVolPtr vol)
@@ -1574,7 +1574,7 @@ virStorageVolGetKey(virStorageVolPtr vol)
  *
  * Returns the storage volume, or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 virStorageVolPtr
 virStorageVolCreateXML(virStoragePoolPtr pool,
@@ -1627,7 +1627,7 @@ virStorageVolCreateXML(virStoragePoolPtr pool,
  *
  * Returns the storage volume, or NULL on error
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 virStorageVolPtr
 virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
@@ -1693,7 +1693,7 @@ virStorageVolCreateXMLFrom(virStoragePoolPtr pool,
  *
  * Returns 0, or -1 upon error.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 int
 virStorageVolDownload(virStorageVolPtr vol,
@@ -1778,7 +1778,7 @@ virStorageVolDownload(virStorageVolPtr vol,
  *
  * Returns 0, or -1 upon error.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 int
 virStorageVolUpload(virStorageVolPtr vol,
@@ -1833,7 +1833,7 @@ virStorageVolUpload(virStorageVolPtr vol,
  *
  * Returns 0 on success, or -1 on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStorageVolDelete(virStorageVolPtr vol,
@@ -1884,7 +1884,7 @@ virStorageVolDelete(virStorageVolPtr vol,
  *
  * Returns 0 on success, or -1 on error
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virStorageVolWipe(virStorageVolPtr vol,
@@ -1932,7 +1932,7 @@ virStorageVolWipe(virStorageVolPtr vol,
  *
  * Returns 0 on success, or -1 on error.
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 int
 virStorageVolWipePattern(virStorageVolPtr vol,
@@ -1974,7 +1974,7 @@ virStorageVolWipePattern(virStorageVolPtr vol,
  *
  * Returns 0 on success, or -1 on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStorageVolFree(virStorageVolPtr vol)
@@ -2007,7 +2007,7 @@ virStorageVolFree(virStorageVolPtr vol)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.0
+ * Since: 0.6.0
  */
 int
 virStorageVolRef(virStorageVolPtr vol)
@@ -2033,7 +2033,7 @@ virStorageVolRef(virStorageVolPtr vol)
  *
  * Returns 0 on success, or -1 on failure
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 int
 virStorageVolGetInfo(virStorageVolPtr vol,
@@ -2085,7 +2085,7 @@ virStorageVolGetInfo(virStorageVolPtr vol,
  *
  * Returns 0 on success, or -1 on failure
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 int
 virStorageVolGetInfoFlags(virStorageVolPtr vol,
@@ -2131,7 +2131,7 @@ virStorageVolGetInfoFlags(virStorageVolPtr vol,
  *
  * Returns the XML document, or NULL on error
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 char *
 virStorageVolGetXMLDesc(virStorageVolPtr vol,
@@ -2174,7 +2174,7 @@ virStorageVolGetXMLDesc(virStorageVolPtr vol,
  * Returns the storage volume path, or NULL on error. The
  * caller must free() the returned path after use.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 char *
 virStorageVolGetPath(virStorageVolPtr vol)
@@ -2237,7 +2237,7 @@ virStorageVolGetPath(virStorageVolPtr vol)
  *
  * Returns 0 on success, or -1 on error.
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 int
 virStorageVolResize(virStorageVolPtr vol,
@@ -2288,7 +2288,7 @@ virStorageVolResize(virStorageVolPtr vol,
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 int
 virStoragePoolIsActive(virStoragePoolPtr pool)
@@ -2323,7 +2323,7 @@ virStoragePoolIsActive(virStoragePoolPtr pool)
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 int
 virStoragePoolIsPersistent(virStoragePoolPtr pool)
@@ -2383,7 +2383,7 @@ virStoragePoolIsPersistent(virStoragePoolPtr pool)
  *
  * Returns a callback identifier on success, -1 on failure.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 int
 virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
@@ -2448,7 +2448,7 @@ virConnectStoragePoolEventRegisterAny(virConnectPtr conn,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 int
 virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
@@ -2489,7 +2489,7 @@ virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
  *
  * Returns NULL in case of error or an XML string defining the capabilities.
  *
- * Since: v5.2.0
+ * Since: 5.2.0
  */
 char *
 virConnectGetStoragePoolCapabilities(virConnectPtr conn,

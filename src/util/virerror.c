@@ -255,7 +255,7 @@ virLastErrorObject(void)
  *
  * Returns a pointer to the last error or NULL if none occurred.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 virErrorPtr
 virGetLastError(void)
@@ -274,7 +274,7 @@ virGetLastError(void)
  *
  * Returns the most recent error code, or VIR_ERR_OK if none is set.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virGetLastErrorCode(void)
@@ -294,7 +294,7 @@ virGetLastErrorCode(void)
  * Returns a numerical value of the most recent error's origin, or VIR_FROM_NONE
  * if none is set.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virGetLastErrorDomain(void)
@@ -314,7 +314,7 @@ virGetLastErrorDomain(void)
  * Returns the most recent error message string in this
  * thread, or a generic message if none is set
  *
- * Since: v1.0.6
+ * Since: 1.0.6
  */
 const char *
 virGetLastErrorMessage(void)
@@ -370,7 +370,7 @@ virSetError(virErrorPtr newerr)
  *
  * Returns error code or -1 in case of parameter error.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 int
 virCopyLastError(virErrorPtr to)
@@ -403,7 +403,7 @@ virCopyLastError(virErrorPtr to)
  * It is the caller's responsibility to free the error with
  * virFreeError().
  *
- * Since: v0.6.1
+ * Since: 0.6.1
  */
 virErrorPtr
 virSaveLastError(void)
@@ -468,7 +468,7 @@ virErrorRestore(virErrorPtr *savederr)
  *
  * Reset the error being pointed to
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virResetError(virErrorPtr err)
@@ -488,7 +488,7 @@ virResetError(virErrorPtr err)
  *
  * Resets and frees the given error.
  *
- * Since: v0.6.1
+ * Since: 0.6.1
  */
 void
 virFreeError(virErrorPtr err)
@@ -506,7 +506,7 @@ virFreeError(virErrorPtr err)
  * threads can safely access this concurrently, only resetting
  * their own error object.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virResetLastError(void)
@@ -538,7 +538,7 @@ virResetLastError(void)
  *
  * Returns a pointer to the last error or NULL if none occurred.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 virErrorPtr
 virConnGetLastError(virConnectPtr conn)
@@ -574,7 +574,7 @@ virConnGetLastError(virConnectPtr conn)
  * Returns 0 if no error was found and the error code otherwise and -1 in case
  *         of parameter error.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 int
 virConnCopyLastError(virConnectPtr conn, virErrorPtr to)
@@ -602,7 +602,7 @@ virConnCopyLastError(virConnectPtr conn, virErrorPtr to)
  *
  * Reset the last error caught on that connection
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virConnResetLastError(virConnectPtr conn)
@@ -623,7 +623,7 @@ virConnResetLastError(virConnectPtr conn)
  * it will reset to default printing on stderr. The error raised there
  * are those for which no handler at the connection level could caught.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virSetErrorFunc(void *userData, virErrorFunc handler)
@@ -642,7 +642,7 @@ virSetErrorFunc(void *userData, virErrorFunc handler)
  * it will reset to default which is to pass error back to the global
  * library handler.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virConnSetErrorFunc(virConnectPtr conn, void *userData,
@@ -662,7 +662,7 @@ virConnSetErrorFunc(virConnectPtr conn, void *userData,
  *
  * Default routine reporting an error to stderr.
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 void
 virDefaultErrorFunc(virErrorPtr err)

@@ -33,7 +33,7 @@
  *
  * a virStoragePool is a private structure representing a storage pool
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef struct _virStoragePool virStoragePool;
 
@@ -43,7 +43,7 @@ typedef struct _virStoragePool virStoragePool;
  * a virStoragePoolPtr is pointer to a virStoragePool private structure, this is the
  * type used to reference a storage pool in the API.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef virStoragePool *virStoragePoolPtr;
 
@@ -51,60 +51,60 @@ typedef virStoragePool *virStoragePoolPtr;
 /**
  * virStoragePoolState:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef enum {
-    VIR_STORAGE_POOL_INACTIVE = 0, /* Not running (Since: v0.4.1) */
-    VIR_STORAGE_POOL_BUILDING = 1, /* Initializing pool, not available (Since: v0.4.1) */
-    VIR_STORAGE_POOL_RUNNING = 2,  /* Running normally (Since: v0.4.1) */
-    VIR_STORAGE_POOL_DEGRADED = 3, /* Running degraded (Since: v0.4.1) */
-    VIR_STORAGE_POOL_INACCESSIBLE = 4, /* Running, but not accessible (Since: v0.8.2) */
+    VIR_STORAGE_POOL_INACTIVE = 0, /* Not running (Since: 0.4.1) */
+    VIR_STORAGE_POOL_BUILDING = 1, /* Initializing pool, not available (Since: 0.4.1) */
+    VIR_STORAGE_POOL_RUNNING = 2,  /* Running normally (Since: 0.4.1) */
+    VIR_STORAGE_POOL_DEGRADED = 3, /* Running degraded (Since: 0.4.1) */
+    VIR_STORAGE_POOL_INACCESSIBLE = 4, /* Running, but not accessible (Since: 0.8.2) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_STORAGE_POOL_STATE_LAST /* (Since: v0.9.10) */
+    VIR_STORAGE_POOL_STATE_LAST /* (Since: 0.9.10) */
 # endif
 } virStoragePoolState;
 
 /**
  * virStoragePoolBuildFlags:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef enum {
-    VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch (Since: v0.4.1) */
-    VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize (Since: v0.4.1) */
-    VIR_STORAGE_POOL_BUILD_RESIZE = (1 << 1),  /* Extend existing pool (Since: v0.4.1) */
-    VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = (1 << 2),  /* Do not overwrite existing pool (Since: v0.9.5) */
-    VIR_STORAGE_POOL_BUILD_OVERWRITE = (1 << 3),  /* Overwrite data (Since: v0.9.5) */
+    VIR_STORAGE_POOL_BUILD_NEW  = 0,   /* Regular build from scratch (Since: 0.4.1) */
+    VIR_STORAGE_POOL_BUILD_REPAIR = (1 << 0), /* Repair / reinitialize (Since: 0.4.1) */
+    VIR_STORAGE_POOL_BUILD_RESIZE = (1 << 1),  /* Extend existing pool (Since: 0.4.1) */
+    VIR_STORAGE_POOL_BUILD_NO_OVERWRITE = (1 << 2),  /* Do not overwrite existing pool (Since: 0.9.5) */
+    VIR_STORAGE_POOL_BUILD_OVERWRITE = (1 << 3),  /* Overwrite data (Since: 0.9.5) */
 } virStoragePoolBuildFlags;
 
 /**
  * virStoragePoolDeleteFlags:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef enum {
-    VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) (Since: v0.4.1) */
-    VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) (Since: v0.4.1) */
+    VIR_STORAGE_POOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) (Since: 0.4.1) */
+    VIR_STORAGE_POOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) (Since: 0.4.1) */
 } virStoragePoolDeleteFlags;
 
 /**
  * virStoragePoolCreateFlags:
  *
- * Since: v1.3.1
+ * Since: 1.3.1
  */
 typedef enum {
-    /* Create the pool but do not perform pool build (Since: v1.3.1) */
+    /* Create the pool but do not perform pool build (Since: 1.3.1) */
     VIR_STORAGE_POOL_CREATE_NORMAL = 0,
 
-    /* Create the pool and perform pool build without any flags (Since: v1.3.1) */
+    /* Create the pool and perform pool build without any flags (Since: 1.3.1) */
     VIR_STORAGE_POOL_CREATE_WITH_BUILD = 1 << 0,
 
     /* Create the pool and perform pool build using the
      * VIR_STORAGE_POOL_BUILD_OVERWRITE flag. This is mutually
      * exclusive to VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE
      *
-     * Since: v1.3.1
+     * Since: 1.3.1
      */
     VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE = 1 << 1,
 
@@ -112,7 +112,7 @@ typedef enum {
      * VIR_STORAGE_POOL_BUILD_NO_OVERWRITE flag. This is mutually
      * exclusive to VIR_STORAGE_POOL_CREATE_WITH_BUILD_OVERWRITE
      *
-     * Since: v1.3.1
+     * Since: 1.3.1
      */
     VIR_STORAGE_POOL_CREATE_WITH_BUILD_NO_OVERWRITE = 1 << 2,
 } virStoragePoolCreateFlags;
@@ -120,7 +120,7 @@ typedef enum {
 /**
  * virStoragePoolInfo:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef struct _virStoragePoolInfo virStoragePoolInfo;
 
@@ -134,7 +134,7 @@ struct _virStoragePoolInfo {
 /**
  * virStoragePoolInfoPtr:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef virStoragePoolInfo *virStoragePoolInfoPtr;
 
@@ -144,7 +144,7 @@ typedef virStoragePoolInfo *virStoragePoolInfoPtr;
  *
  * a virStorageVol is a private structure representing a storage volume
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef struct _virStorageVol virStorageVol;
 
@@ -154,7 +154,7 @@ typedef struct _virStorageVol virStorageVol;
  * a virStorageVolPtr is pointer to a virStorageVol private structure, this is the
  * type used to reference a storage volume in the API.
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef virStorageVol *virStorageVolPtr;
 
@@ -162,59 +162,59 @@ typedef virStorageVol *virStorageVolPtr;
 /**
  * virStorageVolType:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef enum {
-    VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes (Since: v0.4.1) */
-    VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes (Since: v0.4.1) */
-    VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume (Since: v0.9.5) */
-    VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) (Since: v0.9.13) */
+    VIR_STORAGE_VOL_FILE = 0,     /* Regular file based volumes (Since: 0.4.1) */
+    VIR_STORAGE_VOL_BLOCK = 1,    /* Block based volumes (Since: 0.4.1) */
+    VIR_STORAGE_VOL_DIR = 2,      /* Directory-passthrough based volume (Since: 0.9.5) */
+    VIR_STORAGE_VOL_NETWORK = 3,  /* Network volumes like RBD (RADOS Block Device) (Since: 0.9.13) */
     VIR_STORAGE_VOL_NETDIR = 4,   /* Network accessible directory that can
-                                   * contain other network volumes (Since: v1.2.0) */
-    VIR_STORAGE_VOL_PLOOP = 5,    /* Ploop based volumes (Since: v1.3.4) */
+                                   * contain other network volumes (Since: 1.2.0) */
+    VIR_STORAGE_VOL_PLOOP = 5,    /* Ploop based volumes (Since: 1.3.4) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_STORAGE_VOL_LAST /* (Since: v0.9.10) */
+    VIR_STORAGE_VOL_LAST /* (Since: 0.9.10) */
 # endif
 } virStorageVolType;
 
 /**
  * virStorageVolDeleteFlags:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef enum {
-    VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) (Since: v0.4.1) */
-    VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) (Since: v0.4.1) */
-    VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS = 1 << 1, /* Force removal of volume, even if in use (Since: v1.2.21) */
+    VIR_STORAGE_VOL_DELETE_NORMAL = 0, /* Delete metadata only    (fast) (Since: 0.4.1) */
+    VIR_STORAGE_VOL_DELETE_ZEROED = 1 << 0,  /* Clear all data to zeros (slow) (Since: 0.4.1) */
+    VIR_STORAGE_VOL_DELETE_WITH_SNAPSHOTS = 1 << 1, /* Force removal of volume, even if in use (Since: 1.2.21) */
 } virStorageVolDeleteFlags;
 
 /**
  * virStorageVolWipeAlgorithm:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes (Since: v0.9.10) */
+    VIR_STORAGE_VOL_WIPE_ALG_ZERO = 0, /* 1-pass, all zeroes (Since: 0.9.10) */
     VIR_STORAGE_VOL_WIPE_ALG_NNSA = 1, /* 4-pass  NNSA Policy Letter
-                                          NAP-14.1-C (XVI-8) (Since: v0.9.10) */
+                                          NAP-14.1-C (XVI-8) (Since: 0.9.10) */
     VIR_STORAGE_VOL_WIPE_ALG_DOD = 2, /* 4-pass DoD 5220.22-M section
-                                         8-306 procedure (Since: v0.9.10) */
+                                         8-306 procedure (Since: 0.9.10) */
     VIR_STORAGE_VOL_WIPE_ALG_BSI = 3, /* 9-pass method recommended by the
                                          German Center of Security in
-                                         Information Technologies (Since: v0.9.10) */
-    VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence (Since: v0.9.10) */
+                                         Information Technologies (Since: 0.9.10) */
+    VIR_STORAGE_VOL_WIPE_ALG_GUTMANN = 4, /* The canonical 35-pass sequence (Since: 0.9.10) */
     VIR_STORAGE_VOL_WIPE_ALG_SCHNEIER = 5, /* 7-pass method described by
                                               Bruce Schneier in "Applied
-                                              Cryptography" (1996) (Since: v0.9.10) */
-    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random data (Since: v0.9.10) */
+                                              Cryptography" (1996) (Since: 0.9.10) */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER7 = 6, /* 7-pass random data (Since: 0.9.10) */
 
-    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random data (Since: v0.9.10) */
+    VIR_STORAGE_VOL_WIPE_ALG_PFITZNER33 = 7, /* 33-pass random data (Since: 0.9.10) */
 
-    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random data (Since: v0.9.10) */
+    VIR_STORAGE_VOL_WIPE_ALG_RANDOM = 8, /* 1-pass random data (Since: 0.9.10) */
 
     VIR_STORAGE_VOL_WIPE_ALG_TRIM = 9, /* 1-pass, trim all data on the
-                                          volume by using TRIM or DISCARD (Since: v1.3.2) */
+                                          volume by using TRIM or DISCARD (Since: 1.3.2) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_VOL_WIPE_ALG_LAST
@@ -223,7 +223,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last algorithm supported
      * by this version of the libvirt API.
      *
-     * Since: v0.9.10
+     * Since: 0.9.10
      */
 # endif
 } virStorageVolWipeAlgorithm;
@@ -231,17 +231,17 @@ typedef enum {
 /**
  * virStorageVolInfoFlags:
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 typedef enum {
-    VIR_STORAGE_VOL_USE_ALLOCATION = 0, /* (Since: v3.0.0) */
-    VIR_STORAGE_VOL_GET_PHYSICAL = 1 << 0, /* Return the physical size in allocation (Since: v3.0.0) */
+    VIR_STORAGE_VOL_USE_ALLOCATION = 0, /* (Since: 3.0.0) */
+    VIR_STORAGE_VOL_GET_PHYSICAL = 1 << 0, /* Return the physical size in allocation (Since: 3.0.0) */
 } virStorageVolInfoFlags;
 
 /**
  * virStorageVolInfo:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef struct _virStorageVolInfo virStorageVolInfo;
 
@@ -255,17 +255,17 @@ struct _virStorageVolInfo {
 /**
  * virStorageVolInfoPtr:
  *
- * Since: v0.4.1
+ * Since: 0.4.1
  */
 typedef virStorageVolInfo *virStorageVolInfoPtr;
 
 /**
  * virStorageXMLFlags:
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 typedef enum {
-    VIR_STORAGE_XML_INACTIVE    = (1 << 0), /* dump inactive pool/volume information (Since: v0.9.13) */
+    VIR_STORAGE_XML_INACTIVE    = (1 << 0), /* dump inactive pool/volume information (Since: 0.9.13) */
 } virStorageXMLFlags;
 
 /*
@@ -300,32 +300,32 @@ int                     virConnectListDefinedStoragePools(virConnectPtr conn,
  * Note that these flags come in groups; if all bits from a group are 0,
  * then that group is not used to filter results.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE      = 1 << 0, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE        = 1 << 1, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_INACTIVE      = 1 << 0, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_ACTIVE        = 1 << 1, /* (Since: 0.10.2) */
 
-    VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT    = 1 << 2, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT     = 1 << 3, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_PERSISTENT    = 1 << 2, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_TRANSIENT     = 1 << 3, /* (Since: 0.10.2) */
 
-    VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART     = 1 << 4, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART  = 1 << 5, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_AUTOSTART     = 1 << 4, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_NO_AUTOSTART  = 1 << 5, /* (Since: 0.10.2) */
 
-    VIR_CONNECT_LIST_STORAGE_POOLS_DIR           = 1 << 6, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_FS            = 1 << 7, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_NETFS         = 1 << 8, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL       = 1 << 9, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_DISK          = 1 << 10, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI         = 1 << 11, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_SCSI          = 1 << 12, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_MPATH         = 1 << 13, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_RBD           = 1 << 14, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG      = 1 << 15, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER       = 1 << 16, /* (Since: v1.2.1) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_ZFS           = 1 << 17, /* (Since: v1.2.8) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE      = 1 << 18, /* (Since: v3.1.0) */
-    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT  = 1 << 19, /* (Since: v5.6.0) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_DIR           = 1 << 6, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_FS            = 1 << 7, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_NETFS         = 1 << 8, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_LOGICAL       = 1 << 9, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_DISK          = 1 << 10, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI         = 1 << 11, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_SCSI          = 1 << 12, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_MPATH         = 1 << 13, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_RBD           = 1 << 14, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_SHEEPDOG      = 1 << 15, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_GLUSTER       = 1 << 16, /* (Since: 1.2.1) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_ZFS           = 1 << 17, /* (Since: 1.2.8) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_VSTORAGE      = 1 << 18, /* (Since: 3.1.0) */
+    VIR_CONNECT_LIST_STORAGE_POOLS_ISCSI_DIRECT  = 1 << 19, /* (Since: 5.6.0) */
 } virConnectListAllStoragePoolsFlags;
 
 int                     virConnectListAllStoragePools(virConnectPtr conn,
@@ -354,10 +354,10 @@ virStoragePoolPtr       virStoragePoolLookupByTargetPath(virConnectPtr conn,
 /**
  * virStoragePoolDefineFlags:
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 typedef enum {
-    VIR_STORAGE_POOL_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
+    VIR_STORAGE_POOL_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.7.0) */
 } virStoragePoolDefineFlags;
 
 /*
@@ -432,11 +432,11 @@ const char*             virStorageVolGetKey             (virStorageVolPtr vol);
 /**
  * virStorageVolCreateFlags:
  *
- * Since: v1.0.1
+ * Since: 1.0.1
  */
 typedef enum {
-    VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0, /* (Since: v1.0.1) */
-    VIR_STORAGE_VOL_CREATE_REFLINK = 1 << 1, /* perform a btrfs lightweight copy (Since: v1.2.13) */
+    VIR_STORAGE_VOL_CREATE_PREALLOC_METADATA = 1 << 0, /* (Since: 1.0.1) */
+    VIR_STORAGE_VOL_CREATE_REFLINK = 1 << 1, /* perform a btrfs lightweight copy (Since: 1.2.13) */
 } virStorageVolCreateFlags;
 
 virStorageVolPtr        virStorageVolCreateXML          (virStoragePoolPtr pool,
@@ -449,10 +449,10 @@ virStorageVolPtr        virStorageVolCreateXMLFrom      (virStoragePoolPtr pool,
 /**
  * virStorageVolDownloadFlags:
  *
- * Since: v3.4.0
+ * Since: 3.4.0
  */
 typedef enum {
-    VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM = 1 << 0, /* Use sparse stream (Since: v3.4.0) */
+    VIR_STORAGE_VOL_DOWNLOAD_SPARSE_STREAM = 1 << 0, /* Use sparse stream (Since: 3.4.0) */
 } virStorageVolDownloadFlags;
 
 int                     virStorageVolDownload           (virStorageVolPtr vol,
@@ -464,10 +464,10 @@ int                     virStorageVolDownload           (virStorageVolPtr vol,
 /**
  * virStorageVolUploadFlags:
  *
- * Since: v3.4.0
+ * Since: 3.4.0
  */
 typedef enum {
-    VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM = 1 << 0,  /* Use sparse stream (Since: v3.4.0) */
+    VIR_STORAGE_VOL_UPLOAD_SPARSE_STREAM = 1 << 0,  /* Use sparse stream (Since: 3.4.0) */
 } virStorageVolUploadFlags;
 
 int                     virStorageVolUpload             (virStorageVolPtr vol,
@@ -498,12 +498,12 @@ char *                  virStorageVolGetPath            (virStorageVolPtr vol);
 /**
  * virStorageVolResizeFlags:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size (Since: v0.9.10) */
-    VIR_STORAGE_VOL_RESIZE_DELTA    = 1 << 1, /* size is relative to current (Since: v0.9.10) */
-    VIR_STORAGE_VOL_RESIZE_SHRINK   = 1 << 2, /* allow decrease in capacity (Since: v0.9.10) */
+    VIR_STORAGE_VOL_RESIZE_ALLOCATE = 1 << 0, /* force allocation of new size (Since: 0.9.10) */
+    VIR_STORAGE_VOL_RESIZE_DELTA    = 1 << 1, /* size is relative to current (Since: 0.9.10) */
+    VIR_STORAGE_VOL_RESIZE_SHRINK   = 1 << 2, /* allow decrease in capacity (Since: 0.9.10) */
 } virStorageVolResizeFlags;
 
 int                     virStorageVolResize             (virStorageVolPtr vol,
@@ -519,7 +519,7 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool);
  * Used to cast the event specific callback into the generic one
  * for use for virConnectStoragePoolEventRegisterAny()
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 # define VIR_STORAGE_POOL_EVENT_CALLBACK(cb)((virConnectStoragePoolEventGenericCallback)(cb))
 
@@ -530,11 +530,11 @@ int virStoragePoolIsPersistent(virStoragePoolPtr pool);
  * virConnectStoragePoolEventRegisterAny(). Each event id determines which
  * signature of callback function will be used.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 typedef enum {
-    VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE = 0, /* virConnectStoragePoolEventLifecycleCallback (Since: v2.0.0) */
-    VIR_STORAGE_POOL_EVENT_ID_REFRESH = 1, /* virConnectStoragePoolEventGenericCallback (Since: v2.0.0) */
+    VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE = 0, /* virConnectStoragePoolEventLifecycleCallback (Since: 2.0.0) */
+    VIR_STORAGE_POOL_EVENT_ID_REFRESH = 1, /* virConnectStoragePoolEventGenericCallback (Since: 2.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_STORAGE_POOL_EVENT_ID_LAST
@@ -543,7 +543,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      *
-     * Since: v2.0.0
+     * Since: 2.0.0
      */
 # endif
 } virStoragePoolEventID;
@@ -560,7 +560,7 @@ typedef enum {
  * passed in a different parameter position; use
  * VIR_STORAGE_POOL_EVENT_CALLBACK() when registering an appropriate handler.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 typedef void (*virConnectStoragePoolEventGenericCallback)(virConnectPtr conn,
                                                           virStoragePoolPtr pool,
@@ -583,18 +583,18 @@ int virConnectStoragePoolEventDeregisterAny(virConnectPtr conn,
  * a virStoragePoolEventLifecycleType is emitted during storage pool
  * lifecycle events
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 typedef enum {
-    VIR_STORAGE_POOL_EVENT_DEFINED = 0, /* (Since: v2.0.0) */
-    VIR_STORAGE_POOL_EVENT_UNDEFINED = 1, /* (Since: v2.0.0) */
-    VIR_STORAGE_POOL_EVENT_STARTED = 2, /* (Since: v2.0.0) */
-    VIR_STORAGE_POOL_EVENT_STOPPED = 3, /* (Since: v2.0.0) */
-    VIR_STORAGE_POOL_EVENT_CREATED = 4, /* (Since: v3.8.0) */
-    VIR_STORAGE_POOL_EVENT_DELETED = 5, /* (Since: v3.8.0) */
+    VIR_STORAGE_POOL_EVENT_DEFINED = 0, /* (Since: 2.0.0) */
+    VIR_STORAGE_POOL_EVENT_UNDEFINED = 1, /* (Since: 2.0.0) */
+    VIR_STORAGE_POOL_EVENT_STARTED = 2, /* (Since: 2.0.0) */
+    VIR_STORAGE_POOL_EVENT_STOPPED = 3, /* (Since: 2.0.0) */
+    VIR_STORAGE_POOL_EVENT_CREATED = 4, /* (Since: 3.8.0) */
+    VIR_STORAGE_POOL_EVENT_DELETED = 5, /* (Since: 3.8.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_STORAGE_POOL_EVENT_LAST /* (Since: v2.0.0) */
+    VIR_STORAGE_POOL_EVENT_LAST /* (Since: 2.0.0) */
 # endif
 } virStoragePoolEventLifecycleType;
 
@@ -613,7 +613,7 @@ typedef enum {
  * VIR_STORAGE_POOL_EVENT_ID_LIFECYCLE with
  * virConnectStoragePoolEventRegisterAny()
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 typedef void (*virConnectStoragePoolEventLifecycleCallback)(virConnectPtr conn,
                                                             virStoragePoolPtr pool,

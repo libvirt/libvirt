@@ -60,7 +60,7 @@ VIR_LOG_INIT("libvirt-lxc");
  *
  * Returns the number of opened file descriptors, or -1 on error
  *
- * Since: v1.0.2
+ * Since: 1.0.2
  */
 int
 virDomainLxcOpenNamespace(virDomainPtr domain,
@@ -118,7 +118,7 @@ virDomainLxcOpenNamespace(virDomainPtr domain,
  *
  * Returns 0 on success, -1 on error
  *
- * Since: v1.0.2
+ * Since: 1.0.2
  */
 int
 virDomainLxcEnterNamespace(virDomainPtr domain,
@@ -187,7 +187,7 @@ virDomainLxcEnterNamespace(virDomainPtr domain,
  *
  * Returns 0 on success, -1 on error
  *
- * Since: v1.0.4
+ * Since: 1.0.4
  */
 int
 virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
@@ -290,7 +290,7 @@ virDomainLxcEnterSecurityLabel(virSecurityModelPtr model,
  *
  * Returns 0 on success, -1 on error
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 int virDomainLxcEnterCGroup(virDomainPtr domain,
                             unsigned int flags)

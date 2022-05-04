@@ -36,7 +36,7 @@ VIR_LOG_INIT("libvirt.domain-checkpoint");
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * as its lifetime will be the same as the checkpoint object.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 const char *
 virDomainCheckpointGetName(virDomainCheckpointPtr checkpoint)
@@ -61,7 +61,7 @@ virDomainCheckpointGetName(virDomainCheckpointPtr checkpoint)
  *
  * Returns the domain or NULL.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 virDomainPtr
 virDomainCheckpointGetDomain(virDomainCheckpointPtr checkpoint)
@@ -86,7 +86,7 @@ virDomainCheckpointGetDomain(virDomainCheckpointPtr checkpoint)
  *
  * Returns the connection or NULL.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 virConnectPtr
 virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
@@ -145,7 +145,7 @@ virDomainCheckpointGetConnect(virDomainCheckpointPtr checkpoint)
  * Returns an (opaque) new virDomainCheckpointPtr on success or NULL
  * on failure.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 virDomainCheckpointPtr
 virDomainCheckpointCreateXML(virDomainPtr domain,
@@ -216,7 +216,7 @@ virDomainCheckpointCreateXML(virDomainPtr domain,
  * Returns a 0 terminated UTF-8 encoded XML instance or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 char *
 virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
@@ -292,7 +292,7 @@ virDomainCheckpointGetXMLDesc(virDomainCheckpointPtr checkpoint,
  * responsible for calling virDomainCheckpointFree() on each array element,
  * then calling free() on @checkpoints.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 int
 virDomainListAllCheckpoints(virDomainPtr domain,
@@ -361,7 +361,7 @@ virDomainListAllCheckpoints(virDomainPtr domain,
  * for calling virDomainCheckpointFree() on each array element, then calling
  * free() on @children.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 int
 virDomainCheckpointListAllChildren(virDomainCheckpointPtr checkpoint,
@@ -409,7 +409,7 @@ virDomainCheckpointListAllChildren(virDomainCheckpointPtr checkpoint,
  * domain checkpoint cannot be found, then the VIR_ERR_NO_DOMAIN_CHECKPOINT
  * error is raised.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 virDomainCheckpointPtr
 virDomainCheckpointLookupByName(virDomainPtr domain,
@@ -457,7 +457,7 @@ virDomainCheckpointLookupByName(virDomainPtr domain,
  * given checkpoint is a root (no parent), then the VIR_ERR_NO_DOMAIN_CHECKPOINT
  * error is raised.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 virDomainCheckpointPtr
 virDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
@@ -512,7 +512,7 @@ virDomainCheckpointGetParent(virDomainCheckpointPtr checkpoint,
  *
  * Returns 0 on success, -1 on error.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 int
 virDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
@@ -564,7 +564,7 @@ virDomainCheckpointDelete(virDomainCheckpointPtr checkpoint,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 int
 virDomainCheckpointRef(virDomainCheckpointPtr checkpoint)
@@ -589,7 +589,7 @@ virDomainCheckpointRef(virDomainCheckpointPtr checkpoint)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v5.6.0
+ * Since: 5.6.0
  */
 int
 virDomainCheckpointFree(virDomainCheckpointPtr checkpoint)

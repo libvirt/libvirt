@@ -39,7 +39,7 @@ VIR_LOG_INIT("libvirt.network");
  *
  * Returns the virConnectPtr or NULL in case of failure.
  *
- * Since: v0.3.0
+ * Since: 0.3.0
  */
 virConnectPtr
 virNetworkGetConnect(virNetworkPtr net)
@@ -89,7 +89,7 @@ virNetworkGetConnect(virNetworkPtr net)
  * to make iteration easier.  The caller is responsible for calling
  * virNetworkFree() on each array element, then calling free() on @nets.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virConnectListAllNetworks(virConnectPtr conn,
@@ -130,7 +130,7 @@ virConnectListAllNetworks(virConnectPtr conn,
  *
  * Returns the number of network found or -1 in case of error
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virConnectNumOfNetworks(virConnectPtr conn)
@@ -174,7 +174,7 @@ virConnectNumOfNetworks(virConnectPtr conn)
  * all currently active networks were listed if the return is less than
  * @maxnames. The client must call free() on each returned name.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
@@ -211,7 +211,7 @@ virConnectListNetworks(virConnectPtr conn, char **const names, int maxnames)
  *
  * Returns the number of networks found or -1 in case of error
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virConnectNumOfDefinedNetworks(virConnectPtr conn)
@@ -255,7 +255,7 @@ virConnectNumOfDefinedNetworks(virConnectPtr conn)
  * guaranteed that all currently defined networks were listed if the return
  * is less than @maxnames.  The client must call free() on each returned name.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
@@ -298,7 +298,7 @@ virConnectListDefinedNetworks(virConnectPtr conn, char **const names,
  * Returns a new network object or NULL in case of failure.  If the
  * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 virNetworkPtr
 virNetworkLookupByName(virConnectPtr conn, const char *name)
@@ -339,7 +339,7 @@ virNetworkLookupByName(virConnectPtr conn, const char *name)
  * Returns a new network object or NULL in case of failure.  If the
  * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 virNetworkPtr
 virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -377,7 +377,7 @@ virNetworkLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns a new network object or NULL in case of failure.  If the
  * network cannot be found, then VIR_ERR_NO_NETWORK error is raised.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 virNetworkPtr
 virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
@@ -418,7 +418,7 @@ virNetworkLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  *
  * Returns a new network object or NULL in case of failure
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 virNetworkPtr
 virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
@@ -461,7 +461,7 @@ virNetworkCreateXML(virConnectPtr conn, const char *xmlDesc)
  *
  * Returns a new network object or NULL in case of failure
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 virNetworkPtr
 virNetworkCreateXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
@@ -503,7 +503,7 @@ virNetworkCreateXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int f
  *
  * Returns NULL in case of error, a pointer to the network otherwise
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 virNetworkPtr
 virNetworkDefineXML(virConnectPtr conn, const char *xml)
@@ -546,7 +546,7 @@ virNetworkDefineXML(virConnectPtr conn, const char *xml)
  *
  * Returns NULL in case of error, a pointer to the network otherwise
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 virNetworkPtr
 virNetworkDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags)
@@ -583,7 +583,7 @@ virNetworkDefineXMLFlags(virConnectPtr conn, const char *xml, unsigned int flags
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkUndefine(virNetworkPtr network)
@@ -633,7 +633,7 @@ virNetworkUndefine(virNetworkPtr network)
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virNetworkUpdate(virNetworkPtr network,
@@ -701,7 +701,7 @@ virNetworkUpdate(virNetworkPtr network,
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkCreate(virNetworkPtr network)
@@ -743,7 +743,7 @@ virNetworkCreate(virNetworkPtr network)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkDestroy(virNetworkPtr network)
@@ -783,7 +783,7 @@ virNetworkDestroy(virNetworkPtr network)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkFree(virNetworkPtr network)
@@ -816,7 +816,7 @@ virNetworkFree(virNetworkPtr network)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.0
+ * Since: 0.6.0
  */
 int
 virNetworkRef(virNetworkPtr network)
@@ -841,7 +841,7 @@ virNetworkRef(virNetworkPtr network)
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * its lifetime will be the same as the network object.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 const char *
 virNetworkGetName(virNetworkPtr network)
@@ -865,7 +865,7 @@ virNetworkGetName(virNetworkPtr network)
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkGetUUID(virNetworkPtr network, unsigned char *uuid)
@@ -897,7 +897,7 @@ virNetworkGetUUID(virNetworkPtr network, unsigned char *uuid)
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 int
 virNetworkGetUUIDString(virNetworkPtr network, char *buf)
@@ -934,7 +934,7 @@ virNetworkGetUUIDString(virNetworkPtr network, char *buf)
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 char *
 virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
@@ -973,7 +973,7 @@ virNetworkGetXMLDesc(virNetworkPtr network, unsigned int flags)
  * Returns a 0 terminated interface name, or NULL in case of
  * error. The caller must free() the returned value.
  *
- * Since: v0.2.0
+ * Since: 0.2.0
  */
 char *
 virNetworkGetBridgeName(virNetworkPtr network)
@@ -1013,7 +1013,7 @@ virNetworkGetBridgeName(virNetworkPtr network)
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.2.1
+ * Since: 0.2.1
  */
 int
 virNetworkGetAutostart(virNetworkPtr network,
@@ -1055,7 +1055,7 @@ virNetworkGetAutostart(virNetworkPtr network,
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.2.1
+ * Since: 0.2.1
  */
 int
 virNetworkSetAutostart(virNetworkPtr network,
@@ -1095,7 +1095,7 @@ virNetworkSetAutostart(virNetworkPtr network,
  *
  * Returns 1 if running, 0 if inactive, -1 on error
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 int
 virNetworkIsActive(virNetworkPtr net)
@@ -1130,7 +1130,7 @@ virNetworkIsActive(virNetworkPtr net)
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 int
 virNetworkIsPersistent(virNetworkPtr net)
@@ -1191,7 +1191,7 @@ virNetworkIsPersistent(virNetworkPtr net)
  *
  * Returns a callback identifier on success, -1 on failure.
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 int
 virConnectNetworkEventRegisterAny(virConnectPtr conn,
@@ -1254,7 +1254,7 @@ virConnectNetworkEventRegisterAny(virConnectPtr conn,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v1.2.1
+ * Since: 1.2.1
  */
 int
 virConnectNetworkEventDeregisterAny(virConnectPtr conn,
@@ -1357,7 +1357,7 @@ virConnectNetworkEventDeregisterAny(virConnectPtr conn,
  * Returns the number of leases found or -1 and sets @leases to NULL in
  * case of error.
  *
- * Since: v1.2.6
+ * Since: 1.2.6
  */
 int
 virNetworkGetDHCPLeases(virNetworkPtr network,
@@ -1400,7 +1400,7 @@ virNetworkGetDHCPLeases(virNetworkPtr network,
  *
  * Frees all the memory occupied by @lease.
  *
- * Since: v1.2.6
+ * Since: 1.2.6
  */
 void
 virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
@@ -1430,7 +1430,7 @@ virNetworkDHCPLeaseFree(virNetworkDHCPLeasePtr lease)
  * Returns a new network port object or NULL in case of failure.  If the
  * network port cannot be found, then VIR_ERR_NO_NETWORK_PORT error is raised.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 virNetworkPortPtr
 virNetworkPortLookupByUUID(virNetworkPtr net,
@@ -1469,7 +1469,7 @@ virNetworkPortLookupByUUID(virNetworkPtr net,
  * Returns a new network port object or NULL in case of failure.  If the
  * network port cannot be found, then VIR_ERR_NO_NETWORK_PORT error is raised.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 virNetworkPortPtr
 virNetworkPortLookupByUUIDString(virNetworkPtr net,
@@ -1511,7 +1511,7 @@ virNetworkPortLookupByUUIDString(virNetworkPtr net,
  *
  * Returns -1 in case of error, 0 in case of success.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortSetParameters(virNetworkPortPtr port,
@@ -1561,7 +1561,7 @@ virNetworkPortSetParameters(virNetworkPortPtr port,
  *
  * Returns -1 in case of error, 0 in case of success.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortGetParameters(virNetworkPortPtr port,
@@ -1607,7 +1607,7 @@ virNetworkPortGetParameters(virNetworkPortPtr port,
  *
  * Returns a new network port object or NULL in case of failure
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 virNetworkPortPtr
 virNetworkPortCreateXML(virNetworkPtr net,
@@ -1647,7 +1647,7 @@ virNetworkPortCreateXML(virNetworkPtr net,
  *
  * Returns the virNetworkPtr or NULL in case of failure.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 virNetworkPtr
 virNetworkPortGetNetwork(virNetworkPortPtr port)
@@ -1673,7 +1673,7 @@ virNetworkPortGetNetwork(virNetworkPortPtr port)
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case of error.
  *         the caller must free() the returned value.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 char *
 virNetworkPortGetXMLDesc(virNetworkPortPtr port,
@@ -1712,7 +1712,7 @@ virNetworkPortGetXMLDesc(virNetworkPortPtr port,
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortGetUUID(virNetworkPortPtr port,
@@ -1745,7 +1745,7 @@ virNetworkPortGetUUID(virNetworkPortPtr port,
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortGetUUIDString(virNetworkPortPtr port,
@@ -1779,7 +1779,7 @@ virNetworkPortGetUUIDString(virNetworkPortPtr port,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortDelete(virNetworkPortPtr port,
@@ -1829,7 +1829,7 @@ virNetworkPortDelete(virNetworkPortPtr port,
  * for calling virNetworkPortFree() on each array element, then calling
  * free() on @ports.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkListAllPorts(virNetworkPtr network,
@@ -1868,7 +1868,7 @@ virNetworkListAllPorts(virNetworkPtr network,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortFree(virNetworkPortPtr port)
@@ -1901,7 +1901,7 @@ virNetworkPortFree(virNetworkPortPtr port)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v5.5.0
+ * Since: 5.5.0
  */
 int
 virNetworkPortRef(virNetworkPortPtr port)

@@ -33,7 +33,7 @@
  *
  * A virNodeDevice contains a node (host) device details.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef struct _virNodeDevice virNodeDevice;
 
@@ -45,7 +45,7 @@ typedef struct _virNodeDevice virNodeDevice;
  * to call virNodeDeviceFree when done using a virNodeDevicePtr obtained
  * from any of the above functions to avoid leaking memory.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef virNodeDevice *virNodeDevicePtr;
 
@@ -65,34 +65,34 @@ int                     virNodeListDevices      (virConnectPtr conn,
  * Flags used to filter either by capability or active state, the
  * returned node devices.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       = 1 << 1,  /* PCI device (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       = 1 << 2,  /* USB device (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE = 1 << 3,  /* USB interface (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET           = 1 << 4,  /* Network device (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST     = 1 << 5,  /* SCSI Host Bus Adapter (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET   = 1 << 6,  /* SCSI Target (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          = 1 << 7,  /* SCSI device (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       = 1 << 8,  /* Storage device (Since: v0.10.2) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       = 1 << 9,  /* FC Host Bus Adapter (Since: v1.0.4) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        = 1 << 10, /* Capable of vport (Since: v1.0.4) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  = 1 << 11, /* Capable of scsi_generic (Since: v1.1.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           = 1 << 12, /* DRM device (Since: v3.1.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    = 1 << 13, /* Capable of mediated devices (Since: v3.4.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          = 1 << 14, /* Mediated device (Since: v3.4.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV       = 1 << 15, /* CCW device (Since: v3.4.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV       = 1 << 16, /* CSS device (Since: v6.8.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA          = 1 << 17, /* vDPA device (Since: v6.9.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD       = 1 << 18, /* s390 AP Card device (Since: v7.0.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      = 1 << 19, /* s390 AP Queue (Since: v7.0.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     = 1 << 20, /* s390 AP Matrix (Since: v7.0.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD           = 1 << 21, /* Device with VPD (Since: v7.9.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SYSTEM        = 1 << 0,  /* System capability (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_PCI_DEV       = 1 << 1,  /* PCI device (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_DEV       = 1 << 2,  /* USB device (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_USB_INTERFACE = 1 << 3,  /* USB interface (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_NET           = 1 << 4,  /* Network device (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_HOST     = 1 << 5,  /* SCSI Host Bus Adapter (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_TARGET   = 1 << 6,  /* SCSI Target (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI          = 1 << 7,  /* SCSI device (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_STORAGE       = 1 << 8,  /* Storage device (Since: 0.10.2) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_FC_HOST       = 1 << 9,  /* FC Host Bus Adapter (Since: 1.0.4) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPORTS        = 1 << 10, /* Capable of vport (Since: 1.0.4) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_SCSI_GENERIC  = 1 << 11, /* Capable of scsi_generic (Since: 1.1.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_DRM           = 1 << 12, /* DRM device (Since: 3.1.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV_TYPES    = 1 << 13, /* Capable of mediated devices (Since: 3.4.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_MDEV          = 1 << 14, /* Mediated device (Since: 3.4.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CCW_DEV       = 1 << 15, /* CCW device (Since: 3.4.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_CSS_DEV       = 1 << 16, /* CSS device (Since: 6.8.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VDPA          = 1 << 17, /* vDPA device (Since: 6.9.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_CARD       = 1 << 18, /* s390 AP Card device (Since: 7.0.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_QUEUE      = 1 << 19, /* s390 AP Queue (Since: 7.0.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_AP_MATRIX     = 1 << 20, /* s390 AP Matrix (Since: 7.0.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_CAP_VPD           = 1 << 21, /* Device with VPD (Since: 7.9.0) */
 
-    VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE          = 1 << 30, /* Inactive devices (Since: v7.3.0) */
-    VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE            = 1U << 31, /* Active devices (Since: v7.3.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_INACTIVE          = 1 << 30, /* Inactive devices (Since: 7.3.0) */
+    VIR_CONNECT_LIST_NODE_DEVICES_ACTIVE            = 1U << 31, /* Active devices (Since: 7.3.0) */
 } virConnectListAllNodeDeviceFlags;
 
 int                     virConnectListAllNodeDevices (virConnectPtr conn,
@@ -162,7 +162,7 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev);
  * Used to cast the event specific callback into the generic one
  * for use for virConnectNodeDeviceEventRegisterAny()
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 # define VIR_NODE_DEVICE_EVENT_CALLBACK(cb)((virConnectNodeDeviceEventGenericCallback)(cb))
 
@@ -173,11 +173,11 @@ int virNodeDeviceIsActive(virNodeDevicePtr dev);
  * virConnectNodeDeviceEventRegisterAny(). Each event id determines which
  * signature of callback function will be used.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 typedef enum {
-    VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback (Since: v2.2.0) */
-    VIR_NODE_DEVICE_EVENT_ID_UPDATE = 1, /* virConnectNodeDeviceEventGenericCallback (Since: v2.2.0) */
+    VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE = 0, /* virConnectNodeDeviceEventLifecycleCallback (Since: 2.2.0) */
+    VIR_NODE_DEVICE_EVENT_ID_UPDATE = 1, /* virConnectNodeDeviceEventGenericCallback (Since: 2.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_NODE_DEVICE_EVENT_ID_LAST
@@ -186,7 +186,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      *
-     * Since: v2.2.0
+     * Since: 2.2.0
      */
 # endif
 } virNodeDeviceEventID;
@@ -203,7 +203,7 @@ typedef enum {
  * passed in a different parameter position; use
  * VIR_NODE_DEVICE_EVENT_CALLBACK() when registering an appropriate handler.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 typedef void (*virConnectNodeDeviceEventGenericCallback)(virConnectPtr conn,
                                                          virNodeDevicePtr dev,
@@ -226,16 +226,16 @@ int virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
  * a virNodeDeviceEventLifecycleType is emitted during node device
  * lifecycle events
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 typedef enum {
-    VIR_NODE_DEVICE_EVENT_CREATED = 0, /* (Since: v2.2.0) */
-    VIR_NODE_DEVICE_EVENT_DELETED = 1, /* (Since: v2.2.0) */
-    VIR_NODE_DEVICE_EVENT_DEFINED = 2, /* (Since: v7.3.0) */
-    VIR_NODE_DEVICE_EVENT_UNDEFINED = 3, /* (Since: v7.3.0) */
+    VIR_NODE_DEVICE_EVENT_CREATED = 0, /* (Since: 2.2.0) */
+    VIR_NODE_DEVICE_EVENT_DELETED = 1, /* (Since: 2.2.0) */
+    VIR_NODE_DEVICE_EVENT_DEFINED = 2, /* (Since: 7.3.0) */
+    VIR_NODE_DEVICE_EVENT_UNDEFINED = 3, /* (Since: 7.3.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_NODE_DEVICE_EVENT_LAST /* (Since: v2.2.0) */
+    VIR_NODE_DEVICE_EVENT_LAST /* (Since: 2.2.0) */
 # endif
 } virNodeDeviceEventLifecycleType;
 
@@ -254,7 +254,7 @@ typedef enum {
  * VIR_NODE_DEVICE_EVENT_ID_LIFECYCLE with
  * virConnectNodeDeviceEventRegisterAny()
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 typedef void (*virConnectNodeDeviceEventLifecycleCallback)(virConnectPtr conn,
                                                            virNodeDevicePtr dev,

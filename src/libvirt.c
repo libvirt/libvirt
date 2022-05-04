@@ -297,7 +297,7 @@ virGlobalInit(void)
  *
  * Returns 0 in case of success, -1 in case of error
  *
- * Since: v0.1.0
+ * Since: 0.1.0
  */
 int
 virInitialize(void)
@@ -800,7 +800,7 @@ virStateStop(void)
  * Returns -1 in case of failure, 0 otherwise, and values for @libVer and
  *       @typeVer have the format major * 1,000,000 + minor * 1,000 + release.
  *
- * Since: v0.0.3
+ * Since: 0.0.3
  */
 int
 virGetVersion(unsigned long *libVer, const char *type G_GNUC_UNUSED,
@@ -1190,7 +1190,7 @@ virConnectOpenInternal(const char *name,
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
- * Since: v0.0.3
+ * Since: 0.0.3
  */
 virConnectPtr
 virConnectOpen(const char *name)
@@ -1225,7 +1225,7 @@ virConnectOpen(const char *name)
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
- * Since: v0.0.3
+ * Since: 0.0.3
  */
 virConnectPtr
 virConnectOpenReadOnly(const char *name)
@@ -1261,7 +1261,7 @@ virConnectOpenReadOnly(const char *name)
  *
  * Returns a pointer to the hypervisor connection or NULL in case of error
  *
- * Since: v0.4.0
+ * Since: 0.4.0
  */
 virConnectPtr
 virConnectOpenAuth(const char *name,
@@ -1311,7 +1311,7 @@ virConnectOpenAuth(const char *name,
  * connection, but the application should not try to further use a
  * connection after the virConnectClose that matches the initial open.
  *
- * Since: v0.0.3
+ * Since: 0.0.3
  */
 int
 virConnectClose(virConnectPtr conn)

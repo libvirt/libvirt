@@ -41,7 +41,7 @@ VIR_LOG_INIT("libvirt.nodedev");
  *
  * Returns the number of node devices or -1 in case of error
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 int
 virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
@@ -89,7 +89,7 @@ virNodeNumOfDevices(virConnectPtr conn, const char *cap, unsigned int flags)
  * virNodeDeviceFree() on each array element, then calling free() on
  * @devices.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virConnectListAllNodeDevices(virConnectPtr conn,
@@ -140,7 +140,7 @@ virConnectListAllNodeDevices(virConnectPtr conn,
  *
  * Returns the number of node devices found or -1 in case of error
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 int
 virNodeListDevices(virConnectPtr conn,
@@ -185,7 +185,7 @@ virNodeListDevices(virConnectPtr conn,
  *
  * Returns a virNodeDevicePtr if found, NULL otherwise.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 virNodeDevicePtr
 virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
@@ -227,7 +227,7 @@ virNodeDeviceLookupByName(virConnectPtr conn, const char *name)
  *
  * Returns a virNodeDevicePtr if found, NULL otherwise.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 virNodeDevicePtr
 virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
@@ -271,7 +271,7 @@ virNodeDeviceLookupSCSIHostByWWN(virConnectPtr conn,
  *
  * Returns the XML document, or NULL on error
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 char *
 virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
@@ -306,7 +306,7 @@ virNodeDeviceGetXMLDesc(virNodeDevicePtr dev, unsigned int flags)
  *
  * Returns the device name or NULL in case of error
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 const char *
 virNodeDeviceGetName(virNodeDevicePtr dev)
@@ -330,7 +330,7 @@ virNodeDeviceGetName(virNodeDevicePtr dev)
  * Returns the name of the device's parent, or NULL if an
  * error occurred or when the device has no parent.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 const char *
 virNodeDeviceGetParent(virNodeDevicePtr dev)
@@ -363,7 +363,7 @@ virNodeDeviceGetParent(virNodeDevicePtr dev)
  * Returns the number of capabilities supported by the device or -1
  * in case of error.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 int
 virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
@@ -401,7 +401,7 @@ virNodeDeviceNumOfCaps(virNodeDevicePtr dev)
  * Returns the number of capability names listed in @names or -1
  * in case of error.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 int
 virNodeDeviceListCaps(virNodeDevicePtr dev,
@@ -442,7 +442,7 @@ virNodeDeviceListCaps(virNodeDevicePtr dev,
  *
  * Returns the 0 for success, -1 for error.
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 int
 virNodeDeviceFree(virNodeDevicePtr dev)
@@ -475,7 +475,7 @@ virNodeDeviceFree(virNodeDevicePtr dev)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.0
+ * Since: 0.6.0
  */
 int
 virNodeDeviceRef(virNodeDevicePtr dev)
@@ -515,7 +515,7 @@ virNodeDeviceRef(virNodeDevicePtr dev)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.1
+ * Since: 0.6.1
  */
 int
 virNodeDeviceDettach(virNodeDevicePtr dev)
@@ -570,7 +570,7 @@ virNodeDeviceDettach(virNodeDevicePtr dev)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v1.0.5
+ * Since: 1.0.5
  */
 int
 virNodeDeviceDetachFlags(virNodeDevicePtr dev,
@@ -617,7 +617,7 @@ virNodeDeviceDetachFlags(virNodeDevicePtr dev,
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.1
+ * Since: 0.6.1
  */
 int
 virNodeDeviceReAttach(virNodeDevicePtr dev)
@@ -662,7 +662,7 @@ virNodeDeviceReAttach(virNodeDevicePtr dev)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.6.1
+ * Since: 0.6.1
  */
 int
 virNodeDeviceReset(virNodeDevicePtr dev)
@@ -704,7 +704,7 @@ virNodeDeviceReset(virNodeDevicePtr dev)
  *
  * Returns a node device object if successful, NULL in case of failure
  *
- * Since: v0.6.3
+ * Since: 0.6.3
  */
 virNodeDevicePtr
 virNodeDeviceCreateXML(virConnectPtr conn,
@@ -745,7 +745,7 @@ virNodeDeviceCreateXML(virConnectPtr conn,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.6.3
+ * Since: 0.6.3
  */
 int
 virNodeDeviceDestroy(virNodeDevicePtr dev)
@@ -787,7 +787,7 @@ virNodeDeviceDestroy(virNodeDevicePtr dev)
  *
  * Returns a node device object if successful, NULL in case of failure
  *
- * Since: v7.3.0
+ * Since: 7.3.0
  */
 virNodeDevicePtr
 virNodeDeviceDefineXML(virConnectPtr conn,
@@ -828,7 +828,7 @@ virNodeDeviceDefineXML(virConnectPtr conn,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v7.3.0
+ * Since: 7.3.0
  */
 int
 virNodeDeviceUndefine(virNodeDevicePtr dev,
@@ -867,7 +867,7 @@ virNodeDeviceUndefine(virNodeDevicePtr dev,
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v7.3.0
+ * Since: 7.3.0
  */
 int
 virNodeDeviceCreate(virNodeDevicePtr dev,
@@ -932,7 +932,7 @@ virNodeDeviceCreate(virNodeDevicePtr dev,
  *
  * Returns a callback identifier on success, -1 on failure.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 int
 virConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
@@ -998,7 +998,7 @@ virConnectNodeDeviceEventRegisterAny(virConnectPtr conn,
  *
  * Returns 0 on success, -1 on failure.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 int
 virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
@@ -1037,7 +1037,7 @@ virConnectNodeDeviceEventDeregisterAny(virConnectPtr conn,
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 int
 virNodeDeviceSetAutostart(virNodeDevicePtr dev,
@@ -1078,7 +1078,7 @@ virNodeDeviceSetAutostart(virNodeDevicePtr dev,
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 int
 virNodeDeviceGetAutostart(virNodeDevicePtr dev,
@@ -1116,7 +1116,7 @@ virNodeDeviceGetAutostart(virNodeDevicePtr dev,
  *
  * Returns 1 if persistent, 0 if transient, -1 on error
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 int
 virNodeDeviceIsPersistent(virNodeDevicePtr dev)
@@ -1151,7 +1151,7 @@ virNodeDeviceIsPersistent(virNodeDevicePtr dev)
  *
  * Returns 1 if active, 0 if inactive, -1 on error
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 int virNodeDeviceIsActive(virNodeDevicePtr dev)
 {

@@ -33,7 +33,7 @@
  *
  * a virDomain is a private structure representing a domain.
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef struct _virDomain virDomain;
 
@@ -43,7 +43,7 @@ typedef struct _virDomain virDomain;
  * a virDomainPtr is pointer to a virDomain private structure, this is the
  * type used to reference a domain in the API.
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef virDomain *virDomainPtr;
 
@@ -52,18 +52,18 @@ typedef virDomain *virDomainPtr;
  *
  * A domain may be in different states at a given point in time
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef enum {
-    VIR_DOMAIN_NOSTATE = 0,     /* no state (Since: v0.0.1) */
-    VIR_DOMAIN_RUNNING = 1,     /* the domain is running (Since: v0.0.1) */
-    VIR_DOMAIN_BLOCKED = 2,     /* the domain is blocked on resource (Since: v0.0.1) */
-    VIR_DOMAIN_PAUSED  = 3,     /* the domain is paused by user (Since: v0.0.1) */
-    VIR_DOMAIN_SHUTDOWN= 4,     /* the domain is being shut down (Since: v0.0.1) */
-    VIR_DOMAIN_SHUTOFF = 5,     /* the domain is shut off (Since: v0.0.1) */
-    VIR_DOMAIN_CRASHED = 6,     /* the domain is crashed (Since: v0.0.2) */
+    VIR_DOMAIN_NOSTATE = 0,     /* no state (Since: 0.0.1) */
+    VIR_DOMAIN_RUNNING = 1,     /* the domain is running (Since: 0.0.1) */
+    VIR_DOMAIN_BLOCKED = 2,     /* the domain is blocked on resource (Since: 0.0.1) */
+    VIR_DOMAIN_PAUSED  = 3,     /* the domain is paused by user (Since: 0.0.1) */
+    VIR_DOMAIN_SHUTDOWN= 4,     /* the domain is being shut down (Since: 0.0.1) */
+    VIR_DOMAIN_SHUTOFF = 5,     /* the domain is shut off (Since: 0.0.1) */
+    VIR_DOMAIN_CRASHED = 6,     /* the domain is crashed (Since: 0.0.2) */
     VIR_DOMAIN_PMSUSPENDED = 7, /* the domain is suspended by guest
-                                   power management (Since: v0.9.11) */
+                                   power management (Since: 0.9.11) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_LAST
@@ -72,7 +72,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last state supported
      * by this version of the libvirt API.
      *
-     * Since: v0.9.5
+     * Since: 0.9.5
      */
 # endif
 } virDomainState;
@@ -80,152 +80,152 @@ typedef enum {
 /**
  * virDomainNostateReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_NOSTATE_UNKNOWN = 0, /* (Since: v0.9.2) */
+    VIR_DOMAIN_NOSTATE_UNKNOWN = 0, /* (Since: 0.9.2) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_NOSTATE_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_NOSTATE_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainNostateReason;
 
 /**
  * virDomainRunningReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_RUNNING_UNKNOWN = 0,         /* (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_BOOTED = 1,          /* normal startup from boot (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_MIGRATED = 2,        /* migrated from another host (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_RESTORED = 3,        /* restored from a state file (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_FROM_SNAPSHOT = 4,   /* restored from snapshot (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_UNPAUSED = 5,        /* returned from paused state (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6,  /* returned from migration (Since: v0.9.2) */
-    VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process (Since: v0.9.2) */
+    VIR_DOMAIN_RUNNING_UNKNOWN = 0,         /* (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_BOOTED = 1,          /* normal startup from boot (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_MIGRATED = 2,        /* migrated from another host (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_RESTORED = 3,        /* restored from a state file (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_FROM_SNAPSHOT = 4,   /* restored from snapshot (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_UNPAUSED = 5,        /* returned from paused state (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_MIGRATION_CANCELED = 6,  /* returned from migration (Since: 0.9.2) */
+    VIR_DOMAIN_RUNNING_SAVE_CANCELED = 7,   /* returned from failed save process (Since: 0.9.2) */
     VIR_DOMAIN_RUNNING_WAKEUP = 8,          /* returned from pmsuspended due to
-                                               wakeup event (Since: v0.9.11) */
-    VIR_DOMAIN_RUNNING_CRASHED = 9,         /* resumed from crashed (Since: v1.1.1) */
-    VIR_DOMAIN_RUNNING_POSTCOPY = 10,       /* running in post-copy migration mode (Since: v1.3.3) */
+                                               wakeup event (Since: 0.9.11) */
+    VIR_DOMAIN_RUNNING_CRASHED = 9,         /* resumed from crashed (Since: 1.1.1) */
+    VIR_DOMAIN_RUNNING_POSTCOPY = 10,       /* running in post-copy migration mode (Since: 1.3.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_RUNNING_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_RUNNING_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainRunningReason;
 
 /**
  * virDomainBlockedReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_BLOCKED_UNKNOWN = 0,     /* the reason is unknown (Since: v0.9.2) */
+    VIR_DOMAIN_BLOCKED_UNKNOWN = 0,     /* the reason is unknown (Since: 0.9.2) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_BLOCKED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_BLOCKED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainBlockedReason;
 
 /**
  * virDomainPausedReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_PAUSED_UNKNOWN = 0,      /* the reason is unknown (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_USER = 1,         /* paused on user request (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_MIGRATION = 2,    /* paused for offline migration (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_SAVE = 3,         /* paused for save (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_DUMP = 4,         /* paused for offline core dump (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_IOERROR = 5,      /* paused due to a disk I/O error (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot (Since: v0.9.2) */
-    VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process (Since: v0.9.5) */
-    VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot (Since: v1.0.1) */
-    VIR_DOMAIN_PAUSED_CRASHED = 10,     /* paused due to a guest crash (Since: v1.1.1) */
-    VIR_DOMAIN_PAUSED_STARTING_UP = 11, /* the domain is being started (Since: v1.2.14) */
-    VIR_DOMAIN_PAUSED_POSTCOPY = 12,    /* paused for post-copy migration (Since: v1.3.3) */
-    VIR_DOMAIN_PAUSED_POSTCOPY_FAILED = 13, /* paused after failed post-copy (Since: v1.3.3) */
+    VIR_DOMAIN_PAUSED_UNKNOWN = 0,      /* the reason is unknown (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_USER = 1,         /* paused on user request (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_MIGRATION = 2,    /* paused for offline migration (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_SAVE = 3,         /* paused for save (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_DUMP = 4,         /* paused for offline core dump (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_IOERROR = 5,      /* paused due to a disk I/O error (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_WATCHDOG = 6,     /* paused due to a watchdog event (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_FROM_SNAPSHOT = 7, /* paused after restoring from snapshot (Since: 0.9.2) */
+    VIR_DOMAIN_PAUSED_SHUTTING_DOWN = 8, /* paused during shutdown process (Since: 0.9.5) */
+    VIR_DOMAIN_PAUSED_SNAPSHOT = 9,      /* paused while creating a snapshot (Since: 1.0.1) */
+    VIR_DOMAIN_PAUSED_CRASHED = 10,     /* paused due to a guest crash (Since: 1.1.1) */
+    VIR_DOMAIN_PAUSED_STARTING_UP = 11, /* the domain is being started (Since: 1.2.14) */
+    VIR_DOMAIN_PAUSED_POSTCOPY = 12,    /* paused for post-copy migration (Since: 1.3.3) */
+    VIR_DOMAIN_PAUSED_POSTCOPY_FAILED = 13, /* paused after failed post-copy (Since: 1.3.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_PAUSED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_PAUSED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainPausedReason;
 
 /**
  * virDomainShutdownReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request (Since: v0.9.2) */
+    VIR_DOMAIN_SHUTDOWN_UNKNOWN = 0,    /* the reason is unknown (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTDOWN_USER = 1,       /* shutting down on user request (Since: 0.9.2) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_SHUTDOWN_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_SHUTDOWN_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainShutdownReason;
 
 /**
  * virDomainShutoffReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_SHUTOFF_UNKNOWN = 0,     /* the reason is unknown (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_SHUTDOWN = 1,    /* normal shutdown (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_DESTROYED = 2,   /* forced poweroff (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_CRASHED = 3,     /* domain crashed (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_MIGRATED = 4,    /* migrated to another host (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_SAVED = 5,       /* saved to a file (Since: v0.9.2) */
-    VIR_DOMAIN_SHUTOFF_FAILED = 6,      /* domain failed to start (Since: v0.9.2) */
+    VIR_DOMAIN_SHUTOFF_UNKNOWN = 0,     /* the reason is unknown (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_SHUTDOWN = 1,    /* normal shutdown (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_DESTROYED = 2,   /* forced poweroff (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_CRASHED = 3,     /* domain crashed (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_MIGRATED = 4,    /* migrated to another host (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_SAVED = 5,       /* saved to a file (Since: 0.9.2) */
+    VIR_DOMAIN_SHUTOFF_FAILED = 6,      /* domain failed to start (Since: 0.9.2) */
     VIR_DOMAIN_SHUTOFF_FROM_SNAPSHOT = 7, /* restored from a snapshot which was
-                                           * taken while domain was shutoff (Since: v0.9.2) */
+                                           * taken while domain was shutoff (Since: 0.9.2) */
     VIR_DOMAIN_SHUTOFF_DAEMON = 8,      /* daemon decides to kill domain
-                                           during reconnection processing (Since: v4.10.0) */
+                                           during reconnection processing (Since: 4.10.0) */
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_SHUTOFF_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_SHUTOFF_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainShutoffReason;
 
 /**
  * virDomainCrashedReason:
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason (Since: v0.9.2) */
-    VIR_DOMAIN_CRASHED_PANICKED = 1,    /* domain panicked (Since: v1.1.1) */
+    VIR_DOMAIN_CRASHED_UNKNOWN = 0,     /* crashed for unknown reason (Since: 0.9.2) */
+    VIR_DOMAIN_CRASHED_PANICKED = 1,    /* domain panicked (Since: 1.1.1) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_CRASHED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_CRASHED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainCrashedReason;
 
 /**
  * virDomainPMSuspendedReason:
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef enum {
-    VIR_DOMAIN_PMSUSPENDED_UNKNOWN = 0, /* (Since: v0.9.11) */
+    VIR_DOMAIN_PMSUSPENDED_UNKNOWN = 0, /* (Since: 0.9.11) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_PMSUSPENDED_LAST /* (Since: v0.9.11) */
+    VIR_DOMAIN_PMSUSPENDED_LAST /* (Since: 0.9.11) */
 # endif
 } virDomainPMSuspendedReason;
 
 /**
  * virDomainPMSuspendedDiskReason:
  *
- * Since: v1.0.0
+ * Since: 1.0.0
  */
 typedef enum {
-    VIR_DOMAIN_PMSUSPENDED_DISK_UNKNOWN = 0, /* (Since: v1.0.0) */
+    VIR_DOMAIN_PMSUSPENDED_DISK_UNKNOWN = 0, /* (Since: 1.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_PMSUSPENDED_DISK_LAST /* (Since: v1.0.0) */
+    VIR_DOMAIN_PMSUSPENDED_DISK_LAST /* (Since: 1.0.0) */
 # endif
 } virDomainPMSuspendedDiskReason;
 
@@ -234,20 +234,20 @@ typedef enum {
  *
  * Current state of a control interface to the domain.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 typedef enum {
-    VIR_DOMAIN_CONTROL_OK = 0,       /* operational, ready to accept commands (Since: v0.9.3) */
+    VIR_DOMAIN_CONTROL_OK = 0,       /* operational, ready to accept commands (Since: 0.9.3) */
     VIR_DOMAIN_CONTROL_JOB = 1,      /* background job is running (can be
                                         monitored by virDomainGetJobInfo); only
-                                        limited set of commands may be allowed (Since: v0.9.3) */
-    VIR_DOMAIN_CONTROL_OCCUPIED = 2, /* occupied by a running command (Since: v0.9.3) */
+                                        limited set of commands may be allowed (Since: 0.9.3) */
+    VIR_DOMAIN_CONTROL_OCCUPIED = 2, /* occupied by a running command (Since: 0.9.3) */
     VIR_DOMAIN_CONTROL_ERROR = 3,    /* unusable, domain cannot be fully
                                         operated, possible reason is provided
-                                        in the details field (Since: v0.9.3) */
+                                        in the details field (Since: 0.9.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_CONTROL_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_CONTROL_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainControlState;
 
@@ -256,20 +256,20 @@ typedef enum {
  *
  * Reason for the error state.
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef enum {
     VIR_DOMAIN_CONTROL_ERROR_REASON_NONE = 0,     /* server didn't provide a
-                                                     reason (Since: v1.2.14) */
+                                                     reason (Since: 1.2.14) */
     VIR_DOMAIN_CONTROL_ERROR_REASON_UNKNOWN = 1,  /* unknown reason for the
-                                                     error (Since: v1.2.14) */
+                                                     error (Since: 1.2.14) */
     VIR_DOMAIN_CONTROL_ERROR_REASON_MONITOR = 2,  /* monitor connection is
-                                                     broken (Since: v1.2.14) */
+                                                     broken (Since: 1.2.14) */
     VIR_DOMAIN_CONTROL_ERROR_REASON_INTERNAL = 3, /* error caused due to
-                                                     internal failure in libvirt (Since: v1.2.14)
+                                                     internal failure in libvirt (Since: 1.2.14)
                                                   */
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_CONTROL_ERROR_REASON_LAST /* (Since: v1.2.14) */
+    VIR_DOMAIN_CONTROL_ERROR_REASON_LAST /* (Since: 1.2.14) */
 # endif
 } virDomainControlErrorReason;
 
@@ -279,7 +279,7 @@ typedef enum {
  * Structure filled in by virDomainGetControlInfo and providing details about
  * current state of control interface to a domain.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 typedef struct _virDomainControlInfo virDomainControlInfo;
 struct _virDomainControlInfo {
@@ -296,7 +296,7 @@ struct _virDomainControlInfo {
  *
  * Pointer to virDomainControlInfo structure.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 typedef virDomainControlInfo *virDomainControlInfoPtr;
 
@@ -318,12 +318,12 @@ typedef virDomainControlInfo *virDomainControlInfoPtr;
  *
  * These enums should not conflict with those of virTypedParameterFlags.
  *
- * Since: v0.9.2
+ * Since: 0.9.2
  */
 typedef enum {
-    VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state. (Since: v0.9.2)  */
-    VIR_DOMAIN_AFFECT_LIVE    = 1 << 0, /* Affect running domain state. (Since: v0.9.2)  */
-    VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state. (Since: v0.9.2) */
+    VIR_DOMAIN_AFFECT_CURRENT = 0,      /* Affect current domain state. (Since: 0.9.2)  */
+    VIR_DOMAIN_AFFECT_LIVE    = 1 << 0, /* Affect running domain state. (Since: 0.9.2)  */
+    VIR_DOMAIN_AFFECT_CONFIG  = 1 << 1, /* Affect persistent domain state. (Since: 0.9.2) */
     /* 1 << 2 is reserved for virTypedParameterFlags */
 } virDomainModificationImpact;
 
@@ -333,7 +333,7 @@ typedef enum {
  * a virDomainInfo is a structure filled by virDomainGetInfo() and extracting
  * runtime information for a given active Domain
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef struct _virDomainInfo virDomainInfo;
 
@@ -350,7 +350,7 @@ struct _virDomainInfo {
  *
  * a virDomainInfoPtr is a pointer to a virDomainInfo structure.
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef virDomainInfo *virDomainInfoPtr;
 
@@ -360,16 +360,16 @@ typedef virDomainInfo *virDomainInfoPtr;
  * Flags OR'ed together to provide specific behaviour when creating a
  * Domain.
  *
- * Since: v0.0.1
+ * Since: 0.0.1
  */
 typedef enum {
-    VIR_DOMAIN_NONE               = 0,      /* Default behavior (Since: v0.0.1) */
-    VIR_DOMAIN_START_PAUSED       = 1 << 0, /* Launch guest in paused state (Since: v0.8.2) */
-    VIR_DOMAIN_START_AUTODESTROY  = 1 << 1, /* Automatically kill guest when virConnectPtr is closed (Since: v0.9.3) */
-    VIR_DOMAIN_START_BYPASS_CACHE = 1 << 2, /* Avoid file system cache pollution (Since: v0.9.4) */
-    VIR_DOMAIN_START_FORCE_BOOT   = 1 << 3, /* Boot, discarding any managed save (Since: v0.9.5) */
-    VIR_DOMAIN_START_VALIDATE     = 1 << 4, /* Validate the XML document against schema (Since: v1.2.12) */
-    VIR_DOMAIN_START_RESET_NVRAM  = 1 << 5, /* Re-initialize NVRAM from template (Since: v8.1.0) */
+    VIR_DOMAIN_NONE               = 0,      /* Default behavior (Since: 0.0.1) */
+    VIR_DOMAIN_START_PAUSED       = 1 << 0, /* Launch guest in paused state (Since: 0.8.2) */
+    VIR_DOMAIN_START_AUTODESTROY  = 1 << 1, /* Automatically kill guest when virConnectPtr is closed (Since: 0.9.3) */
+    VIR_DOMAIN_START_BYPASS_CACHE = 1 << 2, /* Avoid file system cache pollution (Since: 0.9.4) */
+    VIR_DOMAIN_START_FORCE_BOOT   = 1 << 3, /* Boot, discarding any managed save (Since: 0.9.5) */
+    VIR_DOMAIN_START_VALIDATE     = 1 << 4, /* Validate the XML document against schema (Since: 1.2.12) */
+    VIR_DOMAIN_START_RESET_NVRAM  = 1 << 5, /* Re-initialize NVRAM from template (Since: 8.1.0) */
 } virDomainCreateFlags;
 
 
@@ -381,7 +381,7 @@ typedef enum {
  * Macro represents proportional weight of the scheduler used on the
  * host cpu, when using the posix scheduler, as a ullong.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_CPU_SHARES "cpu_shares"
 
@@ -391,7 +391,7 @@ typedef enum {
  * Macro represents the enforcement period for a quota, in microseconds,
  * for whole domain, when using the posix scheduler, as a ullong.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_DOMAIN_SCHEDULER_GLOBAL_PERIOD "global_period"
 
@@ -401,7 +401,7 @@ typedef enum {
  * Macro represents the maximum bandwidth to be used within a period for
  * whole domain, when using the posix scheduler, as an llong.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_DOMAIN_SCHEDULER_GLOBAL_QUOTA "global_quota"
 
@@ -411,7 +411,7 @@ typedef enum {
  * Macro represents the enforcement period for a quota, in microseconds,
  * for vcpus only, when using the posix scheduler, as a ullong.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_VCPU_PERIOD "vcpu_period"
 
@@ -421,7 +421,7 @@ typedef enum {
  * Macro represents the maximum bandwidth to be used within a period for
  * vcpus only, when using the posix scheduler, as an llong.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_VCPU_QUOTA "vcpu_quota"
 
@@ -432,7 +432,7 @@ typedef enum {
  * when using the posix scheduler, for all emulator activity not tied to
  * vcpus, as a ullong.
  *
- * Since: v0.10.0
+ * Since: 0.10.0
  */
 # define VIR_DOMAIN_SCHEDULER_EMULATOR_PERIOD "emulator_period"
 
@@ -443,7 +443,7 @@ typedef enum {
  * all emulator activity not tied to vcpus, when using the posix scheduler,
  * as an llong.
  *
- * Since: v0.10.0
+ * Since: 0.10.0
  */
 # define VIR_DOMAIN_SCHEDULER_EMULATOR_QUOTA "emulator_quota"
 
@@ -453,7 +453,7 @@ typedef enum {
  * Macro represents the enforcement period for a quota, in microseconds,
  * for IOThreads only, when using the posix scheduler, as a ullong.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 # define VIR_DOMAIN_SCHEDULER_IOTHREAD_PERIOD "iothread_period"
 
@@ -463,7 +463,7 @@ typedef enum {
  * Macro represents the maximum bandwidth to be used within a period for
  * IOThreads only, when using the posix scheduler, as an llong.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 # define VIR_DOMAIN_SCHEDULER_IOTHREAD_QUOTA "iothread_quota"
 
@@ -473,7 +473,7 @@ typedef enum {
  * Macro represents the relative weight,  when using the credit
  * scheduler, as a uint.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_WEIGHT "weight"
 
@@ -483,7 +483,7 @@ typedef enum {
  * Macro represents the maximum scheduler cap, when using the credit
  * scheduler, as a uint.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_CAP "cap"
 
@@ -493,7 +493,7 @@ typedef enum {
  * Macro represents the scheduler reservation value, when using the
  * allocation scheduler, as an llong.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_RESERVATION "reservation"
 
@@ -503,7 +503,7 @@ typedef enum {
  * Macro represents the scheduler limit value, when using the
  * allocation scheduler, as an llong.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_LIMIT "limit"
 
@@ -513,7 +513,7 @@ typedef enum {
  * Macro represents the scheduler shares value, when using the
  * allocation scheduler, as an int.
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 # define VIR_DOMAIN_SCHEDULER_SHARES "shares"
 
@@ -549,7 +549,7 @@ int     virDomainSetSchedulerParametersFlags (virDomainPtr domain,
  *
  * NB. Here 'long long' means 64 bit integer.
  *
- * Since: v0.3.3
+ * Since: 0.3.3
  */
 typedef struct _virDomainBlockStats virDomainBlockStatsStruct;
 
@@ -566,7 +566,7 @@ struct _virDomainBlockStats {
  *
  * A pointer to a virDomainBlockStats structure
  *
- * Since: v0.3.2
+ * Since: 0.3.2
  */
 typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
 
@@ -577,7 +577,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro providing the field length of parameter names when using
  * virDomainBlockStatsFlags().
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
@@ -587,7 +587,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total number of read bytes of the
  * block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_BYTES "rd_bytes"
 
@@ -597,7 +597,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total read requests of the
  * block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_REQ "rd_operations"
 
@@ -607,7 +607,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total time spend on cache reads in
  * nano-seconds of the block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_READ_TOTAL_TIMES "rd_total_times"
 
@@ -617,7 +617,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total number of write bytes of the
  * block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_BYTES "wr_bytes"
 
@@ -627,7 +627,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total write requests of the
  * block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_REQ "wr_operations"
 
@@ -637,7 +637,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total time spend on cache writes in
  * nano-seconds of the block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_WRITE_TOTAL_TIMES "wr_total_times"
 
@@ -647,7 +647,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total flush requests of the
  * block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FLUSH_REQ "flush_operations"
 
@@ -657,7 +657,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  * Macro represents the total time spend on cache flushing in
  * nano-seconds of the block device, as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_FLUSH_TOTAL_TIMES "flush_total_times"
 
@@ -666,7 +666,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * In Xen this returns the mysterious 'oo_req', as an llong.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_DOMAIN_BLOCK_STATS_ERRS "errs"
 
@@ -680,7 +680,7 @@ typedef virDomainBlockStatsStruct *virDomainBlockStatsPtr;
  *
  * NB. Here 'long long' means 64 bit integer.
  *
- * Since: v0.3.3
+ * Since: 0.3.3
  */
 typedef struct _virDomainInterfaceStats virDomainInterfaceStatsStruct;
 
@@ -700,7 +700,7 @@ struct _virDomainInterfaceStats {
  *
  * A pointer to a virDomainInterfaceStats structure
  *
- * Since: v0.3.2
+ * Since: 0.3.2
  */
 typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
 
@@ -709,12 +709,12 @@ typedef virDomainInterfaceStatsStruct *virDomainInterfaceStatsPtr;
  *
  * Memory Statistics Tags:
  *
- * Since: v0.7.5
+ * Since: 0.7.5
  */
 typedef enum {
-    /* The total amount of data read from swap space (in kB). (Since: v0.7.5) */
+    /* The total amount of data read from swap space (in kB). (Since: 0.7.5) */
     VIR_DOMAIN_MEMORY_STAT_SWAP_IN         = 0,
-    /* The total amount of memory written out to swap space (in kB). (Since: v0.7.5) */
+    /* The total amount of memory written out to swap space (in kB). (Since: 0.7.5) */
     VIR_DOMAIN_MEMORY_STAT_SWAP_OUT        = 1,
 
     /*
@@ -723,12 +723,12 @@ typedef enum {
      * required, it is considered a major fault.  If not, it is a minor fault.
      * These are expressed as the number of faults that have occurred.
      *
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_DOMAIN_MEMORY_STAT_MAJOR_FAULT     = 2,
 
     /*
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_DOMAIN_MEMORY_STAT_MINOR_FAULT     = 3,
 
@@ -737,7 +737,7 @@ typedef enum {
      * is available but used for reclaimable caches should NOT be reported as
      * free.  This value is expressed in kB.
      *
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_DOMAIN_MEMORY_STAT_UNUSED          = 4,
 
@@ -747,21 +747,21 @@ typedef enum {
      * balloon driver is in use or if the guest OS does not initialize all
      * assigned pages.  This value is expressed in kB.
      *
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_DOMAIN_MEMORY_STAT_AVAILABLE       = 5,
 
     /*
      * Current balloon value (in KB).
      *
-     * Since: v0.9.3
+     * Since: 0.9.3
      */
     VIR_DOMAIN_MEMORY_STAT_ACTUAL_BALLOON  = 6,
 
     /* Resident Set Size of the process running the domain. This value
      * is in kB
      *
-     * Since: v0.9.10
+     * Since: 0.9.10
      */
     VIR_DOMAIN_MEMORY_STAT_RSS             = 7,
 
@@ -769,14 +769,14 @@ typedef enum {
      * How much the balloon can be inflated without pushing the guest system
      * to swap, corresponds to 'Available' in /proc/meminfo
      *
-     * Since: v2.1.0
+     * Since: 2.1.0
      */
     VIR_DOMAIN_MEMORY_STAT_USABLE          = 8,
 
     /*
      * Timestamp of the last update of statistics, in seconds.
      *
-     * Since: v2.1.0
+     * Since: 2.1.0
      */
     VIR_DOMAIN_MEMORY_STAT_LAST_UPDATE     = 9,
 
@@ -785,7 +785,7 @@ typedef enum {
      * additional I/O (in kB). Typically these pages are used for caching files
      * from disk.
      *
-     * Since: v4.6.0
+     * Since: 4.6.0
      */
     VIR_DOMAIN_MEMORY_STAT_DISK_CACHES     = 10,
 
@@ -793,7 +793,7 @@ typedef enum {
      * The number of successful huge page allocations from inside the domain via
      * virtio balloon.
      *
-     * Since: v5.4.0
+     * Since: 5.4.0
      */
     VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGALLOC    = 11,
 
@@ -801,7 +801,7 @@ typedef enum {
      * The number of failed huge page allocations from inside the domain via
      * virtio balloon.
      *
-     * Since: v5.4.0
+     * Since: 5.4.0
      */
     VIR_DOMAIN_MEMORY_STAT_HUGETLB_PGFAIL    = 12,
 
@@ -809,19 +809,19 @@ typedef enum {
      * The number of statistics supported by this version of the interface.
      * To add new statistics, add them to the enum and increase this value.
      *
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_DOMAIN_MEMORY_STAT_NR              = 13,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR /* (Since: v0.9.10) */
+    VIR_DOMAIN_MEMORY_STAT_LAST = VIR_DOMAIN_MEMORY_STAT_NR /* (Since: 0.9.10) */
 # endif
 } virDomainMemoryStatTags;
 
 /**
  * virDomainMemoryStatStruct:
  *
- * Since: v0.7.5
+ * Since: 0.7.5
  */
 typedef struct _virDomainMemoryStat virDomainMemoryStatStruct;
 
@@ -833,7 +833,7 @@ struct _virDomainMemoryStat {
 /**
  * virDomainMemoryStatPtr:
  *
- * Since: v0.7.5
+ * Since: 0.7.5
  */
 typedef virDomainMemoryStatStruct *virDomainMemoryStatPtr;
 
@@ -843,14 +843,14 @@ typedef virDomainMemoryStatStruct *virDomainMemoryStatPtr;
  *
  * Domain core dump flags.
  *
- * Since: v0.7.5
+ * Since: 0.7.5
  */
 typedef enum {
-    VIR_DUMP_CRASH        = (1 << 0), /* crash after dump (Since: v0.7.5) */
-    VIR_DUMP_LIVE         = (1 << 1), /* live dump (Since: v0.7.5) */
-    VIR_DUMP_BYPASS_CACHE = (1 << 2), /* avoid file system cache pollution (Since: v0.9.4) */
-    VIR_DUMP_RESET        = (1 << 3), /* reset domain after dump finishes (Since: v0.9.7) */
-    VIR_DUMP_MEMORY_ONLY  = (1 << 4), /* use dump-guest-memory (Since: v0.9.13) */
+    VIR_DUMP_CRASH        = (1 << 0), /* crash after dump (Since: 0.7.5) */
+    VIR_DUMP_LIVE         = (1 << 1), /* live dump (Since: 0.7.5) */
+    VIR_DUMP_BYPASS_CACHE = (1 << 2), /* avoid file system cache pollution (Since: 0.9.4) */
+    VIR_DUMP_RESET        = (1 << 3), /* reset domain after dump finishes (Since: 0.9.7) */
+    VIR_DUMP_MEMORY_ONLY  = (1 << 4), /* use dump-guest-memory (Since: 0.9.13) */
 } virDomainCoreDumpFlags;
 
 /**
@@ -858,17 +858,17 @@ typedef enum {
  *
  * Values for specifying different formats of domain core dumps.
  *
- * Since: v1.2.3
+ * Since: 1.2.3
  */
 typedef enum {
-    VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,          /* dump guest memory in raw format (Since: v1.2.3) */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_RAW,          /* dump guest memory in raw format (Since: 1.2.3) */
     VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_ZLIB,   /* kdump-compressed format, with
-                                               * zlib compression (Since: v1.2.3) */
+                                               * zlib compression (Since: 1.2.3) */
     VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_LZO,    /* kdump-compressed format, with
-                                               * lzo compression (Since: v1.2.3) */
+                                               * lzo compression (Since: 1.2.3) */
     VIR_DOMAIN_CORE_DUMP_FORMAT_KDUMP_SNAPPY, /* kdump-compressed format, with
-                                               * snappy compression (Since: v1.2.3) */
-    VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP,      /* Windows full crashdump format (Since: v7.4.0) */
+                                               * snappy compression (Since: 1.2.3) */
+    VIR_DOMAIN_CORE_DUMP_FORMAT_WIN_DMP,      /* Windows full crashdump format (Since: 7.4.0) */
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_CORE_DUMP_FORMAT_LAST
     /*
@@ -876,7 +876,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last format supported
      * by this version of the libvirt API.
      *
-     * Since: v1.2.3
+     * Since: 1.2.3
      */
 # endif
 } virDomainCoreDumpFormat;
@@ -886,7 +886,7 @@ typedef enum {
  *
  * Domain migration flags.
  *
- * Since: v0.3.2
+ * Since: 0.3.2
  */
 typedef enum {
     /* Do not pause the domain during migration. The domain's memory will
@@ -895,7 +895,7 @@ typedef enum {
      * faster then it can be transferred. The domain can be manually paused
      * anytime during migration using virDomainSuspend.
      *
-     * Since: v0.3.2
+     * Since: 0.3.2
      */
     VIR_MIGRATE_LIVE = (1 << 0),
 
@@ -905,7 +905,7 @@ typedef enum {
      * libvirtd controls the migration by calling the destination daemon
      * directly.
      *
-     * Since: v0.7.2
+     * Since: 0.7.2
      */
     VIR_MIGRATE_PEER2PEER = (1 << 1),
 
@@ -917,7 +917,7 @@ typedef enum {
      * Note the less-common spelling that we're stuck with:
      * VIR_MIGRATE_TUNNELLED should be VIR_MIGRATE_TUNNELED.
      *
-     * Since: v0.7.2
+     * Since: 0.7.2
      */
     VIR_MIGRATE_TUNNELLED = (1 << 2),
 
@@ -926,14 +926,14 @@ typedef enum {
      * VIR_MIGRATE_UNDEFINE_SOURCE is not used, it will end up persistent on
      * both hosts.
      *
-     * Since: v0.7.3
+     * Since: 0.7.3
      */
     VIR_MIGRATE_PERSIST_DEST = (1 << 3),
 
     /* Undefine the domain on the source host once migration successfully
      * finishes.
      *
-     * Since: v0.7.3
+     * Since: 0.7.3
      */
     VIR_MIGRATE_UNDEFINE_SOURCE = (1 << 4),
 
@@ -941,7 +941,7 @@ typedef enum {
      * the virDomainPtr returned by the migration API) has to be called
      * explicitly to resume domain's virtual CPUs.
      *
-     * Since: v0.7.5
+     * Since: 0.7.5
      */
     VIR_MIGRATE_PAUSED = (1 << 5),
 
@@ -952,7 +952,7 @@ typedef enum {
      *
      * This flag and VIR_MIGRATE_NON_SHARED_INC are mutually exclusive.
      *
-     * Since: v0.8.2
+     * Since: 0.8.2
      */
     VIR_MIGRATE_NON_SHARED_DISK = (1 << 6),
 
@@ -964,7 +964,7 @@ typedef enum {
      *
      * This flag and VIR_MIGRATE_NON_SHARED_DISK are mutually exclusive.
      *
-     * Since: v0.8.2
+     * Since: 0.8.2
      */
     VIR_MIGRATE_NON_SHARED_INC = (1 << 7),
 
@@ -973,7 +973,7 @@ typedef enum {
      * Explicitly setting this flag will cause migration to fail if either the
      * source or the destination does not support it.
      *
-     * Since: v0.9.4
+     * Since: 0.9.4
      */
     VIR_MIGRATE_CHANGE_PROTECTION = (1 << 8),
 
@@ -985,7 +985,7 @@ typedef enum {
      * is unsafe unless the disk images are stored on coherent clustered
      * filesystem, such as GFS2 or GPFS.
      *
-     * Since: v0.9.11
+     * Since: 0.9.11
      */
     VIR_MIGRATE_UNSAFE = (1 << 9),
 
@@ -996,7 +996,7 @@ typedef enum {
      * Offline migration may not copy disk storage or any other file based
      * storage (such as UEFI variables).
      *
-     * Since: v1.0.1
+     * Since: 1.0.1
      */
     VIR_MIGRATE_OFFLINE = (1 << 10),
 
@@ -1005,14 +1005,14 @@ typedef enum {
      * if this parameter is omitted. Individual compression methods can be
      * tuned via their specific VIR_MIGRATE_PARAM_COMPRESSION_* parameters.
      *
-     * Since: v1.0.3
+     * Since: 1.0.3
      */
     VIR_MIGRATE_COMPRESSED = (1 << 11),
 
     /* Cancel migration if a soft error (such as I/O error) happens during
      * migration.
      *
-     * Since: v1.1.0
+     * Since: 1.1.0
      */
     VIR_MIGRATE_ABORT_ON_ERROR = (1 << 12),
 
@@ -1022,7 +1022,7 @@ typedef enum {
      * memory to the destination host. VIR_MIGRATE_PARAM_AUTO_CONVERGE_*
      * parameters can be used to tune the algorithm.
      *
-     * Since: v1.2.3
+     * Since: 1.2.3
      */
     VIR_MIGRATE_AUTO_CONVERGE = (1 << 13),
 
@@ -1041,7 +1041,7 @@ typedef enum {
      * domain and the host itself since the host's kernel may run out of
      * memory.
      *
-     * Since: v1.2.9
+     * Since: 1.2.9
      */
     VIR_MIGRATE_RDMA_PIN_ALL = (1 << 14),
 
@@ -1050,7 +1050,7 @@ typedef enum {
      * virDomainMigrateStartPostCopy needs to be called to switch it into the
      * post-copy mode. See virDomainMigrateStartPostCopy for more details.
      *
-     * Since: v1.3.3
+     * Since: 1.3.3
      */
     VIR_MIGRATE_POSTCOPY = (1 << 15),
 
@@ -1059,7 +1059,7 @@ typedef enum {
      * perform the migration. If incorrectly configured on either source or
      * destination, the migration will fail.
      *
-     * Since: v3.2.0
+     * Since: 3.2.0
      */
     VIR_MIGRATE_TLS = (1 << 16),
 
@@ -1067,7 +1067,7 @@ typedef enum {
      * connections. See VIR_MIGRATE_PARAM_PARALLEL_* parameters for
      * configuring the parallel migration.
      *
-     * Since: v5.2.0
+     * Since: 5.2.0
      */
     VIR_MIGRATE_PARALLEL = (1 << 17),
 
@@ -1079,7 +1079,7 @@ typedef enum {
       * Requires one of VIR_MIGRATE_NON_SHARED_DISK, VIR_MIGRATE_NON_SHARED_INC
       * to be present as well.
       *
-      * Since: v8.0.0
+      * Since: 8.0.0
       */
     VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES = (1 << 18),
 
@@ -1099,7 +1099,7 @@ typedef enum {
  *
  * This field may not be used when VIR_MIGRATE_TUNNELLED flag is set.
  *
- * Since: v1.1.0
+ * Since: 1.1.0
  */
 # define VIR_MIGRATE_PARAM_URI               "migrate_uri"
 
@@ -1111,7 +1111,7 @@ typedef enum {
  * the domain name the same. This field is only allowed to be used with
  * hypervisors that support domain renaming during migration.
  *
- * Since: v1.1.0
+ * Since: 1.1.0
  */
 # define VIR_MIGRATE_PARAM_DEST_NAME         "destination_name"
 
@@ -1132,7 +1132,7 @@ typedef enum {
  * field with hypervisors that do not support changing domain configuration
  * during migration will result in a failure.
  *
- * Since: v1.1.0
+ * Since: 1.1.0
  */
 # define VIR_MIGRATE_PARAM_DEST_XML          "destination_xml"
 
@@ -1149,7 +1149,7 @@ typedef enum {
  * Using this field with hypervisors that do not support changing domain
  * configuration during migration will result in a failure.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_PERSIST_XML  "persistent_xml"
 
@@ -1161,7 +1161,7 @@ typedef enum {
  * libvirt will choose a suitable default. Some hypervisors do not support this
  * feature and will return an error if this field is used and is not 0.
  *
- * Since: v1.1.0
+ * Since: 1.1.0
  */
 # define VIR_MIGRATE_PARAM_BANDWIDTH         "bandwidth"
 
@@ -1172,7 +1172,7 @@ typedef enum {
  * be used for post-copy phase of a migration as VIR_TYPED_PARAM_ULLONG. If set
  * to 0 or omitted, post-copy migration speed will not be limited.
  *
- * Since: v5.1.0
+ * Since: 5.1.0
  */
 # define VIR_MIGRATE_PARAM_BANDWIDTH_POSTCOPY "bandwidth.postcopy"
 
@@ -1195,7 +1195,7 @@ typedef enum {
  *
  *      spice://target.host.com:1234/?tlsPort=4567
  *
- * Since: v1.1.0
+ * Since: 1.1.0
  */
 # define VIR_MIGRATE_PARAM_GRAPHICS_URI      "graphics_uri"
 
@@ -1208,7 +1208,7 @@ typedef enum {
  * destination). Some hypervisors do not support this feature and will return
  * an error if this field is used.
  *
- * Since: v1.1.4
+ * Since: 1.1.4
  */
 # define VIR_MIGRATE_PARAM_LISTEN_ADDRESS    "listen_address"
 
@@ -1219,7 +1219,7 @@ typedef enum {
  * the block devices to be migrated. At the moment this is only supported
  * by the QEMU driver but not for the tunnelled migration.
  *
- * Since: v1.2.17
+ * Since: 1.2.17
  */
 # define VIR_MIGRATE_PARAM_MIGRATE_DISKS    "migrate_disks"
 
@@ -1231,7 +1231,7 @@ typedef enum {
  * omitted, libvirt will choose a suitable default. At the moment this is only
  * supported by the QEMU driver.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_MIGRATE_PARAM_DISKS_PORT    "disks_port"
 
@@ -1246,7 +1246,7 @@ typedef enum {
  * management application makes sure that socket created with this name on the
  * destination will be reachable from the source under the same exact path.
  *
- * Since: v6.8.0
+ * Since: 6.8.0
  */
 # define VIR_MIGRATE_PARAM_DISKS_URI    "disks_uri"
 
@@ -1258,7 +1258,7 @@ typedef enum {
  * The parameter may be specified multiple times if more than one method
  * should be used.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION    "compression"
 
@@ -1269,7 +1269,7 @@ typedef enum {
  * compression as VIR_TYPED_PARAM_INT. Accepted values are in range 0-9.
  * 0 is no compression, 1 is maximum speed and 9 is maximum compression.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_LEVEL    "compression.mt.level"
 
@@ -1279,7 +1279,7 @@ typedef enum {
  * virDomainMigrate* params field: the number of compression threads for
  * multithread compression as VIR_TYPED_PARAM_INT.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_THREADS "compression.mt.threads"
 
@@ -1289,7 +1289,7 @@ typedef enum {
  * virDomainMigrate* params field: the number of decompression threads for
  * multithread compression as VIR_TYPED_PARAM_INT.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_MT_DTHREADS "compression.mt.dthreads"
 
@@ -1299,7 +1299,7 @@ typedef enum {
  * virDomainMigrate* params field: the size of page cache for xbzrle
  * compression as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 # define VIR_MIGRATE_PARAM_COMPRESSION_XBZRLE_CACHE "compression.xbzrle.cache"
 
@@ -1310,7 +1310,7 @@ typedef enum {
  * throttled to when auto-convergence decides migration is not converging.
  * As VIR_TYPED_PARAM_INT.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 # define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INITIAL    "auto_converge.initial"
 
@@ -1322,7 +1322,7 @@ typedef enum {
  * the current rate is not enough to ensure convergence of the migration.
  * As VIR_TYPED_PARAM_INT.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 # define VIR_MIGRATE_PARAM_AUTO_CONVERGE_INCREMENT  "auto_converge.increment"
 
@@ -1332,7 +1332,7 @@ typedef enum {
  * virDomainMigrate* params field: number of connections used during parallel
  * migration. As VIR_TYPED_PARAM_INT.
  *
- * Since: v5.2.0
+ * Since: 5.2.0
  */
 # define VIR_MIGRATE_PARAM_PARALLEL_CONNECTIONS     "parallel.connections"
 
@@ -1348,7 +1348,7 @@ typedef enum {
  * this parameter can be used to pass this expected hostname when starting
  * the migration.
  *
- * Since: v6.0.0
+ * Since: 6.0.0
  */
 # define VIR_MIGRATE_PARAM_TLS_DESTINATION          "tls.destination"
 
@@ -1403,10 +1403,10 @@ int virDomainMigrateSetCompressionCache(virDomainPtr domain,
  *
  * Domain migration speed flags.
  *
- * Since: v5.1.0
+ * Since: 5.1.0
  */
 typedef enum {
-    /* Set or get maximum speed of post-copy migration. (Since: v5.1.0) */
+    /* Set or get maximum speed of post-copy migration. (Since: 5.1.0) */
     VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY = (1 << 0),
 } virDomainMigrateMaxSpeedFlags;
 
@@ -1470,15 +1470,15 @@ virDomainPtr            virDomainLookupByUUIDString     (virConnectPtr conn,
 /**
  * virDomainShutdownFlagValues:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_DOMAIN_SHUTDOWN_DEFAULT        = 0,        /* hypervisor choice (Since: v0.9.10) */
-    VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event (Since: v0.9.10) */
-    VIR_DOMAIN_SHUTDOWN_GUEST_AGENT    = (1 << 1), /* Use guest agent (Since: v0.9.10) */
-    VIR_DOMAIN_SHUTDOWN_INITCTL        = (1 << 2), /* Use initctl (Since: v1.0.1) */
-    VIR_DOMAIN_SHUTDOWN_SIGNAL         = (1 << 3), /* Send a signal (Since: v1.0.1) */
-    VIR_DOMAIN_SHUTDOWN_PARAVIRT       = (1 << 4), /* Use paravirt guest control (Since: v1.2.5) */
+    VIR_DOMAIN_SHUTDOWN_DEFAULT        = 0,        /* hypervisor choice (Since: 0.9.10) */
+    VIR_DOMAIN_SHUTDOWN_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event (Since: 0.9.10) */
+    VIR_DOMAIN_SHUTDOWN_GUEST_AGENT    = (1 << 1), /* Use guest agent (Since: 0.9.10) */
+    VIR_DOMAIN_SHUTDOWN_INITCTL        = (1 << 2), /* Use initctl (Since: 1.0.1) */
+    VIR_DOMAIN_SHUTDOWN_SIGNAL         = (1 << 3), /* Send a signal (Since: 1.0.1) */
+    VIR_DOMAIN_SHUTDOWN_PARAVIRT       = (1 << 4), /* Use paravirt guest control (Since: 1.2.5) */
 } virDomainShutdownFlagValues;
 
 int                     virDomainShutdown       (virDomainPtr domain);
@@ -1488,15 +1488,15 @@ int                     virDomainShutdownFlags  (virDomainPtr domain,
 /**
  * virDomainRebootFlagValues:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_DOMAIN_REBOOT_DEFAULT        = 0,        /* hypervisor choice (Since: v0.9.10) */
-    VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event (Since: v0.9.10) */
-    VIR_DOMAIN_REBOOT_GUEST_AGENT    = (1 << 1), /* Use guest agent (Since: v0.9.10) */
-    VIR_DOMAIN_REBOOT_INITCTL        = (1 << 2), /* Use initctl (Since: v1.0.1) */
-    VIR_DOMAIN_REBOOT_SIGNAL         = (1 << 3), /* Send a signal (Since: v1.0.1) */
-    VIR_DOMAIN_REBOOT_PARAVIRT       = (1 << 4), /* Use paravirt guest control (Since: v1.2.5) */
+    VIR_DOMAIN_REBOOT_DEFAULT        = 0,        /* hypervisor choice (Since: 0.9.10) */
+    VIR_DOMAIN_REBOOT_ACPI_POWER_BTN = (1 << 0), /* Send ACPI event (Since: 0.9.10) */
+    VIR_DOMAIN_REBOOT_GUEST_AGENT    = (1 << 1), /* Use guest agent (Since: 0.9.10) */
+    VIR_DOMAIN_REBOOT_INITCTL        = (1 << 2), /* Use initctl (Since: 1.0.1) */
+    VIR_DOMAIN_REBOOT_SIGNAL         = (1 << 3), /* Send a signal (Since: 1.0.1) */
+    VIR_DOMAIN_REBOOT_PARAVIRT       = (1 << 4), /* Use paravirt guest control (Since: 1.2.5) */
 } virDomainRebootFlagValues;
 
 int                     virDomainReboot         (virDomainPtr domain,
@@ -1512,12 +1512,12 @@ int                     virDomainDestroy        (virDomainPtr domain);
  * Flags used to provide specific behaviour to the
  * virDomainDestroyFlags() function
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef enum {
-    VIR_DOMAIN_DESTROY_DEFAULT   = 0,      /* Default behavior - could lead to data loss!! (Since: v0.9.10) */
-    VIR_DOMAIN_DESTROY_GRACEFUL  = 1 << 0, /* only SIGTERM, no SIGKILL (Since: v0.9.10) */
-    VIR_DOMAIN_DESTROY_REMOVE_LOGS = 1 << 1, /* remove VM logs on destroy (Since: v8.3.0) */
+    VIR_DOMAIN_DESTROY_DEFAULT   = 0,      /* Default behavior - could lead to data loss!! (Since: 0.9.10) */
+    VIR_DOMAIN_DESTROY_GRACEFUL  = 1 << 0, /* only SIGTERM, no SIGKILL (Since: 0.9.10) */
+    VIR_DOMAIN_DESTROY_REMOVE_LOGS = 1 << 1, /* remove VM logs on destroy (Since: 8.3.0) */
 } virDomainDestroyFlagsValues;
 
 int                     virDomainDestroyFlags   (virDomainPtr domain,
@@ -1547,13 +1547,13 @@ int                     virDomainPMWakeup       (virDomainPtr domain,
  * virDomainRestoreFlags(), and virDomainSaveImageDefineXML().  Not all
  * flags apply to all these functions.
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef enum {
-    VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution (Since: v0.9.4) */
-    VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused (Since: v0.9.5) */
-    VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running (Since: v0.9.5) */
-    VIR_DOMAIN_SAVE_RESET_NVRAM  = 1 << 3, /* Re-initialize NVRAM from template (Since: v8.1.0) */
+    VIR_DOMAIN_SAVE_BYPASS_CACHE = 1 << 0, /* Avoid file system cache pollution (Since: 0.9.4) */
+    VIR_DOMAIN_SAVE_RUNNING      = 1 << 1, /* Favor running over paused (Since: 0.9.5) */
+    VIR_DOMAIN_SAVE_PAUSED       = 1 << 2, /* Favor paused over running (Since: 0.9.5) */
+    VIR_DOMAIN_SAVE_RESET_NVRAM  = 1 << 3, /* Re-initialize NVRAM from template (Since: 8.1.0) */
 } virDomainSaveRestoreFlags;
 
 int                     virDomainSave           (virDomainPtr domain,
@@ -1633,7 +1633,7 @@ int                     virDomainGetState       (virDomainPtr domain,
  * cpu usage (sum of both vcpu and hypervisor usage) in nanoseconds,
  * as a ullong
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 # define VIR_DOMAIN_CPU_STATS_CPUTIME "cpu_time"
 
@@ -1641,7 +1641,7 @@ int                     virDomainGetState       (virDomainPtr domain,
  * VIR_DOMAIN_CPU_STATS_USERTIME:
  * cpu time charged to user instructions in nanoseconds, as a ullong
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 # define VIR_DOMAIN_CPU_STATS_USERTIME "user_time"
 
@@ -1649,7 +1649,7 @@ int                     virDomainGetState       (virDomainPtr domain,
  * VIR_DOMAIN_CPU_STATS_SYSTEMTIME:
  * cpu time charged to system instructions in nanoseconds, as a ullong
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 # define VIR_DOMAIN_CPU_STATS_SYSTEMTIME "system_time"
 
@@ -1658,7 +1658,7 @@ int                     virDomainGetState       (virDomainPtr domain,
  * vcpu usage in nanoseconds (cpu_time excluding hypervisor time),
  * as a ullong
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 # define VIR_DOMAIN_CPU_STATS_VCPUTIME "vcpu_time"
 
@@ -1688,7 +1688,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * Macro for the Blkio tunable weight: it represents the io weight
  * the guest can use, as a uint.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 # define VIR_DOMAIN_BLKIO_WEIGHT "weight"
 
@@ -1699,7 +1699,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * per-device weight, as a string.  The string is parsed as a
  * series of /path/to/device,weight elements, separated by ','.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_WEIGHT "device_weight"
 
@@ -1711,7 +1711,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * string is parsed as a series of /path/to/device, read_iops elements,
  * separated by ','.
  *
- * Since: v1.2.2
+ * Since: 1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_READ_IOPS "device_read_iops_sec"
 
@@ -1724,7 +1724,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * string is parsed as a series of /path/to/device, write_iops elements,
  * separated by ','.
  *
- * Since: v1.2.2
+ * Since: 1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_WRITE_IOPS "device_write_iops_sec"
 
@@ -1737,7 +1737,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * string is parsed as a series of /path/to/device, read_bps elements,
  * separated by ','.
  *
- * Since: v1.2.2
+ * Since: 1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_READ_BPS "device_read_bytes_sec"
 
@@ -1750,7 +1750,7 @@ char *                  virDomainGetSchedulerType(virDomainPtr domain,
  * string is parsed as a series of /path/to/device, write_bps elements,
  * separated by ','.
  *
- * Since: v1.2.2
+ * Since: 1.2.2
  */
 # define VIR_DOMAIN_BLKIO_DEVICE_WRITE_BPS "device_write_bytes_sec"
 
@@ -1770,7 +1770,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  *
  * Macro providing the virMemoryParameter value that indicates "unlimited"
  *
- * Since: v0.8.8
+ * Since: 0.8.8
  */
 # define VIR_DOMAIN_MEMORY_PARAM_UNLIMITED 9007199254740991LL /* = INT64_MAX >> 10 */
 
@@ -1780,7 +1780,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * Macro for the memory tunable hard_limit: it represents the maximum memory
  * the guest can use, as a ullong.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define VIR_DOMAIN_MEMORY_HARD_LIMIT "hard_limit"
 
@@ -1790,7 +1790,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * Macro for the memory tunable soft_limit: it represents the memory upper
  * limit enforced during memory contention, as a ullong.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define VIR_DOMAIN_MEMORY_SOFT_LIMIT "soft_limit"
 
@@ -1800,7 +1800,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * Macro for the memory tunable min_guarantee: it represents the minimum
  * memory guaranteed to be reserved for the guest, as a ullong.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define VIR_DOMAIN_MEMORY_MIN_GUARANTEE "min_guarantee"
 
@@ -1811,7 +1811,7 @@ int     virDomainGetBlkioParameters(virDomainPtr domain,
  * plus memory the guest can use, as a ullong. This limit has to be more than
  * VIR_DOMAIN_MEMORY_HARD_LIMIT.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define VIR_DOMAIN_MEMORY_SWAP_HARD_LIMIT "swap_hard_limit"
 
@@ -1828,14 +1828,14 @@ int     virDomainGetMemoryParameters(virDomainPtr domain,
  *
  * Memory size modification flags.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 typedef enum {
-    VIR_DOMAIN_MEM_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: v0.9.1) */
-    VIR_DOMAIN_MEM_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: v0.9.0) */
-    VIR_DOMAIN_MEM_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: v0.9.0) */
+    VIR_DOMAIN_MEM_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: 0.9.1) */
+    VIR_DOMAIN_MEM_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: 0.9.0) */
+    VIR_DOMAIN_MEM_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: 0.9.0) */
 
-    VIR_DOMAIN_MEM_MAXIMUM = (1 << 2), /* affect Max rather than current (Since: v0.9.1) */
+    VIR_DOMAIN_MEM_MAXIMUM = (1 << 2), /* affect Max rather than current (Since: 0.9.1) */
 } virDomainMemoryModFlags;
 
 
@@ -1846,16 +1846,16 @@ typedef enum {
  * Representation of the various modes in the <numatune> element of
  * a domain.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 typedef enum {
-    VIR_DOMAIN_NUMATUNE_MEM_STRICT      = 0, /* (Since: v0.9.9) */
-    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED   = 1, /* (Since: v0.9.9) */
-    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE  = 2, /* (Since: v0.9.9) */
-    VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE = 3, /* (Since: v7.3.0) */
+    VIR_DOMAIN_NUMATUNE_MEM_STRICT      = 0, /* (Since: 0.9.9) */
+    VIR_DOMAIN_NUMATUNE_MEM_PREFERRED   = 1, /* (Since: 0.9.9) */
+    VIR_DOMAIN_NUMATUNE_MEM_INTERLEAVE  = 2, /* (Since: 0.9.9) */
+    VIR_DOMAIN_NUMATUNE_MEM_RESTRICTIVE = 3, /* (Since: 7.3.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_NUMATUNE_MEM_LAST /* This constant is subject to change (Since: v0.9.9) */
+    VIR_DOMAIN_NUMATUNE_MEM_LAST /* This constant is subject to change (Since: 0.9.9) */
 # endif
 } virDomainNumatuneMemMode;
 
@@ -1865,7 +1865,7 @@ typedef enum {
  * Macro for typed parameter name that lists the numa nodeset of a
  * domain, as a string.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_NUMA_NODESET "numa_nodeset"
 
@@ -1875,7 +1875,7 @@ typedef enum {
  * Macro for typed parameter name that lists the numa mode of a domain,
  * as an int containing a virDomainNumatuneMemMode value.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_NUMA_MODE "numa_mode"
 
@@ -1913,11 +1913,11 @@ int                     virDomainGetSecurityLabel (virDomainPtr domain,
 /**
  * virDomainGetHostnameFlags:
  *
- * Since: v6.1.0
+ * Since: 6.1.0
  */
 typedef enum {
-    VIR_DOMAIN_GET_HOSTNAME_LEASE = (1 << 0), /* Parse DHCP lease file (Since: v6.1.0) */
-    VIR_DOMAIN_GET_HOSTNAME_AGENT = (1 << 1), /* Query qemu guest agent (Since: v6.1.0) */
+    VIR_DOMAIN_GET_HOSTNAME_LEASE = (1 << 0), /* Parse DHCP lease file (Since: 6.1.0) */
+    VIR_DOMAIN_GET_HOSTNAME_AGENT = (1 << 1), /* Query qemu guest agent (Since: 6.1.0) */
 } virDomainGetHostnameFlags;
 
 char *                  virDomainGetHostname    (virDomainPtr domain,
@@ -1928,15 +1928,15 @@ int                     virDomainGetSecurityLabelList (virDomainPtr domain,
 /**
  * virDomainMetadataType:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> (Since: v0.9.10) */
-    VIR_DOMAIN_METADATA_TITLE       = 1, /* Operate on <title> (Since: v0.9.10) */
-    VIR_DOMAIN_METADATA_ELEMENT     = 2, /* Operate on <metadata> (Since: v0.9.10) */
+    VIR_DOMAIN_METADATA_DESCRIPTION = 0, /* Operate on <description> (Since: 0.9.10) */
+    VIR_DOMAIN_METADATA_TITLE       = 1, /* Operate on <title> (Since: 0.9.10) */
+    VIR_DOMAIN_METADATA_ELEMENT     = 2, /* Operate on <metadata> (Since: 0.9.10) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_METADATA_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_METADATA_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainMetadataType;
 
@@ -1963,22 +1963,22 @@ virDomainGetMetadata(virDomainPtr domain,
  *
  * Flags available for virDomainGetXMLDesc
  *
- * Since: v0.3.3
+ * Since: 0.3.3
  */
 typedef enum {
-    VIR_DOMAIN_XML_SECURE       = (1 << 0), /* dump security sensitive information too (Since: v0.3.3) */
-    VIR_DOMAIN_XML_INACTIVE     = (1 << 1), /* dump inactive domain information (Since: v0.3.3) */
-    VIR_DOMAIN_XML_UPDATE_CPU   = (1 << 2), /* update guest CPU requirements according to host CPU (Since: v0.8.0) */
-    VIR_DOMAIN_XML_MIGRATABLE   = (1 << 3), /* dump XML suitable for migration (Since: v1.0.0) */
+    VIR_DOMAIN_XML_SECURE       = (1 << 0), /* dump security sensitive information too (Since: 0.3.3) */
+    VIR_DOMAIN_XML_INACTIVE     = (1 << 1), /* dump inactive domain information (Since: 0.3.3) */
+    VIR_DOMAIN_XML_UPDATE_CPU   = (1 << 2), /* update guest CPU requirements according to host CPU (Since: 0.8.0) */
+    VIR_DOMAIN_XML_MIGRATABLE   = (1 << 3), /* dump XML suitable for migration (Since: 1.0.0) */
 } virDomainXMLFlags;
 
 /**
  * virDomainSaveImageXMLFlags:
  *
- * Since: v5.1.0
+ * Since: 5.1.0
  */
 typedef enum {
-    VIR_DOMAIN_SAVE_IMAGE_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too (Since: v5.1.0) */
+    VIR_DOMAIN_SAVE_IMAGE_XML_SECURE         = VIR_DOMAIN_XML_SECURE, /* dump security sensitive information too (Since: 5.1.0) */
 } virDomainSaveImageXMLFlags;
 
 char *                  virDomainGetXMLDesc     (virDomainPtr domain,
@@ -2015,7 +2015,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the inbound average of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_AVERAGE "inbound.average"
 
@@ -2024,7 +2024,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the inbound peak of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_PEAK "inbound.peak"
 
@@ -2033,7 +2033,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the inbound burst of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_BURST "inbound.burst"
 
@@ -2042,7 +2042,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the inbound floor of NIC bandwidth, as a uint.
  *
- * Since: v1.2.19
+ * Since: 1.2.19
  */
 # define VIR_DOMAIN_BANDWIDTH_IN_FLOOR "inbound.floor"
 
@@ -2051,7 +2051,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the outbound average of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_AVERAGE "outbound.average"
 
@@ -2060,7 +2060,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the outbound peak of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_PEAK "outbound.peak"
 
@@ -2069,7 +2069,7 @@ int                     virDomainInterfaceStats (virDomainPtr dom,
  *
  * Macro represents the outbound burst of NIC bandwidth, as a uint.
  *
- * Since: v0.9.9
+ * Since: 0.9.9
  */
 # define VIR_DOMAIN_BANDWIDTH_OUT_BURST "outbound.burst"
 
@@ -2096,10 +2096,10 @@ int                     virDomainBlockPeek (virDomainPtr dom,
  *
  * Flags available for virDomainBlockResize().
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1 << 0, /* size in bytes instead of KiB (Since: v0.9.11) */
+    VIR_DOMAIN_BLOCK_RESIZE_BYTES = 1 << 0, /* size in bytes instead of KiB (Since: 0.9.11) */
 } virDomainBlockResizeFlags;
 
 int                     virDomainBlockResize (virDomainPtr dom,
@@ -2131,14 +2131,14 @@ int                     virDomainBlockResize (virDomainPtr dom,
  *       * allocation: highest qcow extent written for an active domain
  *       * physical: size of the block device container
  *
- * Since: v0.8.1
+ * Since: 0.8.1
  */
 typedef struct _virDomainBlockInfo virDomainBlockInfo;
 
 /**
  * virDomainBlockInfoPtr:
  *
- * Since: v0.8.1
+ * Since: 0.8.1
  */
 typedef virDomainBlockInfo *virDomainBlockInfoPtr;
 struct _virDomainBlockInfo {
@@ -2171,11 +2171,11 @@ int                     virDomainMemoryStats (virDomainPtr dom,
  *
  * Memory peeking flags.
  *
- * Since: v0.4.4
+ * Since: 0.4.4
  */
 typedef enum {
-    VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses (Since: v0.4.4) */
-    VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses (Since: v0.7.0) */
+    VIR_MEMORY_VIRTUAL            = 1 << 0, /* addresses are virtual addresses (Since: 0.4.4) */
+    VIR_MEMORY_PHYSICAL           = 1 << 1, /* addresses are physical addresses (Since: 0.7.0) */
 } virDomainMemoryFlags;
 
 int                     virDomainMemoryPeek (virDomainPtr dom,
@@ -2187,10 +2187,10 @@ int                     virDomainMemoryPeek (virDomainPtr dom,
 /**
  * virDomainDefineFlags:
  *
- * Since: v1.2.12
+ * Since: 1.2.12
  */
 typedef enum {
-    VIR_DOMAIN_DEFINE_VALIDATE = (1 << 0), /* Validate the XML document against schema (Since: v1.2.12) */
+    VIR_DOMAIN_DEFINE_VALIDATE = (1 << 0), /* Validate the XML document against schema (Since: 1.2.12) */
 } virDomainDefineFlags;
 
 /*
@@ -2207,20 +2207,20 @@ int                     virDomainUndefine       (virDomainPtr domain);
 /**
  * virDomainUndefineFlagsValues:
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef enum {
     VIR_DOMAIN_UNDEFINE_MANAGED_SAVE       = (1 << 0), /* Also remove any
-                                                          managed save (Since: v0.9.4) */
+                                                          managed save (Since: 0.9.4) */
     VIR_DOMAIN_UNDEFINE_SNAPSHOTS_METADATA = (1 << 1), /* If last use of domain,
                                                           then also remove any
-                                                          snapshot metadata (Since: v0.9.5) */
+                                                          snapshot metadata (Since: 0.9.5) */
     VIR_DOMAIN_UNDEFINE_NVRAM              = (1 << 2), /* Also remove any
-                                                          nvram file (Since: v1.2.9) */
-    VIR_DOMAIN_UNDEFINE_KEEP_NVRAM         = (1 << 3), /* Keep nvram file (Since: v2.3.0) */
+                                                          nvram file (Since: 1.2.9) */
+    VIR_DOMAIN_UNDEFINE_KEEP_NVRAM         = (1 << 3), /* Keep nvram file (Since: 2.3.0) */
     VIR_DOMAIN_UNDEFINE_CHECKPOINTS_METADATA = (1 << 4), /* If last use of domain,
                                                             then also remove any
-                                                            checkpoint metadata (Since: v5.6.0) */
+                                                            checkpoint metadata (Since: 5.6.0) */
 } virDomainUndefineFlagsValues;
 
 
@@ -2237,31 +2237,31 @@ int                     virConnectListDefinedDomains (virConnectPtr conn,
  * Note that these flags come in groups; if all bits from a group are 0,
  * then that group is not used to filter results.
  *
- * Since: v0.9.13
+ * Since: 0.9.13
  */
 typedef enum {
-    VIR_CONNECT_LIST_DOMAINS_ACTIVE         = 1 << 0, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_INACTIVE       = 1 << 1, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_ACTIVE         = 1 << 0, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_INACTIVE       = 1 << 1, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_PERSISTENT     = 1 << 2, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_TRANSIENT      = 1 << 3, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_PERSISTENT     = 1 << 2, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_TRANSIENT      = 1 << 3, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_RUNNING        = 1 << 4, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_PAUSED         = 1 << 5, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_SHUTOFF        = 1 << 6, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_OTHER          = 1 << 7, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_RUNNING        = 1 << 4, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_PAUSED         = 1 << 5, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_SHUTOFF        = 1 << 6, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_OTHER          = 1 << 7, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE    = 1 << 8, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE = 1 << 9, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_MANAGEDSAVE    = 1 << 8, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_NO_MANAGEDSAVE = 1 << 9, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_AUTOSTART      = 1 << 10, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART   = 1 << 11, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_AUTOSTART      = 1 << 10, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_NO_AUTOSTART   = 1 << 11, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT   = 1 << 12, /* (Since: v0.9.13) */
-    VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT    = 1 << 13, /* (Since: v0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_HAS_SNAPSHOT   = 1 << 12, /* (Since: 0.9.13) */
+    VIR_CONNECT_LIST_DOMAINS_NO_SNAPSHOT    = 1 << 13, /* (Since: 0.9.13) */
 
-    VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT = 1 << 14, /* (Since: v5.6.0) */
-    VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT  = 1 << 15, /* (Since: v5.6.0) */
+    VIR_CONNECT_LIST_DOMAINS_HAS_CHECKPOINT = 1 << 14, /* (Since: 5.6.0) */
+    VIR_CONNECT_LIST_DOMAINS_NO_CHECKPOINT  = 1 << 15, /* (Since: 5.6.0) */
 } virConnectListAllDomainsFlags;
 
 int                     virConnectListAllDomains (virConnectPtr conn,
@@ -2286,32 +2286,32 @@ int                     virDomainSetAutostart   (virDomainPtr domain,
  *
  * structure for information about a virtual CPU in a domain.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 typedef enum {
-    VIR_VCPU_OFFLINE    = 0,    /* the virtual CPU is offline (Since: v0.1.4) */
-    VIR_VCPU_RUNNING    = 1,    /* the virtual CPU is running (Since: v0.1.4) */
-    VIR_VCPU_BLOCKED    = 2,    /* the virtual CPU is blocked on resource (Since: v0.1.4) */
+    VIR_VCPU_OFFLINE    = 0,    /* the virtual CPU is offline (Since: 0.1.4) */
+    VIR_VCPU_RUNNING    = 1,    /* the virtual CPU is running (Since: 0.1.4) */
+    VIR_VCPU_BLOCKED    = 2,    /* the virtual CPU is blocked on resource (Since: 0.1.4) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_VCPU_LAST /* (Since: v0.9.10) */
+    VIR_VCPU_LAST /* (Since: 0.9.10) */
 # endif
 } virVcpuState;
 
 /**
  * virVcpuHostCpuState:
  *
- * Since: v6.10.0
+ * Since: 6.10.0
  */
 typedef enum {
-    VIR_VCPU_INFO_CPU_OFFLINE     = -1, /* the vCPU is offline (Since: v6.10.0) */
-    VIR_VCPU_INFO_CPU_UNAVAILABLE = -2, /* the hypervisor does not expose real CPU information (Since: v6.10.0) */
+    VIR_VCPU_INFO_CPU_OFFLINE     = -1, /* the vCPU is offline (Since: 6.10.0) */
+    VIR_VCPU_INFO_CPU_UNAVAILABLE = -2, /* the hypervisor does not expose real CPU information (Since: 6.10.0) */
 } virVcpuHostCpuState;
 
 /**
  * virVcpuInfo:
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 typedef struct _virVcpuInfo virVcpuInfo;
 struct _virVcpuInfo {
@@ -2324,7 +2324,7 @@ struct _virVcpuInfo {
 /**
  * virVcpuInfoPtr:
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 typedef virVcpuInfo *virVcpuInfoPtr;
 
@@ -2333,16 +2333,16 @@ typedef virVcpuInfo *virVcpuInfoPtr;
  *
  * Flags for controlling virtual CPU hot-plugging.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 typedef enum {
-    VIR_DOMAIN_VCPU_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: v0.9.4) */
-    VIR_DOMAIN_VCPU_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: v0.8.5) */
-    VIR_DOMAIN_VCPU_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: v0.8.5) */
+    VIR_DOMAIN_VCPU_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: 0.9.4) */
+    VIR_DOMAIN_VCPU_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: 0.8.5) */
+    VIR_DOMAIN_VCPU_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: 0.8.5) */
 
-    VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count (Since: v0.8.5) */
-    VIR_DOMAIN_VCPU_GUEST   = (1 << 3), /* Modify state of the cpu in the guest (Since: v1.1.0) */
-    VIR_DOMAIN_VCPU_HOTPLUGGABLE = (1 << 4), /* Make vcpus added hot(un)pluggable (Since: v2.4.0) */
+    VIR_DOMAIN_VCPU_MAXIMUM = (1 << 2), /* Max rather than current count (Since: 0.8.5) */
+    VIR_DOMAIN_VCPU_GUEST   = (1 << 3), /* Modify state of the cpu in the guest (Since: 1.1.0) */
+    VIR_DOMAIN_VCPU_HOTPLUGGABLE = (1 << 4), /* Make vcpus added hot(un)pluggable (Since: 2.4.0) */
 } virDomainVcpuFlags;
 
 int                     virDomainSetVcpus       (virDomainPtr domain,
@@ -2384,7 +2384,7 @@ int                     virDomainGetEmulatorPinInfo (virDomainPtr domain,
  *
  * The data structure for information about all IOThreads in a domain
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef struct _virDomainIOThreadInfo virDomainIOThreadInfo;
 
@@ -2392,7 +2392,7 @@ typedef struct _virDomainIOThreadInfo virDomainIOThreadInfo;
 /**
  * virDomainIOThreadInfoPtr:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef virDomainIOThreadInfo *virDomainIOThreadInfoPtr;
 struct _virDomainIOThreadInfo {
@@ -2433,7 +2433,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * small will not provide enough cycles for the guest to process data.
  * The polling interval is not available for statistical purposes.
  *
- * Since: v4.10.0
+ * Since: 4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_MAX_NS "poll_max_ns"
 
@@ -2445,7 +2445,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * of 0 (zero) allows the hypervisor to choose its own value. The algorithm
  * to use for adjustment is hypervisor specific.
  *
- * Since: v4.10.0
+ * Since: 4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_GROW "poll_grow"
 
@@ -2458,7 +2458,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * choose its own value. The algorithm to use for adjustment is hypervisor
  * specific.
  *
- * Since: v4.10.0
+ * Since: 4.10.0
  */
 # define VIR_DOMAIN_IOTHREAD_POLL_SHRINK "poll_shrink"
 
@@ -2477,7 +2477,7 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It sets the bit (CPU usable) of the related cpu in cpumap.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_USE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] |= (1 << ((cpu) % 8)))
 
@@ -2489,7 +2489,7 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  * This macro is to be used in conjunction with virDomainPinVcpu() API.
  * It resets the bit (CPU not usable) of the related cpu in cpumap.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_UNUSE_CPU(cpumap, cpu) ((cpumap)[(cpu) / 8] &= ~(1 << ((cpu) % 8)))
 
@@ -2501,7 +2501,7 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  * This macro can be used in conjunction with virNodeGetCPUMap() API.
  * It returns non-zero if the bit of the related CPU is set.
  *
- * Since: v1.0.0
+ * Since: 1.0.0
  */
 # define VIR_CPU_USED(cpumap, cpu) ((cpumap)[(cpu) / 8] & (1 << ((cpu) % 8)))
 
@@ -2513,7 +2513,7 @@ int                  virDomainSetIOThreadParams(virDomainPtr domain,
  * It returns the length (in bytes) required to store the complete
  * CPU map between a single virtual & all physical CPUs of a domain.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_CPU_MAPLEN(cpu) (((cpu) + 7) / 8)
 
@@ -2535,7 +2535,7 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * VIR_CPU_USABLE macro returns a non-zero value (true) if the cpu
  * is usable by the vcpu, and 0 otherwise.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_CPU_USABLE(cpumaps, maplen, vcpu, cpu) \
     VIR_CPU_USED(VIR_GET_CPUMAP(cpumaps, maplen, vcpu), cpu)
@@ -2554,7 +2554,7 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * the specified vcpu from cpumaps array and copies it into cpumap to be used
  * later by virDomainPinVcpu() API.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_COPY_CPUMAP(cpumaps, maplen, vcpu, cpumap) \
     memcpy(cpumap, VIR_GET_CPUMAP(cpumaps, maplen, vcpu), maplen)
@@ -2570,7 +2570,7 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
  * virDomainPinVcpu() APIs. VIR_GET_CPUMAP macro returns a pointer to the
  * cpumap of the specified vcpu from cpumaps array.
  *
- * Since: v0.1.4
+ * Since: 0.1.4
  */
 # define VIR_GET_CPUMAP(cpumaps, maplen, vcpu) (&((cpumaps)[(vcpu) * (maplen)]))
 
@@ -2578,14 +2578,14 @@ int                     virDomainGetVcpus       (virDomainPtr domain,
 /**
  * virDomainDeviceModifyFlags:
  *
- * Since: v0.7.7
+ * Since: 0.7.7
  */
 typedef enum {
-    VIR_DOMAIN_DEVICE_MODIFY_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: v0.7.7) */
-    VIR_DOMAIN_DEVICE_MODIFY_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: v0.7.7) */
-    VIR_DOMAIN_DEVICE_MODIFY_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: v0.7.7) */
+    VIR_DOMAIN_DEVICE_MODIFY_CURRENT = VIR_DOMAIN_AFFECT_CURRENT, /* See virDomainModificationImpact (Since: 0.7.7) */
+    VIR_DOMAIN_DEVICE_MODIFY_LIVE    = VIR_DOMAIN_AFFECT_LIVE, /* See virDomainModificationImpact (Since: 0.7.7) */
+    VIR_DOMAIN_DEVICE_MODIFY_CONFIG  = VIR_DOMAIN_AFFECT_CONFIG, /* See virDomainModificationImpact (Since: 0.7.7) */
 
-    VIR_DOMAIN_DEVICE_MODIFY_FORCE = (1 << 2), /* Forcibly modify device (ex. force eject a cdrom) (Since: v0.8.6) */
+    VIR_DOMAIN_DEVICE_MODIFY_FORCE = (1 << 2), /* Forcibly modify device (ex. force eject a cdrom) (Since: 0.8.6) */
 } virDomainDeviceModifyFlags;
 
 int virDomainAttachDevice(virDomainPtr domain, const char *xml);
@@ -2604,14 +2604,14 @@ int virDomainDetachDeviceAlias(virDomainPtr domain,
 /**
  * virDomainStatsRecord:
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 typedef struct _virDomainStatsRecord virDomainStatsRecord;
 
 /**
  * virDomainStatsRecordPtr:
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 typedef virDomainStatsRecord *virDomainStatsRecordPtr;
 struct _virDomainStatsRecord {
@@ -2623,42 +2623,42 @@ struct _virDomainStatsRecord {
 /**
  * virDomainStatsTypes:
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 typedef enum {
-    VIR_DOMAIN_STATS_STATE = (1 << 0), /* return domain state (Since: v1.2.8) */
-    VIR_DOMAIN_STATS_CPU_TOTAL = (1 << 1), /* return domain CPU info (Since: v1.2.9) */
-    VIR_DOMAIN_STATS_BALLOON = (1 << 2), /* return domain balloon info (Since: v1.2.9) */
-    VIR_DOMAIN_STATS_VCPU = (1 << 3), /* return domain virtual CPU info (Since: v1.2.9) */
-    VIR_DOMAIN_STATS_INTERFACE = (1 << 4), /* return domain interfaces info (Since: v1.2.9) */
-    VIR_DOMAIN_STATS_BLOCK = (1 << 5), /* return domain block info (Since: v1.2.9) */
-    VIR_DOMAIN_STATS_PERF = (1 << 6), /* return domain perf event info (Since: v1.3.3) */
-    VIR_DOMAIN_STATS_IOTHREAD = (1 << 7), /* return iothread poll info (Since: v4.10.0) */
-    VIR_DOMAIN_STATS_MEMORY = (1 << 8), /* return domain memory info (Since: v6.0.0) */
-    VIR_DOMAIN_STATS_DIRTYRATE = (1 << 9), /* return domain dirty rate info (Since: v7.2.0) */
+    VIR_DOMAIN_STATS_STATE = (1 << 0), /* return domain state (Since: 1.2.8) */
+    VIR_DOMAIN_STATS_CPU_TOTAL = (1 << 1), /* return domain CPU info (Since: 1.2.9) */
+    VIR_DOMAIN_STATS_BALLOON = (1 << 2), /* return domain balloon info (Since: 1.2.9) */
+    VIR_DOMAIN_STATS_VCPU = (1 << 3), /* return domain virtual CPU info (Since: 1.2.9) */
+    VIR_DOMAIN_STATS_INTERFACE = (1 << 4), /* return domain interfaces info (Since: 1.2.9) */
+    VIR_DOMAIN_STATS_BLOCK = (1 << 5), /* return domain block info (Since: 1.2.9) */
+    VIR_DOMAIN_STATS_PERF = (1 << 6), /* return domain perf event info (Since: 1.3.3) */
+    VIR_DOMAIN_STATS_IOTHREAD = (1 << 7), /* return iothread poll info (Since: 4.10.0) */
+    VIR_DOMAIN_STATS_MEMORY = (1 << 8), /* return domain memory info (Since: 6.0.0) */
+    VIR_DOMAIN_STATS_DIRTYRATE = (1 << 9), /* return domain dirty rate info (Since: 7.2.0) */
 } virDomainStatsTypes;
 
 /**
  * virConnectGetAllDomainStatsFlags:
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 typedef enum {
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE = VIR_CONNECT_LIST_DOMAINS_ACTIVE, /* (Since: v1.2.8) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_INACTIVE = VIR_CONNECT_LIST_DOMAINS_INACTIVE, /* (Since: v1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ACTIVE = VIR_CONNECT_LIST_DOMAINS_ACTIVE, /* (Since: 1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_INACTIVE = VIR_CONNECT_LIST_DOMAINS_INACTIVE, /* (Since: 1.2.8) */
 
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_PERSISTENT = VIR_CONNECT_LIST_DOMAINS_PERSISTENT, /* (Since: v1.2.8) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_TRANSIENT = VIR_CONNECT_LIST_DOMAINS_TRANSIENT, /* (Since: v1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_PERSISTENT = VIR_CONNECT_LIST_DOMAINS_PERSISTENT, /* (Since: 1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_TRANSIENT = VIR_CONNECT_LIST_DOMAINS_TRANSIENT, /* (Since: 1.2.8) */
 
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING = VIR_CONNECT_LIST_DOMAINS_RUNNING, /* (Since: v1.2.8) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_PAUSED = VIR_CONNECT_LIST_DOMAINS_PAUSED, /* (Since: v1.2.8) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF = VIR_CONNECT_LIST_DOMAINS_SHUTOFF, /* (Since: v1.2.8) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER = VIR_CONNECT_LIST_DOMAINS_OTHER, /* (Since: v1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_RUNNING = VIR_CONNECT_LIST_DOMAINS_RUNNING, /* (Since: 1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_PAUSED = VIR_CONNECT_LIST_DOMAINS_PAUSED, /* (Since: 1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_SHUTOFF = VIR_CONNECT_LIST_DOMAINS_SHUTOFF, /* (Since: 1.2.8) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_OTHER = VIR_CONNECT_LIST_DOMAINS_OTHER, /* (Since: 1.2.8) */
 
     VIR_CONNECT_GET_ALL_DOMAINS_STATS_NOWAIT = 1 << 29, /* report statistics that can be obtained
-                                                           immediately without any blocking (Since: v4.5.0) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING = 1 << 30, /* include backing chain for block stats (Since: v1.2.12) */
-    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS = 1U << 31, /* enforce requested stats (Since: v1.2.8) */
+                                                           immediately without any blocking (Since: 4.5.0) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_BACKING = 1 << 30, /* include backing chain for block stats (Since: 1.2.12) */
+    VIR_CONNECT_GET_ALL_DOMAINS_STATS_ENFORCE_STATS = 1U << 31, /* enforce requested stats (Since: 1.2.8) */
 } virConnectGetAllDomainStatsFlags;
 
 int virConnectGetAllDomainStats(virConnectPtr conn,
@@ -2685,7 +2685,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * applications running on the platform. It corresponds to the
  * "perf.cmt" field in the *Stats APIs.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_PERF_PARAM_CMT "cmt"
 
@@ -2697,7 +2697,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * from one level of cache to another. It corresponds to the
  * "perf.mbmt" field in the *Stats APIs.
  *
- * Since: v1.3.5
+ * Since: 1.3.5
  */
 # define VIR_PERF_PARAM_MBMT "mbmt"
 
@@ -2709,7 +2709,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * through the memory controller on the socket. It corresponds to
  * the "perf.mbml" field in the *Stats APIs.
  *
- * Since: v1.3.5
+ * Since: 1.3.5
  */
 # define VIR_PERF_PARAM_MBML "mbml"
 
@@ -2721,7 +2721,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * applications running on the platform. It corresponds to the
  * "perf.cache_misses" field in the *Stats APIs.
  *
- * Since: v2.3.0
+ * Since: 2.3.0
  */
 # define VIR_PERF_PARAM_CACHE_MISSES "cache_misses"
 
@@ -2733,7 +2733,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * by applications running on the platform. It corresponds to the
  * "perf.cache_references" field in the *Stats APIs.
  *
- * Since: v2.3.0
+ * Since: 2.3.0
  */
 # define VIR_PERF_PARAM_CACHE_REFERENCES "cache_references"
 
@@ -2745,7 +2745,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * by applications running on the platform. It corresponds to the
  * "perf.instructions" field in the *Stats APIs.
  *
- * Since: v2.3.0
+ * Since: 2.3.0
  */
 # define VIR_PERF_PARAM_INSTRUCTIONS "instructions"
 
@@ -2757,7 +2757,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * how many cpu cycles one instruction needs.
  * It corresponds to the "perf.cpu_cycles" field in the *Stats APIs.
  *
- * Since: v2.3.0
+ * Since: 2.3.0
  */
 # define VIR_PERF_PARAM_CPU_CYCLES "cpu_cycles"
 
@@ -2769,7 +2769,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * by applications running on the platform. It corresponds to the
  * "perf.branch_instructions" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_BRANCH_INSTRUCTIONS "branch_instructions"
 
@@ -2781,7 +2781,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * by applications running on the platform. It corresponds to the
  * "perf.branch_misses" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_BRANCH_MISSES "branch_misses"
 
@@ -2793,7 +2793,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * by applications running on the platform. It corresponds to the
  * "perf.bus_cycles" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_BUS_CYCLES "bus_cycles"
 
@@ -2806,7 +2806,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * running on the platform. It corresponds to the
  * "perf.stalled_cycles_frontend" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_FRONTEND "stalled_cycles_frontend"
 
@@ -2819,7 +2819,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * running on the platform. It corresponds to the
  * "perf.stalled_cycles_backend" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_STALLED_CYCLES_BACKEND "stalled_cycles_backend"
 
@@ -2832,7 +2832,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * running on the platform. It corresponds to the
  * "perf.ref_cpu_cycles" field in the *Stats APIs.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_PERF_PARAM_REF_CPU_CYCLES "ref_cpu_cycles"
 
@@ -2845,7 +2845,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * corresponds to the "perf.cpu_clock" field in the *Stats
  * APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_CPU_CLOCK "cpu_clock"
 
@@ -2858,7 +2858,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * corresponds to the "perf.task_clock" field in the *Stats
  * APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_TASK_CLOCK "task_clock"
 
@@ -2870,7 +2870,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * faults by applications running on the platform. It corresponds
  * to the "perf.page_faults" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS "page_faults"
 
@@ -2882,7 +2882,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * switches by applications running on the platform. It corresponds
  * to the "perf.context_switches" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_CONTEXT_SWITCHES "context_switches"
 
@@ -2894,7 +2894,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * migrations by applications running on the platform. It corresponds
  * to the "perf.cpu_migrations" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_CPU_MIGRATIONS "cpu_migrations"
 
@@ -2906,7 +2906,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * faults by applications running on the platform. It corresponds
  * to the "perf.page_faults_min" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MIN  "page_faults_min"
 
@@ -2918,7 +2918,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * faults by applications running on the platform. It corresponds
  * to the "perf.page_faults_maj" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_PAGE_FAULTS_MAJ  "page_faults_maj"
 
@@ -2930,7 +2930,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * faults by applications running on the platform. It corresponds
  * to the "perf.alignment_faults" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_ALIGNMENT_FAULTS  "alignment_faults"
 
@@ -2942,7 +2942,7 @@ void virDomainStatsRecordListFree(virDomainStatsRecordPtr *stats);
  * faults by applications running on the platform. It corresponds
  * to the "perf.emulation_faults" field in the *Stats APIs.
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 # define VIR_PERF_PARAM_EMULATION_FAULTS  "emulation_faults"
 
@@ -2964,48 +2964,48 @@ int virDomainSetPerfEvents(virDomainPtr dom,
  *
  * Describes various possible block jobs.
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef enum {
-    /* Placeholder (Since: v0.9.4) */
+    /* Placeholder (Since: 0.9.4) */
     VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN = 0,
 
     /* Block Pull (virDomainBlockPull, or virDomainBlockRebase without
      * flags), job ends on completion
      *
-     * Since: v0.9.4
+     * Since: 0.9.4
      */
     VIR_DOMAIN_BLOCK_JOB_TYPE_PULL = 1,
 
     /* Block Copy (virDomainBlockCopy, or virDomainBlockRebase with
      * flags), job exists as long as mirroring is active
      *
-     * Since: v0.9.12
+     * Since: 0.9.12
      */
     VIR_DOMAIN_BLOCK_JOB_TYPE_COPY = 2,
 
     /* Block Commit (virDomainBlockCommit without flags), job ends on
      * completion
      *
-     * Since: v0.10.2
+     * Since: 0.10.2
      */
     VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT = 3,
 
     /* Active Block Commit (virDomainBlockCommit with flags), job
      * exists as long as sync is active
      *
-     * Since: v1.2.6
+     * Since: 1.2.6
      */
     VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT = 4,
 
     /* Backup (virDomainBackupBegin)
      *
-     * Since: v6.0.0
+     * Since: 6.0.0
      */
     VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP = 5,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_BLOCK_JOB_TYPE_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_BLOCK_JOB_TYPE_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainBlockJobType;
 
@@ -3016,11 +3016,11 @@ typedef enum {
  * VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT: Pivot to new file when ending a copy or
  *                                   active commit job
  *
- * Since: v0.9.12
+ * Since: 0.9.12
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1 << 0, /* (Since: v0.9.12) */
-    VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT = 1 << 1, /* (Since: v0.9.12) */
+    VIR_DOMAIN_BLOCK_JOB_ABORT_ASYNC = 1 << 0, /* (Since: 0.9.12) */
+    VIR_DOMAIN_BLOCK_JOB_ABORT_PIVOT = 1 << 1, /* (Since: 0.9.12) */
 } virDomainBlockJobAbortFlags;
 
 int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
@@ -3031,11 +3031,11 @@ int virDomainBlockJobAbort(virDomainPtr dom, const char *disk,
  *
  * Flags for use with virDomainGetBlockJobInfo
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_INFO_BANDWIDTH_BYTES = 1 << 0, /* bandwidth in bytes/s
-                                                           instead of MiB/s (Since: v1.2.9) */
+                                                           instead of MiB/s (Since: 1.2.9) */
 } virDomainBlockJobInfoFlags;
 
 /**
@@ -3043,14 +3043,14 @@ typedef enum {
  *
  * An iterator for monitoring block job operations
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef unsigned long long virDomainBlockJobCursor;
 
 /**
  * virDomainBlockJobInfo:
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef struct _virDomainBlockJobInfo virDomainBlockJobInfo;
 struct _virDomainBlockJobInfo {
@@ -3070,7 +3070,7 @@ struct _virDomainBlockJobInfo {
 /**
  * virDomainBlockJobInfoPtr:
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef virDomainBlockJobInfo *virDomainBlockJobInfoPtr;
 
@@ -3083,11 +3083,11 @@ int virDomainGetBlockJobInfo(virDomainPtr dom, const char *disk,
  *
  * Flags for use with virDomainBlockJobSetSpeed
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_JOB_SPEED_BANDWIDTH_BYTES = 1 << 0, /* bandwidth in bytes/s
-                                                            instead of MiB/s (Since: v1.2.9) */
+                                                            instead of MiB/s (Since: 1.2.9) */
 } virDomainBlockJobSetSpeedFlags;
 
 int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
@@ -3099,11 +3099,11 @@ int virDomainBlockJobSetSpeed(virDomainPtr dom, const char *disk,
  * Flags for use with virDomainBlockPull (values chosen to be a subset of the
  * flags for virDomainBlockRebase)
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_PULL_BANDWIDTH_BYTES = 1 << 6, /* bandwidth in bytes/s
-                                                       instead of MiB/s (Since: v1.2.9) */
+                                                       instead of MiB/s (Since: 1.2.9) */
 } virDomainBlockPullFlags;
 
 int virDomainBlockPull(virDomainPtr dom, const char *disk,
@@ -3114,22 +3114,22 @@ int virDomainBlockPull(virDomainPtr dom, const char *disk,
  *
  * Flags available for virDomainBlockRebase().
  *
- * Since: v0.9.12
+ * Since: 0.9.12
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_REBASE_SHALLOW   = 1 << 0, /* Limit copy to top of source
-                                                   backing chain (Since: v0.9.12) */
+                                                   backing chain (Since: 0.9.12) */
     VIR_DOMAIN_BLOCK_REBASE_REUSE_EXT = 1 << 1, /* Reuse existing external
-                                                   file for a copy (Since: v0.9.12) */
-    VIR_DOMAIN_BLOCK_REBASE_COPY_RAW  = 1 << 2, /* Make destination file raw (Since: v0.9.12) */
-    VIR_DOMAIN_BLOCK_REBASE_COPY      = 1 << 3, /* Start a copy job (Since: v0.9.12) */
+                                                   file for a copy (Since: 0.9.12) */
+    VIR_DOMAIN_BLOCK_REBASE_COPY_RAW  = 1 << 2, /* Make destination file raw (Since: 0.9.12) */
+    VIR_DOMAIN_BLOCK_REBASE_COPY      = 1 << 3, /* Start a copy job (Since: 0.9.12) */
     VIR_DOMAIN_BLOCK_REBASE_RELATIVE  = 1 << 4, /* Keep backing chain
                                                    referenced using relative
-                                                   names (Since: v1.2.7) */
+                                                   names (Since: 1.2.7) */
     VIR_DOMAIN_BLOCK_REBASE_COPY_DEV  = 1 << 5, /* Treat destination as block
-                                                   device instead of file (Since: v1.2.9) */
+                                                   device instead of file (Since: 1.2.9) */
     VIR_DOMAIN_BLOCK_REBASE_BANDWIDTH_BYTES = 1 << 6, /* bandwidth in bytes/s
-                                                         instead of MiB/s (Since: v1.2.9) */
+                                                         instead of MiB/s (Since: 1.2.9) */
 } virDomainBlockRebaseFlags;
 
 int virDomainBlockRebase(virDomainPtr dom, const char *disk,
@@ -3141,22 +3141,22 @@ int virDomainBlockRebase(virDomainPtr dom, const char *disk,
  *
  * Flags available for virDomainBlockCopy().
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 typedef enum {
-    /* Limit copy to top of source backing chain (Since: v1.2.8) */
+    /* Limit copy to top of source backing chain (Since: 1.2.8) */
     VIR_DOMAIN_BLOCK_COPY_SHALLOW   = 1 << 0,
 
-    /* Reuse existing external file for a copy (Since: v1.2.8) */
+    /* Reuse existing external file for a copy (Since: 1.2.8) */
     VIR_DOMAIN_BLOCK_COPY_REUSE_EXT = 1 << 1,
 
-    /* Don't force usage of recoverable job for the copy operation (Since: v3.5.0) */
+    /* Don't force usage of recoverable job for the copy operation (Since: 3.5.0) */
     VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB = 1 << 2,
 
     /* Force the copy job to synchronously propagate guest writes into
      * the destination image, so that the copy is guaranteed to converge
      *
-     * Since: v8.0.0
+     * Since: 8.0.0
      */
     VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES = 1 << 3,
 } virDomainBlockCopyFlags;
@@ -3178,7 +3178,7 @@ typedef enum {
  * virDomainBlockJobSetSpeed().  The actual speed can be determined
  * with virDomainGetBlockJobInfo().
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_BANDWIDTH "bandwidth"
 
@@ -3191,7 +3191,7 @@ typedef enum {
  * range. Specifying 0 is the same as omitting this parameter, to
  * request the hypervisor default.
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_GRANULARITY "granularity"
 
@@ -3202,7 +3202,7 @@ typedef enum {
  * as an unsigned long long. Specifying 0 is the same as omitting this
  * parameter, to request the hypervisor default.
  *
- * Since: v1.2.8
+ * Since: 1.2.8
  */
 # define VIR_DOMAIN_BLOCK_COPY_BUF_SIZE "buf-size"
 
@@ -3217,21 +3217,21 @@ int virDomainBlockCopy(virDomainPtr dom, const char *disk,
  *
  * Flags available for virDomainBlockCommit().
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
     VIR_DOMAIN_BLOCK_COMMIT_SHALLOW = 1 << 0, /* NULL base means next backing
-                                                 file, not whole chain (Since: v0.10.2) */
+                                                 file, not whole chain (Since: 0.10.2) */
     VIR_DOMAIN_BLOCK_COMMIT_DELETE  = 1 << 1, /* Delete any files that are now
                                                  invalid after their contents
-                                                 have been committed (Since: v0.10.2) */
+                                                 have been committed (Since: 0.10.2) */
     VIR_DOMAIN_BLOCK_COMMIT_ACTIVE  = 1 << 2, /* Allow a two-phase commit when
-                                                 top is the active layer (Since: v1.2.6) */
+                                                 top is the active layer (Since: 1.2.6) */
     VIR_DOMAIN_BLOCK_COMMIT_RELATIVE = 1 << 3, /* keep the backing chain
                                                   referenced using relative
-                                                  names (Since: v1.2.7) */
+                                                  names (Since: 1.2.7) */
     VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES = 1 << 4, /* bandwidth in bytes/s
-                                                         instead of MiB/s (Since: v1.2.9) */
+                                                         instead of MiB/s (Since: 1.2.9) */
 } virDomainBlockCommitFlags;
 
 int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
@@ -3247,7 +3247,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the total
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC "total_bytes_sec"
 
@@ -3257,7 +3257,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the read
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC "read_bytes_sec"
 
@@ -3267,7 +3267,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the write
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC "write_bytes_sec"
 
@@ -3277,7 +3277,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the total
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC "total_iops_sec"
 
@@ -3287,7 +3287,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the read
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC "read_iops_sec"
 
@@ -3296,7 +3296,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the write
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC "write_iops_sec"
 
@@ -3306,7 +3306,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum total
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX "total_bytes_sec_max"
 
@@ -3316,7 +3316,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum read
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX "read_bytes_sec_max"
 
@@ -3326,7 +3326,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum write
  * bytes per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX "write_bytes_sec_max"
 
@@ -3336,7 +3336,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX "total_iops_sec_max"
 
@@ -3346,7 +3346,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum read
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX "read_iops_sec_max"
 
@@ -3355,7 +3355,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the maximum write
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX "write_iops_sec_max"
 
@@ -3365,7 +3365,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by total_bytes_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_BYTES_SEC_MAX_LENGTH "total_bytes_sec_max_length"
 
@@ -3375,7 +3375,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by read_bytes_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_BYTES_SEC_MAX_LENGTH "read_bytes_sec_max_length"
 
@@ -3385,7 +3385,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by write_bytes_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_BYTES_SEC_MAX_LENGTH "write_bytes_sec_max_length"
 
@@ -3395,7 +3395,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by total_iops_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_TOTAL_IOPS_SEC_MAX_LENGTH "total_iops_sec_max_length"
 
@@ -3405,7 +3405,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by read_iops_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_READ_IOPS_SEC_MAX_LENGTH "read_iops_sec_max_length"
 
@@ -3415,7 +3415,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the duration in
  * seconds for the burst allowed by write_iops_sec_max, as a ullong.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_WRITE_IOPS_SEC_MAX_LENGTH "write_iops_sec_max_length"
 
@@ -3424,7 +3424,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents the size
  * I/O operations per second permitted through a block device, as a ullong.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_SIZE_IOPS_SEC "size_iops_sec"
 
@@ -3433,7 +3433,7 @@ int virDomainBlockCommit(virDomainPtr dom, const char *disk, const char *base,
  * Macro for the BlockIoTune tunable weight: it represents a group name to
  * allow sharing of I/O throttling quota between multiple drives, as a string.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_DOMAIN_BLOCK_IOTUNE_GROUP_NAME "group_name"
 
@@ -3455,29 +3455,29 @@ virDomainGetBlockIoTune(virDomainPtr dom,
  *
  * Disk I/O error.
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef enum {
-    VIR_DOMAIN_DISK_ERROR_NONE      = 0, /* no error (Since: v0.9.10) */
-    VIR_DOMAIN_DISK_ERROR_UNSPEC    = 1, /* unspecified I/O error (Since: v0.9.10) */
-    VIR_DOMAIN_DISK_ERROR_NO_SPACE  = 2, /* no space left on the device (Since: v0.9.10) */
+    VIR_DOMAIN_DISK_ERROR_NONE      = 0, /* no error (Since: 0.9.10) */
+    VIR_DOMAIN_DISK_ERROR_UNSPEC    = 1, /* unspecified I/O error (Since: 0.9.10) */
+    VIR_DOMAIN_DISK_ERROR_NO_SPACE  = 2, /* no space left on the device (Since: 0.9.10) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_DISK_ERROR_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_DISK_ERROR_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainDiskErrorCode;
 
 /**
  * virDomainDiskError:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef struct _virDomainDiskError virDomainDiskError;
 
 /**
  * virDomainDiskErrorPtr:
  *
- * Since: v0.9.10
+ * Since: 0.9.10
  */
 typedef virDomainDiskError *virDomainDiskErrorPtr;
 
@@ -3498,19 +3498,19 @@ int virDomainGetDiskErrors(virDomainPtr dom,
  *
  * Enum to specify which keycode mapping is in use for virDomainSendKey().
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 typedef enum {
-    VIR_KEYCODE_SET_LINUX          = 0, /* (Since: v0.9.3) */
-    VIR_KEYCODE_SET_XT             = 1, /* (Since: v0.9.3) */
-    VIR_KEYCODE_SET_ATSET1         = 2, /* (Since: v0.9.3) */
-    VIR_KEYCODE_SET_ATSET2         = 3, /* (Since: v0.9.3) */
-    VIR_KEYCODE_SET_ATSET3         = 4, /* (Since: v0.9.3) */
-    VIR_KEYCODE_SET_OSX            = 5, /* (Since: v0.9.4) */
-    VIR_KEYCODE_SET_XT_KBD         = 6, /* (Since: v0.9.4) */
-    VIR_KEYCODE_SET_USB            = 7, /* (Since: v0.9.4) */
-    VIR_KEYCODE_SET_WIN32          = 8, /* (Since: v0.9.4) */
-    VIR_KEYCODE_SET_QNUM           = 9, /* (Since: v4.2.0) */
+    VIR_KEYCODE_SET_LINUX          = 0, /* (Since: 0.9.3) */
+    VIR_KEYCODE_SET_XT             = 1, /* (Since: 0.9.3) */
+    VIR_KEYCODE_SET_ATSET1         = 2, /* (Since: 0.9.3) */
+    VIR_KEYCODE_SET_ATSET2         = 3, /* (Since: 0.9.3) */
+    VIR_KEYCODE_SET_ATSET3         = 4, /* (Since: 0.9.3) */
+    VIR_KEYCODE_SET_OSX            = 5, /* (Since: 0.9.4) */
+    VIR_KEYCODE_SET_XT_KBD         = 6, /* (Since: 0.9.4) */
+    VIR_KEYCODE_SET_USB            = 7, /* (Since: 0.9.4) */
+    VIR_KEYCODE_SET_WIN32          = 8, /* (Since: 0.9.4) */
+    VIR_KEYCODE_SET_QNUM           = 9, /* (Since: 4.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_KEYCODE_SET_LAST
@@ -3519,7 +3519,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last keycode set supported
      * by this version of the libvirt API.
      *
-     * Since: v0.9.4
+     * Since: 0.9.4
      */
 # endif
 } virKeycodeSet;
@@ -3529,7 +3529,7 @@ typedef enum {
  *
  * Compatibility alias for VIR_KEYCODE_SET_QNUM, which replaced it since 4.2.0.
  *
- * Since: v0.9.5
+ * Since: 0.9.5
  */
 # define VIR_KEYCODE_SET_RFB VIR_KEYCODE_SET_QNUM
 
@@ -3538,7 +3538,7 @@ typedef enum {
  *
  * Maximum number of keycodes that can be sent in one virDomainSendKey() call.
  *
- * Since: v0.9.3
+ * Since: 0.9.3
  */
 # define VIR_DOMAIN_SEND_KEY_MAX_KEYS  16
 
@@ -3561,83 +3561,83 @@ int virDomainSendKey(virDomainPtr domain,
  * this enum might be extended with new signals which have no
  * mapping in Linux.
  *
- * Since: v1.0.1
+ * Since: 1.0.1
  */
 typedef enum {
-    VIR_DOMAIN_PROCESS_SIGNAL_NOP        =  0, /* No constant in POSIX/Linux (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_HUP        =  1, /* SIGHUP (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_INT        =  2, /* SIGINT (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_QUIT       =  3, /* SIGQUIT (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_ILL        =  4, /* SIGILL (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_TRAP       =  5, /* SIGTRAP (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_ABRT       =  6, /* SIGABRT (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_BUS        =  7, /* SIGBUS (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_FPE        =  8, /* SIGFPE (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_KILL       =  9, /* SIGKILL (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_NOP        =  0, /* No constant in POSIX/Linux (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_HUP        =  1, /* SIGHUP (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_INT        =  2, /* SIGINT (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_QUIT       =  3, /* SIGQUIT (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_ILL        =  4, /* SIGILL (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_TRAP       =  5, /* SIGTRAP (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_ABRT       =  6, /* SIGABRT (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_BUS        =  7, /* SIGBUS (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_FPE        =  8, /* SIGFPE (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_KILL       =  9, /* SIGKILL (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_USR1       = 10, /* SIGUSR1 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_SEGV       = 11, /* SIGSEGV (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_USR2       = 12, /* SIGUSR2 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_PIPE       = 13, /* SIGPIPE (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_ALRM       = 14, /* SIGALRM (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_TERM       = 15, /* SIGTERM (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_STKFLT     = 16, /* Not in POSIX (SIGSTKFLT on Linux (Since: v1.0.1) )*/
-    VIR_DOMAIN_PROCESS_SIGNAL_CHLD       = 17, /* SIGCHLD (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_CONT       = 18, /* SIGCONT (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_STOP       = 19, /* SIGSTOP (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_USR1       = 10, /* SIGUSR1 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_SEGV       = 11, /* SIGSEGV (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_USR2       = 12, /* SIGUSR2 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_PIPE       = 13, /* SIGPIPE (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_ALRM       = 14, /* SIGALRM (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_TERM       = 15, /* SIGTERM (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_STKFLT     = 16, /* Not in POSIX (SIGSTKFLT on Linux (Since: 1.0.1) )*/
+    VIR_DOMAIN_PROCESS_SIGNAL_CHLD       = 17, /* SIGCHLD (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_CONT       = 18, /* SIGCONT (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_STOP       = 19, /* SIGSTOP (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_TSTP       = 20, /* SIGTSTP (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_TTIN       = 21, /* SIGTTIN (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_TTOU       = 22, /* SIGTTOU (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_URG        = 23, /* SIGURG (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_XCPU       = 24, /* SIGXCPU (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_XFSZ       = 25, /* SIGXFSZ (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_VTALRM     = 26, /* SIGVTALRM (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_PROF       = 27, /* SIGPROF (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_WINCH      = 28, /* Not in POSIX (SIGWINCH on Linux) (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_POLL       = 29, /* SIGPOLL (also known as SIGIO on Linux) (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_TSTP       = 20, /* SIGTSTP (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_TTIN       = 21, /* SIGTTIN (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_TTOU       = 22, /* SIGTTOU (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_URG        = 23, /* SIGURG (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_XCPU       = 24, /* SIGXCPU (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_XFSZ       = 25, /* SIGXFSZ (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_VTALRM     = 26, /* SIGVTALRM (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_PROF       = 27, /* SIGPROF (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_WINCH      = 28, /* Not in POSIX (SIGWINCH on Linux) (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_POLL       = 29, /* SIGPOLL (also known as SIGIO on Linux) (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_PWR        = 30, /* Not in POSIX (SIGPWR on Linux) (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_SYS        = 31, /* SIGSYS (also known as SIGUNUSED on Linux) (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT0        = 32, /* SIGRTMIN (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT1        = 33, /* SIGRTMIN + 1 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT2        = 34, /* SIGRTMIN + 2 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT3        = 35, /* SIGRTMIN + 3 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT4        = 36, /* SIGRTMIN + 4 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT5        = 37, /* SIGRTMIN + 5 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT6        = 38, /* SIGRTMIN + 6 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT7        = 39, /* SIGRTMIN + 7 (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_PWR        = 30, /* Not in POSIX (SIGPWR on Linux) (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_SYS        = 31, /* SIGSYS (also known as SIGUNUSED on Linux) (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT0        = 32, /* SIGRTMIN (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT1        = 33, /* SIGRTMIN + 1 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT2        = 34, /* SIGRTMIN + 2 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT3        = 35, /* SIGRTMIN + 3 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT4        = 36, /* SIGRTMIN + 4 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT5        = 37, /* SIGRTMIN + 5 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT6        = 38, /* SIGRTMIN + 6 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT7        = 39, /* SIGRTMIN + 7 (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_RT8        = 40, /* SIGRTMIN + 8 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT9        = 41, /* SIGRTMIN + 9 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT10       = 42, /* SIGRTMIN + 10 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT11       = 43, /* SIGRTMIN + 11 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT12       = 44, /* SIGRTMIN + 12 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT13       = 45, /* SIGRTMIN + 13 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT14       = 46, /* SIGRTMIN + 14 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT15       = 47, /* SIGRTMIN + 15 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT16       = 48, /* SIGRTMIN + 16 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT17       = 49, /* SIGRTMIN + 17 (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT8        = 40, /* SIGRTMIN + 8 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT9        = 41, /* SIGRTMIN + 9 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT10       = 42, /* SIGRTMIN + 10 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT11       = 43, /* SIGRTMIN + 11 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT12       = 44, /* SIGRTMIN + 12 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT13       = 45, /* SIGRTMIN + 13 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT14       = 46, /* SIGRTMIN + 14 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT15       = 47, /* SIGRTMIN + 15 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT16       = 48, /* SIGRTMIN + 16 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT17       = 49, /* SIGRTMIN + 17 (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_RT18       = 50, /* SIGRTMIN + 18 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT19       = 51, /* SIGRTMIN + 19 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT20       = 52, /* SIGRTMIN + 20 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT21       = 53, /* SIGRTMIN + 21 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT22       = 54, /* SIGRTMIN + 22 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT23       = 55, /* SIGRTMIN + 23 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT24       = 56, /* SIGRTMIN + 24 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT25       = 57, /* SIGRTMIN + 25 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT26       = 58, /* SIGRTMIN + 26 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT27       = 59, /* SIGRTMIN + 27 (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT18       = 50, /* SIGRTMIN + 18 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT19       = 51, /* SIGRTMIN + 19 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT20       = 52, /* SIGRTMIN + 20 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT21       = 53, /* SIGRTMIN + 21 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT22       = 54, /* SIGRTMIN + 22 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT23       = 55, /* SIGRTMIN + 23 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT24       = 56, /* SIGRTMIN + 24 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT25       = 57, /* SIGRTMIN + 25 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT26       = 58, /* SIGRTMIN + 26 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT27       = 59, /* SIGRTMIN + 27 (Since: 1.0.1) */
 
-    VIR_DOMAIN_PROCESS_SIGNAL_RT28       = 60, /* SIGRTMIN + 28 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT29       = 61, /* SIGRTMIN + 29 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT30       = 62, /* SIGRTMIN + 30 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT31       = 63, /* SIGRTMIN + 31 (Since: v1.0.1) */
-    VIR_DOMAIN_PROCESS_SIGNAL_RT32       = 64, /* SIGRTMIN + 32 / SIGRTMAX (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT28       = 60, /* SIGRTMIN + 28 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT29       = 61, /* SIGRTMIN + 29 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT30       = 62, /* SIGRTMIN + 30 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT31       = 63, /* SIGRTMIN + 31 (Since: 1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_RT32       = 64, /* SIGRTMIN + 32 / SIGRTMAX (Since: 1.0.1) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_PROCESS_SIGNAL_LAST /* (Since: v1.0.1) */
+    VIR_DOMAIN_PROCESS_SIGNAL_LAST /* (Since: 1.0.1) */
 # endif
 } virDomainProcessSignal;
 
@@ -3663,21 +3663,21 @@ virDomainPtr            virDomainCreateLinux    (virConnectPtr conn,
  *
  * a virDomainEventType is emitted during domain lifecycle events
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_DEFINED = 0, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_UNDEFINED = 1, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STARTED = 2, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_SUSPENDED = 3, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_RESUMED = 4, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED = 5, /* (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_SHUTDOWN = 6, /* (Since: v0.9.8) */
-    VIR_DOMAIN_EVENT_PMSUSPENDED = 7, /* (Since: v0.10.2) */
-    VIR_DOMAIN_EVENT_CRASHED = 8, /* (Since: v1.1.1) */
+    VIR_DOMAIN_EVENT_DEFINED = 0, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_UNDEFINED = 1, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STARTED = 2, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_SUSPENDED = 3, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_RESUMED = 4, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED = 5, /* (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_SHUTDOWN = 6, /* (Since: 0.9.8) */
+    VIR_DOMAIN_EVENT_PMSUSPENDED = 7, /* (Since: 0.10.2) */
+    VIR_DOMAIN_EVENT_CRASHED = 8, /* (Since: 1.1.1) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventType;
 
@@ -3686,16 +3686,16 @@ typedef enum {
  *
  * Details on the cause of a 'defined' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1,   /* Changed config file (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_DEFINED_RENAMED = 2,   /* Domain was renamed (Since: v1.2.19) */
-    VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT = 3,   /* Config was restored from a snapshot (Since: v1.3.3) */
+    VIR_DOMAIN_EVENT_DEFINED_ADDED = 0,     /* Newly created config file (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_DEFINED_UPDATED = 1,   /* Changed config file (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_DEFINED_RENAMED = 2,   /* Domain was renamed (Since: 1.2.19) */
+    VIR_DOMAIN_EVENT_DEFINED_FROM_SNAPSHOT = 3,   /* Config was restored from a snapshot (Since: 1.3.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_DEFINED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_DEFINED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventDefinedDetailType;
 
@@ -3704,14 +3704,14 @@ typedef enum {
  *
  * Details on the cause of an 'undefined' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_UNDEFINED_RENAMED = 1, /* Domain was renamed (Since: v1.2.19) */
+    VIR_DOMAIN_EVENT_UNDEFINED_REMOVED = 0, /* Deleted the config file (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_UNDEFINED_RENAMED = 1, /* Domain was renamed (Since: 1.2.19) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_UNDEFINED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_UNDEFINED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventUndefinedDetailType;
 
@@ -3720,17 +3720,17 @@ typedef enum {
  *
  * Details on the cause of a 'started' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_STARTED_WAKEUP = 4,   /* Started due to wakeup event (Since: v0.9.11) */
+    VIR_DOMAIN_EVENT_STARTED_BOOTED = 0,   /* Normal startup from boot (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STARTED_MIGRATED = 1, /* Incoming migration from another host (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STARTED_RESTORED = 2, /* Restored from a state file (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STARTED_FROM_SNAPSHOT = 3, /* Restored from snapshot (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_STARTED_WAKEUP = 4,   /* Started due to wakeup event (Since: 0.9.11) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_STARTED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_STARTED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventStartedDetailType;
 
@@ -3739,21 +3739,21 @@ typedef enum {
  *
  * Details on the cause of a 'suspended' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0,   /* Normal suspend due to admin pause (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED = 1, /* Suspended for offline migration (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_SUSPENDED_IOERROR = 2,  /* Suspended due to a disk I/O error (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG = 3,  /* Suspended due to a watchdog firing (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4,  /* Restored from paused state file (Since: v0.9.5) */
-    VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5, /* Restored from paused snapshot (Since: v0.9.5) */
-    VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6, /* suspended after failure during libvirt API call (Since: v1.0.1) */
-    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY = 7, /* suspended for post-copy migration (Since: v1.3.3) */
-    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED = 8, /* suspended after failed post-copy (Since: v1.3.3) */
+    VIR_DOMAIN_EVENT_SUSPENDED_PAUSED = 0,   /* Normal suspend due to admin pause (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_SUSPENDED_MIGRATED = 1, /* Suspended for offline migration (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_SUSPENDED_IOERROR = 2,  /* Suspended due to a disk I/O error (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_SUSPENDED_WATCHDOG = 3,  /* Suspended due to a watchdog firing (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_SUSPENDED_RESTORED = 4,  /* Restored from paused state file (Since: 0.9.5) */
+    VIR_DOMAIN_EVENT_SUSPENDED_FROM_SNAPSHOT = 5, /* Restored from paused snapshot (Since: 0.9.5) */
+    VIR_DOMAIN_EVENT_SUSPENDED_API_ERROR = 6, /* suspended after failure during libvirt API call (Since: 1.0.1) */
+    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY = 7, /* suspended for post-copy migration (Since: 1.3.3) */
+    VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED = 8, /* suspended after failed post-copy (Since: 1.3.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_SUSPENDED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_SUSPENDED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventSuspendedDetailType;
 
@@ -3762,17 +3762,17 @@ typedef enum {
  *
  * Details on the cause of a 'resumed' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1,   /* Resumed for completion of migration (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2, /* Resumed from snapshot (Since: v0.9.5) */
+    VIR_DOMAIN_EVENT_RESUMED_UNPAUSED = 0,   /* Normal resume due to admin unpause (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_RESUMED_MIGRATED = 1,   /* Resumed for completion of migration (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2, /* Resumed from snapshot (Since: 0.9.5) */
     VIR_DOMAIN_EVENT_RESUMED_POSTCOPY = 3,   /* Resumed, but migration is still
-                                                running in post-copy mode (Since: v1.3.3) */
+                                                running in post-copy mode (Since: 1.3.3) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_RESUMED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_RESUMED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventResumedDetailType;
 
@@ -3781,19 +3781,19 @@ typedef enum {
  *
  * Details on the cause of a 'stopped' lifecycle event
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0,  /* Normal shutdown (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_DESTROYED = 1, /* Forced poweroff from host (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_CRASHED = 2,   /* Guest crashed (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_MIGRATED = 3,  /* Migrated off to another host (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed (Since: v0.5.0) */
-    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded (Since: v0.8.0) */
+    VIR_DOMAIN_EVENT_STOPPED_SHUTDOWN = 0,  /* Normal shutdown (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_DESTROYED = 1, /* Forced poweroff from host (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_CRASHED = 2,   /* Guest crashed (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_MIGRATED = 3,  /* Migrated off to another host (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_SAVED = 4,     /* Saved to a state file (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_FAILED = 5,    /* Host emulator/mgmt failed (Since: 0.5.0) */
+    VIR_DOMAIN_EVENT_STOPPED_FROM_SNAPSHOT = 6, /* offline snapshot loaded (Since: 0.8.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_STOPPED_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_STOPPED_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventStoppedDetailType;
 
@@ -3803,25 +3803,25 @@ typedef enum {
  *
  * Details on the cause of a 'shutdown' lifecycle event
  *
- * Since: v0.9.8
+ * Since: 0.9.8
  */
 typedef enum {
-    /* Guest finished shutdown sequence (Since: v0.9.8) */
+    /* Guest finished shutdown sequence (Since: 0.9.8) */
     VIR_DOMAIN_EVENT_SHUTDOWN_FINISHED = 0,
 
     /* Domain finished shutting down after request from the guest itself
-     * (e.g. hardware-specific action) (Since: v3.4.0) */
+     * (e.g. hardware-specific action) (Since: 3.4.0) */
     VIR_DOMAIN_EVENT_SHUTDOWN_GUEST = 1,
 
     /* Domain finished shutting down after request from the host (e.g. killed by
      * a signal)
      *
-     * Since: v3.4.0
+     * Since: 3.4.0
      */
     VIR_DOMAIN_EVENT_SHUTDOWN_HOST = 2,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_SHUTDOWN_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_SHUTDOWN_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventShutdownDetailType;
 
@@ -3830,14 +3830,14 @@ typedef enum {
  *
  * Details on the cause of a 'pmsuspended' lifecycle event
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY = 0, /* Guest was PM suspended to memory (Since: v0.10.2) */
-    VIR_DOMAIN_EVENT_PMSUSPENDED_DISK = 1, /* Guest was PM suspended to disk (Since: v1.0.0) */
+    VIR_DOMAIN_EVENT_PMSUSPENDED_MEMORY = 0, /* Guest was PM suspended to memory (Since: 0.10.2) */
+    VIR_DOMAIN_EVENT_PMSUSPENDED_DISK = 1, /* Guest was PM suspended to disk (Since: 1.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_PMSUSPENDED_LAST /* (Since: v0.10.2) */
+    VIR_DOMAIN_EVENT_PMSUSPENDED_LAST /* (Since: 0.10.2) */
 # endif
 } virDomainEventPMSuspendedDetailType;
 
@@ -3846,14 +3846,14 @@ typedef enum {
  *
  * Details on the cause of a 'crashed' lifecycle event
  *
- * Since: v1.1.1
+ * Since: 1.1.1
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0, /* Guest was panicked (Since: v1.1.1) */
-    VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED = 1, /* Guest was crashloaded (Since: v6.1.0) */
+    VIR_DOMAIN_EVENT_CRASHED_PANICKED = 0, /* Guest was panicked (Since: 1.1.1) */
+    VIR_DOMAIN_EVENT_CRASHED_CRASHLOADED = 1, /* Guest was crashloaded (Since: 6.1.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_CRASHED_LAST /* (Since: v1.1.1) */
+    VIR_DOMAIN_EVENT_CRASHED_LAST /* (Since: 1.1.1) */
 # endif
 } virDomainEventCrashedDetailType;
 
@@ -3862,17 +3862,17 @@ typedef enum {
  *
  * Recipient of a memory failure event.
  *
- * Since: v6.9.0
+ * Since: 6.9.0
  */
 typedef enum {
-    /* memory failure at hypersivor memory address space (Since: v6.9.0) */
+    /* memory failure at hypersivor memory address space (Since: 6.9.0) */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_HYPERVISOR = 0,
 
-    /* memory failure at guest memory address space (Since: v6.9.0) */
+    /* memory failure at guest memory address space (Since: 6.9.0) */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_GUEST = 1,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_LAST /* (Since: v6.9.0) */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_LAST /* (Since: 6.9.0) */
 # endif
 } virDomainMemoryFailureRecipientType;
 
@@ -3882,13 +3882,13 @@ typedef enum {
  *
  * Action of a memory failure event.
  *
- * Since: v6.9.0
+ * Since: 6.9.0
  */
 typedef enum {
     /* the memory failure could be ignored. This will only be the case for
      * action-optional failures.
      *
-     * Since: v6.9.0
+     * Since: 6.9.0
      */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_IGNORE = 0,
 
@@ -3896,26 +3896,26 @@ typedef enum {
      * mechanism, and hypervisor could inject the MCE into the guest
      * successfully.
      *
-     * Since: v6.9.0
+     * Since: 6.9.0
      */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_INJECT = 1,
 
     /* the failure is unrecoverable.  This occurs for action-required failures
      * if the recipient is the hypervisor; hypervisor will exit.
      *
-     * Since: v6.9.0
+     * Since: 6.9.0
      */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_FATAL = 2,
 
     /* the failure is unrecoverable but confined to the guest. This occurs if
      * the recipient is a guest which is not ready to handle memory failures.
      *
-     * Since: v6.9.0
+     * Since: 6.9.0
      */
     VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_RESET = 3,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_LAST /* (Since: v6.9.0) */
+    VIR_DOMAIN_EVENT_MEMORY_FAILURE_ACTION_LAST /* (Since: 6.9.0) */
 # endif
 } virDomainMemoryFailureActionType;
 
@@ -3923,17 +3923,17 @@ typedef enum {
 /**
  * virDomainMemoryFailureFlags:
  *
- * Since: v6.9.0
+ * Since: 6.9.0
  */
 typedef enum {
     /* whether a memory failure event is action-required or action-optional
-     * (e.g. a failure during memory scrub). (Since: v6.9.0) */
+     * (e.g. a failure during memory scrub). (Since: 6.9.0) */
     VIR_DOMAIN_MEMORY_FAILURE_ACTION_REQUIRED = (1 << 0),
 
     /* whether the failure occurred while the previous failure was still in
      * progress.
      *
-     * Since: v6.9.0
+     * Since: 6.9.0
      */
     VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE = (1 << 1),
 } virDomainMemoryFailureFlags;
@@ -3951,7 +3951,7 @@ typedef enum {
  *
  * Returns 0 (the return value is currently ignored)
  *
- * Since: v0.5.0
+ * Since: 0.5.0
  */
 typedef int (*virConnectDomainEventCallback)(virConnectPtr conn,
                                              virDomainPtr dom,
@@ -3975,32 +3975,32 @@ int virDomainIsUpdated(virDomainPtr dom);
 /**
  * virDomainJobType:
  *
- * Since: v0.7.7
+ * Since: 0.7.7
  */
 typedef enum {
-    VIR_DOMAIN_JOB_NONE      = 0, /* No job is active (Since: v0.7.7) */
-    VIR_DOMAIN_JOB_BOUNDED   = 1, /* Job with a finite completion time (Since: v0.7.7) */
-    VIR_DOMAIN_JOB_UNBOUNDED = 2, /* Job without a finite completion time (Since: v0.7.7) */
-    VIR_DOMAIN_JOB_COMPLETED = 3, /* Job has finished, but isn't cleaned up (Since: v0.7.7) */
-    VIR_DOMAIN_JOB_FAILED    = 4, /* Job hit error, but isn't cleaned up (Since: v0.7.7) */
-    VIR_DOMAIN_JOB_CANCELLED = 5, /* Job was aborted, but isn't cleaned up (Since: v0.7.7) */
+    VIR_DOMAIN_JOB_NONE      = 0, /* No job is active (Since: 0.7.7) */
+    VIR_DOMAIN_JOB_BOUNDED   = 1, /* Job with a finite completion time (Since: 0.7.7) */
+    VIR_DOMAIN_JOB_UNBOUNDED = 2, /* Job without a finite completion time (Since: 0.7.7) */
+    VIR_DOMAIN_JOB_COMPLETED = 3, /* Job has finished, but isn't cleaned up (Since: 0.7.7) */
+    VIR_DOMAIN_JOB_FAILED    = 4, /* Job hit error, but isn't cleaned up (Since: 0.7.7) */
+    VIR_DOMAIN_JOB_CANCELLED = 5, /* Job was aborted, but isn't cleaned up (Since: 0.7.7) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_JOB_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_JOB_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainJobType;
 
 /**
  * virDomainJobInfo:
  *
- * Since: v0.7.7
+ * Since: 0.7.7
  */
 typedef struct _virDomainJobInfo virDomainJobInfo;
 
 /**
  * virDomainJobInfoPtr:
  *
- * Since: v0.7.7
+ * Since: 0.7.7
  */
 typedef virDomainJobInfo *virDomainJobInfoPtr;
 struct _virDomainJobInfo {
@@ -4043,13 +4043,13 @@ struct _virDomainJobInfo {
  * Flags OR'ed together to provide specific behavior when querying domain
  * job statistics.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 typedef enum {
     VIR_DOMAIN_JOB_STATS_COMPLETED = 1 << 0, /* return stats of a recently
-                                              * completed job (Since: v1.2.9) */
+                                              * completed job (Since: 1.2.9) */
     VIR_DOMAIN_JOB_STATS_KEEP_COMPLETED = 1 << 1, /* don't remove completed
-                                                     stats when reading them (Since: v6.0.0) */
+                                                     stats when reading them (Since: 6.0.0) */
 } virDomainGetJobStatsFlags;
 
 int virDomainGetJobInfo(virDomainPtr dom,
@@ -4064,22 +4064,22 @@ int virDomainAbortJob(virDomainPtr dom);
 /**
  * virDomainJobOperation:
  *
- * Since: v3.3.0
+ * Since: 3.3.0
  */
 typedef enum {
-    VIR_DOMAIN_JOB_OPERATION_UNKNOWN = 0, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_START = 1, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_SAVE = 2, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_RESTORE = 3, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN = 4, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT = 5, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT = 6, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT = 7, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_DUMP = 8, /* (Since: v3.3.0) */
-    VIR_DOMAIN_JOB_OPERATION_BACKUP = 9, /* (Since: v6.0.0) */
+    VIR_DOMAIN_JOB_OPERATION_UNKNOWN = 0, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_START = 1, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_SAVE = 2, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_RESTORE = 3, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN = 4, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT = 5, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT = 6, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_SNAPSHOT_REVERT = 7, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_DUMP = 8, /* (Since: 3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_BACKUP = 9, /* (Since: 6.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_JOB_OPERATION_LAST /* (Since: v3.3.0) */
+    VIR_DOMAIN_JOB_OPERATION_LAST /* (Since: 3.3.0) */
 # endif
 } virDomainJobOperation;
 
@@ -4090,7 +4090,7 @@ typedef enum {
  * VIR_TYPED_PARAM_INT. The values correspond to the items in
  * virDomainJobOperation enum.
  *
- * Since: v3.3.0
+ * Since: 3.3.0
  */
 # define VIR_DOMAIN_JOB_OPERATION                "operation"
 
@@ -4102,7 +4102,7 @@ typedef enum {
  *
  * This field corresponds to timeElapsed field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_TIME_ELAPSED             "time_elapsed"
 
@@ -4114,7 +4114,7 @@ typedef enum {
  * flow from the source host to the destination host,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.15
+ * Since: 1.2.15
  */
 # define VIR_DOMAIN_JOB_TIME_ELAPSED_NET         "time_elapsed_net"
 
@@ -4126,7 +4126,7 @@ typedef enum {
  *
  * This field corresponds to timeRemaining field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_TIME_REMAINING           "time_remaining"
 
@@ -4138,7 +4138,7 @@ typedef enum {
  * between the time guest CPUs were paused and the time they were resumed
  * is reported for completed migration.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DOWNTIME                 "downtime"
 
@@ -4149,7 +4149,7 @@ typedef enum {
  * the time required to transfer control flow from the source host to the
  * destination host, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.15
+ * Since: 1.2.15
  */
 # define VIR_DOMAIN_JOB_DOWNTIME_NET             "downtime_net"
 
@@ -4160,7 +4160,7 @@ typedef enum {
  * the migration in the 'setup' phase before the iterations begin, as
  * VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_JOB_SETUP_TIME               "setup_time"
 
@@ -4177,7 +4177,7 @@ typedef enum {
  *
  * This field corresponds to dataTotal field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_TOTAL               "data_total"
 
@@ -4189,7 +4189,7 @@ typedef enum {
  *
  * This field corresponds to dataProcessed field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_PROCESSED           "data_processed"
 
@@ -4201,7 +4201,7 @@ typedef enum {
  *
  * This field corresponds to dataRemaining field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DATA_REMAINING           "data_remaining"
 
@@ -4213,7 +4213,7 @@ typedef enum {
  *
  * This field corresponds to memTotal field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_TOTAL             "memory_total"
 
@@ -4225,7 +4225,7 @@ typedef enum {
  *
  * This field corresponds to memProcessed field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_PROCESSED         "memory_processed"
 
@@ -4237,7 +4237,7 @@ typedef enum {
  *
  * This field corresponds to memRemaining field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_REMAINING         "memory_remaining"
 
@@ -4251,7 +4251,7 @@ typedef enum {
  * The most common example of such pages are zero pages, i.e., pages filled
  * with zero bytes.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_CONSTANT          "memory_constant"
 
@@ -4263,7 +4263,7 @@ typedef enum {
  * byte and which could not be compressed) transferred since the beginning
  * of the migration job, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_NORMAL            "memory_normal"
 
@@ -4275,7 +4275,7 @@ typedef enum {
  *
  * See VIR_DOMAIN_JOB_MEMORY_NORMAL for more details.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_MEMORY_NORMAL_BYTES      "memory_normal_bytes"
 
@@ -4285,7 +4285,7 @@ typedef enum {
  * virDomainGetJobStats field: network throughput used while migrating
  * memory in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_JOB_MEMORY_BPS               "memory_bps"
 
@@ -4295,7 +4295,7 @@ typedef enum {
  * per second, as VIR_TYPED_PARAM_ULLONG. This statistics makes sense only
  * when live migration is running.
  *
- * Since: v1.3.1
+ * Since: 1.3.1
  */
 # define VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE        "memory_dirty_rate"
 
@@ -4308,7 +4308,7 @@ typedef enum {
  * VIR_DOMAIN_JOB_MEMORY_DIRTY_RATE or VIR_DOMAIN_JOB_COMPRESSION_PAGES
  * to bytes.
  *
- * Since: v3.9.0
+ * Since: 3.9.0
  */
 # define VIR_DOMAIN_JOB_MEMORY_PAGE_SIZE         "memory_page_size"
 
@@ -4321,7 +4321,7 @@ typedef enum {
  * every time a new iteration is started to transfer memory pages dirtied
  * since the last iteration.
  *
- * Since: v1.3.1
+ * Since: 1.3.1
  */
 # define VIR_DOMAIN_JOB_MEMORY_ITERATION         "memory_iteration"
 
@@ -4333,7 +4333,7 @@ typedef enum {
  * This counter is incremented whenever the migrated domain tries to access
  * a memory page which has not been transferred from the source host yet.
  *
- * Since: v5.0.0
+ * Since: 5.0.0
  */
 # define VIR_DOMAIN_JOB_MEMORY_POSTCOPY_REQS     "memory_postcopy_requests"
 
@@ -4345,7 +4345,7 @@ typedef enum {
  *
  * This field corresponds to fileTotal field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_TOTAL               "disk_total"
 
@@ -4357,7 +4357,7 @@ typedef enum {
  *
  * This field corresponds to fileProcessed field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_PROCESSED           "disk_processed"
 
@@ -4369,7 +4369,7 @@ typedef enum {
  *
  * This field corresponds to fileRemaining field in virDomainJobInfo.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_DISK_REMAINING           "disk_remaining"
 
@@ -4379,7 +4379,7 @@ typedef enum {
  * virDomainGetJobStats field: network throughput used while migrating
  * disks in Bytes per second, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_JOB_DISK_BPS                 "disk_bps"
 
@@ -4390,7 +4390,7 @@ typedef enum {
  * compressing repeatedly transferred memory pages during live migration,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_CACHE        "compression_cache"
 
@@ -4400,7 +4400,7 @@ typedef enum {
  * virDomainGetJobStats field: number of compressed bytes transferred
  * since the beginning of migration, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_BYTES        "compression_bytes"
 
@@ -4410,7 +4410,7 @@ typedef enum {
  * virDomainGetJobStats field: number of compressed pages transferred
  * since the beginning of migration, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_PAGES        "compression_pages"
 
@@ -4421,7 +4421,7 @@ typedef enum {
  * were not found in compression cache and thus could not be compressed,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_CACHE_MISSES "compression_cache_misses"
 
@@ -4433,7 +4433,7 @@ typedef enum {
  * the result of compression was larger than the original page as a whole,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.0.3
+ * Since: 1.0.3
  */
 # define VIR_DOMAIN_JOB_COMPRESSION_OVERFLOW     "compression_overflow"
 
@@ -4444,7 +4444,7 @@ typedef enum {
  * to when auto-convergence decided migration was not converging, as
  * VIR_TYPED_PARAM_INT.
  *
- * Since: v2.0.0
+ * Since: 2.0.0
  */
 # define VIR_DOMAIN_JOB_AUTO_CONVERGE_THROTTLE  "auto_converge_throttle"
 
@@ -4454,7 +4454,7 @@ typedef enum {
  * virDomainGetJobStats field: Present only in statistics for a completed job.
  * Successful completion of the job as VIR_TYPED_PARAM_BOOLEAN.
  *
- * Since: v6.0.0
+ * Since: 6.0.0
  */
 # define VIR_DOMAIN_JOB_SUCCESS "success"
 
@@ -4464,7 +4464,7 @@ typedef enum {
  * virDomainGetJobStats field: Present only in statistics for a completed job.
  * Optional error message for a failed job.
  *
- * Since: v6.3.0
+ * Since: 6.3.0
  */
 # define VIR_DOMAIN_JOB_ERRMSG "errmsg"
 
@@ -4474,7 +4474,7 @@ typedef enum {
  * virDomainGetJobStats field: current usage of temporary disk space for the
  * job in bytes as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v6.0.0
+ * Since: 6.0.0
  */
 # define VIR_DOMAIN_JOB_DISK_TEMP_USED "disk_temp_used"
 
@@ -4483,7 +4483,7 @@ typedef enum {
  * virDomainGetJobStats field: possible total temporary disk space for the
  * job in bytes as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v6.0.0
+ * Since: 6.0.0
  */
 # define VIR_DOMAIN_JOB_DISK_TEMP_TOTAL "disk_temp_total"
 
@@ -4499,7 +4499,7 @@ typedef enum {
  * passed in a different parameter position; use VIR_DOMAIN_EVENT_CALLBACK()
  * when registering an appropriate handler.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -4515,7 +4515,7 @@ typedef void (*virConnectDomainEventGenericCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_RTC_CHANGE with virConnectDomainEventRegisterAny()
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
@@ -4527,19 +4527,19 @@ typedef void (*virConnectDomainEventRTCChangeCallback)(virConnectPtr conn,
  *
  * The action that is to be taken due to the watchdog device firing
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_WATCHDOG_NONE = 0, /* No action, watchdog ignored (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_PAUSE,    /* Guest CPUs are paused (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_RESET,    /* Guest CPUs are reset (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF, /* Guest is forcibly powered off (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN, /* Guest is requested to gracefully shutdown (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,    /* No action, a debug message logged (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_WATCHDOG_INJECTNMI,/* Inject a non-maskable interrupt into guest (Since: v1.2.17) */
+    VIR_DOMAIN_EVENT_WATCHDOG_NONE = 0, /* No action, watchdog ignored (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_PAUSE,    /* Guest CPUs are paused (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_RESET,    /* Guest CPUs are reset (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_POWEROFF, /* Guest is forcibly powered off (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_SHUTDOWN, /* Guest is requested to gracefully shutdown (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_DEBUG,    /* No action, a debug message logged (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_WATCHDOG_INJECTNMI,/* Inject a non-maskable interrupt into guest (Since: 1.2.17) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_WATCHDOG_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_WATCHDOG_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventWatchdogAction;
 
@@ -4553,7 +4553,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_WATCHDOG with virConnectDomainEventRegisterAny()
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4565,15 +4565,15 @@ typedef void (*virConnectDomainEventWatchdogCallback)(virConnectPtr conn,
  *
  * The action that is to be taken due to an IO error occurring
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_IO_ERROR_PAUSE,     /* Guest CPUs are paused (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_IO_ERROR_REPORT,    /* IO error reported to guest OS (Since: v0.8.0) */
+    VIR_DOMAIN_EVENT_IO_ERROR_NONE = 0,  /* No action, IO error ignored (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_IO_ERROR_PAUSE,     /* Guest CPUs are paused (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_IO_ERROR_REPORT,    /* IO error reported to guest OS (Since: 0.8.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_IO_ERROR_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_IO_ERROR_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventIOErrorAction;
 
@@ -4590,7 +4590,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_IO_ERROR with virConnectDomainEventRegisterAny()
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -4618,7 +4618,7 @@ typedef void (*virConnectDomainEventIOErrorCallback)(virConnectPtr conn,
  * Otherwise, @reason will be "", although future strings may be added
  * if determination of other error types becomes possible.
  *
- * Since: v0.8.1
+ * Since: 0.8.1
  */
 typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4633,15 +4633,15 @@ typedef void (*virConnectDomainEventIOErrorReasonCallback)(virConnectPtr conn,
  *
  * The phase of the graphics client connection
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0,  /* Initial socket connection established (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE,   /* Authentication & setup completed (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT,   /* Final socket disconnection (Since: v0.8.0) */
+    VIR_DOMAIN_EVENT_GRAPHICS_CONNECT = 0,  /* Initial socket connection established (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_GRAPHICS_INITIALIZE,   /* Authentication & setup completed (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_GRAPHICS_DISCONNECT,   /* Final socket disconnection (Since: 0.8.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_GRAPHICS_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_GRAPHICS_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventGraphicsPhase;
 
@@ -4650,15 +4650,15 @@ typedef enum {
  *
  * The type of address for the connection
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6,  /* IPv6 address (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX,  /* UNIX socket path (Since: v0.9.7) */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV4,  /* IPv4 address (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_IPV6,  /* IPv6 address (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_UNIX,  /* UNIX socket path (Since: 0.9.7) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_GRAPHICS_ADDRESS_LAST /* (Since: 0.9.10) */
 # endif
 } virDomainEventGraphicsAddressType;
 
@@ -4668,7 +4668,7 @@ typedef enum {
  *
  * The data structure containing connection address details
  *
- * Since: v1.0.0
+ * Since: 1.0.0
  */
 struct _virDomainEventGraphicsAddress {
     int family;               /* Address family, virDomainEventGraphicsAddressType */
@@ -4679,14 +4679,14 @@ struct _virDomainEventGraphicsAddress {
 /**
  * virDomainEventGraphicsAddress:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef struct _virDomainEventGraphicsAddress virDomainEventGraphicsAddress;
 
 /**
  * virDomainEventGraphicsAddressPtr:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef virDomainEventGraphicsAddress *virDomainEventGraphicsAddressPtr;
 
@@ -4707,14 +4707,14 @@ struct _virDomainEventGraphicsSubjectIdentity {
 /**
  * virDomainEventGraphicsSubjectIdentity:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef struct _virDomainEventGraphicsSubjectIdentity virDomainEventGraphicsSubjectIdentity;
 
 /**
  * virDomainEventGraphicsSubjectIdentityPtr:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIdentityPtr;
 
@@ -4727,7 +4727,7 @@ typedef virDomainEventGraphicsSubjectIdentity *virDomainEventGraphicsSubjectIden
  * A subject will have zero or more identities. The types of
  * identity differ according to the authentication scheme
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 struct _virDomainEventGraphicsSubject {
     int nidentity;                                /* Number of identities in array*/
@@ -4737,14 +4737,14 @@ struct _virDomainEventGraphicsSubject {
 /**
  * virDomainEventGraphicsSubject:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef struct _virDomainEventGraphicsSubject virDomainEventGraphicsSubject;
 
 /**
  * virDomainEventGraphicsSubjectPtr:
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
 
@@ -4763,7 +4763,7 @@ typedef virDomainEventGraphicsSubject *virDomainEventGraphicsSubjectPtr;
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_GRAPHICS with virConnectDomainEventRegisterAny()
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4780,16 +4780,16 @@ typedef void (*virConnectDomainEventGraphicsCallback)(virConnectPtr conn,
  * Tracks status of a virDomainBlockPull(), virDomainBlockRebase(),
  * virDomainBlockCopy(), or virDomainBlockCommit() operation
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef enum {
-    VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0, /* (Since: v0.9.4) */
-    VIR_DOMAIN_BLOCK_JOB_FAILED = 1, /* (Since: v0.9.4) */
-    VIR_DOMAIN_BLOCK_JOB_CANCELED = 2, /* (Since: v0.9.12) */
-    VIR_DOMAIN_BLOCK_JOB_READY = 3, /* (Since: v1.0.0) */
+    VIR_DOMAIN_BLOCK_JOB_COMPLETED = 0, /* (Since: 0.9.4) */
+    VIR_DOMAIN_BLOCK_JOB_FAILED = 1, /* (Since: 0.9.4) */
+    VIR_DOMAIN_BLOCK_JOB_CANCELED = 2, /* (Since: 0.9.12) */
+    VIR_DOMAIN_BLOCK_JOB_READY = 3, /* (Since: 1.0.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_BLOCK_JOB_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_BLOCK_JOB_LAST /* (Since: 0.9.10) */
 # endif
 } virConnectDomainEventBlockJobStatus;
 
@@ -4817,7 +4817,7 @@ typedef enum {
  * then @disk will contain the device target shorthand (the <target
  * dev='...'/> sub-element, such as "vda").
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4831,25 +4831,25 @@ typedef void (*virConnectDomainEventBlockJobCallback)(virConnectPtr conn,
  *
  * The reason describing why this callback is called
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 typedef enum {
     /* Removable media changed to empty according to startup policy as source
      * was missing. oldSrcPath is set, newSrcPath is NULL
      *
-     * Since: v0.9.7
+     * Since: 0.9.7
      * */
     VIR_DOMAIN_EVENT_DISK_CHANGE_MISSING_ON_START = 0,
 
     /* Disk was dropped from domain as source file was missing.
      * oldSrcPath is set, newSrcPath is NULL
      *
-     * Since: v1.1.2
+     * Since: 1.1.2
      * */
     VIR_DOMAIN_EVENT_DISK_DROP_MISSING_ON_START = 1,
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_DISK_CHANGE_LAST /* (Since: v0.9.10) */
+    VIR_DOMAIN_EVENT_DISK_CHANGE_LAST /* (Since: 0.9.10) */
 # endif
 } virConnectDomainEventDiskChangeReason;
 
@@ -4872,7 +4872,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DISK_CHANGE with virConnectDomainEventRegisterAny()
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
                                                         virDomainPtr dom,
@@ -4887,14 +4887,14 @@ typedef void (*virConnectDomainEventDiskChangeCallback)(virConnectPtr conn,
  *
  * The reason describing why the callback was called
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0, /* (Since: v0.9.11) */
-    VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE, /* (Since: v0.9.11) */
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_OPEN = 0, /* (Since: 0.9.11) */
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_CLOSE, /* (Since: 0.9.11) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST /* (Since: v0.9.11) */
+    VIR_DOMAIN_EVENT_TRAY_CHANGE_LAST /* (Since: 0.9.11) */
 # endif
 } virDomainEventTrayChangeReason;
 
@@ -4911,7 +4911,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_TRAY_CHANGE with virConnectDomainEventRegisterAny()
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
                                                         virDomainPtr dom,
@@ -4932,7 +4932,7 @@ typedef void (*virConnectDomainEventTrayChangeCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMWAKEUP with virConnectDomainEventRegisterAny()
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
                                                       virDomainPtr dom,
@@ -4952,7 +4952,7 @@ typedef void (*virConnectDomainEventPMWakeupCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMSUSPEND with virConnectDomainEventRegisterAny()
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
                                                        virDomainPtr dom,
@@ -4970,7 +4970,7 @@ typedef void (*virConnectDomainEventPMSuspendCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE with virConnectDomainEventRegisterAny()
  *
- * Since: v0.10.0
+ * Since: 0.10.0
  */
 typedef void (*virConnectDomainEventBalloonChangeCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -4990,7 +4990,7 @@ typedef void (*virConnectDomainEventBalloonChangeCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK with virConnectDomainEventRegisterAny()
  *
- * Since: v1.0.0
+ * Since: 1.0.0
  */
 typedef void (*virConnectDomainEventPMSuspendDiskCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -5009,7 +5009,7 @@ typedef void (*virConnectDomainEventPMSuspendDiskCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED with virConnectDomainEventRegisterAny()
  *
- * Since: v1.1.1
+ * Since: 1.1.1
  */
 typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -5028,7 +5028,7 @@ typedef void (*virConnectDomainEventDeviceRemovedCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_DEVICE_ADDED with virConnectDomainEventRegisterAny()
  *
- * Since: v1.2.15
+ * Since: 1.2.15
  */
 typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
                                                          virDomainPtr dom,
@@ -5049,7 +5049,7 @@ typedef void (*virConnectDomainEventDeviceAddedCallback)(virConnectPtr conn,
  * VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED with
  * virConnectDomainEventRegisterAny().
  *
- * Since: v1.3.4
+ * Since: 1.3.4
  */
 typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr conn,
                                                                  virDomainPtr dom,
@@ -5069,7 +5069,7 @@ typedef void (*virConnectDomainEventDeviceRemovalFailedCallback)(virConnectPtr c
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_METADATA_CHANGE with virConnectDomainEventRegisterAny().
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 typedef void (*virConnectDomainEventMetadataChangeCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5094,7 +5094,7 @@ typedef void (*virConnectDomainEventMetadataChangeCallback)(virConnectPtr conn,
  * VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION with
  * virConnectDomainEventRegisterAny().
  *
- * Since: v1.3.2
+ * Since: 1.3.2
  */
 typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr conn,
                                                                 virDomainPtr dom,
@@ -5120,7 +5120,7 @@ typedef void (*virConnectDomainEventMigrationIterationCallback)(virConnectPtr co
  * VIR_DOMAIN_EVENT_ID_JOB_COMPLETED with
  * virConnectDomainEventRegisterAny().
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
                                                           virDomainPtr dom,
@@ -5135,7 +5135,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * appended to the parameter name, for example "cputune.vcpupin1",
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPUPIN "cputune.vcpupin%u"
 
@@ -5145,7 +5145,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents formatted pinning for emulator process,
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATORPIN "cputune.emulatorpin"
 
@@ -5156,7 +5156,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * appended to the parameter name, for example "cputune.iothreadpin1",
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREADSPIN "cputune.iothreadpin%u"
 
@@ -5166,7 +5166,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents proportional weight of the scheduler used on the
  * host cpu, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_CPU_SHARES "cputune.cpu_shares"
 
@@ -5176,7 +5176,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the enforcement period for a quota, in microseconds,
  * for whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_PERIOD "cputune.global_period"
 
@@ -5186,7 +5186,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the maximum bandwidth to be used within a period for
  * whole domain, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
  *
- * Since: v1.3.3
+ * Since: 1.3.3
  */
 # define VIR_DOMAIN_TUNABLE_CPU_GLOBAL_QUOTA "cputune.global_quota"
 
@@ -5196,7 +5196,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the enforcement period for a quota, in microseconds,
  * for vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPU_PERIOD "cputune.vcpu_period"
 
@@ -5206,7 +5206,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the maximum bandwidth to be used within a period for
  * vcpus only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_VCPU_QUOTA "cputune.vcpu_quota"
 
@@ -5217,7 +5217,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * when using the posix scheduler, for all emulator activity not tied to
  * vcpus, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATOR_PERIOD "cputune.emulator_period"
 
@@ -5228,7 +5228,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * all emulator activity not tied to vcpus, when using the posix scheduler,
  * as an VIR_TYPED_PARAM_LLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_CPU_EMULATOR_QUOTA "cputune.emulator_quota"
 
@@ -5238,7 +5238,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the enforcement period for a quota, in microseconds, for
  * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_PERIOD "cputune.iothread_period"
 
@@ -5248,7 +5248,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the maximum bandwidth to be used within a period for
  * iothreads only, when using the posix scheduler, as VIR_TYPED_PARAM_LLONG.
  *
- * Since: v2.2.0
+ * Since: 2.2.0
  */
 # define VIR_DOMAIN_TUNABLE_CPU_IOTHREAD_QUOTA "cputune.iothread_quota"
 
@@ -5258,7 +5258,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the name of guest disk for which the values are updated,
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_DISK "blkdeviotune.disk"
 
@@ -5268,7 +5268,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the total throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC "blkdeviotune.total_bytes_sec"
 
@@ -5278,7 +5278,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the read throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC "blkdeviotune.read_bytes_sec"
 
@@ -5288,7 +5288,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the write throughput limit in bytes per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC "blkdeviotune.write_bytes_sec"
 
@@ -5298,7 +5298,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the total I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC "blkdeviotune.total_iops_sec"
 
@@ -5308,7 +5308,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the read I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC "blkdeviotune.read_iops_sec"
 
@@ -5318,7 +5318,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the write I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC "blkdeviotune.write_iops_sec"
 
@@ -5328,7 +5328,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the total throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX "blkdeviotune.total_bytes_sec_max"
 
@@ -5338,7 +5338,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the read throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX "blkdeviotune.read_bytes_sec_max"
 
@@ -5348,7 +5348,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the write throughput limit during bursts in
  * maximum bytes per second, as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX "blkdeviotune.write_bytes_sec_max"
 
@@ -5358,7 +5358,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the total maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX "blkdeviotune.total_iops_sec_max"
 
@@ -5368,7 +5368,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the read maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX "blkdeviotune.read_iops_sec_max"
 
@@ -5378,7 +5378,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the write maximum I/O operations per second during bursts,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX "blkdeviotune.write_iops_sec_max"
 
@@ -5388,7 +5388,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the size maximum I/O operations per second,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_SIZE_IOPS_SEC "blkdeviotune.size_iops_sec"
 
@@ -5398,7 +5398,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * Macro represents the group name to be used,
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v3.0.0
+ * Since: 3.0.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_GROUP_NAME "blkdeviotune.group_name"
 
@@ -5409,7 +5409,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.total_bytes_sec_max,
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_BYTES_SEC_MAX_LENGTH "blkdeviotune.total_bytes_sec_max_length"
 
@@ -5420,7 +5420,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.read_bytes_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_BYTES_SEC_MAX_LENGTH "blkdeviotune.read_bytes_sec_max_length"
 
@@ -5431,7 +5431,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.write_bytes_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_BYTES_SEC_MAX_LENGTH "blkdeviotune.write_bytes_sec_max_length"
 
@@ -5442,7 +5442,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.total_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_TOTAL_IOPS_SEC_MAX_LENGTH "blkdeviotune.total_iops_sec_max_length"
 
@@ -5453,7 +5453,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.read_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_READ_IOPS_SEC_MAX_LENGTH "blkdeviotune.read_iops_sec_max_length"
 
@@ -5464,7 +5464,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * for the blkdeviotune.write_iops_sec_max
  * as VIR_TYPED_PARAM_ULLONG.
  *
- * Since: v2.4.0
+ * Since: 2.4.0
  */
 # define VIR_DOMAIN_TUNABLE_BLKDEV_WRITE_IOPS_SEC_MAX_LENGTH "blkdeviotune.write_iops_sec_max_length"
 
@@ -5487,7 +5487,7 @@ typedef void (*virConnectDomainEventJobCompletedCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_TUNABLE with virConnectDomainEventRegisterAny()
  *
- * Since: v1.2.9
+ * Since: 1.2.9
  */
 typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
                                                      virDomainPtr dom,
@@ -5499,29 +5499,29 @@ typedef void (*virConnectDomainEventTunableCallback)(virConnectPtr conn,
 /**
  * virConnectDomainEventAgentLifecycleState:
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 typedef enum {
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED = 1, /* agent connected (Since: v1.2.11) */
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED = 2, /* agent disconnected (Since: v1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_CONNECTED = 1, /* agent connected (Since: 1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_DISCONNECTED = 2, /* agent disconnected (Since: 1.2.11) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST /* (Since: v1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_STATE_LAST /* (Since: 1.2.11) */
 # endif
 } virConnectDomainEventAgentLifecycleState;
 
 /**
  * virConnectDomainEventAgentLifecycleReason:
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 typedef enum {
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN = 0, /* unknown state change reason (Since: v1.2.11) */
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED = 1, /* state changed due to domain start (Since: v1.2.11) */
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL = 2, /* channel state changed (Since: v1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_UNKNOWN = 0, /* unknown state change reason (Since: 1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_DOMAIN_STARTED = 1, /* state changed due to domain start (Since: 1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_CHANNEL = 2, /* channel state changed (Since: 1.2.11) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST /* (Since: v1.2.11) */
+    VIR_CONNECT_DOMAIN_EVENT_AGENT_LIFECYCLE_REASON_LAST /* (Since: 1.2.11) */
 # endif
 } virConnectDomainEventAgentLifecycleReason;
 
@@ -5539,7 +5539,7 @@ typedef enum {
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE with virConnectDomainEventRegisterAny()
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5570,7 +5570,7 @@ typedef void (*virConnectDomainEventAgentLifecycleCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD with virConnectDomainEventRegisterAny()
  *
- * Since: v3.2.0
+ * Since: 3.2.0
  */
 typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
                                                             virDomainPtr dom,
@@ -5597,7 +5597,7 @@ typedef void (*virConnectDomainEventBlockThresholdCallback)(virConnectPtr conn,
  * The callback signature to use when registering for an event of type
  * VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE with virConnectDomainEventRegisterAny()
  *
- * Since: v6.9.0
+ * Since: 6.9.0
  */
 typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
                                                            virDomainPtr dom,
@@ -5623,7 +5623,7 @@ typedef void (*virConnectDomainEventMemoryFailureCallback)(virConnectPtr conn,
  * VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE with
  * virConnectDomainEventRegisterAny().
  *
- * Since: v7.9.0
+ * Since: 7.9.0
  */
 typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPtr conn,
                                                                     virDomainPtr dom,
@@ -5638,7 +5638,7 @@ typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPt
  * Used to cast the event specific callback into the generic one
  * for use for virConnectDomainEventRegisterAny()
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 # define VIR_DOMAIN_EVENT_CALLBACK(cb) ((virConnectDomainEventGenericCallback)(cb))
 
@@ -5650,36 +5650,36 @@ typedef void (*virConnectDomainEventMemoryDeviceSizeChangeCallback)(virConnectPt
  * virConnectDomainEventRegisterAny().  Each event id determines which
  * signature of callback function will be used.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef enum {
-    VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_IO_ERROR = 4,        /* virConnectDomainEventIOErrorCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_GRAPHICS = 5,        /* virConnectDomainEventGraphicsCallback (Since: v0.8.0) */
-    VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6, /* virConnectDomainEventIOErrorReasonCallback (Since: v0.8.1) */
-    VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7,   /* virConnectDomainEventGenericCallback (Since: v0.9.2) */
-    VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8,       /* virConnectDomainEventBlockJobCallback (Since: v0.9.4) */
-    VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback (Since: v0.9.7) */
-    VIR_DOMAIN_EVENT_ID_TRAY_CHANGE = 10,    /* virConnectDomainEventTrayChangeCallback (Since: v0.9.11) */
-    VIR_DOMAIN_EVENT_ID_PMWAKEUP = 11,       /* virConnectDomainEventPMWakeupCallback (Since: v0.9.11) */
-    VIR_DOMAIN_EVENT_ID_PMSUSPEND = 12,      /* virConnectDomainEventPMSuspendCallback (Since: v0.9.11) */
-    VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE = 13, /* virConnectDomainEventBalloonChangeCallback (Since: v0.10.0) */
-    VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback (Since: v1.0.0) */
-    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback (Since: v1.1.1) */
-    VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback (Since: v1.2.6) */
-    VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback (Since: v1.2.9) */
-    VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback (Since: v1.2.11) */
-    VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback (Since: v1.2.15) */
-    VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback (Since: v1.3.2) */
-    VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback (Since: v1.3.3) */
-    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback (Since: v1.3.4) */
-    VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback (Since: v3.0.0) */
-    VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback (Since: v3.2.0) */
-    VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback (Since: v6.9.0) */
-    VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback (Since: v7.9.0) */
+    VIR_DOMAIN_EVENT_ID_LIFECYCLE = 0,       /* virConnectDomainEventCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_REBOOT = 1,          /* virConnectDomainEventGenericCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_RTC_CHANGE = 2,      /* virConnectDomainEventRTCChangeCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_WATCHDOG = 3,        /* virConnectDomainEventWatchdogCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_IO_ERROR = 4,        /* virConnectDomainEventIOErrorCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_GRAPHICS = 5,        /* virConnectDomainEventGraphicsCallback (Since: 0.8.0) */
+    VIR_DOMAIN_EVENT_ID_IO_ERROR_REASON = 6, /* virConnectDomainEventIOErrorReasonCallback (Since: 0.8.1) */
+    VIR_DOMAIN_EVENT_ID_CONTROL_ERROR = 7,   /* virConnectDomainEventGenericCallback (Since: 0.9.2) */
+    VIR_DOMAIN_EVENT_ID_BLOCK_JOB = 8,       /* virConnectDomainEventBlockJobCallback (Since: 0.9.4) */
+    VIR_DOMAIN_EVENT_ID_DISK_CHANGE = 9,     /* virConnectDomainEventDiskChangeCallback (Since: 0.9.7) */
+    VIR_DOMAIN_EVENT_ID_TRAY_CHANGE = 10,    /* virConnectDomainEventTrayChangeCallback (Since: 0.9.11) */
+    VIR_DOMAIN_EVENT_ID_PMWAKEUP = 11,       /* virConnectDomainEventPMWakeupCallback (Since: 0.9.11) */
+    VIR_DOMAIN_EVENT_ID_PMSUSPEND = 12,      /* virConnectDomainEventPMSuspendCallback (Since: 0.9.11) */
+    VIR_DOMAIN_EVENT_ID_BALLOON_CHANGE = 13, /* virConnectDomainEventBalloonChangeCallback (Since: 0.10.0) */
+    VIR_DOMAIN_EVENT_ID_PMSUSPEND_DISK = 14, /* virConnectDomainEventPMSuspendDiskCallback (Since: 1.0.0) */
+    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVED = 15, /* virConnectDomainEventDeviceRemovedCallback (Since: 1.1.1) */
+    VIR_DOMAIN_EVENT_ID_BLOCK_JOB_2 = 16,    /* virConnectDomainEventBlockJobCallback (Since: 1.2.6) */
+    VIR_DOMAIN_EVENT_ID_TUNABLE = 17,        /* virConnectDomainEventTunableCallback (Since: 1.2.9) */
+    VIR_DOMAIN_EVENT_ID_AGENT_LIFECYCLE = 18,/* virConnectDomainEventAgentLifecycleCallback (Since: 1.2.11) */
+    VIR_DOMAIN_EVENT_ID_DEVICE_ADDED = 19,   /* virConnectDomainEventDeviceAddedCallback (Since: 1.2.15) */
+    VIR_DOMAIN_EVENT_ID_MIGRATION_ITERATION = 20, /* virConnectDomainEventMigrationIterationCallback (Since: 1.3.2) */
+    VIR_DOMAIN_EVENT_ID_JOB_COMPLETED = 21,  /* virConnectDomainEventJobCompletedCallback (Since: 1.3.3) */
+    VIR_DOMAIN_EVENT_ID_DEVICE_REMOVAL_FAILED = 22, /* virConnectDomainEventDeviceRemovalFailedCallback (Since: 1.3.4) */
+    VIR_DOMAIN_EVENT_ID_METADATA_CHANGE = 23, /* virConnectDomainEventMetadataChangeCallback (Since: 3.0.0) */
+    VIR_DOMAIN_EVENT_ID_BLOCK_THRESHOLD = 24, /* virConnectDomainEventBlockThresholdCallback (Since: 3.2.0) */
+    VIR_DOMAIN_EVENT_ID_MEMORY_FAILURE = 25,  /* virConnectDomainEventMemoryFailureCallback (Since: 6.9.0) */
+    VIR_DOMAIN_EVENT_ID_MEMORY_DEVICE_SIZE_CHANGE = 26, /* virConnectDomainEventMemoryDeviceSizeChangeCallback (Since: 7.9.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_ID_LAST
@@ -5688,7 +5688,7 @@ typedef enum {
      * added to the libvirt API. It reflects the last event ID supported
      * by this version of the libvirt API.
      *
-     * Since: v0.8.0
+     * Since: 0.8.0
      */
 # endif
 } virDomainEventID;
@@ -5709,15 +5709,15 @@ int virConnectDomainEventDeregisterAny(virConnectPtr conn,
 /**
  * virDomainConsoleFlags:
  *
- * Since: v0.9.11
+ * Since: 0.9.11
  */
 typedef enum {
 
     VIR_DOMAIN_CONSOLE_FORCE = (1 << 0), /* abort a (possibly) active console
                                             connection to force a new
-                                            connection (Since: v0.9.11) */
+                                            connection (Since: 0.9.11) */
     VIR_DOMAIN_CONSOLE_SAFE = (1 << 1), /* check if the console driver supports
-                                           safe console operations (Since: v0.9.11) */
+                                           safe console operations (Since: 0.9.11) */
 } virDomainConsoleFlags;
 
 int virDomainOpenConsole(virDomainPtr dom,
@@ -5728,12 +5728,12 @@ int virDomainOpenConsole(virDomainPtr dom,
 /**
  * virDomainChannelFlags:
  *
- * Since: v1.0.2
+ * Since: 1.0.2
  */
 typedef enum {
     VIR_DOMAIN_CHANNEL_FORCE = (1 << 0), /* abort a (possibly) active channel
                                             connection to force a new
-                                            connection (Since: v1.0.2) */
+                                            connection (Since: 1.0.2) */
 } virDomainChannelFlags;
 
 int virDomainOpenChannel(virDomainPtr dom,
@@ -5744,10 +5744,10 @@ int virDomainOpenChannel(virDomainPtr dom,
 /**
  * virDomainOpenGraphicsFlags:
  *
- * Since: v0.9.7
+ * Since: 0.9.7
  */
 typedef enum {
-    VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = (1 << 0), /* (Since: v0.9.7) */
+    VIR_DOMAIN_OPEN_GRAPHICS_SKIPAUTH = (1 << 0), /* (Since: 0.9.7) */
 } virDomainOpenGraphicsFlags;
 
 int virDomainOpenGraphics(virDomainPtr dom,
@@ -5781,14 +5781,14 @@ int virDomainFSThaw(virDomainPtr dom,
  *
  * The data structure containing mounted file systems within a guset
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 typedef struct _virDomainFSInfo virDomainFSInfo;
 
 /**
  * virDomainFSInfoPtr:
  *
- * Since: v1.2.11
+ * Since: 1.2.11
  */
 typedef virDomainFSInfo *virDomainFSInfoPtr;
 
@@ -5813,10 +5813,10 @@ int virDomainGetTime(virDomainPtr dom,
 /**
  * virDomainSetTimeFlags:
  *
- * Since: v1.2.5
+ * Since: 1.2.5
  */
 typedef enum {
-    VIR_DOMAIN_TIME_SYNC = (1 << 0), /* Re-sync domain time from domain's RTC (Since: v1.2.5) */
+    VIR_DOMAIN_TIME_SYNC = (1 << 0), /* Re-sync domain time from domain's RTC (Since: 1.2.5) */
 } virDomainSetTimeFlags;
 
 int virDomainSetTime(virDomainPtr dom,
@@ -5830,15 +5830,15 @@ int virDomainSetTime(virDomainPtr dom,
  * A scheduler parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum
  *
- * Since: v0.2.3
+ * Since: 0.2.3
  */
 typedef enum {
-    VIR_DOMAIN_SCHED_FIELD_INT     = VIR_TYPED_PARAM_INT, /* (Since: v0.2.3) */
-    VIR_DOMAIN_SCHED_FIELD_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: v0.2.3) */
-    VIR_DOMAIN_SCHED_FIELD_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: v0.2.3) */
-    VIR_DOMAIN_SCHED_FIELD_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: v0.2.3) */
-    VIR_DOMAIN_SCHED_FIELD_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: v0.2.3) */
-    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: v0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_INT     = VIR_TYPED_PARAM_INT, /* (Since: 0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: 0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: 0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: 0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: 0.2.3) */
+    VIR_DOMAIN_SCHED_FIELD_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: 0.2.3) */
 } virSchedParameterType;
 
 /**
@@ -5848,14 +5848,14 @@ typedef enum {
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
  * preferred value
  *
- * Since: v0.2.3
+ * Since: 0.2.3
  */
 # define VIR_DOMAIN_SCHED_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * _virSchedParameter:
  *
- * Since: v0.2.3
+ * Since: 0.2.3
  */
 # define _virSchedParameter _virTypedParameter
 
@@ -5866,7 +5866,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.2.3
+ * Since: 0.2.3
  */
 typedef struct _virTypedParameter virSchedParameter;
 
@@ -5877,7 +5877,7 @@ typedef struct _virTypedParameter virSchedParameter;
  * Provided for backwards compatibility; virTypedParameterPtr is the
  * preferred alias since 0.9.2.
  *
- * Since: v0.2.3
+ * Since: 0.2.3
  */
 typedef virSchedParameter *virSchedParameterPtr;
 
@@ -5887,15 +5887,15 @@ typedef virSchedParameter *virSchedParameterPtr;
  * A blkio parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 typedef enum {
-    VIR_DOMAIN_BLKIO_PARAM_INT     = VIR_TYPED_PARAM_INT, /* (Since: v0.9.0) */
-    VIR_DOMAIN_BLKIO_PARAM_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: v0.9.0) */
-    VIR_DOMAIN_BLKIO_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: v0.9.0) */
-    VIR_DOMAIN_BLKIO_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: v0.9.0) */
-    VIR_DOMAIN_BLKIO_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: v0.9.0) */
-    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: v0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_INT     = VIR_TYPED_PARAM_INT, /* (Since: 0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: 0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: 0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: 0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: 0.9.0) */
+    VIR_DOMAIN_BLKIO_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: 0.9.0) */
 } virBlkioParameterType;
 
 /**
@@ -5905,14 +5905,14 @@ typedef enum {
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
  * preferred value.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 # define VIR_DOMAIN_BLKIO_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * _virBlkioParameter:
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 # define _virBlkioParameter _virTypedParameter
 
@@ -5923,7 +5923,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 typedef struct _virTypedParameter virBlkioParameter;
 
@@ -5934,7 +5934,7 @@ typedef struct _virTypedParameter virBlkioParameter;
  * Provided for backwards compatibility; virTypedParameterPtr is the
  * preferred alias.
  *
- * Since: v0.9.0
+ * Since: 0.9.0
  */
 typedef virBlkioParameter *virBlkioParameterPtr;
 
@@ -5944,15 +5944,15 @@ typedef virBlkioParameter *virBlkioParameterPtr;
  * A memory parameter field type.  Provided for backwards
  * compatibility; virTypedParameterType is the preferred enum
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 typedef enum {
-    VIR_DOMAIN_MEMORY_PARAM_INT     = VIR_TYPED_PARAM_INT, /* (Since: v0.8.5) */
-    VIR_DOMAIN_MEMORY_PARAM_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: v0.8.5) */
-    VIR_DOMAIN_MEMORY_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: v0.8.5) */
-    VIR_DOMAIN_MEMORY_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: v0.8.5) */
-    VIR_DOMAIN_MEMORY_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: v0.8.5) */
-    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: v0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_INT     = VIR_TYPED_PARAM_INT, /* (Since: 0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_UINT    = VIR_TYPED_PARAM_UINT, /* (Since: 0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_LLONG   = VIR_TYPED_PARAM_LLONG, /* (Since: 0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_ULLONG  = VIR_TYPED_PARAM_ULLONG, /* (Since: 0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_DOUBLE  = VIR_TYPED_PARAM_DOUBLE, /* (Since: 0.8.5) */
+    VIR_DOMAIN_MEMORY_PARAM_BOOLEAN = VIR_TYPED_PARAM_BOOLEAN, /* (Since: 0.8.5) */
 } virMemoryParameterType;
 
 /**
@@ -5962,14 +5962,14 @@ typedef enum {
  * for backwards compatibility; VIR_TYPED_PARAM_FIELD_LENGTH is the
  * preferred value.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define VIR_DOMAIN_MEMORY_FIELD_LENGTH VIR_TYPED_PARAM_FIELD_LENGTH
 
 /**
  * _virMemoryParameter:
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 # define _virMemoryParameter _virTypedParameter
 
@@ -5980,7 +5980,7 @@ typedef enum {
  * Provided for backwards compatibility; virTypedParameter is the
  * preferred alias.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 typedef struct _virTypedParameter virMemoryParameter;
 
@@ -5991,36 +5991,36 @@ typedef struct _virTypedParameter virMemoryParameter;
  * Provided for backwards compatibility; virTypedParameterPtr is the
  * preferred alias.
  *
- * Since: v0.8.5
+ * Since: 0.8.5
  */
 typedef virMemoryParameter *virMemoryParameterPtr;
 
 /**
  * virDomainInterfaceAddressesSource:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef enum {
-    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE = 0, /* Parse DHCP lease file (Since: v1.2.14) */
-    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT = 1, /* Query qemu guest agent (Since: v1.2.14) */
-    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP = 2, /* Query ARP tables (Since: v4.2.0) */
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LEASE = 0, /* Parse DHCP lease file (Since: 1.2.14) */
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_AGENT = 1, /* Query qemu guest agent (Since: 1.2.14) */
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_ARP = 2, /* Query ARP tables (Since: 4.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST /* (Since: v1.2.14) */
+    VIR_DOMAIN_INTERFACE_ADDRESSES_SRC_LAST /* (Since: 1.2.14) */
 # endif
 } virDomainInterfaceAddressesSource;
 
 /**
  * virDomainIPAddress:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef struct _virDomainInterfaceIPAddress virDomainIPAddress;
 
 /**
  * virDomainIPAddressPtr:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef virDomainIPAddress *virDomainIPAddressPtr;
 struct _virDomainInterfaceIPAddress {
@@ -6032,14 +6032,14 @@ struct _virDomainInterfaceIPAddress {
 /**
  * virDomainInterface:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef struct _virDomainInterface virDomainInterface;
 
 /**
  * virDomainInterfacePtr:
  *
- * Since: v1.2.14
+ * Since: 1.2.14
  */
 typedef virDomainInterface *virDomainInterfacePtr;
 struct _virDomainInterface {
@@ -6059,10 +6059,10 @@ void virDomainInterfaceFree(virDomainInterfacePtr iface);
 /**
  * virDomainSetUserPasswordFlags:
  *
- * Since: v1.2.16
+ * Since: 1.2.16
  */
 typedef enum {
-    VIR_DOMAIN_PASSWORD_ENCRYPTED = 1 << 0, /* the password is already encrypted (Since: v1.2.16) */
+    VIR_DOMAIN_PASSWORD_ENCRYPTED = 1 << 0, /* the password is already encrypted (Since: 1.2.16) */
 } virDomainSetUserPasswordFlags;
 
 int virDomainSetUserPassword(virDomainPtr dom,
@@ -6097,33 +6097,33 @@ int virDomainSetBlockThreshold(virDomainPtr domain,
 /**
  * virDomainLifecycle:
  *
- * Since: v3.9.0
+ * Since: 3.9.0
  */
 typedef enum {
-    VIR_DOMAIN_LIFECYCLE_POWEROFF = 0, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_REBOOT = 1, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_CRASH = 2, /* (Since: v3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_POWEROFF = 0, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_REBOOT = 1, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_CRASH = 2, /* (Since: 3.9.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_LIFECYCLE_LAST /* (Since: v3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_LAST /* (Since: 3.9.0) */
 # endif
 } virDomainLifecycle;
 
 /**
  * virDomainLifecycleAction:
  *
- * Since: v3.9.0
+ * Since: 3.9.0
  */
 typedef enum {
-    VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY = 0, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART = 1, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME = 2, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE = 3, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY = 4, /* (Since: v3.9.0) */
-    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART = 5, /* (Since: v3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_DESTROY = 0, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART = 1, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_RESTART_RENAME = 2, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_PRESERVE = 3, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_DESTROY = 4, /* (Since: 3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_COREDUMP_RESTART = 5, /* (Since: 3.9.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_LIFECYCLE_ACTION_LAST /* (Since: v3.9.0) */
+    VIR_DOMAIN_LIFECYCLE_ACTION_LAST /* (Since: 3.9.0) */
 # endif
 } virDomainLifecycleAction;
 
@@ -6142,7 +6142,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * Macro represents the launch measurement of the SEV guest,
  * as VIR_TYPED_PARAM_STRING.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_MEASUREMENT "sev-measurement"
 
@@ -6153,7 +6153,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * Macro represents the API major version of the SEV host,
  * as VIR_TYPED_PARAM_UINT.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MAJOR "sev-api-major"
 
@@ -6163,7 +6163,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * Macro represents the API minor version of the SEV guest,
  * as VIR_TYPED_PARAM_UINT.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_API_MINOR "sev-api-minor"
 
@@ -6173,7 +6173,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * Macro represents the build ID of the SEV host,
  * as VIR_TYPED_PARAM_UINT.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_BUILD_ID "sev-build-id"
 
@@ -6183,7 +6183,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * Macro represents the policy of the SEV guest,
  * as VIR_TYPED_PARAM_UINT.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_POLICY "sev-policy"
 
@@ -6196,7 +6196,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * section "6.6 LAUNCH_SECRET" in the SEV API specification for a detailed
  * description of the secret header.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_HEADER "sev-secret-header"
 
@@ -6208,7 +6208,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * secret. The secret is created by the domain owner after the SEV launch
  * measurement is retrieved and verified.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET "sev-secret"
 
@@ -6219,7 +6219,7 @@ int virDomainSetLifecycleAction(virDomainPtr domain,
  * where the secret will be set, as VIR_TYPED_PARAM_ULLONG. If not specified,
  * the address will be determined by the hypervisor.
  *
- * Since: v8.0.0
+ * Since: 8.0.0
  */
 # define VIR_DOMAIN_LAUNCH_SECURITY_SEV_SECRET_SET_ADDRESS "sev-secret-set-address"
 
@@ -6236,16 +6236,16 @@ int virDomainSetLaunchSecurityState(virDomainPtr domain,
 /**
  * virDomainGuestInfoTypes:
  *
- * Since: v5.7.0
+ * Since: 5.7.0
  */
 typedef enum {
-    VIR_DOMAIN_GUEST_INFO_USERS = (1 << 0), /* return active users (Since: v5.7.0) */
-    VIR_DOMAIN_GUEST_INFO_OS = (1 << 1), /* return OS information (Since: v5.7.0) */
-    VIR_DOMAIN_GUEST_INFO_TIMEZONE = (1 << 2), /* return timezone information (Since: v5.7.0) */
-    VIR_DOMAIN_GUEST_INFO_HOSTNAME = (1 << 3), /* return hostname information (Since: v5.7.0) */
-    VIR_DOMAIN_GUEST_INFO_FILESYSTEM = (1 << 4), /* return filesystem information (Since: v5.7.0) */
-    VIR_DOMAIN_GUEST_INFO_DISKS = (1 << 5), /* return disks information (Since: v7.0.0) */
-    VIR_DOMAIN_GUEST_INFO_INTERFACES = (1 << 6), /* return interfaces information (Since: v7.10.0) */
+    VIR_DOMAIN_GUEST_INFO_USERS = (1 << 0), /* return active users (Since: 5.7.0) */
+    VIR_DOMAIN_GUEST_INFO_OS = (1 << 1), /* return OS information (Since: 5.7.0) */
+    VIR_DOMAIN_GUEST_INFO_TIMEZONE = (1 << 2), /* return timezone information (Since: 5.7.0) */
+    VIR_DOMAIN_GUEST_INFO_HOSTNAME = (1 << 3), /* return hostname information (Since: 5.7.0) */
+    VIR_DOMAIN_GUEST_INFO_FILESYSTEM = (1 << 4), /* return filesystem information (Since: 5.7.0) */
+    VIR_DOMAIN_GUEST_INFO_DISKS = (1 << 5), /* return disks information (Since: 7.0.0) */
+    VIR_DOMAIN_GUEST_INFO_INTERFACES = (1 << 6), /* return interfaces information (Since: 7.10.0) */
 } virDomainGuestInfoTypes;
 
 int virDomainGetGuestInfo(virDomainPtr domain,
@@ -6257,12 +6257,12 @@ int virDomainGetGuestInfo(virDomainPtr domain,
 /**
  * virDomainAgentResponseTimeoutValues:
  *
- * Since: v5.10.0
+ * Since: 5.10.0
  */
 typedef enum {
-    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK = -2, /* (Since: v5.10.0) */
-    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT = -1, /* (Since: v5.10.0) */
-    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT = 0, /* (Since: v5.10.0) */
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK = -2, /* (Since: 5.10.0) */
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_DEFAULT = -1, /* (Since: 5.10.0) */
+    VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_NOWAIT = 0, /* (Since: 5.10.0) */
 } virDomainAgentResponseTimeoutValues;
 
 int virDomainAgentSetResponseTimeout(virDomainPtr domain,
@@ -6272,11 +6272,11 @@ int virDomainAgentSetResponseTimeout(virDomainPtr domain,
 /**
  * virDomainBackupBeginFlags:
  *
- * Since: v6.0.0
+ * Since: 6.0.0
  */
 typedef enum {
     VIR_DOMAIN_BACKUP_BEGIN_REUSE_EXTERNAL = (1 << 0), /* reuse separately
-                                                          provided images (Since: v6.0.0) */
+                                                          provided images (Since: 6.0.0) */
 } virDomainBackupBeginFlags;
 
 int virDomainBackupBegin(virDomainPtr domain,
@@ -6295,11 +6295,11 @@ int virDomainAuthorizedSSHKeysGet(virDomainPtr domain,
 /**
  * virDomainAuthorizedSSHKeysSetFlags:
  *
- * Since: v6.10.0
+ * Since: 6.10.0
  */
 typedef enum {
-    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND = (1 << 0), /* don't truncate file, just append (Since: v6.10.0) */
-    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE = (1 << 1), /* remove keys, instead of adding them (Since: v6.10.0) */
+    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_APPEND = (1 << 0), /* don't truncate file, just append (Since: 6.10.0) */
+    VIR_DOMAIN_AUTHORIZED_SSH_KEYS_SET_REMOVE = (1 << 1), /* remove keys, instead of adding them (Since: 6.10.0) */
 
 } virDomainAuthorizedSSHKeysSetFlags;
 
@@ -6312,11 +6312,11 @@ int virDomainAuthorizedSSHKeysSet(virDomainPtr domain,
 /**
  * virDomainMessageType:
  *
- * Since: v7.1.0
+ * Since: 7.1.0
  */
 typedef enum {
-    VIR_DOMAIN_MESSAGE_DEPRECATION = (1 << 0), /* (Since: v7.1.0) */
-    VIR_DOMAIN_MESSAGE_TAINTING = (1 << 1), /* (Since: v7.1.0) */
+    VIR_DOMAIN_MESSAGE_DEPRECATION = (1 << 0), /* (Since: 7.1.0) */
+    VIR_DOMAIN_MESSAGE_TAINTING = (1 << 1), /* (Since: 7.1.0) */
 } virDomainMessageType;
 
 int virDomainGetMessages(virDomainPtr domain,
@@ -6328,18 +6328,18 @@ int virDomainGetMessages(virDomainPtr domain,
  *
  * Details on the cause of a dirty rate calculation status.
  *
- * Since: v7.2.0
+ * Since: 7.2.0
  */
 typedef enum {
     VIR_DOMAIN_DIRTYRATE_UNSTARTED = 0, /* the dirtyrate calculation has
-                                           not been started (Since: v7.2.0) */
+                                           not been started (Since: 7.2.0) */
     VIR_DOMAIN_DIRTYRATE_MEASURING = 1, /* the dirtyrate calculation is
-                                           measuring (Since: v7.2.0) */
+                                           measuring (Since: 7.2.0) */
     VIR_DOMAIN_DIRTYRATE_MEASURED  = 2, /* the dirtyrate calculation is
-                                           completed (Since: v7.2.0) */
+                                           completed (Since: 7.2.0) */
 
 # ifdef VIR_ENUM_SENTINELS
-    VIR_DOMAIN_DIRTYRATE_LAST /* (Since: v7.2.0) */
+    VIR_DOMAIN_DIRTYRATE_LAST /* (Since: 7.2.0) */
 # endif
 } virDomainDirtyRateStatus;
 
@@ -6350,12 +6350,12 @@ typedef enum {
  * rate for a Domain
  *
  *
- * Since: v8.1.0
+ * Since: 8.1.0
  */
 typedef enum {
-    VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING = 0,        /* default mode - page-sampling (Since: v8.1.0) */
-    VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP = 1 << 0,    /* dirty-bitmap mode (Since: v8.1.0) */
-    VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING = 1 << 1,      /* dirty-ring mode (Since: v8.1.0) */
+    VIR_DOMAIN_DIRTYRATE_MODE_PAGE_SAMPLING = 0,        /* default mode - page-sampling (Since: 8.1.0) */
+    VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_BITMAP = 1 << 0,    /* dirty-bitmap mode (Since: 8.1.0) */
+    VIR_DOMAIN_DIRTYRATE_MODE_DIRTY_RING = 1 << 1,      /* dirty-ring mode (Since: 8.1.0) */
 } virDomainDirtyRateCalcFlags;
 
 int virDomainStartDirtyRateCalc(virDomainPtr domain,

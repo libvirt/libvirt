@@ -36,7 +36,7 @@ VIR_LOG_INIT("libvirt.nwfilter");
  *
  * Returns the number of nwfilters found or -1 in case of error
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virConnectNumOfNWFilters(virConnectPtr conn)
@@ -80,7 +80,7 @@ virConnectNumOfNWFilters(virConnectPtr conn)
  * to make iteration easier.  The caller is responsible for calling
  * virNWFilterFree() on each array element, then calling free() on @filters.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 int
 virConnectListAllNWFilters(virConnectPtr conn,
@@ -126,7 +126,7 @@ virConnectListAllNWFilters(virConnectPtr conn,
  *
  * Returns the number of network filters found or -1 in case of error
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
@@ -168,7 +168,7 @@ virConnectListNWFilters(virConnectPtr conn, char **const names, int maxnames)
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * network filter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virNWFilterPtr
 virNWFilterLookupByName(virConnectPtr conn, const char *name)
@@ -209,7 +209,7 @@ virNWFilterLookupByName(virConnectPtr conn, const char *name)
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * nwfdilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virNWFilterPtr
 virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
@@ -250,7 +250,7 @@ virNWFilterLookupByUUID(virConnectPtr conn, const unsigned char *uuid)
  * Returns a new nwfilter object or NULL in case of failure.  If the
  * nwfilter cannot be found, then VIR_ERR_NO_NWFILTER error is raised.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virNWFilterPtr
 virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
@@ -287,7 +287,7 @@ virNWFilterLookupByUUIDString(virConnectPtr conn, const char *uuidstr)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virNWFilterFree(virNWFilterPtr nwfilter)
@@ -312,7 +312,7 @@ virNWFilterFree(virNWFilterPtr nwfilter)
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * its lifetime will be the same as the nwfilter object.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 const char *
 virNWFilterGetName(virNWFilterPtr nwfilter)
@@ -336,7 +336,7 @@ virNWFilterGetName(virNWFilterPtr nwfilter)
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virNWFilterGetUUID(virNWFilterPtr nwfilter, unsigned char *uuid)
@@ -368,7 +368,7 @@ virNWFilterGetUUID(virNWFilterPtr nwfilter, unsigned char *uuid)
  *
  * Returns -1 in case of error, 0 in case of success
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
@@ -402,7 +402,7 @@ virNWFilterGetUUIDString(virNWFilterPtr nwfilter, char *buf)
  *
  * Returns a new nwfilter object or NULL in case of failure
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 virNWFilterPtr
 virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
@@ -445,7 +445,7 @@ virNWFilterDefineXML(virConnectPtr conn, const char *xmlDesc)
  *
  * Returns a new nwfilter object or NULL in case of failure
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 virNWFilterPtr
 virNWFilterDefineXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int flags)
@@ -484,7 +484,7 @@ virNWFilterDefineXMLFlags(virConnectPtr conn, const char *xmlDesc, unsigned int 
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virNWFilterUndefine(virNWFilterPtr nwfilter)
@@ -526,7 +526,7 @@ virNWFilterUndefine(virNWFilterPtr nwfilter)
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 char *
 virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
@@ -572,7 +572,7 @@ virNWFilterGetXMLDesc(virNWFilterPtr nwfilter, unsigned int flags)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 int
 virNWFilterRef(virNWFilterPtr nwfilter)
@@ -605,7 +605,7 @@ virNWFilterRef(virNWFilterPtr nwfilter)
  * to make iteration easier.  The caller is responsible for calling
  * virNWFilterFree() on each array element, then calling free() on @filters.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virConnectListAllNWFilterBindings(virConnectPtr conn,
@@ -653,7 +653,7 @@ virConnectListAllNWFilterBindings(virConnectPtr conn,
  * network filter cannot be found, then VIR_ERR_NO_NWFILTER_BINDING
  * error is raised.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 virNWFilterBindingPtr
 virNWFilterBindingLookupByPortDev(virConnectPtr conn, const char *portdev)
@@ -690,7 +690,7 @@ virNWFilterBindingLookupByPortDev(virConnectPtr conn, const char *portdev)
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virNWFilterBindingFree(virNWFilterBindingPtr binding)
@@ -715,7 +715,7 @@ virNWFilterBindingFree(virNWFilterBindingPtr binding)
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * its lifetime will be the same as the binding object.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 const char *
 virNWFilterBindingGetPortDev(virNWFilterBindingPtr binding)
@@ -739,7 +739,7 @@ virNWFilterBindingGetPortDev(virNWFilterBindingPtr binding)
  * Returns a pointer to the name or NULL, the string need not be deallocated
  * its lifetime will be the same as the binding object.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 const char *
 virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding)
@@ -775,7 +775,7 @@ virNWFilterBindingGetFilterName(virNWFilterBindingPtr binding)
  *
  * Returns a new binding object or NULL in case of failure
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 virNWFilterBindingPtr
 virNWFilterBindingCreateXML(virConnectPtr conn, const char *xml, unsigned int flags)
@@ -818,7 +818,7 @@ virNWFilterBindingCreateXML(virConnectPtr conn, const char *xml, unsigned int fl
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virNWFilterBindingDelete(virNWFilterBindingPtr binding)
@@ -860,7 +860,7 @@ virNWFilterBindingDelete(virNWFilterBindingPtr binding)
  * Returns a 0 terminated UTF-8 encoded XML instance, or NULL in case
  * of error. The caller must free() the returned value.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 char *
 virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding, unsigned int flags)
@@ -906,7 +906,7 @@ virNWFilterBindingGetXMLDesc(virNWFilterBindingPtr binding, unsigned int flags)
  *
  * Returns 0 in case of success, -1 in case of failure.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 int
 virNWFilterBindingRef(virNWFilterBindingPtr binding)

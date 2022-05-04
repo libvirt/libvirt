@@ -32,7 +32,7 @@
  *
  * a virNWFilter is a private structure representing a network filter
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef struct _virNWFilter virNWFilter;
 
@@ -42,7 +42,7 @@ typedef struct _virNWFilter virNWFilter;
  * a virNWFilterPtr is pointer to a virNWFilter private structure,
  * this is the type used to reference a network filter in the API.
  *
- * Since: v0.8.0
+ * Since: 0.8.0
  */
 typedef virNWFilter *virNWFilterPtr;
 
@@ -52,7 +52,7 @@ typedef virNWFilter *virNWFilterPtr;
  * a virNWFilterBinding is a private structure representing a network
  * filter binding to a port
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 typedef struct _virNWFilterBinding virNWFilterBinding;
 
@@ -63,7 +63,7 @@ typedef struct _virNWFilterBinding virNWFilterBinding;
  * structure, this is the type used to reference a network filter
  * port binding in the API.
  *
- * Since: v4.5.0
+ * Since: 4.5.0
  */
 typedef virNWFilterBinding *virNWFilterBindingPtr;
 
@@ -90,10 +90,10 @@ virNWFilterPtr          virNWFilterLookupByUUIDString (virConnectPtr conn,
 /**
  * virNWFilterDefineFlags:
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 typedef enum {
-    VIR_NWFILTER_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
+    VIR_NWFILTER_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.7.0) */
 } virNWFilterDefineFlags;
 
 /*
@@ -123,10 +123,10 @@ int                     virNWFilterFree         (virNWFilterPtr nwfilter);
 /**
  * virNWFilterBindingCreateFlags:
  *
- * Since: v7.8.0
+ * Since: 7.8.0
  */
 typedef enum {
-    VIR_NWFILTER_BINDING_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.8.0) */
+    VIR_NWFILTER_BINDING_CREATE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.8.0) */
 } virNWFilterBindingCreateFlags;
 
 const char*             virNWFilterGetName       (virNWFilterPtr nwfilter);

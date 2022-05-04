@@ -32,7 +32,7 @@
  *
  * a virInterface is a private structure representing a virtual interface.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 typedef struct _virInterface virInterface;
 
@@ -42,7 +42,7 @@ typedef struct _virInterface virInterface;
  * a virInterfacePtr is pointer to a virInterface private structure, this is the
  * type used to reference a virtual interface in the API.
  *
- * Since: v0.6.4
+ * Since: 0.6.4
  */
 typedef virInterface *virInterfacePtr;
 
@@ -62,11 +62,11 @@ int                     virConnectListDefinedInterfaces  (virConnectPtr conn,
  *
  * Flags used to filter the returned interfaces.
  *
- * Since: v0.10.2
+ * Since: 0.10.2
  */
 typedef enum {
-    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0, /* (Since: v0.10.2) */
-    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1, /* (Since: v0.10.2) */
+    VIR_CONNECT_LIST_INTERFACES_INACTIVE      = 1 << 0, /* (Since: 0.10.2) */
+    VIR_CONNECT_LIST_INTERFACES_ACTIVE        = 1 << 1, /* (Since: 0.10.2) */
 } virConnectListAllInterfacesFlags;
 
 int                     virConnectListAllInterfaces (virConnectPtr conn,
@@ -84,19 +84,19 @@ const char*             virInterfaceGetMACString  (virInterfacePtr iface);
 /**
  * virInterfaceXMLFlags:
  *
- * Since: v0.7.3
+ * Since: 0.7.3
  */
 typedef enum {
-    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information (Since: v0.7.3) */
+    VIR_INTERFACE_XML_INACTIVE = 1 << 0 /* dump inactive interface information (Since: 0.7.3) */
 } virInterfaceXMLFlags;
 
 /**
  * virInterfaceDefineFlags:
  *
- * Since: v7.7.0
+ * Since: 7.7.0
  */
 typedef enum {
-    VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: v7.7.0) */
+    VIR_INTERFACE_DEFINE_VALIDATE = 1 << 0, /* Validate the XML document against schema (Since: 7.7.0) */
 } virInterfaceDefineFlags;
 
 char *                  virInterfaceGetXMLDesc    (virInterfacePtr iface,

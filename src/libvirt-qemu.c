@@ -61,7 +61,7 @@ VIR_LOG_INIT("libvirt-qemu");
  *
  * Returns 0 in case of success, -1 in case of failure
  *
- * Since: v0.8.3
+ * Since: 0.8.3
  */
 int
 virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
@@ -133,7 +133,7 @@ virDomainQemuMonitorCommand(virDomainPtr domain, const char *cmd,
  *
  * Returns 0 in case of success, -1 in case of failure
  *
- * Since: v8.2.0
+ * Since: 8.2.0
  */
 int
 virDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
@@ -220,7 +220,7 @@ virDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
  *
  * Returns a new domain object on success, NULL otherwise
  *
- * Since: v0.9.4
+ * Since: 0.9.4
  */
 virDomainPtr
 virDomainQemuAttach(virConnectPtr conn,
@@ -278,7 +278,7 @@ virDomainQemuAttach(virConnectPtr conn,
  *
  * Returns strings if success, NULL in failure.
  *
- * Since: v0.10.0
+ * Since: 0.10.0
  */
 char *
 virDomainQemuAgentCommand(virDomainPtr domain,
@@ -358,7 +358,7 @@ virDomainQemuAgentCommand(virDomainPtr domain,
  *
  * Returns a callback identifier on success, -1 on failure
  *
- * Since: v1.2.3
+ * Since: 1.2.3
  */
 int
 virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
@@ -414,7 +414,7 @@ virConnectDomainQemuMonitorEventRegister(virConnectPtr conn,
  *
  * Returns 0 on success, -1 on failure
  *
- * Since: v1.2.3
+ * Since: 1.2.3
  */
 int
 virConnectDomainQemuMonitorEventDeregister(virConnectPtr conn,
