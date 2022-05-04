@@ -174,6 +174,7 @@ mymain(void)
     DO_TEST_DIFFERENT("graphics-vnc-socket-attr-listen-socket");
     DO_TEST_FAIL_ACTIVE("graphics-vnc-socket-attr-listen-socket-mismatch");
     DO_TEST("graphics-vnc-autoport-no");
+    DO_TEST_FAIL_INACTIVE("graphics-listen-network-invalid");
 
     DO_TEST_FAIL_ACTIVE("name-slash-fail");
 
