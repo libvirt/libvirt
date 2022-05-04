@@ -601,35 +601,95 @@ qemuValidateDomainDefPM(const virDomainDef *def,
 
 
 static int
-qemuValidateDomainDefBoot(const virDomainDef *def)
+qemuValidateDomainDefNvram(const virDomainDef *def,
+                           virQEMUCaps *qemuCaps)
 {
-    if (def->os.loader &&
-        def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
-        /* These are the QEMU implementation limitations. But we
-         * have to live with them for now. */
+    virStorageSource *src = def->os.loader->nvram;
 
-        if (!qemuDomainIsQ35(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot is supported with q35 machine types only"));
-            return -1;
+    if (!src)
+        return 0;
+
+    switch (src->type) {
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_NETWORK:
+        break;
+
+    case VIR_STORAGE_TYPE_DIR:
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
+    case VIR_STORAGE_TYPE_VHOST_USER:
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unsupported nvram disk type '%s'"),
+                       virStorageTypeToString(src->type));
+        return -1;
+
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        virReportEnumRangeError(virStorageType, src->type);
+        return -1;
+    }
+
+    if (src->sliceStorage) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("slices are not supported with NVRAM"));
+        return -1;
+    }
+
+    if (src->pr) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("persistent reservations are not supported with NVRAM"));
+        return -1;
+    }
+
+    if (src->backingStore) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                        _("backingStore is not supported with NVRAM"));
+        return -1;
+    }
+
+    if (qemuDomainValidateStorageSource(src, qemuCaps, false) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuValidateDomainDefBoot(const virDomainDef *def,
+                          virQEMUCaps *qemuCaps)
+{
+    if (def->os.loader) {
+        if (def->os.loader->secure == VIR_TRISTATE_BOOL_YES) {
+            /* These are the QEMU implementation limitations. But we
+             * have to live with them for now. */
+
+            if (!qemuDomainIsQ35(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Secure boot is supported with q35 machine types only"));
+                return -1;
+            }
+
+            /* Now, technically it is possible to have secure boot on
+             * 32bits too, but that would require some -cpu xxx magic
+             * too. Not worth it unless we are explicitly asked. */
+            if (def->os.arch != VIR_ARCH_X86_64) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Secure boot is supported for x86_64 architecture only"));
+                return -1;
+            }
+
+            /* SMM will be enabled by qemuFirmwareFillDomain() if needed. */
+            if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE &&
+                def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("Secure boot requires SMM feature enabled"));
+                return -1;
+            }
         }
 
-        /* Now, technically it is possible to have secure boot on
-         * 32bits too, but that would require some -cpu xxx magic
-         * too. Not worth it unless we are explicitly asked. */
-        if (def->os.arch != VIR_ARCH_X86_64) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot is supported for x86_64 architecture only"));
+        if (qemuValidateDomainDefNvram(def, qemuCaps) < 0)
             return -1;
-        }
-
-        /* SMM will be enabled by qemuFirmwareFillDomain() if needed. */
-        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE &&
-            def->features[VIR_DOMAIN_FEATURE_SMM] != VIR_TRISTATE_SWITCH_ON) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Secure boot requires SMM feature enabled"));
-            return -1;
-        }
     }
 
     return 0;
@@ -1210,7 +1270,7 @@ qemuValidateDomainDef(const virDomainDef *def,
     if (qemuValidateDomainDefPM(def, qemuCaps) < 0)
         return -1;
 
-    if (qemuValidateDomainDefBoot(def) < 0)
+    if (qemuValidateDomainDefBoot(def, qemuCaps) < 0)
         return -1;
 
     if (qemuValidateDomainVCpuTopology(def, qemuCaps) < 0)
