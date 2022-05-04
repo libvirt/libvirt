@@ -135,6 +135,35 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    </os>
    ...
 
+   <!-- QEMU with UEFI manual firmware, secure boot and with NVRAM type 'file'-->
+   ...
+   <os>
+     <type>hvm</type>
+     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+     <nvram type='file' template='/usr/share/OVMF/OVMF_VARS.fd'>
+       <source file='/var/lib/libvirt/nvram/guest_VARS.fd'/>
+     </nvram>
+     <boot dev='hd'/>
+   </os>
+   ...
+
+   <!-- QEMU with UEFI manual firmware, secure boot and with network backed NVRAM'-->
+   ...
+   <os>
+     <type>hvm</type>
+     <loader readonly='yes' secure='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
+     <nvram type='network'>
+       <source protocol='iscsi' name='iqn.2013-07.com.example:iscsi-nopool/0'>
+         <host name='example.com' port='6000'/>
+         <auth username='myname'>
+           <secret type='iscsi' usage='mycluster_myname'/>
+         </auth>
+       </source>
+     </nvram>
+     <boot dev='hd'/>
+   </os>
+   ...
+
    <!-- QEMU with automatic UEFI firmware and secure boot -->
    ...
    <os firmware='efi'>
@@ -224,6 +253,15 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    if the NVRAM file has been created by libvirt it is left behind and it is
    management application's responsibility to save and remove file (if needed to
    be persistent). :since:`Since 1.2.8`
+
+   :since:`Since 8.5.0`,  it's possible for the element to have ``type`` attribute
+   (accepts values ``file``, ``block`` and ``network``) in that case the NVRAM
+   storage is described by a ``<source>`` sub-element with the same syntax as
+   ``disk``'s source. See `Hard drives, floppy disks, CDROMs`_.
+
+   **Note:** ``network`` backed NVRAM the variables are not instantiated from
+   the ``template`` and it's user's responsibility to provide a valid NVRAM image.
+
 ``boot``
    The ``dev`` attribute takes one of the values "fd", "hd", "cdrom" or
    "network" and is used to specify the next boot device to consider. The

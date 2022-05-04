@@ -609,6 +609,13 @@ qemuValidateDomainDefNvram(const virDomainDef *def,
     if (!src)
         return 0;
 
+    if (def->os.loader->newStyleNVRAM &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("modern nvram specification is not supported by this qemu"));
+        return -1;
+    }
+
     switch (src->type) {
     case VIR_STORAGE_TYPE_FILE:
     case VIR_STORAGE_TYPE_BLOCK:

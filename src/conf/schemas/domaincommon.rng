@@ -333,7 +333,14 @@
               </attribute>
             </optional>
             <optional>
-              <ref name="absFilePath"/>
+              <choice>
+                <group>
+                  <ref name="absFilePath"/>
+                </group>
+                <group>
+                  <ref name="diskSource"/>
+                </group>
+              </choice>
             </optional>
           </element>
         </optional>

@@ -18014,6 +18014,51 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
 
 
 static int
+virDomainNvramDefParseXML(virDomainLoaderDef *loader,
+                          xmlXPathContextPtr ctxt,
+                          virDomainXMLOption *xmlopt,
+                          unsigned int flags)
+{
+    g_autofree char *nvramType = virXPathString("string(./os/nvram/@type)", ctxt);
+    g_autoptr(virStorageSource) src = virStorageSourceNew();
+
+    src->type = VIR_STORAGE_TYPE_FILE;
+    src->format = VIR_STORAGE_FILE_RAW;
+
+    if (!nvramType) {
+        char *nvramPath = NULL;
+
+        if (!(nvramPath = virXPathString("string(./os/nvram[1])", ctxt)))
+            return 0; /* no nvram */
+
+        src->path = nvramPath;
+    } else {
+        xmlNodePtr sourceNode;
+
+        if ((src->type = virStorageTypeFromString(nvramType)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("unknown disk type '%s'"), nvramType);
+            return -1;
+        }
+
+        if (!(sourceNode = virXPathNode("./os/nvram/source[1]", ctxt))) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("Missing source element for nvram"));
+            return -1;
+        }
+
+        if (virDomainStorageSourceParse(sourceNode, ctxt, src, flags, xmlopt) < 0)
+            return -1;
+
+        loader->newStyleNVRAM = true;
+    }
+
+    loader->nvram = g_steal_pointer(&src);
+    return 0;
+}
+
+
+static int
 virDomainSchedulerParseCommonAttrs(xmlNodePtr node,
                                    virProcessSchedPolicy *policy,
                                    int *priority)
@@ -18398,11 +18443,12 @@ virDomainDefParseBootFirmwareOptions(virDomainDef *def,
 
 static int
 virDomainDefParseBootLoaderOptions(virDomainDef *def,
-                                   xmlXPathContextPtr ctxt)
+                                   xmlXPathContextPtr ctxt,
+                                   virDomainXMLOption *xmlopt,
+                                   unsigned int flags)
 {
     xmlNodePtr loader_node = virXPathNode("./os/loader[1]", ctxt);
     const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
-    g_autofree char *nvramPath = NULL;
 
     if (!loader_node)
         return 0;
@@ -18414,12 +18460,8 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    fwAutoSelect) < 0)
         return -1;
 
-    if ((nvramPath = virXPathString("string(./os/nvram[1])", ctxt))) {
-        def->os.loader->nvram = virStorageSourceNew();
-        def->os.loader->nvram->path = g_steal_pointer(&nvramPath);
-        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
-    }
+    if (virDomainNvramDefParseXML(def->os.loader, ctxt, xmlopt, flags) < 0)
+        return -1;
 
     if (!fwAutoSelect)
         def->os.loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
@@ -18474,7 +18516,9 @@ virDomainDefParseBootAcpiOptions(virDomainDef *def,
 
 static int
 virDomainDefParseBootOptions(virDomainDef *def,
-                             xmlXPathContextPtr ctxt)
+                             xmlXPathContextPtr ctxt,
+                             virDomainXMLOption *xmlopt,
+                             unsigned int flags)
 {
     /*
      * Booting options for different OS types....
@@ -18492,7 +18536,7 @@ virDomainDefParseBootOptions(virDomainDef *def,
         if (virDomainDefParseBootFirmwareOptions(def, ctxt) < 0)
             return -1;
 
-        if (virDomainDefParseBootLoaderOptions(def, ctxt) < 0)
+        if (virDomainDefParseBootLoaderOptions(def, ctxt, xmlopt, flags) < 0)
             return -1;
 
         if (virDomainDefParseBootAcpiOptions(def, ctxt) < 0)
@@ -18508,7 +18552,7 @@ virDomainDefParseBootOptions(virDomainDef *def,
     case VIR_DOMAIN_OSTYPE_UML:
         virDomainDefParseBootKernelOptions(def, ctxt);
 
-        if (virDomainDefParseBootLoaderOptions(def, ctxt) < 0)
+        if (virDomainDefParseBootLoaderOptions(def, ctxt, xmlopt, flags) < 0)
             return -1;
 
         break;
@@ -19808,7 +19852,7 @@ virDomainDefParseXML(xmlXPathContextPtr ctxt,
     if (virDomainDefClockParse(def, ctxt) < 0)
         return NULL;
 
-    if (virDomainDefParseBootOptions(def, ctxt) < 0)
+    if (virDomainDefParseBootOptions(def, ctxt, xmlopt, flags) < 0)
         return NULL;
 
     /* analysis of the disk devices */
@@ -27161,26 +27205,48 @@ virDomainHugepagesFormat(virBuffer *buf,
 }
 
 
-static void
+static int
 virDomainLoaderDefFormatNvram(virBuffer *buf,
-                              virDomainLoaderDef *loader)
+                              virDomainLoaderDef *loader,
+                              virDomainXMLOption *xmlopt,
+                              unsigned int flags)
 {
     g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBufDirect = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBufChild = VIR_BUFFER_INIT_CHILD(buf);
+    virBuffer *childBuf = &childBufDirect;
+    bool childNewline = false;
 
     virBufferEscapeString(&attrBuf, " template='%s'", loader->nvramTemplate);
+
     if (loader->nvram) {
-        if (loader->nvram->type == VIR_STORAGE_TYPE_FILE)
-            virBufferEscapeString(&childBuf, "%s", loader->nvram->path);
+        virStorageSource *src = loader->nvram;
+
+        if (!loader->newStyleNVRAM) {
+            virBufferEscapeString(&childBufDirect, "%s", src->path);
+        } else {
+            childNewline = true;
+            childBuf = &childBufChild;
+
+            virBufferAsprintf(&attrBuf, " type='%s'", virStorageTypeToString(src->type));
+
+            if (virDomainDiskSourceFormat(&childBufChild, src, "source", 0,
+                                          false, flags, false, false, xmlopt) < 0)
+                return -1;
+        }
     }
 
-    virXMLFormatElementInternal(buf, "nvram", &attrBuf, &childBuf, false, false);
+    virXMLFormatElementInternal(buf, "nvram", &attrBuf, childBuf, false, childNewline);
+
+    return 0;
 }
 
 
-static void
+static int
 virDomainLoaderDefFormat(virBuffer *buf,
-                         virDomainLoaderDef *loader)
+                         virDomainLoaderDef *loader,
+                         virDomainXMLOption *xmlopt,
+                         unsigned int flags)
 {
     g_auto(virBuffer) loaderAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) loaderChildBuf = VIR_BUFFER_INITIALIZER;
@@ -27201,7 +27267,10 @@ virDomainLoaderDefFormat(virBuffer *buf,
 
     virXMLFormatElementInternal(buf, "loader", &loaderAttrBuf, &loaderChildBuf, false, false);
 
-    virDomainLoaderDefFormatNvram(buf, loader);
+    if (virDomainLoaderDefFormatNvram(buf, loader, xmlopt, flags) < 0)
+        return -1;
+
+    return 0;
 }
 
 static void
@@ -28454,8 +28523,9 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (def->os.initgroup)
         virBufferAsprintf(buf, "<initgroup>%s</initgroup>\n", def->os.initgroup);
 
-    if (def->os.loader)
-        virDomainLoaderDefFormat(buf, def->os.loader);
+    if (def->os.loader &&
+        virDomainLoaderDefFormat(buf, def->os.loader, xmlopt, flags) < 0)
+        return -1;
     virBufferEscapeString(buf, "<kernel>%s</kernel>\n",
                           def->os.kernel);
     virBufferEscapeString(buf, "<initrd>%s</initrd>\n",
