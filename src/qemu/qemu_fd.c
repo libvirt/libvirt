@@ -65,6 +65,30 @@ qemuFDPassFree(qemuFDPass *fdpass)
 }
 
 
+static int
+qemuFDPassValidate(qemuFDPass *fdpass)
+{
+    size_t i;
+
+    if (!fdpass->useFDSet &&
+        fdpass->nfds > 1) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("direct FD passing supports only 1 file descriptor"));
+        return -1;
+    }
+
+    for (i = 0; i < fdpass->nfds; i++) {
+        if (fdpass->fds[i].fd < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("invalid file descriptor"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
 /**
  * qemuFDPassNew:
  * @prefix: prefix used for naming the passed FDs
@@ -186,6 +210,9 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
     if (!fdpass)
         return 0;
 
+    if (qemuFDPassValidate(fdpass) < 0)
+        return -1;
+
     for (i = 0; i < fdpass->nfds; i++) {
         virCommandPassFD(cmd, fdpass->fds[i].fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
 
@@ -228,6 +255,9 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
 
     if (!fdpass)
         return 0;
+
+    if (qemuFDPassValidate(fdpass) < 0)
+        return -1;
 
     for (i = 0; i < fdpass->nfds; i++) {
         if (fdpass->useFDSet) {
@@ -273,6 +303,9 @@ qemuFDPassTransferMonitorFake(qemuFDPass *fdpass)
 
     if (!fdpass)
         return 0;
+
+    if (qemuFDPassValidate(fdpass) < 0)
+        return -1;
 
     if (fdpass->useFDSet) {
         fdpass->path = g_strdup_printf("/dev/fdset/monitor-fake");
