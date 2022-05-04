@@ -1016,6 +1016,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
             ignore_value(qemuHotplugRemoveManagedPR(vm, VIR_ASYNC_JOB_NONE));
     }
     qemuDomainSecretDiskDestroy(disk);
+    qemuDomainCleanupStorageSourceFD(disk->src);
 
     return ret;
 }

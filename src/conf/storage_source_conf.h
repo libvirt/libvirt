@@ -415,6 +415,8 @@ struct _virStorageSource {
      * registered with a full index (vda[3]) so that we can properly report just
      * one event for it */
     bool thresholdEventWithIndex;
+
+    virStorageSourceFDTuple *fdtuple;
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virStorageSource, virObjectUnref);

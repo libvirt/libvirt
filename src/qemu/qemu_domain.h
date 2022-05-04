@@ -305,6 +305,9 @@ struct _qemuDomainStorageSourcePrivate {
 
     /* key for decrypting TLS certificate */
     qemuDomainSecretInfo *tlsKeySecret;
+
+    /* file descriptors if user asks for FDs to be passed */
+    qemuFDPass *fdpass;
 };
 
 virObject *qemuDomainStorageSourcePrivateNew(void);
@@ -924,6 +927,8 @@ int qemuDomainSecretChardevPrepare(virQEMUDriverConfig *cfg,
                                    virDomainChrSourceDef *dev)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
     ATTRIBUTE_NONNULL(4);
+
+void qemuDomainCleanupStorageSourceFD(virStorageSource *src);
 
 void qemuDomainStartupCleanup(virDomainObj *vm);
 

@@ -886,6 +886,9 @@ virStorageSourceCopy(const virStorageSource *src,
             return NULL;
     }
 
+    if (src->fdtuple)
+        def->fdtuple = g_object_ref(src->fdtuple);
+
     /* ssh config passthrough for libguestfs */
     def->ssh_host_key_check_disabled = src->ssh_host_key_check_disabled;
     def->ssh_user = g_strdup(src->ssh_user);
@@ -1169,6 +1172,8 @@ virStorageSourceClear(virStorageSource *def)
     VIR_FREE(def->nfs_group);
 
     virStorageSourceInitiatorClear(&def->initiator);
+
+    g_clear_pointer(&def->fdtuple, g_object_unref);
 
     /* clear everything except the class header as the object APIs
      * will break otherwise */

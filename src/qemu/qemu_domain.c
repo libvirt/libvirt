@@ -874,6 +874,7 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
     g_clear_pointer(&priv->encinfo, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->httpcookie, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->tlsKeySecret, qemuDomainSecretInfoFree);
+    g_clear_pointer(&priv->fdpass, qemuFDPassFree);
 }
 
 
@@ -10824,6 +10825,61 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDef *disk,
 }
 
 
+static int
+qemuDomainPrepareStorageSourceFDs(virStorageSource *src,
+                                  qemuDomainObjPrivate *priv)
+{
+    qemuDomainStorageSourcePrivate *srcpriv = NULL;
+    virStorageType actualType = virStorageSourceGetActualType(src);
+    virStorageSourceFDTuple *fdt = NULL;
+    size_t i;
+
+    if (actualType != VIR_STORAGE_TYPE_FILE &&
+        actualType != VIR_STORAGE_TYPE_BLOCK)
+        return 0;
+
+    if (!virStorageSourceIsFD(src))
+        return 0;
+
+    if (!(fdt = virHashLookup(priv->fds, src->fdgroup))) {
+        virReportError(VIR_ERR_INVALID_ARG,
+                       _("file descriptor group '%s' was not associated with the domain"),
+                       src->fdgroup);
+        return -1;
+    }
+
+    srcpriv = qemuDomainStorageSourcePrivateFetch(src);
+
+    srcpriv->fdpass = qemuFDPassNew(src->nodestorage, priv);
+
+    for (i = 0; i < fdt->nfds; i++) {
+        g_autofree char *idx = g_strdup_printf("%zu", i);
+        int tmpfd;
+
+        if (fdt->testfds) {
+            /* when testing we want to use stable FD numbers provided by the test
+             * case */
+            tmpfd = dup2(fdt->fds[i], fdt->testfds[i]);
+        } else {
+            tmpfd = dup(fdt->fds[i]);
+        }
+
+        if (tmpfd < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("failed to duplicate file descriptor for fd group '%s'"),
+                           src->fdgroup);
+            return -1;
+        }
+
+        qemuFDPassAddFD(srcpriv->fdpass, &tmpfd, idx);
+    }
+
+    src->fdtuple = g_object_ref(fdt);
+
+    return 0;
+}
+
+
 int
 qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
                                                virStorageSource *src,
@@ -10859,6 +10915,9 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
         return -1;
 
     if (qemuDomainPrepareStorageSourceNFS(src) < 0)
+        return -1;
+
+    if (qemuDomainPrepareStorageSourceFDs(src, priv) < 0)
         return -1;
 
     return 0;
@@ -12214,6 +12273,28 @@ qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv)
 
 
 /**
+ * qemuDomainCleanupStorageSourceFD:
+ * @src: start of the chain to clear
+ *
+ * Cleans up the backing chain starting at @src of FD tuple structures for
+ * all FD-tuples which didn't request explicit relabelling and thus the struct
+ * is no longer needed.
+ */
+void
+qemuDomainCleanupStorageSourceFD(virStorageSource *src)
+{
+    virStorageSource *n;
+
+    for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (virStorageSourceIsFD(n) && n->fdtuple) {
+            if (!n->fdtuple->tryRestoreLabel)
+                g_clear_pointer(&n->fdtuple, g_object_unref);
+        }
+    }
+}
+
+
+/**
  * qemuDomainStartupCleanup:
  *
  * Performs a cleanup of data which is not required after a startup of a VM
@@ -12222,5 +12303,10 @@ qemuDomainSchedCoreStop(qemuDomainObjPrivate *priv)
 void
 qemuDomainStartupCleanup(virDomainObj *vm)
 {
+    size_t i;
+
     qemuDomainSecretDestroy(vm);
+
+    for (i = 0; i < vm->def->ndisks; i++)
+        qemuDomainCleanupStorageSourceFD(vm->def->disks[i]->src);
 }
