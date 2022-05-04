@@ -176,7 +176,7 @@ int                     virNetworkUndefine      (virNetworkPtr network);
  * Since: 0.10.2
  */
 typedef enum {
-    VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* (invalid (Since: 0.10.2) */
+    VIR_NETWORK_UPDATE_COMMAND_NONE      = 0, /* invalid (Since: 0.10.2) */
     VIR_NETWORK_UPDATE_COMMAND_MODIFY    = 1, /* modify an existing element (Since: 0.10.2) */
     VIR_NETWORK_UPDATE_COMMAND_DELETE    = 2, /* delete an existing element (Since: 0.10.2) */
     VIR_NETWORK_UPDATE_COMMAND_ADD_LAST  = 3, /* add an element at end of list (Since: 0.10.2) */
@@ -195,7 +195,7 @@ typedef enum {
  * Since: 0.10.2
  */
 typedef enum {
-    VIR_NETWORK_SECTION_NONE              =  0, /* (invalid (Since: 0.10.2) */
+    VIR_NETWORK_SECTION_NONE              =  0, /* invalid (Since: 0.10.2) */
     VIR_NETWORK_SECTION_BRIDGE            =  1, /* <bridge> (Since: 0.10.2) */
     VIR_NETWORK_SECTION_DOMAIN            =  2, /* <domain> (Since: 0.10.2) */
     VIR_NETWORK_SECTION_IP                =  3, /* <ip> (Since: 0.10.2) */
