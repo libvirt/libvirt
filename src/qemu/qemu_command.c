@@ -9690,7 +9690,7 @@ qemuBuildDomainLoaderPflashCommandLine(virCommand *cmd,
 
     if (loader->nvram) {
         virBufferAddLit(&buf, "file=");
-        virQEMUBuildBufferEscapeComma(&buf, loader->nvram);
+        virQEMUBuildBufferEscapeComma(&buf, loader->nvram->path);
         virBufferAsprintf(&buf, ",if=pflash,format=raw,unit=%d", unit);
 
         virCommandAddArg(cmd, "-drive");

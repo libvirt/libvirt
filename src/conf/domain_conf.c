@@ -3590,7 +3590,7 @@ virDomainLoaderDefFree(virDomainLoaderDef *loader)
         return;
 
     g_free(loader->path);
-    g_free(loader->nvram);
+    virObjectUnref(loader->nvram);
     g_free(loader->nvramTemplate);
     g_free(loader);
 }
@@ -18402,6 +18402,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
 {
     xmlNodePtr loader_node = virXPathNode("./os/loader[1]", ctxt);
     const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
+    g_autofree char *nvramPath = NULL;
 
     if (!loader_node)
         return 0;
@@ -18413,7 +18414,13 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    fwAutoSelect) < 0)
         return -1;
 
-    def->os.loader->nvram = virXPathString("string(./os/nvram[1])", ctxt);
+    if ((nvramPath = virXPathString("string(./os/nvram[1])", ctxt))) {
+        def->os.loader->nvram = virStorageSourceNew();
+        def->os.loader->nvram->path = g_steal_pointer(&nvramPath);
+        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
+    }
+
     if (!fwAutoSelect)
         def->os.loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
 
@@ -27179,7 +27186,10 @@ virDomainLoaderDefFormat(virBuffer *buf,
     virXMLFormatElementInternal(buf, "loader", &loaderAttrBuf, &loaderChildBuf, false, false);
 
     virBufferEscapeString(&nvramAttrBuf, " template='%s'", loader->nvramTemplate);
-    virBufferEscapeString(&nvramChildBuf, "%s", loader->nvram);
+    if (loader->nvram) {
+        if (loader->nvram->type == VIR_STORAGE_TYPE_FILE)
+            virBufferEscapeString(&nvramChildBuf, "%s", loader->nvram->path);
+    }
     virXMLFormatElementInternal(buf, "nvram", &nvramAttrBuf, &nvramChildBuf, false, false);
 }
 

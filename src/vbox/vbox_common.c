@@ -992,7 +992,8 @@ vboxSetBootDeviceOrder(virDomainDef *def, struct _vboxDriver *data,
         VIR_DEBUG("def->os.loader->path %s", def->os.loader->path);
         VIR_DEBUG("def->os.loader->readonly %d", def->os.loader->readonly);
         VIR_DEBUG("def->os.loader->type %d", def->os.loader->type);
-        VIR_DEBUG("def->os.loader->nvram %s", def->os.loader->nvram);
+        if (def->os.loader->nvram)
+            VIR_DEBUG("def->os.loader->nvram->path %s", def->os.loader->nvram->path);
     }
     VIR_DEBUG("def->os.bootloader %s", def->os.bootloader);
     VIR_DEBUG("def->os.bootloaderArgs %s", def->os.bootloaderArgs);

@@ -4609,7 +4609,8 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     struct qemuPrepareNVRAMHelperData data;
 
     if (!loader || !loader->nvram ||
-        (virFileExists(loader->nvram) && !reset_nvram))
+        !virStorageSourceIsLocalStorage(loader->nvram) ||
+        (virFileExists(loader->nvram->path) && !reset_nvram))
         return 0;
 
     master_nvram_path = loader->nvramTemplate;
@@ -4641,7 +4642,7 @@ qemuPrepareNVRAM(virQEMUDriver *driver,
     data.srcFD = srcFD;
     data.srcPath = master_nvram_path;
 
-    if (virFileRewrite(loader->nvram,
+    if (virFileRewrite(loader->nvram->path,
                        S_IRUSR | S_IWUSR,
                        cfg->user, cfg->group,
                        qemuPrepareNVRAMHelper,

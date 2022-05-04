@@ -572,8 +572,9 @@ qemuDomainSetupLoader(virDomainObj *vm,
         case VIR_DOMAIN_LOADER_TYPE_PFLASH:
             *paths = g_slist_prepend(*paths, g_strdup(loader->path));
 
-            if (loader->nvram)
-                *paths = g_slist_prepend(*paths, g_strdup(loader->nvram));
+            if (loader->nvram &&
+                virStorageSourceIsLocalStorage(loader->nvram))
+                *paths = g_slist_prepend(*paths, g_strdup(loader->nvram->path));
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_NONE:

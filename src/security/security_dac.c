@@ -1974,7 +1974,8 @@ virSecurityDACRestoreAllLabel(virSecurityManager *mgr,
     }
 
     if (def->os.loader && def->os.loader->nvram &&
-        virSecurityDACRestoreFileLabel(mgr, def->os.loader->nvram) < 0)
+        virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
+        virSecurityDACRestoreFileLabel(mgr, def->os.loader->nvram->path) < 0)
         rc = -1;
 
     if (def->os.kernel &&
@@ -2185,8 +2186,9 @@ virSecurityDACSetAllLabel(virSecurityManager *mgr,
     }
 
     if (def->os.loader && def->os.loader->nvram &&
+        virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
         virSecurityDACSetOwnership(mgr, NULL,
-                                   def->os.loader->nvram,
+                                   def->os.loader->nvram->path,
                                    user, group, true) < 0)
         return -1;
 

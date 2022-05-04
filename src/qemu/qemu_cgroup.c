@@ -581,7 +581,8 @@ qemuSetupFirmwareCgroup(virDomainObj *vm)
         return -1;
 
     if (vm->def->os.loader->nvram &&
-        qemuSetupImagePathCgroup(vm, vm->def->os.loader->nvram, false) < 0)
+        virStorageSourceIsLocalStorage(vm->def->os.loader->nvram) &&
+        qemuSetupImagePathCgroup(vm, vm->def->os.loader->nvram->path, false) < 0)
         return -1;
 
     return 0;

@@ -1192,13 +1192,17 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         VIR_FREE(def->os.loader->nvramTemplate);
         def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
 
-        if (!def->os.loader->nvram)
-            qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
+        if (!def->os.loader->nvram) {
+            def->os.loader->nvram = virStorageSourceNew();
+            def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+            def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
+            qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+        }
 
         VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
                   def->os.loader->path,
                   def->os.loader->nvramTemplate,
-                  def->os.loader->nvram);
+                  def->os.loader->nvram->path);
         break;
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
@@ -1364,8 +1368,12 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
          * its path in domain XML) but no template for NVRAM was
          * specified and the varstore doesn't exist ... */
         if (!virDomainDefHasOldStyleROUEFI(def) ||
-            def->os.loader->nvramTemplate ||
-            (!reset_nvram && virFileExists(def->os.loader->nvram)))
+            def->os.loader->nvramTemplate)
+            return 0;
+
+        if (!reset_nvram && def->os.loader->nvram &&
+            virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
+            virFileExists(def->os.loader->nvram->path))
             return 0;
 
         /* ... then we want to consult JSON FW descriptors first,

@@ -4678,8 +4678,12 @@ qemuDomainDefPostParse(virDomainDef *def,
     }
 
     if (virDomainDefHasOldStyleROUEFI(def) &&
-        !def->os.loader->nvram)
-        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram);
+        !def->os.loader->nvram) {
+        def->os.loader->nvram = virStorageSourceNew();
+        def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+        def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
+        qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+    }
 
     if (qemuDomainDefAddDefaultDevices(driver, def, qemuCaps) < 0)
         return -1;
@@ -11335,7 +11339,7 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm)
         pflash1 = virStorageSourceNew();
         pflash1->type = VIR_STORAGE_TYPE_FILE;
         pflash1->format = VIR_STORAGE_FILE_RAW;
-        pflash1->path = g_strdup(def->os.loader->nvram);
+        pflash1->path = g_strdup(def->os.loader->nvram->path);
         pflash1->readonly = false;
         pflash1->nodeformat = g_strdup("libvirt-pflash1-format");
         pflash1->nodestorage = g_strdup("libvirt-pflash1-storage");
