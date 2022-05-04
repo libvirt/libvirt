@@ -64,6 +64,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
 #undef g_canonicalize_filename
+#undef g_hash_table_steal_extended
 #undef g_fsync
 #undef g_strdup_printf
 #undef g_strdup_vprintf
@@ -169,6 +170,25 @@ vir_g_canonicalize_filename(const gchar *filename,
         *(p-1) = 0;
 
     return canon;
+#endif /* ! GLIB_CHECK_VERSION(2, 58, 0) */
+}
+
+
+gboolean
+vir_g_hash_table_steal_extended(GHashTable *hash_table,
+                                gconstpointer lookup_key,
+                                gpointer *stolen_key,
+                                gpointer *stolen_value)
+{
+#if GLIB_CHECK_VERSION(2, 58, 0)
+    return g_hash_table_steal_extended(hash_table, lookup_key, stolen_key, stolen_value);
+#else /* ! GLIB_CHECK_VERSION(2, 58, 0) */
+    if (!(g_hash_table_lookup_extended(hash_table, lookup_key, stolen_key, stolen_value)))
+        return FALSE;
+
+    g_hash_table_steal(hash_table, lookup_key);
+
+    return TRUE;
 #endif /* ! GLIB_CHECK_VERSION(2, 58, 0) */
 }
 

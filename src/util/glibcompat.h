@@ -70,6 +70,14 @@
 
 gchar * vir_g_canonicalize_filename(const gchar *filename,
                                     const gchar *relative_to);
+
+gboolean
+vir_g_hash_table_steal_extended(GHashTable *hash_table,
+                                gconstpointer lookup_key,
+                                gpointer *stolen_key,
+                                gpointer *stolen_value);
+#define g_hash_table_steal_extended vir_g_hash_table_steal_extended
+
 gint vir_g_fsync(gint fd);
 char *vir_g_strdup_printf(const char *msg, ...)
     G_GNUC_PRINTF(1, 2);

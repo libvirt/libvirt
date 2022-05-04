@@ -242,24 +242,19 @@ virHashHasEntry(GHashTable *table,
  * Find the userdata specified by @name
  * and remove it from the hash without freeing it.
  *
- * Deprecated: consider using g_hash_table_steal_extended once we upgrade to
- * glib 2.58
+ * Deprecated: consider using g_hash_table_steal_extended instead
  *
  * Returns a pointer to the userdata
  */
 void *virHashSteal(GHashTable *table, const char *name)
 {
-    g_autofree void *orig_name = NULL;
+    g_autofree void *orig_name = NULL; /* the original key needs to be freed */
     void *val = NULL;
 
     if (!table || !name)
         return NULL;
 
-    /* we can replace this by g_hash_table_steal_extended with glib 2.58 */
-    if (!(g_hash_table_lookup_extended(table, name, &orig_name, &val)))
-        return NULL;
-
-    g_hash_table_steal(table, name);
+    g_hash_table_steal_extended(table, name, &orig_name, &val);
 
     return val;
 }
