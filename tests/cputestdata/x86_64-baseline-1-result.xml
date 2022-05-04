@@ -1,5 +1,0 @@
-<cpu mode='custom' match='exact'>
-  <model fallback='allow'>Conroe</model>
-  <vendor>Intel</vendor>
-  <feature policy='disable' name='lahf_lm'/>
-</cpu>
