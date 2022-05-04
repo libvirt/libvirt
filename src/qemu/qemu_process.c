@@ -6847,8 +6847,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
         charpriv->sourcefd = qemuFDPassNew(devalias, data->priv);
 
-        if (qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source") < 0)
-            return -1;
+        qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source");
     }
         break;
 
@@ -6867,8 +6866,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
             charpriv->sourcefd = qemuFDPassNewDirect(devalias, data->priv);
 
-            if (qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source") < 0)
-                return -1;
+            qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source");
         }
         break;
 
@@ -6895,8 +6893,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
         charpriv->logfd = qemuFDPassNew(devalias, data->priv);
 
-        if (qemuFDPassAddFD(charpriv->logfd, &logfd, "-log") < 0)
-            return -1;
+        qemuFDPassAddFD(charpriv->logfd, &logfd, "-log");
     }
 
     return 0;

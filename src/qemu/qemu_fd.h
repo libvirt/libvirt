@@ -34,7 +34,7 @@ qemuFDPass *
 qemuFDPassNewDirect(const char *prefix,
                     void *dompriv);
 
-int
+void
 qemuFDPassAddFD(qemuFDPass *fdpass,
                 int *fd,
                 const char *suffix);

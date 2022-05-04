@@ -1084,8 +1084,7 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
         else
             charpriv->sourcefd = qemuFDPassNewDirect(devalias, priv);
 
-        if (qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source") < 0)
-            return -1;
+        qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source");
     }
 
     if (chardev->logfile) {
@@ -1096,8 +1095,7 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
         charpriv->logfd = qemuFDPassNew(devalias, priv);
 
-        if (qemuFDPassAddFD(charpriv->logfd, &fd, "-log") < 0)
-            return -1;
+        qemuFDPassAddFD(charpriv->logfd, &fd, "-log");
     }
 
     return 0;

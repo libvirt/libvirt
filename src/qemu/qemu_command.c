@@ -4948,10 +4948,7 @@ qemuBuildVideoCommandLine(virCommand *cmd,
             chrsrc->type = VIR_DOMAIN_CHR_TYPE_UNIX;
             chrsrcpriv->sourcefd = qemuFDPassNewDirect(video->info.alias, priv);
 
-            if (qemuFDPassAddFD(chrsrcpriv->sourcefd,
-                                &videopriv->vhost_user_fd,
-                                "-vhost-user") < 0)
-                return -1;
+            qemuFDPassAddFD(chrsrcpriv->sourcefd, &videopriv->vhost_user_fd, "-vhost-user");
 
             if (qemuBuildChardevCommand(cmd, chrsrc, chrAlias, priv->qemuCaps) < 0)
                 return -1;
@@ -8785,8 +8782,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
         vdpa = qemuFDPassNew(net->info.alias, priv);
 
-        if (qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa") < 0)
-            return -1;
+        qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa");
     }
         break;
 
@@ -9814,9 +9810,8 @@ qemuBuildTPMCommandLine(virCommand *cmd,
         passtpm = qemuFDPassNew(tpm->info.alias, priv);
         passcancel = qemuFDPassNew(tpm->info.alias, priv);
 
-        if (qemuFDPassAddFD(passtpm, &fdtpm, "-tpm") < 0 ||
-            qemuFDPassAddFD(passcancel, &fdcancel, "-cancel") < 0)
-            return -1;
+        qemuFDPassAddFD(passtpm, &fdtpm, "-tpm");
+        qemuFDPassAddFD(passcancel, &fdcancel, "-cancel");
     }
         break;
 

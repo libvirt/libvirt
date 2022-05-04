@@ -159,37 +159,19 @@ qemuFDPassNewDirect(const char *prefix,
  * @suffix is used to build the name of the file descriptor by concatenating
  * it with @prefix passed to qemuFDPassNew. @suffix may be NULL, in which case
  * it's considered to be an empty string.
- *
- * Returns 0 on success, -1 on error (when attempting to pass multiple FDs) using
- * the 'direct' method.
  */
-int
+void
 qemuFDPassAddFD(qemuFDPass *fdpass,
                 int *fd,
                 const char *suffix)
 {
     struct qemuFDPassFD newfd = { .fd = *fd };
 
-    if (newfd.fd < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("invalid file descriptor"));
-        return -1;
-    }
-
-    if (!fdpass->useFDSet &&
-        fdpass->nfds >= 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("direct FD passing supports only 1 file descriptor"));
-        return -1;
-    }
-
     *fd = -1;
 
     newfd.opaque = g_strdup_printf("%s%s", fdpass->prefix, NULLSTR_EMPTY(suffix));
 
     VIR_APPEND_ELEMENT(fdpass->fds, fdpass->nfds, newfd);
-
-    return 0;
 }
 
 
