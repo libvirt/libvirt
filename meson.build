@@ -517,8 +517,6 @@ else
   test_file = '@0@/src/libvirt_qemu.syms'.format(meson.source_root())
   if cc.has_link_argument('-Wl,--version-script=@0@'.format(test_file))
     version_script_flags = '-Wl,--version-script='
-  elif cc.has_link_argument('-Wl,-M,')
-    version_script_flags = '-Wl,-M,'
   else
     error('No supported version script link argument found.')
   endif
