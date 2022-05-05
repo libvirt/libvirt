@@ -194,7 +194,7 @@
   <cpu type='kvm' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc32' typename='604-powerpc64-cpu'/>
   <cpu type='kvm' name='ppc64' typename='970fx_v3.1-powerpc64-cpu'/>
-  <cpu type='kvm' name='power10' typename='power10_v1.0-powerpc64-cpu'/>
+  <cpu type='kvm' name='POWER10' typename='power10_v1.0-powerpc64-cpu'/>
   <cpu type='kvm' name='POWER9' typename='host-powerpc64-cpu'/>
   <cpu type='kvm' name='power8nvl' typename='power8nvl_v1.0-powerpc64-cpu'/>
   <cpu type='kvm' name='POWER8' typename='power8_v2.0-powerpc64-cpu'/>
@@ -668,7 +668,7 @@
   <cpu type='tcg' name='ppc' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc32' typename='604-powerpc64-cpu'/>
   <cpu type='tcg' name='ppc64' typename='970fx_v3.1-powerpc64-cpu'/>
-  <cpu type='tcg' name='power10' typename='power10_v1.0-powerpc64-cpu'/>
+  <cpu type='tcg' name='POWER10' typename='power10_v1.0-powerpc64-cpu'/>
   <cpu type='tcg' name='POWER9' typename='power9_v2.0-powerpc64-cpu'/>
   <cpu type='tcg' name='power8nvl' typename='power8nvl_v1.0-powerpc64-cpu'/>
   <cpu type='tcg' name='POWER8' typename='power8_v2.0-powerpc64-cpu'/>

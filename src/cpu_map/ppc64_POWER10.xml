@@ -1,0 +1,6 @@
+<cpus>
+  <model name='POWER10'>
+    <vendor name='IBM'/>
+    <pvr value='0x00800000' mask='0xffff0000'/>
+  </model>
+</cpus>

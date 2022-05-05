@@ -82,6 +82,7 @@
     <include filename='ppc64_POWER7.xml'/>
     <include filename='ppc64_POWER8.xml'/>
     <include filename='ppc64_POWER9.xml'/>
+    <include filename='ppc64_POWER10.xml'/>
 
     <!-- Freescale-based CPU models -->
     <include filename='ppc64_POWERPC_e5500.xml'/>
