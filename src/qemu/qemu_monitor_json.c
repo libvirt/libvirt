@@ -3606,12 +3606,6 @@ qemuAddfdInfoParse(virJSONValue *msg,
         return -1;
     }
 
-    if (virJSONValueObjectGetNumberInt(returnObj, "fd", &fdinfo->fd) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid fd in add-fd response"));
-        return -1;
-    }
-
     if (virJSONValueObjectGetNumberInt(returnObj, "fdset-id", &fdinfo->fdset) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Missing or invalid fdset-id in add-fd response"));
@@ -3703,12 +3697,6 @@ qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,
             if (!(fdentry = virJSONValueArrayGet(fdarray, j))) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("query-fdsets return data missing fd array element"));
-                return -1;
-            }
-
-            if (virJSONValueObjectGetNumberInt(fdentry, "fd", &fdinfo->fd) < 0) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-fdsets return data missing 'fd'"));
                 return -1;
             }
 

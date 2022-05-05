@@ -943,7 +943,6 @@ int qemuMonitorGraphicsRelocate(qemuMonitor *mon,
 
 typedef struct _qemuMonitorAddFdInfo qemuMonitorAddFdInfo;
 struct _qemuMonitorAddFdInfo {
-    int fd;
     int fdset;
 };
 int
@@ -959,7 +958,6 @@ qemuMonitorRemoveFdset(qemuMonitor *mon,
 
 typedef struct _qemuMonitorFdsetFdInfo qemuMonitorFdsetFdInfo;
 struct _qemuMonitorFdsetFdInfo {
-    int fd;
     char *opaque;
 };
 typedef struct _qemuMonitorFdsetInfo qemuMonitorFdsetInfo;
