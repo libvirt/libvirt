@@ -725,7 +725,6 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
     {
         g_autoptr(virDomainChrSourceDef) chr = virDomainChrSourceDefNew(xmlopt);
-        qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chr);
 
         chr->data.file.path = g_strdup("/test/path");
 
@@ -743,12 +742,6 @@ qemuMonitorJSONTestAttachChardev(virDomainXMLOption *xmlopt,
 
         chrdev.source = chr;
         ignore_value(testQemuPrepareHostBackendChardevOne(&dev, chr, NULL));
-        if (qemuFDPassTransferMonitorFake(charpriv->sourcefd) < 0)
-            ret = -1;
-
-        if (qemuFDPassTransferMonitorFake(charpriv->logfd) < 0)
-            ret = -1;
-
         CHECK("file", false,
               "{'id':'alias','backend':{'type':'file','data':{'out':'/dev/fdset/monitor-fake',"
                                                              "'append':true,"

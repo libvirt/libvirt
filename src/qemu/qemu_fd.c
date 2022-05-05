@@ -111,8 +111,12 @@ qemuFDPassNew(const char *prefix,
     fdpass->prefix = g_strdup(prefix);
     fdpass->useFDSet = true;
 
-    if (priv)
+    if (priv) {
         fdpass->fdSetID = qemuDomainFDSetIDNew(priv);
+        fdpass->path = g_strdup_printf("/dev/fdset/%u", fdpass->fdSetID);
+    } else {
+        fdpass->path = g_strdup_printf("/dev/fdset/monitor-fake");
+    }
 
     return fdpass;
 }
@@ -171,6 +175,11 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
 
     newfd.opaque = g_strdup_printf("%s%s", fdpass->prefix, NULLSTR_EMPTY(suffix));
 
+    if (!fdpass->useFDSet) {
+        g_free(fdpass->path);
+        fdpass->path = g_strdup(newfd.opaque);
+    }
+
     VIR_APPEND_ELEMENT(fdpass->fds, fdpass->nfds, newfd);
 }
 
@@ -207,10 +216,10 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
                                   fdpass->fds[i].opaque);
 
             virCommandAddArgList(cmd, "-add-fd", arg, NULL);
-
-            fdpass->path = g_strdup_printf("/dev/fdset/%u", fdpass->fdSetID);
         } else {
-            fdpass->path = g_strdup_printf("%u", fdpass->fds[i].fd);
+            /* for monitor use the older FD passing needs the FD number */
+            g_free(fdpass->path);
+            fdpass->path = g_strdup_printf("%d", fdpass->fds[i].fd);
         }
 
         fdpass->fds[i].fd = -1;
@@ -232,7 +241,6 @@ int
 qemuFDPassTransferMonitor(qemuFDPass *fdpass,
                           qemuMonitor *mon)
 {
-    int fdsetid = -1;
     size_t i;
 
     if (!fdpass)
@@ -240,6 +248,21 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
 
     if (qemuFDPassValidate(fdpass) < 0)
         return -1;
+    if (fdpass->useFDSet) {
+        g_autoptr(qemuMonitorFdsets) fdsets = NULL;
+
+        if (qemuMonitorQueryFdsets(mon, &fdsets) < 0)
+            return -1;
+
+        for (i = 0; i < fdsets->nfdsets; i++) {
+            if (fdsets->fdsets[i].id == fdpass->fdSetID) {
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               _("fdset '%u' is already in use by qemu"),
+                               fdpass->fdSetID);
+                return -1;
+            }
+        }
+    }
 
     for (i = 0; i < fdpass->nfds; i++) {
         if (fdpass->useFDSet) {
@@ -247,52 +270,18 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
 
             if (qemuMonitorAddFileHandleToSet(mon,
                                               fdpass->fds[i].fd,
-                                              fdsetid,
+                                              fdpass->fdSetID,
                                               fdpass->fds[i].opaque,
                                               &fdsetinfo) < 0)
                 return -1;
-
-            if (fdsetid == -1) {
-                fdpass->fdSetID = fdsetid = fdsetinfo.fdset;
-                fdpass->path = g_strdup_printf("/dev/fdset/%u", fdsetid);
-            }
         } else {
             if (qemuMonitorSendFileHandle(mon,
                                           fdpass->fds[i].opaque,
                                           fdpass->fds[i].fd) < 0)
                 return -1;
-
-            fdpass->path = g_strdup(fdpass->fds[i].opaque);
         }
 
         fdpass->passed = true;
-    }
-
-    return 0;
-}
-
-
-/**
- * qemuFDPassTransferMonitorFake:
- * @fdpass: The fd passing helper struct
- *
- * Simulate as if @fdpass was passed via monitor for callers which don't
- * actually wish to test that code path.
- */
-int
-qemuFDPassTransferMonitorFake(qemuFDPass *fdpass)
-{
-
-    if (!fdpass)
-        return 0;
-
-    if (qemuFDPassValidate(fdpass) < 0)
-        return -1;
-
-    if (fdpass->useFDSet) {
-        fdpass->path = g_strdup_printf("/dev/fdset/monitor-fake");
-    } else {
-        fdpass->path = g_strdup(fdpass->fds[0].opaque);
     }
 
     return 0;

@@ -47,9 +47,6 @@ int
 qemuFDPassTransferMonitor(qemuFDPass *fdpass,
                           qemuMonitor *mon);
 
-int
-qemuFDPassTransferMonitorFake(qemuFDPass *fdpass);
-
 void
 qemuFDPassTransferMonitorRollback(qemuFDPass *fdpass,
                                   qemuMonitor *mon);
