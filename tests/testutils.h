@@ -35,7 +35,7 @@
 # error Fix build system
 #endif
 
-extern virArch virTestHostArch;
+void virTestSetHostArch(virArch arch);
 
 int virTestRun(const char *title,
                int (*body)(const void *data),

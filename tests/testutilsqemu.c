@@ -307,7 +307,7 @@ qemuTestSetHostArch(virQEMUDriver *driver,
     if (arch == VIR_ARCH_NONE)
         arch = VIR_ARCH_X86_64;
 
-    virTestHostArch = arch;
+    virTestSetHostArch(arch);
     driver->hostarch = virArchFromHost();
     driver->caps->host.arch = virArchFromHost();
     qemuTestSetHostCPU(driver, arch, NULL);
