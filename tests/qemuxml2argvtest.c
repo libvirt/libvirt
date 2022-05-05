@@ -2068,7 +2068,7 @@ mymain(void)
     DO_TEST_FAILURE("cpu-s390-features", QEMU_CAPS_KVM);
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
-    qemuTestSetHostCPU(&driver, driver.hostarch, cpuHaswell);
+    qemuTestSetHostCPU(&driver, driver.hostarch, qemuTestGetCPUDef(QEMU_CPU_DEF_HASWELL));
     DO_TEST("cpu-Haswell", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell2", QEMU_CAPS_KVM);
     DO_TEST("cpu-Haswell3", QEMU_CAPS_KVM);
@@ -2202,7 +2202,7 @@ mymain(void)
                     QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
                     QEMU_CAPS_KVM);
 
-    qemuTestSetHostCPU(&driver, driver.hostarch, cpuPower9);
+    qemuTestSetHostCPU(&driver, driver.hostarch, qemuTestGetCPUDef(QEMU_CPU_DEF_POWER9));
     DO_TEST("pseries-cpu-compat-power9",
             QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,

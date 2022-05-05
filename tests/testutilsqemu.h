@@ -102,10 +102,15 @@ virDomainXMLOption *testQemuXMLConfInit(void);
 virQEMUCaps *qemuTestParseCapabilitiesArch(virArch arch,
                                              const char *capsFile);
 
-extern virCPUDef *cpuDefault;
-extern virCPUDef *cpuHaswell;
-extern virCPUDef *cpuPower8;
-extern virCPUDef *cpuPower9;
+
+typedef enum {
+    QEMU_CPU_DEF_DEFAULT,
+    QEMU_CPU_DEF_HASWELL,
+    QEMU_CPU_DEF_POWER8,
+    QEMU_CPU_DEF_POWER9,
+} qemuTestCPUDef;
+
+virCPUDef *qemuTestGetCPUDef(qemuTestCPUDef d);
 
 void qemuTestSetHostArch(virQEMUDriver *driver,
                          virArch arch);

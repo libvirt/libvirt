@@ -18,10 +18,10 @@
 
 # define VIR_FROM_THIS VIR_FROM_QEMU
 
-virCPUDef *cpuDefault;
-virCPUDef *cpuHaswell;
-virCPUDef *cpuPower8;
-virCPUDef *cpuPower9;
+static virCPUDef *cpuDefault;
+static virCPUDef *cpuHaswell;
+static virCPUDef *cpuPower8;
+static virCPUDef *cpuPower9;
 
 
 static const char *qemu_emulators[VIR_ARCH_LAST] = {
@@ -297,6 +297,20 @@ virCaps*
 testQemuCapsInitMacOS(void)
 {
     return testQemuCapsInitImpl(HOST_OS_MACOS);
+}
+
+
+virCPUDef *
+qemuTestGetCPUDef(qemuTestCPUDef d)
+{
+    switch (d) {
+    case QEMU_CPU_DEF_DEFAULT: return cpuDefault;
+    case QEMU_CPU_DEF_HASWELL: return cpuHaswell;
+    case QEMU_CPU_DEF_POWER8: return cpuPower8;
+    case QEMU_CPU_DEF_POWER9: return cpuPower9;
+    }
+
+    return NULL;
 }
 
 
