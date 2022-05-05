@@ -256,6 +256,7 @@
   <channelTargetDir path='/var/lib/libvirt/qemu/channel/target/domain-1-nest'/>
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
+  <fdset index='0'/>
   <blockjobs active='no'/>
   <agentTimeout>-2</agentTimeout>
   <domain type='kvm' id='1'>

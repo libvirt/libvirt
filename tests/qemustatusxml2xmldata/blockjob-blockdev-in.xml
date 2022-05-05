@@ -233,6 +233,7 @@
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <nodename index='0'/>
+  <fdset index='0'/>
   <blockjobs active='yes'>
     <blockjob name='broken-test' type='broken' state='ready' brokentype='commit'/>
     <blockjob name='commit-vdc-libvirt-9-format' type='commit' state='running' jobflags='0x0'>

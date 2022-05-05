@@ -343,6 +343,7 @@
   <rememberOwner/>
   <allowReboot value='yes'/>
   <nodename index='3'/>
+  <fdset index='0'/>
   <blockjobs active='yes'>
     <blockjob name='drive-virtio-disk0' type='copy' state='ready' jobflags='0x0'>
       <disk dst='vda'/>

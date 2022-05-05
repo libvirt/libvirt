@@ -261,6 +261,7 @@
   <chardevStdioLogd/>
   <allowReboot value='yes'/>
   <nodename index='123'/>
+  <fdset index='321'/>
   <blockjobs active='no'/>
   <agentTimeout>-2</agentTimeout>
   <domain type='kvm' id='1'>

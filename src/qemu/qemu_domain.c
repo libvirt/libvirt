@@ -2372,6 +2372,8 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         virBufferAsprintf(buf, "<nodename index='%llu'/>\n", priv->nodenameindex);
 
+    virBufferAsprintf(buf, "<fdset index='%u'/>\n", priv->fdsetindex);
+
     if (priv->memPrealloc)
         virBufferAddLit(buf, "<memPrealloc/>\n");
 
@@ -3105,6 +3107,9 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                        _("failed to parse node name index"));
         return -1;
     }
+
+    if (virXPathUInt("string(./fdset/@index)", ctxt, &priv->fdsetindex) == 0)
+        priv->fdsetindexParsed = true;
 
     priv->memPrealloc = virXPathBoolean("boolean(./memPrealloc)", ctxt) == 1;
 

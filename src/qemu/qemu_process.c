@@ -2265,6 +2265,34 @@ qemuRefreshPRManagerState(virQEMUDriver *driver,
 }
 
 
+static int
+qemuProcessRefreshFdsetIndex(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(qemuMonitorFdsets) fdsets = NULL;
+    size_t i;
+    int rc;
+
+    /* if the previous index was in the status XML we don't need to update it */
+    if (priv->fdsetindexParsed)
+        return 0;
+
+    qemuDomainObjEnterMonitor(priv->driver, vm);
+    rc = qemuMonitorQueryFdsets(priv->mon, &fdsets);
+    qemuDomainObjExitMonitor(vm);
+
+    if (rc < 0)
+        return -1;
+
+    for (i = 0; i < fdsets->nfdsets; i++) {
+        if (fdsets->fdsets[i].id >= priv->fdsetindex)
+            priv->fdsetindex = fdsets->fdsets[i].id + 1;
+    }
+
+    return 0;
+}
+
+
 static void
 qemuRefreshRTC(virQEMUDriver *driver,
                virDomainObj *vm)
@@ -8926,6 +8954,9 @@ qemuProcessReconnect(void *opaque)
         goto error;
 
     if (qemuRefreshPRManagerState(driver, obj) < 0)
+        goto error;
+
+    if (qemuProcessRefreshFdsetIndex(obj) < 0)
         goto error;
 
     qemuProcessReconnectCheckMemAliasOrderMismatch(obj);

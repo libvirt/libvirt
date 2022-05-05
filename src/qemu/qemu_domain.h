@@ -204,8 +204,9 @@ struct _qemuDomainObjPrivate {
     /* counter for generating node names for qemu disks */
     unsigned long long nodenameindex;
 
-    /* counter for generating IDs of fdsets - only relevant during startup */
+    /* counter for generating IDs of fdsets */
     unsigned int fdsetindex;
+    bool fdsetindexParsed;
 
     /* qemuProcessStartCPUs stores the reason for starting vCPUs here for the
      * RESUME event handler to use it */
