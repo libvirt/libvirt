@@ -266,13 +266,10 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
 
     for (i = 0; i < fdpass->nfds; i++) {
         if (fdpass->useFDSet) {
-            qemuMonitorAddFdInfo fdsetinfo;
-
             if (qemuMonitorAddFileHandleToSet(mon,
                                               fdpass->fds[i].fd,
                                               fdpass->fdSetID,
-                                              fdpass->fds[i].opaque,
-                                              &fdsetinfo) < 0)
+                                              fdpass->fds[i].opaque) < 0)
                 return -1;
         } else {
             if (qemuMonitorSendFileHandle(mon,

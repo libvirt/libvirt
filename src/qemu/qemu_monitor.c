@@ -2506,7 +2506,6 @@ qemuMonitorGraphicsRelocate(qemuMonitor *mon,
  * @fd: file descriptor to pass to qemu
  * @fdset: the fdset to register this fd with, -1 to create a new fdset
  * @opaque: opaque data to associated with this fd
- * @info: structure that will be updated with the fd and fdset returned by qemu
  *
  * Attempts to register a file descriptor with qemu that can then be referenced
  * via the file path /dev/fdset/$FDSETID
@@ -2515,8 +2514,7 @@ int
 qemuMonitorAddFileHandleToSet(qemuMonitor *mon,
                               int fd,
                               int fdset,
-                              const char *opaque,
-                              qemuMonitorAddFdInfo *info)
+                              const char *opaque)
 {
     VIR_DEBUG("fd=%d,fdset=%i,opaque=%s", fd, fdset, opaque);
 
@@ -2528,7 +2526,7 @@ qemuMonitorAddFileHandleToSet(qemuMonitor *mon,
         return -1;
     }
 
-    return qemuMonitorJSONAddFileHandleToSet(mon, fd, fdset, opaque, info);
+    return qemuMonitorJSONAddFileHandleToSet(mon, fd, fdset, opaque);
 }
 
 

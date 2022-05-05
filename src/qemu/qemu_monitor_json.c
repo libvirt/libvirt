@@ -3594,34 +3594,11 @@ int qemuMonitorJSONGraphicsRelocate(qemuMonitor *mon,
 }
 
 
-static int
-qemuAddfdInfoParse(virJSONValue *msg,
-                   qemuMonitorAddFdInfo *fdinfo)
-{
-    virJSONValue *returnObj;
-
-    if (!(returnObj = virJSONValueObjectGetObject(msg, "return"))) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid return data in add-fd response"));
-        return -1;
-    }
-
-    if (virJSONValueObjectGetNumberInt(returnObj, "fdset-id", &fdinfo->fdset) < 0) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("Missing or invalid fdset-id in add-fd response"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
-/* if fdset is negative, qemu will create a new fdset and add the fd to that */
-int qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
-                                      int fd,
-                                      int fdset,
-                                      const char *opaque,
-                                      qemuMonitorAddFdInfo *fdinfo)
+int
+qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
+                                  int fd,
+                                  int fdset,
+                                  const char *opaque)
 {
     g_autoptr(virJSONValue) args = NULL;
     g_autoptr(virJSONValue) reply = NULL;
@@ -3644,11 +3621,9 @@ int qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
     if (qemuMonitorJSONCheckError(cmd, reply) < 0)
         return -1;
 
-    if (qemuAddfdInfoParse(reply, fdinfo) < 0)
-        return -1;
-
     return 0;
 }
+
 
 static int
 qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,

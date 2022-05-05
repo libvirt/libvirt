@@ -941,16 +941,11 @@ int qemuMonitorGraphicsRelocate(qemuMonitor *mon,
                                 int tlsPort,
                                 const char *tlsSubject);
 
-typedef struct _qemuMonitorAddFdInfo qemuMonitorAddFdInfo;
-struct _qemuMonitorAddFdInfo {
-    int fdset;
-};
 int
 qemuMonitorAddFileHandleToSet(qemuMonitor *mon,
                               int fd,
                               int fdset,
-                              const char *opaque,
-                              qemuMonitorAddFdInfo *info);
+                              const char *opaque);
 
 int
 qemuMonitorRemoveFdset(qemuMonitor *mon,

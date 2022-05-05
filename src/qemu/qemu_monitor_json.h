@@ -253,8 +253,7 @@ int
 qemuMonitorJSONAddFileHandleToSet(qemuMonitor *mon,
                                   int fd,
                                   int fdset,
-                                  const char *opaque,
-                                  qemuMonitorAddFdInfo *info);
+                                  const char *opaque);
 
 int
 qemuMonitorJSONRemoveFdset(qemuMonitor *mon,
