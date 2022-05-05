@@ -49,25 +49,23 @@ nss_libvirt_guest_impl = static_library(
   ],
 )
 
-nss_libvirt_syms = '@0@@1@'.format(
-  version_script_flags,
-  meson.current_source_dir() / nss_sym_file,
-)
+nss_libvirt_syms_file = meson.current_source_dir() / nss_sym_file
+nss_libvirt_syms_path = nss_libvirt_syms_file
 
-nss_libvirt_guest_syms = '@0@@1@'.format(
-  version_script_flags,
-  meson.current_source_dir() / nss_guest_sym_file,
-)
+nss_libvirt_link_args = [
+  libvirt_export_dynamic,
+  coverage_flags,
+  '@0@@1@'.format(
+    version_script_flags,
+    nss_libvirt_syms_path,
+  ),
+]
 
 nss_libvirt_lib = shared_library(
   'nss_libvirt',
   name_prefix: nss_prefix,
   name_suffix: 'so.@0@'.format(nss_so_ver),
-  link_args: [
-    nss_libvirt_syms,
-    libvirt_export_dynamic,
-    coverage_flags,
-  ],
+  link_args: nss_libvirt_link_args,
   link_whole: [
     nss_libvirt_impl,
   ],
@@ -75,15 +73,23 @@ nss_libvirt_lib = shared_library(
   install_dir: libdir,
 )
 
+nss_libvirt_guest_syms_file = meson.current_source_dir() / nss_guest_sym_file
+nss_libvirt_guest_syms_path = nss_libvirt_guest_syms_file
+
+nss_libvirt_guest_link_args = [
+  libvirt_export_dynamic,
+  coverage_flags,
+  '@0@@1@'.format(
+    version_script_flags,
+    nss_libvirt_guest_syms_path,
+  ),
+]
+
 nss_libvirt_guest_lib = shared_library(
   'nss_libvirt_guest',
   name_prefix: nss_prefix,
   name_suffix: 'so.@0@'.format(nss_so_ver),
-  link_args: [
-    nss_libvirt_guest_syms,
-    libvirt_export_dynamic,
-    coverage_flags,
-  ],
+  link_args: nss_libvirt_guest_link_args,
   link_whole: [
     nss_libvirt_guest_impl,
   ],

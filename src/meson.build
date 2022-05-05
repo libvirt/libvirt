@@ -354,7 +354,7 @@ libvirt_syms = custom_target(
     '@OUTPUT@', 'LIBVIRT_PRIVATE_' + meson.project_version(), '@INPUT@',
   ],
 )
-libvirt_syms_file = libvirt_syms
+
 if host_machine.system() == 'windows'
   libvirt_def = custom_target(
     'libvirt.def',
@@ -366,15 +366,27 @@ if host_machine.system() == 'windows'
     ],
   )
   libvirt_syms_file = libvirt_def
+  libvirt_syms_path = libvirt_syms_file.full_path()
+else
+  libvirt_syms_file = libvirt_syms
+  libvirt_syms_path = libvirt_syms_file.full_path()
 endif
 
 
 # libvirt.so library
 
-libvirt_syms_flags = '@0@@1@'.format(
-  version_script_flags,
-  libvirt_syms_file.full_path(),
-)
+libvirt_link_args = [
+  libvirt_flat_namespace,
+  libvirt_no_undefined,
+  libvirt_nodelete,
+  '@0@@1@'.format(
+    version_script_flags,
+    libvirt_syms_path,
+  ),
+]
+libvirt_link_depends = [
+  libvirt_syms_file,
+]
 
 libvirt_lib = shared_library(
   'virt',
@@ -382,18 +394,11 @@ libvirt_lib = shared_library(
   dependencies: [
     src_dep,
   ],
-  link_args: [
-    libvirt_flat_namespace,
-    libvirt_no_undefined,
-    libvirt_nodelete,
-    libvirt_syms_flags,
-  ],
+  link_args: libvirt_link_args,
   link_whole: [
     libvirt_libs,
   ],
-  link_depends: [
-    libvirt_syms_file,
-  ],
+  link_depends: libvirt_link_depends,
   install: true,
   version: libvirt_lib_version,
   soversion: libvirt_so_version,
@@ -403,8 +408,7 @@ libvirt_lib = shared_library(
 # libvirt-qemu.syms symbol files
 
 libvirt_qemu_syms = meson.current_source_dir() / 'libvirt_qemu.syms'
-libvirt_qemu_syms_file = libvirt_qemu_syms
-libvirt_qemu_syms_path = libvirt_qemu_syms
+
 if host_machine.system() == 'windows'
   libvirt_qemu_def = custom_target(
     'libvirt_qemu.def',
@@ -416,16 +420,25 @@ if host_machine.system() == 'windows'
     ],
   )
   libvirt_qemu_syms_file = libvirt_qemu_def
-  libvirt_qemu_syms_path = libvirt_qemu_def.full_path()
+  libvirt_qemu_syms_path = libvirt_qemu_syms_file.full_path()
+else
+  libvirt_qemu_syms_file = libvirt_qemu_syms
+  libvirt_qemu_syms_path = libvirt_qemu_syms
 endif
 
 
 # libvirt-qemu.so
 
-libvirt_qemu_syms_flags = '@0@@1@'.format(
-  version_script_flags,
-  libvirt_qemu_syms_path,
-)
+libvirt_qemu_link_args = [
+  libvirt_nodelete,
+  '@0@@1@'.format(
+    version_script_flags,
+    libvirt_qemu_syms_path,
+  ),
+]
+libvirt_qemu_link_depends = [
+  libvirt_qemu_syms_file,
+]
 
 libvirt_qemu_sources = files(
   'libvirt-qemu.c',
@@ -437,16 +450,11 @@ libvirt_qemu_lib = shared_library(
   dependencies: [
     src_dep,
   ],
-  link_args: [
-    libvirt_nodelete,
-    libvirt_qemu_syms_flags,
-  ],
+  link_args: libvirt_qemu_link_args,
   link_with: [
     libvirt_lib,
   ],
-  link_depends: [
-    libvirt_qemu_syms_file,
-  ],
+  link_depends: libvirt_qemu_link_depends,
   install: true,
   install_rpath: libvirt_rpath,
   version: libvirt_lib_version,
@@ -457,8 +465,7 @@ libvirt_qemu_lib = shared_library(
 # libvirt-lxc.so symbol files
 
 libvirt_lxc_syms = meson.current_source_dir() / 'libvirt_lxc.syms'
-libvirt_lxc_syms_file = libvirt_lxc_syms
-libvirt_lxc_syms_path = libvirt_lxc_syms
+
 if host_machine.system() == 'windows'
   libvirt_lxc_def = custom_target(
     'libvirt_lxc.def',
@@ -470,16 +477,25 @@ if host_machine.system() == 'windows'
     ],
   )
   libvirt_lxc_syms_file = libvirt_lxc_def
-  libvirt_lxc_syms_path = libvirt_lxc_def.full_path()
+  libvirt_lxc_syms_path = libvirt_lxc_syms_file.full_path()
+else
+  libvirt_lxc_syms_file = libvirt_lxc_syms
+  libvirt_lxc_syms_path = libvirt_lxc_syms
 endif
 
 
 # libvirt-lxc.so
 
-libvirt_lxc_syms_flags = '@0@@1@'.format(
-  version_script_flags,
-  libvirt_lxc_syms_path,
-)
+libvirt_lxc_link_args = [
+  libvirt_nodelete,
+  '@0@@1@'.format(
+    version_script_flags,
+    libvirt_lxc_syms_path,
+  ),
+]
+libvirt_lxc_link_depends = [
+  libvirt_lxc_syms_file,
+]
 
 libvirt_lxc_sources = files(
   'libvirt-lxc.c',
@@ -493,16 +509,11 @@ libvirt_lxc_lib = shared_library(
     selinux_dep,
     src_dep,
   ],
-  link_args: [
-    libvirt_nodelete,
-    libvirt_lxc_syms_flags,
-  ],
+  link_args: libvirt_lxc_link_args,
   link_with: [
     libvirt_lib,
   ],
-  link_depends: [
-    libvirt_lxc_syms_file,
-  ],
+  link_depends: libvirt_lxc_link_depends,
   install: true,
   install_rpath: libvirt_rpath,
   version: libvirt_lib_version,
@@ -537,16 +548,11 @@ if conf.has('WITH_REMOTE')
       admin_inc_dir,
       remote_inc_dir,
     ],
-    link_args: [
-      libvirt_admin_syms_flags,
-      libvirt_nodelete,
-    ],
+    link_args: libvirt_admin_link_args,
     link_with: [
       libvirt_lib,
     ],
-    link_depends: [
-      libvirt_admin_syms_file,
-    ],
+    link_depends: libvirt_admin_link_depends,
     install: true,
     install_rpath: libvirt_rpath,
     version: libvirt_lib_version,

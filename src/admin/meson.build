@@ -72,7 +72,7 @@ libvirt_admin_syms = custom_target(
     '@OUTPUT@', 'LIBVIRT_ADMIN_PRIVATE_' + meson.project_version(), '@INPUT@',
   ],
 )
-libvirt_admin_syms_file = libvirt_admin_syms
+
 if host_machine.system() == 'windows'
   libvirt_admin_def = custom_target(
     'libvirt_admin.def',
@@ -84,12 +84,22 @@ if host_machine.system() == 'windows'
     ],
   )
   libvirt_admin_syms_file = libvirt_admin_def
+  libvirt_admin_syms_path = libvirt_admin_syms_file.full_path()
+else
+  libvirt_admin_syms_file = libvirt_admin_syms
+  libvirt_admin_syms_path = libvirt_admin_syms_file.full_path()
 endif
 
-libvirt_admin_syms_flags = '@0@@1@'.format(
-  version_script_flags,
-  libvirt_admin_syms_file.full_path(),
-)
+libvirt_admin_link_args = [
+  libvirt_nodelete,
+  '@0@@1@'.format(
+    version_script_flags,
+    libvirt_admin_syms_path,
+  ),
+]
+libvirt_admin_link_depends = [
+  libvirt_admin_syms_file,
+]
 
 if conf.has('WITH_REMOTE')
   admin_driver_lib = static_library(
