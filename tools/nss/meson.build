@@ -55,11 +55,14 @@ nss_libvirt_syms_path = nss_libvirt_syms_file
 nss_libvirt_link_args = [
   libvirt_export_dynamic,
   coverage_flags,
-  '@0@@1@'.format(
+]
+
+if version_script_flags != ''
+  nss_libvirt_link_args += '@0@@1@'.format(
     version_script_flags,
     nss_libvirt_syms_path,
-  ),
-]
+  )
+endif
 
 nss_libvirt_lib = shared_library(
   'nss_libvirt',
@@ -79,11 +82,14 @@ nss_libvirt_guest_syms_path = nss_libvirt_guest_syms_file
 nss_libvirt_guest_link_args = [
   libvirt_export_dynamic,
   coverage_flags,
-  '@0@@1@'.format(
+]
+
+if version_script_flags != ''
+  nss_libvirt_guest_link_args += '@0@@1@'.format(
     version_script_flags,
     nss_libvirt_guest_syms_path,
-  ),
-]
+  )
+endif
 
 nss_libvirt_guest_lib = shared_library(
   'nss_libvirt_guest',

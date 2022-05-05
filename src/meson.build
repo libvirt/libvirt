@@ -379,14 +379,16 @@ libvirt_link_args = [
   libvirt_flat_namespace,
   libvirt_no_undefined,
   libvirt_nodelete,
-  '@0@@1@'.format(
+]
+libvirt_link_depends = []
+
+if version_script_flags != ''
+  libvirt_link_args += '@0@@1@'.format(
     version_script_flags,
     libvirt_syms_path,
-  ),
-]
-libvirt_link_depends = [
-  libvirt_syms_file,
-]
+  )
+  libvirt_link_depends += libvirt_syms_file
+endif
 
 libvirt_lib = shared_library(
   'virt',
@@ -431,14 +433,16 @@ endif
 
 libvirt_qemu_link_args = [
   libvirt_nodelete,
-  '@0@@1@'.format(
+]
+libvirt_qemu_link_depends = []
+
+if version_script_flags != ''
+  libvirt_qemu_link_args += '@0@@1@'.format(
     version_script_flags,
     libvirt_qemu_syms_path,
-  ),
-]
-libvirt_qemu_link_depends = [
-  libvirt_qemu_syms_file,
-]
+  )
+  libvirt_qemu_link_depends += libvirt_qemu_syms_file
+endif
 
 libvirt_qemu_sources = files(
   'libvirt-qemu.c',
@@ -488,14 +492,16 @@ endif
 
 libvirt_lxc_link_args = [
   libvirt_nodelete,
-  '@0@@1@'.format(
+]
+libvirt_lxc_link_depends = []
+
+if version_script_flags != ''
+  libvirt_lxc_link_args += '@0@@1@'.format(
     version_script_flags,
     libvirt_lxc_syms_path,
-  ),
-]
-libvirt_lxc_link_depends = [
-  libvirt_lxc_syms_file,
-]
+  )
+  libvirt_lxc_link_depends += libvirt_lxc_syms_file
+endif
 
 libvirt_lxc_sources = files(
   'libvirt-lxc.c',

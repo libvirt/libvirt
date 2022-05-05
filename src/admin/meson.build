@@ -92,14 +92,16 @@ endif
 
 libvirt_admin_link_args = [
   libvirt_nodelete,
-  '@0@@1@'.format(
+]
+libvirt_admin_link_depends = []
+
+if version_script_flags != ''
+  libvirt_admin_link_args += '@0@@1@'.format(
     version_script_flags,
     libvirt_admin_syms_path,
-  ),
-]
-libvirt_admin_link_depends = [
-  libvirt_admin_syms_file,
-]
+  )
+  libvirt_admin_link_depends += libvirt_admin_syms_file
+endif
 
 if conf.has('WITH_REMOTE')
   admin_driver_lib = static_library(
