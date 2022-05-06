@@ -8449,6 +8449,7 @@ static virHypervisorDriver hypervisor_driver = {
     .domainSaveParams = remoteDomainSaveParams, /* 8.4.0 */
     .domainRestore = remoteDomainRestore, /* 0.3.0 */
     .domainRestoreFlags = remoteDomainRestoreFlags, /* 0.9.4 */
+    .domainRestoreParams = remoteDomainRestoreParams, /* 8.4.0 */
     .domainSaveImageGetXMLDesc = remoteDomainSaveImageGetXMLDesc, /* 0.9.4 */
     .domainSaveImageDefineXML = remoteDomainSaveImageDefineXML, /* 0.9.4 */
     .domainCoreDump = remoteDomainCoreDump, /* 0.3.0 */

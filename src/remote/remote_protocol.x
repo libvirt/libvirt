@@ -999,6 +999,11 @@ struct remote_domain_restore_flags_args {
     unsigned int flags;
 };
 
+struct remote_domain_restore_params_args {
+    remote_typed_param params<REMOTE_DOMAIN_SAVE_PARAMS_MAX>;
+    unsigned int flags;
+};
+
 struct remote_domain_save_image_get_xml_desc_args {
     remote_nonnull_string file;
     unsigned int flags;
@@ -6935,5 +6940,12 @@ enum remote_procedure {
      * @generate: both
      * @acl: domain:hibernate
      */
-    REMOTE_PROC_DOMAIN_SAVE_PARAMS = 440
+    REMOTE_PROC_DOMAIN_SAVE_PARAMS = 440,
+
+    /**
+     * @generate: both
+     * @acl: domain:start
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_RESTORE_PARAMS = 441
 };
