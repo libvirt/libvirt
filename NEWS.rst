@@ -21,6 +21,14 @@ v8.4.0 (unreleased)
 
 * **Bug fixes**
 
+  * Improve heuristics for computing baseline CPU models
+
+    Both ``virConnectBaselineHypervisorCPU`` and ``virConnectBaselineCPU`` were
+    in some cases computing the result using a CPU model which was newer than
+    some of the input models. For example, ``Cascadelake-Server`` was used as a
+    baseline for ``Skylake-Server-IBRS`` and ``Cascadelake-Server``. The CPU
+    model selection heuristics was improved to choose a more appropriate model.
+
 
 v8.3.0 (2022-05-02)
 ===================
