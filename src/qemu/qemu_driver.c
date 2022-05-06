@@ -2804,6 +2804,58 @@ qemuDomainSave(virDomainPtr dom, const char *path)
     return qemuDomainSaveFlags(dom, path, NULL, 0);
 }
 
+static int
+qemuDomainSaveParams(virDomainPtr dom,
+                     virTypedParameterPtr params, int nparams,
+                     unsigned int flags)
+{
+    const char *to = NULL;
+    const char *dxml = NULL;
+    virQEMUDriver *driver = dom->conn->privateData;
+    int compressed;
+    g_autoptr(virCommand) compressor = NULL;
+    int ret = -1;
+    virDomainObj *vm = NULL;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+
+    virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
+                  VIR_DOMAIN_SAVE_RUNNING |
+                  VIR_DOMAIN_SAVE_PAUSED, -1);
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
+                               VIR_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
+        return -1;
+
+    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_FILE, &to) < 0)
+        return -1;
+    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_DXML, &dxml) < 0)
+        return -1;
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                         &compressor,
+                                                         "save", false)) < 0)
+        goto cleanup;
+
+    if (!(vm = qemuDomainObjFromDomain(dom)))
+        goto cleanup;
+
+    if (virDomainSaveParamsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        goto cleanup;
+
+    ret = qemuDomainSaveInternal(driver, vm, to, compressed,
+                                 compressor, dxml, flags);
+
+ cleanup:
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
 static char *
 qemuDomainManagedSavePath(virQEMUDriver *driver, virDomainObj *vm)
 {
@@ -20829,6 +20881,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetControlInfo = qemuDomainGetControlInfo, /* 0.9.3 */
     .domainSave = qemuDomainSave, /* 0.2.0 */
     .domainSaveFlags = qemuDomainSaveFlags, /* 0.9.4 */
+    .domainSaveParams = qemuDomainSaveParams, /* 8.4.0 */
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
     .domainRestoreFlags = qemuDomainRestoreFlags, /* 0.9.4 */
     .domainSaveImageGetXMLDesc = qemuDomainSaveImageGetXMLDesc, /* 0.9.4 */
