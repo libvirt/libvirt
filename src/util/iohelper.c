@@ -45,6 +45,16 @@
 # define O_DIRECT 0
 #endif
 
+struct runIOParams {
+    bool isBlockDev;
+    bool isDirect;
+    bool isWrite;
+    int fdin;
+    const char *fdinname;
+    int fdout;
+    const char *fdoutname;
+};
+
 static int
 runIO(const char *path, int fd, int oflags)
 {
@@ -53,13 +63,9 @@ runIO(const char *path, int fd, int oflags)
     size_t buflen = 1024*1024;
     intptr_t alignMask = 64*1024 - 1;
     int ret = -1;
-    int fdin, fdout;
-    const char *fdinname, *fdoutname;
-    unsigned long long total = 0;
-    bool direct = O_DIRECT && ((oflags & O_DIRECT) != 0);
-    off_t end = 0;
+    off_t total = 0;
     struct stat sb;
-    bool isBlockDev = false;
+    struct runIOParams p;
 
 #if WITH_POSIX_MEMALIGN
     if (posix_memalign(&base, alignMask + 1, buflen))
@@ -77,34 +83,23 @@ runIO(const char *path, int fd, int oflags)
                              fd, path);
         goto cleanup;
     }
-    isBlockDev = S_ISBLK(sb.st_mode);
+    p.isBlockDev = S_ISBLK(sb.st_mode);
+    p.isDirect = O_DIRECT && (oflags & O_DIRECT);
 
     switch (oflags & O_ACCMODE) {
     case O_RDONLY:
-        fdin = fd;
-        fdinname = path;
-        fdout = STDOUT_FILENO;
-        fdoutname = "stdout";
-        /* To make the implementation simpler, we give up on any
-         * attempt to use O_DIRECT in a non-trivial manner.  */
-        if (!isBlockDev && direct && ((end = lseek(fd, 0, SEEK_CUR)) != 0)) {
-            virReportSystemError(end < 0 ? errno : EINVAL, "%s",
-                                 _("O_DIRECT read needs entire seekable file"));
-            goto cleanup;
-        }
+        p.isWrite = false;
+        p.fdin = fd;
+        p.fdinname = path;
+        p.fdout = STDOUT_FILENO;
+        p.fdoutname = "stdout";
         break;
     case O_WRONLY:
-        fdin = STDIN_FILENO;
-        fdinname = "stdin";
-        fdout = fd;
-        fdoutname = path;
-        /* To make the implementation simpler, we give up on any
-         * attempt to use O_DIRECT in a non-trivial manner.  */
-        if (!isBlockDev && direct && (end = lseek(fd, 0, SEEK_END)) != 0) {
-            virReportSystemError(end < 0 ? errno : EINVAL, "%s",
-                                 _("O_DIRECT write needs empty seekable file"));
-            goto cleanup;
-        }
+        p.isWrite = true;
+        p.fdin = STDIN_FILENO;
+        p.fdinname = "stdin";
+        p.fdout = fd;
+        p.fdoutname = path;
         break;
 
     case O_RDWR:
@@ -113,6 +108,22 @@ runIO(const char *path, int fd, int oflags)
                              _("Unable to process file with flags %d"),
                              (oflags & O_ACCMODE));
         goto cleanup;
+    }
+    /* To make the implementation simpler, we give up on any
+     * attempt to use O_DIRECT in a non-trivial manner.  */
+    if (!p.isBlockDev && p.isDirect) {
+        off_t off;
+        if (p.isWrite) {
+            if ((off = lseek(fd, 0, SEEK_END)) != 0) {
+                virReportSystemError(off < 0 ? errno : EINVAL, "%s",
+                                     _("O_DIRECT write needs empty seekable file"));
+                goto cleanup;
+            }
+        } else if ((off = lseek(fd, 0, SEEK_CUR)) != 0) {
+            virReportSystemError(off < 0 ? errno : EINVAL, "%s",
+                                 _("O_DIRECT read needs entire seekable file"));
+            goto cleanup;
+        }
     }
 
     while (1) {
@@ -124,16 +135,16 @@ runIO(const char *path, int fd, int oflags)
          * writes will be aligned.
          * In other cases using saferead reduces number of syscalls.
          */
-        if (fdin == fd && direct) {
-            if ((got = read(fdin, buf, buflen)) < 0 &&
+        if (!p.isWrite && p.isDirect) {
+            if ((got = read(p.fdin, buf, buflen)) < 0 &&
                 errno == EINTR)
                 continue;
         } else {
-            got = saferead(fdin, buf, buflen);
+            got = saferead(p.fdin, buf, buflen);
         }
 
         if (got < 0) {
-            virReportSystemError(errno, _("Unable to read %s"), fdinname);
+            virReportSystemError(errno, _("Unable to read %s"), p.fdinname);
             goto cleanup;
         }
         if (got == 0)
@@ -142,35 +153,35 @@ runIO(const char *path, int fd, int oflags)
         total += got;
 
         /* handle last write size align in direct case */
-        if (got < buflen && direct && fdout == fd) {
+        if (got < buflen && p.isDirect && p.isWrite) {
             ssize_t aligned_got = (got + alignMask) & ~alignMask;
 
             memset(buf + got, 0, aligned_got - got);
 
-            if (safewrite(fdout, buf, aligned_got) < 0) {
-                virReportSystemError(errno, _("Unable to write %s"), fdoutname);
+            if (safewrite(p.fdout, buf, aligned_got) < 0) {
+                virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
                 goto cleanup;
             }
 
-            if (!isBlockDev && ftruncate(fd, total) < 0) {
-                virReportSystemError(errno, _("Unable to truncate %s"), fdoutname);
+            if (!p.isBlockDev && ftruncate(p.fdout, total) < 0) {
+                virReportSystemError(errno, _("Unable to truncate %s"), p.fdoutname);
                 goto cleanup;
             }
 
             break;
         }
 
-        if (safewrite(fdout, buf, got) < 0) {
-            virReportSystemError(errno, _("Unable to write %s"), fdoutname);
+        if (safewrite(p.fdout, buf, got) < 0) {
+            virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
             goto cleanup;
         }
     }
 
     /* Ensure all data is written */
-    if (virFileDataSync(fdout) < 0) {
+    if (virFileDataSync(p.fdout) < 0) {
         if (errno != EINVAL && errno != EROFS) {
             /* fdatasync() may fail on some special FDs, e.g. pipes */
-            virReportSystemError(errno, _("unable to fsync %s"), fdoutname);
+            virReportSystemError(errno, _("unable to fsync %s"), p.fdoutname);
             goto cleanup;
         }
     }
