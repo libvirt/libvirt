@@ -859,9 +859,9 @@ virDomainPMWakeup(virDomainPtr dom,
  * listed as running anymore (this ends the life of a transient domain).
  * Use virDomainRestore() to restore a domain after saving.
  *
- * See virDomainSaveFlags() for more control.  Also, a save file can
- * be inspected or modified slightly with virDomainSaveImageGetXMLDesc()
- * and virDomainSaveImageDefineXML().
+ * See virDomainSaveFlags() and virDomainSaveParams() for more control.
+ * Also, a save file can be inspected or modified slightly with
+ * virDomainSaveImageGetXMLDesc() and virDomainSaveImageDefineXML().
  *
  * Returns 0 in case of success and -1 in case of failure.
  *

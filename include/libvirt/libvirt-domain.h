@@ -1544,6 +1544,7 @@ int                     virDomainPMWakeup       (virDomainPtr domain,
  * virDomainSaveRestoreFlags:
  *
  * Flags for use in virDomainSaveFlags(), virDomainManagedSave(),
+ * virDomainSaveParams(), virDomainRestoreParams(),
  * virDomainRestoreFlags(), and virDomainSaveImageDefineXML().  Not all
  * flags apply to all these functions.
  *

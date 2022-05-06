@@ -38,8 +38,9 @@ full system
 
 Libvirt can manage all three types of snapshots. For now, VM state (memory)
 snapshots are created only by the ``virDomainSave()``, ``virDomainSaveFlags``,
-and ``virDomainManagedSave()`` functions, and restored via the
-``virDomainRestore()``, ``virDomainRestoreFlags()``, ``virDomainCreate()``, and
+``virDomainSaveParams`` and ``virDomainManagedSave()`` functions, and restored
+via the ``virDomainRestore()``, ``virDomainRestoreFlags()``,
+``virDomainRestoreParams``, ``virDomainCreate()``, and
 ``virDomainCreateWithFlags()`` functions (as well as via domain autostart). With
 managed snapshots, libvirt tracks all information internally; with save images,
 the user tracks the snapshot file, but libvirt provides functions such as
