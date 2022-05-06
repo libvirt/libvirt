@@ -2293,6 +2293,9 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
         if (teardowndevice && qemuDomainNamespaceTeardownChardev(vm, chr) < 0)
             VIR_WARN("Unable to remove chr device from /dev");
     }
+
+    qemuDomainChrSourcePrivateClearFDPass(charpriv);
+
     return ret;
 
  exit_monitor:

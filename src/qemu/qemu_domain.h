@@ -359,6 +359,9 @@ struct _qemuDomainChrSourcePrivate {
 };
 
 
+void
+qemuDomainChrSourcePrivateClearFDPass(qemuDomainChrSourcePrivate *priv);
+
 typedef struct _qemuDomainVsockPrivate qemuDomainVsockPrivate;
 struct _qemuDomainVsockPrivate {
     virObject parent;

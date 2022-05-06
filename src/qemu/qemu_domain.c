@@ -908,13 +908,23 @@ qemuDomainChrSourcePrivateNew(void)
 }
 
 
+void
+qemuDomainChrSourcePrivateClearFDPass(qemuDomainChrSourcePrivate *priv)
+{
+    if (!priv)
+        return;
+
+    g_clear_pointer(&priv->sourcefd, qemuFDPassFree);
+    g_clear_pointer(&priv->logfd, qemuFDPassFree);
+}
+
+
 static void
 qemuDomainChrSourcePrivateDispose(void *obj)
 {
     qemuDomainChrSourcePrivate *priv = obj;
 
-    qemuFDPassFree(priv->sourcefd);
-    qemuFDPassFree(priv->logfd);
+    qemuDomainChrSourcePrivateClearFDPass(priv);
 
     g_free(priv->tlsCertPath);
 

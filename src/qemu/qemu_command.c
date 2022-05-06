@@ -1547,6 +1547,8 @@ qemuBuildChardevCommand(virCommand *cmd,
 
     virCommandAddArgList(cmd, "-chardev", charstr, NULL);
 
+    qemuDomainChrSourcePrivateClearFDPass(chrSourcePriv);
+
     return 0;
 }
 
