@@ -5806,12 +5806,12 @@ static int qemuNodeGetSecurityModel(virConnectPtr conn,
     return 0;
 }
 
-
 static int
-qemuDomainRestoreFlags(virConnectPtr conn,
-                       const char *path,
-                       const char *dxml,
-                       unsigned int flags)
+qemuDomainRestoreInternal(virConnectPtr conn,
+                          const char *path,
+                          const char *dxml,
+                          unsigned int flags,
+                          int (*ensureACL)(virConnectPtr, virDomainDef *))
 {
     virQEMUDriver *driver = conn->privateData;
     qemuDomainObjPrivate *priv = NULL;
@@ -5840,7 +5840,7 @@ qemuDomainRestoreFlags(virConnectPtr conn,
     if (fd < 0)
         goto cleanup;
 
-    if (virDomainRestoreFlagsEnsureACL(conn, def) < 0)
+    if (ensureACL(conn, def) < 0)
         goto cleanup;
 
     if (virHookPresent(VIR_HOOK_DRIVER_QEMU)) {
@@ -5909,10 +5909,46 @@ qemuDomainRestoreFlags(virConnectPtr conn,
 }
 
 static int
+qemuDomainRestoreFlags(virConnectPtr conn,
+                       const char *path,
+                       const char *dxml,
+                       unsigned int flags)
+{
+    return qemuDomainRestoreInternal(conn, path, dxml, flags,
+                                     virDomainRestoreFlagsEnsureACL);
+}
+
+static int
 qemuDomainRestore(virConnectPtr conn,
                   const char *path)
 {
-    return qemuDomainRestoreFlags(conn, path, NULL, 0);
+    return qemuDomainRestoreInternal(conn, path, NULL, 0,
+                                     virDomainRestoreEnsureACL);
+}
+
+static int
+qemuDomainRestoreParams(virConnectPtr conn,
+                        virTypedParameterPtr params, int nparams,
+                        unsigned int flags)
+{
+    const char *path = NULL;
+    const char *dxml = NULL;
+    int ret = -1;
+
+    if (virTypedParamsValidate(params, nparams,
+                               VIR_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
+                               VIR_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
+                               NULL) < 0)
+        return -1;
+
+    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_FILE, &path) < 0)
+        return -1;
+    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_DXML, &dxml) < 0)
+        return -1;
+
+    ret = qemuDomainRestoreInternal(conn, path, dxml, flags,
+                                    virDomainRestoreParamsEnsureACL);
+    return ret;
 }
 
 static char *
@@ -20884,6 +20920,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainSaveParams = qemuDomainSaveParams, /* 8.4.0 */
     .domainRestore = qemuDomainRestore, /* 0.2.0 */
     .domainRestoreFlags = qemuDomainRestoreFlags, /* 0.9.4 */
+    .domainRestoreParams = qemuDomainRestoreParams, /* 8.4.0 */
     .domainSaveImageGetXMLDesc = qemuDomainSaveImageGetXMLDesc, /* 0.9.4 */
     .domainSaveImageDefineXML = qemuDomainSaveImageDefineXML, /* 0.9.4 */
     .domainCoreDump = qemuDomainCoreDump, /* 0.7.0 */
