@@ -3685,23 +3685,24 @@ qemuMonitorJSONQueryFdsetsParse(virJSONValue *msg,
 
         }
 
-        fdarray = virJSONValueObjectGetArray(entry, "fds");
-        fdsetinfo->nfds = virJSONValueArraySize(fdarray);
-        if (fdsetinfo->nfds > 0)
-            fdsetinfo->fds = g_new0(qemuMonitorFdsetFdInfo, fdsetinfo->nfds);
+        if ((fdarray = virJSONValueObjectGetArray(entry, "fds"))) {
+            fdsetinfo->nfds = virJSONValueArraySize(fdarray);
+            if (fdsetinfo->nfds > 0)
+                fdsetinfo->fds = g_new0(qemuMonitorFdsetFdInfo, fdsetinfo->nfds);
 
-        for (j = 0; j < fdsetinfo->nfds; j++) {
-            qemuMonitorFdsetFdInfo *fdinfo = &fdsetinfo->fds[j];
-            virJSONValue *fdentry;
+            for (j = 0; j < fdsetinfo->nfds; j++) {
+                qemuMonitorFdsetFdInfo *fdinfo = &fdsetinfo->fds[j];
+                virJSONValue *fdentry;
 
-            if (!(fdentry = virJSONValueArrayGet(fdarray, j))) {
-                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                               _("query-fdsets return data missing fd array element"));
-                return -1;
+                if (!(fdentry = virJSONValueArrayGet(fdarray, j))) {
+                    virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                                   _("query-fdsets return data missing fd array element"));
+                    return -1;
+                }
+
+                /* opaque is optional and may be missing */
+                fdinfo->opaque = g_strdup(virJSONValueObjectGetString(fdentry, "opaque"));
             }
-
-            /* opaque is optional and may be missing */
-            fdinfo->opaque = g_strdup(virJSONValueObjectGetString(fdentry, "opaque"));
         }
     }
 
@@ -3723,7 +3724,7 @@ int qemuMonitorJSONQueryFdsets(qemuMonitor *mon,
     if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
         return -1;
 
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
         return -1;
 
     if (qemuMonitorJSONQueryFdsetsParse(reply, fdsets) < 0)
