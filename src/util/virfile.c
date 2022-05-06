@@ -4741,6 +4741,10 @@ virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *r
     if (!p.isBlockDev && p.isDirect) {
         off_t off;
         if (p.isWrite) {
+            /*
+             * note: for write we do not only check that disk_fd is seekable,
+             * we also want to know that the file is empty, so we need SEEK_END.
+             */
             if ((off = lseek(disk_fd, 0, SEEK_END)) != 0) {
                 virReportSystemError(off < 0 ? errno : EINVAL, "%s",
                                      _("O_DIRECT write needs empty seekable file"));
