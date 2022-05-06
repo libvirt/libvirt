@@ -184,6 +184,13 @@ x86_64-ubuntu-2004-container:
     NAME: ubuntu-2004
 
 
+x86_64-ubuntu-2204-container:
+  extends: .container_job
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2204
+
+
 
 # Cross container jobs
 
@@ -590,6 +597,15 @@ x86_64-ubuntu-2004-clang:
     MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
     NAME: ubuntu-2004
     UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+
+x86_64-ubuntu-2204:
+  extends: .native_build_job
+  needs:
+    - x86_64-ubuntu-2204-container
+  allow_failure: false
+  variables:
+    NAME: ubuntu-2204
 
 
 

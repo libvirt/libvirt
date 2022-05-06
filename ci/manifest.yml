@@ -223,3 +223,5 @@ targets:
           CC: clang
           MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
           UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+  ubuntu-2204: x86_64
