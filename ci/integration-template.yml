@@ -87,3 +87,14 @@
     - if: '$LIBVIRT_CI_INTEGRATION'
       when: on_success
     - when: never
+
+
+# YAML anchors don't work with Shell conditions so we can't use a variable
+# to conditionally build+install QEMU from source.
+# Instead, create a new test job template for this scenario.
+.integration_tests_upstream_qemu:
+  extends: .integration_tests
+  before_script:
+    - !reference [.integration_tests, before_script]
+    - cd "$SCRATCH_DIR"
+    - *qemu-build-template
