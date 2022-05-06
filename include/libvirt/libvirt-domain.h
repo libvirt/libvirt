@@ -1562,12 +1562,38 @@ int                     virDomainSaveFlags      (virDomainPtr domain,
                                                  const char *to,
                                                  const char *dxml,
                                                  unsigned int flags);
+int                     virDomainSaveParams     (virDomainPtr domain,
+                                                 virTypedParameterPtr params,
+                                                 int nparams,
+                                                 unsigned int flags);
 int                     virDomainRestore        (virConnectPtr conn,
                                                  const char *from);
 int                     virDomainRestoreFlags   (virConnectPtr conn,
                                                  const char *from,
                                                  const char *dxml,
                                                  unsigned int flags);
+
+/**
+ * VIR_SAVE_PARAM_FILE:
+ *
+ * the parameter used to specify the savestate file to save to or restore from.
+ *
+ * Since: 8.4.0
+ */
+# define VIR_SAVE_PARAM_FILE                     "file"
+
+/**
+ * VIR_SAVE_PARAM_DXML:
+ *
+ * an optional parameter used to adjust guest xml on restore.
+ * If the hypervisor supports it, it can be used to alter
+ * host-specific portions of the domain XML that will be used when
+ * restoring an image.  For example, it is possible to alter the
+ * device while the domain is stopped.
+ *
+ * Since: 8.4.0
+ */
+# define VIR_SAVE_PARAM_DXML                     "dxml"
 
 /* See below for virDomainSaveImageXMLFlags */
 char *          virDomainSaveImageGetXMLDesc    (virConnectPtr conn,

@@ -999,6 +999,54 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
     return -1;
 }
 
+/**
+ * virDomainSaveParams:
+ * @domain: a domain object
+ * @params: save parameters
+ * @nparams: number of save parameters
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
+ *
+ * This method extends virDomainSaveFlags by adding parameters.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ *
+ * Since: 8.4.0
+ */
+int
+virDomainSaveParams(virDomainPtr domain,
+                    virTypedParameterPtr params, int nparams,
+                    unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain, "params=%p, nparams=%d, flags=0x%x",
+                     params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SAVE_RUNNING,
+                             VIR_DOMAIN_SAVE_PAUSED,
+                             error);
+
+    if (conn->driver->domainSaveParams) {
+        if (conn->driver->domainSaveParams(domain, params, nparams, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(domain->conn);
+    return -1;
+}
+
 
 /**
  * virDomainRestore:
