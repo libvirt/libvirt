@@ -278,6 +278,7 @@ qemuFDPassTransferMonitor(qemuFDPass *fdpass,
                 return -1;
         }
 
+        VIR_FORCE_CLOSE(fdpass->fds[i].fd);
         fdpass->passed = true;
     }
 
