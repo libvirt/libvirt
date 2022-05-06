@@ -1,3 +1,22 @@
+.qemu-build-template: &qemu-build-template
+  - git clone --depth 1 https://gitlab.com/qemu-project/qemu.git
+  - cd qemu
+  #
+  # inspired by upstream QEMU's buildtest-template.yml
+  - export JOBS="$(expr $(nproc) + 1)"
+  - mkdir build
+  - cd build
+  - ../configure --prefix=/usr
+                 --enable-werror
+                 --disable-tcg
+                 --disable-docs
+                 --target-list=x86_64-softmmu || (cat config.log meson-logs/meson-log.txt && exit 1)
+  - make -j"$JOBS"
+  - if test -n "$MAKE_CHECK_ARGS";
+    then
+      make -j"$JOBS" check-build;
+    fi
+  - sudo make install
 
 
 .install-deps: &install-deps
