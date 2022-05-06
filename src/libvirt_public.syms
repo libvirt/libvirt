@@ -919,6 +919,7 @@ LIBVIRT_8.0.0 {
 LIBVIRT_8.4.0 {
     global:
         virDomainSaveParams;
+        virDomainRestoreParams;
 } LIBVIRT_8.0.0;
 
 # .... define new API here using predicted next version number ....

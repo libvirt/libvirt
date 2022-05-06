@@ -256,6 +256,12 @@ typedef int
                             const char *dxml,
                             unsigned int flags);
 
+typedef int
+(*virDrvDomainRestoreParams)(virConnectPtr conn,
+                             virTypedParameterPtr params,
+                             int nparams,
+                             unsigned int flags);
+
 typedef char *
 (*virDrvDomainSaveImageGetXMLDesc)(virConnectPtr conn,
                                    const char *file,
@@ -1498,6 +1504,7 @@ struct _virHypervisorDriver {
     virDrvDomainSaveParams domainSaveParams;
     virDrvDomainRestore domainRestore;
     virDrvDomainRestoreFlags domainRestoreFlags;
+    virDrvDomainRestoreParams domainRestoreParams;
     virDrvDomainSaveImageGetXMLDesc domainSaveImageGetXMLDesc;
     virDrvDomainSaveImageDefineXML domainSaveImageDefineXML;
     virDrvDomainCoreDump domainCoreDump;

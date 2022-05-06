@@ -1182,6 +1182,51 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
 
 
 /**
+ * virDomainRestoreParams:
+ * @conn: pointer to the hypervisor connection
+ * @params: restore parameters
+ * @nparams: number of restore parameters
+ * @flags: bitwise-OR of virDomainSaveRestoreFlags
+ *
+ * This method extends virDomainRestoreFlags by adding parameters.
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ *
+ * Since: 8.4.0
+ */
+int
+virDomainRestoreParams(virConnectPtr conn,
+                       virTypedParameterPtr params, int nparams,
+                       unsigned int flags)
+{
+    VIR_DEBUG("conn=%p, params=%p, nparams=%d, flags=0x%x",
+              conn, params, nparams, flags);
+    VIR_TYPED_PARAMS_DEBUG(params, nparams);
+
+    virResetLastError();
+
+    virCheckConnectReturn(conn, -1);
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    VIR_EXCLUSIVE_FLAGS_GOTO(VIR_DOMAIN_SAVE_RUNNING,
+                             VIR_DOMAIN_SAVE_PAUSED,
+                             error);
+
+    if (conn->driver->domainRestoreParams) {
+        if (conn->driver->domainRestoreParams(conn, params, nparams, flags) < 0)
+            goto error;
+        return 0;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virDomainSaveImageGetXMLDesc:
  * @conn: pointer to the hypervisor connection
  * @file: path to saved state file

@@ -1572,6 +1572,10 @@ int                     virDomainRestoreFlags   (virConnectPtr conn,
                                                  const char *from,
                                                  const char *dxml,
                                                  unsigned int flags);
+int                     virDomainRestoreParams  (virConnectPtr conn,
+                                                 virTypedParameterPtr params,
+                                                 int nparams,
+                                                 unsigned int flags);
 
 /**
  * VIR_SAVE_PARAM_FILE:
