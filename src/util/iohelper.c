@@ -55,17 +55,23 @@ struct runIOParams {
     const char *fdoutname;
 };
 
-static int
-runIO(const char *path, int fd, int oflags)
+/**
+ * runIOCopy: execute the IO copy based on the passed parameters
+ * @p: the IO parameters
+ *
+ * Execute the copy based on the passed parameters.
+ *
+ * Returns: size transfered, or < 0 on error.
+ */
+
+static off_t
+runIOCopy(const struct runIOParams p)
 {
     g_autofree void *base = NULL; /* Location to be freed */
     char *buf = NULL; /* Aligned location within base */
     size_t buflen = 1024*1024;
     intptr_t alignMask = 64*1024 - 1;
-    int ret = -1;
     off_t total = 0;
-    struct stat sb;
-    struct runIOParams p;
 
 #if WITH_POSIX_MEMALIGN
     if (posix_memalign(&base, alignMask + 1, buflen))
@@ -76,6 +82,67 @@ runIO(const char *path, int fd, int oflags)
     base = buf;
     buf = (char *) (((intptr_t) base + alignMask) & ~alignMask);
 #endif
+
+    while (1) {
+        ssize_t got;
+
+        /* If we read with O_DIRECT from file we can't use saferead as
+         * it can lead to unaligned read after reading last bytes.
+         * If we write with O_DIRECT use should use saferead so that
+         * writes will be aligned.
+         * In other cases using saferead reduces number of syscalls.
+         */
+        if (!p.isWrite && p.isDirect) {
+            if ((got = read(p.fdin, buf, buflen)) < 0 &&
+                errno == EINTR)
+                continue;
+        } else {
+            got = saferead(p.fdin, buf, buflen);
+        }
+
+        if (got < 0) {
+            virReportSystemError(errno, _("Unable to read %s"), p.fdinname);
+            return -2;
+        }
+        if (got == 0)
+            break;
+
+        total += got;
+
+        /* handle last write size align in direct case */
+        if (got < buflen && p.isDirect && p.isWrite) {
+            ssize_t aligned_got = (got + alignMask) & ~alignMask;
+
+            memset(buf + got, 0, aligned_got - got);
+
+            if (safewrite(p.fdout, buf, aligned_got) < 0) {
+                virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
+                return -3;
+            }
+
+            if (!p.isBlockDev && ftruncate(p.fdout, total) < 0) {
+                virReportSystemError(errno, _("Unable to truncate %s"), p.fdoutname);
+                return -4;
+            }
+
+            break;
+        }
+
+        if (safewrite(p.fdout, buf, got) < 0) {
+            virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
+            return -3;
+        }
+    }
+    return total;
+}
+
+static int
+runIO(const char *path, int fd, int oflags)
+{
+    int ret = -1;
+    off_t total = 0;
+    struct stat sb;
+    struct runIOParams p;
 
     if (fstat(fd, &sb) < 0) {
         virReportSystemError(errno,
@@ -125,57 +192,9 @@ runIO(const char *path, int fd, int oflags)
             goto cleanup;
         }
     }
-
-    while (1) {
-        ssize_t got;
-
-        /* If we read with O_DIRECT from file we can't use saferead as
-         * it can lead to unaligned read after reading last bytes.
-         * If we write with O_DIRECT use should use saferead so that
-         * writes will be aligned.
-         * In other cases using saferead reduces number of syscalls.
-         */
-        if (!p.isWrite && p.isDirect) {
-            if ((got = read(p.fdin, buf, buflen)) < 0 &&
-                errno == EINTR)
-                continue;
-        } else {
-            got = saferead(p.fdin, buf, buflen);
-        }
-
-        if (got < 0) {
-            virReportSystemError(errno, _("Unable to read %s"), p.fdinname);
-            goto cleanup;
-        }
-        if (got == 0)
-            break;
-
-        total += got;
-
-        /* handle last write size align in direct case */
-        if (got < buflen && p.isDirect && p.isWrite) {
-            ssize_t aligned_got = (got + alignMask) & ~alignMask;
-
-            memset(buf + got, 0, aligned_got - got);
-
-            if (safewrite(p.fdout, buf, aligned_got) < 0) {
-                virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
-                goto cleanup;
-            }
-
-            if (!p.isBlockDev && ftruncate(p.fdout, total) < 0) {
-                virReportSystemError(errno, _("Unable to truncate %s"), p.fdoutname);
-                goto cleanup;
-            }
-
-            break;
-        }
-
-        if (safewrite(p.fdout, buf, got) < 0) {
-            virReportSystemError(errno, _("Unable to write %s"), p.fdoutname);
-            goto cleanup;
-        }
-    }
+    total = runIOCopy(p);
+    if (total < 0)
+        goto cleanup;
 
     /* Ensure all data is written */
     if (virFileDataSync(p.fdout) < 0) {
