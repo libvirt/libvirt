@@ -1184,8 +1184,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     virErrorPtr originalError = NULL;
     g_autofree char *slirpfdName = NULL;
     int slirpfd = -1;
-    g_autofree char *vdpafdName = NULL;
     int vdpafd = -1;
+    g_autoptr(qemuFDPass) vdpa = NULL;
     char **tapfdName = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
@@ -1394,6 +1394,10 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
         if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
             goto cleanup;
+
+        vdpa = qemuFDPassNew(net->info.alias, priv);
+
+        qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa");
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -1455,24 +1459,15 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (vdpafd > 0) {
-        /* vhost-vdpa only accepts a filename. We can pass an open fd by
-         * filename if we add the fd to an fdset and then pass a filename of
-         * /dev/fdset/$FDSETID. */
-        qemuMonitorAddFdInfo fdinfo;
-        if (qemuMonitorAddFileHandleToSet(priv->mon, vdpafd, -1,
-                                          net->data.vdpa.devicepath,
-                                          &fdinfo) < 0) {
-            qemuDomainObjExitMonitor(vm);
-            goto cleanup;
-        }
-        vdpafdName = g_strdup_printf("/dev/fdset/%d", fdinfo.fdset);
+    if (qemuFDPassTransferMonitor(vdpa, priv->mon) < 0) {
+        qemuDomainObjExitMonitor(vm);
+        goto cleanup;
     }
 
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
                                            vhostfdName, vhostfdSize,
-                                           slirpfdName, vdpafdName))) {
+                                           slirpfdName, qemuFDPassGetPath(vdpa)))) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }
