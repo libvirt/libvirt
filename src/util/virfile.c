@@ -4672,7 +4672,7 @@ runIOCopy(const struct runIOParams p)
 
 
 off_t
-runIO(const char *path, int fd, int oflags)
+virFileDiskCopy(const char *path, int fd, int oflags)
 {
     int ret = -1;
     off_t total = 0;
@@ -4754,12 +4754,12 @@ runIO(const char *path, int fd, int oflags)
 #else /* WIN32 */
 
 off_t
-runIO(const char *path G_GNUC_UNUSED,
-      int fd G_GNUC_UNUSED,
-      int oflags G_GNUC_UNUSED)
+virFileDiskCopy(const char *path G_GNUC_UNUSED,
+                int fd G_GNUC_UNUSED,
+                int oflags G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                   _("runIO unsupported on this platform"));
+                   _("virFileDiskCopy unsupported on this platform"));
     return -1;
 }
 #endif /* WIN32 */

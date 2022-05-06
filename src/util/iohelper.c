@@ -97,7 +97,7 @@ main(int argc, char **argv)
         usage(EXIT_FAILURE);
     }
 
-    if (fd < 0 || runIO(path, fd, oflags) < 0)
+    if (fd < 0 || virFileDiskCopy(path, fd, oflags) < 0)
         goto error;
 
     return 0;
