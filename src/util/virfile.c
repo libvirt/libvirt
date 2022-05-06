@@ -4670,19 +4670,46 @@ runIOCopy(const struct runIOParams p)
     return total;
 }
 
+/**
+ * virFileDiskCopy: run IO to copy data between storage and a pipe or socket.
+ *
+ * @disk_fd:     the already open regular file or block device
+ * @disk_path:   the pathname corresponding to disk_fd (for error reporting)
+ * @remote_fd:   the pipe or socket
+ *               Use -1 to auto-choose between STDIN or STDOUT.
+ * @remote_path: the pathname corresponding to remote_fd (for error reporting)
+ *
+ * Note that the direction of the transfer is detected based on the @disk_fd
+ * file access mode (man 2 open). Therefore @disk_fd must be opened with
+ * O_RDONLY or O_WRONLY. O_RDWR is not supported.
+ *
+ * virFileDiskCopy always closes the file descriptor disk_fd,
+ * and any error during close(2) is reported and considered a failure.
+ *
+ * Returns: bytes transferred or < 0 on failure.
+ */
 
 off_t
-virFileDiskCopy(const char *path, int fd, int oflags)
+virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *remote_path)
 {
     int ret = -1;
     off_t total = 0;
     struct stat sb;
     struct runIOParams p;
+    int oflags = -1;
 
-    if (fstat(fd, &sb) < 0) {
+    oflags = fcntl(disk_fd, F_GETFL);
+
+    if (oflags < 0) {
         virReportSystemError(errno,
-                             _("Unable to access file descriptor %d path %s"),
-                             fd, path);
+                             _("unable to determine access mode of %s"),
+                             disk_path);
+        goto cleanup;
+    }
+    if (fstat(disk_fd, &sb) < 0) {
+        virReportSystemError(errno,
+                             _("unable to stat file descriptor %d path %s"),
+                             disk_fd, disk_path);
         goto cleanup;
     }
     p.isBlockDev = S_ISBLK(sb.st_mode);
@@ -4691,23 +4718,21 @@ virFileDiskCopy(const char *path, int fd, int oflags)
     switch (oflags & O_ACCMODE) {
     case O_RDONLY:
         p.isWrite = false;
-        p.fdin = fd;
-        p.fdinname = path;
-        p.fdout = STDOUT_FILENO;
-        p.fdoutname = "stdout";
+        p.fdin = disk_fd;
+        p.fdinname = disk_path;
+        p.fdout = remote_fd >= 0 ? remote_fd : STDOUT_FILENO;
+        p.fdoutname = remote_path;
         break;
     case O_WRONLY:
         p.isWrite = true;
-        p.fdin = STDIN_FILENO;
-        p.fdinname = "stdin";
-        p.fdout = fd;
-        p.fdoutname = path;
+        p.fdin = remote_fd >= 0 ? remote_fd : STDIN_FILENO;
+        p.fdinname = remote_path;
+        p.fdout = disk_fd;
+        p.fdoutname = disk_path;
         break;
-
     case O_RDWR:
     default:
-        virReportSystemError(EINVAL,
-                             _("Unable to process file with flags %d"),
+        virReportSystemError(EINVAL, _("Unable to process file with flags %d"),
                              (oflags & O_ACCMODE));
         goto cleanup;
     }
@@ -4716,12 +4741,12 @@ virFileDiskCopy(const char *path, int fd, int oflags)
     if (!p.isBlockDev && p.isDirect) {
         off_t off;
         if (p.isWrite) {
-            if ((off = lseek(fd, 0, SEEK_END)) != 0) {
+            if ((off = lseek(disk_fd, 0, SEEK_END)) != 0) {
                 virReportSystemError(off < 0 ? errno : EINVAL, "%s",
                                      _("O_DIRECT write needs empty seekable file"));
                 goto cleanup;
             }
-        } else if ((off = lseek(fd, 0, SEEK_CUR)) != 0) {
+        } else if ((off = lseek(disk_fd, 0, SEEK_CUR)) != 0) {
             virReportSystemError(off < 0 ? errno : EINVAL, "%s",
                                  _("O_DIRECT read needs entire seekable file"));
             goto cleanup;
@@ -4743,9 +4768,8 @@ virFileDiskCopy(const char *path, int fd, int oflags)
     ret = 0;
 
  cleanup:
-    if (VIR_CLOSE(fd) < 0 &&
-        ret == 0) {
-        virReportSystemError(errno, _("Unable to close %s"), path);
+    if (VIR_CLOSE(disk_fd) < 0 && ret == 0) {
+        virReportSystemError(errno, _("Unable to close %s"), disk_path);
         ret = -1;
     }
     return ret;
@@ -4754,9 +4778,10 @@ virFileDiskCopy(const char *path, int fd, int oflags)
 #else /* WIN32 */
 
 off_t
-virFileDiskCopy(const char *path G_GNUC_UNUSED,
-                int fd G_GNUC_UNUSED,
-                int oflags G_GNUC_UNUSED)
+virFileDiskCopy(int disk_fd G_GNUC_UNUSED,
+                const char *disk_path G_GNUC_UNUSED,
+                int remote_fd G_GNUC_UNUSED,
+                const char *remote_path G_GNUC_UNUSED)
 {
     virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                    _("virFileDiskCopy unsupported on this platform"));

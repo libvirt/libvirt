@@ -58,7 +58,6 @@ int
 main(int argc, char **argv)
 {
     const char *path;
-    int oflags = -1;
     int fd = -1;
 
     program_name = argv[0];
@@ -79,25 +78,11 @@ main(int argc, char **argv)
                     program_name, argv[3]);
             exit(EXIT_FAILURE);
         }
-#ifdef F_GETFL
-        oflags = fcntl(fd, F_GETFL);
-#else
-        /* Stupid mingw.  */
-        if (fd == STDIN_FILENO)
-            oflags = O_RDONLY;
-        else if (fd == STDOUT_FILENO)
-            oflags = O_WRONLY;
-#endif
-        if (oflags < 0) {
-            fprintf(stderr, _("%s: unable to determine access mode of fd %d"),
-                    program_name, fd);
-            exit(EXIT_FAILURE);
-        }
     } else { /* unknown argc pattern */
         usage(EXIT_FAILURE);
     }
 
-    if (fd < 0 || virFileDiskCopy(path, fd, oflags) < 0)
+    if (fd < 0 || virFileDiskCopy(fd, path, -1, "stdio") < 0)
         goto error;
 
     return 0;

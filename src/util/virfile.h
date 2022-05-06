@@ -384,4 +384,4 @@ int virFileDataSync(int fd);
 int virFileSetCOW(const char *path,
                   virTristateBool state);
 
-off_t virFileDiskCopy(const char *path, int fd, int oflags);
+off_t virFileDiskCopy(int disk_fd, const char *disk_path, int remote_fd, const char *remote_path);
