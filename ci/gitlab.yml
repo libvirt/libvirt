@@ -581,22 +581,7 @@ x86_64-ubuntu-2004:
     - x86_64-ubuntu-2004-container
   allow_failure: false
   variables:
-    ASAN_OPTIONS: verify_asan_link_order=0
-    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
     NAME: ubuntu-2004
-    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
-
-
-x86_64-ubuntu-2004-clang:
-  extends: .native_build_job
-  needs:
-    - x86_64-ubuntu-2004-container
-  allow_failure: false
-  variables:
-    CC: clang
-    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
-    NAME: ubuntu-2004
-    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 
 x86_64-ubuntu-2204:
@@ -605,7 +590,22 @@ x86_64-ubuntu-2204:
     - x86_64-ubuntu-2204-container
   allow_failure: false
   variables:
+    ASAN_OPTIONS: verify_asan_link_order=0
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
     NAME: ubuntu-2204
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+
+
+x86_64-ubuntu-2204-clang:
+  extends: .native_build_job
+  needs:
+    - x86_64-ubuntu-2204-container
+  allow_failure: false
+  variables:
+    CC: clang
+    MESON_ARGS: -Db_lundef=false -Db_sanitize=address,undefined
+    NAME: ubuntu-2204
+    UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
 
 
 
