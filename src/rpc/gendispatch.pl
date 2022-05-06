@@ -637,7 +637,10 @@ elsif ($mode eq "server") {
                 } elsif ($args_member =~ m/^remote_typed_param (\S+)<(\S+)>;/) {
                     push(@vars_list, "virTypedParameterPtr $1 = NULL");
                     push(@vars_list, "int n$1 = 0");
-                    if ($call->{ProcName} eq "NodeSetMemoryParameters") {
+
+                    # NB: if your new API starts with remote_typed_params, enter it here if you need
+                    # the conn arg to be passed first!
+                    if ($call->{ProcName} eq "NodeSetMemoryParameters" || $call->{ProcName} eq "DomainRestoreParams") {
                         push(@args_list, $conn_var);
                     }
                     push(@args_list, "$1");
