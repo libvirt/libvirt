@@ -383,3 +383,5 @@ int virFileDataSync(int fd);
 
 int virFileSetCOW(const char *path,
                   virTristateBool state);
+
+off_t runIO(const char *path, int fd, int oflags);
