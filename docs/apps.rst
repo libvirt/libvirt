@@ -143,6 +143,8 @@ Desktop applications
    or text console associated with a virtual machine or container.
 `qt-remote-viewer <https://f1ash.github.io/qt-virt-manager/#virtual-machines-viewer>`__
    The Qt VNC/SPICE viewer for access to remote desktops or VMs.
+`GNOME Boxes <https://gnomeboxes.org/>`__
+   A GNOME application to access virtual machines.
 
 Infrastructure as a Service (IaaS)
 ----------------------------------
