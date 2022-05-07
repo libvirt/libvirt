@@ -5300,7 +5300,7 @@ following attributes are available for the ``"virtio"`` NIC driver:
    virtio and tap backends only. Virtio NIC will be launched with "rss"
    property. For now "in-qemu" RSS is supported by libvirt.
    QEMU may load eBPF RSS if it has CAP_SYS_ADMIN permissions, which is
-   not supported by default in libvirt.
+   not supported by default in libvirt. :since:`Since 8.3.0 and QEMU 5.1`
    **In general you should leave this option alone, unless you are very certain
    you know what you are doing. Proper RSS configuration depends from vcpu,
    tap, and vhost settings.**
@@ -5310,6 +5310,7 @@ following attributes are available for the ``"virtio"`` NIC driver:
    to VM will contain a hash of the packet in the virt header. Usually enabled
    alongside with ``rss``. Without ``rss`` option, the hash report doesn't affect
    steering itself but provides vnet header with a calculated hash.
+   :since:`Since 8.3.0 and QEMU 5.1`
    **In general you should leave this option alone, unless you are very certain
    you know what you are doing. Proper RSS configuration depends from vcpu,
    tap, and vhost settings.**
