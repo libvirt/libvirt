@@ -19,7 +19,7 @@ The hypervisor drivers currently supported by libvirt are:
 
 -  `LXC <drvlxc.html>`__ - Linux Containers
 -  `OpenVZ <drvopenvz.html>`__
--  `QEMU <drvqemu.html>`__
+-  `QEMU/KVM/HVF <drvqemu.html>`__
 -  `Test <drvtest.html>`__ - Used for testing
 -  `VirtualBox <drvvbox.html>`__
 -  `VMware ESX <drvesx.html>`__
