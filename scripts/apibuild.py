@@ -328,7 +328,7 @@ class index:
             if type in type_map:
                 type_map[type][name] = d
             else:
-                self.warning("Unable to register type ", type)
+                self.warning("Unable to register type %s" % type)
 
         if name == debugsym and not quiet:
             print("New symbol: %s" % (d))
