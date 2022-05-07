@@ -20,7 +20,7 @@ Project Links
 
 -  The `KVM <https://www.linux-kvm.org/>`__ Linux hypervisor
 -  The `QEMU <https://wiki.qemu.org/Index.html>`__ emulator
--  `Hypervisor.framework`<https://developer.apple.com/documentation/hypervisor>__` reference
+-  `Hypervisor.framework <https://developer.apple.com/documentation/hypervisor>`__ reference
 
 Deployment pre-requisites
 -------------------------
