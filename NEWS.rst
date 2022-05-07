@@ -46,6 +46,12 @@ v8.3.0 (2022-05-02)
 
     This IOMMU device can be used with both Q35 and ARM virt guests.
 
+  * qemu: Introduce attributes rss and rss_hash_report for net interface
+
+    They can enable in-qemu/ebpf RSS and in-qemu RSS hash report for virtio NIC.
+    Require QEMU >= 5.1.
+
+
 v8.2.0 (2022-04-01)
 ===================
 
