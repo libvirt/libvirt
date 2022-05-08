@@ -14,7 +14,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-04-21 15:30+0000\n"
-"PO-Revision-Date: 2022-03-03 20:16+0000\n"
+"PO-Revision-Date: 2022-05-08 17:18+0000\n"
 "Last-Translator: Jan Kuparinen <copper_fin@hotmail.com>\n"
 "Language-Team: Finnish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/fi/>\n"
@@ -23,7 +23,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.11\n"
+"X-Generator: Weblate 4.12.1\n"
 
 msgid ""
 "\n"
@@ -25102,7 +25102,7 @@ msgstr "hakemiston '%s' luonti epäonnistui"
 
 #, c-format
 msgid "failed to create dump dir '%s'"
-msgstr ""
+msgstr "dumppaushakemiston '%s' luominen epäonnistui"
 
 #, c-format
 msgid "failed to create glfs object for '%s'"
@@ -25124,7 +25124,7 @@ msgstr "jsonin luonti epäonnistui"
 
 #, c-format
 msgid "failed to create lib dir '%s'"
-msgstr ""
+msgstr "lib-hakemiston '%s' luominen epäonnistui"
 
 #, fuzzy, c-format
 msgid "failed to create libssh channel: %s"
@@ -25132,7 +25132,7 @@ msgstr "Toimialueen luonti tiedostosta %s epäonnistui"
 
 #, c-format
 msgid "failed to create log dir '%s'"
-msgstr ""
+msgstr "log-hakemiston '%s' luominen epäonnistui"
 
 #, c-format
 msgid "failed to create logfile %s"
@@ -25147,7 +25147,7 @@ msgstr "lokitiedoston kirjoitus epäonnistui"
 
 #, c-format
 msgid "failed to create save dir '%s'"
-msgstr ""
+msgstr "save-hakemiston '%s' luominen epäonnistui"
 
 msgid "failed to create socket"
 msgstr "pistokkeen luominen epäonnistui"
@@ -25161,7 +25161,7 @@ msgstr "pistokeparin luominen epäonnistui"
 
 #, c-format
 msgid "failed to create state dir '%s'"
-msgstr ""
+msgstr "Tilahakemiston %s luominen epäonnistui"
 
 #, fuzzy
 msgid "failed to create the RADOS cluster"
@@ -37719,7 +37719,7 @@ msgid "virtio rss hash report is not supported with this QEMU binary"
 msgstr ""
 
 msgid "virtio rss is not supported with this QEMU binary"
-msgstr ""
+msgstr "virtio rss:ää ei tueta tällä QEMU-binaarilla"
 
 #, c-format
 msgid "virtio rx_queue_size option %d is not same with tx_queue_size %d"
