@@ -1185,8 +1185,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     virErrorPtr originalError = NULL;
     g_autofree char *slirpfdName = NULL;
     int slirpfd = -1;
-    int vdpafd = -1;
-    g_autoptr(qemuFDPass) vdpa = NULL;
     char **tapfdName = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
@@ -1395,13 +1393,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
             goto cleanup;
         adjustmemlock = true;
-
-        if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
-            goto cleanup;
-
-        vdpa = qemuFDPassNew(net->info.alias, priv);
-
-        qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa");
         break;
 
     case VIR_DOMAIN_NET_TYPE_SERVER:
@@ -1463,7 +1454,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
-    if (qemuFDPassTransferMonitor(vdpa, priv->mon) < 0) {
+    if (qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }
@@ -1471,7 +1462,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
                                            vhostfdName, vhostfdSize,
-                                           slirpfdName, qemuFDPassGetPath(vdpa)))) {
+                                           slirpfdName))) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }
@@ -1611,7 +1602,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     VIR_FREE(vhostfdName);
     virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FORCE_CLOSE(slirpfd);
-    VIR_FORCE_CLOSE(vdpafd);
 
     return ret;
 

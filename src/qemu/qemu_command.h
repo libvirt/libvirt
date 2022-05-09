@@ -91,8 +91,7 @@ qemuBuildHostNetProps(virDomainNetDef *net,
                       size_t tapfdSize,
                       char **vhostfd,
                       size_t vhostfdSize,
-                      const char *slirpfd,
-                      const char *vdpadev);
+                      const char *slirpfd);
 
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,

@@ -4213,13 +4213,12 @@ qemuBuildHostNetProps(virDomainNetDef *net,
                       size_t tapfdSize,
                       char **vhostfd,
                       size_t vhostfdSize,
-                      const char *slirpfd,
-                      const char *vdpadev)
+                      const char *slirpfd)
 {
     bool is_tap = false;
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
-
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     g_autoptr(virJSONValue) netprops = NULL;
 
     if (net->script && netType != VIR_DOMAIN_NET_TYPE_ETHERNET) {
@@ -4354,8 +4353,10 @@ qemuBuildHostNetProps(virDomainNetDef *net,
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
         /* Caller will pass the fd to qemu with add-fd */
-        if (virJSONValueObjectAdd(&netprops, "s:type", "vhost-vdpa", NULL) < 0 ||
-            virJSONValueObjectAppendString(netprops, "vhostdev", vdpadev) < 0)
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "vhost-vdpa",
+                                  "s:vhostdev", qemuFDPassGetPath(netpriv->vdpafd),
+                                  NULL) < 0)
             return NULL;
 
         if (net->driver.virtio.queues > 1 &&
@@ -8676,11 +8677,15 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
 
 
 int
-qemuBuildInterfaceConnect(virDomainObj *vm G_GNUC_UNUSED,
+qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
                           bool standalone G_GNUC_UNUSED)
 {
+
+    qemuDomainObjPrivate *priv = vm->privateData;
     virDomainNetType actualType = virDomainNetGetActualType(net);
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+    VIR_AUTOCLOSE vdpafd = -1;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
@@ -8697,6 +8702,11 @@ qemuBuildInterfaceConnect(virDomainObj *vm G_GNUC_UNUSED,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
+        if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
+            return -1;
+
+        netpriv->vdpafd = qemuFDPassNew(net->info.alias, priv);
+        qemuFDPassAddFD(netpriv->vdpafd, &vdpafd, "-vdpa");
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:
@@ -8725,7 +8735,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               size_t *nnicindexes,
                               int **nicindexes)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     int ret = -1;
     g_autoptr(virJSONValue) nicprops = NULL;
@@ -8737,7 +8746,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     char **tapfdName = NULL;
     char **vhostfdName = NULL;
     g_autofree char *slirpfdName = NULL;
-    g_autoptr(qemuFDPass) vdpa = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     const virNetDevBandwidth *actualBandwidth;
     bool requireNicdev = false;
@@ -8820,16 +8828,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
         break;
 
-    case VIR_DOMAIN_NET_TYPE_VDPA: {
-        VIR_AUTOCLOSE vdpafd = -1;
-
-        if ((vdpafd = qemuInterfaceVDPAConnect(net)) < 0)
-            goto cleanup;
-
-        vdpa = qemuFDPassNew(net->info.alias, priv);
-
-        qemuFDPassAddFD(vdpa, &vdpafd, "-vdpa");
-    }
+    case VIR_DOMAIN_NET_TYPE_VDPA:
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
@@ -8962,14 +8961,13 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         vhostfd[i] = -1;
     }
 
-    if (qemuFDPassTransferCommand(vdpa, cmd) < 0)
+    if (qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
         return -1;
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
                                                tapfdName, tapfdSize,
                                                vhostfdName, vhostfdSize,
-                                               slirpfdName,
-                                               qemuFDPassGetPath(vdpa))))
+                                               slirpfdName)))
         goto cleanup;
 
     if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)
