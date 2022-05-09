@@ -1452,17 +1452,15 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     for (i = 0; i < vhostfdSize; i++)
         vhostfdName[i] = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
-    qemuDomainObjEnterMonitor(driver, vm);
-
-    if (qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
-        qemuDomainObjExitMonitor(vm);
-        goto cleanup;
-    }
-
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
                                            vhostfdName, vhostfdSize,
-                                           slirpfdName))) {
+                                           slirpfdName)))
+        goto cleanup;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+
+    if (qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }
