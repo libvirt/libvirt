@@ -1045,12 +1045,27 @@ qemuDomainNetworkPrivateNew(void)
 }
 
 
+void
+qemuDomainNetworkPrivateClearFDs(qemuDomainNetworkPrivate *priv)
+{
+    if (!priv)
+        return;
+
+    g_clear_pointer(&priv->slirpfd, qemuFDPassFree);
+    g_clear_pointer(&priv->vdpafd, qemuFDPassFree);
+    g_slist_free_full(g_steal_pointer(&priv->vhostfds), (GDestroyNotify) qemuFDPassFree);
+    g_slist_free_full(g_steal_pointer(&priv->tapfds), (GDestroyNotify) qemuFDPassFree);
+}
+
+
 static void
 qemuDomainNetworkPrivateDispose(void *obj G_GNUC_UNUSED)
 {
     qemuDomainNetworkPrivate *priv = obj;
 
     qemuSlirpFree(priv->slirp);
+
+    qemuDomainNetworkPrivateClearFDs(priv);
 }
 
 

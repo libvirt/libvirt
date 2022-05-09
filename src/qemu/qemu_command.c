@@ -8704,6 +8704,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     qemuSlirp *slirp;
     size_t i;
     g_autoptr(virJSONValue) hostnetprops = NULL;
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
 
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
@@ -8960,6 +8961,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
     ret = 0;
  cleanup:
+    qemuDomainNetworkPrivateClearFDs(netpriv);
+
     if (ret < 0) {
         virErrorPtr saved_err;
 

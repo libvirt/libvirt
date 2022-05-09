@@ -1181,6 +1181,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_NET, { .net = net } };
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     virErrorPtr originalError = NULL;
     g_autofree char *slirpfdName = NULL;
     int slirpfd = -1;
@@ -1541,6 +1542,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
+    qemuDomainNetworkPrivateClearFDs(netpriv);
+
     if (ret < 0) {
         virErrorPreserveLast(&save_err);
         if (releaseaddr)

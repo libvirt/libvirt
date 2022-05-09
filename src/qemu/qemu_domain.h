@@ -401,8 +401,16 @@ struct _qemuDomainNetworkPrivate {
     virObject parent;
 
     qemuSlirp *slirp;
+
+    /* file descriptor transfer helpers */
+    qemuFDPass *slirpfd;
+    GSList *tapfds;
+    GSList *vhostfds;
+    qemuFDPass *vdpafd;
 };
 
+void
+qemuDomainNetworkPrivateClearFDs(qemuDomainNetworkPrivate *priv);
 
 typedef enum {
     QEMU_PROCESS_EVENT_WATCHDOG = 0,
