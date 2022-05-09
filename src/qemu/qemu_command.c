@@ -8693,23 +8693,27 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
-                          bool standalone G_GNUC_UNUSED)
+                          bool standalone)
 {
 
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     VIR_AUTOCLOSE vdpafd = -1;
+    bool vhostfd = false;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        vhostfd = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
+        vhostfd = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        vhostfd = true;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -8732,6 +8736,11 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
+    }
+
+    if (vhostfd && !standalone) {
+        if (qemuInterfaceOpenVhostNet(vm, net) < 0)
+            return -1;
     }
 
     return 0;
@@ -8929,26 +8938,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     if (net->mtu && net->managed_tap != VIR_TRISTATE_BOOL_NO &&
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
-
-    if ((actualType == VIR_DOMAIN_NET_TYPE_NETWORK ||
-         actualType == VIR_DOMAIN_NET_TYPE_BRIDGE ||
-         actualType == VIR_DOMAIN_NET_TYPE_ETHERNET ||
-         actualType == VIR_DOMAIN_NET_TYPE_DIRECT) &&
-        !standalone) {
-        /* Attempt to use vhost-net mode for these types of
-           network device */
-        vhostfdSize = net->driver.virtio.queues;
-        if (!vhostfdSize)
-            vhostfdSize = 1;
-
-        vhostfd = g_new0(int, vhostfdSize);
-        vhostfdName = g_new0(char *, vhostfdSize);
-
-        memset(vhostfd, -1, vhostfdSize * sizeof(vhostfd[0]));
-
-        if (qemuInterfaceOpenVhostNet(def, net, vhostfd, &vhostfdSize) < 0)
-            goto cleanup;
-    }
 
     slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
     if (slirp && !standalone) {

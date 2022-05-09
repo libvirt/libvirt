@@ -51,10 +51,8 @@ int qemuInterfaceBridgeConnect(virDomainDef *def,
                                size_t *tapfdSize)
     ATTRIBUTE_NONNULL(2);
 
-int qemuInterfaceOpenVhostNet(virDomainDef *def,
-                              virDomainNetDef *net,
-                              int *vhostfd,
-                              size_t *vhostfdSize) G_GNUC_NO_INLINE;
+int qemuInterfaceOpenVhostNet(virDomainObj *def,
+                              virDomainNetDef *net) G_GNUC_NO_INLINE;
 
 int qemuInterfacePrepareSlirp(virQEMUDriver *driver,
                               virDomainNetDef *net,

@@ -1283,52 +1283,40 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
-        tapfdSize = vhostfdSize = net->driver.virtio.queues;
+        tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
-            tapfdSize = vhostfdSize = 1;
+            tapfdSize = 1;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        vhostfd = g_new0(int, vhostfdSize);
-        memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceBridgeConnect(vm->def, driver, net,
                                        tapfd, &tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
-            goto cleanup;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        tapfdSize = vhostfdSize = net->driver.virtio.queues;
+        tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
-            tapfdSize = vhostfdSize = 1;
+            tapfdSize = 1;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        vhostfd = g_new0(int, vhostfdSize);
-        memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceDirectConnect(vm->def, driver, net,
                                        tapfd, tapfdSize,
                                        VIR_NETDEV_VPORT_PROFILE_OP_CREATE) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
-            goto cleanup;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        tapfdSize = vhostfdSize = net->driver.virtio.queues;
+        tapfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
-            tapfdSize = vhostfdSize = 1;
+            tapfdSize = 1;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
-        vhostfd = g_new0(int, vhostfdSize);
-        memset(vhostfd, -1, sizeof(*vhostfd) * vhostfdSize);
         if (qemuInterfaceEthernetConnect(vm->def, driver, net,
                                          tapfd, tapfdSize) < 0)
             goto cleanup;
         iface_connected = true;
-        if (qemuInterfaceOpenVhostNet(vm->def, net, vhostfd, &vhostfdSize) < 0)
-            goto cleanup;
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
@@ -1445,7 +1433,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
-                                           vhostfdName, vhostfdSize,
+                                           NULL, 0,
                                            slirpfdName)))
         goto cleanup;
 
@@ -1481,7 +1469,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     if (qemuMonitorAddNetdev(priv->mon, &netprops,
                              tapfd, tapfdName, tapfdSize,
-                             vhostfd, vhostfdName, vhostfdSize,
+                             NULL, NULL, 0,
                              slirpfd, slirpfdName) < 0) {
         qemuDomainObjExitMonitor(vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
