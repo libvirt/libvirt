@@ -4215,7 +4215,6 @@ qemuBuildHostNetProps(virDomainNetDef *net,
                       size_t vhostfdSize,
                       const char *slirpfd)
 {
-    bool is_tap = false;
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
@@ -4260,7 +4259,31 @@ qemuBuildHostNetProps(virDomainNetDef *net,
                 return NULL;
         }
 
-        is_tap = true;
+        if (vhostfdSize) {
+            if (virJSONValueObjectAppendBoolean(netprops, "vhost", true) < 0)
+                return NULL;
+
+            if (vhostfdSize == 1) {
+                if (virJSONValueObjectAdd(&netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
+                    return NULL;
+            } else {
+                g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
+
+                for (i = 0; i < vhostfdSize; i++)
+                    virBufferAsprintf(&fdsbuf, "%s:", vhostfd[i]);
+
+                virBufferTrim(&fdsbuf, ":");
+
+                if (virJSONValueObjectAdd(&netprops,
+                                          "s:vhostfds", virBufferCurrentContent(&fdsbuf),
+                                          NULL) < 0)
+                    return NULL;
+            }
+        }
+
+        if (net->tune.sndbuf_specified &&
+            virJSONValueObjectAppendNumberUlong(netprops, "sndbuf", net->tune.sndbuf) < 0)
+            return NULL;
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
@@ -4372,34 +4395,6 @@ qemuBuildHostNetProps(virDomainNetDef *net,
 
     if (virJSONValueObjectAppendStringPrintf(netprops, "id", "host%s", net->info.alias) < 0)
         return NULL;
-
-    if (is_tap) {
-        if (vhostfdSize) {
-            if (virJSONValueObjectAppendBoolean(netprops, "vhost", true) < 0)
-                return NULL;
-
-            if (vhostfdSize == 1) {
-                if (virJSONValueObjectAdd(&netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
-                    return NULL;
-            } else {
-                g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
-
-                for (i = 0; i < vhostfdSize; i++)
-                    virBufferAsprintf(&fdsbuf, "%s:", vhostfd[i]);
-
-                virBufferTrim(&fdsbuf, ":");
-
-                if (virJSONValueObjectAdd(&netprops,
-                                          "s:vhostfds", virBufferCurrentContent(&fdsbuf),
-                                          NULL) < 0)
-                    return NULL;
-            }
-        }
-
-        if (net->tune.sndbuf_specified &&
-            virJSONValueObjectAppendNumberUlong(netprops, "sndbuf", net->tune.sndbuf) < 0)
-            return NULL;
-    }
 
     return g_steal_pointer(&netprops);
 }

@@ -47,7 +47,7 @@ QEMU_AUDIO_DRV=none \
 -drive file=/home/zippy/tmp/install-amd64-minimal-20140619.iso,format=raw,if=none,id=drive-ua-WhatAnAwesomeCDROM,readonly=on,cache=none \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ua-WhatAnAwesomeCDROM,id=ua-WhatAnAwesomeCDROM,bootindex=2 \
 -global isa-fdc.driveA=drive-ua-myDisk1 \
--netdev tap,fd=3,id=hostua-CheckoutThisNIC,vhost=on,vhostfd=44 \
+-netdev tap,fd=3,vhost=on,vhostfd=44,id=hostua-CheckoutThisNIC \
 -device virtio-net-pci,netdev=hostua-CheckoutThisNIC,id=ua-CheckoutThisNIC,mac=52:54:00:d6:c0:0b,bus=pci.0,addr=0x3 \
 -netdev socket,listen=127.0.0.1:1234,id=hostua-WeCanAlsoDoServerMode \
 -device rtl8139,netdev=hostua-WeCanAlsoDoServerMode,id=ua-WeCanAlsoDoServerMode,mac=52:54:00:22:c9:42,bus=pci.0,addr=0x9 \
