@@ -4244,17 +4244,41 @@ qemuBuildHostNetProps(virDomainNetDef *net,
         const char *vhostfd_field = "S:vhostfd";
         g_autofree char *vhostfd_arg = NULL;
         bool vhost = false;
+        size_t nfds;
+        GSList *n;
 
-        for (i = 0; i < tapfdSize; i++)
-            virBufferAsprintf(&buf, "%s:", tapfd[i]);
+        if (netpriv->tapfds) {
+            nfds = 0;
+            for (n = netpriv->tapfds; n; n = n->next) {
+                virBufferAsprintf(&buf, "%s:", qemuFDPassGetPath(n->data));
+                nfds++;
+            }
 
-        if (tapfdSize > 1)
-            tapfd_field = "s:fds";
+            if (nfds > 1)
+                tapfd_field = "s:fds";
+        } else {
+            for (i = 0; i < tapfdSize; i++)
+                virBufferAsprintf(&buf, "%s:", tapfd[i]);
+
+            if (tapfdSize > 1)
+                tapfd_field = "s:fds";
+        }
 
         virBufferTrim(&buf, ":");
         tapfd_arg = virBufferContentAndReset(&buf);
 
-        if (vhostfdSize > 0) {
+        if (netpriv->vhostfds) {
+            vhost = true;
+
+            nfds = 0;
+            for (n = netpriv->vhostfds; n; n = n->next) {
+                virBufferAsprintf(&buf, "%s:", qemuFDPassGetPath(n->data));
+                nfds++;
+            }
+
+            if (nfds > 1)
+                vhostfd_field = "s:vhostfds";
+        } else if (vhostfdSize > 0) {
             vhost = true;
 
             for (i = 0; i < vhostfdSize; i++)
@@ -8744,6 +8768,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     size_t i;
     g_autoptr(virJSONValue) hostnetprops = NULL;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+    GSList *n;
 
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
@@ -8950,6 +8975,16 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         virCommandPassFD(cmd, vhostfd[i],
                          VIR_COMMAND_PASS_FD_CLOSE_PARENT);
         vhostfd[i] = -1;
+    }
+
+    for (n = netpriv->tapfds; n; n = n->next) {
+        if (qemuFDPassTransferCommand(n->data, cmd) < 0)
+            return -1;
+    }
+
+    for (n = netpriv->vhostfds; n; n = n->next) {
+        if (qemuFDPassTransferCommand(n->data, cmd) < 0)
+            return -1;
     }
 
     if (qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)

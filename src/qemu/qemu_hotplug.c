@@ -1210,6 +1210,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     g_autoptr(virConnect) conn = NULL;
     virErrorPtr save_err = NULL;
     bool teardownlabel = false;
+    GSList *n;
 
     /* If appropriate, grab a physical device from the configured
      * network's pool of devices, or resolve bridge device name
@@ -1460,6 +1461,20 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     qemuDomainObjEnterMonitor(driver, vm);
 
+    for (n = netpriv->tapfds; n; n = n->next) {
+        if (qemuFDPassTransferMonitor(n->data, priv->mon) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
+    }
+
+    for (n = netpriv->vhostfds; n; n = n->next) {
+        if (qemuFDPassTransferMonitor(n->data, priv->mon) < 0) {
+            qemuDomainObjExitMonitor(vm);
+            goto cleanup;
+        }
+    }
+
     if (qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
@@ -1619,6 +1634,13 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         qemuMonitorRemoveNetdev(priv->mon, netdev_name) < 0)
         VIR_WARN("Failed to remove network backend for netdev %s",
                  netdev_name);
+
+    for (n = netpriv->tapfds; n; n = n->next)
+        qemuFDPassTransferMonitorRollback(n->data, priv->mon);
+
+    for (n = netpriv->vhostfds; n; n = n->next)
+        qemuFDPassTransferMonitorRollback(n->data, priv->mon);
+
     qemuDomainObjExitMonitor(vm);
     virErrorRestore(&originalError);
     goto cleanup;
