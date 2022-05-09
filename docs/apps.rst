@@ -331,6 +331,10 @@ Web applications
       Secrets
    -  Create and launch VMs
    -  Configure VMs with easy panels or go pro and edit the VM's XML
+`Cockpit <https://cockpit-project.org/>`__
+   Cockpit is a web-based graphical interface for servers. With
+   `cockpit-machines <https://github.com/cockpit-project/cockpit-machines>`__
+   it can create and manage virtual machines via libvirt.
 
 Other
 -----
