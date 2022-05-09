@@ -1279,6 +1279,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
      */
     VIR_APPEND_ELEMENT_COPY(vm->def->nets, vm->def->nnets, net);
 
+    if (qemuBuildInterfaceConnect(vm, net, false) < 0)
+         return -1;
+
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:

@@ -94,6 +94,11 @@ qemuBuildHostNetProps(virDomainNetDef *net,
                       const char *slirpfd,
                       const char *vdpadev);
 
+int
+qemuBuildInterfaceConnect(virDomainObj *vm,
+                          virDomainNetDef *net,
+                          bool standalone);
+
 /* Current, best practice */
 virJSONValue *
 qemuBuildNicDevProps(virDomainDef *def,

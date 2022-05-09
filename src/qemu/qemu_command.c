@@ -8674,6 +8674,46 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
     return 0;
 }
 
+
+int
+qemuBuildInterfaceConnect(virDomainObj *vm G_GNUC_UNUSED,
+                          virDomainNetDef *net,
+                          bool standalone G_GNUC_UNUSED)
+{
+    virDomainNetType actualType = virDomainNetGetActualType(net);
+
+    switch (actualType) {
+    case VIR_DOMAIN_NET_TYPE_NETWORK:
+    case VIR_DOMAIN_NET_TYPE_BRIDGE:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_DIRECT:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_VDPA:
+        break;
+
+    case VIR_DOMAIN_NET_TYPE_HOSTDEV:
+    case VIR_DOMAIN_NET_TYPE_USER:
+    case VIR_DOMAIN_NET_TYPE_SERVER:
+    case VIR_DOMAIN_NET_TYPE_CLIENT:
+    case VIR_DOMAIN_NET_TYPE_MCAST:
+    case VIR_DOMAIN_NET_TYPE_INTERNAL:
+    case VIR_DOMAIN_NET_TYPE_UDP:
+    case VIR_DOMAIN_NET_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 static int
 qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               virDomainObj *vm,
@@ -8707,6 +8747,9 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
 
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
+        return -1;
+
+    if (qemuBuildInterfaceConnect(vm, net, standalone) < 0)
         return -1;
 
     switch (actualType) {
