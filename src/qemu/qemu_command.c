@@ -4236,54 +4236,50 @@ qemuBuildHostNetProps(virDomainNetDef *net,
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-    case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        if (virJSONValueObjectAdd(&netprops, "s:type", "tap", NULL) < 0)
+    case VIR_DOMAIN_NET_TYPE_ETHERNET: {
+        g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
+        /* for one tapfd/vhostfd 'fd=' shall be used, for more use 'fds=' */
+        const char *tapfd_field = "s:fd";
+        g_autofree char *tapfd_arg = NULL;
+        const char *vhostfd_field = "S:vhostfd";
+        g_autofree char *vhostfd_arg = NULL;
+        bool vhost = false;
+
+        for (i = 0; i < tapfdSize; i++)
+            virBufferAsprintf(&buf, "%s:", tapfd[i]);
+
+        if (tapfdSize > 1)
+            tapfd_field = "s:fds";
+
+        virBufferTrim(&buf, ":");
+        tapfd_arg = virBufferContentAndReset(&buf);
+
+        if (vhostfdSize > 0) {
+            vhost = true;
+
+            for (i = 0; i < vhostfdSize; i++)
+                virBufferAsprintf(&buf, "%s:", vhostfd[i]);
+
+            if (vhostfdSize > 1)
+                vhostfd_field = "s:vhostfds";
+        }
+
+        virBufferTrim(&buf, ":");
+        vhostfd_arg = virBufferContentAndReset(&buf);
+
+        if (virJSONValueObjectAdd(&netprops,
+                                  "s:type", "tap",
+                                  tapfd_field, tapfd_arg,
+                                  "B:vhost", vhost,
+                                  vhostfd_field, vhostfd_arg,
+                                  NULL) < 0)
             return NULL;
 
-        /* for one tapfd 'fd=' shall be used,
-         * for more than one 'fds=' is the right choice */
-        if (tapfdSize == 1) {
-            if (virJSONValueObjectAdd(&netprops, "s:fd", tapfd[0], NULL) < 0)
-                return NULL;
-        } else {
-            g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
-
-            for (i = 0; i < tapfdSize; i++)
-                virBufferAsprintf(&fdsbuf, "%s:", tapfd[i]);
-
-            virBufferTrim(&fdsbuf, ":");
-
-            if (virJSONValueObjectAdd(&netprops,
-                                      "s:fds", virBufferCurrentContent(&fdsbuf),
-                                      NULL) < 0)
-                return NULL;
-        }
-
-        if (vhostfdSize) {
-            if (virJSONValueObjectAppendBoolean(netprops, "vhost", true) < 0)
-                return NULL;
-
-            if (vhostfdSize == 1) {
-                if (virJSONValueObjectAdd(&netprops, "s:vhostfd", vhostfd[0], NULL) < 0)
-                    return NULL;
-            } else {
-                g_auto(virBuffer) fdsbuf = VIR_BUFFER_INITIALIZER;
-
-                for (i = 0; i < vhostfdSize; i++)
-                    virBufferAsprintf(&fdsbuf, "%s:", vhostfd[i]);
-
-                virBufferTrim(&fdsbuf, ":");
-
-                if (virJSONValueObjectAdd(&netprops,
-                                          "s:vhostfds", virBufferCurrentContent(&fdsbuf),
-                                          NULL) < 0)
-                    return NULL;
-            }
-        }
 
         if (net->tune.sndbuf_specified &&
             virJSONValueObjectAppendNumberUlong(netprops, "sndbuf", net->tune.sndbuf) < 0)
             return NULL;
+    }
         break;
 
     case VIR_DOMAIN_NET_TYPE_CLIENT:
