@@ -1191,7 +1191,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     char **vhostfdName = NULL;
     int *vhostfd = NULL;
     size_t vhostfdSize = 0;
-    size_t queueSize = 0;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
     int ret = -1;
@@ -1287,7 +1286,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
-        queueSize = tapfdSize;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
         vhostfd = g_new0(int, vhostfdSize);
@@ -1304,7 +1302,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
-        queueSize = tapfdSize;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
         vhostfd = g_new0(int, vhostfdSize);
@@ -1322,7 +1319,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         tapfdSize = vhostfdSize = net->driver.virtio.queues;
         if (!tapfdSize)
             tapfdSize = vhostfdSize = 1;
-        queueSize = tapfdSize;
         tapfd = g_new0(int, tapfdSize);
         memset(tapfd, -1, sizeof(*tapfd) * tapfdSize);
         vhostfd = g_new0(int, vhostfdSize);
@@ -1336,9 +1332,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VHOSTUSER:
-        queueSize = net->driver.virtio.queues;
-        if (!queueSize)
-            queueSize = 1;
         if (!qemuDomainSupportsNicdev(vm->def, net)) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            "%s", _("Nicdev support unavailable"));
@@ -1388,9 +1381,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_NET_TYPE_VDPA:
-        queueSize = net->driver.virtio.queues;
-        if (!queueSize)
-            queueSize = 1;
         if (qemuDomainAdjustMaxMemLock(vm, false) < 0)
             goto cleanup;
         adjustmemlock = true;
@@ -1506,7 +1496,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     for (i = 0; i < vhostfdSize; i++)
         VIR_FORCE_CLOSE(vhostfd[i]);
 
-    if (!(nicprops = qemuBuildNicDevProps(vm->def, net, queueSize, priv->qemuCaps)))
+    if (!(nicprops = qemuBuildNicDevProps(vm->def, net, priv->qemuCaps)))
         goto try_remove;
 
     qemuDomainObjEnterMonitor(driver, vm);

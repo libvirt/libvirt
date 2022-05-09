@@ -102,7 +102,6 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
 virJSONValue *
 qemuBuildNicDevProps(virDomainDef *def,
                      virDomainNetDef *net,
-                     size_t vhostfdSize,
                      virQEMUCaps *qemuCaps);
 
 char *qemuDeviceDriveHostAlias(virDomainDiskDef *disk);

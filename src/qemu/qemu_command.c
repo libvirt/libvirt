@@ -4096,7 +4096,6 @@ qemuBuildLegacyNicStr(virDomainNetDef *net)
 virJSONValue *
 qemuBuildNicDevProps(virDomainDef *def,
                      virDomainNetDef *net,
-                     size_t vhostfdSize,
                      virQEMUCaps *qemuCaps)
 {
     g_autoptr(virJSONValue) props = NULL;
@@ -4133,7 +4132,7 @@ qemuBuildNicDevProps(virDomainDef *def,
             }
         }
 
-        if (vhostfdSize > 1) {
+        if (net->driver.virtio.queues > 1) {
             if (net->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW) {
                 /* ccw provides a one to one relation of fds to queues and
                  * does not support the vectors option
@@ -4144,7 +4143,7 @@ qemuBuildNicDevProps(virDomainDef *def,
                  * we should add vectors=2*N+2 where N is the vhostfdSize
                  */
                 mq = VIR_TRISTATE_SWITCH_ON;
-                vectors = 2 * vhostfdSize + 2;
+                vectors = 2 * net->driver.virtio.queues + 2;
             }
         }
 
@@ -9009,7 +9008,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         if (qemuCommandAddExtDevice(cmd, &net->info, def, qemuCaps) < 0)
             goto cleanup;
 
-        if (!(nicprops = qemuBuildNicDevProps(def, net, net->driver.virtio.queues, qemuCaps)))
+        if (!(nicprops = qemuBuildNicDevProps(def, net, qemuCaps)))
             goto cleanup;
         if (qemuBuildDeviceCommandlineFromJSON(cmd, nicprops, def, qemuCaps) < 0)
             goto cleanup;
