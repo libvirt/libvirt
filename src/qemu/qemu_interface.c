@@ -726,9 +726,8 @@ qemuInterfaceOpenVhostNet(virDomainDef *def,
      */
     if (!qemuDomainSupportsNicdev(def, net)) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("vhost-net is not supported with "
-                                   "this QEMU binary"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vhost-net is not supported with this QEMU binary"));
             return -1;
         }
         *vhostfdSize = 0;
@@ -738,9 +737,8 @@ qemuInterfaceOpenVhostNet(virDomainDef *def,
     /* If the nic model isn't virtio, don't try to open. */
     if (!virDomainNetIsVirtioModel(net)) {
         if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           "%s", _("vhost-net is only supported for "
-                                   "virtio network interfaces"));
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("vhost-net is only supported for virtio network interfaces"));
             return -1;
         }
         *vhostfdSize = 0;
@@ -756,9 +754,8 @@ qemuInterfaceOpenVhostNet(virDomainDef *def,
         if (vhostfd[i] < 0) {
             virDomainAuditNetDevice(def, net, vhostnet_path, false);
             if (net->driver.virtio.name == VIR_DOMAIN_NET_BACKEND_TYPE_VHOST) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               "%s", _("vhost-net was requested for an interface, "
-                                       "but is unavailable"));
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("vhost-net was requested for an interface, but is unavailable"));
                 goto error;
             }
             VIR_WARN("Unable to open vhost-net. Opened so far %zu, requested %zu",
