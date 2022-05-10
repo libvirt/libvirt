@@ -1513,6 +1513,17 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         }
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
+        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
+            state == VIR_DOMAIN_PAUSED) {
+            /* At this point no thread is watching the migration progress on
+             * the source as it is just waiting for the Finish phase to end.
+             * Thus we need to handle the event here. */
+            qemuMigrationSrcPostcopyFailed(vm);
+            qemuDomainSaveStatus(vm);
+        }
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:

@@ -1747,6 +1747,10 @@ qemuMigrationUpdateJobType(virDomainJobData *jobData)
         jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY;
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_PAUSED:
+        jobData->status = VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED;
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
         jobData->status = VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED;
         break;
@@ -1871,6 +1875,12 @@ qemuMigrationJobCheckStatus(virQEMUDriver *driver,
                        qemuMigrationJobName(vm), _("canceled by client"));
         return -1;
 
+    case VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED:
+        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
+                       qemuMigrationJobName(vm),
+                       _("post-copy phase failed"));
+        return -1;
+
     case VIR_DOMAIN_JOB_STATUS_COMPLETED:
     case VIR_DOMAIN_JOB_STATUS_ACTIVE:
     case VIR_DOMAIN_JOB_STATUS_MIGRATING:
@@ -1973,6 +1983,7 @@ qemuMigrationAnyCompleted(virQEMUDriver *driver,
 
     case VIR_DOMAIN_JOB_STATUS_FAILED:
     case VIR_DOMAIN_JOB_STATUS_CANCELED:
+    case VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED:
         /* QEMU aborted the migration. */
         return -1;
 
