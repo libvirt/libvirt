@@ -3249,55 +3249,48 @@ qemuMonitorJSONGetMigrationStatsReply(virJSONValue *reply,
     case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
     case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
         ram = virJSONValueObjectGetObject(ret, "ram");
-        if (!ram) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("migration was active, but no RAM info was set"));
-            return -1;
-        }
+        if (ram) {
+            if (virJSONValueObjectGetNumberUlong(ram, "transferred",
+                                                 &stats->ram_transferred) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("migration was active, but RAM 'transferred' data was missing"));
+                return -1;
+            }
+            if (virJSONValueObjectGetNumberUlong(ram, "remaining",
+                                                 &stats->ram_remaining) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("migration was active, but RAM 'remaining' data was missing"));
+                return -1;
+            }
+            if (virJSONValueObjectGetNumberUlong(ram, "total",
+                                                 &stats->ram_total) < 0) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("migration was active, but RAM 'total' data was missing"));
+                return -1;
+            }
 
-        if (virJSONValueObjectGetNumberUlong(ram, "transferred",
-                                             &stats->ram_transferred) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("migration was active, but RAM 'transferred' "
-                             "data was missing"));
-            return -1;
-        }
-        if (virJSONValueObjectGetNumberUlong(ram, "remaining",
-                                             &stats->ram_remaining) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("migration was active, but RAM 'remaining' "
-                             "data was missing"));
-            return -1;
-        }
-        if (virJSONValueObjectGetNumberUlong(ram, "total",
-                                             &stats->ram_total) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("migration was active, but RAM 'total' "
-                             "data was missing"));
-            return -1;
-        }
+            if (virJSONValueObjectGetNumberDouble(ram, "mbps", &mbps) == 0 &&
+                mbps > 0) {
+                /* mpbs from QEMU reports Mbits/s (M as in 10^6 not Mi as 2^20) */
+                stats->ram_bps = mbps * (1000 * 1000 / 8);
+            }
 
-        if (virJSONValueObjectGetNumberDouble(ram, "mbps", &mbps) == 0 &&
-            mbps > 0) {
-            /* mpbs from QEMU reports Mbits/s (M as in 10^6 not Mi as 2^20) */
-            stats->ram_bps = mbps * (1000 * 1000 / 8);
+            if (virJSONValueObjectGetNumberUlong(ram, "duplicate",
+                                                 &stats->ram_duplicate) == 0)
+                stats->ram_duplicate_set = true;
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal",
+                                                          &stats->ram_normal));
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
+                                                          &stats->ram_normal_bytes));
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-pages-rate",
+                                                          &stats->ram_dirty_rate));
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "page-size",
+                                                          &stats->ram_page_size));
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-sync-count",
+                                                          &stats->ram_iteration));
+            ignore_value(virJSONValueObjectGetNumberUlong(ram, "postcopy-requests",
+                                                          &stats->ram_postcopy_reqs));
         }
-
-        if (virJSONValueObjectGetNumberUlong(ram, "duplicate",
-                                             &stats->ram_duplicate) == 0)
-            stats->ram_duplicate_set = true;
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal",
-                                                      &stats->ram_normal));
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "normal-bytes",
-                                                      &stats->ram_normal_bytes));
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-pages-rate",
-                                                      &stats->ram_dirty_rate));
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "page-size",
-                                                      &stats->ram_page_size));
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "dirty-sync-count",
-                                                      &stats->ram_iteration));
-        ignore_value(virJSONValueObjectGetNumberUlong(ram, "postcopy-requests",
-                                                      &stats->ram_postcopy_reqs));
 
         disk = virJSONValueObjectGetObject(ret, "disk");
         if (disk) {
