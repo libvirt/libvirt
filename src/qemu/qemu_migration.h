@@ -251,8 +251,10 @@ qemuMigrationDstRun(virQEMUDriver *driver,
                     virDomainAsyncJob asyncJob);
 
 void
-qemuMigrationAnyPostcopyFailed(virQEMUDriver *driver,
-                            virDomainObj *vm);
+qemuMigrationSrcPostcopyFailed(virDomainObj *vm);
+
+void
+qemuMigrationDstPostcopyFailed(virDomainObj *vm);
 
 int
 qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,

@@ -3411,7 +3411,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
          * confirm success or failure yet; killing it seems safest unless
          * we already started guest CPUs or we were in post-copy mode */
         if (postcopy) {
-            qemuMigrationAnyPostcopyFailed(driver, vm);
+            qemuMigrationDstPostcopyFailed(vm);
         } else if (state != VIR_DOMAIN_RUNNING) {
             VIR_DEBUG("Killing migrated domain %s", vm->def->name);
             return -1;
@@ -3462,7 +3462,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          * post-copy mode
          */
         if (postcopy) {
-            qemuMigrationAnyPostcopyFailed(driver, vm);
+            qemuMigrationSrcPostcopyFailed(vm);
         } else {
             VIR_DEBUG("Cancelling unfinished migration of domain %s",
                       vm->def->name);
@@ -3480,7 +3480,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          * post-copy mode we can use PAUSED_POSTCOPY_FAILED state for this
          */
         if (postcopy)
-            qemuMigrationAnyPostcopyFailed(driver, vm);
+            qemuMigrationSrcPostcopyFailed(vm);
         break;
 
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
@@ -3489,7 +3489,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          * as broken in that case
          */
         if (postcopy) {
-            qemuMigrationAnyPostcopyFailed(driver, vm);
+            qemuMigrationSrcPostcopyFailed(vm);
         } else {
             VIR_DEBUG("Resuming domain %s after failed migration",
                       vm->def->name);
