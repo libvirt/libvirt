@@ -5812,11 +5812,19 @@ static virDomainPtr
 qemuMigrationDstFinishOffline(virQEMUDriver *driver,
                               virConnectPtr dconn,
                               virDomainObj *vm,
-                              qemuMigrationCookie *mig,
+                              int cookie_flags,
+                              const char *cookiein,
+                              int cookieinlen,
                               char **cookieout,
                               int *cookieoutlen)
 {
     virDomainPtr dom = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+
+    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+                                         cookiein, cookieinlen, cookie_flags)))
+        return NULL;
 
     if (qemuMigrationDstPersist(driver, vm, mig, false) < 0)
         return NULL;
@@ -6019,19 +6027,21 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
      * even though VIR_MIGRATE_PERSIST_DEST was not used. */
     cookie_flags |= QEMU_MIGRATION_COOKIE_PERSISTENT;
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
-                                         cookiein, cookieinlen, cookie_flags)))
-        goto error;
-
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (retcode == 0) {
-            dom = qemuMigrationDstFinishOffline(driver, dconn, vm, mig,
+            dom = qemuMigrationDstFinishOffline(driver, dconn, vm,
+                                                cookie_flags,
+                                                cookiein, cookieinlen,
                                                 cookieout, cookieoutlen);
         }
 
         qemuMigrationJobFinish(vm);
         goto cleanup;
     }
+
+    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+                                         cookiein, cookieinlen, cookie_flags)))
+        goto error;
 
     if (retcode != 0) {
         /* Check for a possible error on the monitor in case Finish was called
