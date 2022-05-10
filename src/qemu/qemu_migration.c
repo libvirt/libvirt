@@ -5966,11 +5966,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
             if (virGetLastErrorCode() == VIR_ERR_OK)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("resume operation failed"));
-            /* Need to save the current error, in case shutting
-             * down the process overwrites it
-             */
-            virErrorPreserveLast(&orig_err);
-
             /*
              * In v3 protocol, the source VM is still available to
              * restart during confirm() step, so we kill it off
@@ -6043,6 +6038,10 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     return dom;
 
  error:
+    /* Need to save the current error, in case shutting down the process
+     * overwrites it. */
+    virErrorPreserveLast(&orig_err);
+
     if (virDomainObjIsActive(vm)) {
         if (doKill) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
