@@ -2458,6 +2458,60 @@ qemuMigrationAnyRefreshStatus(virQEMUDriver *driver,
 }
 
 
+static char *
+qemuMigrationSrcBeginXML(virDomainObj *vm,
+                         const char *xmlin,
+                         char **cookieout,
+                         int *cookieoutlen,
+                         unsigned int cookieFlags,
+                         const char **migrate_disks,
+                         size_t nmigrate_disks,
+                         unsigned long flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+
+    if (priv->origCPU)
+        cookieFlags |= QEMU_MIGRATION_COOKIE_CPU;
+
+    if (!(flags & VIR_MIGRATE_OFFLINE))
+        cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
+
+    if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
+        return NULL;
+
+    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING) &&
+        qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm, migrate_disks,
+                                                    nmigrate_disks) < 0)
+        return NULL;
+
+    if (qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_SOURCE,
+                                  cookieout, cookieoutlen,
+                                  cookieFlags) < 0)
+        return NULL;
+
+    if (xmlin) {
+        g_autoptr(virDomainDef) def = NULL;
+
+        if (!(def = virDomainDefParseString(xmlin, driver->xmlopt, priv->qemuCaps,
+                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
+                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
+            return NULL;
+
+        if (!qemuDomainCheckABIStability(driver, vm, def))
+            return NULL;
+
+        return qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, false, true);
+    }
+
+    return qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def, priv->origCPU,
+                                   false, true);
+}
+
+
 /* The caller is supposed to lock the vm and start a migration job. */
 static char *
 qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
@@ -2470,8 +2524,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                            const char **migrate_disks,
                            unsigned long flags)
 {
-    g_autoptr(qemuMigrationCookie) mig = NULL;
-    g_autoptr(virDomainDef) def = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int cookieFlags = QEMU_MIGRATION_COOKIE_LOCKSTATE;
 
@@ -2589,41 +2641,10 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
          vm->newDef && !qemuDomainVcpuHotplugIsInOrder(vm->newDef)))
         cookieFlags |= QEMU_MIGRATION_COOKIE_CPU_HOTPLUG;
 
-    if (priv->origCPU)
-        cookieFlags |= QEMU_MIGRATION_COOKIE_CPU;
-
-    if (!(flags & VIR_MIGRATE_OFFLINE))
-        cookieFlags |= QEMU_MIGRATION_COOKIE_CAPS;
-
-    if (!(mig = qemuMigrationCookieNew(vm->def, priv->origname)))
-        return NULL;
-
-    if (cookieFlags & QEMU_MIGRATION_COOKIE_NBD &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING) &&
-        qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(mig, vm, migrate_disks,
-                                                    nmigrate_disks) < 0)
-        return NULL;
-
-    if (qemuMigrationCookieFormat(mig, driver, vm,
-                                  QEMU_MIGRATION_SOURCE,
-                                  cookieout, cookieoutlen,
-                                  cookieFlags) < 0)
-        return NULL;
-
-    if (xmlin) {
-        if (!(def = virDomainDefParseString(xmlin, driver->xmlopt, priv->qemuCaps,
-                                            VIR_DOMAIN_DEF_PARSE_INACTIVE |
-                                            VIR_DOMAIN_DEF_PARSE_SKIP_VALIDATE)))
-            return NULL;
-
-        if (!qemuDomainCheckABIStability(driver, vm, def))
-            return NULL;
-
-        return qemuDomainDefFormatLive(driver, priv->qemuCaps, def, NULL, false, true);
-    } else {
-        return qemuDomainDefFormatLive(driver, priv->qemuCaps, vm->def, priv->origCPU,
-                                       false, true);
-    }
+    return qemuMigrationSrcBeginXML(vm, xmlin,
+                                    cookieout, cookieoutlen, cookieFlags,
+                                    migrate_disks, nmigrate_disks,
+                                    flags);
 }
 
 char *
