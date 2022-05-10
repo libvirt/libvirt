@@ -29249,6 +29249,28 @@ virDomainObjIsFailedPostcopy(virDomainObj *dom)
 }
 
 
+bool
+virDomainObjIsPostcopy(virDomainObj *dom,
+                       virDomainJobOperation op)
+{
+    if (op != VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN &&
+        op != VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT)
+        return false;
+
+    if (op == VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN) {
+        return (dom->state.state == VIR_DOMAIN_PAUSED &&
+                dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
+               (dom->state.state == VIR_DOMAIN_RUNNING &&
+                (dom->state.reason == VIR_DOMAIN_RUNNING_POSTCOPY ||
+                 dom->state.reason == VIR_DOMAIN_RUNNING_POSTCOPY_FAILED));
+    }
+
+    return dom->state.state == VIR_DOMAIN_PAUSED &&
+           (dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
+            dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
+}
+
+
 void
 virDomainObjSetState(virDomainObj *dom, virDomainState state, int reason)
 {
