@@ -8790,15 +8790,11 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     int ret = -1;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autofree char *nic = NULL;
-    int *tapfd = NULL;
-    size_t tapfdSize = 0;
-    char **tapfdName = NULL;
     g_autofree char *slirpfdName = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     const virNetDevBandwidth *actualBandwidth;
     bool requireNicdev = false;
     qemuSlirp *slirp;
-    size_t i;
     g_autoptr(virJSONValue) hostnetprops = NULL;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     GSList *n;
@@ -8932,17 +8928,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         slirpfdName = g_strdup_printf("%d", slirpfd);
     }
 
-
-    for (i = 0; i < tapfdSize; i++) {
-        if (qemuSecuritySetTapFDLabel(driver->securityManager,
-                                      def, tapfd[i]) < 0)
-            goto cleanup;
-        tapfdName[i] = g_strdup_printf("%d", tapfd[i]);
-        virCommandPassFD(cmd, tapfd[i],
-                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        tapfd[i] = -1;
-    }
-
     for (n = netpriv->tapfds; n; n = n->next) {
         if (qemuFDPassTransferCommand(n->data, cmd) < 0)
             return -1;
@@ -8957,7 +8942,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         return -1;
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
-                                               tapfdName, tapfdSize,
+                                               NULL, 0,
                                                slirpfdName)))
         goto cleanup;
 
@@ -9002,14 +8987,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         virDomainConfNWFilterTeardown(net);
         virErrorRestore(&saved_err);
     }
-    for (i = 0; tapfd && i < tapfdSize; i++) {
-        if (ret < 0)
-            VIR_FORCE_CLOSE(tapfd[i]);
-        if (tapfdName)
-            VIR_FREE(tapfdName[i]);
-    }
-    VIR_FREE(tapfdName);
-    VIR_FREE(tapfd);
     return ret;
 }
 
