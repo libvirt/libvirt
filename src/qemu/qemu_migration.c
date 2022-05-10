@@ -4412,6 +4412,14 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     virErrorPreserveLast(&orig_err);
 
     if (virDomainObjIsActive(vm)) {
+        int reason;
+        virDomainState state = virDomainObjGetState(vm, &reason);
+
+        if (state == VIR_DOMAIN_PAUSED && reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
+            VIR_DEBUG("Aborting failed post-copy migration as the destination is not running yet");
+            virDomainObjSetState(vm, state, VIR_DOMAIN_PAUSED_MIGRATION);
+        }
+
         if (cancel &&
             priv->job.current->status != VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED &&
             qemuDomainObjEnterMonitorAsync(driver, vm,

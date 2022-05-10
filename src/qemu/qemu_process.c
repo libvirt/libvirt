@@ -3483,20 +3483,16 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
     case QEMU_MIGRATION_PHASE_PERFORM2:
     case QEMU_MIGRATION_PHASE_PERFORM3:
         /* migration is still in progress, let's cancel it and resume the
-         * domain; however we can only do that before migration enters
-         * post-copy mode
+         * domain; we can do so even in post-copy phase as the domain was not
+         * resumed on the destination host yet
          */
-        if (postcopy) {
-            qemuMigrationSrcPostcopyFailed(vm);
-        } else {
-            VIR_DEBUG("Cancelling unfinished migration of domain %s",
-                      vm->def->name);
-            if (qemuMigrationSrcCancel(driver, vm) < 0) {
-                VIR_WARN("Could not cancel ongoing migration of domain %s",
-                         vm->def->name);
-            }
-            resume = true;
+        VIR_DEBUG("Cancelling unfinished migration of domain %s",
+                  vm->def->name);
+        if (qemuMigrationSrcCancel(driver, vm) < 0) {
+            VIR_WARN("Could not cancel ongoing migration of domain %s",
+                     vm->def->name);
         }
+        resume = true;
         break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
