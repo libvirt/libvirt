@@ -2629,31 +2629,12 @@ qemuMonitorCloseFileHandle(qemuMonitor *mon,
 
 int
 qemuMonitorAddNetdev(qemuMonitor *mon,
-                     virJSONValue **props,
-                     int slirpfd, char *slirpfdName)
+                     virJSONValue **props)
 {
-    int ret = -1;
-
-    VIR_DEBUG("props=%p "
-              "slirpfd=%d slirpfdName=%s",
-              props,
-              slirpfd, slirpfdName);
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (slirpfd > 0 &&
-        qemuMonitorSendFileHandle(mon, slirpfdName, slirpfd) < 0)
-        goto cleanup;
-
-    ret = qemuMonitorJSONAddNetdev(mon, props);
-
- cleanup:
-    if (ret < 0) {
-        if (qemuMonitorCloseFileHandle(mon, slirpfdName) < 0)
-            VIR_WARN("failed to close device handle '%s'", slirpfdName);
-    }
-
-    return ret;
+    return qemuMonitorJSONAddNetdev(mon, props);
 }
 
 

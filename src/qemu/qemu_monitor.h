@@ -982,8 +982,7 @@ int qemuMonitorCloseFileHandle(qemuMonitor *mon,
                                const char *fdname);
 
 int qemuMonitorAddNetdev(qemuMonitor *mon,
-                         virJSONValue **props,
-                         int slirpfd, char *slirpfdName);
+                         virJSONValue **props);
 
 int qemuMonitorRemoveNetdev(qemuMonitor *mon,
                             const char *alias);

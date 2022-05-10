@@ -1401,8 +1401,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         charDevPlugged = true;
     }
 
-    if (qemuMonitorAddNetdev(priv->mon, &netprops,
-                             -1, NULL) < 0) {
+    if (qemuMonitorAddNetdev(priv->mon, &netprops) < 0) {
         qemuDomainObjExitMonitor(vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
@@ -2170,8 +2169,7 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     chardevAttached = true;
 
     if (netdevprops) {
-        if (qemuMonitorAddNetdev(priv->mon, &netdevprops,
-                                -1, NULL) < 0)
+        if (qemuMonitorAddNetdev(priv->mon, &netdevprops) < 0)
             goto exit_monitor;
     }
 
