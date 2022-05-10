@@ -3917,21 +3917,25 @@ qemuMigrationSrcComplete(virQEMUDriver *driver,
     virObjectEvent *event;
     int reason;
 
-    if (jobData) {
-        /* We need to refresh migration statistics after a completed post-copy
-         * migration since jobData contains obsolete data from the time we
-         * switched to post-copy mode.
-         */
-        if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-            reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
-            VIR_DEBUG("Refreshing migration statistics");
-            if (qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                           jobData, NULL) < 0)
-                VIR_WARN("Could not refresh migration statistics");
-        }
-
-        qemuDomainJobDataUpdateTime(jobData);
+    if (!jobData) {
+        priv->job.completed = virDomainJobDataCopy(priv->job.current);
+        jobData = priv->job.completed;
+        jobData->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
     }
+
+    /* We need to refresh migration statistics after a completed post-copy
+     * migration since jobData contains obsolete data from the time we
+     * switched to post-copy mode.
+     */
+    if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+        reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
+        VIR_DEBUG("Refreshing migration statistics");
+        if (qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                       jobData, NULL) < 0)
+            VIR_WARN("Could not refresh migration statistics");
+    }
+
+    qemuDomainJobDataUpdateTime(jobData);
 
     /* If guest uses SPICE and supports seamless migration we have to hold
      * up domain shutdown until SPICE server transfers its data */
