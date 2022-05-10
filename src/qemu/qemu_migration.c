@@ -2317,6 +2317,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
     virQEMUDriver *driver = priv->driver;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     bool postcopy = false;
+    int phase;
 
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
               vm->def->name, conn,
@@ -2376,12 +2377,17 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
         return;
     }
 
+    if (postcopy)
+        phase = QEMU_MIGRATION_PHASE_POSTCOPY_FAILED;
+    else
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+    ignore_value(qemuMigrationJobStartPhase(vm, phase));
+
     if (postcopy) {
         if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
             qemuMigrationSrcPostcopyFailed(vm);
         else
             qemuMigrationDstPostcopyFailed(vm);
-        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
     } else {
