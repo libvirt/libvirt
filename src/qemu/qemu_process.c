@@ -3374,6 +3374,9 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
                     (state == VIR_DOMAIN_RUNNING &&
                      reason == VIR_DOMAIN_RUNNING_POSTCOPY);
 
+    VIR_DEBUG("Active incoming migration in phase %s",
+              qemuMigrationJobPhaseTypeToString(job->phase));
+
     switch ((qemuMigrationJobPhase) job->phase) {
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_PERFORM2:
@@ -3434,6 +3437,9 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
                     (reason == VIR_DOMAIN_PAUSED_POSTCOPY ||
                      reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
     bool resume = false;
+
+    VIR_DEBUG("Active outgoing migration in phase %s",
+              qemuMigrationJobPhaseTypeToString(job->phase));
 
     switch ((qemuMigrationJobPhase) job->phase) {
     case QEMU_MIGRATION_PHASE_NONE:
@@ -3529,6 +3535,13 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     unsigned long long now;
 
     state = virDomainObjGetState(vm, &reason);
+
+    VIR_DEBUG("Recovering job for domain %s, state=%s(%s), async=%s, job=%s",
+              vm->def->name,
+              virDomainStateTypeToString(state),
+              virDomainStateReasonToString(state, reason),
+              virDomainAsyncJobTypeToString(job->asyncJob),
+              virDomainJobTypeToString(job->active));
 
     switch (job->asyncJob) {
     case VIR_ASYNC_JOB_MIGRATION_OUT:
