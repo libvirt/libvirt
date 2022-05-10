@@ -61,9 +61,7 @@ int qemuSlirpOpen(qemuSlirp *slirp,
                   virQEMUDriver *driver,
                   virDomainDef *def);
 
-int qemuSlirpStart(qemuSlirp *slirp,
-                   virDomainObj *vm,
-                   virQEMUDriver *driver,
+int qemuSlirpStart(virDomainObj *vm,
                    virDomainNetDef *net,
                    bool incoming);
 

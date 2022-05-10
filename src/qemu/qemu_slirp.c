@@ -245,12 +245,13 @@ qemuSlirpSetupCgroup(qemuSlirp *slirp,
 
 
 int
-qemuSlirpStart(qemuSlirp *slirp,
-               virDomainObj *vm,
-               virQEMUDriver *driver,
+qemuSlirpStart(virDomainObj *vm,
                virDomainNetDef *net,
                bool incoming)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    qemuSlirp *slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
@@ -261,6 +262,9 @@ qemuSlirpStart(qemuSlirp *slirp,
     int cmdret = 0;
     VIR_AUTOCLOSE errfd = -1;
     bool killDBusDaemon = false;
+
+    if (!slirp)
+        return 0;
 
     if (incoming &&
         !qemuSlirpHasFeature(slirp, QEMU_SLIRP_FEATURE_MIGRATE)) {

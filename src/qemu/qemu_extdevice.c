@@ -185,10 +185,8 @@ qemuExtDevicesStart(virQEMUDriver *driver,
 
     for (i = 0; i < def->nnets; i++) {
         virDomainNetDef *net = def->nets[i];
-        qemuSlirp *slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
 
-        if (slirp &&
-            qemuSlirpStart(slirp, vm, driver, net, incomingMigration) < 0)
+        if (qemuSlirpStart(vm, net, incomingMigration) < 0)
             return -1;
     }
 

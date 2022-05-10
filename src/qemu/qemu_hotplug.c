@@ -1314,7 +1314,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                 break;
 
             if (qemuSlirpOpen(slirp, driver, vm->def) < 0 ||
-                qemuSlirpStart(slirp, vm, driver, net, NULL) < 0) {
+                qemuSlirpStart(vm, net, NULL) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to start slirp"));
                 goto cleanup;
