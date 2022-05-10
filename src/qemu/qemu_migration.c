@@ -3777,15 +3777,19 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    /* Keep the original migration phase in case post-copy failed as the job
-     * will stay active even though migration API finishes with an error.
-     */
-    if (virDomainObjIsFailedPostcopy(vm))
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        phase = QEMU_MIGRATION_PHASE_CONFIRM_RESUME;
+    } else if (virDomainObjIsFailedPostcopy(vm)) {
+        /* Keep the original migration phase in case post-copy failed as the
+         * job will stay active even though migration API finishes with an
+         * error.
+         */
         phase = priv->job.phase;
-    else if (retcode == 0)
+    } else if (retcode == 0) {
         phase = QEMU_MIGRATION_PHASE_CONFIRM3;
-    else
+    } else {
         phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+    }
 
     if (qemuMigrationJobStartPhase(vm, phase) < 0)
         return -1;
@@ -3860,18 +3864,28 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
 
-    if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))
-        goto cleanup;
+    VIR_DEBUG("vm=%p, flags=0x%x, cancelled=%d", vm, flags, cancelled);
 
-    /* Keep the original migration phase in case post-copy failed as the job
-     * will stay active even though migration API finishes with an error.
-     */
-    if (virDomainObjIsFailedPostcopy(vm))
-        phase = priv->job.phase;
-    else if (cancelled)
-        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
-    else
-        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags,
+                                       QEMU_MIGRATION_PHASE_PERFORM_RESUME))
+            goto cleanup;
+        phase = QEMU_MIGRATION_PHASE_CONFIRM_RESUME;
+    } else {
+        if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))
+            goto cleanup;
+
+        /* Keep the original migration phase in case post-copy failed as the
+         * job will stay active even though migration API finishes with an
+         * error.
+         */
+        if (virDomainObjIsFailedPostcopy(vm))
+            phase = priv->job.phase;
+        else if (cancelled)
+            phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+        else
+            phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+    }
 
     if (qemuMigrationJobStartPhase(vm, phase) < 0)
         goto cleanup;
