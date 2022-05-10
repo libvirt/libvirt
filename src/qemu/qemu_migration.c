@@ -2512,6 +2512,25 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         return NULL;
     }
 
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
+                     VIR_MIGRATE_NON_SHARED_INC)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("offline migration cannot handle non-shared storage"));
+            return NULL;
+        }
+        if (!(flags & VIR_MIGRATE_PERSIST_DEST)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("offline migration must be specified with the persistent flag set"));
+            return NULL;
+        }
+        if (flags & VIR_MIGRATE_TUNNELLED) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("tunnelled offline migration does not make sense"));
+            return NULL;
+        }
+    }
+
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
             !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -2590,28 +2609,6 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                                   cookieout, cookieoutlen,
                                   cookieFlags) < 0)
         return NULL;
-
-    if (flags & VIR_MIGRATE_OFFLINE) {
-        if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
-                     VIR_MIGRATE_NON_SHARED_INC)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("offline migration cannot handle "
-                             "non-shared storage"));
-            return NULL;
-        }
-        if (!(flags & VIR_MIGRATE_PERSIST_DEST)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("offline migration must be specified with "
-                             "the persistent flag set"));
-            return NULL;
-        }
-        if (flags & VIR_MIGRATE_TUNNELLED) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("tunnelled offline migration does not "
-                             "make sense"));
-            return NULL;
-        }
-    }
 
     if (xmlin) {
         if (!(def = virDomainDefParseString(xmlin, driver->xmlopt, priv->qemuCaps,
