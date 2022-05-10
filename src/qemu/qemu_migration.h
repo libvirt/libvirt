@@ -279,3 +279,9 @@ qemuMigrationSrcFetchMirrorStats(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virDomainAsyncJob asyncJob,
                                  virDomainJobData *jobData);
+
+int
+qemuMigrationAnyRefreshStatus(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virDomainAsyncJob asyncJob,
+                              virDomainJobStatus *status);

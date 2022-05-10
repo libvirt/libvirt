@@ -2432,6 +2432,32 @@ qemuMigrationSrcBeginPhaseBlockDirtyBitmaps(qemuMigrationCookie *mig,
 }
 
 
+int
+qemuMigrationAnyRefreshStatus(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virDomainAsyncJob asyncJob,
+                              virDomainJobStatus *status)
+{
+    g_autoptr(virDomainJobData) jobData = NULL;
+    qemuDomainJobDataPrivate *priv;
+
+    jobData = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+    priv = jobData->privateData;
+
+    if (qemuMigrationAnyFetchStats(driver, vm, asyncJob, jobData, NULL) < 0)
+        return -1;
+
+    qemuMigrationUpdateJobType(jobData);
+    VIR_DEBUG("QEMU reports domain '%s' is in '%s' migration state, translated as %d",
+              vm->def->name,
+              qemuMonitorMigrationStatusTypeToString(priv->stats.mig.status),
+              jobData->status);
+
+    *status = jobData->status;
+    return 0;
+}
+
+
 /* The caller is supposed to lock the vm and start a migration job. */
 static char *
 qemuMigrationSrcBeginPhase(virQEMUDriver *driver,

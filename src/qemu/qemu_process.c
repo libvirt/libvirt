@@ -3532,10 +3532,8 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
         /* migration finished, we started resuming the domain but didn't
          * confirm success or failure yet; killing it seems safest unless
          * we already started guest CPUs or we were in post-copy mode */
-        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN)) {
-            qemuMigrationDstPostcopyFailed(vm);
+        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN))
             return 1;
-        }
 
         if (state != VIR_DOMAIN_RUNNING) {
             VIR_DEBUG("Killing migrated domain %s", vm->def->name);
@@ -3602,10 +3600,8 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          * of Finish3 step; third party needs to check what to do next; in
          * post-copy mode we can use PAUSED_POSTCOPY_FAILED state for this
          */
-        if (postcopy) {
-            qemuMigrationSrcPostcopyFailed(vm);
+        if (postcopy)
             return 1;
-        }
         break;
 
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
@@ -3613,10 +3609,8 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
          * post-copy mode there's no way back, so let's just mark the domain
          * as broken in that case
          */
-        if (postcopy) {
-            qemuMigrationSrcPostcopyFailed(vm);
+        if (postcopy)
             return 1;
-        }
 
         VIR_DEBUG("Resuming domain %s after failed migration",
                   vm->def->name);
@@ -3654,12 +3648,15 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
                             qemuDomainJobObj *job,
                             unsigned int *stopFlags)
 {
+    virDomainJobStatus migStatus = VIR_DOMAIN_JOB_STATUS_NONE;
     qemuDomainJobPrivate *jobPriv = job->privateData;
     virDomainState state;
     int reason;
     int rc;
 
     state = virDomainObjGetState(vm, &reason);
+
+    qemuMigrationAnyRefreshStatus(driver, vm, VIR_ASYNC_JOB_NONE, &migStatus);
 
     if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
         rc = qemuProcessRecoverMigrationOut(driver, vm, job,
@@ -3672,7 +3669,29 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
         return -1;
 
     if (rc > 0) {
-        qemuProcessRestoreMigrationJob(vm, job);
+        if (migStatus == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
+            VIR_DEBUG("Post-copy migration of domain %s still running, it will be handled as unattended",
+                      vm->def->name);
+            qemuProcessRestoreMigrationJob(vm, job);
+            return 0;
+        }
+
+        if (migStatus != VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED) {
+            if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
+                qemuMigrationSrcPostcopyFailed(vm);
+            else
+                qemuMigrationDstPostcopyFailed(vm);
+
+            qemuProcessRestoreMigrationJob(vm, job);
+            return 0;
+        }
+
+        VIR_DEBUG("Post-copy migration of domain %s already finished",
+                  vm->def->name);
+        if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
+            qemuMigrationSrcComplete(driver, vm, VIR_ASYNC_JOB_NONE);
+        else
+            qemuMigrationDstComplete(driver, vm, true, VIR_ASYNC_JOB_NONE, job);
         return 0;
     }
 
