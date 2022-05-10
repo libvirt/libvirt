@@ -3084,6 +3084,197 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
 
 
 static int
+qemuMigrationDstPrepareActive(virQEMUDriver *driver,
+                              virDomainObj *vm,
+                              virConnectPtr dconn,
+                              qemuMigrationCookie *mig,
+                              virStreamPtr st,
+                              const char *protocol,
+                              unsigned short port,
+                              const char *listenAddress,
+                              size_t nmigrate_disks,
+                              const char **migrate_disks,
+                              int nbdPort,
+                              const char *nbdURI,
+                              qemuMigrationParams *migParams,
+                              unsigned long flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuProcessIncomingDef *incoming = NULL;
+    g_autofree char *tlsAlias = NULL;
+    virObjectEvent *event = NULL;
+    virErrorPtr origErr = NULL;
+    int dataFD[2] = { -1, -1 };
+    bool stopProcess = false;
+    unsigned int startFlags;
+    bool relabel = false;
+    bool tunnel = !!st;
+    int ret = -1;
+    int rv;
+
+    if (STREQ_NULLABLE(protocol, "rdma") &&
+        !virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot start RDMA migration with no memory hard limit set"));
+        goto error;
+    }
+
+    if (qemuMigrationDstPrecreateStorage(vm, mig->nbd,
+                                         nmigrate_disks, migrate_disks,
+                                         !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
+        goto error;
+
+    if (tunnel &&
+        virPipe(dataFD) < 0)
+        goto error;
+
+    startFlags = VIR_QEMU_PROCESS_START_AUTODESTROY;
+
+    if (qemuProcessInit(driver, vm, mig->cpu, VIR_ASYNC_JOB_MIGRATION_IN,
+                        true, startFlags) < 0)
+        goto error;
+    stopProcess = true;
+
+    if (!(incoming = qemuMigrationDstPrepare(vm, tunnel, protocol,
+                                             listenAddress, port,
+                                             dataFD[0])))
+        goto error;
+
+    if (qemuProcessPrepareDomain(driver, vm, startFlags) < 0)
+        goto error;
+
+    if (qemuProcessPrepareHost(driver, vm, startFlags) < 0)
+        goto error;
+
+    rv = qemuProcessLaunch(dconn, driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                           incoming, NULL,
+                           VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
+                           startFlags);
+    if (rv < 0) {
+        if (rv == -2)
+            relabel = true;
+        goto error;
+    }
+    relabel = true;
+
+    if (tunnel) {
+        if (virFDStreamOpen(st, dataFD[1]) < 0) {
+            virReportSystemError(errno, "%s",
+                                 _("cannot pass pipe for tunnelled migration"));
+            goto error;
+        }
+        dataFD[1] = -1; /* 'st' owns the FD now & will close it */
+    }
+
+    if (STREQ_NULLABLE(protocol, "rdma") &&
+        vm->def->mem.hard_limit > 0 &&
+        virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+        goto error;
+    }
+
+    if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
+        goto error;
+
+    if (qemuMigrationParamsCheck(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                 migParams, mig->caps->automatic) < 0)
+        goto error;
+
+    /* Migrations using TLS need to add the "tls-creds-x509" object and
+     * set the migration TLS parameters */
+    if (flags & VIR_MIGRATE_TLS) {
+        if (qemuMigrationParamsEnableTLS(driver, vm, true,
+                                         VIR_ASYNC_JOB_MIGRATION_IN,
+                                         &tlsAlias, NULL,
+                                         migParams) < 0)
+            goto error;
+    } else {
+        if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
+            goto error;
+    }
+
+    if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                 migParams) < 0)
+        goto error;
+
+    if (mig->nbd &&
+        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
+        const char *nbdTLSAlias = NULL;
+
+        if (flags & VIR_MIGRATE_TLS) {
+            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_TLS)) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("QEMU NBD server does not support TLS transport"));
+                goto error;
+            }
+
+            nbdTLSAlias = tlsAlias;
+        }
+
+        if (qemuMigrationDstStartNBDServer(driver, vm, incoming->address,
+                                           nmigrate_disks, migrate_disks,
+                                           nbdPort, nbdURI,
+                                           nbdTLSAlias) < 0) {
+            goto error;
+        }
+    }
+
+    if (mig->lockState) {
+        VIR_DEBUG("Received lockstate %s", mig->lockState);
+        VIR_FREE(priv->lockState);
+        priv->lockState = g_steal_pointer(&mig->lockState);
+    } else {
+        VIR_DEBUG("Received no lockstate");
+    }
+
+    if (qemuMigrationDstRun(driver, vm, incoming->uri,
+                            VIR_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto error;
+
+    if (qemuProcessFinishStartup(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                 false, VIR_DOMAIN_PAUSED_MIGRATION) < 0)
+        goto error;
+
+    virDomainAuditStart(vm, "migrated", true);
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_STARTED,
+                                              VIR_DOMAIN_EVENT_STARTED_MIGRATED);
+
+    ret = 0;
+
+ cleanup:
+    qemuProcessIncomingDefFree(incoming);
+    VIR_FORCE_CLOSE(dataFD[0]);
+    VIR_FORCE_CLOSE(dataFD[1]);
+    virObjectEventStateQueue(driver->domainEventState, event);
+    virErrorRestore(&origErr);
+    return ret;
+
+ error:
+    virErrorPreserveLast(&origErr);
+    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                             jobPriv->migParams, priv->job.apiFlags);
+
+    if (stopProcess) {
+        unsigned int stopFlags = VIR_QEMU_PROCESS_STOP_MIGRATED;
+        if (!relabel)
+            stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
+        virDomainAuditStart(vm, "migrated", false);
+        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                        VIR_ASYNC_JOB_MIGRATION_IN, stopFlags);
+        /* release if port is auto selected which is not the case if
+         * it is given in parameters
+         */
+        if (nbdPort == 0)
+            virPortAllocatorRelease(priv->nbdPort);
+        priv->nbdPort = 0;
+    }
+    goto cleanup;
+}
+
+
+static int
 qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
                              virConnectPtr dconn,
                              const char *cookiein,
@@ -3105,32 +3296,20 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
                              unsigned long flags)
 {
     virDomainObj *vm = NULL;
-    virObjectEvent *event = NULL;
     virErrorPtr origErr;
     int ret = -1;
-    int dataFD[2] = { -1, -1 };
     qemuDomainObjPrivate *priv = NULL;
     qemuMigrationCookie *mig = NULL;
-    qemuDomainJobPrivate *jobPriv = NULL;
-    bool tunnel = !!st;
     g_autofree char *xmlout = NULL;
-    unsigned int cookieFlags;
-    unsigned int startFlags;
-    qemuProcessIncomingDef *incoming = NULL;
+    unsigned int cookieFlags = 0;
     bool taint_hook = false;
-    bool stopProcess = false;
-    bool relabel = false;
-    int rv;
-    g_autofree char *tlsAlias = NULL;
 
     VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
               "listenAddress=%s, nbdPort=%d, nbdURI=%s, flags=0x%lx",
               (*def)->name, NULLSTR(origname), protocol, port,
               listenAddress, nbdPort, NULLSTR(nbdURI), flags);
 
-    if (flags & VIR_MIGRATE_OFFLINE) {
-        cookieFlags = 0;
-    } else {
+    if (!(flags & VIR_MIGRATE_OFFLINE)) {
         cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS |
                       QEMU_MIGRATION_COOKIE_CAPS;
     }
@@ -3203,26 +3382,12 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
         goto cleanup;
 
     priv = vm->privateData;
-    jobPriv = priv->job.privateData;
     priv->origname = g_strdup(origname);
 
     if (taint_hook) {
         /* Domain XML has been altered by a hook script. */
         priv->hookRun = true;
     }
-
-    if (STREQ_NULLABLE(protocol, "rdma") &&
-        !virMemoryLimitIsSet(vm->def->mem.hard_limit)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot start RDMA migration with no memory hard "
-                         "limit set"));
-        goto cleanup;
-    }
-
-    if (qemuMigrationDstPrecreateStorage(vm, mig->nbd,
-                                         nmigrate_disks, migrate_disks,
-                                         !!(flags & VIR_MIGRATE_NON_SHARED_INC)) < 0)
-        goto cleanup;
 
     if (qemuMigrationJobStart(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
                               flags) < 0)
@@ -3234,122 +3399,21 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
     /* Domain starts inactive, even if the domain XML had an id field. */
     vm->def->id = -1;
 
-    if (flags & VIR_MIGRATE_OFFLINE)
-        goto done;
-
-    if (tunnel &&
-        virPipe(dataFD) < 0)
-        goto stopjob;
-
-    startFlags = VIR_QEMU_PROCESS_START_AUTODESTROY;
-
-    if (qemuProcessInit(driver, vm, mig->cpu, VIR_ASYNC_JOB_MIGRATION_IN,
-                        true, startFlags) < 0)
-        goto stopjob;
-    stopProcess = true;
-
-    if (!(incoming = qemuMigrationDstPrepare(vm, tunnel, protocol,
-                                             listenAddress, port,
-                                             dataFD[0])))
-        goto stopjob;
-
-    if (qemuProcessPrepareDomain(driver, vm, startFlags) < 0)
-        goto stopjob;
-
-    if (qemuProcessPrepareHost(driver, vm, startFlags) < 0)
-        goto stopjob;
-
-    rv = qemuProcessLaunch(dconn, driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                           incoming, NULL,
-                           VIR_NETDEV_VPORT_PROFILE_OP_MIGRATE_IN_START,
-                           startFlags);
-    if (rv < 0) {
-        if (rv == -2)
-            relabel = true;
-        goto stopjob;
-    }
-    relabel = true;
-
-    if (tunnel) {
-        if (virFDStreamOpen(st, dataFD[1]) < 0) {
-            virReportSystemError(errno, "%s",
-                                 _("cannot pass pipe for tunnelled migration"));
+    if (!(flags & VIR_MIGRATE_OFFLINE)) {
+        if (qemuMigrationDstPrepareActive(driver, vm, dconn, mig, st,
+                                          protocol, port, listenAddress,
+                                          nmigrate_disks, migrate_disks,
+                                          nbdPort, nbdURI,
+                                          migParams, flags) < 0) {
             goto stopjob;
         }
-        dataFD[1] = -1; /* 'st' owns the FD now & will close it */
+
+        if (mig->nbd &&
+            flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
+            virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER))
+            cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
     }
 
-    if (STREQ_NULLABLE(protocol, "rdma") &&
-        vm->def->mem.hard_limit > 0 &&
-        virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
-        goto stopjob;
-    }
-
-    if (qemuMigrationDstPrepareAnyBlockDirtyBitmaps(vm, mig, migParams, flags) < 0)
-        goto stopjob;
-
-    if (qemuMigrationParamsCheck(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 migParams, mig->caps->automatic) < 0)
-        goto stopjob;
-
-    /* Migrations using TLS need to add the "tls-creds-x509" object and
-     * set the migration TLS parameters */
-    if (flags & VIR_MIGRATE_TLS) {
-        if (qemuMigrationParamsEnableTLS(driver, vm, true,
-                                         VIR_ASYNC_JOB_MIGRATION_IN,
-                                         &tlsAlias, NULL,
-                                         migParams) < 0)
-            goto stopjob;
-    } else {
-        if (qemuMigrationParamsDisableTLS(vm, migParams) < 0)
-            goto stopjob;
-    }
-
-    if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 migParams) < 0)
-        goto stopjob;
-
-    if (mig->nbd &&
-        flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC) &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_SERVER)) {
-        const char *nbdTLSAlias = NULL;
-
-        if (flags & VIR_MIGRATE_TLS) {
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_NBD_TLS)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("QEMU NBD server does not support TLS transport"));
-                goto stopjob;
-            }
-
-            nbdTLSAlias = tlsAlias;
-        }
-
-        if (qemuMigrationDstStartNBDServer(driver, vm, incoming->address,
-                                           nmigrate_disks, migrate_disks,
-                                           nbdPort, nbdURI,
-                                           nbdTLSAlias) < 0) {
-            goto stopjob;
-        }
-        cookieFlags |= QEMU_MIGRATION_COOKIE_NBD;
-    }
-
-    if (mig->lockState) {
-        VIR_DEBUG("Received lockstate %s", mig->lockState);
-        VIR_FREE(priv->lockState);
-        priv->lockState = g_steal_pointer(&mig->lockState);
-    } else {
-        VIR_DEBUG("Received no lockstate");
-    }
-
-    if (qemuMigrationDstRun(driver, vm, incoming->uri,
-                            VIR_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto stopjob;
-
-    if (qemuProcessFinishStartup(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 false, VIR_DOMAIN_PAUSED_MIGRATION) < 0)
-        goto stopjob;
-
- done:
     if (qemuMigrationCookieFormat(mig, driver, vm,
                                   QEMU_MIGRATION_DESTINATION,
                                   cookieout, cookieoutlen, cookieFlags) < 0) {
@@ -3361,13 +3425,6 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
     }
 
     qemuDomainCleanupAdd(vm, qemuMigrationDstPrepareCleanup);
-
-    if (!(flags & VIR_MIGRATE_OFFLINE)) {
-        virDomainAuditStart(vm, "migrated", true);
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_MIGRATED);
-    }
 
     /* We keep the job active across API calls until the finish() call.
      * This prevents any other APIs being invoked while incoming
@@ -3386,41 +3443,19 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
 
  cleanup:
     virErrorPreserveLast(&origErr);
-    qemuProcessIncomingDefFree(incoming);
-    VIR_FORCE_CLOSE(dataFD[0]);
-    VIR_FORCE_CLOSE(dataFD[1]);
     if (ret < 0 && priv) {
         /* priv is set right after vm is added to the list of domains
          * and there is no 'goto cleanup;' in the middle of those */
         VIR_FREE(priv->origname);
-        /* release if port is auto selected which is not the case if
-         * it is given in parameters
-         */
-        if (nbdPort == 0)
-            virPortAllocatorRelease(priv->nbdPort);
-        priv->nbdPort = 0;
         virDomainObjRemoveTransientDef(vm);
         qemuDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
-    virObjectEventStateQueue(driver->domainEventState, event);
     qemuMigrationCookieFree(mig);
     virErrorRestore(&origErr);
     return ret;
 
  stopjob:
-    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                             jobPriv->migParams, priv->job.apiFlags);
-
-    if (stopProcess) {
-        unsigned int stopFlags = VIR_QEMU_PROCESS_STOP_MIGRATED;
-        if (!relabel)
-            stopFlags |= VIR_QEMU_PROCESS_STOP_NO_RELABEL;
-        virDomainAuditStart(vm, "migrated", false);
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                        VIR_ASYNC_JOB_MIGRATION_IN, stopFlags);
-    }
-
     qemuMigrationJobFinish(vm);
     goto cleanup;
 }
