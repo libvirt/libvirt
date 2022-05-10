@@ -17,6 +17,11 @@ v8.5.0 (unreleased)
 
 * **New features**
 
+  * qemu: Add support for post-copy migration recovery
+
+    A new ``VIR_MIGRATE_POSTCOPY_RESUME`` flag (``virsh migrate --postcopy-resume``)
+    was introduced for recovering from a failed post-copy migration.
+
 * **Improvements**
 
 * **Bug fixes**
