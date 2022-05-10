@@ -1524,6 +1524,31 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         }
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY_RECOVER:
+        if (virDomainObjIsFailedPostcopy(vm)) {
+            int eventType = -1;
+            int eventDetail = -1;
+
+            if (state == VIR_DOMAIN_PAUSED) {
+                reason = VIR_DOMAIN_PAUSED_POSTCOPY;
+                eventType = VIR_DOMAIN_EVENT_SUSPENDED;
+                eventDetail = qemuDomainPausedReasonToSuspendedEvent(reason);
+            } else {
+                reason = VIR_DOMAIN_RUNNING_POSTCOPY;
+                eventType = VIR_DOMAIN_EVENT_RESUMED;
+                eventDetail = qemuDomainRunningReasonToResumeEvent(reason);
+            }
+
+            VIR_DEBUG("Post-copy migration recovered; correcting state for domain '%s' to %s/%s",
+                      vm->def->name,
+                      virDomainStateTypeToString(state),
+                      NULLSTR(virDomainStateReasonToString(state, reason)));
+            virDomainObjSetState(vm, state, reason);
+            event = virDomainEventLifecycleNewFromObj(vm, eventType, eventDetail);
+            qemuDomainSaveStatus(vm);
+        }
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
