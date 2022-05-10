@@ -3360,6 +3360,31 @@ qemuProcessUpdateState(virQEMUDriver *driver, virDomainObj *vm)
     return 0;
 }
 
+
+void
+qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
+                               virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainState state;
+    int reason;
+
+    state = virDomainObjGetState(vm, &reason);
+
+    VIR_DEBUG("driver=%p, vm=%s, asyncJob=%s, state=%s, reason=%s",
+              driver, vm->def->name,
+              virDomainAsyncJobTypeToString(priv->job.asyncJob),
+              virDomainStateTypeToString(state),
+              virDomainStateReasonToString(state, reason));
+
+    if (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_IN &&
+        priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT)
+        return;
+
+    qemuDomainObjDiscardAsyncJob(vm);
+}
+
+
 static int
 qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
                               virDomainObj *vm,

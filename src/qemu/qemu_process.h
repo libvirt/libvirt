@@ -241,3 +241,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuProcessQMP, qemuProcessQMPFree);
 int qemuProcessQMPStart(qemuProcessQMP *proc);
 
 bool qemuProcessRebootAllowed(const virDomainDef *def);
+
+void qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
+                                    virDomainObj *vm);
