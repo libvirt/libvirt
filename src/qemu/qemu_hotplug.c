@@ -1188,9 +1188,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     char **tapfdName = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
-    char **vhostfdName = NULL;
-    int *vhostfd = NULL;
-    size_t vhostfdSize = 0;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
     int ret = -1;
@@ -1423,13 +1420,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     tapfdName = g_new0(char *, tapfdSize);
-    vhostfdName = g_new0(char *, vhostfdSize);
 
     for (i = 0; i < tapfdSize; i++)
         tapfdName[i] = g_strdup_printf("fd-%s%zu", net->info.alias, i);
-
-    for (i = 0; i < vhostfdSize; i++)
-        vhostfdName[i] = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
@@ -1481,8 +1474,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     for (i = 0; i < tapfdSize; i++)
         VIR_FORCE_CLOSE(tapfd[i]);
-    for (i = 0; i < vhostfdSize; i++)
-        VIR_FORCE_CLOSE(vhostfd[i]);
 
     if (!(nicprops = qemuBuildNicDevProps(vm->def, net, priv->qemuCaps)))
         goto try_remove;
@@ -1584,13 +1575,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
     VIR_FREE(tapfd);
     VIR_FREE(tapfdName);
-    for (i = 0; vhostfd && i < vhostfdSize; i++) {
-        VIR_FORCE_CLOSE(vhostfd[i]);
-        if (vhostfdName)
-            VIR_FREE(vhostfdName[i]);
-    }
-    VIR_FREE(vhostfd);
-    VIR_FREE(vhostfdName);
     virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FORCE_CLOSE(slirpfd);
 
