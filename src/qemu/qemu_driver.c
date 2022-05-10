@@ -12788,7 +12788,9 @@ qemuDomainAbortJobMigration(virDomainObj *vm)
 }
 
 
-static int qemuDomainAbortJob(virDomainPtr dom)
+static int
+qemuDomainAbortJobFlags(virDomainPtr dom,
+                        unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
@@ -12796,10 +12798,14 @@ static int qemuDomainAbortJob(virDomainPtr dom)
     qemuDomainObjPrivate *priv;
     int reason;
 
+    VIR_DEBUG("flags=0x%x", flags);
+
+    virCheckFlags(0, -1);
+
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
-    if (virDomainAbortJobEnsureACL(dom->conn, vm->def) < 0)
+    if (virDomainAbortJobFlagsEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
     if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_ABORT) < 0)
@@ -12875,6 +12881,13 @@ static int qemuDomainAbortJob(virDomainPtr dom)
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
+}
+
+
+static int
+qemuDomainAbortJob(virDomainPtr dom)
+{
+    return qemuDomainAbortJobFlags(dom, 0);
 }
 
 
@@ -21042,6 +21055,7 @@ static virHypervisorDriver qemuHypervisorDriver = {
     .domainGetJobInfo = qemuDomainGetJobInfo, /* 0.7.7 */
     .domainGetJobStats = qemuDomainGetJobStats, /* 1.0.3 */
     .domainAbortJob = qemuDomainAbortJob, /* 0.7.7 */
+    .domainAbortJobFlags = qemuDomainAbortJobFlags, /* 8.5.0 */
     .domainMigrateGetMaxDowntime = qemuDomainMigrateGetMaxDowntime, /* 3.7.0 */
     .domainMigrateSetMaxDowntime = qemuDomainMigrateSetMaxDowntime, /* 0.8.0 */
     .domainMigrateGetCompressionCache = qemuDomainMigrateGetCompressionCache, /* 1.0.3 */
