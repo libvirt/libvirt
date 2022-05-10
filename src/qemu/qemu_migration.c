@@ -2309,8 +2309,8 @@ qemuMigrationDstRun(virQEMUDriver *driver,
  * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
  */
 static void
-qemuMigrationSrcCleanup(virDomainObj *vm,
-                        virConnectPtr conn)
+qemuMigrationAnyConnectionClosed(virDomainObj *vm,
+                                 virConnectPtr conn)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -2800,13 +2800,13 @@ qemuMigrationSrcBeginResumePhase(virConnectPtr conn,
         return NULL;
 
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           qemuMigrationSrcCleanup);
+                           qemuMigrationAnyConnectionClosed);
     qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
 
     xml = qemuMigrationSrcBeginResume(driver, vm, xmlin, cookieout, cookieoutlen, flags);
 
     if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                             qemuMigrationSrcCleanup) < 0)
+                             qemuMigrationAnyConnectionClosed) < 0)
         g_clear_pointer(&xml, g_free);
 
     if (!xml)
@@ -2886,7 +2886,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
          * place.
          */
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                                 qemuMigrationSrcCleanup) < 0)
+                                 qemuMigrationAnyConnectionClosed) < 0)
             goto endjob;
     }
 
@@ -3962,7 +3962,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
         goto cleanup;
 
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           qemuMigrationSrcCleanup);
+                           qemuMigrationAnyConnectionClosed);
     qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
 
     ret = qemuMigrationSrcConfirmPhase(driver, vm,
@@ -5933,7 +5933,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
         return -1;
 
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           qemuMigrationSrcCleanup);
+                           qemuMigrationAnyConnectionClosed);
     qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
 
     ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri,
@@ -5942,7 +5942,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
                                         0, NULL, NULL, 0, NULL, NULL, NULL);
 
     if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                             qemuMigrationSrcCleanup) < 0)
+                             qemuMigrationAnyConnectionClosed) < 0)
         ret = -1;
 
     if (ret < 0)
@@ -5998,7 +5998,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
         goto cleanup;
 
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           qemuMigrationSrcCleanup);
+                           qemuMigrationAnyConnectionClosed);
 
     if (qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
                                       cookieout, cookieoutlen,
@@ -6007,7 +6007,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
         goto cleanup;
 
     if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
-                             qemuMigrationSrcCleanup) < 0)
+                             qemuMigrationAnyConnectionClosed) < 0)
         goto cleanup;
 
     ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE));
