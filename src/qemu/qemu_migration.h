@@ -211,6 +211,12 @@ qemuMigrationSrcComplete(virQEMUDriver *driver,
                          virDomainObj *vm,
                          virDomainAsyncJob asyncJob);
 
+void
+qemuMigrationProcessUnattended(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainAsyncJob job,
+                               qemuMonitorMigrationStatus status);
+
 bool
 qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
                           virDomainObj *vm,

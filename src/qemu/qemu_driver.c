@@ -4312,6 +4312,11 @@ static void qemuProcessEventHandler(void *data, void *opaque)
     case QEMU_PROCESS_EVENT_MEMORY_DEVICE_SIZE_CHANGE:
         processMemoryDeviceSizeChange(driver, vm, processEvent->data);
         break;
+    case QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION:
+        qemuMigrationProcessUnattended(driver, vm,
+                                       processEvent->action,
+                                       processEvent->status);
+        break;
     case QEMU_PROCESS_EVENT_LAST:
         break;
     }

@@ -1549,12 +1549,22 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
         }
         break;
 
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+        /* A post-copy migration marked as failed when reconnecting to a domain
+         * with running migration may actually still be running, but we're not
+         * watching it in any thread. Let's make sure the migration is properly
+         * finished in case we get a "completed" event.
+         */
+        if (virDomainObjIsFailedPostcopy(vm) && priv->job.asyncOwner == 0)
+            qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION,
+                                   priv->job.asyncJob, status, NULL);
+        break;
+
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
     case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
     case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
     case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
-    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
     case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
     case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:

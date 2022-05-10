@@ -5811,8 +5811,11 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
 
     qemuDomainSaveStatus(vm);
 
-    /* Guest is successfully running, so cancel previous auto destroy */
-    qemuProcessAutoDestroyRemove(driver, vm);
+    /* Guest is successfully running, so cancel previous auto destroy. There's
+     * nothing to remove when we are resuming post-copy migration.
+     */
+    if (!virDomainObjIsFailedPostcopy(vm))
+        qemuProcessAutoDestroyRemove(driver, vm);
 
     /* Remove completed stats for post-copy, everything but timing fields
      * is obsolete anyway.
@@ -6176,6 +6179,42 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     if (retcode != 0 && !dom && virGetLastErrorCode() == VIR_ERR_OK)
         virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
     return dom;
+}
+
+
+void
+qemuMigrationProcessUnattended(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               virDomainAsyncJob job,
+                               qemuMonitorMigrationStatus status)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuMigrationJobPhase phase;
+
+    if (!qemuMigrationJobIsActive(vm, job) ||
+        status != QEMU_MONITOR_MIGRATION_STATUS_COMPLETED)
+        return;
+
+    VIR_DEBUG("Unattended %s migration of domain %s successfully finished",
+              job == VIR_ASYNC_JOB_MIGRATION_IN ? "incoming" : "outgoing",
+              vm->def->name);
+
+    if (job == VIR_ASYNC_JOB_MIGRATION_IN)
+        phase = QEMU_MIGRATION_PHASE_FINISH3;
+    else
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+
+    qemuMigrationJobStartPhase(vm, phase);
+
+    if (job == VIR_ASYNC_JOB_MIGRATION_IN)
+        qemuMigrationDstComplete(driver, vm, true, job, &priv->job);
+    else
+        qemuMigrationSrcComplete(driver, vm, job);
+
+    qemuMigrationJobFinish(vm);
+
+    if (!virDomainObjIsActive(vm))
+        qemuDomainRemoveInactive(driver, vm);
 }
 
 
