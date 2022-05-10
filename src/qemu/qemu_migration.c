@@ -3299,7 +3299,7 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
     virErrorPtr origErr;
     int ret = -1;
     qemuDomainObjPrivate *priv = NULL;
-    qemuMigrationCookie *mig = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
     g_autofree char *xmlout = NULL;
     unsigned int cookieFlags = 0;
     bool taint_hook = false;
@@ -3451,7 +3451,6 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
         qemuDomainRemoveInactive(driver, vm);
     }
     virDomainObjEndAPI(&vm);
-    qemuMigrationCookieFree(mig);
     virErrorRestore(&origErr);
     return ret;
 
