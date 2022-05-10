@@ -1185,9 +1185,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     virErrorPtr originalError = NULL;
     g_autofree char *slirpfdName = NULL;
     int slirpfd = -1;
-    char **tapfdName = NULL;
-    int *tapfd = NULL;
-    size_t tapfdSize = 0;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
     int ret = -1;
@@ -1198,7 +1195,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     const virNetDevBandwidth *actualBandwidth;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainCCWAddressSet *ccwaddrs = NULL;
-    size_t i;
     g_autofree char *charDevAlias = NULL;
     bool charDevPlugged = false;
     bool netdevPlugged = false;
@@ -1383,19 +1379,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
-    for (i = 0; i < tapfdSize; i++) {
-        if (qemuSecuritySetTapFDLabel(driver->securityManager,
-                                      vm->def, tapfd[i]) < 0)
-            goto cleanup;
-    }
-
-    tapfdName = g_new0(char *, tapfdSize);
-
-    for (i = 0; i < tapfdSize; i++)
-        tapfdName[i] = g_strdup_printf("fd-%s%zu", net->info.alias, i);
-
     if (!(netprops = qemuBuildHostNetProps(net,
-                                           tapfdName, tapfdSize,
+                                           NULL, 0,
                                            slirpfdName)))
         goto cleanup;
 
@@ -1430,7 +1415,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     if (qemuMonitorAddNetdev(priv->mon, &netprops,
-                             tapfd, tapfdName, tapfdSize,
+                             NULL, NULL, 0,
                              slirpfd, slirpfdName) < 0) {
         qemuDomainObjExitMonitor(vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
@@ -1439,9 +1424,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     netdevPlugged = true;
 
     qemuDomainObjExitMonitor(vm);
-
-    for (i = 0; i < tapfdSize; i++)
-        VIR_FORCE_CLOSE(tapfd[i]);
 
     if (!(nicprops = qemuBuildNicDevProps(vm->def, net, priv->qemuCaps)))
         goto try_remove;
@@ -1536,13 +1518,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virErrorRestore(&save_err);
     }
 
-    for (i = 0; tapfd && i < tapfdSize; i++) {
-        VIR_FORCE_CLOSE(tapfd[i]);
-        if (tapfdName)
-            VIR_FREE(tapfdName[i]);
-    }
-    VIR_FREE(tapfd);
-    VIR_FREE(tapfdName);
     virDomainCCWAddressSetFree(ccwaddrs);
     VIR_FORCE_CLOSE(slirpfd);
 
