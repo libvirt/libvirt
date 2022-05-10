@@ -5813,8 +5813,16 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (retcode == 0 &&
-            qemuMigrationDstPersist(driver, vm, mig, false) == 0)
+            qemuMigrationDstPersist(driver, vm, mig, false) == 0) {
             dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, -1);
+
+            if (dom &&
+                qemuMigrationCookieFormat(mig, driver, vm,
+                                          QEMU_MIGRATION_DESTINATION,
+                                          cookieout, cookieoutlen,
+                                          QEMU_MIGRATION_COOKIE_STATS) < 0)
+                VIR_WARN("Unable to encode migration cookie");
+        }
         goto endjob;
     }
 
@@ -5977,6 +5985,25 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     /* Guest is successfully running, so cancel previous auto destroy */
     qemuProcessAutoDestroyRemove(driver, vm);
 
+    if (jobData) {
+        priv->job.completed = g_steal_pointer(&jobData);
+        priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
+        qemuDomainJobSetStatsType(priv->job.completed,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
+    }
+
+    if (qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_DESTINATION,
+                                  cookieout, cookieoutlen,
+                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
+    /* Remove completed stats for post-copy, everything but timing fields
+     * is obsolete anyway.
+     */
+    if (inPostCopy)
+        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
+
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
  endjob:
@@ -5995,27 +6022,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         } else {
             qemuMigrationDstPostcopyFailed(vm);
         }
-    }
-
-    if (dom) {
-        if (jobData) {
-            priv->job.completed = g_steal_pointer(&jobData);
-            priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
-            qemuDomainJobSetStatsType(priv->job.completed,
-                                      QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
-        }
-
-        if (qemuMigrationCookieFormat(mig, driver, vm,
-                                      QEMU_MIGRATION_DESTINATION,
-                                      cookieout, cookieoutlen,
-                                      QEMU_MIGRATION_COOKIE_STATS) < 0)
-            VIR_WARN("Unable to encode migration cookie");
-
-        /* Remove completed stats for post-copy, everything but timing fields
-         * is obsolete anyway.
-         */
-        if (inPostCopy)
-            g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
     }
 
     if (virDomainObjIsFailedPostcopy(vm)) {
