@@ -4210,8 +4210,6 @@ virJSONValue *
 qemuBuildHostNetProps(virDomainNetDef *net,
                       char **tapfd,
                       size_t tapfdSize,
-                      char **vhostfd,
-                      size_t vhostfdSize,
                       const char *slirpfd)
 {
     virDomainNetType netType = virDomainNetGetActualType(net);
@@ -4276,14 +4274,6 @@ qemuBuildHostNetProps(virDomainNetDef *net,
             }
 
             if (nfds > 1)
-                vhostfd_field = "s:vhostfds";
-        } else if (vhostfdSize > 0) {
-            vhost = true;
-
-            for (i = 0; i < vhostfdSize; i++)
-                virBufferAsprintf(&buf, "%s:", vhostfd[i]);
-
-            if (vhostfdSize > 1)
                 vhostfd_field = "s:vhostfds";
         }
 
@@ -8970,7 +8960,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
                                                tapfdName, tapfdSize,
-                                               NULL, 0,
                                                slirpfdName)))
         goto cleanup;
 

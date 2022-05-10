@@ -89,8 +89,6 @@ virJSONValue *
 qemuBuildHostNetProps(virDomainNetDef *net,
                       char **tapfd,
                       size_t tapfdSize,
-                      char **vhostfd,
-                      size_t vhostfdSize,
                       const char *slirpfd);
 
 int

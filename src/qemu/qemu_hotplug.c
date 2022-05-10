@@ -1426,7 +1426,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     if (!(netprops = qemuBuildHostNetProps(net,
                                            tapfdName, tapfdSize,
-                                           NULL, 0,
                                            slirpfdName)))
         goto cleanup;
 
