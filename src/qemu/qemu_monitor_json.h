@@ -872,3 +872,7 @@ int
 qemuMonitorJSONChangeMemoryRequestedSize(qemuMonitor *mon,
                                          const char *alias,
                                          unsigned long long requestedsize);
+
+int
+qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
+                              const char *uri);

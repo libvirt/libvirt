@@ -1210,6 +1210,7 @@ GEN_TEST_FUNC(qemuMonitorJSONSetMigrationDowntime, 1)
 GEN_TEST_FUNC(qemuMonitorJSONMigrate, QEMU_MONITOR_MIGRATE_BACKGROUND |
               QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
               QEMU_MONITOR_MIGRATE_NON_SHARED_INC, "tcp:localhost:12345")
+GEN_TEST_FUNC(qemuMonitorJSONMigrateRecover, "tcp://destination.host:54321");
 GEN_TEST_FUNC(qemuMonitorJSONDump, "dummy_protocol", "elf",
               true)
 GEN_TEST_FUNC(qemuMonitorJSONGraphicsRelocate, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
@@ -3109,6 +3110,7 @@ mymain(void)
     DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationSpeed, true);
     DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationDowntime, true);
     DO_TEST_GEN(qemuMonitorJSONMigrate);
+    DO_TEST_GEN(qemuMonitorJSONMigrateRecover);
     DO_TEST_GEN(qemuMonitorJSONDump);
     DO_TEST_GEN(qemuMonitorJSONGraphicsRelocate);
     DO_TEST_GEN(qemuMonitorJSONRemoveNetdev);

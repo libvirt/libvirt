@@ -8970,3 +8970,22 @@ qemuMonitorJSONChangeMemoryRequestedSize(qemuMonitor *mon,
 
     return qemuMonitorJSONSetObjectProperty(mon, path, "requested-size", &prop);
 }
+
+
+int
+qemuMonitorJSONMigrateRecover(qemuMonitor *mon,
+                              const char *uri)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("migrate-recover",
+                                           "s:uri", uri,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    return qemuMonitorJSONCheckError(cmd, reply);
+}

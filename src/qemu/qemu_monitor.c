@@ -4521,3 +4521,15 @@ qemuMonitorChangeMemoryRequestedSize(qemuMonitor *mon,
 
     return qemuMonitorJSONChangeMemoryRequestedSize(mon, alias, requestedsize);
 }
+
+
+int
+qemuMonitorMigrateRecover(qemuMonitor *mon,
+                          const char *uri)
+{
+    VIR_DEBUG("uri=%s", uri);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONMigrateRecover(mon, uri);
+}
