@@ -5949,11 +5949,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                                  VIR_DOMAIN_RUNNING,
                                  VIR_DOMAIN_RUNNING_MIGRATED);
         }
-    }
 
-    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
-
-    if (inPostCopy) {
         /* The only RESUME event during post-copy migration is triggered by
          * QEMU when the running domain moves from the source to the
          * destination host, but then the migration keeps running until all
@@ -5980,6 +5976,8 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     /* Guest is successfully running, so cancel previous auto destroy */
     qemuProcessAutoDestroyRemove(driver, vm);
+
+    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
  endjob:
     if (!dom &&
