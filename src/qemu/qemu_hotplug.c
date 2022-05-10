@@ -1306,14 +1306,12 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         if (!priv->disableSlirp &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
             qemuSlirp *slirp = NULL;
-            int rv = qemuInterfacePrepareSlirp(driver, net, &slirp);
 
-            if (rv == -1)
+            if (qemuInterfacePrepareSlirp(driver, net) < 0)
                 goto cleanup;
-            if (rv == 0)
-                break;
 
-            QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
+            if (!(slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp))
+                break;
 
             if (qemuSlirpOpen(slirp, driver, vm->def) < 0 ||
                 qemuSlirpStart(slirp, vm, driver, net, NULL) < 0) {

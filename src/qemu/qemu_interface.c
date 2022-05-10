@@ -651,12 +651,12 @@ qemuInterfaceVDPAConnect(virDomainNetDef *net)
 
 
 /*
- * Returns: -1 on error, 0 if slirp isn't available, 1 on success
+ * Returns: -1 on error, 0 on success. Populates net->privateData->slirp if
+ * the slirp helper is needed.
  */
 int
 qemuInterfacePrepareSlirp(virQEMUDriver *driver,
-                          virDomainNetDef *net,
-                          qemuSlirp **slirpret)
+                          virDomainNetDef *net)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(qemuSlirp) slirp = NULL;
@@ -681,8 +681,8 @@ qemuInterfacePrepareSlirp(virQEMUDriver *driver,
             return 0;
     }
 
-    *slirpret = g_steal_pointer(&slirp);
-    return 1;
+    QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = g_steal_pointer(&slirp);
+    return 0;
 }
 
 

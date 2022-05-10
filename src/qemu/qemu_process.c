@@ -5728,13 +5728,8 @@ qemuProcessNetworkPrepareDevices(virQEMUDriver *driver,
         } else if (actualType == VIR_DOMAIN_NET_TYPE_USER &&
                    !priv->disableSlirp &&
                    virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-            qemuSlirp *slirp = NULL;
-            int rv = qemuInterfacePrepareSlirp(driver, net, &slirp);
-
-            if (rv == -1)
+            if (qemuInterfacePrepareSlirp(driver, net) < 0)
                 return -1;
-            if (rv == 1)
-                QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp = slirp;
          }
 
     }
