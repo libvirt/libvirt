@@ -2685,6 +2685,139 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
                                     flags);
 }
 
+
+static bool
+qemuMigrationAnyCanResume(virDomainObj *vm,
+                          virDomainAsyncJob job,
+                          unsigned long flags,
+                          qemuMigrationJobPhase expectedPhase)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    VIR_DEBUG("vm=%p, job=%s, flags=0x%lx, expectedPhase=%s",
+              vm, virDomainAsyncJobTypeToString(job), flags,
+              qemuDomainAsyncJobPhaseToString(VIR_ASYNC_JOB_MIGRATION_OUT,
+                                              expectedPhase));
+
+    if (!(flags & VIR_MIGRATE_POSTCOPY)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("resuming failed post-copy migration requires post-copy to be enabled"));
+        return false;
+    }
+
+    /* This should never happen since POSTCOPY_RESUME is newer than
+     * CHANGE_PROTECTION, but let's check it anyway in case we're talking to
+     * a weired client.
+     */
+    if (job == VIR_ASYNC_JOB_MIGRATION_OUT &&
+        expectedPhase < QEMU_MIGRATION_PHASE_PERFORM_RESUME &&
+        !(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("resuming failed post-copy migration requires change protection"));
+        return false;
+    }
+
+    if (!qemuMigrationJobIsActive(vm, job))
+        return false;
+
+    if (priv->job.asyncOwner != 0 &&
+        priv->job.asyncOwner != virThreadSelfID()) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("migration of domain %s is being actively monitored by another thread"),
+                       vm->def->name);
+        return false;
+    }
+
+    if (!virDomainObjIsPostcopy(vm, priv->job.current->operation)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("migration of domain %s is not in post-copy phase"),
+                       vm->def->name);
+        return false;
+    }
+
+    if (priv->job.phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
+        !virDomainObjIsFailedPostcopy(vm)) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("post-copy migration of domain %s has not failed"),
+                       vm->def->name);
+        return false;
+    }
+
+    if (priv->job.phase > expectedPhase) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("resuming failed post-copy migration of domain %s already in progress"),
+                       vm->def->name);
+        return false;
+    }
+
+    return true;
+}
+
+
+static char *
+qemuMigrationSrcBeginResume(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            const char *xmlin,
+                            char **cookieout,
+                            int *cookieoutlen,
+                            unsigned long flags)
+{
+    virDomainJobStatus status;
+
+    if (qemuMigrationAnyRefreshStatus(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                      &status) < 0)
+        return NULL;
+
+    if (status != VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("QEMU reports migration is still running"));
+        return NULL;
+    }
+
+    return qemuMigrationSrcBeginXML(vm, xmlin,
+                                    cookieout, cookieoutlen, 0, NULL, 0, flags);
+}
+
+
+static char *
+qemuMigrationSrcBeginResumePhase(virConnectPtr conn,
+                                 virQEMUDriver *driver,
+                                 virDomainObj *vm,
+                                 const char *xmlin,
+                                 char **cookieout,
+                                 int *cookieoutlen,
+                                 unsigned long flags)
+{
+    g_autofree char *xml = NULL;
+
+    VIR_DEBUG("vm=%p", vm);
+
+    if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags,
+                                   QEMU_MIGRATION_PHASE_POSTCOPY_FAILED))
+        return NULL;
+
+    if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_BEGIN_RESUME) < 0)
+        return NULL;
+
+    virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                           qemuMigrationSrcCleanup);
+    qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
+
+    xml = qemuMigrationSrcBeginResume(driver, vm, xmlin, cookieout, cookieoutlen, flags);
+
+    if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                             qemuMigrationSrcCleanup) < 0)
+        g_clear_pointer(&xml, g_free);
+
+    if (!xml)
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
+
+    qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+    qemuMigrationJobContinue(vm);
+    return g_steal_pointer(&xml);
+}
+
+
 char *
 qemuMigrationSrcBegin(virConnectPtr conn,
                       virDomainObj *vm,
@@ -2707,6 +2840,12 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         !(flags & VIR_MIGRATE_TLS)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
+        goto cleanup;
+    }
+
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        ret = qemuMigrationSrcBeginResumePhase(conn, driver, vm, xmlin,
+                                               cookieout, cookieoutlen, flags);
         goto cleanup;
     }
 
