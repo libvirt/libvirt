@@ -762,8 +762,8 @@ int qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
                                            qemuDomainObjPrivate *priv,
                                            virQEMUDriverConfig *cfg);
 
-int qemuDomainCleanupAdd(virDomainObj *vm,
-                         qemuDomainCleanupCallback cb);
+void qemuDomainCleanupAdd(virDomainObj *vm,
+                          qemuDomainCleanupCallback cb);
 void qemuDomainCleanupRemove(virDomainObj *vm,
                              qemuDomainCleanupCallback cb);
 void qemuDomainCleanupRun(virQEMUDriver *driver,

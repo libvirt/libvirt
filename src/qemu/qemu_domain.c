@@ -7475,7 +7475,7 @@ qemuDomainCheckDiskStartupPolicy(virQEMUDriver *driver,
  * The vm must be locked when any of the following cleanup functions is
  * called.
  */
-int
+void
 qemuDomainCleanupAdd(virDomainObj *vm,
                      qemuDomainCleanupCallback cb)
 {
@@ -7486,7 +7486,7 @@ qemuDomainCleanupAdd(virDomainObj *vm,
 
     for (i = 0; i < priv->ncleanupCallbacks; i++) {
         if (priv->cleanupCallbacks[i] == cb)
-            return 0;
+            return;
     }
 
     VIR_RESIZE_N(priv->cleanupCallbacks,
@@ -7494,7 +7494,6 @@ qemuDomainCleanupAdd(virDomainObj *vm,
                  priv->ncleanupCallbacks, 1);
 
     priv->cleanupCallbacks[priv->ncleanupCallbacks++] = cb;
-    return 0;
 }
 
 void

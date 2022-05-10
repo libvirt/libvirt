@@ -3071,8 +3071,7 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
         VIR_WARN("Unable to encode migration cookie");
     }
 
-    if (qemuDomainCleanupAdd(vm, qemuMigrationDstPrepareCleanup) < 0)
-        goto stopjob;
+    qemuDomainCleanupAdd(vm, qemuMigrationDstPrepareCleanup);
 
     if (!(flags & VIR_MIGRATE_OFFLINE)) {
         virDomainAuditStart(vm, "migrated", true);
