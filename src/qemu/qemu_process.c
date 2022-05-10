@@ -3437,6 +3437,8 @@ qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
         priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT)
         return;
 
+    virPortAllocatorRelease(priv->migrationPort);
+    priv->migrationPort = 0;
     qemuDomainObjDiscardAsyncJob(vm);
 }
 

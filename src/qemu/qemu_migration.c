@@ -5821,6 +5821,9 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
 
     qemuMigrationParamsReset(driver, vm, asyncJob, jobPriv->migParams,
                              priv->job.apiFlags);
+
+    virPortAllocatorRelease(priv->migrationPort);
+    priv->migrationPort = 0;
 }
 
 
