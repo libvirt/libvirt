@@ -9473,12 +9473,12 @@ virDomainAbortJob(virDomainPtr domain)
 /**
  * virDomainAbortJobFlags:
  * @domain: a domain object
- * @flags: extra flags; not used yet, callers should always pass 0
+ * @flags: bitwise-OR of virDomainAbortJobFlagsValues
  *
  * Requests that the current background job be aborted at the
  * soonest opportunity. In case the job is a migration in a post-copy mode,
- * this function will report an error (see virDomainMigrateStartPostCopy for
- * more details).
+ * this function will report an error unless VIR_DOMAIN_ABORT_JOB_POSTCOPY
+ * flag is used (see virDomainMigrateStartPostCopy for more details).
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
@@ -9816,7 +9816,9 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
  * will remain running with VIR_DOMAIN_RUNNING_POSTCOPY_FAILED reason.
  * It's up to the upper layer to decide what to do in such case. Because of
  * this, libvirt will refuse to cancel post-copy migration via
- * virDomainAbortJob.
+ * virDomainAbortJobFlags unless it is called with
+ * VIR_DOMAIN_ABORT_JOB_POSTCOPY, in which case the post-copy migration will be
+ * paused.
  *
  * Failed post-copy migration can be recovered once the cause for the failure
  * (e.g., a network issue) is resolved by repeating the migration with an

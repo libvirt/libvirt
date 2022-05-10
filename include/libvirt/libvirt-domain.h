@@ -4099,6 +4099,22 @@ int virDomainGetJobStats(virDomainPtr domain,
                          unsigned int flags);
 int virDomainAbortJob(virDomainPtr dom);
 
+/**
+ * virDomainAbortJobFlagsValues:
+ *
+ * Flags OR'ed together to provide specific behavior when aborting a domain job.
+ *
+ * Since: 8.5.0
+ */
+typedef enum {
+    /* Interrupt post-copy migration. Since migration in a post-copy phase
+     * cannot be aborted without losing the domain (none of the hosts involved
+     * in migration has a complete state of the domain), the migration will be
+     * suspended and it can later be resumed using virDomainMigrate* APIs with
+     * VIR_MIGRATE_POSTCOPY_RESUME flag. (Since: 8.5.0) */
+    VIR_DOMAIN_ABORT_JOB_POSTCOPY = 1 << 0,
+} virDomainAbortJobFlagsValues;
+
 int virDomainAbortJobFlags(virDomainPtr dom,
                            unsigned int flags);
 
