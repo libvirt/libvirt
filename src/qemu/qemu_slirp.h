@@ -66,8 +66,6 @@ void qemuSlirpStop(qemuSlirp *slirp,
                    virQEMUDriver *driver,
                    virDomainNetDef *net);
 
-int qemuSlirpGetFD(qemuSlirp *slirp);
-
 int qemuSlirpSetupCgroup(qemuSlirp *slirp,
                          virCgroup *cgroup);
 

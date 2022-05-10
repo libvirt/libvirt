@@ -188,15 +188,6 @@ qemuSlirpOpen(qemuSlirp *slirp,
 }
 
 
-int
-qemuSlirpGetFD(qemuSlirp *slirp)
-{
-    int fd = slirp->fd[0];
-    slirp->fd[0] = -1;
-    return fd;
-}
-
-
 static char *
 qemuSlirpGetDBusVMStateId(virDomainNetDef *net)
 {
