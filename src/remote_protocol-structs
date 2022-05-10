@@ -1869,6 +1869,10 @@ struct remote_domain_get_job_stats_ret {
 struct remote_domain_abort_job_args {
         remote_nonnull_domain      dom;
 };
+struct remote_domain_abort_job_flags_args {
+        remote_nonnull_domain      dom;
+        u_int                      flags;
+};
 struct remote_domain_migrate_get_max_downtime_args {
         remote_nonnull_domain      dom;
         u_int                      flags;
@@ -3706,4 +3710,5 @@ enum remote_procedure {
         REMOTE_PROC_DOMAIN_SET_LAUNCH_SECURITY_STATE = 439,
         REMOTE_PROC_DOMAIN_SAVE_PARAMS = 440,
         REMOTE_PROC_DOMAIN_RESTORE_PARAMS = 441,
+        REMOTE_PROC_DOMAIN_ABORT_JOB_FLAGS = 442,
 };

@@ -9471,6 +9471,51 @@ virDomainAbortJob(virDomainPtr domain)
 
 
 /**
+ * virDomainAbortJobFlags:
+ * @domain: a domain object
+ * @flags: extra flags; not used yet, callers should always pass 0
+ *
+ * Requests that the current background job be aborted at the
+ * soonest opportunity. In case the job is a migration in a post-copy mode,
+ * this function will report an error (see virDomainMigrateStartPostCopy for
+ * more details).
+ *
+ * Returns 0 in case of success and -1 in case of failure.
+ *
+ * Since: 8.5.0
+ */
+int
+virDomainAbortJobFlags(virDomainPtr domain,
+                       unsigned int flags)
+{
+    virConnectPtr conn;
+
+    VIR_DOMAIN_DEBUG(domain);
+
+    virResetLastError();
+
+    virCheckDomainReturn(domain, -1);
+    conn = domain->conn;
+
+    virCheckReadOnlyGoto(conn->flags, error);
+
+    if (conn->driver->domainAbortJobFlags) {
+        int ret;
+        ret = conn->driver->domainAbortJobFlags(domain, flags);
+        if (ret < 0)
+            goto error;
+        return ret;
+    }
+
+    virReportUnsupportedError();
+
+ error:
+    virDispatchError(conn);
+    return -1;
+}
+
+
+/**
  * virDomainMigrateSetMaxDowntime:
  * @domain: a domain object
  * @downtime: maximum tolerable downtime for live migration, in milliseconds

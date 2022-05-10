@@ -2492,6 +2492,12 @@ struct remote_domain_abort_job_args {
 };
 
 
+struct remote_domain_abort_job_flags_args {
+    remote_nonnull_domain dom;
+    unsigned int flags;
+};
+
+
 struct remote_domain_migrate_get_max_downtime_args {
     remote_nonnull_domain dom;
     unsigned int flags;
@@ -6947,5 +6953,11 @@ enum remote_procedure {
      * @acl: domain:start
      * @acl: domain:write
      */
-    REMOTE_PROC_DOMAIN_RESTORE_PARAMS = 441
+    REMOTE_PROC_DOMAIN_RESTORE_PARAMS = 441,
+
+    /**
+     * @generate: both
+     * @acl: domain:write
+     */
+    REMOTE_PROC_DOMAIN_ABORT_JOB_FLAGS = 442
 };

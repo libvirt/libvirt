@@ -4099,6 +4099,9 @@ int virDomainGetJobStats(virDomainPtr domain,
                          unsigned int flags);
 int virDomainAbortJob(virDomainPtr dom);
 
+int virDomainAbortJobFlags(virDomainPtr dom,
+                           unsigned int flags);
+
 /**
  * virDomainJobOperation:
  *
