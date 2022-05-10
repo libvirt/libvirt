@@ -2044,7 +2044,7 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
 {
     const testGenericData *data = opaque;
     virDomainXMLOption *xmlopt = data->xmlopt;
-    const char *cap;
+    size_t cap;
     g_auto(GStrv) caps = NULL;
     g_autoptr(virBitmap) bitmap = NULL;
     g_autoptr(virJSONValue) json = NULL;
@@ -2054,6 +2054,10 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
         "        {"
         "            \"state\": false,"
         "            \"capability\": \"xbzrle\""
+        "        },"
+        "        {"
+        "            \"state\": true,"
+        "            \"capability\": \"events\""
         "        }"
         "    ],"
         "    \"id\": \"libvirt-22\""
@@ -2072,11 +2076,25 @@ testQemuMonitorJSONqemuMonitorJSONGetMigrationCapabilities(const void *opaque)
                                             &caps) < 0)
         return -1;
 
-    cap = qemuMigrationCapabilityTypeToString(QEMU_MIGRATION_CAP_XBZRLE);
-    if (!g_strv_contains((const char **) caps, cap)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Expected capability %s is missing", cap);
-        return -1;
+    for (cap = 0; cap < QEMU_MIGRATION_CAP_LAST; cap++) {
+        const char *capStr = qemuMigrationCapabilityTypeToString(cap);
+        bool present = g_strv_contains((const char **) caps, capStr);
+
+        switch (cap) {
+        case QEMU_MIGRATION_CAP_XBZRLE:
+        case QEMU_MIGRATION_CAP_EVENTS:
+            if (!present) {
+                VIR_TEST_VERBOSE("Expected capability %s is missing", capStr);
+                return -1;
+            }
+            break;
+
+        default:
+            if (present) {
+                VIR_TEST_VERBOSE("Unexpected capability %s found", capStr);
+                return -1;
+            }
+        }
     }
 
     bitmap = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
