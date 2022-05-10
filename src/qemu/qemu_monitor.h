@@ -983,7 +983,6 @@ int qemuMonitorCloseFileHandle(qemuMonitor *mon,
 
 int qemuMonitorAddNetdev(qemuMonitor *mon,
                          virJSONValue **props,
-                         int *tapfd, char **tapfdName, int tapfdSize,
                          int slirpfd, char *slirpfdName);
 
 int qemuMonitorRemoveNetdev(qemuMonitor *mon,
