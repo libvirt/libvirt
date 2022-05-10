@@ -5985,7 +5985,8 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
                              unsigned long flags,
                              int retcode,
                              bool v3proto,
-                             unsigned long long timeReceived)
+                             unsigned long long timeReceived,
+                             bool *finishJob)
 {
     virErrorPtr orig_err = NULL;
     virDomainPtr dom = NULL;
@@ -6034,8 +6035,6 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     qemuMigrationDstComplete(driver, vm, inPostCopy,
                              VIR_ASYNC_JOB_MIGRATION_IN);
 
-    qemuMigrationJobFinish(vm);
-
     return dom;
 
  error:
@@ -6061,12 +6060,10 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     if (virDomainObjIsFailedPostcopy(vm)) {
         qemuProcessAutoDestroyRemove(driver, vm);
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        *finishJob = false;
     } else {
         qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
                                  jobPriv->migParams, priv->job.apiFlags);
-
-        qemuMigrationJobFinish(vm);
     }
 
     if (!virDomainObjIsActive(vm))
@@ -6131,17 +6128,20 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                                                 cookiein, cookieinlen,
                                                 cookieout, cookieoutlen);
         }
-
         qemuMigrationJobFinish(vm);
-        goto cleanup;
-    }
+    } else {
+        bool finishJob = true;
 
-    dom = qemuMigrationDstFinishActive(driver, dconn, vm, cookie_flags,
-                                       cookiein, cookieinlen,
-                                       cookieout, cookieoutlen,
-                                       flags, retcode, v3proto, timeReceived);
-    if (!dom)
-        goto cleanup;
+        dom = qemuMigrationDstFinishActive(driver, dconn, vm, cookie_flags,
+                                           cookiein, cookieinlen,
+                                           cookieout, cookieoutlen,
+                                           flags, retcode, v3proto, timeReceived,
+                                           &finishJob);
+        if (finishJob)
+            qemuMigrationJobFinish(vm);
+        else
+            qemuMigrationJobContinue(vm);
+    }
 
  cleanup:
     virPortAllocatorRelease(port);
