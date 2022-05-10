@@ -1313,8 +1313,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
             if (!(slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp))
                 break;
 
-            if (qemuSlirpOpen(slirp, driver, vm->def) < 0 ||
-                qemuSlirpStart(vm, net, NULL) < 0) {
+            if (qemuSlirpStart(vm, net, NULL) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                "%s", _("Failed to start slirp"));
                 goto cleanup;

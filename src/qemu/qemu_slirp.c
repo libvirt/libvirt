@@ -156,7 +156,7 @@ qemuSlirpCreatePidFilename(virQEMUDriverConfig *cfg,
 }
 
 
-int
+static int
 qemuSlirpOpen(qemuSlirp *slirp,
               virQEMUDriver *driver,
               virDomainDef *def)
@@ -271,6 +271,9 @@ qemuSlirpStart(virDomainObj *vm,
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("The slirp-helper doesn't support migration"));
     }
+
+    if (qemuSlirpOpen(slirp, driver, vm->def) < 0)
+        return -1;
 
     if (!(pidfile = qemuSlirpCreatePidFilename(cfg, vm->def, net->info.alias)))
         return -1;

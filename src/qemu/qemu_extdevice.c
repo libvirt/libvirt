@@ -130,7 +130,6 @@ qemuExtDevicesPrepareHost(virQEMUDriver *driver,
                           virDomainObj *vm)
 {
     virDomainDef *def = vm->def;
-    size_t i;
 
     if (qemuExtDevicesInitPaths(driver, def) < 0)
         return -1;
@@ -138,14 +137,6 @@ qemuExtDevicesPrepareHost(virQEMUDriver *driver,
     if (def->ntpms > 0 &&
         qemuExtTPMPrepareHost(driver, def) < 0)
         return -1;
-
-    for (i = 0; i < def->nnets; i++) {
-        virDomainNetDef *net = def->nets[i];
-        qemuSlirp *slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
-
-        if (slirp && qemuSlirpOpen(slirp, driver, def) < 0)
-            return -1;
-    }
 
     return 0;
 }
