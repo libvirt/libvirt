@@ -3455,6 +3455,25 @@ int qemuMonitorJSONMigrateCancel(qemuMonitor *mon)
 }
 
 
+int
+qemuMonitorJSONMigratePause(qemuMonitor *mon)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("migrate-pause", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /* qemuMonitorJSONQueryDump:
  * @mon: Monitor pointer
  * @stats: Monitor dump stats

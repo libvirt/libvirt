@@ -2426,6 +2426,15 @@ qemuMonitorMigrateCancel(qemuMonitor *mon)
 
 
 int
+qemuMonitorMigratePause(qemuMonitor *mon)
+{
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONMigratePause(mon);
+}
+
+
+int
 qemuMonitorQueryDump(qemuMonitor *mon,
                      qemuMonitorDumpStats *stats)
 {

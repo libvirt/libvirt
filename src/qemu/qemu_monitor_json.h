@@ -208,6 +208,9 @@ int
 qemuMonitorJSONMigrateCancel(qemuMonitor *mon);
 
 int
+qemuMonitorJSONMigratePause(qemuMonitor *mon);
+
+int
 qemuMonitorJSONQueryDump(qemuMonitor *mon,
                          qemuMonitorDumpStats *stats);
 

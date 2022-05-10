@@ -3111,6 +3111,7 @@ mymain(void)
     DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationDowntime, true);
     DO_TEST_GEN(qemuMonitorJSONMigrate);
     DO_TEST_GEN(qemuMonitorJSONMigrateRecover);
+    DO_TEST_SIMPLE("migrate-pause", qemuMonitorJSONMigratePause);
     DO_TEST_GEN(qemuMonitorJSONDump);
     DO_TEST_GEN(qemuMonitorJSONGraphicsRelocate);
     DO_TEST_GEN(qemuMonitorJSONRemoveNetdev);

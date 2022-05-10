@@ -890,6 +890,9 @@ int qemuMonitorMigrateToSocket(qemuMonitor *mon,
 
 int qemuMonitorMigrateCancel(qemuMonitor *mon);
 
+int
+qemuMonitorMigratePause(qemuMonitor *mon);
+
 int qemuMonitorGetDumpGuestMemoryCapability(qemuMonitor *mon,
                                             const char *capability);
 

@@ -12789,6 +12789,30 @@ qemuDomainAbortJobMigration(virDomainObj *vm)
 
 
 static int
+qemuDomainAbortJobPostcopy(virDomainObj *vm,
+                           unsigned int flags)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+
+    if (!(flags & VIR_DOMAIN_ABORT_JOB_POSTCOPY)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot abort migration in post-copy mode"));
+        return -1;
+    }
+
+    VIR_DEBUG("Suspending post-copy migration at client request");
+
+    qemuDomainObjAbortAsyncJob(vm);
+    qemuDomainObjEnterMonitor(priv->driver, vm);
+    rc = qemuMonitorMigratePause(priv->mon);
+    qemuDomainObjExitMonitor(vm);
+
+    return rc;
+}
+
+
+static int
 qemuDomainAbortJobFlags(virDomainPtr dom,
                         unsigned int flags)
 {
@@ -12796,11 +12820,10 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
     virDomainObj *vm;
     int ret = -1;
     qemuDomainObjPrivate *priv;
-    int reason;
 
     VIR_DEBUG("flags=0x%x", flags);
 
-    virCheckFlags(0, -1);
+    virCheckFlags(VIR_DOMAIN_ABORT_JOB_POSTCOPY, -1);
 
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
@@ -12815,6 +12838,14 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
         goto endjob;
 
     priv = vm->privateData;
+
+    if (flags & VIR_DOMAIN_ABORT_JOB_POSTCOPY &&
+        (priv->job.asyncJob != VIR_ASYNC_JOB_MIGRATION_OUT ||
+         !virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT))) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("current job is not outgoing migration in post-copy mode"));
+        goto endjob;
+    }
 
     switch (priv->job.asyncJob) {
     case VIR_ASYNC_JOB_NONE:
@@ -12835,15 +12866,10 @@ qemuDomainAbortJobFlags(virDomainPtr dom,
         break;
 
     case VIR_ASYNC_JOB_MIGRATION_OUT:
-        if ((priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY ||
-             (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-              reason == VIR_DOMAIN_PAUSED_POSTCOPY))) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("cannot abort migration in post-copy mode"));
-            goto endjob;
-        }
-
-        ret = qemuDomainAbortJobMigration(vm);
+        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT))
+            ret = qemuDomainAbortJobPostcopy(vm, flags);
+        else
+            ret = qemuDomainAbortJobMigration(vm);
         break;
 
     case VIR_ASYNC_JOB_SAVE:
