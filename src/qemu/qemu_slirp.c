@@ -251,7 +251,8 @@ qemuSlirpStart(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
-    qemuSlirp *slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
+    qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
+    qemuSlirp *slirp = netpriv->slirp;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     g_autoptr(virCommand) cmd = NULL;
     g_autofree char *pidfile = NULL;
@@ -262,6 +263,7 @@ qemuSlirpStart(virDomainObj *vm,
     int cmdret = 0;
     VIR_AUTOCLOSE errfd = -1;
     bool killDBusDaemon = false;
+    g_autofree char *fdname = g_strdup_printf("slirpfd-%s", net->info.alias);
 
     if (!slirp)
         return 0;
@@ -358,6 +360,10 @@ qemuSlirpStart(virDomainObj *vm,
     }
 
     slirp->pid = pid;
+
+    netpriv->slirpfd = qemuFDPassNewDirect(fdname, priv);
+
+    qemuFDPassAddFD(netpriv->slirpfd, &slirp->fd[0], NULL);
 
     return 0;
 

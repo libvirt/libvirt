@@ -1318,9 +1318,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                                "%s", _("Failed to start slirp"));
                 goto cleanup;
             }
-
-            slirpfd = qemuSlirpGetFD(slirp);
-            slirpfdName = g_strdup_printf("slirpfd-%s", net->info.alias);
         }
         break;
 
@@ -1376,8 +1373,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
-    if (!(netprops = qemuBuildHostNetProps(net,
-                                           slirpfdName)))
+    if (!(netprops = qemuBuildHostNetProps(net)))
         goto cleanup;
 
     qemuDomainObjEnterMonitor(driver, vm);
@@ -1396,7 +1392,8 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         }
     }
 
-    if (qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
+    if (qemuFDPassTransferMonitor(netpriv->slirpfd, priv->mon) < 0 ||
+        qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;
     }

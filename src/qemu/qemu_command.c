@@ -4207,8 +4207,7 @@ qemuBuildNicDevProps(virDomainDef *def,
 
 
 virJSONValue *
-qemuBuildHostNetProps(virDomainNetDef *net,
-                      const char *slirpfd)
+qemuBuildHostNetProps(virDomainNetDef *net)
 {
     virDomainNetType netType = virDomainNetGetActualType(net);
     size_t i;
@@ -4323,9 +4322,11 @@ qemuBuildHostNetProps(virDomainNetDef *net,
         break;
 
     case VIR_DOMAIN_NET_TYPE_USER:
-        if (slirpfd) {
-            if (virJSONValueObjectAdd(&netprops, "s:type", "socket", NULL) < 0 ||
-                virJSONValueObjectAppendString(netprops, "fd", slirpfd) < 0)
+        if (netpriv->slirpfd) {
+            if (virJSONValueObjectAdd(&netprops,
+                                      "s:type", "socket",
+                                      "s:fd", qemuFDPassGetPath(netpriv->slirpfd),
+                                      NULL) < 0)
                 return NULL;
         } else {
             if (virJSONValueObjectAdd(&netprops, "s:type", "user", NULL) < 0)
@@ -8782,11 +8783,9 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     int ret = -1;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autofree char *nic = NULL;
-    g_autofree char *slirpfdName = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     const virNetDevBandwidth *actualBandwidth;
     bool requireNicdev = false;
-    qemuSlirp *slirp;
     g_autoptr(virJSONValue) hostnetprops = NULL;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     GSList *n;
@@ -8912,14 +8911,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
-    slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp;
-    if (slirp && !standalone) {
-        int slirpfd = qemuSlirpGetFD(slirp);
-        virCommandPassFD(cmd, slirpfd,
-                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        slirpfdName = g_strdup_printf("%d", slirpfd);
-    }
-
     for (n = netpriv->tapfds; n; n = n->next) {
         if (qemuFDPassTransferCommand(n->data, cmd) < 0)
             return -1;
@@ -8930,11 +8921,11 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
             return -1;
     }
 
-    if (qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
+    if (qemuFDPassTransferCommand(netpriv->slirpfd, cmd) < 0 ||
+        qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
         return -1;
 
-    if (!(hostnetprops = qemuBuildHostNetProps(net,
-                                               slirpfdName)))
+    if (!(hostnetprops = qemuBuildHostNetProps(net)))
         goto cleanup;
 
     if (qemuBuildNetdevCommandlineFromJSON(cmd, hostnetprops, qemuCaps) < 0)
