@@ -1380,7 +1380,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         goto cleanup;
 
     if (!(netprops = qemuBuildHostNetProps(net,
-                                           NULL, 0,
                                            slirpfdName)))
         goto cleanup;
 

@@ -4208,8 +4208,6 @@ qemuBuildNicDevProps(virDomainDef *def,
 
 virJSONValue *
 qemuBuildHostNetProps(virDomainNetDef *net,
-                      char **tapfd,
-                      size_t tapfdSize,
                       const char *slirpfd)
 {
     virDomainNetType netType = virDomainNetGetActualType(net);
@@ -4252,12 +4250,6 @@ qemuBuildHostNetProps(virDomainNetDef *net,
             }
 
             if (nfds > 1)
-                tapfd_field = "s:fds";
-        } else {
-            for (i = 0; i < tapfdSize; i++)
-                virBufferAsprintf(&buf, "%s:", tapfd[i]);
-
-            if (tapfdSize > 1)
                 tapfd_field = "s:fds";
         }
 
@@ -8942,7 +8934,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         return -1;
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
-                                               NULL, 0,
                                                slirpfdName)))
         goto cleanup;
 

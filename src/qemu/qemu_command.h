@@ -87,8 +87,6 @@ qemuBuildChannelGuestfwdNetdevProps(virDomainChrDef *chr);
 
 virJSONValue *
 qemuBuildHostNetProps(virDomainNetDef *net,
-                      char **tapfd,
-                      size_t tapfdSize,
                       const char *slirpfd);
 
 int
