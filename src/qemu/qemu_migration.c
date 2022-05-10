@@ -5823,7 +5823,9 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                                           QEMU_MIGRATION_COOKIE_STATS) < 0)
                 VIR_WARN("Unable to encode migration cookie");
         }
-        goto endjob;
+
+        qemuMigrationJobFinish(vm);
+        goto cleanup;
     }
 
     if (retcode != 0) {
@@ -6004,12 +6006,31 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     if (inPostCopy)
         g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
 
+    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                             jobPriv->migParams, priv->job.apiFlags);
+
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
+    qemuMigrationJobFinish(vm);
+
+ cleanup:
+    g_clear_pointer(&jobData, virDomainJobDataFree);
+    virPortAllocatorRelease(port);
+    if (priv->mon)
+        qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
+    VIR_FREE(priv->origname);
+    virDomainObjEndAPI(&vm);
+    virErrorRestore(&orig_err);
+
+    /* Set a special error if Finish is expected to return NULL as a result of
+     * successful call with retcode != 0
+     */
+    if (retcode != 0 && !dom && virGetLastErrorCode() == VIR_ERR_OK)
+        virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
+    return dom;
+
  endjob:
-    if (!dom &&
-        !(flags & VIR_MIGRATE_OFFLINE) &&
-        virDomainObjIsActive(vm)) {
+    if (virDomainObjIsActive(vm)) {
         if (doKill) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
                             VIR_ASYNC_JOB_MIGRATION_IN,
@@ -6038,21 +6059,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
- cleanup:
-    g_clear_pointer(&jobData, virDomainJobDataFree);
-    virPortAllocatorRelease(port);
-    if (priv->mon)
-        qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
-    VIR_FREE(priv->origname);
-    virDomainObjEndAPI(&vm);
-    virErrorRestore(&orig_err);
-
-    /* Set a special error if Finish is expected to return NULL as a result of
-     * successful call with retcode != 0
-     */
-    if (retcode != 0 && !dom && virGetLastErrorCode() == VIR_ERR_OK)
-        virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
-    return dom;
+    goto cleanup;
 }
 
 
