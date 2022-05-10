@@ -2726,7 +2726,7 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
      */
     if (job == VIR_ASYNC_JOB_MIGRATION_OUT &&
         expectedPhase < QEMU_MIGRATION_PHASE_PERFORM_RESUME &&
-        !(flags & VIR_MIGRATE_CHANGE_PROTECTION)) {
+        !(flags & (VIR_MIGRATE_CHANGE_PROTECTION | VIR_MIGRATE_PEER2PEER))) {
         virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                        _("resuming failed post-copy migration requires change protection"));
         return false;
@@ -5438,9 +5438,14 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
      * bit here, because we are already running inside the context of
      * a single job.  */
 
-    dom_xml = qemuMigrationSrcBeginPhase(driver, vm, xmlin, dname,
-                                         &cookieout, &cookieoutlen,
-                                         nmigrate_disks, migrate_disks, flags);
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        dom_xml = qemuMigrationSrcBeginResume(driver, vm, xmlin,
+                                              &cookieout, &cookieoutlen, flags);
+    } else {
+        dom_xml = qemuMigrationSrcBeginPhase(driver, vm, xmlin, dname,
+                                             &cookieout, &cookieoutlen,
+                                             nmigrate_disks, migrate_disks, flags);
+    }
     if (!dom_xml)
         goto cleanup;
 
@@ -5496,7 +5501,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
             goto cleanup;
     }
 
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
+    if (!(flags & VIR_MIGRATE_POSTCOPY_RESUME) &&
+        virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED)
         flags |= VIR_MIGRATE_PAUSED;
 
     destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
@@ -5945,22 +5951,35 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
-    if (qemuMigrationJobStart(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                              flags) < 0)
-        goto cleanup;
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_OUT, flags,
+                                       QEMU_MIGRATION_PHASE_POSTCOPY_FAILED))
+            goto cleanup;
 
-    if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
-        goto endjob;
+        if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_BEGIN_RESUME) < 0)
+            goto cleanup;
 
-    if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
-        goto endjob;
+        virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                               qemuMigrationAnyConnectionClosed);
+        qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
+    } else {
+        if (qemuMigrationJobStart(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                  flags) < 0)
+            goto cleanup;
 
-    if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
-        !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps,
-                                nmigrate_disks, migrate_disks, flags))
-        goto endjob;
+        if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
+            goto endjob;
 
-    qemuMigrationSrcStoreDomainState(vm);
+        if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
+            goto endjob;
+
+        if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
+            !qemuMigrationSrcIsSafe(vm->def, priv->qemuCaps,
+                                    nmigrate_disks, migrate_disks, flags))
+            goto endjob;
+
+        qemuMigrationSrcStoreDomainState(vm);
+    }
 
     if ((flags & (VIR_MIGRATE_TUNNELLED | VIR_MIGRATE_PEER2PEER))) {
         ret = qemuMigrationSrcPerformPeer2Peer(driver, conn, vm, xmlin, persist_xml,
