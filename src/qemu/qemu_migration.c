@@ -3475,6 +3475,106 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
 
 
 static int
+qemuMigrationDstPrepareResume(virQEMUDriver *driver,
+                              virConnectPtr conn,
+                              const char *cookiein,
+                              int cookieinlen,
+                              char **cookieout,
+                              int *cookieoutlen,
+                              virDomainDef *def,
+                              const char *origname,
+                              const char *protocol,
+                              unsigned short port,
+                              bool autoPort,
+                              const char *listenAddress,
+                              unsigned long flags)
+{
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+    qemuProcessIncomingDef *incoming = NULL;
+    qemuDomainObjPrivate *priv;
+    virDomainJobStatus status;
+    virDomainObj *vm;
+    int ret = -1;
+
+    VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
+              "listenAddress=%s, flags=0x%lx",
+              def->name, NULLSTR(origname), protocol, port,
+              NULLSTR(listenAddress), flags);
+
+    vm = virDomainObjListFindByName(driver->domains, def->name);
+    if (!vm) {
+        virReportError(VIR_ERR_NO_DOMAIN,
+                       _("no domain with matching name '%s'"), def->name);
+        qemuMigrationDstErrorReport(driver, def->name);
+        return -1;
+    }
+    priv = vm->privateData;
+
+    if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_IN, flags,
+                                   QEMU_MIGRATION_PHASE_POSTCOPY_FAILED))
+        goto cleanup;
+
+    if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PREPARE_RESUME) < 0)
+        goto cleanup;
+
+    qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
+
+    if (qemuMigrationAnyRefreshStatus(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                      &status) < 0)
+        goto cleanup;
+
+    if (status != VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("QEMU reports migration is still running"));
+        goto cleanup;
+    }
+
+    if (!(mig = qemuMigrationCookieParse(driver, def, origname, NULL,
+                                         cookiein, cookieinlen,
+                                         QEMU_MIGRATION_COOKIE_CAPS)))
+        goto cleanup;
+
+    priv->origname = g_strdup(origname);
+
+    if (!(incoming = qemuMigrationDstPrepare(vm, false, protocol,
+                                             listenAddress, port, -1)))
+        goto cleanup;
+
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0)
+        goto cleanup;
+
+    ret = qemuMonitorMigrateRecover(priv->mon, incoming->uri);
+    qemuDomainObjExitMonitor(vm);
+
+    if (ret < 0)
+        goto cleanup;
+
+    if (qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_DESTINATION,
+                                  cookieout, cookieoutlen,
+                                  QEMU_MIGRATION_COOKIE_CAPS) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
+    virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
+                         qemuMigrationAnyConnectionClosed);
+
+    if (autoPort)
+        priv->migrationPort = port;
+
+ cleanup:
+    qemuProcessIncomingDefFree(incoming);
+    if (ret < 0) {
+        VIR_FREE(priv->origname);
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
+    }
+    qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+    qemuMigrationJobContinue(vm);
+    virDomainObjEndAPI(&vm);
+    return ret;
+}
+
+
+static int
 qemuMigrationDstPrepareAny(virQEMUDriver *driver,
                            virConnectPtr dconn,
                            const char *cookiein,
@@ -3536,6 +3636,14 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                        _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
         return -1;
+    }
+
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        return qemuMigrationDstPrepareResume(driver, dconn, cookiein, cookieinlen,
+                                             cookieout, cookieoutlen,
+                                             *def, origname, protocol,
+                                             port, autoPort,
+                                             listenAddress, flags);
     }
 
     return qemuMigrationDstPrepareFresh(driver, dconn,
