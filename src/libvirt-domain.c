@@ -3290,7 +3290,9 @@ virDomainMigrateVersion3Full(virDomainPtr domain,
         ret = virDomainGetInfo(domain, &info);
         state = info.state;
     }
-    if (ret == 0 && state == VIR_DOMAIN_PAUSED)
+    if (ret == 0 &&
+        state == VIR_DOMAIN_PAUSED &&
+        !(flags & VIR_MIGRATE_POSTCOPY_RESUME))
         flags |= VIR_MIGRATE_PAUSED;
 
     destflags = flags & ~(VIR_MIGRATE_ABORT_ON_ERROR |
