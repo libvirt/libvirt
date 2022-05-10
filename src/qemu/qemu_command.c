@@ -8683,6 +8683,7 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
+                          virNetDevVPortProfileOp vmop,
                           bool standalone)
 {
 
@@ -8690,19 +8691,33 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
     virDomainNetType actualType = virDomainNetGetActualType(net);
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     VIR_AUTOCLOSE vdpafd = -1;
-    bool vhostfd = false;
+    bool vhostfd = false; /* also used to signal processing of tapfds */
+    size_t tapfdSize = net->driver.virtio.queues;
+    g_autofree int *tapfd = g_new0(int, tapfdSize + 1);
+
+    if (tapfdSize == 0)
+        tapfdSize = 1;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
         vhostfd = true;
+        if (qemuInterfaceBridgeConnect(vm->def, priv->driver, net,
+                                       tapfd, &tapfdSize) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_NET_TYPE_DIRECT:
         vhostfd = true;
+        if (qemuInterfaceDirectConnect(vm->def, priv->driver, net,
+                                       tapfd, tapfdSize, vmop) < 0)
+            return -1;
         break;
 
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
+        if (qemuInterfaceEthernetConnect(vm->def, priv->driver, net,
+                                         tapfd, tapfdSize) < 0)
+            return -1;
         vhostfd = true;
         break;
 
@@ -8726,6 +8741,29 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
     case VIR_DOMAIN_NET_TYPE_UDP:
     case VIR_DOMAIN_NET_TYPE_LAST:
         break;
+    }
+
+    /* 'vhostfd' is set to true in all cases when we need to process tapfds */
+    if (vhostfd) {
+        g_autofree char *prefix = g_strdup_printf("tapfd-%s", net->info.alias);
+        size_t i;
+
+        for (i = 0; i < tapfdSize; i++) {
+            g_autoptr(qemuFDPass) pass = qemuFDPassNewDirect(prefix, priv);
+            g_autofree char *suffix = g_strdup_printf("%zu", i);
+            int fd = tapfd[i]; /* we want to keep the array intact for security labeling*/
+
+            qemuFDPassAddFD(pass, &fd, suffix);
+            netpriv->tapfds = g_slist_prepend(netpriv->tapfds, g_steal_pointer(&pass));
+        }
+
+        netpriv->tapfds = g_slist_reverse(netpriv->tapfds);
+
+        for (i = 0; i < tapfdSize; i++) {
+            if (qemuSecuritySetTapFDLabel(priv->driver->securityManager,
+                                          vm->def, tapfd[i]) < 0)
+                return -1;
+        }
     }
 
     if (vhostfd && !standalone) {
@@ -8768,54 +8806,14 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
 
-    if (qemuBuildInterfaceConnect(vm, net, standalone) < 0)
+    if (qemuBuildInterfaceConnect(vm, net, vmop, standalone) < 0)
         return -1;
 
     switch (actualType) {
     case VIR_DOMAIN_NET_TYPE_NETWORK:
     case VIR_DOMAIN_NET_TYPE_BRIDGE:
-        tapfdSize = net->driver.virtio.queues;
-        if (!tapfdSize)
-            tapfdSize = 1;
-
-        tapfd = g_new0(int, tapfdSize);
-        tapfdName = g_new0(char *, tapfdSize);
-
-        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
-
-        if (qemuInterfaceBridgeConnect(def, driver, net,
-                                       tapfd, &tapfdSize) < 0)
-            goto cleanup;
-        break;
-
     case VIR_DOMAIN_NET_TYPE_DIRECT:
-        tapfdSize = net->driver.virtio.queues;
-        if (!tapfdSize)
-            tapfdSize = 1;
-
-        tapfd = g_new0(int, tapfdSize);
-        tapfdName = g_new0(char *, tapfdSize);
-
-        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
-
-        if (qemuInterfaceDirectConnect(def, driver, net,
-                                       tapfd, tapfdSize, vmop) < 0)
-            goto cleanup;
-        break;
-
     case VIR_DOMAIN_NET_TYPE_ETHERNET:
-        tapfdSize = net->driver.virtio.queues;
-        if (!tapfdSize)
-            tapfdSize = 1;
-
-        tapfd = g_new0(int, tapfdSize);
-        tapfdName = g_new0(char *, tapfdSize);
-
-        memset(tapfd, -1, tapfdSize * sizeof(tapfd[0]));
-
-        if (qemuInterfaceEthernetConnect(def, driver, net,
-                                         tapfd, tapfdSize) < 0)
-            goto cleanup;
         break;
 
     case VIR_DOMAIN_NET_TYPE_HOSTDEV:

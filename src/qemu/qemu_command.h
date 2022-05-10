@@ -94,6 +94,7 @@ qemuBuildHostNetProps(virDomainNetDef *net,
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
+                          virNetDevVPortProfileOp vmop,
                           bool standalone);
 
 /* Current, best practice */
