@@ -4399,8 +4399,12 @@ qemuMigrationSrcStart(virDomainObj *vm,
     }
 
     /* log start of migration */
-    if ((timestamp = virTimeStringNow()) != NULL)
-        qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
+    if ((timestamp = virTimeStringNow()) != NULL) {
+        if (migrateFlags & QEMU_MONITOR_MIGRATE_RESUME)
+            qemuDomainLogAppendMessage(driver, vm, "%s: resuming migration\n", timestamp);
+        else
+            qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
+    }
 
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:

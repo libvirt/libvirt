@@ -870,6 +870,7 @@ typedef enum {
   QEMU_MONITOR_MIGRATE_BACKGROUND       = 1 << 0,
   QEMU_MONITOR_MIGRATE_NON_SHARED_DISK  = 1 << 1, /* migration with non-shared storage with full disk copy */
   QEMU_MONITOR_MIGRATE_NON_SHARED_INC   = 1 << 2, /* migration with non-shared storage with incremental copy */
+  QEMU_MONITOR_MIGRATE_RESUME           = 1 << 3, /* resume failed post-copy migration */
   QEMU_MONITOR_MIGRATION_FLAGS_LAST
 } QEMU_MONITOR_MIGRATE;
 
