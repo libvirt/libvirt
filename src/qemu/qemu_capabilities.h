@@ -651,6 +651,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     /* 430 */
     QEMU_CAPS_CHARDEV_QEMU_VDAGENT, /* -chardev qemu-vdagent */
     QEMU_CAPS_DISPLAY_DBUS, /* -display dbus */
+    QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX, /* -object iothread.thread-pool-max */
 
     QEMU_CAPS_LAST /* this must always be the last item */
 } virQEMUCapsFlags;

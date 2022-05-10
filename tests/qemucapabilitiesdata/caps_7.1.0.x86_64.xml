@@ -243,6 +243,7 @@
   <flag name='virtio-net.rss'/>
   <flag name='chardev.qemu-vdagent'/>
   <flag name='display-dbus'/>
+  <flag name='iothread.thread-pool-max'/>
   <version>7000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
