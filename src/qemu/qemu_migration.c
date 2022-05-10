@@ -2902,6 +2902,8 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
                                  qemuMigrationAnyConnectionClosed) < 0)
             goto endjob;
+
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
     }
 
     ret = g_steal_pointer(&xml);
