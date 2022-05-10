@@ -3246,7 +3246,8 @@ migrate
    migrate [--live] [--offline] [--direct] [--p2p [--tunnelled]]
       [--persistent] [--undefinesource] [--suspend] [--copy-storage-all]
       [--copy-storage-inc] [--change-protection] [--unsafe] [--verbose]
-      [--rdma-pin-all] [--abort-on-error] [--postcopy] [--postcopy-after-precopy]
+      [--rdma-pin-all] [--abort-on-error] [--postcopy]
+      [--postcopy-after-precopy] [--postcopy-resume]
       domain desturi [migrateuri] [graphicsuri] [listen-address] [dname]
       [--timeout seconds [--timeout-suspend | --timeout-postcopy]]
       [--xml file] [--migrate-disks disk-list] [--disks-port port]
@@ -3302,7 +3303,11 @@ Once migration is running, the user may switch to post-copy using the
 automatically switch to post-copy after the first pass of pre-copy is finished.
 The maximum bandwidth consumed during the post-copy phase may be limited using
 *--postcopy-bandwidth*. The maximum bandwidth consumed during the pre-copy phase
-may be limited using *--bandwidth*.
+may be limited using *--bandwidth*. In case connection between the hosts breaks
+while migration is in post-copy mode, the domain cannot be resumed on either
+source or destination host and the ``migrate`` command will report an error
+leaving the domain active on both hosts. To recover from such situation repeat
+the original ``migrate`` command with an additional *--postcopy-resume* flag.
 
 *--auto-converge* forces convergence during live migration. The initial
 guest CPU throttling rate can be set with *auto-converge-initial*. If the

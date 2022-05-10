@@ -10807,6 +10807,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("automatically switch to post-copy migration after one pass of pre-copy")
     },
+    {.name = "postcopy-resume",
+     .type = VSH_OT_BOOL,
+     .help = N_("resume failed post-copy migration")
+    },
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
      .completer = virshCompleteEmpty,
@@ -11210,6 +11214,9 @@ doMigrate(void *opaque)
     if (vshCommandOptBool(cmd, "postcopy"))
         flags |= VIR_MIGRATE_POSTCOPY;
 
+    if (vshCommandOptBool(cmd, "postcopy-resume"))
+        flags |= VIR_MIGRATE_POSTCOPY_RESUME;
+
     if (vshCommandOptBool(cmd, "tls"))
         flags |= VIR_MIGRATE_TLS;
 
@@ -11314,6 +11321,7 @@ cmdMigrate(vshControl *ctl, const vshCmd *cmd)
     VSH_EXCLUSIVE_OPTIONS("live", "offline");
     VSH_EXCLUSIVE_OPTIONS("timeout-suspend", "timeout-postcopy");
     VSH_REQUIRE_OPTION("postcopy-after-precopy", "postcopy");
+    VSH_REQUIRE_OPTION("postcopy-resume", "postcopy");
     VSH_REQUIRE_OPTION("timeout-postcopy", "postcopy");
     VSH_REQUIRE_OPTION("persistent-xml", "persistent");
     VSH_REQUIRE_OPTION("tls-destination", "tls");
