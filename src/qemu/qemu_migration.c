@@ -1579,6 +1579,9 @@ qemuMigrationSrcIsSafe(virDomainDef *def,
 void
 qemuMigrationSrcPostcopyFailed(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    virObjectEvent *event = NULL;
     virDomainState state;
     int reason;
 
@@ -1597,12 +1600,18 @@ qemuMigrationSrcPostcopyFailed(virDomainObj *vm)
 
     virDomainObjSetState(vm, VIR_DOMAIN_PAUSED,
                          VIR_DOMAIN_PAUSED_POSTCOPY_FAILED);
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_SUSPENDED,
+                                              VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 
 void
 qemuMigrationDstPostcopyFailed(virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    virObjectEvent *event = NULL;
     virDomainState state;
     int reason;
 
@@ -1622,6 +1631,9 @@ qemuMigrationDstPostcopyFailed(virDomainObj *vm)
 
     virDomainObjSetState(vm, VIR_DOMAIN_RUNNING,
                          VIR_DOMAIN_RUNNING_POSTCOPY_FAILED);
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_RESUMED,
+                                              VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED);
+    virObjectEventStateQueue(driver->domainEventState, event);
 }
 
 
