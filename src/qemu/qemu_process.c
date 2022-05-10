@@ -8714,7 +8714,7 @@ qemuProcessReconnect(void *opaque)
     cfg = virQEMUDriverGetConfig(driver);
     priv = obj->privateData;
 
-    qemuDomainObjRestoreJob(obj, &oldjob);
+    qemuDomainObjPreserveJob(obj, &oldjob);
     if (oldjob.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN)
         stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
     if (oldjob.asyncJob == VIR_ASYNC_JOB_BACKUP && priv->backup)

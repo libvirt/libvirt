@@ -214,9 +214,19 @@ qemuDomainObjResetAsyncJob(qemuDomainJobObj *job)
         job->cb->resetJobPrivate(job->privateData);
 }
 
+
+/**
+ * qemuDomainObjPreserveJob
+ * @param obj domain with a job that needs to be preserved
+ * @param job structure where to store job details from @obj
+ *
+ * Saves the current job details from @obj to @job and resets the job in @obj.
+ *
+ * Returns 0 on success, -1 on failure.
+ */
 int
-qemuDomainObjRestoreJob(virDomainObj *obj,
-                        qemuDomainJobObj *job)
+qemuDomainObjPreserveJob(virDomainObj *obj,
+                         qemuDomainJobObj *job)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
