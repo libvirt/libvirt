@@ -5809,7 +5809,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
                                          cookiein, cookieinlen, cookie_flags)))
-        goto endjob;
+        goto error;
 
     if (flags & VIR_MIGRATE_OFFLINE) {
         if (retcode == 0 &&
@@ -5833,31 +5833,31 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
          * earlier than monitor EOF handler got a chance to process the error
          */
         qemuDomainCheckMonitor(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN);
-        goto endjob;
+        goto error;
     }
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("guest unexpectedly quit"));
         qemuMigrationDstErrorReport(driver, vm->def->name);
-        goto endjob;
+        goto error;
     }
 
     if (qemuMigrationDstVPAssociatePortProfiles(vm->def) < 0)
-        goto endjob;
+        goto error;
 
     if (mig->network && qemuMigrationDstOPDRelocate(driver, vm, mig) < 0)
         VIR_WARN("unable to provide network data for relocation");
 
     if (qemuMigrationDstStopNBDServer(driver, vm, mig) < 0)
-        goto endjob;
+        goto error;
 
     if (qemuRefreshVirtioChannelState(driver, vm,
                                       VIR_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto endjob;
+        goto error;
 
     if (qemuConnectAgent(driver, vm) < 0)
-        goto endjob;
+        goto error;
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (qemuMigrationDstPersist(driver, vm, mig, !v3proto) < 0) {
@@ -5874,7 +5874,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
              * to restart during confirm() step, so we kill it off now.
              */
             if (v3proto)
-                goto endjob;
+                goto error;
         }
     }
 
@@ -5888,7 +5888,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
          * original domain on the source host is already gone.
          */
         if (v3proto)
-            goto endjob;
+            goto error;
     }
 
     /* Now that the state data was transferred we can refresh the actual state
@@ -5897,7 +5897,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         /* Similarly to the case above v2 protocol will not be able to recover
          * from this. Let's ignore this and perhaps stuff will not break. */
         if (v3proto)
-            goto endjob;
+            goto error;
     }
 
     if (priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
@@ -5929,7 +5929,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
              * things up.
              */
             if (v3proto)
-                goto endjob;
+                goto error;
         }
 
         if (inPostCopy)
@@ -5952,7 +5952,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         if (qemuMigrationDstWaitForCompletion(driver, vm,
                                               VIR_ASYNC_JOB_MIGRATION_IN,
                                               false) < 0) {
-            goto endjob;
+            goto error;
         }
         if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
             virDomainObjSetState(vm,
@@ -6029,7 +6029,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
     return dom;
 
- endjob:
+ error:
     if (virDomainObjIsActive(vm)) {
         if (doKill) {
             qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
