@@ -2221,10 +2221,17 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
         VIR_WARN("Migration of domain %s finished but we don't know if the"
                  " domain was successfully started on destination or not",
                  vm->def->name);
-        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                 jobPriv->migParams, priv->job.apiFlags);
-        /* clear the job and let higher levels decide what to do */
-        qemuMigrationJobFinish(vm);
+
+        if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT)) {
+            qemuMigrationSrcPostcopyFailed(vm);
+            qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+            qemuMigrationJobContinue(vm);
+        } else {
+            qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                     jobPriv->migParams, priv->job.apiFlags);
+            /* clear the job and let higher levels decide what to do */
+            qemuMigrationJobFinish(vm);
+        }
         break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3:
@@ -3400,6 +3407,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     virDomainJobData *jobData = NULL;
+    qemuMigrationJobPhase phase;
 
     VIR_DEBUG("driver=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "flags=0x%x, retcode=%d",
@@ -3408,10 +3416,17 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 
     virCheckFlags(QEMU_MIGRATION_FLAGS, -1);
 
-    qemuMigrationJobSetPhase(vm,
-                             retcode == 0
-                             ? QEMU_MIGRATION_PHASE_CONFIRM3
-                             : QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED);
+    /* Keep the original migration phase in case post-copy failed as the job
+     * will stay active even though migration API finishes with an error.
+     */
+    if (virDomainObjIsFailedPostcopy(vm))
+        phase = priv->job.phase;
+    else if (retcode == 0)
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+    else
+        phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
+
+    qemuMigrationJobSetPhase(vm, phase);
 
     if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
                                          cookiein, cookieinlen,
@@ -3480,13 +3495,14 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
         virErrorRestore(&orig_err);
 
         if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-            reason == VIR_DOMAIN_PAUSED_POSTCOPY)
+            reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
             qemuMigrationSrcPostcopyFailed(vm);
-        else
+        } else if (!virDomainObjIsFailedPostcopy(vm)) {
             qemuMigrationSrcRestoreDomainState(driver, vm);
 
-        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                 jobPriv->migParams, priv->job.apiFlags);
+            qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                     jobPriv->migParams, priv->job.apiFlags);
+        }
 
         qemuDomainSaveStatus(vm);
     }
@@ -3504,12 +3520,18 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
 {
     qemuMigrationJobPhase phase;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+    qemuDomainObjPrivate *priv = vm->privateData;
     int ret = -1;
 
     if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))
         goto cleanup;
 
-    if (cancelled)
+    /* Keep the original migration phase in case post-copy failed as the job
+     * will stay active even though migration API finishes with an error.
+     */
+    if (virDomainObjIsFailedPostcopy(vm))
+        phase = priv->job.phase;
+    else if (cancelled)
         phase = QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED;
     else
         phase = QEMU_MIGRATION_PHASE_CONFIRM3;
@@ -3517,12 +3539,19 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
     qemuMigrationJobStartPhase(vm, phase);
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            qemuMigrationSrcCleanup);
+    qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
 
     ret = qemuMigrationSrcConfirmPhase(driver, vm,
                                        cookiein, cookieinlen,
                                        flags, cancelled);
 
-    qemuMigrationJobFinish(vm);
+    if (virDomainObjIsFailedPostcopy(vm)) {
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+    } else {
+        qemuMigrationJobFinish(vm);
+    }
+
     if (!virDomainObjIsActive(vm)) {
         if (!cancelled && ret == 0 && flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
@@ -5334,16 +5363,22 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
     if (ret < 0)
         virErrorPreserveLast(&orig_err);
 
-    /* v2 proto has no confirm phase so we need to reset migration parameters
-     * here
-     */
-    if (!v3proto && ret < 0)
-        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                 jobPriv->migParams, priv->job.apiFlags);
+    if (virDomainObjIsFailedPostcopy(vm)) {
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+    } else {
+        /* v2 proto has no confirm phase so we need to reset migration parameters
+         * here
+         */
+        if (!v3proto && ret < 0)
+            qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                     jobPriv->migParams, priv->job.apiFlags);
 
-    qemuMigrationSrcRestoreDomainState(driver, vm);
+        qemuMigrationSrcRestoreDomainState(driver, vm);
 
-    qemuMigrationJobFinish(vm);
+        qemuMigrationJobFinish(vm);
+    }
+
     if (!virDomainObjIsActive(vm) && ret == 0) {
         if (flags & VIR_MIGRATE_UNDEFINE_SOURCE) {
             virDomainDeleteConfig(cfg->configDir, cfg->autostartDir, vm);
@@ -5414,11 +5449,12 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
         goto endjob;
 
  endjob:
-    if (ret < 0) {
+    if (ret < 0 && !virDomainObjIsFailedPostcopy(vm)) {
         qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, priv->job.apiFlags);
         qemuMigrationJobFinish(vm);
     } else {
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
     }
 
@@ -5879,10 +5915,17 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
             g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
     }
 
-    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                             jobPriv->migParams, priv->job.apiFlags);
+    if (virDomainObjIsFailedPostcopy(vm)) {
+        qemuProcessAutoDestroyRemove(driver, vm);
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+    } else {
+        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                 jobPriv->migParams, priv->job.apiFlags);
 
-    qemuMigrationJobFinish(vm);
+        qemuMigrationJobFinish(vm);
+    }
+
     if (!virDomainObjIsActive(vm))
         qemuDomainRemoveInactive(driver, vm);
 
