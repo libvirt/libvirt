@@ -82,6 +82,23 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase,
 );
 
 
+static bool ATTRIBUTE_NONNULL(1)
+qemuMigrationJobIsAllowed(virDomainObj *vm)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_IN ||
+        priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("another migration job is already running for domain '%s'"),
+                       vm->def->name);
+        return false;
+    }
+
+    return true;
+}
+
+
 static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT
 qemuMigrationJobStart(virQEMUDriver *driver,
                       virDomainObj *vm,
@@ -91,6 +108,9 @@ qemuMigrationJobStart(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainJobOperation op;
     unsigned long long mask;
+
+    if (!qemuMigrationJobIsAllowed(vm))
+        return -1;
 
     if (job == VIR_ASYNC_JOB_MIGRATION_IN) {
         op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN;
@@ -2602,6 +2622,9 @@ qemuMigrationSrcBegin(virConnectPtr conn,
             goto cleanup;
         asyncJob = VIR_ASYNC_JOB_MIGRATION_OUT;
     } else {
+        if (!qemuMigrationJobIsAllowed(vm))
+            goto cleanup;
+
         if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
             goto cleanup;
         asyncJob = VIR_ASYNC_JOB_NONE;
