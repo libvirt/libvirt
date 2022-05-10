@@ -60,6 +60,7 @@
      VIR_MIGRATE_TLS | \
      VIR_MIGRATE_PARALLEL | \
      VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES | \
+     VIR_MIGRATE_POSTCOPY_RESUME | \
      0)
 
 /* All supported migration parameters and their types. */
