@@ -191,6 +191,12 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                        int retcode,
                        bool v3proto);
 
+void
+qemuMigrationDstComplete(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         bool inPostCopy,
+                         virDomainAsyncJob asyncJob);
+
 int
 qemuMigrationSrcConfirm(virQEMUDriver *driver,
                         virDomainObj *vm,

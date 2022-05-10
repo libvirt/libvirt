@@ -5753,6 +5753,61 @@ qemuMigrationDstPersist(virQEMUDriver *driver,
 }
 
 
+void
+qemuMigrationDstComplete(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         bool inPostCopy,
+                         virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    virObjectEvent *event;
+
+    if (inPostCopy) {
+        if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
+            virDomainObjSetState(vm,
+                                 VIR_DOMAIN_RUNNING,
+                                 VIR_DOMAIN_RUNNING_MIGRATED);
+        }
+
+        /* The only RESUME event during post-copy migration is triggered by
+         * QEMU when the running domain moves from the source to the
+         * destination host, but then the migration keeps running until all
+         * modified memory is transferred from the source host. This will
+         * result in VIR_DOMAIN_EVENT_RESUMED with RESUMED_POSTCOPY detail.
+         * However, our API documentation says we need to fire another RESUMED
+         * event at the very end of migration with RESUMED_MIGRATED detail.
+         */
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_RESUMED,
+                                                  VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
+        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
+        event = virDomainEventLifecycleNewFromObj(vm,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED,
+                                                  VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
+        virObjectEventStateQueue(driver->domainEventState, event);
+    }
+
+    qemuDomainSaveStatus(vm);
+
+    /* Guest is successfully running, so cancel previous auto destroy */
+    qemuProcessAutoDestroyRemove(driver, vm);
+
+    /* Remove completed stats for post-copy, everything but timing fields
+     * is obsolete anyway.
+     */
+    if (inPostCopy)
+        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
+
+    qemuMigrationParamsReset(driver, vm, asyncJob, jobPriv->migParams,
+                             priv->job.apiFlags);
+}
+
+
 virDomainPtr
 qemuMigrationDstFinish(virQEMUDriver *driver,
                        virConnectPtr dconn,
@@ -5968,48 +6023,8 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                                   QEMU_MIGRATION_COOKIE_STATS) < 0)
         VIR_WARN("Unable to encode migration cookie");
 
-    if (inPostCopy) {
-        if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
-            virDomainObjSetState(vm,
-                                 VIR_DOMAIN_RUNNING,
-                                 VIR_DOMAIN_RUNNING_MIGRATED);
-        }
-
-        /* The only RESUME event during post-copy migration is triggered by
-         * QEMU when the running domain moves from the source to the
-         * destination host, but then the migration keeps running until all
-         * modified memory is transferred from the source host. This will
-         * result in VIR_DOMAIN_EVENT_RESUMED with RESUMED_POSTCOPY detail.
-         * However, our API documentation says we need to fire another RESUMED
-         * event at the very end of migration with RESUMED_MIGRATED detail.
-         */
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_RESUMED,
-                                                  VIR_DOMAIN_EVENT_RESUMED_MIGRATED);
-        virObjectEventStateQueue(driver->domainEventState, event);
-    }
-
-    if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_PAUSED) {
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_USER);
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED_PAUSED);
-        virObjectEventStateQueue(driver->domainEventState, event);
-    }
-
-    qemuDomainSaveStatus(vm);
-
-    /* Guest is successfully running, so cancel previous auto destroy */
-    qemuProcessAutoDestroyRemove(driver, vm);
-
-    /* Remove completed stats for post-copy, everything but timing fields
-     * is obsolete anyway.
-     */
-    if (inPostCopy)
-        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
-
-    qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                             jobPriv->migParams, priv->job.apiFlags);
+    qemuMigrationDstComplete(driver, vm, inPostCopy,
+                             VIR_ASYNC_JOB_MIGRATION_IN);
 
     dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
 
