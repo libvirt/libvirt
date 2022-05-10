@@ -166,6 +166,7 @@ VIR_ENUM_IMPL(virshDomainRunningReason,
               N_("event wakeup"),
               N_("crashed"),
               N_("post-copy"),
+              N_("post-copy failed"),
 );
 
 VIR_ENUM_DECL(virshDomainBlockedReason);

@@ -1106,6 +1106,7 @@ VIR_ENUM_IMPL(virDomainRunningReason,
               "wakeup",
               "crashed",
               "post-copy",
+              "post-copy failed",
 );
 
 VIR_ENUM_IMPL(virDomainBlockedReason,

@@ -9764,10 +9764,12 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
  * at most once no matter how fast it changes. On the other hand once the
  * guest is running on the destination host, the migration can no longer be
  * rolled back because none of the hosts has complete state. If this happens,
- * libvirt will leave the domain paused on both hosts with
- * VIR_DOMAIN_PAUSED_POSTCOPY_FAILED reason. It's up to the upper layer to
- * decide what to do in such case. Because of this, libvirt will refuse to
- * cancel post-copy migration via virDomainAbortJob.
+ * libvirt will leave the domain paused on the source host with
+ * VIR_DOMAIN_PAUSED_POSTCOPY_FAILED reason. The domain on the destination host
+ * will remain running with VIR_DOMAIN_RUNNING_POSTCOPY_FAILED reason.
+ * It's up to the upper layer to decide what to do in such case. Because of
+ * this, libvirt will refuse to cancel post-copy migration via
+ * virDomainAbortJob.
  *
  * The following domain life cycle events are emitted during post-copy
  * migration:
@@ -9781,9 +9783,11 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
  *  VIR_DOMAIN_EVENT_RESUMED_MIGRATED (on the destination),
  *  VIR_DOMAIN_EVENT_STOPPED_MIGRATED (on the source) -- migration finished
  *      successfully and the destination host holds a complete guest state.
- *  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED (on the destination) -- emitted
- *      when migration fails in post-copy mode and it's unclear whether any
- *      of the hosts has a complete guest state.
+ *  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY_FAILED (on the source),
+ *  VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED (on the destination) -- emitted
+ *      when migration fails in post-copy mode and it's unclear whether any of
+ *      the hosts has a complete guest state. Virtual CPUs on the destination
+ *      are still running.
  *
  * The progress of a post-copy migration can be monitored normally using
  * virDomainGetJobStats on the source host. Fetching statistics of a completed

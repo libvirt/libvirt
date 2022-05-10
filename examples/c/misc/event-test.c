@@ -196,6 +196,9 @@ eventDetailToString(int event,
             case VIR_DOMAIN_EVENT_RESUMED_POSTCOPY:
                 return "Post-copy";
 
+            case VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED:
+                return "Post-copy Error";
+
             case VIR_DOMAIN_EVENT_RESUMED_LAST:
                 break;
             }

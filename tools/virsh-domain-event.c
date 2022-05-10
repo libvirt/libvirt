@@ -93,7 +93,8 @@ VIR_ENUM_IMPL(virshDomainEventResumed,
               N_("Unpaused"),
               N_("Migrated"),
               N_("Snapshot"),
-              N_("Post-copy"));
+              N_("Post-copy"),
+              N_("Post-copy Error"));
 
 VIR_ENUM_DECL(virshDomainEventStopped);
 VIR_ENUM_IMPL(virshDomainEventStopped,

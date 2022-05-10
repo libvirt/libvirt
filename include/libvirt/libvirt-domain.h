@@ -108,6 +108,7 @@ typedef enum {
                                                wakeup event (Since: 0.9.11) */
     VIR_DOMAIN_RUNNING_CRASHED = 9,         /* resumed from crashed (Since: 1.1.1) */
     VIR_DOMAIN_RUNNING_POSTCOPY = 10,       /* running in post-copy migration mode (Since: 1.3.3) */
+    VIR_DOMAIN_RUNNING_POSTCOPY_FAILED = 11, /* running in failed post-copy migration (Since: 8.5.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_RUNNING_LAST /* (Since: 0.9.10) */
@@ -3801,6 +3802,7 @@ typedef enum {
     VIR_DOMAIN_EVENT_RESUMED_FROM_SNAPSHOT = 2, /* Resumed from snapshot (Since: 0.9.5) */
     VIR_DOMAIN_EVENT_RESUMED_POSTCOPY = 3,   /* Resumed, but migration is still
                                                 running in post-copy mode (Since: 1.3.3) */
+    VIR_DOMAIN_EVENT_RESUMED_POSTCOPY_FAILED = 4, /* Running, but migration failed in post-copy (Since: 8.5.0) */
 
 # ifdef VIR_ENUM_SENTINELS
     VIR_DOMAIN_EVENT_RESUMED_LAST /* (Since: 0.9.10) */
