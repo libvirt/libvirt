@@ -81,35 +81,97 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase,
               "finish3",
 );
 
-static int
+
+static int ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT
 qemuMigrationJobStart(virQEMUDriver *driver,
                       virDomainObj *vm,
                       virDomainAsyncJob job,
                       unsigned long apiFlags)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainJobOperation op;
+    unsigned long long mask;
 
-static void
+    if (job == VIR_ASYNC_JOB_MIGRATION_IN) {
+        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN;
+        mask = VIR_JOB_NONE;
+    } else {
+        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT;
+        mask = VIR_JOB_DEFAULT_MASK |
+               JOB_MASK(VIR_JOB_SUSPEND) |
+               JOB_MASK(VIR_JOB_MIGRATION_OP);
+    }
+
+    if (qemuDomainObjBeginAsyncJob(driver, vm, job, op, apiFlags) < 0)
+        return -1;
+
+    qemuDomainJobSetStatsType(priv->job.current,
+                              QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
+
+    qemuDomainObjSetAsyncJobMask(vm, mask);
+    return 0;
+}
+
+
+static void ATTRIBUTE_NONNULL(1)
 qemuMigrationJobSetPhase(virDomainObj *vm,
                          qemuMigrationJobPhase phase)
-    ATTRIBUTE_NONNULL(1);
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
 
-static void
+    if (phase < priv->job.phase) {
+        VIR_ERROR(_("migration protocol going backwards %s => %s"),
+                  qemuMigrationJobPhaseTypeToString(priv->job.phase),
+                  qemuMigrationJobPhaseTypeToString(phase));
+        return;
+    }
+
+    qemuDomainObjSetJobPhase(vm, phase);
+}
+
+
+static void ATTRIBUTE_NONNULL(1)
 qemuMigrationJobStartPhase(virDomainObj *vm,
                            qemuMigrationJobPhase phase)
-    ATTRIBUTE_NONNULL(1);
+{
+    qemuMigrationJobSetPhase(vm, phase);
+}
 
-static void
-qemuMigrationJobContinue(virDomainObj *obj)
-    ATTRIBUTE_NONNULL(1);
 
-static bool
+static void ATTRIBUTE_NONNULL(1)
+qemuMigrationJobContinue(virDomainObj *vm)
+{
+    qemuDomainObjReleaseAsyncJob(vm);
+}
+
+
+static bool ATTRIBUTE_NONNULL(1)
 qemuMigrationJobIsActive(virDomainObj *vm,
                          virDomainAsyncJob job)
-    ATTRIBUTE_NONNULL(1);
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
 
-static void
-qemuMigrationJobFinish(virDomainObj *obj)
-    ATTRIBUTE_NONNULL(1);
+    if (priv->job.asyncJob != job) {
+        const char *msg;
+
+        if (job == VIR_ASYNC_JOB_MIGRATION_IN)
+            msg = _("domain '%s' is not processing incoming migration");
+        else
+            msg = _("domain '%s' is not being migrated");
+
+        virReportError(VIR_ERR_OPERATION_INVALID, msg, vm->def->name);
+        return false;
+    }
+    return true;
+}
+
+
+static void ATTRIBUTE_NONNULL(1)
+qemuMigrationJobFinish(virDomainObj *vm)
+{
+    qemuDomainObjEndAsyncJob(vm);
+}
+
 
 static void
 qemuMigrationSrcStoreDomainState(virDomainObj *vm)
@@ -6146,92 +6208,6 @@ qemuMigrationSrcCancel(virQEMUDriver *driver,
         return -1;
 
     return 0;
-}
-
-
-static int
-qemuMigrationJobStart(virQEMUDriver *driver,
-                      virDomainObj *vm,
-                      virDomainAsyncJob job,
-                      unsigned long apiFlags)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-    virDomainJobOperation op;
-    unsigned long long mask;
-
-    if (job == VIR_ASYNC_JOB_MIGRATION_IN) {
-        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_IN;
-        mask = VIR_JOB_NONE;
-    } else {
-        op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT;
-        mask = VIR_JOB_DEFAULT_MASK |
-               JOB_MASK(VIR_JOB_SUSPEND) |
-               JOB_MASK(VIR_JOB_MIGRATION_OP);
-    }
-
-    if (qemuDomainObjBeginAsyncJob(driver, vm, job, op, apiFlags) < 0)
-        return -1;
-
-    qemuDomainJobSetStatsType(priv->job.current,
-                              QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
-
-    qemuDomainObjSetAsyncJobMask(vm, mask);
-    return 0;
-}
-
-static void
-qemuMigrationJobSetPhase(virDomainObj *vm,
-                         qemuMigrationJobPhase phase)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (phase < priv->job.phase) {
-        VIR_ERROR(_("migration protocol going backwards %s => %s"),
-                  qemuMigrationJobPhaseTypeToString(priv->job.phase),
-                  qemuMigrationJobPhaseTypeToString(phase));
-        return;
-    }
-
-    qemuDomainObjSetJobPhase(vm, phase);
-}
-
-static void
-qemuMigrationJobStartPhase(virDomainObj *vm,
-                           qemuMigrationJobPhase phase)
-{
-    qemuMigrationJobSetPhase(vm, phase);
-}
-
-static void
-qemuMigrationJobContinue(virDomainObj *vm)
-{
-    qemuDomainObjReleaseAsyncJob(vm);
-}
-
-static bool
-qemuMigrationJobIsActive(virDomainObj *vm,
-                         virDomainAsyncJob job)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (priv->job.asyncJob != job) {
-        const char *msg;
-
-        if (job == VIR_ASYNC_JOB_MIGRATION_IN)
-            msg = _("domain '%s' is not processing incoming migration");
-        else
-            msg = _("domain '%s' is not being migrated");
-
-        virReportError(VIR_ERR_OPERATION_INVALID, msg, vm->def->name);
-        return false;
-    }
-    return true;
-}
-
-static void
-qemuMigrationJobFinish(virDomainObj *vm)
-{
-    qemuDomainObjEndAsyncJob(vm);
 }
 
 
