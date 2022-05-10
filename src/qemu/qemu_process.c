@@ -3557,7 +3557,6 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainState state;
     int reason;
-    unsigned long long now;
 
     state = virDomainObjGetState(vm, &reason);
 
@@ -3614,28 +3613,14 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
         break;
 
     case VIR_ASYNC_JOB_BACKUP:
-        ignore_value(virTimeMillisNow(&now));
-
         /* Restore the config of the async job which is not persisted */
-        priv->job.jobsQueued++;
-        priv->job.asyncJob = VIR_ASYNC_JOB_BACKUP;
-        priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
-        priv->job.asyncStarted = now;
-
-        qemuDomainObjSetAsyncJobMask(vm, (VIR_JOB_DEFAULT_MASK |
-                                          JOB_MASK(VIR_JOB_SUSPEND) |
-                                          JOB_MASK(VIR_JOB_MODIFY)));
-
-        /* We reset the job parameters for backup so that the job will look
-         * active. This is possible because we are able to recover the state
-         * of blockjobs and also the backup job allows all sub-job types */
-        priv->job.current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
-
-        qemuDomainJobSetStatsType(priv->job.current,
-                                  QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP);
-        priv->job.current->operation = VIR_DOMAIN_JOB_OPERATION_BACKUP;
-        priv->job.current->status = VIR_DOMAIN_JOB_STATUS_ACTIVE;
-        priv->job.current->started = now;
+        qemuDomainObjRestoreAsyncJob(vm, VIR_ASYNC_JOB_BACKUP, 0,
+                                     VIR_DOMAIN_JOB_OPERATION_BACKUP,
+                                     QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP,
+                                     VIR_DOMAIN_JOB_STATUS_ACTIVE,
+                                     (VIR_JOB_DEFAULT_MASK |
+                                      JOB_MASK(VIR_JOB_SUSPEND) |
+                                      JOB_MASK(VIR_JOB_MODIFY)));
         break;
 
     case VIR_ASYNC_JOB_NONE:

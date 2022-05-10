@@ -160,6 +160,14 @@ void qemuDomainObjSetAsyncJobMask(virDomainObj *obj,
                                   unsigned long long allowedJobs);
 int qemuDomainObjPreserveJob(virDomainObj *obj,
                              qemuDomainJobObj *job);
+void
+qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
+                             virDomainAsyncJob asyncJob,
+                             int phase,
+                             virDomainJobOperation operation,
+                             qemuDomainJobStatsType statsType,
+                             virDomainJobStatus status,
+                             unsigned long long allowedJobs);
 void qemuDomainObjDiscardAsyncJob(virDomainObj *obj);
 void qemuDomainObjReleaseAsyncJob(virDomainObj *obj);
 

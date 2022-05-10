@@ -249,6 +249,41 @@ qemuDomainObjPreserveJob(virDomainObj *obj,
     return 0;
 }
 
+
+void
+qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
+                             virDomainAsyncJob asyncJob,
+                             int phase,
+                             virDomainJobOperation operation,
+                             qemuDomainJobStatsType statsType,
+                             virDomainJobStatus status,
+                             unsigned long long allowedJobs)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobObj *job = &priv->job;
+    unsigned long long now;
+
+    VIR_DEBUG("Restoring %s async job for domain %s",
+              virDomainAsyncJobTypeToString(asyncJob), vm->def->name);
+
+    ignore_value(virTimeMillisNow(&now));
+
+    job->jobsQueued++;
+    job->asyncJob = asyncJob;
+    job->phase = phase;
+    job->asyncOwnerAPI = g_strdup(virThreadJobGet());
+    job->asyncStarted = now;
+
+    qemuDomainObjSetAsyncJobMask(vm, allowedJobs);
+
+    job->current = virDomainJobDataInit(&qemuJobDataPrivateDataCallbacks);
+    qemuDomainJobSetStatsType(priv->job.current, statsType);
+    job->current->operation = operation;
+    job->current->status = status;
+    job->current->started = now;
+}
+
+
 void
 qemuDomainObjClearJob(qemuDomainJobObj *job)
 {
