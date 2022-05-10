@@ -3084,27 +3084,26 @@ qemuMigrationDstPrepareAnyBlockDirtyBitmaps(virDomainObj *vm,
 
 
 static int
-qemuMigrationDstPrepareAny(virQEMUDriver *driver,
-                           virConnectPtr dconn,
-                           const char *cookiein,
-                           int cookieinlen,
-                           char **cookieout,
-                           int *cookieoutlen,
-                           virDomainDef **def,
-                           const char *origname,
-                           virStreamPtr st,
-                           const char *protocol,
-                           unsigned short port,
-                           bool autoPort,
-                           const char *listenAddress,
-                           size_t nmigrate_disks,
-                           const char **migrate_disks,
-                           int nbdPort,
-                           const char *nbdURI,
-                           qemuMigrationParams *migParams,
-                           unsigned long flags)
+qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
+                             virConnectPtr dconn,
+                             const char *cookiein,
+                             int cookieinlen,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             virDomainDef **def,
+                             const char *origname,
+                             virStreamPtr st,
+                             const char *protocol,
+                             unsigned short port,
+                             bool autoPort,
+                             const char *listenAddress,
+                             size_t nmigrate_disks,
+                             const char **migrate_disks,
+                             int nbdPort,
+                             const char *nbdURI,
+                             qemuMigrationParams *migParams,
+                             unsigned long flags)
 {
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainObj *vm = NULL;
     virObjectEvent *event = NULL;
     virErrorPtr origErr;
@@ -3124,53 +3123,16 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
     int rv;
     g_autofree char *tlsAlias = NULL;
 
+    VIR_DEBUG("name=%s, origname=%s, protocol=%s, port=%hu, "
+              "listenAddress=%s, nbdPort=%d, nbdURI=%s, flags=0x%lx",
+              (*def)->name, NULLSTR(origname), protocol, port,
+              listenAddress, nbdPort, NULLSTR(nbdURI), flags);
+
     if (flags & VIR_MIGRATE_OFFLINE) {
-        if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
-                     VIR_MIGRATE_NON_SHARED_INC)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("offline migration cannot handle "
-                             "non-shared storage"));
-            goto cleanup;
-        }
-        if (!(flags & VIR_MIGRATE_PERSIST_DEST)) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("offline migration must be specified with "
-                             "the persistent flag set"));
-            goto cleanup;
-        }
-        if (tunnel) {
-            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                           _("tunnelled offline migration does not "
-                             "make sense"));
-            goto cleanup;
-        }
         cookieFlags = 0;
     } else {
         cookieFlags = QEMU_MIGRATION_COOKIE_GRAPHICS |
                       QEMU_MIGRATION_COOKIE_CAPS;
-    }
-
-    if (flags & VIR_MIGRATE_POSTCOPY &&
-        (!(flags & VIR_MIGRATE_LIVE) ||
-         flags & VIR_MIGRATE_PAUSED)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("post-copy migration is not supported with non-live "
-                         "or paused migration"));
-        goto cleanup;
-    }
-
-    if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("post-copy is not supported with tunnelled migration"));
-        goto cleanup;
-    }
-
-    if (cfg->migrateTLSForce &&
-        !(flags & VIR_MIGRATE_TUNNELLED) &&
-        !(flags & VIR_MIGRATE_TLS)) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
-        goto cleanup;
     }
 
     if (!qemuMigrationSrcIsAllowedHostdev(*def))
@@ -3461,6 +3423,81 @@ qemuMigrationDstPrepareAny(virQEMUDriver *driver,
 
     qemuMigrationJobFinish(vm);
     goto cleanup;
+}
+
+
+static int
+qemuMigrationDstPrepareAny(virQEMUDriver *driver,
+                           virConnectPtr dconn,
+                           const char *cookiein,
+                           int cookieinlen,
+                           char **cookieout,
+                           int *cookieoutlen,
+                           virDomainDef **def,
+                           const char *origname,
+                           virStreamPtr st,
+                           const char *protocol,
+                           unsigned short port,
+                           bool autoPort,
+                           const char *listenAddress,
+                           size_t nmigrate_disks,
+                           const char **migrate_disks,
+                           int nbdPort,
+                           const char *nbdURI,
+                           qemuMigrationParams *migParams,
+                           unsigned long flags)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    if (flags & VIR_MIGRATE_OFFLINE) {
+        if (flags & (VIR_MIGRATE_NON_SHARED_DISK |
+                     VIR_MIGRATE_NON_SHARED_INC)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("offline migration cannot handle non-shared storage"));
+            return -1;
+        }
+        if (!(flags & VIR_MIGRATE_PERSIST_DEST)) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("offline migration must be specified with the persistent flag set"));
+            return -1;
+        }
+        if (st) {
+            virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                           _("tunnelled offline migration does not make sense"));
+            return -1;
+        }
+    }
+
+    if (flags & VIR_MIGRATE_POSTCOPY &&
+        (!(flags & VIR_MIGRATE_LIVE) ||
+         flags & VIR_MIGRATE_PAUSED)) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy migration is not supported with non-live or paused migration"));
+        return -1;
+    }
+
+    if (flags & VIR_MIGRATE_POSTCOPY && flags & VIR_MIGRATE_TUNNELLED) {
+        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
+                       _("post-copy is not supported with tunnelled migration"));
+        return -1;
+    }
+
+    if (cfg->migrateTLSForce &&
+        !(flags & VIR_MIGRATE_TUNNELLED) &&
+        !(flags & VIR_MIGRATE_TLS)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("this libvirtd instance allows migration only with VIR_MIGRATE_TLS flag"));
+        return -1;
+    }
+
+    return qemuMigrationDstPrepareFresh(driver, dconn,
+                                        cookiein, cookieinlen,
+                                        cookieout, cookieoutlen,
+                                        def, origname, st, protocol,
+                                        port, autoPort, listenAddress,
+                                        nmigrate_disks, migrate_disks,
+                                        nbdPort, nbdURI,
+                                        migParams, flags);
 }
 
 
