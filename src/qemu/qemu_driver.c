@@ -12544,13 +12544,13 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriver *driver,
     case VIR_DOMAIN_JOB_STATUS_MIGRATING:
     case VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED:
     case VIR_DOMAIN_JOB_STATUS_POSTCOPY:
+    case VIR_DOMAIN_JOB_STATUS_PAUSED:
         if (qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_NONE,
                                        jobData, NULL) < 0)
             return -1;
         break;
 
     case VIR_DOMAIN_JOB_STATUS_NONE:
-    case VIR_DOMAIN_JOB_STATUS_PAUSED:
     case VIR_DOMAIN_JOB_STATUS_COMPLETED:
     case VIR_DOMAIN_JOB_STATUS_FAILED:
     case VIR_DOMAIN_JOB_STATUS_CANCELED:
