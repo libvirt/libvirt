@@ -5780,29 +5780,27 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
     }
 
     if (qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3) < 0)
-        goto endjob;
+        goto cleanup;
 
     virCloseCallbacksUnset(driver->closeCallbacks, vm,
                            qemuMigrationSrcCleanup);
 
-    ret = qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
-                                        cookieout, cookieoutlen,
-                                        flags, resource, NULL, graphicsuri,
-                                        nmigrate_disks, migrate_disks, migParams, nbdURI);
-
-    if (ret < 0) {
-        qemuMigrationSrcRestoreDomainState(driver, vm);
-        goto endjob;
-    }
-
-    ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE));
+    if (qemuMigrationSrcPerformNative(driver, vm, persist_xml, uri, cookiein, cookieinlen,
+                                      cookieout, cookieoutlen,
+                                      flags, resource, NULL, graphicsuri,
+                                      nmigrate_disks, migrate_disks, migParams, nbdURI) < 0)
+        goto cleanup;
 
     if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
                              qemuMigrationSrcCleanup) < 0)
-        goto endjob;
+        goto cleanup;
 
- endjob:
+    ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_PERFORM3_DONE));
+    ret = 0;
+
+ cleanup:
     if (ret < 0 && !virDomainObjIsFailedPostcopy(vm)) {
+        qemuMigrationSrcRestoreDomainState(driver, vm);
         qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, priv->job.apiFlags);
         qemuMigrationJobFinish(vm);
