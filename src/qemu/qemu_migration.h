@@ -195,7 +195,8 @@ void
 qemuMigrationDstComplete(virQEMUDriver *driver,
                          virDomainObj *vm,
                          bool inPostCopy,
-                         virDomainAsyncJob asyncJob);
+                         virDomainAsyncJob asyncJob,
+                         qemuDomainJobObj *job);
 
 int
 qemuMigrationSrcConfirm(virQEMUDriver *driver,

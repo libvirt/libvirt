@@ -5773,10 +5773,11 @@ void
 qemuMigrationDstComplete(virQEMUDriver *driver,
                          virDomainObj *vm,
                          bool inPostCopy,
-                         virDomainAsyncJob asyncJob)
+                         virDomainAsyncJob asyncJob,
+                         qemuDomainJobObj *job)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    qemuDomainJobPrivate *jobPriv = job->privateData;
     virObjectEvent *event;
 
     if (inPostCopy) {
@@ -5817,10 +5818,10 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
      * is obsolete anyway.
      */
     if (inPostCopy)
-        g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
+        g_clear_pointer(&job->completed, virDomainJobDataFree);
 
     qemuMigrationParamsReset(driver, vm, asyncJob, jobPriv->migParams,
-                             priv->job.apiFlags);
+                             job->apiFlags);
 
     virPortAllocatorRelease(priv->migrationPort);
     priv->migrationPort = 0;
@@ -6052,7 +6053,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
         VIR_WARN("Unable to encode migration cookie");
 
     qemuMigrationDstComplete(driver, vm, inPostCopy,
-                             VIR_ASYNC_JOB_MIGRATION_IN);
+                             VIR_ASYNC_JOB_MIGRATION_IN, &priv->job);
 
     return dom;
 
