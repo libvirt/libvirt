@@ -29239,6 +29239,16 @@ virDomainObjGetState(virDomainObj *dom, int *reason)
 }
 
 
+bool
+virDomainObjIsFailedPostcopy(virDomainObj *dom)
+{
+    return ((dom->state.state == VIR_DOMAIN_PAUSED &&
+             dom->state.reason == VIR_DOMAIN_PAUSED_POSTCOPY_FAILED) ||
+            (dom->state.state == VIR_DOMAIN_RUNNING &&
+             dom->state.reason == VIR_DOMAIN_RUNNING_POSTCOPY_FAILED));
+}
+
+
 void
 virDomainObjSetState(virDomainObj *dom, virDomainState state, int reason)
 {

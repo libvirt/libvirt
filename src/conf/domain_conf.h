@@ -3886,6 +3886,10 @@ virDomainState
 virDomainObjGetState(virDomainObj *obj, int *reason)
         ATTRIBUTE_NONNULL(1);
 
+bool
+virDomainObjIsFailedPostcopy(virDomainObj *obj)
+        ATTRIBUTE_NONNULL(1);
+
 virSecurityLabelDef *
 virDomainDefGetSecurityLabelDef(const virDomainDef *def, const char *model);
 

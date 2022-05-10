@@ -577,6 +577,7 @@ virDomainObjGetOneDef;
 virDomainObjGetOneDefState;
 virDomainObjGetPersistentDef;
 virDomainObjGetState;
+virDomainObjIsFailedPostcopy;
 virDomainObjNew;
 virDomainObjParseFile;
 virDomainObjParseNode;
