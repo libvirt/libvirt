@@ -2302,11 +2302,12 @@ qemuMigrationDstRun(virQEMUDriver *driver,
 }
 
 
-/* This is called for outgoing non-p2p migrations when a connection to the
- * client which initiated the migration was closed but we were waiting for it
- * to follow up with the next phase, that is, in between
- * qemuDomainMigrateBegin3 and qemuDomainMigratePerform3 or
- * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3.
+/* This is called for outgoing non-p2p and incoming migrations when a
+ * connection to the client which controls the migration was closed but we
+ * were waiting for it to follow up with the next phase, that is, in between
+ * qemuDomainMigrateBegin3 and qemuDomainMigratePerform3,
+ * qemuDomainMigratePerform3 and qemuDomainMigrateConfirm3, or
+ * qemuDomainMigratePrepare3 and qemuDomainMigrateFinish3.
  */
 static void
 qemuMigrationAnyConnectionClosed(virDomainObj *vm,
@@ -2315,6 +2316,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    bool postcopy = false;
 
     VIR_DEBUG("vm=%s, conn=%p, asyncJob=%s, phase=%s",
               vm->def->name, conn,
@@ -2322,64 +2324,68 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
               qemuDomainAsyncJobPhaseToString(priv->job.asyncJob,
                                               priv->job.phase));
 
-    if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))
+    if (!qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_IN) &&
+        !qemuMigrationJobIsActive(vm, VIR_ASYNC_JOB_MIGRATION_OUT))
         return;
 
-    VIR_DEBUG("The connection which started outgoing migration of domain %s"
-              " was closed; canceling the migration",
+    VIR_WARN("The connection which controls migration of domain %s was closed",
               vm->def->name);
 
     switch ((qemuMigrationJobPhase) priv->job.phase) {
     case QEMU_MIGRATION_PHASE_BEGIN3:
-        /* just forget we were about to migrate */
-        qemuMigrationJobFinish(vm);
+        VIR_DEBUG("Aborting outgoing migration after Begin phase");
         break;
 
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
-        VIR_WARN("Migration of domain %s finished but we don't know if the"
-                 " domain was successfully started on destination or not",
-                 vm->def->name);
-
         if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT)) {
-            ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-            qemuMigrationSrcPostcopyFailed(vm);
-            qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-            qemuMigrationJobContinue(vm);
+            VIR_DEBUG("Migration protocol interrupted in post-copy mode");
+            postcopy = true;
         } else {
-            qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                     jobPriv->migParams, priv->job.apiFlags);
-            /* clear the job and let higher levels decide what to do */
-            qemuMigrationJobFinish(vm);
+            VIR_WARN("Migration of domain %s finished but we don't know if the "
+                     "domain was successfully started on destination or not",
+                     vm->def->name);
         }
         break;
 
     case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
     case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
-        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-        qemuMigrationSrcPostcopyFailed(vm);
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        VIR_DEBUG("Connection closed while resuming failed post-copy migration");
+        postcopy = true;
         break;
+
+    case QEMU_MIGRATION_PHASE_PREPARE:
+    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
+        /* incoming migration; the domain will be autodestroyed */
+        return;
 
     case QEMU_MIGRATION_PHASE_PERFORM3:
         /* cannot be seen without an active migration API; unreachable */
     case QEMU_MIGRATION_PHASE_CONFIRM3:
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
     case QEMU_MIGRATION_PHASE_CONFIRM_RESUME:
-        /* all done; unreachable */
-    case QEMU_MIGRATION_PHASE_PREPARE:
     case QEMU_MIGRATION_PHASE_FINISH2:
     case QEMU_MIGRATION_PHASE_FINISH3:
-    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
     case QEMU_MIGRATION_PHASE_FINISH_RESUME:
-        /* incoming migration; unreachable */
+        /* all done; unreachable */
     case QEMU_MIGRATION_PHASE_PERFORM2:
         /* single phase outgoing migration; unreachable */
     case QEMU_MIGRATION_PHASE_NONE:
     case QEMU_MIGRATION_PHASE_LAST:
         /* unreachable */
-        ;
+        return;
+    }
+
+    if (postcopy) {
+        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
+            qemuMigrationSrcPostcopyFailed(vm);
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+    } else {
+        qemuMigrationParamsReset(driver, vm, priv->job.asyncJob,
+                                 jobPriv->migParams, priv->job.apiFlags);
+        qemuMigrationJobFinish(vm);
     }
 }
 
