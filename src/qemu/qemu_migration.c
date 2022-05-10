@@ -6565,6 +6565,22 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
 }
 
 
+static int
+qemuMigrationDstFinishResume(virQEMUDriver *driver,
+                             virDomainObj *vm)
+{
+    VIR_DEBUG("vm=%p", vm);
+
+    if (qemuMigrationDstWaitForCompletion(driver, vm,
+                                          VIR_ASYNC_JOB_MIGRATION_IN,
+                                          false) < 0) {
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static virDomainPtr
 qemuMigrationDstFinishActive(virQEMUDriver *driver,
                              virConnectPtr dconn,
@@ -6587,7 +6603,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     virObjectEvent *event;
     bool inPostCopy = false;
-    bool doKill = true;
+    bool doKill = priv->job.phase != QEMU_MIGRATION_PHASE_FINISH_RESUME;
     int rc;
 
     VIR_DEBUG("vm=%p, flags=0x%lx, retcode=%d",
@@ -6612,8 +6628,14 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
         goto error;
     }
 
-    rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
-                                     timeReceived, &doKill, &inPostCopy);
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        rc = qemuMigrationDstFinishResume(driver, vm);
+        inPostCopy = true;
+    } else {
+        rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
+                                         timeReceived, &doKill, &inPostCopy);
+    }
+
     if (rc < 0 ||
         !(dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id)))
         goto error;
@@ -6684,6 +6706,8 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv = vm->privateData;
     unsigned short port;
     unsigned long long timeReceived = 0;
+    int phase = v3proto ? QEMU_MIGRATION_PHASE_FINISH3
+                        : QEMU_MIGRATION_PHASE_FINISH2;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%lx, retcode=%d",
@@ -6698,14 +6722,24 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         goto cleanup;
     }
 
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        if (!qemuMigrationAnyCanResume(vm, VIR_ASYNC_JOB_MIGRATION_IN, flags,
+                                       QEMU_MIGRATION_PHASE_PREPARE_RESUME))
+            goto cleanup;
+        phase = QEMU_MIGRATION_PHASE_FINISH_RESUME;
+    }
     ignore_value(virTimeMillisNow(&timeReceived));
 
-    if (qemuMigrationJobStartPhase(vm,
-                                   v3proto ? QEMU_MIGRATION_PHASE_FINISH3
-                                           : QEMU_MIGRATION_PHASE_FINISH2) < 0)
+    if (qemuMigrationJobStartPhase(vm, phase) < 0)
         goto cleanup;
 
-    qemuDomainCleanupRemove(vm, qemuMigrationDstPrepareCleanup);
+    if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
+        virCloseCallbacksUnset(driver->closeCallbacks, vm,
+                               qemuMigrationAnyConnectionClosed);
+        qemuDomainCleanupRemove(vm, qemuProcessCleanupMigrationJob);
+    } else {
+        qemuDomainCleanupRemove(vm, qemuMigrationDstPrepareCleanup);
+    }
     g_clear_pointer(&priv->job.completed, virDomainJobDataFree);
 
     cookie_flags = QEMU_MIGRATION_COOKIE_NETWORK |
