@@ -139,9 +139,9 @@ qemuMigrationJobStart(virQEMUDriver *driver,
 }
 
 
-static void ATTRIBUTE_NONNULL(1)
-qemuMigrationJobSetPhase(virDomainObj *vm,
-                         qemuMigrationJobPhase phase)
+static int
+qemuMigrationCheckPhase(virDomainObj *vm,
+                        qemuMigrationJobPhase phase)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
@@ -150,8 +150,19 @@ qemuMigrationJobSetPhase(virDomainObj *vm,
         VIR_ERROR(_("migration protocol going backwards %s => %s"),
                   qemuMigrationJobPhaseTypeToString(priv->job.phase),
                   qemuMigrationJobPhaseTypeToString(phase));
-        return;
+        return -1;
     }
+
+    return 0;
+}
+
+
+static void ATTRIBUTE_NONNULL(1)
+qemuMigrationJobSetPhase(virDomainObj *vm,
+                         qemuMigrationJobPhase phase)
+{
+    if (qemuMigrationCheckPhase(vm, phase) < 0)
+        return;
 
     qemuDomainObjSetJobPhase(vm, phase);
 }
