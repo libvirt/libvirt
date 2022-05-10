@@ -5948,12 +5948,27 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         qemuDomainJobDataUpdateDowntime(jobData);
     }
 
+    if (inPostCopy &&
+        qemuMigrationDstWaitForCompletion(driver, vm,
+                                          VIR_ASYNC_JOB_MIGRATION_IN,
+                                          false) < 0) {
+        goto error;
+    }
+
+    if (jobData) {
+        priv->job.completed = g_steal_pointer(&jobData);
+        priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
+        qemuDomainJobSetStatsType(priv->job.completed,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
+    }
+
+    if (qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_DESTINATION,
+                                  cookieout, cookieoutlen,
+                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
     if (inPostCopy) {
-        if (qemuMigrationDstWaitForCompletion(driver, vm,
-                                              VIR_ASYNC_JOB_MIGRATION_IN,
-                                              false) < 0) {
-            goto error;
-        }
         if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
             virDomainObjSetState(vm,
                                  VIR_DOMAIN_RUNNING,
@@ -5986,19 +6001,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
 
     /* Guest is successfully running, so cancel previous auto destroy */
     qemuProcessAutoDestroyRemove(driver, vm);
-
-    if (jobData) {
-        priv->job.completed = g_steal_pointer(&jobData);
-        priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
-        qemuDomainJobSetStatsType(priv->job.completed,
-                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
-    }
-
-    if (qemuMigrationCookieFormat(mig, driver, vm,
-                                  QEMU_MIGRATION_DESTINATION,
-                                  cookieout, cookieoutlen,
-                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
-        VIR_WARN("Unable to encode migration cookie");
 
     /* Remove completed stats for post-copy, everything but timing fields
      * is obsolete anyway.
