@@ -5808,6 +5808,137 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
 }
 
 
+/*
+ * Perform Finish phase of a fresh (i.e., not recovery) migration of an active
+ * domain.
+ */
+static int
+qemuMigrationDstFinishFresh(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            qemuMigrationCookie *mig,
+                            unsigned long flags,
+                            bool v3proto,
+                            unsigned long long timeReceived,
+                            bool *doKill,
+                            bool *inPostCopy)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virDomainJobData) jobData = NULL;
+
+    if (qemuMigrationDstVPAssociatePortProfiles(vm->def) < 0)
+        return -1;
+
+    if (mig->network && qemuMigrationDstOPDRelocate(driver, vm, mig) < 0)
+        VIR_WARN("unable to provide network data for relocation");
+
+    if (qemuMigrationDstStopNBDServer(driver, vm, mig) < 0)
+        return -1;
+
+    if (qemuRefreshVirtioChannelState(driver, vm,
+                                      VIR_ASYNC_JOB_MIGRATION_IN) < 0)
+        return -1;
+
+    if (qemuConnectAgent(driver, vm) < 0)
+        return -1;
+
+    if (flags & VIR_MIGRATE_PERSIST_DEST) {
+        if (qemuMigrationDstPersist(driver, vm, mig, !v3proto) < 0) {
+            /* Hmpf.  Migration was successful, but making it persistent
+             * was not.  If we report successful, then when this domain
+             * shuts down, management tools are in for a surprise.  On the
+             * other hand, if we report failure, then the management tools
+             * might try to restart the domain on the source side, even
+             * though the domain is actually running on the destination.
+             * Pretend success and hope that this is a rare situation and
+             * management tools are smart.
+             *
+             * However, in v3 protocol, the source VM is still available
+             * to restart during confirm() step, so we kill it off now.
+             */
+            if (v3proto)
+                return -1;
+        }
+    }
+
+    /* We need to wait for QEMU to process all data sent by the source
+     * before starting guest CPUs.
+     */
+    if (qemuMigrationDstWaitForCompletion(driver, vm,
+                                          VIR_ASYNC_JOB_MIGRATION_IN,
+                                          !!(flags & VIR_MIGRATE_POSTCOPY)) < 0) {
+        /* There's not much we can do for v2 protocol since the
+         * original domain on the source host is already gone.
+         */
+        if (v3proto)
+            return -1;
+    }
+
+    /* Now that the state data was transferred we can refresh the actual state
+     * of the devices */
+    if (qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
+        /* Similarly to the case above v2 protocol will not be able to recover
+         * from this. Let's ignore this and perhaps stuff will not break. */
+        if (v3proto)
+            return -1;
+    }
+
+    if (priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
+        *inPostCopy = true;
+
+    if (!(flags & VIR_MIGRATE_PAUSED)) {
+        if (qemuProcessStartCPUs(driver, vm,
+                                 *inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
+                                             : VIR_DOMAIN_RUNNING_MIGRATED,
+                                 VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
+            if (virGetLastErrorCode() == VIR_ERR_OK)
+                virReportError(VIR_ERR_INTERNAL_ERROR,
+                               "%s", _("resume operation failed"));
+            /*
+             * In v3 protocol, the source VM is still available to
+             * restart during confirm() step, so we kill it off
+             * now.
+             * In v2 protocol, the source is dead, so we leave
+             * target in paused state, in case admin can fix
+             * things up.
+             */
+            if (v3proto)
+                return -1;
+        }
+
+        if (*inPostCopy)
+            *doKill = false;
+    }
+
+    if (mig->jobData) {
+        jobData = g_steal_pointer(&mig->jobData);
+
+        if (jobData->sent && timeReceived) {
+            jobData->timeDelta = timeReceived - jobData->sent;
+            jobData->received = timeReceived;
+            jobData->timeDeltaSet = true;
+        }
+        qemuDomainJobDataUpdateTime(jobData);
+        qemuDomainJobDataUpdateDowntime(jobData);
+    }
+
+    if (*inPostCopy &&
+        qemuMigrationDstWaitForCompletion(driver, vm,
+                                          VIR_ASYNC_JOB_MIGRATION_IN,
+                                          false) < 0) {
+        return -1;
+    }
+
+    if (jobData) {
+        priv->job.completed = g_steal_pointer(&jobData);
+        priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
+        qemuDomainJobSetStatsType(priv->job.completed,
+                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
+    }
+
+    return 0;
+}
+
+
 virDomainPtr
 qemuMigrationDstFinish(virQEMUDriver *driver,
                        virConnectPtr dconn,
@@ -5829,9 +5960,9 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     unsigned short port;
     unsigned long long timeReceived = 0;
     virObjectEvent *event;
-    virDomainJobData *jobData = NULL;
     bool inPostCopy = false;
     bool doKill = true;
+    int rc;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%lx, retcode=%d",
@@ -5898,115 +6029,11 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         goto error;
     }
 
-    if (qemuMigrationDstVPAssociatePortProfiles(vm->def) < 0)
+    rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
+                                     timeReceived, &doKill, &inPostCopy);
+    if (rc < 0 ||
+        !(dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id)))
         goto error;
-
-    if (mig->network && qemuMigrationDstOPDRelocate(driver, vm, mig) < 0)
-        VIR_WARN("unable to provide network data for relocation");
-
-    if (qemuMigrationDstStopNBDServer(driver, vm, mig) < 0)
-        goto error;
-
-    if (qemuRefreshVirtioChannelState(driver, vm,
-                                      VIR_ASYNC_JOB_MIGRATION_IN) < 0)
-        goto error;
-
-    if (qemuConnectAgent(driver, vm) < 0)
-        goto error;
-
-    if (flags & VIR_MIGRATE_PERSIST_DEST) {
-        if (qemuMigrationDstPersist(driver, vm, mig, !v3proto) < 0) {
-            /* Hmpf.  Migration was successful, but making it persistent
-             * was not.  If we report successful, then when this domain
-             * shuts down, management tools are in for a surprise.  On the
-             * other hand, if we report failure, then the management tools
-             * might try to restart the domain on the source side, even
-             * though the domain is actually running on the destination.
-             * Pretend success and hope that this is a rare situation and
-             * management tools are smart.
-             *
-             * However, in v3 protocol, the source VM is still available
-             * to restart during confirm() step, so we kill it off now.
-             */
-            if (v3proto)
-                goto error;
-        }
-    }
-
-    /* We need to wait for QEMU to process all data sent by the source
-     * before starting guest CPUs.
-     */
-    if (qemuMigrationDstWaitForCompletion(driver, vm,
-                                          VIR_ASYNC_JOB_MIGRATION_IN,
-                                          !!(flags & VIR_MIGRATE_POSTCOPY)) < 0) {
-        /* There's not much we can do for v2 protocol since the
-         * original domain on the source host is already gone.
-         */
-        if (v3proto)
-            goto error;
-    }
-
-    /* Now that the state data was transferred we can refresh the actual state
-     * of the devices */
-    if (qemuProcessRefreshState(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
-        /* Similarly to the case above v2 protocol will not be able to recover
-         * from this. Let's ignore this and perhaps stuff will not break. */
-        if (v3proto)
-            goto error;
-    }
-
-    if (priv->job.current->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY)
-        inPostCopy = true;
-
-    if (!(flags & VIR_MIGRATE_PAUSED)) {
-        if (qemuProcessStartCPUs(driver, vm,
-                                 inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
-                                            : VIR_DOMAIN_RUNNING_MIGRATED,
-                                 VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
-            if (virGetLastErrorCode() == VIR_ERR_OK)
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               "%s", _("resume operation failed"));
-            /*
-             * In v3 protocol, the source VM is still available to
-             * restart during confirm() step, so we kill it off
-             * now.
-             * In v2 protocol, the source is dead, so we leave
-             * target in paused state, in case admin can fix
-             * things up.
-             */
-            if (v3proto)
-                goto error;
-        }
-
-        if (inPostCopy)
-            doKill = false;
-    }
-
-    if (mig->jobData) {
-        jobData = g_steal_pointer(&mig->jobData);
-
-        if (jobData->sent && timeReceived) {
-            jobData->timeDelta = timeReceived - jobData->sent;
-            jobData->received = timeReceived;
-            jobData->timeDeltaSet = true;
-        }
-        qemuDomainJobDataUpdateTime(jobData);
-        qemuDomainJobDataUpdateDowntime(jobData);
-    }
-
-    if (inPostCopy &&
-        qemuMigrationDstWaitForCompletion(driver, vm,
-                                          VIR_ASYNC_JOB_MIGRATION_IN,
-                                          false) < 0) {
-        goto error;
-    }
-
-    if (jobData) {
-        priv->job.completed = g_steal_pointer(&jobData);
-        priv->job.completed->status = VIR_DOMAIN_JOB_STATUS_COMPLETED;
-        qemuDomainJobSetStatsType(priv->job.completed,
-                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION);
-    }
 
     if (qemuMigrationCookieFormat(mig, driver, vm,
                                   QEMU_MIGRATION_DESTINATION,
@@ -6017,12 +6044,9 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     qemuMigrationDstComplete(driver, vm, inPostCopy,
                              VIR_ASYNC_JOB_MIGRATION_IN);
 
-    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id);
-
     qemuMigrationJobFinish(vm);
 
  cleanup:
-    g_clear_pointer(&jobData, virDomainJobDataFree);
     virPortAllocatorRelease(port);
     if (priv->mon)
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
