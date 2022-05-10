@@ -79,6 +79,12 @@ VIR_ENUM_IMPL(qemuMigrationJobPhase,
               "prepare",
               "finish2",
               "finish3",
+              "postcopy_failed",
+              "begin_resume",
+              "perform_resume",
+              "confirm_resume",
+              "prepare_resume",
+              "finish_resume",
 );
 
 
@@ -139,7 +145,8 @@ qemuMigrationJobSetPhase(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
-    if (phase < priv->job.phase) {
+    if (phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
+        phase < priv->job.phase) {
         VIR_ERROR(_("migration protocol going backwards %s => %s"),
                   qemuMigrationJobPhaseTypeToString(priv->job.phase),
                   qemuMigrationJobPhaseTypeToString(phase));
@@ -2328,18 +2335,29 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
         }
         break;
 
+    case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
+    case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
+        qemuMigrationSrcPostcopyFailed(vm);
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+        break;
+
     case QEMU_MIGRATION_PHASE_PERFORM3:
         /* cannot be seen without an active migration API; unreachable */
     case QEMU_MIGRATION_PHASE_CONFIRM3:
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
+    case QEMU_MIGRATION_PHASE_CONFIRM_RESUME:
         /* all done; unreachable */
     case QEMU_MIGRATION_PHASE_PREPARE:
     case QEMU_MIGRATION_PHASE_FINISH2:
     case QEMU_MIGRATION_PHASE_FINISH3:
+    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
+    case QEMU_MIGRATION_PHASE_FINISH_RESUME:
         /* incoming migration; unreachable */
     case QEMU_MIGRATION_PHASE_PERFORM2:
         /* single phase outgoing migration; unreachable */
     case QEMU_MIGRATION_PHASE_NONE:
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_LAST:
         /* unreachable */
         ;

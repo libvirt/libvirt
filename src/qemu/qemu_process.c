@@ -3507,6 +3507,10 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
     case QEMU_MIGRATION_PHASE_CONFIRM3:
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
+    case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
+    case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
+    case QEMU_MIGRATION_PHASE_CONFIRM_RESUME:
     case QEMU_MIGRATION_PHASE_LAST:
         /* N/A for incoming migration */
         break;
@@ -3540,6 +3544,10 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
             return -1;
         }
         break;
+
+    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
+    case QEMU_MIGRATION_PHASE_FINISH_RESUME:
+        return 1;
     }
 
     return 0;
@@ -3548,7 +3556,8 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
 
 /*
  * Returns
- *     -1 on error, the domain will be killed,
+ *     -1 the domain should be killed (either after a successful migration or
+ *        on error),
  *      0 the domain should remain running with the migration job discarded,
  *      1 the daemon was restarted during post-copy phase
  */
@@ -3556,6 +3565,7 @@ static int
 qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
                                virDomainObj *vm,
                                qemuDomainJobObj *job,
+                               virDomainJobStatus migStatus,
                                virDomainState state,
                                int reason,
                                unsigned int *stopFlags)
@@ -3571,6 +3581,9 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
     case QEMU_MIGRATION_PHASE_PREPARE:
     case QEMU_MIGRATION_PHASE_FINISH2:
     case QEMU_MIGRATION_PHASE_FINISH3:
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
+    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
+    case QEMU_MIGRATION_PHASE_FINISH_RESUME:
     case QEMU_MIGRATION_PHASE_LAST:
         /* N/A for outgoing migration */
         break;
@@ -3621,6 +3634,18 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
         /* migration completed, we need to kill the domain here */
         *stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
         return -1;
+
+    case QEMU_MIGRATION_PHASE_CONFIRM_RESUME:
+        if (migStatus == VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED) {
+            /* migration completed, we need to kill the domain here */
+            *stopFlags |= VIR_QEMU_PROCESS_STOP_MIGRATED;
+            return -1;
+        }
+        return 1;
+
+    case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
+    case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
+        return 1;
     }
 
     if (resume) {
@@ -3659,7 +3684,7 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
     qemuMigrationAnyRefreshStatus(driver, vm, VIR_ASYNC_JOB_NONE, &migStatus);
 
     if (job->asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT) {
-        rc = qemuProcessRecoverMigrationOut(driver, vm, job,
+        rc = qemuProcessRecoverMigrationOut(driver, vm, job, migStatus,
                                             state, reason, stopFlags);
     } else {
         rc = qemuProcessRecoverMigrationIn(driver, vm, job, state);
