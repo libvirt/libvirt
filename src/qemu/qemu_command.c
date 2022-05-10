@@ -8764,10 +8764,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     g_autofree char *nic = NULL;
     int *tapfd = NULL;
     size_t tapfdSize = 0;
-    int *vhostfd = NULL;
-    size_t vhostfdSize = 0;
     char **tapfdName = NULL;
-    char **vhostfdName = NULL;
     g_autofree char *slirpfdName = NULL;
     virDomainNetType actualType = virDomainNetGetActualType(net);
     const virNetDevBandwidth *actualBandwidth;
@@ -8958,13 +8955,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         tapfd[i] = -1;
     }
 
-    for (i = 0; i < vhostfdSize; i++) {
-        vhostfdName[i] = g_strdup_printf("%d", vhostfd[i]);
-        virCommandPassFD(cmd, vhostfd[i],
-                         VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-        vhostfd[i] = -1;
-    }
-
     for (n = netpriv->tapfds; n; n = n->next) {
         if (qemuFDPassTransferCommand(n->data, cmd) < 0)
             return -1;
@@ -8980,7 +8970,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
 
     if (!(hostnetprops = qemuBuildHostNetProps(net,
                                                tapfdName, tapfdSize,
-                                               vhostfdName, vhostfdSize,
+                                               NULL, 0,
                                                slirpfdName)))
         goto cleanup;
 
@@ -9025,13 +9015,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         virDomainConfNWFilterTeardown(net);
         virErrorRestore(&saved_err);
     }
-    for (i = 0; vhostfd && i < vhostfdSize; i++) {
-        if (ret < 0)
-            VIR_FORCE_CLOSE(vhostfd[i]);
-        if (vhostfdName)
-            VIR_FREE(vhostfdName[i]);
-    }
-    VIR_FREE(vhostfdName);
     for (i = 0; tapfd && i < tapfdSize; i++) {
         if (ret < 0)
             VIR_FORCE_CLOSE(tapfd[i]);
@@ -9039,7 +9022,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
             VIR_FREE(tapfdName[i]);
     }
     VIR_FREE(tapfdName);
-    VIR_FREE(vhostfd);
     VIR_FREE(tapfd);
     return ret;
 }
