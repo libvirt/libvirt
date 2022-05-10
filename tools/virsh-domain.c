@@ -6477,6 +6477,10 @@ static const vshCmdInfo info_domjobabort[] = {
 
 static const vshCmdOptDef opts_domjobabort[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "postcopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("interrupt post-copy migration")
+    },
     {.name = NULL}
 };
 
@@ -6484,11 +6488,21 @@ static bool
 cmdDomjobabort(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
+    unsigned int flags = 0;
+    int rc;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (virDomainAbortJob(dom) < 0)
+    if (vshCommandOptBool(cmd, "postcopy"))
+        flags |= VIR_DOMAIN_ABORT_JOB_POSTCOPY;
+
+    if (flags == 0)
+        rc = virDomainAbortJob(dom);
+    else
+        rc = virDomainAbortJobFlags(dom, flags);
+
+    if (rc < 0)
         return false;
 
     return true;

@@ -2053,9 +2053,15 @@ domjobabort
 
 ::
 
-   domjobabort domain
+   domjobabort domain [--postcopy]
 
 Abort the currently running domain job.
+
+When the job to be aborted is a migration which entered post-copy mode, it
+cannot be aborted as none of the hosts involved in migration has a complete
+state of the domain. Optional *--postcopy* can be used to interrupt such
+migration although doing so may effectively suspend the domain until the
+migration is resumed (see also *--postcopy-resume* option of ``migrate``).
 
 
 domjobinfo
