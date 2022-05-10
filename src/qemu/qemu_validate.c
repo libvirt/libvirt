@@ -385,6 +385,27 @@ qemuValidateDomainDefCpu(virQEMUDriver *driver,
 
 
 static int
+qemuValidateDomainDefIOThreads(const virDomainDef *def,
+                               virQEMUCaps *qemuCaps)
+{
+    size_t i;
+
+    for (i = 0; i < def->niothreadids; i++) {
+        virDomainIOThreadIDDef *iothread = def->iothreadids[i];
+
+        if ((iothread->thread_pool_min != -1 || iothread->thread_pool_max != -1) &&
+            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("thread_pool_min and thread_pool_max is not supported by this QEMU binary"));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDefClockTimers(const virDomainDef *def,
                                  virQEMUCaps *qemuCaps)
 {
@@ -1166,6 +1187,9 @@ qemuValidateDomainDef(const virDomainDef *def,
         return -1;
 
     if (qemuDomainDefValidateMemoryHotplug(def, NULL) < 0)
+        return -1;
+
+    if (qemuValidateDomainDefIOThreads(def, qemuCaps) < 0)
         return -1;
 
     if (qemuValidateDomainDefClockTimers(def, qemuCaps) < 0)
