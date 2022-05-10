@@ -5973,6 +5973,110 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
 }
 
 
+static virDomainPtr
+qemuMigrationDstFinishActive(virQEMUDriver *driver,
+                             virConnectPtr dconn,
+                             virDomainObj *vm,
+                             int cookie_flags,
+                             const char *cookiein,
+                             int cookieinlen,
+                             char **cookieout,
+                             int *cookieoutlen,
+                             unsigned long flags,
+                             int retcode,
+                             bool v3proto,
+                             unsigned long long timeReceived)
+{
+    virErrorPtr orig_err = NULL;
+    virDomainPtr dom = NULL;
+    g_autoptr(qemuMigrationCookie) mig = NULL;
+    qemuDomainObjPrivate *priv = vm->privateData;
+    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
+    virObjectEvent *event;
+    bool inPostCopy = false;
+    bool doKill = true;
+    int rc;
+
+    VIR_DEBUG("vm=%p, flags=0x%lx, retcode=%d",
+              vm, flags, retcode);
+
+    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
+                                         cookiein, cookieinlen, cookie_flags)))
+        goto error;
+
+    if (retcode != 0) {
+        /* Check for a possible error on the monitor in case Finish was called
+         * earlier than monitor EOF handler got a chance to process the error
+         */
+        qemuDomainCheckMonitor(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN);
+        goto error;
+    }
+
+    if (!virDomainObjIsActive(vm)) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("guest unexpectedly quit"));
+        qemuMigrationDstErrorReport(driver, vm->def->name);
+        goto error;
+    }
+
+    rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
+                                     timeReceived, &doKill, &inPostCopy);
+    if (rc < 0 ||
+        !(dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id)))
+        goto error;
+
+    if (qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_DESTINATION,
+                                  cookieout, cookieoutlen,
+                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
+    qemuMigrationDstComplete(driver, vm, inPostCopy,
+                             VIR_ASYNC_JOB_MIGRATION_IN);
+
+    qemuMigrationJobFinish(vm);
+
+    return dom;
+
+ error:
+    /* Need to save the current error, in case shutting down the process
+     * overwrites it. */
+    virErrorPreserveLast(&orig_err);
+
+    if (virDomainObjIsActive(vm)) {
+        if (doKill) {
+            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
+                            VIR_ASYNC_JOB_MIGRATION_IN,
+                            VIR_QEMU_PROCESS_STOP_MIGRATED);
+            virDomainAuditStop(vm, "failed");
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                VIR_DOMAIN_EVENT_STOPPED,
+                                VIR_DOMAIN_EVENT_STOPPED_FAILED);
+            virObjectEventStateQueue(driver->domainEventState, event);
+        } else {
+            qemuMigrationDstPostcopyFailed(vm);
+        }
+    }
+
+    if (virDomainObjIsFailedPostcopy(vm)) {
+        qemuProcessAutoDestroyRemove(driver, vm);
+        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
+        qemuMigrationJobContinue(vm);
+    } else {
+        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
+                                 jobPriv->migParams, priv->job.apiFlags);
+
+        qemuMigrationJobFinish(vm);
+    }
+
+    if (!virDomainObjIsActive(vm))
+        qemuDomainRemoveInactive(driver, vm);
+
+    virErrorRestore(&orig_err);
+    return NULL;
+}
+
+
 virDomainPtr
 qemuMigrationDstFinish(virQEMUDriver *driver,
                        virConnectPtr dconn,
@@ -5986,17 +6090,10 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
                        bool v3proto)
 {
     virDomainPtr dom = NULL;
-    g_autoptr(qemuMigrationCookie) mig = NULL;
-    virErrorPtr orig_err = NULL;
     int cookie_flags = 0;
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     unsigned short port;
     unsigned long long timeReceived = 0;
-    virObjectEvent *event;
-    bool inPostCopy = false;
-    bool doKill = true;
-    int rc;
 
     VIR_DEBUG("driver=%p, dconn=%p, vm=%p, cookiein=%s, cookieinlen=%d, "
               "cookieout=%p, cookieoutlen=%p, flags=0x%lx, retcode=%d",
@@ -6039,41 +6136,12 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         goto cleanup;
     }
 
-    if (!(mig = qemuMigrationCookieParse(driver, vm->def, priv->origname, priv,
-                                         cookiein, cookieinlen, cookie_flags)))
-        goto error;
-
-    if (retcode != 0) {
-        /* Check for a possible error on the monitor in case Finish was called
-         * earlier than monitor EOF handler got a chance to process the error
-         */
-        qemuDomainCheckMonitor(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN);
-        goto error;
-    }
-
-    if (!virDomainObjIsActive(vm)) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("guest unexpectedly quit"));
-        qemuMigrationDstErrorReport(driver, vm->def->name);
-        goto error;
-    }
-
-    rc = qemuMigrationDstFinishFresh(driver, vm, mig, flags, v3proto,
-                                     timeReceived, &doKill, &inPostCopy);
-    if (rc < 0 ||
-        !(dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, vm->def->id)))
-        goto error;
-
-    if (qemuMigrationCookieFormat(mig, driver, vm,
-                                  QEMU_MIGRATION_DESTINATION,
-                                  cookieout, cookieoutlen,
-                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
-        VIR_WARN("Unable to encode migration cookie");
-
-    qemuMigrationDstComplete(driver, vm, inPostCopy,
-                             VIR_ASYNC_JOB_MIGRATION_IN);
-
-    qemuMigrationJobFinish(vm);
+    dom = qemuMigrationDstFinishActive(driver, dconn, vm, cookie_flags,
+                                       cookiein, cookieinlen,
+                                       cookieout, cookieoutlen,
+                                       flags, retcode, v3proto, timeReceived);
+    if (!dom)
+        goto cleanup;
 
  cleanup:
     virPortAllocatorRelease(port);
@@ -6081,7 +6149,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         qemuMonitorSetDomainLog(priv->mon, NULL, NULL, NULL);
     VIR_FREE(priv->origname);
     virDomainObjEndAPI(&vm);
-    virErrorRestore(&orig_err);
 
     /* Set a special error if Finish is expected to return NULL as a result of
      * successful call with retcode != 0
@@ -6089,42 +6156,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
     if (retcode != 0 && !dom && virGetLastErrorCode() == VIR_ERR_OK)
         virReportError(VIR_ERR_MIGRATE_FINISH_OK, NULL);
     return dom;
-
- error:
-    /* Need to save the current error, in case shutting down the process
-     * overwrites it. */
-    virErrorPreserveLast(&orig_err);
-
-    if (virDomainObjIsActive(vm)) {
-        if (doKill) {
-            qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_FAILED,
-                            VIR_ASYNC_JOB_MIGRATION_IN,
-                            VIR_QEMU_PROCESS_STOP_MIGRATED);
-            virDomainAuditStop(vm, "failed");
-            event = virDomainEventLifecycleNewFromObj(vm,
-                                VIR_DOMAIN_EVENT_STOPPED,
-                                VIR_DOMAIN_EVENT_STOPPED_FAILED);
-            virObjectEventStateQueue(driver->domainEventState, event);
-        } else {
-            qemuMigrationDstPostcopyFailed(vm);
-        }
-    }
-
-    if (virDomainObjIsFailedPostcopy(vm)) {
-        qemuProcessAutoDestroyRemove(driver, vm);
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
-    } else {
-        qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
-                                 jobPriv->migParams, priv->job.apiFlags);
-
-        qemuMigrationJobFinish(vm);
-    }
-
-    if (!virDomainObjIsActive(vm))
-        qemuDomainRemoveInactive(driver, vm);
-
-    goto cleanup;
 }
 
 
