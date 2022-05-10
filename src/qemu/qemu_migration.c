@@ -165,7 +165,7 @@ qemuMigrationJobSetPhase(virDomainObj *vm,
     if (qemuMigrationCheckPhase(vm, phase) < 0)
         return -1;
 
-    qemuDomainObjSetJobPhase(vm, phase);
+    qemuDomainObjStartJobPhase(vm, phase);
     return 0;
 }
 

@@ -717,6 +717,10 @@ qemuDomainJobDataToParams(virDomainJobData *jobData,
 }
 
 
+/*
+ * Sets the job phase without changing the job owner. The owner is supposed to
+ * be 0 or the current thread, a warning is issued otherwise.
+ */
 void
 qemuDomainObjSetJobPhase(virDomainObj *obj,
                          int phase)
@@ -731,18 +735,50 @@ qemuDomainObjSetJobPhase(virDomainObj *obj,
               virDomainAsyncJobTypeToString(priv->job.asyncJob),
               qemuDomainAsyncJobPhaseToString(priv->job.asyncJob, phase));
 
-    if (priv->job.asyncOwner == 0) {
-        priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
-    } else if (me != priv->job.asyncOwner) {
-        VIR_WARN("'%s' async job is owned by thread %llu",
+    if (priv->job.asyncOwner != 0 &&
+        priv->job.asyncOwner != me) {
+        VIR_WARN("'%s' async job is owned by thread %llu, API '%s'",
                  virDomainAsyncJobTypeToString(priv->job.asyncJob),
-                 priv->job.asyncOwner);
+                 priv->job.asyncOwner,
+                 NULLSTR(priv->job.asyncOwnerAPI));
     }
 
     priv->job.phase = phase;
-    priv->job.asyncOwner = me;
     qemuDomainSaveStatus(obj);
 }
+
+
+/*
+ * Changes the job owner and sets the job phase. The current owner is supposed
+ * to be 0 or the current thread, a warning is issued otherwise.
+ */
+void
+qemuDomainObjStartJobPhase(virDomainObj *obj,
+                           int phase)
+{
+    qemuDomainObjPrivate *priv = obj->privateData;
+    unsigned long long me = virThreadSelfID();
+
+    if (!priv->job.asyncJob)
+        return;
+
+    VIR_DEBUG("Starting phase '%s' of '%s' job",
+              qemuDomainAsyncJobPhaseToString(priv->job.asyncJob, phase),
+              virDomainAsyncJobTypeToString(priv->job.asyncJob));
+
+    if (priv->job.asyncOwner == 0) {
+        priv->job.asyncOwnerAPI = g_strdup(virThreadJobGet());
+    } else if (me != priv->job.asyncOwner) {
+        VIR_WARN("'%s' async job is owned by thread %llu, API '%s'",
+                 virDomainAsyncJobTypeToString(priv->job.asyncJob),
+                 priv->job.asyncOwner,
+                 NULLSTR(priv->job.asyncOwnerAPI));
+    }
+
+    priv->job.asyncOwner = me;
+    qemuDomainObjSetJobPhase(obj, phase);
+}
+
 
 void
 qemuDomainObjSetAsyncJobMask(virDomainObj *obj,
