@@ -4379,6 +4379,76 @@ qemuMigrationSrcRunPrepareBlockDirtyBitmaps(virDomainObj *vm,
 }
 
 
+/* The caller is supposed to enter monitor before calling this. */
+static int
+qemuMigrationSrcStart(virDomainObj *vm,
+                      qemuMigrationSpec *spec,
+                      unsigned int migrateFlags,
+                      int *tunnelFd)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autofree char *timestamp = NULL;
+    int rc;
+
+    /* connect to the destination qemu if needed */
+    if ((spec->destType == MIGRATION_DEST_CONNECT_HOST ||
+         spec->destType == MIGRATION_DEST_CONNECT_SOCKET) &&
+        qemuMigrationSrcConnect(driver, vm, spec) < 0) {
+        return -1;
+    }
+
+    /* log start of migration */
+    if ((timestamp = virTimeStringNow()) != NULL)
+        qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
+
+    switch (spec->destType) {
+    case MIGRATION_DEST_HOST:
+        if (STREQ(spec->dest.host.protocol, "rdma") &&
+            vm->def->mem.hard_limit > 0 &&
+            virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+            return -1;
+        }
+        return qemuMonitorMigrateToHost(priv->mon, migrateFlags,
+                                        spec->dest.host.protocol,
+                                        spec->dest.host.name,
+                                        spec->dest.host.port);
+
+    case MIGRATION_DEST_SOCKET:
+        qemuSecurityDomainSetPathLabel(driver, vm, spec->dest.socket.path, false);
+        return qemuMonitorMigrateToSocket(priv->mon, migrateFlags,
+                                          spec->dest.socket.path);
+
+    case MIGRATION_DEST_CONNECT_HOST:
+    case MIGRATION_DEST_CONNECT_SOCKET:
+        /* handled above and transformed into MIGRATION_DEST_FD */
+        break;
+
+    case MIGRATION_DEST_FD:
+        if (spec->fwdType != MIGRATION_FWD_DIRECT) {
+            if (!tunnelFd) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("tunnelFD argument is required for tunnelled "
+                                 "migration"));
+                VIR_FORCE_CLOSE(spec->dest.fd.local);
+                VIR_FORCE_CLOSE(spec->dest.fd.qemu);
+                return -1;
+            }
+            *tunnelFd = spec->dest.fd.local;
+            spec->dest.fd.local = -1;
+        }
+        rc = qemuMonitorMigrateToFd(priv->mon, migrateFlags,
+                                    spec->dest.fd.qemu);
+        VIR_FORCE_CLOSE(spec->dest.fd.qemu);
+        return rc;
+    }
+
+    virReportError(VIR_ERR_INTERNAL_ERROR,
+                   _("unexpected migration schema: %d"), spec->destType);
+    return -1;
+}
+
+
 static int
 qemuMigrationSrcRun(virQEMUDriver *driver,
                     virDomainObj *vm,
@@ -4413,7 +4483,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     bool cancel = false;
     unsigned int waitFlags;
     g_autoptr(virDomainDef) persistDef = NULL;
-    g_autofree char *timestamp = NULL;
     int rc;
 
     if (resource > 0)
@@ -4588,52 +4657,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         qemuMonitorSetMigrationSpeed(priv->mon, priv->migMaxBandwidth) < 0)
         goto exit_monitor;
 
-    /* connect to the destination qemu if needed */
-    if ((spec->destType == MIGRATION_DEST_CONNECT_HOST ||
-         spec->destType == MIGRATION_DEST_CONNECT_SOCKET) &&
-        qemuMigrationSrcConnect(driver, vm, spec) < 0) {
-        goto exit_monitor;
-    }
-
-    /* log start of migration */
-    if ((timestamp = virTimeStringNow()) != NULL)
-        qemuDomainLogAppendMessage(driver, vm, "%s: initiating migration\n", timestamp);
-
-    rc = -1;
-    switch (spec->destType) {
-    case MIGRATION_DEST_HOST:
-        if (STREQ(spec->dest.host.protocol, "rdma") &&
-            vm->def->mem.hard_limit > 0 &&
-            virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
-            goto exit_monitor;
-        }
-        rc = qemuMonitorMigrateToHost(priv->mon, migrate_flags,
-                                      spec->dest.host.protocol,
-                                      spec->dest.host.name,
-                                      spec->dest.host.port);
-        break;
-
-    case MIGRATION_DEST_SOCKET:
-        qemuSecurityDomainSetPathLabel(driver, vm, spec->dest.socket.path, false);
-        rc = qemuMonitorMigrateToSocket(priv->mon, migrate_flags,
-                                        spec->dest.socket.path);
-        break;
-
-    case MIGRATION_DEST_CONNECT_HOST:
-    case MIGRATION_DEST_CONNECT_SOCKET:
-        /* handled above and transformed into MIGRATION_DEST_FD */
-        break;
-
-    case MIGRATION_DEST_FD:
-        if (spec->fwdType != MIGRATION_FWD_DIRECT) {
-            fd = spec->dest.fd.local;
-            spec->dest.fd.local = -1;
-        }
-        rc = qemuMonitorMigrateToFd(priv->mon, migrate_flags,
-                                    spec->dest.fd.qemu);
-        VIR_FORCE_CLOSE(spec->dest.fd.qemu);
-        break;
-    }
+    rc = qemuMigrationSrcStart(vm, spec, migrate_flags, &fd);
 
     qemuDomainObjExitMonitor(vm);
     if (rc < 0)
