@@ -1183,8 +1183,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     virDomainDeviceDef dev = { VIR_DOMAIN_DEVICE_NET, { .net = net } };
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     virErrorPtr originalError = NULL;
-    g_autofree char *slirpfdName = NULL;
-    int slirpfd = -1;
     g_autoptr(virJSONValue) nicprops = NULL;
     g_autoptr(virJSONValue) netprops = NULL;
     int ret = -1;
@@ -1305,13 +1303,9 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     case VIR_DOMAIN_NET_TYPE_USER:
         if (!priv->disableSlirp &&
             virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_DBUS_VMSTATE)) {
-            qemuSlirp *slirp = NULL;
 
             if (qemuInterfacePrepareSlirp(driver, net) < 0)
                 goto cleanup;
-
-            if (!(slirp = QEMU_DOMAIN_NETWORK_PRIVATE(net)->slirp))
-                break;
 
             if (qemuSlirpStart(vm, net, NULL) < 0) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
@@ -1408,7 +1402,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     if (qemuMonitorAddNetdev(priv->mon, &netprops,
-                             slirpfd, slirpfdName) < 0) {
+                             -1, NULL) < 0) {
         qemuDomainObjExitMonitor(vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
         goto try_remove;
@@ -1511,7 +1505,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     }
 
     virDomainCCWAddressSetFree(ccwaddrs);
-    VIR_FORCE_CLOSE(slirpfd);
 
     return ret;
 
