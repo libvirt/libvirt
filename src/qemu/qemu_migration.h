@@ -205,6 +205,11 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
                         unsigned int flags,
                         int cancelled);
 
+void
+qemuMigrationSrcComplete(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         virDomainAsyncJob asyncJob);
+
 bool
 qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
                           virDomainObj *vm,

@@ -3491,6 +3491,48 @@ qemuMigrationAnyPrepareDef(virQEMUDriver *driver,
 }
 
 
+void
+qemuMigrationSrcComplete(virQEMUDriver *driver,
+                         virDomainObj *vm,
+                         virDomainAsyncJob asyncJob)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    virDomainJobData *jobData = priv->job.completed;
+    virObjectEvent *event;
+    int reason;
+
+    if (jobData) {
+        /* We need to refresh migration statistics after a completed post-copy
+         * migration since jobData contains obsolete data from the time we
+         * switched to post-copy mode.
+         */
+        if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
+            reason == VIR_DOMAIN_PAUSED_POSTCOPY) {
+            VIR_DEBUG("Refreshing migration statistics");
+            if (qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                           jobData, NULL) < 0)
+                VIR_WARN("Could not refresh migration statistics");
+        }
+
+        qemuDomainJobDataUpdateTime(jobData);
+    }
+
+    /* If guest uses SPICE and supports seamless migration we have to hold
+     * up domain shutdown until SPICE server transfers its data */
+    qemuMigrationSrcWaitForSpice(vm);
+
+    qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED, asyncJob,
+                    VIR_QEMU_PROCESS_STOP_MIGRATED);
+    virDomainAuditStop(vm, "migrated");
+
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_STOPPED,
+                                              VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
+    virObjectEventStateQueue(driver->domainEventState, event);
+    qemuDomainEventEmitJobCompleted(driver, vm);
+}
+
+
 static int
 qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
                              virDomainObj *vm,
@@ -3500,7 +3542,6 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
                              int retcode)
 {
     g_autoptr(qemuMigrationCookie) mig = NULL;
-    virObjectEvent *event;
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = priv->job.privateData;
     virDomainJobData *jobData = NULL;
@@ -3537,21 +3578,9 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 
     /* Update times with the values sent by the destination daemon */
     if (mig->jobData && jobData) {
-        int reason;
         qemuDomainJobDataPrivate *privJob = jobData->privateData;
         qemuDomainJobDataPrivate *privMigJob = mig->jobData->privateData;
 
-        /* We need to refresh migration statistics after a completed post-copy
-         * migration since priv->job.completed contains obsolete data from the
-         * time we switched to post-copy mode.
-         */
-        if (virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-            reason == VIR_DOMAIN_PAUSED_POSTCOPY &&
-            qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
-                                       jobData, NULL) < 0)
-            VIR_WARN("Could not refresh migration statistics");
-
-        qemuDomainJobDataUpdateTime(jobData);
         jobData->timeDeltaSet = mig->jobData->timeDeltaSet;
         jobData->timeDelta = mig->jobData->timeDelta;
         privJob->stats.mig.downtime_set = privMigJob->stats.mig.downtime_set;
@@ -3565,20 +3594,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
      * If something failed, resume CPUs, but only if we didn't use post-copy.
      */
     if (retcode == 0) {
-        /* If guest uses SPICE and supports seamless migration we have to hold
-         * up domain shutdown until SPICE server transfers its data */
-        qemuMigrationSrcWaitForSpice(vm);
-
-        qemuProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_MIGRATED,
-                        VIR_ASYNC_JOB_MIGRATION_OUT,
-                        VIR_QEMU_PROCESS_STOP_MIGRATED);
-        virDomainAuditStop(vm, "migrated");
-
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STOPPED,
-                                         VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
-        virObjectEventStateQueue(driver->domainEventState, event);
-        qemuDomainEventEmitJobCompleted(driver, vm);
+        qemuMigrationSrcComplete(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT);
     } else {
         virErrorPtr orig_err;
         int reason;
