@@ -1084,6 +1084,11 @@ typedef enum {
       */
     VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES = (1 << 18),
 
+    /* Resume migration which failed in post-copy phase.
+     *
+     * Since: 8.5.0
+     */
+    VIR_MIGRATE_POSTCOPY_RESUME = (1 << 19),
 } virDomainMigrateFlags;
 
 

@@ -9771,6 +9771,12 @@ virDomainMigrateGetMaxSpeed(virDomainPtr domain,
  * this, libvirt will refuse to cancel post-copy migration via
  * virDomainAbortJob.
  *
+ * Failed post-copy migration can be recovered once the cause for the failure
+ * (e.g., a network issue) is resolved by repeating the migration with an
+ * additional VIR_MIGRATE_POSTCOPY_RESUME flag. This will recreate the
+ * connection and resume migration from the point where it failed. This step
+ * can be repeated in case the migration breaks again.
+ *
  * The following domain life cycle events are emitted during post-copy
  * migration:
  *  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY (on the source) -- migration entered
