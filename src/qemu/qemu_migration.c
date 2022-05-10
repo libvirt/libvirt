@@ -5959,10 +5959,6 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         inPostCopy = true;
 
     if (!(flags & VIR_MIGRATE_PAUSED)) {
-        /* run 'cont' on the destination, which allows migration on qemu
-         * >= 0.10.6 to work properly.  This isn't strictly necessary on
-         * older qemu's, but it also doesn't hurt anything there
-         */
         if (qemuProcessStartCPUs(driver, vm,
                                  inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
                                             : VIR_DOMAIN_RUNNING_MIGRATED,
