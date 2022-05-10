@@ -1461,7 +1461,6 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
 
     if (qemuMonitorAddNetdev(priv->mon, &netprops,
                              tapfd, tapfdName, tapfdSize,
-                             NULL, NULL, 0,
                              slirpfd, slirpfdName) < 0) {
         qemuDomainObjExitMonitor(vm);
         virDomainAuditNet(vm, NULL, net, "attach", false);
@@ -2242,7 +2241,7 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
 
     if (netdevprops) {
         if (qemuMonitorAddNetdev(priv->mon, &netdevprops,
-                                 NULL, NULL, 0, NULL, NULL, 0, -1, NULL) < 0)
+                                 NULL, NULL, 0, -1, NULL) < 0)
             goto exit_monitor;
     }
 
