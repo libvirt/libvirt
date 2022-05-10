@@ -183,8 +183,10 @@ qemuMigrationJobStartPhase(virDomainObj *vm,
 
 
 static void ATTRIBUTE_NONNULL(1)
-qemuMigrationJobContinue(virDomainObj *vm)
+qemuMigrationJobContinue(virDomainObj *vm,
+                         qemuDomainCleanupCallback cleanup)
 {
+    qemuDomainCleanupAdd(vm, cleanup);
     qemuDomainObjReleaseAsyncJob(vm);
 }
 
@@ -2388,8 +2390,7 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
             qemuMigrationSrcPostcopyFailed(vm);
         else
             qemuMigrationDstPostcopyFailed(vm);
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     } else {
         qemuMigrationParamsReset(driver, vm, priv->job.asyncJob,
                                  jobPriv->migParams, priv->job.apiFlags);
@@ -2826,8 +2827,7 @@ qemuMigrationSrcBeginResumePhase(virConnectPtr conn,
     if (!xml)
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
 
-    qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-    qemuMigrationJobContinue(vm);
+    qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     return g_steal_pointer(&xml);
 }
 
@@ -2902,8 +2902,6 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
                                  qemuMigrationAnyConnectionClosed) < 0)
             goto endjob;
-
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
     }
 
     ret = g_steal_pointer(&xml);
@@ -2911,7 +2909,7 @@ qemuMigrationSrcBegin(virConnectPtr conn,
  endjob:
     if (flags & VIR_MIGRATE_CHANGE_PROTECTION) {
         if (ret)
-            qemuMigrationJobContinue(vm);
+            qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
         else
             qemuMigrationJobFinish(vm);
     } else {
@@ -3440,13 +3438,11 @@ qemuMigrationDstPrepareFresh(virQEMUDriver *driver,
         VIR_WARN("Unable to encode migration cookie");
     }
 
-    qemuDomainCleanupAdd(vm, qemuMigrationDstPrepareCleanup);
-
     /* We keep the job active across API calls until the finish() call.
      * This prevents any other APIs being invoked while incoming
      * migration is taking place.
      */
-    qemuMigrationJobContinue(vm);
+    qemuMigrationJobContinue(vm, qemuMigrationDstPrepareCleanup);
 
     if (autoPort)
         priv->migrationPort = port;
@@ -3569,8 +3565,7 @@ qemuMigrationDstPrepareResume(virQEMUDriver *driver,
         VIR_FREE(priv->origname);
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
     }
-    qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-    qemuMigrationJobContinue(vm);
+    qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     virDomainObjEndAPI(&vm);
     return ret;
 }
@@ -4099,8 +4094,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
 
     if (virDomainObjIsFailedPostcopy(vm)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     } else {
         qemuMigrationJobFinish(vm);
     }
@@ -6007,8 +6001,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
 
     if (virDomainObjIsFailedPostcopy(vm)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     } else {
         /* v2 proto has no confirm phase so we need to reset migration parameters
          * here
@@ -6076,8 +6069,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
     if (ret < 0)
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
 
-    qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-    qemuMigrationJobContinue(vm);
+    qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     return ret;
 }
 
@@ -6150,8 +6142,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
     } else {
         if (ret < 0)
             ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
-        qemuMigrationJobContinue(vm);
+        qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     }
 
     if (!virDomainObjIsActive(vm))
@@ -6680,7 +6671,6 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     if (virDomainObjIsFailedPostcopy(vm)) {
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuProcessAutoDestroyRemove(driver, vm);
-        qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         *finishJob = false;
     } else {
         qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_IN,
@@ -6774,7 +6764,7 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         if (finishJob)
             qemuMigrationJobFinish(vm);
         else
-            qemuMigrationJobContinue(vm);
+            qemuMigrationJobContinue(vm, qemuProcessCleanupMigrationJob);
     }
 
  cleanup:
