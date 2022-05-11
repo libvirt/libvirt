@@ -499,7 +499,6 @@ mymain(void)
             QEMU_CAPS_SPICE);
     cfg->spiceTLS = false;
 
-    DO_TEST_NOCAPS("serial-spiceport-nospice");
     DO_TEST_NOCAPS("serial-debugcon");
     DO_TEST_NOCAPS("console-compat");
     DO_TEST_NOCAPS("console-compat2");

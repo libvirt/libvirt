@@ -1613,7 +1613,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_QXL,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST_NOCAPS("serial-spiceport-nospice");
 
     DO_TEST("console-compat",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
@@ -1635,7 +1634,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_CAPS_LATEST("serial-file-log");
     DO_TEST_CAPS_LATEST("serial-spiceport");
-    DO_TEST_CAPS_LATEST("serial-spiceport-nospice");
     DO_TEST_CAPS_LATEST("serial-debugcon");
 
     DO_TEST_CAPS_LATEST("console-compat");
