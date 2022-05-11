@@ -1196,6 +1196,14 @@ v6.9.0 (2020-11-02)
 
     It's supported in QEMU 5.0.0 and newer.
 
+  * cpu: Add a flag for XML validation in CPU comparison
+
+    The ``virConnectCompareCPU`` and ``virConnectCompareHypervisorCPU`` API
+    now support the ``VIR_CONNECT_COMPARE_CPU_VALIDATE_XML`` flag, which
+    enables XML validation. For virsh, this feature is enabled by passing
+    the ``--validate`` option to the ``cpu-compare`` and
+    ``hypervisor-cpu-compare`` subcommands.
+
 * **Improvements**
 
   * qemu: Make 'cbitpos' & 'reducedPhysBits' attrs optional
