@@ -74,8 +74,20 @@ if [ -z "$TYPE" ]; then
     ROOT=`xmllint --stream --debug "$XMLFILE" 2>/dev/null | grep "^0 1 " | awk '{ print $3 }'`
   fi
   case "$ROOT" in
+     *cpu*)
+        TYPE="cpu"
+        ;;
      *domainsnapshot*) # Must come first, since *domain* is a substring
         TYPE="domainsnapshot"
+        ;;
+     *domaincheckpoint*)
+        TYPE="domaincheckpoint"
+        ;;
+     *domainbackup*)
+        TYPE="domainbackup"
+        ;;
+     *domaincaps*)
+        TYPE="domaincaps"
         ;;
      *domain*)
         TYPE="domain"
@@ -85,6 +97,9 @@ if [ -z "$TYPE" ]; then
         ;;
      *network*)
         TYPE="network"
+        ;;
+     *storagepoolcaps*)
+        TYPE="storagepoolcaps"
         ;;
      *pool*)
         TYPE="storagepool"

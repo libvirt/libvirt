@@ -31,17 +31,41 @@ from the name of the root element in the XML document.
 
 Valid schema names currently include
 
+- ``cpu``
+
+The schema for the XML format of cpu
+
 - ``domainsnapshot``
 
 The schema for the XML format used by domain snapshot configuration
+
+- ``domaincheckpoint``
+
+The schema for the XML format used by domain checkpoint configuration
+
+- ``domainbackup``
+
+The schema for the XML format used by domain backup configuration
+
+- ``domaincaps``
+
+The schema for the XML format of domain capabilities
 
 - ``domain``
 
 The schema for the XML format used by guest domains configuration
 
+- ``networkport``
+
+The schema for the XML format used by network port configuration
+
 - ``network``
 
 The schema for the XML format used by virtual network configuration
+
+- ``storagepoolcaps``
+
+The schema for the XML format of storage pool capabilities
 
 - ``storagepool``
 
