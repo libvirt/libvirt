@@ -5324,6 +5324,26 @@ qemuDomainHotplugModIOThread(virQEMUDriver *driver,
 
 
 static int
+qemuDomainHotplugModIOThreadIDDef(virDomainIOThreadIDDef *def,
+                                  qemuMonitorIOThreadInfo mondef)
+{
+    /* These have no representation in domain XML */
+    if (mondef.set_poll_grow ||
+        mondef.set_poll_max_ns ||
+        mondef.set_poll_shrink)
+        return -1;
+
+    if (mondef.set_thread_pool_min)
+        def->thread_pool_min = mondef.thread_pool_min;
+
+    if (mondef.set_thread_pool_max)
+        def->thread_pool_max = mondef.thread_pool_max;
+
+    return 0;
+}
+
+
+static int
 qemuDomainHotplugDelIOThread(virQEMUDriver *driver,
                              virDomainObj *vm,
                              unsigned int iothread_id)
@@ -5430,6 +5450,10 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
                                VIR_TYPED_PARAM_UINT,
                                VIR_DOMAIN_IOTHREAD_POLL_SHRINK,
                                VIR_TYPED_PARAM_UINT,
+                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
+                               VIR_TYPED_PARAM_INT,
+                               VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,
+                               VIR_TYPED_PARAM_INT,
                                NULL) < 0)
         return -1;
 
@@ -5454,6 +5478,20 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
     if (rc == 1)
         iothread->set_poll_shrink = true;
 
+    if ((rc = virTypedParamsGetInt(params, nparams,
+                                   VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN,
+                                   &iothread->thread_pool_min)) < 0)
+        return -1;
+    if (rc == 1)
+        iothread->set_thread_pool_min = true;
+
+    if ((rc = virTypedParamsGetInt(params, nparams,
+                                   VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX,
+                                   &iothread->thread_pool_max)) < 0)
+        return -1;
+    if (rc == 1)
+        iothread->set_thread_pool_max = true;
+
     if (iothread->set_poll_max_ns && iothread->poll_max_ns > INT_MAX) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("poll-max-ns (%llu) must be less than or equal to %d"),
@@ -5472,6 +5510,78 @@ qemuDomainIOThreadParseParams(virTypedParameterPtr params,
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("poll-shrink (%u) must be less than or equal to %d"),
                        iothread->poll_shrink, INT_MAX);
+        return -1;
+    }
+
+    if (iothread->set_thread_pool_min && iothread->thread_pool_min < -1) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("thread_pool_min (%d) must be equal to or greater than -1"),
+                       iothread->thread_pool_min);
+        return -1;
+    }
+
+    if (iothread->set_thread_pool_max &&
+        (iothread->thread_pool_max < -1 || iothread->thread_pool_max == 0)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("thread_pool_max (%d) must be a positive number or -1"),
+                       iothread->thread_pool_max);
+        return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuDomainIOThreadValidate:
+ * iothreaddef: IOThread definition in domain XML
+ * iothread: new values to set
+ * live: whether this is update of active domain
+ *
+ * Validate that changes to be made to an IOThread (as expressed by @iothread)
+ * are consistent with the current state of the IOThread (@iothreaddef).
+ * For instance, that thread_pool_min won't end up greater than thread_pool_max.
+ *
+ * Returns: 0 on success,
+ *         -1 on error, with error message reported.
+ */
+static int
+qemuDomainIOThreadValidate(virDomainIOThreadIDDef *iothreaddef,
+                           qemuMonitorIOThreadInfo iothread,
+                           bool live)
+{
+    int thread_pool_min = iothreaddef->thread_pool_min;
+    int thread_pool_max = iothreaddef->thread_pool_max;
+
+    /* For live change we don't have a way to let QEMU return to its
+     * defaults. Therefore, deny setting -1. */
+
+    if (iothread.set_thread_pool_min) {
+        if (live && iothread.thread_pool_min < 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("thread_pool_min (%d) must be equal to or greater than 0 for live change"),
+                           iothread.thread_pool_min);
+            return -1;
+        }
+
+        thread_pool_min = iothread.thread_pool_min;
+    }
+
+    if (iothread.set_thread_pool_max) {
+        if (live && iothread.thread_pool_max < 0) {
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("thread_pool_max (%d) must be equal to or greater than 0 for live change"),
+                           iothread.thread_pool_max);
+            return -1;
+        }
+
+        thread_pool_max = iothread.thread_pool_max;
+    }
+
+    if (thread_pool_min > thread_pool_max) {
+        virReportError(VIR_ERR_OPERATION_INVALID,
+                       _("thread_pool_min (%d) can't be greater than thread_pool_max (%d)"),
+                       thread_pool_min, thread_pool_max);
         return -1;
     }
 
@@ -5496,6 +5606,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
     qemuDomainObjPrivate *priv;
     virDomainDef *def;
     virDomainDef *persistentDef;
+    virDomainIOThreadIDDef *iothreaddef = NULL;
     int ret = -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -5535,16 +5646,22 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
             break;
 
         case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
-            if (!(virDomainIOThreadIDFind(def, iothread.iothread_id))) {
+            iothreaddef = virDomainIOThreadIDFind(def, iothread.iothread_id);
+
+            if (!iothreaddef) {
                 virReportError(VIR_ERR_INVALID_ARG,
                                _("cannot find IOThread '%u' in iothreadids"),
                                iothread.iothread_id);
                 goto endjob;
             }
 
+            if (qemuDomainIOThreadValidate(iothreaddef, iothread, true) < 0)
+                goto endjob;
+
             if (qemuDomainHotplugModIOThread(driver, vm, iothread) < 0)
                 goto endjob;
 
+            qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread);
             break;
 
         }
@@ -5572,10 +5689,23 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
             break;
 
         case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("configuring persistent polling values is "
-                             "not supported"));
-            goto endjob;
+            iothreaddef = virDomainIOThreadIDFind(persistentDef, iothread.iothread_id);
+
+            if (!iothreaddef) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("cannot find IOThread '%u' in iothreadids"),
+                               iothread.iothread_id);
+                goto endjob;
+            }
+
+            if (qemuDomainIOThreadValidate(iothreaddef, iothread, false) < 0)
+                goto endjob;
+
+            if (qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread) < 0) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("configuring persistent polling values is not supported"));
+                goto endjob;
+            }
 
             break;
         }

@@ -7447,6 +7447,8 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
     VIR_IOTHREAD_SET_PROP("poll-max-ns", poll_max_ns);
     VIR_IOTHREAD_SET_PROP("poll-grow", poll_grow);
     VIR_IOTHREAD_SET_PROP("poll-shrink", poll_shrink);
+    VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
+    VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
 
 #undef VIR_IOTHREAD_SET_PROP
 
