@@ -1137,6 +1137,11 @@ v6.10.0 (2020-12-01)
     mode of files and directories, respectively, when using accessmode=mapped.
     It requires QEMU 2.10 or above.
 
+  * qemu: support kvm-poll-control performance hint
+
+    Implement the new KVM feature 'poll-control' to set this performance hint
+    for KVM guests. It requires QEMU 4.2 or above.
+
 * **Improvements**
 
   * virsh: Support network disks in ``virsh attach-disk``
