@@ -472,6 +472,18 @@ v7.8.0 (2021-10-01)
 
   * qemu: Add attribute ``queue_size`` for virtio-blk devices
 
+* **Improvements**
+
+  * api: Add XML validation for creating of: networkport, nwfilter-binding,
+    network
+
+    * Add flag ``VIR_NETWORK_PORT_CREATE_VALIDATE`` to validate network port
+      input xml of network-port creating.
+    * Add flag ``VIR_NETWORK_CREATE_VALIDATE`` to validate network input xml of
+      network creating.
+    * Add flag ``VIR_NWFILTER_BINDING_CREATE_VALIDATE`` to validate
+      nwfilter-binding input xml of nwfilter-binding creating.
+
 
 v7.7.0 (2021-09-01)
 ===================
