@@ -1914,8 +1914,12 @@ qemuProcessInitMonitor(virQEMUDriver *driver,
 
 
 static int
-qemuConnectMonitor(virQEMUDriver *driver, virDomainObj *vm, int asyncJob,
-                   bool retry, qemuDomainLogContext *logCtxt)
+qemuConnectMonitor(virQEMUDriver *driver,
+                   virDomainObj *vm,
+                   int asyncJob,
+                   bool retry,
+                   qemuDomainLogContext *logCtxt,
+                   bool reconnect)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitor *mon = NULL;
@@ -1968,7 +1972,7 @@ qemuConnectMonitor(virQEMUDriver *driver, virDomainObj *vm, int asyncJob,
     if (qemuProcessInitMonitor(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (qemuMigrationCapsCheck(driver, vm, asyncJob) < 0)
+    if (qemuMigrationCapsCheck(driver, vm, asyncJob, reconnect) < 0)
         return -1;
 
     return 0;
@@ -2353,7 +2357,7 @@ qemuProcessWaitForMonitor(virQEMUDriver *driver,
     VIR_DEBUG("Connect monitor to vm=%p name='%s' retry=%d",
               vm, vm->def->name, retry);
 
-    if (qemuConnectMonitor(driver, vm, asyncJob, retry, logCtxt) < 0)
+    if (qemuConnectMonitor(driver, vm, asyncJob, retry, logCtxt, false) < 0)
         goto cleanup;
 
     /* Try to get the pty path mappings again via the monitor. This is much more
@@ -8773,7 +8777,7 @@ qemuProcessReconnect(void *opaque)
     tryMonReconn = true;
 
     /* XXX check PID liveliness & EXE path */
-    if (qemuConnectMonitor(driver, obj, VIR_ASYNC_JOB_NONE, retry, NULL) < 0)
+    if (qemuConnectMonitor(driver, obj, VIR_ASYNC_JOB_NONE, retry, NULL, true) < 0)
         goto error;
 
     priv->machineName = qemuDomainGetMachineName(obj);

@@ -162,7 +162,8 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
 int
 qemuMigrationCapsCheck(virQEMUDriver *driver,
                        virDomainObj *vm,
-                       int asyncJob);
+                       int asyncJob,
+                       bool reconnect);
 
 bool
 qemuMigrationCapsGet(virDomainObj *vm,

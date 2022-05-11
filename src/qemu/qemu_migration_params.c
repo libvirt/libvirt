@@ -1385,10 +1385,10 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
 int
 qemuMigrationCapsCheck(virQEMUDriver *driver,
                        virDomainObj *vm,
-                       int asyncJob)
+                       int asyncJob,
+                       bool reconnect)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virBitmap) migEvent = NULL;
     g_autoptr(virJSONValue) json = NULL;
     g_auto(GStrv) caps = NULL;
     char **capStr;
@@ -1419,22 +1419,24 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
         }
     }
 
-    migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
+    if (!reconnect) {
+        g_autoptr(virBitmap) migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
-    ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
+        ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
 
-    if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
-        return -1;
+        if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
+            return -1;
 
-    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-        return -1;
+        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+            return -1;
 
-    rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
+        rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
 
-    qemuDomainObjExitMonitor(vm);
+        qemuDomainObjExitMonitor(vm);
 
-    if (rc < 0)
-        return -1;
+        if (rc < 0)
+            return -1;
+    }
 
     /* Migration events capability must always be enabled, clearing it from
      * migration capabilities bitmap makes sure it won't be touched anywhere
