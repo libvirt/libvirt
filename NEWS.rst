@@ -1020,6 +1020,10 @@ v7.0.0 (2021-01-15)
 
     It's supported in QEMU 4.1 and newer.
 
+  * qemu: Add support for NFS disk protocol
+
+    Implement support for the 'nfs' native protocol driver in the qemu driver.
+
 * **Improvements**
 
   * qemu: Discourage users from polling ``virDomainGetBlockJobInfo`` for block
