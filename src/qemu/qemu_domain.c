@@ -3118,9 +3118,6 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     return 0;
 
  error:
-    g_clear_pointer(&priv->namespaces, virBitmapFree);
-    g_clear_pointer(&priv->monConfig, virObjectUnref);
-    g_clear_pointer(&priv->qemuDevices, g_strfreev);
     return -1;
 }
 
