@@ -1016,6 +1016,10 @@ v7.0.0 (2021-01-15)
     powered off or undefined. Add per-TPM emulator option ``persistent_state``
     for keeping TPM state.
 
+  * cpu_map: Add Snowridge CPU model
+
+    It's supported in QEMU 4.1 and newer.
+
 * **Improvements**
 
   * qemu: Discourage users from polling ``virDomainGetBlockJobInfo`` for block
