@@ -1216,6 +1216,10 @@ v6.9.0 (2020-11-02)
     For SR-IOV VF hostdevs, libvirt now supports retrieving device traffic
     stats via the ``virDomainInterfaceStats`` API and ``virsh domifstat``.
 
+  * logging: Allow disabling log rollover
+
+    Set ``max_len=0`` in ``virtlogd.conf`` to disable log rollover.
+
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
