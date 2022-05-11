@@ -1124,6 +1124,13 @@ v6.10.0 (2020-12-01)
     ``virDomainSetVcpus()``, and ``virDomainSetVcpusFlags()`` APIs have been
     implemented in the Hyper-V driver.
 
+  * qemu: Add 'fmode' and 'dmode' options for 9pfs
+
+    Expose QEMU's 9pfs 'fmode' and 'dmode' options via attributes on the
+    'filesystem' node in the domain XML. These options control the creation
+    mode of files and directories, respectively, when using accessmode=mapped.
+    It requires QEMU 2.10 or above.
+
 * **Improvements**
 
   * virsh: Support network disks in ``virsh attach-disk``
