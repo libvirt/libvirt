@@ -1233,6 +1233,11 @@ v6.9.0 (2020-11-02)
     for TAP devices. It will avoid needless cost of host CPU cycles and
     thus improve performance.
 
+  * qemu: virtiofs can be used without NUMA nodes
+
+    Virtiofs is supported for the VM without NUMA nodes but configured with
+    shared memory.
+
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
