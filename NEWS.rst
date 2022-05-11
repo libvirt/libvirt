@@ -1204,6 +1204,13 @@ v6.9.0 (2020-11-02)
     the ``--validate`` option to the ``cpu-compare`` and
     ``hypervisor-cpu-compare`` subcommands.
 
+  * qemu: Introduce virtio-balloon free page reporting feature
+
+    Introduce the optional attribute ``free-page-reporting`` for virtio
+    memballoon device. It enables/disables the ability of the QEMU virtio
+    memory balloon to return unused pages back to the hypervisor. QEMU 5.1
+    and newer support this feature.
+
 * **Improvements**
 
   * qemu: Make 'cbitpos' & 'reducedPhysBits' attrs optional
