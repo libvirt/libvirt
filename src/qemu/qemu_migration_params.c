@@ -1433,10 +1433,8 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
 
     qemuDomainObjExitMonitor(vm);
 
-    if (rc < 0) {
-        virResetLastError();
-        VIR_DEBUG("Cannot enable migration events");
-    }
+    if (rc < 0)
+        return -1;
 
     /* Migration events capability must always be enabled, clearing it from
      * migration capabilities bitmap makes sure it won't be touched anywhere
