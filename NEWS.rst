@@ -1220,6 +1220,12 @@ v6.9.0 (2020-11-02)
 
     Set ``max_len=0`` in ``virtlogd.conf`` to disable log rollover.
 
+  * qemu: Set noqueue qdisc for TAP devices
+
+    Set ``noqueue`` instead of the former ``pfifo_fast`` queue discipline
+    for TAP devices. It will avoid needless cost of host CPU cycles and
+    thus improve performance.
+
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
