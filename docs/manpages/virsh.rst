@@ -2999,7 +2999,8 @@ iothreadset
 ::
 
    iothreadset domain iothread_id [[--poll-max-ns ns] [--poll-grow factor]
-      [--poll-shrink divisor]]
+      [--poll-shrink divisor] [--thread-pool-min value]
+      [--thread-pool-max value]]
       [[--config] [--live] | [--current]]
 
 Modifies an existing iothread of the domain using the specified
@@ -3015,6 +3016,16 @@ the default quotient will be used. The polling values are purely dynamic
 for a running guest. Saving, destroying, stopping, etc. the guest will
 result in the polling values returning to hypervisor defaults at the
 next start, restore, etc.
+
+The *--thread-pool-min* and *--thread-pool-max* options then set lower and
+upper bound, respectively of number of threads in worker pool of given
+iothread. For changes to an inactive configuration -1 can be specified to
+remove corresponding boundary from the domain configuration. For changes to a
+running guest it's recommended to set the upper boundary first
+(*--thread-pool-max*) and only after that set the lower boundary
+(*--thread-pool-min*). It is allowed for the lower boundary to be the same as
+the upper boundary, however it's not allowed for the upper boundary to be value
+of zero.
 
 If *--live* is specified, affect a running guest. If the guest is not
 running an error is returned.

@@ -7796,7 +7796,15 @@ static const vshCmdOptDef opts_iothreadset[] = {
     },
     {.name = "poll-shrink",
      .type = VSH_OT_INT,
-     .help = N_("set the value for reduction of the IOThread polling time ")
+     .help = N_("set the value for reduction of the IOThread polling time")
+    },
+    {.name = "thread-pool-min",
+     .type = VSH_OT_INT,
+     .help = N_("lower boundary for worker thread pool")
+    },
+    {.name = "thread-pool-max",
+     .type = VSH_OT_INT,
+     .help = N_("upper boundary for worker thread pool")
     },
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
@@ -7816,6 +7824,7 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     int maxparams = 0;
     unsigned long long poll_max;
     unsigned int poll_val;
+    int thread_val;
     int rc;
 
     if (live)
@@ -7852,6 +7861,19 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     VSH_IOTHREAD_SET_UINT_PARAMS("poll-shrink", VIR_DOMAIN_IOTHREAD_POLL_SHRINK)
 
 #undef VSH_IOTHREAD_SET_UINT_PARAMS
+
+#define VSH_IOTHREAD_SET_INT_PARAMS(opt, param) \
+    thread_val = -1; \
+    if ((rc = vshCommandOptInt(ctl, cmd, opt, &thread_val)) < 0) \
+        goto cleanup; \
+    if (rc > 0 && \
+        virTypedParamsAddInt(&params, &nparams, &maxparams, \
+                             param, thread_val) < 0) \
+        goto save_error;
+
+    VSH_IOTHREAD_SET_INT_PARAMS("thread-pool-min", VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN)
+    VSH_IOTHREAD_SET_INT_PARAMS("thread-pool-max", VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX)
+#undef VSH_IOTHREAD_SET_INT_PARAMS
 
     if (nparams == 0) {
         vshError(ctl, _("Not enough arguments passed, nothing to set"));
