@@ -1199,6 +1199,11 @@ v6.9.0 (2020-11-02)
     Libvirt probes the underlying platform in order to fill in these SEV
     attributes automatically before launching a guest.
 
+  * util: support device stats collection for SR-IOV VF hostdev
+
+    For SR-IOV VF hostdevs, libvirt now supports retrieving device traffic
+    stats via the ``virDomainInterfaceStats`` API and ``virsh domifstat``.
+
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
