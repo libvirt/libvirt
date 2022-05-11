@@ -12511,26 +12511,32 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriver *driver,
 {
     qemuDomainJobDataPrivate *privStats = jobData->privateData;
 
-    if (jobData->status == VIR_DOMAIN_JOB_STATUS_ACTIVE ||
-        jobData->status == VIR_DOMAIN_JOB_STATUS_MIGRATING ||
-        jobData->status == VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED ||
-        jobData->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
-        if (jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE &&
-            qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_NONE,
-                                       jobData, NULL) < 0)
-            return -1;
-
-        if (jobData->status == VIR_DOMAIN_JOB_STATUS_ACTIVE &&
-            privStats->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION &&
+    switch (jobData->status) {
+    case VIR_DOMAIN_JOB_STATUS_ACTIVE:
+        if (privStats->statsType == QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION &&
             qemuMigrationSrcFetchMirrorStats(driver, vm, VIR_ASYNC_JOB_NONE,
                                              jobData) < 0)
             return -1;
+        break;
 
-        if (qemuDomainJobDataUpdateTime(jobData) < 0)
+    case VIR_DOMAIN_JOB_STATUS_MIGRATING:
+    case VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED:
+    case VIR_DOMAIN_JOB_STATUS_POSTCOPY:
+        if (qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_NONE,
+                                       jobData, NULL) < 0)
             return -1;
+        break;
+
+    case VIR_DOMAIN_JOB_STATUS_NONE:
+    case VIR_DOMAIN_JOB_STATUS_PAUSED:
+    case VIR_DOMAIN_JOB_STATUS_COMPLETED:
+    case VIR_DOMAIN_JOB_STATUS_FAILED:
+    case VIR_DOMAIN_JOB_STATUS_CANCELED:
+    default:
+        return 0;
     }
 
-    return 0;
+    return qemuDomainJobDataUpdateTime(jobData);
 }
 
 
