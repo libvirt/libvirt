@@ -2912,13 +2912,13 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     g_autoptr(virQEMUCaps) qemuCaps = NULL;
 
     if (!(priv->monConfig = virDomainChrSourceDefNew(NULL)))
-        goto error;
+        return -1;
 
     if (!(monitorpath =
           virXPathString("string(./monitor[1]/@path)", ctxt))) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("no monitor path"));
-        goto error;
+        return -1;
     }
 
     tmp = virXPathString("string(./monitor[1]/@type)", ctxt);
@@ -2940,13 +2940,13 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("unsupported monitor type '%s'"),
                        virDomainChrTypeToString(priv->monConfig->type));
-        goto error;
+        return -1;
     }
 
     if (virXPathInt("string(./agentTimeout)", ctxt, &priv->agentTimeout) == -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse agent timeout"));
-        goto error;
+        return -1;
     }
 
     priv->dbusDaemonRunning = virXPathBoolean("boolean(./dbusDaemon)", ctxt) > 0;
@@ -2963,11 +2963,11 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                 virReportError(VIR_ERR_INTERNAL_ERROR,
                                _("malformed namespace name: %s"),
                                next->name);
-                goto error;
+                return -1;
             }
 
             if (qemuDomainEnableNamespace(vm, ns) < 0)
-                goto error;
+                return -1;
         }
     }
 
@@ -2979,22 +2979,22 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->rememberOwner = virXPathBoolean("count(./rememberOwner) > 0", ctxt);
 
     if ((n = virXPathNodeSet("./vcpus/vcpu", ctxt, &nodes)) < 0)
-        goto error;
+        return -1;
 
     for (i = 0; i < n; i++) {
         if (qemuDomainObjPrivateXMLParseVcpu(nodes[i], i, vm->def) < 0)
-            goto error;
+            return -1;
     }
     VIR_FREE(nodes);
 
     if ((n = virXPathNodeSet("./qemuCaps/flag", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("failed to parse qemu capabilities flags"));
-        goto error;
+        return -1;
     }
     if (n > 0) {
         if (!(qemuCaps = virQEMUCapsNew()))
-            goto error;
+            return -1;
 
         for (i = 0; i < n; i++) {
             g_autofree char *str = virXMLPropString(nodes[i], "name");
@@ -3003,7 +3003,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                 if (flag < 0) {
                     virReportError(VIR_ERR_INTERNAL_ERROR,
                                    _("Unknown qemu capabilities flag %s"), str);
-                    goto error;
+                    return -1;
                 }
                 virQEMUCapsSet(qemuCaps, flag);
             }
@@ -3016,14 +3016,14 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     priv->lockState = virXPathString("string(./lockstate)", ctxt);
 
     if (qemuDomainObjPrivateXMLParseJob(vm, ctxt) < 0)
-        goto error;
+        return -1;
 
     priv->fakeReboot = virXPathBoolean("boolean(./fakereboot)", ctxt) == 1;
 
     if ((n = virXPathNodeSet("./devices/device", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse qemu device list"));
-        goto error;
+        return -1;
     }
     if (n > 0) {
         /* NULL-terminated list */
@@ -3034,7 +3034,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             if (!priv->qemuDevices[i]) {
                 virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                                _("failed to parse qemu device list"));
-                goto error;
+                return -1;
             }
         }
     }
@@ -3043,7 +3043,7 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     if ((n = virXPathNodeSet("./slirp/helper", ctxt, &nodes)) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse slirp helper list"));
-        goto error;
+        return -1;
     }
     for (i = 0; i < n; i++) {
         g_autofree char *alias = virXMLPropString(nodes[i], "alias");
@@ -3055,22 +3055,22 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
             virStrToLong_i(pid, NULL, 10, &slirp->pid) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("failed to parse slirp helper list"));
-            goto error;
+            return -1;
         }
 
         if (virDomainDefFindDevice(vm->def, alias, &dev, true) < 0 ||
             dev.type != VIR_DOMAIN_DEVICE_NET)
-            goto error;
+            return -1;
 
         if (qemuDomainObjPrivateXMLParseSlirpFeatures(nodes[i], ctxt, slirp) < 0)
-            goto error;
+            return -1;
 
         QEMU_DOMAIN_NETWORK_PRIVATE(dev.data.net)->slirp = g_steal_pointer(&slirp);
     }
     VIR_FREE(nodes);
 
     if (qemuDomainObjPrivateXMLParseAutomaticPlacement(ctxt, priv) < 0)
-        goto error;
+        return -1;
 
     if ((tmp = virXPathString("string(./libDir/@path)", ctxt)))
         priv->libDir = tmp;
@@ -3082,28 +3082,28 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
 
     if (virCPUDefParseXML(ctxt, "./cpu", VIR_CPU_TYPE_GUEST, &priv->origCPU,
                           false) < 0)
-        goto error;
+        return -1;
 
     priv->chardevStdioLogd = virXPathBoolean("boolean(./chardevStdioLogd)",
                                              ctxt) == 1;
 
     if (qemuDomainObjPrivateXMLParseAllowReboot(ctxt, &priv->allowReboot) < 0)
-        goto error;
+        return -1;
 
     qemuDomainObjPrivateXMLParsePR(ctxt, &priv->prDaemonRunning);
 
     if (qemuDomainObjPrivateXMLParseBlockjobs(vm, priv, ctxt) < 0)
-        goto error;
+        return -1;
 
     if (qemuDomainObjPrivateXMLParseBackups(priv, ctxt) < 0)
-        goto error;
+        return -1;
 
     qemuDomainStorageIDReset(priv);
     if (virXPathULongLong("string(./nodename/@index)", ctxt,
                           &priv->nodenameindex) == -2) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("failed to parse node name index"));
-        goto error;
+        return -1;
     }
 
     priv->memPrealloc = virXPathBoolean("boolean(./memPrealloc)", ctxt) == 1;
@@ -3112,13 +3112,10 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                           ctxt, &priv->originalMemlock) == -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse original memlock size"));
-        goto error;
+        return -1;
     }
 
     return 0;
-
- error:
-    return -1;
 }
 
 
