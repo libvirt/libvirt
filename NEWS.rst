@@ -1192,6 +1192,13 @@ v6.9.0 (2020-11-02)
     using ``<interface type='vdpa'>``. The node device APIs also now
     list and provide XML descriptions for vDPA devices.
 
+* **Improvements**
+
+  * qemu: Make 'cbitpos' & 'reducedPhysBits' attrs optional
+
+    Libvirt probes the underlying platform in order to fill in these SEV
+    attributes automatically before launching a guest.
+
 * **Bug fixes**
 
   * hyperv: ensure WQL queries work in all locales
