@@ -541,6 +541,8 @@ v7.7.0 (2021-09-01)
       forbidden for older qemus which don't support the update API as the guest
       could still reboot and execute some instructions until it was terminated.
 
+  * virsh: Support vhostuser in attach-interface
+
 * **Bug fixes**
 
   * qemu: Open chardev logfile on behalf of QEMU
