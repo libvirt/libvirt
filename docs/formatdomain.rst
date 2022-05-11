@@ -6630,7 +6630,7 @@ types have different ``target`` attributes.
    Mouse mode is set by the ``mouse`` element, setting its ``mode`` attribute
    to one of ``server`` or ``client``. If no mode is specified, the qemu
    default will be used (client mode).
-   :since:`Since 8.2.0`
+   :since:`Since 8.4.0`
 
 :anchor:`<a id="elementsCharHostInterface"/>`
 
