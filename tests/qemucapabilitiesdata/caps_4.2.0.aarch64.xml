@@ -61,7 +61,6 @@
   <flag name='pc-dimm'/>
   <flag name='pci-serial'/>
   <flag name='aarch64-off'/>
-  <flag name='migration-event'/>
   <flag name='gpex-pcihost'/>
   <flag name='ioh3420'/>
   <flag name='x3130-upstream'/>

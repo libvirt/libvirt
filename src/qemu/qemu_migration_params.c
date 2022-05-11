@@ -1419,26 +1419,23 @@ qemuMigrationCapsCheck(virQEMUDriver *driver,
         }
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT)) {
-        migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
+    migEvent = virBitmapNew(QEMU_MIGRATION_CAP_LAST);
 
-        ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
+    ignore_value(virBitmapSetBit(migEvent, QEMU_MIGRATION_CAP_EVENTS));
 
-        if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
-            return -1;
+    if (!(json = qemuMigrationCapsToJSON(migEvent, migEvent)))
+        return -1;
 
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
-            return -1;
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
 
-        rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
+    rc = qemuMonitorSetMigrationCapabilities(priv->mon, &json);
 
-        qemuDomainObjExitMonitor(vm);
+    qemuDomainObjExitMonitor(vm);
 
-        if (rc < 0) {
-            virResetLastError();
-            VIR_DEBUG("Cannot enable migration events; clearing capability");
-            virQEMUCapsClear(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
-        }
+    if (rc < 0) {
+        virResetLastError();
+        VIR_DEBUG("Cannot enable migration events");
     }
 
     /* Migration events capability must always be enabled, clearing it from

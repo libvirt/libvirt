@@ -35,7 +35,6 @@
   <flag name='migrate-rdma'/>
   <flag name='aes-key-wrap'/>
   <flag name='dea-key-wrap'/>
-  <flag name='migration-event'/>
   <flag name='virtio-net'/>
   <flag name='virtio-gpu'/>
   <flag name='virtio-gpu.virgl'/>

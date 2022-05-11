@@ -12509,17 +12509,13 @@ qemuDomainGetJobInfoMigrationStats(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    virDomainJobData *jobData)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobDataPrivate *privStats = jobData->privateData;
-
-    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
 
     if (jobData->status == VIR_DOMAIN_JOB_STATUS_ACTIVE ||
         jobData->status == VIR_DOMAIN_JOB_STATUS_MIGRATING ||
         jobData->status == VIR_DOMAIN_JOB_STATUS_HYPERVISOR_COMPLETED ||
         jobData->status == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
-        if (events &&
-            jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE &&
+        if (jobData->status != VIR_DOMAIN_JOB_STATUS_ACTIVE &&
             qemuMigrationAnyFetchStats(driver, vm, VIR_ASYNC_JOB_NONE,
                                        jobData, NULL) < 0)
             return -1;

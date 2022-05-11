@@ -335,7 +335,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "pci-serial", /* QEMU_CAPS_DEVICE_PCI_SERIAL */
               "aarch64-off", /* QEMU_CAPS_CPU_AARCH64_OFF */
               "vhost-user-multiqueue", /* X_QEMU_CAPS_VHOSTUSER_MULTIQUEUE */
-              "migration-event", /* QEMU_CAPS_MIGRATION_EVENT */
+              "migration-event", /* X_QEMU_CAPS_MIGRATION_EVENT */
 
               /* 190 */
               "gpex-pcihost", /* QEMU_CAPS_OBJECT_GPEX */
@@ -1237,7 +1237,6 @@ struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
 
 /* Use virQEMUCapsQMPSchemaQueries for querying parameters of events */
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
-    { "MIGRATION", QEMU_CAPS_MIGRATION_EVENT },
     { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
     { "BLOCK_WRITE_THRESHOLD", QEMU_CAPS_BLOCK_WRITE_THRESHOLD },
     { "DUMP_COMPLETED", QEMU_CAPS_DUMP_COMPLETED },

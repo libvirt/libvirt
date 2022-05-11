@@ -1735,10 +1735,8 @@ qemuMigrationJobCheckStatus(virQEMUDriver *driver,
     virDomainJobData *jobData = priv->job.current;
     qemuDomainJobDataPrivate *privJob = jobData->privateData;
     g_autofree char *error = NULL;
-    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
 
-    if (!events ||
-        privJob->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
+    if (privJob->stats.mig.status == QEMU_MONITOR_MIGRATION_STATUS_ERROR) {
         if (qemuMigrationAnyFetchStats(driver, vm, asyncJob, jobData, &error) < 0)
             return -1;
     }
@@ -1890,7 +1888,6 @@ qemuMigrationSrcWaitForCompletion(virQEMUDriver *driver,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainJobData *jobData = priv->job.current;
-    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     int rv;
 
     jobData->status = VIR_DOMAIN_JOB_STATUS_MIGRATING;
@@ -1900,24 +1897,14 @@ qemuMigrationSrcWaitForCompletion(virQEMUDriver *driver,
         if (rv < 0)
             return rv;
 
-        if (events) {
-            if (virDomainObjWait(vm) < 0) {
-                if (virDomainObjIsActive(vm))
-                    jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
-                return -2;
-            }
-        } else {
-            /* Poll every 50ms for progress & to allow cancellation */
-            struct timespec ts = { .tv_sec = 0, .tv_nsec = 50 * 1000 * 1000ull };
-
-            virObjectUnlock(vm);
-            nanosleep(&ts, NULL);
-            virObjectLock(vm);
+        if (virDomainObjWait(vm) < 0) {
+            if (virDomainObjIsActive(vm))
+                jobData->status = VIR_DOMAIN_JOB_STATUS_FAILED;
+            return -2;
         }
     }
 
-    if (events)
-        ignore_value(qemuMigrationAnyFetchStats(driver, vm, asyncJob, jobData, NULL));
+    ignore_value(qemuMigrationAnyFetchStats(driver, vm, asyncJob, jobData, NULL));
 
     qemuDomainJobDataUpdateTime(jobData);
     qemuDomainJobDataUpdateDowntime(jobData);
@@ -1939,12 +1926,8 @@ qemuMigrationDstWaitForCompletion(virQEMUDriver *driver,
                                   virDomainAsyncJob asyncJob,
                                   bool postcopy)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned int flags = 0;
     int rv;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT))
-        return 0;
 
     VIR_DEBUG("Waiting for incoming migration to complete");
 
@@ -4028,7 +4011,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
-    bool events = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_EVENT);
     bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
     bool storageMigration = flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC);
     bool cancel = false;
@@ -4071,8 +4053,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
         return -1;
     }
 
-    if (events)
-        priv->signalIOError = abort_on_error;
+    priv->signalIOError = abort_on_error;
 
     if (flags & VIR_MIGRATE_PERSIST_DEST) {
         if (persist_xml) {
@@ -4364,9 +4345,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     ret = 0;
 
  cleanup:
-    if (events)
-        priv->signalIOError = false;
-
+    priv->signalIOError = false;
     priv->migMaxBandwidth = restore_max_bandwidth;
     virErrorRestore(&orig_err);
 
