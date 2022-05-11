@@ -1192,6 +1192,10 @@ v6.9.0 (2020-11-02)
     using ``<interface type='vdpa'>``. The node device APIs also now
     list and provide XML descriptions for vDPA devices.
 
+  * cpu_map: Add EPYC-Rome CPU model
+
+    It's supported in QEMU 5.0.0 and newer.
+
 * **Improvements**
 
   * qemu: Make 'cbitpos' & 'reducedPhysBits' attrs optional
