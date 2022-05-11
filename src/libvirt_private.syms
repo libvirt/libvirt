@@ -333,6 +333,7 @@ virDomainDefHasMemoryHotplug;
 virDomainDefHasNVMeDisk;
 virDomainDefHasOldStyleROUEFI;
 virDomainDefHasOldStyleUEFI;
+virDomainDefHasSpiceGraphics;
 virDomainDefHasUSB;
 virDomainDefHasVcpusOffline;
 virDomainDefHasVDPANet;

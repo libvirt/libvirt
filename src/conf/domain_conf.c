@@ -31558,3 +31558,17 @@ virDomainObjGetMessages(virDomainObj *vm,
 
     return rv;
 }
+
+bool
+virDomainDefHasSpiceGraphics(const virDomainDef *def)
+{
+    size_t i = 0;
+
+    for (i = 0; i < def->ngraphics; i++) {
+        if (def->graphics[i]->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+            return true;
+        }
+    }
+
+    return false;
+}

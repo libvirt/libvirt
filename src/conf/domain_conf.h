@@ -4277,3 +4277,6 @@ int
 virDomainObjGetMessages(virDomainObj *vm,
                         char ***msgs,
                         unsigned int flags);
+
+bool
+virDomainDefHasSpiceGraphics(const virDomainDef *def);
