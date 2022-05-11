@@ -1106,6 +1106,12 @@ v6.10.0 (2020-12-01)
   option is missing are now '1'. This ensures that only legitimate clients
   access servers, which don't have any additional form of authentication.
 
+  * qemu: Introduce "migrate_tls_force" qemu.conf option
+
+    The ``migrate_tls_force`` configuration option allows administrators to
+    always force connections used for migration to be TLS secured as if the
+    ``VIR_MIGRATE_TLS`` flag had been used.
+
 * **New features**
 
   * qemu: Implement OpenSSH authorized key file management APIs
