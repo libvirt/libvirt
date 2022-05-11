@@ -9445,6 +9445,7 @@ int
 qemuDomainAdjustMaxMemLock(virDomainObj *vm,
                            bool forceVFIO)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
     unsigned long long currentMemLock = 0;
     unsigned long long desiredMemLock = 0;
 
@@ -9457,8 +9458,8 @@ qemuDomainAdjustMaxMemLock(virDomainObj *vm,
             /* If this is the first time adjusting the limit, save the current
              * value so that we can restore it once memory locking is no longer
              * required */
-            if (vm->originalMemlock == 0) {
-                vm->originalMemlock = currentMemLock;
+            if (priv->originalMemlock == 0) {
+                priv->originalMemlock = currentMemLock;
             }
         } else {
             /* If the limit is already high enough, we can assume
@@ -9471,8 +9472,8 @@ qemuDomainAdjustMaxMemLock(virDomainObj *vm,
     } else {
         /* Once memory locking is no longer required, we can restore the
          * original, usually very low, limit */
-        desiredMemLock = vm->originalMemlock;
-        vm->originalMemlock = 0;
+        desiredMemLock = priv->originalMemlock;
+        priv->originalMemlock = 0;
     }
 
     if (desiredMemLock > 0 &&

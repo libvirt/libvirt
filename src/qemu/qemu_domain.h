@@ -241,6 +241,9 @@ struct _qemuDomainObjPrivate {
     GSList *dbusVMStateIds;
     /* true if -object dbus-vmstate was added */
     bool dbusVMState;
+
+    unsigned long long originalMemlock; /* Original RLIMIT_MEMLOCK, zero if no
+                                         * restore will be required later */
 };
 
 #define QEMU_DOMAIN_PRIVATE(vm) \

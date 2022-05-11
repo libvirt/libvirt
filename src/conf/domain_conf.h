@@ -3064,9 +3064,6 @@ struct _virDomainObj {
     int taint;
     size_t ndeprecations;
     char **deprecations;
-
-    unsigned long long originalMemlock; /* Original RLIMIT_MEMLOCK, zero if no
-                                         * restore will be required later */
 };
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainObj, virObjectUnref);
