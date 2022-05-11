@@ -2386,6 +2386,12 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
     if (qemuDomainObjPrivateXMLFormatBackups(buf, vm) < 0)
         return -1;
 
+    if (priv->originalMemlock > 0) {
+        virBufferAsprintf(buf,
+                          "<originalMemlock>%llu</originalMemlock>\n",
+                          priv->originalMemlock);
+    }
+
     return 0;
 }
 
@@ -3101,6 +3107,13 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
     }
 
     priv->memPrealloc = virXPathBoolean("boolean(./memPrealloc)", ctxt) == 1;
+
+    if (virXPathULongLong("string(./originalMemlock)",
+                          ctxt, &priv->originalMemlock) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse original memlock size"));
+        goto error;
+    }
 
     return 0;
 
