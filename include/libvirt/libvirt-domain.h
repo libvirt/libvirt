@@ -1579,16 +1579,16 @@ int                     virDomainRestoreParams  (virConnectPtr conn,
                                                  unsigned int flags);
 
 /**
- * VIR_SAVE_PARAM_FILE:
+ * VIR_DOMAIN_SAVE_PARAM_FILE:
  *
  * the parameter used to specify the savestate file to save to or restore from.
  *
  * Since: 8.4.0
  */
-# define VIR_SAVE_PARAM_FILE                     "file"
+# define VIR_DOMAIN_SAVE_PARAM_FILE             "file"
 
 /**
- * VIR_SAVE_PARAM_DXML:
+ * VIR_DOMAIN_SAVE_PARAM_DXML:
  *
  * an optional parameter used to adjust guest xml on restore.
  * If the hypervisor supports it, it can be used to alter
@@ -1598,7 +1598,7 @@ int                     virDomainRestoreParams  (virConnectPtr conn,
  *
  * Since: 8.4.0
  */
-# define VIR_SAVE_PARAM_DXML                     "dxml"
+# define VIR_DOMAIN_SAVE_PARAM_DXML             "dxml"
 
 /* See below for virDomainSaveImageXMLFlags */
 char *          virDomainSaveImageGetXMLDesc    (virConnectPtr conn,

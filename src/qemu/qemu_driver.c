@@ -2823,14 +2823,18 @@ qemuDomainSaveParams(virDomainPtr dom,
                   VIR_DOMAIN_SAVE_PAUSED, -1);
 
     if (virTypedParamsValidate(params, nparams,
-                               VIR_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
-                               VIR_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_FILE,
+                               VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_DXML,
+                               VIR_TYPED_PARAM_STRING,
                                NULL) < 0)
         return -1;
 
-    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_FILE, &to) < 0)
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_SAVE_PARAM_FILE, &to) < 0)
         return -1;
-    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_DXML, &dxml) < 0)
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_SAVE_PARAM_DXML, &dxml) < 0)
         return -1;
 
     cfg = virQEMUDriverGetConfig(driver);
@@ -5936,14 +5940,16 @@ qemuDomainRestoreParams(virConnectPtr conn,
     int ret = -1;
 
     if (virTypedParamsValidate(params, nparams,
-                               VIR_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
-                               VIR_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_FILE, VIR_TYPED_PARAM_STRING,
+                               VIR_DOMAIN_SAVE_PARAM_DXML, VIR_TYPED_PARAM_STRING,
                                NULL) < 0)
         return -1;
 
-    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_FILE, &path) < 0)
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_SAVE_PARAM_FILE, &path) < 0)
         return -1;
-    if (virTypedParamsGetString(params, nparams, VIR_SAVE_PARAM_DXML, &dxml) < 0)
+    if (virTypedParamsGetString(params, nparams,
+                                VIR_DOMAIN_SAVE_PARAM_DXML, &dxml) < 0)
         return -1;
 
     ret = qemuDomainRestoreInternal(conn, path, dxml, flags,
