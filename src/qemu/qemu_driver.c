@@ -2772,6 +2772,7 @@ qemuDomainManagedSavePath(virQEMUDriver *driver, virDomainObj *vm)
 static int
 qemuDomainManagedSaveHelper(virQEMUDriver *driver,
                             virDomainObj *vm,
+                            const char *dxml,
                             unsigned int flags)
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
@@ -2799,7 +2800,7 @@ qemuDomainManagedSaveHelper(virQEMUDriver *driver,
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, path);
 
     if (qemuDomainSaveInternal(driver, vm, path, compressed,
-                                 compressor, NULL, flags) < 0)
+                                 compressor, dxml, flags) < 0)
         return -1;
 
     vm->hasManagedSave = true;
@@ -2853,17 +2854,18 @@ qemuDomainSave(virDomainPtr dom, const char *path)
 
 static int
 qemuDomainSaveParams(virDomainPtr dom,
-                     virTypedParameterPtr params, int nparams,
+                     virTypedParameterPtr params,
+                     int nparams,
                      unsigned int flags)
 {
+    virQEMUDriver *driver = dom->conn->privateData;
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    virDomainObj *vm = NULL;
+    g_autoptr(virCommand) compressor = NULL;
     const char *to = NULL;
     const char *dxml = NULL;
-    virQEMUDriver *driver = dom->conn->privateData;
     int compressed;
-    g_autoptr(virCommand) compressor = NULL;
     int ret = -1;
-    virDomainObj *vm = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
                   VIR_DOMAIN_SAVE_RUNNING |
@@ -2884,16 +2886,21 @@ qemuDomainSaveParams(virDomainPtr dom,
                                 VIR_DOMAIN_SAVE_PARAM_DXML, &dxml) < 0)
         return -1;
 
-    cfg = virQEMUDriverGetConfig(driver);
-    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                         &compressor,
-                                                         "save", false)) < 0)
-        goto cleanup;
-
     if (!(vm = qemuDomainObjFromDomain(dom)))
         goto cleanup;
 
     if (virDomainSaveParamsEnsureACL(dom->conn, vm->def) < 0)
+        goto cleanup;
+
+    if (!to) {
+        /* If no save path was provided then this behaves as managed save. */
+        return qemuDomainManagedSaveHelper(driver, vm, dxml, flags);
+    }
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                         &compressor,
+                                                         "save", false)) < 0)
         goto cleanup;
 
     if (virDomainObjCheckActive(vm) < 0)
@@ -2925,7 +2932,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    ret = qemuDomainManagedSaveHelper(driver, vm, flags);
+    ret = qemuDomainManagedSaveHelper(driver, vm, NULL, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);

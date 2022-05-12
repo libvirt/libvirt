@@ -1007,6 +1007,8 @@ virDomainSaveFlags(virDomainPtr domain, const char *to,
  * @flags: bitwise-OR of virDomainSaveRestoreFlags
  *
  * This method extends virDomainSaveFlags by adding parameters.
+ * If VIR_DOMAIN_SAVE_PARAM_FILE is not provided then a managed save is
+ * performed (see virDomainManagedSave).
  *
  * Returns 0 in case of success and -1 in case of failure.
  *
