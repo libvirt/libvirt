@@ -2904,8 +2904,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
                                                          "save", false)) < 0)
         goto cleanup;
 
-    if (!(name = qemuDomainManagedSavePath(driver, vm)))
-        goto cleanup;
+    name = qemuDomainManagedSavePath(driver, vm);
 
     VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
 
@@ -2926,19 +2925,15 @@ qemuDomainManagedSaveLoad(virDomainObj *vm,
 {
     virQEMUDriver *driver = opaque;
     g_autofree char *name = NULL;
-    int ret = -1;
 
     virObjectLock(vm);
 
-    if (!(name = qemuDomainManagedSavePath(driver, vm)))
-        goto cleanup;
+    name = qemuDomainManagedSavePath(driver, vm);
 
     vm->hasManagedSave = virFileExists(name);
 
-    ret = 0;
- cleanup:
     virObjectUnlock(vm);
-    return ret;
+    return 0;
 }
 
 
@@ -2979,8 +2974,7 @@ qemuDomainManagedSaveRemove(virDomainPtr dom, unsigned int flags)
     if (virDomainManagedSaveRemoveEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(name = qemuDomainManagedSavePath(driver, vm)))
-        goto cleanup;
+    name = qemuDomainManagedSavePath(driver, vm);
 
     if (unlink(name) < 0) {
         virReportSystemError(errno,
@@ -6079,8 +6073,7 @@ qemuDomainManagedSaveGetXMLDesc(virDomainPtr dom, unsigned int flags)
     if (virDomainManagedSaveGetXMLDescEnsureACL(dom->conn, vm->def, flags) < 0)
         goto cleanup;
 
-    if (!(path = qemuDomainManagedSavePath(driver, vm)))
-        goto cleanup;
+    path = qemuDomainManagedSavePath(driver, vm);
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -6117,8 +6110,7 @@ qemuDomainManagedSaveDefineXML(virDomainPtr dom, const char *dxml,
     if (virDomainManagedSaveDefineXMLEnsureACL(conn, vm->def) < 0)
         goto cleanup;
 
-    if (!(path = qemuDomainManagedSavePath(driver, vm)))
-        goto cleanup;
+    path = qemuDomainManagedSavePath(driver, vm);
 
     if (!virFileExists(path)) {
         virReportError(VIR_ERR_OPERATION_INVALID, "%s",
@@ -6427,9 +6419,6 @@ qemuDomainObjStart(virConnectPtr conn,
      */
     managed_save = qemuDomainManagedSavePath(driver, vm);
 
-    if (!managed_save)
-        return ret;
-
     if (virFileExists(managed_save)) {
         if (force_boot) {
             if (unlink(managed_save) < 0) {
@@ -6690,8 +6679,6 @@ qemuDomainUndefineFlags(virDomainPtr dom,
     }
 
     name = qemuDomainManagedSavePath(driver, vm);
-    if (name == NULL)
-        goto endjob;
 
     if (virFileExists(name)) {
         if (flags & VIR_DOMAIN_UNDEFINE_MANAGED_SAVE) {
