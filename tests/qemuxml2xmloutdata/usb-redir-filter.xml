@@ -32,7 +32,14 @@
     <controller type='pci' index='0' model='pci-root'/>
     <input type='mouse' bus='ps2'/>
     <input type='keyboard' bus='ps2'/>
-    <audio id='1' type='none'/>
+    <graphics type='spice'>
+      <listen type='none'/>
+    </graphics>
+    <audio id='1' type='spice'/>
+    <video>
+      <model type='cirrus' vram='16384' heads='1' primary='yes'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+    </video>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='4'/>
     </redirdev>
@@ -44,7 +51,7 @@
       <usbdev allow='no'/>
     </redirfilter>
     <memballoon model='virtio'>
-      <address type='pci' domain='0x0000' bus='0x00' slot='0x02' function='0x0'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
     </memballoon>
   </devices>
 </domain>

@@ -12,5 +12,6 @@
     <emulator>/usr/bin/qemu-system-i386</emulator>
     <smartcard mode='passthrough' type='spicevmc'/>
     <memballoon model='virtio'/>
+    <graphics type='spice'/>
   </devices>
 </domain>

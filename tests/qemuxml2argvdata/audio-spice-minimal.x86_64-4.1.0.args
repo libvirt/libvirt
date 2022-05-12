@@ -17,7 +17,6 @@ QEMU_AUDIO_DRV=spice \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
--display none \
 -no-user-config \
 -nodefaults \
 -chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
@@ -29,5 +28,7 @@ QEMU_AUDIO_DRV=spice \
 -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
+-spice port=0,seamless-migration=on \
+-device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

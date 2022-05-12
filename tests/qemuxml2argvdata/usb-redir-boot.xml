@@ -37,6 +37,7 @@
       <address type='usb' bus='0' port='4'/>
       <boot order='2'/>
     </redirdev>
+    <graphics type='spice'/>
     <memballoon model='virtio'/>
   </devices>
 </domain>

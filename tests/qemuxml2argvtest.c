@@ -1711,7 +1711,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent");
     DO_TEST_CAPS_LATEST("channel-qemu-vdagent-features");
     DO_TEST("channel-virtio-default",
-            QEMU_CAPS_SPICE);
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_NOCAPS("channel-virtio-unix");
 
     DO_TEST("smartcard-host",
@@ -1723,7 +1724,9 @@ mymain(void)
     DO_TEST("smartcard-passthrough-tcp",
             QEMU_CAPS_CCID_PASSTHRU);
     DO_TEST("smartcard-passthrough-spicevmc",
-            QEMU_CAPS_CCID_PASSTHRU);
+            QEMU_CAPS_CCID_PASSTHRU,
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("smartcard-controller",
             QEMU_CAPS_CCID_EMULATED);
     DO_TEST_CAPS_LATEST("smartcard-passthrough-unix");
@@ -1776,22 +1779,26 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
-            QEMU_CAPS_SPICE);
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("usb-redir-boot",
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
-            QEMU_CAPS_SPICE);
+            QEMU_CAPS_SPICE,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("usb-redir-filter",
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_ICH9_USB_EHCI1,
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_USB_REDIR_FILTER);
+            QEMU_CAPS_USB_REDIR_FILTER,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST("usb-redir-filter-version",
             QEMU_CAPS_USB_REDIR,
             QEMU_CAPS_SPICE,
-            QEMU_CAPS_USB_REDIR_FILTER);
+            QEMU_CAPS_USB_REDIR_FILTER,
+            QEMU_CAPS_DEVICE_CIRRUS_VGA);
     DO_TEST_CAPS_LATEST("usb-redir-unix");
     DO_TEST("usb1-usb2",
             QEMU_CAPS_PIIX3_USB_UHCI,

@@ -29,6 +29,7 @@
       <master startport='4'/>
       <address type='pci' domain='0x0000' bus='0x00' slot='0x04' function='0x2'/>
     </controller>
+    <graphics type='spice'/>
     <redirdev bus='usb' type='spicevmc'>
       <address type='usb' bus='0' port='4'/>
     </redirdev>
