@@ -2760,6 +2760,53 @@ qemuDomainSaveInternal(virQEMUDriver *driver,
 }
 
 
+static char *
+qemuDomainManagedSavePath(virQEMUDriver *driver, virDomainObj *vm)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
+
+    return g_strdup_printf("%s/%s.save", cfg->saveDir, vm->def->name);
+}
+
+
+static int
+qemuDomainManagedSaveHelper(virQEMUDriver *driver,
+                            virDomainObj *vm,
+                            unsigned int flags)
+{
+    g_autoptr(virQEMUDriverConfig) cfg = NULL;
+    g_autoptr(virCommand) compressor = NULL;
+    g_autofree char *path = NULL;
+    int compressed;
+
+    if (virDomainObjCheckActive(vm) < 0)
+        return -1;
+
+    if (!vm->persistent) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("cannot do managed save for transient domain"));
+        return -1;
+    }
+
+    cfg = virQEMUDriverGetConfig(driver);
+    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
+                                                         &compressor,
+                                                         "save", false)) < 0)
+        return -1;
+
+    path = qemuDomainManagedSavePath(driver, vm);
+
+    VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, path);
+
+    if (qemuDomainSaveInternal(driver, vm, path, compressed,
+                                 compressor, NULL, flags) < 0)
+        return -1;
+
+    vm->hasManagedSave = true;
+    return 0;
+}
+
+
 static int
 qemuDomainSaveFlags(virDomainPtr dom, const char *path, const char *dxml,
                     unsigned int flags)
@@ -2860,23 +2907,12 @@ qemuDomainSaveParams(virDomainPtr dom,
     return ret;
 }
 
-static char *
-qemuDomainManagedSavePath(virQEMUDriver *driver, virDomainObj *vm)
-{
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-
-    return g_strdup_printf("%s/%s.save", cfg->saveDir, vm->def->name);
-}
 
 static int
 qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
 {
     virQEMUDriver *driver = dom->conn->privateData;
-    g_autoptr(virQEMUDriverConfig) cfg = NULL;
-    int compressed;
-    g_autoptr(virCommand) compressor = NULL;
     virDomainObj *vm;
-    g_autofree char *name = NULL;
     int ret = -1;
 
     virCheckFlags(VIR_DOMAIN_SAVE_BYPASS_CACHE |
@@ -2889,29 +2925,7 @@ qemuDomainManagedSave(virDomainPtr dom, unsigned int flags)
     if (virDomainManagedSaveEnsureACL(dom->conn, vm->def) < 0)
         goto cleanup;
 
-    if (virDomainObjCheckActive(vm) < 0)
-        goto cleanup;
-
-    if (!vm->persistent) {
-        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
-                       _("cannot do managed save for transient domain"));
-        goto cleanup;
-    }
-
-    cfg = virQEMUDriverGetConfig(driver);
-    if ((compressed = qemuSaveImageGetCompressionProgram(cfg->saveImageFormat,
-                                                         &compressor,
-                                                         "save", false)) < 0)
-        goto cleanup;
-
-    name = qemuDomainManagedSavePath(driver, vm);
-
-    VIR_INFO("Saving state of domain '%s' to '%s'", vm->def->name, name);
-
-    ret = qemuDomainSaveInternal(driver, vm, name, compressed,
-                                 compressor, NULL, flags);
-    if (ret == 0)
-        vm->hasManagedSave = true;
+    ret = qemuDomainManagedSaveHelper(driver, vm, flags);
 
  cleanup:
     virDomainObjEndAPI(&vm);
