@@ -1190,7 +1190,9 @@ virDomainRestoreFlags(virConnectPtr conn, const char *from, const char *dxml,
  * @nparams: number of restore parameters
  * @flags: bitwise-OR of virDomainSaveRestoreFlags
  *
- * This method extends virDomainRestoreFlags by adding parameters.
+ * This method extends virDomainRestoreFlags by adding parameters. For
+ * now, VIR_DOMAIN_SAVE_PARAM_FILE is required but this requirement may
+ * be lifted in the future.
  *
  * Returns 0 in case of success and -1 in case of failure.
  *

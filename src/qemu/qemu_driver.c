@@ -5967,6 +5967,12 @@ qemuDomainRestoreParams(virConnectPtr conn,
                                 VIR_DOMAIN_SAVE_PARAM_DXML, &dxml) < 0)
         return -1;
 
+    if (!path) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("missing path to restore from"));
+        return -1;
+    }
+
     ret = qemuDomainRestoreInternal(conn, path, dxml, flags,
                                     virDomainRestoreParamsEnsureACL);
     return ret;
