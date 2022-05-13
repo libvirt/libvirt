@@ -20,7 +20,10 @@
 
 #include <config.h>
 #include "virccw.h"
+#include "virerror.h"
 #include "virstring.h"
+
+#define VIR_FROM_THIS VIR_FROM_NONE
 
 
 bool
@@ -47,6 +50,26 @@ char*
 virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
 {
     return g_strdup_printf(VIR_CCW_DEVICE_ADDRESS_FMT, addr->cssid, addr->ssid, addr->devno);
+}
+
+virCCWDeviceAddress *
+virCCWDeviceAddressFromString(const char *address)
+{
+    g_autofree virCCWDeviceAddress *ccw = NULL;
+
+    ccw = g_new0(virCCWDeviceAddress, 1);
+
+    if (virCCWDeviceAddressParseFromString(address,
+                                           &ccw->cssid,
+                                           &ccw->ssid,
+                                           &ccw->devno) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Failed to parse CCW address '%s'"),
+                       address);
+        return NULL;
+    }
+
+    return g_steal_pointer(&ccw);
 }
 
 int

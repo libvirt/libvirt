@@ -248,6 +248,7 @@ src/util/virauth.c
 src/util/virauthconfig.c
 src/util/virbitmap.c
 src/util/vircgroup.c
+src/util/virccw.c
 src/util/vircgroupbackend.c
 src/util/vircgroupbackend.h
 src/util/vircgroupv1.c

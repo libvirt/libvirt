@@ -1926,6 +1926,7 @@ virBufferVasprintf;
 # util/virccw.h
 virCCWDeviceAddressAsString;
 virCCWDeviceAddressEqual;
+virCCWDeviceAddressFromString;
 virCCWDeviceAddressIncrement;
 virCCWDeviceAddressIsValid;
 virCCWDeviceAddressParseFromString;
