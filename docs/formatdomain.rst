@@ -699,7 +699,6 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
    ``iothreads`` defined for the domain, then the ``iothreads`` value will be
    adjusted accordingly. :since:`Since 1.2.15`
 
-:anchor:`<a id="elementsCPUTuning"/>`
 
 CPU Tuning
 ----------
