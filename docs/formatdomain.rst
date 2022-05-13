@@ -5236,8 +5236,8 @@ following attributes are available for the ``"virtio"`` NIC driver:
 ``queues``
    The optional ``queues`` attribute controls the number of queues to be used
    for either `Multiqueue
-   virtio-net <https://www.linux-kvm.org/page/Multiqueue>`__ or
-   `vhost-user <#elementVhostuser>`__ network interfaces. Use of multiple packet
+   virtio-net <https://www.linux-kvm.org/page/Multiqueue>`__ or vhost-user (See
+   `vhost-user interface`_) network interfaces. Use of multiple packet
    processing queues requires the interface having the
    ``<model type='virtio'/>`` element. Each queue will potentially be handled by
    a different processor, resulting in much higher throughput.
@@ -5679,7 +5679,6 @@ side of the network device. These are configured as subelements of the
 similarly named elements used to configure the guest side of the interface
 (described above).
 
-:anchor:`<a id="elementVhostuser"/>`
 
 vhost-user interface
 ^^^^^^^^^^^^^^^^^^^^
