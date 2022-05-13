@@ -3674,12 +3674,12 @@ void virDomainRNGDefFree(virDomainRNGDef *def);
 
 int virDomainDiskIndexByAddress(virDomainDef *def,
                                 virPCIDeviceAddress *pci_controller,
-                                virDomainDeviceCCWAddress *ccw_addr,
+                                virCCWDeviceAddress *ccw_addr,
                                 unsigned int bus, unsigned int target,
                                 unsigned int unit);
 virDomainDiskDef *virDomainDiskByAddress(virDomainDef *def,
                                          virPCIDeviceAddress *pci_controller,
-                                         virDomainDeviceCCWAddress *ccw_addr,
+                                         virCCWDeviceAddress *ccw_addr,
                                          unsigned int bus,
                                          unsigned int target,
                                          unsigned int unit);
@@ -3764,7 +3764,7 @@ void virDomainControllerInsertPreAlloced(virDomainDef *def,
 int virDomainControllerFind(const virDomainDef *def, int type, int idx);
 int virDomainControllerFindByType(virDomainDef *def, int type);
 int virDomainControllerFindByCCWAddress(virDomainDef *def,
-                                        virDomainDeviceCCWAddress *addr);
+                                        virCCWDeviceAddress *addr);
 int virDomainControllerFindByPCIAddress(virDomainDef *def,
                                         virPCIDeviceAddress *addr);
 int virDomainControllerFindUnusedIndex(virDomainDef const *def, int type);

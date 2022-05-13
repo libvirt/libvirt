@@ -1764,9 +1764,9 @@ qemuAgentGetDiskAddress(virJSONValue *json)
     GET_DISK_ADDR(pci, &addr->pci_controller.function, "function");
 
     if ((ccw = virJSONValueObjectGet(json, "ccw-address"))) {
-        g_autofree virDomainDeviceCCWAddress *ccw_addr = NULL;
+        g_autofree virCCWDeviceAddress *ccw_addr = NULL;
 
-        ccw_addr = g_new0(virDomainDeviceCCWAddress, 1);
+        ccw_addr = g_new0(virCCWDeviceAddress, 1);
 
         GET_DISK_ADDR(ccw, &ccw_addr->cssid, "cssid");
         if (ccw_addr->cssid == 0)  /* Guest CSSID 0 is 0xfe on host */

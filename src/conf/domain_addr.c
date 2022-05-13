@@ -1304,15 +1304,15 @@ virDomainPCIAddressSetAllMulti(virDomainDef *def)
 
 
 char*
-virDomainCCWAddressAsString(virDomainDeviceCCWAddress *addr)
+virDomainCCWAddressAsString(virCCWDeviceAddress *addr)
 {
     return g_strdup_printf("%x.%x.%04x", addr->cssid, addr->ssid, addr->devno);
 }
 
 static int
-virDomainCCWAddressIncrement(virDomainDeviceCCWAddress *addr)
+virDomainCCWAddressIncrement(virCCWDeviceAddress *addr)
 {
-    virDomainDeviceCCWAddress ccwaddr = *addr;
+    virCCWDeviceAddress ccwaddr = *addr;
 
     /* We are not touching subchannel sets and channel subsystems */
     if (++ccwaddr.devno > VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO)

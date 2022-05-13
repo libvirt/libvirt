@@ -27,6 +27,7 @@
 #include "internal.h"
 #include "virthread.h"
 #include "virbuffer.h"
+#include "virccw.h"
 #include "virpci.h"
 #include "virnetdev.h"
 #include "virenum.h"
@@ -72,14 +73,6 @@ struct _virDomainDeviceVirtioSerialAddress {
 #define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
 #define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
 #define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
-
-typedef struct _virDomainDeviceCCWAddress virDomainDeviceCCWAddress;
-struct _virDomainDeviceCCWAddress {
-    unsigned int cssid;
-    unsigned int ssid;
-    unsigned int devno;
-    bool         assigned;
-};
 
 typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
 struct _virDomainDeviceCcidAddress {
@@ -136,7 +129,7 @@ struct _virDomainDeviceInfo {
         virDomainDeviceCcidAddress ccid;
         virDomainDeviceUSBAddress usb;
         virDomainDeviceSpaprVioAddress spaprvio;
-        virDomainDeviceCCWAddress ccw;
+        virCCWDeviceAddress ccw;
         virDomainDeviceISAAddress isa;
         virDomainDeviceDimmAddress dimm;
     } addr;
@@ -204,11 +197,11 @@ void virPCIDeviceAddressFormat(virBuffer *buf,
                                virPCIDeviceAddress addr,
                                bool includeTypeInAddr);
 
-bool virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddress *addr);
+bool virDomainDeviceCCWAddressIsValid(virCCWDeviceAddress *addr);
 int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                      virDomainDeviceCCWAddress *addr);
-bool virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddress *addr1,
-                                    virDomainDeviceCCWAddress *addr2);
+                                      virCCWDeviceAddress *addr);
+bool virDomainDeviceCCWAddressEqual(virCCWDeviceAddress *addr1,
+                                    virCCWDeviceAddress *addr2);
 #define VIR_CCW_DEVICE_ADDRESS_FMT "%x.%x.%04x"
 
 int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,

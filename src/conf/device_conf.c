@@ -259,7 +259,7 @@ virPCIDeviceAddressFormat(virBuffer *buf,
 }
 
 bool
-virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddress *addr)
+virDomainDeviceCCWAddressIsValid(virCCWDeviceAddress *addr)
 {
     return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
            addr->ssid <= VIR_DOMAIN_DEVICE_CCW_MAX_SSID &&
@@ -268,7 +268,7 @@ virDomainDeviceCCWAddressIsValid(virDomainDeviceCCWAddress *addr)
 
 int
 virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                  virDomainDeviceCCWAddress *addr)
+                                  virCCWDeviceAddress *addr)
 {
     int cssid;
     int ssid;
@@ -307,8 +307,8 @@ virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
 }
 
 bool
-virDomainDeviceCCWAddressEqual(virDomainDeviceCCWAddress *addr1,
-                               virDomainDeviceCCWAddress *addr2)
+virDomainDeviceCCWAddressEqual(virCCWDeviceAddress *addr1,
+                               virCCWDeviceAddress *addr2)
 {
     if (addr1->cssid == addr2->cssid &&
         addr1->ssid == addr2->ssid &&

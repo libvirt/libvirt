@@ -15491,7 +15491,7 @@ virDomainDiskControllerMatch(int controller_type, int disk_bus)
 int
 virDomainDiskIndexByAddress(virDomainDef *def,
                             virPCIDeviceAddress *pci_address,
-                            virDomainDeviceCCWAddress *ccw_addr,
+                            virCCWDeviceAddress *ccw_addr,
                             unsigned int bus, unsigned int target,
                             unsigned int unit)
 {
@@ -15535,7 +15535,7 @@ virDomainDiskIndexByAddress(virDomainDef *def,
 virDomainDiskDef *
 virDomainDiskByAddress(virDomainDef *def,
                        virPCIDeviceAddress *pci_address,
-                       virDomainDeviceCCWAddress *ccw_addr,
+                       virCCWDeviceAddress *ccw_addr,
                        unsigned int bus,
                        unsigned int target,
                        unsigned int unit)
@@ -16134,7 +16134,7 @@ virDomainControllerFindByType(virDomainDef *def,
 
 int
 virDomainControllerFindByCCWAddress(virDomainDef *def,
-                                    virDomainDeviceCCWAddress *addr)
+                                    virCCWDeviceAddress *addr)
 {
     size_t i;
 
