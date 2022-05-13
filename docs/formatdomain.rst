@@ -7769,7 +7769,6 @@ machines and the host. :since:`Since 1.2.10, QEMU and KVM only`
    the number of interrupt vectors. The ``ioeventd`` attribute enables/disables
    (values "on"/"off", respectively) ioeventfd.
 
-:anchor:`<a id="elementsMemory"/>`
 
 Memory devices
 ~~~~~~~~~~~~~~

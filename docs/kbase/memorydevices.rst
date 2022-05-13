@@ -79,7 +79,7 @@ Furthermore, DIMMs can have ``<source/>`` element which configures backend for
 devices. For NVDIMMs the element is mandatory and reflects where the content
 is saved.
 
-See `memory devices documentation <../formatdomain.html#elementsMemory>`_.
+See `memory devices documentation <../formatdomain.html#memory-devices>`_.
 
 ``virtio-mem`` model
 ====================
