@@ -645,6 +645,17 @@ virNodeDeviceCapCSSDefFormat(virBuffer *buf,
 
     virNodeDeviceCapCCWDefFormat(buf, data);
 
+    if (ccw_dev.channel_dev_addr) {
+        virCCWDeviceAddress *ccw = ccw_dev.channel_dev_addr;
+        virBufferAddLit(buf, "<channel_dev_addr>\n");
+        virBufferAdjustIndent(buf, 2);
+        virBufferAsprintf(buf, "<cssid>0x%x</cssid>\n", ccw->cssid);
+        virBufferAsprintf(buf, "<ssid>0x%x</ssid>\n", ccw->ssid);
+        virBufferAsprintf(buf, "<devno>0x%04x</devno>\n", ccw->devno);
+        virBufferAdjustIndent(buf, -2);
+        virBufferAddLit(buf, "</channel_dev_addr>\n");
+    }
+
     if (ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV)
         virNodeDeviceCapMdevTypesFormat(buf,
                                         ccw_dev.mdev_types,
@@ -1257,6 +1268,7 @@ virNodeDevCapCSSParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     int n = 0;
     size_t i = 0;
+    xmlNodePtr channel_ddno = NULL;
 
     ctxt->node = node;
 
@@ -1269,6 +1281,21 @@ virNodeDevCapCSSParseXML(xmlXPathContextPtr ctxt,
     for (i = 0; i < n; i++) {
         if (virNodeDevCSSCapabilityParseXML(ctxt, nodes[i], ccw_dev) < 0)
             return -1;
+    }
+
+    /* channel_dev_addr is optional */
+    if ((channel_ddno = virXPathNode("./channel_dev_addr[1]", ctxt))) {
+        g_autofree virCCWDeviceAddress *channel_dev = NULL;
+
+        channel_dev = g_new0(virCCWDeviceAddress, 1);
+
+        if (virNodeDevCCWDeviceAddressParseXML(ctxt,
+                                               channel_ddno,
+                                               def->name,
+                                               channel_dev) < 0)
+            return -1;
+
+        ccw_dev->channel_dev_addr = g_steal_pointer(&channel_dev);
     }
 
     return 0;
@@ -2639,6 +2666,7 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         for (i = 0; i < data->ccw_dev.nmdev_types; i++)
             virMediatedDeviceTypeFree(data->ccw_dev.mdev_types[i]);
         g_free(data->ccw_dev.mdev_types);
+        g_free(data->ccw_dev.channel_dev_addr);
         break;
     case VIR_NODE_DEV_CAP_AP_MATRIX:
         g_free(data->ap_matrix.addr);

@@ -683,6 +683,11 @@
     </attribute>
     <ref name="capccwaddress"/>
     <optional>
+      <element name="channel_dev_addr">
+        <ref name="capccwaddress"/>
+      </element>
+    </optional>
+    <optional>
       <ref name="mdev_types"/>
     </optional>
   </define>

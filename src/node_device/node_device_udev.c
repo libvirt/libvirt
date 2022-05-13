@@ -1124,6 +1124,8 @@ static int
 udevProcessCSS(struct udev_device *device,
                virNodeDeviceDef *def)
 {
+    g_autofree char *dev_busid = NULL;
+
     /* only process IO subchannel and vfio-ccw devices to keep the list sane */
     if (!def->driver ||
         (STRNEQ(def->driver, "io_subchannel") &&
@@ -1134,6 +1136,12 @@ udevProcessCSS(struct udev_device *device,
         return -1;
 
     udevGenerateDeviceName(device, def, NULL);
+
+    /* process optional channel devices information */
+    udevGetStringSysfsAttr(device, "dev_busid", &dev_busid);
+
+    if (dev_busid != NULL)
+        def->caps->data.ccw_dev.channel_dev_addr = virCCWDeviceAddressFromString(dev_busid);
 
     if (virNodeDeviceGetCSSDynamicCaps(def->sysfs_path, &def->caps->data.ccw_dev) < 0)
         return -1;
