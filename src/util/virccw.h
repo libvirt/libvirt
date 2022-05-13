@@ -37,3 +37,4 @@ struct _virCCWDeviceAddress {
 
 char* virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
     ATTRIBUTE_NONNULL(1);
+int virCCWDeviceAddressIncrement(virCCWDeviceAddress *addr);

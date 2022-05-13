@@ -27,3 +27,16 @@ virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
 {
     return g_strdup_printf(VIR_CCW_DEVICE_ADDRESS_FMT, addr->cssid, addr->ssid, addr->devno);
 }
+
+int
+virCCWDeviceAddressIncrement(virCCWDeviceAddress *addr)
+{
+    virCCWDeviceAddress ccwaddr = *addr;
+
+    /* We are not touching subchannel sets and channel subsystems */
+    if (++ccwaddr.devno > VIR_CCW_DEVICE_MAX_DEVNO)
+        return -1;
+
+    *addr = ccwaddr;
+    return 0;
+}

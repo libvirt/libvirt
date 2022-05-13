@@ -1927,6 +1927,7 @@ virBufferVasprintf;
 
 # util/virccw.h
 virCCWDeviceAddressAsString;
+virCCWDeviceAddressIncrement;
 
 
 # util/vircgroup.h
