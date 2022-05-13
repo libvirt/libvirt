@@ -6716,7 +6716,6 @@ NB special case if <console type='pty'>, then the TTY path is also duplicated as
 an attribute tty='/dev/pts/3' on the top level <console> tag. This provides
 compat with existing syntax for <console> tags.
 
-:anchor:`<a id="elementsCharHost"/>`
 
 Host device proxy
 '''''''''''''''''
