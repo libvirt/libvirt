@@ -91,8 +91,7 @@ qemuBuildHostNetProps(virDomainNetDef *net);
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
-                          virNetDevVPortProfileOp vmop,
-                          bool standalone);
+                          virNetDevVPortProfileOp vmop);
 
 /* Current, best practice */
 virJSONValue *

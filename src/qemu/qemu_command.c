@@ -8684,8 +8684,7 @@ qemuInterfaceVhostuserConnect(virCommand *cmd,
 int
 qemuBuildInterfaceConnect(virDomainObj *vm,
                           virDomainNetDef *net,
-                          virNetDevVPortProfileOp vmop,
-                          bool standalone)
+                          virNetDevVPortProfileOp vmop)
 {
 
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8767,7 +8766,7 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
         }
     }
 
-    if (vhostfd && !standalone) {
+    if (vhostfd) {
         if (qemuInterfaceOpenVhostNet(vm, net) < 0)
             return -1;
     }
@@ -8783,7 +8782,6 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
                               virDomainNetDef *net,
                               virQEMUCaps *qemuCaps,
                               virNetDevVPortProfileOp vmop,
-                              bool standalone,
                               size_t *nnicindexes,
                               int **nicindexes)
 {
@@ -8801,7 +8799,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     if (qemuDomainValidateActualNetDef(net, qemuCaps) < 0)
         return -1;
 
-    if (qemuBuildInterfaceConnect(vm, net, vmop, standalone) < 0)
+    if (qemuBuildInterfaceConnect(vm, net, vmop) < 0)
         return -1;
 
     switch (actualType) {
@@ -8991,7 +8989,6 @@ qemuBuildNetCommandLine(virQEMUDriver *driver,
                         virCommand *cmd,
                         virQEMUCaps *qemuCaps,
                         virNetDevVPortProfileOp vmop,
-                        bool standalone,
                         size_t *nnicindexes,
                         int **nicindexes)
 {
@@ -9005,8 +9002,7 @@ qemuBuildNetCommandLine(virQEMUDriver *driver,
 
         if (qemuBuildInterfaceCommandLine(driver, vm, cmd, net,
                                           qemuCaps, vmop,
-                                          standalone, nnicindexes,
-                                          nicindexes) < 0)
+                                          nnicindexes, nicindexes) < 0)
             goto error;
 
         last_good_net = i;
@@ -10596,8 +10592,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     if (qemuBuildFilesystemCommandLine(cmd, def, qemuCaps, priv) < 0)
         return NULL;
 
-    if (qemuBuildNetCommandLine(driver, vm, cmd,
-                                qemuCaps, vmop, standalone,
+    if (qemuBuildNetCommandLine(driver, vm, cmd, qemuCaps, vmop,
                                 nnicindexes, nicindexes) < 0)
         return NULL;
 
