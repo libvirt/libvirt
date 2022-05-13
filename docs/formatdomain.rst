@@ -53,7 +53,7 @@ General metadata
    the virtual machine. The format must be RFC 4122 compliant, eg
    ``3e3fce45-4f53-4fa7-bb32-11f34168b82b``. If omitted when defining/creating a
    new machine, a random UUID is generated. It is also possible to provide the
-   UUID via a `sysinfo <#elementsSysinfo>`__ specification. :since:`Since 0.0.1,
+   UUID via a `SMBIOS System Information`_ specification. :since:`Since 0.0.1,
    sysinfo since 0.8.7`
 ``genid``
    :since:`Since 4.4.0` , the ``genid`` element can be used to add a Virtual
@@ -251,7 +251,7 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    UUID, from the host's SMBIOS values; the
    `virConnectGetSysinfo <html/libvirt-libvirt-host.html#virConnectGetSysinfo>`__
    call can be used to see what values are copied), or "sysinfo" (use the values
-   in the `sysinfo <#elementsSysinfo>`__ element). If not specified, the
+   in the `SMBIOS System Information`_ element). If not specified, the
    hypervisor default is used. :since:`Since 0.8.7`
 
 Up till here the BIOS/UEFI configuration knobs are generic enough to be
@@ -407,7 +407,6 @@ If you want to enable user namespace, set the ``idmap`` element. The ``uid`` and
      <gid start='0' target='1000' count='10'/>
    </idmap>
 
-:anchor:`<a id="elementsSysinfo"/>`
 
 SMBIOS System Information
 -------------------------
