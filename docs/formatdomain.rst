@@ -5920,7 +5920,7 @@ interaction with the admin.
            <audio id='1'>
          </graphics>
 
-      Where ``1`` is an id of the `audio device <#elementsAudio>`__. If no
+      Where ``1`` is an id of the audio device (See`Audio backends`_). If no
       ID is specified, then the default audio backend will be used.
       :since:`Since 7.2.0, qemu`.
 
@@ -6077,7 +6077,7 @@ interaction with the admin.
            <audio id='1'>
          </graphics>
 
-      Where ``1`` is an id of the `audio device <#elementsAudio>`__.
+      Where ``1`` is an id of the audio device (See `Audio backends`_).
 
 Graphics device uses a ``<listen>`` to set up where the device should listen for
 clients. It has a mandatory attribute ``type`` which specifies the listen type.
@@ -6971,11 +6971,10 @@ backend using the ``<audio>`` sub-element:
    </devices>
    ...
 
-Where ``1`` is an id of the `audio device <#elementsAudio>`__. If no
+Where ``1`` is an id of the audio device (See `Audio backends`_). If no
 ID is specified, then the default audio backend will be used.
 :since:`Since 6.7.0, bhyve; Since 7.2.0, qemu`.
 
-:anchor:`<a id="elementsAudio"/>`
 
 Audio backends
 ~~~~~~~~~~~~~~
