@@ -1630,7 +1630,6 @@ QEMU. If no ``distances`` are given to describe the SLIT data between different
 cells, it will default to a scheme using 10 for local and 20 for remote
 distances.
 
-:anchor:`<a id="hmat"/>`
 
 ACPI Heterogeneous Memory Attribute Table
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
