@@ -8024,7 +8024,6 @@ Example:
       mapping larger iova addresses in the guest. :since:`Since 6.5.0` (QEMU/KVM
       only)
 
-:anchor:`<a id="vsock"/>`
 
 Vsock
 ~~~~~
