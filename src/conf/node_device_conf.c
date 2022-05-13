@@ -1195,6 +1195,31 @@ virNodeDevCCWDeviceAddressParseXML(xmlXPathContextPtr ctxt,
     return 0;
 }
 
+
+static int
+virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
+                         virNodeDeviceDef *def,
+                         xmlNodePtr node,
+                         virNodeDevCapCCW *ccw_dev)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree virCCWDeviceAddress *ccw_addr = NULL;
+
+    ctxt->node = node;
+
+    ccw_addr = g_new0(virCCWDeviceAddress, 1);
+
+    if (virNodeDevCCWDeviceAddressParseXML(ctxt, node, def->name, ccw_addr) < 0)
+        return -1;
+
+    ccw_dev->cssid = ccw_addr->cssid;
+    ccw_dev->ssid = ccw_addr->ssid;
+    ccw_dev->devno = ccw_addr->devno;
+
+    return 0;
+}
+
+
 static int
 virNodeDevCSSCapabilityParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
@@ -1223,7 +1248,7 @@ virNodeDevCSSCapabilityParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
-virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
+virNodeDevCapCSSParseXML(xmlXPathContextPtr ctxt,
                          virNodeDeviceDef *def,
                          xmlNodePtr node,
                          virNodeDevCapCCW *ccw_dev)
@@ -1232,18 +1257,11 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     int n = 0;
     size_t i = 0;
-    g_autofree virCCWDeviceAddress *ccw_addr = NULL;
 
     ctxt->node = node;
 
-    ccw_addr = g_new0(virCCWDeviceAddress, 1);
-
-    if (virNodeDevCCWDeviceAddressParseXML(ctxt, node, def->name, ccw_addr) < 0)
+    if (virNodeDevCapCCWParseXML(ctxt, def, node, ccw_dev) < 0)
         return -1;
-
-    ccw_dev->cssid = ccw_addr->cssid;
-    ccw_dev->ssid = ccw_addr->ssid;
-    ccw_dev->devno = ccw_addr->devno;
 
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         return -1;
@@ -2284,8 +2302,10 @@ virNodeDevCapsDefParseXML(xmlXPathContextPtr ctxt,
         ret = virNodeDevCapMdevParseXML(ctxt, def, node, &caps->data.mdev);
         break;
     case VIR_NODE_DEV_CAP_CCW_DEV:
-    case VIR_NODE_DEV_CAP_CSS_DEV:
         ret = virNodeDevCapCCWParseXML(ctxt, def, node, &caps->data.ccw_dev);
+        break;
+    case VIR_NODE_DEV_CAP_CSS_DEV:
+        ret = virNodeDevCapCSSParseXML(ctxt, def, node, &caps->data.ccw_dev);
         break;
     case VIR_NODE_DEV_CAP_AP_CARD:
         ret = virNodeDevCapAPCardParseXML(ctxt, def, node,
