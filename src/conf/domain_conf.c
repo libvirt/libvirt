@@ -15743,7 +15743,7 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
         alias = net->info.alias;
 
     if (CCWAddrSpecified)
-        addr = virDomainCCWAddressAsString(&net->info.addr.ccw);
+        addr = virCCWDeviceAddressAsString(&net->info.addr.ccw);
     else if (PCIAddrSpecified)
         addr = virPCIDeviceAddressAsString(&net->info.addr.pci);
     else

@@ -1303,12 +1303,6 @@ virDomainPCIAddressSetAllMulti(virDomainDef *def)
 }
 
 
-char*
-virDomainCCWAddressAsString(virCCWDeviceAddress *addr)
-{
-    return g_strdup_printf("%x.%x.%04x", addr->cssid, addr->ssid, addr->devno);
-}
-
 static int
 virDomainCCWAddressIncrement(virCCWDeviceAddress *addr)
 {
@@ -1334,7 +1328,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfo *dev,
         return 0;
 
     if (!autoassign && dev->addr.ccw.assigned) {
-        if (!(addr = virDomainCCWAddressAsString(&dev->addr.ccw)))
+        if (!(addr = virCCWDeviceAddressAsString(&dev->addr.ccw)))
             return -1;
 
         if (virHashLookup(addrs->defined, addr)) {
@@ -1344,7 +1338,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfo *dev,
             return -1;
         }
     } else if (autoassign && !dev->addr.ccw.assigned) {
-        if (!(addr = virDomainCCWAddressAsString(&addrs->next)))
+        if (!(addr = virCCWDeviceAddressAsString(&addrs->next)))
             return -1;
 
         while (virHashLookup(addrs->defined, addr)) {
@@ -1354,7 +1348,7 @@ virDomainCCWAddressAssign(virDomainDeviceInfo *dev,
                 return -1;
             }
             VIR_FREE(addr);
-            if (!(addr = virDomainCCWAddressAsString(&addrs->next)))
+            if (!(addr = virCCWDeviceAddressAsString(&addrs->next)))
                 return -1;
         }
         dev->addr.ccw = addrs->next;

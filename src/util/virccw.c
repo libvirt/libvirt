@@ -1,5 +1,5 @@
 /*
- * virccw.h: helper APIs for managing host CCW devices
+ * virccw.c: helper APIs for managing host CCW devices
  *
  * Copyright (C) 2022 IBM Corporation
  *
@@ -18,17 +18,12 @@
  * <http://www.gnu.org/licenses/>.
  */
 
-#pragma once
+#include <config.h>
+#include "virccw.h"
 
-#include "internal.h"
 
-typedef struct _virCCWDeviceAddress virCCWDeviceAddress;
-struct _virCCWDeviceAddress {
-    unsigned int cssid;
-    unsigned int ssid;
-    unsigned int devno;
-    bool         assigned;
-};
-
-char* virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
-    ATTRIBUTE_NONNULL(1);
+char*
+virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
+{
+    return g_strdup_printf("%x.%x.%04x", addr->cssid, addr->ssid, addr->devno);
+}

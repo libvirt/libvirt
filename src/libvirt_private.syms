@@ -147,7 +147,6 @@ virPCIDeviceAddressParseXML;
 
 # conf/domain_addr.h
 virDomainCCWAddressAssign;
-virDomainCCWAddressAsString;
 virDomainCCWAddressSetCreateFromDomain;
 virDomainCCWAddressSetFree;
 virDomainPCIAddressBusIsFullyReserved;
@@ -1924,6 +1923,10 @@ virBufferTrimLen;
 virBufferURIEncodeString;
 virBufferUse;
 virBufferVasprintf;
+
+
+# util/virccw.h
+virCCWDeviceAddressAsString;
 
 
 # util/vircgroup.h

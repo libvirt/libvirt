@@ -9,6 +9,7 @@ util_sources = [
   'virbitmap.c',
   'virbpf.c',
   'virbuffer.c',
+  'virccw.c',
   'vircgroup.c',
   'vircgroupbackend.c',
   'vircgroupv1.c',

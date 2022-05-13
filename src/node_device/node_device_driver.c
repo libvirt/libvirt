@@ -667,7 +667,7 @@ nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
                 .devno = caps->data.ccw_dev.devno
             };
 
-            addr = virDomainCCWAddressAsString(&ccw_addr);
+            addr = virCCWDeviceAddressAsString(&ccw_addr);
             break;
             }
 
