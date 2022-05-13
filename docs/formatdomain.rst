@@ -13,7 +13,6 @@ variations on the format based on the kind of domains run and the options used
 to launch them. For hypervisor specific details consult the `driver
 docs <drivers.html>`__
 
-:anchor:`<a id="elements"/>`
 
 Element and attribute overview
 ==============================

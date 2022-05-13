@@ -68,7 +68,7 @@ The root element that emulator capability XML document starts with has name
 ``path``
    The full path to the emulator binary.
 ``domain``
-   Describes the `virtualization type <formatdomain.html#elements>`__ (or so
+   Describes the `virtualization type <formatdomain.html#element-and-attribute-overview>`__ (or so
    called domain type).
 ``machine``
    The domain's `machine type <formatdomain.html#elementsOSBIOS>`__. Since not
