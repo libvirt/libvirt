@@ -2571,9 +2571,8 @@ paravirtualized driver is specified via the ``disk`` element.
       Indicates the emulated device model of the disk. Typically this is
       indicated solely by the ``bus`` property but for ``bus`` "virtio" the
       model can be specified further with "virtio-transitional",
-      "virtio-non-transitional", or "virtio". See `Virtio transitional
-      devices <#elementsVirtioTransitional>`__ for more details. :since:`Since
-      5.2.0`
+      "virtio-non-transitional", or "virtio". See `Virtio transitional devices`_
+      for more details. :since:`Since 5.2.0`
    ``rawio``
       Indicates whether the disk needs rawio capability. Valid settings are
       "yes" or "no" (default is "no"). If any one disk in a domain has
@@ -3385,8 +3384,8 @@ A directory on the host that can be accessed directly from the guest.
 
    :since:`Since 5.2.0` , the filesystem element has an optional attribute
    ``model`` with supported values "virtio-transitional",
-   "virtio-non-transitional", or "virtio". See `Virtio transitional
-   devices <#elementsVirtioTransitional>`__ for more details.
+   "virtio-non-transitional", or "virtio". See `Virtio transitional devices`_
+   for more details.
 
    The filesystem element has optional attributes ``fmode`` and ``dmode``.
    These two attributes control the creation mode for files and directories
@@ -3593,7 +3592,6 @@ granularity. The default is determined by QEMU. :since:`Since 7.9.0 (QEMU 2.8)`
 Note: In general you should leave this option alone, unless you are very certain
 you know what you are doing.
 
-:anchor:`<a id="elementsVirtioTransitional"/>`
 
 Virtio transitional devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3679,15 +3677,13 @@ specific features, such as:
    ``ports`` and ``vectors``, which control how many devices can be connected
    through the controller. :since:`Since 5.2.0` , it supports an optional
    attribute ``model`` which can be 'virtio', 'virtio-transitional', or
-   'virtio-non-transitional'. See `Virtio transitional
-   devices <#elementsVirtioTransitional>`__ for more details.
+   'virtio-non-transitional'. See `Virtio transitional devices`_ for more details.
 ``scsi``
    A ``scsi`` controller has an optional attribute ``model``, which is one of
    'auto', 'buslogic', 'ibmvscsi', 'lsilogic', 'lsisas1068', 'lsisas1078',
    'virtio-scsi', 'vmpvscsi', 'virtio-transitional', 'virtio-non-transitional',
    'ncr53c90' (as builtin implicit controller only), 'am53c974', 'dc390'.
-   See `Virtio transitional devices <#elementsVirtioTransitional>`__ for more
-   details.
+   See `Virtio transitional devices`_ for more details.
 ``usb``
    A ``usb`` controller has an optional attribute ``model``, which is one of
    "piix3-uhci", "piix4-uhci", "ehci", "ich9-ehci1", "ich9-uhci1", "ich9-uhci2",
@@ -4123,8 +4119,8 @@ or:
       the device is not used by host. This ``type`` passes all LUNs presented by
       a single HBA to the guest. :since:`Since 5.2.0,` the ``model`` attribute
       can be specified further with "virtio-transitional",
-      "virtio-non-transitional", or "virtio". See `Virtio transitional
-      devices <#elementsVirtioTransitional>`__ for more details.
+      "virtio-non-transitional", or "virtio". `Virtio transitional devices`_
+      for more details.
    ``mdev``
       For mediated devices ( :since:`Since 3.2.0` ) the ``model`` attribute
       specifies the device API which determines how the host's vfio driver will
@@ -5163,8 +5159,7 @@ supported models with these commands:
 Typical values for QEMU and KVM include: ne2k_isa i82551 i82557b i82559er
 ne2k_pci pcnet rtl8139 e1000 virtio. :since:`Since 5.2.0` ,
 ``virtio-transitional`` and ``virtio-non-transitional`` values are supported.
-See `Virtio transitional devices <#elementsVirtioTransitional>`__ for more
-details.
+See `Virtio transitional devices`_ for more details.
 
 Setting NIC driver-specific options
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5820,8 +5815,7 @@ change the grab key combination.
 ``input`` type ``evdev`` is currently supported only on linux devices.
 (KVM only) :since:`Since 5.2.0` , the ``input`` element accepts a
 ``model`` attribute which has the values 'virtio', 'virtio-transitional' and
-'virtio-non-transitional'. See `Virtio transitional devices
-<#elementsVirtioTransitional>`__ for more details.
+'virtio-non-transitional'. See `Virtio transitional devices`_ for more details.
 
 The subelement ``driver`` can be used to tune the virtio options of the device:
 `Virtio-related options`_ can also be set. ( :since:`Since 3.5.0` )
@@ -7443,8 +7437,7 @@ Example: manually added device with static PCI slot 2 requested
    -  'virtio-non-transitional' :since:`Since 5.2.0`
    -  'xen' - default with Xen
 
-   See `Virtio transitional devices <#elementsVirtioTransitional>`__ for more
-   details.
+   See `Virtio transitional devices`_ for more details.
 
 ``autodeflate``
    The optional ``autodeflate`` attribute allows to enable/disable (values
@@ -7510,8 +7503,7 @@ Example: usage of the RNG device:
    -  'virtio-transitional' :since:`Since 5.2.0`
    -  'virtio-non-transitional' :since:`Since 5.2.0`
 
-   See `Virtio transitional devices <#elementsVirtioTransitional>`__ for more
-   details.
+   See `Virtio transitional devices`_ for more details.
 
 ``rate``
    The optional ``rate`` element allows limiting the rate at which entropy can
@@ -8061,11 +8053,10 @@ Vsock
 
 A vsock host/guest interface. The ``model`` attribute defaults to ``virtio``.
 :since:`Since 5.2.0` ``model`` can also be 'virtio-transitional' and
-'virtio-non-transitional', see `Virtio transitional
-devices <#elementsVirtioTransitional>`__ for more details. The optional
-attribute ``address`` of the ``cid`` element specifies the CID assigned to the
-guest. If the attribute ``auto`` is set to ``yes``, libvirt will assign a free
-CID automatically on domain startup. :since:`Since 4.4.0`
+'virtio-non-transitional', see `Virtio transitional devices`_  for more details.
+The optional attribute ``address`` of the ``cid`` element specifies the CID
+assigned to the guest. If the attribute ``auto`` is set to ``yes``, libvirt will
+assign a free CID automatically on domain startup. :since:`Since 4.4.0`
 The optional ``driver`` element allows to specify virtio options, see
 `Virtio-related options`_  for more details. :since:`Since 7.1.0`
 
