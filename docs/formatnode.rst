@@ -12,7 +12,7 @@ Node Device XML
 There are several libvirt functions, all with the prefix ``virNodeDevice``,
 which deal with management of host devices that can be handed to guests via
 passthrough as <hostdev> elements in `the domain
-XML <formatdomain.html#elementsHostDev>`__. These devices are represented as a
+XML <formatdomain.html#host-device-assignment>`__. These devices are represented as a
 hierarchy, where a device on a bus has a parent of the bus controller device;
 the root of the hierarchy is the node named "computer".
 

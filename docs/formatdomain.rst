@@ -240,7 +240,7 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    and hda disks will boot from hda (sorted disks are: hda, hdc, vda, vdb). It
    can be tricky to configure in the desired way, which is why per-device boot
    elements (see `Hard drives, floppy disks, CDROMs`_, `network
-   interfaces <#elementsNICS>`__, and `USB and PCI devices <#elementsHostDev>`__
+   interfaces <#elementsNICS>`__, and `Host device assignment`_
    sections below) were introduced and they are the preferred way providing full
    control over booting order. The ``boot`` element and per-device boot elements
    are mutually exclusive. :since:`Since 0.1.3, per-device boot since 0.8.8`
@@ -3975,7 +3975,6 @@ acquired.
    The offset specifies where the lease is stored within the file. If the lock
    manager does not require an offset, just pass 0.
 
-:anchor:`<a id="elementsHostDev"/>`
 
 Host device assignment
 ~~~~~~~~~~~~~~~~~~~~~~
