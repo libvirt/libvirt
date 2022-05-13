@@ -1,0 +1,15 @@
+<device>
+  <name>css_0_0_ffff</name>
+  <path>/sys/devices/css0/0.0.ffff</path>
+  <parent>computer</parent>
+  <capability type='css'>
+    <cssid>0x0</cssid>
+    <ssid>0x0</ssid>
+    <devno>0xffff</devno>
+    <channel_dev_addr>
+      <cssid>0x0</cssid>
+      <ssid>0x0</ssid>
+      <devno>0x0815</devno>
+    </channel_dev_addr>
+  </capability>
+</device>

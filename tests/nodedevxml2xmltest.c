@@ -125,7 +125,9 @@ mymain(void)
     DO_TEST("mdev_3627463d_b7f0_4fea_b468_f1da537d301b");
     DO_TEST("ccw_0_0_ffff");
     DO_TEST("css_0_0_ffff");
+    DO_TEST("css_0_0_ffff_channel_dev_addr");
     DO_TEST("css_0_0_fffe_mdev_types");
+    DO_TEST("css_0_0_fffe_mdev_types_channel_dev_addr");
     DO_TEST("ap_card07");
     DO_TEST("ap_07_0038");
     DO_TEST("ap_matrix");
