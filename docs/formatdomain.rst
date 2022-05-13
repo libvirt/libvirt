@@ -885,8 +885,7 @@ CPU Tuning
          but the ``unit`` attribute can be used to scale the value.
       ``unit`` (optional)
          If specified it is the unit such as KiB, MiB, GiB, or TiB (described in
-         the ``memory`` element for `Memory
-         Allocation <#elementsMemoryAllocation>`__) in which ``size`` is
+         the ``memory`` element for `Memory Allocation`_) in which ``size`` is
          specified, defaults to bytes.
 
    ``monitor`` :since:`Since 4.10.0`
@@ -921,7 +920,6 @@ CPU Tuning
          The memory bandwidth to allocate from this node. The value by default
          is in percentage.
 
-:anchor:`<a id="elementsMemoryAllocation"/>`
 
 Memory Allocation
 -----------------
@@ -1565,8 +1563,8 @@ maximum virtual CPUs number declared in ``vcpus``, to make the domain consistent
 across qemu and libvirt versions. ``memory`` specifies the node memory in
 kibibytes (i.e. blocks of 1024 bytes). :since:`Since 6.6.0` the ``cpus``
 attribute is optional and if omitted a CPU-less NUMA node is created.
-:since:`Since 1.2.11` one can use an additional
-`unit <#elementsMemoryAllocation>`__ attribute to define units in which
+:since:`Since 1.2.11` one can use an additional ``unit`` attribute
+(See `Memory Allocation`_) to define units in which
 ``memory`` is specified. :since:`Since 1.2.7` all cells should have ``id``
 attribute in case referring to some cell is necessary in the code, otherwise the
 cells are assigned ``id``\ s in the increasing order starting from 0. Mixing
@@ -2034,7 +2032,7 @@ are:
    as 48 MiB of unavailable RAM might be too much for small guests (e.g. with
    512 MiB of RAM).
 
-   See `Memory Allocation <#elementsMemoryAllocation>`__ for more details about
+   See `Memory Allocation`_ for more details about
    the ``unit`` attribute. :since:`Since 4.5.0` (QEMU only)
 
 ``ioapic``
@@ -7981,8 +7979,8 @@ Example: usage of the memory devices
    ``label``
       For NVDIMM type devices one can use ``label`` and its subelement ``size``
       to configure the size of namespaces label storage within the NVDIMM
-      module. The ``size`` element has usual meaning described
-      `here <#elementsMemoryAllocation>`__. ``label`` is mandatory for pSeries
+      module. The ``size`` element has usual meaning described in the
+      `Memory Allocation`_ section. ``label`` is mandatory for pSeries
       guests and optional for all other architectures. For QEMU domains the
       following restrictions apply:
 
