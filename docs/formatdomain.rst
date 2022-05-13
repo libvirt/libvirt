@@ -6400,8 +6400,8 @@ types are ``isa`` (for ``isa-serial``), ``usb`` (for ``usb-serial``), ``pci``
 ``system-serial`` and ``sclp-serial`` target types don't support specifying an
 address.
 
-For the relationship between serial ports and consoles, `see
-below <#elementCharSerialAndConsole>`__.
+For the relationship between serial ports and consoles, refer to the
+`Relationship between serial ports and consoles`_ section.
 
 Console
 '''''''
@@ -6454,10 +6454,8 @@ Virtio consoles are usually accessible as ``/dev/hvc[0-7]`` from inside the
 guest; for more information, see
 https://fedoraproject.org/wiki/Features/VirtioSerial. :since:`Since 0.8.3`
 
-For the relationship between serial ports and consoles, `see
-below <#elementCharSerialAndConsole>`__.
-
-:anchor:`<a id="elementCharSerialAndConsole"/>`
+For the relationship between serial ports and consoles, refer to the
+`Relationship between serial ports and consoles`_ section.
 
 Relationship between serial ports and consoles
 ''''''''''''''''''''''''''''''''''''''''''''''
