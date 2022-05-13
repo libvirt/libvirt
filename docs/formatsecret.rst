@@ -65,7 +65,7 @@ using ``virsh secret-set-value``.
 The volume type secret can be supplied either in volume XML during creation of a
 `storage volume <formatstorage.html#storage-volume-xml>`__ in order to provide
 the passphrase to encrypt the volume or in domain XML
-`disk device <formatdomain.html#elementsDisks>`__ in order to provide the
+`disk device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ in order to provide the
 passphrase to decrypt the volume, :since:`since 2.1.0` . An example follows:
 
 ::
@@ -101,7 +101,7 @@ This secret is associated with a Ceph RBD (rados block device). The
 ``<usage type='ceph'>`` element must contain a single ``name`` element that
 specifies a usage name for the secret. The Ceph secret can then be used by UUID
 or by this usage name via the ``<auth>`` element of a `disk
-device <formatdomain.html#elementsDisks>`__ or a `storage pool
+device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ or a `storage pool
 (rbd) <formatstorage.html>`__. :since:`Since 0.9.7` . The following is an
 example of the steps to be taken. First create a ceph-secret.xml file:
 
@@ -132,7 +132,7 @@ See `Setting secret values in virsh`_ on how to set the value of the secret
 using ``virsh secret-set-value``.
 
 The ceph secret can then be used by UUID or by the usage name via the ``<auth>``
-element in a domain's `<disk> <formatdomain.html#elementsDisks>`__ element as
+element in a domain's `<disk> <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ element as
 follows:
 
 ::
@@ -157,7 +157,7 @@ This secret is associated with an iSCSI target for CHAP authentication. The
 ``<usage type='iscsi'>`` element must contain a single ``target`` element that
 specifies a usage name for the secret. The iSCSI secret can then be used by UUID
 or by this usage name via the ``<auth>`` element of a `disk
-device <formatdomain.html#elementsDisks>`__ or a `storage pool
+device <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ or a `storage pool
 (iscsi) <formatstorage.html>`__. :since:`Since 1.0.4` . The following is an
 example of the XML that may be used to generate a secret for iSCSI CHAP
 authentication. Assume the following sample entry in an iSCSI authentication
@@ -207,7 +207,7 @@ See `Setting secret values in virsh`_ on how to set the value of the secret
 using ``virsh secret-set-value``.
 
 The iSCSI secret can then be used by UUID or by the usage name via the
-``<auth>`` element in a domain's `<disk> <formatdomain.html#elementsDisks>`__
+``<auth>`` element in a domain's `<disk> <formatdomain.html#hard-drives-floppy-disks-cdroms>`__
 element as follows:
 
 ::

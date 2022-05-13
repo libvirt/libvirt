@@ -69,7 +69,7 @@ The top-level ``domaincheckpoint`` element may contain the following elements:
       ``name``
          A mandatory attribute which must match either the
          ``<target dev='name'/>`` or an unambiguous ``<source file='name'/>`` of
-         one of the `disk devices <formatdomain.html#elementsDisks>`__ specified
+         one of the `disk devices <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ specified
          for the domain at the time of the checkpoint.
 
       ``checkpoint``

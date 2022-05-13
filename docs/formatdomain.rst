@@ -239,7 +239,7 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    (the sorted list is vda, vdb, hda, hdc). Similar domain with hdc, vda, vdb,
    and hda disks will boot from hda (sorted disks are: hda, hdc, vda, vdb). It
    can be tricky to configure in the desired way, which is why per-device boot
-   elements (see `disks <#elementsDisks>`__, `network
+   elements (see `Hard drives, floppy disks, CDROMs`_, `network
    interfaces <#elementsNICS>`__, and `USB and PCI devices <#elementsHostDev>`__
    sections below) were introduced and they are the preferred way providing full
    control over booting order. The ``boot`` element and per-device boot elements
@@ -1186,12 +1186,13 @@ Block I/O Tuning
 ``device``
    The domain may have multiple ``device`` elements that further tune the
    weights for each host block device in use by the domain. Note that multiple
-   `guest disks <#elementsDisks>`__ can share a single host block device, if
-   they are backed by files within the same host file system, which is why this
-   tuning parameter is at the global domain level rather than associated with
-   each guest disk device (contrast this to the `<iotune> <#elementsDisks>`__
-   element which can apply to an individual ``<disk>``). Each ``device`` element
-   has two mandatory sub-elements, ``path`` describing the absolute path of the
+   disks (See `Hard drives, floppy disks, CDROMs`_) can share a single host
+   block device, if they are backed by files within the same host file system,
+   which is why this tuning parameter is at the global domain level rather than
+   associated with each guest disk device (contrast this to the <iotune>
+   element of a disk definition (See `Hard drives, floppy disks, CDROMs`_)
+   which can applies to an individual disk).  Each ``device`` element has
+   two mandatory sub-elements, ``path`` describing the absolute path of the
    device, and ``weight`` giving the relative weight of that device, in the
    range [100, 1000]. After kernel 2.6.39, the value could be in the range [10,
    1000]. :since:`Since 0.9.8`
@@ -2331,7 +2332,6 @@ following characters: ``[a-zA-Z0-9_-]``. :since:`Since 3.9.0`
      ...
    </devices>
 
-:anchor:`<a id="elementsDisks"/>`
 
 Hard drives, floppy disks, CDROMs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4118,7 +4118,7 @@ or:
       "unfiltered", where the default is "filtered". The optional ``rawio`` (
       :since:`since 1.2.9` ) attribute indicates whether the lun needs the rawio
       capability. Valid settings are "yes" or "no". See the rawio description
-      within the `disk <#elementsDisks>`__ section. If a disk lun in the domain
+      within the `Hard drives, floppy disks, CDROMs`_ section. If a disk lun in the domain
       already has the rawio capability, then this setting not required.
    ``scsi_host``
       :since:`since 2.5.0` For SCSI devices, user is responsible to make sure
@@ -4197,7 +4197,8 @@ or:
 
       :since:`Since 1.2.8` , the ``source`` element of a SCSI device may contain
       the ``protocol`` attribute. When the attribute is set to "iscsi", the host
-      device XML follows the network `disk <#elementsDisks>`__ device using the
+      device XML follows the network disk device
+      (See `Hard drives, floppy disks, CDROMs`_) using the
       same ``name`` attribute and optionally using the ``auth`` element to
       provide the authentication credentials to the iSCSI server.
 

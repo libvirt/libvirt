@@ -557,7 +557,7 @@ Example RBD disk attachment
 
 RBD images can be attached to QEMU guests when QEMU is built with RBD support.
 Information about attaching a RBD image to a guest can be found at `format
-domain <formatdomain.html#elementsDisks>`__ page.
+domain <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ page.
 
 Valid RBD pool format types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -618,7 +618,7 @@ Example Sheepdog disk attachment
 
 Sheepdog images can be attached to QEMU guests. Information about attaching a
 Sheepdog image to a guest can be found at the `format
-domain <formatdomain.html#elementsDisks>`__ page.
+domain <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ page.
 
 Valid Sheepdog pool format types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -698,7 +698,7 @@ Example Gluster disk attachment
 
 Files within a gluster volume can be attached to QEMU guests. Information about
 attaching a Gluster image to a guest can be found at the `format
-domain <formatdomain.html#elementsDisks>`__ page.
+domain <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ page.
 
 Valid Gluster pool format types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

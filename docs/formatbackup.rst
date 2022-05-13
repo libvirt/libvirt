@@ -37,7 +37,7 @@ were supplied). The following child elements and attributes are supported:
 
 ``server``
    Present only for a pull mode backup. Contains the same attributes as the
-   ```protocol`` element of a disk <formatdomain.html#elementsDisks>`__ attached
+   ```protocol`` element of a disk <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ attached
    via NBD in the domain (such as transport, socket, name, port, or tls),
    necessary to set up an NBD server that exposes the content of each disk at
    the time the backup is started.
@@ -61,7 +61,7 @@ were supplied). The following child elements and attributes are supported:
 
       ``name``
          A mandatory attribute which must match the ``<target dev='name'/>`` of
-         one of the `disk devices <formatdomain.html#elementsDisks>`__ specified
+         one of the `disk devices <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ specified
          for the domain at the time of the checkpoint.
 
       ``backup``
@@ -122,7 +122,7 @@ were supplied). The following child elements and attributes are supported:
          file is not deleted after the backup but the contents of the file don't
          make sense outside of the backup. The same applies for the block device
          which must be formatted appropriately. Similarly to the domain
-         ```disk`` <formatdomain.html#elementsDisks>`__ definition ``scratch``
+         ```disk`` <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ definition ``scratch``
          and ``target`` can contain ``seclabel`` and/or ``encryption``
          subelements to configure the corresponding properties.
 

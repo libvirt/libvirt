@@ -115,11 +115,11 @@ The top-level ``domainsnapshot`` element may contain the following elements:
       This sub-element describes the snapshot properties of a specific disk.
       The attribute ``name`` is mandatory, and must match either the ``<target
       dev='name'/>`` (recommended) or an unambiguous ``<source file='name'/>``
-      of one of the `disk devices <formatdomain.html#elementsDisks>`__
+      of one of the `disk devices <formatdomain.html#hard-drives-floppy-disks-cdroms>`__
       specified for the domain at the time of the snapshot. The attribute
       ``snapshot`` is optional, and the possible values are the same as the
       ``snapshot`` attribute for `disk devices
-      <formatdomain.html#elementsDisks>`__ (``no``, ``internal``, or
+      <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ (``no``, ``internal``, or
       ``external``). Some hypervisors like ESX require that if specified, the
       snapshot mode must not override any snapshot mode attached to the
       corresponding domain disk, while others like qemu allow this field to
@@ -140,7 +140,7 @@ The top-level ``domainsnapshot`` element may contain the following elements:
       overwrite the default ``file`` type. The ``type`` attribute along with
       the format of the ``source`` sub-element is identical to the ``source``
       element used in domain disk definitions. See the `disk devices
-      <formatdomain.html#elementsDisks>`__ section documentation for further
+      <formatdomain.html#hard-drives-floppy-disks-cdroms>`__ section documentation for further
       information. Libvirt currently supports the ``type`` element in the qemu
       driver and supported values are ``file``, ``block`` and ``network``
       :since:`(since 1.2.2)`.
