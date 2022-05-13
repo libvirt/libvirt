@@ -5,6 +5,7 @@ docs_kbase_internals_files = [
   'locking',
   'migration',
   'overview',
+  'qemu-event-handlers',
   'qemu-migration',
   'qemu-threads',
   'rpc',
