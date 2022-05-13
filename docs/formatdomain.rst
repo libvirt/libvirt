@@ -4130,12 +4130,11 @@ or:
       create mediated devices on the host. :since:`Since 4.6.0 (QEMU 2.12)` an
       optional ``display`` attribute may be used to enable or disable support
       for an accelerated remote desktop backed by a mediated device (such as
-      NVIDIA vGPU or Intel GVT-g) as an alternative to emulated `video
-      devices <#elementsVideo>`__. This attribute is limited to
-      ``model='vfio-pci'`` only. Supported values are either ``on`` or ``off``
-      (default is 'off'). It is required to use a graphical framebuffer (See
-      `Graphical framebuffers`_) in order to use this attribute,
-      currently only supported with VNC, Spice and egl-headless graphics
+      NVIDIA vGPU or Intel GVT-g) as an alternative to emulated `Video devices`_.
+      This attribute is limited to ``model='vfio-pci'`` only. Supported values
+      are either ``on`` or ``off`` (default is 'off'). It is required to use a
+      graphical framebuffer (See `Graphical framebuffers`_) in order to use this
+      attribute, currently only supported with VNC, Spice and egl-headless graphics
       devices. :since:`Since version 5.10.0` , there is an optional ``ramfb``
       attribute for devices with ``model='vfio-pci'``. Supported values are
       either ``on`` or ``off`` (default is 'off'). When enabled, this attribute
@@ -6125,7 +6124,6 @@ Only ``vnc``, ``spice`` and ``rdp`` supports ``<listen>`` element. :since:`Since
    the two APIs to pass a FD to QEMU in order to connect to this graphics
    device. Supported by graphics type ``vnc`` and ``spice``.
 
-:anchor:`<a id="elementsVideo"/>`
 
 Video devices
 ~~~~~~~~~~~~~
