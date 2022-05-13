@@ -8177,7 +8177,6 @@ At least one ``cipher`` element must be nested within the ``keywrap`` element.
 
 Note: DEA/TDEA is synonymous with DES/TDES.
 
-:anchor:`<a id="launchSecurity"/>`
 
 Launch Security
 ---------------

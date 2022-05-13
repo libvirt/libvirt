@@ -568,7 +568,7 @@ s390-pv capability
 
 Reports whether the hypervisor supports the Protected Virtualization. In order
 to use Protected Virtualization with libvirt have a look at the `launchSecurity
-element in the domain XML <formatdomain.html#launchSecurity>`__. For more
+element in the domain XML <formatdomain.html#launch-security>`__. For more
 details on the Protected Virtualization feature please see `Protected
 Virtualization on s390 <kbase/s390_protected_virt.html>`__.
 
@@ -583,7 +583,7 @@ transparently encrypted with a key unique to that VM.
 
 For more details on the SEV feature, please follow resources in the AMD
 developer's document store. In order to use SEV with libvirt have a look at `SEV
-in domain XML <formatdomain.html#launchSecurity>`__
+in domain XML <formatdomain.html#launch-security>`__
 
 ``cbitpos``
    When memory encryption is enabled, one of the physical address bits (aka the

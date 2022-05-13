@@ -154,7 +154,7 @@ VM Configuration
 ================
 
 SEV is enabled in the XML by specifying the
-`<launchSecurity> <https://libvirt.org/formatdomain.html#launchSecurity>`__
+`<launchSecurity> <https://libvirt.org/formatdomain.html#launch-security>`__
 element. However, specifying ``launchSecurity`` isn't enough to boot an
 SEV VM. Further configuration requirements are discussed below.
 

@@ -128,7 +128,7 @@ As the virtio data structures of secure guests are not accessible
 by the host, it is necessary to use shared memory ('bounce buffers').
 
 Since libvirt 7.6.0 the
-`<launchSecurity> <https://libvirt.org/formatdomain.html#launchSecurity>`__
+`<launchSecurity> <https://libvirt.org/formatdomain.html#launch-security>`__
 element with type ``s390-pv`` should be used on protected virtualization guests.
 Without ``launchSecurity`` you must enable all virtio devices to use shared
 buffers by configuring them with platform_iommu enabled.
