@@ -4133,8 +4133,8 @@ or:
       NVIDIA vGPU or Intel GVT-g) as an alternative to emulated `video
       devices <#elementsVideo>`__. This attribute is limited to
       ``model='vfio-pci'`` only. Supported values are either ``on`` or ``off``
-      (default is 'off'). It is required to use a `graphical
-      framebuffer <#elementsGraphics>`__ in order to use this attribute,
+      (default is 'off'). It is required to use a graphical framebuffer (See
+      `Graphical framebuffers`_) in order to use this attribute,
       currently only supported with VNC, Spice and egl-headless graphics
       devices. :since:`Since version 5.10.0` , there is an optional ``ramfb``
       attribute for devices with ``model='vfio-pci'``. Supported values are
@@ -4350,7 +4350,7 @@ after 0.9.5 (KVM only)` :
    ``type`` is required, matching one of the supported `serial
    device <#elementsConsole>`__ types, to describe the host side of the tunnel;
    ``type='tcp'`` or ``type='spicevmc'`` (which uses the usbredir channel of a
-   `SPICE graphics device <#elementsGraphics>`__) are typical. The redirdev
+   SPICE graphics device (See `Graphical framebuffers`_)) are typical. The redirdev
    element has an optional sub-element ``<address>`` which can tie the device to
    a particular controller. Further sub-elements, such as ``<source>``, may be
    required according to the given type, although a ``<target>`` sub-element is
@@ -4431,7 +4431,7 @@ behaves like a physical USB CCID (Chip/Smart Card Interface Device) card.
    ``type`` is required, matching one of the supported `serial
    device <#elementsConsole>`__ types, to describe the host side of the tunnel;
    ``type='tcp'`` or ``type='spicevmc'`` (which uses the smartcard channel of a
-   `SPICE graphics device <#elementsGraphics>`__) are typical. Further
+   SPICE graphics device (See `Graphical framebuffers`_)) are typical. Further
    sub-elements, such as ``<source>``, may be required according to the given
    type, although a ``<target>`` sub-element is not required (since the consumer
    of the character device is the hypervisor itself, rather than a device
@@ -5830,7 +5830,6 @@ The ``hub`` element has an optional sub-element ``<address>``
 (See `Device Addresses`_) ``type='usb'`` which can tie the device to a
 particular controller.
 
-:anchor:`<a id="elementsGraphics"/>`
 
 Graphical framebuffers
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -6596,7 +6595,7 @@ types have different ``target`` attributes.
    the necessary probing mechanism. :since:`Since 2.3.0`
 ``spicevmc``
    Paravirtualized SPICE channel. The domain must also have a SPICE server as a
-   `graphics device <#elementsGraphics>`__, at which point the host piggy-backs
+   graphics device (See `Graphical framebuffers`_), at which point the host piggy-backs
    messages across the ``main`` channel. The ``target`` element must be present,
    with attribute ``type='virtio'``; an optional attribute ``name`` controls how
    the guest will have access to the channel, and defaults to
@@ -6618,7 +6617,7 @@ types have different ``target`` attributes.
    disabled by default, and can be enabled by setting the ``copypaste``
    property to ``yes``. This allows the guest's clipboard to be synchronized
    with the qemu clipboard manager. This can enable copy and paste between a
-   guest and a client when using a VNC `graphics device <#elementsGraphics>`__
+   guest and a client when using a VNC graphics device (See `Graphical framebuffers`_)
    (when using a VNC client that supports the copy/paste feature) or other
    graphics types that support the qemu clipboard manager.
 
@@ -6879,7 +6878,7 @@ The character device is accessible through spice connection under a channel name
 specified in the ``channel`` attribute. :since:`Since 1.2.2`
 
 Note: depending on the hypervisor, spiceports might (or might not) be enabled on
-domains with or without `spice graphics <#elementsGraphics>`__.
+domains with or without spice graphics (See `Graphical framebuffers`_).
 
 ::
 
