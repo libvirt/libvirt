@@ -61,9 +61,6 @@ void virCommandPassFDIndex(virCommand *cmd,
                            unsigned int flags,
                            size_t *idx) G_GNUC_NO_INLINE;
 
-int virCommandPassFDGetFDIndex(virCommand *cmd,
-                               int fd);
-
 void virCommandSetPidFile(virCommand *cmd,
                           const char *pidfile) ATTRIBUTE_NONNULL(2);
 

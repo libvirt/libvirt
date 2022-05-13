@@ -1077,33 +1077,6 @@ virCommandPassFD(virCommand *cmd, int fd, unsigned int flags)
     virCommandPassFDIndex(cmd, fd, flags, NULL);
 }
 
-/*
- * virCommandPassFDGetFDIndex:
- * @cmd: pointer to virCommand
- * @fd: FD to get index of
- *
- * Determine the index of the FD in the transfer set.
- *
- * Returns index >= 0 if @set contains @fd,
- * -1 otherwise.
- */
-int
-virCommandPassFDGetFDIndex(virCommand *cmd, int fd)
-{
-    size_t i = 0;
-
-    if (virCommandHasError(cmd))
-        return -1;
-
-    while (i < cmd->npassfd) {
-        if (cmd->passfd[i].fd == fd)
-            return i;
-        i++;
-    }
-
-    return -1;
-}
-
 /**
  * virCommandSetPidFile:
  * @cmd: the command to modify
