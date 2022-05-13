@@ -24,7 +24,6 @@ domain. The allowed values are driver specific, but include "xen", "kvm",
 and "lxc". The second attribute is ``id`` which is a unique integer identifier
 for the running guest machine. Inactive machines have no id value.
 
-:anchor:`<a id="elementsMetadata"/>`
 
 General metadata
 ----------------
@@ -500,8 +499,8 @@ layout of sub-elements, with supported values of:
          Serial number
       ``uuid``
          Universal Unique ID number. If this entry is provided alongside a
-         top-level `uuid <#elementsMetadata>`__ element, then the two values
-         must match.
+         top-level ``uuid`` element (see `General metadata`_), then the two
+         values must match.
       ``sku``
          SKU number to identify a particular configuration.
       ``family``
