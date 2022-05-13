@@ -128,7 +128,7 @@ host core that is in the `isolcpus` reserved set. The QEMU emulator threads
 need to be pinned to host CPUs that are not in the `isolcpus` reserved set.
 The vCPUs need to be given a real time CPU scheduler policy.
 
-When configuring the `guest CPU count <../formatdomain.html#elementsCPUAllocation>`_,
+When configuring the `guest CPU count <../formatdomain.html#cpu-allocation>`_,
 do not include any CPU affinity at this stage:
 
 ::

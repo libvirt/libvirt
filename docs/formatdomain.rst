@@ -576,7 +576,6 @@ layout of sub-elements, with supported values of:
    the value (to set the blob value directly), or ``file`` attribute (to set the
    blob value from the file).
 
-:anchor:`<a id="elementsCPUAllocation"/>`
 
 CPU Allocation
 --------------
