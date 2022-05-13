@@ -14411,6 +14411,8 @@ virDomainRedirdevDefParseXML(virDomainXMLOption *xmlopt,
 
     if (def->source->type == VIR_DOMAIN_CHR_TYPE_SPICEVMC)
         def->source->data.spicevmc = VIR_DOMAIN_CHR_SPICEVMC_USBREDIR;
+    if (def->source->type == VIR_DOMAIN_CHR_TYPE_DBUS && !def->source->data.dbus.channel)
+        def->source->data.dbus.channel = g_strdup("org.qemu.usbredir");
 
     if (virDomainDeviceInfoParseXML(xmlopt, node, ctxt, &def->info,
                                     flags | VIR_DOMAIN_DEF_PARSE_ALLOW_BOOT) < 0)
