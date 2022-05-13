@@ -658,10 +658,7 @@
     </interleave>
   </define>
 
-  <define name="capccwdev">
-    <attribute name="type">
-      <value>ccw</value>
-    </attribute>
+  <define name="capccwaddress">
     <element name="cssid">
       <ref name="ccwCssidRange"/>
     </element>
@@ -673,19 +670,18 @@
     </element>
   </define>
 
+  <define name="capccwdev">
+    <attribute name="type">
+      <value>ccw</value>
+    </attribute>
+    <ref name="capccwaddress"/>
+  </define>
+
   <define name="capcssdev">
     <attribute name="type">
       <value>css</value>
     </attribute>
-    <element name="cssid">
-      <ref name="ccwCssidRange"/>
-    </element>
-    <element name="ssid">
-      <ref name="ccwSsidRange"/>
-    </element>
-    <element name="devno">
-      <ref name="ccwDevnoRange"/>
-    </element>
+    <ref name="capccwaddress"/>
     <optional>
       <ref name="mdev_types"/>
     </optional>
