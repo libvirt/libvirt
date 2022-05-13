@@ -61,7 +61,7 @@ The first elements provide basic metadata about the virtual network.
    The optional parameter ``trustGuestRxFilters`` can be used to set that
    attribute of the same name for each domain interface connected to this
    network ( :since:`since 1.2.10` ). See the `Network
-   interfaces <formatdomain.html#elementsNICS>`__ section of the domain XML
+   interfaces <formatdomain.html#network-interfaces>`__ section of the domain XML
    documentation for more details. Note that an explicit setting of this
    attribute in a portgroup or the individual domain interface will override the
    setting in the network.
@@ -616,7 +616,7 @@ starting.
 portgroups also support the optional parameter ``trustGuestRxFilters`` which can
 be used to set that attribute of the same name for each domain interface using
 this portgroup ( :since:`since 1.2.10` ). See the `Network
-interfaces <formatdomain.html#elementsNICS>`__ section of the domain XML
+interfaces <formatdomain.html#network-interfaces>`__ section of the domain XML
 documentation for more details. Note that an explicit setting of this attribute
 in the portgroup overrides the network-wide setting, and an explicit setting in
 the individual domain interface will override the setting in the portgroup.

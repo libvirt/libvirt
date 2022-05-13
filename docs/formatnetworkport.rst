@@ -98,7 +98,7 @@ The following elements are common to one or more of the plug types listed later
 ``virtualport``
    The ``virtualport`` element describes metadata that needs to be provided to
    the underlying network subsystem. It is described in the domain XML
-   `interface documentation <formatdomain.html#elementsNICS>`__.
+   `interface documentation <formatdomain.html#network-interfaces>`__.
 
 Plugs
 ~~~~~

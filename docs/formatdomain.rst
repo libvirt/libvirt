@@ -239,11 +239,11 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    (the sorted list is vda, vdb, hda, hdc). Similar domain with hdc, vda, vdb,
    and hda disks will boot from hda (sorted disks are: hda, hdc, vda, vdb). It
    can be tricky to configure in the desired way, which is why per-device boot
-   elements (see `Hard drives, floppy disks, CDROMs`_, `network
-   interfaces <#elementsNICS>`__, and `Host device assignment`_
-   sections below) were introduced and they are the preferred way providing full
-   control over booting order. The ``boot`` element and per-device boot elements
-   are mutually exclusive. :since:`Since 0.1.3, per-device boot since 0.8.8`
+   elements (see `Hard drives, floppy disks, CDROMs`_, `Network interfaces`_,
+   and `Host device assignment`_ sections below) were introduced and they are
+   the preferred way providing full control over booting order.
+   The ``boot`` element and per-device boot elements are mutually exclusive.
+   :since:`Since 0.1.3, per-device boot since 0.8.8`
 ``smbios``
    How to populate SMBIOS information visible in the guest. The ``mode``
    attribute must be specified, and is either "emulate" (let the hypervisor
@@ -4441,7 +4441,6 @@ Each mode supports an optional sub-element ``<address>`` (See `Device Addresses`
 which fine-tunes the correlation between the smartcard and a ccid bus controller.
 For now, qemu only supports at most one smartcard, with an address of bus=0 slot=0.
 
-:anchor:`<a id="elementsNICS"/>`
 
 Network interfaces
 ~~~~~~~~~~~~~~~~~~
