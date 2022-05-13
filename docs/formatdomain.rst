@@ -1008,7 +1008,7 @@ influence how virtual memory pages are backed by host pages.
    ``nodeset`` attribute may come handy as it ties given guest's NUMA nodes to
    certain hugepage sizes. From the example snippet, one gigabyte hugepages are
    used for every NUMA node except node number four. For the correct syntax see
-   `this <#elementsNUMATuning>`__.
+   `NUMA Node Tuning`_.
 ``nosharepages``
    Instructs hypervisor to disable shared pages (memory merge, KSM) for this
    domain. :since:`Since 1.0.6`
@@ -1100,7 +1100,6 @@ Memory Tuning
    of 1024 bytes). This element is only supported by VMware ESX and OpenVZ
    drivers.
 
-:anchor:`<a id="elementsNUMATuning"/>`
 
 NUMA Node Tuning
 ----------------
