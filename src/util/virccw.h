@@ -22,6 +22,8 @@
 
 #include "internal.h"
 
+#define VIR_CCW_DEVICE_ADDRESS_FMT "%x.%x.%04x"
+
 typedef struct _virCCWDeviceAddress virCCWDeviceAddress;
 struct _virCCWDeviceAddress {
     unsigned int cssid;

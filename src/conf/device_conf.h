@@ -202,7 +202,6 @@ int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
                                       virCCWDeviceAddress *addr);
 bool virDomainDeviceCCWAddressEqual(virCCWDeviceAddress *addr1,
                                     virCCWDeviceAddress *addr2);
-#define VIR_CCW_DEVICE_ADDRESS_FMT "%x.%x.%04x"
 
 int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                         virDomainDeviceDriveAddress *addr);

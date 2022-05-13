@@ -601,7 +601,7 @@ qemuBuildDeviceAddressProps(virJSONValue *props,
         return 0;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW: {
-        g_autofree char *devno = g_strdup_printf("%x.%x.%04x",
+        g_autofree char *devno = g_strdup_printf(VIR_CCW_DEVICE_ADDRESS_FMT,
                                                  info->addr.ccw.cssid,
                                                  info->addr.ccw.ssid,
                                                  info->addr.ccw.devno);

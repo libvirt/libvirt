@@ -25,5 +25,5 @@
 char*
 virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
 {
-    return g_strdup_printf("%x.%x.%04x", addr->cssid, addr->ssid, addr->devno);
+    return g_strdup_printf(VIR_CCW_DEVICE_ADDRESS_FMT, addr->cssid, addr->ssid, addr->devno);
 }
