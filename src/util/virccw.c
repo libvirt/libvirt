@@ -22,6 +22,14 @@
 #include "virccw.h"
 
 
+bool
+virCCWDeviceAddressIsValid(virCCWDeviceAddress *addr)
+{
+    return addr->cssid <= VIR_CCW_DEVICE_MAX_CSSID &&
+           addr->ssid <= VIR_CCW_DEVICE_MAX_SSID &&
+           addr->devno <= VIR_CCW_DEVICE_MAX_DEVNO;
+}
+
 char*
 virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
 {

@@ -35,6 +35,8 @@ struct _virCCWDeviceAddress {
     bool         assigned;
 };
 
+bool virCCWDeviceAddressIsValid(virCCWDeviceAddress *addr);
+
 char* virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
     ATTRIBUTE_NONNULL(1);
 int virCCWDeviceAddressIncrement(virCCWDeviceAddress *addr);

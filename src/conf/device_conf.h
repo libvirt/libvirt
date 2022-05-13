@@ -193,7 +193,6 @@ void virPCIDeviceAddressFormat(virBuffer *buf,
                                virPCIDeviceAddress addr,
                                bool includeTypeInAddr);
 
-bool virDomainDeviceCCWAddressIsValid(virCCWDeviceAddress *addr);
 int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
                                       virCCWDeviceAddress *addr);
 bool virDomainDeviceCCWAddressEqual(virCCWDeviceAddress *addr1,
