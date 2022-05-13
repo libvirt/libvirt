@@ -5436,7 +5436,6 @@ domains (so data will not go through host system). Use with type 'ethernet' to
 create plain network link, or with type 'bridge' to connect to a bridge inside
 the backend domain. :since:`Since 1.2.13 (Xen only)`
 
-:anchor:`<a id="elementQoS"/>`
 
 Quality of service
 ^^^^^^^^^^^^^^^^^^
