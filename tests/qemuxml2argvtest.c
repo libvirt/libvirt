@@ -1062,6 +1062,7 @@ mymain(void)
     DO_TEST_NOCAPS("machine-core-off");
     driver.config->dumpGuestCore = false;
     DO_TEST_CAPS_LATEST("machine-smm-on");
+    DO_TEST_CAPS_LATEST("machine-smm-off");
     DO_TEST("machine-vmport-opt",
             QEMU_CAPS_MACHINE_VMPORT_OPT);
     DO_TEST_NOCAPS("default-kvm-host-arch");
