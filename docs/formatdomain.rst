@@ -97,7 +97,6 @@ Operating system booting
 There are a number of different ways to boot virtual machines each with their
 own pros and cons.
 
-:anchor:`<a id="elementsOSBIOS"/>`
 
 BIOS bootloader
 ~~~~~~~~~~~~~~~
@@ -332,11 +331,11 @@ and full virtualized guests.
    ...
 
 ``type``
-   This element has the same semantics as described earlier in the `BIOS boot
-   section <#elementsOSBIOS>`__
+   This element has the same semantics as described earlier in the
+   `BIOS bootloader`_ section.
 ``loader``
-   This element has the same semantics as described earlier in the `BIOS boot
-   section <#elementsOSBIOS>`__
+   This element has the same semantics as described earlier in the
+   `BIOS bootloader`_ section.
 ``kernel``
    The contents of this element specify the fully-qualified path to the kernel
    image in the host OS.
@@ -3197,7 +3196,7 @@ paravirtualized driver is specified via the ``disk`` element.
    attribute is an 8 character string which can be queried by guests on S390 via
    sclp or diag 308. Linux guests on S390 can use ``loadparm`` to select a boot
    entry. :since:`Since 3.5.0` The per-device ``boot`` elements cannot be used
-   together with general boot elements in `BIOS bootloader <#elementsOSBIOS>`__
+   together with general boot elements in `BIOS bootloader`_
    section. :since:`Since 0.8.8`
 ``encryption``
    Starting with :since:`libvirt 3.9.0` the ``encryption`` element is preferred
@@ -4240,8 +4239,8 @@ or:
 ``boot``
    Specifies that the device is bootable. The ``order`` attribute determines the
    order in which devices will be tried during boot sequence. The per-device
-   ``boot`` elements cannot be used together with general boot elements in `BIOS
-   bootloader <#elementsOSBIOS>`__ section. :since:`Since 0.8.8` for PCI
+   ``boot`` elements cannot be used together with general boot elements in
+   `BIOS bootloader`_ section. :since:`Since 0.8.8` for PCI
    devices, :since:`Since 1.0.1` for USB devices.
 ``rom``
    The ``rom`` element is used to change how a PCI device's ROM is presented to
@@ -4384,8 +4383,8 @@ after 0.9.5 (KVM only)` :
 ``boot``
    Specifies that the device is bootable. The ``order`` attribute determines the
    order in which devices will be tried during boot sequence. The per-device
-   ``boot`` elements cannot be used together with general boot elements in `BIOS
-   bootloader <#elementsOSBIOS>`__ section. ( :since:`Since 1.0.1` )
+   ``boot`` elements cannot be used together with general boot elements in
+   `BIOS bootloader`_ section. ( :since:`Since 1.0.1` )
 ``redirfilter``
    The\ ``redirfilter``\ element is used for creating the filter rule to filter
    out certain devices from redirection. It uses sub-element ``<usbdev>`` to
@@ -5415,7 +5414,7 @@ Specifying boot order
 For hypervisors which support this, you can set a specific NIC to be used for
 network boot. The ``order`` attribute determines the order in which devices will
 be tried during boot sequence. The per-device ``boot`` elements cannot be used
-together with general boot elements in `BIOS bootloader <#elementsOSBIOS>`__
+together with general boot elements in `BIOS bootloader`_
 section. :since:`Since 0.8.8`
 
 Interface ROM BIOS configuration
