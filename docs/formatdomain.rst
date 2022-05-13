@@ -7523,7 +7523,6 @@ Example: usage of the RNG device:
    virtio options
       `Virtio-related options`_ can also be set. ( :since:`Since 3.5.0` )
 
-:anchor:`<a id="elementsTpm"/>`
 
 TPM device
 ~~~~~~~~~~

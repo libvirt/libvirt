@@ -268,7 +268,7 @@ This secret is associated with a virtualized TPM (vTPM) and serves as a
 passphrase for deriving a key from for encrypting the state of the vTPM. The
 ``<usage type='vtpm'>`` element must contain a single ``name`` element that
 specifies a usage name for the secret. The vTPM secret can then be used by UUID
-via the ``<encryption>`` element of a `tpm <formatdomain.html#elementsTpm>`__
+via the ``<encryption>`` element of a `tpm <formatdomain.html#tpm-device>`__
 when using an emulator. :since:`Since 5.6.0` . The following is an example of
 the steps to be taken. First create a vtpm-secret.xml file:
 
