@@ -1195,7 +1195,7 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
     if (virStrToLong_uip(ssid, NULL, 0, &ccw_dev->ssid) < 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("invalid ssid value '%s' for '%s'"),
-                       cssid, def->name);
+                       ssid, def->name);
         return -1;
     }
 
