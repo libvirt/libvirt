@@ -3127,7 +3127,7 @@ paravirtualized driver is specified via the ``disk`` element.
       virtio-blk. ( :since:`Since 3.9.0` )
    -  The optional ``queue_size`` attribute specifies the size of each virt
       queue for virtio-blk. ( :since:`Since 7.8.0` )
-   -  For virtio disks, `Virtio-specific options <#elementsVirtio>`__ can also
+   -  For virtio disks, `Virtio-related options`_ can also
       be set. ( :since:`Since 3.5.0` )
    -  The optional ``metadata_cache`` subelement controls aspects related to the
       format specific caching of storage image metadata. Note that this setting
@@ -3431,7 +3431,7 @@ A directory on the host that can be accessed directly from the guest.
       "loop", with a format of "raw" or "nbd" with any format. QEMU supports a
       type of "path" or "handle", but no formats. Virtuozzo driver supports a
       type of "ploop" with a format of "ploop".
-   -  For virtio-backed devices, `Virtio-specific options <#elementsVirtio>`__
+   -  For virtio-backed devices, `Virtio-related options`_
       can also be set. ( :since:`Since 3.5.0` )
    -  For ``virtiofs``, the ``queue`` attribute can be used to specify the queue
       size (i.e. how many requests can the queue fit). ( :since:`Since 6.2.0` )
@@ -3565,7 +3565,6 @@ control where on the bus the device will be placed:
    will have access to it. ``<address type='unassigned'/>`` is an invalid
    address type for all other device types. :since:`Since 6.0.0`
 
-:anchor:`<a id="elementsVirtio"/>`
 
 Virtio-related options
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -3746,7 +3745,7 @@ An optional sub-element ``driver`` can specify the driver specific options:
    controllers must be defined each having a specific ``iothread`` value. The
    ``iothread`` value must be within the range 1 to the domain iothreads value.
 virtio options
-   For virtio controllers, `Virtio-specific options <#elementsVirtio>`__ can
+   For virtio controllers, `Virtio-related options`_ can
    also be set. ( :since:`Since 3.5.0` )
 
 USB companion controllers have an optional sub-element ``<master>`` to specify
@@ -5293,7 +5292,7 @@ following attributes are available for the ``"virtio"`` NIC driver:
    you know what you are doing. Proper RSS configuration depends from vcpu,
    tap, and vhost settings.**
 virtio options
-   For virtio interfaces, `Virtio-specific options <#elementsVirtio>`__ can also
+   For virtio interfaces, `Virtio-related options`_ can also
    be set. ( :since:`Since 3.5.0` )
 
 Offloading options for the host and guest can be configured using the following
@@ -5825,8 +5824,7 @@ change the grab key combination.
 <#elementsVirtioTransitional>`__ for more details.
 
 The subelement ``driver`` can be used to tune the virtio options of the device:
-`Virtio-specific options <#elementsVirtio>`__ can also be set. ( :since:`Since
-3.5.0` )
+`Virtio-related options`_ can also be set. ( :since:`Since 3.5.0` )
 
 Hub devices
 ~~~~~~~~~~~
@@ -6247,8 +6245,7 @@ A video device.
       the default QEMU backend. "vhostuser" will use a separate vhost-user
       process backend (for ``virtio`` device).
    virtio options
-      `Virtio-specific options <#elementsVirtio>`__ can also be set (
-      :since:`Since 3.5.0` )
+      `Virtio-related options`_ can also be set (:since:`Since 3.5.0`)
    VGA configuration
       Control how the video devices exposed to the guest using the ``vgaconf``
       attribute which takes the value "io", "on" or "off". At present, it's only
@@ -7476,8 +7473,8 @@ Example: manually added device with static PCI slot 2 requested
    years) might be ignored. :since:`Since 1.1.1, requires QEMU 1.5`
 
 ``driver``
-   For model ``virtio`` memballoon, `Virtio-specific
-   options <#elementsVirtio>`__ can also be set. ( :since:`Since 3.5.0` )
+   For model ``virtio`` memballoon, `Virtio-related options`_ can also be set.
+   ( :since:`Since 3.5.0` )
 
 Random number generator device
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7551,8 +7548,7 @@ Example: usage of the RNG device:
    The subelement ``driver`` can be used to tune the device:
 
    virtio options
-      `Virtio-specific options <#elementsVirtio>`__ can also be set. (
-      :since:`Since 3.5.0` )
+      `Virtio-related options`_ can also be set. ( :since:`Since 3.5.0` )
 
 :anchor:`<a id="elementsTpm"/>`
 
@@ -8071,7 +8067,7 @@ attribute ``address`` of the ``cid`` element specifies the CID assigned to the
 guest. If the attribute ``auto`` is set to ``yes``, libvirt will assign a free
 CID automatically on domain startup. :since:`Since 4.4.0`
 The optional ``driver`` element allows to specify virtio options, see
-`Virtio-specific options <#elementsVirtio>`__  for more details. :since:`Since 7.1.0`
+`Virtio-related options`_  for more details. :since:`Since 7.1.0`
 
 ::
 
