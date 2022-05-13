@@ -4346,15 +4346,18 @@ after 0.9.5 (KVM only)` :
 ``redirdev``
    The ``redirdev`` element is the main container for describing redirected
    devices. ``bus`` must be "usb" for a USB device. An additional attribute
-   ``type`` is required, matching one of the supported `serial
-   device <#elementsConsole>`__ types, to describe the host side of the tunnel;
-   ``type='tcp'`` or ``type='spicevmc'`` (which uses the usbredir channel of a
-   SPICE graphics device (See `Graphical framebuffers`_)) are typical. The redirdev
-   element has an optional sub-element ``<address>`` which can tie the device to
-   a particular controller. Further sub-elements, such as ``<source>``, may be
-   required according to the given type, although a ``<target>`` sub-element is
-   not required (since the consumer of the character device is the hypervisor
-   itself, rather than a device visible in the guest).
+   ``type`` is required, matching one of the supported serial device types
+   (See `Consoles, serial, parallel & channel devices`_), to describe the host
+   side of the tunnel; ``type='tcp'`` or ``type='spicevmc'`` (which uses the
+   usbredir channel of a  SPICE graphics device (See `Graphical framebuffers`_))
+   are typical.
+
+   The redirdev element has an optional sub-element ``<address>`` which can tie
+   the device to  a particular controller. Further sub-elements, such as
+   ``<source>``, may be required according to the given type, although a
+   ``<target>`` sub-element is not required (since the consumer of the
+   character device is the hypervisor itself, rather than a device visible in
+   the guest).
 ``boot``
    Specifies that the device is bootable. The ``order`` attribute determines the
    order in which devices will be tried during boot sequence. The per-device
@@ -4427,8 +4430,9 @@ behaves like a physical USB CCID (Chip/Smart Card Interface Device) card.
    possible to tunnel all requests through a secondary character device to a
    third-party provider (which may in turn be talking to a smartcard or using
    three certificate files). In this mode of operation, an additional attribute
-   ``type`` is required, matching one of the supported `serial
-   device <#elementsConsole>`__ types, to describe the host side of the tunnel;
+   ``type`` is required, matching one of the supported serial device types
+   (See `Consoles, serial, parallel & channel devices`_),
+   to describe the host side of the tunnel;
    ``type='tcp'`` or ``type='spicevmc'`` (which uses the smartcard channel of a
    SPICE graphics device (See `Graphical framebuffers`_)) are typical. Further
    sub-elements, such as ``<source>``, may be required according to the given
@@ -6230,7 +6234,6 @@ A video device.
       attribute which takes the value "io", "on" or "off". At present, it's only
       applicable to the bhyve's "gop" video model type ( :since:`Since 3.5.0` )
 
-:anchor:`<a id="elementsConsole"/>`
 
 Consoles, serial, parallel & channel devices
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
