@@ -159,7 +159,7 @@ The top-level ``domainsnapshot`` element may contain the following elements:
 
          The ``source`` element also may contain the ``seclabel`` element
          (described in the `domain XML documentation
-         <formatdomain.html#seclabel>`__) which can be used to override the
+         <formatdomain.html#security-label>`__) which can be used to override the
          domain security labeling policy for ``source``.
 
       ``driver``

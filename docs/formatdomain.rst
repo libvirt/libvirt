@@ -2720,10 +2720,11 @@ paravirtualized driver is specified via the ``disk`` element.
       incremental backups and snapshots are not supported for this disk type.
 
    With "file", "block", and "volume", one or more optional sub-elements
-   ``seclabel``, `described below <#seclabel>`__ (and :since:`since 0.9.9` ),
-   can be used to override the domain security labeling policy for just that
-   source file. (NB, for "volume" type disk, ``seclabel`` is only valid when the
+   ``seclabel`` (See `Security label`_) can be used to override the domain
+   security labeling policy for just that source file.
+   (NB, for "volume" type disk, ``seclabel`` is only valid when the
    specified storage volume is of 'file' or 'block' type).
+   :since:`since 0.9.9`
 
    The ``source`` element may also have the ``index`` attribute with same
    semantics the ``index`` attribute of ``backingStore``.
@@ -6280,7 +6281,7 @@ top-level element. The host interface is configured by the ``source`` element.
 
 The ``source`` element may contain an optional ``seclabel`` to override the way
 that labelling is done on the socket path. If this element is not present, the
-`security label is inherited from the per-domain setting <#seclabel>`__.
+`Security label`_ is inherited from the per-domain setting.
 
 If the interface ``type`` presented to the host is "file", then the ``source``
 element may contain an optional attribute ``append`` that specifies whether or
@@ -8047,7 +8048,6 @@ The optional ``driver`` element allows to specify virtio options, see
    </devices>
    ...
 
-:anchor:`<a id="seclabel"/>`
 
 Security label
 --------------
