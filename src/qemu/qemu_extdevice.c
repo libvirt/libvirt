@@ -190,6 +190,19 @@ qemuExtDevicesStart(virQEMUDriver *driver,
         }
     }
 
+    for (i = 0; i < def->ngraphics; i++) {
+        virDomainGraphicsDef *graphics = def->graphics[i];
+
+        if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_DBUS)
+            continue;
+
+        if (graphics->data.dbus.p2p || graphics->data.dbus.fromConfig)
+            continue;
+
+        if (qemuDBusStart(driver, vm) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
