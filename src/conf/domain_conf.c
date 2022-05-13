@@ -15516,7 +15516,7 @@ virDomainDiskIndexByAddress(virDomainDef *def,
             return i;
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
             ccw_addr &&
-            virDomainDeviceCCWAddressEqual(&vdisk->info.addr.ccw, ccw_addr)) {
+            virCCWDeviceAddressEqual(&vdisk->info.addr.ccw, ccw_addr)) {
             return i;
         }
         if (vdisk->info.type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_DRIVE) {
@@ -15705,8 +15705,8 @@ virDomainNetFindIdx(virDomainDef *def, virDomainNetDef *net)
             continue;
 
         if (CCWAddrSpecified &&
-            !virDomainDeviceCCWAddressEqual(&def->nets[i]->info.addr.ccw,
-                                            &net->info.addr.ccw))
+            !virCCWDeviceAddressEqual(&def->nets[i]->info.addr.ccw,
+                                      &net->info.addr.ccw))
             continue;
 
         if (net->info.alias && def->nets[i]->info.alias &&
@@ -16142,7 +16142,7 @@ virDomainControllerFindByCCWAddress(virDomainDef *def,
         virDomainDeviceInfo *info = &def->controllers[i]->info;
 
         if (info->type == VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW &&
-            virDomainDeviceCCWAddressEqual(&info->addr.ccw, addr))
+            virCCWDeviceAddressEqual(&info->addr.ccw, addr))
             return i;
     }
 

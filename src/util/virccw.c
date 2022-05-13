@@ -30,6 +30,18 @@ virCCWDeviceAddressIsValid(virCCWDeviceAddress *addr)
            addr->devno <= VIR_CCW_DEVICE_MAX_DEVNO;
 }
 
+bool
+virCCWDeviceAddressEqual(virCCWDeviceAddress *addr1,
+                         virCCWDeviceAddress *addr2)
+{
+    if (addr1->cssid == addr2->cssid &&
+        addr1->ssid == addr2->ssid &&
+        addr1->devno == addr2->devno) {
+        return true;
+    }
+    return false;
+}
+
 char*
 virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
 {

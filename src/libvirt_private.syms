@@ -131,7 +131,6 @@ virDeviceInfoPCIAddressIsWanted;
 virDomainDeviceAddressIsValid;
 virDomainDeviceAddressTypeToString;
 virDomainDeviceCcidAddressParseXML;
-virDomainDeviceCCWAddressEqual;
 virDomainDeviceCCWAddressParseXML;
 virDomainDeviceDriveAddressParseXML;
 virDomainDeviceInfoAddressIsEqual;
@@ -1926,6 +1925,7 @@ virBufferVasprintf;
 
 # util/virccw.h
 virCCWDeviceAddressAsString;
+virCCWDeviceAddressEqual;
 virCCWDeviceAddressIncrement;
 virCCWDeviceAddressIsValid;
 

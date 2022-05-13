@@ -36,6 +36,8 @@ struct _virCCWDeviceAddress {
 };
 
 bool virCCWDeviceAddressIsValid(virCCWDeviceAddress *addr);
+bool virCCWDeviceAddressEqual(virCCWDeviceAddress *addr1,
+                              virCCWDeviceAddress *addr2);
 
 char* virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
     ATTRIBUTE_NONNULL(1);
