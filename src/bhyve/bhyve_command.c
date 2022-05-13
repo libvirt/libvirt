@@ -551,6 +551,7 @@ bhyveBuildSoundArgStr(const virDomainDef *def G_GNUC_UNUSED,
         case VIR_DOMAIN_AUDIO_TYPE_SDL:
         case VIR_DOMAIN_AUDIO_TYPE_SPICE:
         case VIR_DOMAIN_AUDIO_TYPE_FILE:
+        case VIR_DOMAIN_AUDIO_TYPE_DBUS:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("unsupported audio backend '%s'"),
                            virDomainAudioTypeTypeToString(audio->type));

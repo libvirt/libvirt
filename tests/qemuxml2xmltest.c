@@ -412,6 +412,10 @@ mymain(void)
     DO_TEST("graphics-dbus-p2p",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_DISPLAY_DBUS);
+    DO_TEST("graphics-dbus-audio",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_DISPLAY_DBUS,
+            QEMU_CAPS_AUDIODEV);
 
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");

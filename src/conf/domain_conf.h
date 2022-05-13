@@ -1548,6 +1548,7 @@ typedef enum {
     VIR_DOMAIN_AUDIO_TYPE_SDL,
     VIR_DOMAIN_AUDIO_TYPE_SPICE,
     VIR_DOMAIN_AUDIO_TYPE_FILE,
+    VIR_DOMAIN_AUDIO_TYPE_DBUS,
 
     VIR_DOMAIN_AUDIO_TYPE_LAST
 } virDomainAudioType;
@@ -1959,6 +1960,7 @@ struct _virDomainGraphicsDef {
             char *address;
             char *rendernode;
             virTristateBool gl;
+            unsigned int audioId;
             bool fromConfig;    /* true if the @address is config file originated */
         } dbus;
     } data;

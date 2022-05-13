@@ -147,6 +147,7 @@ qemuAudioDriverTypeToString(virDomainAudioType type)
         case VIR_DOMAIN_AUDIO_TYPE_OSS:
         case VIR_DOMAIN_AUDIO_TYPE_SDL:
         case VIR_DOMAIN_AUDIO_TYPE_SPICE:
+        case VIR_DOMAIN_AUDIO_TYPE_DBUS:
         case VIR_DOMAIN_AUDIO_TYPE_LAST:
             break;
     }
@@ -7957,6 +7958,9 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
             return -1;
         break;
 
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainAudioType, def->type);
@@ -8159,6 +8163,9 @@ qemuBuildAudioCommandLineEnv(virCommand *cmd,
         if (audio->backend.file.path)
             virCommandAddEnvFormat(cmd, "QEMU_WAV_PATH=%s",
                                    audio->backend.file.path);
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:

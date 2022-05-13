@@ -770,6 +770,7 @@ VIR_ENUM_IMPL(virDomainAudioType,
               "sdl",
               "spice",
               "file",
+              "dbus",
 );
 
 VIR_ENUM_IMPL(virDomainAudioSDLDriver,
@@ -3074,6 +3075,7 @@ virDomainAudioDefFree(virDomainAudioDef *def)
         g_free(def->backend.file.path);
         break;
 
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
         break;
     }
@@ -12809,6 +12811,14 @@ virDomainGraphicsDefParseXMLDBus(virDomainGraphicsDef *def,
             return -1;
     }
 
+    cur = virXPathNode("./audio", ctxt);
+    if (cur) {
+        if (virXMLPropUInt(cur, "id", 10,
+                           VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                           &def->data.dbus.audioId) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -13294,6 +13304,9 @@ virDomainAudioDefParseXML(virDomainXMLOption *xmlopt G_GNUC_UNUSED,
 
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         def->backend.file.path = virXMLPropString(node, "path");
+        break;
+
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
@@ -25719,6 +25732,9 @@ virDomainAudioDefFormat(virBuffer *buf,
         virBufferEscapeString(&attrBuf, " path='%s'", def->backend.file.path);
         break;
 
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainAudioType, def->type);
@@ -26660,7 +26676,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             virBufferAsprintf(buf, " address='%s'",
                               def->data.dbus.address);
 
-        if (!def->data.dbus.gl)
+        if (!def->data.dbus.gl && def->data.dbus.audioId <= 0)
             break;
 
         if (!children) {
@@ -26669,10 +26685,17 @@ virDomainGraphicsDefFormat(virBuffer *buf,
             children = true;
         }
 
-        virBufferAsprintf(buf, "<gl enable='%s'",
-                          virTristateBoolTypeToString(def->data.dbus.gl));
-        virBufferEscapeString(buf, " rendernode='%s'", def->data.dbus.rendernode);
-        virBufferAddLit(buf, "/>\n");
+        if (def->data.dbus.gl) {
+            virBufferAsprintf(buf, "<gl enable='%s'",
+                              virTristateBoolTypeToString(def->data.dbus.gl));
+            virBufferEscapeString(buf, " rendernode='%s'", def->data.dbus.rendernode);
+            virBufferAddLit(buf, "/>\n");
+        }
+
+        if (def->data.dbus.audioId > 0)
+            virBufferAsprintf(buf, "<audio id='%d'/>\n",
+                              def->data.dbus.audioId);
+
         break;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
@@ -29993,6 +30016,7 @@ virDomainAudioBackendIsEqual(virDomainAudioDef *this,
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         return STREQ_NULLABLE(this->backend.file.path, that->backend.file.path);
 
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
     default:
         return false;

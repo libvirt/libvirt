@@ -4076,6 +4076,13 @@
                 </optional>
               </element>
             </optional>
+            <optional>
+              <element name="audio">
+                <attribute name="id">
+                  <ref name="uint8"/>
+                </attribute>
+              </element>
+            </optional>
           </interleave>
         </group>
         <group>
@@ -4918,6 +4925,11 @@
     <ref name="audiocommonchild"/>
   </define>
 
+  <define name="audiodbus">
+    <ref name="audiocommonattr"/>
+    <ref name="audiocommonchild"/>
+  </define>
+
   <define name="audio">
     <element name="audio">
       <attribute name="id">
@@ -4942,6 +4954,23 @@
             <optional>
               <element name="output">
                 <ref name="audionone"/>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
+            <value>dbus</value>
+          </attribute>
+          <interleave>
+            <optional>
+              <element name="input">
+                <ref name="audiodbus"/>
+              </element>
+            </optional>
+            <optional>
+              <element name="output">
+                <ref name="audiodbus"/>
               </element>
             </optional>
           </interleave>

@@ -4507,6 +4507,9 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
     case VIR_DOMAIN_AUDIO_TYPE_FILE:
         break;
 
+    case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        break;
+
     case VIR_DOMAIN_AUDIO_TYPE_LAST:
     default:
         virReportEnumRangeError(virDomainAudioType, audio->type);
