@@ -3572,7 +3572,7 @@ QEMU's virtio devices have some attributes related to the virtio transport under
 the ``driver`` element: The ``iommu`` attribute enables the use of emulated
 IOMMU by the device. The attribute ``ats`` controls the Address Translation
 Service support for PCIe devices. This is needed to make use of IOTLB support
-(see `IOMMU device <#elementsIommu>`__). Possible values are ``on`` or ``off``.
+(see `IOMMU devices`_). Possible values are ``on`` or ``off``.
 :since:`Since 3.5.0`
 
 The attribute ``packed`` controls if QEMU should try to use packed virtqueues.
@@ -7969,7 +7969,6 @@ Example: usage of the memory devices
      element is formatted into live XML and never parsed, i.e. it is
      output-only element.
 
-:anchor:`<a id="elementsIommu"/>`
 
 IOMMU devices
 ~~~~~~~~~~~~~
