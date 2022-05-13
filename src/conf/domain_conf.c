@@ -17676,8 +17676,12 @@ virDomainFeaturesDefParse(virDomainDef *def,
                                          VIR_XML_PROP_NONE, &state) < 0)
                 return -1;
 
-            if ((state == VIR_TRISTATE_SWITCH_ABSENT) ||
-                (state == VIR_TRISTATE_SWITCH_ON)) {
+            if (state == VIR_TRISTATE_SWITCH_ABSENT)
+                state = VIR_TRISTATE_SWITCH_ON;
+
+            def->features[val] = state;
+
+            if (state == VIR_TRISTATE_SWITCH_ON) {
                 int rv = virParseScaledValue("string(./features/smm/tseg)",
                                              "string(./features/smm/tseg/@unit)",
                                              ctxt,
@@ -17688,7 +17692,6 @@ virDomainFeaturesDefParse(virDomainDef *def,
                 if (rv < 0)
                     return -1;
 
-                def->features[val] = VIR_TRISTATE_SWITCH_ON;
                 def->tseg_specified = rv != 0;
             }
             break;

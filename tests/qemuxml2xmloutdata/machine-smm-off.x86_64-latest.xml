@@ -8,6 +8,9 @@
     <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <features>
+    <smm state='off'/>
+  </features>
   <cpu mode='custom' match='exact' check='none'>
     <model fallback='forbid'>qemu64</model>
   </cpu>
