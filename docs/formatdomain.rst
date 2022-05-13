@@ -8142,7 +8142,6 @@ an output-only element ``labelskip`` will be present for active domains on disks
 where labeling was skipped due to the image being on a file system that lacks
 security labeling.
 
-:anchor:`<a id="keywrap"/>`
 
 Key Wrap
 --------
