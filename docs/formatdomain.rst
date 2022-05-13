@@ -5460,7 +5460,6 @@ outgoing traffic can be shaped independently. The ``bandwidth`` element and its
 child elements are described in the `QoS <formatnetwork.html#quality-of-service>`__
 section of the Network XML.
 
-:anchor:`<a id="elementVlanTag"/>`
 
 Setting VLAN tag (on supported network types only)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
