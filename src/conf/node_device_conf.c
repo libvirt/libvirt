@@ -1144,6 +1144,58 @@ virNodeDevAPMatrixCapabilityParseXML(xmlXPathContextPtr ctxt,
 
 
 static int
+virNodeDevCCWDeviceAddressParseXML(xmlXPathContextPtr ctxt,
+                                   xmlNodePtr node,
+                                   const char *dev_name,
+                                   virCCWDeviceAddress *ccw_addr)
+{
+    VIR_XPATH_NODE_AUTORESTORE(ctxt)
+    g_autofree char *cssid = NULL;
+    g_autofree char *ssid = NULL;
+    g_autofree char *devno = NULL;
+
+    ctxt->node = node;
+
+    if (!(cssid = virXPathString("string(./cssid[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing cssid value for '%s'"), dev_name);
+        return -1;
+    }
+    if (virStrToLong_uip(cssid, NULL, 0, &ccw_addr->cssid) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid cssid value '%s' for '%s'"),
+                       cssid, dev_name);
+        return -1;
+    }
+
+    if (!(ssid = virXPathString("string(./ssid[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing ssid value for '%s'"), dev_name);
+        return -1;
+    }
+    if (virStrToLong_uip(ssid, NULL, 0, &ccw_addr->ssid) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid ssid value '%s' for '%s'"),
+                       ssid, dev_name);
+        return -1;
+    }
+
+    if (!(devno = virXPathString("string(./devno[1])", ctxt))) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("missing devno value for '%s'"), dev_name);
+        return -1;
+    }
+    if (virStrToLong_uip(devno, NULL, 16, &ccw_addr->devno) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("invalid devno value '%s' for '%s'"),
+                       devno, dev_name);
+        return -1;
+    }
+
+    return 0;
+}
+
+static int
 virNodeDevCSSCapabilityParseXML(xmlXPathContextPtr ctxt,
                                 xmlNodePtr node,
                                 virNodeDevCapCCW *ccw_dev)
@@ -1180,50 +1232,18 @@ virNodeDevCapCCWParseXML(xmlXPathContextPtr ctxt,
     g_autofree xmlNodePtr *nodes = NULL;
     int n = 0;
     size_t i = 0;
-    g_autofree char *cssid = NULL;
-    g_autofree char *ssid = NULL;
-    g_autofree char *devno = NULL;
+    g_autofree virCCWDeviceAddress *ccw_addr = NULL;
 
     ctxt->node = node;
 
-    if (!(cssid = virXPathString("string(./cssid[1])", ctxt))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("missing cssid value for '%s'"), def->name);
-        return -1;
-    }
+    ccw_addr = g_new0(virCCWDeviceAddress, 1);
 
-    if (virStrToLong_uip(cssid, NULL, 0, &ccw_dev->cssid) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid cssid value '%s' for '%s'"),
-                       cssid, def->name);
+    if (virNodeDevCCWDeviceAddressParseXML(ctxt, node, def->name, ccw_addr) < 0)
         return -1;
-    }
 
-    if (!(ssid = virXPathString("string(./ssid[1])", ctxt))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("missing ssid value for '%s'"), def->name);
-        return -1;
-    }
-
-    if (virStrToLong_uip(ssid, NULL, 0, &ccw_dev->ssid) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid ssid value '%s' for '%s'"),
-                       ssid, def->name);
-        return -1;
-    }
-
-    if (!(devno = virXPathString("string(./devno[1])", ctxt))) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("missing devno value for '%s'"), def->name);
-        return -1;
-    }
-
-    if (virStrToLong_uip(devno, NULL, 16, &ccw_dev->devno) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("invalid devno value '%s' for '%s'"),
-                       devno, def->name);
-        return -1;
-    }
+    ccw_dev->cssid = ccw_addr->cssid;
+    ccw_dev->ssid = ccw_addr->ssid;
+    ccw_dev->devno = ccw_addr->devno;
 
     if ((n = virXPathNodeSet("./capability", ctxt, &nodes)) < 0)
         return -1;
