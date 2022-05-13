@@ -2291,7 +2291,6 @@ event name                  Description                                         
 ``emulation_faults``        the count of emulation faults, that is when the kernel traps on unimplemented instrucions and emulates them for user space, by applications running on the platform                     ``perf.emulation_faults``
 =========================== ======================================================================================================================================================================================= ================================
 
-:anchor:`<a id="elementsDevices"/>`
 
 Devices
 -------

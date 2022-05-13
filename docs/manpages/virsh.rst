@@ -4645,7 +4645,7 @@ attach-device
 Attach a device to the domain, using a device definition in an XML
 file using a device definition element such as <disk> or <interface>
 as the top-level element.  See the documentation at
-`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`__ to learn about
+`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#devices>`__ to learn about
 libvirt XML format for a device.  If *--config* is specified the
 command alters the persistent guest configuration with the device
 attach taking effect the next time libvirt starts the domain.
@@ -5006,7 +5006,7 @@ Update the characteristics of a device associated with *domain*,
 based on the device definition in an XML *file*.  The *--force* option
 can be used to force device update, e.g., to eject a CD-ROM even if it is
 locked/mounted in the domain. See the documentation at
-`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#elementsDevices>`__ to learn about
+`https://libvirt.org/formatdomain.html#elementsDevices <https://libvirt.org/formatdomain.html#devices>`__ to learn about
 libvirt XML format for a device.
 
 If *--live* is specified, affect a running domain.
