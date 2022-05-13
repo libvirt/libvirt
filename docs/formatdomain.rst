@@ -1149,7 +1149,6 @@ NUMA Node Tuning
    element. This setting is not compatible with automatic placement.
    :since:`QEMU Since 1.2.7`
 
-:anchor:`<a id="elementsBlockTuning"/>`
 
 Block I/O Tuning
 ----------------
@@ -2970,7 +2969,7 @@ paravirtualized driver is specified via the ``disk`` element.
 ``iotune``
    The optional ``iotune`` element provides the ability to provide additional
    per-device I/O tuning, with values that can vary for each device (contrast
-   this to the `<blkiotune> <#elementsBlockTuning>`__ element, which applies
+   this to the ``blkiotune`` element (See `Block I/O Tuning`_), which applies
    globally to the domain). Currently, the only tuning available is Block I/O
    throttling for qemu. This element has optional sub-elements; any sub-element
    not specified or given with a value of 0 implies no limit. :since:`Since
