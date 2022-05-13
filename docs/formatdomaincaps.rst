@@ -527,7 +527,7 @@ each of the elements or attributes. For example, the ``gic`` element has an
 attribute ``version`` which can support the values ``2`` or ``3``.
 
 For information about the purpose of each feature, see the `relevant
-section <formatdomain.html#elementsFeatures>`__ in the domain XML documentation.
+section <formatdomain.html#hypervisor-features>`__ in the domain XML documentation.
 
 GIC capabilities
 ^^^^^^^^^^^^^^^^

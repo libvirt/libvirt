@@ -162,7 +162,7 @@ placement:
    </cpu>
 
 The performance monitoring unit virtualization needs to be disabled
-via the `hypervisor features <../formatdomain.html#elementsFeatures>`_:
+via the `hypervisor features <../formatdomain.html#hypervisor-features>`_:
 
 ::
 

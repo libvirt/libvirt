@@ -1809,7 +1809,6 @@ advertisements to the guest OS. (NB: Only qemu driver support)
    the guest OS itself can choose to circumvent the unavailability of the sleep
    states (e.g. S4 by turning off completely).
 
-:anchor:`<a id="elementsFeatures"/>`
 
 Hypervisor features
 -------------------
@@ -8047,7 +8046,7 @@ Example:
    ``eim``
       The ``eim`` attribute (with possible values ``on`` and ``off``) can be
       used to configure Extended Interrupt Mode. A q35 domain with split I/O
-      APIC (as described in `hypervisor features <#elementsFeatures>`__), and
+      APIC (as described in `Hypervisor features`_), and
       both interrupt remapping and EIM turned on for the IOMMU, will be able to
       use more than 255 vCPUs. :since:`Since 3.4.0` (QEMU/KVM only)
 
