@@ -11675,7 +11675,7 @@ static const vshCmdOptDef opts_domdisplay[] = {
     {.name = "type",
      .type = VSH_OT_STRING,
      .help = N_("select particular graphical display "
-                "(e.g. \"vnc\", \"spice\", \"rdp\")")
+                "(e.g. \"vnc\", \"spice\", \"rdp\", \"dbus\")")
     },
     {.name = "all",
      .type = VSH_OT_BOOL,
@@ -11684,6 +11684,23 @@ static const vshCmdOptDef opts_domdisplay[] = {
     {.name = NULL}
 };
 
+static char *
+virshGetDBusDisplay(vshControl *ctl, xmlXPathContext *ctxt)
+{
+    g_autofree char *addr = NULL;
+    const char *xpath = "string(/domain/devices/graphics[@type='dbus']/@address)";
+
+    addr = virXPathString(xpath, ctxt);
+    if (!addr)
+        return false;
+
+    if (STRPREFIX(addr, "unix:path=")) {
+        return g_strdup_printf("dbus+unix://%s", addr + 10);
+    }
+
+    vshError(ctl, _("'%s' D-Bus address is not handled"), addr);
+    return NULL;
+}
 
 static char *
 virshGetOneDisplay(vshControl *ctl,
@@ -11703,6 +11720,9 @@ virshGetOneDisplay(vshControl *ctl,
     g_autofree char *type_conn = NULL;
     g_autofree char *sockpath = NULL;
     g_autofree char *passwd = NULL;
+
+    if (STREQ(scheme, "dbus"))
+        return virshGetDBusDisplay(ctl, ctxt);
 
     /* Attempt to get the port number for the current graphics scheme */
     xpathPort = g_strdup_printf(xpath_fmt, scheme, "@port");
@@ -11830,7 +11850,7 @@ cmdDomDisplay(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(xmlXPathContext) ctxt = NULL;
     g_autoptr(virshDomain) dom = NULL;
     bool ret = false;
-    const char *scheme[] = { "vnc", "spice", "rdp", NULL };
+    const char *scheme[] = { "vnc", "spice", "rdp", "dbus", NULL };
     const char *type = NULL;
     int iter = 0;
     int flags = 0;
