@@ -261,9 +261,9 @@ virPCIDeviceAddressFormat(virBuffer *buf,
 bool
 virDomainDeviceCCWAddressIsValid(virCCWDeviceAddress *addr)
 {
-    return addr->cssid <= VIR_DOMAIN_DEVICE_CCW_MAX_CSSID &&
-           addr->ssid <= VIR_DOMAIN_DEVICE_CCW_MAX_SSID &&
-           addr->devno <= VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO;
+    return addr->cssid <= VIR_CCW_DEVICE_MAX_CSSID &&
+           addr->ssid <= VIR_CCW_DEVICE_MAX_SSID &&
+           addr->devno <= VIR_CCW_DEVICE_MAX_DEVNO;
 }
 
 int

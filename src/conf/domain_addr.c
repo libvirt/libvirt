@@ -1309,7 +1309,7 @@ virDomainCCWAddressIncrement(virCCWDeviceAddress *addr)
     virCCWDeviceAddress ccwaddr = *addr;
 
     /* We are not touching subchannel sets and channel subsystems */
-    if (++ccwaddr.devno > VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO)
+    if (++ccwaddr.devno > VIR_CCW_DEVICE_MAX_DEVNO)
         return -1;
 
     *addr = ccwaddr;

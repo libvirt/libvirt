@@ -70,10 +70,6 @@ struct _virDomainDeviceVirtioSerialAddress {
     unsigned int port;
 };
 
-#define VIR_DOMAIN_DEVICE_CCW_MAX_CSSID    254
-#define VIR_DOMAIN_DEVICE_CCW_MAX_SSID       3
-#define VIR_DOMAIN_DEVICE_CCW_MAX_DEVNO  65535
-
 typedef struct _virDomainDeviceCcidAddress virDomainDeviceCcidAddress;
 struct _virDomainDeviceCcidAddress {
     unsigned int controller;
