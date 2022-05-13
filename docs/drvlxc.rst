@@ -37,7 +37,7 @@ In order to separate processes inside a container from those in the primary
 namespaces are compiled in. Libvirt currently requires the 'mount', 'ipc',
 'pid', and 'uts' namespaces to be available. If separate network interfaces are
 desired, then the 'net' namespace is required. If the guest configuration
-declares a `UID or GID mapping <formatdomain.html#elementsOSContainer>`__, the
+declares a `UID or GID mapping <formatdomain.html#container-boot>`__, the
 'user' namespace will be enabled to apply these. **A suitably configured UID/GID
 mapping is a pre-requisite to making containers secure, in the absence of sVirt
 confinement.**

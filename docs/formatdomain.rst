@@ -355,7 +355,6 @@ and full virtualized guests.
    ``type`` attribute contains the ACPI table type (currently only ``slic`` is
    supported) :since:`Since 1.3.5 (QEMU)` :since:`Since 5.9.0 (Xen)`
 
-:anchor:`<a id="elementsOSContainer"/>`
 
 Container boot
 ~~~~~~~~~~~~~~
