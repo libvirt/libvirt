@@ -259,8 +259,8 @@ virPCIDeviceAddressFormat(virBuffer *buf,
 }
 
 int
-virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                  virCCWDeviceAddress *addr)
+virCCWDeviceAddressParseXML(xmlNodePtr node,
+                            virCCWDeviceAddress *addr)
 {
     int cssid;
     int ssid;

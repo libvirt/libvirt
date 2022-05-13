@@ -124,6 +124,7 @@ virCPUModeTypeToString;
 
 
 # conf/device_conf.h
+virCCWDeviceAddressParseXML;
 virDeviceInfoPCIAddressExtensionIsPresent;
 virDeviceInfoPCIAddressExtensionIsWanted;
 virDeviceInfoPCIAddressIsPresent;
@@ -131,7 +132,6 @@ virDeviceInfoPCIAddressIsWanted;
 virDomainDeviceAddressIsValid;
 virDomainDeviceAddressTypeToString;
 virDomainDeviceCcidAddressParseXML;
-virDomainDeviceCCWAddressParseXML;
 virDomainDeviceDriveAddressParseXML;
 virDomainDeviceInfoAddressIsEqual;
 virDomainDeviceSpaprVioAddressParseXML;

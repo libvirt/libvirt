@@ -6756,8 +6756,7 @@ virDomainDeviceAddressParseXML(xmlNodePtr address,
         break;
 
     case VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW:
-        if (virDomainDeviceCCWAddressParseXML
-                (address, &info->addr.ccw) < 0)
+        if (virCCWDeviceAddressParseXML(address, &info->addr.ccw) < 0)
             return -1;
         break;
 

@@ -193,8 +193,8 @@ void virPCIDeviceAddressFormat(virBuffer *buf,
                                virPCIDeviceAddress addr,
                                bool includeTypeInAddr);
 
-int virDomainDeviceCCWAddressParseXML(xmlNodePtr node,
-                                      virCCWDeviceAddress *addr);
+int virCCWDeviceAddressParseXML(xmlNodePtr node,
+                                virCCWDeviceAddress *addr);
 
 int virDomainDeviceDriveAddressParseXML(xmlNodePtr node,
                                         virDomainDeviceDriveAddress *addr);
