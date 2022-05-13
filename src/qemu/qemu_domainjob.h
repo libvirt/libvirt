@@ -164,6 +164,7 @@ void
 qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
                              virDomainAsyncJob asyncJob,
                              int phase,
+                             unsigned long long started,
                              virDomainJobOperation operation,
                              qemuDomainJobStatsType statsType,
                              virDomainJobStatus status,

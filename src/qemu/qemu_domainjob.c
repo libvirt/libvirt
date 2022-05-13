@@ -235,6 +235,7 @@ qemuDomainObjPreserveJob(virDomainObj *obj,
     job->owner = priv->job.owner;
     job->asyncJob = priv->job.asyncJob;
     job->asyncOwner = priv->job.asyncOwner;
+    job->asyncStarted = priv->job.asyncStarted;
     job->phase = priv->job.phase;
     job->privateData = g_steal_pointer(&priv->job.privateData);
     job->apiFlags = priv->job.apiFlags;
@@ -254,6 +255,7 @@ void
 qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
                              virDomainAsyncJob asyncJob,
                              int phase,
+                             unsigned long long started,
                              virDomainJobOperation operation,
                              qemuDomainJobStatsType statsType,
                              virDomainJobStatus status,
@@ -261,18 +263,18 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobObj *job = &priv->job;
-    unsigned long long now;
 
     VIR_DEBUG("Restoring %s async job for domain %s",
               virDomainAsyncJobTypeToString(asyncJob), vm->def->name);
 
-    ignore_value(virTimeMillisNow(&now));
+    if (started == 0)
+        ignore_value(virTimeMillisNow(&started));
 
     job->jobsQueued++;
     job->asyncJob = asyncJob;
     job->phase = phase;
     job->asyncOwnerAPI = g_strdup(virThreadJobGet());
-    job->asyncStarted = now;
+    job->asyncStarted = started;
 
     qemuDomainObjSetAsyncJobMask(vm, allowedJobs);
 
@@ -280,7 +282,7 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
     qemuDomainJobSetStatsType(priv->job.current, statsType);
     job->current->operation = operation;
     job->current->status = status;
-    job->current->started = now;
+    job->current->started = started;
 }
 
 
@@ -1250,8 +1252,10 @@ qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
                                                           priv->job.phase));
     }
 
-    if (priv->job.asyncJob != VIR_ASYNC_JOB_NONE)
+    if (priv->job.asyncJob != VIR_ASYNC_JOB_NONE) {
         virBufferAsprintf(&attrBuf, " flags='0x%lx'", priv->job.apiFlags);
+        virBufferAsprintf(&attrBuf, " asyncStarted='%llu'", priv->job.asyncStarted);
+    }
 
     if (priv->job.cb &&
         priv->job.cb->formatJob(&childBuf, &priv->job, vm) < 0)
@@ -1306,6 +1310,13 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
                 return -1;
             }
             VIR_FREE(tmp);
+        }
+
+        if (virXPathULongLong("string(@asyncStarted)", ctxt,
+                              &priv->job.asyncStarted) == -2) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("Invalid async job start"));
+            return -1;
         }
     }
 

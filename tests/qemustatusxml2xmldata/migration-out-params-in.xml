@@ -238,7 +238,7 @@
     <flag name='dump-completed'/>
     <flag name='hda-output'/>
   </qemuCaps>
-  <job type='none' async='migration out' phase='perform3' flags='0x802'>
+  <job type='none' async='migration out' phase='perform3' flags='0x802' asyncStarted='0'>
     <disk dev='vda' migrating='no'/>
     <migParams>
       <param name='compress-level' value='1'/>

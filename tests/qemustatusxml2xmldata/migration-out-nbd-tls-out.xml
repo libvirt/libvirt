@@ -235,7 +235,7 @@
     <flag name='nbd-tls'/>
     <flag name='blockdev-del'/>
   </qemuCaps>
-  <job type='none' async='migration out' phase='perform3' flags='0x0'>
+  <job type='none' async='migration out' phase='perform3' flags='0x0' asyncStarted='0'>
     <disk dev='vdb' migrating='yes'>
       <migrationSource type='network' format='raw'>
         <source protocol='nbd' name='drive-virtio-disk1' tlsFromConfig='0'>

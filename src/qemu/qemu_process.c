@@ -3402,7 +3402,8 @@ qemuProcessRestoreMigrationJob(virDomainObj *vm,
         allowedJobs = VIR_JOB_DEFAULT_MASK | JOB_MASK(VIR_JOB_MIGRATION_OP);
     }
 
-    qemuDomainObjRestoreAsyncJob(vm, job->asyncJob, job->phase, op,
+    qemuDomainObjRestoreAsyncJob(vm, job->asyncJob, job->phase,
+                                 job->asyncStarted, op,
                                  QEMU_DOMAIN_JOB_STATS_TYPE_MIGRATION,
                                  VIR_DOMAIN_JOB_STATUS_PAUSED,
                                  allowedJobs);
@@ -3675,6 +3676,7 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     case VIR_ASYNC_JOB_BACKUP:
         /* Restore the config of the async job which is not persisted */
         qemuDomainObjRestoreAsyncJob(vm, VIR_ASYNC_JOB_BACKUP, 0,
+                                     job->asyncStarted,
                                      VIR_DOMAIN_JOB_OPERATION_BACKUP,
                                      QEMU_DOMAIN_JOB_STATS_TYPE_BACKUP,
                                      VIR_DOMAIN_JOB_STATUS_ACTIVE,

@@ -238,7 +238,7 @@
     <flag name='dump-completed'/>
     <flag name='hda-output'/>
   </qemuCaps>
-  <job type='none' async='migration in' phase='prepare' flags='0x900'>
+  <job type='none' async='migration in' phase='prepare' flags='0x900' asyncStarted='0'>
     <migParams>
       <param name='compress-level' value='1'/>
       <param name='compress-threads' value='8'/>
