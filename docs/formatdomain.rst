@@ -653,7 +653,6 @@ CPU Allocation
    same core need to be enabled as well. All non-hotpluggable CPUs present at
    boot need to be grouped after vCPU 0. :since:`Since 2.2.0 (QEMU only)`
 
-:anchor:`<a id="elementsIOThreadsAllocation"/>`
 
 IOThreads Allocation
 --------------------
@@ -775,9 +774,8 @@ CPU Tuning
    of element ``vcpu`` is not specified, the IOThreads are pinned to all the
    physical CPUs by default. There are two required attributes, the attribute
    ``iothread`` specifies the IOThread ID and the attribute ``cpuset``
-   specifying which physical CPUs to pin to. See the ``iothreadids``
-   `description <#elementsIOThreadsAllocation>`__ for valid ``iothread`` values.
-   :since:`Since 1.2.9`
+   specifying which physical CPUs to pin to. See the `IOThreads Allocation`_
+   section documenting valid values of ``iothread``. :since:`Since 1.2.9`
 ``shares``
    The optional ``shares`` element specifies the proportional weighted share for
    the domain. If this is omitted, it defaults to the OS provided defaults. NB,
@@ -851,8 +849,8 @@ CPU Tuning
    vCPUs/IOThreads this setting applies to, leaving them out sets the default.
    The element ``emulatorsched`` does not have that attribute. Valid ``vcpus``
    values start at 0 through one less than the number of vCPU's defined for the
-   domain. Valid ``iothreads`` values are described in the ``iothreadids``
-   `description <#elementsIOThreadsAllocation>`__. If no ``iothreadids`` are
+   domain. Valid ``iothreads`` values are described in the `IOThreads Allocation`_
+   section. If no ``iothreadids`` are
    defined, then libvirt numbers IOThreads from 1 to the number of ``iothreads``
    available for the domain. For real-time schedulers (``fifo``, ``rr``),
    priority must be specified as well (and is ignored for non-real-time ones).
@@ -3131,8 +3129,8 @@ paravirtualized driver is specified via the ``disk`` element.
       intensive operation, but can save file space and/or time on slow media.
       :since:`Since 2.0.0`
    -  The optional ``iothread`` attribute assigns the disk to an IOThread as
-      defined by the range for the domain
-      `iothreads <#elementsIOThreadsAllocation>`__ value. Multiple disks may be
+      defined by the range for the domain ``iothreads`` value. (See
+      `IOThreads Allocation`_). Multiple disks may be
       assigned to the same IOThread and are numbered from 1 to the domain
       iothreads value. Available for a disk device ``target`` configured to use
       "virtio" ``bus`` and "pci" or "ccw" ``address`` types. :since:`Since 1.2.8
@@ -3754,8 +3752,8 @@ An optional sub-element ``driver`` can specify the driver specific options:
    Supported for controller type ``scsi`` using model ``virtio-scsi`` for
    ``address`` types ``pci`` and ``ccw`` :since:`since 1.3.5 (QEMU 2.4)` . The
    optional ``iothread`` attribute assigns the controller to an IOThread as
-   defined by the range for the domain
-   `iothreads <#elementsIOThreadsAllocation>`__ value. Each SCSI ``disk``
+   defined by the range for the domain ``iothreads`` (See `IOThreads Allocation`_).
+   Each SCSI ``disk``
    assigned to use the specified ``controller`` will utilize the same IOThread.
    If a specific IOThread is desired for a specific SCSI ``disk``, then multiple
    controllers must be defined each having a specific ``iothread`` value. The

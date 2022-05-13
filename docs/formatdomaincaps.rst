@@ -232,7 +232,7 @@ I/O Threads
 ~~~~~~~~~~~
 
 The ``iothread`` elements indicates whether or not `I/O
-threads <formatdomain.html#elementsIOThreadsAllocation>`__ are supported.
+threads <formatdomain.html#iothreads-allocation>`__ are supported.
 
 ::
 
