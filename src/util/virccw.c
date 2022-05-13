@@ -20,6 +20,7 @@
 
 #include <config.h>
 #include "virccw.h"
+#include "virstring.h"
 
 
 bool
@@ -58,5 +59,22 @@ virCCWDeviceAddressIncrement(virCCWDeviceAddress *addr)
         return -1;
 
     *addr = ccwaddr;
+    return 0;
+}
+
+int
+virCCWDeviceAddressParseFromString(const char *address,
+                                   unsigned int *cssid,
+                                   unsigned int *ssid,
+                                   unsigned int *devno)
+{
+    char *p;
+
+    if (address == NULL || virStrToLong_ui(address, &p, 16, cssid) < 0 ||
+        p == NULL || virStrToLong_ui(p + 1, &p, 16, ssid) < 0 ||
+        p == NULL || virStrToLong_ui(p + 1, &p, 16, devno) < 0) {
+        return -1;
+    }
+
     return 0;
 }

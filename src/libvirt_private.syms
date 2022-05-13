@@ -1928,6 +1928,7 @@ virCCWDeviceAddressAsString;
 virCCWDeviceAddressEqual;
 virCCWDeviceAddressIncrement;
 virCCWDeviceAddressIsValid;
+virCCWDeviceAddressParseFromString;
 
 
 # util/vircgroup.h

@@ -36,6 +36,7 @@
 #include "viruuid.h"
 #include "virbuffer.h"
 #include "virfile.h"
+#include "virccw.h"
 #include "virpci.h"
 #include "virpidfile.h"
 #include "virstring.h"
@@ -1086,9 +1087,10 @@ udevGetCCWAddress(const char *sysfs_path,
     char *p;
 
     if ((p = strrchr(sysfs_path, '/')) == NULL ||
-        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.cssid) < 0 || p == NULL ||
-        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.ssid) < 0 || p == NULL ||
-        virStrToLong_ui(p + 1, &p, 16, &data->ccw_dev.devno) < 0) {
+        virCCWDeviceAddressParseFromString(p + 1,
+                                           &data->ccw_dev.cssid,
+                                           &data->ccw_dev.ssid,
+                                           &data->ccw_dev.devno) < 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("failed to parse the CCW address from sysfs path: '%s'"),
                        sysfs_path);

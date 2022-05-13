@@ -42,3 +42,8 @@ bool virCCWDeviceAddressEqual(virCCWDeviceAddress *addr1,
 char* virCCWDeviceAddressAsString(virCCWDeviceAddress *addr)
     ATTRIBUTE_NONNULL(1);
 int virCCWDeviceAddressIncrement(virCCWDeviceAddress *addr);
+
+int virCCWDeviceAddressParseFromString(const char *address,
+                                       unsigned int *cssid,
+                                       unsigned int *ssid,
+                                       unsigned int *devno);
