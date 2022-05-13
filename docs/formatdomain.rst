@@ -3234,7 +3234,7 @@ paravirtualized driver is specified via the ``disk`` element.
 ``address``
    If present, the ``address`` element ties the disk to a given slot of a
    controller (the actual ``<controller>`` device can often be inferred by
-   libvirt, although it can be `explicitly specified <#elementsControllers>`__).
+   libvirt, although it can be be explicitly specified. See `Controllers`_).
    The ``type`` attribute is mandatory, and is typically "pci" or "drive". For a
    "pci" controller, additional attributes for ``bus``, ``slot``, and
    ``function`` must be present, as well as optional ``domain`` and
@@ -3633,7 +3633,6 @@ posting <https://lists.gnu.org/archive/html/qemu-devel/2018-12/msg00923.html>`__
 and the `virtio-1.0
 spec <https://docs.oasis-open.org/virtio/virtio/v1.0/virtio-v1.0.html>`__.
 
-:anchor:`<a id="elementsControllers"/>`
 
 Controllers
 ~~~~~~~~~~~
@@ -6311,8 +6310,7 @@ same values described above. :since:`Since 1.3.3` .
    ...
 
 Each character device element has an optional sub-element ``<address>`` which
-can tie the device to a particular `controller <#elementsControllers>`__ or PCI
-slot.
+can tie the device to a particular controller (See `Controllers`_) or PCI slot.
 
 For character device with type ``unix`` or ``tcp`` the ``source`` has an
 optional element ``reconnect`` which configures reconnect timeout if the
