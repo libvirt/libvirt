@@ -90,7 +90,6 @@ General metadata
    application needs structure, they should have sub-elements to their namespace
    element). :since:`Since 0.9.10`
 
-:anchor:`<a id="elementsOS"/>`
 
 Operating system booting
 ------------------------
@@ -465,8 +464,8 @@ layout of sub-elements, with supported values of:
 
 ``smbios``
    Sub-elements call out specific SMBIOS values, which will affect the guest if
-   used in conjunction with the ``smbios`` sub-element of the
-   `os <#elementsOS>`__ element. Each sub-element of ``sysinfo`` names a SMBIOS
+   used in conjunction with the ``smbios`` sub-element of the ``os`` element
+   (see `Operating system booting`_). Each sub-element of ``sysinfo`` names a SMBIOS
    block, and within those elements can be a list of ``entry`` elements that
    describe a field within the block. The following blocks and entries are
    recognized:
