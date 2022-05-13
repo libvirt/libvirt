@@ -6624,7 +6624,6 @@ types have different ``target`` attributes.
    default will be used (client mode).
    :since:`Since 8.4.0`
 
-:anchor:`<a id="elementsCharHostInterface"/>`
 
 Host interface
 ^^^^^^^^^^^^^^
@@ -7512,8 +7511,8 @@ Example: usage of the RNG device:
 
    ``egd``
       This backend connects to a source using the EGD protocol. The source is
-      specified as a character device. Refer to `character device host
-      interface <#elementsCharHostInterface>`__ for more information.
+      specified as a character device. Refer to the `Host interface`_ for more
+      information.
 
    ``builtin``
       This backend uses qemu builtin random generator, which uses
