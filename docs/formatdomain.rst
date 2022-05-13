@@ -6086,6 +6086,39 @@ interaction with the admin.
            <gl rendernode='/dev/dri/renderD128'/>
          </graphics>
 
+   ``dbus``:since:`Since 8.4.0`
+      Export the display over D-Bus. By default, it will use a private bus,
+      except when ``p2p`` or ``address`` are specified.
+
+      ::
+
+        <graphics type='dbus'/>
+
+      ``p2p`` (accepts ``on`` or ``off``) enables peer-to-peer connections,
+      established through virDomainOpenGraphics() APIs.
+
+      ``address`` (accepts a `D-Bus address
+      <https://dbus.freedesktop.org/doc/dbus-specification.html#addresses>`_),
+      will connect to the specified bus address.
+
+      This element accepts a ``<gl/>`` sub-element with an optional attribute
+      ``rendernode`` which can be used to specify an absolute path to a host's
+      DRI device to be used for OpenGL rendering.
+
+      Copy & Paste functionality is provided thanks to the QEMU clipboard
+      manager and the SPICE vdagent protocol. See ``qemu-vdagent`` for more
+      details.
+
+      D-Bus can export an audio backend using the ``<audio>`` sub-element:
+
+      ::
+
+         <graphics type='dbus' ...>
+           <audio id='1'>
+         </graphics>
+
+      Where ``1`` is an id of the `audio device <#elementsAudio>`__.
+
 Graphics device uses a ``<listen>`` to set up where the device should listen for
 clients. It has a mandatory attribute ``type`` which specifies the listen type.
 Only ``vnc``, ``spice`` and ``rdp`` supports ``<listen>`` element. :since:`Since
@@ -7002,7 +7035,7 @@ to the guest sound device.
 ``type``
    The required ``type`` attribute specifies audio backend type.
    Currently, the supported values are 'none', 'alsa', 'coreaudio',
-   'jack', 'oss', 'pulseaudio', 'sdl', 'spice', 'file'.
+   'dbus', jack', 'oss', 'pulseaudio', 'sdl', 'spice', 'file'.
 
 ``id``
    Integer id of the audio device. Must be greater than 0.
@@ -7142,6 +7175,14 @@ and ``<output>`` elements
    </audio>
 
 :since:`Since 7.2.0, qemu`
+
+D-Bus audio backend
+^^^^^^^^^^^^^^^^^^^
+
+The 'dbus' audio backend does not connect to any host audio framework. It
+exports a D-Bus interface when associated with a D-Bus display.
+
+:since:`Since 8.4.0, qemu`
 
 Jack audio backend
 ^^^^^^^^^^^^^^^^^^

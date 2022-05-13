@@ -17,6 +17,11 @@ v8.4.0 (unreleased)
 
 * **New features**
 
+  * qemu: D-Bus display
+
+    Libvirt is now able to setup a D-Bus display export, either with a private
+    bus or in p2p mode. This display is available in QEMU 7.0.0.
+
 * **Improvements**
 
 * **Bug fixes**
