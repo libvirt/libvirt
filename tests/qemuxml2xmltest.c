@@ -243,6 +243,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("genid-auto");
     DO_TEST_NOCAPS("machine-core-on");
     DO_TEST_NOCAPS("machine-core-off");
+    DO_TEST_CAPS_LATEST("machine-smm-on");
     DO_TEST("machine-loadparm-multiple-disks-nets-s390", QEMU_CAPS_CCW);
     DO_TEST_NOCAPS("default-kvm-host-arch");
     DO_TEST_NOCAPS("default-qemu-host-arch");

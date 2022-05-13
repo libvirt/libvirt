@@ -6,14 +6,15 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine q35,usb=off,smm=on,dump-guest-core=off \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine q35,usb=off,smm=on,dump-guest-core=off,memory-backend=pc.ram \
 -accel tcg \
+-cpu qemu64 \
 -m 214 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":224395264}' \
 -overcommit mem-lock=off \
 -smp 1,sockets=1,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -26,11 +27,6 @@ QEMU_AUDIO_DRV=none \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
--device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
--device ioh3420,port=8,chassis=3,id=pci.3,bus=pcie.0,addr=0x1 \
--device virtio-scsi-pci,id=scsi0,bus=pci.2,addr=0x1 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-scsi0-0-0-0 \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
--device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x2 \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on
