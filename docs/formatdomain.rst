@@ -5515,7 +5515,6 @@ done with the optional ``nativeMode`` attribute on the ``<tag>`` subelement:
 be the "native" VLAN for this interface, and the ``nativeMode`` attribute
 determines whether or not traffic for that VLAN will be tagged.
 
-:anchor:`<a id="elementPort"/>`
 
 Isolating guests's network traffic from each other
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
