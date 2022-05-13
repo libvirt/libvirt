@@ -173,7 +173,7 @@ Domain configuration
 
 In case sanlock loses access to disk locks for some reason, it will kill
 all domains that lost their locks. This default behavior may be changed
-using `on_lockfailure element <../formatdomain.html#elementsEvents>`__ in
+using `on_lockfailure element <../formatdomain.html#events-configuration>`__ in
 domain XML. When this element is present, sanlock will call
 ``sanlock_helper`` (provided by libvirt) with the specified action. This
 helper binary will connect to libvirtd and thus it may need to

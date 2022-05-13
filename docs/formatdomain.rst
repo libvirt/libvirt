@@ -1705,7 +1705,6 @@ To describe latency from one NUMA node to a cache of another NUMA node the
 For instance, ``target='0' cache='1'`` refers to the first level cache of NUMA
 node 0.
 
-:anchor:`<a id="elementsEvents"/>`
 
 Events configuration
 --------------------
