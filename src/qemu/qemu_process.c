@@ -1472,6 +1472,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
     qemuDomainJobDataPrivate *privJob = NULL;
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
+    virDomainState state;
     int reason;
 
     virObjectLock(vm);
@@ -1493,19 +1494,38 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
     privJob->stats.mig.status = status;
     virDomainObjBroadcast(vm);
 
-    if (status == QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY &&
-        priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
-        virDomainObjGetState(vm, &reason) == VIR_DOMAIN_PAUSED &&
-        reason == VIR_DOMAIN_PAUSED_MIGRATION) {
-        VIR_DEBUG("Correcting paused state reason for domain %s to %s",
-                  vm->def->name,
-                  virDomainPausedReasonTypeToString(VIR_DOMAIN_PAUSED_POSTCOPY));
+    state = virDomainObjGetState(vm, &reason);
 
-        virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_POSTCOPY);
-        event = virDomainEventLifecycleNewFromObj(vm,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED,
-                                                  VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY);
-        qemuDomainSaveStatus(vm);
+    switch ((qemuMonitorMigrationStatus) status) {
+    case QEMU_MONITOR_MIGRATION_STATUS_POSTCOPY:
+        if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT &&
+            state == VIR_DOMAIN_PAUSED &&
+            reason == VIR_DOMAIN_PAUSED_MIGRATION) {
+            VIR_DEBUG("Correcting paused state reason for domain %s to %s",
+                      vm->def->name,
+                      virDomainPausedReasonTypeToString(VIR_DOMAIN_PAUSED_POSTCOPY));
+
+            virDomainObjSetState(vm, VIR_DOMAIN_PAUSED, VIR_DOMAIN_PAUSED_POSTCOPY);
+            event = virDomainEventLifecycleNewFromObj(vm,
+                                                      VIR_DOMAIN_EVENT_SUSPENDED,
+                                                      VIR_DOMAIN_EVENT_SUSPENDED_POSTCOPY);
+            qemuDomainSaveStatus(vm);
+        }
+        break;
+
+    case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_SETUP:
+    case QEMU_MONITOR_MIGRATION_STATUS_ACTIVE:
+    case QEMU_MONITOR_MIGRATION_STATUS_PRE_SWITCHOVER:
+    case QEMU_MONITOR_MIGRATION_STATUS_DEVICE:
+    case QEMU_MONITOR_MIGRATION_STATUS_COMPLETED:
+    case QEMU_MONITOR_MIGRATION_STATUS_ERROR:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLING:
+    case QEMU_MONITOR_MIGRATION_STATUS_CANCELLED:
+    case QEMU_MONITOR_MIGRATION_STATUS_WAIT_UNPLUG:
+    case QEMU_MONITOR_MIGRATION_STATUS_LAST:
+    default:
+        break;
     }
 
  cleanup:
