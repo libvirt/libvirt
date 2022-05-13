@@ -5564,7 +5564,6 @@ specified as the value, the interface behaves as if it had the network cable
 disconnected. Default behavior if this element is unspecified is to have the
 link state ``up``. :since:`Since 0.9.5`
 
-:anchor:`<a id="mtu"/>`
 
 MTU configuration
 ^^^^^^^^^^^^^^^^^
