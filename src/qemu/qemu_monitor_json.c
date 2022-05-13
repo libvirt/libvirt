@@ -6812,6 +6812,15 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
     }
 
     case VIR_DOMAIN_CHR_TYPE_DBUS:
+        backendType = "dbus";
+
+        if (virJSONValueObjectAdd(&backendData,
+                                  "s:name", chr->data.dbus.channel,
+                                  NULL) < 0)
+            return NULL;
+
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:

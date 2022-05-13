@@ -1444,6 +1444,10 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_DBUS:
+        virBufferAsprintf(&buf, "dbus,id=%s,name=%s", charAlias,
+                          dev->data.dbus.channel);
+        break;
+
     case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
     default:
