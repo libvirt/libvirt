@@ -1025,7 +1025,7 @@ influence how virtual memory pages are backed by host pages.
    amounts of locked memory could cause a denial-of-service attack on the host.
    Because of this, using this option is discouraged unless your workload
    demands it; even then, it's highly recommended to set a ``hard_limit`` (see
-   `memory tuning <#elementsMemoryTuning>`__) on memory allocation suitable for
+   `Memory Tuning`_) on memory allocation suitable for
    the specific environment at the same time to mitigate the risks described
    above. :since:`Since 1.0.6`
 ``source``
@@ -1046,7 +1046,6 @@ influence how virtual memory pages are backed by host pages.
    this is just an optimization and is not guaranteed to work in all cases (e.g.
    when hypervisor crashes). :since:`Since 4.4.0` (QEMU/KVM only)
 
-:anchor:`<a id="elementsMemoryTuning"/>`
 
 Memory Tuning
 -------------
