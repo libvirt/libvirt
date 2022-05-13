@@ -101,3 +101,6 @@ Internals
 
 `RPC protocol & APIs <internals/rpc.html>`__
    RPC protocol information and API / dispatch guide
+
+`QEMU driver threading <internals/qemu-threads.html>`__
+   Basics of locking and threaded access to qemu driver primitives.

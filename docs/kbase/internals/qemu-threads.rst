@@ -1,5 +1,7 @@
-   QEMU Driver  Threading: The Rules
-   =================================
+QEMU Driver Threading: The Rules
+================================
+
+.. contents::
 
 This document describes how thread safety is ensured throughout
 the QEMU driver. The criteria for this model are:
@@ -8,37 +10,36 @@ the QEMU driver. The criteria for this model are:
  - Code which sleeps must be able to time out after suitable period
  - Must be safe against dispatch of asynchronous events from monitor
 
-
 Basic locking primitives
 ------------------------
 
 There are a number of locks on various objects
 
-  * virQEMUDriver *
+  ``virQEMUDriver``
 
-    The qemu_conf.h file has inline comments describing the locking
+    The ``qemu_conf.h`` file has inline comments describing the locking
     needs for each field. Any field marked immutable, self-locking
     can be accessed without the driver lock. For other fields there
-    are typically helper APIs in qemu_conf.c that provide serialized
-    access to the data. No code outside qemu_conf.c should ever
+    are typically helper APIs in ``qemu_conf.c`` that provide serialized
+    access to the data. No code outside ``qemu_conf.c`` should ever
     acquire this lock
 
-  * virDomainObj *
+  ``virDomainObj``
 
     Will be locked and the reference counter will be increased after calling
-    any of the virDomainObjListFindBy{ID,Name,UUID} methods. The preferred way
+    any of the ``virDomainObjListFindBy{ID,Name,UUID}`` methods. The preferred way
     of decrementing the reference counter and unlocking the domain is using the
-    virDomainObjEndAPI() function.
+    ``virDomainObjEndAPI()`` function.
 
-    Lock must be held when changing/reading any variable in the virDomainObj *
+    Lock must be held when changing/reading any variable in the ``virDomainObj``
 
     This lock must not be held for anything which sleeps/waits (i.e. monitor
     commands).
 
 
-  * qemuMonitorPrivatePtr: Job conditions
+  ``qemuMonitorPrivatePtr`` job conditions
 
-    Since virDomainObj *lock must not be held during sleeps, the job
+    Since ``virDomainObj`` lock must not be held during sleeps, the job
     conditions provide additional protection for code making updates.
 
     QEMU driver uses three kinds of job conditions: asynchronous, agent
@@ -61,30 +62,30 @@ There are a number of locks on various objects
 
     Agent job condition is then used when thread wishes to talk to qemu
     agent monitor. It is possible to acquire just agent job
-    (qemuDomainObjBeginAgentJob), or only normal job (qemuDomainObjBeginJob)
+    (``qemuDomainObjBeginAgentJob``), or only normal job (``qemuDomainObjBeginJob``)
     but not both at the same time. Holding an agent job and a normal job would
     allow an unresponsive or malicious agent to block normal libvirt API and
     potentially result in a denial of service. Which type of job to grab
     depends whether caller wishes to communicate only with agent socket, or
     only with qemu monitor socket.
 
-    Immediately after acquiring the virDomainObj *lock, any method
+    Immediately after acquiring the ``virDomainObj`` lock, any method
     which intends to update state must acquire asynchronous, normal or
-    agent job . The virDomainObj *lock is released while blocking on
+    agent job . The ``virDomainObj`` lock is released while blocking on
     these condition variables.  Once the job condition is acquired, a
-    method can safely release the virDomainObj *lock whenever it hits
+    method can safely release the ``virDomainObj`` lock whenever it hits
     a piece of code which may sleep/wait, and re-acquire it after the
     sleep/wait.  Whenever an asynchronous job wants to talk to the
     monitor, it needs to acquire nested job (a special kind of normal
     job) to obtain exclusive access to the monitor.
 
-    Since the virDomainObj *lock was dropped while waiting for the
+    Since the ``virDomainObj`` lock was dropped while waiting for the
     job condition, it is possible that the domain is no longer active
     when the condition is finally obtained.  The monitor lock is only
     safe to grab after verifying that the domain is still active.
 
 
-  * qemuMonitor *:  Mutex
+  ``qemuMonitor`` mutex
 
     Lock to be used when invoking any monitor command to ensure safety
     wrt any asynchronous events that may be dispatched from the monitor.
@@ -92,118 +93,111 @@ There are a number of locks on various objects
 
     The job condition *MUST* be held before acquiring the monitor lock
 
-    The virDomainObj *lock *MUST* be held before acquiring the monitor
+    The ``virDomainObj`` lock *MUST* be held before acquiring the monitor
     lock.
 
-    The virDomainObj *lock *MUST* then be released when invoking the
+    The ``virDomainObj`` lock *MUST* then be released when invoking the
     monitor command.
 
 
 Helper methods
 --------------
 
-To lock the virDomainObj *
+To lock the ``virDomainObj``
 
-  virObjectLock()
-    - Acquires the virDomainObj *lock
+  ``virObjectLock()``
+    - Acquires the ``virDomainObj`` lock
 
-  virObjectUnlock()
-    - Releases the virDomainObj *lock
-
+  ``virObjectUnlock()``
+    - Releases the ``virDomainObj`` lock
 
 
 To acquire the normal job condition
 
-  qemuDomainObjBeginJob()
+  ``qemuDomainObjBeginJob()``
     - Waits until the job is compatible with current async job or no
       async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObj *
+    - Waits for ``job.cond`` condition ``job.active != 0`` using ``virDomainObj``
       mutex
     - Rechecks if the job is still compatible and repeats waiting if it
       isn't
-    - Sets job.active to the job type
+    - Sets ``job.active`` to the job type
 
-
-  qemuDomainObjEndJob()
+  ``qemuDomainObjEndJob()``
     - Sets job.active to 0
     - Signals on job.cond condition
 
 
-
 To acquire the agent job condition
 
-  qemuDomainObjBeginAgentJob()
+  ``qemuDomainObjBeginAgentJob()``
     - Waits until there is no other agent job set
-    - Sets job.agentActive tp the job type
+    - Sets ``job.agentActive`` to the job type
 
-  qemuDomainObjEndAgentJob()
-    - Sets job.agentActive to 0
-    - Signals on job.cond condition
-
+  ``qemuDomainObjEndAgentJob()``
+    - Sets ``job.agentActive`` to 0
+    - Signals on ``job.cond`` condition
 
 
 To acquire the asynchronous job condition
 
-  qemuDomainObjBeginAsyncJob()
+  ``qemuDomainObjBeginAsyncJob()``
     - Waits until no async job is running
-    - Waits for job.cond condition 'job.active != 0' using virDomainObj *
+    - Waits for ``job.cond`` condition ``job.active != 0`` using ``virDomainObj``
       mutex
-    - Rechecks if any async job was started while waiting on job.cond
+    - Rechecks if any async job was started while waiting on ``job.cond``
       and repeats waiting in that case
-    - Sets job.asyncJob to the asynchronous job type
+    - Sets ``job.asyncJob`` to the asynchronous job type
 
-
-  qemuDomainObjEndAsyncJob()
-    - Sets job.asyncJob to 0
-    - Broadcasts on job.asyncCond condition
-
+  ``qemuDomainObjEndAsyncJob()``
+    - Sets ``job.asyncJob`` to 0
+    - Broadcasts on ``job.asyncCond`` condition
 
 
 To acquire the QEMU monitor lock
 
-  qemuDomainObjEnterMonitor()
-    - Acquires the qemuMonitorObjPtr lock
-    - Releases the virDomainObj *lock
+  ``qemuDomainObjEnterMonitor()``
+    - Acquires the ``qemuMonitorObj`` lock
+    - Releases the ``virDomainObj`` lock
 
-  qemuDomainObjExitMonitor()
-    - Releases the qemuMonitorObjPtr lock
-    - Acquires the virDomainObj *lock
+  ``qemuDomainObjExitMonitor()``
+    - Releases the ``qemuMonitorObj`` lock
+    - Acquires the ``virDomainObj`` lock
 
   These functions must not be used by an asynchronous job.
 
 
 To acquire the QEMU monitor lock as part of an asynchronous job
 
-  qemuDomainObjEnterMonitorAsync()
+  ``qemuDomainObjEnterMonitorAsync()``
     - Validates that the right async job is still running
-    - Acquires the qemuMonitorObjPtr lock
-    - Releases the virDomainObj *lock
+    - Acquires the ``qemuMonitorObj`` lock
+    - Releases the ``virDomainObj`` lock
     - Validates that the VM is still active
 
   qemuDomainObjExitMonitor()
-    - Releases the qemuMonitorObjPtr lock
-    - Acquires the virDomainObj *lock
+    - Releases the ``qemuMonitorObj`` lock
+    - Acquires the ``virDomainObj`` lock
 
   These functions are for use inside an asynchronous job; the caller
   must check for a return of -1 (VM not running, so nothing to exit).
-  Helper functions may also call this with VIR_ASYNC_JOB_NONE when
+  Helper functions may also call this with ``VIR_ASYNC_JOB_NONE`` when
   used from a sync job (such as when first starting a domain).
 
 
 To keep a domain alive while waiting on a remote command
 
-  qemuDomainObjEnterRemote()
-    - Releases the virDomainObj *lock
+  ``qemuDomainObjEnterRemote()``
+    - Releases the ``virDomainObj`` lock
 
-  qemuDomainObjExitRemote()
-    - Acquires the virDomainObj *lock
+  ``qemuDomainObjExitRemote()``
+    - Acquires the ``virDomainObj`` lock
 
 
 Design patterns
 ---------------
 
-
- * Accessing something directly to do with a virDomainObj *
+ * Accessing something directly to do with a ``virDomainObj``::
 
      virDomainObj *obj;
 
@@ -214,7 +208,7 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Updating something directly to do with a virDomainObj *
+ * Updating something directly to do with a ``virDomainObj``::
 
      virDomainObj *obj;
 
@@ -229,7 +223,7 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Invoking a monitor command on a virDomainObj *
+ * Invoking a monitor command on a ``virDomainObj``::
 
      virDomainObj *obj;
      qemuDomainObjPrivate *priv;
@@ -252,7 +246,7 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Invoking an agent command on a virDomainObj *
+ * Invoking an agent command on a ``virDomainObj``::
 
      virDomainObj *obj;
      qemuAgent *agent;
@@ -276,7 +270,7 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Running asynchronous job
+ * Running asynchronous job::
 
      virDomainObj *obj;
      qemuDomainObjPrivate *priv;
@@ -316,7 +310,7 @@ Design patterns
      virDomainObjEndAPI(&obj);
 
 
- * Coordinating with a remote server for migration
+ * Coordinating with a remote server for migration::
 
      virDomainObj *obj;
      qemuDomainObjPrivate *priv;
