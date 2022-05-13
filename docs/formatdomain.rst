@@ -274,8 +274,8 @@ them in production.
 ``bios``
    This element has attribute ``useserial`` with possible values ``yes`` or
    ``no``. It enables or disables Serial Graphics Adapter which allows users to
-   see BIOS messages on a serial port. Therefore, one needs to have `serial
-   port <#elementCharSerial>`__ defined. :since:`Since 0.9.4` . :since:`Since
+   see BIOS messages on a serial port. Therefore, one needs to have `Serial port`_
+   defined. :since:`Since 0.9.4` . :since:`Since
    0.10.2 (QEMU only)` there is another attribute, ``rebootTimeout`` that
    controls whether and after how long the guest should start booting again in
    case the boot fails (according to BIOS). The value is in milliseconds with
@@ -6330,7 +6330,6 @@ Parallel port
 ``target`` can have a ``port`` attribute, which specifies the port number. Ports
 are numbered starting from 0. There are usually 0, 1 or 2 parallel ports.
 
-:anchor:`<a id="elementCharSerial"/>`
 
 Serial port
 '''''''''''
@@ -6437,7 +6436,7 @@ the ``console`` element might represent the same device as an existing
 ``serial`` element or a separate device.
 
 A ``target`` subelement is supported and works the same way as with the
-``serial`` element (`see above <#elementCharSerial>`__ for details). Valid
+``serial`` element (See `Serial port`_ for details). Valid
 values for the ``type`` attribute are: ``serial`` (described below); ``virtio``
 (usable whenever VirtIO support is available); ``xen``, ``lxc`` and ``openvz``
 (available when the corresponding hypervisor is in use). ``sclp`` and ``sclplm``
