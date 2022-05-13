@@ -150,7 +150,7 @@ siblings. This is achieved using the `CPU tuning config <../formatdomain.html#cp
      <vcpusched vcpus='0-4' scheduler='fifo' priority='1'/>
    </cputune>
 
-The `guest CPU model <formatdomain.html#elementsCPU>`_ now needs to be
+The `guest CPU model <formatdomain.html#cpu-model-and-topology>`_ now needs to be
 configured to pass through the host model unchanged, with topology matching the
 placement:
 

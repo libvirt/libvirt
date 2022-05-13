@@ -895,7 +895,7 @@ domain capabilities XML (printed by ``domcapabilities`` command). In
 addition to the <cpu> element itself, this command accepts
 full domain XML, capabilities XML, or domain capabilities XML containing
 the CPU definition. For more information on guest CPU definition see:
-`https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`__. If *--error* is
+`https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#cpu-model-and-topology>`__. If *--error* is
 specified, the command will return an error when the given CPU is
 incompatible with host CPU and a message providing more details about the
 incompatibility will be printed out. If *--validate* is specified, validates
@@ -943,7 +943,7 @@ host CPU model found in the domain capabilities XML (printed by the
 ``domcapabilities`` command). In addition to the <cpu> element itself, this
 command accepts full domain XML, capabilities XML, or domain capabilities XML
 containing the CPU definition. For more information on guest CPU definition
-see: `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#elementsCPU>`__.
+see: `https://libvirt.org/formatdomain.html#elementsCPU <https://libvirt.org/formatdomain.html#cpu-model-and-topology>`__.
 
 The *virttype* option specifies the virtualization type (usable in the 'type'
 attribute of the <domain> top level element from the domain XML). *emulator*

@@ -948,8 +948,8 @@ Memory Allocation
    or "TiB" for tebibytes (2\ :sup:`40` or 1,099,511,627,776 bytes). However, the
    value will be rounded up to the nearest kibibyte by libvirt, and may be
    further rounded to the granularity supported by the hypervisor. Some
-   hypervisors also enforce a minimum, such as 4000KiB. In case
-   `NUMA <#elementsCPU>`__ is configured for the guest the ``memory`` element
+   hypervisors also enforce a minimum, such as 4000KiB. In case NUMA is
+   configured for the guest (See `CPU model and topology`_) the ``memory`` element
    can be omitted. In the case of crash, optional attribute ``dumpCore`` can be
    used to control whether the guest memory should be included in the generated
    coredump or not (values "on", "off"). ``unit`` :since:`since 0.9.11` ,
@@ -1252,7 +1252,6 @@ Using this feature requires Fibre Channel capable HW, kernel compiled with
 option ``CONFIG_BLK_CGROUP_FC_APPID`` and ``nvme_fc`` kernel module loaded.
 :since:`Since 7.7.0`
 
-:anchor:`<a id="elementsCPU"/>`
 
 CPU model and topology
 ----------------------

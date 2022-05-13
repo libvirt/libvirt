@@ -165,7 +165,7 @@ CPU configuration
 ~~~~~~~~~~~~~~~~~
 
 The ``cpu`` element exposes options usable for configuring `guest
-CPUs <formatdomain.html#elementsCPU>`__.
+CPUs <formatdomain.html#cpu-model-and-topology>`__.
 
 ::
 
