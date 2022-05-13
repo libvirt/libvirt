@@ -8591,6 +8591,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
                                                         graphics) < 0)
                 return -1;
 
+        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
@@ -10190,6 +10191,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
         case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
             ++egl_headless;
             break;
+        case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:

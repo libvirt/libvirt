@@ -15717,12 +15717,13 @@ qemuDomainOpenGraphics(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         protocol = "spice";
         break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can only open VNC or SPICE graphics backends, not %s"),
+                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
         goto endjob;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -15785,12 +15786,13 @@ qemuDomainOpenGraphicsFD(virDomainPtr dom,
     case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         protocol = "spice";
         break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
     case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Can only open VNC or SPICE graphics backends, not %s"),
+                       _("Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"),
                        virDomainGraphicsTypeToString(vm->def->graphics[idx]->type));
         goto cleanup;
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:

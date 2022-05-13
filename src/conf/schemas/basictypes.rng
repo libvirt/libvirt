@@ -220,6 +220,13 @@
   </define>
   <!--======================================================================-->
 
+  <!-- A D-Bus server address: https://dbus.freedesktop.org/doc/dbus-specification.html#addresses -->
+  <define name="dbusAddr">
+    <data type="string">
+      <param name="pattern">.+</param>
+    </data>
+  </define>
+
   <!-- An ipv4 "dotted quad" address -->
   <define name="ipv4Addr">
     <data type="string">

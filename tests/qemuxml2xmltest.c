@@ -403,6 +403,16 @@ mymain(void)
             QEMU_CAPS_VNC,
             QEMU_CAPS_EGL_HEADLESS);
 
+    DO_TEST("graphics-dbus",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_DISPLAY_DBUS);
+    DO_TEST("graphics-dbus-address",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_DISPLAY_DBUS);
+    DO_TEST("graphics-dbus-p2p",
+            QEMU_CAPS_DEVICE_CIRRUS_VGA,
+            QEMU_CAPS_DISPLAY_DBUS);
+
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-aarch64", "aarch64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-ppc64", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("default-video-type-riscv64", "riscv64");

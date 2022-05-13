@@ -2424,8 +2424,15 @@ virDomainGraphicsDefValidate(const virDomainDef *def,
             return -1;
     }
 
-    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC)
+    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_VNC) {
         return virDomainEnsureAudioID(def, graphics->data.vnc.audioId);
+    } else if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_DBUS) {
+        if (graphics->data.dbus.p2p && graphics->data.dbus.address) {
+            virReportError(VIR_ERR_XML_ERROR, "%s",
+                           _("D-Bus p2p with an address is not supported"));
+            return -1;
+        }
+    }
 
     return 0;
 }

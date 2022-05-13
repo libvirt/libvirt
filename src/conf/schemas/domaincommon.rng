@@ -4047,6 +4047,39 @@
         </group>
         <group>
           <attribute name="type">
+            <value>dbus</value>
+          </attribute>
+          <optional>
+            <choice>
+              <group>
+                <attribute name="address">
+                  <ref name="dbusAddr"/>
+                </attribute>
+              </group>
+              <group>
+                <attribute name="p2p">
+                  <ref name="virYesNo"/>
+                </attribute>
+              </group>
+            </choice>
+          </optional>
+          <interleave>
+            <optional>
+              <element name="gl">
+                <attribute name="enable">
+                  <ref name="virYesNo"/>
+                </attribute>
+                <optional>
+                  <attribute name="rendernode">
+                    <ref name="absFilePath"/>
+                  </attribute>
+                </optional>
+              </element>
+            </optional>
+          </interleave>
+        </group>
+        <group>
+          <attribute name="type">
             <value>rdp</value>
           </attribute>
           <optional>

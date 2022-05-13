@@ -3435,6 +3435,7 @@ virVMXFormatConfig(virVMXContext *ctx, virDomainXMLOption *xmlopt, virDomainDef 
           case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
           case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
           case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+          case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported graphics type '%s'"),
                            virDomainGraphicsTypeToString(def->graphics[i]->type));

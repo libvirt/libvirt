@@ -465,6 +465,7 @@ libxlReconnectDomain(virDomainObj *vm,
          case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
          case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
          case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
+         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
          case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
              break;
          }
