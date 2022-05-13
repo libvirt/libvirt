@@ -4513,8 +4513,7 @@ can be determined by examining the virtual network config with
 'default' setup out of the box which does NAT'ing to the default route and has
 an IP range of ``192.168.122.0/255.255.255.0``. Each guest will have an
 associated tun device created with a name of vnetN, which can also be overridden
-with the <target> element (see `overriding the target
-element <#elementsNICSTargetOverride>`__).
+with the <target> element (see `Overriding the target element`_).
 
 When the source of an interface is a network, a ``portgroup`` can be specified
 along with the name of the network; one network may have multiple portgroups
@@ -4580,8 +4579,8 @@ static wired networking configs.**
 Provides a bridge from the VM directly to the LAN. This assumes there is a
 bridge device on the host which has one or more of the hosts physical NICs
 attached. The guest VM will have an associated tun device created with a name of
-vnetN, which can also be overridden with the <target> element (see `overriding
-the target element <#elementsNICSTargetOverride>`__). The tun device will be
+vnetN, which can also be overridden with the <target> element (see
+`Overriding the target element`_). The tun device will be
 attached to the bridge. The IP range / network configuration is whatever is used
 on the LAN. This provides the guest VM full incoming & outgoing net access just
 like a physical machine.
@@ -5331,7 +5330,6 @@ bridge interfaces. This does not work in session mode. :since:`Since 1.2.9`
 For tap devices there is also ``sndbuf`` element which can adjust the size of
 send buffer in the host. :since:`Since 0.8.8`
 
-:anchor:`<a id="elementsNICSTargetOverride"/>`
 
 Overriding the target element
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
