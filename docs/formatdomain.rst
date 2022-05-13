@@ -3473,7 +3473,6 @@ A directory on the host that can be accessed directly from the guest.
    permitted to exceed its soft limits for a grace period of time. Afterwards
    the hard limit is enforced. :since:`Since 0.9.13`
 
-:anchor:`<a id="elementsAddress"/>`
 
 Device Addresses
 ~~~~~~~~~~~~~~~~
@@ -3715,7 +3714,7 @@ Note: The PowerPC64 "spapr-vio" addresses do not have an associated controller.
 
 For controllers that are themselves devices on a PCI or USB bus, an optional
 sub-element ``<address>`` can specify the exact relationship of the controller
-to its master bus, with semantics `given above <#elementsAddress>`__.
+to its master bus, with semantics described in the `Device Addresses`_ section.
 
 An optional sub-element ``driver`` can specify the driver specific options:
 
@@ -4255,7 +4254,7 @@ or:
    the address type used must conform to the ``model`` attribute of element
    ``hostdev``, e.g. any address type other than PCI for ``vfio-pci`` device API
    or any address type other than CCW for ``vfio-ccw`` device API will result in
-   an error. `See above <#elementsAddress>`__ for more details on the address
+   an error. See the `Device Addresses`_ section for more details on the address
    element.
 ``driver``
    PCI devices can have an optional ``driver`` subelement that specifies which
@@ -4445,10 +4444,9 @@ behaves like a physical USB CCID (Chip/Smart Card Interface Device) card.
    of the character device is the hypervisor itself, rather than a device
    visible in the guest).
 
-Each mode supports an optional sub-element ``<address>``, which fine-tunes the
-correlation between the smartcard and a ccid bus controller, `documented
-above <#elementsAddress>`__. For now, qemu only supports at most one smartcard,
-with an address of bus=0 slot=0.
+Each mode supports an optional sub-element ``<address>`` (See `Device Addresses`_),
+which fine-tunes the correlation between the smartcard and a ccid bus controller.
+For now, qemu only supports at most one smartcard, with an address of bus=0 slot=0.
 
 :anchor:`<a id="elementsNICS"/>`
 
@@ -4484,7 +4482,7 @@ the host.
 
 Each ``<interface>`` element has an optional ``<address>`` sub-element that can
 tie the interface to a particular pci slot, with attribute ``type='pci'`` as
-`documented above <#elementsAddress>`__.
+documented in the `Device Addresses`_ section.
 
 :since:`Since 6.6.0` , one can force libvirt to keep the provided MAC address
 when it's in the reserved VMware range by adding a ``type="static"`` attribute
@@ -5808,7 +5806,7 @@ to provide a graphics tablet for absolute cursor movement.
    :since:`since 1.3.0` ) "virtio".
 
 The ``input`` element has an optional sub-element ``<address>`` which can tie
-the device to a particular PCI slot, `documented above <#elementsAddress>`__.
+the device to a particular PCI slot, documented in the `Device Addresses`_ section.
 On S390, ``address`` can be used to provide a CCW address for an input device (
 :since:`since 4.2.0` ). For types ``passthrough`` and ``evdev``, the mandatory
 sub-element ``source`` must have an ``evdev`` (for ``passthrough``) or ``dev``
@@ -5848,9 +5846,9 @@ ports available to connect devices to a host system.
    The ``hub`` element has one mandatory attribute, the ``type`` whose value can
    only be 'usb'.
 
-The ``hub`` element has an optional sub-element ``<address>`` with
-``type='usb'``\ which can tie the device to a particular controller, `documented
-above <#elementsAddress>`__.
+The ``hub`` element has an optional sub-element ``<address>``
+(See `Device Addresses`_) ``type='usb'`` which can tie the device to a
+particular controller.
 
 :anchor:`<a id="elementsGraphics"/>`
 
@@ -6419,7 +6417,7 @@ If any of the attributes is not specified by the user, libvirt will choose a
 value suitable for most users.
 
 Most target types support configuring the guest-visible device address as
-`documented above <#elementsAddress>`__; more specifically, acceptable address
+documented in the `Device Addresses`_ section; more specifically, acceptable address
 types are ``isa`` (for ``isa-serial``), ``usb`` (for ``usb-serial``), ``pci``
 (for ``pci-serial``) and ``spapr-vio`` (for ``spapr-vio-serial``). The
 ``system-serial`` and ``sclp-serial`` target types don't support specifying an
@@ -6598,7 +6596,7 @@ types have different ``target`` attributes.
    /dev/virtio-ports/$name (for more info, please see
    https://fedoraproject.org/wiki/Features/VirtioSerial). The optional element
    ``address`` can tie the channel to a particular ``type='virtio-serial'``
-   controller, `documented above <#elementsAddress>`__. With qemu, if ``name``
+   controller, as documented in the `Device Addresses`_ section. With qemu, if ``name``
    is "org.qemu.guest_agent.0", then libvirt can interact with a guest agent
    installed in the guest, for actions such as guest shutdown or file system
    quiescing. :since:`Since 0.7.7, guest agent interaction since 0.9.10`
@@ -6985,7 +6983,7 @@ Valid values are:
    ...
 
 Each ``sound`` element has an optional sub-element ``<address>`` which can tie
-the device to a particular PCI slot, `documented above <#elementsAddress>`__.
+the device to a particular PCI slot. See `Device Addresses`_.
 
 A sound device could be optionally mapped to the specific host audio
 backend using the ``<audio>`` sub-element:
