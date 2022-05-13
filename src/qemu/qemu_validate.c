@@ -4175,6 +4175,24 @@ qemuValidateDomainDeviceDefVNCGraphics(const virDomainGraphicsDef *graphics,
 
 
 static int
+qemuValidateDomainDeviceDefDBusGraphics(const virDomainGraphicsDef *graphics,
+                                        const virDomainDef *def)
+{
+    if (graphics->data.dbus.audioId > 0) {
+        virDomainAudioDef *audio = virDomainDefFindAudioByID(def, graphics->data.dbus.audioId);
+
+        if (audio && audio->type != VIR_DOMAIN_AUDIO_TYPE_DBUS) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("The associated audio is not of 'dbus' kind."));
+            return -1;
+        }
+    }
+
+    return 0;
+}
+
+
+static int
 qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
                                     const virDomainDef *def,
                                     virQEMUDriver *driver,
@@ -4251,10 +4269,15 @@ qemuValidateDomainDeviceDefGraphics(const virDomainGraphicsDef *graphics,
 
         break;
 
+    case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+        if (qemuValidateDomainDeviceDefDBusGraphics(graphics, def) < 0)
+            return -1;
+
+        break;
+
     case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
     case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
     case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
-    case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
     case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
         break;
     }
@@ -4508,6 +4531,11 @@ qemuValidateDomainDeviceDefAudio(virDomainAudioDef *audio,
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_DBUS:
+        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DISPLAY_DBUS)) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("D-Bus audio is not supported with this QEMU"));
+            return -1;
+        }
         break;
 
     case VIR_DOMAIN_AUDIO_TYPE_LAST:

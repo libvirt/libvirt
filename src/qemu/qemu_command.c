@@ -8564,7 +8564,8 @@ qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfig *cfg G_GNUC_UNUSED,
 
 
 static int
-qemuBuildGraphicsDBusCommandLine(virCommand *cmd,
+qemuBuildGraphicsDBusCommandLine(virDomainDef *def,
+                                 virCommand *cmd,
                                  virDomainGraphicsDef *graphics)
 {
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
@@ -8584,6 +8585,13 @@ qemuBuildGraphicsDBusCommandLine(virCommand *cmd,
         virBufferAddLit(&opt, ",rendernode=");
         virQEMUBuildBufferEscapeComma(&opt,
                                       graphics->data.dbus.rendernode);
+    }
+
+    if (graphics->data.dbus.audioId > 0) {
+        g_autofree char *audioid = qemuGetAudioIDString(def, graphics->data.dbus.audioId);
+        if (!audioid)
+            return -1;
+        virBufferAsprintf(&opt, ",audiodev=%s", audioid);
     }
 
     virCommandAddArg(cmd, "-display");
@@ -8630,7 +8638,7 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
 
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
-            if (qemuBuildGraphicsDBusCommandLine(cmd, graphics) < 0)
+            if (qemuBuildGraphicsDBusCommandLine(def, cmd, graphics) < 0)
                 return -1;
 
             break;
