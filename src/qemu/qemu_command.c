@@ -8557,6 +8557,36 @@ qemuBuildGraphicsEGLHeadlessCommandLine(virQEMUDriverConfig *cfg G_GNUC_UNUSED,
 
 
 static int
+qemuBuildGraphicsDBusCommandLine(virCommand *cmd,
+                                 virDomainGraphicsDef *graphics)
+{
+    g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
+
+    virBufferAddLit(&opt, "dbus");
+
+    if (graphics->data.dbus.p2p) {
+        virBufferAddLit(&opt, ",p2p=on");
+    } else {
+        virBufferAddLit(&opt, ",addr=");
+        virQEMUBuildBufferEscapeComma(&opt, graphics->data.dbus.address);
+    }
+    if (graphics->data.dbus.gl != VIR_TRISTATE_BOOL_ABSENT)
+        virBufferAsprintf(&opt, ",gl=%s",
+                          virTristateSwitchTypeToString(graphics->data.dbus.gl));
+    if (graphics->data.dbus.rendernode) {
+        virBufferAddLit(&opt, ",rendernode=");
+        virQEMUBuildBufferEscapeComma(&opt,
+                                      graphics->data.dbus.rendernode);
+    }
+
+    virCommandAddArg(cmd, "-display");
+    virCommandAddArgBuffer(cmd, &opt);
+
+    return 0;
+}
+
+
+static int
 qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
                              virCommand *cmd,
                              virDomainDef *def,
@@ -8591,7 +8621,11 @@ qemuBuildGraphicsCommandLine(virQEMUDriverConfig *cfg,
                                                         graphics) < 0)
                 return -1;
 
+            break;
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+            if (qemuBuildGraphicsDBusCommandLine(cmd, graphics) < 0)
+                return -1;
+
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
@@ -10147,6 +10181,7 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
     int vnc = 0;
     int spice = 0;
     int egl_headless = 0;
+    int dbus = 0;
 
     if (!driver->privileged) {
         /* If we have no cgroups then we can have no tunings that
@@ -10192,6 +10227,8 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
             ++egl_headless;
             break;
         case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+            ++dbus;
+            break;
         case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
         case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
         case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
@@ -10199,10 +10236,10 @@ qemuBuildCommandLineValidate(virQEMUDriver *driver,
         }
     }
 
-    if (sdl > 1 || vnc > 1 || spice > 1 || egl_headless > 1) {
+    if (sdl > 1 || vnc > 1 || spice > 1 || egl_headless > 1 || dbus > 1) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("only 1 graphics device of each type "
-                         "(sdl, vnc, spice, headless) is supported"));
+                         "(sdl, vnc, spice, headless, dbus) is supported"));
         return -1;
     }
 

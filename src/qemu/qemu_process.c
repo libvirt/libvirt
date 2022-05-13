@@ -4907,6 +4907,22 @@ qemuProcessGraphicsSetupNetworkAddress(virDomainGraphicsListenDef *glisten,
 
 
 static int
+qemuProcessGraphicsSetupDBus(virQEMUDriver *driver,
+                             virDomainGraphicsDef *graphics,
+                             virDomainObj *vm)
+{
+    if (graphics->type != VIR_DOMAIN_GRAPHICS_TYPE_DBUS)
+        return 0;
+
+    if (!graphics->data.dbus.p2p && !graphics->data.dbus.address) {
+        graphics->data.dbus.address = qemuDBusGetAddress(driver, vm);
+    }
+
+    return 0;
+}
+
+
+static int
 qemuProcessGraphicsSetupListen(virQEMUDriver *driver,
                                virDomainGraphicsDef *graphics,
                                virDomainObj *vm)
@@ -4997,16 +5013,29 @@ qemuProcessGraphicsSetupRenderNode(virDomainGraphicsDef *graphics,
         return 0;
 
     /* Don't bother picking a DRM node if QEMU doesn't support it. */
-    if (graphics->type == VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
+    switch (graphics->type) {
+    case VIR_DOMAIN_GRAPHICS_TYPE_SPICE:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_SPICE_RENDERNODE))
             return 0;
 
         rendernode = &graphics->data.spice.rendernode;
-    } else {
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_EGL_HEADLESS:
         if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_EGL_HEADLESS_RENDERNODE))
             return 0;
 
         rendernode = &graphics->data.egl_headless.rendernode;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_DBUS:
+        rendernode = &graphics->data.dbus.rendernode;
+        break;
+    case VIR_DOMAIN_GRAPHICS_TYPE_SDL:
+    case VIR_DOMAIN_GRAPHICS_TYPE_VNC:
+    case VIR_DOMAIN_GRAPHICS_TYPE_RDP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_DESKTOP:
+    case VIR_DOMAIN_GRAPHICS_TYPE_LAST:
+        virReportEnumRangeError(virDomainGraphicsType, graphics->type);
+        break;
     }
 
     if (!(*rendernode = virHostGetDRMRenderNode()))
@@ -5033,6 +5062,9 @@ qemuProcessSetupGraphics(virQEMUDriver *driver,
             return -1;
 
         if (qemuProcessGraphicsSetupListen(driver, graphics, vm) < 0)
+            return -1;
+
+        if (qemuProcessGraphicsSetupDBus(driver, graphics, vm) < 0)
             return -1;
     }
 
