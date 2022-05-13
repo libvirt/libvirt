@@ -5584,7 +5584,6 @@ This element provides means of setting MTU of the virtual network link.
 Currently there is just one attribute ``size`` which accepts a non-negative
 integer which specifies the MTU size for the interface. :since:`Since 3.1.0`
 
-:anchor:`<a id="coalesce"/>`
 
 Coalesce settings
 ^^^^^^^^^^^^^^^^^
