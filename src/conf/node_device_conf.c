@@ -634,10 +634,21 @@ virNodeDeviceCapCCWDefFormat(virBuffer *buf,
                       data->ccw_dev.ssid);
     virBufferAsprintf(buf, "<devno>0x%04x</devno>\n",
                       data->ccw_dev.devno);
-    if (data->ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV)
+}
+
+
+static void
+virNodeDeviceCapCSSDefFormat(virBuffer *buf,
+                             const virNodeDevCapData *data)
+{
+    virNodeDevCapCCW ccw_dev = data->ccw_dev;
+
+    virNodeDeviceCapCCWDefFormat(buf, data);
+
+    if (ccw_dev.flags & VIR_NODE_DEV_CAP_FLAG_CSS_MDEV)
         virNodeDeviceCapMdevTypesFormat(buf,
-                                        data->ccw_dev.mdev_types,
-                                        data->ccw_dev.nmdev_types);
+                                        ccw_dev.mdev_types,
+                                        ccw_dev.nmdev_types);
 }
 
 
@@ -726,8 +737,10 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
             virNodeDeviceCapMdevDefFormat(&buf, data);
             break;
         case VIR_NODE_DEV_CAP_CCW_DEV:
-        case VIR_NODE_DEV_CAP_CSS_DEV:
             virNodeDeviceCapCCWDefFormat(&buf, data);
+            break;
+        case VIR_NODE_DEV_CAP_CSS_DEV:
+            virNodeDeviceCapCSSDefFormat(&buf, data);
             break;
         case VIR_NODE_DEV_CAP_VDPA:
             virNodeDeviceCapVDPADefFormat(&buf, data);
