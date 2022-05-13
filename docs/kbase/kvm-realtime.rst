@@ -178,7 +178,7 @@ Memory configuration
 The host memory used for guest RAM needs to be allocated from huge pages on the
 second NUMA node, and all other memory allocation needs to be locked into RAM
 with memory page sharing disabled.
-This is achieved by using the `memory backing config <formatdomain.html#elementsMemoryBacking>`_:
+This is achieved by using the `memory backing config <formatdomain.html#memory-backing>`_:
 
 ::
 

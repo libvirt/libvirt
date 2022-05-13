@@ -970,7 +970,6 @@ Memory Allocation
    fly. If this is omitted, it defaults to the same value as the ``memory``
    element. The ``unit`` attribute behaves the same as for ``memory``.
 
-:anchor:`<a id="elementsMemoryBacking"/>`
 
 Memory Backing
 --------------
@@ -1083,7 +1082,7 @@ Memory Tuning
    killed by the kernel if the guess is too low, and determining the memory
    needed for a process to run is an `undecidable
    problem <https://en.wikipedia.org/wiki/Undecidable_problem>`__; that said, if
-   you already set ``locked`` in `memory backing <#elementsMemoryBacking>`__
+   you already set ``locked`` in `Memory Backing`_
    because your workload demands it, you'll have to take into account the
    specifics of your deployment and figure out a value for ``hard_limit`` that
    is large enough to support the memory requirements of your guest, but small
@@ -1573,8 +1572,8 @@ in unwanted behaviour. :since:`Since 1.2.9` the optional attribute ``memAccess``
 can control whether the memory is to be mapped as "shared" or "private". This is
 valid only for hugepages-backed memory and nvdimm modules. Each ``cell`` element
 can have an optional ``discard`` attribute which fine tunes the discard feature
-for given numa node as described under `Memory
-Backing <#elementsMemoryBacking>`__. Accepted values are ``yes`` and ``no``.
+for given numa node as described under `Memory Backing`_.
+Accepted values are ``yes`` and ``no``.
 :since:`Since 4.4.0`
 
 This guest NUMA specification is currently available only for QEMU/KVM and Xen.
@@ -2715,7 +2714,7 @@ paravirtualized driver is specified via the ``disk`` element.
    ``vhostuser``
       Enables the hypervisor to connect to another process using vhost-user
       protocol. Requires shared memory configured for the VM, for more details
-      see ``access`` mode for `memoryBacking <#elementsMemoryBacking>`__ element.
+      see ``access`` mode for ``memoryBacking`` element (See `Memory Backing`_).
 
       The ``source`` element has following mandatory attributes:
 
@@ -7907,7 +7906,7 @@ Example: usage of the memory devices
 ``access``
    An optional attribute ``access`` ( :since:`since 3.2.0` ) that provides
    capability to fine tune mapping of the memory on per module basis. Values are
-   the same as `Memory Backing <#elementsMemoryBacking>`__: ``shared`` and
+   the same as `Memory Backing`_: ``shared`` and
    ``private``. For ``nvdimm`` model, if using real NVDIMM DAX device as
    backend, ``shared`` is required. For ``virtio-pmem`` model ``shared`` is
    required.
@@ -7915,9 +7914,8 @@ Example: usage of the memory devices
 ``discard``
    An optional attribute ``discard`` ( :since:`since 4.4.0` ) that provides
    capability to fine tune discard of data on per module basis. Accepted values
-   are ``yes`` and ``no``. The feature is described here: `Memory
-   Backing <#elementsMemoryBacking>`__. This attribute is allowed only for
-   ``model='dimm'``.
+   are ``yes`` and ``no``. The feature is described here: `Memory Backing`_.
+   This attribute is allowed only for ``model='dimm'``.
 
 ``uuid``
    For pSeries guests, an uuid can be set to identify the nvdimm module. If
