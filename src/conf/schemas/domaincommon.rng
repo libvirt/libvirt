@@ -4569,6 +4569,7 @@
       <value>spiceport</value>
       <value>nmdm</value>
       <value>qemu-vdagent</value>
+      <value>dbus</value>
     </choice>
   </define>
 

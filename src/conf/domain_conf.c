@@ -716,6 +716,7 @@ VIR_ENUM_IMPL(virDomainChr,
               "spiceport",
               "nmdm",
               "qemu-vdagent",
+              "dbus",
 );
 
 VIR_ENUM_IMPL(virDomainChrTcpProtocol,
@@ -2712,6 +2713,7 @@ virDomainChrSourceDefGetPath(virDomainChrSourceDef *chr)
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         return NULL;
     }
@@ -2754,6 +2756,10 @@ virDomainChrSourceDefClear(virDomainChrSourceDef *def)
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         VIR_FREE(def->data.spiceport.channel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        VIR_FREE(def->data.dbus.channel);
         break;
     }
 
@@ -2824,6 +2830,10 @@ virDomainChrSourceDefCopy(virDomainChrSourceDef *dest,
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         dest->data.qemuVdagent.clipboard = src->data.qemuVdagent.clipboard;
         dest->data.qemuVdagent.mouse = src->data.qemuVdagent.mouse;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        dest->data.dbus.channel = g_strdup(src->data.dbus.channel);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -2910,6 +2920,12 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         return src->data.qemuVdagent.clipboard == tgt->data.qemuVdagent.clipboard &&
             src->data.qemuVdagent.mouse == tgt->data.qemuVdagent.mouse;
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        return STREQ_NULLABLE(src->data.dbus.channel,
+                              tgt->data.dbus.channel);
+        break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
@@ -11341,6 +11357,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
 
         case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
             def->data.spiceport.channel = virXMLPropString(sources[0], "channel");
+            break;
+
+        case VIR_DOMAIN_CHR_TYPE_DBUS:
+            def->data.dbus.channel = virXMLPropString(sources[0], "channel");
             break;
 
         case VIR_DOMAIN_CHR_TYPE_NMDM:
@@ -25209,6 +25229,11 @@ virDomainChrSourceDefFormat(virBuffer *buf,
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         virBufferEscapeString(buf, "<source channel='%s'/>\n",
                               def->data.spiceport.channel);
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        virBufferEscapeString(buf, "<source channel='%s'/>\n",
+                              def->data.dbus.channel);
         break;
     }
 

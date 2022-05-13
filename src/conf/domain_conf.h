@@ -1242,6 +1242,7 @@ typedef enum {
     VIR_DOMAIN_CHR_TYPE_SPICEPORT,
     VIR_DOMAIN_CHR_TYPE_NMDM,
     VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT,
+    VIR_DOMAIN_CHR_TYPE_DBUS,
 
     VIR_DOMAIN_CHR_TYPE_LAST
 } virDomainChrType;
@@ -1321,6 +1322,9 @@ struct _virDomainChrSourceDef {
             virDomainMouseMode mouse;
             virTristateBool clipboard;
         } qemuVdagent;
+        struct {
+            char *channel;
+        } dbus;
     } data;
     char *logfile;
     virTristateSwitch logappend;

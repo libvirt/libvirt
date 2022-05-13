@@ -6811,6 +6811,7 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
         break;
     }
 
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
     case VIR_DOMAIN_CHR_TYPE_STDIO:

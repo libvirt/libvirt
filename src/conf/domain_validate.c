@@ -909,6 +909,24 @@ virDomainDiskDefValidate(const virDomainDef *def,
 #define SERIAL_CHANNEL_NAME_CHARS \
     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-."
 
+
+static int
+virDomainChrSourceDefValidateChannelName(const char *name)
+{
+    if (!name) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("Missing source channel attribute for char device"));
+        return -1;
+    }
+    if (strspn(name, SERIAL_CHANNEL_NAME_CHARS) < strlen(name)) {
+        virReportError(VIR_ERR_INVALID_ARG, "%s",
+                       _("Invalid character in source channel for char device"));
+        return -1;
+    }
+
+    return 0;
+}
+
 static int
 virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
                               const virDomainChrDef *chr_def,
@@ -995,17 +1013,13 @@ virDomainChrSourceDefValidate(const virDomainChrSourceDef *src_def,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
-        if (!src_def->data.spiceport.channel) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("Missing source channel attribute for char device"));
+        if (virDomainChrSourceDefValidateChannelName(src_def->data.spiceport.channel) < 0)
             return -1;
-        }
-        if (strspn(src_def->data.spiceport.channel,
-                   SERIAL_CHANNEL_NAME_CHARS) < strlen(src_def->data.spiceport.channel)) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("Invalid character in source channel for char device"));
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
+        if (virDomainChrSourceDefValidateChannelName(src_def->data.dbus.channel) < 0)
             return -1;
-        }
         break;
     }
 

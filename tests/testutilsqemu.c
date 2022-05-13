@@ -1056,6 +1056,7 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
+    case VIR_DOMAIN_CHR_TYPE_DBUS:
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
