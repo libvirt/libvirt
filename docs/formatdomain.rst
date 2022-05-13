@@ -4725,7 +4725,6 @@ integration is required.
    </devices>
    ...
 
-:anchor:`<a id="elementsNICSDirect"/>`
 
 Direct attachment to physical interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

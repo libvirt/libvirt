@@ -253,7 +253,7 @@ to the physical LAN (if at all).
       interfaces to be used for a "direct" connection via macvtap using
       macvtap's "bridge" mode (if the forward element has one or more
       ``<interface>`` subelements, :since:`Since 0.9.4` ) (see `Direct
-      attachment to physical interface <formatdomain.html#elementsNICSDirect>`__
+      attachment to physical interface <formatdomain.html#direct-attachment-to-physical-interface>`__
       for descriptions of the various macvtap modes). libvirt doesn't attempt to
       manage the bridge interface at all, thus the ``<bridge>`` element's
       ``stp`` and ``delay`` attributes are not allowed; no iptables rules, IP
@@ -599,7 +599,7 @@ as the 'default' portgroup for the network), and each portgroup has a name, as
 well as various attributes and subelements associated with it. The currently
 supported subelements are ``<bandwidth>`` (described in `Quality of service`_)
 and ``<virtualport>`` (documented
-`here <formatdomain.html#elementsNICSDirect>`__). If a domain interface
+`here <formatdomain.html#direct-attachment-to-physical-interface>`__). If a domain interface
 definition specifies a portgroup (by adding a ``portgroup`` attribute to the
 ``<source>`` subelement), that portgroup's info will be merged into the
 interface's configuration. If no portgroup is given in the interface definition,

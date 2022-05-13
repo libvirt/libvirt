@@ -151,7 +151,7 @@ interface.
 The ``dev`` attribute provides the name of the physical network interface to
 which the port will be connected. The ``mode`` attribute describes how the
 connection will be setup and takes the same values described in the `domain
-XML <formatdomain.html#elementsNICSDirect>`__.
+XML <formatdomain.html#direct-attachment-to-physical-interface>`__.
 
 Host PCI
 ^^^^^^^^
