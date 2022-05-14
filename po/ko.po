@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-04-21 15:30+0000\n"
-"PO-Revision-Date: 2022-05-13 01:18+0000\n"
+"PO-Revision-Date: 2022-05-14 13:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -3054,7 +3054,7 @@ msgstr "파일 시스템 유형 %s을 마운트할 수 없음"
 
 #, c-format
 msgid "Cannot move fd %d out of the way"
-msgstr "파일디스크 %d를 그 경로에서 제거할 수 없습니다"
+msgstr "fd %d를 경로 밖으로 이동 할 수 없습니다"
 
 msgid "Cannot obtain CPU count"
 msgstr "CPU 수를 획득 할 수 없습니다"
@@ -16070,7 +16070,7 @@ msgstr "디스크 장치 '%s'에 미디어가 없습니다"
 
 #, c-format
 msgid "The disk device '%s' is not removable"
-msgstr "디스크 장치 '%s'을(를) 제거할 수 없습니다"
+msgstr "디스크 장치 '%s'를 제거 할 수 없습니다"
 
 msgid "The domain is not running"
 msgstr "도메인이 실행중이 아닙니다"
@@ -17104,7 +17104,7 @@ msgstr "'%s'를 제거할 수 없음: %s"
 
 #, c-format
 msgid "Unable to destroy '%s': device in use"
-msgstr "'%s'를 제거할 수 없습니다: 현재 사용 중인 장치입니다"
+msgstr "'%s'를 제거 할 수 없습니다: 현재 사용 중인 장치입니다"
 
 #, c-format
 msgid "Unable to detect filesystem for %s"
@@ -18102,14 +18102,14 @@ msgstr "장치 %s을 제거 할 수 없습니다"
 
 #, c-format
 msgid "Unable to remove disk from media registry. uuid = %s"
-msgstr "미디어 레지스트리에서 디스크를 제거할 수 없습니다. uuid = %s"
+msgstr "미디어 레지스트리에서 디스크를 제거 할 수 없습니다. uuid = %s"
 
 msgid "Unable to remove epoll fd"
 msgstr "epoll fd를 제거 할 수 없습니다"
 
 #, c-format
 msgid "Unable to remove hard disk %s from media registry"
-msgstr "미디어 레지스트리에서 하드 디스크 %s를 제거할 수 없습니다"
+msgstr "미디어 레지스트리에서 하드 디스크 %s를 제거 할 수 없습니다"
 
 #, c-format
 msgid "Unable to remove metadata of %d snapshots"
@@ -22252,10 +22252,10 @@ msgstr "IOThread %u를(디스크 '%s'에서 사용 중이므로) 제거 할 수 
 
 #, c-format
 msgid "cannot remove IOThread '%u' since it is being used by controller"
-msgstr "컨트롤러에서 사용 중이므로 IOThread '%u'를 제거할 수 없습니다"
+msgstr "제어장치에서 사용 중이므로 IOThread '%u'를 제거 할 수 없습니다"
 
 msgid "cannot remove checkpoint from inactive domain"
-msgstr "비활성 도메인에서 체크포인트를 제거할 수 없습니다"
+msgstr "비활성 도메인에서 체크포인트를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove config %s"
@@ -22275,19 +22275,19 @@ msgstr "손상된 파일을 제거할 수 없음: %s"
 
 #, c-format
 msgid "cannot remove directory '%s'"
-msgstr "디렉토리 '%s'을(를) 제거할 수 없습니다"
+msgstr "디렉토리 '%s'를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove gluster volume dir '%s'"
-msgstr "Gluster 볼륨 디렉터리 '%s'을(를) 제거할 수 없습니다"
+msgstr "Gluster 볼륨 디렉터리 '%s'를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove gluster volume file '%s'"
-msgstr "Gluster 볼륨 파일 '%s'을(를) 제거할 수 없습니다"
+msgstr "Gluster 볼륨 파일 '%s'를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove managed save file %s"
-msgstr "관리되는 저장 파일 %s을(를) 제거할 수 없습니다"
+msgstr "관리되는 저장 파일 %s을 제거 할 수 없습니다"
 
 msgid "cannot rename a transient domain"
 msgstr "임시 도메인의 이름을 바꿀 수 없습니다"
@@ -36108,7 +36108,7 @@ msgid "unable to register monitor events"
 msgstr "모니터 이벤트를 등록할 수 없음"
 
 msgid "unable to remove just-created copy target"
-msgstr "방금 생성한 복사 대상을 제거할 수 없습니다"
+msgstr "방금 생성한 복사 대상을 제거 할 수 없습니다"
 
 #, c-format
 msgid "unable to resolve symlink '%s'"
