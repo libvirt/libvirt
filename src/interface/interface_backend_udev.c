@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "datatypes.h"
-#include "domain_conf.h"
 #include "interface_driver.h"
 #include "interface_conf.h"
 #include "viralloc.h"
