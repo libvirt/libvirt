@@ -27,12 +27,8 @@
 #include "virerror.h"
 #include "storage_file_backend.h"
 #include "storage_file_backend_fs.h"
-#include "storage_util.h"
-#include "vircommand.h"
-#include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

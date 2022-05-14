@@ -23,9 +23,7 @@
 
 #include <sys/stat.h>
 
-#include "datatypes.h"
 #include "virerror.h"
-#include "viralloc.h"
 #include "internal.h"
 #include "storage_file_backend.h"
 #include "virlog.h"
