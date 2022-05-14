@@ -26,7 +26,6 @@
 
 #include "viralloc.h"
 #include "virlog.h"
-#include "domain_conf.h"
 #include "virerror.h"
 #include "nwfilter_gentech_driver.h"
 #include "nwfilter_ebiptables_driver.h"
@@ -34,9 +33,6 @@
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
 #include "virnetdev.h"
-#include "datatypes.h"
-#include "virsocketaddr.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

@@ -31,15 +31,10 @@
 
 #include "virerror.h"
 #include "datatypes.h"
-#include "viralloc.h"
-#include "domain_conf.h"
-#include "domain_nwfilter.h"
 #include "nwfilter_driver.h"
 #include "nwfilter_gentech_driver.h"
 #include "configmake.h"
-#include "virfile.h"
 #include "virpidfile.h"
-#include "virstring.h"
 #include "viraccessapicheck.h"
 
 #include "nwfilter_ipaddrmap.h"

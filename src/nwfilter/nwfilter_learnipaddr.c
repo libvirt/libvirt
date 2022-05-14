@@ -37,20 +37,15 @@
 #include "internal.h"
 
 #include "virbuffer.h"
-#include "viralloc.h"
 #include "virlog.h"
-#include "datatypes.h"
 #include "virnetdev.h"
 #include "virerror.h"
 #include "virthread.h"
 #include "conf/nwfilter_params.h"
-#include "conf/domain_conf.h"
 #include "nwfilter_gentech_driver.h"
-#include "nwfilter_ebiptables_driver.h"
 #include "nwfilter_ipaddrmap.h"
 #include "nwfilter_learnipaddr.h"
 #include "virstring.h"
-#include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_NWFILTER
 

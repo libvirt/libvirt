@@ -24,7 +24,6 @@
 
 #include "virnwfilterobj.h"
 #include "virnwfilterbindingdef.h"
-#include "nwfilter_tech_driver.h"
 
 int virNWFilterTechDriversInit(bool privileged);
 void virNWFilterTechDriversShutdown(void);

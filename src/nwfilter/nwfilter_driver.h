@@ -24,7 +24,4 @@
 
 #pragma once
 
-#include "nwfilter_params.h"
-#include "nwfilter_conf.h"
-
 int nwfilterRegister(void);
