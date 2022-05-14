@@ -23,7 +23,6 @@
 #include "virstring.h"
 #include "virerror.h"
 #include "virlog.h"
-#include "viruuid.h"
 #include "virhostuptime.h"
 
 #include "security_util.h"

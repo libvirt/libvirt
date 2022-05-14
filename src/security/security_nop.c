@@ -20,8 +20,6 @@
 #include <config.h>
 
 #include "security_nop.h"
-#include "virstring.h"
-#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_SECURITY
 

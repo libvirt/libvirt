@@ -26,7 +26,6 @@
 #include <selinux/label.h>
 
 #include "security_driver.h"
-#include "security_selinux.h"
 #include "security_util.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -36,7 +35,6 @@
 #include "virusb.h"
 #include "virscsi.h"
 #include "virscsivhost.h"
-#include "virstoragefile.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virrandom.h"

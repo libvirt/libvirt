@@ -39,7 +39,6 @@
 #include "virusb.h"
 #include "virscsi.h"
 #include "virscsivhost.h"
-#include "virstoragefile.h"
 #include "virstring.h"
 #include "virutil.h"
 

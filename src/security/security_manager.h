@@ -22,7 +22,6 @@
 
 #include "domain_conf.h"
 #include "vircommand.h"
-#include "virstoragefile.h"
 
 typedef struct _virSecurityManager virSecurityManager;
 
