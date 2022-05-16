@@ -27570,7 +27570,7 @@ virDomainCpuDefFormat(virBuffer *buf,
 
 
 static bool
-virDomainDefIothreadShouldFormat(virDomainDef *def)
+virDomainDefIothreadShouldFormat(const virDomainDef *def)
 {
     size_t i;
 
@@ -27580,6 +27580,31 @@ virDomainDefIothreadShouldFormat(virDomainDef *def)
     }
 
     return false;
+}
+
+
+static void
+virDomainDefIOThreadsFormat(virBuffer *buf,
+                            const virDomainDef *def)
+{
+    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+    size_t i;
+
+    if (def->niothreadids == 0)
+        return;
+
+    virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
+                      def->niothreadids);
+
+    if (!virDomainDefIothreadShouldFormat(def))
+        return;
+
+    for (i = 0; i < def->niothreadids; i++) {
+        virBufferAsprintf(&childrenBuf, "<iothread id='%u'/>\n",
+                          def->iothreadids[i]->iothread_id);
+    }
+
+    virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);
 }
 
 
@@ -28228,20 +28253,7 @@ virDomainDefFormatInternalSetRootName(virDomainDef *def,
     if (virDomainCpuDefFormat(buf, def) < 0)
         return -1;
 
-    if (def->niothreadids > 0) {
-        virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
-                          def->niothreadids);
-        if (virDomainDefIothreadShouldFormat(def)) {
-            virBufferAddLit(buf, "<iothreadids>\n");
-            virBufferAdjustIndent(buf, 2);
-            for (i = 0; i < def->niothreadids; i++) {
-                virBufferAsprintf(buf, "<iothread id='%u'/>\n",
-                                  def->iothreadids[i]->iothread_id);
-            }
-            virBufferAdjustIndent(buf, -2);
-            virBufferAddLit(buf, "</iothreadids>\n");
-        }
-    }
+    virDomainDefIOThreadsFormat(buf, def);
 
     if (virDomainCputuneDefFormat(buf, def, flags) < 0)
         return -1;
