@@ -1476,10 +1476,10 @@ perl_translatable_files_list_ =						\
   -e '}'
 
 # Verify that all source files using _() (more specifically, files that
-# match $(_gl_translatable_string_re)) are listed in po/POTFILES.in.
-po_file ?= $(top_srcdir)/po/POTFILES.in
+# match $(_gl_translatable_string_re)) are listed in po/POTFILES.
+po_file ?= $(top_srcdir)/po/POTFILES
 
-# List of additional files that we want to pick up in our POTFILES.in
+# List of additional files that we want to pick up in our POTFILES
 # This is all generated files for RPC code.
 generated_files = \
   $(top_builddir)/src/*.[ch] \
