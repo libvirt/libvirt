@@ -1396,8 +1396,8 @@ qemuBuildChardevStr(const virDomainChrSourceDef *dev,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         virBufferAsprintf(&buf, "socket,id=%s", charAlias);
-        if (chrSourcePriv->sourcefd) {
-            virBufferAsprintf(&buf, ",fd=%s", qemuFDPassGetPath(chrSourcePriv->sourcefd));
+        if (chrSourcePriv->directfd) {
+            virBufferAsprintf(&buf, ",fd=%s", qemuFDPassDirectGetPath(chrSourcePriv->directfd));
         } else {
             virBufferAddLit(&buf, ",path=");
             virQEMUBuildBufferEscapeComma(&buf, dev->data.nix.path);
@@ -1513,9 +1513,13 @@ qemuBuildChardevCommand(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-    case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (qemuFDPassTransferCommand(chrSourcePriv->sourcefd, cmd) < 0)
             return -1;
+
+        break;
+
+    case VIR_DOMAIN_CHR_TYPE_UNIX:
+        qemuFDPassDirectTransferCommand(chrSourcePriv->directfd, cmd);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
@@ -4907,12 +4911,11 @@ qemuBuildVideoCommandLine(virCommand *cmd,
             qemuDomainVideoPrivate *videopriv = QEMU_DOMAIN_VIDEO_PRIVATE(video);
             g_autoptr(virDomainChrSourceDef) chrsrc = virDomainChrSourceDefNew(priv->driver->xmlopt);
             g_autofree char *chrAlias = qemuDomainGetVhostUserChrAlias(video->info.alias);
+            g_autofree char *name = g_strdup_printf("%s-vhost-user", video->info.alias);
             qemuDomainChrSourcePrivate *chrsrcpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chrsrc);
 
             chrsrc->type = VIR_DOMAIN_CHR_TYPE_UNIX;
-            chrsrcpriv->sourcefd = qemuFDPassNewDirect(video->info.alias, priv);
-
-            qemuFDPassAddFD(chrsrcpriv->sourcefd, &videopriv->vhost_user_fd, "-vhost-user");
+            chrsrcpriv->directfd = qemuFDPassDirectNew(name, &videopriv->vhost_user_fd);
 
             if (qemuBuildChardevCommand(cmd, chrsrc, chrAlias, priv->qemuCaps) < 0)
                 return -1;

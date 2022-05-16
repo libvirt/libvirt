@@ -350,6 +350,7 @@ struct _qemuDomainChrSourcePrivate {
 
     qemuFDPass *sourcefd;
     qemuFDPass *logfd;
+    qemuFDPassDirect *directfd;
     bool wait; /* wait for incoming connections on chardev */
 
     char *tlsCertPath; /* path to certificates if TLS is requested */

@@ -916,6 +916,7 @@ qemuDomainChrSourcePrivateClearFDPass(qemuDomainChrSourcePrivate *priv)
 
     g_clear_pointer(&priv->sourcefd, qemuFDPassFree);
     g_clear_pointer(&priv->logfd, qemuFDPassFree);
+    g_clear_pointer(&priv->directfd, qemuFDPassDirectFree);
 }
 
 

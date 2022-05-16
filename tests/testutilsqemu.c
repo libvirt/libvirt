@@ -1019,7 +1019,6 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
     qemuDomainChrSourcePrivate *charpriv = QEMU_DOMAIN_CHR_SOURCE_PRIVATE(chardev);
     int fakesourcefd = -1;
     const char *devalias = NULL;
-    bool usefdset = true;
 
     if (vm)
         priv = vm->privateData;
@@ -1061,30 +1060,27 @@ testQemuPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
         fakesourcefd = 1750;
+
+        if (fcntl(fakesourcefd, F_GETFD) != -1)
+            abort();
+
+        charpriv->sourcefd = qemuFDPassNew(devalias, priv);
+        qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source");
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (chardev->data.nix.listen)
+        if (chardev->data.nix.listen) {
+            g_autofree char *name = g_strdup_printf("%s-source", devalias);
             fakesourcefd = 1729;
 
-        usefdset = false;
+            charpriv->directfd = qemuFDPassDirectNew(name, &fakesourcefd);
+        }
+
         break;
 
     case VIR_DOMAIN_CHR_TYPE_NMDM:
     case VIR_DOMAIN_CHR_TYPE_LAST:
         break;
-    }
-
-    if (fakesourcefd != -1) {
-        if (fcntl(fakesourcefd, F_GETFD) != -1)
-            abort();
-
-        if (usefdset)
-            charpriv->sourcefd = qemuFDPassNew(devalias, priv);
-        else
-            charpriv->sourcefd = qemuFDPassNewDirect(devalias, priv);
-
-        qemuFDPassAddFD(charpriv->sourcefd, &fakesourcefd, "-source");
     }
 
     if (chardev->logfile) {

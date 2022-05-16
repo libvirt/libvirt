@@ -2133,11 +2133,12 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuProcessPrepareHostBackendChardevHotplug(vm, dev) < 0)
         goto cleanup;
 
-    if (charpriv->sourcefd || charpriv->logfd) {
+    if (charpriv->sourcefd || charpriv->logfd || charpriv->directfd) {
         qemuDomainObjEnterMonitor(driver, vm);
 
         if (qemuFDPassTransferMonitor(charpriv->sourcefd, priv->mon) < 0 ||
-            qemuFDPassTransferMonitor(charpriv->logfd, priv->mon) < 0)
+            qemuFDPassTransferMonitor(charpriv->logfd, priv->mon) < 0 ||
+            qemuFDPassDirectTransferMonitor(charpriv->directfd, priv->mon) < 0)
             goto exit_monitor;
 
         qemuDomainObjExitMonitor(vm);

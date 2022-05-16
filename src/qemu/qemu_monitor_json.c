@@ -6724,8 +6724,8 @@ qemuMonitorJSONAttachCharDevGetProps(const char *chrID,
                 waitval = VIR_TRISTATE_BOOL_NO;
             }
 
-            if (chrSourcePriv->sourcefd) {
-                if (!(addr = qemuMonitorJSONBuildFDSocketAddress(qemuFDPassGetPath(chrSourcePriv->sourcefd))))
+            if (chrSourcePriv->directfd) {
+                if (!(addr = qemuMonitorJSONBuildFDSocketAddress(qemuFDPassDirectGetPath(chrSourcePriv->directfd))))
                     return NULL;
             } else {
                 if (!(addr = qemuMonitorJSONBuildUnixSocketAddress(chr->data.nix.path)))

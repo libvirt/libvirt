@@ -6876,6 +6876,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (chardev->data.nix.listen) {
+            g_autofree char *name = g_strdup_printf("%s-source", devalias);
             VIR_AUTOCLOSE sourcefd = -1;
 
             if (qemuSecuritySetSocketLabel(data->priv->driver->securityManager, data->def) < 0)
@@ -6887,9 +6888,7 @@ qemuProcessPrepareHostBackendChardevOne(virDomainDeviceDef *dev,
                 sourcefd < 0)
                 return -1;
 
-            charpriv->sourcefd = qemuFDPassNewDirect(devalias, data->priv);
-
-            qemuFDPassAddFD(charpriv->sourcefd, &sourcefd, "-source");
+            charpriv->directfd = qemuFDPassDirectNew(name, &sourcefd);
         }
         break;
 
