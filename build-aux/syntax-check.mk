@@ -1490,8 +1490,7 @@ _gl_translatable_string_re ?= \b(N?_|gettext *)\([^)"]*("|$$)
 # sc_po_check can fail if generated files are not built first
 sc_po_check:
 	@if test -f $(po_file); then					\
-	  $(GREP) -E -v '^(#|$$)' $(po_file)				\
-	    | $(GREP) -v '^src/false\.c$$' | sort > $@-1;		\
+	  $(GREP) -E -v '^(#|$$)' $(po_file) | sort > $@-1; \
 	  { $(VC_LIST_EXCEPT); echo $(generated_files); }		\
 	    | xargs perl $(perl_translatable_files_list_)		\
 	    | xargs $(GREP) -E -l '$(_gl_translatable_string_re)'	\
