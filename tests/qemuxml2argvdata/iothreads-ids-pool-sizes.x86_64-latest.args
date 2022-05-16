@@ -22,6 +22,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -object '{"qom-type":"iothread","id":"iothread1"}' \
 -object '{"qom-type":"iothread","id":"iothread3"}' \
 -object '{"qom-type":"iothread","id":"iothread5"}' \
+-object '{"qom-type":"main-loop","id":"main-loop","thread-pool-min":8,"thread-pool-max":16}' \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
 -display none \
 -no-user-config \
