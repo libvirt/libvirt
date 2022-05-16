@@ -30,7 +30,6 @@ msgid ""
 "  (specify help <group> for details about the commands in the group)\n"
 msgstr ""
 
-#. Print the description only if it's not empty.
 #: tools/vsh.c:709
 msgid ""
 "\n"
@@ -292,7 +291,6 @@ msgstr ""
 msgid "    Bandwidth limit: %llu bytes/s (%-.3lf %s/s)"
 msgstr ""
 
-#. true if 'arg' works instead of '--opt arg'
 #: tools/vsh.c:653
 msgid "  NAME\n"
 msgstr ""
@@ -590,16 +588,6 @@ msgstr ""
 msgid "%s object has invalid dynamic type"
 msgstr ""
 
-#.
-#. * A required property must be != 0 (NULL for pointers, "undefined" == 0 for
-#. * enumeration values).
-#. *
-#. * To be used as part of ESX_VI__TEMPLATE__VALIDATE.
-#.
-#.
-#. * Macros to implement managed objects
-#.
-#. FIXME: This results in O(n^2) runtime in case of missing required, but      * unselected properties.
 #: src/esx/esx_vi_types.c:487 src/esx/esx_vi_types.c:744
 #, c-format
 msgid "%s object is missing the required '%s' property"
@@ -1773,7 +1761,6 @@ msgstr ""
 msgid "(libxl_migration_cookie)"
 msgstr ""
 
-#. parse and modify the xml from the user
 #: src/conf/domain_conf.c:29964
 msgid "(metadata_xml)"
 msgstr ""
@@ -1850,7 +1837,6 @@ msgstr ""
 msgid "(volume_definition)"
 msgstr ""
 
-#. Capacity related information isn't available
 #: tools/virsh-pool.c:1283 tools/virsh-pool.c:1284 tools/virsh-pool.c:1285
 msgid "-"
 msgstr ""
@@ -2975,15 +2961,11 @@ msgid ""
 "dirtyrate'."
 msgstr ""
 
-#.
-#. * Macros to implement dynamic dispatched functions
-#.
 #: src/esx/esx_vi_types.c:544 src/esx/esx_vi_types.c:690
 #, c-format
 msgid "Call to %s for unexpected type '%s'"
 msgstr ""
 
-#. nothing
 #: src/esx/esx_vi_types.c:210 src/esx/esx_vi_types.c:225
 #, c-format
 msgid "Call to %s for unexpected type '%s', expected '%s'"
@@ -4418,7 +4400,6 @@ msgstr ""
 msgid "Checkpoints have inconsistent relations for domain %s"
 msgstr ""
 
-#. All bytes up to and including the checksum byte should add up to 0.
 #: src/util/virpcivpd.c:556
 msgid "Checksum validation has failed"
 msgstr ""
@@ -5963,7 +5944,6 @@ msgstr ""
 msgid "Could not retrieve default Msvm_DiskDrive object"
 msgstr ""
 
-#. Something went wrong retrieving pool info, cope with it
 #: tools/virsh-pool.c:1250
 msgid "Could not retrieve pool information"
 msgstr ""
@@ -7024,7 +7004,6 @@ msgid ""
 "Domain has %d interfaces. Please specify which one to detach using --mac"
 msgstr ""
 
-#. this is the 2nd match, so it's ambiguous
 #: tools/virsh-domain.c:12353
 #, c-format
 msgid ""
@@ -8495,28 +8474,18 @@ msgstr ""
 msgid "Failed to create thread for receiving migration data"
 msgstr ""
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #: src/remote/remote_daemon.c:476
 msgid "Failed to create thread to handle daemon restart"
 msgstr ""
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #: src/libxl/libxl_domain.c:723
 msgid "Failed to create thread to handle domain death"
 msgstr ""
 
-#.
-#. * Not much we can do on error here except log it.
-#.
 #: src/libxl/libxl_domain.c:701
 msgid "Failed to create thread to handle domain shutdown"
 msgstr ""
 
-#. Not much else can be done
 #: src/storage/storage_driver.c:2352
 msgid "Failed to create thread to handle pool refresh"
 msgstr ""
@@ -9218,7 +9187,6 @@ msgstr ""
 msgid "Failed to list active pools"
 msgstr ""
 
-#. there was an error during the first or second call
 #: tools/virsh-domain-monitor.c:1590
 msgid "Failed to list domains"
 msgstr ""
@@ -9239,32 +9207,26 @@ msgstr ""
 msgid "Failed to list inactive pools"
 msgstr ""
 
-#. there was an error during the first or second call
 #: tools/virsh-interface.c:208
 msgid "Failed to list interfaces"
 msgstr ""
 
-#. there was an error during the call
 #: tools/virsh-nwfilter.c:679
 msgid "Failed to list network filter bindings"
 msgstr ""
 
-#. there was an error during the call
 #: tools/virsh-nwfilter.c:276 tools/virsh-nwfilter.c:297
 msgid "Failed to list network filters"
 msgstr ""
 
-#. there was an error during the first or second call
 #: tools/virsh-network.c:514
 msgid "Failed to list networks"
 msgstr ""
 
-#. there was an error during the call
 #: tools/virsh-nodedev.c:242 tools/virsh-nodedev.c:263
 msgid "Failed to list node devices"
 msgstr ""
 
-#. there was an error during the call
 #: tools/virsh-secret.c:452
 msgid "Failed to list node secrets"
 msgstr ""
@@ -9274,7 +9236,6 @@ msgstr ""
 msgid "Failed to list persistent guests on $uri"
 msgstr ""
 
-#. there was an error during the first or second call
 #: tools/virsh-pool.c:879
 msgid "Failed to list pools"
 msgstr ""
@@ -9300,7 +9261,6 @@ msgstr ""
 msgid "Failed to list vcpus for domain '%d' with libxenlight"
 msgstr ""
 
-#. there was an error during the call
 #: tools/virsh-volume.c:1248
 msgid "Failed to list volumes"
 msgstr ""
@@ -10046,9 +10006,6 @@ msgstr ""
 msgid "Failed to resume domain '%s'"
 msgstr ""
 
-#. Hm, we already know we are in error here.  We don't want to
-#. * overwrite the previous error, though, so we just throw something
-#. * to the logs and hope for the best
 #: src/qemu/qemu_migration.c:156
 #, c-format
 msgid "Failed to resume guest %s after failure"
@@ -10844,64 +10801,11 @@ msgid ""
 "for VMX file"
 msgstr ""
 
-#. Macros to help dealing with flag requirements.
-#. *
-#. * VIR_REQUIRE_FLAG_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @RET: Return value.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_REQUIRE_FLAG_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag that is required by first flag.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Check whether required flag is set.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if required flag is not set.
-#.
 #: src/internal.h:382 src/internal.h:404
 #, c-format
 msgid "Flag '%s' is required by flag '%s'"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive flags.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_RET:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @RET: Return value.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
-#. *
-#. * VIR_EXCLUSIVE_FLAGS_GOTO:
-#. *
-#. * @FLAG1: First flag to be checked.
-#. * @FLAG2: Second flag to be checked.
-#. * @LABEL: Label to jump to.
-#. *
-#. * Reject mutually exclusive API flags.  The checked flags are compared
-#. * with flags variable.
-#. *
-#. * Returns nothing.  Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #: src/internal.h:332 src/internal.h:356
 #, c-format
 msgid "Flags '%s' and '%s' are mutually exclusive"
@@ -12065,15 +11969,6 @@ msgstr ""
 msgid "Invalid address."
 msgstr ""
 
-#.
-#. * Don't check for *selectSet != NULL here because selectSet is a list
-#. * and might contain items already. This function appends to selectSet.
-#.
-#. optional
-#. optional
-#. nothing
-#. nothing
-#. nothing
 #: src/esx/esx_driver.c:4170 src/esx/esx_driver.c:4260
 #: src/esx/esx_storage_backend_vmfs.c:606 src/esx/esx_util.c:219
 #: src/esx/esx_util.h:30 src/esx/esx_vi.c:419 src/esx/esx_vi.c:817
@@ -14838,12 +14733,6 @@ msgstr ""
 msgid "NVMe namespace can't be zero"
 msgstr ""
 
-#. Output old style header
-#. We only get here if the --details option was selected.
-#. Insert the header into table
-#. The old output format
-#. We only get here if the --details option was selected.
-#. Insert the header into table
 #: tools/virsh-checkpoint.c:750 tools/virsh-checkpoint.c:753
 #: tools/virsh-domain-monitor.c:1929 tools/virsh-domain-monitor.c:1931
 #: tools/virsh-domain-monitor.c:2330 tools/virsh-domain.c:13216
@@ -16114,20 +16003,6 @@ msgid ""
 "modelName '%s'"
 msgstr ""
 
-#. Macros to help dealing with required options.
-#. VSH_REQUIRE_OPTION_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable).
-#. * @NAME2: String containing the name of required option.
-#. * @EXPR2: Expression to validate the variable (boolean variable).
-#. *
-#. * Check if required command options in virsh was set.  Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #: tools/vsh.h:542
 #, c-format
 msgid "Option --%s is required by option --%s"
@@ -16153,20 +16028,6 @@ msgstr ""
 msgid "Optional flags or --rawstats are not supported by the daemon"
 msgstr ""
 
-#. Macros to help dealing with mutually exclusive options.
-#. VSH_EXCLUSIVE_OPTIONS_EXPR:
-#. *
-#. * @NAME1: String containing the name of the option.
-#. * @EXPR1: Expression to validate the variable (boolean variable)
-#. * @NAME2: String containing the name of the option.
-#. * @EXPR2: Expression to validate the variable (boolean variable)
-#. *
-#. * Reject mutually exclusive command options in virsh. Use the
-#. * provided expression to check the variables.
-#. *
-#. * This helper does an early return and therefore it has to be called
-#. * before anything that would require cleanup.
-#.
 #: tools/vsh.h:490
 #, c-format
 msgid "Options --%s and --%s are mutually exclusive"
@@ -16460,7 +16321,6 @@ msgstr ""
 msgid "Partition path '%s' must start with '/'"
 msgstr ""
 
-#. warn users that the --base64 option passed from command line is wrong
 #: tools/virsh-secret.c:237
 msgid "Passing secret value as command-line argument is insecure!"
 msgstr ""
@@ -17501,7 +17361,6 @@ msgstr ""
 msgid "S4 state is disabled for this domain"
 msgstr ""
 
-#. Denied
 #: src/rpc/virnetsaslcontext.c:168
 #, c-format
 msgid "SASL client identity '%s' not allowed by ACL"
@@ -18137,9 +17996,6 @@ msgstr ""
 msgid "Shared memory mapping is not supported with this QEMU"
 msgstr ""
 
-#. XXX: Need to sort the returned params once new parameter
-#. * fields not of shared memory are added.
-#.
 #: tools/virsh-host.c:1543
 msgid "Shared memory:\n"
 msgstr ""
@@ -18239,7 +18095,6 @@ msgstr ""
 msgid "Snapshot"
 msgstr ""
 
-#. Depending on flags, we re-edit even if XML is unchanged.
 #: tools/virsh-snapshot.c:553
 #, c-format
 msgid "Snapshot %s XML configuration not changed.\n"
@@ -18837,7 +18692,6 @@ msgstr ""
 msgid "Table row cannot be empty"
 msgstr ""
 
-#. title
 #: tools/virsh-domain-monitor.c:482 tools/virsh-domain-monitor.c:597
 #: tools/virsh-domain-monitor.c:599 tools/virsh-domain.c:13216
 msgid "Target"
@@ -20421,12 +20275,10 @@ msgstr ""
 msgid "Try again?"
 msgstr ""
 
-#. Better leak than crash
 #: src/esx/esx_vi.c:628
 msgid "Trying to free MultiCURL object that is still in use"
 msgstr ""
 
-#. Better leak than crash
 #: src/esx/esx_vi.c:517
 msgid "Trying to free SharedCURL object that is still in use"
 msgstr ""
@@ -23748,7 +23600,6 @@ msgstr ""
 msgid "Unknown error"
 msgstr ""
 
-#. should never happen (tm)
 #: src/rpc/virnetsshsession.c:480
 msgid "Unknown error value"
 msgstr ""
@@ -24737,13 +24588,11 @@ msgstr ""
 msgid "Video adapters are not supported int containers."
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #: tools/virsh.c:498
 #, c-format
 msgid "Virsh command line tool of libvirt %s\n"
 msgstr ""
 
-#. FIXME - list a copyright blurb, as in GNU programs?
 #: tools/virt-admin.c:1262
 #, c-format
 msgid "Virt-admin command line tool of libvirt %s\n"
@@ -25320,11 +25169,6 @@ msgstr ""
 msgid "allocate the new capacity, rather than leaving it sparse"
 msgstr ""
 
-#.
-#. * we need to use an intermediary pointer to @data as compilers may sometimes
-#. * complain about @data not being a pointer type:
-#. * error: the address of 'foo' will always evaluate as 'true' [-Werror=address]
-#.
 #: src/util/virnetdev.c:1584 src/util/virnetdev.c:3166
 #: src/util/virnetdev.c:3249 src/util/virnetdevbridge.c:1073
 #: src/util/virnetdevip.c:140 src/util/virnetdevip.c:363
@@ -27529,7 +27373,6 @@ msgstr ""
 msgid "cannot open path '%s' in '%s'"
 msgstr ""
 
-#. A dangling symlink now implies a TOCTTOU race; report it.
 #: src/storage/storage_backend_gluster.c:267 src/storage/storage_util.c:1672
 #, c-format
 msgid "cannot open volume '%s'"
@@ -28539,7 +28382,6 @@ msgstr ""
 msgid "child didn't write error (status=%d)"
 msgstr ""
 
-#. in case of EACCES, the parent will retry
 #: src/util/virfile.c:2807
 #, c-format
 msgid "child failed to create directory '%s'"
@@ -33443,9 +33285,6 @@ msgstr ""
 msgid "fetch or set the currently defined set of logging outputs on daemon"
 msgstr ""
 
-#. parse inbound and outbound which are in the format of
-#. * 'average,peak,burst,floor', in which peak and burst are optional,
-#. * thus 'average,,burst' and 'average,peak' are also legal.
 #: tools/virsh-domain.c:908
 #, c-format
 msgid "field '%s' is malformed"
@@ -34183,7 +34022,6 @@ msgstr ""
 msgid "handler failed to wait on condition"
 msgstr ""
 
-#. caller's error
 #: src/conf/nwfilter_params.c:408
 msgid "hash lookup resulted in NULL pointer"
 msgstr ""
@@ -34873,25 +34711,6 @@ msgstr ""
 msgid "interface name %s does not fit into buffer"
 msgstr ""
 
-#.
-#. * virsh-interface.c: Commands to manage host interface
-#. *
-#. * Copyright (C) 2005, 2007-2016 Red Hat, Inc.
-#. *
-#. * This library is free software; you can redistribute it and/or
-#. * modify it under the terms of the GNU Lesser General Public
-#. * License as published by the Free Software Foundation; either
-#. * version 2.1 of the License, or (at your option) any later version.
-#. *
-#. * This library is distributed in the hope that it will be useful,
-#. * but WITHOUT ANY WARRANTY; without even the implied warranty of
-#. * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#. * Lesser General Public License for more details.
-#. *
-#. * You should have received a copy of the GNU Lesser General Public
-#. * License along with this library.  If not, see
-#. * <http://www.gnu.org/licenses/>.
-#.
 #: tools/virsh-interface.c:25
 msgid "interface name or MAC address"
 msgstr ""
@@ -38802,15 +38621,6 @@ msgstr ""
 msgid "monitor failure"
 msgstr ""
 
-#. *
-#. * QEMU_CHECK_MONITOR_FULL:
-#. * @mon: monitor pointer variable to check, evaluated multiple times, no parentheses
-#. * @exit: statement that is used to exit the function
-#. *
-#. * This macro checks that the monitor is valid for given operation and exits
-#. * the function if not. The macro also adds a debug statement regarding the
-#. * monitor.
-#.
 #: src/qemu/qemu_monitor.c:82
 msgid "monitor must not be NULL"
 msgstr ""
@@ -39050,7 +38860,6 @@ msgstr ""
 msgid "negative size requires --shrink"
 msgstr ""
 
-#. 56 is good for Kerberos
 #: src/remote/remote_daemon_dispatch.c:3733
 #, c-format
 msgid "negotiated SSF %d was not strong enough"
@@ -45298,7 +45107,6 @@ msgstr ""
 msgid "unable to find valid requested VMware backend '%s'"
 msgstr ""
 
-#. fdatasync() may fail on some special FDs, e.g. pipes
 #: src/util/iohelper.c:173
 #, c-format
 msgid "unable to fsync %s"
@@ -46325,8 +46133,6 @@ msgstr ""
 msgid "unix"
 msgstr ""
 
-#. Something went wrong retrieving a volume path, cope with it
-#. Something went wrong retrieving volume info, cope with it
 #: src/conf/network_conf.c:2920 src/conf/network_conf.c:2921
 #: src/conf/network_conf.c:2953 src/conf/network_conf.c:2954
 #: tools/virsh-domain-event.c:51 tools/virsh-domain-event.c:163
@@ -47319,28 +47125,6 @@ msgstr ""
 msgid "unsupported filesystem type '%s'"
 msgstr ""
 
-#. *
-#. * virCheckFlags:
-#. * @supported: an OR'ed set of supported flags
-#. * @retval: return value in case unsupported flags were passed
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Exits the caller function if unsupported flags were
-#. * passed to it.
-#.
-#. *
-#. * virCheckFlagsGoto:
-#. * @supported: an OR'ed set of supported flags
-#. * @label: label to jump to on error
-#. *
-#. * To avoid memory leaks this macro has to be used before any non-trivial
-#. * code which could possibly allocate some memory.
-#. *
-#. * Returns nothing. Jumps to a label if unsupported flags were
-#. * passed to it.
-#.
 #: src/internal.h:285 src/internal.h:307
 #, c-format
 msgid "unsupported flags (0x%lx) in function %s"
