@@ -39,7 +39,7 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
                 int *fd,
                 const char *suffix);
 
-int
+void
 qemuFDPassTransferCommand(qemuFDPass *fdpass,
                           virCommand *cmd);
 

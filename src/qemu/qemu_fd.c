@@ -133,14 +133,14 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
  * Pass the fds in @fdpass to a commandline object @cmd. @fdpass may be NULL
  * in which case this is a no-op.
  */
-int
+void
 qemuFDPassTransferCommand(qemuFDPass *fdpass,
                           virCommand *cmd)
 {
     size_t i;
 
     if (!fdpass)
-        return 0;
+        return;
 
     for (i = 0; i < fdpass->nfds; i++) {
         g_autofree char *arg = g_strdup_printf("set=%u,fd=%d,opaque=%s",
@@ -152,8 +152,6 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
         fdpass->fds[i].fd = -1;
         virCommandAddArgList(cmd, "-add-fd", arg, NULL);
     }
-
-    return 0;
 }
 
 

@@ -1513,9 +1513,7 @@ qemuBuildChardevCommand(virCommand *cmd,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_FILE:
-        if (qemuFDPassTransferCommand(chrSourcePriv->sourcefd, cmd) < 0)
-            return -1;
-
+        qemuFDPassTransferCommand(chrSourcePriv->sourcefd, cmd);
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
@@ -1543,8 +1541,7 @@ qemuBuildChardevCommand(virCommand *cmd,
         return -1;
     }
 
-    if (qemuFDPassTransferCommand(chrSourcePriv->logfd, cmd) < 0)
-        return -1;
+    qemuFDPassTransferCommand(chrSourcePriv->logfd, cmd);
 
     if (!(charstr = qemuBuildChardevStr(dev, charAlias)))
         return -1;
@@ -8888,9 +8885,7 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         qemuFDPassDirectTransferCommand(n->data, cmd);
 
     qemuFDPassDirectTransferCommand(netpriv->slirpfd, cmd);
-
-    if (qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
-        return -1;
+    qemuFDPassTransferCommand(netpriv->vdpafd, cmd);
 
     if (!(hostnetprops = qemuBuildHostNetProps(net)))
         goto cleanup;
@@ -9778,11 +9773,8 @@ qemuBuildTPMCommandLine(virCommand *cmd,
         return -1;
     }
 
-    if (qemuFDPassTransferCommand(passtpm, cmd) < 0)
-        return -1;
-
-    if (qemuFDPassTransferCommand(passcancel, cmd) < 0)
-        return -1;
+    qemuFDPassTransferCommand(passtpm, cmd);
+    qemuFDPassTransferCommand(passcancel, cmd);
 
     if (!(tpmdevstr = qemuBuildTPMBackendStr(tpm, passtpm, passcancel)))
         return -1;
