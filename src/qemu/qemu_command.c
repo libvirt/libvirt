@@ -10436,7 +10436,6 @@ qemuBuildCommandLine(virQEMUDriver *driver,
                      const char *migrateURI,
                      virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
-                     bool standalone,
                      bool enableFips,
                      size_t *nnicindexes,
                      int **nicindexes,
@@ -10484,7 +10483,7 @@ qemuBuildCommandLine(virQEMUDriver *driver,
 
     qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def, qemuCaps);
 
-    if (!standalone)
+    if (!(flags & QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING))
         virCommandAddArg(cmd, "-S"); /* freeze CPU */
 
     if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)

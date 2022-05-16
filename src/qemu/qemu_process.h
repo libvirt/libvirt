@@ -98,10 +98,10 @@ int qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
                                        unsigned int flags);
 
 virCommand *qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
-                                               virDomainObj *vm,
-                                               const char *migrateURI,
-                                               bool enableFips,
-                                               bool standalone);
+                                             virDomainObj *vm,
+                                             const char *migrateURI,
+                                             bool enableFips,
+                                             unsigned int flags);
 
 int qemuProcessInit(virQEMUDriver *driver,
                     virDomainObj *vm,

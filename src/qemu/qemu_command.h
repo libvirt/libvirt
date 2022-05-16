@@ -43,12 +43,15 @@
 VIR_ENUM_DECL(qemuVideo);
 VIR_ENUM_DECL(qemuSoundCodec);
 
+typedef enum {
+    QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING = 1 << 0,
+} qemuBuildCommandLineFlags;
+
 virCommand *qemuBuildCommandLine(virQEMUDriver *driver,
                                    virDomainObj *vm,
                                    const char *migrateURI,
                                    virDomainMomentObj *snapshot,
                                    virNetDevVPortProfileOp vmop,
-                                   bool standalone,
                                    bool enableFips,
                                    size_t *nnicindexes,
                                    int **nicindexes,

@@ -7450,7 +7450,6 @@ qemuProcessLaunch(virConnectPtr conn,
                                      vm,
                                      incoming ? "defer" : NULL,
                                      snapshot, vmop,
-                                     false,
                                      qemuCheckFips(vm),
                                      &nnicindexes, &nicindexes, 0)))
         goto cleanup;
@@ -7952,7 +7951,7 @@ qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  const char *migrateURI,
                                  bool enableFips,
-                                 bool standalone)
+                                 unsigned int flags)
 {
     VIR_DEBUG("Building emulator command line");
     return qemuBuildCommandLine(driver,
@@ -7960,11 +7959,10 @@ qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                 migrateURI,
                                 NULL,
                                 VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
-                                standalone,
                                 enableFips,
                                 NULL,
                                 NULL,
-                                0);
+                                flags);
 }
 
 

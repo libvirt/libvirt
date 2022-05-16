@@ -488,7 +488,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         enableFips = false;
 
     return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
-                                            enableFips, false);
+                                            enableFips, 0);
 }
 
 
