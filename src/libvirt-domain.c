@@ -2909,6 +2909,13 @@ virConnectDomainXMLFromNative(virConnectPtr conn,
  * a native configuration file describing the domain.
  * The format of the native data is hypervisor dependent.
  *
+ * Note that certain hypervisor drivers such as the QEMU driver configure many
+ * aspects of the domain dynamically via hypervisor APIs and that may not be
+ * part of the returned native configuration format. Similarly certain resources
+ * are passed to the hypervisor via file descriptors, which are not part of the
+ * native configuration returned by this API. Such configuration is thus not
+ * trivially usable outside of libvirt.
+ *
  * Returns a 0 terminated UTF-8 encoded native config datafile, or
  * NULL in case of error. The caller must free() the returned value.
  *
