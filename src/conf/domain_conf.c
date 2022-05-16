@@ -17047,7 +17047,8 @@ virDomainDefParseIOThreads(virDomainDef *def,
         def->iothreadids = g_new0(virDomainIOThreadIDDef *, n);
 
     for (i = 0; i < n; i++) {
-        virDomainIOThreadIDDef *iothrid = NULL;
+        g_autoptr(virDomainIOThreadIDDef) iothrid = NULL;
+
         if (!(iothrid = virDomainIOThreadIDDefParseXML(nodes[i])))
             return -1;
 
@@ -17055,10 +17056,9 @@ virDomainDefParseIOThreads(virDomainDef *def,
             virReportError(VIR_ERR_XML_ERROR,
                            _("duplicate iothread id '%u' found"),
                            iothrid->iothread_id);
-            virDomainIOThreadIDDefFree(iothrid);
             return -1;
         }
-        def->iothreadids[def->niothreadids++] = iothrid;
+        def->iothreadids[def->niothreadids++] = g_steal_pointer(&iothrid);
     }
 
     return virDomainIOThreadIDDefArrayInit(def, iothreads);
