@@ -251,6 +251,7 @@ struct _virQEMUDriver {
     /* Immutable values */
     bool privileged;
     char *embeddedRoot;
+    bool hostFips; /* FIPS mode is enabled on the host */
 
     /* Immutable pointers. Caller must provide locking */
     virStateInhibitCallback inhibitCallback;

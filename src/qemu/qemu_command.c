@@ -1787,21 +1787,11 @@ bool
 qemuCheckFips(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_ENABLE_FIPS))
+    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         return false;
 
-    if (virFileExists("/proc/sys/crypto/fips_enabled")) {
-        g_autofree char *buf = NULL;
-
-        if (virFileReadAll("/proc/sys/crypto/fips_enabled", 10, &buf) < 0)
-            return false;
-        if (STREQ(buf, "1\n"))
-            return true;
-    }
-
-    return false;
+    return priv->driver->hostFips;
 }
 
 
