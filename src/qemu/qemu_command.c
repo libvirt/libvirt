@@ -10444,8 +10444,7 @@ qemuBuildCommandLine(virDomainObj *vm,
 
     qemuBuildCompatDeprecatedCommandLine(cmd, cfg, def, qemuCaps);
 
-    if (!(flags & QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING))
-        virCommandAddArg(cmd, "-S"); /* freeze CPU */
+    virCommandAddArg(cmd, "-S"); /* freeze CPUs during startup */
 
     if (qemuBuildMasterKeyCommandLine(cmd, priv) < 0)
         return NULL;

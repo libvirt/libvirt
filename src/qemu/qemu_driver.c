@@ -6339,7 +6339,6 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     virQEMUDriver *driver = conn->privateData;
     g_autoptr(virDomainObj) vm = NULL;
     g_autoptr(virCommand) cmd = NULL;
-    unsigned int commandlineflags = QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING;
     size_t i;
 
     virCheckFlags(0, NULL);
@@ -6391,7 +6390,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
         return NULL;
 
-    if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL, commandlineflags)))
+    if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL, 0)))
         return NULL;
 
     return virCommandToString(cmd, false);
