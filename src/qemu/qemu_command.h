@@ -51,7 +51,6 @@ virCommand *qemuBuildCommandLine(virDomainObj *vm,
                                  const char *migrateURI,
                                  virDomainMomentObj *snapshot,
                                  virNetDevVPortProfileOp vmop,
-                                 bool enableFips,
                                  size_t *nnicindexes,
                                  int **nicindexes,
                                  unsigned int flags);
@@ -213,10 +212,6 @@ int qemuGetDriveSourceString(virStorageSource *src,
 
 bool
 qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk);
-
-
-bool
-qemuCheckFips(virDomainObj *vm);
 
 virJSONValue *qemuBuildHotpluggableCPUProps(const virDomainVcpuDef *vcpu)
     ATTRIBUTE_NONNULL(1);

@@ -1769,32 +1769,6 @@ qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk)
 }
 
 
-/* QEMU 1.2 and later have a binary flag -enable-fips that must be
- * used for VNC auth to obey FIPS settings; but the flag only
- * exists on Linux, and with no way to probe for it via QMP.  Our
- * solution: if FIPS mode is required, then unconditionally use
- * the flag, regardless of qemu version, for the following matrix:
- *
- *                          old QEMU            new QEMU
- * FIPS enabled             doesn't start       VNC auth disabled
- * FIPS disabled/missing    VNC auth enabled    VNC auth enabled
- *
- * In QEMU 5.2.0, use of -enable-fips was deprecated. In scenarios
- * where FIPS is required, QEMU must be built against libgcrypt
- * which automatically enforces FIPS compliance.
- */
-bool
-qemuCheckFips(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
-        return false;
-
-    return priv->driver->hostFips;
-}
-
-
 /**
  * qemuDiskBusIsSD:
  * @bus: disk bus
@@ -10425,7 +10399,6 @@ qemuBuildCommandLine(virDomainObj *vm,
                      const char *migrateURI,
                      virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
-                     bool enableFips,
                      size_t *nnicindexes,
                      int **nicindexes,
                      unsigned int flags)
@@ -10486,7 +10459,19 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildPflashBlockdevCommandLine(cmd, priv) < 0)
         return NULL;
 
-    if (enableFips)
+    /* QEMU 1.2 and later have a binary flag -enable-fips that must be
+     * used for VNC auth to obey FIPS settings; but the flag only
+     * exists on Linux, and with no way to probe for it via QMP.  Our
+     * solution: if FIPS mode is required, then unconditionally use the flag.
+     *
+     * In QEMU 5.2.0, use of -enable-fips was deprecated. In scenarios
+     * where FIPS is required, QEMU must be built against libgcrypt
+     * which automatically enforces FIPS compliance.
+     *
+     * Note this is the only use of driver->hostFips.
+     */
+    if (driver->hostFips &&
+        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         virCommandAddArg(cmd, "-enable-fips");
 
     if (qemuBuildMachineCommandLine(cmd, cfg, def, qemuCaps, priv) < 0)

@@ -386,11 +386,9 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
                                unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool enableFips;
     size_t i;
 
     drv->hostFips = flags & FLAG_FIPS_HOST;
-    enableFips = drv->hostFips;
 
     if (qemuProcessCreatePretendCmdPrepare(drv, vm, migrateURI,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
@@ -486,12 +484,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         }
     }
 
-    /* we can't use qemuCheckFips() directly as it queries host state */
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
-        enableFips = false;
-
-    return qemuProcessCreatePretendCmdBuild(vm, migrateURI,
-                                            enableFips, 0);
+    return qemuProcessCreatePretendCmdBuild(vm, migrateURI, 0);
 }
 
 
