@@ -6337,30 +6337,29 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
                                           unsigned int flags)
 {
     virQEMUDriver *driver = conn->privateData;
-    virDomainObj *vm = NULL;
+    g_autoptr(virDomainObj) vm = NULL;
     g_autoptr(virCommand) cmd = NULL;
     unsigned int commandlineflags = QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING;
-    char *ret = NULL;
     size_t i;
 
     virCheckFlags(0, NULL);
 
     if (virConnectDomainXMLToNativeEnsureACL(conn) < 0)
-        goto cleanup;
+        return NULL;
 
     if (STRNEQ(format, QEMU_CONFIG_FORMAT_ARGV)) {
         virReportError(VIR_ERR_INVALID_ARG,
                        _("unsupported config type %s"), format);
-        goto cleanup;
+        return NULL;
     }
 
     if (!(vm = virDomainObjNew(driver->xmlopt)))
-        goto cleanup;
+        return NULL;
 
     if (!(vm->def = virDomainDefParseString(xmlData, driver->xmlopt, NULL,
                                             VIR_DOMAIN_DEF_PARSE_INACTIVE |
                                             VIR_DOMAIN_DEF_PARSE_ABI_UPDATE)))
-        goto cleanup;
+        return NULL;
 
     /* Since we're just exporting args, we can't do bridge/network/direct
      * setups, since libvirt will normally create TAP/macvtap devices
@@ -6372,7 +6371,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
         virDomainNetDef *newNet = virDomainNetDefNew(driver->xmlopt);
 
         if (!newNet)
-            goto cleanup;
+            return NULL;
 
         newNet->type = VIR_DOMAIN_NET_TYPE_ETHERNET;
         newNet->info.bootIndex = net->info.bootIndex;
@@ -6387,21 +6386,17 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
 
     if (qemuProcessCreatePretendCmdPrepare(driver, vm, NULL,
                                            VIR_QEMU_PROCESS_START_COLD) < 0)
-        goto cleanup;
+        return NULL;
 
     if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
-        goto cleanup;
+        return NULL;
 
     if (!(cmd = qemuProcessCreatePretendCmdBuild(driver, vm, NULL,
                                                  qemuCheckFips(vm),
                                                  commandlineflags)))
-        goto cleanup;
+        return NULL;
 
-    ret = virCommandToString(cmd, false);
-
- cleanup:
-    virObjectUnref(vm);
-    return ret;
+    return virCommandToString(cmd, false);
 }
 
 
