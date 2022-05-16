@@ -7448,7 +7448,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (!(cmd = qemuBuildCommandLine(vm,
                                      incoming ? "defer" : NULL,
                                      snapshot, vmop,
-                                     &nnicindexes, &nicindexes, 0)))
+                                     &nnicindexes, &nicindexes)))
         goto cleanup;
 
     if (incoming && incoming->fd != -1)
@@ -7945,16 +7945,14 @@ qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
 
 virCommand *
 qemuProcessCreatePretendCmdBuild(virDomainObj *vm,
-                                 const char *migrateURI,
-                                 unsigned int flags)
+                                 const char *migrateURI)
 {
     return qemuBuildCommandLine(vm,
                                 migrateURI,
                                 NULL,
                                 VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,
                                 NULL,
-                                NULL,
-                                flags);
+                                NULL);
 }
 
 

@@ -10400,8 +10400,7 @@ qemuBuildCommandLine(virDomainObj *vm,
                      virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
                      size_t *nnicindexes,
-                     int **nicindexes,
-                     unsigned int flags)
+                     int **nicindexes)
 {
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
@@ -10412,8 +10411,8 @@ qemuBuildCommandLine(virDomainObj *vm,
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    VIR_DEBUG("Building qemu commandline for def=%s(%p) migrateURI=%s snapshot=%p vmop=%d flags=0x%x",
-              def->name, def, migrateURI, snapshot, vmop, flags);
+    VIR_DEBUG("Building qemu commandline for def=%s(%p) migrateURI=%s snapshot=%p vmop=%d",
+              def->name, def, migrateURI, snapshot, vmop);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
         return NULL;

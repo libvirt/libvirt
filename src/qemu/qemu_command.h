@@ -48,8 +48,7 @@ virCommand *qemuBuildCommandLine(virDomainObj *vm,
                                  virDomainMomentObj *snapshot,
                                  virNetDevVPortProfileOp vmop,
                                  size_t *nnicindexes,
-                                 int **nicindexes,
-                                 unsigned int flags);
+                                 int **nicindexes);
 
 /* Generate the object properties for pr-manager */
 virJSONValue *qemuBuildPRManagerInfoProps(virStorageSource *src);

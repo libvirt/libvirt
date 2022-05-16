@@ -6390,7 +6390,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
         return NULL;
 
-    if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL, 0)))
+    if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL)))
         return NULL;
 
     return virCommandToString(cmd, false);

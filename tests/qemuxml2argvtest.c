@@ -484,7 +484,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
         }
     }
 
-    return qemuProcessCreatePretendCmdBuild(vm, migrateURI, 0);
+    return qemuProcessCreatePretendCmdBuild(vm, migrateURI);
 }
 
 
