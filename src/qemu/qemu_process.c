@@ -7445,7 +7445,6 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuExtDevicesStart(driver, vm, incoming != NULL) < 0)
         goto cleanup;
 
-    VIR_DEBUG("Building emulator command line");
     if (!(cmd = qemuBuildCommandLine(driver,
                                      vm,
                                      incoming ? "defer" : NULL,
@@ -7953,7 +7952,6 @@ qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
                                  bool enableFips,
                                  unsigned int flags)
 {
-    VIR_DEBUG("Building emulator command line");
     return qemuBuildCommandLine(driver,
                                 vm,
                                 migrateURI,

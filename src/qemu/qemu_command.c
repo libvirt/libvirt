@@ -10439,10 +10439,8 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 
-    VIR_DEBUG("driver=%p def=%p mon=%p "
-              "qemuCaps=%p migrateURI=%s snapshot=%p vmop=%d flags=0x%x",
-              driver, def, priv->monConfig,
-              qemuCaps, migrateURI, snapshot, vmop, flags);
+    VIR_DEBUG("Building qemu commandline for def=%s(%p) migrateURI=%s snapshot=%p vmop=%d flags=0x%x",
+              def->name, def, migrateURI, snapshot, vmop, flags);
 
     if (qemuBuildCommandLineValidate(driver, def) < 0)
         return NULL;
