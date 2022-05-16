@@ -47,7 +47,7 @@ tests_env = [
 #
 #  (process:50880): GLib-WARNING **: 02:54:15.272: poll(2) failed due to: Bad file descriptor.
 #
-# Our code is inherantly racy, calling g_source_destroy which
+# Our code is inherently racy, calling g_source_destroy which
 # removes the FD from the event thread poll asynchronously
 # but we close the FD immediately after g_source_destroy returns.
 #

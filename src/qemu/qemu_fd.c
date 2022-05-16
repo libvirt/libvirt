@@ -262,7 +262,7 @@ qemuFDPassDirectFree(qemuFDPassDirect *fdpass)
  * @fd: The FD, cleared when passed.
  *
  * The qemuFDPassDirect helper returned by this helper is used to hold a FD
- * passed to qemu either direcly via FD number when used on commandline or the
+ * passed to qemu either directly via FD number when used on commandline or the
  * 'getfd' QMP command.
  */
 qemuFDPassDirect *

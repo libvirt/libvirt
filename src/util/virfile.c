@@ -4595,7 +4595,7 @@ struct runIOParams {
  *
  * Execute the copy based on the passed parameters.
  *
- * Returns: size transfered, or < 0 on error.
+ * Returns: size transferred, or < 0 on error.
  */
 
 static off_t
