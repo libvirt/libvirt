@@ -1495,8 +1495,8 @@ sc_po_check:
 	  { $(VC_LIST_EXCEPT); echo $(generated_files); }		\
 	    | xargs perl $(perl_translatable_files_list_)		\
 	    | xargs $(GREP) -E -l '$(_gl_translatable_string_re)'	\
-	    | $(SED) 's|^$(_dot_escaped_builddir)/|@BUILDDIR@|'		\
-	    | $(SED) 's|^$(_dot_escaped_srcdir)/|@SRCDIR@|'		\
+	    | $(SED) 's|^$(_dot_escaped_builddir)/||' \
+	    | $(SED) 's|^$(_dot_escaped_srcdir)/||' \
 	    | sort -u > $@-2;						\
 	  diff -u -L $(po_file) -L $(po_file) $@-1 $@-2			\
 	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\
