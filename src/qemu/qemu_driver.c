@@ -6391,7 +6391,7 @@ static char *qemuConnectDomainXMLToNative(virConnectPtr conn,
     if (qemuConnectDomainXMLToNativePrepareHost(vm) < 0)
         return NULL;
 
-    if (!(cmd = qemuProcessCreatePretendCmdBuild(driver, vm, NULL,
+    if (!(cmd = qemuProcessCreatePretendCmdBuild(vm, NULL,
                                                  qemuCheckFips(vm),
                                                  commandlineflags)))
         return NULL;

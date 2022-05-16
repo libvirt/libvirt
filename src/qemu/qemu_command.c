@@ -10421,8 +10421,7 @@ qemuBuildCompatDeprecatedCommandLine(virCommand *cmd,
  * for a given virtual machine.
  */
 virCommand *
-qemuBuildCommandLine(virQEMUDriver *driver,
-                     virDomainObj *vm,
+qemuBuildCommandLine(virDomainObj *vm,
                      const char *migrateURI,
                      virDomainMomentObj *snapshot,
                      virNetDevVPortProfileOp vmop,
@@ -10434,8 +10433,9 @@ qemuBuildCommandLine(virQEMUDriver *driver,
     size_t i;
     char uuid[VIR_UUID_STRING_BUFLEN];
     g_autoptr(virCommand) cmd = NULL;
-    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     qemuDomainObjPrivate *priv = vm->privateData;
+    virQEMUDriver *driver = priv->driver;
+    g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virDomainDef *def = vm->def;
     virQEMUCaps *qemuCaps = priv->qemuCaps;
 

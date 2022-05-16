@@ -7445,8 +7445,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuExtDevicesStart(driver, vm, incoming != NULL) < 0)
         goto cleanup;
 
-    if (!(cmd = qemuBuildCommandLine(driver,
-                                     vm,
+    if (!(cmd = qemuBuildCommandLine(vm,
                                      incoming ? "defer" : NULL,
                                      snapshot, vmop,
                                      qemuCheckFips(vm),
@@ -7946,14 +7945,12 @@ qemuProcessCreatePretendCmdPrepare(virQEMUDriver *driver,
 
 
 virCommand *
-qemuProcessCreatePretendCmdBuild(virQEMUDriver *driver,
-                                 virDomainObj *vm,
+qemuProcessCreatePretendCmdBuild(virDomainObj *vm,
                                  const char *migrateURI,
                                  bool enableFips,
                                  unsigned int flags)
 {
-    return qemuBuildCommandLine(driver,
-                                vm,
+    return qemuBuildCommandLine(vm,
                                 migrateURI,
                                 NULL,
                                 VIR_NETDEV_VPORT_PROFILE_OP_NO_OP,

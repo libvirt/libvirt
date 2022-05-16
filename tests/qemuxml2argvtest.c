@@ -490,7 +490,7 @@ testCompareXMLToArgvCreateArgs(virQEMUDriver *drv,
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ENABLE_FIPS))
         enableFips = false;
 
-    return qemuProcessCreatePretendCmdBuild(drv, vm, migrateURI,
+    return qemuProcessCreatePretendCmdBuild(vm, migrateURI,
                                             enableFips, 0);
 }
 

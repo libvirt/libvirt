@@ -47,15 +47,14 @@ typedef enum {
     QEMU_BUILD_COMMAND_LINE_CPUS_RUNNING = 1 << 0,
 } qemuBuildCommandLineFlags;
 
-virCommand *qemuBuildCommandLine(virQEMUDriver *driver,
-                                   virDomainObj *vm,
-                                   const char *migrateURI,
-                                   virDomainMomentObj *snapshot,
-                                   virNetDevVPortProfileOp vmop,
-                                   bool enableFips,
-                                   size_t *nnicindexes,
-                                   int **nicindexes,
-                                   unsigned int flags);
+virCommand *qemuBuildCommandLine(virDomainObj *vm,
+                                 const char *migrateURI,
+                                 virDomainMomentObj *snapshot,
+                                 virNetDevVPortProfileOp vmop,
+                                 bool enableFips,
+                                 size_t *nnicindexes,
+                                 int **nicindexes,
+                                 unsigned int flags);
 
 /* Generate the object properties for pr-manager */
 virJSONValue *qemuBuildPRManagerInfoProps(virStorageSource *src);
