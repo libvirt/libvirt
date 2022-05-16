@@ -4289,7 +4289,7 @@ qemuBuildHostNetProps(virDomainNetDef *net)
         if (netpriv->slirpfd) {
             if (virJSONValueObjectAdd(&netprops,
                                       "s:type", "socket",
-                                      "s:fd", qemuFDPassGetPath(netpriv->slirpfd),
+                                      "s:fd", qemuFDPassDirectGetPath(netpriv->slirpfd),
                                       NULL) < 0)
                 return NULL;
         } else {
@@ -8884,8 +8884,9 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
     for (n = netpriv->vhostfds; n; n = n->next)
         qemuFDPassDirectTransferCommand(n->data, cmd);
 
-    if (qemuFDPassTransferCommand(netpriv->slirpfd, cmd) < 0 ||
-        qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
+    qemuFDPassDirectTransferCommand(netpriv->slirpfd, cmd);
+
+    if (qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
         return -1;
 
     if (!(hostnetprops = qemuBuildHostNetProps(net)))

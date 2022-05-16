@@ -1386,7 +1386,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
         }
     }
 
-    if (qemuFDPassTransferMonitor(netpriv->slirpfd, priv->mon) < 0 ||
+    if (qemuFDPassDirectTransferMonitor(netpriv->slirpfd, priv->mon) < 0 ||
         qemuFDPassTransferMonitor(netpriv->vdpafd, priv->mon) < 0) {
         qemuDomainObjExitMonitor(vm);
         goto cleanup;

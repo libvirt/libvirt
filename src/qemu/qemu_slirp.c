@@ -352,9 +352,7 @@ qemuSlirpStart(virDomainObj *vm,
 
     slirp->pid = pid;
 
-    netpriv->slirpfd = qemuFDPassNewDirect(fdname, priv);
-
-    qemuFDPassAddFD(netpriv->slirpfd, &slirp->fd[0], NULL);
+    netpriv->slirpfd = qemuFDPassDirectNew(fdname, &slirp->fd[0]);
 
     return 0;
 
