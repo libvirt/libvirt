@@ -34,7 +34,6 @@ struct qemuFDPassFD {
 };
 
 struct _qemuFDPass {
-    bool useFDSet;
     unsigned int fdSetID;
     size_t nfds;
     struct qemuFDPassFD *fds;
@@ -65,20 +64,6 @@ qemuFDPassFree(qemuFDPass *fdpass)
 }
 
 
-static int
-qemuFDPassValidate(qemuFDPass *fdpass)
-{
-    if (!fdpass->useFDSet &&
-        fdpass->nfds > 1) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("direct FD passing supports only 1 file descriptor"));
-        return -1;
-    }
-
-    return 0;
-}
-
-
 /**
  * qemuFDPassNew:
  * @prefix: prefix used for naming the passed FDs
@@ -99,7 +84,6 @@ qemuFDPassNew(const char *prefix,
     qemuFDPass *fdpass = g_new0(qemuFDPass, 1);
 
     fdpass->prefix = g_strdup(prefix);
-    fdpass->useFDSet = true;
 
     if (priv) {
         fdpass->fdSetID = qemuDomainFDSetIDNew(priv);
@@ -107,34 +91,6 @@ qemuFDPassNew(const char *prefix,
     } else {
         fdpass->path = g_strdup_printf("/dev/fdset/monitor-fake");
     }
-
-    return fdpass;
-}
-
-
-/**
- * qemuFDPassNewDirect:
- * @prefix: prefix used for naming the passed FDs
- * @dompriv: qemu domain private data
- *
- * Create a new helper object for passing FDs to QEMU.
- *
- * The instance created via 'qemuFDPassNewDirect' will result in the older
- * approach of directly using FD number on the commandline and 'getfd'
- * QMP command.
- *
- * Non-test uses must pass a valid @dompriv.
- *
- * @prefix is used for naming the FD if needed and is later referenced when
- * removing the FDSet via monitor.
- */
-qemuFDPass *
-qemuFDPassNewDirect(const char *prefix,
-                    void *dompriv G_GNUC_UNUSED)
-{
-    qemuFDPass *fdpass = g_new0(qemuFDPass, 1);
-
-    fdpass->prefix = g_strdup(prefix);
 
     return fdpass;
 }
@@ -165,11 +121,6 @@ qemuFDPassAddFD(qemuFDPass *fdpass,
 
     newfd.opaque = g_strdup_printf("%s%s", fdpass->prefix, NULLSTR_EMPTY(suffix));
 
-    if (!fdpass->useFDSet) {
-        g_free(fdpass->path);
-        fdpass->path = g_strdup(newfd.opaque);
-    }
-
     VIR_APPEND_ELEMENT(fdpass->fds, fdpass->nfds, newfd);
 }
 
@@ -191,28 +142,15 @@ qemuFDPassTransferCommand(qemuFDPass *fdpass,
     if (!fdpass)
         return 0;
 
-    if (qemuFDPassValidate(fdpass) < 0)
-        return -1;
-
     for (i = 0; i < fdpass->nfds; i++) {
+        g_autofree char *arg = g_strdup_printf("set=%u,fd=%d,opaque=%s",
+                                               fdpass->fdSetID,
+                                               fdpass->fds[i].fd,
+                                               fdpass->fds[i].opaque);
+
         virCommandPassFD(cmd, fdpass->fds[i].fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-
-        if (fdpass->useFDSet) {
-            g_autofree char *arg = NULL;
-
-            arg = g_strdup_printf("set=%u,fd=%d,opaque=%s",
-                                  fdpass->fdSetID,
-                                  fdpass->fds[i].fd,
-                                  fdpass->fds[i].opaque);
-
-            virCommandAddArgList(cmd, "-add-fd", arg, NULL);
-        } else {
-            /* for monitor use the older FD passing needs the FD number */
-            g_free(fdpass->path);
-            fdpass->path = g_strdup_printf("%d", fdpass->fds[i].fd);
-        }
-
         fdpass->fds[i].fd = -1;
+        virCommandAddArgList(cmd, "-add-fd", arg, NULL);
     }
 
     return 0;
@@ -231,42 +169,30 @@ int
 qemuFDPassTransferMonitor(qemuFDPass *fdpass,
                           qemuMonitor *mon)
 {
+    g_autoptr(qemuMonitorFdsets) fdsets = NULL;
     size_t i;
 
     if (!fdpass)
         return 0;
 
-    if (qemuFDPassValidate(fdpass) < 0)
+    if (qemuMonitorQueryFdsets(mon, &fdsets) < 0)
         return -1;
-    if (fdpass->useFDSet) {
-        g_autoptr(qemuMonitorFdsets) fdsets = NULL;
 
-        if (qemuMonitorQueryFdsets(mon, &fdsets) < 0)
+    for (i = 0; i < fdsets->nfdsets; i++) {
+        if (fdsets->fdsets[i].id == fdpass->fdSetID) {
+            virReportError(VIR_ERR_INTERNAL_ERROR,
+                           _("fdset '%u' is already in use by qemu"),
+                           fdpass->fdSetID);
             return -1;
-
-        for (i = 0; i < fdsets->nfdsets; i++) {
-            if (fdsets->fdsets[i].id == fdpass->fdSetID) {
-                virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("fdset '%u' is already in use by qemu"),
-                               fdpass->fdSetID);
-                return -1;
-            }
         }
     }
 
     for (i = 0; i < fdpass->nfds; i++) {
-        if (fdpass->useFDSet) {
-            if (qemuMonitorAddFileHandleToSet(mon,
-                                              fdpass->fds[i].fd,
-                                              fdpass->fdSetID,
-                                              fdpass->fds[i].opaque) < 0)
-                return -1;
-        } else {
-            if (qemuMonitorSendFileHandle(mon,
-                                          fdpass->fds[i].opaque,
-                                          fdpass->fds[i].fd) < 0)
-                return -1;
-        }
+        if (qemuMonitorAddFileHandleToSet(mon,
+                                          fdpass->fds[i].fd,
+                                          fdpass->fdSetID,
+                                          fdpass->fds[i].opaque) < 0)
+            return -1;
 
         VIR_FORCE_CLOSE(fdpass->fds[i].fd);
         fdpass->passed = true;
@@ -290,11 +216,7 @@ qemuFDPassTransferMonitorRollback(qemuFDPass *fdpass,
     if (!fdpass || !fdpass->passed)
         return;
 
-    if (fdpass->useFDSet) {
-        ignore_value(qemuMonitorRemoveFdset(mon, fdpass->fdSetID));
-    } else {
-        ignore_value(qemuMonitorCloseFileHandle(mon, fdpass->fds[0].opaque));
-    }
+    ignore_value(qemuMonitorRemoveFdset(mon, fdpass->fdSetID));
 }
 
 
