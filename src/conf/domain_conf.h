@@ -2655,6 +2655,12 @@ void virDomainIOThreadIDDefFree(virDomainIOThreadIDDef *def);
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainIOThreadIDDef, virDomainIOThreadIDDefFree);
 
 
+struct _virDomainDefaultIOThreadDef {
+    int thread_pool_min;
+    int thread_pool_max;
+};
+
+
 struct _virDomainCputune {
     unsigned long long shares;
     bool sharesSpecified;
@@ -2862,6 +2868,8 @@ struct _virDomainDef {
 
     size_t niothreadids;
     virDomainIOThreadIDDef **iothreadids;
+
+    virDomainDefaultIOThreadDef *defaultIOThread;
 
     virDomainCputune cputune;
 

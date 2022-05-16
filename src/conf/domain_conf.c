@@ -3825,6 +3825,8 @@ void virDomainDefFree(virDomainDef *def)
 
     virDomainIOThreadIDDefArrayFree(def->iothreadids, def->niothreadids);
 
+    g_free(def->defaultIOThread);
+
     virBitmapFree(def->cputune.emulatorpin);
     g_free(def->cputune.emulatorsched);
 
@@ -17017,6 +17019,7 @@ virDomainIdmapDefParseXML(xmlXPathContextPtr ctxt,
  *       <iothread id='5'/>
  *       <iothread id='7'/>
  *     </iothreadids>
+ *     <defaultiothread thread_pool_min="8" thread_pool_max="8"/>
  */
 static virDomainIOThreadIDDef *
 virDomainIOThreadIDDefParseXML(xmlNodePtr node)
@@ -17043,6 +17046,38 @@ virDomainIOThreadIDDefParseXML(xmlNodePtr node)
 
 
 static int
+virDomainDefaultIOThreadDefParse(virDomainDef *def,
+                                 xmlXPathContextPtr ctxt)
+{
+    xmlNodePtr node = NULL;
+    g_autofree virDomainDefaultIOThreadDef *thrd = NULL;
+
+    node = virXPathNode("./defaultiothread", ctxt);
+    if (!node)
+        return 0;
+
+    thrd = g_new0(virDomainDefaultIOThreadDef, 1);
+
+    if (virXMLPropInt(node, "thread_pool_min", 10,
+                      VIR_XML_PROP_NONNEGATIVE,
+                      &thrd->thread_pool_min, -1) < 0)
+        return -1;
+
+    if (virXMLPropInt(node, "thread_pool_max", 10,
+                      VIR_XML_PROP_NONNEGATIVE,
+                      &thrd->thread_pool_max, -1) < 0)
+        return -1;
+
+    if (thrd->thread_pool_min == -1 &&
+        thrd->thread_pool_max == -1)
+        return 0;
+
+    def->defaultIOThread = g_steal_pointer(&thrd);
+    return 0;
+}
+
+
+static int
 virDomainDefParseIOThreads(virDomainDef *def,
                            xmlXPathContextPtr ctxt)
 {
@@ -17058,6 +17093,9 @@ virDomainDefParseIOThreads(virDomainDef *def,
                        _("invalid iothreads count '%s'"), tmp);
         return -1;
     }
+
+    if (virDomainDefaultIOThreadDefParse(def, ctxt) < 0)
+        return -1;
 
     /* Extract any iothread id's defined */
     if ((n = virXPathNodeSet("./iothreadids/iothread", ctxt, &nodes)) < 0)
@@ -27605,6 +27643,29 @@ virDomainDefIothreadShouldFormat(const virDomainDef *def)
 
 
 static void
+virDomainDefaultIOThreadDefFormat(virBuffer *buf,
+                                  const virDomainDef *def)
+{
+    virBuffer attrBuf = VIR_BUFFER_INITIALIZER;
+
+    if (!def->defaultIOThread)
+        return;
+
+    if (def->defaultIOThread->thread_pool_min >= 0) {
+        virBufferAsprintf(&attrBuf, " thread_pool_min='%d'",
+                          def->defaultIOThread->thread_pool_min);
+    }
+
+    if (def->defaultIOThread->thread_pool_max >= 0) {
+        virBufferAsprintf(&attrBuf, " thread_pool_max='%d'",
+                          def->defaultIOThread->thread_pool_max);
+    }
+
+    virXMLFormatElement(buf, "defaultiothread", &attrBuf, NULL);
+}
+
+
+static void
 virDomainDefIOThreadsFormat(virBuffer *buf,
                             const virDomainDef *def)
 {
@@ -27641,6 +27702,8 @@ virDomainDefIOThreadsFormat(virBuffer *buf,
     }
 
     virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);
+
+    virDomainDefaultIOThreadDefFormat(buf, def);
 }
 
 

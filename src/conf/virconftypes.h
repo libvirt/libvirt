@@ -142,6 +142,8 @@ typedef struct _virDomainIOMMUDef virDomainIOMMUDef;
 
 typedef struct _virDomainIOThreadIDDef virDomainIOThreadIDDef;
 
+typedef struct _virDomainDefaultIOThreadDef virDomainDefaultIOThreadDef;
+
 typedef struct _virDomainIdMapDef virDomainIdMapDef;
 
 typedef struct _virDomainIdMapEntry virDomainIdMapEntry;

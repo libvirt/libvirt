@@ -677,6 +677,7 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
        <iothread id="6"/>
        <iothread id="8" thread_pool_min="2" thread_pool_max="32"/>
      </iothreadids>
+     <defaultiothread thread_pool_min="8" thread_pool_max="16">
      ...
    </domain>
 
@@ -700,6 +701,16 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
    ``thread_pool_max`` which allow setting lower and upper boundary for number
    of worker threads for given IOThread. While the former can be value of zero,
    the latter can't. :since:`Since 8.5.0`
+``defaultiothread``
+   This element represents the default event loop within hypervisor, where I/O
+   requests from devices not assigned to a specific IOThread are processed.
+   The element then can have ``thread_pool_min`` and/or ``thread_pool_max``
+   attributes, which control the lower and upper boundary for number of worker
+   threads of the default event loop. Emulator might be multithreaded and spawn
+   so called worker threads on demand. In general neither of these attributes
+   should be set (leaving the emulator use its own default values), unless the
+   emulator runs in a real time workload and thus can't afford unpredictability
+   of time it takes to spawn new worker threads. :since:`Since 8.5.0`
 
 
 CPU Tuning

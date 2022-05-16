@@ -1717,6 +1717,26 @@ virDomainDefFSValidate(const virDomainDef *def)
 
 
 static int
+virDomainDefValidateIOThreadsThreadPool(int thread_pool_min,
+                                        int thread_pool_max)
+{
+    if (thread_pool_max == 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("thread_pool_max must be a positive integer"));
+        return -1;
+    }
+
+    if (thread_pool_min > thread_pool_max) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("thread_pool_min must be smaller or equal to thread_pool_max"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 virDomainDefValidateIOThreads(const virDomainDef *def)
 {
     size_t i;
@@ -1724,18 +1744,15 @@ virDomainDefValidateIOThreads(const virDomainDef *def)
     for (i = 0; i < def->niothreadids; i++) {
         virDomainIOThreadIDDef *iothread = def->iothreadids[i];
 
-        if (iothread->thread_pool_max == 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("thread_pool_max must be a positive integer"));
+        if (virDomainDefValidateIOThreadsThreadPool(iothread->thread_pool_min,
+                                                    iothread->thread_pool_max) < 0)
             return -1;
-        }
-
-        if (iothread->thread_pool_min > iothread->thread_pool_max) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("thread_pool_min must be smaller or equal to thread_pool_max"));
-            return -1;
-        }
     }
+
+    if (def->defaultIOThread &&
+        virDomainDefValidateIOThreadsThreadPool(def->defaultIOThread->thread_pool_min,
+                                                def->defaultIOThread->thread_pool_max) < 0)
+        return -1;
 
     return 0;
 }

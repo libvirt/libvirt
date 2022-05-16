@@ -12,6 +12,7 @@
     <iothread id='3'/>
     <iothread id='5'/>
   </iothreadids>
+  <defaultiothread thread_pool_min='8' thread_pool_max='16'/>
   <os>
     <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='hd'/>
