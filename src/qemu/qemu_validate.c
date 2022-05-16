@@ -389,16 +389,28 @@ qemuValidateDomainDefIOThreads(const virDomainDef *def,
                                virQEMUCaps *qemuCaps)
 {
     size_t i;
+    bool needsThreadPoolCap = false;
 
     for (i = 0; i < def->niothreadids; i++) {
         virDomainIOThreadIDDef *iothread = def->iothreadids[i];
 
-        if ((iothread->thread_pool_min != -1 || iothread->thread_pool_max != -1) &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("thread_pool_min and thread_pool_max is not supported by this QEMU binary"));
-            return -1;
+        if (iothread->thread_pool_min != -1 || iothread->thread_pool_max != -1) {
+            needsThreadPoolCap = true;
+            break;
         }
+    }
+
+    if (def->defaultIOThread &&
+        (def->defaultIOThread->thread_pool_min >= 0 ||
+         def->defaultIOThread->thread_pool_max >= 0)) {
+        needsThreadPoolCap = true;
+    }
+
+    if (needsThreadPoolCap &&
+        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                       _("thread_pool_min and thread_pool_max is not supported by this QEMU binary"));
+        return -1;
     }
 
     return 0;
