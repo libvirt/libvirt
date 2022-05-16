@@ -1373,7 +1373,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
     qemuDomainObjEnterMonitor(driver, vm);
 
     for (n = netpriv->tapfds; n; n = n->next) {
-        if (qemuFDPassTransferMonitor(n->data, priv->mon) < 0) {
+        if (qemuFDPassDirectTransferMonitor(n->data, priv->mon) < 0) {
             qemuDomainObjExitMonitor(vm);
             goto cleanup;
         }
@@ -1525,7 +1525,7 @@ qemuDomainAttachNetDevice(virQEMUDriver *driver,
                  netdev_name);
 
     for (n = netpriv->tapfds; n; n = n->next)
-        qemuFDPassTransferMonitorRollback(n->data, priv->mon);
+        qemuFDPassDirectTransferMonitorRollback(n->data, priv->mon);
 
     for (n = netpriv->vhostfds; n; n = n->next)
         qemuFDPassDirectTransferMonitorRollback(n->data, priv->mon);

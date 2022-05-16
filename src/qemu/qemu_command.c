@@ -4208,7 +4208,7 @@ qemuBuildHostNetProps(virDomainNetDef *net)
         if (netpriv->tapfds) {
             nfds = 0;
             for (n = netpriv->tapfds; n; n = n->next) {
-                virBufferAsprintf(&buf, "%s:", qemuFDPassGetPath(n->data));
+                virBufferAsprintf(&buf, "%s:", qemuFDPassDirectGetPath(n->data));
                 nfds++;
             }
 
@@ -8709,16 +8709,13 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
 
     /* 'vhostfd' is set to true in all cases when we need to process tapfds */
     if (vhostfd) {
-        g_autofree char *prefix = g_strdup_printf("tapfd-%s", net->info.alias);
         size_t i;
 
         for (i = 0; i < tapfdSize; i++) {
-            g_autoptr(qemuFDPass) pass = qemuFDPassNewDirect(prefix, priv);
-            g_autofree char *suffix = g_strdup_printf("%zu", i);
+            g_autofree char *name = g_strdup_printf("tapfd-%s%zu", net->info.alias, i);
             int fd = tapfd[i]; /* we want to keep the array intact for security labeling*/
 
-            qemuFDPassAddFD(pass, &fd, suffix);
-            netpriv->tapfds = g_slist_prepend(netpriv->tapfds, g_steal_pointer(&pass));
+            netpriv->tapfds = g_slist_prepend(netpriv->tapfds, qemuFDPassDirectNew(name, &fd));
         }
 
         netpriv->tapfds = g_slist_reverse(netpriv->tapfds);
@@ -8881,10 +8878,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
         virNetDevSetMTU(net->ifname, net->mtu) < 0)
         goto cleanup;
 
-    for (n = netpriv->tapfds; n; n = n->next) {
-        if (qemuFDPassTransferCommand(n->data, cmd) < 0)
-            return -1;
-    }
+    for (n = netpriv->tapfds; n; n = n->next)
+        qemuFDPassDirectTransferCommand(n->data, cmd);
 
     for (n = netpriv->vhostfds; n; n = n->next)
         qemuFDPassDirectTransferCommand(n->data, cmd);

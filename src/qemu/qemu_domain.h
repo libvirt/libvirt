@@ -404,7 +404,7 @@ struct _qemuDomainNetworkPrivate {
 
     /* file descriptor transfer helpers */
     qemuFDPass *slirpfd;
-    GSList *tapfds;
+    GSList *tapfds; /* qemuFDPassDirect */
     GSList *vhostfds; /* qemuFDPassDirect */
     qemuFDPass *vdpafd;
 };
