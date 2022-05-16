@@ -53,3 +53,25 @@ qemuFDPassTransferMonitorRollback(qemuFDPass *fdpass,
 
 const char *
 qemuFDPassGetPath(qemuFDPass *fdpass);
+
+
+typedef struct _qemuFDPassDirect qemuFDPassDirect;
+
+void
+qemuFDPassDirectFree(qemuFDPassDirect *fdpass);
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuFDPassDirect, qemuFDPassDirectFree);
+
+qemuFDPassDirect *
+qemuFDPassDirectNew(const char *name,
+                    int *fd);
+void
+qemuFDPassDirectTransferCommand(qemuFDPassDirect *fdpass,
+                                virCommand *cmd);
+int
+qemuFDPassDirectTransferMonitor(qemuFDPassDirect *fdpass,
+                                qemuMonitor *mon);
+void
+qemuFDPassDirectTransferMonitorRollback(qemuFDPassDirect *fdpass,
+                                        qemuMonitor *mon);
+const char *
+qemuFDPassDirectGetPath(qemuFDPassDirect *fdpass);

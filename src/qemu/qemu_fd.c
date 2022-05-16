@@ -324,3 +324,132 @@ qemuFDPassGetPath(qemuFDPass *fdpass)
 
     return fdpass->path;
 }
+
+
+struct _qemuFDPassDirect {
+    int fd;
+    char *path;
+    char *name;
+
+    bool passed; /* passed to qemu via monitor */
+};
+
+
+void
+qemuFDPassDirectFree(qemuFDPassDirect *fdpass)
+{
+
+    if (!fdpass)
+        return;
+
+    VIR_FORCE_CLOSE(fdpass->fd);
+    g_free(fdpass->name);
+    g_free(fdpass->path);
+    g_free(fdpass);
+}
+
+
+/**
+ * qemuFDPassDirectNew:
+ * @name: Name of the fd (for monitor passing use-case)
+ * @fd: The FD, cleared when passed.
+ *
+ * The qemuFDPassDirect helper returned by this helper is used to hold a FD
+ * passed to qemu either direcly via FD number when used on commandline or the
+ * 'getfd' QMP command.
+ */
+qemuFDPassDirect *
+qemuFDPassDirectNew(const char *name,
+                    int *fd)
+{
+    qemuFDPassDirect *fdpass = g_new0(qemuFDPassDirect, 1);
+
+    fdpass->name = g_strdup(name);
+    fdpass->fd = *fd;
+    *fd = -1;
+
+    return fdpass;
+}
+
+
+/**
+ * qemuFDPassDirectTransferCommand:
+ * @fdpass: The fd passing helper struct
+ * @cmd: Command to pass the filedescriptors to
+ *
+ * Pass the fds in @fdpass to a commandline object @cmd. @fdpass may be NULL
+ * in which case this is a no-op.
+ */
+void
+qemuFDPassDirectTransferCommand(qemuFDPassDirect *fdpass,
+                                virCommand *cmd)
+{
+    if (!fdpass)
+        return;
+
+    virCommandPassFD(cmd, fdpass->fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
+    fdpass->path = g_strdup_printf("%d", fdpass->fd);
+    fdpass->fd = -1;
+}
+
+
+/**
+ * qemuFDPassDirectTransferMonitor:
+ * @fdpass: The fd passing helper struct
+ * @mon: monitor object
+ *
+ * Pass the fds in @fdpass to qemu via the monitor. @fdpass may be NULL
+ * in which case this is a no-op. Caller needs to enter the monitor context.
+ */
+int
+qemuFDPassDirectTransferMonitor(qemuFDPassDirect *fdpass,
+                                qemuMonitor *mon)
+{
+    if (!fdpass)
+        return 0;
+
+    if (qemuMonitorSendFileHandle(mon, fdpass->name, fdpass->fd) < 0)
+        return -1;
+
+    fdpass->path = g_strdup(fdpass->name);
+    VIR_FORCE_CLOSE(fdpass->fd);
+    fdpass->passed = true;
+
+    return 0;
+}
+
+
+/**
+ * qemuFDPassDirectTransferMonitorRollback:
+ * @fdpass: The fd passing helper struct
+ * @mon: monitor object
+ *
+ * Rolls back the addition of @fdpass to @mon if it was added originally.
+ */
+void
+qemuFDPassDirectTransferMonitorRollback(qemuFDPassDirect *fdpass,
+                                        qemuMonitor *mon)
+{
+    if (!fdpass || !fdpass->passed)
+        return;
+
+    ignore_value(qemuMonitorCloseFileHandle(mon, fdpass->name));
+}
+
+
+/**
+ * qemuFDPassDirectGetPath:
+ * @fdpass: The fd passing helper struct
+ *
+ * Returns the path/fd name that is used in qemu to refer to the passed FD.
+ * Note that it's only valid to call this function after @fdpass was already
+ * transferred to the command or monitor.
+ */
+const char *
+qemuFDPassDirectGetPath(qemuFDPassDirect *fdpass)
+{
+    if (!fdpass)
+        return NULL;
+
+    return fdpass->path;
+}
