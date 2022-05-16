@@ -700,12 +700,10 @@ int
 qemuInterfaceOpenVhostNet(virDomainObj *vm,
                           virDomainNetDef *net)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
     size_t i;
     const char *vhostnet_path = net->backend.vhost;
     size_t vhostfdSize = net->driver.virtio.queues;
-    g_autofree char *prefix = g_strdup_printf("vhostfd-%s", net->info.alias);
 
     if (!vhostfdSize)
         vhostfdSize = 1;
@@ -743,8 +741,7 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm,
 
     for (i = 0; i < vhostfdSize; i++) {
         VIR_AUTOCLOSE fd = open(vhostnet_path, O_RDWR);
-        g_autoptr(qemuFDPass) pass = qemuFDPassNewDirect(prefix, priv);
-        g_autofree char *suffix = g_strdup_printf("%zu", i);
+        g_autofree char *name = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
 
         /* If the config says explicitly to use vhost and we couldn't open it,
          * report an error.
@@ -761,8 +758,7 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm,
             break;
         }
 
-        qemuFDPassAddFD(pass, &fd, suffix);
-        netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, g_steal_pointer(&pass));
+        netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, qemuFDPassDirectNew(name, &fd));
     }
 
     netpriv->vhostfds = g_slist_reverse(netpriv->vhostfds);

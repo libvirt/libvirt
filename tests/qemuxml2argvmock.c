@@ -226,12 +226,10 @@ virNetDevOpenvswitchGetVhostuserIfname(const char *path G_GNUC_UNUSED,
 }
 
 int
-qemuInterfaceOpenVhostNet(virDomainObj *vm,
+qemuInterfaceOpenVhostNet(virDomainObj *vm G_GNUC_UNUSED,
                           virDomainNetDef *net)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainNetworkPrivate *netpriv = QEMU_DOMAIN_NETWORK_PRIVATE(net);
-    g_autofree char *prefix = g_strdup_printf("vhostfd-%s", net->info.alias);
     size_t vhostfdSize = net->driver.virtio.queues;
     size_t i;
 
@@ -242,12 +240,10 @@ qemuInterfaceOpenVhostNet(virDomainObj *vm,
         return 0;
 
     for (i = 0; i < vhostfdSize; i++) {
-        g_autoptr(qemuFDPass) pass = qemuFDPassNewDirect(prefix, priv);
-        g_autofree char *suffix = g_strdup_printf("%zu", i);
+        g_autofree char *name = g_strdup_printf("vhostfd-%s%zu", net->info.alias, i);
         int fd = STDERR_FILENO + 42 + i;
 
-        qemuFDPassAddFD(pass, &fd, suffix);
-        netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, g_steal_pointer(&pass));
+        netpriv->vhostfds = g_slist_prepend(netpriv->vhostfds, qemuFDPassDirectNew(name, &fd));
     }
 
     netpriv->vhostfds = g_slist_reverse(netpriv->vhostfds);

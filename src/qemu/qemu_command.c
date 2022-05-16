@@ -4224,7 +4224,7 @@ qemuBuildHostNetProps(virDomainNetDef *net)
 
             nfds = 0;
             for (n = netpriv->vhostfds; n; n = n->next) {
-                virBufferAsprintf(&buf, "%s:", qemuFDPassGetPath(n->data));
+                virBufferAsprintf(&buf, "%s:", qemuFDPassDirectGetPath(n->data));
                 nfds++;
             }
 
@@ -8886,10 +8886,8 @@ qemuBuildInterfaceCommandLine(virQEMUDriver *driver,
             return -1;
     }
 
-    for (n = netpriv->vhostfds; n; n = n->next) {
-        if (qemuFDPassTransferCommand(n->data, cmd) < 0)
-            return -1;
-    }
+    for (n = netpriv->vhostfds; n; n = n->next)
+        qemuFDPassDirectTransferCommand(n->data, cmd);
 
     if (qemuFDPassTransferCommand(netpriv->slirpfd, cmd) < 0 ||
         qemuFDPassTransferCommand(netpriv->vdpafd, cmd) < 0)
