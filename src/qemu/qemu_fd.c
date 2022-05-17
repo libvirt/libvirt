@@ -102,9 +102,8 @@ qemuFDPassNew(const char *prefix,
  * @fd: File descriptor to pass
  * @suffix: Name suffix for the file descriptor name
  *
- * Adds @fd to be passed to qemu when transferring @fdpass to qemu. When @fdpass
- * is configured to use FD set mode, multiple file descriptors can be passed by
- * calling this function repeatedly.
+ * Adds @fd to be passed to qemu when transferring @fdpass to qemu.
+ * Multiple file descriptors can be passed by calling this function repeatedly.
  *
  * @suffix is used to build the name of the file descriptor by concatenating
  * it with @prefix passed to qemuFDPassNew. @suffix may be NULL, in which case
@@ -223,8 +222,6 @@ qemuFDPassTransferMonitorRollback(qemuFDPass *fdpass,
  * @fdpass: The fd passing helper struct
  *
  * Returns the path/fd name that is used in qemu to refer to the passed FD.
- * Note that it's only valid to call this function after @fdpass was already
- * transferred to the command or monitor.
  */
 const char *
 qemuFDPassGetPath(qemuFDPass *fdpass)
