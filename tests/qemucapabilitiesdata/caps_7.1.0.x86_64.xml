@@ -246,7 +246,7 @@
   <version>7000050</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100244</microcodeVersion>
-  <package>v7.0.0-930-g178bacb66d</package>
+  <package>v7.0.0-1512-gca127b3fc2</package>
   <arch>x86_64</arch>
   <hostCPU type='kvm' model='base' migratability='yes'>
     <property name='vmx-entry-load-rtit-ctl' type='boolean' value='false'/>
@@ -310,6 +310,7 @@
     <property name='avx512-bf16' type='boolean' value='false'/>
     <property name='vmx-cr8-load-exit' type='boolean' value='false'/>
     <property name='xsaveopt' type='boolean' value='true' migratable='yes'/>
+    <property name='arch-lbr' type='boolean' value='false'/>
     <property name='vmx-apicv-vid' type='boolean' value='false'/>
     <property name='vmx-exit-save-pat' type='boolean' value='false'/>
     <property name='xtpr' type='boolean' value='false'/>
@@ -346,7 +347,7 @@
     <property name='smx' type='boolean' value='false'/>
     <property name='cmp-legacy' type='boolean' value='true' migratable='yes'/>
     <property name='avx512-4fmaps' type='boolean' value='false'/>
-    <property name='vmcb-clean' type='boolean' value='false'/>
+    <property name='vmcb-clean' type='boolean' value='true' migratable='yes'/>
     <property name='hle' type='boolean' value='false'/>
     <property name='avx-vnni' type='boolean' value='false'/>
     <property name='3dnowext' type='boolean' value='false'/>
@@ -1173,90 +1174,6 @@
     <blocker name='avx512f'/>
     <blocker name='pku'/>
   </cpu>
-  <cpu type='kvm' name='Icelake-Client-v3' typename='Icelake-Client-v3-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='pcid'/>
-    <blocker name='erms'/>
-    <blocker name='invpcid'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='pcid'/>
-    <blocker name='erms'/>
-    <blocker name='invpcid'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='pcid'/>
-    <blocker name='hle'/>
-    <blocker name='erms'/>
-    <blocker name='invpcid'/>
-    <blocker name='rtm'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='pcid'/>
-    <blocker name='erms'/>
-    <blocker name='invpcid'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='pku'/>
-  </cpu>
-  <cpu type='kvm' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='pcid'/>
-    <blocker name='hle'/>
-    <blocker name='erms'/>
-    <blocker name='invpcid'/>
-    <blocker name='rtm'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='pku'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='pku'/>
-  </cpu>
   <cpu type='kvm' name='Haswell-v4' typename='Haswell-v4-x86_64-cpu' usable='no'>
     <blocker name='pcid'/>
     <blocker name='erms'/>
@@ -1732,6 +1649,7 @@
     <property name='avx512-bf16' type='boolean' value='false'/>
     <property name='vmx-cr8-load-exit' type='boolean' value='false'/>
     <property name='xsaveopt' type='boolean' value='true' migratable='yes'/>
+    <property name='arch-lbr' type='boolean' value='false'/>
     <property name='vmx-apicv-vid' type='boolean' value='false'/>
     <property name='vmx-exit-save-pat' type='boolean' value='false'/>
     <property name='xtpr' type='boolean' value='false'/>
@@ -2792,131 +2710,6 @@
     <blocker name='avx512cd'/>
     <blocker name='avx512bw'/>
     <blocker name='avx512vl'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
-    <blocker name='3dnowprefetch'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='xsavec'/>
-  </cpu>
-  <cpu type='tcg' name='Icelake-Client-v3' typename='Icelake-Client-v3-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='fma'/>
-    <blocker name='pcid'/>
-    <blocker name='x2apic'/>
-    <blocker name='tsc-deadline'/>
-    <blocker name='avx'/>
-    <blocker name='f16c'/>
-    <blocker name='avx2'/>
-    <blocker name='invpcid'/>
-    <blocker name='rdseed'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
-    <blocker name='3dnowprefetch'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='xsavec'/>
-    <blocker name='xsaves'/>
-  </cpu>
-  <cpu type='tcg' name='Icelake-Client-v2' typename='Icelake-Client-v2-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='fma'/>
-    <blocker name='pcid'/>
-    <blocker name='x2apic'/>
-    <blocker name='tsc-deadline'/>
-    <blocker name='avx'/>
-    <blocker name='f16c'/>
-    <blocker name='avx2'/>
-    <blocker name='invpcid'/>
-    <blocker name='rdseed'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
-    <blocker name='3dnowprefetch'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='xsavec'/>
-  </cpu>
-  <cpu type='tcg' name='Icelake-Client-v1' typename='Icelake-Client-v1-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='fma'/>
-    <blocker name='pcid'/>
-    <blocker name='x2apic'/>
-    <blocker name='tsc-deadline'/>
-    <blocker name='avx'/>
-    <blocker name='f16c'/>
-    <blocker name='hle'/>
-    <blocker name='avx2'/>
-    <blocker name='invpcid'/>
-    <blocker name='rtm'/>
-    <blocker name='rdseed'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
-    <blocker name='3dnowprefetch'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='xsavec'/>
-  </cpu>
-  <cpu type='tcg' name='Icelake-Client-noTSX' typename='Icelake-Client-noTSX-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='fma'/>
-    <blocker name='pcid'/>
-    <blocker name='x2apic'/>
-    <blocker name='tsc-deadline'/>
-    <blocker name='avx'/>
-    <blocker name='f16c'/>
-    <blocker name='avx2'/>
-    <blocker name='invpcid'/>
-    <blocker name='rdseed'/>
-    <blocker name='avx512vbmi'/>
-    <blocker name='avx512vbmi2'/>
-    <blocker name='gfni'/>
-    <blocker name='vaes'/>
-    <blocker name='vpclmulqdq'/>
-    <blocker name='avx512vnni'/>
-    <blocker name='avx512bitalg'/>
-    <blocker name='avx512-vpopcntdq'/>
-    <blocker name='spec-ctrl'/>
-    <blocker name='ssbd'/>
-    <blocker name='3dnowprefetch'/>
-    <blocker name='wbnoinvd'/>
-    <blocker name='xsavec'/>
-  </cpu>
-  <cpu type='tcg' name='Icelake-Client' typename='Icelake-Client-x86_64-cpu' usable='no' deprecated='yes'>
-    <blocker name='fma'/>
-    <blocker name='pcid'/>
-    <blocker name='x2apic'/>
-    <blocker name='tsc-deadline'/>
-    <blocker name='avx'/>
-    <blocker name='f16c'/>
-    <blocker name='hle'/>
-    <blocker name='avx2'/>
-    <blocker name='invpcid'/>
-    <blocker name='rtm'/>
-    <blocker name='rdseed'/>
     <blocker name='avx512vbmi'/>
     <blocker name='avx512vbmi2'/>
     <blocker name='gfni'/>

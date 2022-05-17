@@ -56,6 +56,7 @@
       <feature policy='require' name='amd-ssbd'/>
       <feature policy='require' name='virt-ssbd'/>
       <feature policy='require' name='tsc-scale'/>
+      <feature policy='require' name='vmcb-clean'/>
       <feature policy='require' name='svme-addr-chk'/>
       <feature policy='require' name='rdctl-no'/>
       <feature policy='require' name='skip-l1dfl-vmentry'/>
@@ -98,8 +99,6 @@
       <model usable='no'>IvyBridge</model>
       <model usable='no'>Icelake-Server-noTSX</model>
       <model usable='no'>Icelake-Server</model>
-      <model usable='no' deprecated='yes'>Icelake-Client-noTSX</model>
-      <model usable='no' deprecated='yes'>Icelake-Client</model>
       <model usable='no'>Haswell-noTSX-IBRS</model>
       <model usable='no'>Haswell-noTSX</model>
       <model usable='no'>Haswell-IBRS</model>

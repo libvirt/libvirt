@@ -112,8 +112,6 @@
       <model usable='no'>IvyBridge</model>
       <model usable='no'>Icelake-Server-noTSX</model>
       <model usable='no'>Icelake-Server</model>
-      <model usable='no' deprecated='yes'>Icelake-Client-noTSX</model>
-      <model usable='no' deprecated='yes'>Icelake-Client</model>
       <model usable='no'>Haswell-noTSX-IBRS</model>
       <model usable='no'>Haswell-noTSX</model>
       <model usable='no'>Haswell-IBRS</model>
