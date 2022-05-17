@@ -5808,6 +5808,32 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
 }
 
 
+static virDomainPtr
+qemuMigrationDstFinishOffline(virQEMUDriver *driver,
+                              virConnectPtr dconn,
+                              virDomainObj *vm,
+                              qemuMigrationCookie *mig,
+                              char **cookieout,
+                              int *cookieoutlen)
+{
+    virDomainPtr dom = NULL;
+
+    if (qemuMigrationDstPersist(driver, vm, mig, false) < 0)
+        return NULL;
+
+    dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, -1);
+
+    if (dom &&
+        qemuMigrationCookieFormat(mig, driver, vm,
+                                  QEMU_MIGRATION_DESTINATION,
+                                  cookieout, cookieoutlen,
+                                  QEMU_MIGRATION_COOKIE_STATS) < 0)
+        VIR_WARN("Unable to encode migration cookie");
+
+    return dom;
+}
+
+
 /*
  * Perform Finish phase of a fresh (i.e., not recovery) migration of an active
  * domain.
@@ -5998,16 +6024,9 @@ qemuMigrationDstFinish(virQEMUDriver *driver,
         goto error;
 
     if (flags & VIR_MIGRATE_OFFLINE) {
-        if (retcode == 0 &&
-            qemuMigrationDstPersist(driver, vm, mig, false) == 0) {
-            dom = virGetDomain(dconn, vm->def->name, vm->def->uuid, -1);
-
-            if (dom &&
-                qemuMigrationCookieFormat(mig, driver, vm,
-                                          QEMU_MIGRATION_DESTINATION,
-                                          cookieout, cookieoutlen,
-                                          QEMU_MIGRATION_COOKIE_STATS) < 0)
-                VIR_WARN("Unable to encode migration cookie");
+        if (retcode == 0) {
+            dom = qemuMigrationDstFinishOffline(driver, dconn, vm, mig,
+                                                cookieout, cookieoutlen);
         }
 
         qemuMigrationJobFinish(vm);
