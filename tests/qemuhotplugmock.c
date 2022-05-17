@@ -26,6 +26,8 @@
 #include "virdevmapper.h"
 #include <fcntl.h>
 
+#include "testutils.h"
+
 #define LIBVIRT_QEMU_MONITOR_PRIV_H_ALLOW
 #include "qemu/qemu_monitor_priv.h"
 
@@ -71,10 +73,9 @@ qemuProcessKillManagedPRDaemon(virDomainObj *vm G_GNUC_UNUSED)
 }
 
 int
-qemuVDPAConnect(const char *devicepath G_GNUC_UNUSED)
+qemuVDPAConnect(const char *devicepath)
 {
-    /* need a valid fd or sendmsg won't work. Just open /dev/null */
-    return open("/dev/null", O_RDONLY);
+    return virTestMakeDummyFD(g_strdup_printf("@vdpa-%s-fd@", devicepath));
 }
 
 
