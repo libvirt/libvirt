@@ -68,21 +68,11 @@ qemuFDPassFree(qemuFDPass *fdpass)
 static int
 qemuFDPassValidate(qemuFDPass *fdpass)
 {
-    size_t i;
-
     if (!fdpass->useFDSet &&
         fdpass->nfds > 1) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("direct FD passing supports only 1 file descriptor"));
         return -1;
-    }
-
-    for (i = 0; i < fdpass->nfds; i++) {
-        if (fdpass->fds[i].fd < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("invalid file descriptor"));
-            return -1;
-        }
     }
 
     return 0;
