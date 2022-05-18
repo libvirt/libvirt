@@ -36,6 +36,7 @@
 #include "viridentity.h"
 #include "datatypes.h"
 #include "configmake.h"
+#include "virtypedparam.h"
 
 VIR_LOG_INIT("driver");
 
@@ -159,6 +160,7 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 
         if (conn->driver->connectSetIdentity != NULL) {
             g_autoptr(virIdentity) ident = NULL;
+            g_autoptr(virTypedParamList) paramlist = NULL;
             virTypedParameterPtr identparams = NULL;
             int nidentparams = 0;
 
@@ -169,7 +171,9 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
             if (virIdentityGetParameters(ident, &identparams, &nidentparams) < 0)
                 goto error;
 
-            if (virConnectSetIdentity(conn, identparams, nidentparams, 0) < 0)
+            paramlist = virTypedParamListFromParams(&identparams, nidentparams);
+
+            if (virConnectSetIdentity(conn, paramlist->par, paramlist->npar, 0) < 0)
                 goto error;
         }
     }
