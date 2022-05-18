@@ -14,6 +14,9 @@ potfiles = configure_file(
 i18n.gettext(
   meson.project_name(),
   args: [
+    '--from-code=UTF-8',
+    '--keyword=_',
+    '--keyword=N_',
     '--add-comments=TRANSLATORS:',
     '--directory=@0@'.format(meson.source_root()),
     '--directory=@0@'.format(meson.build_root()),
@@ -22,7 +25,6 @@ i18n.gettext(
     '--package-version=@0@'.format(meson.project_version()),
     '--sort-output',
   ],
-  preset: 'glib',
 )
 
 potfiles_dep = [
