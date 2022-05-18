@@ -1793,8 +1793,7 @@ remoteOpenConn(const char *uri,
                bool preserveIdentity,
                virConnectPtr *conn)
 {
-    virTypedParameterPtr params = NULL;
-    int nparams = 0;
+    g_autoptr(virTypedParamList) identparams = NULL;
     int ret = -1;
 
     VIR_DEBUG("Getting secondary uri=%s readonly=%d preserveIdent=%d conn=%p",
@@ -1814,7 +1813,7 @@ remoteOpenConn(const char *uri,
         if (!(ident = virIdentityGetCurrent()))
             return -1;
 
-        if (virIdentityGetParameters(ident, &params, &nparams) < 0)
+        if (!(identparams = virIdentityGetParameters(ident)))
             goto error;
     }
 
@@ -1828,7 +1827,7 @@ remoteOpenConn(const char *uri,
     VIR_DEBUG("Opened driver %p", *conn);
 
     if (preserveIdentity) {
-        if (virConnectSetIdentity(*conn, params, nparams, 0) < 0)
+        if (virConnectSetIdentity(*conn, identparams->par, identparams->npar, 0) < 0)
             goto error;
 
         VIR_DEBUG("Forwarded current identity to secondary driver");
@@ -1836,7 +1835,6 @@ remoteOpenConn(const char *uri,
 
     ret = 0;
  cleanup:
-    virTypedParamsFree(params, nparams);
     return ret;
 
  error:

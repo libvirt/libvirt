@@ -23,6 +23,7 @@
 
 #include "internal.h"
 #include <glib-object.h>
+#include "virtypedparam.h"
 
 #define VIR_TYPE_IDENTITY vir_identity_get_type()
 G_DECLARE_FINAL_TYPE(virIdentity, vir_identity, VIR, IDENTITY, GObject);
@@ -88,6 +89,4 @@ int virIdentitySetParameters(virIdentity *ident,
                              virTypedParameterPtr params,
                              int nparams);
 
-int virIdentityGetParameters(virIdentity *ident,
-                             virTypedParameterPtr *params,
-                             int *nparams);
+virTypedParamList *virIdentityGetParameters(virIdentity *ident);

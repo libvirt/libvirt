@@ -160,20 +160,16 @@ virGetConnectGeneric(virThreadLocal *threadPtr, const char *name)
 
         if (conn->driver->connectSetIdentity != NULL) {
             g_autoptr(virIdentity) ident = NULL;
-            g_autoptr(virTypedParamList) paramlist = NULL;
-            virTypedParameterPtr identparams = NULL;
-            int nidentparams = 0;
+            g_autoptr(virTypedParamList) identparams = NULL;
 
             VIR_DEBUG("Attempting to delegate current identity");
             if (!(ident = virIdentityGetCurrent()))
                 goto error;
 
-            if (virIdentityGetParameters(ident, &identparams, &nidentparams) < 0)
+            if (!(identparams = virIdentityGetParameters(ident)))
                 goto error;
 
-            paramlist = virTypedParamListFromParams(&identparams, nidentparams);
-
-            if (virConnectSetIdentity(conn, paramlist->par, paramlist->npar, 0) < 0)
+            if (virConnectSetIdentity(conn, identparams->par, identparams->npar, 0) < 0)
                 goto error;
         }
     }

@@ -838,17 +838,12 @@ int virIdentitySetParameters(virIdentity *ident,
 }
 
 
-int virIdentityGetParameters(virIdentity *ident,
-                             virTypedParameterPtr *params,
-                             int *nparams)
+virTypedParamList *virIdentityGetParameters(virIdentity *ident)
 {
-    *params = NULL;
-    *nparams = 0;
+    virTypedParameter *tmp = NULL;
 
-    if (virTypedParamsCopy(params, ident->params, ident->nparams) < 0)
-        return -1;
+    if (virTypedParamsCopy(&tmp, ident->params, ident->nparams) < 0)
+        return NULL;
 
-    *nparams = ident->nparams;
-
-    return 0;
+    return virTypedParamListFromParams(&tmp, ident->nparams);
 }
