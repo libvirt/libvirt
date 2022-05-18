@@ -161,7 +161,7 @@ virDomainQemuMonitorCommandWithFiles(virDomainPtr domain,
     if (ninfiles > 0 || outfiles) {
         int rc;
         if ((rc = VIR_DRV_SUPPORTS_FEATURE(conn->driver, conn,
-                                           VIR_DRV_FEATURE_FD_PASSING) <= 0)) {
+                                           VIR_DRV_FEATURE_FD_PASSING)) <= 0) {
             if (rc == 0)
                 virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
                                _("fd passing is not supported by this connection"));
