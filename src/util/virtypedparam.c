@@ -738,6 +738,19 @@ virTypedParamListStealParams(virTypedParamList *list,
     return ret;
 }
 
+virTypedParamList *
+virTypedParamListFromParams(virTypedParameterPtr *params,
+                            size_t nparams)
+{
+    virTypedParamList *l = g_new0(virTypedParamList, 1);
+
+    l->par = g_steal_pointer(params);
+    l->npar = nparams;
+    l->par_alloc = nparams;
+
+    return l;
+}
+
 
 static int G_GNUC_PRINTF(2, 0)
 virTypedParamSetNameVPrintf(virTypedParameterPtr par,

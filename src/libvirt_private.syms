@@ -3493,6 +3493,7 @@ virTypedParamListAddString;
 virTypedParamListAddUInt;
 virTypedParamListAddULLong;
 virTypedParamListFree;
+virTypedParamListFromParams;
 virTypedParamListStealParams;
 virTypedParamsCheck;
 virTypedParamsCopy;
