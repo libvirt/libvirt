@@ -10144,8 +10144,10 @@ qemuBuildPflashBlockdevOne(virCommand *cmd,
 
 static int
 qemuBuildPflashBlockdevCommandLine(virCommand *cmd,
-                                   qemuDomainObjPrivate *priv)
+                                   virDomainObj *vm)
 {
+    qemuDomainObjPrivate *priv = vm->privateData;
+
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
 
@@ -10526,7 +10528,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildManagedPRCommandLine(cmd, def, priv) < 0)
         return NULL;
 
-    if (qemuBuildPflashBlockdevCommandLine(cmd, priv) < 0)
+    if (qemuBuildPflashBlockdevCommandLine(cmd, vm) < 0)
         return NULL;
 
     /* QEMU 1.2 and later have a binary flag -enable-fips that must be
