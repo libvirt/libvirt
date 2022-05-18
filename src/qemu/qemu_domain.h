@@ -231,7 +231,6 @@ struct _qemuDomainObjPrivate {
      * pointers hold the temporary virStorageSources for creating the -blockdev
      * commandline for pflash drives. */
     virStorageSource *pflash0;
-    virStorageSource *pflash1;
 
     /* running backup job */
     virDomainBackupDef *backup;

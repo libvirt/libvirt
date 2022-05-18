@@ -1698,7 +1698,6 @@ qemuDomainObjPrivateDataClear(qemuDomainObjPrivate *priv)
     virHashRemoveAll(priv->blockjobs);
 
     g_clear_pointer(&priv->pflash0, virObjectUnref);
-    g_clear_pointer(&priv->pflash1, virObjectUnref);
     g_clear_pointer(&priv->backup, virDomainBackupDefFree);
 
     /* reset node name allocator */
@@ -11317,7 +11316,6 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm)
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     g_autoptr(virStorageSource) pflash0 = NULL;
-    g_autoptr(virStorageSource) pflash1 = NULL;
 
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
@@ -11336,17 +11334,11 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm)
 
 
     if (def->os.loader->nvram) {
-        pflash1 = virStorageSourceNew();
-        pflash1->type = VIR_STORAGE_TYPE_FILE;
-        pflash1->format = VIR_STORAGE_FILE_RAW;
-        pflash1->path = g_strdup(def->os.loader->nvram->path);
-        pflash1->readonly = false;
-        pflash1->nodeformat = g_strdup("libvirt-pflash1-format");
-        pflash1->nodestorage = g_strdup("libvirt-pflash1-storage");
+        def->os.loader->nvram->nodeformat = g_strdup("libvirt-pflash1-format");
+        def->os.loader->nvram->nodestorage = g_strdup("libvirt-pflash1-storage");
     }
 
     priv->pflash0 = g_steal_pointer(&pflash0);
-    priv->pflash1 = g_steal_pointer(&pflash1);
 
     return 0;
 }

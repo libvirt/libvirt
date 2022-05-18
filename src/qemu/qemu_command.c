@@ -7142,11 +7142,12 @@ qemuBuildMachineCommandLine(virCommand *cmd,
         }
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
+        virDomainDefHasOldStyleUEFI(def)) {
         if (priv->pflash0)
             virBufferAsprintf(&buf, ",pflash0=%s", priv->pflash0->nodeformat);
-        if (priv->pflash1)
-            virBufferAsprintf(&buf, ",pflash1=%s", priv->pflash1->nodeformat);
+        if (def->os.loader->nvram)
+            virBufferAsprintf(&buf, ",pflash1=%s", def->os.loader->nvram->nodeformat);
     }
 
     if (virDomainNumaHasHMAT(def->numa))
@@ -10148,6 +10149,9 @@ qemuBuildPflashBlockdevCommandLine(virCommand *cmd,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
 
+    if (!virDomainDefHasOldStyleUEFI(vm->def))
+        return 0;
+
     if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
         return 0;
 
@@ -10155,8 +10159,8 @@ qemuBuildPflashBlockdevCommandLine(virCommand *cmd,
         qemuBuildPflashBlockdevOne(cmd, priv->pflash0, priv->qemuCaps) < 0)
         return -1;
 
-    if (priv->pflash1 &&
-        qemuBuildPflashBlockdevOne(cmd, priv->pflash1, priv->qemuCaps) < 0)
+    if (vm->def->os.loader->nvram &&
+        qemuBuildPflashBlockdevOne(cmd, vm->def->os.loader->nvram, priv->qemuCaps) < 0)
         return -1;
 
     return 0;
