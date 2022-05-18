@@ -233,7 +233,7 @@ virDomainQemuAttach(virConnectPtr conn,
     virResetLastError();
 
     virCheckConnectReturn(conn, NULL);
-    virCheckPositiveArgGoto(pid_value, error);
+    virCheckNonZeroArgGoto(pid_value, error);
     if (pid != pid_value) {
         virReportInvalidArg(pid_value,
                             _("pid_value in %s is too large"),

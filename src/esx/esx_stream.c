@@ -287,7 +287,7 @@ esxStreamRecvFlags(virStreamPtr stream,
             if (esxStreamTransfer(priv, false) < 0)
                 return -1;
 
-            if (priv->buffer_used <= 0)
+            if (priv->buffer_used == 0)
                 return -2;
         } else /* blocking */ {
             do {
