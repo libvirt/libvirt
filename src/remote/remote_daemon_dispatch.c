@@ -1794,7 +1794,7 @@ remoteOpenConn(const char *uri,
                virConnectPtr *conn)
 {
     g_autoptr(virTypedParamList) identparams = NULL;
-    int ret = -1;
+    g_autoptr(virConnect) newconn = NULL;
 
     VIR_DEBUG("Getting secondary uri=%s readonly=%d preserveIdent=%d conn=%p",
               NULLSTR(uri), readonly, preserveIdentity, conn);
@@ -1814,34 +1814,30 @@ remoteOpenConn(const char *uri,
             return -1;
 
         if (!(identparams = virIdentityGetParameters(ident)))
-            goto error;
+            return -1;
     }
 
     VIR_DEBUG("Opening driver %s", uri);
     if (readonly)
-        *conn = virConnectOpenReadOnly(uri);
+        newconn = virConnectOpenReadOnly(uri);
     else
-        *conn = virConnectOpen(uri);
-    if (!*conn)
-        goto error;
-    VIR_DEBUG("Opened driver %p", *conn);
+        newconn = virConnectOpen(uri);
+
+    if (!newconn)
+        return -1;
+
+    VIR_DEBUG("Opened driver %p", newconn);
 
     if (preserveIdentity) {
         if (virConnectSetIdentity(*conn, identparams->par, identparams->npar, 0) < 0)
-            goto error;
+            return -1;
 
         VIR_DEBUG("Forwarded current identity to secondary driver");
     }
 
-    ret = 0;
- cleanup:
-    return ret;
+    *conn = g_steal_pointer(&newconn);
 
- error:
-    if (*conn) {
-        g_clear_pointer(conn, virConnectClose);
-    }
-    goto cleanup;
+    return 0;
 }
 
 
