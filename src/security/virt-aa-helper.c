@@ -1497,7 +1497,7 @@ main(int argc, char **argv)
                 size = virFileLength(profile, -1);
                 if (size == 0) {
                         vah_warning(_("Profile of 0 size detected, will attempt to remove it"));
-                        if ((rc = parserRemove(ctl->uuid) != 0))
+                        if ((rc = parserRemove(ctl->uuid)) != 0)
                                 vah_error(ctl, 1, _("could not remove profile"));
                         unlink(profile);
                         purged = true;
