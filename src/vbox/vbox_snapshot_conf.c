@@ -454,7 +454,6 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDisk *disk,
                                virVBoxSnapshotConfHardDisk ***list)
 {
     size_t returnSize = 0;
-    size_t tempSize = 0;
     virVBoxSnapshotConfHardDisk **ret = NULL;
     virVBoxSnapshotConfHardDisk **tempList = NULL;
     size_t i = 0;
@@ -463,7 +462,7 @@ virVBoxSnapshotConfAllChildren(virVBoxSnapshotConfHardDisk *disk,
     ret = g_new0(virVBoxSnapshotConfHardDisk *, 0);
 
     for (i = 0; i < disk->nchildren; i++) {
-        tempSize = virVBoxSnapshotConfAllChildren(disk->children[i], &tempList);
+        size_t tempSize = virVBoxSnapshotConfAllChildren(disk->children[i], &tempList);
         VIR_EXPAND_N(ret, returnSize, tempSize);
 
         for (j = 0; j < tempSize; j++)
