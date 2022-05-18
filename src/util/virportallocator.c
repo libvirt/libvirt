@@ -254,12 +254,7 @@ virPortAllocatorRelease(unsigned short port)
         return 0;
 
     VIR_WITH_OBJECT_LOCK_GUARD(pa) {
-        if (virBitmapClearBit(pa->bitmap, port) < 0) {
-            virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Failed to release port %d"),
-                           port);
-            return -1;
-        }
+        ignore_value(virBitmapClearBit(pa->bitmap, port));
     }
 
     return 0;
