@@ -1555,9 +1555,12 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
          * watching it in any thread. Let's make sure the migration is properly
          * finished in case we get a "completed" event.
          */
-        if (virDomainObjIsFailedPostcopy(vm) && priv->job.asyncOwner == 0)
+        if (virDomainObjIsPostcopy(vm, priv->job.current->operation) &&
+            priv->job.phase == QEMU_MIGRATION_PHASE_POSTCOPY_FAILED &&
+            priv->job.asyncOwner == 0) {
             qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_UNATTENDED_MIGRATION,
                                    priv->job.asyncJob, status, NULL);
+        }
         break;
 
     case QEMU_MONITOR_MIGRATION_STATUS_INACTIVE:
@@ -3507,7 +3510,6 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
     case QEMU_MIGRATION_PHASE_PERFORM3_DONE:
     case QEMU_MIGRATION_PHASE_CONFIRM3_CANCELLED:
     case QEMU_MIGRATION_PHASE_CONFIRM3:
-    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
     case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
     case QEMU_MIGRATION_PHASE_CONFIRM_RESUME:
@@ -3545,6 +3547,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
         }
         break;
 
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
     case QEMU_MIGRATION_PHASE_FINISH_RESUME:
         return 1;
@@ -3581,7 +3584,6 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
     case QEMU_MIGRATION_PHASE_PREPARE:
     case QEMU_MIGRATION_PHASE_FINISH2:
     case QEMU_MIGRATION_PHASE_FINISH3:
-    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
     case QEMU_MIGRATION_PHASE_FINISH_RESUME:
     case QEMU_MIGRATION_PHASE_LAST:
@@ -3643,6 +3645,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
         }
         return 1;
 
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
     case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
         return 1;
@@ -3694,6 +3697,8 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
         return -1;
 
     if (rc > 0) {
+        job->phase = QEMU_MIGRATION_PHASE_POSTCOPY_FAILED;
+
         if (migStatus == VIR_DOMAIN_JOB_STATUS_POSTCOPY) {
             VIR_DEBUG("Post-copy migration of domain %s still running, it will be handled as unattended",
                       vm->def->name);

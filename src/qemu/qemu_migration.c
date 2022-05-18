@@ -2341,6 +2341,7 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
                  vm->def->name);
 
         if (virDomainObjIsPostcopy(vm, VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT)) {
+            ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
             qemuMigrationSrcPostcopyFailed(vm);
             qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
             qemuMigrationJobContinue(vm);
@@ -2352,8 +2353,10 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
         }
         break;
 
+    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
     case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuMigrationSrcPostcopyFailed(vm);
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
@@ -2374,7 +2377,6 @@ qemuMigrationSrcCleanup(virDomainObj *vm,
     case QEMU_MIGRATION_PHASE_PERFORM2:
         /* single phase outgoing migration; unreachable */
     case QEMU_MIGRATION_PHASE_NONE:
-    case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_LAST:
         /* unreachable */
         ;
@@ -3744,6 +3746,7 @@ qemuMigrationSrcConfirm(virQEMUDriver *driver,
                                        flags, cancelled);
 
     if (virDomainObjIsFailedPostcopy(vm)) {
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
     } else {
@@ -5572,6 +5575,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
         virErrorPreserveLast(&orig_err);
 
     if (virDomainObjIsFailedPostcopy(vm)) {
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
     } else {
@@ -5664,6 +5668,8 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
                                  jobPriv->migParams, priv->job.apiFlags);
         qemuMigrationJobFinish(vm);
     } else {
+        if (ret < 0)
+            ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
     }
@@ -5903,7 +5909,7 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
     /* Guest is successfully running, so cancel previous auto destroy. There's
      * nothing to remove when we are resuming post-copy migration.
      */
-    if (!virDomainObjIsFailedPostcopy(vm))
+    if (job->phase < QEMU_MIGRATION_PHASE_POSTCOPY_FAILED)
         qemuProcessAutoDestroyRemove(driver, vm);
 
     /* Remove completed stats for post-copy, everything but timing fields
@@ -6170,6 +6176,7 @@ qemuMigrationDstFinishActive(virQEMUDriver *driver,
     }
 
     if (virDomainObjIsFailedPostcopy(vm)) {
+        ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuProcessAutoDestroyRemove(driver, vm);
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         *finishJob = false;
@@ -6290,9 +6297,9 @@ qemuMigrationProcessUnattended(virQEMUDriver *driver,
               vm->def->name);
 
     if (job == VIR_ASYNC_JOB_MIGRATION_IN)
-        phase = QEMU_MIGRATION_PHASE_FINISH3;
+        phase = QEMU_MIGRATION_PHASE_FINISH_RESUME;
     else
-        phase = QEMU_MIGRATION_PHASE_CONFIRM3;
+        phase = QEMU_MIGRATION_PHASE_CONFIRM_RESUME;
 
     if (qemuMigrationJobStartPhase(vm, phase) < 0)
         return;
