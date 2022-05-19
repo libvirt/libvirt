@@ -2350,12 +2350,12 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
     case QEMU_MIGRATION_PHASE_POSTCOPY_FAILED:
     case QEMU_MIGRATION_PHASE_BEGIN_RESUME:
     case QEMU_MIGRATION_PHASE_PERFORM_RESUME:
+    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
         VIR_DEBUG("Connection closed while resuming failed post-copy migration");
         postcopy = true;
         break;
 
     case QEMU_MIGRATION_PHASE_PREPARE:
-    case QEMU_MIGRATION_PHASE_PREPARE_RESUME:
         /* incoming migration; the domain will be autodestroyed */
         return;
 
@@ -2379,6 +2379,8 @@ qemuMigrationAnyConnectionClosed(virDomainObj *vm,
     if (postcopy) {
         if (priv->job.asyncJob == VIR_ASYNC_JOB_MIGRATION_OUT)
             qemuMigrationSrcPostcopyFailed(vm);
+        else
+            qemuMigrationDstPostcopyFailed(vm);
         ignore_value(qemuMigrationJobSetPhase(vm, QEMU_MIGRATION_PHASE_POSTCOPY_FAILED));
         qemuDomainCleanupAdd(vm, qemuProcessCleanupMigrationJob);
         qemuMigrationJobContinue(vm);
