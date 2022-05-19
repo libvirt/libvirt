@@ -1829,7 +1829,7 @@ remoteOpenConn(const char *uri,
     VIR_DEBUG("Opened driver %p", newconn);
 
     if (preserveIdentity) {
-        if (virConnectSetIdentity(*conn, identparams->par, identparams->npar, 0) < 0)
+        if (virConnectSetIdentity(newconn, identparams->par, identparams->npar, 0) < 0)
             return -1;
 
         VIR_DEBUG("Forwarded current identity to secondary driver");
