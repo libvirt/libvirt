@@ -886,6 +886,10 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
             info->args.capsver = va_arg(argptr, char *);
             break;
 
+        case ARG_CAPS_HOST_CPU_MODEL:
+            info->args.capsHostCPUModel = va_arg(argptr, int);
+            break;
+
         case ARG_HOST_OS:
             info->args.hostOS = va_arg(argptr, int);
             break;

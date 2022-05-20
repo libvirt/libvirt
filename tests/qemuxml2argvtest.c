@@ -336,6 +336,12 @@ testAddCPUModels(virQEMUCaps *caps, bool skipLegacy)
     return 0;
 }
 
+static void
+testUpdateQEMUCapsHostCPUModel(virQEMUCaps *qemuCaps, virArch hostArch)
+{
+    virQEMUCapsUpdateHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_KVM);
+    virQEMUCapsUpdateHostCPUModel(qemuCaps, hostArch, VIR_DOMAIN_VIRT_QEMU);
+}
 
 static int
 testUpdateQEMUCaps(const struct testQemuInfo *info,
@@ -353,10 +359,7 @@ testUpdateQEMUCaps(const struct testQemuInfo *info,
                          !!(info->flags & FLAG_SKIP_LEGACY_CPUS)) < 0)
         return -1;
 
-    virQEMUCapsUpdateHostCPUModel(info->qemuCaps, caps->host.arch,
-                                  VIR_DOMAIN_VIRT_KVM);
-    virQEMUCapsUpdateHostCPUModel(info->qemuCaps, caps->host.arch,
-                                  VIR_DOMAIN_VIRT_QEMU);
+    testUpdateQEMUCapsHostCPUModel(info->qemuCaps, caps->host.arch);
 
     return 0;
 }
@@ -649,6 +652,13 @@ testCompareXMLToArgv(const void *data)
 
     if (info->arch != VIR_ARCH_NONE && info->arch != VIR_ARCH_X86_64)
         qemuTestSetHostArch(&driver, info->arch);
+
+    if (info->args.capsHostCPUModel) {
+        virCPUDef *hostCPUModel = qemuTestGetCPUDef(info->args.capsHostCPUModel);
+
+        qemuTestSetHostCPU(&driver, driver.hostarch, hostCPUModel);
+        testUpdateQEMUCapsHostCPUModel(info->qemuCaps, driver.hostarch);
+    }
 
     if (!(conn = virGetConnect()))
         goto cleanup;
