@@ -6,15 +6,15 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
--object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-QEMUGuest1/master-key.aes \
--machine pseries,usb=off,dump-guest-core=off,max-cpu-compat=power9 \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-QEMUGuest1/master-key.aes"}' \
+-machine pseries,usb=off,dump-guest-core=off,max-cpu-compat=power9,memory-backend=ppc_spapr.ram \
 -accel kvm \
 -cpu host \
 -m 256 \
+-object '{"qom-type":"memory-backend-ram","id":"ppc_spapr.ram","size":268435456}' \
 -overcommit mem-lock=off \
 -smp 4,sockets=4,cores=1,threads=1 \
 -uuid c7a5fdbd-edaf-9455-926a-d65c16db1809 \
@@ -26,7 +26,9 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
--usb \
+-device '{"driver":"pci-ohci","id":"usb","bus":"pci.0","addr":"0x1"}' \
 -chardev pty,id=charserial0 \
--device spapr-vty,chardev=charserial0,id=serial0,reg=805306368 \
+-device '{"driver":"spapr-vty","chardev":"charserial0","id":"serial0","reg":805306368}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
 -msg timestamp=on

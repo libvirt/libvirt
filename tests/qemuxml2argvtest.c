@@ -980,6 +980,15 @@ mymain(void)
 # define DO_TEST_CAPS_LATEST_PPC64(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "ppc64")
 
+# define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU(name, hostcpu) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "ppc64", \
+                                  ARG_CAPS_HOST_CPU_MODEL, hostcpu)
+
+# define DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE(name, hostcpu) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "ppc64", \
+                                  ARG_CAPS_HOST_CPU_MODEL, hostcpu, \
+                                  ARG_FLAGS, FLAG_EXPECT_FAILURE)
+
 # define DO_TEST_CAPS_ARCH_LATEST_FAILURE(name, arch) \
     DO_TEST_CAPS_ARCH_LATEST_FULL(name, arch, \
                                   ARG_FLAGS, FLAG_EXPECT_FAILURE)
@@ -2226,16 +2235,10 @@ mymain(void)
     DO_TEST("pseries-cpu-le", QEMU_CAPS_KVM,
             QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
             QEMU_CAPS_DEVICE_SPAPR_VTY);
-    DO_TEST_FAILURE("pseries-cpu-compat-power9",
-                    QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-                    QEMU_CAPS_KVM);
-
-    qemuTestSetHostCPU(&driver, driver.hostarch, qemuTestGetCPUDef(QEMU_CPU_DEF_POWER9));
-    DO_TEST("pseries-cpu-compat-power9",
-            QEMU_CAPS_KVM,
-            QEMU_CAPS_DEVICE_SPAPR_PCI_HOST_BRIDGE,
-            QEMU_CAPS_DEVICE_SPAPR_VTY);
-    qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
+    DO_TEST_CAPS_LATEST_PPC64_HOSTCPU_FAILURE("pseries-cpu-compat-power9",
+                                              QEMU_CPU_DEF_POWER8);
+    DO_TEST_CAPS_LATEST_PPC64_HOSTCPU("pseries-cpu-compat-power9",
+                                      QEMU_CPU_DEF_POWER9);
 
     qemuTestSetHostArch(&driver, VIR_ARCH_NONE);
 
