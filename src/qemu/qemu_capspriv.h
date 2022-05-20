@@ -63,8 +63,8 @@ virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
 
 void
 virQEMUCapsUpdateHostCPUModel(virQEMUCaps *qemuCaps,
-                            virArch hostArch,
-                            virDomainVirtType type);
+                              virArch hostArch,
+                              virDomainVirtType type);
 int
 virQEMUCapsInitCPUModel(virQEMUCaps *qemuCaps,
                         virDomainVirtType type,
