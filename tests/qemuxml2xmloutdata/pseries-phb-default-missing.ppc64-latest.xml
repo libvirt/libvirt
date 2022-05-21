@@ -8,16 +8,15 @@
     <type arch='ppc64' machine='pseries'>hvm</type>
     <boot dev='hd'/>
   </os>
+  <cpu mode='custom' match='exact' check='none'>
+    <model fallback='forbid'>POWER9</model>
+  </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
   <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-ppc64</emulator>
-    <controller type='pci' index='0' model='pci-root'>
-      <model name='spapr-pci-host-bridge'/>
-      <target index='0'/>
-    </controller>
     <controller type='pci' index='1' model='pci-root'>
       <model name='spapr-pci-host-bridge'/>
       <target index='1'/>
@@ -27,6 +26,10 @@
       <target index='2'/>
     </controller>
     <controller type='usb' index='0' model='none'/>
+    <controller type='pci' index='0' model='pci-root'>
+      <model name='spapr-pci-host-bridge'/>
+      <target index='0'/>
+    </controller>
     <audio id='1' type='none'/>
     <memballoon model='none'/>
     <panic model='pseries'/>
