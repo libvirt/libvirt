@@ -19,43 +19,10 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-# Helper variables.
-_empty =
-_sp = $(_empty) $(_empty)
 
-VC_LIST = cd $(top_srcdir); git ls-tree -r 'HEAD:' | \
-          sed -n "s|^100[^	]*.||p"
-
-# This is to preprocess robustly the output of $(VC_LIST), so that even
-# when $(top_srcdir) is a pathological name like "....", the leading sed command
-# removes only the intended prefix.
-_dot_escaped_srcdir = $(subst .,\.,$(top_srcdir))
-_dot_escaped_builddir = $(subst .,\.,$(top_builddir))
-
-# Post-process $(VC_LIST) output, prepending $(top_srcdir)/, but only
-# when $(top_srcdir) is not ".".
-ifeq ($(top_srcdir),.)
-  _prepend_srcdir_prefix =
-else
-  _prepend_srcdir_prefix = | $(SED) 's|^|$(top_srcdir)/|'
-endif
-
-# In order to be able to consistently filter "."-relative names,
-# (i.e., with no $(top_srcdir) prefix), this definition is careful to
-# remove any $(top_srcdir) prefix, and to restore what it removes.
-_sc_excl = \
-  $(or $(exclude_file_name_regexp--$@),^$$)
-VC_LIST_EXCEPT = \
-  $(VC_LIST) | $(GREP) -Ev -e '($(VC_LIST_ALWAYS_EXCLUDE_REGEX)|$(_sc_excl))' \
-	$(_prepend_srcdir_prefix)
-
-# Prevent programs like 'sort' from considering distinct strings to be equal.
-# Doing it here saves us from having to set LC_ALL elsewhere in this file.
-export LC_ALL = C
-
-## --------------- ##
-## Sanity checks.  ##
-## --------------- ##
+## ----- ##
+## Rules ##
+## ----- ##
 
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
@@ -927,143 +894,6 @@ sc_prohibit_dirent_d_type:
 	halt='do not use the d_type field in "struct dirent"' \
 	  $(_sc_search_regexp)
 
-
-# _sc_search_regexp
-#
-# This macro searches for a given construct in the selected files and
-# then takes some action.
-#
-# Parameters (shell variables):
-#
-#  prohibit | require
-#
-#     Regular expression (ERE) denoting either a forbidden construct
-#     or a required construct.  Those arguments are exclusive.
-#
-#  exclude
-#
-#     Regular expression (ERE) denoting lines to ignore that matched
-#     a prohibit construct.  For example, this can be used to exclude
-#     comments that mention why the nearby code uses an alternative
-#     construct instead of the simpler prohibited construct.
-#
-#  in_vc_files | in_files
-#
-#     grep-E-style regexp selecting the files to check.  For in_vc_files,
-#     the regexp is used to select matching files from the list of all
-#     version-controlled files; for in_files, it's from the names printed
-#     by "find $(top_srcdir)".  When neither is specified, use all files that
-#     are under version control.
-#
-#  containing | non_containing
-#
-#     Select the files (non) containing strings matching this regexp.
-#     If both arguments are specified then CONTAINING takes
-#     precedence.
-#
-#  with_grep_options
-#
-#     Extra options for grep.
-#
-#  ignore_case
-#
-#     Ignore case.
-#
-#  halt
-#
-#     Message to display before to halting execution.
-#
-# Finally, you may exempt files based on an ERE matching file names.
-# For example, to exempt from the sc_space_tab check all files with the
-# .diff suffix, set this Make variable:
-#
-# exclude_file_name_regexp--sc_space_tab = \.diff$
-#
-# Note that while this functionality is mostly inherited via VC_LIST_EXCEPT,
-# when filtering by name via in_files, we explicitly filter out matching
-# names here as well.
-
-# Initialize each, so that envvar settings cannot interfere.
-export require =
-export prohibit =
-export exclude =
-export in_vc_files =
-export in_files =
-export containing =
-export non_containing =
-export halt =
-export with_grep_options =
-
-# By default, _sc_search_regexp does not ignore case.
-export ignore_case =
-_ignore_case = $$(test -n "$$ignore_case" && printf %s -i || :)
-
-define _sc_say_and_exit
-   dummy=; : so we do not need a semicolon before each use;		\
-   { printf '%s\n' "$$msg" 1>&2; exit 1; };
-endef
-
-define _sc_search_regexp
-   dummy=; : so we do not need a semicolon before each use;		\
-									\
-   : Check arguments;							\
-   test -n "$$prohibit" && test -n "$$require"				\
-     && { msg='Cannot specify both prohibit and require'		\
-          $(_sc_say_and_exit) } || :;					\
-   test -z "$$prohibit" && test -z "$$require"				\
-     && { msg='Should specify either prohibit or require'		\
-          $(_sc_say_and_exit) } || :;					\
-   test -z "$$prohibit" && test -n "$$exclude"				\
-     && { msg='Use of exclude requires a prohibit pattern'		\
-          $(_sc_say_and_exit) } || :;					\
-   test -n "$$in_vc_files" && test -n "$$in_files"			\
-     && { msg='Cannot specify both in_vc_files and in_files'		\
-          $(_sc_say_and_exit) } || :;					\
-   test "x$$halt" != x							\
-     || { msg='halt not defined' $(_sc_say_and_exit) };			\
-									\
-   : Filter by file name;						\
-   if test -n "$$in_files"; then					\
-     files=$$(find $(top_srcdir) | $(GREP) -E "$$in_files"			\
-              | $(GREP) -Ev '$(_sc_excl)');				\
-   else									\
-     files=$$($(VC_LIST_EXCEPT));					\
-     if test -n "$$in_vc_files"; then					\
-       files=$$(echo "$$files" | $(GREP) -E "$$in_vc_files");		\
-     fi;								\
-   fi;									\
-									\
-   : Filter by content;							\
-   test -n "$$files"							\
-     && test -n "$$containing"						\
-     && { files=$$(echo "$$files" | xargs $(GREP) -l "$$containing"); }	\
-     || :;								\
-   test -n "$$files"							\
-     && test -n "$$non_containing"					\
-     && { files=$$(echo "$$files" | xargs $(GREP) -vl "$$non_containing"); } \
-     || :;								\
-									\
-   : Check for the construct;						\
-   if test -n "$$files"; then						\
-     if test -n "$$prohibit"; then					\
-       echo "$$files"							\
-         | xargs $(GREP) $$with_grep_options $(_ignore_case) -nE	\
-		"$$prohibit" /dev/null					\
-         | $(GREP) -vE "$${exclude:-^$$}"				\
-         && { msg="$$halt" $(_sc_say_and_exit) }			\
-         || :;								\
-     else								\
-       echo "$$files"							\
-         | xargs							\
-             $(GREP) $$with_grep_options $(_ignore_case) -LE "$$require" \
-         | $(GREP) .							\
-         && { msg="$$halt" $(_sc_say_and_exit) }			\
-         || :;								\
-     fi									\
-   else :;								\
-   fi || :;
-endef
-
 sc_cast_of_argument_to_free:
 	@prohibit='\<free *\( *\(' halt="don't cast free argument"	\
 	  $(_sc_search_regexp)
@@ -1270,8 +1100,6 @@ sc_prohibit_defined_have_decl_tests:
 	@prohibit='(#[	 ]*ifn?def|\<defined)\>[	 (]+WITH_DECL_'	\
 	halt='WITH_DECL macros are always defined'			\
 	  $(_sc_search_regexp)
-
-# ==================================================================
 
 # Prohibit checked in backup files.
 sc_prohibit_backup_files:
@@ -1513,7 +1341,10 @@ sc_prohibit_enum_impl_with_vir_prefix_in_virsh:
 	  $(_sc_search_regexp)
 
 
-# List all syntax-check exemptions:
+## ---------- ##
+## Exceptions ##
+## ---------- ##
+
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
 exclude_file_name_regexp--sc_avoid_write = ^src/libvirt-stream\.c$$
@@ -1656,3 +1487,178 @@ exclude_file_name_regexp--sc_prohibit_backslash_alignment = \
 
 exclude_file_name_regexp--sc_prohibit_select = \
   ^build-aux/syntax-check\.mk|src/util/vireventglibwatch\.c|tests/meson\.build$$
+
+
+## -------------- ##
+## Implementation ##
+## -------------- ##
+
+# Helper variables.
+_empty =
+_sp = $(_empty) $(_empty)
+
+VC_LIST = cd $(top_srcdir); git ls-tree -r 'HEAD:' | \
+          sed -n "s|^100[^	]*.||p"
+
+# This is to preprocess robustly the output of $(VC_LIST), so that even
+# when $(top_srcdir) is a pathological name like "....", the leading sed command
+# removes only the intended prefix.
+_dot_escaped_srcdir = $(subst .,\.,$(top_srcdir))
+_dot_escaped_builddir = $(subst .,\.,$(top_builddir))
+
+# Post-process $(VC_LIST) output, prepending $(top_srcdir)/, but only
+# when $(top_srcdir) is not ".".
+ifeq ($(top_srcdir),.)
+  _prepend_srcdir_prefix =
+else
+  _prepend_srcdir_prefix = | $(SED) 's|^|$(top_srcdir)/|'
+endif
+
+# In order to be able to consistently filter "."-relative names,
+# (i.e., with no $(top_srcdir) prefix), this definition is careful to
+# remove any $(top_srcdir) prefix, and to restore what it removes.
+_sc_excl = \
+  $(or $(exclude_file_name_regexp--$@),^$$)
+VC_LIST_EXCEPT = \
+  $(VC_LIST) | $(GREP) -Ev -e '($(VC_LIST_ALWAYS_EXCLUDE_REGEX)|$(_sc_excl))' \
+	$(_prepend_srcdir_prefix)
+
+# Prevent programs like 'sort' from considering distinct strings to be equal.
+# Doing it here saves us from having to set LC_ALL elsewhere in this file.
+export LC_ALL = C
+
+# _sc_search_regexp
+#
+# This macro searches for a given construct in the selected files and
+# then takes some action.
+#
+# Parameters (shell variables):
+#
+#  prohibit | require
+#
+#     Regular expression (ERE) denoting either a forbidden construct
+#     or a required construct.  Those arguments are exclusive.
+#
+#  exclude
+#
+#     Regular expression (ERE) denoting lines to ignore that matched
+#     a prohibit construct.  For example, this can be used to exclude
+#     comments that mention why the nearby code uses an alternative
+#     construct instead of the simpler prohibited construct.
+#
+#  in_vc_files | in_files
+#
+#     grep-E-style regexp selecting the files to check.  For in_vc_files,
+#     the regexp is used to select matching files from the list of all
+#     version-controlled files; for in_files, it's from the names printed
+#     by "find $(top_srcdir)".  When neither is specified, use all files that
+#     are under version control.
+#
+#  containing | non_containing
+#
+#     Select the files (non) containing strings matching this regexp.
+#     If both arguments are specified then CONTAINING takes
+#     precedence.
+#
+#  with_grep_options
+#
+#     Extra options for grep.
+#
+#  ignore_case
+#
+#     Ignore case.
+#
+#  halt
+#
+#     Message to display before to halting execution.
+#
+# Finally, you may exempt files based on an ERE matching file names.
+# For example, to exempt from the sc_space_tab check all files with the
+# .diff suffix, set this Make variable:
+#
+# exclude_file_name_regexp--sc_space_tab = \.diff$
+#
+# Note that while this functionality is mostly inherited via VC_LIST_EXCEPT,
+# when filtering by name via in_files, we explicitly filter out matching
+# names here as well.
+
+# Initialize each, so that envvar settings cannot interfere.
+export require =
+export prohibit =
+export exclude =
+export in_vc_files =
+export in_files =
+export containing =
+export non_containing =
+export halt =
+export with_grep_options =
+
+# By default, _sc_search_regexp does not ignore case.
+export ignore_case =
+_ignore_case = $$(test -n "$$ignore_case" && printf %s -i || :)
+
+define _sc_say_and_exit
+   dummy=; : so we do not need a semicolon before each use;		\
+   { printf '%s\n' "$$msg" 1>&2; exit 1; };
+endef
+
+define _sc_search_regexp
+   dummy=; : so we do not need a semicolon before each use;		\
+									\
+   : Check arguments;							\
+   test -n "$$prohibit" && test -n "$$require"				\
+     && { msg='Cannot specify both prohibit and require'		\
+          $(_sc_say_and_exit) } || :;					\
+   test -z "$$prohibit" && test -z "$$require"				\
+     && { msg='Should specify either prohibit or require'		\
+          $(_sc_say_and_exit) } || :;					\
+   test -z "$$prohibit" && test -n "$$exclude"				\
+     && { msg='Use of exclude requires a prohibit pattern'		\
+          $(_sc_say_and_exit) } || :;					\
+   test -n "$$in_vc_files" && test -n "$$in_files"			\
+     && { msg='Cannot specify both in_vc_files and in_files'		\
+          $(_sc_say_and_exit) } || :;					\
+   test "x$$halt" != x							\
+     || { msg='halt not defined' $(_sc_say_and_exit) };			\
+									\
+   : Filter by file name;						\
+   if test -n "$$in_files"; then					\
+     files=$$(find $(top_srcdir) | $(GREP) -E "$$in_files"			\
+              | $(GREP) -Ev '$(_sc_excl)');				\
+   else									\
+     files=$$($(VC_LIST_EXCEPT));					\
+     if test -n "$$in_vc_files"; then					\
+       files=$$(echo "$$files" | $(GREP) -E "$$in_vc_files");		\
+     fi;								\
+   fi;									\
+									\
+   : Filter by content;							\
+   test -n "$$files"							\
+     && test -n "$$containing"						\
+     && { files=$$(echo "$$files" | xargs $(GREP) -l "$$containing"); }	\
+     || :;								\
+   test -n "$$files"							\
+     && test -n "$$non_containing"					\
+     && { files=$$(echo "$$files" | xargs $(GREP) -vl "$$non_containing"); } \
+     || :;								\
+									\
+   : Check for the construct;						\
+   if test -n "$$files"; then						\
+     if test -n "$$prohibit"; then					\
+       echo "$$files"							\
+         | xargs $(GREP) $$with_grep_options $(_ignore_case) -nE	\
+		"$$prohibit" /dev/null					\
+         | $(GREP) -vE "$${exclude:-^$$}"				\
+         && { msg="$$halt" $(_sc_say_and_exit) }			\
+         || :;								\
+     else								\
+       echo "$$files"							\
+         | xargs							\
+             $(GREP) $$with_grep_options $(_ignore_case) -LE "$$require" \
+         | $(GREP) .							\
+         && { msg="$$halt" $(_sc_say_and_exit) }			\
+         || :;								\
+     fi									\
+   else :;								\
+   fi || :;
+endef
