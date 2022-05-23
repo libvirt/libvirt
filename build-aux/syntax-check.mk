@@ -4,10 +4,10 @@
 #
 # Specifically, all shared code should match gnulib commit
 #
-#   1f6fb368c04919243e2c70f2aa514a5f88e95309 (2019-08-19)
+#   dd2503c8e73621e919e8e214a29c495ac89d8a92 (2022-05-21)
 #
 # Copyright (C) 2008-2019 Red Hat, Inc.
-# Copyright (C) 2003-2019 Free Software Foundation, Inc.
+# Copyright (C) 2001-2022 Free Software Foundation, Inc.
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -1155,7 +1155,7 @@ perl_filename_lineno_text_ = \
     -e '  }'
 
 prohibit_doubled_words_ = \
-    the then in an on if is it but for or at and do to
+    the then in an on if is it but for or at and do to can
 # expand the regex before running the check to avoid using expensive captures
 prohibit_doubled_word_expanded_ = \
     $(join $(prohibit_doubled_words_),$(addprefix \s+,$(prohibit_doubled_words_)))
