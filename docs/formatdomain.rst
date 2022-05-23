@@ -568,8 +568,8 @@ layout of sub-elements, with supported values of:
 
    The ``sysinfo`` element can have multiple ``entry`` child elements. Each
    element then has mandatory ``name`` attribute, which defines the name of the
-   blob and must begin with ``"opt/"`` and to avoid clashing with other names is
-   advised to be in form ``"opt/$RFQDN/$name"`` where ``$RFQDN`` is a reverse
+   blob and must begin with ``opt/`` and to avoid clashing with other names is
+   advised to be in form ``opt/$RFQDN/$name`` where ``$RFQDN`` is a reverse
    fully qualified domain name you control. Then, the element can either contain
    the value (to set the blob value directly), or ``file`` attribute (to set the
    blob value from the file).
@@ -2589,11 +2589,11 @@ paravirtualized driver is specified via the ``disk`` element.
       ``device`` is 'lun'. :since:`Since 1.0.2`
    ``snapshot``
       Indicates the default behavior of the disk during disk snapshots:
-      "``internal``" requires a file format such as qcow2 that can store both
-      the snapshot and the data changes since the snapshot; "``external``" will
-      separate the snapshot from the live data; "``no``" means the disk will
+      ``internal`` requires a file format such as qcow2 that can store both
+      the snapshot and the data changes since the snapshot; ``external`` will
+      separate the snapshot from the live data; ``no`` means the disk will
       not participate in snapshots; and ``manual`` allows snapshotting done via
-      an unmanaged storage provider. Read-only disks default to "``no``", while
+      an unmanaged storage provider. Read-only disks default to ``no``, while
       the default for other disks depends on the hypervisor's capabilities.
       Some hypervisors allow a per-snapshot choice as well, during `domain
       snapshot creation <formatsnapshot.html>`__. Not all snapshot modes are
@@ -4971,10 +4971,10 @@ directly reference an SRIOV VF device:
    ...
 
 The ``<teaming>`` element required attribute ``type`` will be set to either
-``"persistent"`` to indicate a device that should always be present in the
-domain, or ``"transient"`` to indicate a device that may periodically be
+``persistent`` to indicate a device that should always be present in the
+domain, or ``transient`` to indicate a device that may periodically be
 removed, then later re-added to the domain. When type="transient", there should
-be a second attribute to ``<teaming>`` called ``"persistent"`` - this attribute
+be a second attribute to ``<teaming>`` called ``persistent`` - this attribute
 should be set to the alias name of the other device in the pair (the one that
 has ``<teaming       type="persistent'/>``).
 
@@ -5179,7 +5179,7 @@ Setting NIC driver-specific options
 
 Some NICs may have tunable driver-specific options. These are set as attributes
 of the ``driver`` sub-element of the interface definition. Currently the
-following attributes are available for the ``"virtio"`` NIC driver:
+following attributes are available for the ``virtio`` NIC driver:
 
 ``name``
    The optional ``name`` attribute forces which type of backend driver to use.
