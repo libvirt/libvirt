@@ -1569,7 +1569,8 @@ exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
 exclude_file_name_regexp--sc_avoid_write = ^src/libvirt-stream\.c$$
 
-exclude_file_name_regexp--sc_gettext_init = ^((tests|examples)/|tools/virt-login-shell.c|src/util/vireventglib\.c)
+exclude_file_name_regexp--sc_gettext_init = \
+	^((tests|examples)/|tools/virt-login-shell.c)
 
 exclude_file_name_regexp--sc_copyright_usage = \
   ^COPYING(|\.LESSER)|build-aux/syntax-check.mk$$
