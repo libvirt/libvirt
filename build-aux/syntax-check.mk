@@ -40,10 +40,6 @@ _equal = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
 VC_LIST = cd $(top_srcdir); git ls-tree -r 'HEAD:' | \
           sed -n "s|^100[^	]*.||p"
 
-# You can override this variable in syntax-check.mk to set your own regexp
-# matching files to ignore.
-VC_LIST_ALWAYS_EXCLUDE_REGEX ?= ^$$
-
 # This is to preprocess robustly the output of $(VC_LIST), so that even
 # when $(top_srcdir) is a pathological name like "....", the leading sed command
 # removes only the intended prefix.
@@ -110,7 +106,7 @@ syntax-check: $(local-check)
 
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
-  (^(docs/(news(-[0-9]*)?\.html\.in|.*\.patch))|\.(po|fig|gif|ico|png))$$
+  \.(po|ico|png)$$
 
 # Avoid uses of write(2).  Either switch to streams (fwrite), or use
 # the safewrite wrapper.
