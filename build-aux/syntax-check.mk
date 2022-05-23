@@ -1297,15 +1297,6 @@ sc_prohibit_dirent_without_use:
 	re='\<($(_dirent_syms_re))\>'					\
 	  $(_sc_header_without_use)
 
-# Ensure that each .c file containing a "main" function also
-# calls bindtextdomain.
-sc_bindtextdomain:
-	@require='bindtextdomain *\('					\
-	in_vc_files='\.c$$'						\
-	containing='\<main *('						\
-	halt='the above files do not call bindtextdomain'		\
-	  $(_sc_search_regexp)
-
 sc_trailing_blank:
 	@prohibit='[	 ]$$'						\
 	halt='found trailing blank(s)'					\
@@ -1577,8 +1568,6 @@ sc_prohibit_enum_impl_with_vir_prefix_in_virsh:
 exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
 
 exclude_file_name_regexp--sc_avoid_write = ^src/libvirt-stream\.c$$
-
-exclude_file_name_regexp--sc_bindtextdomain = .*
 
 exclude_file_name_regexp--sc_gettext_init = ^((tests|examples)/|tools/virt-login-shell.c|src/util/vireventglib\.c)
 
