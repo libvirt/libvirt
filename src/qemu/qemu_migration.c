@@ -2534,23 +2534,23 @@ qemuMigrationSrcBegin(virConnectPtr conn,
         if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
                                  qemuMigrationSrcCleanup) < 0)
             goto endjob;
-        qemuMigrationJobContinue(vm);
-    } else {
-        goto endjob;
     }
 
     ret = g_steal_pointer(&xml);
 
+ endjob:
+    if (flags & VIR_MIGRATE_CHANGE_PROTECTION) {
+        if (ret)
+            qemuMigrationJobContinue(vm);
+        else
+            qemuMigrationJobFinish(vm);
+    } else {
+        qemuDomainObjEndJob(vm);
+    }
+
  cleanup:
     virDomainObjEndAPI(&vm);
     return ret;
-
- endjob:
-    if (flags & VIR_MIGRATE_CHANGE_PROTECTION)
-        qemuMigrationJobFinish(vm);
-    else
-        qemuDomainObjEndJob(vm);
-    goto cleanup;
 }
 
 
