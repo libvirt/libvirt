@@ -1544,6 +1544,7 @@
         <value>no</value>
         <value>internal</value>
         <value>external</value>
+        <value>manual</value>
       </choice>
     </attribute>
   </define>
