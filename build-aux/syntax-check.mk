@@ -20,6 +20,11 @@
 # <http://www.gnu.org/licenses/>.
 
 
+all:
+	@echo "Do not call this file directly, use 'meson test' instead" >&2; \
+	exit 1
+
+
 ## ----- ##
 ## Rules ##
 ## ----- ##
