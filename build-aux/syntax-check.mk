@@ -1573,7 +1573,7 @@ exclude_file_name_regexp--sc_gettext_init = \
 	^((tests|examples)/|tools/virt-login-shell.c)
 
 exclude_file_name_regexp--sc_copyright_usage = \
-  ^COPYING(|\.LESSER)|build-aux/syntax-check.mk$$
+  ^COPYING(|\.LESSER)$$
 
 exclude_file_name_regexp--sc_flags_usage = \
   ^(build-aux/syntax-check\.mk|docs/|src/util/virnetdevtap\.c$$|tests/((vir(cgroup|pci|test|usb)|nss|qemuxml2argv|qemusecurity)mock|virfilewrapper)\.c$$)
