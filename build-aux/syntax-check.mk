@@ -32,11 +32,6 @@ AWK ?= awk
 _empty =
 _sp = $(_empty) $(_empty)
 
-# _equal,S1,S2
-# ------------
-# If S1 == S2, return S1, otherwise the empty string.
-_equal = $(and $(findstring $(1),$(2)),$(findstring $(2),$(1)))
-
 VC_LIST = cd $(top_srcdir); git ls-tree -r 'HEAD:' | \
           sed -n "s|^100[^	]*.||p"
 
@@ -70,39 +65,6 @@ export LC_ALL = C
 ## --------------- ##
 ## Sanity checks.  ##
 ## --------------- ##
-
-_cfg_mk := $(wildcard $(top_srcdir)/build-aux/syntax-check.mk)
-
-# Collect the names of rules starting with 'sc_'.
-syntax-check-rules := $(sort $(shell $(SED) -n \
-   's/^\(sc_[a-zA-Z0-9_-]*\):.*/\1/p' $(top_srcdir)/$(ME) $(_cfg_mk)))
-.PHONY: $(syntax-check-rules)
-
-# Arrange to print the name of each syntax-checking rule just before running it.
-$(syntax-check-rules): %: %.m
-sc_m_rules_ = $(patsubst %, %.m, $(syntax-check-rules))
-.PHONY: $(sc_m_rules_)
-$(sc_m_rules_):
-	@echo $(patsubst sc_%.m, %, $@)
-	@date +%s.%N > .sc-start-$(basename $@)
-
-# Compute and print the elapsed time for each syntax-check rule.
-sc_z_rules_ = $(patsubst %, %.z, $(syntax-check-rules))
-.PHONY: $(sc_z_rules_)
-$(sc_z_rules_): %.z: %
-	@end=$$(date +%s.%N);						\
-	start=$$(cat .sc-start-$*);					\
-	rm -f .sc-start-$*;						\
-	$(AWK) -v s=$$start -v e=$$end					\
-	  'END {printf "%.2f $(patsubst sc_%,%,$*)\n", e - s}' < /dev/null
-
-# The patsubst here is to replace each sc_% rule with its sc_%.z wrapper
-# that computes and prints elapsed time.
-local-check :=								\
-  $(patsubst sc_%, sc_%.z,						\
-    $(filter-out $(local-checks-to-skip), $(syntax-check-rules)))
-
-syntax-check: $(local-check)
 
 # Files that should never cause syntax check failures.
 VC_LIST_ALWAYS_EXCLUDE_REGEX = \
