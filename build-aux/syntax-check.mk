@@ -2,6 +2,10 @@
 # Rules for running syntax-check, derived from gnulib's
 # maint.mk
 #
+# Specifically, all shared code should match gnulib commit
+#
+#   1f6fb368c04919243e2c70f2aa514a5f88e95309 (2019-08-19)
+#
 # Copyright (C) 2008-2019 Red Hat, Inc.
 # Copyright (C) 2003-2019 Free Software Foundation, Inc.
 
