@@ -3662,7 +3662,9 @@ qemuDomainChangeNet(virQEMUDriver *driver,
          olddev->driver.virtio.guest.tso4 != newdev->driver.virtio.guest.tso4 ||
          olddev->driver.virtio.guest.tso6 != newdev->driver.virtio.guest.tso6 ||
          olddev->driver.virtio.guest.ecn != newdev->driver.virtio.guest.ecn ||
-         olddev->driver.virtio.guest.ufo != newdev->driver.virtio.guest.ufo)) {
+         olddev->driver.virtio.guest.ufo != newdev->driver.virtio.guest.ufo ||
+         olddev->driver.virtio.rss != newdev->driver.virtio.rss ||
+         olddev->driver.virtio.rss_hash_report != newdev->driver.virtio.rss_hash_report)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                        _("cannot modify virtio network device driver attributes"));
         goto cleanup;
