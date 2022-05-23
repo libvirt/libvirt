@@ -19,11 +19,6 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-# These variables ought to be defined through the configure.ac section
-# of the module description. But some packages import this file directly,
-# ignoring the module description.
-AWK ?= awk
-
 # Helper variables.
 _empty =
 _sp = $(_empty) $(_empty)

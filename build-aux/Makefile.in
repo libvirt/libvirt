@@ -7,6 +7,7 @@ RUNUTF8 = @runutf8@
 PYTHON = @PYTHON3@
 GREP = @GREP@
 SED = @SED@
+AWK = @AWK@
 
 # include syntax-check.mk file
 include $(top_srcdir)/build-aux/syntax-check.mk

@@ -26,6 +26,8 @@ else
   grep_prog = find_program('grep')
 endif
 
+awk_prog = find_program('awk')
+
 syntax_check_conf = configuration_data({
   'top_srcdir': meson.source_root(),
   'top_builddir': meson.build_root(),
@@ -34,6 +36,7 @@ syntax_check_conf = configuration_data({
   'PYTHON3': python3_prog.path(),
   'GREP': grep_prog.path(),
   'SED': sed_prog.path(),
+  'AWK': awk_prog.path(),
 })
 
 configure_file(
