@@ -1140,7 +1140,7 @@ udevProcessCSS(struct udev_device *device,
     /* process optional channel devices information */
     udevGetStringSysfsAttr(device, "dev_busid", &dev_busid);
 
-    if (dev_busid != NULL)
+    if (dev_busid != NULL && STRNEQ(dev_busid, "none"))
         def->caps->data.ccw_dev.channel_dev_addr = virCCWDeviceAddressFromString(dev_busid);
 
     if (virNodeDeviceGetCSSDynamicCaps(def->sysfs_path, &def->caps->data.ccw_dev) < 0)
