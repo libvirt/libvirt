@@ -1326,7 +1326,7 @@ sc_prohibit_defined_have_decl_tests:
 
 # Prohibit checked in backup files.
 sc_prohibit_backup_files:
-	@$(VC_LIST) | $(GREP) '~$$' &&					\
+	@$(VC_LIST_EXCEPT) | $(GREP) '~$$' && \
 	  { echo '$(ME): found version controlled backup file' 1>&2;	\
 	    exit 1; } || :
 
