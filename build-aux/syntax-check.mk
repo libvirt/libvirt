@@ -19,10 +19,6 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-# This is reported not to work with make-3.79.1
-# ME := $(word $(words $(MAKEFILE_LIST)),$(MAKEFILE_LIST))
-ME := build-aux/syntax-check.mk
-
 # These variables ought to be defined through the configure.ac section
 # of the module description. But some packages import this file directly,
 # ignoring the module description.
@@ -103,7 +99,7 @@ sc_flags_usage:
 	    $(top_srcdir)/include/libvirt/libvirt-lxc.h \
 	    $(top_srcdir)/include/libvirt/libvirt-admin.h \
 	  | $(GREP) -c '\(long\|unsigned\) flags')" != 4 && \
-	  { echo '$(ME): new API should use "unsigned int flags"' 1>&2; \
+	  { echo 'new API should use "unsigned int flags"' 1>&2; \
 	    exit 1; } || :
 	@prohibit=' flags G_GNUC_UNUSED' \
 	exclude='virSecurityDomainImageLabelFlags' \
@@ -466,7 +462,7 @@ sc_libvirt_unmarked_diagnostics:
 		$(GREP) -A1 -nE '\<$(func_re) *\(.*,$$' /dev/null; } \
 	   | $(SED) -E 's/_\("([^\"]|\\.)+"//;s/"%s"//' \
 	   | $(GREP) '"' && \
-	  { echo '$(ME): found unmarked diagnostic(s)' 1>&2; \
+	  { echo 'found unmarked diagnostic(s)' 1>&2; \
 	    exit 1; } || :
 
 # Like the above, but prohibit a newline at the end of a diagnostic.
@@ -480,7 +476,7 @@ sc_prohibit_newline_at_end_of_diagnostic:
 	@$(VC_LIST_EXCEPT) | xargs $(GREP) -A2 -nE \
 	    '\<$(func_re) *\(' /dev/null \
 	    | $(GREP) '\\n"' \
-	  && { echo '$(ME): newline at end of message(s)' 1>&2; \
+	  && { echo 'newline at end of message(s)' 1>&2; \
 	    exit 1; } || :
 
 # Look for diagnostics that lack a % in the format string, except that we
@@ -495,7 +491,7 @@ sc_prohibit_diagnostic_without_format:
 		-e '/(vah_(error|warning))/d' \
 		-e '/\<$(func_re) *\([^"]*"([^%"]|"\n[^"]*")*"[,)]/p' \
            | $(GREP) -vE 'VIR_ERROR' && \
-	  { echo '$(ME): found diagnostic without %' 1>&2; \
+	  { echo 'found diagnostic without %' 1>&2; \
 	    exit 1; } || :
 
 # The strings "" and "%s" should never be marked for translation.
@@ -515,17 +511,17 @@ sc_require_whitespace_in_translation:
 	@$(VC_LIST_EXCEPT) | xargs $(GREP) -n -A1 '"$$' /dev/null \
 	   | $(SED) -ne ':l; /"$$/ {N;b l;}; s/"\n[^"]*"/""/g; s/\\n/ /g' \
 		-e '/_(.*[^\ ]""[^\ ]/p' | $(GREP) . && \
-	  { echo '$(ME): missing whitespace at line split' 1>&2; \
+	  { echo 'missing whitespace at line split' 1>&2; \
 	    exit 1; } || :
 
 # Enforce recommended preprocessor indentation style.
 sc_preprocessor_indentation:
 	@if cppi --version >/dev/null 2>&1; then \
 	  $(VC_LIST_EXCEPT) | $(GREP) -E '\.[ch](\.in)?$$' | xargs cppi -a -c \
-	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
+	    || { echo 'incorrect preprocessor indentation' 1>&2; \
 		exit 1; }; \
 	else \
-	  echo '$(ME): skipping test $@: cppi not installed' 1>&2; \
+	  echo 'skipping test $@: cppi not installed' 1>&2; \
 	fi
 
 # Enforce similar spec file indentation style, by running cppi on a
@@ -539,10 +535,10 @@ sc_spec_indentation:
 		-e 's|^\( *[^#/ ]\)|// \1|; s|^\( */[^/]\)|// \1|' $$f \
 	    | cppi -a -c 2>&1 | $(SED) "s|standard input|$$f|"; \
 	  done | { if $(GREP) . >&2; then false; else :; fi; } \
-	    || { echo '$(ME): incorrect preprocessor indentation' 1>&2; \
+	    || { echo 'incorrect preprocessor indentation' 1>&2; \
 		exit 1; }; \
 	else \
-	  echo '$(ME): skipping test $@: cppi not installed' 1>&2; \
+	  echo 'skipping test $@: cppi not installed' 1>&2; \
 	fi
 
 
@@ -601,7 +597,7 @@ sc_require_enum_last_marker:
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]*,[^,]*[^_,][^L,][^A,][^S,][^T,],/p' \
 	     -e '/VIR_ENUM_IMPL[^,]*,[^,]\{0,4\},/p' \
 	   | $(GREP) . && \
-	  { echo '$(ME): enum impl needs _LAST marker on second line' 1>&2; \
+	  { echo 'enum impl needs _LAST marker on second line' 1>&2; \
 	    exit 1; } || :
 
 # We're intentionally ignoring a few warnings
@@ -623,7 +619,7 @@ sc_flake8:
 		ALL_PY=$$(printf "%s\n%s" "$$DOT_PY" "$$BANG_PY" | sort -u); \
 		echo "$$ALL_PY" | xargs $(FLAKE8) --ignore $(FLAKE8_IGNORE) --show-source; \
 	else \
-		echo '$(ME): skipping test $@: flake8 not installed' 1>&2; \
+		echo 'skipping test $@: flake8 not installed' 1>&2; \
 	fi
 
 # mymain() in test files should use return, not exit, for nicer output
@@ -685,7 +681,7 @@ sc_prohibit_wrong_filename_in_comment:
 	  if (fail == 1) { \
 	    exit 1; \
 	  } \
-	}' || { echo '$(ME): The file name in comments must match the' \
+	}' || { echo 'The file name in comments must match the' \
 	    'actual file name' 1>&2; exit 1; }
 
 sc_prohibit_virConnectOpen_in_virsh:
@@ -720,18 +716,18 @@ sc_curly_braces_style:
 	@if $(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | xargs $(GREP) -nHP \
 '^\s*(?!([a-zA-Z_]*for_?each[a-zA-Z_]*) ?\()([_a-zA-Z0-9]+( [_a-zA-Z0-9]+)* ?\()?(\*?[_a-zA-Z0-9]+(,? \*?[_a-zA-Z0-9\[\]]+)+|void)\) ?\{' \
 	/dev/null; then \
-	  echo '$(ME): Non-K&R style used for curly braces around' \
+	  echo 'Non-K&R style used for curly braces around' \
 	    'function body' 1>&2; exit 1; \
 	fi; \
 	if $(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | xargs \
 	    $(GREP) -A1 -En ' ((if|for|while|switch) \(|(else|do)\b)[^{]*$$' \
 	    /dev/null | $(GREP) '^[^ ]*- *{'; then \
-	  echo '$(ME): Use hanging braces for compound statements' 1>&2; exit 1; \
+	  echo 'Use hanging braces for compound statements' 1>&2; exit 1; \
 	fi
 
 sc_prohibit_windows_special_chars_in_filename:
 	@$(VC_LIST_EXCEPT) | $(GREP) '[:*?"<>|]' && \
-	{ echo '$(ME): Windows special chars in filename not allowed' 1>&2; echo exit 1; } || :
+	{ echo 'Windows special chars in filename not allowed' 1>&2; echo exit 1; } || :
 
 sc_prohibit_mixed_case_abbreviations:
 	@prohibit='Pci|Usb|Scsi|Vpd' \
@@ -751,7 +747,7 @@ sc_prohibit_empty_first_line:
 	FNR == 1 { maybe_fail = $$0 == ""; } \
 	FNR == 2 { if (maybe_fail == 1) { print FILENAME ":1:"; fail=1; } } \
 	END { if (fail == 1) { \
-	  print "$(ME): Prohibited empty first line" > "/dev/stderr"; \
+	  print "Prohibited empty first line" > "/dev/stderr"; \
 	} exit fail; }'
 
 sc_prohibit_paren_brace:
@@ -798,7 +794,7 @@ sc_prohibit_virSecurityManager:
 	@$(VC_LIST_EXCEPT) | $(GREP) 'src/qemu/' | \
 		$(GREP) -v 'src/qemu/qemu_security' | \
 		xargs $(GREP) -Pn 'virSecurityManager\S*\(' /dev/null && \
-		{ echo '$(ME): prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
+		{ echo 'prefer qemuSecurity wrappers' 1>&2; exit 1; } || :
 
 sc_prohibit_pthread_create:
 	@prohibit='\bpthread_create\b' \
@@ -1009,7 +1005,7 @@ _ignore_case = $$(test -n "$$ignore_case" && printf %s -i || :)
 
 define _sc_say_and_exit
    dummy=; : so we do not need a semicolon before each use;		\
-   { printf '%s\n' "$(ME): $$msg" 1>&2; exit 1; };
+   { printf '%s\n' "$$msg" 1>&2; exit 1; };
 endef
 
 define _sc_search_regexp
@@ -1120,7 +1116,7 @@ sc_error_message_warn_fatal:
 	@$(VC_LIST_EXCEPT)						\
 	  | xargs $(GREP) -nEA2 '[^rp]error *\(' /dev/null		\
 	  | $(GREP) -E '"Warning|"Fatal|"fatal'				\
-	  && { echo '$(ME): use FATAL, WARNING or warning' 1>&2;	\
+	  && { echo 'use FATAL, WARNING or warning' 1>&2;	\
 	       exit 1; }						\
 	  || :
 
@@ -1129,7 +1125,7 @@ sc_error_message_period:
 	@$(VC_LIST_EXCEPT)						\
 	  | xargs $(GREP) -nEA2 '[^rp]error *\(' /dev/null		\
 	  | $(GREP) -E '[^."]\."'					\
-	  && { echo '$(ME): found error message ending in period' 1>&2;	\
+	  && { echo 'found error message ending in period' 1>&2;	\
 	       exit 1; }						\
 	  || :
 
@@ -1169,7 +1165,7 @@ sc_require_config_h_first:
 	@if $(VC_LIST_EXCEPT) | $(GREP) '\.c$$' > /dev/null; then	\
 	  files=$$($(VC_LIST_EXCEPT) | $(GREP) '\.c$$') &&		\
 	  perl -n $(perl_config_h_first_) $$files ||			\
-	    { echo '$(ME): the above files include some other header'	\
+	    { echo 'the above files include some other header'	\
 		'before <config.h>' 1>&2; exit 1; } || :;		\
 	else :;								\
 	fi
@@ -1184,7 +1180,7 @@ define _sc_header_without_use
     files=$$($(GREP) -l '^# *include '"$$h_esc"				\
 	     $$($(VC_LIST_EXCEPT) | $(GREP) '\.c$$')) &&		\
     $(GREP) -LE "$$re" $$files | $(GREP) . &&				\
-      { echo "$(ME): the above files include $$h but don't use it"	\
+      { echo "the above files include $$h but don't use it"	\
 	1>&2; exit 1; } || :;						\
   else :;								\
   fi
@@ -1285,7 +1281,7 @@ sc_prohibit_defined_have_decl_tests:
 # Prohibit checked in backup files.
 sc_prohibit_backup_files:
 	@$(VC_LIST_EXCEPT) | $(GREP) '~$$' && \
-	  { echo '$(ME): found version controlled backup file' 1>&2;	\
+	  { echo 'found version controlled backup file' 1>&2;	\
 	    exit 1; } || :
 
 # This Perl code is slightly obfuscated.  Not only is each "$" doubled
@@ -1329,7 +1325,7 @@ require_exactly_one_NL_at_EOF_ =					\
 sc_prohibit_empty_lines_at_EOF:
 	@$(VC_LIST_EXCEPT)						\
 	  | xargs perl -le '$(require_exactly_one_NL_at_EOF_)'		\
-	  || { echo '$(ME): empty line(s) or no newline at EOF' 1>&2;	\
+	  || { echo 'empty line(s) or no newline at EOF' 1>&2;	\
 	       exit 1; }						\
 	  || :
 
@@ -1364,7 +1360,7 @@ sc_prohibit_doubled_word:
 	  | xargs perl -n -0777 $(prohibit_doubled_word_)		\
 	  | $(GREP) -vE '$(ignore_doubled_word_match_RE_)'		\
 	  | $(GREP) .							\
-	  && { echo '$(ME): doubled words' 1>&2; exit 1; }		\
+	  && { echo 'doubled words' 1>&2; exit 1; }		\
 	  || :
 
 # Except for shell files and for loops, double semicolon is probably a mistake
@@ -1447,7 +1443,7 @@ sc_po_check:
 	    | $(SED) 's|^$(_dot_escaped_srcdir)/||' \
 	    | sort -u > $@-2;						\
 	  diff -u -L $(po_file) -L $(po_file) $@-1 $@-2			\
-	    || { printf '$(ME): '$(fix_po_file_diag) 1>&2; exit 1; };	\
+	    || { printf $(fix_po_file_diag) 1>&2; exit 1; };	\
 	  rm -f $@-1 $@-2;						\
 	fi
 
@@ -1501,7 +1497,7 @@ sc_prohibit-duplicate-header:
 sc_spacing-check:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.c$$' | xargs \
 	$(PERL) $(top_srcdir)/build-aux/check-spacing.pl || \
-	  { echo '$(ME): incorrect formatting' 1>&2; exit 1; }
+	  { echo 'incorrect formatting' 1>&2; exit 1; }
 
 sc_mock-noinline:
 	$(AM_V_GEN)$(VC_LIST_EXCEPT) | $(GREP) '\.[ch]$$' | $(RUNUTF8) \
