@@ -140,7 +140,7 @@ endif
 CI_GIT_ARGS = \
 	-c advice.detachedHead=false \
 	-q \
-	--local  \
+	--local \
 	$(NULL)
 
 # Args to use when running the container
