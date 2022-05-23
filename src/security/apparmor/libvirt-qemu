@@ -78,7 +78,7 @@
   /var/lib/dbus/machine-id r,
 
   # access to firmware's etc
-  /usr/share/AAVMF/** r,
+  /usr/share/AAVMF/** rk,
   /usr/share/bochs/** r,
   /usr/share/edk2-ovmf/** rk,
   /usr/share/kvm/** r,
