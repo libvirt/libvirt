@@ -47,7 +47,7 @@ configure_file(
 
 rc = run_command(
   'sed', '-n',
-  's/^\\(sc_[a-zA-Z0-9_-]*\\):.*/\\1/p',
+  's/^sc_\\([a-zA-Z0-9_-]*\\):.*/\\1/p',
   meson.current_source_dir() / 'syntax-check.mk',
   check: true,
 )
@@ -62,7 +62,7 @@ if git
     test(
       target,
       make_prog,
-      args: [ '-C', meson.current_build_dir(), target ],
+      args: [ '-C', meson.current_build_dir(), 'sc_@0@'.format(target) ],
       depends: [
         potfiles_dep,
       ],
