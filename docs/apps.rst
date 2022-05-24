@@ -154,7 +154,7 @@ Infrastructure as a Service (IaaS)
    software platform that is open source and AWS-compatible. Eucalyptus
    uses libvirt virtualization API to directly interact with Xen and KVM
    hypervisors.
-`Nimbus <http://www.nimbusproject.org>`__
+`Nimbus <https://www.nimbusproject.org/>`__
    Nimbus is an open-source toolkit focused on providing
    Infrastructure-as-a-Service (IaaS) capabilities to the scientific
    community. It uses libvirt for communication with all KVM and Xen
@@ -224,14 +224,14 @@ Monitoring
    for each guest without installing collectd on the guest systems. For
    a full description, please refer to the libvirt section in the
    collectd.conf(5) manual page.
-`Host sFlow <https://www.sflow.net/>`__
+`Host sFlow <https://sflow.net/>`__
    Host sFlow is a lightweight agent running on KVM hypervisors that
    links to libvirt library and exports standardized cpu, memory,
    network and disk metrics for all virtual machines.
 `Munin <https://honk.sigxcpu.org/projects/libvirt/#munin>`__
    The plugins provided by Guido Günther allow to monitor various things
    like network and block I/O with
-   `Munin <http://munin.projects.linpro.no/>`__.
+   `Munin <https://munin-monitoring.org/>`__.
 `Nagios-virt <https://people.redhat.com/rjones/nagios-virt/>`__
    Nagios-virt is a configuration tool to add monitoring of your
    virtualised domains to `Nagios <https://www.nagios.org/>`__. You can

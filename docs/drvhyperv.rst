@@ -9,7 +9,7 @@ The libvirt Microsoft Hyper-V driver can manage Hyper-V 2012 R2 and newer.
 Project Links
 -------------
 
--  The `Microsoft Hyper-V <http://www.microsoft.com/hyper-v-server/>`__
+-  The `Microsoft Hyper-V <https://docs.microsoft.com/en-us/windows-server/virtualization/hyper-v/hyper-v-on-windows-server>`__
    hypervisor
 
 Connections to the Microsoft Hyper-V driver
