@@ -827,7 +827,6 @@ http_sites += mingw.org
 http_sites += munin.projects.linpro.no
 http_sites += www.nimbusproject.org
 http_sites += www.sflow.net
-http_sites += xmlsoft.org
 http_sites += etallen.com
 
 # dead sites

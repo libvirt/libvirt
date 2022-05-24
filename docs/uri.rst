@@ -178,7 +178,7 @@ Extra parameters can be added to remote URIs as part of the query string (the
 part following ``?``). Remote URIs understand the extra parameters shown
 below. Any others are passed unmodified through to the back end. Note that
 parameter values must be
-`URI-escaped <http://xmlsoft.org/html/libxml-uri.html#xmlURIEscapeStr>`__.
+`URI-escaped <https://gnome.pages.gitlab.gnome.org/libxml2/devhelp/libxml2-uri.html#xmlURIEscapeStr>`__.
 
 All transports support the following parameters:
 
