@@ -839,7 +839,6 @@ http_sites += www.javvin.com
 # 404 links
 http_sites += kerneltrap.org
 http_sites += www.microsoft.com
-http_sites += lovezutto.googlepages.com
 
 http_re= ($(subst $(space),|,$(http_sites)))
 
