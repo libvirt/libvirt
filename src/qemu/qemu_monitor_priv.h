@@ -57,7 +57,6 @@ struct _qemuMonitor {
     char *domainName;
 
     qemuMonitorCallbacks *cb;
-    void *callbackOpaque;
 
     /* If there's a command being processed this will be
      * non-NULL */

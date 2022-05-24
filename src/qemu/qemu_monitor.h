@@ -180,49 +180,38 @@ void qemuMonitorEventRdmaGidStatusFree(qemuMonitorRdmaGidStatus *info);
 void qemuMonitorMemoryDeviceSizeChangeFree(qemuMonitorMemoryDeviceSizeChange *info);
 
 typedef void (*qemuMonitorDestroyCallback)(qemuMonitor *mon,
-                                           virDomainObj *vm,
-                                           void *opaque);
+                                           virDomainObj *vm);
 typedef void (*qemuMonitorEofNotifyCallback)(qemuMonitor *mon,
-                                             virDomainObj *vm,
-                                             void *opaque);
+                                             virDomainObj *vm);
 typedef void (*qemuMonitorErrorNotifyCallback)(qemuMonitor *mon,
-                                               virDomainObj *vm,
-                                               void *opaque);
+                                               virDomainObj *vm);
 typedef void (*qemuMonitorDomainEventCallback)(qemuMonitor *mon,
                                                virDomainObj *vm,
                                                const char *event,
                                                long long seconds,
                                                unsigned int micros,
-                                               const char *details,
-                                               void *opaque);
+                                               const char *details);
 typedef void (*qemuMonitorDomainShutdownCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
-                                                  virTristateBool guest,
-                                                  void *opaque);
+                                                  virTristateBool guest);
 typedef void (*qemuMonitorDomainResetCallback)(qemuMonitor *mon,
-                                               virDomainObj *vm,
-                                               void *opaque);
+                                               virDomainObj *vm);
 typedef void (*qemuMonitorDomainStopCallback)(qemuMonitor *mon,
-                                              virDomainObj *vm,
-                                              void *opaque);
+                                              virDomainObj *vm);
 typedef void (*qemuMonitorDomainResumeCallback)(qemuMonitor *mon,
-                                                virDomainObj *vm,
-                                                void *opaque);
+                                                virDomainObj *vm);
 typedef void (*qemuMonitorDomainRTCChangeCallback)(qemuMonitor *mon,
                                                    virDomainObj *vm,
-                                                   long long offset,
-                                                   void *opaque);
+                                                   long long offset);
 typedef void (*qemuMonitorDomainWatchdogCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
-                                                  int action,
-                                                  void *opaque);
+                                                  int action);
 typedef void (*qemuMonitorDomainIOErrorCallback)(qemuMonitor *mon,
                                                  virDomainObj *vm,
                                                  const char *diskAlias,
                                                  const char *nodename,
                                                  int action,
-                                                 const char *reason,
-                                                 void *opaque);
+                                                 const char *reason);
 typedef void (*qemuMonitorDomainGraphicsCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
                                                   int phase,
@@ -234,76 +223,60 @@ typedef void (*qemuMonitorDomainGraphicsCallback)(qemuMonitor *mon,
                                                   const char *remoteService,
                                                   const char *authScheme,
                                                   const char *x509dname,
-                                                  const char *saslUsername,
-                                                  void *opaque);
+                                                  const char *saslUsername);
 typedef void (*qemuMonitorDomainBlockJobCallback)(qemuMonitor *mon,
                                                   virDomainObj *vm,
                                                   const char *diskAlias,
                                                   int type,
                                                   int status,
-                                                  const char *error,
-                                                  void *opaque);
+                                                  const char *error);
 typedef void (*qemuMonitorDomainJobStatusChangeCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
                                                          const char *jobname,
-                                                         int status,
-                                                         void *opaque);
+                                                         int status);
 typedef void (*qemuMonitorDomainTrayChangeCallback)(qemuMonitor *mon,
                                                     virDomainObj *vm,
                                                     const char *devAlias,
                                                     const char *devid,
-                                                    int reason,
-                                                    void *opaque);
+                                                    int reason);
 typedef void (*qemuMonitorDomainPMWakeupCallback)(qemuMonitor *mon,
-                                                  virDomainObj *vm,
-                                                  void *opaque);
+                                                  virDomainObj *vm);
 typedef void (*qemuMonitorDomainPMSuspendCallback)(qemuMonitor *mon,
-                                                   virDomainObj *vm,
-                                                   void *opaque);
+                                                   virDomainObj *vm);
 typedef void (*qemuMonitorDomainBalloonChangeCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
-                                                       unsigned long long actual,
-                                                       void *opaque);
+                                                       unsigned long long actual);
 typedef void (*qemuMonitorDomainPMSuspendDiskCallback)(qemuMonitor *mon,
-                                                       virDomainObj *vm,
-                                                       void *opaque);
+                                                       virDomainObj *vm);
 typedef void (*qemuMonitorDomainGuestPanicCallback)(qemuMonitor *mon,
                                                     virDomainObj *vm,
-                                                    qemuMonitorEventPanicInfo *info,
-                                                    void *opaque);
+                                                    qemuMonitorEventPanicInfo *info);
 typedef void (*qemuMonitorDomainDeviceDeletedCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
-                                                       const char *devAlias,
-                                                       void *opaque);
+                                                       const char *devAlias);
 typedef void (*qemuMonitorDomainDeviceUnplugErrCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
                                                          const char *devPath,
-                                                         const char *devAlias,
-                                                         void *opaque);
+                                                         const char *devAlias);
 typedef void (*qemuMonitorDomainNicRxFilterChangedCallback)(qemuMonitor *mon,
                                                             virDomainObj *vm,
-                                                            const char *devAlias,
-                                                            void *opaque);
+                                                            const char *devAlias);
 
 typedef void (*qemuMonitorDomainSerialChangeCallback)(qemuMonitor *mon,
                                                       virDomainObj *vm,
                                                       const char *devAlias,
-                                                      bool connected,
-                                                      void *opaque);
+                                                      bool connected);
 
 typedef void (*qemuMonitorDomainSpiceMigratedCallback)(qemuMonitor *mon,
-                                                       virDomainObj *vm,
-                                                       void *opaque);
+                                                       virDomainObj *vm);
 
 typedef void (*qemuMonitorDomainMigrationStatusCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
-                                                         int status,
-                                                         void *opaque);
+                                                         int status);
 
 typedef void (*qemuMonitorDomainMigrationPassCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
-                                                       int pass,
-                                                       void *opaque);
+                                                       int pass);
 
 typedef void (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
                                                      virDomainObj *vm,
@@ -311,16 +284,14 @@ typedef void (*qemuMonitorDomainAcpiOstInfoCallback)(qemuMonitor *mon,
                                                      const char *slotType,
                                                      const char *slot,
                                                      unsigned int source,
-                                                     unsigned int status,
-                                                     void *opaque);
+                                                     unsigned int status);
 
 
 typedef void (*qemuMonitorDomainBlockThresholdCallback)(qemuMonitor *mon,
                                                         virDomainObj *vm,
                                                         const char *nodename,
                                                         unsigned long long threshold,
-                                                        unsigned long long excess,
-                                                        void *opaque);
+                                                        unsigned long long excess);
 
 
 typedef enum {
@@ -345,26 +316,22 @@ typedef void (*qemuMonitorDomainDumpCompletedCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
                                                        int status,
                                                        qemuMonitorDumpStats *stats,
-                                                       const char *error,
-                                                       void *opaque);
+                                                       const char *error);
 
 typedef void (*qemuMonitorDomainPRManagerStatusChangedCallback)(qemuMonitor *mon,
                                                                 virDomainObj *vm,
                                                                 const char *prManager,
-                                                                bool connected,
-                                                                void *opaque);
+                                                                bool connected);
 
 typedef void (*qemuMonitorDomainRdmaGidStatusChangedCallback)(qemuMonitor *mon,
                                                               virDomainObj *vm,
                                                               const char *netdev,
                                                               bool gid_status,
                                                               unsigned long long subnet_prefix,
-                                                              unsigned long long interface_id,
-                                                              void *opaque);
+                                                              unsigned long long interface_id);
 
 typedef void (*qemuMonitorDomainGuestCrashloadedCallback)(qemuMonitor *mon,
-                                                          virDomainObj *vm,
-                                                          void *opaque);
+                                                          virDomainObj *vm);
 
 typedef enum {
     QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_HYPERVISOR,
@@ -396,14 +363,12 @@ struct _qemuMonitorEventMemoryFailure {
 
 typedef void (*qemuMonitorDomainMemoryFailureCallback)(qemuMonitor *mon,
                                                        virDomainObj *vm,
-                                                       qemuMonitorEventMemoryFailure *mfp,
-                                                       void *opaque);
+                                                       qemuMonitorEventMemoryFailure *mfp);
 
 typedef void (*qemuMonitorDomainMemoryDeviceSizeChange)(qemuMonitor *mon,
                                                         virDomainObj *vm,
                                                         const char *alias,
-                                                        unsigned long long size,
-                                                        void *opaque);
+                                                        unsigned long long size);
 
 typedef struct _qemuMonitorCallbacks qemuMonitorCallbacks;
 struct _qemuMonitorCallbacks {
@@ -448,8 +413,7 @@ qemuMonitor *qemuMonitorOpen(virDomainObj *vm,
                                bool retry,
                                unsigned long long timeout,
                                GMainContext *context,
-                               qemuMonitorCallbacks *cb,
-                               void *opaque)
+                               qemuMonitorCallbacks *cb)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(5);
 
 void qemuMonitorWatchDispose(void);

@@ -34,7 +34,6 @@
 
 void qemuProcessHandleDeviceDeleted(qemuMonitor *mon,
                                     virDomainObj *vm,
-                                    const char *devAlias,
-                                    void *opaque);
+                                    const char *devAlias);
 
 int qemuProcessQMPInitMonitor(qemuMonitor *mon);

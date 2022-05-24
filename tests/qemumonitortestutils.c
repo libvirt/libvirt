@@ -953,16 +953,14 @@ qemuMonitorTestAddItemExpect(qemuMonitorTest *test,
 
 static void
 qemuMonitorTestEOFNotify(qemuMonitor *mon G_GNUC_UNUSED,
-                         virDomainObj *vm G_GNUC_UNUSED,
-                         void *opaque G_GNUC_UNUSED)
+                         virDomainObj *vm G_GNUC_UNUSED)
 {
 }
 
 
 static void
 qemuMonitorTestErrorNotify(qemuMonitor *mon G_GNUC_UNUSED,
-                           virDomainObj *vm G_GNUC_UNUSED,
-                           void *opaque G_GNUC_UNUSED)
+                           virDomainObj *vm G_GNUC_UNUSED)
 {
 }
 
@@ -1096,7 +1094,6 @@ qemuMonitorCommonTestInit(qemuMonitorTest *test)
 qemuMonitorTest *
 qemuMonitorTestNew(virDomainXMLOption *xmlopt,
                    virDomainObj *vm,
-                   virQEMUDriver *driver,
                    const char *greeting,
                    GHashTable *schema)
 {
@@ -1117,8 +1114,7 @@ qemuMonitorTestNew(virDomainXMLOption *xmlopt,
                                       true,
                                       0,
                                       virEventThreadGetContext(test->eventThread),
-                                      &qemuMonitorTestCallbacks,
-                                      driver)))
+                                      &qemuMonitorTestCallbacks)))
         goto error;
 
     virObjectLock(test->mon);
@@ -1190,7 +1186,7 @@ qemuMonitorTestNewFromFile(const char *fileName,
                     return NULL;
             } else {
                 /* Create new mocked monitor with our greeting */
-                if (!(test = qemuMonitorTestNew(xmlopt, NULL, NULL,
+                if (!(test = qemuMonitorTestNew(xmlopt, NULL,
                                                 singleReply, NULL)))
                     return NULL;
             }
@@ -1390,8 +1386,7 @@ qemuMonitorTestNewFromFileFull(const char *fileName,
     if (virTestLoadFile(fileName, &jsonstr) < 0)
         return NULL;
 
-    if (!(ret = qemuMonitorTestNew(driver->xmlopt, vm, driver, NULL,
-                                   qmpschema)))
+    if (!(ret = qemuMonitorTestNew(driver->xmlopt, vm, NULL, qmpschema)))
         return NULL;
 
     if (qemuMonitorTestProcessFileEntries(jsonstr, fileName, &items, &nitems) < 0)

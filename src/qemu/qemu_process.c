@@ -304,8 +304,7 @@ qemuProcessEventSubmit(virDomainObj *vm,
  */
 static void
 qemuProcessHandleMonitorEOF(qemuMonitor *mon,
-                            virDomainObj *vm,
-                            void *opaque G_GNUC_UNUSED)
+                            virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv;
 
@@ -346,8 +345,7 @@ qemuProcessHandleMonitorEOF(qemuMonitor *mon,
  */
 static void
 qemuProcessHandleMonitorError(qemuMonitor *mon G_GNUC_UNUSED,
-                              virDomainObj *vm,
-                              void *opaque G_GNUC_UNUSED)
+                              virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv;
     virObjectEvent *event = NULL;
@@ -408,8 +406,7 @@ qemuProcessFindDomainDiskByAliasOrQOM(virDomainObj *vm,
 
 static void
 qemuProcessHandleReset(qemuMonitor *mon G_GNUC_UNUSED,
-                       virDomainObj *vm,
-                       void *opaque G_GNUC_UNUSED)
+                       virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -542,8 +539,7 @@ qemuProcessHandleEvent(qemuMonitor *mon G_GNUC_UNUSED,
                        const char *eventName,
                        long long seconds,
                        unsigned int micros,
-                       const char *details,
-                       void *opaque G_GNUC_UNUSED)
+                       const char *details)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -564,8 +560,7 @@ qemuProcessHandleEvent(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
-                          virTristateBool guest_initiated,
-                          void *opaque G_GNUC_UNUSED)
+                          virTristateBool guest_initiated)
 {
     virQEMUDriver *driver;
     qemuDomainObjPrivate *priv;
@@ -636,8 +631,7 @@ qemuProcessHandleShutdown(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
-                      virDomainObj *vm,
-                      void *opaque G_GNUC_UNUSED)
+                      virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -694,8 +688,7 @@ qemuProcessHandleStop(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
-                        virDomainObj *vm,
-                        void *opaque G_GNUC_UNUSED)
+                        virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -734,8 +727,7 @@ qemuProcessHandleResume(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
                            virDomainObj *vm,
-                           long long offset,
-                           void *opaque G_GNUC_UNUSED)
+                           long long offset)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -776,8 +768,7 @@ qemuProcessHandleRTCChange(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
                           virDomainObj *vm,
-                          int action,
-                          void *opaque G_GNUC_UNUSED)
+                          int action)
 {
     virQEMUDriver *driver;
     virObjectEvent *watchdogEvent = NULL;
@@ -822,8 +813,7 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
                          const char *diskAlias,
                          const char *nodename,
                          int action,
-                         const char *reason,
-                         void *opaque G_GNUC_UNUSED)
+                         const char *reason)
 {
     virQEMUDriver *driver;
     virObjectEvent *ioErrorEvent = NULL;
@@ -890,8 +880,7 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
                           const char *diskAlias,
                           int type,
                           int status,
-                          const char *error,
-                          void *opaque G_GNUC_UNUSED)
+                          const char *error)
 {
     qemuDomainObjPrivate *priv;
     virDomainDiskDef *disk;
@@ -934,8 +923,7 @@ static void
 qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
                                  virDomainObj *vm,
                                  const char *jobname,
-                                 int status,
-                                 void *opaque G_GNUC_UNUSED)
+                                 int status)
 {
     qemuDomainObjPrivate *priv;
     qemuBlockJobData *job = NULL;
@@ -989,8 +977,7 @@ qemuProcessHandleGraphics(qemuMonitor *mon G_GNUC_UNUSED,
                           const char *remoteService,
                           const char *authScheme,
                           const char *x509dname,
-                          const char *saslUsername,
-                          void *opaque G_GNUC_UNUSED)
+                          const char *saslUsername)
 {
     virQEMUDriver *driver;
     virObjectEvent *event;
@@ -1035,8 +1022,7 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
                             virDomainObj *vm,
                             const char *devAlias,
                             const char *devid,
-                            int reason,
-                            void *opaque G_GNUC_UNUSED)
+                            int reason)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1064,8 +1050,7 @@ qemuProcessHandleTrayChange(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
-                          virDomainObj *vm,
-                          void *opaque G_GNUC_UNUSED)
+                          virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1097,8 +1082,7 @@ qemuProcessHandlePMWakeup(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandlePMSuspend(qemuMonitor *mon G_GNUC_UNUSED,
-                           virDomainObj *vm,
-                           void *opaque G_GNUC_UNUSED)
+                           virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1134,8 +1118,7 @@ qemuProcessHandlePMSuspend(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
-                               unsigned long long actual,
-                               void *opaque G_GNUC_UNUSED)
+                               unsigned long long actual)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1168,8 +1151,7 @@ qemuProcessHandleBalloonChange(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
-                               virDomainObj *vm,
-                               void *opaque G_GNUC_UNUSED)
+                               virDomainObj *vm)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1206,8 +1188,7 @@ qemuProcessHandlePMSuspendDisk(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
                             virDomainObj *vm,
-                            qemuMonitorEventPanicInfo *info,
-                            void *opaque G_GNUC_UNUSED)
+                            qemuMonitorEventPanicInfo *info)
 {
     virObjectLock(vm);
 
@@ -1221,8 +1202,7 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
 void
 qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
-                               const char *devAlias,
-                               void *opaque G_GNUC_UNUSED)
+                               const char *devAlias)
 {
     virObjectLock(vm);
 
@@ -1245,8 +1225,7 @@ static void
 qemuProcessHandleDeviceUnplugErr(qemuMonitor *mon G_GNUC_UNUSED,
                                  virDomainObj *vm,
                                  const char *devPath,
-                                 const char *devAlias,
-                                 void *opaque G_GNUC_UNUSED)
+                                 const char *devAlias)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1341,8 +1320,7 @@ qemuProcessHandleAcpiOstInfo(qemuMonitor *mon G_GNUC_UNUSED,
                              const char *slotType,
                              const char *slot,
                              unsigned int source,
-                             unsigned int status,
-                             void *opaque G_GNUC_UNUSED)
+                             unsigned int status)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1378,8 +1356,7 @@ qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
                                 virDomainObj *vm,
                                 const char *nodename,
                                 unsigned long long threshold,
-                                unsigned long long excess,
-                                void *opaque G_GNUC_UNUSED)
+                                unsigned long long excess)
 {
     qemuDomainObjPrivate *priv;
     virQEMUDriver *driver;
@@ -1427,8 +1404,7 @@ qemuProcessHandleBlockThreshold(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                     virDomainObj *vm,
-                                    const char *devAlias,
-                                    void *opaque G_GNUC_UNUSED)
+                                    const char *devAlias)
 {
     virObjectLock(vm);
 
@@ -1446,8 +1422,7 @@ static void
 qemuProcessHandleSerialChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                const char *devAlias,
-                               bool connected,
-                               void *opaque G_GNUC_UNUSED)
+                               bool connected)
 {
     virObjectLock(vm);
 
@@ -1463,8 +1438,7 @@ qemuProcessHandleSerialChanged(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
-                               virDomainObj *vm,
-                               void *opaque G_GNUC_UNUSED)
+                               virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv;
     qemuDomainJobPrivate *jobPriv;
@@ -1492,8 +1466,7 @@ qemuProcessHandleSpiceMigrated(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
                                  virDomainObj *vm,
-                                 int status,
-                                 void *opaque G_GNUC_UNUSED)
+                                 int status)
 {
     qemuDomainObjPrivate *priv;
     qemuDomainJobDataPrivate *privJob = NULL;
@@ -1544,8 +1517,7 @@ qemuProcessHandleMigrationStatus(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleMigrationPass(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
-                               int pass,
-                               void *opaque G_GNUC_UNUSED)
+                               int pass)
 {
     qemuDomainObjPrivate *priv;
 
@@ -1573,8 +1545,7 @@ qemuProcessHandleDumpCompleted(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
                                int status,
                                qemuMonitorDumpStats *stats,
-                               const char *error,
-                               void *opaque G_GNUC_UNUSED)
+                               const char *error)
 {
     qemuDomainObjPrivate *priv;
     qemuDomainJobPrivate *jobPriv;
@@ -1614,8 +1585,7 @@ static void
 qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                         virDomainObj *vm,
                                         const char *prManager,
-                                        bool connected,
-                                        void *opaque G_GNUC_UNUSED)
+                                        bool connected)
 {
     qemuDomainObjPrivate *priv;
     const char *managedAlias = qemuDomainGetManagedPRAlias();
@@ -1654,8 +1624,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                       const char *netdev,
                                       bool gid_status,
                                       unsigned long long subnet_prefix,
-                                      unsigned long long interface_id,
-                                      void *opaque G_GNUC_UNUSED)
+                                      unsigned long long interface_id)
 {
     qemuMonitorRdmaGidStatus *info = NULL;
 
@@ -1681,8 +1650,7 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
 
 static void
 qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
-                                  virDomainObj *vm,
-                                  void *opaque G_GNUC_UNUSED)
+                                  virDomainObj *vm)
 {
     virObjectLock(vm);
 
@@ -1696,8 +1664,7 @@ qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
 static void
 qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
                                virDomainObj *vm,
-                               qemuMonitorEventMemoryFailure *mfp,
-                               void *opaque G_GNUC_UNUSED)
+                               qemuMonitorEventMemoryFailure *mfp)
 {
     virQEMUDriver *driver;
     virObjectEvent *event = NULL;
@@ -1755,8 +1722,7 @@ static void
 qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
                                         virDomainObj *vm,
                                         const char *devAlias,
-                                        unsigned long long size,
-                                        void *opaque G_GNUC_UNUSED)
+                                        unsigned long long size)
 {
     qemuMonitorMemoryDeviceSizeChange *info = NULL;
 
@@ -1876,8 +1842,7 @@ qemuConnectMonitor(virQEMUDriver *driver,
                           retry,
                           timeout,
                           virEventThreadGetContext(priv->eventThread),
-                          &monitorCallbacks,
-                          driver);
+                          &monitorCallbacks);
 
     if (mon && logCtxt) {
         g_object_ref(logCtxt);
@@ -9059,8 +9024,7 @@ qemuProcessReconnectAll(virQEMUDriver *driver)
 
 
 static void virQEMUCapsMonitorNotify(qemuMonitor *mon G_GNUC_UNUSED,
-                                     virDomainObj *vm G_GNUC_UNUSED,
-                                     void *opaque G_GNUC_UNUSED)
+                                     virDomainObj *vm G_GNUC_UNUSED)
 {
 }
 
@@ -9343,7 +9307,7 @@ qemuProcessQMPConnectMonitor(qemuProcessQMP *proc)
 
     if (!(proc->mon = qemuMonitorOpen(proc->vm, &monConfig, true, 0,
                                       virEventThreadGetContext(proc->eventThread),
-                                      &callbacks, NULL)))
+                                      &callbacks)))
         return -1;
 
     virObjectLock(proc->mon);

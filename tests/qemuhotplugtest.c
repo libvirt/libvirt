@@ -298,8 +298,7 @@ testQemuHotplug(const void *data)
 
     /* Now is the best time to feed the spoofed monitor with predefined
      * replies. */
-    if (!(test_mon = qemuMonitorTestNew(driver.xmlopt, vm, &driver,
-                                        NULL, NULL)))
+    if (!(test_mon = qemuMonitorTestNew(driver.xmlopt, vm, NULL, NULL)))
         goto cleanup;
 
     tmp = test->mon;

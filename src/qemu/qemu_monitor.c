@@ -578,7 +578,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         virObjectUnlock(mon);
         VIR_DEBUG("Triggering EOF callback mon=%p vm=%p name=%s",
                   mon, mon->vm, mon->domainName);
-        (eofNotify)(mon, vm, mon->callbackOpaque);
+        (eofNotify)(mon, vm);
         virObjectUnref(mon);
     } else if (error) {
         qemuMonitorErrorNotifyCallback errorNotify = mon->cb->errorNotify;
@@ -589,7 +589,7 @@ qemuMonitorIO(GSocket *socket G_GNUC_UNUSED,
         virObjectUnlock(mon);
         VIR_DEBUG("Triggering error callback mon=%p vm=%p name=%s",
                   mon, mon->vm, mon->domainName);
-        (errorNotify)(mon, vm, mon->callbackOpaque);
+        (errorNotify)(mon, vm);
         virObjectUnref(mon);
     } else {
         virObjectUnlock(mon);
@@ -604,8 +604,7 @@ static qemuMonitor *
 qemuMonitorOpenInternal(virDomainObj *vm,
                         int fd,
                         GMainContext *context,
-                        qemuMonitorCallbacks *cb,
-                        void *opaque)
+                        qemuMonitorCallbacks *cb)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuMonitor *mon;
@@ -639,7 +638,6 @@ qemuMonitorOpenInternal(virDomainObj *vm,
     mon->domainName = g_strdup(NULLSTR(vm->def->name));
     mon->waitGreeting = true;
     mon->cb = cb;
-    mon->callbackOpaque = opaque;
 
     if (priv)
         mon->objectAddNoWrap = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_JSON);
@@ -688,7 +686,6 @@ qemuMonitorOpenInternal(virDomainObj *vm,
  * @config: monitor configuration
  * @timeout: number of seconds to add to default timeout
  * @cb: monitor event handles
- * @opaque: opaque data for @cb
  *
  * Opens the monitor for running qemu. It may happen that it
  * takes some time for qemu to create the monitor socket (e.g.
@@ -704,8 +701,7 @@ qemuMonitorOpen(virDomainObj *vm,
                 bool retry,
                 unsigned long long timeout,
                 GMainContext *context,
-                qemuMonitorCallbacks *cb,
-                void *opaque)
+                qemuMonitorCallbacks *cb)
 {
     VIR_AUTOCLOSE fd = -1;
     qemuMonitor *ret = NULL;
@@ -733,7 +729,7 @@ qemuMonitorOpen(virDomainObj *vm,
         return NULL;
     }
 
-    ret = qemuMonitorOpenInternal(vm, fd, context, cb, opaque);
+    ret = qemuMonitorOpenInternal(vm, fd, context, cb);
     fd = -1;
     return ret;
 }
@@ -1085,7 +1081,7 @@ qemuMonitorUpdateVideoVram64Size(qemuMonitor *mon,
         virObjectRef(mon); \
         virObjectUnlock(mon); \
         if ((mon)->cb && (mon)->cb->callback) \
-            (mon)->cb->callback(mon, __VA_ARGS__, (mon)->callbackOpaque); \
+            (mon)->cb->callback(mon, __VA_ARGS__); \
         virObjectLock(mon); \
         virObjectUnref(mon); \
     } while (0)
