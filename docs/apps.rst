@@ -159,11 +159,6 @@ Infrastructure as a Service (IaaS)
    Infrastructure-as-a-Service (IaaS) capabilities to the scientific
    community. It uses libvirt for communication with all KVM and Xen
    virtual machines.
-`Snooze <http://snooze.inria.fr>`__
-   Snooze is an open-source scalable, autonomic, and energy-efficient
-   virtual machine (VM) management framework for private clouds. It
-   integrates libvirt for VM monitoring, live migration, and life-cycle
-   management.
 `OpenStack <https://www.openstack.org>`__
    OpenStack is a "cloud operating system" usable for both public and
    private clouds. Its various parts take care of compute, storage and
