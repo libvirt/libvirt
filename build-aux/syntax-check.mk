@@ -825,7 +825,6 @@ http_sites += 0pointer.de
 http_sites += mah.everybody.org
 http_sites += mingw.org
 http_sites += munin.projects.linpro.no
-http_sites += netcat.sourceforge.net
 http_sites += www.nimbusproject.org
 http_sites += www.sflow.net
 http_sites += xmlsoft.org
