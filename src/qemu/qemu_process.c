@@ -145,9 +145,8 @@ qemuProcessHandleAgentEOF(qemuAgent *agent,
 {
     qemuDomainObjPrivate *priv;
 
-    VIR_DEBUG("Received EOF from agent on %p '%s'", vm, vm->def->name);
-
     virObjectLock(vm);
+    VIR_DEBUG("Received EOF from agent on %p '%s'", vm, vm->def->name);
 
     priv = vm->privateData;
 
@@ -186,9 +185,8 @@ qemuProcessHandleAgentError(qemuAgent *agent G_GNUC_UNUSED,
 {
     qemuDomainObjPrivate *priv;
 
-    VIR_DEBUG("Received error from agent on %p '%s'", vm, vm->def->name);
-
     virObjectLock(vm);
+    VIR_DEBUG("Received error from agent on %p '%s'", vm, vm->def->name);
 
     priv = vm->privateData;
 
@@ -353,9 +351,8 @@ qemuProcessHandleMonitorError(qemuMonitor *mon G_GNUC_UNUSED,
     virQEMUDriver *driver = opaque;
     virObjectEvent *event = NULL;
 
-    VIR_DEBUG("Received error on %p '%s'", vm, vm->def->name);
-
     virObjectLock(vm);
+    VIR_DEBUG("Received error on %p '%s'", vm, vm->def->name);
 
     ((qemuDomainObjPrivate *) vm->privateData)->monError = true;
     event = virDomainEventControlErrorNewFromObj(vm);
@@ -1773,6 +1770,8 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
     virDomainMemoryFailureActionType action;
     unsigned int flags = 0;
 
+    virObjectLock(vm);
+
     switch (mfp->recipient) {
     case QEMU_MONITOR_MEMORY_FAILURE_RECIPIENT_HYPERVISOR:
         recipient = VIR_DOMAIN_EVENT_MEMORY_FAILURE_RECIPIENT_HYPERVISOR;
@@ -1809,6 +1808,9 @@ qemuProcessHandleMemoryFailure(qemuMonitor *mon G_GNUC_UNUSED,
         flags |= VIR_DOMAIN_MEMORY_FAILURE_RECURSIVE;
 
     event = virDomainEventMemoryFailureNewFromObj(vm, recipient, action, flags);
+
+    virObjectUnlock(vm);
+
     virObjectEventStateQueue(driver->domainEventState, event);
 }
 
