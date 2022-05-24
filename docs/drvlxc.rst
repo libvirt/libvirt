@@ -245,7 +245,7 @@ Systemd Socket Activation Integration
 The libvirt LXC driver provides the ability to pass across pre-opened file
 descriptors when starting LXC guests. This allows for libvirt LXC to support
 systemd's `socket activation
-capability <http://0pointer.de/blog/projects/socket-activated-containers.html>`__,
+capability <https://0pointer.de/blog/projects/socket-activated-containers.html>`__,
 where an incoming client connection in the host OS will trigger the startup of a
 container, which runs another copy of systemd which gets passed the server
 socket, and then activates the actual service handler in the container.

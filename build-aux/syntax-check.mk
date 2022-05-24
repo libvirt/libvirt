@@ -821,7 +821,6 @@ http_sites += example.org
 http_sites += herp.derp
 
 # HTTP-only sites
-http_sites += 0pointer.de
 http_sites += mah.everybody.org
 http_sites += etallen.com
 
