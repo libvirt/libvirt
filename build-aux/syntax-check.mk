@@ -828,7 +828,6 @@ http_sites += munin.projects.linpro.no
 http_sites += netcat.sourceforge.net
 http_sites += snooze.inria.fr
 http_sites += www.nimbusproject.org
-http_sites += www.odin.com
 http_sites += www.sflow.net
 http_sites += xmlsoft.org
 http_sites += etallen.com
@@ -843,7 +842,6 @@ http_sites += www.javvin.com
 http_sites += publib.boulder.ibm.com
 http_sites += kerneltrap.org
 http_sites += www.microsoft.com
-http_sites += xenbits.xen.org
 http_sites += lovezutto.googlepages.com
 
 http_re= ($(subst $(space),|,$(http_sites)))
