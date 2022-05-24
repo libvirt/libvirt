@@ -3998,7 +3998,7 @@ processSerialChangedEvent(virQEMUDriver *driver,
         memset(&dev, 0, sizeof(dev));
     }
 
-    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY) < 0)
+    if (qemuDomainObjBeginJob(driver, vm, VIR_JOB_MODIFY_MIGRATION_SAFE) < 0)
         return;
 
     if (!virDomainObjIsActive(vm)) {
