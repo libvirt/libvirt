@@ -104,8 +104,8 @@ desired <contact.html>`__.
 Compiling yourself
 ------------------
 
-Libvirt can be compiled on Windows using the free `MinGW
-compiler <http://www.mingw.org/>`__.
+Libvirt can be compiled on Windows using the free `MinGW-w64
+compiler <https://www.mingw-w64.org/>`__.
 
 MSYS Build script
 ~~~~~~~~~~~~~~~~~

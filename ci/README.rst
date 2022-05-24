@@ -10,8 +10,8 @@ Cirrus CI integration
 =====================
 
 libvirt currently supports three non-Linux operating systems: Windows, FreeBSD
-and macOS. Windows cross-builds can be prepared on Linux by using `MinGW`_, but
-for both FreeBSD and macOS we need to use the actual operating system, and
+and macOS. Windows cross-builds can be prepared on Linux by using `MinGW-w64`_,
+but for both FreeBSD and macOS we need to use the actual operating system, and
 unfortunately GitLab shared runners are currently not available for either.
 
 To work around this limitation, we take advantage of `Cirrus CI`_'s free
@@ -61,7 +61,7 @@ repository as usual and you'll automatically get the additional CI coverage.
 .. _Cirrus CI GitHub app: https://github.com/marketplace/cirrus-ci
 .. _Cirrus CI settings: https://cirrus-ci.com/settings/profile/
 .. _Cirrus CI: https://cirrus-ci.com/
-.. _MinGW: http://mingw.org/
+.. _MinGW-w64: https://www.mingw-w64.org/
 .. _cirrus-run: https://github.com/sio/cirrus-run/
 
 

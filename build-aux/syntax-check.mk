@@ -823,7 +823,6 @@ http_sites += herp.derp
 # HTTP-only sites
 http_sites += 0pointer.de
 http_sites += mah.everybody.org
-http_sites += mingw.org
 http_sites += munin.projects.linpro.no
 http_sites += www.nimbusproject.org
 http_sites += www.sflow.net
