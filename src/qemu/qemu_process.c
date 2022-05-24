@@ -265,27 +265,37 @@ qemuConnectAgent(virQEMUDriver *driver, virDomainObj *vm)
 /**
  * qemuProcessEventSubmit:
  * @driver: QEMU driver object
- * @event: pointer to the variable holding the event processing data (stolen and cleared)
+ * @vm: pointer to the domain object, the function will take an extra reference
+ * @eventType: the event to be processed
+ * @action: event specific action to be taken
+ * @status: event specific status
+ * @data: additional data for the event processor (the pointer is stolen and it
+ *        will be properly freed
  *
- * Submits @event to be processed by the asynchronous event handling thread.
- * In case when submission of the handling fails @event is properly freed and
- * cleared. If (*event)->vm is non-NULL the domain object is uref'd before freeing
- * @event.
+ * Submits @eventType to be processed by the asynchronous event handling thread.
  */
 static void
 qemuProcessEventSubmit(virQEMUDriver *driver,
-                       struct qemuProcessEvent **event)
+                       virDomainObj *vm,
+                       qemuProcessEventType eventType,
+                       int action,
+                       int status,
+                       void *data)
 {
-    if (!*event)
-        return;
+    struct qemuProcessEvent *event = g_new0(struct qemuProcessEvent, 1);
 
-    if (virThreadPoolSendJob(driver->workerPool, 0, *event) < 0) {
-        if ((*event)->vm)
-            virObjectUnref((*event)->vm);
-        qemuProcessEventFree(*event);
+    if (vm)
+        event->vm = virObjectRef(vm);
+    event->eventType = eventType;
+    event->action = action;
+    event->status = status;
+    event->data = data;
+
+    if (virThreadPoolSendJob(driver->workerPool, 0, event) < 0) {
+        if (vm)
+            virObjectUnref(vm);
+        qemuProcessEventFree(event);
     }
-
-    *event = NULL;
 }
 
 
@@ -302,7 +312,6 @@ qemuProcessHandleMonitorEOF(qemuMonitor *mon,
 {
     virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv;
-    struct qemuProcessEvent *processEvent;
 
     virObjectLock(vm);
 
@@ -314,12 +323,8 @@ qemuProcessHandleMonitorEOF(qemuMonitor *mon,
         goto cleanup;
     }
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_MONITOR_EOF;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(driver, vm, QEMU_PROCESS_EVENT_MONITOR_EOF,
+                           0, 0, NULL);
 
     /* We don't want this EOF handler to be called over and over while the
      * thread is waiting for a job.
@@ -795,17 +800,8 @@ qemuProcessHandleWatchdog(qemuMonitor *mon G_GNUC_UNUSED,
     }
 
     if (vm->def->watchdog->action == VIR_DOMAIN_WATCHDOG_ACTION_DUMP) {
-        struct qemuProcessEvent *processEvent;
-        processEvent = g_new0(struct qemuProcessEvent, 1);
-
-        processEvent->eventType = QEMU_PROCESS_EVENT_WATCHDOG;
-        processEvent->action = VIR_DOMAIN_WATCHDOG_ACTION_DUMP;
-        /* Hold an extra reference because we can't allow 'vm' to be
-         * deleted before handling watchdog event is finished.
-         */
-        processEvent->vm = virObjectRef(vm);
-
-        qemuProcessEventSubmit(driver, &processEvent);
+        qemuProcessEventSubmit(driver, vm, QEMU_PROCESS_EVENT_WATCHDOG,
+                               VIR_DOMAIN_WATCHDOG_ACTION_DUMP, 0, NULL);
     }
 
     virObjectUnlock(vm);
@@ -891,10 +887,8 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
                           void *opaque)
 {
     qemuDomainObjPrivate *priv;
-    virQEMUDriver *driver = opaque;
     virDomainDiskDef *disk;
     g_autoptr(qemuBlockJobData) job = NULL;
-    char *data = NULL;
 
     virObjectLock(vm);
 
@@ -920,16 +914,8 @@ qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
         virDomainObjBroadcast(vm);
     } else {
         /* there is no waiting SYNC API, dispatch the update to a thread */
-        struct qemuProcessEvent *processEvent = g_new0(struct qemuProcessEvent, 1);
-
-        processEvent->eventType = QEMU_PROCESS_EVENT_BLOCK_JOB;
-        data = g_strdup(diskAlias);
-        processEvent->data = data;
-        processEvent->vm = virObjectRef(vm);
-        processEvent->action = type;
-        processEvent->status = status;
-
-        qemuProcessEventSubmit(driver, &processEvent);
+        qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_BLOCK_JOB,
+                               type, status, g_strdup(diskAlias));
     }
 
  cleanup:
@@ -944,7 +930,6 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
                                  int status,
                                  void *opaque)
 {
-    virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv;
     qemuBlockJobData *job = NULL;
     int jobnewstate;
@@ -975,15 +960,9 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
         VIR_DEBUG("job '%s' handled synchronously", jobname);
         virDomainObjBroadcast(vm);
     } else {
-        struct qemuProcessEvent *processEvent = g_new0(struct qemuProcessEvent, 1);
-
         VIR_DEBUG("job '%s' handled by event thread", jobname);
-
-        processEvent->eventType = QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE;
-        processEvent->vm = virObjectRef(vm);
-        processEvent->data = virObjectRef(job);
-
-        qemuProcessEventSubmit(driver, &processEvent);
+        qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_JOB_STATUS_CHANGE,
+                               0, 0, virObjectRef(job));
     }
 
  cleanup:
@@ -1217,21 +1196,10 @@ qemuProcessHandleGuestPanic(qemuMonitor *mon G_GNUC_UNUSED,
                             qemuMonitorEventPanicInfo *info,
                             void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent;
-
     virObjectLock(vm);
-    processEvent = g_new0(struct qemuProcessEvent, 1);
 
-    processEvent->eventType = QEMU_PROCESS_EVENT_GUESTPANIC;
-    processEvent->action = vm->def->onCrash;
-    processEvent->data = info;
-    /* Hold an extra reference because we can't allow 'vm' to be
-     * deleted before handling guest panic event is finished.
-     */
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_GUESTPANIC,
+                           vm->def->onCrash, 0, info);
 
     virObjectUnlock(vm);
 }
@@ -1243,10 +1211,6 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
                                const char *devAlias,
                                void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
-    char *data;
-
     virObjectLock(vm);
 
     VIR_DEBUG("Device %s removed from domain %p %s",
@@ -1256,14 +1220,8 @@ qemuProcessHandleDeviceDeleted(qemuMonitor *mon G_GNUC_UNUSED,
                                       QEMU_DOMAIN_UNPLUGGING_DEVICE_STATUS_OK))
         goto cleanup;
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_DEVICE_DELETED;
-    data = g_strdup(devAlias);
-    processEvent->data = data;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_DEVICE_DELETED,
+                           0, 0, g_strdup(devAlias));
 
  cleanup:
     virObjectUnlock(vm);
@@ -1456,23 +1414,13 @@ qemuProcessHandleNicRxFilterChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                     const char *devAlias,
                                     void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
-    char *data;
-
     virObjectLock(vm);
 
     VIR_DEBUG("Device %s RX Filter changed in domain %p %s",
               devAlias, vm, vm->def->name);
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED;
-    data = g_strdup(devAlias);
-    processEvent->data = data;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_NIC_RX_FILTER_CHANGED,
+                           0, 0, g_strdup(devAlias));
 
     virObjectUnlock(vm);
 }
@@ -1485,24 +1433,13 @@ qemuProcessHandleSerialChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                bool connected,
                                void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
-    char *data;
-
     virObjectLock(vm);
 
     VIR_DEBUG("Serial port %s state changed to '%d' in domain %p %s",
               devAlias, connected, vm, vm->def->name);
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_SERIAL_CHANGED;
-    data = g_strdup(devAlias);
-    processEvent->data = data;
-    processEvent->action = connected;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_SERIAL_CHANGED,
+                           connected, 0, g_strdup(devAlias));
 
     virObjectUnlock(vm);
 }
@@ -1663,9 +1600,7 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                         bool connected,
                                         void *opaque)
 {
-    virQEMUDriver *driver = opaque;
     qemuDomainObjPrivate *priv;
-    struct qemuProcessEvent *processEvent = NULL;
     const char *managedAlias = qemuDomainGetManagedPRAlias();
 
     virObjectLock(vm);
@@ -1688,12 +1623,8 @@ qemuProcessHandlePRManagerStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     priv = vm->privateData;
     priv->prDaemonRunning = false;
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_PR_DISCONNECT;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_PR_DISCONNECT,
+                           0, 0, NULL);
 
  cleanup:
     virObjectUnlock(vm);
@@ -1709,8 +1640,6 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
                                       unsigned long long interface_id,
                                       void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
     qemuMonitorRdmaGidStatus *info = NULL;
 
     virObjectLock(vm);
@@ -1726,13 +1655,8 @@ qemuProcessHandleRdmaGidStatusChanged(qemuMonitor *mon G_GNUC_UNUSED,
     info->subnet_prefix = subnet_prefix;
     info->interface_id = interface_id;
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-
-    processEvent->eventType = QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED;
-    processEvent->vm = virObjectRef(vm);
-    processEvent->data = g_steal_pointer(&info);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_RDMA_GID_STATUS_CHANGED,
+                           0, 0, info);
 
     virObjectUnlock(vm);
 }
@@ -1743,16 +1667,10 @@ qemuProcessHandleGuestCrashloaded(qemuMonitor *mon G_GNUC_UNUSED,
                                   virDomainObj *vm,
                                   void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent;
-
     virObjectLock(vm);
-    processEvent = g_new0(struct qemuProcessEvent, 1);
 
-    processEvent->eventType = QEMU_PROCESS_EVENT_GUEST_CRASHLOADED;
-    processEvent->vm = virObjectRef(vm);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_GUEST_CRASHLOADED,
+                           0, 0, NULL);
 
     virObjectUnlock(vm);
 }
@@ -1822,8 +1740,6 @@ qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
                                         unsigned long long size,
                                         void *opaque)
 {
-    virQEMUDriver *driver = opaque;
-    struct qemuProcessEvent *processEvent = NULL;
     qemuMonitorMemoryDeviceSizeChange *info = NULL;
 
     virObjectLock(vm);
@@ -1835,12 +1751,8 @@ qemuProcessHandleMemoryDeviceSizeChange(qemuMonitor *mon G_GNUC_UNUSED,
     info->devAlias = g_strdup(devAlias);
     info->size = size;
 
-    processEvent = g_new0(struct qemuProcessEvent, 1);
-    processEvent->eventType = QEMU_PROCESS_EVENT_MEMORY_DEVICE_SIZE_CHANGE;
-    processEvent->vm = virObjectRef(vm);
-    processEvent->data = g_steal_pointer(&info);
-
-    qemuProcessEventSubmit(driver, &processEvent);
+    qemuProcessEventSubmit(opaque, vm, QEMU_PROCESS_EVENT_MEMORY_DEVICE_SIZE_CHANGE,
+                           0, 0, info);
 
     virObjectUnlock(vm);
 }
