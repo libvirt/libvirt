@@ -18,6 +18,7 @@ VIR_ENUM_IMPL(virDomainJob,
               "modify",
               "abort",
               "migration operation",
+              "modify migration safe",
               "none",   /* async job is never stored in job.active */
               "async nested",
 );

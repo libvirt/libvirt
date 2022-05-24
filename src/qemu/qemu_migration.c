@@ -127,6 +127,7 @@ qemuMigrationJobStart(virQEMUDriver *driver,
                JOB_MASK(VIR_JOB_SUSPEND) |
                JOB_MASK(VIR_JOB_MIGRATION_OP);
     }
+    mask |= JOB_MASK(VIR_JOB_MODIFY_MIGRATION_SAFE);
 
     if (qemuDomainObjBeginAsyncJob(driver, vm, job, op, apiFlags) < 0)
         return -1;

@@ -3472,6 +3472,7 @@ qemuProcessRestoreMigrationJob(virDomainObj *vm,
         op = VIR_DOMAIN_JOB_OPERATION_MIGRATION_OUT;
         allowedJobs = VIR_JOB_DEFAULT_MASK | JOB_MASK(VIR_JOB_MIGRATION_OP);
     }
+    allowedJobs |= JOB_MASK(VIR_JOB_MODIFY_MIGRATION_SAFE);
 
     qemuDomainObjRestoreAsyncJob(vm, job->asyncJob, job->phase,
                                  job->asyncStarted, op,
@@ -3831,6 +3832,12 @@ qemuProcessRecoverJob(virQEMUDriver *driver,
     case VIR_JOB_MODIFY:
         /* XXX depending on the command we may be in an inconsistent state and
          * we should probably fall back to "monitor error" state and refuse to
+         */
+        break;
+
+    case VIR_JOB_MODIFY_MIGRATION_SAFE:
+        /* event handlers, the reconnection code already handles them as we
+         * might as well just missed the event while we were not running
          */
         break;
 
