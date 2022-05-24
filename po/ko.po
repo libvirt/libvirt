@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-04-21 15:30+0000\n"
-"PO-Revision-Date: 2022-05-14 13:18+0000\n"
+"PO-Revision-Date: 2022-05-24 09:14+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -27860,7 +27860,7 @@ msgstr "잘못된 UUID"
 
 #, c-format
 msgid "invalid UUID source: %s"
-msgstr "잘못된 UUID 소스: %s"
+msgstr "잘못된 UUID 원천: %s"
 
 msgid "invalid VM definition"
 msgstr "잘못된 VM 정의"
@@ -29671,7 +29671,7 @@ msgid "mirror requires file name"
 msgstr "미러에는 파일 이름이 필요합니다"
 
 msgid "mirror requires source element"
-msgstr "미러에는 소스 요소가 필요합니다"
+msgstr "미러에는 원천 요소가 필요합니다"
 
 msgid "mirror without type only supported by copy job"
 msgstr "복사 작업에서만 지원되는 유형 없는 미러"
@@ -29777,14 +29777,14 @@ msgid "missing 'name' attribute for qemu:property"
 msgstr "qemu를 위해 누락된 'name' 속성:property"
 
 msgid "missing 'namespace' attribute to disk source"
-msgstr "디스크 소스에 대한 '네임스페이스' 속성 누락"
+msgstr "디스크 원천에 대한 '이름공간' 속성 누락"
 
 #, c-format
 msgid "missing 'nvram-template' in '%s'"
 msgstr "'%s'에 'nvram-template'이 없습니다"
 
 msgid "missing 'path' attribute for vhostuser disk source"
-msgstr "vhostuser 디스크 소스에 대한 '경로' 속성 누락"
+msgstr "vhostuser 디스크 원천에 대한 '경로' 속성 누락"
 
 msgid "missing 'path' attribute in JSON backing definition for NFS volume"
 msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '경로' 속성이 없습니다"
@@ -29817,10 +29817,10 @@ msgid "missing 'timezone' attribute for clock with offset='timezone'"
 msgstr "offset='timezone'으로 지정한 클럭의 'timezone' 특성 빠"
 
 msgid "missing 'type' attribute for vhostuser disk source"
-msgstr "vhostuser 디스크 소스에 대한 '유형' 속성이 없습니다"
+msgstr "vhostuser 디스크 원천에 대한 '유형' 속성이 없습니다"
 
 msgid "missing 'type' attribute to disk source"
-msgstr "디스크 소스에 '유형' 속성이 없습니다"
+msgstr "디스크 원천에 '유형' 속성이 없습니다"
 
 msgid "missing 'url' in JSON backing volume definition"
 msgstr "JSON 백업 볼륨 정의에서 누락된 'url'"
@@ -30030,14 +30030,14 @@ msgid "missing disk backing store format"
 msgstr "누락된 디스크 백업 저장소 형식"
 
 msgid "missing disk backing store source"
-msgstr "누락된 디스크 백업 저장소 소스"
+msgstr "누락된 디스크 백업 저장소 원천"
 
 #, c-format
 msgid "missing disk device alias name for %s"
 msgstr "%s에 대한 디스크 장치 별칭이 빠짐"
 
 msgid "missing disk source for 'sheepdog' protocol"
-msgstr "'쉽독' 프로토콜에 대한 디스크 소스 누락"
+msgstr "'쉽독' 통신규약에 대한 디스크 원천 누락"
 
 msgid "missing domain in checkpoint"
 msgstr "체크포인트에서 누락된 도메인"
@@ -30125,7 +30125,7 @@ msgid "missing hub device type"
 msgstr "hub 장치 유형이 누락되어 있음"
 
 msgid "missing iSCSI hostdev source path name"
-msgstr "iSCSI hostdev 소스 경로 이름 누락"
+msgstr "iSCSI hostdev 원천 경로 이름 누락"
 
 msgid "missing in-kernel GIC information"
 msgstr "커널 내 GIC 정보 누락"
@@ -30296,7 +30296,7 @@ msgid "missing pool or image name in ceph backing volume JSON specification"
 msgstr "ceph 백업 볼륨 JSON 사양에서 풀 또는 이미지 이름 누락"
 
 msgid "missing pool source name element"
-msgstr "풀(pool) 소스 이름 요소 빠짐"
+msgstr "풀 원천 이름 요소 누락"
 
 msgid "missing port attribute in migration data"
 msgstr "이전 자료에서 port 속성이 누락"
@@ -30390,23 +30390,23 @@ msgid "missing source address type"
 msgstr "원천 주소 유형이 누락됨"
 
 msgid "missing source device"
-msgstr "소스 장치가 빠짐"
+msgstr "원천 장치 누락"
 
 msgid "missing source devices"
-msgstr "소스 장치가 누락됨"
+msgstr "원천 장치가 누락"
 
 msgid "missing source host"
-msgstr "소스 호스트가 빠짐"
+msgstr "원천 호스트 누락"
 
 msgid "missing source information for device"
-msgstr "장치의 소스 정보 부재"
+msgstr "장치를 위한 원천 정보 누락"
 
 #, c-format
 msgid "missing source information for device %s"
-msgstr "%s 장치의 소스 정보 부재"
+msgstr "장치 %s를 위한 원천 정보 누락"
 
 msgid "missing source path"
-msgstr "소스 경로가 빠짐"
+msgstr "원천 경로 누락"
 
 #, c-format
 msgid "missing ssid value for '%s'"
@@ -30431,19 +30431,19 @@ msgid "missing storage pool host name"
 msgstr "저장 풀 호스트 이름이 누락되어 있음"
 
 msgid "missing storage pool source adapter"
-msgstr "저장 풀 소스 어댑터가 누락되어 있음"
+msgstr "저장 풀 원천 어댑터가 누락"
 
 msgid "missing storage pool source device name"
-msgstr "저장 풀(pool) 소스 장치 이름이 빠짐"
+msgstr "저장 풀 원천 장치 이름 누락"
 
 msgid "missing storage pool source device path"
-msgstr "저장 풀 소스 장치 경로가 누락되어 있음"
+msgstr "저장소 풀 원천 장치 경로 누락"
 
 msgid "missing storage pool source host name"
-msgstr "저장 풀(pool) 소스 호스트 이름이 빠짐"
+msgstr "저장 풀 원천 호스트 이름 누락"
 
 msgid "missing storage pool source path"
-msgstr "저장 풀(pool) 소스 경로가 빠짐"
+msgstr "저장 풀 원천 경로 누락"
 
 msgid "missing storage pool target path"
 msgstr "저장 풀(pool) 타겟 경로가 빠짐"
@@ -30523,7 +30523,7 @@ msgid "missing version in QEMU capabilities cache"
 msgstr "QEMU 기능 캐시에 누락된 버전"
 
 msgid "missing vhost-scsi hostdev source wwpn"
-msgstr "vhost-scsi hostdev 소스 wwpn 누락"
+msgstr "vhost-scsi hostdev 원천 wwpn 누락"
 
 msgid "missing video model and cannot determine default"
 msgstr "비디오 모델이 빠져있으며, 기본 모델명을 결정할 수 없음"
@@ -30539,7 +30539,7 @@ msgstr "볼륨 이름 요소가 빠짐"
 
 #, c-format
 msgid "missing volume name or file name in gluster source path '%s'"
-msgstr "Gluster 소스 경로 '%s'에 볼륨 이름 또는 파일 이름이 없습니다"
+msgstr "Gluster 원천 경로 '%s'에 볼륨 이름 또는 파일 이름 누락"
 
 msgid "missing vporttype attribute in migration data"
 msgstr "이전 자료에서 vporttype 속성이 누락됨"
@@ -32023,16 +32023,16 @@ msgid "only one protocol element is allowed for character device"
 msgstr "문자 장치에는 하나의 프로토콜 요소만 허용됩니다"
 
 msgid "only one resource element is supported"
-msgstr "오직 하나의 리소스 요소만이 지원됨"
+msgstr "오직 하나의 자원 요소만이 지원됨"
 
 msgid "only one set of redirection filter rule is supported"
 msgstr "오직 한가지 리다이렉션 필터 룰만 사용 가능합니다"
 
 msgid "only one source element is allowed for character device"
-msgstr "문자 장치에는 하나의 소스 요소만 허용됩니다"
+msgstr "문자 장치에는 하나의 원천 요소만 허용됩니다"
 
 msgid "only one source host address may be specified for the iSCSI hostdev"
-msgstr "iSCSI hostdev에 대해 하나의 소스 호스트 주소만 지정할 수 있습니다"
+msgstr "iSCSI hostdev에 대해 하나의 원천 호스트 주소만 지정 할 수 있습니다"
 
 msgid "only pSeries guests support panic device of model 'pseries'"
 msgstr "pSeries 게스트만 'pseries' 모델의 패닉 장치를 지원합니다"
@@ -32072,7 +32072,7 @@ msgid "only two serial ports are supported"
 msgstr "시리얼 포트 두개 까지만 지원합니다"
 
 msgid "only two source elements are allowed for character device"
-msgstr "저장소 소스 %s는 문자 장치여야 합니다"
+msgstr "저장소 원천 %s는 문자 장치여야 합니다"
 
 msgid "only virtiofs filesystems can be hotplugged"
 msgstr "virtiofs 파일 시스템만 핫플러그 할 수 있습니다"
@@ -32154,7 +32154,7 @@ msgid "optional CPU features are not supported"
 msgstr "선택적 CPU 기능은 지원되지 않습니다"
 
 msgid "optional file of source xml to query for pools"
-msgstr "풀에 대해 질의할 소스 xml 파일(선택적임)"
+msgstr "풀을 위해 질의 하려는 원천 xml의 선택적인 파일"
 
 msgid "optional file to read keys from"
 msgstr "키를 읽을 선택적 파일"
@@ -32219,10 +32219,10 @@ msgstr "기존 데이터 덮어쓰기"
 
 #, c-format
 msgid "owner %lld does not hold the resource lock"
-msgstr "소유자 %lld가 리소스 잠금을 보유하지 않습니다"
+msgstr "소유자 %lld가 자원 잠금을 보유하지 않습니다"
 
 msgid "p2p migration is not supported by the source host"
-msgstr "p2p 이전은 소스 호스트에서 지원되지 않습니다"
+msgstr "p2p 이전은 원천 호스트에서 지원되지 않습니다"
 
 msgid "packed driver option is only supported for virtio devices"
 msgstr "꾸러미 드라이버 옵션은 virtio 장치에만 지원됩니다"
@@ -32612,7 +32612,7 @@ msgstr "입력 볼륨의 풀의 이름이나 uuid"
 
 #, c-format
 msgid "pool type '%s' does not support source discovery"
-msgstr "풀 유형 '%s'는 소스 발견을 지원하지 않습니다"
+msgstr "풀 유형 '%s'는 원천 발견을 지원하지 않습니다"
 
 #, c-format
 msgid "port %u out of range in USB address bus: %u port: %s"
@@ -32840,7 +32840,7 @@ msgid "protocol misses the family attribute"
 msgstr "프로토콜에 패밀리 특성이 빠졌습니다"
 
 msgid "protocol used by disk device source"
-msgstr "디스크 장치 소스에서 사용하는 프로토콜"
+msgstr "디스크 장치 원천에서 사용하는 통신규약"
 
 msgid "provide XML suitable for migrations"
 msgstr "이전을 위한 적절한 XML을 제공합니다"
@@ -33302,9 +33302,8 @@ msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되�
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
-msgstr ""
-"연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 소스 경로 목록)(domblklist 참"
-"조)"
+msgstr "연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 원천 경로 목록)(domblklist "
+"참조)"
 
 msgid "remove domain logs"
 msgstr "도메인 로그를 제거합니다"
@@ -33496,11 +33495,11 @@ msgid "resize of qcow2 encrypted image is not supported"
 msgstr "qcow2 암호화된 이미지의 크기 조정은 지원되지 않습니다"
 
 msgid "resource busy"
-msgstr "리소스 사용 중"
+msgstr "자원 사용 중"
 
 #, c-format
 msgid "resource busy: %s"
-msgstr "리소스 사용 중: %s"
+msgstr "자원 사용 중: %s"
 
 msgid "resource relabeling is not compatible with 'none' label type"
 msgstr "자원 이름 변경은 'none' 이름표 형식과 호환되지 않습니다"
@@ -33963,7 +33962,7 @@ msgid ""
 msgstr "타이머 캐치업 정책 설정은 tickpolicy='catchup'에서만 지원됩니다"
 
 msgid "setting source evdev path only supported for passthrough input devices"
-msgstr "패스스루 입력 장치에 대해서만 지원되는 소스 evdev 경로 설정"
+msgstr "통과 입력 장치에 대해서만 지원되는 원천 evdev 경로 설정"
 
 #, c-format
 msgid ""
@@ -34209,10 +34208,10 @@ msgid "sound card model '%s' is not supported by qemu"
 msgstr "사운드 카드 모델 '%s'는 qemu에서 지원되지 않습니다"
 
 msgid "source config data format"
-msgstr "소스 설정 데이터 형식"
+msgstr "원천 설정 자료 형식"
 
 msgid "source device for underlying storage"
-msgstr "저장소에 대한 소스 장치"
+msgstr "저장소에 대한 원천 장치"
 
 #, c-format
 msgid ""
@@ -34222,25 +34221,25 @@ msgstr ""
 "디스크 '%s'의 원천는 정규 파일이 아닙니다; 외부 스냅샷 이름 생성을 거부함"
 
 msgid "source media is a block device"
-msgstr "소스 미디어는 블록 장치입니다"
+msgstr "원천 미디어는 블록 장치입니다"
 
 msgid "source name for underlying storage"
-msgstr "저장소에 대한 소스 이름"
+msgstr "저장소에 대한 원천 이름"
 
 msgid "source of disk device or name of network disk"
-msgstr "디스크 장치의 소스 또는 네트워크 디스크 이름"
+msgstr "디스크 장치의 원천 또는 네트워크 디스크 이름"
 
 msgid "source of network interface"
-msgstr "네트워크 인터페이스 소스"
+msgstr "네트워크 연결장치 원천"
 
 msgid "source of the media"
 msgstr "미디어의 원천"
 
 msgid "source path for underlying storage"
-msgstr "저장소에 대한 소스 경로"
+msgstr "저장소에 대한 원천 경로"
 
 msgid "source-host for underlying storage"
-msgstr "저장소에 대한 소스 호스트"
+msgstr "저장소에 대한 원천-호스트"
 
 msgid "source-mode is mandatory"
 msgstr "원쳔-방법은 필수적입니다"
@@ -34661,7 +34660,7 @@ msgstr "대상 %s:%d가 이미 존재합니다"
 
 #, c-format
 msgid "target '%s' duplicated for disk sources '%s' and '%s'"
-msgstr "대상 '%s'가 디스크 소스 '%s' 및 '%s'에 대해 복제되었습니다"
+msgstr "대상 '%s'가 디스크 원천 '%s'과 '%s'에 대해 복제되었습니다"
 
 msgid "target NUMA node needs to be specified for memory device"
 msgstr "메모리 장치에 대해 대상 NUMA 노드를 지정해야 합니다"
@@ -35527,13 +35526,13 @@ msgid "type mismatch in event (actual 0x%x, expected 0x%x)"
 msgstr "이벤트의 유형 불일치(실제 0x%x, 예상 0x%x)"
 
 msgid "type of source (block|file|network)"
-msgstr "소스 유형(블록|파일|네트워크)"
+msgstr "원천 유형(블록|파일|네트워크)"
 
 msgid "type of storage pool sources to discover"
-msgstr "발견할 저장소 풀 소스의 유형"
+msgstr "발견할 저장소 풀 원천의 유형"
 
 msgid "type of storage pool sources to find"
-msgstr "찾아야 할 저장소 풀 소스 유형"
+msgstr "찾아야 할 저장소 풀 원천 유형"
 
 msgid "type of the pool"
 msgstr "풀의 유형"
@@ -36059,7 +36058,7 @@ msgid "unbridge a network device"
 msgstr "네트워크 장치 브리지 해제"
 
 msgid "undefine VM on source"
-msgstr "소스의 VM 정의를 없앰"
+msgstr "원천에서 VM 정의 취소"
 
 msgid "undefine a bridge device after detaching its device(s)"
 msgstr "장치를 분리한 후 브리지 장치 정의 해제"
@@ -36436,7 +36435,7 @@ msgstr "예기치 못한 사운드 모델 %d"
 
 #, c-format
 msgid "unexpected source mode %d"
-msgstr "예기치 못한 소스 모드 %d"
+msgstr "예기치 못한 원천 방식 %d"
 
 #, c-format
 msgid "unexpected storage mode for '%s'"
@@ -36726,7 +36725,7 @@ msgstr "알 수 없는 호스트 CPU 모델"
 
 #, c-format
 msgid "unknown host device source address type '%s'"
-msgstr "알 수 없는 호스트 장치 소스 주소 유형 '%s'"
+msgstr "알 수 없는 호스트 장치 원천 주소 유형 '%s'"
 
 #, c-format
 msgid "unknown hostdev mode '%s'"
@@ -36782,7 +36781,7 @@ msgstr "알 수 없는 메모리 백업/할당/모드 '%s'"
 
 #, c-format
 msgid "unknown memoryBacking/source/type '%s'"
-msgstr "알 수 없는 메모리 백업/소스/유형 '%s'"
+msgstr "알 수 없는 메모리 백업/원천/유형 '%s'"
 
 #, c-format
 msgid "unknown metadata type '%d'"
@@ -36896,7 +36895,7 @@ msgstr "알려지지 않은 smbios 모드 '%s'"
 
 #, c-format
 msgid "unknown source mode '%s' for volume type disk"
-msgstr "알 수 없는 볼륨 유형 디스크의 소스 모드 '%s'"
+msgstr "알 수 없는 볼륨 유형 디스크의 원천 방식 '%s'"
 
 #, c-format
 msgid "unknown storage capability type '%s' for '%s'"
@@ -36916,11 +36915,11 @@ msgstr "알 수 없는 저장소 풀 볼륨 새로 고침 할당 유형 %s"
 
 #, c-format
 msgid "unknown storage source format '%s'"
-msgstr "알려지지 않은 저장소 소스 형식 '%s'"
+msgstr "알려지지 않은 저장소 원천 형식 '%s'"
 
 #, c-format
 msgid "unknown storage source type '%s'"
-msgstr "알려지지 않은 저장소 소스 유형 '%s'"
+msgstr "알려지지 않은 저장소 원천 유형 '%s'"
 
 #, c-format
 msgid "unknown storage vol backing store type %d"
@@ -37389,7 +37388,7 @@ msgstr "지원되지 않는 비밀 이벤트 ID %d"
 
 #, c-format
 msgid "unsupported source type '%s'"
-msgstr "지원되지 않는 소스 유형 '%s'"
+msgstr "지원되지 않는 원천 유형 '%s'"
 
 msgid "unsupported state value"
 msgstr "지원되지 않는 상태 값"
@@ -37729,7 +37728,7 @@ msgstr "vcpu 0은 오프라인일 수 없습니다"
 msgid ""
 "vcpu enable order of vCPU '%zu' differs between source and destination "
 "definitions"
-msgstr "vCPU '%zu'의 vcpu 활성화 순서가 소스 및 대상 정의 간에 다릅니다"
+msgstr "vCPU '%zu'의 vcpu 활성화 순서가 원천과 대상 정의 간에 다릅니다"
 
 #, c-format
 msgid "vcpu id '%u' is out of range of maximum vcpu count"
@@ -38230,7 +38229,7 @@ msgstr "볼륨 대상 경로 '%s'가 이미 존재합니다"
 
 #, c-format
 msgid "volume target path empty for source path '%s'"
-msgstr "소스 경로 '%s'에 대한 볼륨 대상 경로가 비어 있습니다"
+msgstr "원천 경로 '%s'에 대한 볼륨 대상 경로가 비어 있습니다"
 
 msgid "volume usage specified, but volume path is missing"
 msgstr "볼륨 사용이 지정되었으나, 볼륨 경로가 빠졌습니다"
@@ -38268,7 +38267,7 @@ msgid "vz driver doesn't support setting video acceleration parameters."
 msgstr "vz 드라이버는 비디오 가속 매개변수 설정을 지원하지 않습니다."
 
 msgid "vz driver doesn't support specified serial source type."
-msgstr "vz 드라이버는 지정된 직렬 소스 유형을 지원하지 않습니다."
+msgstr "vz 드라이버는 지정된 직렬 원천 유형을 지원하지 않습니다."
 
 msgid "vz driver doesn't support websockets for VNC graphics."
 msgstr "vz 드라이버는 VNC 그래픽용 웹 소켓을 지원하지 않습니다."
