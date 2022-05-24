@@ -234,7 +234,7 @@
     </data>
   </define>
 
-  <!-- Based on http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
+  <!-- Based on https://web.archive.org/web/20090503193311/http://blog.mes-stats.fr/2008/10/09/regex-ipv4-et-ipv6 -->
   <define name="ipv6Addr">
     <data type="string">
       <!-- To understand this better, take apart the toplevel "|"s -->

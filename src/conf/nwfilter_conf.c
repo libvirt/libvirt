@@ -1107,8 +1107,8 @@ static const virXMLAttr2Struct vlanAttributes[] = {
     }
 };
 
-/* STP is documented by IEEE 802.1D; for a synopsis,
- * see http://www.javvin.com/protocolSTP.html */
+/* STP is documented by IEEE 802.1D; for a synopsis, see
+ * https://web.archive.org/web/20130530200728/http://www.javvin.com/protocolSTP.html */
 static const virXMLAttr2Struct stpAttributes[] = {
     /* spanning tree uses a special destination MAC address */
     {
