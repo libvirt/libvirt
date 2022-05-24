@@ -342,18 +342,6 @@ sc_avoid_g_gnuc_unused_in_header:
 	halt='use G_GNUC_UNUSED in .c rather than .h files' \
 	  $(_sc_search_regexp)
 
-sc_prohibit_attribute_macros:
-	@prohibit='ATTRIBUTE_(UNUSED|NORETURN|SENTINEL|RETURN_CHECK|NOINLINE|FMT_PRINTF|FALLTHROUGH)' \
-	in_vc_files='\.[ch]$$' \
-	halt='use GLib macros: G_GNUC_<ATTRIBUTE_SUFFIX> for most' \
-	  $(_sc_search_regexp)
-
-sc_prohibit_non_glib_macros:
-	@prohibit='ARRAY_CARDINALITY' \
-	in_vc_files='\.[ch]$$' \
-	halt='use GLib macros: G_N_ELEMENTS' \
-	  $(_sc_search_regexp)
-
 sc_prohibit_int_index:
 	@prohibit='\<(int|unsigned)\s*\*?index\>(\s|,|;)' \
 	halt='use different name than 'index' for declaration' \
