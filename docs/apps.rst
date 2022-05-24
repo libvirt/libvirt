@@ -258,12 +258,6 @@ Monitoring
 Provisioning
 ------------
 
-`Tivoli Provisioning Manager <https://www.ibm.com/developerworks/community/wikis/home?lang=en#!/wiki/Tivoli+Provisioning+Manager>`__
-   Part of the IBM Tivoli family, Tivoli Provisioning Manager (TPM) is
-   an IT lifecycle automation product. It `uses
-   libvirt <http://publib.boulder.ibm.com/infocenter/tivihelp/v38r1/index.jsp?topic=/com.ibm.tivoli.tpm.apk.doc/libvirt_package.html>`__
-   for communication with virtualization hosts and guest domains.
-
 `Foreman <https://theforeman.org>`__
    Foreman is an open source web based application aimed to be a Single
    Address For All Machines Life Cycle Management. Foreman:
