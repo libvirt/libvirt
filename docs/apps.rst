@@ -149,11 +149,6 @@ Desktop applications
 Infrastructure as a Service (IaaS)
 ----------------------------------
 
-`Cracow Cloud One <http://cc1.ifj.edu.pl>`__
-   The CC1 system provides a complete solution for Private Cloud
-   Computing. An intuitive web access interface with an administration
-   module and simple installation procedure make it easy to benefit from
-   private Cloud Computing technology.
 `Eucalyptus <https://github.com/eucalyptus/eucalyptus>`__
    Eucalyptus is an on-premise Infrastructure as a Service cloud
    software platform that is open source and AWS-compatible. Eucalyptus

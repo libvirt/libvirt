@@ -835,7 +835,6 @@ http_sites += etallen.com
 # dead sites
 http_sites += blog.lystor.org.ua
 http_sites += blog.mes-stats.fr
-http_sites += cc1.ifj.edu.pl
 http_sites += www.javvin.com
 
 # 404 links
