@@ -284,16 +284,14 @@ qemuProcessEventSubmit(virQEMUDriver *driver,
 {
     struct qemuProcessEvent *event = g_new0(struct qemuProcessEvent, 1);
 
-    if (vm)
-        event->vm = virObjectRef(vm);
+    event->vm = virObjectRef(vm);
     event->eventType = eventType;
     event->action = action;
     event->status = status;
     event->data = data;
 
     if (virThreadPoolSendJob(driver->workerPool, 0, event) < 0) {
-        if (vm)
-            virObjectUnref(vm);
+        virObjectUnref(vm);
         qemuProcessEventFree(event);
     }
 }
