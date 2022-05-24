@@ -22,6 +22,10 @@ v8.4.0 (unreleased)
     Libvirt is now able to setup a D-Bus display export, either with a private
     bus or in p2p mode. This display is available in QEMU 7.0.0.
 
+  * qemu: ppc64 Power10 processor support
+
+    Support for the recently released IBM Power10 processor was added.
+
 * **Improvements**
 
 * **Bug fixes**
