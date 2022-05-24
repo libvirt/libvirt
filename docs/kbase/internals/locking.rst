@@ -127,7 +127,7 @@ locks, this will be done from the libvirtd process.
    };
    mgr = virLockManagerNew(lockPlugin,
                            VIR_LOCK_MANAGER_TYPE_DOMAIN,
-                           ARRAY_CARDINALITY(params),
+                           G_N_ELEMENTS(params),
                            params,
                            0)));
 
@@ -171,7 +171,7 @@ however, a process may voluntarily give up the lock by running
    };
    mgr = virLockManagerNew(lockPlugin,
                            VIR_LOCK_MANAGER_TYPE_DOMAIN,
-                           ARRAY_CARDINALITY(params),
+                           G_N_ELEMENTS(params),
                            params,
                            0)));
 
