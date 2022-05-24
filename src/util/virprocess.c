@@ -27,7 +27,6 @@
 #ifndef WIN32
 # include <sys/wait.h>
 #endif
-#include <unistd.h>
 #if WITH_SYS_MOUNT_H
 # include <sys/mount.h>
 #endif
@@ -69,49 +68,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 VIR_LOG_INIT("util.process");
-
-#ifdef __linux__
-/*
- * Workaround older glibc. While kernel may support the setns
- * syscall, the glibc wrapper might not exist. If that's the
- * case, use our own.
- */
-# ifndef __NR_setns
-#  if defined(__x86_64__)
-#   define __NR_setns 308
-#  elif defined(__i386__)
-#   define __NR_setns 346
-#  elif defined(__arm__)
-#   define __NR_setns 375
-#  elif defined(__aarch64__)
-#   define __NR_setns 375
-#  elif defined(__powerpc__)
-#   define __NR_setns 350
-#  elif defined(__s390__)
-#   define __NR_setns 339
-#  endif
-# endif
-
-# ifndef WITH_SETNS
-#  if defined(__NR_setns)
-#   include <sys/syscall.h>
-
-static inline int setns(int fd, int nstype)
-{
-    return syscall(__NR_setns, fd, nstype);
-}
-#  else /* !__NR_setns */
-#   error Please determine the syscall number for setns on your architecture
-#  endif
-# endif
-#else /* !__linux__ */
-static inline int setns(int fd G_GNUC_UNUSED, int nstype G_GNUC_UNUSED)
-{
-    virReportSystemError(ENOSYS, "%s",
-                         _("Namespaces are not supported on this platform."));
-    return -1;
-}
-#endif
 
 VIR_ENUM_IMPL(virProcessSchedPolicy,
               VIR_PROC_POLICY_LAST,
@@ -714,6 +670,7 @@ int virProcessGetNamespaces(pid_t pid,
 }
 
 
+#ifdef __linux__
 int virProcessSetNamespaces(size_t nfdlist,
                             int *fdlist)
 {
@@ -742,6 +699,16 @@ int virProcessSetNamespaces(size_t nfdlist,
     }
     return 0;
 }
+#else
+int virProcessSetNamespaces(size_t nfdlist G_GNUC_UNUSED,
+                            int *fdlist G_GNUC_UNUSED)
+{
+    virReportSystemError(ENOSYS, "%s",
+                         _("Namespaces are not supported on this platform."));
+    return -1;
+}
+#endif
+
 
 #if WITH_PRLIMIT
 static int

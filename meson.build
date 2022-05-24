@@ -557,7 +557,6 @@ functions = [
   'prlimit',
   'sched_setscheduler',
   'setgroups',
-  'setns',
   'setrlimit',
   'symlink',
   'sysctlbyname',
