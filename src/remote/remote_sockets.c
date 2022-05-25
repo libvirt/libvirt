@@ -184,7 +184,7 @@ remoteProbeSessionDriverFromBinary(char **driver)
         g_autofree char *daemonpath = NULL;
 
         daemonname = g_strdup_printf("virt%sd", drivers[i]);
-        VIR_DEBUG("Probing driver '%s' via daemon %s", drivers[i], daemonpath);
+        VIR_DEBUG("Probing driver '%s' via daemon %s", drivers[i], daemonname);
 
         if (!(daemonpath = virFileFindResource(daemonname,
                                                abs_top_builddir "/src",
