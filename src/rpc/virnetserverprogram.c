@@ -518,14 +518,9 @@ int virNetServerProgramSendStreamData(virNetServerProgram *prog,
     if (virNetMessageEncodeHeader(msg) < 0)
         return -1;
 
-    if (data && len) {
-        if (virNetMessageEncodePayloadRaw(msg, data, len) < 0)
-            return -1;
+    if (virNetMessageEncodePayloadRaw(msg, data, len) < 0)
+        return -1;
 
-    } else {
-        if (virNetMessageEncodePayloadEmpty(msg) < 0)
-            return -1;
-    }
     VIR_DEBUG("Total %zu", msg->bufferLength);
 
     return virNetServerClientSendMessage(client, msg);
