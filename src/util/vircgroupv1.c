@@ -409,9 +409,8 @@ virCgroupV1ValidatePlacement(virCgroup *group,
 
         if (!group->legacy[i].placement) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
-                           _("Could not find placement for v1 controller %s at %s"),
-                           virCgroupV1ControllerTypeToString(i),
-                           group->legacy[i].placement);
+                           _("Could not find placement for v1 controller %s"),
+                           virCgroupV1ControllerTypeToString(i));
             return -1;
         }
 
