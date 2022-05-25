@@ -434,6 +434,15 @@ int virNetMessageDecodePayload(virNetMessage *msg,
 }
 
 
+/**
+ * virNetMessageEncodePayloadRaw:
+ * @msg: message to encode payload into
+ * @data: data to encode into @msg
+ * @len: lenght of @data
+ *
+ * Encodes message payload. If @data is NULL or @len is 0 an empty message is
+ * encoded.
+ */
 int virNetMessageEncodePayloadRaw(virNetMessage *msg,
                                   const char *data,
                                   size_t len)
@@ -441,29 +450,31 @@ int virNetMessageEncodePayloadRaw(virNetMessage *msg,
     XDR xdr;
     unsigned int msglen;
 
-    /* If the message buffer is too small for the payload increase it accordingly. */
-    if ((msg->bufferLength - msg->bufferOffset) < len) {
-        if ((msg->bufferOffset + len) >
-            (VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX)) {
-            virReportError(VIR_ERR_RPC,
-                           _("Stream data too long to send "
-                             "(%zu bytes needed, %zu bytes available)"),
-                           len,
-                           VIR_NET_MESSAGE_MAX +
-                           VIR_NET_MESSAGE_LEN_MAX -
-                           msg->bufferOffset);
-            return -1;
+    if (data && len > 0) {
+        /* If the message buffer is too small for the payload increase it accordingly. */
+        if ((msg->bufferLength - msg->bufferOffset) < len) {
+            if ((msg->bufferOffset + len) >
+                (VIR_NET_MESSAGE_MAX + VIR_NET_MESSAGE_LEN_MAX)) {
+                virReportError(VIR_ERR_RPC,
+                               _("Stream data too long to send "
+                                 "(%zu bytes needed, %zu bytes available)"),
+                               len,
+                               VIR_NET_MESSAGE_MAX +
+                               VIR_NET_MESSAGE_LEN_MAX -
+                               msg->bufferOffset);
+                return -1;
+            }
+
+            msg->bufferLength = msg->bufferOffset + len;
+
+            VIR_REALLOC_N(msg->buffer, msg->bufferLength);
+
+            VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
         }
 
-        msg->bufferLength = msg->bufferOffset + len;
-
-        VIR_REALLOC_N(msg->buffer, msg->bufferLength);
-
-        VIR_DEBUG("Increased message buffer length = %zu", msg->bufferLength);
+        memcpy(msg->buffer + msg->bufferOffset, data, len);
+        msg->bufferOffset += len;
     }
-
-    memcpy(msg->buffer + msg->bufferOffset, data, len);
-    msg->bufferOffset += len;
 
     /* Re-encode the length word. */
     VIR_DEBUG("Encode length as %zu", msg->bufferOffset);
