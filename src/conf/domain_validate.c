@@ -2254,8 +2254,7 @@ virDomainInputDefValidate(const virDomainInputDef *input,
             def->virtType == VIR_DOMAIN_VIRT_PARALLELS) {
             if (input->bus != VIR_DOMAIN_INPUT_BUS_PARALLELS) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("parallels containers don't support "
-                                 "input bus %s"),
+                               _("parallels containers don't support input bus %s"),
                                virDomainInputBusTypeToString(input->bus));
                 return -1;
             }
@@ -2263,52 +2262,48 @@ virDomainInputDefValidate(const virDomainInputDef *input,
             if (input->type != VIR_DOMAIN_INPUT_TYPE_MOUSE &&
                 input->type != VIR_DOMAIN_INPUT_TYPE_KBD) {
                 virReportError(VIR_ERR_INTERNAL_ERROR,
-                               _("parallels bus does not support "
-                                 "%s input device"),
+                               _("parallels bus does not support %s input device"),
                                virDomainInputTypeToString(input->type));
                 return -1;
             }
         } else {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Input devices are not supported by this "
-                             "virtualization driver."));
+                           _("Input devices are not supported by this virtualization driver."));
             return -1;
         }
     }
 
     switch ((virDomainInputType) input->type) {
-        case VIR_DOMAIN_INPUT_TYPE_MOUSE:
-        case VIR_DOMAIN_INPUT_TYPE_TABLET:
-        case VIR_DOMAIN_INPUT_TYPE_KBD:
-            if (input->source.evdev) {
-                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                                _("setting source evdev path only supported for "
-                                  "passthrough input devices"));
-                 return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
-            if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("only bus 'virtio' is supported for 'passthrough' "
-                                 "input devices"));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_INPUT_TYPE_EVDEV:
-            if (input->bus != VIR_DOMAIN_INPUT_BUS_NONE) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("input evdev doesn't support bus element"));
-                return -1;
-            }
-            break;
-
-        case VIR_DOMAIN_INPUT_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainInputType, input->type);
+    case VIR_DOMAIN_INPUT_TYPE_MOUSE:
+    case VIR_DOMAIN_INPUT_TYPE_TABLET:
+    case VIR_DOMAIN_INPUT_TYPE_KBD:
+        if (input->source.evdev) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("setting source evdev path only supported for passthrough input devices"));
             return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_PASSTHROUGH:
+        if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("only bus 'virtio' is supported for 'passthrough' input devices"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_EVDEV:
+        if (input->bus != VIR_DOMAIN_INPUT_BUS_NONE) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("input evdev doesn't support bus element"));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_INPUT_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainInputType, input->type);
+        return -1;
     }
 
     return 0;
