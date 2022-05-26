@@ -334,15 +334,15 @@ s390x-debian-sid:
     NAME: debian-sid
 
 
-mingw64-fedora-35:
+mingw64-fedora-36:
   extends: .cross_build_job
   needs:
-    - job: mingw64-fedora-35-container
+    - job: mingw64-fedora-36-container
       optional: true
   allow_failure: false
   variables:
     CROSS: mingw64
-    NAME: fedora-35
+    NAME: fedora-36
 
 
 mingw32-fedora-rawhide:

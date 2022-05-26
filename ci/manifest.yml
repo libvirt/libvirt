@@ -152,13 +152,15 @@ targets:
           paths:
             - libvirt-rpms
 
+  fedora-36:
+    jobs:
+      - arch: x86_64
+
       - arch: mingw32
         allow-failure: true
         builds: false
 
       - arch: mingw64
-
-  fedora-36: x86_64
 
   fedora-rawhide:
     jobs:

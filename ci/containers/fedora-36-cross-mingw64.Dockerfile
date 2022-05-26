@@ -4,7 +4,7 @@
 #
 # https://gitlab.com/libvirt/libvirt-ci
 
-FROM registry.fedoraproject.org/fedora:35
+FROM registry.fedoraproject.org/fedora:36
 
 RUN dnf install -y nosync && \
     echo -e '#!/bin/sh\n\
@@ -66,23 +66,23 @@ ENV PYTHON "/usr/bin/python3"
 ENV CCACHE_WRAPPERSDIR "/usr/libexec/ccache-wrappers"
 
 RUN nosync dnf install -y \
-        mingw32-curl \
-        mingw32-dlfcn \
-        mingw32-gcc \
-        mingw32-gettext \
-        mingw32-glib2 \
-        mingw32-gnutls \
-        mingw32-headers \
-        mingw32-libssh2 \
-        mingw32-libxml2 \
-        mingw32-pkg-config \
-        mingw32-portablexdr \
-        mingw32-readline && \
+        mingw64-curl \
+        mingw64-dlfcn \
+        mingw64-gcc \
+        mingw64-gettext \
+        mingw64-glib2 \
+        mingw64-gnutls \
+        mingw64-headers \
+        mingw64-libssh2 \
+        mingw64-libxml2 \
+        mingw64-pkg-config \
+        mingw64-portablexdr \
+        mingw64-readline && \
     nosync dnf clean all -y && \
     rpm -qa | sort > /packages.txt && \
     mkdir -p /usr/libexec/ccache-wrappers && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-cc && \
-    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/i686-w64-mingw32-gcc
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/x86_64-w64-mingw32-cc && \
+    ln -s /usr/bin/ccache /usr/libexec/ccache-wrappers/x86_64-w64-mingw32-gcc
 
-ENV ABI "i686-w64-mingw32"
-ENV MESON_OPTS "--cross-file=/usr/share/mingw/toolchain-mingw32.meson"
+ENV ABI "x86_64-w64-mingw32"
+ENV MESON_OPTS "--cross-file=/usr/share/mingw/toolchain-mingw64.meson"

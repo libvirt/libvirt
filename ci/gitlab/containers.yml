@@ -297,18 +297,18 @@ s390x-debian-sid-container:
     NAME: debian-sid-cross-s390x
 
 
-mingw32-fedora-35-container:
+mingw32-fedora-36-container:
   extends: .container_job
   allow_failure: true
   variables:
-    NAME: fedora-35-cross-mingw32
+    NAME: fedora-36-cross-mingw32
 
 
-mingw64-fedora-35-container:
+mingw64-fedora-36-container:
   extends: .container_job
   allow_failure: false
   variables:
-    NAME: fedora-35-cross-mingw64
+    NAME: fedora-36-cross-mingw64
 
 
 mingw32-fedora-rawhide-container:
