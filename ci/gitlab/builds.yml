@@ -153,6 +153,10 @@ x86_64-fedora-36:
   allow_failure: false
   variables:
     NAME: fedora-36
+  artifacts:
+    expire_in: 1 day
+    paths:
+      - libvirt-rpms
 
 
 x86_64-fedora-rawhide:
