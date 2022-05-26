@@ -1,0 +1,52 @@
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool manifest ci/manifest.yml
+#
+# https://gitlab.com/libvirt/libvirt-ci
+
+
+# For upstream
+#
+#   - Push to default branch:
+#       -> rebuild if dockerfile changed, no cache
+#   - Otherwise
+#       -> rebuild if LIBVIRT_CI_CONTAINERS=1, no cache,
+#          to pick up new published distro packages or
+#          recover from deleted tag
+#
+# For forks
+#   - Always rebuild, with cache
+#
+.container_job:
+  image: docker:stable
+  stage: containers
+  needs: []
+  services:
+    - docker:dind
+  before_script:
+    - export TAG="$CI_REGISTRY_IMAGE/ci-$NAME:latest"
+    - export COMMON_TAG="$CI_REGISTRY/libvirt/libvirt/ci-$NAME:latest"
+    - docker info
+    - docker login "$CI_REGISTRY" -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+  script:
+    - if test $CI_PROJECT_NAMESPACE = "libvirt";
+      then
+        docker build --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers ;
+      else
+        docker pull "$TAG" || docker pull "$COMMON_TAG" || true ;
+        docker build --cache-from "$TAG" --cache-from "$COMMON_TAG" --tag "$TAG" -f "ci/containers/$NAME.Dockerfile" ci/containers ;
+      fi
+    - docker push "$TAG"
+  after_script:
+    - docker logout
+  rules:
+    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+      when: on_success
+      changes:
+       - ci/gitlab/container-templates.yml
+       - ci/containers/$NAME.Dockerfile
+    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $LIBVIRT_CI_CONTAINERS == "1"'
+      when: on_success
+    - if: '$CI_PROJECT_NAMESPACE == "libvirt"'
+      when: never
+    - when: on_success

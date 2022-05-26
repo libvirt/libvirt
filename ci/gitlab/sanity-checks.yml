@@ -1,0 +1,18 @@
+# THIS FILE WAS AUTO-GENERATED
+#
+#  $ lcitool manifest ci/manifest.yml
+#
+# https://gitlab.com/libvirt/libvirt-ci
+
+
+check-dco:
+  stage: sanity_checks
+  needs: []
+  image: registry.gitlab.com/libvirt/libvirt-ci/check-dco:master
+  script:
+    - /check-dco libvirt
+  except:
+    variables:
+      - $CI_PROJECT_NAMESPACE == 'libvirt'
+  variables:
+    GIT_DEPTH: 1000
