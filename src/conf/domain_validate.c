@@ -2306,6 +2306,27 @@ virDomainInputDefValidate(const virDomainInputDef *input,
         return -1;
     }
 
+    switch ((virDomainInputModel)input->model) {
+    case VIR_DOMAIN_INPUT_MODEL_VIRTIO:
+    case VIR_DOMAIN_INPUT_MODEL_VIRTIO_TRANSITIONAL:
+    case VIR_DOMAIN_INPUT_MODEL_VIRTIO_NON_TRANSITIONAL:
+        if (input->bus != VIR_DOMAIN_INPUT_BUS_VIRTIO) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("only bus 'virtio' is supported for input model '%s'"),
+                           virDomainInputModelTypeToString(input->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_INPUT_MODEL_DEFAULT:
+        break;
+
+    case VIR_DOMAIN_INPUT_MODEL_LAST:
+    default:
+        virReportEnumRangeError(virDomainInputModel, input->model);
+        return -1;
+    }
+
     return 0;
 }
 
