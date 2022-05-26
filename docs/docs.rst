@@ -139,6 +139,10 @@ Project development
 `CI <ci.html>`__
    Details on our Continuous Integration
 
+`Upstream issue handling <issue-handling.html>`__
+   Outlines the process of handling issues as well as describes the supported
+   issue types along with their life cycle.
+
 `Bug reports <bugs.html>`__
    How and where to report bugs and request features
 

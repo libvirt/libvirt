@@ -83,6 +83,7 @@ docs_rst_files = [
   'governance',
   'hacking',
   'hooks',
+  'issue-handling',
   'java',
   'libvirt-go',
   'libvirt-go-xml',
