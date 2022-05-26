@@ -49,24 +49,24 @@ fedora-35-tests:
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
 
-fedora-35-upstream-qemu-tests:
-  extends: .integration_tests_upstream_qemu
+fedora-36-tests:
+  extends: .integration_tests
   needs:
-    - x86_64-fedora-35
+    - x86_64-fedora-36
     - project: libvirt/libvirt-perl
-      job: x86_64-fedora-35
+      job: x86_64-fedora-36
       ref: master
       artifacts: true
   variables:
     # needed by libvirt-gitlab-executor
-    DISTRO: fedora-35
+    DISTRO: fedora-36
     # can be overridden in forks to set a different runner tag
     LIBVIRT_CI_INTEGRATION_RUNNER_TAG: redhat-vm-host
   tags:
     - $LIBVIRT_CI_INTEGRATION_RUNNER_TAG
 
-fedora-36-tests:
-  extends: .integration_tests
+fedora-36-upstream-qemu-tests:
+  extends: .integration_tests_upstream_qemu
   needs:
     - x86_64-fedora-36
     - project: libvirt/libvirt-perl
