@@ -54,7 +54,6 @@ prepareObjects(virQEMUDriver *driver,
     if (!(vm = virDomainObjNew(driver->xmlopt)))
         return -1;
 
-    vm->pid = -1;
     priv = vm->privateData;
     priv->chardevStdioLogd = false;
     priv->rememberOwner = true;

@@ -293,7 +293,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
         return 0;
     }
 
-    if (vm->pid <= 0) {
+    if (vm->pid == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PID %d for VM"),
                        (int)vm->pid);
@@ -329,7 +329,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
                            bhyveProcessAutoDestroy);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
-    vm->pid = -1;
+    vm->pid = 0;
     vm->def->id = -1;
 
     bhyveProcessStopHook(vm, VIR_HOOK_BHYVE_OP_RELEASE);
@@ -344,7 +344,7 @@ virBhyveProcessStop(struct _bhyveConn *driver,
 int
 virBhyveProcessShutdown(virDomainObj *vm)
 {
-    if (vm->pid <= 0) {
+    if (vm->pid == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Invalid PID %d for VM"),
                        (int)vm->pid);
@@ -433,7 +433,7 @@ virBhyveProcessReconnect(virDomainObj *vm,
     if (!virDomainObjIsActive(vm))
         return 0;
 
-    if (!vm->pid)
+    if (vm->pid == 0)
         return 0;
 
     virObjectLock(vm);

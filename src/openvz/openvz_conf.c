@@ -528,7 +528,7 @@ int openvzLoadDomains(struct openvz_driver *driver)
         if (STREQ(status, "stopped")) {
             virDomainObjSetState(dom, VIR_DOMAIN_SHUTOFF,
                                  VIR_DOMAIN_SHUTOFF_UNKNOWN);
-            dom->pid = -1;
+            dom->pid = 0;
         } else {
             virDomainObjSetState(dom, VIR_DOMAIN_RUNNING,
                                  VIR_DOMAIN_RUNNING_UNKNOWN);

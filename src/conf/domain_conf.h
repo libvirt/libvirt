@@ -3059,7 +3059,7 @@ struct _virDomainObj {
     virObjectLockable parent;
     virCond cond;
 
-    pid_t pid;
+    pid_t pid; /* 0 for no PID, avoid negative values like -1 */
     virDomainStateReason state;
 
     unsigned int autostart : 1;

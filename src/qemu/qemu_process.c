@@ -8233,7 +8233,7 @@ void qemuProcessStop(virQEMUDriver *driver,
     g_clear_pointer(&vm->deprecations, g_free);
     vm->ndeprecations = 0;
     vm->taint = 0;
-    vm->pid = -1;
+    vm->pid = 0;
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
     for (i = 0; i < vm->def->niothreadids; i++)
         vm->def->iothreadids[i]->thread_id = 0;
@@ -8963,7 +8963,7 @@ qemuProcessReconnectHelper(virDomainObj *obj,
     g_autofree char *name = NULL;
 
     /* If the VM was inactive, we don't need to reconnect */
-    if (!obj->pid)
+    if (obj->pid == 0)
         return 0;
 
     data = g_new0(struct qemuProcessReconnectData, 1);

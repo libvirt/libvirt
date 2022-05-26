@@ -517,7 +517,7 @@ virDomainCgroupSetupCgroup(const char *prefix,
                            bool privileged,
                            char *machineName)
 {
-    if (!vm->pid) {
+    if (vm->pid == 0) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Cannot setup cgroups until process is started"));
         return -1;

@@ -574,7 +574,7 @@ virCHProcessStop(virCHDriver *driver G_GNUC_UNUSED,
                  vm->def->name);
     }
 
-    vm->pid = -1;
+    vm->pid = 0;
     vm->def->id = -1;
     g_clear_pointer(&priv->machineName, g_free);
 

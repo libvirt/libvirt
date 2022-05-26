@@ -217,7 +217,7 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     lxcProcessRemoveDomainStatus(cfg, vm);
 
     virDomainObjSetState(vm, VIR_DOMAIN_SHUTOFF, reason);
-    vm->pid = -1;
+    vm->pid = 0;
     vm->def->id = -1;
 
     if (!!g_atomic_int_dec_and_test(&driver->nactive) && driver->inhibitCallback)
@@ -892,7 +892,7 @@ int virLXCProcessStop(virLXCDriver *driver,
                            _("Some processes refused to die"));
             return -1;
         }
-    } else if (vm->pid > 0) {
+    } else if (vm->pid != 0) {
         /* If cgroup doesn't exist, just try cleaning up the
          * libvirt_lxc process */
         if (virProcessKillPainfully(vm->pid, true) < 0) {
@@ -1033,7 +1033,7 @@ virLXCProcessReadLogOutputData(virDomainObj *vm,
         bool isdead = false;
         char *eol;
 
-        if (vm->pid <= 0 ||
+        if (vm->pid == 0 ||
             (kill(vm->pid, 0) == -1 && errno == ESRCH))
             isdead = true;
 
