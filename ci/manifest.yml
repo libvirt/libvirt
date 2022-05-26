@@ -157,7 +157,6 @@ targets:
       - arch: x86_64
 
       - arch: mingw32
-        allow-failure: true
         builds: false
 
       - arch: mingw64

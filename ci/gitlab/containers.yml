@@ -299,7 +299,7 @@ s390x-debian-sid-container:
 
 mingw32-fedora-36-container:
   extends: .container_job
-  allow_failure: true
+  allow_failure: false
   variables:
     NAME: fedora-36-cross-mingw32
 
