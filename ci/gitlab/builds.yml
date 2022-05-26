@@ -142,6 +142,16 @@ x86_64-fedora-35:
       - libvirt-rpms
 
 
+x86_64-fedora-36:
+  extends: .native_build_job
+  needs:
+    - job: x86_64-fedora-36-container
+      optional: true
+  allow_failure: false
+  variables:
+    NAME: fedora-36
+
+
 x86_64-fedora-rawhide:
   extends: .native_build_job
   needs:
