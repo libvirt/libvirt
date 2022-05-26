@@ -142,13 +142,6 @@ x86_64-debian-sid-container:
     NAME: debian-sid
 
 
-x86_64-fedora-34-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    NAME: fedora-34
-
-
 x86_64-fedora-35-container:
   extends: .container_job
   allow_failure: false
@@ -507,19 +500,6 @@ x86_64-debian-sid:
   allow_failure: true
   variables:
     NAME: debian-sid
-
-
-x86_64-fedora-34:
-  extends: .native_build_job
-  needs:
-    - x86_64-fedora-34-container
-  allow_failure: false
-  variables:
-    NAME: fedora-34
-  artifacts:
-    expire_in: 1 day
-    paths:
-      - libvirt-rpms
 
 
 x86_64-fedora-35:

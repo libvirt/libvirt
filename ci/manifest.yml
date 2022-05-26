@@ -144,14 +144,6 @@ targets:
       - arch: s390x
         allow-failure: true
 
-  fedora-34:
-    jobs:
-      - arch: x86_64
-        artifacts:
-          expire_in: 1 day
-          paths:
-            - libvirt-rpms
-
   fedora-35:
     jobs:
       - arch: x86_64
