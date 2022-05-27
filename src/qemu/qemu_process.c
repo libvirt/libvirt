@@ -8166,12 +8166,6 @@ void qemuProcessStop(virQEMUDriver *driver,
             else
                 VIR_WARN("Unable to release network device '%s'", NULLSTR(net->ifname));
         }
-
-        if (virDomainNetDefIsOvsport(net) &&
-            virNetDevOpenvswitchInterfaceClearQos(net->ifname, vm->def->uuid) < 0) {
-            VIR_WARN("cannot clear bandwidth setting for ovs device : %s",
-                     net->ifname);
-        }
     }
 
  retry:
