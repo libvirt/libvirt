@@ -26,6 +26,13 @@ v8.4.0 (unreleased)
 
     Support for the recently released IBM Power10 processor was added.
 
+  * qemu: Introduce ``absolute`` clock offset
+
+    The ``absolute`` clock offset type allows to set the guest clock to an
+    arbitrary epoch timestamp at each start. This is useful if some VM needs
+    to be kept set to an arbitrary time for e.g. testing or working around
+    broken software.
+
 * **Improvements**
 
 * **Bug fixes**
