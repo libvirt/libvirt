@@ -14,6 +14,7 @@ x86_64-almalinux-8:
       optional: true
   allow_failure: false
   variables:
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: almalinux-8
     RPM: skip
 
@@ -47,6 +48,7 @@ x86_64-alpine-315:
       optional: true
   allow_failure: false
   variables:
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: alpine-315
 
 
@@ -105,6 +107,7 @@ x86_64-debian-11:
       optional: true
   allow_failure: false
   variables:
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 

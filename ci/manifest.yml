@@ -9,6 +9,7 @@ targets:
   almalinux-8:
     jobs:
       - arch: x86_64
+        builds: false
         variables:
           RPM: skip
 
@@ -20,7 +21,10 @@ targets:
 
   alpine-314: x86_64
 
-  alpine-315: x86_64
+  alpine-315:
+    jobs:
+      - arch: x86_64
+        builds: false
 
   alpine-edge:
     jobs:
@@ -80,6 +84,7 @@ targets:
   debian-11:
     jobs:
       - arch: x86_64
+        builds: false
 
       - arch: x86_64
         suffix: -clang
