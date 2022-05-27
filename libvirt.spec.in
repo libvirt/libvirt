@@ -899,6 +899,15 @@ Obsoletes: libvirt-bash-completion < 7.3.0
 The client binaries needed to access the virtualization
 capabilities of recent versions of Linux (and other OSes).
 
+%package client-qemu
+Summary: Additional client side utilities for QEMU
+Requires: %{name}-libs = %{version}-%{release}
+Requires: python3-libvirt >= %{version}-%{release}
+
+%description client-qemu
+The additional client binaries are used to interact
+with some QEMU specific features of libvirt.
+
 %package libs
 Summary: Client side libraries
 # So remote clients can access libvirt over SSH tunnel
@@ -2158,6 +2167,12 @@ exit 0
 %{_bindir}/virt-pki-validate
 
 %{_datadir}/bash-completion/completions/virsh
+
+%if %{with_qemu}
+%files client-qemu
+%{_mandir}/man1/virt-qemu-qmp-proxy.1*
+%{_bindir}/virt-qemu-qmp-proxy
+%endif
 
 %files libs -f %{name}.lang
 %license COPYING COPYING.LESSER

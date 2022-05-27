@@ -320,6 +320,11 @@ if conf.has('WITH_LIBVIRTD')
   endif
 endif
 
+if conf.has('WITH_QEMU')
+    install_data('virt-qemu-qmp-proxy',
+                 install_dir: bindir)
+endif
+
 if bash_completion_dep.found()
   subdir('bash-completion')
 endif

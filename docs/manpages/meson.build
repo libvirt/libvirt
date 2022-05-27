@@ -18,6 +18,7 @@ docs_man_files = [
   { 'name': 'virt-pki-query-dn', 'section': '1', 'install': true },
   { 'name': 'virt-pki-validate', 'section': '1', 'install': true },
   { 'name': 'virt-qemu-run', 'section': '1', 'install': conf.has('WITH_QEMU') },
+  { 'name': 'virt-qemu-qmp-proxy', 'section': '1', 'install': conf.has('WITH_QEMU') },
   { 'name': 'virt-xml-validate', 'section': '1', 'install': true },
 
   { 'name': 'libvirt-guests', 'section': '8', 'install': conf.has('WITH_LIBVIRTD') },
