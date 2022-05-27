@@ -256,9 +256,10 @@ armv6l-debian-10:
   needs:
     - job: armv6l-debian-10-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: armv6l
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -267,10 +268,9 @@ armv7l-debian-10:
   needs:
     - job: armv7l-debian-10-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: armv7l
-    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -291,9 +291,10 @@ mips-debian-10:
   needs:
     - job: mips-debian-10-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: mips
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -314,9 +315,10 @@ mipsel-debian-10:
   needs:
     - job: mipsel-debian-10-container
       optional: true
-  allow_failure: false
+  allow_failure: true
   variables:
     CROSS: mipsel
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -349,7 +351,7 @@ aarch64-debian-11:
   needs:
     - job: aarch64-debian-11-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: aarch64
     LIBVIRT_JOB_OPTIONAL: 1
@@ -361,7 +363,7 @@ armv6l-debian-11:
   needs:
     - job: armv6l-debian-11-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: armv6l
     LIBVIRT_JOB_OPTIONAL: 1
@@ -376,6 +378,7 @@ armv7l-debian-11:
   allow_failure: false
   variables:
     CROSS: armv7l
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -384,7 +387,7 @@ i686-debian-11:
   needs:
     - job: i686-debian-11-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: i686
     LIBVIRT_JOB_OPTIONAL: 1
@@ -399,6 +402,7 @@ mips64el-debian-11:
   allow_failure: false
   variables:
     CROSS: mips64el
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -407,7 +411,7 @@ mipsel-debian-11:
   needs:
     - job: mipsel-debian-11-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: mipsel
     LIBVIRT_JOB_OPTIONAL: 1
@@ -422,6 +426,7 @@ ppc64le-debian-11:
   allow_failure: false
   variables:
     CROSS: ppc64le
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -430,7 +435,7 @@ s390x-debian-11:
   needs:
     - job: s390x-debian-11-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: s390x
     LIBVIRT_JOB_OPTIONAL: 1
@@ -442,9 +447,10 @@ aarch64-debian-sid:
   needs:
     - job: aarch64-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: aarch64
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -453,7 +459,7 @@ armv6l-debian-sid:
   needs:
     - job: armv6l-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: armv6l
     LIBVIRT_JOB_OPTIONAL: 1
@@ -465,7 +471,7 @@ armv7l-debian-sid:
   needs:
     - job: armv7l-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: armv7l
     LIBVIRT_JOB_OPTIONAL: 1
@@ -477,9 +483,10 @@ i686-debian-sid:
   needs:
     - job: i686-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: i686
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -488,7 +495,7 @@ mips64el-debian-sid:
   needs:
     - job: mips64el-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: mips64el
     LIBVIRT_JOB_OPTIONAL: 1
@@ -500,7 +507,7 @@ mipsel-debian-sid:
   needs:
     - job: mipsel-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: mipsel
     LIBVIRT_JOB_OPTIONAL: 1
@@ -512,7 +519,7 @@ ppc64le-debian-sid:
   needs:
     - job: ppc64le-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: ppc64le
     LIBVIRT_JOB_OPTIONAL: 1
@@ -524,9 +531,10 @@ s390x-debian-sid:
   needs:
     - job: s390x-debian-sid-container
       optional: true
-  allow_failure: true
+  allow_failure: false
   variables:
     CROSS: s390x
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-sid
 
 

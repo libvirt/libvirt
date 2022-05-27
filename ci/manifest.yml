@@ -56,22 +56,26 @@ targets:
         builds: false
 
       - arch: armv6l
-
-      - arch: armv7l
         allow-failure: true
         builds: false
+
+      - arch: armv7l
 
       - arch: i686
         allow-failure: true
         builds: false
 
       - arch: mips
+        allow-failure: true
+        builds: false
 
       - arch: mips64el
         allow-failure: true
         builds: false
 
       - arch: mipsel
+        allow-failure: true
+        builds: false
 
       - arch: ppc64le
         allow-failure: true
@@ -90,29 +94,35 @@ targets:
         suffix: -clang
 
       - arch: aarch64
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: armv6l
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: armv7l
+        containers: false
+        builds: false
 
       - arch: i686
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: mips64el
+        containers: false
+        builds: false
 
       - arch: mipsel
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: ppc64le
+        containers: false
+        builds: false
 
       - arch: s390x
-        allow-failure: true
+        containers: false
         builds: false
 
   debian-sid:
@@ -121,33 +131,36 @@ targets:
         allow-failure: true
 
       - arch: aarch64
-        allow-failure: true
+        containers: false
+        builds: false
 
       - arch: armv6l
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: armv7l
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: i686
-        allow-failure: true
+        containers: false
+        builds: false
 
       - arch: mips64el
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: mipsel
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: ppc64le
-        allow-failure: true
+        containers: false
         builds: false
 
       - arch: s390x
-        allow-failure: true
+        containers: false
+        builds: false
 
   fedora-35:
     jobs:
