@@ -62,7 +62,8 @@ website:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-almalinux-8-container
+    - job: x86_64-almalinux-8-container
+      optional: true
   before_script:
     - *script_variables
   script:
@@ -82,7 +83,8 @@ codestyle:
   stage: sanity_checks
   image: $CI_REGISTRY_IMAGE/ci-opensuse-leap-153:latest
   needs:
-    - x86_64-opensuse-leap-153-container
+    - job: x86_64-opensuse-leap-153-container
+      optional: true
   before_script:
     - *script_variables
   script:
@@ -98,7 +100,8 @@ potfile:
   stage: builds
   image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-almalinux-8-container
+    - job: x86_64-almalinux-8-container
+      optional: true
   rules:
     - if: "$CI_COMMIT_BRANCH == 'master'"
   before_script:
@@ -120,7 +123,8 @@ potfile:
 coverity:
   image: $CI_REGISTRY_IMAGE/ci-almalinux-8:latest
   needs:
-    - x86_64-almalinux-8-container
+    - job: x86_64-almalinux-8-container
+      optional: true
   stage: builds
   script:
     - curl https://scan.coverity.com/download/linux64 --form project=$COVERITY_SCAN_PROJECT_NAME --form token=$COVERITY_SCAN_TOKEN -o /tmp/cov-analysis-linux64.tgz
