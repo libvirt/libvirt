@@ -5,8 +5,8 @@
 # https://gitlab.com/libvirt/libvirt-ci
 
 include:
-  - local: 'ci/gitlab/container-templates.yml'
-  - local: 'ci/gitlab/build-templates.yml'
-  - local: 'ci/gitlab/sanity-checks.yml'
-  - local: 'ci/gitlab/containers.yml'
-  - local: 'ci/gitlab/builds.yml'
+  - local: '/ci/gitlab/container-templates.yml'
+  - local: '/ci/gitlab/build-templates.yml'
+  - local: '/ci/gitlab/sanity-checks.yml'
+  - local: '/ci/gitlab/containers.yml'
+  - local: '/ci/gitlab/builds.yml'
