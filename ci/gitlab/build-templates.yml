@@ -8,11 +8,21 @@
 .gitlab_native_build_job:
   image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
   stage: builds
+  rules:
+    - if: '$LIBVIRT_JOB_OPTIONAL'
+      when: manual
+      allow_failure: true
+    - when: on_success
 
 
 .gitlab_cross_build_job:
   image: $CI_REGISTRY_IMAGE/ci-$NAME-cross-$CROSS:latest
   stage: builds
+  rules:
+    - if: '$LIBVIRT_JOB_OPTIONAL'
+      when: manual
+      allow_failure: true
+    - when: on_success
 
 
 .cirrus_build_job:
@@ -42,4 +52,9 @@
     - cat ci/cirrus/$NAME.yml
     - cirrus-run -v --show-build-log always ci/cirrus/$NAME.yml
   rules:
-    - if: "$CIRRUS_GITHUB_REPO && $CIRRUS_API_TOKEN"
+    - if: "$CIRRUS_GITHUB_REPO == null || $CIRRUS_API_TOKEN == null"
+      when: never
+    - if: '$LIBVIRT_JOB_OPTIONAL'
+      when: manual
+      allow_failure: true
+    - when: on_success

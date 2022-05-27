@@ -235,6 +235,18 @@ x86_64-ubuntu-2204-clang:
 
 # Cross build jobs
 
+aarch64-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: aarch64-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: aarch64
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-10
+
+
 armv6l-debian-10:
   extends: .cross_build_job
   needs:
@@ -243,6 +255,30 @@ armv6l-debian-10:
   allow_failure: false
   variables:
     CROSS: armv6l
+    NAME: debian-10
+
+
+armv7l-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: armv7l-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: armv7l
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-10
+
+
+i686-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: i686-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: i686
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -257,6 +293,18 @@ mips-debian-10:
     NAME: debian-10
 
 
+mips64el-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: mips64el-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: mips64el
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-10
+
+
 mipsel-debian-10:
   extends: .cross_build_job
   needs:
@@ -268,6 +316,54 @@ mipsel-debian-10:
     NAME: debian-10
 
 
+ppc64le-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: ppc64le-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: ppc64le
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-10
+
+
+s390x-debian-10:
+  extends: .cross_build_job
+  needs:
+    - job: s390x-debian-10-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: s390x
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-10
+
+
+aarch64-debian-11:
+  extends: .cross_build_job
+  needs:
+    - job: aarch64-debian-11-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: aarch64
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-11
+
+
+armv6l-debian-11:
+  extends: .cross_build_job
+  needs:
+    - job: armv6l-debian-11-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: armv6l
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-11
+
+
 armv7l-debian-11:
   extends: .cross_build_job
   needs:
@@ -276,6 +372,18 @@ armv7l-debian-11:
   allow_failure: false
   variables:
     CROSS: armv7l
+    NAME: debian-11
+
+
+i686-debian-11:
+  extends: .cross_build_job
+  needs:
+    - job: i686-debian-11-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: i686
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -290,6 +398,18 @@ mips64el-debian-11:
     NAME: debian-11
 
 
+mipsel-debian-11:
+  extends: .cross_build_job
+  needs:
+    - job: mipsel-debian-11-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: mipsel
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-11
+
+
 ppc64le-debian-11:
   extends: .cross_build_job
   needs:
@@ -298,6 +418,18 @@ ppc64le-debian-11:
   allow_failure: false
   variables:
     CROSS: ppc64le
+    NAME: debian-11
+
+
+s390x-debian-11:
+  extends: .cross_build_job
+  needs:
+    - job: s390x-debian-11-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: s390x
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -312,6 +444,30 @@ aarch64-debian-sid:
     NAME: debian-sid
 
 
+armv6l-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: armv6l-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: armv6l
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-sid
+
+
+armv7l-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: armv7l-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: armv7l
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-sid
+
+
 i686-debian-sid:
   extends: .cross_build_job
   needs:
@@ -320,6 +476,42 @@ i686-debian-sid:
   allow_failure: true
   variables:
     CROSS: i686
+    NAME: debian-sid
+
+
+mips64el-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: mips64el-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: mips64el
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-sid
+
+
+mipsel-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: mipsel-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: mipsel
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: debian-sid
+
+
+ppc64le-debian-sid:
+  extends: .cross_build_job
+  needs:
+    - job: ppc64le-debian-sid-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: ppc64le
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -332,6 +524,18 @@ s390x-debian-sid:
   variables:
     CROSS: s390x
     NAME: debian-sid
+
+
+mingw32-fedora-36:
+  extends: .cross_build_job
+  needs:
+    - job: mingw32-fedora-36-container
+      optional: true
+  allow_failure: false
+  variables:
+    CROSS: mingw32
+    LIBVIRT_JOB_OPTIONAL: 1
+    NAME: fedora-36
 
 
 mingw64-fedora-36:
@@ -353,6 +557,18 @@ mingw32-fedora-rawhide:
   allow_failure: true
   variables:
     CROSS: mingw32
+    NAME: fedora-rawhide
+
+
+mingw64-fedora-rawhide:
+  extends: .cross_build_job
+  needs:
+    - job: mingw64-fedora-rawhide-container
+      optional: true
+  allow_failure: true
+  variables:
+    CROSS: mingw64
+    LIBVIRT_JOB_OPTIONAL: 1
     NAME: fedora-rawhide
 
 

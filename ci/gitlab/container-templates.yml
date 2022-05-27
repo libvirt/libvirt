@@ -49,4 +49,7 @@
       when: on_success
     - if: '$CI_PROJECT_NAMESPACE == "libvirt"'
       when: never
+    - if: '$LIBVIRT_JOB_OPTIONAL'
+      when: manual
+      allow_failure: true
     - when: on_success
