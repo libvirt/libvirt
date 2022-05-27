@@ -142,7 +142,7 @@ findMACsParserEndMap(void *ctx)
     if (parser->state != FIND_MACS_STATE_ENTRY)
         return 0;
 
-    if (!strcmp(parser->entry.name, parser->name)) {
+    if (!strcasecmp(parser->entry.name, parser->name)) {
         char **macs = realloc(*parser->macs,
                               sizeof(char *) * ((*parser->nmacs) + parser->entry.nmacs));
         if (!macs)

@@ -1325,7 +1325,7 @@ sc_prohibit_enum_impl_with_vir_prefix_in_virsh:
 ## Exceptions ##
 ## ---------- ##
 
-exclude_file_name_regexp--sc_avoid_strcase = ^tools/vsh\.h$$
+exclude_file_name_regexp--sc_avoid_strcase = ^tools/(vsh\.h|nss/libvirt_nss_(leases|macs)\.c)$$
 
 exclude_file_name_regexp--sc_avoid_write = ^src/libvirt-stream\.c$$
 

@@ -272,7 +272,7 @@ findLeasesParserEndMap(void *ctx)
         }
     } else {
         DEBUG("Check name '%s' vs '%s'", parser->name, NULLSTR(parser->entry.hostname));
-        if (parser->entry.hostname && !strcmp(parser->name, parser->entry.hostname))
+        if (parser->entry.hostname && !strcasecmp(parser->name, parser->entry.hostname))
             found = true;
     }
     DEBUG("Found %d", found);
