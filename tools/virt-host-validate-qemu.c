@@ -71,7 +71,8 @@ int virHostValidateQEMU(void)
             virHostMsgPass();
         } else {
             virHostMsgFail(VIR_HOST_VALIDATE_FAIL,
-                           _("Only emulated CPUs are available, performance will be significantly limited"));
+                           _("Host not compatible with KVM; HW virtualization CPU features not found. "
+                             "Only emulated CPUs are available; performance will be significantly limited"));
             ret = -1;
         }
     }
