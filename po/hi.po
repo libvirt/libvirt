@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2015-02-23 12:39+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Hindi (http://www.transifex.com/projects/p/fedora/language/"
@@ -915,10 +915,6 @@ msgstr ""
 msgid "%s: try --help for more details\n"
 msgstr ""
 
-#, fuzzy, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: त्रुटि: निर्धारित करने में असमर्थ यदि डेमॉन चल रहा है: %s\n"
-
 #, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr ""
@@ -971,6 +967,10 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
+msgstr ""
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
 msgstr ""
 
 #, fuzzy, c-format
@@ -1166,6 +1166,9 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr ""
 
 msgid "'netns' namespace source can only be used with sharenet"
+msgstr ""
+
+msgid "'network' attribute is required for listen type 'network'"
 msgstr ""
 
 #, fuzzy
@@ -2345,8 +2348,8 @@ msgid "Can only modify disk quota"
 msgstr ""
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr "केवल VNC या SPICE ग्राफिक्स बैकेंड खोल सकते हैं, %s नहीं "
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
+msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB हब जोड़ नहीं सकता है: USB इस डोमेन के लिए निष्क्रिय है"
@@ -4976,6 +4979,12 @@ msgstr "वर्तमान:"
 
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
+msgstr ""
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
 msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
@@ -7648,6 +7657,10 @@ msgstr "tty %s खोलने में विफल"
 msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr ""
 
+#, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "पीसीआई कॉन्फिग पते '%s' का विश्लेषण करने में विफल"
@@ -7935,10 +7948,6 @@ msgstr "लॉक जारी करने में विफल"
 
 #, fuzzy, c-format
 msgid "Failed to release lock: %s"
-msgstr "लॉक जारी करने में विफल"
-
-#, fuzzy, c-format
-msgid "Failed to release port %d"
 msgstr "लॉक जारी करने में विफल"
 
 #, fuzzy, c-format
@@ -10134,7 +10143,7 @@ msgid "Invalid parameter type passed to free"
 msgstr "virXPathNode() में अवैध पैरामीटर"
 
 #, c-format
-msgid "Invalid parameters: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
 msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
@@ -11496,16 +11505,7 @@ msgid ""
 "response"
 msgstr ""
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr ""
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
-
 msgid "Missing or invalid name in query-rx-filter response"
-msgstr ""
-
-msgid "Missing or invalid return data in add-fd response"
 msgstr ""
 
 #, fuzzy
@@ -12870,6 +12870,9 @@ msgstr "केवल एक प्राथमिक वीडियो यु�
 
 msgid "Only one primary video device is supported"
 msgstr "केवल एक प्राथमिक वीडियो युक्ति समर्थित है"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
@@ -14817,6 +14820,9 @@ msgstr ""
 msgid "Specifying mount point is not supported for now"
 msgstr "ऑपरेशन डिवाइस के लिए समर्थित नहीं है: %s"
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 #, fuzzy
 msgid "Start"
 msgstr "आरंभ किया"
@@ -15987,6 +15993,9 @@ msgstr ""
 msgid "The XML configuration was changed by another user."
 msgstr "XML विन्यास दूसरे उपयोक्ता के द्वारा बदला गया था"
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr ""
@@ -16655,10 +16664,6 @@ msgstr "config फ़ाइल %s पर पहुँच में अक्ष�
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "फाइल विवरक %d पर पहुँच में अक्षम"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to access kernel32.dll"
@@ -20755,6 +20760,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "सत्यापन विफल: %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "सत्यापन जरूरी"
 
@@ -23036,6 +23048,14 @@ msgstr "वर्ण युक्ति सूचना में फाइल�
 msgid "character device name"
 msgstr "वर्ण युक्ति नाम"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 #, fuzzy
 msgid "chardev already exists"
 msgstr "लक्ष्य पहले से मौजूद है"
@@ -24379,9 +24399,6 @@ msgstr ""
 msgid "dir"
 msgstr "डिर."
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
-
 msgid "direct migration"
 msgstr "सीधा उत्प्रवासन"
 
@@ -25281,6 +25298,9 @@ msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
 msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 
 #, c-format
@@ -26566,6 +26586,9 @@ msgstr "mac पता '%s' के विश्लेषण में असम�
 msgid "failed to parse node name index"
 msgstr "%s ब्लॉक नाम विश्लेषण में विफल"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "dir नाम '%s' को विश्लेषित करने में विफल"
@@ -27044,6 +27067,10 @@ msgstr "fd मान्य किया जाना चाहिए"
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "ऑफ़लाइन प्रवास गंतव्य होस्ट के द्वारा समर्थित नहीं है"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -28619,9 +28646,6 @@ msgstr "अमान्य क्रिया प्रकार: '%s'\n"
 msgid "invalid fd %d for %s"
 msgstr "अवैध uuid %s"
 
-msgid "invalid file descriptor"
-msgstr ""
-
 msgid "invalid flag"
 msgstr "अमान्य झंडा"
 
@@ -29212,10 +29236,10 @@ msgstr ""
 msgid "library call failed: %s"
 msgstr "ऑपरेशन विफल: %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
+msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 
-msgid "librbd encryption is not supported by this QEMU binary"
+msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
 msgid "libssh transport error"
@@ -30545,6 +30569,9 @@ msgstr ""
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -31079,6 +31106,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "गायब cpuset vcpupin के लिए"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "गुम प्रति-युक्ति पथ"
@@ -32766,7 +32796,8 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -33673,6 +33704,9 @@ msgstr "अस्थायी संजाल के लिए स्वतः �
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr ""
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 #, fuzzy
 msgid "print the admin server URI"
 msgstr "हाइपरविजर कैनोनिकल URI छापें"
@@ -33918,9 +33952,6 @@ msgid "query-dirty-rate reply was missing 'status' data"
 msgstr ""
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
-
-msgid "query-fdsets return data missing 'fd'"
 msgstr ""
 
 msgid "query-fdsets return data missing fd array element"
@@ -34764,7 +34795,9 @@ msgstr "सुरक्षा मॉडल अधिकतम से अधि�
 msgid "security model string exceeds max %d bytes"
 msgstr "सुरक्षा मॉडल स्ट्रिंग %d बाइट से अधिक हो गई"
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
 msgstr ""
 
 #, fuzzy
@@ -36607,6 +36640,10 @@ msgstr ""
 "संजाल '%s' अंतरफलक '%s' को नष्ट करने में असमर्थ. यह वर्तमान में %d डोमेन द्वारा इस्तेमाल "
 "किया जा रहा है."
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 #, fuzzy
 msgid "unable to determine if checkpoint has parent"
 msgstr "%s: त्रुटि: निर्धारित करने में असमर्थ यदि डेमॉन चल रहा है: %s\n"
@@ -36991,6 +37028,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "स्टेट बाँध लक्ष्य %s में असमर्थ"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -38892,6 +38933,9 @@ msgstr "virDomainGetXMLDesc सुरक्षित फ्लैग के स�
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc सुरक्षित फ्लैग के साथ"
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 #, fuzzy
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "%s Win32 पर लागू नहीं"
@@ -39489,6 +39533,17 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#, fuzzy
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s: त्रुटि: निर्धारित करने में असमर्थ यदि डेमॉन चल रहा है: %s\n"
+
+#~ msgid "Can only open VNC or SPICE graphics backends, not %s"
+#~ msgstr "केवल VNC या SPICE ग्राफिक्स बैकेंड खोल सकते हैं, %s नहीं "
+
+#, fuzzy
+#~ msgid "Failed to release port %d"
+#~ msgstr "लॉक जारी करने में विफल"
 
 #, fuzzy
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"

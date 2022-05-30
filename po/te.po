@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2015-03-05 07:40+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Telugu (http://www.transifex.com/projects/p/libvirt/language/"
@@ -913,10 +913,6 @@ msgid "%s: try --help for more details\n"
 msgstr "%s: మరిన్ని వివరాల కొరకు --help ప్రయత్నించు"
 
 #, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: fd %d యొక్క ఏక్సెస్ రీతిని నిర్ణయించలేదు"
-
-#, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr ""
 
@@ -970,6 +966,10 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
+msgstr ""
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
 msgstr ""
 
 #, fuzzy, c-format
@@ -1172,6 +1172,9 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "guest-get-vcpus యొక్క ప్రత్యుత్తరం నందు 'online' దొరకలేదు"
 
 msgid "'netns' namespace source can only be used with sharenet"
+msgstr ""
+
+msgid "'network' attribute is required for listen type 'network'"
 msgstr ""
 
 #, fuzzy
@@ -2354,8 +2357,8 @@ msgid "Can only modify disk quota"
 msgstr "డిస్కు కోటాను మాత్రమే సవరించగలదు"
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr "VNC లేదా SPICE గ్రాఫిక్స్ బ్యాకెండ్స్ మాత్రమే తెరువగలదు, %s కాదు"
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
+msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB హబ్ జతచేయలేదు: ఈ డొమైన్ కొరకు USB అచేతనం చేయబడెను"
@@ -4968,6 +4971,12 @@ msgstr "ప్రస్తుత:"
 
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
+msgstr ""
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
 msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
@@ -7606,6 +7615,10 @@ msgstr "tty %s తెరుచుటకు విఫలమైంది"
 msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr "URI కాంపోనెంట్ %s యొక్క విలువ పార్స్ చేయుటకు విఫలమైంది"
 
+#, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "'%s' నుండి uid మరియు gid పార్స్ చేయలేదు"
@@ -7891,10 +7904,6 @@ msgstr "లాక్ విడుదలకు విఫలమైంది"
 #, fuzzy, c-format
 msgid "Failed to release lock: %s"
 msgstr "లాక్ విడుదలకు విఫలమైంది"
-
-#, c-format
-msgid "Failed to release port %d"
-msgstr "పోర్ట్ %d విడుదల చేయుటకు విఫలమైంది"
 
 #, fuzzy, c-format
 msgid "Failed to remove capability %s: %d"
@@ -10077,7 +10086,7 @@ msgid "Invalid parameter type passed to free"
 msgstr "virXPathNode()కు చెల్లని పారామితి"
 
 #, c-format
-msgid "Invalid parameters: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
 msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
@@ -11429,18 +11438,9 @@ msgid ""
 "response"
 msgstr ""
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr ""
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
-
 #, fuzzy
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr "CPU రకం %s నందు దొరకని లేదా చెల్లని PVR విలువ"
-
-msgid "Missing or invalid return data in add-fd response"
-msgstr ""
 
 #, fuzzy
 msgid "Missing or invalid scsi adapter 'unique_id' value"
@@ -12782,6 +12782,9 @@ msgstr "ఒక ప్రాథమిక వీడియో పరికరం �
 
 msgid "Only one primary video device is supported"
 msgstr "ఒక ప్రాథమిక వీడియో పరికరం మాత్రమే తోడ్పాటునిచ్చును"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
@@ -14715,6 +14718,9 @@ msgstr "విభిన్న న్యూమా నోడ్ల నుండి
 msgid "Specifying mount point is not supported for now"
 msgstr "ప్రస్తుతానికి మౌంట్ పాయింట్ తెలుపుటకు తోడ్పాటులేదు"
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 #, fuzzy
 msgid "Start"
 msgstr "ప్రారంభమైంది"
@@ -15892,6 +15898,9 @@ msgstr "QEMU నిర్వర్తించదగు %s అనునది TP
 msgid "The XML configuration was changed by another user."
 msgstr "XML ఆకృతీకరణ వేరే వాడుకరి చేత మార్చబడింది."
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr "ధృవీకరణపత్రం %s ప్రాథమిక నిభందనలు CA ను చూపవు"
@@ -16561,10 +16570,6 @@ msgstr "ఆకృతీకరణ ఫైలు %s ను యాక్సెస్
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "ఫైల్ వివరణి %d యాక్సెస్ చేయలేదు"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to access kernel32.dll"
@@ -20568,6 +20573,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "ధృవీకరణ విఫలమైంది: %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "ధృవీకరణ అవసరమైంది"
 
@@ -22824,6 +22836,14 @@ msgstr "కారెక్టర్ పరికర సమాచారము ఫ
 msgid "character device name"
 msgstr "అక్షర పరికరం పేరు"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 msgid "chardev already exists"
 msgstr "chardev ఇప్పటికే వుంది"
 
@@ -24152,9 +24172,6 @@ msgstr ""
 msgid "dir"
 msgstr "dir"
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
-
 msgid "direct migration"
 msgstr "నేరుగా మైగ్రేషన్"
 
@@ -25046,6 +25063,9 @@ msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
 msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 
 #, c-format
@@ -26328,6 +26348,9 @@ msgstr "'%s' నుండి uid మరియు gid పార్స్ చే�
 msgid "failed to parse node name index"
 msgstr "నిరోధక నామము %s పార్శ్‍ చేయుటకు విఫలమైంది"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "పోర్టు సంఖ్య పార్స్ చేయుటకు విఫలమైంది"
@@ -26800,6 +26823,10 @@ msgstr "fd తప్పకుండా చెల్లునది కావా�
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "ఈ ఫంక్షన్ అనునది అనుసంధాన డ్రైవర్ చేత తోడ్పాటునీయదు"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -28365,9 +28392,6 @@ msgstr "చెల్లని వైఫల్య చర్య: '%s'\n"
 msgid "invalid fd %d for %s"
 msgstr "fd %d చెల్లనిది %s కొరకు"
 
-msgid "invalid file descriptor"
-msgstr ""
-
 msgid "invalid flag"
 msgstr "చెల్లని ఫ్లాగ్"
 
@@ -28947,10 +28971,10 @@ msgstr "nl_recv విఫలమైంది"
 msgid "library call failed: %s"
 msgstr "వ్రాయుట విఫలమైంది: %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
+msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 
-msgid "librbd encryption is not supported by this QEMU binary"
+msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
 #, fuzzy
@@ -30252,6 +30276,9 @@ msgstr ""
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -30792,6 +30819,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "దొరకని పేరు సమాచారం"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "పర్-డివైజ్ పాత్ దొరకట్లేదు"
@@ -32464,7 +32494,8 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -33372,6 +33403,9 @@ msgstr "ఇచ్చిన నెట్వర్కును బలవంతం�
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr ""
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 #, fuzzy
 msgid "print the admin server URI"
 msgstr "డొమైన్ యొక్క అతిధేయపేరు ముద్రించు"
@@ -33612,9 +33646,6 @@ msgid "query-dirty-rate reply was missing 'status' data"
 msgstr ""
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
-
-msgid "query-fdsets return data missing 'fd'"
 msgstr ""
 
 msgid "query-fdsets return data missing fd array element"
@@ -34451,7 +34482,9 @@ msgstr "రక్షణ మోడల్ గరిష్ట: %zu దాటివ�
 msgid "security model string exceeds max %d bytes"
 msgstr "రక్షణ రీతి స్ట్రింగ్ గరిష్ట %d బైట్లను మించుతుంది"
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
 msgstr ""
 
 #, fuzzy
@@ -36297,6 +36330,10 @@ msgstr ""
 "ఇంటర్ఫేస్ '%s' ను నెట్వర్కు '%s' నందు తొలగించలేక పోయింది. ఇది ప్రస్తుతం %d డొమైన్లచేత "
 "వుపయోగించబడుచున్నది."
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 #, fuzzy
 msgid "unable to determine if checkpoint has parent"
 msgstr "స్నాప్‌షాట్ పేరెంట్ కలిగివుంటే నిర్వచించలేదు"
@@ -36670,6 +36707,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "లక్ష్యం %s స్టాట్ బైండ్‌కు చేయలేదు"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -38559,6 +38600,9 @@ msgstr "virDomainGetXMLDesc సురక్షిత ఫ్లాగ్‌తో
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc సురక్షిత ఫ్లాగ్ తో"
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs అనునది WIN32 కొరకు ఇంప్లిమెంట్ చేయలేదు"
 
@@ -39149,6 +39193,15 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s: fd %d యొక్క ఏక్సెస్ రీతిని నిర్ణయించలేదు"
+
+#~ msgid "Can only open VNC or SPICE graphics backends, not %s"
+#~ msgstr "VNC లేదా SPICE గ్రాఫిక్స్ బ్యాకెండ్స్ మాత్రమే తెరువగలదు, %s కాదు"
+
+#~ msgid "Failed to release port %d"
+#~ msgstr "పోర్ట్ %d విడుదల చేయుటకు విఫలమైంది"
 
 #, fuzzy
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"

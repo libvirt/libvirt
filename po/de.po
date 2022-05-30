@@ -20,7 +20,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2022-03-19 09:16+0000\n"
 "Last-Translator: Tom Wieczorek <tom@bibbu.net>\n"
 "Language-Team: German <https://translate.fedoraproject.org/projects/libvirt/"
@@ -958,10 +958,6 @@ msgid "%s: try --help for more details\n"
 msgstr "%s: Versuchen Sie --help für mehr Details\n"
 
 #, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: Kann nicht den Zugriffs-Modus von fd %d bestimmen"
-
-#, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr ""
 
@@ -1016,6 +1012,10 @@ msgstr ""
 #, c-format
 msgid "'%s'"
 msgstr "'%s'"
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
+msgstr ""
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1217,6 +1217,9 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr "'online' fehlt in Antwort auf guest-get-vcpus"
 
 msgid "'netns' namespace source can only be used with sharenet"
+msgstr ""
+
+msgid "'network' attribute is required for listen type 'network'"
 msgstr ""
 
 #, fuzzy
@@ -2426,8 +2429,8 @@ msgid "Can only modify disk quota"
 msgstr "Kann Datenträgerkontingent nur ändern"
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr "Kann nur VNC oder SPICE Grafik-Backends öffnen, nicht %s"
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
+msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "Kann keinen USB-Hub hinzufügen: USB ist für diese Domain deaktiviert"
@@ -5111,6 +5114,12 @@ msgstr "Aktuell:"
 
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
+msgstr ""
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
 msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
@@ -7830,6 +7839,10 @@ msgstr "Öffnen des TTY %s fehlgeschlagen"
 msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr "Konnte den Wert der URI Komponente %s nicht analysieren"
 
+#, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "Verarbeiten von uid und gid von '%s' fehlgeschlagen"
@@ -8115,10 +8128,6 @@ msgstr "Sperren Freigabe fehlgeschlagen"
 #, fuzzy, c-format
 msgid "Failed to release lock: %s"
 msgstr "Sperren Freigabe fehlgeschlagen"
-
-#, c-format
-msgid "Failed to release port %d"
-msgstr "Port %d Freigabe fehlgeschlagen"
 
 #, fuzzy, c-format
 msgid "Failed to remove capability %s: %d"
@@ -10363,7 +10372,7 @@ msgid "Invalid parameter type passed to free"
 msgstr "Ungültiger Parameter für PrintDlgEx"
 
 #, c-format
-msgid "Invalid parameters: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
 msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
@@ -11749,18 +11758,9 @@ msgid ""
 "response"
 msgstr ""
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr ""
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
-
 #, fuzzy
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr "Fehlender oder ungültiger PVR Wert in CPU-Modell %s"
-
-msgid "Missing or invalid return data in add-fd response"
-msgstr ""
 
 #, fuzzy
 msgid "Missing or invalid scsi adapter 'unique_id' value"
@@ -13142,6 +13142,9 @@ msgstr "Nur eine Primär-Video-Einheit wird unterstützt"
 
 msgid "Only one primary video device is supported"
 msgstr "Nur eine Primär-Video-Einheit wird unterstützt"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
@@ -15152,6 +15155,9 @@ msgstr ""
 msgid "Specifying mount point is not supported for now"
 msgstr "Festlegen Anschlusspunkt ist derzeit nicht unterstützt"
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 #, fuzzy
 msgid "Start"
 msgstr "gestartet"
@@ -16387,6 +16393,9 @@ msgstr "Die QEMU ausführbare Datei %s unterstützt nicht TPM Modell %s"
 msgid "The XML configuration was changed by another user."
 msgstr "Die XML-Konfiguration wurde von einem anderen Benutzer verändert."
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr "Die grundlegenden Einschränkungen des Zertifikats %s zeigen keine CA"
@@ -17070,10 +17079,6 @@ msgstr "Konnte nicht auf Konfigurations-Datei %s zugreifen"
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "Konnte nicht auf Datei-Beschreibung %d zugreifen"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to access kernel32.dll"
@@ -21155,6 +21160,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "Authentifikation gescheitert: %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "Authentifikation benötigt"
 
@@ -23441,6 +23453,14 @@ msgstr "Den Charaktergeräte-Informationen fehlte der Dateiname"
 msgid "character device name"
 msgstr "Charakter-Einheit Name"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 msgid "chardev already exists"
 msgstr "chardev bereits vorhanden"
 
@@ -24818,9 +24838,6 @@ msgstr ""
 msgid "dir"
 msgstr "dir"
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
-
 msgid "direct migration"
 msgstr "Direkte Migration"
 
@@ -25717,6 +25734,9 @@ msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
 msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 
 #, c-format
@@ -27006,6 +27026,9 @@ msgstr "Verarbeiten von uid und gid von '%s' fehlgeschlagen"
 msgid "failed to parse node name index"
 msgstr "Parsen von Blockname %s fehlgeschlagen"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "Kann Port Nummer nicht analysieren"
@@ -27483,6 +27506,10 @@ msgstr "fd muss gültig sein"
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "Diese Funktion wird vom Verbindungstreiber nicht unterstützt"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -29072,9 +29099,6 @@ msgstr "Ungültige Fehler Aktion: '%s'\n"
 msgid "invalid fd %d for %s"
 msgstr "Ungültige fd %d für %s"
 
-msgid "invalid file descriptor"
-msgstr ""
-
 msgid "invalid flag"
 msgstr "ungültige Flag"
 
@@ -29656,10 +29680,10 @@ msgstr "nl_recv fehlgeschlagen"
 msgid "library call failed: %s"
 msgstr "Schreiben schlug fehl: %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
+msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 
-msgid "librbd encryption is not supported by this QEMU binary"
+msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
 #, fuzzy
@@ -30960,6 +30984,9 @@ msgstr ""
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -31501,6 +31528,9 @@ msgstr ""
 #, fuzzy
 msgid "missing path for <reservations/>"
 msgstr "fehlende Namens-Information"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "Per-Einheit Pfad fehlt"
@@ -33225,7 +33255,8 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -34142,6 +34173,9 @@ msgstr "Ein bestimmtes Domäne gewaltsam anhalten."
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr ""
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 #, fuzzy
 msgid "print the admin server URI"
 msgstr "Hostname der Domain ausgeben"
@@ -34385,9 +34419,6 @@ msgid "query-dirty-rate reply was missing 'status' data"
 msgstr ""
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
-
-msgid "query-fdsets return data missing 'fd'"
 msgstr ""
 
 msgid "query-fdsets return data missing fd array element"
@@ -35259,7 +35290,9 @@ msgstr "Sicherheits-Modell überschreitet Höchstwert: %zu"
 msgid "security model string exceeds max %d bytes"
 msgstr "Sicherheitsmodell-String größer als die maximal erlaubten %d Bytes"
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
 msgstr ""
 
 #, fuzzy
@@ -37152,6 +37185,10 @@ msgstr ""
 "kann Schnittstelle '%s' in Netzwerk '%s' nicht löschen. Sie wird derzeit von "
 "%d Domänen verwendet."
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 #, fuzzy
 msgid "unable to determine if checkpoint has parent"
 msgstr "nicht in der Lage zu bestimmen, ob Snapshot einen Übergeordneten hat"
@@ -37525,6 +37562,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "Konnte stat für Bind-Ziel %s nicht erhalten"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -39420,6 +39461,9 @@ msgstr "virDomainGetXMLDesc mit sicherem Flag"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc mit sicherer Flag"
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs ist nicht implementiert auf Win32"
 
@@ -40027,6 +40071,15 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s: Kann nicht den Zugriffs-Modus von fd %d bestimmen"
+
+#~ msgid "Can only open VNC or SPICE graphics backends, not %s"
+#~ msgstr "Kann nur VNC oder SPICE Grafik-Backends öffnen, nicht %s"
+
+#~ msgid "Failed to release port %d"
+#~ msgstr "Port %d Freigabe fehlgeschlagen"
 
 #, fuzzy
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"

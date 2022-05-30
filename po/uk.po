@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2022-04-26 14:28+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
@@ -1099,10 +1099,6 @@ msgid "%s: try --help for more details\n"
 msgstr "%s: спробуйте вказати параметр --help, щоб дізнатися більше\n"
 
 #, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: не вдалося визначити режим доступу до дескриптора файла %d"
-
-#, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s: неочікуване передавання адреси «%s»\n"
 
@@ -1158,6 +1154,10 @@ msgstr "Для %s_DEBUG не встановлено коректного чис�
 #, c-format
 msgid "'%s'"
 msgstr "«%s»"
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
+msgstr ""
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1360,6 +1360,9 @@ msgstr "у відповіді guest-get-fsinfo пропущено «name»"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr "простір назв «netns» джерела можна використовувати лише з sharenet"
+
+msgid "'network' attribute is required for listen type 'network'"
+msgstr ""
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "Атрибут «network» є коректним лише для типу очікування «network»"
@@ -2600,8 +2603,8 @@ msgid "Can only modify disk quota"
 msgstr "Можлива лише зміна квоти на диску"
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr "Можливе відкриття лише графічних серверів VNC або SPICE, але не %s"
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
+msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "Не вдалося додати вузол USB: для цього домену USB вимкнено"
@@ -5286,6 +5289,12 @@ msgstr "Поточний:"
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
 msgstr "Нетиповий завантажувач потребує явного налаштовування %s"
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
+msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "Не вдалося визначити мітку образу (imagelabel) DAC"
@@ -7980,6 +7989,10 @@ msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr "Не вдалося обробити %s: підтримку передбачено лише для com1 і com2."
 
 #, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "Не вдалося обробити MAC-адресу з «%s»"
 
@@ -8257,10 +8270,6 @@ msgstr "Не вдалося зняти блокування"
 #, c-format
 msgid "Failed to release lock: %s"
 msgstr "Не вдалося зняти блокування: %s"
-
-#, c-format
-msgid "Failed to release port %d"
-msgstr "Не вдалося звільнити порт %d"
 
 #, c-format
 msgid "Failed to remove capability %s: %d"
@@ -10547,8 +10556,8 @@ msgid "Invalid parameter type passed to free"
 msgstr "Free передано параметр некоректного типу"
 
 #, c-format
-msgid "Invalid parameters: %d"
-msgstr "Некоректні параметри: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
+msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr ""
@@ -11937,19 +11946,9 @@ msgstr ""
 "У відповіді query-rx-filter пропущено елемент %zu масиву «vlan-table» або "
 "вказано некоректні дані"
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr "Не вказано відповіді fd в add-fd або вказано некоректну відповідь"
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
-"Не вказано відповіді fdset-id в add-fd або вказано некоректну відповідь"
-
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr ""
 "У відповіді query-rx-filter пропущено назву або вказано некоректну назву"
-
-msgid "Missing or invalid return data in add-fd response"
-msgstr "Не вказано повернутих даних в add-fd або вказано некоректну відповідь"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr ""
@@ -13310,6 +13309,9 @@ msgstr "Передбачено підтримку пристроїв основ�
 
 msgid "Only one primary video device is supported"
 msgstr "Передбачено підтримку лише одного основного відеопристрою"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "У драйвері vz передбачено підтримку лише образів дисків ploop."
@@ -15335,6 +15337,9 @@ msgid "Specifying mount point is not supported for now"
 msgstr ""
 "У поточній версії ще не передбачено визначення точки монтування користувачем"
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 msgid "Start"
 msgstr "Запустити"
 
@@ -16728,6 +16733,9 @@ msgstr "У виконуваному файлі QEMU %s не передбачен
 msgid "The XML configuration was changed by another user."
 msgstr "Налаштування у форматі XML було змінено іншим користувачем."
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr "У основних обмеженнях сертифіката %s не вказано службу сертифікації"
@@ -17433,10 +17441,6 @@ msgstr "Не вдалося отримати доступ до файла нал
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "Не вдалося отримати доступ до дескриптора файла %d"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr "Не вдалося отримати доступ до дескриптора файла %d, шлях %s"
 
 msgid "Unable to access kernel32.dll"
 msgstr "Не вдалося отримати доступ kernel32.dll"
@@ -21445,6 +21449,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "помилка розпізнавання: %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "потрібно пройти розпізнавання"
 
@@ -23767,6 +23778,14 @@ msgstr "у даних символьного пристрою немає міт�
 msgid "character device name"
 msgstr "назва символьного пристрою"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 msgid "chardev already exists"
 msgstr "символьний пристрій вже існує"
 
@@ -25124,11 +25143,6 @@ msgstr "дані щодо пам'яті dimm не містять «id»"
 msgid "dir"
 msgstr "каталог"
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
-"для безпосереднього передавання дескриптора файла передбачено підтримку лише "
-"1 дескриптора"
-
 msgid "direct migration"
 msgstr "безпосереднє перенесення"
 
@@ -26028,6 +26042,9 @@ msgstr "форматом шифрування inputvol має бути LUKS"
 
 msgid "encryption is not supported with vhostuser disk"
 msgstr "підтримки шифрування для дисків vhostuser не передбачено"
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
+msgstr ""
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
@@ -27290,6 +27307,9 @@ msgstr "не вдалося обробити адресу трансляції �
 msgid "failed to parse node name index"
 msgstr "не вдалося обробити покажчик назв вузлів"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "не вдалося обробити номер порту: «%s»"
@@ -27755,6 +27775,10 @@ msgstr "дескриптор файла має бути коректним"
 msgid "fd passing is not supported by this connection"
 msgstr ""
 "цим з'єднанням не передбачено можливості передавання дескрипторів файлів"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -29421,9 +29445,6 @@ msgstr "некоректна дія у відповідь на помилку: �
 msgid "invalid fd %d for %s"
 msgstr "некоректний дескриптор файла %d для %s"
 
-msgid "invalid file descriptor"
-msgstr "некоректний дескриптор файла"
-
 msgid "invalid flag"
 msgstr "некоректний прапорець"
 
@@ -30002,13 +30023,12 @@ msgstr "помилка під час виклику бібліотеки"
 msgid "library call failed: %s"
 msgstr "помилка під час виклику бібліотеки: %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
-msgstr ""
-"у рушії шифрування librbd передбачено підтримку лише форматів luks/luks2"
-
 msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки шифрування librbd"
+
+msgid "librbd encryption is supported only with RBD backed disks"
+msgstr ""
 
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
@@ -31344,6 +31364,9 @@ msgstr "у файлі контекстів lxc selinux «%s» пропущено
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr "пропущено атрибут «server» у резервному визначенні JSON для тому NFS"
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -31862,6 +31885,9 @@ msgstr "немає реалізації обробника для драйвер
 
 msgid "missing path for <reservations/>"
 msgstr "не вказано шлях для <reservations/>"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "не вказано окремого шляху до пристрою"
@@ -33553,10 +33579,9 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "для пристрою virtio-pmem передбачено підтримку лише адрес «pci»"
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
 msgstr ""
-"передбачено підтримку лише одного графічного пристрою кожного типу (sdl, "
-"vnc, spice, headless)"
 
 msgid "only JSON objects can be top level"
 msgstr "на верхньому рівні можуть бути лише об'єкти JSON"
@@ -34478,6 +34503,9 @@ msgstr "вивести дані щодо надання для вказаної 
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr "виводити статистику для усіх типів завдань (навіть невдалих)"
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 msgid "print the admin server URI"
 msgstr "вивести URI адміністративного сервера"
 
@@ -34733,9 +34761,6 @@ msgstr "у відповіді query-dirty-rate пропущено дані «sta
 
 msgid "query-fdsets reply was missing 'fdset-id'"
 msgstr "у відповіді query-fdsets немає «fdset-id»"
-
-msgid "query-fdsets return data missing 'fd'"
-msgstr "у повернутих query-fdsets даних немає «fd»"
 
 msgid "query-fdsets return data missing fd array element"
 msgstr ""
@@ -35589,10 +35614,10 @@ msgid "security model string exceeds max %d bytes"
 msgstr ""
 "довжина рядка моделі захисту перевищує максимальне значення у %d байтів"
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
 msgstr ""
-"вибрати певний спосіб передавання графічних даних (наприклад «vnc», «spice» "
-"або «rdp»)"
 
 msgid "send handler failed"
 msgstr "помилка надсилання обробника"
@@ -37525,6 +37550,10 @@ msgstr ""
 "не вдалося вилучити інтерфейс «%s» у мережі «%s». Зараз цей інтерфейс "
 "використовується %d доменами."
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 msgid "unable to determine if checkpoint has parent"
 msgstr "не вдалося визначити, чи має контрольна точка батьківський запис"
 
@@ -37886,6 +37915,10 @@ msgstr "не вдалося виконати stat для %s"
 #, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "не вдалося отримати статистичні дані призначення копії блоку «%s»"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -39804,6 +39837,9 @@ msgstr "virDomainManagedSaveGetXMLDesc із прапорцем захисту"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc з прапорцем безпеки"
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs не реалізовано для WIN32"
 
@@ -40427,6 +40463,60 @@ msgstr "надійшов запит щодо зони %s для мережі %s,
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <рядок>}..."
+
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s: не вдалося визначити режим доступу до дескриптора файла %d"
+
+#~ msgid "Can only open VNC or SPICE graphics backends, not %s"
+#~ msgstr "Можливе відкриття лише графічних серверів VNC або SPICE, але не %s"
+
+#~ msgid "Failed to release port %d"
+#~ msgstr "Не вдалося звільнити порт %d"
+
+#~ msgid "Invalid parameters: %d"
+#~ msgstr "Некоректні параметри: %d"
+
+#~ msgid "Missing or invalid fd in add-fd response"
+#~ msgstr "Не вказано відповіді fd в add-fd або вказано некоректну відповідь"
+
+#~ msgid "Missing or invalid fdset-id in add-fd response"
+#~ msgstr ""
+#~ "Не вказано відповіді fdset-id в add-fd або вказано некоректну відповідь"
+
+#~ msgid "Missing or invalid return data in add-fd response"
+#~ msgstr ""
+#~ "Не вказано повернутих даних в add-fd або вказано некоректну відповідь"
+
+#~ msgid "Unable to access file descriptor %d path %s"
+#~ msgstr "Не вдалося отримати доступ до дескриптора файла %d, шлях %s"
+
+#~ msgid "direct FD passing supports only 1 file descriptor"
+#~ msgstr ""
+#~ "для безпосереднього передавання дескриптора файла передбачено підтримку "
+#~ "лише 1 дескриптора"
+
+#~ msgid "invalid file descriptor"
+#~ msgstr "некоректний дескриптор файла"
+
+#~ msgid "librbd encryption engine only supports luks/luks2 formats"
+#~ msgstr ""
+#~ "у рушії шифрування librbd передбачено підтримку лише форматів luks/luks2"
+
+#~ msgid ""
+#~ "only 1 graphics device of each type (sdl, vnc, spice, headless) is "
+#~ "supported"
+#~ msgstr ""
+#~ "передбачено підтримку лише одного графічного пристрою кожного типу (sdl, "
+#~ "vnc, spice, headless)"
+
+#~ msgid "query-fdsets return data missing 'fd'"
+#~ msgstr "у повернутих query-fdsets даних немає «fd»"
+
+#~ msgid ""
+#~ "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+#~ msgstr ""
+#~ "вибрати певний спосіб передавання графічних даних (наприклад «vnc», "
+#~ "«spice» або «rdp»)"
 
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"
 #~ msgstr "%s: не вдалося обмінятися даними із допоміжним засобом містка: %s%s"

@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2022-05-24 09:14+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1048,10 +1048,6 @@ msgid "%s: try --help for more details\n"
 msgstr "%s: 보다 상세함을 위하여 --help를 시도하세요\n"
 
 #, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s: fd %d 의 접근 방법을 선택 할 수 없습니다"
-
-#, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr "%s: 예상되지 않는 URI 전송 '%s'\n"
 
@@ -1106,6 +1102,10 @@ msgstr "%s_디버그는 유효한 숫자 값으로 설정되지 않았습니다"
 #, c-format
 msgid "'%s'"
 msgstr "'%s'"
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
+msgstr ""
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1301,6 +1301,9 @@ msgstr "guest-get-fsinfo의 응답에서 '이름'이 누락"
 
 msgid "'netns' namespace source can only be used with sharenet"
 msgstr "'netns' 명칭공간 원천은 오직 sharenet 에서만 사용 할 수 있습니다"
+
+msgid "'network' attribute is required for listen type 'network'"
+msgstr ""
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "'network' 속성은 응답 형태 'network'을 위하여만 유효합니다"
@@ -2502,8 +2505,8 @@ msgid "Can only modify disk quota"
 msgstr "디스크 쿼타만 수정 가능합니다"
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
-msgstr "오직 VNC 또는 SPICE 그래픽스 백앤드만 열 수 있으며, %s는 불가능합니다"
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
+msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB 허브를 추가할 수 없음: USB는 이 도메인에 비활성화되어 있음"
@@ -5052,6 +5055,12 @@ msgstr "현재:"
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
 msgstr "사용자 지정 로더에는 명시적 %s 구성이 필요합니다"
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
+msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "DAC 이미지 레이블을 확인할 수 없습니다"
@@ -7671,6 +7680,10 @@ msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr "%s를 파싱 (구문 분석)하지 못했습니다: 오직 com1 및 com2만 지원됩니다."
 
 #, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
+#, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "'%s'에서 맥 주소를 구문 분석하는데 실패"
 
@@ -7946,10 +7959,6 @@ msgstr "잠금을 해제하는데 실패"
 #, c-format
 msgid "Failed to release lock: %s"
 msgstr "잠금을 해제하는데 실패: %s"
-
-#, c-format
-msgid "Failed to release port %d"
-msgstr "포트 %d를 해제하는데 실패했습니다"
 
 #, c-format
 msgid "Failed to remove capability %s: %d"
@@ -10148,8 +10157,8 @@ msgid "Invalid parameter type passed to free"
 msgstr "free에 잘못된 매개변수 유형이 전달되었습니다"
 
 #, c-format
-msgid "Invalid parameters: %d"
-msgstr "잘못된 매개변수: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
+msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "virtio ccw 주소에 대한 잘못된 부분적 지정"
@@ -11448,17 +11457,8 @@ msgid ""
 msgstr ""
 "query-rx-filter 응답에서 'vlan-table' 배열의 요소 %zu가 없거나 잘못되었습니다"
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr "add-fd 응답에서 누락되거나 잘못된 fd"
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr "add-fd 응답에서 누락되거나 잘못된 fdset-id"
-
 msgid "Missing or invalid name in query-rx-filter response"
 msgstr "query-rx-filter 응답에서 누락되어 있거나 잘못된 이름"
-
-msgid "Missing or invalid return data in add-fd response"
-msgstr "add-fd 응답에서 누락되거나 잘못된 반환 데이터"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr "누락되어 있거나 잘못된scsi 어댑터 'unique_id' 값"
@@ -12749,6 +12749,9 @@ msgstr "vfio-ap 모델의 hostdev는 하나만 지원됩니다"
 
 msgid "Only one primary video device is supported"
 msgstr "하나의 주요 비디오 장치만 지원됨"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "vz 드라이버는 오직 루프 디스크 이미지만 지원합니다."
@@ -14639,6 +14642,9 @@ msgstr "다른 numa 노드의 페이지를 병합할 수 있는지 여부를 지
 msgid "Specifying mount point is not supported for now"
 msgstr "마운트 지점 지정은 현재 지원되지 않습니다"
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 msgid "Start"
 msgstr "시작"
 
@@ -15833,6 +15839,9 @@ msgstr "QEMU 실행 가능한 %s는 TPM 모델 %s를 지원하지 않습니다"
 msgid "The XML configuration was changed by another user."
 msgstr "다른 사용자가 XML 구성을 변경했습니다."
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr "인증서 %s 기본 제약 조건에 인증서(CA)가 표시되지 않습니다"
@@ -16504,10 +16513,6 @@ msgstr "설정 파일 %s에 접근 할 수 없습니다"
 #, c-format
 msgid "Unable to access file descriptor %d"
 msgstr "파일 설명자 %d에 접근 할 수 없습니다"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr "파일 설명자 %d 경로 %s에 접근 할 수 없습니다"
 
 msgid "Unable to access kernel32.dll"
 msgstr "kernel32.dll에 접근 할 수 없습니다"
@@ -20389,6 +20394,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "인증이 실패했습니다: %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "인증이 필요합니다"
 
@@ -22588,6 +22600,14 @@ msgstr "문자 장치 정보에 이름표가 누락되었습니다"
 msgid "character device name"
 msgstr "캐릭터 디바이스 이름"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 msgid "chardev already exists"
 msgstr "chardev는 이미 존재합니다"
 
@@ -23889,9 +23909,6 @@ msgstr "dimm 메모리 정보 데이터에 'id'가 없습니다"
 msgid "dir"
 msgstr "디렉토리"
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr "직접 FD 전달은 단 1개의 파일 설명자를 지원합니다"
-
 msgid "direct migration"
 msgstr "직접 이전"
 
@@ -24751,6 +24768,9 @@ msgstr "inputvol의 암호화 형식은 LUKS여야 합니다"
 
 msgid "encryption is not supported with vhostuser disk"
 msgstr "암호화는 vhostuser 디스크에서 지원되지 않습니다"
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
+msgstr ""
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
@@ -25999,6 +26019,9 @@ msgstr "'%s'의 멀티캐스트 주소를 구문 분석하지 못했습니다"
 msgid "failed to parse node name index"
 msgstr "노드 이름 인덱스를 구문 분석하지 못했습니다"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "포트 번호 '%s'을(를) 구문 분석하지 못했습니다"
@@ -26453,6 +26476,10 @@ msgstr "파일디스크(fd)는 유효해야 합니다"
 
 msgid "fd passing is not supported by this connection"
 msgstr "이 연결은 파일디스크(fd) 전달을 지원하지 않습니다"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr "데몬에서 현재 정의된 로깅 필터 세트를 가져오거나 설정합니다"
@@ -28004,9 +28031,6 @@ msgstr "잘못된 오류 동작: '%s'\n"
 msgid "invalid fd %d for %s"
 msgstr "잘못된 fd %d (%s를 위한)"
 
-msgid "invalid file descriptor"
-msgstr "잘못된 파일 설명자"
-
 msgid "invalid flag"
 msgstr "잘못된 플래그"
 
@@ -28562,11 +28586,11 @@ msgstr "라이브러리 호출 실패"
 msgid "library call failed: %s"
 msgstr "라이브러리 호출 실패: %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
-msgstr "librbd 암호화 엔진은 luks/luks2 형식만 지원합니다"
-
 msgid "librbd encryption is not supported by this QEMU binary"
 msgstr "librbd 암호화는 이 QEMU 바이너리에서 지원되지 않습니다"
+
+msgid "librbd encryption is supported only with RBD backed disks"
+msgstr ""
 
 msgid "libssh transport error"
 msgstr "libssh 전송 오류"
@@ -29799,6 +29823,9 @@ msgstr "selinux lxc 컨텍스트 파일 '%s'에 '프로세스' 값이 없습니�
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr "NFS 볼륨에 대한 JSON 지원 정의에 '서버' 속성이 없습니다"
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -30284,6 +30311,9 @@ msgstr "JSON 백업 볼륨 드라이버 '%s'에 대한 구문 분석기 구현�
 
 msgid "missing path for <reservations/>"
 msgstr "<reservations/>를 위한 경로 누락"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "장치-별 경로가 누락됨"
@@ -31913,8 +31943,9 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr "virtio-pmem 장치에는 'pci' 주소만 지원됩니다"
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
-msgstr "각 유형(sdl, vnc, spice, headless)의 그래픽 장치 1개만 지원됩니다"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
+msgstr ""
 
 msgid "only JSON objects can be top level"
 msgstr "JSON 객체만 최상위 레벨이 될 수 있습니다"
@@ -32766,6 +32797,9 @@ msgstr "주어진 네트워크를 위한 임대 정보를 출력합니다"
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr "모든 종류의 작업에 대한 통계 인쇄(실패한 작업도 포함)"
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 msgid "print the admin server URI"
 msgstr "관리 서버 URI 인쇄"
 
@@ -33010,9 +33044,6 @@ msgstr "query-dirty-rate 응답에 '상태' 데이터가 누락되었습니다"
 
 msgid "query-fdsets reply was missing 'fdset-id'"
 msgstr "쿼리 fdsets 응답에 'fdset-id'가 누락되었습니다"
-
-msgid "query-fdsets return data missing 'fd'"
-msgstr "query-fdsets는 'fd'가 누락된 데이터를 반환합니다"
 
 msgid "query-fdsets return data missing fd array element"
 msgstr "query-fdsets는 fd 배열 요소가 누락된 데이터를 반환합니다"
@@ -33302,8 +33333,9 @@ msgstr "모든 도메인 스냅샷 메타데이터 제거(vm은 비활성화되�
 msgid ""
 "remove associated storage volumes (comma separated list of targets or source "
 "paths) (see domblklist)"
-msgstr "연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 원천 경로 목록)(domblklist "
-"참조)"
+msgstr ""
+"연결된 저장소 볼륨 제거(쉼표로 구분된 대상 또는 원천 경로 목록)(domblklist 참"
+"조)"
 
 msgid "remove domain logs"
 msgstr "도메인 로그를 제거합니다"
@@ -33809,8 +33841,10 @@ msgstr "보안 모델이 최대값을 초과함: %zd"
 msgid "security model string exceeds max %d bytes"
 msgstr "보안 모델 문자열이 최대 %d 바이트를 넘어갑니다"
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
-msgstr "특정 그래픽 디스플레이 선택(예: \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
+msgstr ""
 
 msgid "send handler failed"
 msgstr "핸들러 보내기 실패"
@@ -35645,6 +35679,10 @@ msgstr ""
 "네트워크 '%s'에서 연결장치 '%s'를 삭제 할 수 없습니다. 이는 현재 %d 도메인에 "
 "의해 사용되고 있습니다."
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 msgid "unable to determine if checkpoint has parent"
 msgstr "체크포인트가 부모가 있는지 확인 할 수 없습니다"
 
@@ -36007,6 +36045,10 @@ msgstr "실패한 통계 %s"
 #, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "블록 복사 대상 '%s'를 stat할 수 없습니다"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -37877,6 +37919,9 @@ msgstr "보안 플래그가 있는 virDomainManagedSaveGetXMLDesc"
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "보안 플래그와 함께 virDomainSnapshotGetXMLDesc"
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs는 WIN32에 대해 구현되지 않았습니다"
 
@@ -38458,6 +38503,52 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s: fd %d 의 접근 방법을 선택 할 수 없습니다"
+
+#~ msgid "Can only open VNC or SPICE graphics backends, not %s"
+#~ msgstr ""
+#~ "오직 VNC 또는 SPICE 그래픽스 백앤드만 열 수 있으며, %s는 불가능합니다"
+
+#~ msgid "Failed to release port %d"
+#~ msgstr "포트 %d를 해제하는데 실패했습니다"
+
+#~ msgid "Invalid parameters: %d"
+#~ msgstr "잘못된 매개변수: %d"
+
+#~ msgid "Missing or invalid fd in add-fd response"
+#~ msgstr "add-fd 응답에서 누락되거나 잘못된 fd"
+
+#~ msgid "Missing or invalid fdset-id in add-fd response"
+#~ msgstr "add-fd 응답에서 누락되거나 잘못된 fdset-id"
+
+#~ msgid "Missing or invalid return data in add-fd response"
+#~ msgstr "add-fd 응답에서 누락되거나 잘못된 반환 데이터"
+
+#~ msgid "Unable to access file descriptor %d path %s"
+#~ msgstr "파일 설명자 %d 경로 %s에 접근 할 수 없습니다"
+
+#~ msgid "direct FD passing supports only 1 file descriptor"
+#~ msgstr "직접 FD 전달은 단 1개의 파일 설명자를 지원합니다"
+
+#~ msgid "invalid file descriptor"
+#~ msgstr "잘못된 파일 설명자"
+
+#~ msgid "librbd encryption engine only supports luks/luks2 formats"
+#~ msgstr "librbd 암호화 엔진은 luks/luks2 형식만 지원합니다"
+
+#~ msgid ""
+#~ "only 1 graphics device of each type (sdl, vnc, spice, headless) is "
+#~ "supported"
+#~ msgstr "각 유형(sdl, vnc, spice, headless)의 그래픽 장치 1개만 지원됩니다"
+
+#~ msgid "query-fdsets return data missing 'fd'"
+#~ msgstr "query-fdsets는 'fd'가 누락된 데이터를 반환합니다"
+
+#~ msgid ""
+#~ "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+#~ msgstr "특정 그래픽 디스플레이 선택(예: \"vnc\", \"spice\", \"rdp\")"
 
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"
 #~ msgstr "%s: 브릿지 도우미와 통신에 실패하였습니다: %s%s"

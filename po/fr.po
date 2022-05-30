@@ -24,7 +24,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-04-21 15:30+0000\n"
+"POT-Creation-Date: 2022-05-25 19:40+0000\n"
 "PO-Revision-Date: 2021-10-22 21:05+0000\n"
 "Last-Translator: Franck Ridel <fridel@protonmail.com>\n"
 "Language-Team: French <https://translate.fedoraproject.org/projects/libvirt/"
@@ -925,10 +925,6 @@ msgid "%s: try --help for more details\n"
 msgstr ""
 
 #, c-format
-msgid "%s: unable to determine access mode of fd %d"
-msgstr "%s : impossible de déterminer le mode d'accès de fd %d"
-
-#, c-format
 msgid "%s: unexpected URI transport '%s'\n"
 msgstr ""
 
@@ -982,6 +978,10 @@ msgstr ""
 
 #, c-format
 msgid "'%s'"
+msgstr ""
+
+#, c-format
+msgid "'%s' D-Bus address is not handled"
 msgstr ""
 
 #, c-format
@@ -1177,6 +1177,9 @@ msgid "'name' missing in reply of guest-get-fsinfo"
 msgstr ""
 
 msgid "'netns' namespace source can only be used with sharenet"
+msgstr ""
+
+msgid "'network' attribute is required for listen type 'network'"
 msgstr ""
 
 #, fuzzy
@@ -2326,7 +2329,7 @@ msgid "Can only modify disk quota"
 msgstr ""
 
 #, c-format
-msgid "Can only open VNC or SPICE graphics backends, not %s"
+msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
 msgstr ""
 
 msgid "Can't add USB hub: USB is disabled for this domain"
@@ -4935,6 +4938,12 @@ msgstr ""
 
 #, c-format
 msgid "Custom loader requires explicit %s configuration"
+msgstr ""
+
+msgid "D-Bus audio is not supported with this QEMU"
+msgstr ""
+
+msgid "D-Bus p2p with an address is not supported"
 msgstr ""
 
 msgid "DAC imagelabel couldn't be determined"
@@ -7605,6 +7614,10 @@ msgstr "impossible de compiler le regex %s"
 msgid "Failed to parse %s: only com1 and com2 supported."
 msgstr ""
 
+#, c-format
+msgid "Failed to parse CCW address '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "Failed to parse MAC address from '%s'"
 msgstr "impossible d’analyser l’adresse mac « %s »"
@@ -7900,10 +7913,6 @@ msgstr "Impossible de créer XML"
 #, fuzzy, c-format
 msgid "Failed to release lock: %s"
 msgstr "Impossible de créer le volume %s"
-
-#, fuzzy, c-format
-msgid "Failed to release port %d"
-msgstr "Impossible de créer le pool %s"
 
 #, fuzzy, c-format
 msgid "Failed to remove capability %s: %d"
@@ -10083,7 +10092,7 @@ msgid "Invalid parameter type passed to free"
 msgstr "Paramètre pour virXPathNode() invalide"
 
 #, c-format
-msgid "Invalid parameters: %d"
+msgid "Invalid parameters macaddr=%p allowRetry=%p"
 msgstr ""
 
 msgid "Invalid partial specification for virtio ccw address"
@@ -11429,16 +11438,7 @@ msgid ""
 "response"
 msgstr ""
 
-msgid "Missing or invalid fd in add-fd response"
-msgstr ""
-
-msgid "Missing or invalid fdset-id in add-fd response"
-msgstr ""
-
 msgid "Missing or invalid name in query-rx-filter response"
-msgstr ""
-
-msgid "Missing or invalid return data in add-fd response"
 msgstr ""
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
@@ -12779,6 +12779,9 @@ msgstr "Un seul périphérique vidéo principale peut être pris en charge"
 
 msgid "Only one primary video device is supported"
 msgstr "Un seul périphérique vidéo principale peut être pris en charge"
+
+msgid "Only one vgpu device can have 'ramfb' enabled"
+msgstr ""
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr ""
@@ -14680,6 +14683,9 @@ msgstr ""
 msgid "Specifying mount point is not supported for now"
 msgstr ""
 
+msgid "Spice audio is not supported without spice graphics"
+msgstr ""
+
 msgid "Start"
 msgstr ""
 
@@ -15914,6 +15920,9 @@ msgstr ""
 msgid "The XML configuration was changed by another user."
 msgstr ""
 
+msgid "The associated audio is not of 'dbus' kind."
+msgstr ""
+
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
 msgstr ""
@@ -16588,10 +16597,6 @@ msgstr "impossible d’analyser le fichier de configuration %s"
 msgid "Unable to access file descriptor %d"
 msgstr ""
 "Impossible de définir le drapeau descripteur de fichiers « non-blocking »"
-
-#, c-format
-msgid "Unable to access file descriptor %d path %s"
-msgstr ""
 
 #, fuzzy
 msgid "Unable to access kernel32.dll"
@@ -20631,6 +20636,13 @@ msgstr ""
 msgid "authentication failed: %s"
 msgstr "l’authentification a échoué : %s"
 
+#, c-format
+msgid "authentication is not supported for protocol '%s'"
+msgstr ""
+
+msgid "authentication is supported only for network backed disks"
+msgstr ""
+
 msgid "authentication required"
 msgstr "authentification requise"
 
@@ -22894,6 +22906,14 @@ msgstr "périphérique racine non spécifié dans %s"
 msgid "character device name"
 msgstr "type de périphérique de caractères inconnu : %s"
 
+#, c-format
+msgid "chardev '%s' not supported in this QEMU binary"
+msgstr ""
+
+#, c-format
+msgid "chardev '%s' not supported without spice graphics"
+msgstr ""
+
 #, fuzzy
 msgid "chardev already exists"
 msgstr "le volume de stockage existe déjà"
@@ -24225,9 +24245,6 @@ msgstr ""
 msgid "dir"
 msgstr ""
 
-msgid "direct FD passing supports only 1 file descriptor"
-msgstr ""
-
 #, fuzzy
 msgid "direct migration"
 msgstr "migration pendant l’exécution"
@@ -25129,6 +25146,9 @@ msgid "encryption format of inputvol must be LUKS"
 msgstr ""
 
 msgid "encryption is not supported with vhostuser disk"
+msgstr ""
+
+msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
 
 #, c-format
@@ -26423,6 +26443,9 @@ msgstr "impossible d’analyser l’adresse mac « %s »"
 msgid "failed to parse node name index"
 msgstr "impossible de récupérer les informations relatives au noeud"
 
+msgid "failed to parse original memlock size"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "Impossible d’analyser le mode « %s »"
@@ -26911,6 +26934,10 @@ msgstr ""
 #, fuzzy
 msgid "fd passing is not supported by this connection"
 msgstr "Le modèle de CPU « %s » n’est pas pris en charge par l’hyperviseur"
+
+#, c-format
+msgid "fdset '%u' is already in use by qemu"
+msgstr ""
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -28472,9 +28499,6 @@ msgstr "valeur de traduction « %s » invalide "
 msgid "invalid fd %d for %s"
 msgstr "PID invalide %d pour la VM"
 
-msgid "invalid file descriptor"
-msgstr ""
-
 #, fuzzy
 msgid "invalid flag"
 msgstr "pid invalide"
@@ -29071,10 +29095,10 @@ msgstr ""
 msgid "library call failed: %s"
 msgstr "opération échouée : %s"
 
-msgid "librbd encryption engine only supports luks/luks2 formats"
+msgid "librbd encryption is not supported by this QEMU binary"
 msgstr ""
 
-msgid "librbd encryption is not supported by this QEMU binary"
+msgid "librbd encryption is supported only with RBD backed disks"
 msgstr ""
 
 msgid "libssh transport error"
@@ -30388,6 +30412,9 @@ msgstr ""
 msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr ""
 
+msgid "missing 'start' attribute for clock with offset='absolute'"
+msgstr ""
+
 #, c-format
 msgid ""
 "missing 'start' attribute in <address> element in <nat> in <forward> in "
@@ -30925,6 +30952,9 @@ msgstr ""
 
 msgid "missing path for <reservations/>"
 msgstr "chemin manquant pour <reservations/>"
+
+msgid "missing path to restore from"
+msgstr ""
 
 msgid "missing per-device path"
 msgstr "chemin « par périphérique » manquant"
@@ -32602,7 +32632,8 @@ msgid "only 'pci' addresses are supported for the virtio-pmem device"
 msgstr ""
 
 msgid ""
-"only 1 graphics device of each type (sdl, vnc, spice, headless) is supported"
+"only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
+"supported"
 msgstr ""
 
 msgid "only JSON objects can be top level"
@@ -33500,6 +33531,9 @@ msgstr ""
 msgid "print statistics for any kind of job (even failed ones)"
 msgstr ""
 
+msgid "print the XML used to start the copy job instead of starting the job"
+msgstr ""
+
 #, fuzzy
 msgid "print the admin server URI"
 msgstr "afficher l’URI canonique de l’hyperviseur"
@@ -33740,9 +33774,6 @@ msgid "query-dirty-rate reply was missing 'status' data"
 msgstr ""
 
 msgid "query-fdsets reply was missing 'fdset-id'"
-msgstr ""
-
-msgid "query-fdsets return data missing 'fd'"
 msgstr ""
 
 msgid "query-fdsets return data missing fd array element"
@@ -34567,7 +34598,9 @@ msgstr ""
 msgid "security model string exceeds max %d bytes"
 msgstr ""
 
-msgid "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\")"
+msgid ""
+"select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
+"\")"
 msgstr ""
 
 msgid "send handler failed"
@@ -36366,6 +36399,10 @@ msgid ""
 "by %d domains."
 msgstr ""
 
+#, c-format
+msgid "unable to determine access mode of %s"
+msgstr ""
+
 #, fuzzy
 msgid "unable to determine if checkpoint has parent"
 msgstr "%s : erreur : impossible de déterminer si le daemon fonctionne : %s\n"
@@ -36747,6 +36784,10 @@ msgstr ""
 #, fuzzy, c-format
 msgid "unable to stat block copy target '%s'"
 msgstr "impossible d’analyser l’adresse mac « %s »"
+
+#, c-format
+msgid "unable to stat file descriptor %d path %s"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "unable to stat for disk %s: %s"
@@ -38653,6 +38694,9 @@ msgstr ""
 msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr ""
 
+msgid "virFileDiskCopy unsupported on this platform"
+msgstr ""
+
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr ""
 
@@ -39230,6 +39274,13 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "%s: unable to determine access mode of fd %d"
+#~ msgstr "%s : impossible de déterminer le mode d'accès de fd %d"
+
+#, fuzzy
+#~ msgid "Failed to release port %d"
+#~ msgstr "Impossible de créer le pool %s"
 
 #, fuzzy
 #~ msgid "%s: failed to communicate with bridge helper: %s%s"
