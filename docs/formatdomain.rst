@@ -1,6 +1,4 @@
 .. role:: since
-.. role:: anchor(raw)
-   :format: html
 
 =================
 Domain XML format
