@@ -3725,7 +3725,7 @@ virQEMUCapsNewHostCPUModel(void)
 }
 
 
-void
+static void
 virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
                             virArch hostArch,
                             virDomainVirtType type)

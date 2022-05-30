@@ -57,11 +57,6 @@ virQEMUCapsSetArch(virQEMUCaps *qemuCaps,
                    virArch arch);
 
 void
-virQEMUCapsInitHostCPUModel(virQEMUCaps *qemuCaps,
-                            virArch hostArch,
-                            virDomainVirtType type);
-
-void
 virQEMUCapsUpdateHostCPUModel(virQEMUCaps *qemuCaps,
                               virArch hostArch,
                               virDomainVirtType type);
@@ -96,10 +91,6 @@ void
 virQEMUCapsSetGICCapabilities(virQEMUCaps *qemuCaps,
                               virGICCapability *capabilities,
                               size_t ncapabilities);
-
-void
-virQEMUCapsSetSEVCapabilities(virQEMUCaps *qemuCaps,
-                              virSEVCapability *capabilities);
 
 int
 virQEMUCapsProbeCPUDefinitionsTest(virQEMUCaps *qemuCaps,
