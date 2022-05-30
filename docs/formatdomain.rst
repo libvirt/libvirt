@@ -6171,9 +6171,8 @@ A video device.
    above), since such behaviour is inconvenient in cases where GPU mediated
    devices are meant to be the only rendering device within a guest. If this
    is your use case specify a ``none`` type ``video`` device in the XML to stop
-   the default behaviour. Refer to `Host device assignment
-   <#host-device-assignment>`__ to see how to add a mediated device into a
-   guest.
+   the default behaviour. Refer to `Host device assignment`_ to see how to add
+   a mediated device into a guest.
 
    You can provide the amount of video memory in kibibytes (blocks of 1024
    bytes) using ``vram``. This is supported only for guest type of "vz", "qemu",
