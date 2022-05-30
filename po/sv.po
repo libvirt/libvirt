@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-02-15 08:56+0000\n"
+"PO-Revision-Date: 2022-05-30 07:27+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.10.1\n"
+"X-Generator: Weblate 4.12.2\n"
 
 msgid ""
 "\n"
@@ -952,7 +952,7 @@ msgstr "%s: en teckenlöst heltal förväntades till parametern ”%s”"
 
 #, c-format
 msgid "%s: failed to communicate with bridge helper: %s"
-msgstr ""
+msgstr "%s: misslyckades att kommuniciera med brygghjälparen: %s"
 
 #, c-format
 msgid "%s: failed to read temporary file: %s"
@@ -1122,7 +1122,7 @@ msgstr "”%s”"
 
 #, c-format
 msgid "'%s' D-Bus address is not handled"
-msgstr ""
+msgstr "”%s” D-Bussadressen hanteras inte"
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1288,10 +1288,10 @@ msgid "'login-time' missing in reply of guest-get-users"
 msgstr "”login-time” saknas i svaret på guest-get-users"
 
 msgid "'manual' memory snapshot mode not supported"
-msgstr ""
+msgstr "”manuellt” läge för minnesögonblicksbilder stödjs inte"
 
 msgid "'manual' snapshot mode is not supported by the test driver"
-msgstr ""
+msgstr "”manuellt” läge för ögonblicksbilder stödjs inte av testdrivrutinen"
 
 msgid "'max_sectors' is only supported by virtio-scsi controller"
 msgstr "”max_sectors” stödjs endast av styrenheten virtio-scsi"
@@ -1322,7 +1322,7 @@ msgid "'netns' namespace source can only be used with sharenet"
 msgstr "namnrymden ”netns” källa kan endaste användas med sharenet"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "attributet ”network” krävs för lyssningstypen ”network”"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "attributet ”network” är endast giltigt för lyssningstypen ”network”"
@@ -1397,10 +1397,10 @@ msgid "'tftp' protocol is not supported with this QEMU binary"
 msgstr "protokollet ”tftp” stödjs inte med denna QEMU-binär"
 
 msgid "'tlsHostname' field is not supported by this QEMU"
-msgstr ""
+msgstr "fältet ”tlsHostname” stödjs inte av denna QEMU"
 
 msgid "'tlsHostname' field is supported only with NBD disks"
-msgstr ""
+msgstr "fältet ”tlsHostname” stödjs endast för NBD-diskar"
 
 msgid "'trim' algorithm not supported"
 msgstr "algoritmen ”trim” stödjs inte"
@@ -2166,7 +2166,7 @@ msgstr ""
 "Både port och URI begärda för diskmigrering fast de är ömsesidigt uteslutande"
 
 msgid "Both secret and the secret header are required"
-msgstr ""
+msgstr "Både hemligheten och hemlighetshuvudet krävs"
 
 msgid "Bounded"
 msgstr "Begränsad"
@@ -2513,6 +2513,8 @@ msgstr "Kan endast ändra diskkvot"
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
 msgstr ""
+"Det går endast att öppna de grafiska bakänderna VNC, SPICE eller D-Bus p2p, "
+"inte %s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "Kan inte lägga till ett USB-nav: USB är avaktiverat för denna domän"
@@ -3345,7 +3347,7 @@ msgstr "Kan inte sätta gränssnitts-MAC på ”%s”"
 
 #, c-format
 msgid "Cannot set interface MAC to %s for ifname %s vf %d"
-msgstr ""
+msgstr "Kan inte sätta gränssnitts-MAC till %s för ifname %s vf %d"
 
 #, c-format
 msgid "Cannot set interface MAC to %s on '%s'"
@@ -3361,7 +3363,7 @@ msgstr "Kan inte sätta gränssnittsflaggor på ”%s”"
 
 #, c-format
 msgid "Cannot set interface vlanid to %d for ifname %s vf %d"
-msgstr ""
+msgstr "Kan inte sätta gränssnitts-vlanid til %d för ifname %s vf %d"
 
 msgid "Cannot set memory higher than max memory"
 msgstr "Det går inte att sätta minnet högre än maximalt minne"
@@ -5120,10 +5122,10 @@ msgid "Custom loader requires explicit %s configuration"
 msgstr "Anpassad laddare kräver explicit %s-konfiguration"
 
 msgid "D-Bus audio is not supported with this QEMU"
-msgstr ""
+msgstr "D-Bus-audio stödjs inte med denna QEMU"
 
 msgid "D-Bus p2p with an address is not supported"
-msgstr ""
+msgstr "D-Bus p2p med en adress stödjs inte"
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "DAC-avbildsetiketten kunde inte avgöras"
@@ -7764,7 +7766,7 @@ msgstr "Misslyckades att tolka %s: endast com1 och com2 stödjs."
 
 #, c-format
 msgid "Failed to parse CCW address '%s'"
-msgstr ""
+msgstr "Misslyckades med att tolka CCW-adressen ”%s”"
 
 #, c-format
 msgid "Failed to parse MAC address from '%s'"
@@ -7820,7 +7822,7 @@ msgid "Failed to parse memory"
 msgstr "Misslyckades med att tolka minnet"
 
 msgid "Failed to parse memory allocation threads"
-msgstr ""
+msgstr "Misslyckades med att tolka minnesallokeringstrådar"
 
 msgid "Failed to parse memory slot count"
 msgstr "Misslyckades med att tolka fackantalet"
@@ -8787,7 +8789,7 @@ msgstr ""
 
 #, c-format
 msgid "Firmware flash mode value '%s' unexpected"
-msgstr ""
+msgstr "Den fasta programvarans flash-läges värde ”%s” är oväntat"
 
 msgid "Firmware flash mode value was malformed"
 msgstr ""
