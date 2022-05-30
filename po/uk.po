@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-04-26 14:28+0000\n"
+"PO-Revision-Date: 2022-05-26 09:32+0000\n"
 "Last-Translator: Yuri Chornoivan <yurchor@ukr.net>\n"
 "Language-Team: Ukrainian <https://translate.fedoraproject.org/projects/"
 "libvirt/libvirt/uk/>\n"
@@ -26,7 +26,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.12\n"
+"X-Generator: Weblate 4.12.2\n"
 
 msgid ""
 "\n"
@@ -1157,7 +1157,7 @@ msgstr "«%s»"
 
 #, c-format
 msgid "'%s' D-Bus address is not handled"
-msgstr ""
+msgstr "Обробка адреси D-Bus «%s» не виконується"
 
 #, c-format
 msgid "'%s' architecture is not supported by CPU driver"
@@ -1362,7 +1362,7 @@ msgid "'netns' namespace source can only be used with sharenet"
 msgstr "простір назв «netns» джерела можна використовувати лише з sharenet"
 
 msgid "'network' attribute is required for listen type 'network'"
-msgstr ""
+msgstr "Для типу очікування на дані «network» потрібен атрибут «network»"
 
 msgid "'network' attribute is valid only for listen type 'network'"
 msgstr "Атрибут «network» є коректним лише для типу очікування «network»"
@@ -2605,6 +2605,8 @@ msgstr "Можлива лише зміна квоти на диску"
 #, c-format
 msgid "Can only open VNC, SPICE or D-Bus p2p graphics backends, not %s"
 msgstr ""
+"Можна відкривати лише модулі обробки графіки VNC, SPICE або p2p D-Bus, а не "
+"%s"
 
 msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "Не вдалося додати вузол USB: для цього домену USB вимкнено"
@@ -5291,10 +5293,10 @@ msgid "Custom loader requires explicit %s configuration"
 msgstr "Нетиповий завантажувач потребує явного налаштовування %s"
 
 msgid "D-Bus audio is not supported with this QEMU"
-msgstr ""
+msgstr "У цьому QEMU не передбачено підтримки звуку D-Bus"
 
 msgid "D-Bus p2p with an address is not supported"
-msgstr ""
+msgstr "Для цієї адреси не передбачено підтримки p2p D-Bus"
 
 msgid "DAC imagelabel couldn't be determined"
 msgstr "Не вдалося визначити мітку образу (imagelabel) DAC"
@@ -7990,7 +7992,7 @@ msgstr "Не вдалося обробити %s: підтримку передб
 
 #, c-format
 msgid "Failed to parse CCW address '%s'"
-msgstr ""
+msgstr "Не вдалося обробити адресу CCW «%s»"
 
 #, c-format
 msgid "Failed to parse MAC address from '%s'"
@@ -10557,7 +10559,7 @@ msgstr "Free передано параметр некоректного типу
 
 #, c-format
 msgid "Invalid parameters macaddr=%p allowRetry=%p"
-msgstr ""
+msgstr "Некоректні параметри macaddr=%p allowRetry=%p"
 
 msgid "Invalid partial specification for virtio ccw address"
 msgstr ""
@@ -13311,7 +13313,7 @@ msgid "Only one primary video device is supported"
 msgstr "Передбачено підтримку лише одного основного відеопристрою"
 
 msgid "Only one vgpu device can have 'ramfb' enabled"
-msgstr ""
+msgstr "«rambf» може бути увімкнено лише для одного пристрою vgpu"
 
 msgid "Only ploop disk images are supported by vz driver."
 msgstr "У драйвері vz передбачено підтримку лише образів дисків ploop."
@@ -15338,7 +15340,7 @@ msgstr ""
 "У поточній версії ще не передбачено визначення точки монтування користувачем"
 
 msgid "Spice audio is not supported without spice graphics"
-msgstr ""
+msgstr "Підтримку звуку spice передбачено лише у поєднанні із графікою spice"
 
 msgid "Start"
 msgstr "Запустити"
@@ -16734,7 +16736,7 @@ msgid "The XML configuration was changed by another user."
 msgstr "Налаштування у форматі XML було змінено іншим користувачем."
 
 msgid "The associated audio is not of 'dbus' kind."
-msgstr ""
+msgstr "Пов'язаний звук не належить до типу «dbus»."
 
 #, c-format
 msgid "The certificate %s basic constraints do not show a CA"
@@ -21451,10 +21453,12 @@ msgstr "помилка розпізнавання: %s"
 
 #, c-format
 msgid "authentication is not supported for protocol '%s'"
-msgstr ""
+msgstr "підтримки розпізнавання для протоколу «%s» не передбачено"
 
 msgid "authentication is supported only for network backed disks"
 msgstr ""
+"підтримку розпізнавання передбачено лише для дисків із резервними копіями у "
+"мережі"
 
 msgid "authentication required"
 msgstr "потрібно пройти розпізнавання"
@@ -23781,10 +23785,12 @@ msgstr "назва символьного пристрою"
 #, c-format
 msgid "chardev '%s' not supported in this QEMU binary"
 msgstr ""
+"у цьому виконуваному файлі QEMU не передбачено підтримки символьного "
+"пристрою «%s»"
 
 #, c-format
 msgid "chardev '%s' not supported without spice graphics"
-msgstr ""
+msgstr "підтримки символьного пристрою «%s» не передбачено без графіки spice"
 
 msgid "chardev already exists"
 msgstr "символьний пристрій вже існує"
@@ -26045,6 +26051,7 @@ msgstr "підтримки шифрування для дисків vhostuser н
 
 msgid "encryption is supported only with 'raw' and 'qcow2' image format"
 msgstr ""
+"підтримку шифрування передбачено лише із форматами образів «raw» і «qcow2»"
 
 #, c-format
 msgid "end of range %s - %s in network %s/%d is the broadcast address"
@@ -27308,7 +27315,7 @@ msgid "failed to parse node name index"
 msgstr "не вдалося обробити покажчик назв вузлів"
 
 msgid "failed to parse original memlock size"
-msgstr ""
+msgstr "не вдалося обробити початковий розмір memlock"
 
 #, c-format
 msgid "failed to parse port number '%s'"
@@ -27778,7 +27785,7 @@ msgstr ""
 
 #, c-format
 msgid "fdset '%u' is already in use by qemu"
-msgstr ""
+msgstr "fdset «%u» вже використовується qemu"
 
 msgid "fetch or set the currently defined set of logging filters on daemon"
 msgstr ""
@@ -30028,7 +30035,7 @@ msgstr ""
 "у цьому виконуваному файлі QEMU не передбачено підтримки шифрування librbd"
 
 msgid "librbd encryption is supported only with RBD backed disks"
-msgstr ""
+msgstr "підтримку шифрування librbd передбачено лише із дисками на основі RBD"
 
 msgid "libssh transport error"
 msgstr "Помилка передавання даних libssh"
@@ -31365,7 +31372,7 @@ msgid "missing 'server' attribute in JSON backing definition for NFS volume"
 msgstr "пропущено атрибут «server» у резервному визначенні JSON для тому NFS"
 
 msgid "missing 'start' attribute for clock with offset='absolute'"
-msgstr ""
+msgstr "пропущено атрибут «start» для годинника з offset='absolute'"
 
 #, c-format
 msgid ""
@@ -31887,7 +31894,7 @@ msgid "missing path for <reservations/>"
 msgstr "не вказано шлях для <reservations/>"
 
 msgid "missing path to restore from"
-msgstr ""
+msgstr "пропущено шлях для відновлення"
 
 msgid "missing per-device path"
 msgstr "не вказано окремого шляху до пристрою"
@@ -33582,6 +33589,8 @@ msgid ""
 "only 1 graphics device of each type (sdl, vnc, spice, headless, dbus) is "
 "supported"
 msgstr ""
+"передбачено підтримку лише 1 графічного пристрою для кожного типу (sdl, vnc, "
+"spice, headless, dbus)"
 
 msgid "only JSON objects can be top level"
 msgstr "на верхньому рівні можуть бути лише об'єкти JSON"
@@ -34505,6 +34514,8 @@ msgstr "виводити статистику для усіх типів зав�
 
 msgid "print the XML used to start the copy job instead of starting the job"
 msgstr ""
+"вивести XML, який використано для запуску завдання з копіювання, замість "
+"запуску завдання"
 
 msgid "print the admin server URI"
 msgstr "вивести URI адміністративного сервера"
@@ -35618,6 +35629,7 @@ msgid ""
 "select particular graphical display (e.g. \"vnc\", \"spice\", \"rdp\", \"dbus"
 "\")"
 msgstr ""
+"виберіть певний графічний дисплей (наприклад, «vnc», «spice», «rdp», «dbus»)"
 
 msgid "send handler failed"
 msgstr "помилка надсилання обробника"
@@ -37552,7 +37564,7 @@ msgstr ""
 
 #, c-format
 msgid "unable to determine access mode of %s"
-msgstr ""
+msgstr "не вдалося визначити режим доступу %s"
 
 msgid "unable to determine if checkpoint has parent"
 msgstr "не вдалося визначити, чи має контрольна точка батьківський запис"
@@ -37918,7 +37930,7 @@ msgstr "не вдалося отримати статистичні дані п�
 
 #, c-format
 msgid "unable to stat file descriptor %d path %s"
-msgstr ""
+msgstr "не вдалося статистично обробити дескриптор файла %d, шлях %s"
 
 #, c-format
 msgid "unable to stat for disk %s: %s"
@@ -39838,7 +39850,7 @@ msgid "virDomainSnapshotGetXMLDesc with secure flag"
 msgstr "virDomainSnapshotGetXMLDesc з прапорцем безпеки"
 
 msgid "virFileDiskCopy unsupported on this platform"
-msgstr ""
+msgstr "підтримки virFileDiskCopy на цій платформі не передбачено"
 
 msgid "virFileOpenAs is not implemented for WIN32"
 msgstr "virFileOpenAs не реалізовано для WIN32"
