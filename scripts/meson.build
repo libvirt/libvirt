@@ -6,6 +6,7 @@ scripts = [
   'check-driverimpls.py',
   'check-drivername.py',
   'check-file-access.py',
+  'check-html-references.py',
   'check-remote-protocol.py',
   'check-symfile.py',
   'check-symsorting.py',
