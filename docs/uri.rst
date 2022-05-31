@@ -291,7 +291,7 @@ Supported extra parameters:
     If set to a non-zero value, this disables client checks of the server's
     certificate. Note that to disable server checks of the client's certificate
     or IP address you must `change the libvirtd configuration
-    <#Remote_libvirtd_configuration>`__
+    <remote.html#libvirtd-configuration-file>`__
 
     **Example:** ``no_verify=1``
 
