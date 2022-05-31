@@ -18,7 +18,7 @@ more recent to support VFIO, while legacy KVM is achievable just fine with older
 qemus.
 
 The main difference between
-`virConnectGetCapabilities </html/libvirt-libvirt-host.html#virConnectGetCapabilities>`__
+`virConnectGetCapabilities <html/libvirt-libvirt-host.html#virConnectGetCapabilities>`__
 and the emulator capabilities API is, the former one aims more on the host
 capabilities (e.g. NUMA topology, security models in effect, etc.) while the
 latter one specializes on the hypervisor capabilities.

@@ -27,7 +27,7 @@ wise thing to do in most cases. See the `connection URI <uri.html>`__
 page for a full descriptions of the values allowed.
 
 OnDevice the application obtains a
-`virConnectPtr </html/libvirt-libvirt-host.html#virConnectPtr>`__
+`virConnectPtr <html/libvirt-libvirt-host.html#virConnectPtr>`__
 connection to the hypervisor it can then use it to manage the
 hypervisor's available domains and related virtualization resources,
 such as storage and networking. All those are exposed as first class
