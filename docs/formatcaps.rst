@@ -84,20 +84,20 @@ The ``<guest/>`` element will typically wrap up the following elements:
       Size of CPU word in bits, for example 64.
    ``emulator``
       Emulator (device model) path, for use in
-      `emulator <formatdomain.html#elementEmulator>`__ element of domain XML.
+      `emulator <formatdomain.html#devices>`__ element of domain XML.
    ``loader``
-      Loader path, for use in `loader <formatdomain.html#elementLoader>`__
+      Loader path, for use in `loader <formatdomain.html#bios-bootloader>`__
       element of domain XML.
    ``machine``
       Machine type, for use in
-      `machine <formatdomain.html#attributeOSTypeMachine>`__ attribute of
+      `machine <formatdomain.html#operating-system-booting>`__ attribute of
       os/type element in domain XML. For example Xen supports ``xenfv`` for HVM,
       ``xenpv`` for PV, or ``xenpvh`` for PVH.
    ``domain``
       The ``type`` attribute of this element specifies the type of hypervisor
       required to run the domain. Use in
-      `type <formatdomain.html#attributeDomainType>`__ attribute of the domain
-      root element.
+      `type <formatdomain.html#element-and-attribute-overview>`__ attribute of
+      the domain root element.
 ``features``
    This optional element encases possible features that can be used with a guest
    of described type. Possible subelements are:
