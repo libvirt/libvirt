@@ -150,7 +150,7 @@ siblings. This is achieved using the `CPU tuning config <../formatdomain.html#cp
      <vcpusched vcpus='0-4' scheduler='fifo' priority='1'/>
    </cputune>
 
-The `guest CPU model <formatdomain.html#cpu-model-and-topology>`_ now needs to be
+The `guest CPU model <../formatdomain.html#cpu-model-and-topology>`_ now needs to be
 configured to pass through the host model unchanged, with topology matching the
 placement:
 
@@ -178,7 +178,7 @@ Memory configuration
 The host memory used for guest RAM needs to be allocated from huge pages on the
 second NUMA node, and all other memory allocation needs to be locked into RAM
 with memory page sharing disabled.
-This is achieved by using the `memory backing config <formatdomain.html#memory-backing>`_:
+This is achieved by using the `memory backing config <../formatdomain.html#memory-backing>`_:
 
 ::
 
