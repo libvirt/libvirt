@@ -172,7 +172,7 @@
           <div id="contact">
             <h3>Contact</h3>
             <ul>
-              <li><a href="{$href_base}contact.html#mailng-lists">email</a></li>
+              <li><a href="{$href_base}contact.html#mailing-lists">email</a></li>
               <li><a href="{$href_base}contact.html#irc">irc</a></li>
             </ul>
           </div>
