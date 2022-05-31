@@ -33,6 +33,11 @@ v8.4.0 (unreleased)
     to be kept set to an arbitrary time for e.g. testing or working around
     broken software.
 
+  * qemu: add qemu-vdagent channel
+
+    This paravirtualized qemu vdagent channel can enable copy and paste between
+    a guest and a VNC client. It is available in QEMU 6.1.0.
+
 * **Improvements**
 
 * **Bug fixes**
