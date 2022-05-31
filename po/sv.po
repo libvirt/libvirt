@@ -5394,7 +5394,7 @@ msgstr ""
 "enheten på adressen ”%s”"
 
 msgid "Device attached successfully\n"
-msgstr "Enheten anslöts framgångsrikt\n"
+msgstr "Enheten anslöts\n"
 
 #, c-format
 msgid "Device attached to bridge %s has no name"
@@ -8792,7 +8792,7 @@ msgid "Firmware flash mode value '%s' unexpected"
 msgstr "Den fasta programvarans flash-läges värde ”%s” är oväntat"
 
 msgid "Firmware flash mode value was malformed"
-msgstr ""
+msgstr "Flash-läget för fast programvara var felformaterat"
 
 msgid ""
 "First file-based harddisk has no source, cannot deduce datastore and path "
@@ -9059,7 +9059,7 @@ msgstr "Hämtar statistik om en eller flera (eller alla) domäner"
 
 #, c-format
 msgid "Global feature %d should have already been handled"
-msgstr ""
+msgstr "Global funktion %d skulle redan ha hanterats"
 
 msgid "Got empty feature list from resctrl"
 msgstr "Fick en tom funktionslista från resctrl"
@@ -9317,7 +9317,7 @@ msgstr "IOMMU-enhet: ”%s” stödjs endast med ARM virt-maskiner"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 and ARM Virt machines"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” stödjs endast med Q35 och ARM virt-maskiner"
 
 #, c-format
 msgid "IOMMU device: '%s' is only supported with Q35 machines"
@@ -9325,11 +9325,11 @@ msgstr "IOMMU-enhet: ”%s” stödjs endast med Q35-maskiner"
 
 #, c-format
 msgid "IOMMU device: '%s' needs a PCI address"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” behöver en PCI-adress"
 
 #, c-format
 msgid "IOMMU device: '%s' requires ACPI"
-msgstr ""
+msgstr "IOMMU-enhet: ”%s” behöver ACPI"
 
 msgid "IOMMU eim requires interrupt remapping to be enabled"
 msgstr "IOMMU eim kräver att omavbildning av avbrott är aktiverat"
@@ -9512,17 +9512,17 @@ msgid "Installed bhyve binary does not support UEFI loader"
 msgstr "Den installerade bhyve-binären stödjer inte UEFI-laddare"
 
 msgid "Installed bhyve binary does not support UTC clock"
-msgstr ""
+msgstr "Den installerade bhyve-binären stödjer inte UTC-klocka"
 
 msgid "Installed bhyve binary does not support bootrom"
-msgstr ""
+msgstr "Den installerade bhyve-binären stödjer inte bootrom"
 
 msgid "Installed bhyve binary does not support defining CPU topology"
-msgstr ""
+msgstr "Den installerade bhyve-binären stödjer inte att definiera CPU-topologi"
 
 #, c-format
 msgid "Instantiation of rules failed on interface '%s'"
-msgstr ""
+msgstr "Instantiering av regler misslyckades för gränssnittet ”%s”"
 
 msgid "Interface"
 msgstr "Gränssnitt"
@@ -9533,11 +9533,11 @@ msgstr "Gränssnittet %s XML-konfiguration redigerad\n"
 
 #, c-format
 msgid "Interface %s XML configuration not changed.\n"
-msgstr ""
+msgstr "Gränssnittet %s XML-konfiguration inte ändrad.\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Interface %s defined from %s\n"
-msgstr "Nätverk %s definierad från %s\n"
+msgstr "Nätverket %s definierad från %s\n"
 
 #, c-format
 msgid "Interface %s destroyed\n"
@@ -9547,9 +9547,9 @@ msgstr "Gränssnittet %s förstört\n"
 msgid "Interface %s started\n"
 msgstr "Gränssnitt %s startat\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Interface %s undefined\n"
-msgstr "Gränssnittet %s förstört\n"
+msgstr "Gränssnittet %s är odefinierat\n"
 
 #, c-format
 msgid "Interface (dev: %s) not found."
@@ -9560,67 +9560,69 @@ msgid "Interface (mac: %s) not found."
 msgstr "Gränssnittet (mac: %s) finns inte."
 
 msgid "Interface attached successfully\n"
-msgstr ""
+msgstr "Gränssnittet anslöts\n"
 
 msgid "Interface backend parameters are not supported by vz driver."
-msgstr ""
+msgstr "Gränssnittets bakändesparametrar stödjs inte av vz-drivrutinen."
 
 msgid "Interface detached successfully\n"
-msgstr ""
+msgstr "Gränssnittet kopplades ifrån\n"
 
 msgid "Interface doesn't have any statistics"
-msgstr ""
+msgstr "Gränssnittet har ingen statistik"
 
 #, c-format
 msgid "Interface name from config %s doesn't match given supplied name %s"
 msgstr ""
+"Gränssnittsnamnet från konfigurationen %s stämmer inte med det angivna "
+"namnet %s"
 
 msgid "Interface name not provided"
 msgstr "Gränssnittsnamnet angavs inte"
 
-#, fuzzy
 msgid "Interface not found"
-msgstr "Nätverk hittades inte"
+msgstr "Gränssnittet finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Interface not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Gränssnittet finns inte: %s"
 
 msgid ""
 "Interface type hostdev is currently supported on SR-IOV Virtual Functions "
 "only"
 msgstr ""
+"Gränssnittstypen hostdev stödjs för närvarande endast med SR-IOV Virtual "
+"Functions"
 
 #, c-format
 msgid "Invalid \"nativeMode='%s'\" in vlan <tag> element"
-msgstr ""
+msgstr "Felaktig ”nativeMode='%s'” i vlan-<tag>-element"
 
 #, c-format
 msgid "Invalid %s attribute 'vcpus' value '%s'"
-msgstr ""
+msgstr "Felaktigt %s-attribut ”vcpus” med värde ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid %s image format specified in configuration file"
-msgstr "kunde inte analysera konfigurationsfilen"
+msgstr "Felaktig avbildsformat för %s angivet i konfigurationsfilen"
 
 msgid "Invalid 'cpu.max' data."
-msgstr ""
+msgstr "Felaktig data till ”cpu.max”."
 
 #, c-format
 msgid "Invalid 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Felaktigt attribut ”level” i cache-elementet för NUMA-nod %d"
 
 #, c-format
 msgid "Invalid --with-loader-nvram list: %s"
-msgstr ""
+msgstr "Felaktig lista till --with-loader-nvram: %s"
 
-#, fuzzy
 msgid "Invalid BIOS 'date' format"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt BIOS-”date”-format"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid CIDR address: '%s'"
-msgstr "felaktig UUID-källa: %s"
+msgstr "Felaktig CIDR-adress: ”%s”"
 
 msgid "Invalid CPU feature name"
 msgstr "Ogiltigt CPU-funktionsnamn"
@@ -9628,53 +9630,56 @@ msgstr "Ogiltigt CPU-funktionsnamn"
 msgid "Invalid CPU feature policy"
 msgstr "Ogiltig CPU-funktionspolicy"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid CPU signature family in model %s"
-msgstr "Ogiltigt CPU-funktionsnamn"
+msgstr "Felaktig CPU-signaturfamilj i modellen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid CPU signature model in model %s"
-msgstr "Ogiltigt CPU-funktionsnamn"
+msgstr "Felaktig CPU-signaturmodell i modellen %s"
 
 msgid ""
 "Invalid CPU topology: total number of vCPUs must equal the product of "
 "sockets, cores, and threads"
 msgstr ""
+"Felaktig CPU-topologi: totalt antal vCPU:er måste vara lika med produkten av "
+"uttag, kärnor och trådar"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid CPU vendor string '%s'"
-msgstr "Ogiltiga vektorer: %s"
+msgstr "Felaktig CPU-leverantörsträng ”%s”"
 
 #, c-format
 msgid "Invalid DNS SRV priority attribute for service '%s' in network '%s'"
 msgstr ""
+"Felaktigt DNS SRV-prioritetsattribut för tjänsten ”%s” i nätverket ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid IOThread id value: '%d'"
-msgstr "Ogiltigt hårddiskenhetsnamn: %s"
+msgstr "Felaktigt värde för IOThread-id: ”%d”"
 
 #, c-format
 msgid "Invalid IP address in network '%s' DNS HOST record"
-msgstr ""
+msgstr "Felaktig IP-adress i nätverket ”%s” DNS HOST-post"
 
 #, c-format
 msgid "Invalid IP address in static host definition for network '%s'"
-msgstr ""
+msgstr "Felaktig IP-adress i statisk värddefinition för nätverket ”%s”"
 
 #, c-format
 msgid "Invalid IPv4 prefix '%lu' in network '%s'"
-msgstr ""
+msgstr "Felaktigt IPv4-prefix ”%lu” i nätverket ”%s”"
 
 #, c-format
 msgid "Invalid IPv6 prefix '%lu' in network '%s'"
-msgstr ""
+msgstr "Felaktigt IPv6-prefix ”%lu” i nätverket ”%s”"
 
 msgid "Invalid NULL callback provided"
-msgstr ""
+msgstr "Felaktigt NULL-återanrop angivet"
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI buses up to %zu are available"
-msgstr ""
+msgstr "Felaktig PCI-adress %s. Endast PCI-bussar upp till %zu är tillgängliga"
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI domain 0 is available"
