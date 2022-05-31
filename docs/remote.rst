@@ -24,7 +24,7 @@ access the system-wide QEMU daemon, then to access the system-wide QEMU daemon
 on a remote machine called ``compute1.libvirt.org`` you would use
 ``qemu://compute1.libvirt.org/system``.
 
-The `section on remote URIs <uri.html#URI_remote>`__ describes in more detail
+The `section on remote URIs <uri.html#remote-uris>`__ describes in more detail
 these remote URIs.
 
 From an API point of view, apart from the change in URI, the API should behave
@@ -82,7 +82,7 @@ Remote libvirt supports a range of transports:
    remote side.
 
 The choice of transport is determined by the `URI
-scheme <uri.html#URI_remote>`__, with ``tls`` as the default if no explicit
+scheme <uri.html#remote-uris>`__, with ``tls`` as the default if no explicit
 transport is requested.
 
 libvirtd configuration file
