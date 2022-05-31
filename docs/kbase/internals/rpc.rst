@@ -27,8 +27,8 @@ outstanding method. The protocol was loosely inspired by the design of SunRPC.
 The definition of the RPC protocol is in the file ``src/rpc/virnetprotocol.x``
 in the libvirt source tree.
 
-`Packet framing <protocolframing>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Packet framing
+~~~~~~~~~~~~~~
 
 On the wire, there is no explicit packet framing marker. Instead each packet is
 preceded by an unsigned 32-bit integer giving the total length of the packet in
@@ -45,8 +45,8 @@ the framing looks like this:
 
    |~ Len ~|~   Data   ~|~ Len ~|~   Data   ~|~ Len ~|~   Data   ~|~
 
-`Packet data <protocoldata>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Packet data
+~~~~~~~~~~~
 
 The data in each packet is split into two parts, a short fixed length header,
 followed by a variable length payload. So a packet from the illustration above
@@ -61,8 +61,8 @@ is more correctly shown as
 
    |~ Len ~|~  Header   ~|~  Payload     ....  ~|
 
-`Packet header <protocolheader>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Packet header
+~~~~~~~~~~~~~
 
 The header contains 6 fields, encoded as signed/unsigned 32-bit integers.
 
@@ -119,8 +119,8 @@ The header contains 6 fields, encoded as signed/unsigned 32-bit integers.
    #. continue: for streams this indicates that further data packets will be
       following
 
-`Packet payload <protocolpayload>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Packet payload
+~~~~~~~~~~~~~~
 
 The payload of a packet will vary depending on the ``type`` and ``status``
 fields from the header.
