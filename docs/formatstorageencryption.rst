@@ -107,7 +107,7 @@ to a qemu VM using the qemu VM driver. A single
 Examples
 --------
 
-Assuming a `luks volume type secret <formatsecret.html#VolumeUsageType>`__ is
+Assuming a `luks volume type secret <formatsecret.html#usage-type-volume>`__ is
 already defined, a simple example specifying use of the ``luks`` format for
 either volume creation without a specific cipher being defined or as part of a
 domain volume definition:
