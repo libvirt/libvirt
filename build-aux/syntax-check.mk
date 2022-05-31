@@ -1087,6 +1087,13 @@ sc_prohibit_backup_files:
 	  { echo 'found version controlled backup file' 1>&2; \
 	    exit 1; } || :
 
+# prohibit remote references to local file in RST files
+sc_avoid_remote_reference_to_local_file:
+	@prohibit='<#' \
+	in_vc_files='\.rst$$' \
+	halt='use local reference within a file' \
+	  $(_sc_search_regexp)
+
 # This Perl code is slightly obfuscated.  Not only is each "$" doubled
 # because it's in a Makefile, but the $$c's are comments;  we cannot
 # use "#" due to the way the script ends up concatenated onto one line.
