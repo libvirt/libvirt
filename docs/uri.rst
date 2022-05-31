@@ -121,7 +121,7 @@ So to connect to the daemon, one of two different URIs is used:
 domain socket(s) that it listens on in the various different modes).
 
 KVM URIs are identical. You select between qemu, qemu accelerated and KVM guests
-in the `guest XML as described here <format.html#KVM1>`__.
+in the `guest XML as described here <drvqemu.html#example-domain-xml-config>`__.
 
 test:///... Test URIs
 ~~~~~~~~~~~~~~~~~~~~~
