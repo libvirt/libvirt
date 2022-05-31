@@ -26,7 +26,7 @@ Deployment / operation
 `Remote access <remote.html>`__
    Enable remote access over TCP
 
-`TLS certs <tlscerts.html>`__
+`TLS certs <kbase/tlscerts.html>`__
    Generate and deploy x509 certificates for TLS
 
 `Authentication <auth.html>`__
