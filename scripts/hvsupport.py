@@ -426,7 +426,7 @@ print('''<?xml version="1.0" encoding="UTF-8"?>
 <ul id="toc"></ul>
 
 <p>
-This page documents which <a href="html/">libvirt calls</a> work on
+This page documents which libvirt calls work on
 which libvirt drivers / hypervisors, and which version the API appeared
 in. If a hypervisor driver later dropped support for the API, the version
 when it was removed is also mentioned (highlighted in
