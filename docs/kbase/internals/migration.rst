@@ -7,7 +7,7 @@ Libvirt migration internals
 Migration is a multi-step operation with at least two distinct actors,
 the source and the destination libvirtd daemons, and a lot of failure
 points. This document describes the basic migration workflow in the
-code level, as a way to complement `the base migration docs <../migration.html>`_
+code level, as a way to complement `the base migration docs <../../migration.html>`_
 and help developers to get up to speed quicker with the code.
 
 In this document, unless stated otherwise, these conventions are followed:

@@ -47,7 +47,7 @@ To work with event loop from our code we have plenty of APIs.
 -  ``virEventRemoveTimeout``: Unregisters a timer.
 
 For more information on these APIs continue reading
-`here <../html/libvirt-libvirt-event.html>`__.
+`here <../../html/libvirt-libvirt-event.html>`__.
 
 Worker pool
 -----------
