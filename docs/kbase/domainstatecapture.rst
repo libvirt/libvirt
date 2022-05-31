@@ -176,12 +176,12 @@ capture have these properties:
    contents are not also saved. Since creating an external snapshot
    changes which disk image resource is in use by the guest, this API
    can be coupled with
-   `virDomainBlockCommit() <html/libvirt-libvirt-domain.html#virDomainBlockCommit>`__
+   `virDomainBlockCommit() <../html/libvirt-libvirt-domain.html#virDomainBlockCommit>`__
    to restore things back to the guest using its original disk image,
    where a third-party tool can read the backing file prior to the live
-   commit. See also the `XML details <formatsnapshot.html>`__ used with
+   commit. See also the `XML details <../formatsnapshot.html>`__ used with
    this command.
-`virDomainFSFreeze <html/libvirt-libvirt-domain.html#virDomainFSFreeze>`__, `virDomainFSThaw <html/libvirt-libvirt-domain.html#virDomainFSThaw>`__
+`virDomainFSFreeze <../html/libvirt-libvirt-domain.html#virDomainFSFreeze>`__, `virDomainFSThaw <../html/libvirt-libvirt-domain.html#virDomainFSThaw>`__
    This pair of APIs does not directly capture guest state, but can be
    used to coordinate with a trusted live guest that state capture is
    about to happen, and therefore guest I/O should be quiesced so that
@@ -191,7 +191,7 @@ capture have these properties:
    to these functions. Also, note that freezing guest I/O is only
    possible with trusted guests running a guest agent, and that some
    guests place maximum time limits on how long I/O can be frozen.
-`virDomainCheckpointCreateXML <html/libvirt-libvirt-domain-checkpoint.html#virDomainCheckpointCreateXML>`__
+`virDomainCheckpointCreateXML <../html/libvirt-libvirt-domain-checkpoint.html#virDomainCheckpointCreateXML>`__
    This API does not actually capture guest state, rather it makes it
    possible to track which portions of guest disks have changed between
    a checkpoint and the current live execution of the guest. However,
@@ -201,9 +201,9 @@ capture have these properties:
    at the creation of an external snapshot with
    ``virDomainSnapshotCreateXML2()``, since a second incremental backup
    is most useful when using the checkpoint created during the first.
-   See also the `XML details <formatcheckpoint.html>`__ used with this
+   See also the `XML details <../formatcheckpoint.html>`__ used with this
    command.
-`virDomainBackupBegin <html/libvirt-libvirt-domain.html#virDomainBackupBegin>`__, `virDomainBackupEnd <html/libvirt-libvirt-domain.html#virDomainBackupEnd>`__
+`virDomainBackupBegin <../html/libvirt-libvirt-domain.html#virDomainBackupBegin>`__
    This API wraps approaches for capturing the state of disks of a
    running guest, but does not track accompanying guest memory state.
    The capture is consistent to the start of the operation, where the
