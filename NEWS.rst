@@ -38,6 +38,13 @@ v8.4.0 (unreleased)
     This paravirtualized qemu vdagent channel can enable copy and paste between
     a guest and a VNC client. It is available in QEMU 6.1.0.
 
+  * api: Add new APIs ``virDomainSaveParams`` and ``virDomainRestoreParams``
+
+    * ``virDomainSaveParams``: An alternative domain saving API, extends
+      ``virDomainSaveFlags`` by adding parameters.
+    * ``virDomainRestoreParams``: An alternative domain restoring API, extends
+      ``virDomainRestoreFlags`` by adding parameters.
+
 * **Improvements**
 
 * **Bug fixes**
