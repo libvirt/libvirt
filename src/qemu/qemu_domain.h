@@ -1048,7 +1048,8 @@ int
 qemuDomainMakeCPUMigratable(virCPUDef *cpu);
 
 int
-qemuDomainInitializePflashStorageSource(virDomainObj *vm);
+qemuDomainInitializePflashStorageSource(virDomainObj *vm,
+                                        virQEMUDriverConfig *cfg);
 
 bool
 qemuDomainDiskBlockJobIsSupported(virDomainObj *vm,

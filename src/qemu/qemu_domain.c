@@ -11311,7 +11311,8 @@ qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm)
  * 'libvirt-pflash1-format' for pflash1.
  */
 int
-qemuDomainInitializePflashStorageSource(virDomainObj *vm)
+qemuDomainInitializePflashStorageSource(virDomainObj *vm,
+                                        virQEMUDriverConfig *cfg)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
@@ -11334,8 +11335,12 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm)
 
 
     if (def->os.loader->nvram) {
-        def->os.loader->nvram->nodeformat = g_strdup("libvirt-pflash1-format");
-        def->os.loader->nvram->nodestorage = g_strdup("libvirt-pflash1-storage");
+        if (qemuDomainPrepareStorageSourceBlockdevNodename(NULL,
+                                                           def->os.loader->nvram,
+                                                           "libvirt-pflash1",
+                                                           priv,
+                                                           cfg) < 0)
+            return -1;
     }
 
     priv->pflash0 = g_steal_pointer(&pflash0);
