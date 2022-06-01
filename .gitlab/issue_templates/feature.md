@@ -23,8 +23,3 @@ Thank you for your interest in helping us to make libvirt better!
 
 
 ## Additional information
-
-
-
-<!-- The line below ensures that proper tags are added to the issue. -- >
-/label ~enhancement
