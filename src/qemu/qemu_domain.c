@@ -10854,15 +10854,14 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDef *disk,
 
 
 int
-qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
-                                       virStorageSource *src,
-                                       qemuDomainObjPrivate *priv,
-                                       virQEMUDriverConfig *cfg)
+qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
+                                               virStorageSource *src,
+                                               const char *nodenameprefix,
+                                               qemuDomainObjPrivate *priv,
+                                               virQEMUDriverConfig *cfg)
 {
-    src->id = qemuDomainStorageIDNew(priv);
-
-    src->nodestorage = g_strdup_printf("libvirt-%u-storage", src->id);
-    src->nodeformat = g_strdup_printf("libvirt-%u-format", src->id);
+    src->nodestorage = g_strdup_printf("%s-storage", nodenameprefix);
+    src->nodeformat = g_strdup_printf("%s-format", nodenameprefix);
 
     if (qemuBlockStorageSourceNeedsStorageSliceLayer(src))
         src->sliceStorage->nodename = g_strdup_printf("libvirt-%u-slice-sto", src->id);
@@ -10892,6 +10891,22 @@ qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
         return -1;
 
     return 0;
+}
+
+
+int
+qemuDomainPrepareStorageSourceBlockdev(virDomainDiskDef *disk,
+                                       virStorageSource *src,
+                                       qemuDomainObjPrivate *priv,
+                                       virQEMUDriverConfig *cfg)
+{
+    g_autofree char *nodenameprefix = NULL;
+
+    src->id = qemuDomainStorageIDNew(priv);
+
+    nodenameprefix = g_strdup_printf("libvirt-%u", src->id);
+
+    return qemuDomainPrepareStorageSourceBlockdevNodename(disk, src, nodenameprefix, priv, cfg);
 }
 
 
