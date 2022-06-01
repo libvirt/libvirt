@@ -8939,10 +8939,6 @@ qemuProcessReconnect(void *opaque)
     if (qemuDomainPerfRestart(obj) < 0)
         goto error;
 
-    /* recreate the pflash storage sources */
-    if (qemuDomainInitializePflashStorageSource(obj) < 0)
-        goto error;
-
     for (i = 0; i < obj->def->ndisks; i++) {
         virDomainDiskDef *disk = obj->def->disks[i];
 
