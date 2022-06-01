@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v8.4.0 (unreleased)
+v8.4.0 (2022-06-01)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
@@ -44,8 +40,6 @@ v8.4.0 (unreleased)
       ``virDomainSaveFlags`` by adding parameters.
     * ``virDomainRestoreParams``: An alternative domain restoring API, extends
       ``virDomainRestoreFlags`` by adding parameters.
-
-* **Improvements**
 
 * **Bug fixes**
 
