@@ -80,7 +80,7 @@ Some of the libvirt developers may be found on IRC on the `OFTC
 IRC <https://oftc.net>`__ network. Use the settings:
 
 -  server: irc.oftc.net
--  port: 6667 (the usual IRC port)
+-  port: 6697 (the usual IRC TLS port)
 -  channel: #virt
 
 NB There is no guarantee that someone will be watching or able to reply
