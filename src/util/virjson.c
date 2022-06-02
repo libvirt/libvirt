@@ -121,6 +121,7 @@ virJSONValueGetType(const virJSONValue *value)
  *
  * I: signed long integer value
  * J: signed long integer value, error if negative
+ * K: signed long integer value, omitted if negative
  * Z: signed long integer value, omitted if zero
  * Y: signed long integer value, omitted if zero, error if negative
  *
@@ -228,6 +229,7 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
 
         case 'Z':
         case 'Y':
+        case 'K':
         case 'J':
         case 'I': {
             long long val = va_arg(args, long long);
@@ -240,6 +242,9 @@ virJSONValueObjectAddVArgs(virJSONValue **objptr,
             }
 
             if (!val && (type == 'Z' || type == 'Y'))
+                continue;
+
+            if (val < 0 && type == 'K')
                 continue;
 
             rc = virJSONValueObjectAppendNumberLong(obj, key, val);
