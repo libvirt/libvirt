@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-05-30 07:27+0000\n"
+"PO-Revision-Date: 2022-06-02 20:18+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9683,82 +9683,85 @@ msgstr "Felaktig PCI-adress %s. Endast PCI-bussar upp till %zu är tillgängliga
 
 #, c-format
 msgid "Invalid PCI address %s. Only PCI domain 0 is available"
-msgstr ""
+msgstr "Felaktig PCI-adress %s. Endast PCI-domän 0 är tillgänglig"
 
 #, c-format
 msgid "Invalid PCI address %s. function must be <= %u"
-msgstr ""
+msgstr "Felaktig PCI-adress %s. funktionen måste vara ≤ %u"
 
 #, c-format
 msgid "Invalid PCI address %s. slot must be <= %zu"
-msgstr ""
+msgstr "Felaktig PCI-adress %s. facket måste vara ≤ %zu"
 
 #, c-format
 msgid "Invalid PCI address %s. slot must be >= %zu"
-msgstr ""
+msgstr "Felaktig PCI-adress %s. facket måste vara ≥ %zu"
 
 msgid ""
 "Invalid PCI address 0000:00:00, at least one of domain, bus, or slot must be "
 "> 0"
 msgstr ""
+"Felaktig PCI-adress 0000:00:00, åtminstone en av domänen, bussen eller "
+"facket måste vara > 0"
 
 #, c-format
 msgid "Invalid PCI address bus='0x%x', must be <= 0xFF"
-msgstr ""
+msgstr "Felaktig PCI-adress buss=”0x%x”, måste vara ≤ 0xFF"
 
 #, c-format
 msgid "Invalid PCI address function=0x%x, must be <= 7"
-msgstr ""
+msgstr "Felaktig PCI-adress funktionen=0x%x, måste vara ≤ 7"
 
 #, c-format
 msgid "Invalid PCI address slot='0x%x', must be <= 0x1F"
-msgstr ""
+msgstr "Felaktig PCI-adress facket=”0x%x”, måste vara ≤ 0x1F"
 
 #, c-format
 msgid "Invalid PCI address uid='0x%.4x', must be > 0x0000 and <= 0x%.4x"
-msgstr ""
+msgstr "Felaktig PCI-adress aid=”0x%.4x”, måste vara > 0x0000 och ≤ 0x%.4x"
 
 #, c-format
 msgid "Invalid PID %d for VM"
-msgstr ""
+msgstr "Felaktig PID %d för VM"
 
 #, c-format
 msgid "Invalid STP state value %d received for '%s'. Must be -1, 0, or 1."
 msgstr ""
+"Felaktigt STP-tillståndsvärde %d motaget för ”%s”. Måsta vara -1, 0 eller 1."
 
 #, c-format
 msgid "Invalid ULong value specified for prefix in definition of network '%s'"
 msgstr ""
+"Felaktigt ULong-värde angivet för prefixet i definitionen av nätverket ”%s”"
 
 #, c-format
 msgid "Invalid URI path '%s', try '/system'"
-msgstr ""
+msgstr "Felaktig URI-sökväg ”%s”, prova ”/system”"
 
 #, c-format
 msgid "Invalid USB Class code 0x%x"
-msgstr ""
+msgstr "Felaktig USB-klasskod 0x%x"
 
-#, fuzzy
 msgid "Invalid UUID"
-msgstr "ogiltiga värd-UUID: %s"
+msgstr "Felaktig UUID"
 
 msgid "Invalid XML response"
-msgstr ""
+msgstr "Felaktigt XML-svar"
 
 #, c-format
 msgid "Invalid adapter name '%s' for SCSI pool"
-msgstr ""
+msgstr "Felaktigt adapternamn ”%s” för SCSI-poolen"
 
 #, c-format
 msgid "Invalid address '%s' in <ip>"
-msgstr ""
+msgstr "Felaktig adress ”%s” i <ip>"
 
 #, c-format
 msgid "Invalid address '%s' in network '%s'"
-msgstr ""
+msgstr "Felaktig adress ”%s” i nätverket ”%s”"
 
 msgid "Invalid address for a USB device"
-msgstr ""
+msgstr "Felaktig adress till en USB-enhet"
 
 #, c-format
 msgid "Invalid address type '%s' for the disk '%s' with the bus type '%s'"
