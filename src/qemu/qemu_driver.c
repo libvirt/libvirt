@@ -3423,8 +3423,13 @@ qemuDomainScreenshot(virDomainPtr dom,
 
  endjob:
     VIR_FORCE_CLOSE(tmp_fd);
-    if (unlink_tmp)
+    if (unlink_tmp) {
+        /* This may look pointless, since we're removing the file anyways, but
+         * it's crucial for AppArmor. Otherwise these temp files would
+         * accumulate in the domain's profile. */
+        qemuSecurityDomainRestorePathLabel(driver, vm, tmp);
         unlink(tmp);
+    }
 
     qemuDomainObjEndJob(vm);
 
