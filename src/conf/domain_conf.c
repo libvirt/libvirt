@@ -27186,22 +27186,15 @@ virDomainHugepagesFormat(virBuffer *buf,
                          virDomainHugePage *hugepages,
                          size_t nhugepages)
 {
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
     size_t i;
 
-    if (nhugepages == 1 &&
-        hugepages[0].size == 0) {
-        virBufferAddLit(buf, "<hugepages/>\n");
-        return;
+    if (nhugepages != 1 || hugepages[0].size != 0) {
+        for (i = 0; i < nhugepages; i++)
+            virDomainHugepagesFormatBuf(&childBuf, &hugepages[i]);
     }
 
-    virBufferAddLit(buf, "<hugepages>\n");
-    virBufferAdjustIndent(buf, 2);
-
-    for (i = 0; i < nhugepages; i++)
-        virDomainHugepagesFormatBuf(buf, &hugepages[i]);
-
-    virBufferAdjustIndent(buf, -2);
-    virBufferAddLit(buf, "</hugepages>\n");
+    virXMLFormatElementEmpty(buf, "hugepages", NULL, &childBuf);
 }
 
 
