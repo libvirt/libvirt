@@ -1371,10 +1371,22 @@ qemuFirmwareFillDomain(virQEMUDriver *driver,
             def->os.loader->nvramTemplate)
             return 0;
 
-        if (!reset_nvram && def->os.loader->nvram &&
-            virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
-            virFileExists(def->os.loader->nvram->path))
-            return 0;
+        if (def->os.loader->nvram) {
+            if (!virStorageSourceIsLocalStorage(def->os.loader->nvram)) {
+                if (reset_nvram) {
+                    virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                                   _("resetting of nvram is not supported with network backed nvram"));
+                    return -1;
+                }
+
+                /* we don't scrutinize whether NVRAM image accessed via network
+                 * is present */
+                return 0;
+            }
+
+            if (!reset_nvram && virFileExists(def->os.loader->nvram->path))
+                return 0;
+        }
 
         /* ... then we want to consult JSON FW descriptors first,
          * but we don't want to fail if we haven't found a match. */
