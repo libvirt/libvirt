@@ -573,8 +573,9 @@ qemuDomainSetupLoader(virDomainObj *vm,
             *paths = g_slist_prepend(*paths, g_strdup(loader->path));
 
             if (loader->nvram &&
-                virStorageSourceIsLocalStorage(loader->nvram))
-                *paths = g_slist_prepend(*paths, g_strdup(loader->nvram->path));
+                qemuDomainSetupDisk(loader->nvram, paths) < 0)
+                return -1;
+
             break;
 
         case VIR_DOMAIN_LOADER_TYPE_NONE:

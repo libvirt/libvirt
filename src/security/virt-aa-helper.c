@@ -1006,10 +1006,10 @@ get_files(vahControl * ctl)
         if (vah_add_file(&buf, ctl->def->os.loader->path, "rk") != 0)
             goto cleanup;
 
-    if (ctl->def->os.loader && ctl->def->os.loader->nvram &&
-        virStorageSourceIsLocalStorage(ctl->def->os.loader->nvram))
-        if (vah_add_file(&buf, ctl->def->os.loader->nvram->path, "rwk") != 0)
+    if (ctl->def->os.loader && ctl->def->os.loader->nvram) {
+        if (storage_source_add_files(ctl->def->os.loader->nvram, &buf, 0) < 0)
             goto cleanup;
+    }
 
     for (i = 0; i < ctl->def->ngraphics; i++) {
         virDomainGraphicsDef *graphics = ctl->def->graphics[i];

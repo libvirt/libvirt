@@ -2803,10 +2803,11 @@ virSecuritySELinuxRestoreAllLabel(virSecurityManager *mgr,
             rc = -1;
     }
 
-    if (def->os.loader && def->os.loader->nvram &&
-        virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
-        virSecuritySELinuxRestoreFileLabel(mgr, def->os.loader->nvram->path, true) < 0)
-        rc = -1;
+    if (def->os.loader && def->os.loader->nvram) {
+        if (virSecuritySELinuxRestoreImageLabelInt(mgr, def, def->os.loader->nvram,
+                                                   migrated) < 0)
+            rc = -1;
+    }
 
     if (def->os.kernel &&
         virSecuritySELinuxRestoreFileLabel(mgr, def->os.kernel, true) < 0)
@@ -3208,14 +3209,12 @@ virSecuritySELinuxSetAllLabel(virSecurityManager *mgr,
             return -1;
     }
 
-    /* This is different than kernel or initrd. The nvram store
-     * is really a disk, qemu can read and write to it. */
-    if (def->os.loader && def->os.loader->nvram &&
-        virStorageSourceIsLocalStorage(def->os.loader->nvram) &&
-        secdef && secdef->imagelabel &&
-        virSecuritySELinuxSetFilecon(mgr, def->os.loader->nvram->path,
-                                     secdef->imagelabel, true) < 0)
-        return -1;
+    if (def->os.loader && def->os.loader->nvram) {
+        if (virSecuritySELinuxSetImageLabel(mgr, def, def->os.loader->nvram,
+                                            VIR_SECURITY_DOMAIN_IMAGE_LABEL_BACKING_CHAIN |
+                                            VIR_SECURITY_DOMAIN_IMAGE_PARENT_CHAIN_TOP) < 0)
+            return -1;
+    }
 
     if (def->os.kernel &&
         virSecuritySELinuxSetFilecon(mgr, def->os.kernel,
