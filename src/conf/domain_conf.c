@@ -27160,14 +27160,30 @@ virDomainHugepagesFormat(virBuffer *buf,
     virBufferAddLit(buf, "</hugepages>\n");
 }
 
+
+static void
+virDomainLoaderDefFormatNvram(virBuffer *buf,
+                              virDomainLoaderDef *loader)
+{
+    g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INITIALIZER;
+
+    virBufferEscapeString(&attrBuf, " template='%s'", loader->nvramTemplate);
+    if (loader->nvram) {
+        if (loader->nvram->type == VIR_STORAGE_TYPE_FILE)
+            virBufferEscapeString(&childBuf, "%s", loader->nvram->path);
+    }
+
+    virXMLFormatElementInternal(buf, "nvram", &attrBuf, &childBuf, false, false);
+}
+
+
 static void
 virDomainLoaderDefFormat(virBuffer *buf,
                          virDomainLoaderDef *loader)
 {
     g_auto(virBuffer) loaderAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) loaderChildBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) nvramAttrBuf = VIR_BUFFER_INITIALIZER;
-    g_auto(virBuffer) nvramChildBuf = VIR_BUFFER_INITIALIZER;
 
     if (loader->readonly != VIR_TRISTATE_BOOL_ABSENT)
         virBufferAsprintf(&loaderAttrBuf, " readonly='%s'",
@@ -27185,12 +27201,7 @@ virDomainLoaderDefFormat(virBuffer *buf,
 
     virXMLFormatElementInternal(buf, "loader", &loaderAttrBuf, &loaderChildBuf, false, false);
 
-    virBufferEscapeString(&nvramAttrBuf, " template='%s'", loader->nvramTemplate);
-    if (loader->nvram) {
-        if (loader->nvram->type == VIR_STORAGE_TYPE_FILE)
-            virBufferEscapeString(&nvramChildBuf, "%s", loader->nvram->path);
-    }
-    virXMLFormatElementInternal(buf, "nvram", &nvramAttrBuf, &nvramChildBuf, false, false);
+    virDomainLoaderDefFormatNvram(buf, loader);
 }
 
 static void
