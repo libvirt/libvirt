@@ -235,7 +235,6 @@ qemuFDPassGetPath(qemuFDPass *fdpass)
 
 struct _qemuFDPassDirect {
     int fd;
-    char *path;
     char *name;
 
     bool passed; /* passed to qemu via monitor */
@@ -251,7 +250,6 @@ qemuFDPassDirectFree(qemuFDPassDirect *fdpass)
 
     VIR_FORCE_CLOSE(fdpass->fd);
     g_free(fdpass->name);
-    g_free(fdpass->path);
     g_free(fdpass);
 }
 
@@ -295,7 +293,8 @@ qemuFDPassDirectTransferCommand(qemuFDPassDirect *fdpass,
         return;
 
     virCommandPassFD(cmd, fdpass->fd, VIR_COMMAND_PASS_FD_CLOSE_PARENT);
-    fdpass->path = g_strdup_printf("%d", fdpass->fd);
+    g_free(fdpass->name);
+    fdpass->name = g_strdup_printf("%d", fdpass->fd);
     fdpass->fd = -1;
 }
 
@@ -318,7 +317,6 @@ qemuFDPassDirectTransferMonitor(qemuFDPassDirect *fdpass,
     if (qemuMonitorSendFileHandle(mon, fdpass->name, fdpass->fd) < 0)
         return -1;
 
-    fdpass->path = g_strdup(fdpass->name);
     VIR_FORCE_CLOSE(fdpass->fd);
     fdpass->passed = true;
 
@@ -358,5 +356,5 @@ qemuFDPassDirectGetPath(qemuFDPassDirect *fdpass)
     if (!fdpass)
         return NULL;
 
-    return fdpass->path;
+    return fdpass->name;
 }
