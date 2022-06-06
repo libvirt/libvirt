@@ -240,6 +240,10 @@ qemuBuildDeviceCommandlineHandleOverrides(virJSONValue *props,
     const char *alias = virJSONValueObjectGetString(props, "id");
     size_t i;
 
+    /* If the device doesn't have an alias we can't override its props */
+    if (!alias)
+        return;
+
     for (i = 0; i < nsdef->ndeviceOverride; i++) {
         qemuDomainXmlNsDeviceOverride *dev = nsdef->deviceOverride + i;
         size_t j;
