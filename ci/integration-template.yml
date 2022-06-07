@@ -98,3 +98,4 @@
     - !reference [.integration_tests, before_script]
     - cd "$SCRATCH_DIR"
     - *qemu-build-template
+    - sudo restorecon -R /usr
