@@ -16,6 +16,11 @@
     then
       make -j"$JOBS" check-build;
     fi
+
+  # we need the following since the fix for CVE-2022-24765 now causes a fatal
+  # error if a user issues a git command from within a directory owned by some
+  # other user
+  - sudo git config --global --add safe.directory "$SCRATCH_DIR/qemu"
   - sudo make install
 
 
