@@ -30,11 +30,9 @@
 #include "node_device_udev.h"
 #include "virerror.h"
 #include "driver.h"
-#include "datatypes.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "viruuid.h"
-#include "virbuffer.h"
 #include "virfile.h"
 #include "virccw.h"
 #include "virpci.h"
@@ -43,7 +41,6 @@
 #include "virnetdev.h"
 #include "virmdev.h"
 #include "virutil.h"
-#include "virpcivpd.h"
 
 #include "configmake.h"
 
