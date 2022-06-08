@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "virconf.h"
 #include "domain_conf.h"
 
 #define VMX_CONFIG_FORMAT_ARGV "vmware-vmx"
