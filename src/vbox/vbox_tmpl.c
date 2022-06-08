@@ -42,7 +42,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "virutil.h"
 
 /* This one changes from version to version. */
 #if VBOX_API_VERSION == 5002000
