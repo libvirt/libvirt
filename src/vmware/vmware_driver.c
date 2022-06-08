@@ -34,7 +34,6 @@
 #include "vmx.h"
 #include "vmware_conf.h"
 #include "vmware_driver.h"
-#include "virstring.h"
 
 /* Various places we may find the "vmrun" binary,
  * without a leading / it will be searched in PATH
