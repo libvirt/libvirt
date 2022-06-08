@@ -20,7 +20,6 @@
 
 #include "testutils.h"
 #include "capabilities.h"
-#include "virbitmap.h"
 #include "virfilewrapper.h"
 
 

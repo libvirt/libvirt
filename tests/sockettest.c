@@ -25,7 +25,6 @@
 #include "virsocketaddr.h"
 #include "testutils.h"
 #include "virlog.h"
-#include "viralloc.h"
 
 VIR_LOG_INIT("tests.sockettest");
 

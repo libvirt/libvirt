@@ -23,11 +23,8 @@
 #include "storage_source.h"
 #include "testutils.h"
 #include "vircommand.h"
-#include "virerror.h"
 #include "virfile.h"
 #include "virlog.h"
-#include "virstoragefile.h"
-#include "virstring.h"
 
 #include "storage/storage_driver.h"
 

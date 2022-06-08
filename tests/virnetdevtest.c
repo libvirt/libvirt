@@ -21,8 +21,6 @@
 #include "internal.h"
 #include "testutils.h"
 
-#include "virnetlink.h"
-
 #define LIBVIRT_VIRNETDEVPRIV_H_ALLOW
 
 #ifdef __linux__

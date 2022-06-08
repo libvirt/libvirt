@@ -31,10 +31,8 @@
 #include "testutils.h"
 #include "internal.h"
 #include "virfile.h"
-#include "virthread.h"
 #include "virlog.h"
 #include "virutil.h"
-#include "virevent.h"
 
 VIR_LOG_INIT("tests.eventtest");
 

@@ -28,7 +28,6 @@
 #include "internal.h"
 #include "testutils.h"
 #include "virnetworkportdef.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

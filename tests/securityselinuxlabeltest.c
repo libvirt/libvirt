@@ -30,13 +30,11 @@
 #include "internal.h"
 #include "testutils.h"
 #include "testutilsqemu.h"
-#include "qemu/qemu_domain.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "security/security_manager.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

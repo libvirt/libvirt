@@ -23,7 +23,6 @@
 
 #include "testutils.h"
 #include "virfile.h"
-#include "virstring.h"
 
 #ifdef __linux__
 # include <linux/falloc.h>

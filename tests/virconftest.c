@@ -23,7 +23,6 @@
 
 #include <unistd.h>
 #include "virconf.h"
-#include "viralloc.h"
 #include "testutils.h"
 
 

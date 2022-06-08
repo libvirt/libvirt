@@ -9,9 +9,7 @@
 
 #ifdef WITH_QEMU
 
-# include "datatypes.h"
 # include "internal.h"
-# include "virstring.h"
 # include "conf/domain_conf.h"
 # include "qemu/qemu_domain.h"
 

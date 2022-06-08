@@ -7,7 +7,6 @@
 # include <unistd.h>
 
 # include "internal.h"
-# include "viralloc.h"
 # include "vmx/vmx.h"
 # include "esx/esx_util.h"
 # include "esx/esx_vi_types.h"

@@ -26,8 +26,6 @@
 
 #include "virsocket.h"
 #include "configmake.h"
-#include "virstring.h"
-#include "viralloc.h"
 #include "virfile.h"
 
 static int (*real_open)(const char *path, int flags, ...);

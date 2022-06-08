@@ -29,13 +29,9 @@
 #include "testutils.h"
 #include "internal.h"
 #include "viralloc.h"
-#include "virthread.h"
 #include "virerror.h"
 #include "virbuffer.h"
 #include "virlog.h"
-#include "vircommand.h"
-#include "virrandom.h"
-#include "virprocess.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

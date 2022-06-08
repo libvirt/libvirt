@@ -26,8 +26,6 @@
 # include <fcntl.h>
 # include <sys/stat.h>
 # include <unistd.h>
-# include "virstring.h"
-# include "virerror.h"
 # include "virlog.h"
 # include "virscsihost.h"
 

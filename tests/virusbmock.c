@@ -24,9 +24,6 @@
 #include <dlfcn.h>
 #include <fcntl.h>
 
-#include "viralloc.h"
-#include "virfile.h"
-#include "virstring.h"
 #include "virusb.h"
 
 #define USB_SYSFS "/sys/bus/usb"

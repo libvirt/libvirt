@@ -9,7 +9,6 @@
 # include "internal.h"
 # include "viralloc.h"
 # include "vmx/vmx.h"
-# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_VMWARE
 

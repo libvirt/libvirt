@@ -8,7 +8,6 @@
 #define LIBVIRT_VIRHOSTCPUPRIV_H_ALLOW
 #include "virhostcpupriv.h"
 #include "virfile.h"
-#include "virstring.h"
 #include "virfilewrapper.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

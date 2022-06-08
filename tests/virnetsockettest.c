@@ -29,7 +29,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "virstring.h"
 
 #include "rpc/virnetsocket.h"
 #include "rpc/virnetclient.h"

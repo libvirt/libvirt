@@ -22,7 +22,6 @@
 #include "virjson.h"
 #include "virbuffer.h"
 #include "virxml.h"
-#include "virhash.h"
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "tests/testutilsqemuschema.h"

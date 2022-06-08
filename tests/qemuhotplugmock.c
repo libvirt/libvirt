@@ -24,7 +24,6 @@
 #include "testutilsqemu.h"
 #include "conf/domain_conf.h"
 #include "virdevmapper.h"
-#include "virutil.h"
 #include "virmock.h"
 #include <fcntl.h>
 

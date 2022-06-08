@@ -22,11 +22,7 @@
 #include "testutils.h"
 
 #include "virkeycode.h"
-#include "virerror.h"
-#include "viralloc.h"
 #include "virlog.h"
-
-#include "virlockspace.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

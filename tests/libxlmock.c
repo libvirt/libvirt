@@ -28,8 +28,6 @@
 # include <xenstore.h>
 # include <xenctrl.h>
 
-# include "virfile.h"
-# include "virsocket.h"
 # include "libxl/libxl_capabilities.h"
 
 VIR_MOCK_IMPL_RET_VOID(xs_daemon_open,

@@ -18,10 +18,7 @@
 
 
 #include "testutils.h"
-#include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "virstring.h"
 
 #include "storage/storage_util.h"
 

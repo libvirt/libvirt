@@ -2,7 +2,6 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "datatypes.h"
 #include "node_device/node_device_driver.h"
 #include "vircommand.h"
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW

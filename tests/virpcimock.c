@@ -31,7 +31,6 @@
 # include <stdarg.h>
 # include <dirent.h>
 # include "viralloc.h"
-# include "virstring.h"
 # include "virfile.h"
 
 static int (*real_access)(const char *path, int mode);

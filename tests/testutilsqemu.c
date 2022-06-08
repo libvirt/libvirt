@@ -6,7 +6,6 @@
 # include "testutils.h"
 # include "viralloc.h"
 # include "cpu_conf.h"
-# include "qemu/qemu_driver.h"
 # include "qemu/qemu_domain.h"
 # define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 # include "qemu/qemu_capspriv.h"

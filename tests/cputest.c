@@ -33,8 +33,6 @@
 #include "cpu_conf.h"
 #include "cpu/cpu.h"
 #include "cpu/cpu_x86.h"
-#include "cpu/cpu_map.h"
-#include "virstring.h"
 
 #if WITH_QEMU
 # include "testutilsqemu.h"

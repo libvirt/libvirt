@@ -7,9 +7,7 @@
 # include <unistd.h>
 
 # include "internal.h"
-# include "viralloc.h"
 # include "openvz/openvz_conf.h"
-# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_OPENVZ
 

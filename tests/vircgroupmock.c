@@ -26,8 +26,6 @@
 # include <sys/sysmacros.h>
 # include <stdarg.h>
 # include "testutilslxc.h"
-# include "virstring.h"
-# include "virfile.h"
 # include "viralloc.h"
 # include "vircgroupv2devices.h"
 

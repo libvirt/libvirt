@@ -7,7 +7,6 @@
 
 #include "testutils.h"
 #include "internal.h"
-#include "virstring.h"
 #include "conf/backup_conf.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

@@ -14,10 +14,8 @@
 
 # include "internal.h"
 # include "qemu/qemu_conf.h"
-# include "qemu/qemu_domain.h"
 # include "checkpoint_conf.h"
 # include "testutilsqemu.h"
-# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

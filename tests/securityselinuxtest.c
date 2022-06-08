@@ -27,10 +27,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "viralloc.h"
 #include "virlog.h"
-#include "virerror.h"
-#include "virfile.h"
 #include "security/security_manager.h"
 #include "virstring.h"
 

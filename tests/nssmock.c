@@ -27,8 +27,6 @@
 # include <unistd.h>
 
 # include "configmake.h"
-# include "virstring.h"
-# include "viralloc.h"
 
 static int (*real_open)(const char *path, int flags, ...);
 static DIR * (*real_opendir)(const char *name);

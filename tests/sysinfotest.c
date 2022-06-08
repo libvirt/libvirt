@@ -29,7 +29,6 @@
 #include "virsysinfo.h"
 #include "testutils.h"
 #include "virfile.h"
-#include "virstring.h"
 
 #define LIBVIRT_VIRSYSINFOPRIV_H_ALLOW
 #include "virsysinfopriv.h"

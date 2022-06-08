@@ -39,7 +39,6 @@
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 #include "viralloc.h"
-#include "virstring.h"
 
 static int (*real_statfs)(const char *path, struct statfs *buf);
 static int (*real_security_get_boolean_active)(const char *name);

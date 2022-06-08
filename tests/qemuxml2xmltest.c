@@ -8,10 +8,7 @@
 #include "testutils.h"
 
 #include "internal.h"
-#include "qemu/qemu_domain_address.h"
-#include "qemu/qemu_domain.h"
 #include "testutilsqemu.h"
-#include "virstring.h"
 #include "virfilewrapper.h"
 #include "configmake.h"
 

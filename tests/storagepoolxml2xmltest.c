@@ -8,8 +8,6 @@
 #include "internal.h"
 #include "testutils.h"
 #include "storage_conf.h"
-#include "testutilsqemu.h"
-#include "virstring.h"
 
 #include "storage/storage_util.h"
 

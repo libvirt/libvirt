@@ -30,12 +30,10 @@
 #include "qemu/qemu_processpriv.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_agent.h"
-#include "qemu/qemu_qapi.h"
 #include "rpc/virnetsocket.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "vireventthread.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

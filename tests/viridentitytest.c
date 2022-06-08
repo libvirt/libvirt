@@ -28,11 +28,7 @@
 #define LIBVIRT_VIRIDENTITYPRIV_H_ALLOW
 
 #include "viridentitypriv.h"
-#include "virerror.h"
-#include "viralloc.h"
 #include "virlog.h"
-
-#include "virlockspace.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

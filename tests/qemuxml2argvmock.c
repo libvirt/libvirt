@@ -23,25 +23,19 @@
 #include "internal.h"
 #include "viralloc.h"
 #include "vircommand.h"
-#include "vircrypto.h"
 #include "viridentitypriv.h"
 #include "virmock.h"
-#include "virlog.h"
 #include "virnetdev.h"
 #include "virnetdevbandwidth.h"
 #include "virnetdevip.h"
 #include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "virnuma.h"
-#include "virrandom.h"
-#include "virscsi.h"
 #include "virscsivhost.h"
-#include "virstring.h"
 #include "virtpm.h"
 #include "virutil.h"
 #include "qemu/qemu_interface.h"
 #include "qemu/qemu_command.h"
-#include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
 

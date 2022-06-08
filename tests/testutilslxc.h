@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include "capabilities.h"
-
 #include "lxc/lxc_conf.h"
 
 #define FAKEDEVDIR0 "/fakedevdir0/bla/fasl"

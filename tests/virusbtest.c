@@ -18,9 +18,7 @@
 
 #include <config.h>
 
-#include "viralloc.h"
 #include "virerror.h"
-#include "virfile.h"
 #include "virusb.h"
 
 #include "testutils.h"

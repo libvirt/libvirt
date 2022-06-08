@@ -24,7 +24,6 @@
 #include "testutils.h"
 #include "nwfilter/nwfilter_ebiptables_driver.h"
 #include "virbuffer.h"
-#include "virfirewall.h"
 
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"

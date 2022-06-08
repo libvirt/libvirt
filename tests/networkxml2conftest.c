@@ -8,10 +8,8 @@
 #include "internal.h"
 #include "testutils.h"
 #include "network_conf.h"
-#include "vircommand.h"
 #include "viralloc.h"
 #include "network/bridge_driver.h"
-#include "virstring.h"
 #define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 #include "vircommandpriv.h"
 

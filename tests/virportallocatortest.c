@@ -26,11 +26,8 @@
 
 #if defined(__linux__) && defined(RTLD_NEXT)
 
-# include "virerror.h"
-# include "viralloc.h"
 # include "virlog.h"
 # include "virportallocator.h"
-# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_RPC
 

@@ -19,11 +19,8 @@
 #include <config.h>
 
 #include "internal.h"
-#include "virmock.h"
 #include "virnuma.h"
 #include "virfile.h"
-#include "viralloc.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

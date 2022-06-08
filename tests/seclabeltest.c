@@ -2,7 +2,6 @@
 
 #include <unistd.h>
 #include "security/security_driver.h"
-#include "virrandom.h"
 #include "testutils.h"
 
 static int

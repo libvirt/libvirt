@@ -2,10 +2,7 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "datatypes.h"
 #include "storage/storage_util.h"
-#include "testutilsqemu.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

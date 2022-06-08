@@ -23,9 +23,6 @@
 
 #include "testutils.h"
 
-#include "virerror.h"
-#include "virxml.h"
-
 #define VIR_FROM_THIS VIR_FROM_NONE
 
 

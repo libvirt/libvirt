@@ -23,7 +23,6 @@
 # include <gnutls/gnutls.h>
 
 # include "internal.h"
-# include "virstring.h"
 # include "virrandom.h"
 # include "virmock.h"
 

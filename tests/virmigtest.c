@@ -22,7 +22,6 @@
 
 #include "testutils.h"
 #include "virlog.h"
-#include "viruri.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

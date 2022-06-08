@@ -25,7 +25,6 @@
 
 # define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 # include "vircgrouppriv.h"
-# include "virstring.h"
 # include "virerror.h"
 # include "virlog.h"
 # include "virfile.h"

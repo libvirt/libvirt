@@ -21,7 +21,6 @@
  */
 
 #include "virmock.h"
-#include "viralloc.h"
 
 #include <sys/stat.h>
 #include <unistd.h>

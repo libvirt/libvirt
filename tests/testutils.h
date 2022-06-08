@@ -24,7 +24,6 @@
 #include "virfile.h"
 #include "virstring.h"
 #include "virjson.h"
-#include "capabilities.h"
 #include "domain_conf.h"
 
 #define EXIT_AM_SKIP 77 /* tell Automake we're skipping a test */

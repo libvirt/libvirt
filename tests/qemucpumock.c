@@ -18,7 +18,6 @@
 
 
 #include "conf/cpu_conf.h"
-#include "cpu/cpu.h"
 #include "qemu/qemu_capabilities.h"
 #define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW
 #include "qemu/qemu_capspriv.h"

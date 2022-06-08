@@ -20,7 +20,6 @@
 #include <config.h>
 
 #include "virlog.h"
-#include "virstring.h"
 #include "virvhba.h"
 #include "testutils.h"
 

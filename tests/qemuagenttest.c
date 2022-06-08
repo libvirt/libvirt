@@ -24,9 +24,7 @@
 #include "qemumonitortestutils.h"
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_agent.h"
-#include "virthread.h"
 #include "virerror.h"
-#include "virstring.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE

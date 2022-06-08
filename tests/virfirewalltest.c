@@ -31,7 +31,6 @@
 # include "vircommandpriv.h"
 # define LIBVIRT_VIRFIREWALLDPRIV_H_ALLOW
 # include "virfirewalldpriv.h"
-# include "virmock.h"
 
 # define VIR_FROM_THIS VIR_FROM_FIREWALL
 

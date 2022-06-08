@@ -27,9 +27,6 @@
 #include "testutilsqemu.h"
 #include "testutilsqemuschema.h"
 #include "virhostdev.h"
-#include "virerror.h"
-#include "virstring.h"
-#include "virthread.h"
 #include "virfile.h"
 
 #define LIBVIRT_QEMU_CAPSPRIV_H_ALLOW

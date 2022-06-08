@@ -29,7 +29,6 @@
 #include "testutils.h"
 #define LIBVIRT_STORAGE_BACKEND_SHEEPDOG_PRIV_H_ALLOW
 #include "storage/storage_backend_sheepdog_priv.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -23,7 +23,6 @@
 #ifdef WITH_NSS
 
 # include "libvirt_nss.h"
-# include "virsocket.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

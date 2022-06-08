@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "testutils.h"
-#include "viralloc.h"
 
 #if defined (__linux__)
 
@@ -31,7 +30,6 @@
 # include "network/bridge_driver_platform.h"
 # include "virbuffer.h"
 # include "virmock.h"
-# include "virfirewall.h"
 
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"

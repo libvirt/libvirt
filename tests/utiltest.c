@@ -3,7 +3,6 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "viralloc.h"
 #include "testutils.h"
 #include "virutil.h"
 

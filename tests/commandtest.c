@@ -35,8 +35,6 @@
 #include "virfile.h"
 #include "virpidfile.h"
 #include "virerror.h"
-#include "virthread.h"
-#include "virstring.h"
 #include "virprocess.h"
 #include "virutil.h"
 

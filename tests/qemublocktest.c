@@ -21,8 +21,6 @@
 #include "testutils.h"
 #include "testutilsqemu.h"
 #include "testutilsqemuschema.h"
-#include "virstoragefile.h"
-#include "virstring.h"
 #include "virlog.h"
 #include "qemu/qemu_block.h"
 #include "qemu/qemu_qapi.h"
@@ -30,8 +28,6 @@
 #include "qemu/qemu_backup.h"
 #include "qemu/qemu_checkpoint.h"
 #include "qemu/qemu_validate.h"
-
-#include "qemu/qemu_command.h"
 
 #define LIBVIRT_SNAPSHOT_CONF_PRIV_H_ALLOW
 #include "conf/snapshot_conf_priv.h"

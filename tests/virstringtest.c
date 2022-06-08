@@ -20,9 +20,6 @@
 
 
 #include "testutils.h"
-#include "virerror.h"
-#include "viralloc.h"
-#include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"
 

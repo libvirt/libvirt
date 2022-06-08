@@ -22,7 +22,6 @@
 #include "util/virjson.h"
 #include "util/virqemu.h"
 #include "testutils.h"
-#include "testutilsqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

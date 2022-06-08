@@ -20,7 +20,6 @@
 
 #ifdef __linux__
 # include "internal.h"
-# include "virstring.h"
 # include "virnetdev.h"
 
 # define NET_DEV_TEST_DATA_PREFIX abs_srcdir "/virnetdevtestdata/sys/class/net"

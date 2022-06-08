@@ -3,7 +3,6 @@
 
 # include "testutilslxc.h"
 # include "testutils.h"
-# include "viralloc.h"
 # include "domain_conf.h"
 
 # define VIR_FROM_THIS VIR_FROM_LXC

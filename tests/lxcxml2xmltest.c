@@ -12,7 +12,6 @@
 # include "internal.h"
 # include "lxc/lxc_conf.h"
 # include "testutilslxc.h"
-# include "virstring.h"
 
 # define VIR_FROM_THIS VIR_FROM_NONE
 

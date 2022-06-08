@@ -27,7 +27,6 @@
 
 #include "internal.h"
 #include "testutils.h"
-#include "viralloc.h"
 #include "../tools/vsh-table.h"
 
 static int

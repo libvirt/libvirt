@@ -23,10 +23,8 @@
 # include <fcntl.h>
 
 # include "viralloc.h"
-# include "virfile.h"
 # include "virfilewrapper.h"
 # include "virmock.h"
-# include "virstring.h"
 
 
 /* Mapping for prefix overrides */

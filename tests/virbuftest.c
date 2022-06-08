@@ -4,8 +4,6 @@
 #include "internal.h"
 #include "testutils.h"
 #include "virbuffer.h"
-#include "viralloc.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

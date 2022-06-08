@@ -25,7 +25,6 @@
 # define LIBVIRT_VIRCOMMANDPRIV_H_ALLOW
 # include "vircommandpriv.h"
 # include "virkmod.h"
-# include "virstring.h"
 
 # define MODNAME "vfio-pci"
 

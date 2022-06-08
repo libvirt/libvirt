@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "domain_conf.h"
 #include "qemu/qemu_conf.h"
 #include "qemu/qemu_monitor.h"
 #include "qemu/qemu_agent.h"
