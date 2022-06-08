@@ -34,7 +34,6 @@
 #include "openvz_conf.h"
 #include "openvz_util.h"
 #include "viruuid.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "vircommand.h"
