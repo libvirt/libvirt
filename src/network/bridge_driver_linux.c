@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include "viralloc.h"
 #include "virfile.h"
 #include "viriptables.h"
 #include "virstring.h"

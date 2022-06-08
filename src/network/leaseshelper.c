@@ -24,12 +24,9 @@
 #include <config.h>
 
 
-#include "virthread.h"
 #include "virfile.h"
 #include "virpidfile.h"
-#include "virstring.h"
 #include "virerror.h"
-#include "viralloc.h"
 #include "virjson.h"
 #include "virlease.h"
 #include "virenum.h"
