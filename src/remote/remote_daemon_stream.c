@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "remote_daemon_stream.h"
-#include "remote_daemon_dispatch.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "virnetserverclient.h"

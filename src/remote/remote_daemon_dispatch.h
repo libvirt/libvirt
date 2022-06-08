@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "remote_protocol.h"
 #include "rpc/virnetserverprogram.h"
 #include "rpc/virnetserverclient.h"
 

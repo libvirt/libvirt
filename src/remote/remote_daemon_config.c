@@ -31,7 +31,6 @@
 #include "remote_protocol.h"
 #include "remote_driver.h"
 #include "util/virnetdevopenvswitch.h"
-#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF

@@ -32,7 +32,6 @@
 #include "virfile.h"
 #include "virlog.h"
 #include "virpidfile.h"
-#include "virprocess.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 
@@ -43,14 +42,12 @@
 #include "viruuid.h"
 #include "remote_driver.h"
 #include "viralloc.h"
-#include "virconf.h"
 #include "virnetlink.h"
 #include "virnetdaemon.h"
 #include "remote_daemon_dispatch.h"
 #include "virhook.h"
 #include "viraudit.h"
 #include "virstring.h"
-#include "locking/lock_manager.h"
 #include "viraccessmanager.h"
 #include "virutil.h"
 #include "virgettext.h"

@@ -25,7 +25,6 @@
 
 #include <rpc/types.h>
 #include <rpc/xdr.h>
-#include "remote_protocol.h"
 #include "lxc_protocol.h"
 #include "qemu_protocol.h"
 #include "virthread.h"
