@@ -23,8 +23,6 @@
 #include <stdarg.h>
 
 #include "virbuffer.h"
-#include "virstring.h"
-#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

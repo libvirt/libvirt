@@ -22,10 +22,8 @@
 
 #include "internal.h"
 
-#include "viralloc.h"
 #include "virfile.h"
 #include "virerror.h"
-#include "virstring.h"
 
 #include "virfcp.h"
 

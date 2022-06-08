@@ -18,7 +18,6 @@
 #include <config.h>
 
 #include "virlog.h"
-#include "virerror.h"
 #include "virbpf.h"
 
 VIR_LOG_INIT("util.bpf");

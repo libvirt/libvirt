@@ -22,7 +22,6 @@
 
 #include <sys/stat.h>
 
-#include "virstring.h"
 #include "virerror.h"
 #include "viralloc.h"
 #include "virfile.h"

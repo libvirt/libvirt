@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include "viralloc.h"
 #include "virerror.h"
 #include "virfirmware.h"
 #include "virlog.h"

@@ -29,14 +29,8 @@
 #include "internal.h"
 #include "viriptables.h"
 #include "virfirewalld.h"
-#include "vircommand.h"
-#include "viralloc.h"
 #include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "virthread.h"
-#include "virstring.h"
-#include "virutil.h"
 #include "virhash.h"
 
 VIR_LOG_INIT("util.iptables");

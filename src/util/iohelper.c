@@ -31,11 +31,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
-#include "virthread.h"
 #include "virfile.h"
-#include "viralloc.h"
 #include "virerror.h"
-#include "virrandom.h"
 #include "virstring.h"
 #include "virgettext.h"
 

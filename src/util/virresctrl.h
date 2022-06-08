@@ -21,7 +21,6 @@
 #include "internal.h"
 
 #include "virobject.h"
-#include "virbitmap.h"
 #include "virenum.h"
 
 typedef enum {

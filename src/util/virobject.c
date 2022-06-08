@@ -24,11 +24,9 @@
 #define VIR_PARENT_REQUIRED /* empty, to allow virObject to have no parent */
 #include "virobject.h"
 #include "virthread.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virprobe.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

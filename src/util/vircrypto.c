@@ -23,8 +23,6 @@
 #include "vircrypto.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "viralloc.h"
-#include "virrandom.h"
 #include "virsecureerase.h"
 
 #include <gnutls/gnutls.h>

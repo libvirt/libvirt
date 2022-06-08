@@ -23,7 +23,6 @@
 #include "viralloc.h"
 #include "virkmod.h"
 #include "vircommand.h"
-#include "virstring.h"
 
 static int
 doModprobe(const char *opts, const char *module, char **outbuf, char **errbuf)

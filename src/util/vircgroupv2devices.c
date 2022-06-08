@@ -30,7 +30,6 @@
 #define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 #include "vircgrouppriv.h"
 
-#include "viralloc.h"
 #include "virbpf.h"
 #include "vircgroup.h"
 #include "vircgroupv2devices.h"

@@ -45,9 +45,7 @@
 #include "virerror.h"
 #include "virarch.h"
 #include "virfile.h"
-#include "virtypedparam.h"
 #include "virstring.h"
-#include "virnuma.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

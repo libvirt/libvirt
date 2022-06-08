@@ -26,8 +26,6 @@
 #include "virjson.h"
 #include "virfile.h"
 #include "virhash.h"
-#include "virstring.h"
-#include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK
 

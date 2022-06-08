@@ -26,8 +26,6 @@
 #include "virpolkit.h"
 #include "virerror.h"
 #include "virlog.h"
-#include "virstring.h"
-#include "virprocess.h"
 #include "viralloc.h"
 #include "virgdbus.h"
 #include "virfile.h"

@@ -27,7 +27,6 @@
 
 #include "vireventglib.h"
 #include "vireventglibwatch.h"
-#include "virerror.h"
 #include "virlog.h"
 #include "virprobe.h"
 

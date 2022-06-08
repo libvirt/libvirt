@@ -22,10 +22,8 @@
 #include "virnetdev.h"
 #include "virerror.h"
 #include "virfile.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "virsocket.h"
 
 #ifdef WITH_NET_IF_H
 # include <net/if.h>

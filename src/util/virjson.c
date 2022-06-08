@@ -28,7 +28,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "virutil.h"
 #include "virbuffer.h"
 #include "virenum.h"
 #include "virbitmap.h"

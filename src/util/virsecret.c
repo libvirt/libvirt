@@ -26,7 +26,6 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virsecret.h"
-#include "virstring.h"
 #include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

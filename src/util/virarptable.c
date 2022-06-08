@@ -27,11 +27,9 @@
 #include "viralloc.h"
 #include "virarptable.h"
 #include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
 #include "virnetlink.h"
 #include "virsocketaddr.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

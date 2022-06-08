@@ -28,7 +28,6 @@
 #include "virrotatingfile.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "virfile.h"
 #include "virlog.h"
 

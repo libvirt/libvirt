@@ -31,8 +31,6 @@
 #include <signal.h>
 
 #include "internal.h"
-#include "datatypes.h"
-#include "virbitmap.h"
 #include "virdnsmasq.h"
 #include "vircommand.h"
 #include "viralloc.h"

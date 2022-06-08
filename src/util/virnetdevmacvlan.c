@@ -24,8 +24,6 @@
 #include "virnetdevmacvlan.h"
 #include "virmacaddr.h"
 #include "virerror.h"
-#include "virthread.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NET
 

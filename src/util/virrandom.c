@@ -28,11 +28,8 @@
 #include <gnutls/crypto.h>
 
 #include "virrandom.h"
-#include "virthread.h"
 #include "virerror.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

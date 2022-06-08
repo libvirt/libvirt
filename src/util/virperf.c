@@ -30,8 +30,6 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virstring.h"
-#include "virtypedparam.h"
-#include "viralloc.h"
 
 VIR_LOG_INIT("util.perf");
 

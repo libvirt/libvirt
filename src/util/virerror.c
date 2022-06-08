@@ -27,7 +27,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virthread.h"
-#include "virstring.h"
 #include "virbuffer.h"
 
 #define LIBVIRT_VIRERRORPRIV_H_ALLOW

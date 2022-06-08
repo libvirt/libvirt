@@ -20,7 +20,6 @@
 
 #include "virnetdevmidonet.h"
 #include "vircommand.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "viruuid.h"
 

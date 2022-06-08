@@ -21,8 +21,6 @@
 
 #include "internal.h"
 #include "virmacaddr.h"
-#include "virsocketaddr.h"
-#include "virnetdevbandwidth.h"
 #include "virnetdevvportprofile.h"
 #include "virnetdevvlan.h"
 #include "virenum.h"

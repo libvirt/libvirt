@@ -35,19 +35,16 @@
 #define LIBVIRT_VIRCGROUPPRIV_H_ALLOW
 #include "vircgrouppriv.h"
 
-#include "virutil.h"
 #include "viralloc.h"
 #include "vircgroupbackend.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virfile.h"
 #include "virgdbus.h"
-#include "virhash.h"
 #include "virstring.h"
 #include "virsystemd.h"
 #include "virtypedparam.h"
 #include "virhostcpu.h"
-#include "virthread.h"
 
 VIR_LOG_INIT("util.cgroup");
 

@@ -36,10 +36,8 @@
 # include <windows.h>
 #endif
 
-#include "viralloc.h"
 #include "virhostmem.h"
 #include "virerror.h"
-#include "virarch.h"
 #include "virfile.h"
 #include "virtypedparam.h"
 #include "virstring.h"

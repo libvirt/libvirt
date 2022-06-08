@@ -23,7 +23,6 @@
 #include "virpci.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 
 VIR_LOG_INIT("util.nvme");
 #define VIR_FROM_THIS VIR_FROM_NONE

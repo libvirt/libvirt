@@ -24,7 +24,6 @@
 
 #include "internal.h"
 
-#include "viralloc.h"
 #include "virbuffer.h"
 #include "vircrypto.h"
 #include "virerror.h"
@@ -33,7 +32,6 @@
 #include "virhash.h"
 #include "virlog.h"
 #include "virobject.h"
-#include "virstring.h"
 
 #include <sys/stat.h>
 #include <sys/types.h>

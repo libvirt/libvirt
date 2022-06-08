@@ -25,7 +25,6 @@
 #endif
 
 #include "virhostuptime.h"
-#include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"
 #include "virstring.h"

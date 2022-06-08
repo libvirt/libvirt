@@ -18,7 +18,6 @@
 #include <config.h>
 
 #include "virenum.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

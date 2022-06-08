@@ -23,14 +23,10 @@
 #include "virstoragefile.h"
 
 #include "viralloc.h"
-#include "viruuid.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "vircommand.h"
-#include "virhash.h"
 #include "virstring.h"
-#include "virbuffer.h"
-#include "virsecret.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

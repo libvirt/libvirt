@@ -23,10 +23,7 @@
 
 #include "internal.h"
 #include "virebtables.h"
-#include "viralloc.h"
-#include "virerror.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virfirewall.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

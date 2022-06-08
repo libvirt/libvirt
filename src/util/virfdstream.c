@@ -39,7 +39,6 @@
 #include "configmake.h"
 #include "virstring.h"
 #include "virtime.h"
-#include "virprocess.h"
 #include "virsocket.h"
 
 #define VIR_FROM_THIS VIR_FROM_STREAMS

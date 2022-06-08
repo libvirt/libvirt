@@ -29,7 +29,6 @@
 
 #include "virpidfile.h"
 #include "virfile.h"
-#include "viralloc.h"
 #include "virbuffer.h"
 #include "virutil.h"
 #include "virlog.h"

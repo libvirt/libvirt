@@ -48,11 +48,9 @@
 
 #include "virerror.h"
 #include "virlog.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "vircommand.h"
-#include "virprocess.h"
 #include "virstring.h"
 #include "virutil.h"
 #include "virsocket.h"

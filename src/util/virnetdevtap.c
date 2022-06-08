@@ -29,7 +29,6 @@
 #include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "datatypes.h"
 
 #include <unistd.h>
 #include <sys/types.h>
