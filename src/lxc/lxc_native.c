@@ -25,7 +25,6 @@
 #include "lxc_container.h"
 #include "lxc_native.h"
 #include "util/viralloc.h"
-#include "util/virfile.h"
 #include "util/virlog.h"
 #include "util/virstring.h"
 #include "util/virconf.h"

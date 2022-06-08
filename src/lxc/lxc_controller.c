@@ -36,7 +36,6 @@
 #include <sys/mount.h>
 #include <grp.h>
 #include <sys/stat.h>
-#include <time.h>
 
 #if WITH_CAPNG
 # include <cap-ng.h>
@@ -56,15 +55,12 @@
 #include "virfile.h"
 #include "virgdbus.h"
 #include "virpidfile.h"
-#include "vircommand.h"
 #include "virhostcpu.h"
-#include "virrandom.h"
 #include "virprocess.h"
 #include "virnuma.h"
 #include "rpc/virnetdaemon.h"
 #include "virstring.h"
 #include "virgettext.h"
-#include "virsocket.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC

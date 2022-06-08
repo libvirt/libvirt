@@ -23,7 +23,6 @@
 
 #include "vircgroup.h"
 #include "domain_conf.h"
-#include "lxc_fuse.h"
 #include "virusb.h"
 
 virCgroup *virLXCCgroupCreate(virDomainDef *def,

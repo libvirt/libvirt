@@ -34,7 +34,6 @@
 #include "configmake.h"
 #include "lxc_container.h"
 #include "virnodesuspend.h"
-#include "virstring.h"
 #include "virfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC

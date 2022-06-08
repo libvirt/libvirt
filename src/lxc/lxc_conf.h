@@ -23,15 +23,11 @@
 
 #include "internal.h"
 #include "libvirt_internal.h"
-#include "domain_conf.h"
 #include "domain_event.h"
-#include "capabilities.h"
 #include "virthread.h"
 #include "security/security_manager.h"
 #include "configmake.h"
-#include "vircgroup.h"
 #include "virsysinfo.h"
-#include "virusb.h"
 #include "virclosecallbacks.h"
 #include "virhostdev.h"
 

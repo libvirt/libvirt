@@ -29,8 +29,6 @@
 #include "lxc_process.h"
 #include "lxc_domain.h"
 #include "lxc_container.h"
-#include "lxc_cgroup.h"
-#include "lxc_fuse.h"
 #include "datatypes.h"
 #include "virfile.h"
 #include "virpidfile.h"
@@ -48,9 +46,7 @@
 #include "vircommand.h"
 #include "lxc_hostdev.h"
 #include "virhook.h"
-#include "virstring.h"
 #include "virprocess.h"
-#include "virsystemd.h"
 #include "netdev_bandwidth_conf.h"
 #include "virutil.h"
 

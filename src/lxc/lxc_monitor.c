@@ -21,14 +21,12 @@
 #include <config.h>
 
 #include "lxc_monitor.h"
-#include "lxc_conf.h"
 #include "lxc_monitor_dispatch.h"
 
 #include "virerror.h"
 #include "virlog.h"
 #include "virthread.h"
 #include "rpc/virnetclient.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC
 
