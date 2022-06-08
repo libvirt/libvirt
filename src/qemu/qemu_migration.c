@@ -1847,24 +1847,23 @@ qemuMigrationJobName(virDomainObj *vm)
 
     switch (priv->job.asyncJob) {
     case VIR_ASYNC_JOB_MIGRATION_OUT:
-        return _("migration out job");
+        return _("migration out");
     case VIR_ASYNC_JOB_SAVE:
-        return _("domain save job");
+        return _("domain save");
     case VIR_ASYNC_JOB_DUMP:
-        return _("domain core dump job");
-    case VIR_ASYNC_JOB_NONE:
-        return _("undefined");
+        return _("domain core dump");
     case VIR_ASYNC_JOB_MIGRATION_IN:
-        return _("migration in job");
+        return _("migration in");
     case VIR_ASYNC_JOB_SNAPSHOT:
-        return _("snapshot job");
+        return _("snapshot");
     case VIR_ASYNC_JOB_START:
-        return _("start job");
+        return _("start");
     case VIR_ASYNC_JOB_BACKUP:
-        return _("backup job");
+        return _("backup");
+    case VIR_ASYNC_JOB_NONE:
     case VIR_ASYNC_JOB_LAST:
     default:
-        return _("job");
+        return _("undefined");
     }
 }
 
@@ -1888,25 +1887,33 @@ qemuMigrationJobCheckStatus(virQEMUDriver *driver,
 
     switch (jobData->status) {
     case VIR_DOMAIN_JOB_STATUS_NONE:
-        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
-                       qemuMigrationJobName(vm), _("is not active"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("job '%s' is not active"),
+                       qemuMigrationJobName(vm));
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_FAILED:
-        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
-                       qemuMigrationJobName(vm),
-                       error ? error : _("unexpectedly failed"));
+        if (error) {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("job '%s' failed: %s"),
+                           qemuMigrationJobName(vm), error);
+        } else {
+            virReportError(VIR_ERR_OPERATION_FAILED,
+                           _("job '%s' unexpectedly failed"),
+                           qemuMigrationJobName(vm));
+        }
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_CANCELED:
-        virReportError(VIR_ERR_OPERATION_ABORTED, _("%s: %s"),
-                       qemuMigrationJobName(vm), _("canceled by client"));
+        virReportError(VIR_ERR_OPERATION_ABORTED,
+                       _("job '%s' canceled by client"),
+                       qemuMigrationJobName(vm));
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_POSTCOPY_PAUSED:
-        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
-                       qemuMigrationJobName(vm),
-                       _("post-copy phase failed"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("job '%s' failed in post-copy phase"),
+                       qemuMigrationJobName(vm));
         return -1;
 
     case VIR_DOMAIN_JOB_STATUS_COMPLETED:
@@ -1959,8 +1966,9 @@ qemuMigrationAnyCompleted(virQEMUDriver *driver,
     if (flags & QEMU_MIGRATION_COMPLETED_ABORT_ON_ERROR &&
         virDomainObjGetState(vm, &pauseReason) == VIR_DOMAIN_PAUSED &&
         pauseReason == VIR_DOMAIN_PAUSED_IOERROR) {
-        virReportError(VIR_ERR_OPERATION_FAILED, _("%s: %s"),
-                       qemuMigrationJobName(vm), _("failed due to I/O error"));
+        virReportError(VIR_ERR_OPERATION_FAILED,
+                       _("job '%s' failed due to I/O error"),
+                       qemuMigrationJobName(vm));
         goto error;
     }
 
