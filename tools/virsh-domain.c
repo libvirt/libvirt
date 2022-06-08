@@ -7853,6 +7853,11 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
 
 #undef VSH_IOTHREAD_SET_UINT_PARAMS
 
+    if (nparams == 0) {
+        vshError(ctl, _("Not enough arguments passed, nothing to set"));
+        goto cleanup;
+    }
+
     if (virDomainSetIOThreadParams(dom, id, params, nparams, flags) < 0)
         goto cleanup;
 
