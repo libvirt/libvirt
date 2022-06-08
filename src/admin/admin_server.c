@@ -21,15 +21,11 @@
 #include <config.h>
 
 #include "admin_server.h"
-#include "datatypes.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "viridentity.h"
 #include "virlog.h"
 #include "rpc/virnetdaemon.h"
 #include "rpc/virnetserver.h"
-#include "virstring.h"
-#include "virthreadpool.h"
 #include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_ADMIN

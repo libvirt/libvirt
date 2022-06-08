@@ -29,10 +29,8 @@
 #include "virlog.h"
 #include "virnetclient.h"
 #include "virobject.h"
-#include "virstring.h"
 #include "viruri.h"
 #include "virutil.h"
-#include "viruuid.h"
 
 #define VIR_FROM_THIS VIR_FROM_ADMIN
 

@@ -21,17 +21,14 @@
 #include <config.h>
 
 #include "internal.h"
-#include "libvirt_internal.h"
 
 #include "admin_server_dispatch.h"
 #include "admin_server.h"
-#include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "rpc/virnetdaemon.h"
 #include "rpc/virnetserver.h"
-#include "virstring.h"
 #include "virthreadjob.h"
 #include "virtypedparam.h"
 #include "virutil.h"

@@ -21,7 +21,6 @@
 #pragma once
 
 #include "rpc/virnetdaemon.h"
-#include "rpc/virnetserver.h"
 
 int adminConnectListServers(virNetDaemon *dmn,
                             virNetServer ***servers,
