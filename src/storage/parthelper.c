@@ -37,7 +37,6 @@
 #include <unistd.h>
 
 #include "virfile.h"
-#include "virstring.h"
 #include "virgettext.h"
 #include "virdevmapper.h"
 #include "virerror.h"

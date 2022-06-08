@@ -1,11 +1,9 @@
 #include <config.h>
 
-#include "viralloc.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "storage_backend_vstorage.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virutil.h"
 #include <mntent.h>
 #include <paths.h>

@@ -27,14 +27,12 @@
 #include "virsecret.h"
 #include "storage_backend_iscsi_direct.h"
 #include "storage_util.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "viridentity.h"
 #include "virlog.h"
 #include "virobject.h"
 #include "virstring.h"
 #include "virtime.h"
-#include "viruuid.h"
 #include "virsecureerase.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

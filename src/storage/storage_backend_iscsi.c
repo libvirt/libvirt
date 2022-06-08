@@ -26,19 +26,15 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#include "datatypes.h"
 #include "driver.h"
 #include "storage_backend_iscsi.h"
 #include "viralloc.h"
-#include "vircommand.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "viriscsi.h"
 #include "viridentity.h"
 #include "virlog.h"
 #include "virobject.h"
-#include "virstring.h"
-#include "viruuid.h"
 #include "virsecret.h"
 #include "storage_util.h"
 #include "virutil.h"

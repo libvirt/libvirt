@@ -30,7 +30,6 @@
 #include "viridentity.h"
 #include "virlog.h"
 #include "viruuid.h"
-#include "virstring.h"
 #include "virrandom.h"
 #include "rados/librados.h"
 #include "rbd/librbd.h"

@@ -26,11 +26,8 @@
 
 #include "virerror.h"
 #include "storage_backend_scsi.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "vircommand.h"
-#include "virstring.h"
 #include "storage_util.h"
 #include "node_device_conf.h"
 #include "node_device_util.h"

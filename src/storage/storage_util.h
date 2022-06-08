@@ -22,7 +22,6 @@
 
 #include "internal.h"
 #include "vircommand.h"
-#include "storage_driver.h"
 #include "storage_backend.h"
 
 /* Storage Pool Namespace options to share w/ storage_backend_fs.c and
