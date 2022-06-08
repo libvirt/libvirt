@@ -21,7 +21,6 @@
 #pragma once
 
 #include "viridentity.h"
-#include "conf/domain_conf.h"
 #include "conf/network_conf.h"
 #include "conf/nwfilter_conf.h"
 #include "conf/node_device_conf.h"

@@ -21,13 +21,9 @@
 #include <config.h>
 
 #include "viraccessdriverpolkit.h"
-#include "viralloc.h"
-#include "vircommand.h"
 #include "virlog.h"
-#include "virprocess.h"
 #include "virerror.h"
 #include "virpolkit.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ACCESS
 

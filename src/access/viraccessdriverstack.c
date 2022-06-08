@@ -22,7 +22,6 @@
 
 #include "viraccessdriverstack.h"
 #include "viralloc.h"
-#include "virerror.h"
 
 #define VIR_FROM_THIS VIR_FROM_ACCESS
 

@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "conf/domain_conf.h"
 #include "access/viraccessmanager.h"
 
 typedef int (*virAccessDriverCheckConnectDrv)(virAccessManager *manager,
