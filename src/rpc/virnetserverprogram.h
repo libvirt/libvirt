@@ -23,7 +23,6 @@
 
 #include "virnetmessage.h"
 #include "virnetserverclient.h"
-#include "virobject.h"
 
 typedef struct _virNetDaemon virNetDaemon;
 

@@ -24,7 +24,6 @@
 #include <rpc/xdr.h>
 
 #include "virnetmessage.h"
-#include "virobject.h"
 
 typedef struct _virNetClient virNetClient;
 

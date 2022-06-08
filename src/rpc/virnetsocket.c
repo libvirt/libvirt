@@ -45,7 +45,6 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virthread.h"
-#include "virpidfile.h"
 #include "virprobe.h"
 #include "virprocess.h"
 #include "virstring.h"

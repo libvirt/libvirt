@@ -21,13 +21,10 @@
 #include <config.h>
 
 #include "virnetsaslcontext.h"
-#include "virnetmessage.h"
 
 #include "virerror.h"
-#include "viralloc.h"
 #include "virthread.h"
 #include "virlog.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

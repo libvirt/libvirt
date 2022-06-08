@@ -34,7 +34,6 @@
 #include "virutil.h"
 #include "virerror.h"
 #include "virprobe.h"
-#include "virstring.h"
 #include "vireventglibwatch.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

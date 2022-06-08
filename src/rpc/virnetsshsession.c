@@ -32,7 +32,6 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "virobject.h"
-#include "virstring.h"
 #include "virauth.h"
 
 #define VIR_FROM_THIS VIR_FROM_SSH

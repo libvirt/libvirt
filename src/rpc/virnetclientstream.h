@@ -21,7 +21,6 @@
 #pragma once
 
 #include "virnetclientprogram.h"
-#include "virobject.h"
 
 typedef struct _virNetClientStream virNetClientStream;
 

@@ -25,7 +25,6 @@
 #include "virnetserverprogram.h"
 #include "virnetserverclient.h"
 #include "virnetserverservice.h"
-#include "virobject.h"
 #include "virjson.h"
 #include "virsystemd.h"
 

@@ -22,12 +22,9 @@
 
 #include <signal.h>
 
-#include "virnettlscontext.h"
-#include "virobject.h"
 #include "virjson.h"
 #include "virnetserverprogram.h"
 #include "virnetserverclient.h"
-#include "virnetserverservice.h"
 #include "virnetserver.h"
 
 virNetDaemon *virNetDaemonNew(void);

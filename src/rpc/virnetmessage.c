@@ -28,7 +28,6 @@
 #include "virlog.h"
 #include "virfile.h"
 #include "virutil.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
 

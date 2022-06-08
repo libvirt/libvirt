@@ -27,7 +27,6 @@
 #endif
 #include "virnetclientprogram.h"
 #include "virnetclientstream.h"
-#include "virobject.h"
 #include "viruri.h"
 
 typedef enum {

@@ -20,12 +20,9 @@
 
 #include <config.h>
 
-#include "viralloc.h"
 #include "virthread.h"
-#include "virfile.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "virnetsocket.h"
 #include "virkeepaliveprotocol.h"
 #include "virkeepalive.h"
 #include "virprobe.h"

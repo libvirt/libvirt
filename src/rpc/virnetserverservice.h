@@ -22,7 +22,6 @@
 #pragma once
 
 #include "virnetserverprogram.h"
-#include "virobject.h"
 
 typedef enum {
     VIR_NET_SERVER_SERVICE_AUTH_NONE = 0,

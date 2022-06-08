@@ -28,13 +28,11 @@
 #include "viralloc.h"
 #include "virerror.h"
 #include "virthread.h"
-#include "virthreadpool.h"
 #include "virutil.h"
 #include "virfile.h"
 #include "virnetserver.h"
 #include "virgdbus.h"
 #include "virhash.h"
-#include "virstring.h"
 #include "virsystemd.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC

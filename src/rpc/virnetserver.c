@@ -27,7 +27,6 @@
 #include "virerror.h"
 #include "virthread.h"
 #include "virthreadpool.h"
-#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_RPC
