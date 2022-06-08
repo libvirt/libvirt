@@ -22,13 +22,10 @@
 #include <config.h>
 
 #include "internal.h"
-#include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "viruuid.h"
 #include "hyperv_private.h"
 #include "hyperv_util.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_HYPERV
 

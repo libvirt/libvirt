@@ -23,11 +23,9 @@
 #pragma once
 
 #include "internal.h"
-#include "virerror.h"
 #include "hyperv_util.h"
 #include "hyperv_wsman.h"
 #include "capabilities.h"
-#include "domain_conf.h"
 
 typedef struct _hypervPrivate hypervPrivate;
 struct _hypervPrivate {
