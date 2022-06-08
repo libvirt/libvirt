@@ -23,7 +23,6 @@
 #include "rpc/virnetserver.h"
 #include "rpc/virnetserverclient.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "log_daemon.h"
 #include "log_protocol.h"
 #include "virerror.h"

@@ -24,7 +24,6 @@
 #include "log_protocol.h"
 #include "viralloc.h"
 #include "virutil.h"
-#include "virstring.h"
 #include "virerror.h"
 #include "virfile.h"
 

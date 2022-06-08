@@ -25,7 +25,6 @@
 #include "virobject.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "virstring.h"
 #include "virlog.h"
 #include "virrotatingfile.h"
 #include "viruuid.h"
