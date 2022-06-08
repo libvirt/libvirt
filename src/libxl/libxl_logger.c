@@ -24,10 +24,8 @@
 #include "internal.h"
 #include "libxl_logger.h"
 #include "util/viralloc.h"
-#include "util/virerror.h"
 #include "util/virfile.h"
 #include "util/virhash.h"
-#include "util/virstring.h"
 #include "util/virthread.h"
 #include "util/virtime.h"
 

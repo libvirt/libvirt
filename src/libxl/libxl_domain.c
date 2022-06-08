@@ -32,7 +32,6 @@
 #include "virerror.h"
 #include "virhook.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "locking/domain_lock.h"
 #include "xen_common.h"

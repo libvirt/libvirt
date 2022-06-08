@@ -27,7 +27,6 @@
 #include "virerror.h"
 #include "virfile.h"
 #include "viralloc.h"
-#include "virstring.h"
 #include "domain_conf.h"
 #include "capabilities.h"
 #include "domain_capabilities.h"

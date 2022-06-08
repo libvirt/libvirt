@@ -22,10 +22,8 @@
 
 #include <libxl.h>
 
-#include "domain_conf.h"
 #include "libxl_conf.h"
 #include "virchrdev.h"
-#include "virenum.h"
 #include "domain_job.h"
 
 

@@ -22,8 +22,6 @@
 
 #include <libxl.h>
 
-#include "virobject.h"
-#include "capabilities.h"
 #include "domain_capabilities.h"
 #include "virfirmware.h"
 

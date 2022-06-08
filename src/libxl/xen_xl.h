@@ -23,7 +23,6 @@
 #pragma once
 
 #include "virconf.h"
-#include "domain_conf.h"
 #include "xen_common.h"
 
 virDomainDef *xenParseXL(virConf *conn,
