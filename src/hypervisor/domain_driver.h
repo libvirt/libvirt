@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "domain_conf.h"
 #include "node_device_conf.h"
 #include "virhostdev.h"
 

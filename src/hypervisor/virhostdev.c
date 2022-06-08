@@ -28,8 +28,6 @@
 
 #include "virhostdev.h"
 #include "viralloc.h"
-#include "virstring.h"
-#include "virfile.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virutil.h"
