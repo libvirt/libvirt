@@ -27,7 +27,6 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "conf/storage_conf.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "vsh-table.h"
 #include "virenum.h"

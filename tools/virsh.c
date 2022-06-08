@@ -21,29 +21,22 @@
 #include <config.h>
 #include "virsh.h"
 
-#include <stdarg.h>
 #include <unistd.h>
 #include <getopt.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#include <time.h>
 #include <sys/stat.h>
-#include <inttypes.h>
 
 #include "internal.h"
 #include "virerror.h"
-#include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virthread.h"
-#include "vircommand.h"
-#include "virtypedparam.h"
 #include "virstring.h"
 #include "virgettext.h"
 
 #include "virsh-backup.h"
 #include "virsh-checkpoint.h"
-#include "virsh-console.h"
 #include "virsh-domain.h"
 #include "virsh-domain-event.h"
 #include "virsh-domain-monitor.h"

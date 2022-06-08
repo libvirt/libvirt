@@ -17,13 +17,11 @@
  */
 
 #include <config.h>
-#include "virsh-domain-event.h"
 #include "virsh-util.h"
 
 #include "internal.h"
 #include "viralloc.h"
 #include "virenum.h"
-#include "virutil.h"
 #include "virtime.h"
 #include "virtypedparam.h"
 

@@ -31,7 +31,6 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virsh-util.h"
-#include "virstring.h"
 #include "virxml.h"
 #include "conf/virdomainsnapshotobjlist.h"
 #include "vsh-table.h"

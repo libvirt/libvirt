@@ -35,7 +35,6 @@
 # include "virsh-console.h"
 # include "virsh-util.h"
 # include "virlog.h"
-# include "virfile.h"
 # include "viralloc.h"
 # include "virthread.h"
 # include "virerror.h"

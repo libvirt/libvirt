@@ -26,7 +26,6 @@
 #include "internal.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "conf/node_device_conf.h"
 #include "virenum.h"

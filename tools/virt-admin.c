@@ -32,7 +32,6 @@
 #include "virstring.h"
 #include "virthread.h"
 #include "virgettext.h"
-#include "virtime.h"
 #include "virt-admin-completer.h"
 #include "vsh-table.h"
 #include "virenum.h"

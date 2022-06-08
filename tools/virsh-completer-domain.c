@@ -27,7 +27,6 @@
 #include "virsh-domain-monitor.h"
 #include "virsh-util.h"
 #include "virsh.h"
-#include "virstring.h"
 #include "virxml.h"
 #include "virperf.h"
 #include "virbitmap.h"

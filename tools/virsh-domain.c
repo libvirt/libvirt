@@ -44,7 +44,6 @@
 #include "virsh-console.h"
 #include "virsh-domain-monitor.h"
 #include "virsh-host.h"
-#include "virerror.h"
 #include "virtime.h"
 #include "virtypedparam.h"
 #include "virxml.h"

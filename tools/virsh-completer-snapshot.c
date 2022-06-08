@@ -21,10 +21,8 @@
 #include <config.h>
 
 #include "virsh-completer-snapshot.h"
-#include "viralloc.h"
 #include "virsh-util.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshSnapshotNameCompleter(vshControl *ctl,

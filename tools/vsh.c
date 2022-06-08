@@ -26,7 +26,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
-#include <inttypes.h>
 #include <signal.h>
 
 #if WITH_READLINE

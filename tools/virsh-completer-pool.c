@@ -23,10 +23,8 @@
 #include "virsh-completer-pool.h"
 #include "virsh-util.h"
 #include "conf/storage_conf.h"
-#include "viralloc.h"
 #include "virsh-pool.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshStoragePoolNameCompleter(vshControl *ctl,

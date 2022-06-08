@@ -21,11 +21,9 @@
 #include <config.h>
 
 #include "virsh-completer-secret.h"
-#include "viralloc.h"
 #include "virsh-secret.h"
 #include "virsh-util.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshSecretUUIDCompleter(vshControl *ctl,

@@ -33,9 +33,7 @@
 #include "viralloc.h"
 #include "virfile.h"
 #include "virsh-util.h"
-#include "virstring.h"
 #include "virxml.h"
-#include "conf/checkpoint_conf.h"
 #include "vsh-table.h"
 
 /* Helper for checkpoint-create and checkpoint-create-as */

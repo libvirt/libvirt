@@ -25,7 +25,6 @@
 #include "viralloc.h"
 #include "virsh-network.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshNetworkNameCompleter(vshControl *ctl,

@@ -21,10 +21,8 @@
 #include <config.h>
 
 #include "virsh-completer-checkpoint.h"
-#include "viralloc.h"
 #include "virsh-util.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshCheckpointNameCompleter(vshControl *ctl,

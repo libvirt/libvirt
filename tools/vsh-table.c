@@ -22,7 +22,6 @@
 #include "vsh-table.h"
 
 #include <stdarg.h>
-#include <stddef.h>
 #include <wchar.h>
 #include <wctype.h>
 

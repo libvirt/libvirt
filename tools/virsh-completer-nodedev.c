@@ -24,10 +24,8 @@
 #include "virsh-util.h"
 #include "conf/node_device_conf.h"
 #include "conf/domain_conf.h"
-#include "viralloc.h"
 #include "virsh-nodedev.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshNodeDeviceNameCompleter(vshControl *ctl,

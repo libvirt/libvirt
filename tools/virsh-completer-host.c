@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include "virsh-completer-host.h"
-#include "viralloc.h"
 #include "virsh.h"
 #include "virstring.h"
 #include "virxml.h"

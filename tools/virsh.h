@@ -23,8 +23,6 @@
 #include <unistd.h>
 
 #include "internal.h"
-#include "virerror.h"
-#include "virthread.h"
 #include "virpolkit.h"
 #include "vsh.h"
 #include "virsh-completer.h"

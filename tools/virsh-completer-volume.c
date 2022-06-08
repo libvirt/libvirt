@@ -22,10 +22,8 @@
 
 #include "virsh-completer-volume.h"
 #include "virsh-util.h"
-#include "viralloc.h"
 #include "virsh-pool.h"
 #include "virsh.h"
-#include "virstring.h"
 #include "virsh-volume.h"
 
 char **

@@ -22,9 +22,7 @@
 
 #include "virsh-completer-nwfilter.h"
 #include "virsh-util.h"
-#include "viralloc.h"
 #include "virsh.h"
-#include "virstring.h"
 
 char **
 virshNWFilterNameCompleter(vshControl *ctl,

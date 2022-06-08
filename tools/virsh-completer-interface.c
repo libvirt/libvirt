@@ -22,9 +22,7 @@
 
 #include "virsh-completer-interface.h"
 #include "virsh-util.h"
-#include "viralloc.h"
 #include "virsh.h"
-#include "virstring.h"
 
 typedef const char *
 (*virInterfaceStringCallback)(virInterfacePtr iface);

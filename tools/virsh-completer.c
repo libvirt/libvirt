@@ -21,8 +21,6 @@
 #include <config.h>
 
 #include "virsh-completer.h"
-#include "viralloc.h"
-#include "virstring.h"
 
 /**
  * A completer callback is a function that accepts three arguments:

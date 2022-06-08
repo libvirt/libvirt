@@ -21,7 +21,6 @@
 
 #include <getopt.h>
 #include <signal.h>
-#include <stdarg.h>
 #include <unistd.h>
 
 #include "internal.h"
