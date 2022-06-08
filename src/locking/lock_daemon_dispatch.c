@@ -23,7 +23,6 @@
 #include "rpc/virnetdaemon.h"
 #include "rpc/virnetserverclient.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "lock_daemon.h"
 #include "lock_protocol.h"
 #include "virerror.h"

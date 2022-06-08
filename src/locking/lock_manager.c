@@ -28,7 +28,6 @@
 #include "virlog.h"
 #include "viralloc.h"
 #include "viruuid.h"
-#include "virstring.h"
 
 #if WITH_DLFCN_H
 # include <dlfcn.h>

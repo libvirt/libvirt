@@ -23,12 +23,8 @@
 
 #include "lock_daemon_config.h"
 #include "virconf.h"
-#include "viralloc.h"
-#include "virerror.h"
 #include "virlog.h"
-#include "rpc/virnetdaemon.h"
 #include "configmake.h"
-#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_CONF

@@ -1,8 +1,6 @@
 #include <config.h>
 
 #include "internal.h"
-#include "virconf.h"
-#include "viralloc.h"
 #include "domain_conf.h"
 #include "virgettext.h"
 

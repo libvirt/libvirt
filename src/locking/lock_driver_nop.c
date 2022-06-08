@@ -22,9 +22,7 @@
 #include <config.h>
 
 #include "lock_driver_nop.h"
-#include "viralloc.h"
 #include "virlog.h"
-#include "viruuid.h"
 
 VIR_LOG_INIT("locking.lock_driver_nop");
 
