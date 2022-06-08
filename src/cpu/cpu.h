@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "virerror.h"
 #include "datatypes.h"
 #include "virarch.h"
 #include "domain_capabilities.h"

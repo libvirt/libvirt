@@ -21,16 +21,13 @@
 #include <config.h>
 
 #include "virlog.h"
-#include "viralloc.h"
 #include "virxml.h"
 #include "cpu.h"
-#include "cpu_map.h"
 #include "cpu_x86.h"
 #include "cpu_ppc64.h"
 #include "cpu_s390.h"
 #include "cpu_arm.h"
 #include "capabilities.h"
-#include "virstring.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_CPU

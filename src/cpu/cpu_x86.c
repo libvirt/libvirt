@@ -31,7 +31,6 @@
 #include "cpu_x86.h"
 #include "virbuffer.h"
 #include "virendian.h"
-#include "virstring.h"
 #include "virhostcpu.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU

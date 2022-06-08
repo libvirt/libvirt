@@ -21,8 +21,6 @@
 
 #include <config.h>
 
-#include "viralloc.h"
-#include "virstring.h"
 #include "cpu.h"
 
 

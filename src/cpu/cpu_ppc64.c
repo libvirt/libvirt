@@ -26,7 +26,6 @@
 #include "cpu.h"
 #include "virstring.h"
 #include "cpu_map.h"
-#include "virbuffer.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU
 
