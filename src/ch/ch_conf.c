@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include "configmake.h"
-#include "viralloc.h"
 #include "vircommand.h"
 #include "virlog.h"
 #include "virobject.h"

@@ -27,8 +27,6 @@
 #include "ch_monitor.h"
 #include "ch_process.h"
 #include "domain_cgroup.h"
-#include "virnuma.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virjson.h"
 #include "virlog.h"

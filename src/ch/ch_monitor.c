@@ -24,7 +24,6 @@
 #include <unistd.h>
 #include <curl/curl.h>
 
-#include "ch_conf.h"
 #include "ch_monitor.h"
 #include "viralloc.h"
 #include "vircommand.h"
@@ -33,7 +32,6 @@
 #include "virjson.h"
 #include "virlog.h"
 #include "virstring.h"
-#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_CH
 

@@ -22,7 +22,6 @@
 
 #include "ch_domain.h"
 #include "domain_driver.h"
-#include "viralloc.h"
 #include "virchrdev.h"
 #include "virlog.h"
 #include "virtime.h"
