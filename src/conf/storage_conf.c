@@ -27,8 +27,6 @@
 #include <fcntl.h>
 
 #include "virerror.h"
-#include "datatypes.h"
-#include "node_device_conf.h"
 #include "storage_adapter_conf.h"
 #include "storage_conf.h"
 #include "storage_source_conf.h"
@@ -38,10 +36,8 @@
 #include "virbuffer.h"
 #include "viralloc.h"
 #include "virfile.h"
-#include "virscsihost.h"
 #include "virstring.h"
 #include "virlog.h"
-#include "virvhba.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE

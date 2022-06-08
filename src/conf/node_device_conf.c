@@ -25,7 +25,6 @@
 #include <unistd.h>
 
 #include "virerror.h"
-#include "datatypes.h"
 #include "viralloc.h"
 #include "virstring.h"
 #include "node_device_conf.h"

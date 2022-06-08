@@ -34,7 +34,6 @@
 #include "viruuid.h"
 #include "virlog.h"
 #include "viralloc.h"
-#include "virstring.h"
 
 VIR_LOG_INIT("conf.domain_audit");
 

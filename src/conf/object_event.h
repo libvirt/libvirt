@@ -24,8 +24,6 @@
 
 #include "internal.h"
 
-#include "virobject.h"
-
 /**
  * Dispatching domain events that come in while
  * in a call / response rpc

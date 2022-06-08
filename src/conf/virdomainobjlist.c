@@ -25,8 +25,6 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "virdomainobjlist.h"
-#include "checkpoint_conf.h"
-#include "snapshot_conf.h"
 #include "viralloc.h"
 #include "virfile.h"
 #include "virlog.h"

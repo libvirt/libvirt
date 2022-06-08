@@ -26,7 +26,6 @@
 #include <fcntl.h>
 
 #include "virerror.h"
-#include "datatypes.h"
 #include "network_conf.h"
 #include "netdev_vport_profile_conf.h"
 #include "netdev_bandwidth_conf.h"
@@ -35,7 +34,6 @@
 #include "virxml.h"
 #include "viruuid.h"
 #include "virbuffer.h"
-#include "virfile.h"
 #include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_NETWORK

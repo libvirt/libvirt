@@ -26,13 +26,8 @@
 #include "virdomainmomentobjlist.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "moment_conf.h"
 #include "viralloc.h"
-
-/* FIXME: using virObject would allow us to not need this */
-#include "virdomainsnapshotobjlist.h"
-#include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN
 

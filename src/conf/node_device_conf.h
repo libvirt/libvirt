@@ -30,7 +30,6 @@
 #include "virpci.h"
 #include "virvhba.h"
 #include "device_conf.h"
-#include "storage_adapter_conf.h"
 #include "virenum.h"
 
 #include <libxml/tree.h>

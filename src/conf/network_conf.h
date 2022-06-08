@@ -24,14 +24,12 @@
 #define DNS_RECORD_LENGTH_SRV  (512 - 30)  /* Limit minus overhead as mentioned in RFC-2782 */
 
 #include "internal.h"
-#include "virthread.h"
 #include "virsocketaddr.h"
 #include "virnetdevbandwidth.h"
 #include "virnetdevvportprofile.h"
 #include "virnetdevvlan.h"
 #include "virmacaddr.h"
 #include "device_conf.h"
-#include "virbitmap.h"
 #include "networkcommon_conf.h"
 #include "virobject.h"
 #include "virmacmap.h"

@@ -37,7 +37,6 @@
 #include "virlog.h"
 #include "virnuma.h"
 #include "virstring.h"
-#include "virtypedparam.h"
 #include "viruuid.h"
 #include "virenum.h"
 #include "virutil.h"

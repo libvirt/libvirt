@@ -23,8 +23,6 @@
 
 #include "storage_conf.h"
 
-#include "capabilities.h"
-
 typedef struct _virStoragePoolObj virStoragePoolObj;
 
 typedef struct _virStoragePoolObjList virStoragePoolObjList;

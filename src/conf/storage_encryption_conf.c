@@ -30,10 +30,7 @@
 #include "storage_encryption_conf.h"
 #include "virxml.h"
 #include "virerror.h"
-#include "viruuid.h"
-#include "virfile.h"
 #include "virsecret.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_STORAGE
 

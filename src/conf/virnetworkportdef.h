@@ -22,7 +22,6 @@
 #pragma once
 
 #include "internal.h"
-#include "viruuid.h"
 #include "virnetdevvlan.h"
 #include "virnetdevvportprofile.h"
 #include "virnetdevbandwidth.h"

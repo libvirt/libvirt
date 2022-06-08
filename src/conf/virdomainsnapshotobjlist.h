@@ -24,7 +24,6 @@
 
 #include "internal.h"
 #include "virdomainmomentobjlist.h"
-#include "virbuffer.h"
 
 virDomainSnapshotObjList *virDomainSnapshotObjListNew(void);
 void virDomainSnapshotObjListFree(virDomainSnapshotObjList *snapshots);

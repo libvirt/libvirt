@@ -27,7 +27,6 @@
 #include "virinterfaceobj.h"
 #include "virhash.h"
 #include "virlog.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 

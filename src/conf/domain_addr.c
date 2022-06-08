@@ -23,7 +23,6 @@
 
 #include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "domain_addr.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN

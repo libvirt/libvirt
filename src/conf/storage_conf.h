@@ -22,10 +22,7 @@
 #pragma once
 
 #include "internal.h"
-#include "storage_encryption_conf.h"
 #include "storage_source_conf.h"
-#include "virbitmap.h"
-#include "virthread.h"
 #include "device_conf.h"
 #include "object_event.h"
 #include "storage_adapter_conf.h"

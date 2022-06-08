@@ -20,11 +20,9 @@
 
 #include <config.h>
 
-#include "device_conf.h"
 #include "domain_capabilities.h"
 #include "domain_conf.h"
 #include "viralloc.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_CAPABILITIES
 

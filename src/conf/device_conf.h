@@ -25,7 +25,6 @@
 #include <libxml/xpath.h>
 
 #include "internal.h"
-#include "virthread.h"
 #include "virbuffer.h"
 #include "virccw.h"
 #include "virpci.h"

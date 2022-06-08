@@ -23,8 +23,6 @@
 
 #include "viralloc.h"
 #include "virerror.h"
-#include "virstring.h"
-#include "virfile.h"
 #include "virnetdevmacvlan.h"
 #include "virnetworkportdef.h"
 #include "network_conf.h"

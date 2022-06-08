@@ -38,10 +38,8 @@
 #include "viruuid.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_conf.h"
-#include "domain_conf.h"
 #include "virfile.h"
 #include "virstring.h"
 

@@ -26,7 +26,6 @@
 
 #include "internal.h"
 
-#include "virhash.h"
 #include "virxml.h"
 #include "virbuffer.h"
 #include "virsocketaddr.h"

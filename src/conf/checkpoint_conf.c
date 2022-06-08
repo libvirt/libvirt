@@ -23,19 +23,15 @@
 
 #include "configmake.h"
 #include "internal.h"
-#include "virbitmap.h"
 #include "virbuffer.h"
-#include "datatypes.h"
 #include "domain_conf.h"
 #include "virlog.h"
 #include "viralloc.h"
 #include "checkpoint_conf.h"
 #include "storage_source_conf.h"
 #include "viruuid.h"
-#include "virfile.h"
 #include "virerror.h"
 #include "virxml.h"
-#include "virstring.h"
 #include "virdomaincheckpointobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_CHECKPOINT

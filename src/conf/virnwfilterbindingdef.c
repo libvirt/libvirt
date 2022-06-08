@@ -22,7 +22,6 @@
 
 #include "viralloc.h"
 #include "virerror.h"
-#include "virstring.h"
 #include "nwfilter_params.h"
 #include "virnwfilterbindingdef.h"
 #include "viruuid.h"

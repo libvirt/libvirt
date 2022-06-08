@@ -26,8 +26,6 @@
 #include "virbuffer.h"
 #include "virfile.h"
 #include "cpu_conf.h"
-#include "domain_conf.h"
-#include "virstring.h"
 #include "virlog.h"
 
 #define VIR_FROM_THIS VIR_FROM_CPU

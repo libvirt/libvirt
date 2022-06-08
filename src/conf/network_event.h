@@ -23,7 +23,6 @@
 
 #include "internal.h"
 #include "object_event.h"
-#include "object_event_private.h"
 
 int
 virNetworkEventStateRegisterID(virConnectPtr conn,

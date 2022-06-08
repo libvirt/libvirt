@@ -29,8 +29,6 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "virerror.h"
-#include "virstring.h"
-#include "virtypedparam.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

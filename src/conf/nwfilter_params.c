@@ -25,9 +25,7 @@
 
 #include "viralloc.h"
 #include "virerror.h"
-#include "datatypes.h"
 #include "nwfilter_params.h"
-#include "domain_conf.h"
 #include "virlog.h"
 #include "virstring.h"
 

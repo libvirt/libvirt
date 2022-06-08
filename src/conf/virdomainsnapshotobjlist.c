@@ -26,9 +26,7 @@
 #include "virdomainsnapshotobjlist.h"
 #include "snapshot_conf.h"
 #include "virlog.h"
-#include "virerror.h"
 #include "datatypes.h"
-#include "virstring.h"
 #include "viralloc.h"
 
 #define VIR_FROM_THIS VIR_FROM_DOMAIN_SNAPSHOT

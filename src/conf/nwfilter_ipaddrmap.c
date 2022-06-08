@@ -23,9 +23,6 @@
 
 #include "internal.h"
 
-#include "viralloc.h"
-#include "virerror.h"
-#include "virstring.h"
 #include "datatypes.h"
 #include "nwfilter_params.h"
 #include "nwfilter_ipaddrmap.h"

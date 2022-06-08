@@ -22,7 +22,6 @@
 
 #include "domain_validate.h"
 #include "domain_conf.h"
-#include "snapshot_conf.h"
 #include "vircgroup.h"
 #include "virconftypes.h"
 #include "virlog.h"

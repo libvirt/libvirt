@@ -23,7 +23,6 @@
 #include "internal.h"
 
 #include "secret_conf.h"
-#include "virobject.h"
 
 typedef struct _virSecretObj virSecretObj;
 

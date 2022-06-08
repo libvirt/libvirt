@@ -20,10 +20,8 @@
 
 #include <config.h>
 #include "virerror.h"
-#include "datatypes.h"
 #include "viralloc.h"
 #include "virxml.h"
-#include "viruuid.h"
 #include "virbuffer.h"
 #include "device_conf.h"
 #include "domain_addr.h"

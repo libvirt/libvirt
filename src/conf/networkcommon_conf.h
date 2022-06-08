@@ -27,7 +27,6 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "virsocketaddr.h"
 #include "virnetdevip.h"
 
 virNetDevIPRoute *

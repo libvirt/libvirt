@@ -22,7 +22,6 @@
 
 #include "virbuffer.h"
 #include "virxml.h"
-#include "virbitmap.h"
 #include "virarch.h"
 #include "numa_conf.h"
 #include "virenum.h"

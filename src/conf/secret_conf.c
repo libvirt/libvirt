@@ -22,11 +22,8 @@
 
 #include "internal.h"
 #include "virbuffer.h"
-#include "datatypes.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "secret_conf.h"
-#include "virsecretobj.h"
 #include "virerror.h"
 #include "virsecret.h"
 #include "virstring.h"

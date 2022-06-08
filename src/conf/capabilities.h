@@ -23,10 +23,8 @@
 
 #include "internal.h"
 #include "virconftypes.h"
-#include "virbuffer.h"
 #include "cpu_conf.h"
 #include "virarch.h"
-#include "virmacaddr.h"
 #include "virobject.h"
 #include "virresctrl.h"
 

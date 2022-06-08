@@ -21,7 +21,6 @@
 #include <config.h>
 
 #include "virerror.h"
-#include "datatypes.h"
 #include "capabilities.h"
 #include "storage_capabilities.h"
 #include "storage_conf.h"

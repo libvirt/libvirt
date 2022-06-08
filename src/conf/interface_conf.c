@@ -20,15 +20,11 @@
 
 #include <config.h>
 #include "virerror.h"
-#include "datatypes.h"
 
 #include "interface_conf.h"
 
-#include "viralloc.h"
 #include "virxml.h"
-#include "viruuid.h"
 #include "virbuffer.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_INTERFACE
 

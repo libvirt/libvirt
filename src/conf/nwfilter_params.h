@@ -23,7 +23,6 @@
 
 #include "virhash.h"
 #include "virbuffer.h"
-#include "virmacaddr.h"
 #include "virxml.h"
 
 typedef enum {

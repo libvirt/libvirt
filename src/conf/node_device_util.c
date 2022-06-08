@@ -23,7 +23,6 @@
 #include "node_device_util.h"
 #include "virlog.h"
 #include "virscsihost.h"
-#include "virstring.h"
 #include "virvhba.h"
 #include "viralloc.h"
 #include "virutil.h"
