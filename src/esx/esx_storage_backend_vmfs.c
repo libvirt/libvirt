@@ -28,9 +28,7 @@
 
 #include "internal.h"
 #include "viralloc.h"
-#include "virfile.h"
 #include "virlog.h"
-#include "viruuid.h"
 #include "storage_conf.h"
 #include "storage_source_conf.h"
 #include "esx_storage_backend_vmfs.h"

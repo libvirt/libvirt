@@ -27,7 +27,6 @@
 #include <curl/curl.h>
 
 #include "internal.h"
-#include "virerror.h"
 #include "datatypes.h"
 #include "esx_vi_types.h"
 #include "esx_util.h"

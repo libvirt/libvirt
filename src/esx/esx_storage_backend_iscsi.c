@@ -33,9 +33,7 @@
 #include "esx_private.h"
 #include "esx_vi.h"
 #include "esx_vi_methods.h"
-#include "esx_util.h"
 #include "vircrypto.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

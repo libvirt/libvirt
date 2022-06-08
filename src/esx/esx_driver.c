@@ -28,7 +28,6 @@
 #include "snapshot_conf.h"
 #include "virauth.h"
 #include "viralloc.h"
-#include "virfile.h"
 #include "virlog.h"
 #include "viruuid.h"
 #include "vmx.h"

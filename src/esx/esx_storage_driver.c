@@ -26,9 +26,7 @@
 
 #include "viruuid.h"
 #include "viralloc.h"
-#include "storage_conf.h"
 #include "esx_private.h"
-#include "esx_storage_driver.h"
 #include "esx_storage_backend_vmfs.h"
 #include "esx_storage_backend_iscsi.h"
 

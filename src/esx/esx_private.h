@@ -22,9 +22,7 @@
 #pragma once
 
 #include "internal.h"
-#include "virerror.h"
 #include "capabilities.h"
-#include "domain_conf.h"
 #include "esx_vi.h"
 
 typedef struct _esxPrivate {

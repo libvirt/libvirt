@@ -26,7 +26,6 @@
 #include <libxml/xpathInternals.h>
 
 #include "virbuffer.h"
-#include "datatypes.h"
 #include "viralloc.h"
 #include "virlog.h"
 #include "esx_vi.h"

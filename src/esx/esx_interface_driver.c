@@ -24,16 +24,10 @@
 #include <config.h>
 
 #include "internal.h"
-#include "viralloc.h"
-#include "viruuid.h"
 #include "interface_conf.h"
 #include "virsocketaddr.h"
 #include "esx_private.h"
-#include "esx_interface_driver.h"
 #include "esx_vi.h"
-#include "esx_vi_methods.h"
-#include "esx_util.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
 

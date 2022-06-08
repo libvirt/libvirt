@@ -24,7 +24,6 @@
 #include "internal.h"
 #include "datatypes.h"
 #include "viralloc.h"
-#include "virstring.h"
 #include "esx_stream.h"
 
 #define VIR_FROM_THIS VIR_FROM_ESX
