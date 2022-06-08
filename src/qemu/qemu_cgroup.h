@@ -21,9 +21,7 @@
 
 #pragma once
 
-#include "virusb.h"
 #include "vircgroup.h"
-#include "domain_conf.h"
 #include "qemu_conf.h"
 
 int qemuSetupImageCgroup(virDomainObj *vm,

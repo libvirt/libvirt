@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include "qemu_alias.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virstring.h"
 #include "virutil.h"

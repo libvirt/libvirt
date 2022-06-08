@@ -22,12 +22,10 @@
 #pragma once
 
 #include <glib-object.h>
-#include "virthread.h"
 #include "vircgroup.h"
 #include "virperf.h"
 #include "domain_addr.h"
 #include "domain_conf.h"
-#include "snapshot_conf.h"
 #include "qemu_monitor.h"
 #include "qemu_agent.h"
 #include "qemu_blockjob.h"
@@ -37,7 +35,6 @@
 #include "qemu_migration_params.h"
 #include "qemu_slirp.h"
 #include "qemu_fd.h"
-#include "virmdev.h"
 #include "virchrdev.h"
 #include "virobject.h"
 #include "logging/log_manager.h"

@@ -33,7 +33,6 @@
 #include "qemu_process.h"
 #include "qemu_capabilities.h"
 #include "qemu_alias.h"
-#include "qemu_cgroup.h"
 #include "qemu_hotplug.h"
 #include "qemu_blockjob.h"
 #include "qemu_security.h"
@@ -48,9 +47,7 @@
 #include "virnetdevopenvswitch.h"
 #include "datatypes.h"
 #include "virfdstream.h"
-#include "viruuid.h"
 #include "virtime.h"
-#include "locking/domain_lock.h"
 #include "rpc/virnetsocket.h"
 #include "storage_source_conf.h"
 #include "viruri.h"
@@ -58,9 +55,7 @@
 #include "virstring.h"
 #include "virtypedparam.h"
 #include "virprocess.h"
-#include "nwfilter_conf.h"
 #include "virdomainsnapshotobjlist.h"
-#include "virsocket.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

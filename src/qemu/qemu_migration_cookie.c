@@ -22,7 +22,6 @@
 #include <gnutls/x509.h>
 
 #include "locking/domain_lock.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "virlog.h"
 #include "virnetdevopenvswitch.h"

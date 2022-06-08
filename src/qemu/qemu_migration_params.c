@@ -23,12 +23,10 @@
 
 #include "virlog.h"
 #include "virerror.h"
-#include "viralloc.h"
 #include "virstring.h"
 
 #include "qemu_alias.h"
 #include "qemu_hotplug.h"
-#include "qemu_migration.h"
 #include "qemu_migration_params.h"
 #define LIBVIRT_QEMU_MIGRATION_PARAMSPRIV_H_ALLOW
 #include "qemu_migration_paramspriv.h"

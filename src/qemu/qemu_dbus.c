@@ -18,13 +18,10 @@
 
 #include <config.h>
 
-#include "qemu_extdevice.h"
 #include "qemu_dbus.h"
 #include "qemu_security.h"
 
-#include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virtime.h"
 #include "virpidfile.h"
 

@@ -24,8 +24,6 @@
 #include "internal.h"
 
 #include "virbuffer.h"
-#include "virxml.h"
-#include "qemu_monitor.h"
 #include "qemu_conf.h"
 #include "virenum.h"
 

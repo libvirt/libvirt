@@ -20,9 +20,7 @@
 
 #pragma once
 
-#include "domain_conf.h"
 #include "qemu_conf.h"
-#include "virarch.h"
 
 typedef struct _qemuVhostUser qemuVhostUser;
 

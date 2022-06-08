@@ -24,10 +24,8 @@
 
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virerror.h"
-#include "virstring.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

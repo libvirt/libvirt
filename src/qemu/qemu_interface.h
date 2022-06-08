@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include "domain_conf.h"
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 #include "qemu_slirp.h"

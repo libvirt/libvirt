@@ -24,7 +24,6 @@
 #include "internal.h"
 
 #include "qemu_monitor.h"
-#include "virbitmap.h"
 #include "cpu/cpu.h"
 #include "util/virgic.h"
 

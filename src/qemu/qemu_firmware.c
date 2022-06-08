@@ -29,7 +29,6 @@
 #include "virarch.h"
 #include "virjson.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "viralloc.h"
 #include "virenum.h"
 

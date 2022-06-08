@@ -25,10 +25,8 @@
 
 #include "domain_conf.h"
 #include "virbitmap.h"
-#include "virhash.h"
 #include "virjson.h"
 #include "virnetdev.h"
-#include "device_conf.h"
 #include "cpu/cpu.h"
 #include "util/virgic.h"
 #include "virenum.h"

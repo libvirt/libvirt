@@ -31,11 +31,8 @@
 #include "datatypes.h"
 #include "viralloc.h"
 #include "domain_conf.h"
-#include "libvirt_internal.h"
 #include "virxml.h"
-#include "virstring.h"
 #include "virdomaincheckpointobjlist.h"
-#include "virdomainsnapshotobjlist.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

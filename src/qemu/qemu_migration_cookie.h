@@ -19,7 +19,6 @@
 #pragma once
 
 #include "qemu_domain.h"
-#include "qemu_domainjob.h"
 #include "qemu_migration_params.h"
 #include "virenum.h"
 

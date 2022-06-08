@@ -26,19 +26,14 @@
 #include <fcntl.h>
 
 #include "qemu_extdevice.h"
-#include "qemu_domain.h"
 #include "qemu_security.h"
 
 #include "conf/domain_conf.h"
 #include "vircommand.h"
-#include "viralloc.h"
-#include "virkmod.h"
 #include "viridentity.h"
 #include "virlog.h"
-#include "virutil.h"
 #include "viruuid.h"
 #include "virfile.h"
-#include "virstring.h"
 #include "virpidfile.h"
 #include "configmake.h"
 #include "qemu_tpm.h"

@@ -31,7 +31,6 @@
 #include "qemu_monitor_text.h"
 #include "qemu_monitor_json.h"
 #include "qemu_domain.h"
-#include "qemu_process.h"
 #include "qemu_capabilities.h"
 #include "virerror.h"
 #include "viralloc.h"
@@ -42,7 +41,6 @@
 #include "virprobe.h"
 #include "virstring.h"
 #include "virtime.h"
-#include "virsocket.h"
 #include "virutil.h"
 
 #ifdef WITH_DTRACE_PROBES

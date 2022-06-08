@@ -21,8 +21,6 @@
 #pragma once
 
 #include "qemu_conf.h"
-#include "domain_conf.h"
-#include "security/security_manager.h"
 
 int qemuSecuritySetAllLabel(virQEMUDriver *driver,
                             virDomainObj *vm,

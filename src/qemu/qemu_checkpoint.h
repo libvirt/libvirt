@@ -19,7 +19,6 @@
 #pragma once
 
 #include "virconftypes.h"
-#include "datatypes.h"
 #include "qemu_conf.h"
 
 virDomainObj *

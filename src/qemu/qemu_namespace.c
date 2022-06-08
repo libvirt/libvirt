@@ -38,7 +38,6 @@
 #include "qemu_hostdev.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virdevmapper.h"
 #include "virglibutil.h"
 

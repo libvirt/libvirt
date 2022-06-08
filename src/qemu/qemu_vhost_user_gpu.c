@@ -27,11 +27,8 @@
 #include "conf/domain_conf.h"
 #include "configmake.h"
 #include "vircommand.h"
-#include "viralloc.h"
 #include "virlog.h"
 #include "virfile.h"
-#include "virstring.h"
-#include "virtime.h"
 #include "virpidfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE

@@ -46,20 +46,16 @@
 #include "viralloc.h"
 #include "virpci.h"
 #include "virfile.h"
-#include "virprocess.h"
 #include "qemu_cgroup.h"
 #include "locking/domain_lock.h"
 #include "virnetdev.h"
 #include "virnetdevbridge.h"
-#include "virnetdevtap.h"
 #include "virnetdevopenvswitch.h"
 #include "virnetdevmidonet.h"
 #include "device_conf.h"
 #include "storage_source.h"
 #include "storage_source_conf.h"
-#include "virstring.h"
 #include "virtime.h"
-#include "virqemu.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

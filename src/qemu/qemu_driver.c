@@ -25,11 +25,9 @@
 #include <poll.h>
 #include <sys/time.h>
 #include <dirent.h>
-#include <stdarg.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <sys/ioctl.h>
 
 #include "qemu_driver.h"
@@ -39,7 +37,6 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_command.h"
-#include "qemu_cgroup.h"
 #include "qemu_hostdev.h"
 #include "qemu_hotplug.h"
 #include "qemu_monitor.h"
@@ -65,25 +62,20 @@
 #include "virnetdevopenvswitch.h"
 #include "capabilities.h"
 #include "viralloc.h"
-#include "virarptable.h"
 #include "viruuid.h"
 #include "domain_conf.h"
 #include "domain_audit.h"
 #include "domain_cgroup.h"
 #include "domain_driver.h"
 #include "domain_validate.h"
-#include "node_device_conf.h"
 #include "virpci.h"
-#include "virusb.h"
 #include "virpidfile.h"
 #include "virprocess.h"
 #include "libvirt_internal.h"
 #include "virxml.h"
 #include "cpu/cpu.h"
 #include "virsysinfo.h"
-#include "domain_nwfilter.h"
 #include "virhook.h"
-#include "virstoragefile.h"
 #include "storage_source_conf.h"
 #include "storage_file_probe.h"
 #include "storage_source.h"
@@ -107,11 +99,9 @@
 #include "virperf.h"
 #include "virnuma.h"
 #include "netdev_bandwidth_conf.h"
-#include "virqemu.h"
 #include "virdomainsnapshotobjlist.h"
 #include "virenum.h"
 #include "virdomaincheckpointobjlist.h"
-#include "virsocket.h"
 #include "virutil.h"
 #include "backup_conf.h"
 

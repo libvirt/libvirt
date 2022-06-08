@@ -23,7 +23,6 @@
 
 #include "qemu_conf.h"
 #include "qemu_domain.h"
-#include "virstoragefile.h"
 #include "vireventthread.h"
 
 int qemuProcessPrepareMonitorChr(virDomainChrSourceDef *monConfig,

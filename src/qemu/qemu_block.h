@@ -23,7 +23,6 @@
 #include "qemu_conf.h"
 #include "qemu_domain.h"
 
-#include "virhash.h"
 #include "virjson.h"
 #include "viruri.h"
 

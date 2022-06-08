@@ -28,8 +28,6 @@
 
 #include "virerror.h"
 #include "virlog.h"
-#include "viralloc.h"
-#include "virqemu.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>

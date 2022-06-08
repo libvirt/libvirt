@@ -27,7 +27,6 @@
 #include "qemu_interface.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virnetdev.h"
 #include "virnetdevtap.h"
 #include "virnetdevmacvlan.h"

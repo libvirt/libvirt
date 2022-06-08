@@ -20,7 +20,6 @@
 
 #include <config.h>
 
-#include "qemu_command.h"
 #include "qemu_extdevice.h"
 #include "qemu_vhost_user_gpu.h"
 #include "qemu_dbus.h"
@@ -29,12 +28,8 @@
 #include "qemu_slirp.h"
 #include "qemu_virtiofs.h"
 
-#include "viralloc.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virtime.h"
-#include "virtpm.h"
-#include "virpidfile.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU
 

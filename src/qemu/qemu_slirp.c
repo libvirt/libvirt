@@ -22,14 +22,11 @@
 #include "qemu_extdevice.h"
 #include "qemu_security.h"
 #include "qemu_slirp.h"
-#include "viralloc.h"
 #include "virenum.h"
 #include "virerror.h"
 #include "virjson.h"
 #include "virlog.h"
 #include "virpidfile.h"
-#include "virstring.h"
-#include "virtime.h"
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 

@@ -23,21 +23,14 @@
 
 #include "qemu_cgroup.h"
 #include "qemu_domain.h"
-#include "qemu_process.h"
 #include "qemu_extdevice.h"
 #include "qemu_hostdev.h"
 #include "virlog.h"
-#include "viralloc.h"
 #include "virerror.h"
 #include "domain_audit.h"
 #include "domain_cgroup.h"
-#include "virscsi.h"
-#include "virstring.h"
 #include "virfile.h"
-#include "virtypedparam.h"
-#include "virnuma.h"
 #include "virdevmapper.h"
-#include "virutil.h"
 #include "virglibutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

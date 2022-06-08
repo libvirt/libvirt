@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include "domain_conf.h"
 #include "qemu_domain.h"
 #include "qemu_security.h"
 

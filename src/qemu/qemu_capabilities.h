@@ -22,8 +22,6 @@
 #pragma once
 
 #include "virobject.h"
-#include "capabilities.h"
-#include "vircommand.h"
 #include "qemu_monitor.h"
 #include "domain_capabilities.h"
 #include "virfirmware.h"

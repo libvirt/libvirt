@@ -41,23 +41,16 @@
 #include "viruuid.h"
 #include "domain_nwfilter.h"
 #include "domain_addr.h"
-#include "domain_audit.h"
 #include "domain_conf.h"
 #include "netdev_bandwidth_conf.h"
-#include "snapshot_conf.h"
-#include "storage_conf.h"
-#include "secret_conf.h"
 #include "virnetdevopenvswitch.h"
 #include "device_conf.h"
 #include "storage_source_conf.h"
 #include "virtpm.h"
-#include "virscsi.h"
 #include "virnuma.h"
 #include "virgic.h"
 #include "virmdev.h"
-#include "virdomainsnapshotobjlist.h"
 #include "virutil.h"
-#include "virsecureerase.h"
 
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -27,18 +27,14 @@
 
 #include "qemu_monitor_json.h"
 #include "qemu_alias.h"
-#include "qemu_capabilities.h"
 #include "viralloc.h"
 #include "virlog.h"
-#include "driver.h"
-#include "datatypes.h"
 #include "virerror.h"
 #include "virjson.h"
 #include "virprobe.h"
 #include "virstring.h"
 #include "cpu/cpu_x86.h"
 #include "virenum.h"
-#include "virsocket.h"
 
 #ifdef WITH_DTRACE_PROBES
 # include "libvirt_qemu_probes.h"

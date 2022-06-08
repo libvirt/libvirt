@@ -22,13 +22,10 @@
 
 #include "qemu_interop_config.h"
 #include "configmake.h"
-#include "viralloc.h"
-#include "virenum.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virhash.h"
 #include "virlog.h"
-#include "virstring.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_QEMU

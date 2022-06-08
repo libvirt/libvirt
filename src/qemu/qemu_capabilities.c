@@ -24,20 +24,15 @@
 #include "qemu_capabilities.h"
 #include "viralloc.h"
 #include "virarch.h"
-#include "vircrypto.h"
 #include "virlog.h"
 #include "virerror.h"
 #include "virfile.h"
 #include "virfilecache.h"
-#include "virpidfile.h"
-#include "virprocess.h"
 #include "cpu/cpu.h"
 #include "cpu/cpu_x86.h"
 #include "domain_conf.h"
-#include "vircommand.h"
 #include "virbitmap.h"
 #include "virnodesuspend.h"
-#include "virnuma.h"
 #include "virhostcpu.h"
 #include "qemu_monitor.h"
 #include "virstring.h"
@@ -54,7 +49,6 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <stdarg.h>
 #include <sys/utsname.h>
 #ifdef __APPLE__
 # include <sys/types.h>

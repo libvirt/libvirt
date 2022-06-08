@@ -25,7 +25,6 @@
 #include <unistd.h>
 
 #include "virfile.h"
-#include "virstring.h"
 #include "virgettext.h"
 #include "virthread.h"
 

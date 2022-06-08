@@ -21,17 +21,13 @@
 
 #pragma once
 
-#include "domain_addr.h"
 #include "domain_conf.h"
 #include "vircommand.h"
 #include "virenum.h"
-#include "capabilities.h"
 #include "qemu_block.h"
 #include "qemu_conf.h"
 #include "qemu_domain.h"
-#include "qemu_domain_address.h"
 #include "qemu_capabilities.h"
-#include "logging/log_manager.h"
 
 /* Config type for XML import/export conversions */
 #define QEMU_CONFIG_FORMAT_ARGV "qemu-argv"

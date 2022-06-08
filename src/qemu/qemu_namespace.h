@@ -23,7 +23,6 @@
 
 #include "virenum.h"
 #include "qemu_conf.h"
-#include "virconf.h"
 
 typedef enum {
     QEMU_DOMAIN_NS_MOUNT = 0,

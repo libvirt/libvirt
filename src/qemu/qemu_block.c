@@ -26,7 +26,6 @@
 
 #include "storage_source.h"
 #include "viralloc.h"
-#include "virstoragefile.h"
 #include "virstring.h"
 #include "virlog.h"
 
