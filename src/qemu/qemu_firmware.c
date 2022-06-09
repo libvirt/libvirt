@@ -1240,6 +1240,8 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
             case VIR_TRISTATE_SWITCH_LAST:
                 break;
             }
+            VIR_DEBUG("Enabling secure loader");
+            def->os.loader->secure = VIR_TRISTATE_BOOL_YES;
             break;
 
         case QEMU_FIRMWARE_FEATURE_NONE:
