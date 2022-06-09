@@ -11,11 +11,9 @@
   <features>
     <acpi/>
   </features>
-  <cpu mode='custom'>
-    <model>Haswell</model>
-  </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>

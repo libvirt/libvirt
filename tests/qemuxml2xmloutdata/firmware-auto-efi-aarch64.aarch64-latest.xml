@@ -6,28 +6,24 @@
   <vcpu placement='static'>1</vcpu>
   <os firmware='efi'>
     <type arch='aarch64' machine='virt-4.0'>hvm</type>
-    <kernel>/aarch64.kernel</kernel>
-    <initrd>/aarch64.initrd</initrd>
-    <cmdline>earlyprintk console=ttyAMA0,115200n8 rw root=/dev/vda rootwait</cmdline>
-    <dtb>/aarch64.dtb</dtb>
     <boot dev='hd'/>
   </os>
   <features>
     <acpi/>
-    <apic/>
-    <pae/>
     <gic version='2'/>
   </features>
   <cpu mode='custom' match='exact' check='none'>
-    <model fallback='allow'>cortex-a53</model>
+    <model fallback='forbid'>cortex-a15</model>
   </cpu>
   <clock offset='utc'/>
   <on_poweroff>destroy</on_poweroff>
   <on_reboot>restart</on_reboot>
-  <on_crash>restart</on_crash>
+  <on_crash>destroy</on_crash>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' index='0' model='none'/>
     <controller type='pci' index='0' model='pcie-root'/>
     <audio id='1' type='none'/>
+    <memballoon model='none'/>
   </devices>
 </domain>

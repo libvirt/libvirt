@@ -5,15 +5,10 @@
   <vcpu placement='static'>1</vcpu>
   <os>
     <type arch='x86_64' machine='q35'>hvm</type>
-    <kernel>/var/lib/libvirt/images/guest.vmlinuz</kernel>
-    <initrd>/var/lib/libvirt/images/guest.initramfs</initrd>
-    <cmdline>rw root=/dev/vda rootwait</cmdline>
   </os>
-  <cpu mode='custom'>
-    <model>Haswell</model>
-  </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>

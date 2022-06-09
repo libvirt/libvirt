@@ -11,11 +11,9 @@
   <features>
     <acpi/>
   </features>
-  <cpu mode='custom'>
-    <model>cortex-a57</model>
-  </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-aarch64</emulator>
+    <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>

@@ -13,7 +13,6 @@ QEMU_AUDIO_DRV=none \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-guest/master-key.aes \
 -machine virt,usb=off,dump-guest-core=off,gic-version=2 \
 -accel tcg \
--cpu cortex-a57 \
 -drive file=/usr/share/AAVMF/AAVMF_CODE.fd,if=pflash,format=raw,unit=0,readonly=on \
 -drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 1024 \

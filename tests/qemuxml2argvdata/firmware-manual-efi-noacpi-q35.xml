@@ -8,11 +8,9 @@
     <loader readonly='yes' type='pflash'>/usr/share/OVMF/OVMF_CODE.fd</loader>
     <nvram>/some/user/nvram/path/guest_VARS.fd</nvram>
   </os>
-  <cpu mode='custom'>
-    <model>Haswell</model>
-  </cpu>
   <devices>
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
     <memballoon model='none'/>
   </devices>
 </domain>
