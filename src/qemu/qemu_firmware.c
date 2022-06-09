@@ -1269,6 +1269,7 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
     size_t i;
     bool requiresSMM = false;
     bool supportsSecureBoot = false;
+    bool hasEnrolledKeys = false;
 
     for (i = 0; i < fw->nfeatures; i++) {
         switch (fw->features[i]) {
@@ -1278,12 +1279,14 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         case QEMU_FIRMWARE_FEATURE_SECURE_BOOT:
             supportsSecureBoot = true;
             break;
+        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
+            hasEnrolledKeys = true;
+            break;
         case QEMU_FIRMWARE_FEATURE_NONE:
         case QEMU_FIRMWARE_FEATURE_ACPI_S3:
         case QEMU_FIRMWARE_FEATURE_ACPI_S4:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV:
         case QEMU_FIRMWARE_FEATURE_AMD_SEV_ES:
-        case QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_DYNAMIC:
         case QEMU_FIRMWARE_FEATURE_VERBOSE_STATIC:
         case QEMU_FIRMWARE_FEATURE_LAST:
@@ -1291,14 +1294,17 @@ qemuFirmwareSanityCheck(const qemuFirmware *fw,
         }
     }
 
-    if (supportsSecureBoot != requiresSMM) {
+    if ((supportsSecureBoot != requiresSMM) ||
+        (hasEnrolledKeys && !supportsSecureBoot)) {
         VIR_WARN("Firmware description '%s' has invalid set of features: "
-                 "%s = %d, %s = %d",
+                 "%s = %d, %s = %d, %s = %d",
                  filename,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_REQUIRES_SMM),
                  requiresSMM,
                  qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_SECURE_BOOT),
-                 supportsSecureBoot);
+                 supportsSecureBoot,
+                 qemuFirmwareFeatureTypeToString(QEMU_FIRMWARE_FEATURE_ENROLLED_KEYS),
+                 hasEnrolledKeys);
     }
 }
 
