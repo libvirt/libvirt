@@ -1598,15 +1598,15 @@ static int
 virDomainDefOSValidate(const virDomainDef *def,
                        virDomainXMLOption *xmlopt)
 {
-    if (!def->os.loader)
-        return 0;
-
     if (def->os.firmware &&
         !(xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT)) {
         virReportError(VIR_ERR_XML_DETAIL, "%s",
                        _("firmware auto selection not implemented for this driver"));
         return -1;
     }
+
+    if (!def->os.loader)
+        return 0;
 
     if (!def->os.loader->path &&
         def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
