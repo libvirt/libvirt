@@ -1067,10 +1067,16 @@ mymain(void)
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT, QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
-    DO_TEST_NOCAPS("bios-nvram");
-    DO_TEST_CAPS_LATEST("bios-nvram-network-iscsi");
-    DO_TEST_CAPS_LATEST("bios-nvram-network-nbd");
-    DO_TEST_CAPS_LATEST("bios-nvram-file");
+    DO_TEST_NOCAPS("firmware-manual-efi");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
+
+    DO_TEST_CAPS_LATEST("firmware-auto-bios");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-no-enrolled-keys");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
 
     DO_TEST_NOCAPS("tap-vhost");
     DO_TEST_NOCAPS("tap-vhost-incorrect");
@@ -1081,15 +1087,9 @@ mymain(void)
     DO_TEST_NOCAPS("smbios-multiple-type2");
     DO_TEST_NOCAPS("smbios-type-fwcfg");
 
-    DO_TEST_CAPS_LATEST("os-firmware-bios");
-    DO_TEST_CAPS_LATEST("os-firmware-efi");
-    DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
-    DO_TEST_CAPS_LATEST("os-firmware-efi-no-enrolled-keys");
-
     DO_TEST("aarch64-aavmf-virtio-mmio",
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,
             QEMU_CAPS_DEVICE_VIRTIO_RNG, QEMU_CAPS_OBJECT_RNG_RANDOM);
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-os-firmware-efi", "aarch64");
     DO_TEST("aarch64-virtio-pci-default",
             QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY,
             QEMU_CAPS_DEVICE_VIRTIO_MMIO,

@@ -1188,29 +1188,39 @@ mymain(void)
     DO_TEST_NOCAPS("reboot-timeout-disabled");
     DO_TEST_NOCAPS("reboot-timeout-enabled");
 
-    DO_TEST("bios",
+    DO_TEST("firmware-manual-bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
-    DO_TEST_NOCAPS("bios-nvram");
-    DO_TEST_PARSE_ERROR_NOCAPS("bios-nvram-no-path");
-    DO_TEST_CAPS_LATEST("bios-nvram-rw");
-    DO_TEST_CAPS_LATEST("bios-nvram-rw-implicit");
-    DO_TEST("bios-nvram-secure",
+    DO_TEST_NOCAPS("firmware-manual-efi");
+    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-no-path");
+    DO_TEST_CAPS_LATEST("firmware-manual-bios-rw");
+    DO_TEST_CAPS_LATEST("firmware-manual-bios-rw-implicit");
+    DO_TEST("firmware-manual-efi-secure",
             QEMU_CAPS_DEVICE_DMI_TO_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_VIRTIO_SCSI);
-    DO_TEST_CAPS_LATEST("bios-nvram-template");
-    DO_TEST_CAPS_LATEST("bios-nvram-network-iscsi");
-    DO_TEST_CAPS_VER_PARSE_ERROR("bios-nvram-network-iscsi", "4.1.0");
-    DO_TEST_CAPS_LATEST("bios-nvram-network-nbd");
-    DO_TEST_CAPS_LATEST("bios-nvram-file");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
+    DO_TEST_CAPS_VER_PARSE_ERROR("firmware-manual-efi-nvram-network-iscsi", "4.1.0");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
-    DO_TEST_NOCAPS("q35-acpi-uefi");
-    DO_TEST_PARSE_ERROR_NOCAPS("q35-noacpi-uefi");
-    DO_TEST_NOCAPS("q35-noacpi-nouefi");
-    DO_TEST_NOCAPS("q35-acpi-nouefi");
+    DO_TEST_NOCAPS("firmware-manual-efi-acpi-aarch64");
+    DO_TEST_NOCAPS("firmware-manual-efi-acpi-q35");
+    DO_TEST_NOCAPS("firmware-manual-efi-noacpi-aarch64");
+    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-noacpi-q35");
+    DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-noefi-acpi-aarch64");
+    DO_TEST_NOCAPS("firmware-manual-noefi-acpi-q35");
+    DO_TEST_NOCAPS("firmware-manual-noefi-noacpi-aarch64");
+    DO_TEST_NOCAPS("firmware-manual-noefi-noacpi-q35");
+
+    DO_TEST_CAPS_LATEST("firmware-auto-bios");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-no-enrolled-keys");
+    DO_TEST_CAPS_ARCH_LATEST("firmware-auto-efi-aarch64", "aarch64");
 
     DO_TEST_NOCAPS("clock-utc");
     DO_TEST_NOCAPS("clock-localtime");
@@ -3018,12 +3028,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
-    /* Make sure all combinations of ACPI and UEFI behave as expected */
-    DO_TEST_NOCAPS("aarch64-acpi-uefi");
-    DO_TEST_NOCAPS("aarch64-noacpi-uefi");
-    DO_TEST_NOCAPS("aarch64-noacpi-nouefi");
-    DO_TEST_PARSE_ERROR_NOCAPS("aarch64-acpi-nouefi");
-
     /* QEMU 4.0.0 didn't have support for aarch64 CPU features */
     DO_TEST_CAPS_ARCH_VER_FAILURE("aarch64-features-sve", "aarch64", "4.0.0");
     /* aarch64 doesn't support the same CPU features as x86 */
@@ -3407,12 +3411,6 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("s390x-ccw-graphics", "s390x");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-pc-graphics", "x86_64");
     DO_TEST_CAPS_ARCH_LATEST("x86_64-q35-graphics", "x86_64");
-
-    DO_TEST_CAPS_LATEST("os-firmware-bios");
-    DO_TEST_CAPS_LATEST("os-firmware-efi");
-    DO_TEST_CAPS_LATEST("os-firmware-efi-secboot");
-    DO_TEST_CAPS_LATEST("os-firmware-efi-no-enrolled-keys");
-    DO_TEST_CAPS_ARCH_LATEST("aarch64-os-firmware-efi", "aarch64");
 
     DO_TEST_CAPS_LATEST("vhost-user-vga");
     DO_TEST_CAPS_LATEST("vhost-user-gpu-secondary");

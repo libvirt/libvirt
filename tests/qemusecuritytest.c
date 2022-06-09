@@ -237,9 +237,9 @@ mymain(void)
     DO_TEST_DOMAIN("memory-hotplug-nvdimm-pmem");
     DO_TEST_DOMAIN("memory-hotplug-nvdimm-readonly");
     DO_TEST_DOMAIN("net-vhostuser");
-    DO_TEST_DOMAIN("os-firmware-bios");
-    DO_TEST_DOMAIN("os-firmware-efi");
-    DO_TEST_DOMAIN("os-firmware-efi-secboot");
+    DO_TEST_DOMAIN("firmware-auto-bios");
+    DO_TEST_DOMAIN("firmware-auto-efi");
+    DO_TEST_DOMAIN("firmware-auto-efi-loader-secure");
     DO_TEST_DOMAIN("pci-bridge-many-disks");
     DO_TEST_DOMAIN("tseg-explicit-size");
     DO_TEST_DOMAIN("usb-redir-unix");
