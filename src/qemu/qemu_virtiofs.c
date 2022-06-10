@@ -163,6 +163,10 @@ qemuVirtioFSBuildCommandLine(virQEMUDriverConfig *cfg,
         virBufferAddLit(&opts, ",no_posix_lock");
 
     virCommandAddArgBuffer(cmd, &opts);
+
+    if (fs->thread_pool_size >= 0)
+        virCommandAddArgFormat(cmd, "--thread-pool-size=%i", fs->thread_pool_size);
+
     if (cfg->virtiofsdDebug)
         virCommandAddArg(cmd, "-d");
 
