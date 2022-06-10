@@ -926,6 +926,7 @@ virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes)
                              _("cannot limit locked memory "
                                "of process %lld to %llu"),
                              (long long int)pid, bytes);
+        return -1;
     }
 
     VIR_DEBUG("Locked memory for process %lld limited to %llu bytes",
