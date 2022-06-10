@@ -638,6 +638,7 @@ static virDomainDefParserConfig virVMXDomainDefParserConfig = {
     .domainPostParseCallback = virVMXDomainDefPostParse,
     .features = (VIR_DOMAIN_DEF_FEATURE_WIDE_SCSI |
                  VIR_DOMAIN_DEF_FEATURE_NAME_SLASH |
+                 VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT |
                  VIR_DOMAIN_DEF_FEATURE_NO_BOOT_ORDER),
     .defArch = VIR_ARCH_I686,
 };
