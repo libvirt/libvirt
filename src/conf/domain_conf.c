@@ -2472,6 +2472,8 @@ virDomainFSDefNew(virDomainXMLOption *xmlopt)
 
     ret->src = virStorageSourceNew();
 
+    ret->thread_pool_size = -1;
+
     if (xmlopt &&
         xmlopt->privateData.fsNew &&
         !(ret->privateData = xmlopt->privateData.fsNew()))
@@ -9910,6 +9912,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
     if (def->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS) {
         g_autofree char *queue_size = virXPathString("string(./driver/@queue)", ctxt);
         g_autofree char *binary = virXPathString("string(./binary/@path)", ctxt);
+        g_autofree char *thread_pool_size = virXPathString("string(./binary/thread_pool/@size)", ctxt);
         xmlNodePtr binary_node = virXPathNode("./binary", ctxt);
         xmlNodePtr binary_lock_node = virXPathNode("./binary/lock", ctxt);
         xmlNodePtr binary_cache_node = virXPathNode("./binary/cache", ctxt);
@@ -9918,6 +9921,14 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
         if (queue_size && virStrToLong_ull(queue_size, NULL, 10, &def->queue_size) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse queue size '%s' for virtiofs"),
+                           queue_size);
+            goto error;
+        }
+
+        if (thread_pool_size &&
+            virStrToLong_i(thread_pool_size, NULL, 10, &def->thread_pool_size) < 0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("cannot parse thread pool size '%s' for virtiofs"),
                            queue_size);
             goto error;
         }
@@ -24258,6 +24269,10 @@ virDomainFSDefFormat(virBuffer *buf,
         }
 
         virXMLFormatElement(&binaryBuf, "lock", &lockAttrBuf, NULL);
+
+        if (def->thread_pool_size >= 0)
+            virBufferAsprintf(&binaryBuf, "<thread_pool size='%d'/>\n", def->thread_pool_size);
+
     }
 
     virDomainVirtioOptionsFormat(&driverAttrBuf, def->virtio);

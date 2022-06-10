@@ -3367,6 +3367,7 @@ A directory on the host that can be accessed directly from the guest.
             <cache mode='always'/>
             <sandbox mode='namespace'/>
             <lock posix='on' flock='on'/>
+            <thread_pool size='16'/>
          </binary>
          <source dir='/path'/>
          <target dir='mount_tag'/>
@@ -3500,6 +3501,11 @@ A directory on the host that can be accessed directly from the guest.
    ``chroot``, see the
    `virtiofsd documentation <https://qemu.readthedocs.io/en/latest/tools/virtiofsd.html>`__
    for more details. ( :since:`Since 7.2.0` )
+   Element ``thread_pool`` accepts one attribute ``size`` which defines the
+   maximum thread pool size. A value of "0" disables the pool.
+   The thread pool helps increase the number of requests in flight when used with
+   storage that has a higher latency.  However, it has an overhead, and so for
+   fast, low latency filesystems, it may be best to turn it off. ( :since:`Since 8.5.0` )
 ``source``
    The resource on the host that is being accessed in the guest. The ``name``
    attribute must be used with ``type='template'``, and the ``dir`` attribute

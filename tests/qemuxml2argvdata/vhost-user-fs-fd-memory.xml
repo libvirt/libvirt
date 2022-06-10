@@ -32,6 +32,7 @@
         <cache mode='always'/>
         <sandbox mode='chroot'/>
         <lock posix='off' flock='off'/>
+        <thread_pool size='16'/>
       </binary>
       <source dir='/path'/>
       <target dir='mount_tag'/>

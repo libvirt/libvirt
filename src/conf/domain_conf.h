@@ -905,6 +905,7 @@ struct _virDomainFSDef {
     virTristateSwitch posix_lock;
     virTristateSwitch flock;
     virDomainFSSandboxMode sandbox;
+    int thread_pool_size;
     virDomainVirtioOptions *virtio;
     virObject *privateData;
 };
