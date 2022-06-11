@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Opteron_G3</model>
   <vendor>AMD</vendor>
+  <signature family='16' model='2' stepping='3'/>
   <feature name='vme'/>
   <feature name='ht'/>
   <feature name='monitor'/>

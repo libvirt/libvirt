@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>EPYC</model>
   <vendor>AMD</vendor>
+  <signature family='23' model='1' stepping='1'/>
   <feature name='ht'/>
   <feature name='monitor'/>
   <feature name='osxsave'/>

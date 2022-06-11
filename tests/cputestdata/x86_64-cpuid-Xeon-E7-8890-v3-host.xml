@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Haswell</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='63' stepping='4'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

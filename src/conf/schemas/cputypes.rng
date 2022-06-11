@@ -343,6 +343,19 @@
           </element>
         </optional>
         <optional>
+          <element name="signature">
+            <attribute name="family">
+              <ref name="positiveInteger"/>
+            </attribute>
+            <attribute name="model">
+              <ref name="unsignedInt"/>
+            </attribute>
+            <attribute name="stepping">
+              <ref name="unsignedInt"/>
+            </attribute>
+          </element>
+        </optional>
+        <optional>
           <element name="counter">
             <attribute name="name">
               <text/>

@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Conroe</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='15' stepping='6'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

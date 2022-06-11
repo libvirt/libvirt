@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Penryn</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='23' stepping='10'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

@@ -243,6 +243,9 @@ virCPUDefCopyWithoutModel(const virCPUDef *cpu)
     copy->threads = cpu->threads;
     copy->arch = cpu->arch;
     copy->migratable = cpu->migratable;
+    copy->sigFamily = cpu->sigFamily;
+    copy->sigModel = cpu->sigModel;
+    copy->sigStepping = cpu->sigStepping;
 
     if (cpu->cache) {
         copy->cache = g_new0(virCPUCacheDef, 1);
@@ -419,6 +422,7 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
     if (def->type == VIR_CPU_TYPE_HOST) {
         g_autofree char *arch = virXPathString("string(./arch[1])", ctxt);
         xmlNodePtr counter_node = NULL;
+        xmlNodePtr signature_node = NULL;
 
         if (!arch) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
@@ -437,6 +441,26 @@ virCPUDefParseXML(xmlXPathContextPtr ctxt,
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("invalid microcode version"));
             return -1;
+        }
+
+        if ((signature_node = virXPathNode("./signature[1]", ctxt))) {
+            if (virXMLPropUInt(signature_node, "family", 10,
+                               VIR_XML_PROP_REQUIRED | VIR_XML_PROP_NONZERO,
+                               &def->sigFamily) < 0) {
+                return -1;
+            }
+
+            if (virXMLPropUInt(signature_node, "model", 10,
+                               VIR_XML_PROP_REQUIRED,
+                               &def->sigModel) < 0) {
+                return -1;
+            }
+
+            if (virXMLPropUInt(signature_node, "stepping", 10,
+                               VIR_XML_PROP_REQUIRED,
+                               &def->sigStepping) < 0) {
+                return -1;
+            }
         }
 
         if ((counter_node = virXPathNode("./counter[@name='tsc']", ctxt))) {
@@ -750,6 +774,14 @@ virCPUDefFormatBuf(virBuffer *buf,
     if (def->type == VIR_CPU_TYPE_HOST && def->microcodeVersion)
         virBufferAsprintf(buf, "<microcode version='%u'/>\n",
                           def->microcodeVersion);
+
+    if (def->type == VIR_CPU_TYPE_HOST && def->sigFamily) {
+        virBufferAddLit(buf, "<signature");
+        virBufferAsprintf(buf, " family='%u'", def->sigFamily);
+        virBufferAsprintf(buf, " model='%u'", def->sigModel);
+        virBufferAsprintf(buf, " stepping='%u'", def->sigStepping);
+        virBufferAddLit(buf, "/>\n");
+    }
 
     if (def->type == VIR_CPU_TYPE_HOST && def->tsc) {
         virBufferAddLit(buf, "<counter name='tsc'");

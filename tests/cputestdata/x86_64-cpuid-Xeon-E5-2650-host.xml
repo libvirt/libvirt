@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>SandyBridge-IBRS</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='45' stepping='7'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

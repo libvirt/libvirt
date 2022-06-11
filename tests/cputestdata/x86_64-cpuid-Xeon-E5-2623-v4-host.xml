@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Broadwell-IBRS</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='79' stepping='1'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

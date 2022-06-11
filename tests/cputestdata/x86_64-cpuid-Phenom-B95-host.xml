@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>athlon</model>
   <vendor>AMD</vendor>
+  <signature family='16' model='4' stepping='2'/>
   <feature name='mca'/>
   <feature name='clflush'/>
   <feature name='ht'/>

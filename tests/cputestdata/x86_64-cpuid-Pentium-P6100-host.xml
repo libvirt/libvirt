@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>core2duo</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='37' stepping='5'/>
   <feature name='ds'/>
   <feature name='acpi'/>
   <feature name='ss'/>

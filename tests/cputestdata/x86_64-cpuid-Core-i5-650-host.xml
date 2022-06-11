@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Westmere</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='37' stepping='2'/>
   <feature name='vme'/>
   <feature name='ds'/>
   <feature name='acpi'/>

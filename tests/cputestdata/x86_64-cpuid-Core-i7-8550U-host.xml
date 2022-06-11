@@ -2,6 +2,7 @@
   <arch>x86_64</arch>
   <model>Skylake-Client-noTSX-IBRS</model>
   <vendor>Intel</vendor>
+  <signature family='6' model='142' stepping='10'/>
   <feature name='ds'/>
   <feature name='acpi'/>
   <feature name='ss'/>
