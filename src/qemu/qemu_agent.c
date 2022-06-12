@@ -452,8 +452,9 @@ static void
 qemuAgentUnregister(qemuAgent *agent)
 {
     if (agent->watch) {
+        g_source_destroy(agent->watch);
         vir_g_source_unref(agent->watch, agent->context);
-        g_clear_pointer(&agent->watch, g_source_destroy);
+        agent->watch = NULL;
     }
 }
 

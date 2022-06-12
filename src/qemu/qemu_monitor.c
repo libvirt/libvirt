@@ -794,8 +794,9 @@ void
 qemuMonitorUnregister(qemuMonitor *mon)
 {
     if (mon->watch) {
+        g_source_destroy(mon->watch);
         vir_g_source_unref(mon->watch, mon->context);
-        g_clear_pointer(&mon->watch, g_source_destroy);
+        mon->watch = NULL;
     }
 }
 
