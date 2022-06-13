@@ -295,9 +295,9 @@ In order to make virtio devices work, we need to use
 ``<driver iommu='on'/>`` inside the given device XML element in order
 to enable DMA API in the virtio driver.
 
-Starting with QEMU 6.0.0 QEMU will set this for us by default. For earlier versions though, you will need to explicitly enable this in the device XML as follows:
-
-::
+Starting with QEMU 6.0.0 QEMU will set this for us by default. For earlier
+versions though, you will need to explicitly enable this in the device XML as
+follows::
 
    # virsh edit <domain>
    <domain>
