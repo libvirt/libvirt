@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-07 11:46+0000\n"
+"PO-Revision-Date: 2022-06-13 12:11+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -10287,163 +10287,158 @@ msgstr "Felaktiga parametrar macaddr=%p allowRetry=%p"
 msgid "Invalid partial specification for virtio ccw address"
 msgstr "Felaktig partiell specifikation av virtio ccw-adress"
 
-#, fuzzy
 msgid "Invalid partition type"
-msgstr "Ogiltig kontext"
+msgstr "Felaktig partitionstyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid passthrough mode %s"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktigt genomgångsläge: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid peer '%s' in <ip>"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "Felaktig motpart ”%s” i <ip>"
 
 msgid "Invalid persistent_state value, either 'yes' or 'no'"
-msgstr ""
+msgstr "Felaktigt värde på\"persistent_state, antingen ”yes” eller ”no”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid pool type '%s'"
-msgstr "Ogiltiga portar: %s"
+msgstr "Felaktig pooltyp ”%s”"
 
 #, c-format
 msgid "Invalid port number: %s"
 msgstr "Ogiltigt portnummer: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid port range '%u-%u'."
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktigt portintervall ”%u-%u”."
 
 #, c-format
 msgid "Invalid ports: %i"
-msgstr ""
+msgstr "Felaktiga portar: %i"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid prefix or netmask for '%s'"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktigt prefix eller nätmask för ”%s”"
 
 #, c-format
 msgid "Invalid prefix value '%s' in <ip>"
-msgstr ""
+msgstr "Felaktigt prefixvärde ”%s” i <ip>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid priority '%s' for filter '%s'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "Felaktig prioritet ”%s” för filtret ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid rate '%s' specified"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "Felaktig hastighet ”%s” angiven"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid relative path '%s'"
-msgstr "Ogiltiga vektorer: %s"
+msgstr "Felaktig relativ sökväg ”%s”"
 
-#, fuzzy
 msgid "Invalid resctrl monitor"
-msgstr "Ogiltig kontext"
+msgstr "Felaktig resctrl-övervakare"
 
-#, fuzzy
 msgid "Invalid secret"
-msgstr "Ogiltig kontext"
+msgstr "Felaktig hemlighet"
 
 #, c-format
 msgid "Invalid secret: %s"
 msgstr "Ogiltig hemlighet: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid security label %s"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktig säkerhetsetikett %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid security label '%s'"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktig säkerhetsetikett ”%s”"
 
 msgid "Invalid setting for HPT resizing"
-msgstr ""
+msgstr "Felaktig inställning för HPT-storleksändring"
 
 msgid "Invalid setting for HTM state"
-msgstr ""
+msgstr "Felaktig inställning för HTM-tillstånd"
 
 msgid "Invalid setting for ccf-assist state"
-msgstr ""
+msgstr "Felaktig inställning för ccf-assist-tillstånd"
 
 msgid "Invalid setting for nested HV state"
-msgstr ""
+msgstr "Felaktig inställning för nästat HV-tillstånd"
 
 #, c-format
 msgid "Invalid source mode: %s"
-msgstr ""
+msgstr "Felaktigt källäge: %s"
 
 #, c-format
 msgid ""
 "Invalid specification for virtio ccw address: cssid='0x%x' ssid='0x%x' "
 "devno='0x%04x'"
 msgstr ""
+"Felaktig specifikation av virtio ccw-adress: cssid=”0x%x” ssid=”0x%x” "
+"devno=”0x%04x”"
 
 #, c-format
 msgid "Invalid state '%s' in domain snapshot XML"
-msgstr ""
+msgstr "Felaktigt tillstånd ”%s” i domänögonblicksbildens XML"
 
-#, fuzzy
 msgid "Invalid state for this operation"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt tillstånd för denna åtgärd"
 
-#, fuzzy
 msgid "Invalid state transition"
-msgstr "ogiltig vakthundsåtgärd"
+msgstr "Felaktig tillståndsövergång"
 
-#, fuzzy
 msgid "Invalid stream hole"
-msgstr "Ogiltigt CPU-funktionsnamn"
+msgstr "Felaktigt strömhål"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid string '%s' for escape sequence"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "Felaktig sträng ”%s” för specialsekvensen"
 
-#, fuzzy
 msgid "Invalid suspend target"
-msgstr "Ogiltig kontext"
+msgstr "Felaktigt sovmål"
 
 msgid "Invalid syntax for --set, expecting name=value"
-msgstr ""
+msgstr "Felaktig syntax för --set, namn=värde förväntades"
 
-#, fuzzy
 msgid "Invalid target"
-msgstr "Ogiltig kontext"
+msgstr "Felaktigt mål"
 
 #, c-format
 msgid "Invalid target domain state '%s'. Refusing snapshot reversion"
-msgstr ""
+msgstr "Felaktig måldomänstillstånd ”%s”. Vägrar återgå till ögonblicksbild"
 
 #, c-format
 msgid "Invalid target index '%i' in PCI controller"
-msgstr ""
+msgstr "Felaktigt målindex ”%i” i PCI-styrenhet"
 
-#, fuzzy
 msgid "Invalid target model for serial device"
-msgstr "mål för diskenhet"
+msgstr "Felaktig målmodell för serieenhet"
 
 #, c-format
 msgid ""
 "Invalid to specify MAC address '%s' in network '%s' IPv6 static host "
 "definition"
 msgstr ""
+"Felaktigt angiven MAC-adress ”%s” i nätverket ”%s” IPv6 statisk "
+"värddefinition"
 
 #, c-format
 msgid "Invalid type '%s' requested for parameter '%s', actual type is '%s'"
-msgstr ""
+msgstr "Felaktig typ ”%s” begärd för parametern ”%s”, faktiskt typ är ”%s”"
 
 #, c-format
 msgid "Invalid unsigned integer value '%s' in file '%s'"
-msgstr ""
+msgstr "Felaktigt teckenlöst heltalsvärde ”%s” i filen ”%s”"
 
 #, c-format
 msgid "Invalid unsigned long long value '%s' in file '%s'"
-msgstr ""
+msgstr "Felaktigt teckenlöst långlångt värde ”%s” i filen ”%s”"
 
 #, c-format
 msgid "Invalid unsigned scaled integer value '%s' in file '%s'"
-msgstr ""
+msgstr "Felaktigt teckenlöst skalat heltalsvärde ”%s” i filen ”%s”"
 
 #, c-format
 msgid ""
@@ -10451,99 +10446,107 @@ msgid ""
 "supported for interface type 'network' with forward type 'nat', 'route', "
 "'open' or none"
 msgstr ""
+"Felaktig användning av ”floor” i gränssnittet med MAC-adress %s – ”floor” "
+"stödjs endast för gränssnittstypen ”network” med vidarebefordranstypen ”nat”"
+", ”route”, ”open” eller ingen"
 
 #, c-format
 msgid ""
 "Invalid use of 'floor' on interface with MAC address %s - network '%s' has "
 "no inbound QoS set"
 msgstr ""
+"Felaktig användning av ”floor” i gränssnittet med MAC-adress %s – nätverket "
+"”%s” har ingen ingående QoS-mängd"
 
 #, c-format
 msgid "Invalid uuid '%s' for new mdev device"
-msgstr ""
+msgstr "Felaktigt uuid ”%s” för ny mdev-enhet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value '%s' for '%s'"
-msgstr "Ogiltig busstyp ”%s” för hårddisk"
+msgstr "Felaktigt värde ”%s” för ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value '%s' for VMX entry '%s'"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde ”%s” för VMX-posten ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value '%s' for element or attribute '%s'"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde ”%s” för elementet eller attributet ”%s”"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': '%s'."
-msgstr ""
+msgstr "Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”."
 
 #, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected integer "
 "value"
 msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett heltalsvärde "
+"förväntades"
 
 #, c-format
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
 msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett icke-negativt "
+"heltalsvärde förväntades"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
 msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: noll är inte tillåtet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for field '%s': expected double"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på fältet ”%s”: en dubbel förväntades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for field '%s': expected int"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på fältet ”%s”: ett heltal förväntades"
 
 #, c-format
 msgid "Invalid value for field '%s': expected long long"
-msgstr ""
+msgstr "Felaktigt värde på fältet ”%s”: en långlång förväntades"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for field '%s': expected unsigned int"
-msgstr "Misslyckades att konvertera ”%s” till teckenlöst heltal"
+msgstr "Felaktigt värde på fältet ”%s”: ett teckenlöst heltal förväntades"
 
 #, c-format
 msgid "Invalid value for field '%s': expected unsigned long long"
-msgstr ""
+msgstr "Felaktigt värde på fältet ”%s”: en teckenlös långlång förväntades"
 
-#, fuzzy
 msgid "Invalid value for number of CPUs to show"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på antalet CPU:er att visa"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value for option %s"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på alternativet %s"
 
-#, fuzzy
 msgid "Invalid value for start CPU"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på start-CPU"
 
 msgid "Invalid value for timeout"
 msgstr "Felaktigt värde för tidsgräns"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of %d for I/O weight"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på %d som I/O-vikt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'cpuset': %s"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på ”cpuset”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'nodemask': %s"
-msgstr "Ogiltiga vektorer: %s"
+msgstr "Felaktigt värde på ”nodemask”: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid value of 'nodeset': %s"
-msgstr "Felaktigt värde för tidsgräns"
+msgstr "Felaktigt värde på ”nodeset”: %s"
 
 #, c-format
 msgid "Invalid vectors: %i"
