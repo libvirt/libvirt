@@ -194,6 +194,26 @@ package manager provided by your distribution to install this package.
 guideline in the sections above in place of ``virt-admin`` in the examples
 below if needed.
 
+
+Timeout of the configured daemon
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Common deployments of libvirt start the libvirt daemons via socket activation
+and with automatic shutdown timeout of 120 seconds when no client or object is
+handled by the daemon. When a timeout is reached the daemon stops and all
+settings done during runtime via ``virt-admin`` are discarded. The daemon then
+is re-started with another command.
+
+To prevent auto-shutdown of the daemon you can use the following command::
+
+  virt-admin daemon-timeout 0
+
+The above is introduced in libvirt-8.6.0.
+
+
+Adding filters and outputs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 The following command allows to query the list of currently active log filters:
 
 ::
