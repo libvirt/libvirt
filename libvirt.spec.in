@@ -22,7 +22,7 @@
 %define arches_dmidecode        %{arches_x86}
 %define arches_xen              %{arches_x86} aarch64
 %if 0%{?fedora} >= 36
-%define arches_xen              x86_64 aarch64
+    %define arches_xen              x86_64 aarch64
 %endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
