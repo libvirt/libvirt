@@ -751,7 +751,7 @@ qemuFirmwareMappingFlashFormat(virJSONValue *mapping,
             return -1;
 
         if (virJSONValueObjectAppend(mapping,
-                                 "nvram-template",
+                                     "nvram-template",
                                      &nvram_template) < 0)
             return -1;
     }
