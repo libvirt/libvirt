@@ -463,6 +463,18 @@ adminConnectSetLoggingFilters(virNetDaemon *dmn G_GNUC_UNUSED,
     return virLogSetFilters(filters);
 }
 
+
+static int
+adminConnectSetDaemonTimeout(virNetDaemon *dmn,
+                             unsigned int timeout,
+                             unsigned int flags)
+{
+    virCheckFlags(0, -1);
+
+    return virNetDaemonAutoShutdown(dmn, timeout);
+}
+
+
 static int
 adminDispatchConnectGetLoggingOutputs(virNetServer *server G_GNUC_UNUSED,
                                       virNetServerClient *client G_GNUC_UNUSED,

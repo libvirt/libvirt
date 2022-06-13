@@ -1327,3 +1327,37 @@ virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
     virDispatchError(NULL);
     return -1;
 }
+
+
+/**
+ * virAdmConnectSetDaemonTimeout:
+ * @conn: pointer to an active admin connection
+ * @timeout: timeout to set in seconds (0 disables timeout)
+ * @flags: extra flags; not used yet, so callers should always pass 0
+ *
+ * Reconfigure the existing timeout of the daemon to @timeout. Setting timeout
+ * to 0 disables the daemon timeout.
+ *
+ * Returns 0 on success, -1 on error.
+ *
+ * Since: 8.6.0
+ */
+int
+virAdmConnectSetDaemonTimeout(virAdmConnectPtr conn,
+                              unsigned int timeout,
+                              unsigned int flags)
+{
+    int ret;
+
+    VIR_DEBUG("conn=%p, timeout=%u, flags=0x%x", conn, timeout, flags);
+
+    virResetLastError();
+    virCheckAdmConnectReturn(conn, -1);
+
+    if ((ret = remoteAdminConnectSetDaemonTimeout(conn, timeout, flags)) < 0) {
+        virDispatchError(NULL);
+        return -1;
+    }
+
+    return ret;
+}

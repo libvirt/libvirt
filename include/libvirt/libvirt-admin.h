@@ -480,6 +480,10 @@ int virAdmConnectSetLoggingFilters(virAdmConnectPtr conn,
                                    const char *filters,
                                    unsigned int flags);
 
+int virAdmConnectSetDaemonTimeout(virAdmConnectPtr conn,
+                                  unsigned int timeout,
+                                  unsigned int flags);
+
 # ifdef __cplusplus
 }
 # endif

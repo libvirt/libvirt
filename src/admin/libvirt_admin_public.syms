@@ -48,3 +48,8 @@ LIBVIRT_ADMIN_3.0.0 {
         virAdmConnectSetLoggingOutputs;
         virAdmConnectSetLoggingFilters;
 } LIBVIRT_ADMIN_2.0.0;
+
+LIBVIRT_ADMIN_8.6.0 {
+    global:
+        virAdmConnectSetDaemonTimeout;
+} LIBVIRT_ADMIN_3.0.0;

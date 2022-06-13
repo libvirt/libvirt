@@ -144,6 +144,10 @@ struct admin_connect_set_logging_filters_args {
         admin_string               filters;
         u_int                      flags;
 };
+struct admin_connect_set_daemon_timeout_args {
+        u_int                      timeout;
+        u_int                      flags;
+};
 enum admin_procedure {
         ADMIN_PROC_CONNECT_OPEN = 1,
         ADMIN_PROC_CONNECT_CLOSE = 2,
@@ -163,4 +167,5 @@ enum admin_procedure {
         ADMIN_PROC_CONNECT_SET_LOGGING_OUTPUTS = 16,
         ADMIN_PROC_CONNECT_SET_LOGGING_FILTERS = 17,
         ADMIN_PROC_SERVER_UPDATE_TLS_FILES = 18,
+        ADMIN_PROC_CONNECT_SET_DAEMON_TIMEOUT       = 19,
 };

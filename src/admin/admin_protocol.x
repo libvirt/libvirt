@@ -214,6 +214,11 @@ struct admin_connect_set_logging_filters_args {
     unsigned int flags;
 };
 
+struct admin_connect_set_daemon_timeout_args {
+    unsigned int timeout;
+    unsigned int flags;
+};
+
 /* Define the program number, protocol version and procedure numbers here. */
 const ADMIN_PROGRAM = 0x06900690;
 const ADMIN_PROTOCOL_VERSION = 1;
@@ -324,5 +329,10 @@ enum admin_procedure {
     /**
      * @generate: both
      */
-    ADMIN_PROC_SERVER_UPDATE_TLS_FILES = 18
+    ADMIN_PROC_SERVER_UPDATE_TLS_FILES = 18,
+
+    /**
+     * @generate: both
+     */
+    ADMIN_PROC_CONNECT_SET_DAEMON_TIMEOUT = 19
 };
