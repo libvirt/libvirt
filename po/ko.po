@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-05-26 15:17+0000\n"
+"PO-Revision-Date: 2022-06-13 08:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -14994,11 +14994,11 @@ msgstr "TPM 1.2는 SPAPR 장치 모델에서 지원되지 않습니다"
 
 #, c-format
 msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr "TPM 프록시 모델 %s는 PPC64 게스트만 사용할 수 있습니다"
+msgstr "TPM 프락시 모델 %s는 PPC64 게스트만 사용 할 수 있습니다"
 
 #, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
-msgstr "TPM 프록시 모델 %s에는 '통과' 백엔드가 필요합니다"
+msgstr "TPM 프락시 모델 %s에는 '통과' 백엔드가 필요합니다"
 
 #, c-format
 msgid "TPM device path %s is invalid"
@@ -19061,7 +19061,7 @@ msgstr "관리되지 않는 PCI 장치 %s는 호스트에서 수동으로 분리
 
 #, c-format
 msgid "Unnkown proxy type '%s'"
-msgstr "알 수 없는 프록시 유형 '%s'"
+msgstr "알 수 없는 프락시 유형 '%s'"
 
 msgid "Unpaused"
 msgstr "일시 정지 해제"
@@ -19985,7 +19985,7 @@ msgstr ""
 msgid ""
 "a maximum of two TPM devices is supported, one of them being a TPM Proxy "
 "device"
-msgstr "최대 2개의 TPM 장치가 지원되며 그 중 하나는 TPM 프록시 장치입니다"
+msgstr "최대 2개의 TPM 장치가 지원되며 그 중 하나는 TPM 프락시 장치입니다"
 
 msgid "a redefined checkpoint must have a name"
 msgstr "재 정의된 점검점은 이름을 지정해야 합니다"
@@ -30855,7 +30855,7 @@ msgid "nested JSON array to commandline conversion is not supported"
 msgstr "중첩된 JSON 배열에서 명령줄로의 변환은 지원되지 않습니다"
 
 msgid "netcat path not valid with native proxy mode"
-msgstr "netcat 경로가 기본 프록시 모드에서 유효하지 않습니다"
+msgstr "netcat 경로가 기본 프락시 방식에서 유효하지 않습니다"
 
 msgid "netdir"
 msgstr "네트워크 디렉토리(netdir)"
@@ -31972,7 +31972,7 @@ msgid "only a single TPM Proxy device is supported"
 msgstr "단일 TPM 프락시 장치만이 지원됨"
 
 msgid "only a single TPM non-proxy device is supported"
-msgstr "단일 TPM 비프록시 장치만 지원됩니다"
+msgstr "단일 TPM 비-프락시 장치만 지원됩니다"
 
 msgid "only a single memory balloon device is supported"
 msgstr "단일 메모리 부울 장치만이 지원됨"
