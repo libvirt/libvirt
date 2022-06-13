@@ -2405,6 +2405,8 @@ class docBuilder:
 
         # NB: this is consumed by a regex in 'getAPIFilenames' in hvsupport.pl
         if id.type == "function":
+            if name not in self.versions:
+                raise Exception("Missing symbol file entry for '%s'" % name)
             ver = self.versions[name]
             if ver is None:
                 raise Exception("Missing version for '%s'" % name)
