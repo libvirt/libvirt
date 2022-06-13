@@ -1049,9 +1049,8 @@ int main(int argc, char **argv) {
     }
 
     if (timeout > 0) {
-        VIR_DEBUG("Registering shutdown timeout %d", timeout);
-        virNetDaemonAutoShutdown(lockDaemon->dmn,
-                                 timeout);
+        if (virNetDaemonAutoShutdown(lockDaemon->dmn, timeout) < 0)
+            goto cleanup;
     }
 
     if ((virLockDaemonSetupSignals(lockDaemon->dmn)) < 0) {

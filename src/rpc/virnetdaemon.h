@@ -46,8 +46,8 @@ virJSONValue *virNetDaemonPreExecRestart(virNetDaemon *dmn);
 
 bool virNetDaemonIsPrivileged(virNetDaemon *dmn);
 
-void virNetDaemonAutoShutdown(virNetDaemon *dmn,
-                              unsigned int timeout);
+int virNetDaemonAutoShutdown(virNetDaemon *dmn,
+                             unsigned int timeout) G_GNUC_WARN_UNUSED_RESULT;
 
 void virNetDaemonAddShutdownInhibition(virNetDaemon *dmn);
 void virNetDaemonRemoveShutdownInhibition(virNetDaemon *dmn);

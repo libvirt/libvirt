@@ -73,6 +73,7 @@ struct _virNetDaemon {
     bool finished;
     bool graceful;
     bool execRestart;
+    bool running; /* the daemon has reached the running phase */
 
     unsigned int autoShutdownTimeout;
     int autoShutdownTimerID;
@@ -422,7 +423,7 @@ virNetDaemonAutoShutdownTimer(int timerid G_GNUC_UNUSED,
 static int
 virNetDaemonShutdownTimerRegister(virNetDaemon *dmn)
 {
-    if (dmn->autoShutdownTimeout == 0)
+    if (dmn->autoShutdownTimerID != -1)
         return 0;
 
     if ((dmn->autoShutdownTimerID = virEventAddTimeout(-1,
@@ -440,7 +441,7 @@ virNetDaemonShutdownTimerRegister(virNetDaemon *dmn)
 static void
 virNetDaemonShutdownTimerUpdate(virNetDaemon *dmn)
 {
-    if (dmn->autoShutdownTimeout == 0)
+    if (dmn->autoShutdownTimerID == -1)
         return;
 
     /* A shutdown timeout is specified, so check
@@ -448,13 +449,15 @@ virNetDaemonShutdownTimerUpdate(virNetDaemon *dmn)
      * shutdown after timeout seconds
      */
     if (dmn->autoShutdownTimerActive) {
-        if (virNetDaemonHasClients(dmn)) {
+        if (virNetDaemonHasClients(dmn) ||
+            dmn->autoShutdownTimeout == 0) {
             VIR_DEBUG("Deactivating shutdown timer %d", dmn->autoShutdownTimerID);
             virEventUpdateTimeout(dmn->autoShutdownTimerID, -1);
             dmn->autoShutdownTimerActive = false;
         }
     } else {
-        if (!virNetDaemonHasClients(dmn)) {
+        if (!virNetDaemonHasClients(dmn) &&
+            dmn->autoShutdownTimeout != 0) {
             VIR_DEBUG("Activating shutdown timer %d", dmn->autoShutdownTimerID);
             virEventUpdateTimeout(dmn->autoShutdownTimerID,
                                   dmn->autoShutdownTimeout * 1000);
@@ -464,13 +467,25 @@ virNetDaemonShutdownTimerUpdate(virNetDaemon *dmn)
 }
 
 
-void
+int
 virNetDaemonAutoShutdown(virNetDaemon *dmn,
                          unsigned int timeout)
 {
     VIR_LOCK_GUARD lock = virObjectLockGuard(dmn);
 
+    VIR_DEBUG("Registering shutdown timeout %u", timeout);
+
+    if (timeout > 0) {
+        if (virNetDaemonShutdownTimerRegister(dmn) < 0)
+            return -1;
+    }
+
     dmn->autoShutdownTimeout = timeout;
+
+    if (dmn->running)
+        virNetDaemonShutdownTimerUpdate(dmn);
+
+    return 0;
 }
 
 
@@ -809,9 +824,7 @@ virNetDaemonRun(virNetDaemon *dmn)
     dmn->finishTimer = -1;
     dmn->finished = false;
     dmn->graceful = false;
-
-    if (virNetDaemonShutdownTimerRegister(dmn) < 0)
-        goto cleanup;
+    dmn->running = true;
 
     /* We are accepting connections now. Notify systemd
      * so it can start dependent services. */
