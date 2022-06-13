@@ -1977,7 +1977,7 @@ virNetDevSaveNetConfig(const char *linkdev, int vf,
     if (!(fileStr = virJSONValueToString(configJSON, true)))
         return -1;
 
-    if (virFileWriteStr(filePath, fileStr, O_CREAT|O_TRUNC|O_WRONLY) < 0) {
+    if (virFileWriteStr(filePath, fileStr, 0600) < 0) {
         virReportSystemError(errno, _("Unable to preserve mac/vlan tag "
                                       "for device = %s, vf = %d"), linkdev, vf);
         return -1;
