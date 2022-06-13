@@ -8736,6 +8736,8 @@ qemuBuildInterfaceConnect(virDomainObj *vm,
     size_t tapfdSize = net->driver.virtio.queues;
     g_autofree int *tapfd = g_new0(int, tapfdSize + 1);
 
+    memset(tapfd, -1, (tapfdSize + 1) * sizeof(*tapfd));
+
     if (tapfdSize == 0)
         tapfdSize = 1;
 
