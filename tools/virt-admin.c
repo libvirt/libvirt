@@ -1071,6 +1071,45 @@ static const vshCmdInfo info_daemon_log_outputs[] = {
     {.name = NULL}
 };
 
+static const vshCmdOptDef opts_daemon_timeout[] = {
+    {.name = "timeout",
+     .type = VSH_OT_INT,
+     .help = N_("number of seconds the daemon will run without any active connection"),
+     .flags = VSH_OFLAG_REQ | VSH_OFLAG_REQ_OPT
+    },
+    {.name = NULL}
+};
+
+static bool
+cmdDaemonTimeout(vshControl *ctl, const vshCmd *cmd)
+{
+    vshAdmControl *priv = ctl->privData;
+    unsigned int timeout = 0;
+
+    if (vshCommandOptUInt(ctl, cmd, "timeout", &timeout) < 0)
+        return false;
+
+    if (virAdmConnectSetDaemonTimeout(priv->conn, timeout, 0) < 0)
+        return false;
+
+    return true;
+}
+
+
+/* --------------------------
+ * Command daemon-timeout
+ * --------------------------
+ */
+static const vshCmdInfo info_daemon_timeout[] = {
+    {.name = "help",
+     .data = N_("set the auto shutdown timeout of the daemon")
+    },
+    {.name = "desc",
+     .data = N_("set the auto shutdown timeout of the daemon")
+    },
+    {.name = NULL}
+};
+
 static const vshCmdOptDef opts_daemon_log_outputs[] = {
     {.name = "outputs",
      .type = VSH_OT_STRING,
@@ -1496,6 +1535,12 @@ static const vshCmdDef managementCmds[] = {
      .handler = cmdDaemonLogOutputs,
      .opts = opts_daemon_log_outputs,
      .info = info_daemon_log_outputs,
+     .flags = 0
+    },
+    {.name = "daemon-timeout",
+     .handler = cmdDaemonTimeout,
+     .opts = opts_daemon_timeout,
+     .info = info_daemon_timeout,
      .flags = 0
     },
     {.name = NULL}
