@@ -638,7 +638,10 @@ virDomainDiskDefValidateStartupPolicy(const virDomainDiskDef *disk)
     if (disk->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_DEFAULT)
         return 0;
 
-    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
+    /* We want to allow any startup policy for un-translated _TYPE_VOLUME disks.
+     * virStorageSourceGetActualType returns _TYPE_VOLUME in such case */
+    if (virStorageSourceGetActualType(disk->src) != VIR_STORAGE_TYPE_VOLUME &&
+        !virStorageSourceIsLocalStorage(disk->src)) {
         virReportError(VIR_ERR_XML_ERROR,
                        _("disk startupPolicy '%s' is not allowed for disk of '%s' type"),
                        virDomainStartupPolicyTypeToString(disk->startupPolicy),
