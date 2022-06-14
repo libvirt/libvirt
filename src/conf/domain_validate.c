@@ -632,6 +632,32 @@ virDomainDiskDefSourceLUNValidate(const virStorageSource *src)
 }
 
 
+int
+virDomainDiskDefValidateStartupPolicy(const virDomainDiskDef *disk)
+{
+    if (disk->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_DEFAULT)
+        return 0;
+
+    if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("disk startupPolicy '%s' is not allowed for disk of '%s' type"),
+                       virDomainStartupPolicyTypeToString(disk->startupPolicy),
+                       virStorageTypeToString(disk->src->type));
+        return -1;
+    }
+
+    if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
+        disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
+        disk->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
+        virReportError(VIR_ERR_XML_ERROR, "%s",
+                       _("disk startupPolicy 'requisite' is allowed only for cdrom or floppy"));
+        return -1;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDiskDefValidate(const virDomainDef *def,
                          const virDomainDiskDef *disk)
@@ -852,23 +878,8 @@ virDomainDiskDefValidate(const virDomainDef *def,
         return -1;
     }
 
-    if (disk->startupPolicy != VIR_DOMAIN_STARTUP_POLICY_DEFAULT) {
-        if (disk->src->type == VIR_STORAGE_TYPE_NETWORK) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("disk startupPolicy '%s' is not allowed for disk of '%s' type"),
-                           virDomainStartupPolicyTypeToString(disk->startupPolicy),
-                           virStorageTypeToString(disk->src->type));
-            return -1;
-        }
-
-        if (disk->device != VIR_DOMAIN_DISK_DEVICE_CDROM &&
-            disk->device != VIR_DOMAIN_DISK_DEVICE_FLOPPY &&
-            disk->startupPolicy == VIR_DOMAIN_STARTUP_POLICY_REQUISITE) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("disk startupPolicy 'requisite' is allowed only for cdrom or floppy"));
-            return -1;
-        }
-    }
+    if (virDomainDiskDefValidateStartupPolicy(disk) < 0)
+        return -1;
 
     if (disk->wwn && !virValidateWWN(disk->wwn))
         return -1;

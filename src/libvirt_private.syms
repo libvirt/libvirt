@@ -779,6 +779,7 @@ virDomainActualNetDefValidate;
 virDomainDefValidate;
 virDomainDeviceValidateAliasForHotplug;
 virDomainDiskDefSourceLUNValidate;
+virDomainDiskDefValidateStartupPolicy;
 
 
 # conf/interface_conf.h

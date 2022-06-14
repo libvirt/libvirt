@@ -41,4 +41,6 @@ int virDomainDeviceDefValidate(const virDomainDeviceDef *dev,
 
 int virDomainDiskDefValidateSource(const virStorageSource *src);
 
+int virDomainDiskDefValidateStartupPolicy(const virDomainDiskDef *disk);
+
 int virDomainDiskDefSourceLUNValidate(const virStorageSource *src);
