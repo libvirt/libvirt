@@ -4873,7 +4873,7 @@ virDomainDefPostParseMemory(virDomainDef *def,
 }
 
 
-static void
+static int
 virDomainDefPostParseOs(virDomainDef *def)
 {
     if (def->os.firmwareFeatures &&
@@ -4887,13 +4887,15 @@ virDomainDefPostParseOs(virDomainDef *def)
     }
 
     if (!def->os.loader)
-        return;
+        return 0;
 
     if (def->os.loader->path &&
         def->os.loader->type == VIR_DOMAIN_LOADER_TYPE_NONE) {
         /* By default, loader is type of 'rom' */
         def->os.loader->type = VIR_DOMAIN_LOADER_TYPE_ROM;
     }
+
+    return 0;
 }
 
 
@@ -6214,7 +6216,8 @@ virDomainDefPostParseCommon(virDomainDef *def,
     if (virDomainDefPostParseMemory(def, data->parseFlags) < 0)
         return -1;
 
-    virDomainDefPostParseOs(def);
+    if (virDomainDefPostParseOs(def) < 0)
+        return -1;
 
     virDomainDefPostParseMemtune(def);
 
