@@ -4876,6 +4876,16 @@ virDomainDefPostParseMemory(virDomainDef *def,
 static void
 virDomainDefPostParseOs(virDomainDef *def)
 {
+    if (def->os.firmwareFeatures &&
+        def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_ENROLLED_KEYS] == VIR_TRISTATE_BOOL_YES) {
+
+        /* For all non-broken firmware builds, enrolled-keys implies
+         * secure-boot, and having the Secure Boot keys in the NVRAM file
+         * when the firmware doesn't support the Secure Boot feature doesn't
+         * make sense anyway. Reflect this fact explicitly in the XML */
+        def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] = VIR_TRISTATE_BOOL_YES;
+    }
+
     if (!def->os.loader)
         return;
 
