@@ -11,13 +11,14 @@
 # Yulia <yulia.poyarkova@redhat.com>, 2012, 2013, 2014
 # yuliya <ypoyarko@redhat.com>, 2015, 2016
 # Olesya Gerasimenko <gammaray@basealt.ru>, 2020.
+# Sergey A. <sw@atrus.ru>, 2022.
 msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2020-09-29 12:11+0000\n"
-"Last-Translator: Olesya Gerasimenko <gammaray@basealt.ru>\n"
+"PO-Revision-Date: 2022-06-15 15:18+0000\n"
+"Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
 "Language: ru\n"
@@ -26,7 +27,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.2.2\n"
+"X-Generator: Weblate 4.12.2\n"
 
 msgid ""
 "\n"
@@ -462,10 +463,10 @@ msgid " %s (help keyword '%s'):\n"
 msgstr " %s (ключевое слово «%s»):\n"
 
 msgid " Hypervisors:"
-msgstr "Гипервизоры:"
+msgstr " Гипервизоры:"
 
 msgid " Miscellaneous:"
-msgstr "Прочее:"
+msgstr " Прочее:"
 
 msgid " Networking:"
 msgstr "Сеть:"
