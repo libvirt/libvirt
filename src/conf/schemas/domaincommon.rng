@@ -1967,22 +1967,24 @@
   </define>
 
   <define name="diskSourceNetworkProtocolPropsCommon">
-    <optional>
-      <element name="readahead">
-        <attribute name="size">
-          <ref name="positiveInteger"/>
-        </attribute>
-        <empty/>
-      </element>
-    </optional>
-    <optional>
-      <element name="timeout">
-        <attribute name="seconds">
-          <ref name="positiveInteger"/>
-        </attribute>
-        <empty/>
-      </element>
-    </optional>
+    <interleave>
+      <optional>
+        <element name="readahead">
+          <attribute name="size">
+            <ref name="positiveInteger"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+      <optional>
+        <element name="timeout">
+          <attribute name="seconds">
+            <ref name="positiveInteger"/>
+          </attribute>
+          <empty/>
+        </element>
+      </optional>
+    </interleave>
   </define>
 
   <define name="diskSourceNetworkProtocolSSLVerify">
