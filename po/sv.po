@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-13 12:11+0000\n"
+"PO-Revision-Date: 2022-06-15 15:18+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -10550,78 +10550,80 @@ msgstr "Felaktigt värde på ”nodeset”: %s"
 
 #, c-format
 msgid "Invalid vectors: %i"
-msgstr ""
+msgstr "Felaktiga vektorer: %i"
 
 #, c-format
 msgid "Invalid vendor element in CPU model %s"
-msgstr ""
+msgstr "Felaktigt leverantörselement i CPU-modell %s"
 
 msgid "Invalid virNetLibsshSession *"
-msgstr ""
+msgstr "Felaktig virNetLibsshSession *"
 
 msgid "Invalid virNetSSHSession *"
-msgstr ""
+msgstr "Felaktig virNetSSHSession *"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid vnuma configuration for vnode %zu"
-msgstr "kunde inte läsa konfigurationsfilen %s"
+msgstr "Felaktig vnuma-konfiguration för vnode %zu"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid volume name %s"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktigt volymnamn %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Invalid vport operation (%d)"
-msgstr "Ogiltigt portnummer: %s"
+msgstr "Felaktig vport-åtgärd (%d)"
 
 #, c-format
 msgid "Invocation of %s returned an error: %s (%d)"
-msgstr ""
+msgstr "Anrop av %s returnerade ett fel: %s (%d)"
 
 msgid "Invoke fstrim on domain's mounted filesystems."
-msgstr ""
+msgstr "Anrop av fstrim på domänens monterade filsystem."
 
 msgid "Iteration:"
-msgstr ""
+msgstr "Upprepning:"
 
 #, c-format
 msgid "Iterator ID exceeds maximum ID of %u"
-msgstr ""
+msgstr "Upprepnings-ID överskrider maximalt ID på %u"
 
 msgid "JSON array -> commandline conversion function not provided"
-msgstr ""
+msgstr "JSON-vektor → konverteringsfunktion för kommandoraden gavs inte"
 
 #, c-format
 msgid "JSON backing volume definition '%s' lacks 'file' object"
-msgstr ""
+msgstr "JSON-definition av stödvolymen ”%s” saknar ett ”file”-objekt"
 
 #, c-format
 msgid "JSON backing volume definition '%s' lacks driver name"
-msgstr ""
+msgstr "JSON-definition av stödvolymen ”%s” saknar ett drivrutinsnamn"
 
 #, c-format
 msgid "JSON backing volume definition '%s' must not have nested format drivers"
 msgstr ""
+"JSON-definition av stödvolymen ”%s” får inte ha nästade formatdrivrutiner"
 
 #, c-format
 msgid "Job submission failed on interface '%s'"
-msgstr ""
+msgstr "Jobbskickandet misslyckades på gränssnittet ”%s”"
 
 msgid "Job type:"
 msgstr "Jobbtyp:"
 
 msgid "Just a hint to ignore contiguous free ranges smaller than this (Bytes)"
 msgstr ""
+"Bara ett tips att ignorera sammanhängande fria intervall mindre än detta "
+"(byte)"
 
 msgid "KVM device assignment is no longer supported on this system"
-msgstr ""
+msgstr "KVM-enhetstilldelning stödjs inte längre på detta system"
 
-#, fuzzy
 msgid "KVM is not supported on this platform"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "KVM stödjs inte på denna plattform"
 
 msgid "Kernel does not provide mount namespace"
-msgstr ""
+msgstr "Kärnan tillhandahåller inte monteringsnamnrymder"
 
 #, fuzzy
 msgid "Kernel does not support private devpts"
