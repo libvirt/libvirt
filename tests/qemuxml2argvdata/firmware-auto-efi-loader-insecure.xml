@@ -1,0 +1,18 @@
+<domain type='kvm'>
+  <name>fedora</name>
+  <uuid>63840878-0deb-4095-97e6-fc444d9bc9fa</uuid>
+  <memory unit='KiB'>8192</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os firmware='efi'>
+    <type arch='x86_64' machine='pc-q35-4.0'>hvm</type>
+    <loader secure='no'/>
+  </os>
+  <features>
+    <acpi/>
+  </features>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>
