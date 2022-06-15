@@ -2878,11 +2878,13 @@ paravirtualized driver is specified via the ``disk`` element.
       more cookies. The cookie name and value must conform to the HTTP
       specification. :since:`Since 6.2.0`
    ``readahead``
-      Specifies the size of the readahead buffer for protocols which support it.
-      (all 'curl' based drivers in qemu). The size is in bytes. Note that '0' is
-      considered as if the value is not provided. :since:`Since 6.2.0`
+      The ``readahead`` element has a ``size`` attribute which specifies the
+      size of the readahead buffer in bytes for protocols which support it.
+      Note that '0' is considered as if the value is not provided.
+      :since:`Since 6.2.0`
    ``timeout``
-      Specifies the connection timeout for protocols which support it. Note that
+      The ``timeout`` element has a ``seconds`` attribute which specifies the
+      connection timeout in seconds for protocols which support it. Note that
       '0' is considered as if the value is not provided. :since:`Since 6.2.0`
    ``identity``
       When using an ``nfs`` protocol, this is used to provide information on the
