@@ -4917,9 +4917,9 @@ To use VFIO device assignment rather than traditional/legacy KVM device
 assignment (VFIO is a new method of device assignment that is compatible with
 UEFI Secure Boot), a type='hostdev' interface can have an optional ``driver``
 sub-element with a ``name`` attribute set to "vfio". To use legacy KVM device
-assignment you can set ``name`` to "kvm" (or simply omit the ``<driver>``
-element, since "kvm" is currently the default). :since:`Since 1.0.5 (QEMU and
-KVM only, requires kernel 3.6 or newer)`
+assignment you can set ``name`` to "kvm" (the default is "vfio" on systems
+where the VFIO driver is available, and "kvm" on older systems. :since:`Since
+1.1.3` (prior to that the default was always "kvm").
 
 Note that this "intelligent passthrough" of network devices is very similar to
 the functionality of a standard <hostdev> device, the difference being that this
@@ -5018,7 +5018,7 @@ directly reference an SRIOV VF device:
        <source>
          <address type='pci' domain='0x0000' bus='0x00' slot='0x07' function='0x0'/>
        </source>
-       <mac address='00:11:22:33:44:55:66'/>
+       <mac address='00:11:22:33:44:55'/>
        <teaming type='transient' persistent='ua-backup0'/>
      </interface>
    ...
