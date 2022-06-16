@@ -17993,10 +17993,10 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
 
 
 static int
-virDomainNvramDefParseXML(virDomainLoaderDef *loader,
-                          xmlXPathContextPtr ctxt,
-                          virDomainXMLOption *xmlopt,
-                          unsigned int flags)
+virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
+                                xmlXPathContextPtr ctxt,
+                                virDomainXMLOption *xmlopt,
+                                unsigned int flags)
 {
     g_autofree char *nvramType = virXPathString("string(./os/nvram/@type)", ctxt);
     g_autoptr(virStorageSource) src = virStorageSourceNew();
@@ -18468,7 +18468,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    fwAutoSelect) < 0)
         return -1;
 
-    if (virDomainNvramDefParseXML(def->os.loader, ctxt, xmlopt, flags) < 0)
+    if (virDomainLoaderDefParseXMLNvram(def->os.loader, ctxt, xmlopt, flags) < 0)
         return -1;
 
     if (!fwAutoSelect)
