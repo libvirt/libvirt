@@ -1959,10 +1959,16 @@ backup-dumpxml
 
 ::
 
-   backup-dumpxml domain
+   backup-dumpxml [--xpath EXPRESSION] [--wrap] domain
 
 Output XML describing the current backup job.
 
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 domiflist
 ---------
@@ -2652,7 +2658,8 @@ dumpxml
 
 ::
 
-   dumpxml domain [--inactive] [--security-info] [--update-cpu] [--migratable]
+   dumpxml [--inactive] [--security-info] [--update-cpu] [--migratable]
+           [--xpath EXPRESSION] [--wrap] domain
 
 Output the domain information as an XML dump to stdout, this format can be used
 by the ``create`` command. Additional options affecting the XML dump may be
@@ -2664,6 +2671,13 @@ host CPU. With *--migratable* one can request an XML that is suitable for
 migrations, i.e., compatible with older libvirt releases and possibly amended
 with internal run-time options. This option may automatically enable other
 options (*--update-cpu*, *--security-info*, ...) as necessary.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 edit
@@ -3090,11 +3104,18 @@ managedsave-dumpxml
 
 ::
 
-   managedsave-dumpxml domain [--security-info]
+   managedsave-dumpxml [--security-info] [--xpath EXPRESSION] [--wrap] domain
 
 Extract the domain XML that was in effect at the time the saved state
 file *file* was created with the ``managedsave`` command.  Using
 *--security-info* will also include security sensitive information.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 managedsave-edit
@@ -3890,11 +3911,18 @@ save-image-dumpxml
 
 ::
 
-   save-image-dumpxml file [--security-info]
+   save-image-dumpxml [--security-info] [--xpath EXPRESSION] [--wrap] file
 
 Extract the domain XML that was in effect at the time the saved state
 file *file* was created with the ``save`` command.  Using
 *--security-info* will also include security sensitive information.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 save-image-edit
@@ -5244,7 +5272,7 @@ nodedev-dumpxml
 
 ::
 
-   nodedev-dumpxml device
+   nodedev-dumpxml [--xpath EXPRESSION] [--wrap] device
 
 Dump a <device> XML representation for the given node device, including
 such information as the device name, which bus owns the device, the
@@ -5252,6 +5280,13 @@ vendor and product id, and any capabilities of the device usable by
 libvirt (such as whether device reset is supported). *device* can
 be either device name or wwn pair in "wwnn,wwpn" format (only works
 for HBA).
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 nodedev-info
@@ -5433,12 +5468,19 @@ net-dumpxml
 
 ::
 
-   net-dumpxml network [--inactive]
+   net-dumpxml [--inactive] [--xpath EXPRESSION] [--wrap] network
 
 
 Output the virtual network information as an XML dump to stdout.
 If *--inactive* is specified, then physical functions are not
 expanded into their associated virtual functions.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 net-edit
@@ -5695,9 +5737,16 @@ net-port-dumpxml
 
 ::
 
-   net-port-dumpxml network port
+   net-port-dumpxml [--xpath EXPRESSION] [--wrap] network port
 
 Output the network port information as an XML dump to stdout.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 net-port-delete
@@ -5782,11 +5831,18 @@ iface-dumpxml
 
 ::
 
-   iface-dumpxml interface [--inactive]
+   iface-dumpxml [--inactive] [--xpath EXPRESSION] [--wrap] interface
 
 Output the host interface information as an XML dump to stdout.  If
 *--inactive* is specified, then the output reflects the persistent
 state of the interface that will be used the next time it is started.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 iface-edit
@@ -6258,11 +6314,18 @@ pool-dumpxml
 
 ::
 
-   pool-dumpxml [--inactive] pool-or-uuid
+   pool-dumpxml [--inactive] [--xpath EXPRESSION] [--wrap] pool-or-uuid
 
 Returns the XML information about the *pool* object.
 *--inactive* tells virsh to dump pool configuration that will be used
 on next start of the pool as opposed to the current pool configuration.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 pool-edit
@@ -6750,7 +6813,8 @@ vol-dumpxml
 
 ::
 
-   vol-dumpxml vol-name-or-key-or-path [--pool pool-or-uuid]
+   vol-dumpxml [--pool pool-or-uuid] [--xpath EXPRESSION] [--wrap]
+               vol-name-or-key-or-path
 
 Output the volume information as an XML dump to stdout.
 
@@ -6761,6 +6825,13 @@ to output the XML.
 is in. If the volume name is provided instead of the key or path, then
 providing the pool is necessary to find the volume to be uploaded into;
 otherwise, the first volume found by the key or path will be used.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 vol-info
@@ -6949,9 +7020,16 @@ secret-dumpxml
 
 ::
 
-   secret-dumpxml secret
+   secret-dumpxml [--xpath EXPRESSION] [--wrap] secret
 
 Output properties of *secret* (specified by its UUID) as an XML dump to stdout.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 secret-event
@@ -7370,11 +7448,19 @@ snapshot-dumpxml
 
 ::
 
-   snapshot-dumpxml domain snapshot [--security-info]
+   snapshot-dumpxml [--security-info] [--xpath EXPRESSION] [--wrap]
+                    domain snapshot
 
 Output the snapshot XML for the domain's snapshot named *snapshot*.
 Using *--security-info* will also include security sensitive information.
 Use ``snapshot-current`` to easily access the XML of the current snapshot.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 snapshot-parent
@@ -7655,7 +7741,8 @@ checkpoint-dumpxml
 
 ::
 
-   checkpoint-dumpxml domain checkpoint [--security-info] [--no-domain] [--size]
+   checkpoint-dumpxml [--security-info] [--no-domain] [--size]
+                      [--xpath EXPRESSION] [--wrap] domain checkpoint
 
 Output the checkpoint XML for the domain's checkpoint named
 *checkpoint*.  Using
@@ -7670,6 +7757,13 @@ space). Note that some hypervisors may require that *domain* is running when
 
 Using *--no-domain* will omit the <domain> element from the
 output for a more compact view.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 checkpoint-parent
@@ -7773,9 +7867,16 @@ nwfilter-dumpxml
 
 ::
 
-   nwfilter-dumpxml nwfilter-name
+   nwfilter-dumpxml [--xpath EXPRESSION] [--wrap] nwfilter-name
 
 Output the network filter XML.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 nwfilter-edit
@@ -7876,10 +7977,17 @@ nwfilter-binding-dumpxml
 
 ::
 
-   nwfilter-binding-dumpxml port-name
+   nwfilter-binding-dumpxml [--xpath EXPRESSION] [--wrap] port-name
 
 Output the network filter binding XML for the network device called
 ``port-name``.
+
+If the **--xpath** argument provides an XPath expression, it will be
+evaluated against the output XML and only those matching nodes will
+be printed. The default behaviour is to print each matching node as
+a standalone document, however, for ease of additional processing,
+the **--wrap** argument will cause the matching node to be wrapped
+in a common root node.
 
 
 HYPERVISOR-SPECIFIC COMMANDS

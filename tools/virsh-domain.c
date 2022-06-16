@@ -4527,6 +4527,15 @@ static const vshCmdOptDef opts_save_image_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("include security sensitive information in XML dump")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -4537,6 +4546,8 @@ cmdSaveImageDumpxml(vshControl *ctl, const vshCmd *cmd)
     unsigned int flags = 0;
     g_autofree char *xml = NULL;
     virshControl *priv = ctl->privData;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
@@ -4544,12 +4555,14 @@ cmdSaveImageDumpxml(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptStringReq(ctl, cmd, "file", &file) < 0)
         return false;
 
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
+
     xml = virDomainSaveImageGetXMLDesc(priv->conn, file, flags);
     if (!xml)
         return false;
 
-    vshPrint(ctl, "%s", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "domain-save-image", xpath, wrap);
 }
 
 /*
@@ -4946,6 +4959,15 @@ static const vshCmdOptDef opts_managed_save_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("include security sensitive information in XML dump")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -4955,6 +4977,8 @@ cmdManagedSaveDumpxml(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     unsigned int flags = 0;
     g_autofree char *xml = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
@@ -4962,11 +4986,13 @@ cmdManagedSaveDumpxml(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
+
     if (!(xml = virDomainManagedSaveGetXMLDesc(dom, flags)))
         return false;
 
-    vshPrint(ctl, "%s", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "domain-save-image", xpath, wrap);
 }
 
 /*
@@ -10433,6 +10459,15 @@ static const vshCmdOptDef opts_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("provide XML suitable for migrations")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -10440,12 +10475,14 @@ static bool
 cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshDomain) dom = NULL;
-    g_autofree char *dump = NULL;
+    g_autofree char *xml = NULL;
     unsigned int flags = 0;
     bool inactive = vshCommandOptBool(cmd, "inactive");
     bool secure = vshCommandOptBool(cmd, "security-info");
     bool update = vshCommandOptBool(cmd, "update-cpu");
     bool migratable = vshCommandOptBool(cmd, "migratable");
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (inactive)
         flags |= VIR_DOMAIN_XML_INACTIVE;
@@ -10459,11 +10496,13 @@ cmdDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
-    if (!(dump = virDomainGetXMLDesc(dom, flags)))
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
         return false;
 
-    vshPrint(ctl, "%s", dump);
-    return true;
+    if (!(xml = virDomainGetXMLDesc(dom, flags)))
+        return false;
+
+    return virshDumpXML(ctl, xml, "domain", xpath, wrap);
 }
 
 /*

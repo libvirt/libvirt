@@ -1159,6 +1159,15 @@ static const vshCmdInfo info_vol_dumpxml[] = {
 static const vshCmdOptDef opts_vol_dumpxml[] = {
     VIRSH_COMMON_OPT_VOL_FULL,
     VIRSH_COMMON_OPT_POOL_OPTIONAL,
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -1166,21 +1175,20 @@ static bool
 cmdVolDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshStorageVol) vol = NULL;
-    bool ret = true;
-    char *dump;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
+    g_autofree char *xml = NULL;
 
     if (!(vol = virshCommandOptVol(ctl, cmd, "vol", "pool", NULL)))
         return false;
 
-    dump = virStorageVolGetXMLDesc(vol, 0);
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-        VIR_FREE(dump);
-    } else {
-        ret = false;
-    }
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
 
-    return ret;
+    if (!(xml = virStorageVolGetXMLDesc(vol, 0)))
+        return false;
+
+    return virshDumpXML(ctl, xml, "volume", xpath, wrap);
 }
 
 static int

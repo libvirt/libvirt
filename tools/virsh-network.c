@@ -349,6 +349,15 @@ static const vshCmdOptDef opts_network_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("show inactive defined XML")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -356,8 +365,10 @@ static bool
 cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNetwork) network = NULL;
-    g_autofree char *dump = NULL;
+    g_autofree char *xml = NULL;
     unsigned int flags = 0;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         return false;
@@ -365,12 +376,13 @@ cmdNetworkDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (vshCommandOptBool(cmd, "inactive"))
         flags |= VIR_NETWORK_XML_INACTIVE;
 
-    if (!(dump = virNetworkGetXMLDesc(network, flags))) {
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
         return false;
-    }
 
-    vshPrint(ctl, "%s", dump);
-    return true;
+    if (!(xml = virNetworkGetXMLDesc(network, flags)))
+        return false;
+
+    return virshDumpXML(ctl, xml, "network", xpath, wrap);
 }
 
 /*
@@ -1542,6 +1554,15 @@ static const vshCmdInfo info_network_port_dumpxml[] = {
 static const vshCmdOptDef opts_network_port_dumpxml[] = {
     VIRSH_COMMON_OPT_NETWORK_FULL(VIR_CONNECT_LIST_NETWORKS_ACTIVE),
     VIRSH_COMMON_OPT_NETWORK_PORT(0),
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -1551,8 +1572,10 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshNetwork) network = NULL;
     virNetworkPortPtr port = NULL;
     bool ret = true;
-    g_autofree char *dump = NULL;
+    g_autofree char *xml = NULL;
     unsigned int flags = 0;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (!(network = virshCommandOptNetwork(ctl, cmd, NULL)))
         goto cleanup;
@@ -1560,13 +1583,13 @@ cmdNetworkPortDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(port = virshCommandOptNetworkPort(ctl, cmd, network, NULL)))
         goto cleanup;
 
-    dump = virNetworkPortGetXMLDesc(port, flags);
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
 
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
-    }
+    if (!(xml = virNetworkPortGetXMLDesc(port, flags)))
+        goto cleanup;
+
+    ret = virshDumpXML(ctl, xml, "network-port", xpath, wrap);
 
  cleanup:
     if (port)

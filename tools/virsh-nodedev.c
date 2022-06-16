@@ -565,6 +565,15 @@ static const vshCmdOptDef opts_node_device_dumpxml[] = {
      .help = N_("device name or wwn pair in 'wwnn,wwpn' format"),
      .completer = virshNodeDeviceNameCompleter,
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -574,9 +583,14 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshNodeDevice) device = NULL;
     g_autofree char *xml = NULL;
     const char *device_value = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (vshCommandOptStringReq(ctl, cmd, "device", &device_value) < 0)
          return false;
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
 
     device = vshFindNodeDevice(ctl, device_value);
 
@@ -586,8 +600,7 @@ cmdNodeDeviceDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(xml = virNodeDeviceGetXMLDesc(device, 0)))
         return false;
 
-    vshPrint(ctl, "%s\n", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "node-device", xpath, wrap);
 }
 
 /*

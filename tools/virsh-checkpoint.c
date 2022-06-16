@@ -852,6 +852,15 @@ static const vshCmdOptDef opts_checkpoint_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("include backup size estimate in XML dump")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -864,6 +873,8 @@ cmdCheckpointDumpXML(vshControl *ctl,
     g_autoptr(virshDomainCheckpoint) checkpoint = NULL;
     g_autofree char *xml = NULL;
     unsigned int flags = 0;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_CHECKPOINT_XML_SECURE;
@@ -875,6 +886,9 @@ cmdCheckpointDumpXML(vshControl *ctl,
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
 
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
+
     if (virshLookupCheckpoint(ctl, cmd, "checkpointname", dom,
                               &checkpoint, &name) < 0)
         return false;
@@ -882,8 +896,7 @@ cmdCheckpointDumpXML(vshControl *ctl,
     if (!(xml = virDomainCheckpointGetXMLDesc(checkpoint, flags)))
         return false;
 
-    vshPrint(ctl, "%s", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "domain-checkpoint", xpath, wrap);
 }
 
 

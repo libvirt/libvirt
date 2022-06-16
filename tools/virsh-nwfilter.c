@@ -186,6 +186,15 @@ static const vshCmdOptDef opts_nwfilter_dumpxml[] = {
      .help = N_("network filter name or uuid"),
      .completer = virshNWFilterNameCompleter,
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -193,20 +202,20 @@ static bool
 cmdNWFilterDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     g_autoptr(virshNWFilter) nwfilter = NULL;
-    bool ret = true;
-    g_autofree char *dump = NULL;
+    g_autofree char *xml = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (!(nwfilter = virshCommandOptNWFilter(ctl, cmd, NULL)))
         return false;
 
-    dump = virNWFilterGetXMLDesc(nwfilter, 0);
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
-    }
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
 
-    return ret;
+    if (!(xml = virNWFilterGetXMLDesc(nwfilter, 0)))
+        return false;
+
+    return virshDumpXML(ctl, xml, "nwfilter", xpath, wrap);
 }
 
 static int
@@ -599,6 +608,15 @@ static const vshCmdOptDef opts_nwfilter_binding_dumpxml[] = {
      .help = N_("network filter binding portdev"),
      .completer = virshNWFilterBindingNameCompleter,
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -607,18 +625,19 @@ cmdNWFilterBindingDumpXML(vshControl *ctl, const vshCmd *cmd)
 {
     virNWFilterBindingPtr binding;
     bool ret = true;
-    g_autofree char *dump = NULL;
+    g_autofree char *xml = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (!(binding = virshCommandOptNWFilterBinding(ctl, cmd, NULL)))
         return false;
 
-    dump = virNWFilterBindingGetXMLDesc(binding, 0);
-    if (dump != NULL) {
-        vshPrint(ctl, "%s", dump);
-    } else {
-        ret = false;
-    }
+    if (!(xml = virNWFilterBindingGetXMLDesc(binding, 0)))
+        goto cleanup;
 
+    ret = virshDumpXML(ctl, xml, "nwfilter-binding", xpath, wrap);
+
+ cleanup:
     virNWFilterBindingFree(binding);
     return ret;
 }

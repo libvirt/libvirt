@@ -115,6 +115,15 @@ static const vshCmdInfo info_backup_dumpxml[] = {
 
 static const vshCmdOptDef opts_backup_dumpxml[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -124,15 +133,19 @@ cmdBackupDumpXML(vshControl *ctl,
 {
     g_autoptr(virshDomain) dom = NULL;
     g_autofree char *xml = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
+        return false;
+
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
         return false;
 
     if (!(xml = virDomainBackupGetXMLDesc(dom, 0)))
         return false;
 
-    vshPrint(ctl, "%s", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "domain-backup", xpath, wrap);
 }
 
 

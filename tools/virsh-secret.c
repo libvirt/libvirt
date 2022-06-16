@@ -138,6 +138,15 @@ static const vshCmdOptDef opts_secret_dumpxml[] = {
      .help = N_("secret UUID"),
      .completer = virshSecretUUIDCompleter,
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -147,16 +156,21 @@ cmdSecretDumpXML(vshControl *ctl, const vshCmd *cmd)
     virSecretPtr secret;
     bool ret = false;
     g_autofree char *xml = NULL;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     secret = virshCommandOptSecret(ctl, cmd, NULL);
     if (secret == NULL)
         return false;
 
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
+
     xml = virSecretGetXMLDesc(secret, 0);
     if (xml == NULL)
         goto cleanup;
-    vshPrint(ctl, "%s", xml);
-    ret = true;
+
+    ret = virshDumpXML(ctl, xml, "secret", xpath, wrap);
 
  cleanup:
     virshSecretFree(secret);

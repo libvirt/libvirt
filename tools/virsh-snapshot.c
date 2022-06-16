@@ -1607,6 +1607,15 @@ static const vshCmdOptDef opts_snapshot_dumpxml[] = {
      .type = VSH_OT_BOOL,
      .help = N_("include security sensitive information in XML dump")
     },
+    {.name = "xpath",
+     .type = VSH_OT_STRING,
+     .completer = virshCompleteEmpty,
+     .help = N_("xpath expression to filter the XML document")
+    },
+    {.name = "wrap",
+     .type = VSH_OT_BOOL,
+     .help = N_("wrap xpath results in an common root element"),
+    },
     {.name = NULL}
 };
 
@@ -1618,6 +1627,8 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomainSnapshot) snapshot = NULL;
     g_autofree char *xml = NULL;
     unsigned int flags = 0;
+    bool wrap = vshCommandOptBool(cmd, "wrap");
+    const char *xpath = NULL;
 
     if (vshCommandOptBool(cmd, "security-info"))
         flags |= VIR_DOMAIN_XML_SECURE;
@@ -1631,11 +1642,13 @@ cmdSnapshotDumpXML(vshControl *ctl, const vshCmd *cmd)
     if (!(snapshot = virDomainSnapshotLookupByName(dom, name, 0)))
         return false;
 
+    if (vshCommandOptStringQuiet(ctl, cmd, "xpath", &xpath) < 0)
+        return false;
+
     if (!(xml = virDomainSnapshotGetXMLDesc(snapshot, flags)))
         return false;
 
-    vshPrint(ctl, "%s", xml);
-    return true;
+    return virshDumpXML(ctl, xml, "domain-snapshot", xpath, wrap);
 }
 
 /*
