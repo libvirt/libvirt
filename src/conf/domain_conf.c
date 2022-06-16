@@ -18042,8 +18042,11 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 
 
 static int
-virDomainLoaderDefParseXML(xmlNodePtr node,
-                           virDomainLoaderDef *loader,
+virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
+                           xmlNodePtr node,
+                           xmlXPathContextPtr ctxt,
+                           virDomainXMLOption *xmlopt,
+                           unsigned int flags,
                            bool fwAutoSelect)
 {
     if (!fwAutoSelect) {
@@ -18064,6 +18067,11 @@ virDomainLoaderDefParseXML(xmlNodePtr node,
 
     if (virXMLPropTristateBool(node, "secure", VIR_XML_PROP_NONE,
                                &loader->secure) < 0)
+        return -1;
+
+    if (virDomainLoaderDefParseXMLNvram(loader,
+                                        ctxt, xmlopt, flags,
+                                        fwAutoSelect) < 0)
         return -1;
 
     return 0;
@@ -18467,14 +18475,10 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
 
     def->os.loader = g_new0(virDomainLoaderDef, 1);
 
-    if (virDomainLoaderDefParseXML(loader_node,
-                                   def->os.loader,
+    if (virDomainLoaderDefParseXML(def->os.loader,
+                                   loader_node,
+                                   ctxt, xmlopt, flags,
                                    fwAutoSelect) < 0)
-        return -1;
-
-    if (virDomainLoaderDefParseXMLNvram(def->os.loader,
-                                        ctxt, xmlopt, flags,
-                                        fwAutoSelect) < 0)
         return -1;
 
     return 0;
