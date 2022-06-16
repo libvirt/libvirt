@@ -17996,10 +17996,14 @@ static int
 virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
                                 xmlXPathContextPtr ctxt,
                                 virDomainXMLOption *xmlopt,
-                                unsigned int flags)
+                                unsigned int flags,
+                                bool fwAutoSelect)
 {
     g_autofree char *nvramType = virXPathString("string(./os/nvram/@type)", ctxt);
     g_autoptr(virStorageSource) src = virStorageSourceNew();
+
+    if (!fwAutoSelect)
+        loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
 
     src->format = VIR_STORAGE_FILE_RAW;
 
@@ -18468,11 +18472,10 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    fwAutoSelect) < 0)
         return -1;
 
-    if (virDomainLoaderDefParseXMLNvram(def->os.loader, ctxt, xmlopt, flags) < 0)
+    if (virDomainLoaderDefParseXMLNvram(def->os.loader,
+                                        ctxt, xmlopt, flags,
+                                        fwAutoSelect) < 0)
         return -1;
-
-    if (!fwAutoSelect)
-        def->os.loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
 
     return 0;
 }
