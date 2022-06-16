@@ -18018,8 +18018,7 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
                                 xmlNodePtr nvramSourceNode,
                                 xmlXPathContextPtr ctxt,
                                 virDomainXMLOption *xmlopt,
-                                unsigned int flags,
-                                bool fwAutoSelect)
+                                unsigned int flags)
 {
     g_autoptr(virStorageSource) src = virStorageSourceNew();
     int typePresent;
@@ -18027,8 +18026,7 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
     if (!nvramNode)
         return 0;
 
-    if (!fwAutoSelect)
-        loader->nvramTemplate = virXMLPropString(nvramNode, "template");
+    loader->nvramTemplate = virXMLPropString(nvramNode, "template");
 
     src->format = VIR_STORAGE_FILE_RAW;
 
@@ -18070,33 +18068,29 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                            xmlNodePtr nvramSourceNode,
                            xmlXPathContextPtr ctxt,
                            virDomainXMLOption *xmlopt,
-                           unsigned int flags,
-                           bool fwAutoSelect)
+                           unsigned int flags)
 {
     if (virDomainLoaderDefParseXMLNvram(loader,
                                         nvramNode, nvramSourceNode,
-                                        ctxt, xmlopt, flags,
-                                        fwAutoSelect) < 0)
+                                        ctxt, xmlopt, flags) < 0)
         return -1;
 
     if (!loaderNode)
         return 0;
 
-    if (!fwAutoSelect) {
-        if (virXMLPropTristateBool(loaderNode, "readonly", VIR_XML_PROP_NONE,
-                                   &loader->readonly) < 0)
-            return -1;
+    if (virXMLPropTristateBool(loaderNode, "readonly", VIR_XML_PROP_NONE,
+                               &loader->readonly) < 0)
+        return -1;
 
-        if (virXMLPropEnum(loaderNode, "type", virDomainLoaderTypeFromString,
-                           VIR_XML_PROP_NONZERO, &loader->type) < 0)
-            return -1;
+    if (virXMLPropEnum(loaderNode, "type", virDomainLoaderTypeFromString,
+                       VIR_XML_PROP_NONZERO, &loader->type) < 0)
+        return -1;
 
-        if (!(loader->path = virXMLNodeContentString(loaderNode)))
-            return -1;
+    if (!(loader->path = virXMLNodeContentString(loaderNode)))
+        return -1;
 
-        if (STREQ(loader->path, ""))
-            VIR_FREE(loader->path);
-    }
+    if (STREQ(loader->path, ""))
+        VIR_FREE(loader->path);
 
     if (virXMLPropTristateBool(loaderNode, "secure", VIR_XML_PROP_NONE,
                                &loader->secure) < 0)
@@ -18498,7 +18492,6 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
     xmlNodePtr loaderNode = virXPathNode("./os/loader[1]", ctxt);
     xmlNodePtr nvramNode = virXPathNode("./os/nvram[1]", ctxt);
     xmlNodePtr nvramSourceNode = virXPathNode("./os/nvram/source[1]", ctxt);
-    const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
 
     if (!loaderNode && !nvramNode)
         return 0;
@@ -18507,8 +18500,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
 
     if (virDomainLoaderDefParseXML(def->os.loader,
                                    loaderNode, nvramNode, nvramSourceNode,
-                                   ctxt, xmlopt, flags,
-                                   fwAutoSelect) < 0)
+                                   ctxt, xmlopt, flags) < 0)
         return -1;
 
     return 0;
