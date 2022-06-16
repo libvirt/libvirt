@@ -1598,21 +1598,23 @@ static int
 virDomainDefOSValidate(const virDomainDef *def,
                        virDomainXMLOption *xmlopt)
 {
-    if (def->os.firmware &&
-        !(xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT)) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("firmware auto selection not implemented for this driver"));
-        return -1;
-    }
+    virDomainLoaderDef *loader = def->os.loader;
 
-    if (!def->os.loader)
-        return 0;
+    if (def->os.firmware) {
+        if (!(xmlopt->config.features & VIR_DOMAIN_DEF_FEATURE_FW_AUTOSELECT)) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("firmware auto selection not implemented for this driver"));
+            return -1;
+        }
+    } else {
+        if (!loader)
+            return 0;
 
-    if (!def->os.loader->path &&
-        def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
-        virReportError(VIR_ERR_XML_DETAIL, "%s",
-                       _("no loader path specified and firmware auto selection disabled"));
-        return -1;
+        if (!loader->path) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("no loader path specified and firmware auto selection disabled"));
+            return -1;
+        }
     }
 
     return 0;
