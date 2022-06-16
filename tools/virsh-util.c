@@ -436,3 +436,62 @@ virshDomainBlockJobToString(int type)
     const char *str = virshDomainBlockJobTypeToString(type);
     return str ? _(str) : _("Unknown job");
 }
+
+bool
+virshDumpXML(vshControl *ctl,
+             const char *xml,
+             const char *url,
+             const char *xpath,
+             bool wrap)
+{
+    g_autoptr(xmlDoc) doc = NULL;
+    g_autoptr(xmlXPathContext) ctxt = NULL;
+    g_autofree xmlNodePtr *nodes = NULL;
+    int nnodes = 0;
+    size_t i;
+    int oldblanks;
+
+    if (xpath == NULL) {
+        vshPrint(ctl, "%s", xml);
+        return true;
+    }
+
+    oldblanks = xmlKeepBlanksDefault(0);
+    doc = virXMLParseString(xml, url);
+    xmlKeepBlanksDefault(oldblanks);
+    if (!doc)
+        return false;
+
+    if (!(ctxt = virXMLXPathContextNew(doc)))
+        return false;
+
+    if ((nnodes = virXPathNodeSet(xpath, ctxt, &nodes)) < 0) {
+        return false;
+    }
+
+    if (wrap) {
+        g_autoptr(xmlDoc) newdoc = xmlNewDoc((xmlChar *)"1.0");
+        xmlNodePtr newroot = xmlNewNode(NULL, (xmlChar *)"nodes");
+        g_autofree char *xmlbit = NULL;
+
+        xmlDocSetRootElement(newdoc, newroot);
+
+        for (i = 0; i < nnodes; i++) {
+            g_autoptr(xmlNode) copy = xmlDocCopyNode(nodes[i], newdoc, 1);
+            if (!xmlAddChild(newroot, copy))
+                return false;
+
+            copy = NULL;
+        }
+
+        xmlbit = virXMLNodeToString(doc, newroot);
+        vshPrint(ctl, "%s\n", xmlbit);
+    } else {
+        for (i = 0; i < nnodes; i++) {
+            g_autofree char *xmlbit = virXMLNodeToString(doc, nodes[i]);
+            vshPrint(ctl, "%s\n", xmlbit);
+        }
+    }
+
+    return true;
+}

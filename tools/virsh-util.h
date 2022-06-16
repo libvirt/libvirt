@@ -156,3 +156,10 @@ VIR_ENUM_DECL(virshDomainBlockJob);
 
 const char *
 virshDomainBlockJobToString(int type);
+
+bool
+virshDumpXML(vshControl *ctl,
+             const char *xml,
+             const char *url,
+             const char *xpath,
+             bool wrap);
