@@ -17991,34 +17991,6 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
     return 0;
 }
 
-static int
-virDomainLoaderDefParseXML(xmlNodePtr node,
-                           virDomainLoaderDef *loader,
-                           bool fwAutoSelect)
-{
-    if (!fwAutoSelect) {
-        if (virXMLPropTristateBool(node, "readonly", VIR_XML_PROP_NONE,
-                                   &loader->readonly) < 0)
-            return -1;
-
-        if (virXMLPropEnum(node, "type", virDomainLoaderTypeFromString,
-                           VIR_XML_PROP_NONZERO, &loader->type) < 0)
-            return -1;
-
-        if (!(loader->path = virXMLNodeContentString(node)))
-            return -1;
-
-        if (STREQ(loader->path, ""))
-            VIR_FREE(loader->path);
-    }
-
-    if (virXMLPropTristateBool(node, "secure", VIR_XML_PROP_NONE,
-                               &loader->secure) < 0)
-        return -1;
-
-    return 0;
-}
-
 
 static int
 virDomainNvramDefParseXML(virDomainLoaderDef *loader,
@@ -18061,6 +18033,35 @@ virDomainNvramDefParseXML(virDomainLoaderDef *loader,
     }
 
     loader->nvram = g_steal_pointer(&src);
+    return 0;
+}
+
+
+static int
+virDomainLoaderDefParseXML(xmlNodePtr node,
+                           virDomainLoaderDef *loader,
+                           bool fwAutoSelect)
+{
+    if (!fwAutoSelect) {
+        if (virXMLPropTristateBool(node, "readonly", VIR_XML_PROP_NONE,
+                                   &loader->readonly) < 0)
+            return -1;
+
+        if (virXMLPropEnum(node, "type", virDomainLoaderTypeFromString,
+                           VIR_XML_PROP_NONZERO, &loader->type) < 0)
+            return -1;
+
+        if (!(loader->path = virXMLNodeContentString(node)))
+            return -1;
+
+        if (STREQ(loader->path, ""))
+            VIR_FREE(loader->path);
+    }
+
+    if (virXMLPropTristateBool(node, "secure", VIR_XML_PROP_NONE,
+                               &loader->secure) < 0)
+        return -1;
+
     return 0;
 }
 
