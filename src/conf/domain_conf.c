@@ -18001,7 +18001,6 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
     g_autofree char *nvramType = virXPathString("string(./os/nvram/@type)", ctxt);
     g_autoptr(virStorageSource) src = virStorageSourceNew();
 
-    src->type = VIR_STORAGE_TYPE_FILE;
     src->format = VIR_STORAGE_FILE_RAW;
 
     if (!nvramType) {
@@ -18011,6 +18010,7 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
             return 0; /* no nvram */
 
         src->path = nvramPath;
+        src->type = VIR_STORAGE_TYPE_FILE;
     } else {
         xmlNodePtr sourceNode;
 
