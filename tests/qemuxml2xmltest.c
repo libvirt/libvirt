@@ -1068,7 +1068,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
     DO_TEST_NOCAPS("bios-nvram");
-    DO_TEST_NOCAPS("bios-nvram-os-interleave");
     DO_TEST_CAPS_LATEST("bios-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("bios-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("bios-nvram-file");
