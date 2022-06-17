@@ -18043,29 +18043,29 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 
 static int
 virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
-                           xmlNodePtr node,
+                           xmlNodePtr loaderNode,
                            xmlXPathContextPtr ctxt,
                            virDomainXMLOption *xmlopt,
                            unsigned int flags,
                            bool fwAutoSelect)
 {
     if (!fwAutoSelect) {
-        if (virXMLPropTristateBool(node, "readonly", VIR_XML_PROP_NONE,
+        if (virXMLPropTristateBool(loaderNode, "readonly", VIR_XML_PROP_NONE,
                                    &loader->readonly) < 0)
             return -1;
 
-        if (virXMLPropEnum(node, "type", virDomainLoaderTypeFromString,
+        if (virXMLPropEnum(loaderNode, "type", virDomainLoaderTypeFromString,
                            VIR_XML_PROP_NONZERO, &loader->type) < 0)
             return -1;
 
-        if (!(loader->path = virXMLNodeContentString(node)))
+        if (!(loader->path = virXMLNodeContentString(loaderNode)))
             return -1;
 
         if (STREQ(loader->path, ""))
             VIR_FREE(loader->path);
     }
 
-    if (virXMLPropTristateBool(node, "secure", VIR_XML_PROP_NONE,
+    if (virXMLPropTristateBool(loaderNode, "secure", VIR_XML_PROP_NONE,
                                &loader->secure) < 0)
         return -1;
 
@@ -18467,16 +18467,16 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    virDomainXMLOption *xmlopt,
                                    unsigned int flags)
 {
-    xmlNodePtr loader_node = virXPathNode("./os/loader[1]", ctxt);
+    xmlNodePtr loaderNode = virXPathNode("./os/loader[1]", ctxt);
     const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
 
-    if (!loader_node)
+    if (!loaderNode)
         return 0;
 
     def->os.loader = g_new0(virDomainLoaderDef, 1);
 
     if (virDomainLoaderDefParseXML(def->os.loader,
-                                   loader_node,
+                                   loaderNode,
                                    ctxt, xmlopt, flags,
                                    fwAutoSelect) < 0)
         return -1;
