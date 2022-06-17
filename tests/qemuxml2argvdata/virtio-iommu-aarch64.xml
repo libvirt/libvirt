@@ -3,10 +3,8 @@
   <uuid>1ccfd97d-5eb4-478a-bbe6-88d254c16db7</uuid>
   <memory unit='KiB'>1048576</memory>
   <vcpu placement='static'>1</vcpu>
-  <os>
-    <type arch='aarch64' machine='virt'>hvm</type>
-    <loader readonly='yes' type='pflash'>/usr/share/AAVMF/AAVMF_CODE.fd</loader>
-    <nvram>/var/lib/libvirt/qemu/nvram/guest_VARS.fd</nvram>
+  <os firmware='efi'>
+    <type arch='aarch64' machine='virt-6.0'>hvm</type>
   </os>
   <features>
     <acpi/>
