@@ -903,9 +903,12 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI;
     size_t i;
+    virErrorPtr save_err;
 
     VIR_DEBUG("Cleaning up domain with id '%d' and name '%s'",
               vm->def->id, vm->def->name);
+
+    virErrorPreserveLast(&save_err);
 
     hostdev_flags |= VIR_HOSTDEV_SP_USB;
 
@@ -979,6 +982,7 @@ libxlDomainCleanup(libxlDriverPrivate *driver,
                                     VIR_HOOK_SUBOP_END, NULL));
 
     virDomainObjRemoveTransientDef(vm);
+    virErrorRestore(&save_err);
 }
 
 /*
@@ -1240,6 +1244,7 @@ libxlDomainStartPrepare(libxlDriverPrivate *driver,
 {
     virHostdevManager *hostdev_mgr = driver->hostdevMgr;
     unsigned int hostdev_flags = VIR_HOSTDEV_SP_PCI | VIR_HOSTDEV_SP_USB;
+    virErrorPtr save_err;
 
     if (virDomainObjSetDefTransient(driver->xmlopt, vm, NULL) < 0)
         return -1;
@@ -1267,10 +1272,12 @@ libxlDomainStartPrepare(libxlDriverPrivate *driver,
     return 0;
 
  error:
+    virErrorPreserveLast(&save_err);
     libxlNetworkUnwindDevices(vm->def);
     virHostdevReAttachDomainDevices(hostdev_mgr, LIBXL_DRIVER_INTERNAL_NAME,
                                     vm->def, hostdev_flags);
     virDomainObjRemoveTransientDef(vm);
+    virErrorRestore(&save_err);
     return -1;
 }
 
