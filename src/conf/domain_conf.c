@@ -17994,43 +17994,45 @@ virDomainDefMaybeAddHostdevSCSIcontroller(virDomainDef *def)
 
 static int
 virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
+                                xmlNodePtr nvramNode,
+                                xmlNodePtr nvramSourceNode,
                                 xmlXPathContextPtr ctxt,
                                 virDomainXMLOption *xmlopt,
                                 unsigned int flags,
                                 bool fwAutoSelect)
 {
-    g_autofree char *nvramType = virXPathString("string(./os/nvram/@type)", ctxt);
     g_autoptr(virStorageSource) src = virStorageSourceNew();
+    int typePresent;
+
+    if (!nvramNode)
+        return 0;
 
     if (!fwAutoSelect)
-        loader->nvramTemplate = virXPathString("string(./os/nvram[1]/@template)", ctxt);
+        loader->nvramTemplate = virXMLPropString(nvramNode, "template");
 
     src->format = VIR_STORAGE_FILE_RAW;
 
-    if (!nvramType) {
-        char *nvramPath = NULL;
+    if ((typePresent = virXMLPropEnum(nvramNode, "type",
+                                      virStorageTypeFromString, VIR_XML_PROP_NONE,
+                                      &src->type)) < 0)
+        return -1;
 
-        if (!(nvramPath = virXPathString("string(./os/nvram[1])", ctxt)))
-            return 0; /* no nvram */
+    if (!typePresent) {
+        g_autofree char *path = NULL;
 
-        src->path = nvramPath;
+        if (!(path = virXMLNodeContentString(nvramNode)))
+            return -1;
+
+        if (STREQ(path, ""))
+            return 0;
+
         src->type = VIR_STORAGE_TYPE_FILE;
+        src->path = g_steal_pointer(&path);
     } else {
-        xmlNodePtr sourceNode;
-
-        if ((src->type = virStorageTypeFromString(nvramType)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown disk type '%s'"), nvramType);
+        if (!nvramSourceNode)
             return -1;
-        }
 
-        if (!(sourceNode = virXPathNode("./os/nvram/source[1]", ctxt))) {
-            virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Missing source element for nvram"));
-            return -1;
-        }
-
-        if (virDomainStorageSourceParse(sourceNode, ctxt, src, flags, xmlopt) < 0)
+        if (virDomainStorageSourceParse(nvramSourceNode, ctxt, src, flags, xmlopt) < 0)
             return -1;
 
         loader->newStyleNVRAM = true;
@@ -18044,6 +18046,8 @@ virDomainLoaderDefParseXMLNvram(virDomainLoaderDef *loader,
 static int
 virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                            xmlNodePtr loaderNode,
+                           xmlNodePtr nvramNode,
+                           xmlNodePtr nvramSourceNode,
                            xmlXPathContextPtr ctxt,
                            virDomainXMLOption *xmlopt,
                            unsigned int flags,
@@ -18070,6 +18074,7 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
         return -1;
 
     if (virDomainLoaderDefParseXMLNvram(loader,
+                                        nvramNode, nvramSourceNode,
                                         ctxt, xmlopt, flags,
                                         fwAutoSelect) < 0)
         return -1;
@@ -18468,6 +18473,8 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
                                    unsigned int flags)
 {
     xmlNodePtr loaderNode = virXPathNode("./os/loader[1]", ctxt);
+    xmlNodePtr nvramNode = virXPathNode("./os/nvram[1]", ctxt);
+    xmlNodePtr nvramSourceNode = virXPathNode("./os/nvram/source[1]", ctxt);
     const bool fwAutoSelect = def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_NONE;
 
     if (!loaderNode)
@@ -18476,7 +18483,7 @@ virDomainDefParseBootLoaderOptions(virDomainDef *def,
     def->os.loader = g_new0(virDomainLoaderDef, 1);
 
     if (virDomainLoaderDefParseXML(def->os.loader,
-                                   loaderNode,
+                                   loaderNode, nvramNode, nvramSourceNode,
                                    ctxt, xmlopt, flags,
                                    fwAutoSelect) < 0)
         return -1;
