@@ -5,7 +5,6 @@
   <currentMemory unit='KiB'>4000000</currentMemory>
   <os>
     <type arch='x86_64' machine='pc'>hvm</type>
-    <loader>/usr/share/seabios/bios.bin</loader>
     <boot dev='hd'/>
   </os>
   <features>
