@@ -11,6 +11,7 @@
 # include "qemu/qemu_capspriv.h"
 # include "virstring.h"
 # include "virfilecache.h"
+# include "virtpm.h"
 
 # include <sys/types.h>
 # include <fcntl.h>
@@ -135,6 +136,13 @@ virFindFileInPath(const char *file)
      * an error in such a case
      */
     return NULL;
+}
+
+
+/* Enough to tell capabilities code that swtpm is usable */
+bool virTPMHasSwtpm(void)
+{
+    return true;
 }
 
 

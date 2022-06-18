@@ -22,7 +22,6 @@
 #include "domain_capabilities.h"
 #include "virfilewrapper.h"
 #include "configmake.h"
-#include "virtpm.h"
 
 
 #define VIR_FROM_THIS VIR_FROM_NONE
@@ -128,12 +127,6 @@ fillQemuCaps(virDomainCaps *domCaps,
     return 0;
 }
 
-
-/* Enough to tell capabilities code that swtpm is usable */
-bool virTPMHasSwtpm(void)
-{
-    return true;
-}
 
 #endif /* WITH_QEMU */
 
