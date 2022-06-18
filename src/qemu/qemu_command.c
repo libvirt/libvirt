@@ -9731,7 +9731,7 @@ qemuBuildTPMDevCmd(virCommand *cmd,
     const char *model = virDomainTPMModelTypeToString(tpm->model);
     g_autofree char *tpmdev = g_strdup_printf("tpm-%s", tpm->info.alias);
 
-    if (tpm->model == VIR_DOMAIN_TPM_MODEL_TIS && def->os.arch == VIR_ARCH_AARCH64)
+    if (tpm->model == VIR_DOMAIN_TPM_MODEL_TIS && !ARCH_IS_X86(def->os.arch))
         model = "tpm-tis-device";
 
     if (virJSONValueObjectAdd(&props,
