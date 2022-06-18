@@ -4750,7 +4750,7 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
                                const virDomainDef *def,
                                virQEMUCaps *qemuCaps)
 {
-    virQEMUCapsFlags flag;
+    virDomainCapsDeviceTPM tpmCaps = { 0 };
 
     switch (tpm->version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
@@ -4781,57 +4781,28 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
         break;
     }
 
-    switch (tpm->type) {
-    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
-            goto no_support;
-        break;
+    virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, &tpmCaps);
 
-    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
-            goto no_support;
-
-        break;
-    case VIR_DOMAIN_TPM_TYPE_LAST:
-        break;
-    }
-
-    switch (tpm->model) {
-    case VIR_DOMAIN_TPM_MODEL_TIS:
-        flag = QEMU_CAPS_DEVICE_TPM_TIS;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_CRB:
-        flag = QEMU_CAPS_DEVICE_TPM_CRB;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_SPAPR:
-        flag = QEMU_CAPS_DEVICE_TPM_SPAPR;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY:
-        if (!ARCH_IS_PPC64(def->os.arch)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("TPM Proxy model %s is only available for "
-                             "PPC64 guests"),
-                          virDomainTPMModelTypeToString(tpm->model));
-            return -1;
-        }
-
-        /* TPM Proxy devices have 'passthrough' backend */
-        if (tpm->type != VIR_DOMAIN_TPM_TYPE_PASSTHROUGH) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("TPM Proxy model %s requires "
-                             "'Passthrough' backend"),
-                            virDomainTPMModelTypeToString(tpm->model));
-        }
-
-        flag = QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY;
-        break;
-    case VIR_DOMAIN_TPM_MODEL_LAST:
-    default:
-        virReportEnumRangeError(virDomainTPMModel, tpm->model);
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(tpmCaps.backendModel, tpm->type)) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("The QEMU executable %s does not support TPM "
+                         "backend type %s"),
+                       def->emulator,
+                       virDomainTPMBackendTypeToString(tpm->type));
         return -1;
     }
 
-    if (!virQEMUCapsGet(qemuCaps, flag)) {
+    if (ARCH_IS_PPC64(def->os.arch) &&
+        tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY &&
+        tpm->type != VIR_DOMAIN_TPM_TYPE_PASSTHROUGH) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("TPM Proxy model %s requires "
+                         "'Passthrough' backend"),
+                        virDomainTPMModelTypeToString(tpm->model));
+        return -1;
+    }
+
+    if (!VIR_DOMAIN_CAPS_ENUM_IS_SET(tpmCaps.model, tpm->model)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("The QEMU executable %s does not support TPM "
                          "model %s"),
@@ -4841,14 +4812,6 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
     }
 
     return 0;
-
- no_support:
-    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                   _("The QEMU executable %s does not support TPM "
-                     "backend type %s"),
-                   def->emulator,
-                   virDomainTPMBackendTypeToString(tpm->type));
-    return -1;
 }
 
 
