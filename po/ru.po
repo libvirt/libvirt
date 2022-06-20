@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-15 15:18+0000\n"
+"PO-Revision-Date: 2022-06-20 09:42+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
@@ -27,7 +27,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
-"X-Generator: Weblate 4.12.2\n"
+"X-Generator: Weblate 4.13\n"
 
 msgid ""
 "\n"
@@ -469,10 +469,10 @@ msgid " Miscellaneous:"
 msgstr " Прочее:"
 
 msgid " Networking:"
-msgstr "Сеть:"
+msgstr " Работа в сети:"
 
 msgid " Storage:"
-msgstr "Пространство данных:"
+msgstr " Хранилище данных:"
 
 #, c-format
 msgid ""
@@ -2488,8 +2488,8 @@ msgid ""
 "Cache allocation of size %llu is smaller than the minimum allowed allocation "
 "%llu"
 msgstr ""
-"Размер получаемой памяти для кэша, llu, меньше минимального допустимого "
-"размера %llu"
+"Распределение кэша размером %llu меньше, чем минимально допустимое "
+"распределение %llu"
 
 #, c-format
 msgid "Cache level %d does not support tuning"
@@ -7345,7 +7345,7 @@ msgstr "Не удалось получить статистику блочног
 
 #, c-format
 msgid "Failed to get block stats for domain '%s' device '%s'"
-msgstr "Не удалось получить статистику устройства «%2$s» в домене «%1$s»"
+msgstr "Не удалось получить статистику устройства «%s» в домене «%s»"
 
 msgid "Failed to get capabilities from libxenlight"
 msgstr "Не удалось получить возможности от libxenlight"
@@ -8777,7 +8777,7 @@ msgstr ""
 
 #, c-format
 msgid "File name '%s' refers to non-existing datastore '%s'"
-msgstr " «%s» ссылается на несуществующее хранилище «%s» "
+msgstr "Имя файла «%s» ссылается на несуществующее хранилище данных «%s»"
 
 msgid "File processed:"
 msgstr "Обработано файлов:"
@@ -9459,7 +9459,7 @@ msgid "IPv6"
 msgstr "IPv6"
 
 msgid "ISession object is null"
-msgstr " Пустой объект "
+msgstr "Объект ISession имеет значение null"
 
 msgid "IVirtualBox object is null"
 msgstr "Пустой объект "
@@ -11085,7 +11085,7 @@ msgstr "Размер памяти «%llu» должен быть меньше %l
 msgid ""
 "Memory Bandwidth allocation of size %u is not divisible by granularity %u"
 msgstr ""
-"Размер выделяемой пропускной способности памяти, u%, не является кратным "
+"Размер выделяемой пропускной способности памяти %u, не является кратным "
 "уровню детализации %u"
 
 #, c-format
@@ -15064,7 +15064,7 @@ msgid ""
 "State of HyperV stimer direct feature differs: source: '%s', destination: "
 "'%s'"
 msgstr ""
-"Состояние возможности direct stimer HyperV «%s» различается: источник: «%s», "
+"Состояние возможности direct stimer HyperV различается: источник: «%s», "
 "назначение: «%s»"
 
 #, c-format
@@ -17670,7 +17670,7 @@ msgstr "Не удалось получить мост  %s %s"
 
 #, c-format
 msgid "Unable to get bridge %s port %s %s"
-msgstr "Не удалось получить значение параметра %3$s для моста %1$s (порт %2$s)"
+msgstr "Не удалось получить порт моста %s %s %s"
 
 msgid "Unable to get bridge port isolated on this platform"
 msgstr "Невозможно получить изолированный порт моста на этой платформе"
@@ -19359,7 +19359,7 @@ msgstr "Неизвестный слой межсетевого экрана %d"
 
 #, c-format
 msgid "Unknown forward <driver name='%s'/> in network %s"
-msgstr "Неизвестный драйвер <driver name='%s'/> в секции <forward> для сети %s"
+msgstr "Неизвестная переадресация <driver name='%s'/> в сети %s"
 
 #, c-format
 msgid "Unknown forward type %d in network '%s'"
@@ -20723,7 +20723,7 @@ msgid "append not supported in this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает добавление"
 
 msgid "applyDHCPOnlyRules failed - spoofing not protected!"
-msgstr "Ошибка applyDHCPOnlyRules: нет защиты от подмены адреса."
+msgstr "Ошибка applyDHCPOnlyRules: нет защиты от подмены адреса!"
 
 msgid "architecture"
 msgstr "архитектура"
@@ -29930,8 +29930,7 @@ msgstr "данные миграции содержат неверно сформ
 
 #, c-format
 msgid "malformed http cookie '%s' in backing store definition '%s'"
-msgstr ""
-"неверно сформированное поле «timeout» в определении резервного хранилища «%s»"
+msgstr "неверный формат куки http «%s» в определении резервного хранилища «%s»"
 
 msgid "malformed hyperv panic data"
 msgstr "неверно сформированные данные паники гипервизора"
