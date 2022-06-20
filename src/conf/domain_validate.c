@@ -1655,6 +1655,13 @@ virDomainDefOSValidate(const virDomainDef *def,
             return -1;
         }
     } else {
+        if (def->os.firmwareFeatures) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("cannot use feature-based firmware autoselection "
+                             "when firmware autoselection is disabled"));
+            return -1;
+        }
+
         if (!loader)
             return 0;
 
