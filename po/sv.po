@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-15 15:18+0000\n"
+"PO-Revision-Date: 2022-06-20 09:42+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 4.12.2\n"
+"X-Generator: Weblate 4.13\n"
 
 msgid ""
 "\n"
@@ -10625,30 +10625,31 @@ msgstr "KVM stödjs inte på denna plattform"
 msgid "Kernel does not provide mount namespace"
 msgstr "Kärnan tillhandahåller inte monteringsnamnrymder"
 
-#, fuzzy
 msgid "Kernel does not support private devpts"
-msgstr "lagringspool stödjer inte skapande av volymer"
+msgstr "Kärnan stödjer inte privata devpts:er"
 
 msgid "Kernel doesn't support user namespace"
-msgstr ""
+msgstr "Kärnan stödjer inte användarnamnrymder"
 
 msgid "Kernel image path in this domain is not defined"
-msgstr ""
+msgstr "Käravbildens sökväg i denna domän är inte definierad"
 
 msgid "Key file path must be provided for private key authentication"
-msgstr ""
+msgstr "Nyckelfilens sökväg måste anges för autentisering med privat nyckel"
 
 msgid "Key of the current session differs from the key at last login"
 msgstr ""
+"Nyckeln för den aktuella sessionen skiljer från nyckeln vid den senaste "
+"inloggningen"
 
 msgid "Known, but different label format present, requires build --overwrite"
-msgstr ""
+msgstr "Känt, men ett annorlunda etikettsformat finns, kräver build --overwrite"
 
 msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
-msgstr ""
+msgstr "LUKS-krypterade QCow2-avbilder stödjs inte av denna QEMU"
 
 msgid "LXC Guest Enter Namespace"
-msgstr ""
+msgstr "LXC-gästs ingångsnamnrymd"
 
 #, c-format
 msgid "Lease %s in lockspace %s already exists"
@@ -10660,117 +10661,117 @@ msgstr "Hyra %s i låsrymden %s finns inte"
 
 #, c-format
 msgid "Lease path '%s' exceeds %d characters"
-msgstr ""
+msgstr "Hyressökvägen ”%s” överskrider %d tecken"
 
 #, c-format
 msgid "Library '%s' doesn't exist"
-msgstr ""
+msgstr "Biblioteket ”%s” finns inte"
 
 msgid "Library function returned error but did not set virError"
-msgstr ""
+msgstr "Biblioteksfunktionen returnerade fel men satte inte virError"
 
 msgid "Libvirt"
-msgstr ""
+msgstr "Libvirt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Lifecycle event '%s' doesn't support '%s' action"
-msgstr "kommandot '%s' stöder inte flaggan --%s"
+msgstr "Livscykehändelsen ”%s” stöder inte åtgärden ”%s”"
 
 msgid "Link already defined"
-msgstr ""
+msgstr "Länken är redan definierad"
 
 msgid "List all manageable clients connected to <server>."
-msgstr ""
+msgstr "Lista alla hanterbara klienter anslutna till <server>."
 
 msgid "List all manageable servers on a daemon."
-msgstr ""
+msgstr "Lista alla hanterbara servrar på en demon."
 
-#, fuzzy
 msgid "List checkpoints for a domain"
-msgstr "hämta enhetsblocks-statistik för en domän"
+msgstr "Lista kontrollpunkter för en domän"
 
 msgid "List event types, or wait for domain events to occur"
-msgstr ""
+msgstr "Lista händelsetyper, eller vänta på att domänhändelser inträffar"
 
 msgid "List event types, or wait for network events to occur"
-msgstr ""
+msgstr "Lista händelsetyper, eller vänta på att nätverkshändelser inträffar"
 
 msgid "List event types, or wait for node device events to occur"
-msgstr ""
+msgstr "Lista händelsetyper, eller vänta på att nodenhetshändelser inträffar"
 
 msgid "List event types, or wait for secret events to occur"
-msgstr ""
+msgstr "Lista händelsetyper, eller vänta på att hemlighetshändelser inträffar"
 
 msgid "List event types, or wait for storage pool events to occur"
 msgstr ""
+"Lista händelsetyper, eller vänta på att lagringspoolshändelser inträffar"
 
-#, fuzzy
 msgid "List snapshots for a domain"
-msgstr "hämta enhetsblocks-statistik för en domän"
+msgstr "Lista ögonblicksbilder för en domän"
 
 msgid "Listen for QEMU Monitor Events"
-msgstr ""
+msgstr "Lyssna efter QEMU-monitorhändelser"
 
 msgid "Listen for TCP/IP connections"
-msgstr ""
+msgstr "Lyssna efter TCP/IP-anslutningar"
 
 msgid "Load kvm_hv for better performance"
-msgstr ""
+msgstr "Ladda kvm_hv för bättre prestanda"
 
 msgid "Load the 'fuse' module to enable /proc/ overrides"
-msgstr ""
+msgstr "Ladda modulen ”fuse” för att aktivera åsidosättningar i /proc/"
 
 msgid "Load the 'tun' module to enable networking for QEMU guests"
-msgstr ""
+msgstr "Ladda modulen ”tun” för att aktivera nätverk för QEMU-gäster"
 
 msgid "Load the 'vhost_net' module to improve performance of virtio networking"
 msgstr ""
+"Ladda modulen ”vhost_net” för att förbättra prestandan hos virtio-nätverkande"
 
 msgid "Location:"
 msgstr "Placering:"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Lockspace for path %s already exists"
-msgstr "Hyra %s i låsrymden %s finns redan"
+msgstr "Låsrymden för sökvägen %s finns redan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Lockspace for path %s does not exist"
-msgstr "Hyra %s i låsrymden %s finns inte"
+msgstr "Låsrymden för sökvägen %s finns inte"
 
 #, c-format
 msgid "Lockspace location %s exists, but is not a directory"
-msgstr ""
+msgstr "Lockrymdsplatsen %s finns, men är inte en katalog"
 
 #, c-format
 msgid "Lockspace path '%s' exceeded %d characters"
-msgstr ""
+msgstr "Låsrymdssökvägen ”%s” överskrider %d tecken"
 
 #, c-format
 msgid "Lockspace resource '%s' is locked"
-msgstr ""
+msgstr "Låsrymdsresursen ”%s” är låst"
 
 #, c-format
 msgid "Lockspace resource '%s' is not locked"
-msgstr ""
+msgstr "Låsrymdsresursen ”%s” är inte låst"
 
 #, c-format
 msgid ""
 "Log output '%s' does not meet the format requirements for destination type "
 "'%s'"
-msgstr ""
+msgstr "Loggutdata ”%s” motsvarar inte formatkraven för destinationstypen ”%s”"
 
 msgid "Logging filters: "
-msgstr ""
+msgstr "Loggningsfilter: "
 
 msgid "Logging outputs: "
-msgstr ""
+msgstr "Loggningsutdata: "
 
 #, c-format
 msgid "Lookup of value at index %u resulted in a NULL pointer"
-msgstr ""
+msgstr "Uppslagning av värdet vid index %u resulterade i en NULL-pekare"
 
 msgid "Lost connection to destination host"
-msgstr ""
+msgstr "Tappade anslutningen till destinationsvärden"
 
 msgid "MAC"
 msgstr "MAC"
@@ -10783,146 +10784,147 @@ msgstr "MAC-adress"
 
 #, c-format
 msgid "MCS level for existing domain label %s already reserved"
-msgstr ""
+msgstr "MCS-nivån för den befintliga domänetiketten %s är redan reserverad"
 
 #, c-format
 msgid "MD5 hash '%s' unexpectedly larger than %d characters"
-msgstr ""
+msgstr "MD5-hashen ”%s” är oväntat större än %d tecken"
 
 msgid "Machine is Null"
-msgstr ""
+msgstr "Maskinen är Null"
 
 msgid "Machine is null"
-msgstr ""
+msgstr "Maskinen är null"
 
 msgid "Malformatted array index"
-msgstr ""
+msgstr "Felformaterat vektorindex"
 
 msgid "Malformatted iterator id"
-msgstr ""
+msgstr "Felformaterat iterations-id"
 
 msgid "Malformatted variable"
-msgstr ""
+msgstr "Felformaterad variabel"
 
 msgid "Malformed 'domuuid' in JSON document"
-msgstr ""
+msgstr "Felformaterad ”domuuid” i JSON-dokumentet"
 
 #, c-format
 msgid "Malformed 'floor_sum' attribute: %s"
-msgstr ""
+msgstr "Felformaterat ”floor_sum”-attribut: %s"
 
 msgid "Malformed 'maxCount' parameter"
-msgstr ""
+msgstr "Felformaterad ”maxCount”-parameter"
 
 #, c-format
 msgid ""
 "Malformed 'uri_aliases' config entry '%s', aliases may only contain 'a-Z, "
 "0-9, _, -'"
 msgstr ""
+"Felformaterad ”uri_aliases”-konfigurationspost ”%s”, alias får endast "
+"innehålla ”a-Z, 0-9, _, -”"
 
 #, c-format
 msgid ""
 "Malformed 'uri_aliases' config entry '%s', expected 'alias=uri://host/path'"
 msgstr ""
+"Felformaterad ”uri_aliases”-konfigurationspost ”%s”, ”alias=uri://värd/"
+"sökväg” förväntades"
 
 #, c-format
 msgid "Malformed PCI address %s"
-msgstr ""
+msgstr "Felformaterad PCI-adress %s"
 
 #, c-format
 msgid "Malformed PCI options %s"
-msgstr ""
+msgstr "Felformaterade PCI-alternativ %s"
 
 msgid "Malformed auth_pending field in JSON state document"
-msgstr ""
+msgstr "Felformaterat auth_pending-fält i JSON-tillståndsdokumentet"
 
 msgid "Malformed clients array"
-msgstr ""
+msgstr "Felformaterad klientvektor"
 
 msgid "Malformed conn_time field in JSON state document"
-msgstr ""
+msgstr "Felformaterat conn_time-fält i JSON-tillståndsdokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed ctrl-alt-del setting '%s'"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felformaterad ctrl-alt-del-inställning ”%s”"
 
 msgid "Malformed daemon data from JSON file"
-msgstr ""
+msgstr "Felformaterad demon-data från JSON-filen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed device value '%s'"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felformaterat enhetsvärde ”%s”"
 
 #, c-format
 msgid "Malformed disk capacity: '%s'"
-msgstr ""
+msgstr "Felformaterad diskkapacitet: ”%s”"
 
-#, fuzzy
 msgid "Malformed disk target"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felformaterat diskmål"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed file structure: %s"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felaktig filstruktur: %s"
 
-#, fuzzy
 msgid "Malformed files array"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felformaterad filvektor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed format for filter '%s'"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Felformaterat filterformat ”%s”"
 
 #, c-format
 msgid "Malformed format for log output '%s'"
-msgstr ""
+msgstr "Felformaterat format för logutdata ”%s”"
 
 msgid "Malformed guest-get-fsinfo 'disk' data array"
-msgstr ""
+msgstr "Felformaterad guest-get-fsinfo ”disk” datavektor"
 
 msgid "Malformed guest-get-fsinfo data array"
-msgstr ""
+msgstr "Felformaterad guest-get-fsinfo datavektor"
 
 msgid "Malformed id field in JSON state document"
-msgstr ""
+msgstr "Felformaterat id-fält i JSON-tillståndsdokumentet"
 
 msgid "Malformed ip-addresses array"
-msgstr ""
+msgstr "Felformaterad ip-adressvektor"
 
-#, fuzzy
 msgid "Malformed lease_entries array"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felaktig lease_entries-vektor"
 
 msgid "Malformed lockspaces array"
-msgstr ""
+msgstr "Felformaterad låsrymdsvektor"
 
 msgid "Malformed max_anonymous_clients data in JSON document"
 msgstr "Felformaterad max_anonymous_clients-data i JSON-dokument"
 
 #, c-format
 msgid "Malformed nbd port '%s'"
-msgstr ""
+msgstr "Felformaterad nbd-port ”%s”"
 
 msgid "Malformed output of dmidecode"
-msgstr ""
+msgstr "Felformaterad utdata från dmidecode"
 
 msgid "Malformed ovs-vsctl output"
-msgstr ""
+msgstr "Felformaterad utdata från ovs-vsctl"
 
 msgid "Malformed owner value in JSON document"
-msgstr ""
+msgstr "Felformaterat ägarvärde i JSON-dokumentet"
 
 msgid "Malformed owners array"
-msgstr ""
+msgstr "Felformaterad ägarvektor"
 
 msgid "Malformed resources array"
-msgstr ""
+msgstr "Felformaterad resursvektor"
 
 msgid "Malformed servers data in JSON document"
-msgstr ""
+msgstr "Felformaterad serverdata i JSON-dokument"
 
 msgid "Malformed services array"
-msgstr ""
+msgstr "Felformaterad tjänstevektor"
 
 #, fuzzy, c-format
 msgid "Malformed size %s"
