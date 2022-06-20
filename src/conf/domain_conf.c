@@ -18439,20 +18439,6 @@ virDomainDefParseBootFirmwareOptions(virDomainDef *def,
     int n = 0;
     size_t i;
 
-    if (!firmware)
-        return 0;
-
-    fw = virDomainOsDefFirmwareTypeFromString(firmware);
-
-    if (fw <= 0) {
-        virReportError(VIR_ERR_XML_ERROR,
-                       _("unknown firmware value %s"),
-                       firmware);
-        return -1;
-    }
-
-    def->os.firmware = fw;
-
     if ((n = virXPathNodeSet("./os/firmware/feature", ctxt, &nodes)) < 0)
         return -1;
 
@@ -18478,6 +18464,20 @@ virDomainDefParseBootFirmwareOptions(virDomainDef *def,
     }
 
     def->os.firmwareFeatures = g_steal_pointer(&features);
+
+    if (!firmware)
+        return 0;
+
+    fw = virDomainOsDefFirmwareTypeFromString(firmware);
+
+    if (fw <= 0) {
+        virReportError(VIR_ERR_XML_ERROR,
+                       _("unknown firmware value %s"),
+                       firmware);
+        return -1;
+    }
+
+    def->os.firmware = fw;
 
     return 0;
 }
