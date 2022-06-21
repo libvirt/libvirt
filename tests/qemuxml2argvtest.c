@@ -1269,11 +1269,8 @@ mymain(void)
     DO_TEST_CAPS_VER("kvmclock+eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("kvmclock+eoi-disabled");
 
-    DO_TEST_CAPS_VER("hyperv", "4.0.0");
     DO_TEST_CAPS_LATEST("hyperv");
-    DO_TEST_CAPS_VER("hyperv-off", "4.0.0");
     DO_TEST_CAPS_LATEST("hyperv-off");
-    DO_TEST_CAPS_VER("hyperv-panic", "4.0.0");
     DO_TEST_CAPS_LATEST("hyperv-panic");
     DO_TEST_CAPS_VER("hyperv-passthrough", "6.1.0");
     DO_TEST_CAPS_LATEST("hyperv-passthrough");
