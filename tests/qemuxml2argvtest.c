@@ -3326,9 +3326,6 @@ mymain(void)
     DO_TEST("riscv64-virt-pci",
             QEMU_CAPS_OBJECT_GPEX);
 
-    /* Older version checks disable-legacy usage */
-    DO_TEST_CAPS_VER("virtio-transitional", "3.1.0");
-    DO_TEST_CAPS_VER("virtio-non-transitional", "3.1.0");
     DO_TEST_CAPS_LATEST("virtio-transitional");
     DO_TEST_CAPS_LATEST("virtio-non-transitional");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("virtio-transitional-not-supported");
