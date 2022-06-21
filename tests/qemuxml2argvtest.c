@@ -2019,9 +2019,6 @@ mymain(void)
 
     /* host-model cpu expansion depends on the cpu reported by qemu and thus
      * we invoke it for all real capability dumps we have */
-    DO_TEST_CAPS_VER("cpu-host-model", "3.1.0");
-    DO_TEST_CAPS_VER("cpu-host-model", "4.0.0");
-    DO_TEST_CAPS_VER("cpu-host-model", "4.1.0");
     DO_TEST_CAPS_VER("cpu-host-model", "4.2.0");
     DO_TEST_CAPS_VER("cpu-host-model", "5.0.0");
     DO_TEST_CAPS_VER("cpu-host-model", "5.1.0");
