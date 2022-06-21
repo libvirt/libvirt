@@ -2962,8 +2962,6 @@ mymain(void)
             QEMU_CAPS_DEVICE_PCI_BRIDGE,
             QEMU_CAPS_DEVICE_PCI_SERIAL);
 
-    /* QEMU 4.0.0 didn't have support for aarch64 CPU features */
-    DO_TEST_CAPS_ARCH_VER_FAILURE("aarch64-features-sve", "aarch64", "4.0.0");
     /* aarch64 doesn't support the same CPU features as x86 */
     DO_TEST_CAPS_ARCH_LATEST_FAILURE("aarch64-features-wrong", "aarch64");
     /* Can't enable vector lengths when SVE is overall disabled */
