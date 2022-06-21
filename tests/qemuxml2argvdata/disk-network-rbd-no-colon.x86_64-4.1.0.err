@@ -1,1 +1,0 @@
-unsupported configuration: ':' not allowed in RBD source volume name 'imagename:rbd_cache=1:rbd_cache_size=67108864:rbd_cache_max_dirty=0'
