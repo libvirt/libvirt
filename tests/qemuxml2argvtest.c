@@ -3424,7 +3424,6 @@ mymain(void)
     DO_TEST_CAPS_LATEST("vhost-user-vga");
     DO_TEST_CAPS_LATEST("vhost-user-gpu-secondary");
 
-    DO_TEST_CAPS_VER("cpu-Icelake-Server-pconfig", "3.1.0");
     DO_TEST_CAPS_LATEST("cpu-Icelake-Server-pconfig");
 
     DO_TEST_CAPS_ARCH_LATEST("aarch64-default-cpu-kvm-virt-4.2", "aarch64");
