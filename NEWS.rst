@@ -17,6 +17,11 @@ v8.5.0 (unreleased)
 
 * **New features**
 
+  * qemu: Introduce support for network backed NVRAM
+
+    Users can now use remote store NVRAM image by specifying newly introduced
+    attribute `type='network'` with `<nvram>` element.
+
   * qemu: Add support for post-copy migration recovery
 
     A new ``VIR_MIGRATE_POSTCOPY_RESUME`` flag (``virsh migrate --postcopy-resume``)
