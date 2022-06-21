@@ -1247,8 +1247,6 @@ mymain(void)
 
     DO_TEST_CAPS_LATEST("controller-usb-order");
 
-    DO_TEST_NOCAPS("cpu-eoi-disabled");
-    DO_TEST_NOCAPS("cpu-eoi-enabled");
     DO_TEST("controller-order",
             QEMU_CAPS_KVM,
             QEMU_CAPS_PIIX3_USB_UHCI,
@@ -1258,6 +1256,10 @@ mymain(void)
             QEMU_CAPS_USB_HUB,
             QEMU_CAPS_DEVICE_ISA_SERIAL,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
+    /* 'eoi' cpu feature with an explicit CPU defined */
+    DO_TEST_CAPS_LATEST("cpu-eoi-disabled");
+    DO_TEST_CAPS_LATEST("cpu-eoi-enabled");
+    /* 'eoi' cpu feature without an explicit CPU defined */
     DO_TEST_CAPS_VER("eoi-disabled", "4.0.0");
     DO_TEST_CAPS_LATEST("eoi-disabled");
     DO_TEST_CAPS_VER("eoi-enabled", "4.0.0");
