@@ -1029,6 +1029,11 @@ int qemuMonitorJobDismiss(qemuMonitor *mon,
                           const char *jobname)
     ATTRIBUTE_NONNULL(2);
 
+int
+qemuMonitorJobFinalize(qemuMonitor *mon,
+                       const char *jobname)
+    ATTRIBUTE_NONNULL(2);
+
 int qemuMonitorJobComplete(qemuMonitor *mon,
                            const char *jobname)
     ATTRIBUTE_NONNULL(2);

@@ -4406,6 +4406,28 @@ qemuMonitorJSONJobDismiss(qemuMonitor *mon,
 
 
 int
+qemuMonitorJSONJobFinalize(qemuMonitor *mon,
+                           const char *jobname)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("job-finalize",
+                                           "s:id", jobname,
+                                           NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+int
 qemuMonitorJSONJobComplete(qemuMonitor *mon,
                            const char *jobname)
 {

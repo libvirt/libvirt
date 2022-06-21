@@ -2933,6 +2933,18 @@ qemuMonitorJobDismiss(qemuMonitor *mon,
 
 
 int
+qemuMonitorJobFinalize(qemuMonitor *mon,
+                       const char *jobname)
+{
+    VIR_DEBUG("jobname=%s", jobname);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONJobFinalize(mon, jobname);
+}
+
+
+int
 qemuMonitorJobComplete(qemuMonitor *mon,
                        const char *jobname)
 {
