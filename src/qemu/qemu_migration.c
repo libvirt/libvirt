@@ -3181,7 +3181,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
         vm->def->mem.hard_limit > 0 &&
-        virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+        qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10, NULL) < 0) {
         goto error;
     }
 
@@ -4615,7 +4615,7 @@ qemuMigrationSrcStart(virDomainObj *vm,
     case MIGRATION_DEST_HOST:
         if (STREQ(spec->dest.host.protocol, "rdma") &&
             vm->def->mem.hard_limit > 0 &&
-            virProcessSetMaxMemLock(vm->pid, vm->def->mem.hard_limit << 10) < 0) {
+            qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10, NULL) < 0) {
             return -1;
         }
         return qemuMonitorMigrateToHost(priv->mon, migrateFlags,
