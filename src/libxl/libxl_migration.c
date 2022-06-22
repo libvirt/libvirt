@@ -637,7 +637,7 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     char *xmlout = NULL;
     unsigned short port;
     char portstr[100];
-    virURI *uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     virNetSocket **socks = NULL;
     size_t nsocks = 0;
     int nsocks_listen = 0;
@@ -795,8 +795,6 @@ libxlDomainMigrationDstPrepare(virConnectPtr dconn,
     libxlMigrationCookieFree(mig);
     if (!uri_in)
         VIR_FREE(hostname);
-    else
-        virURIFree(uri);
     virObjectUnref(args);
     virDomainObjEndAPI(&vm);
     virObjectUnref(cfg);
@@ -1183,7 +1181,7 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
     char *hostname = NULL;
     unsigned short port = 0;
     char portstr[100];
-    virURI *uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     virNetSocket *sock;
     int sockfd = -1;
     int ret = -1;
@@ -1233,7 +1231,6 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
 
  cleanup:
     VIR_FORCE_CLOSE(sockfd);
-    virURIFree(uri);
     return ret;
 }
 

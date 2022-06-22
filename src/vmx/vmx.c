@@ -2903,7 +2903,7 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
     char network_endPoint_name[48] = "";
     char *network_endPoint = NULL;
 
-    virURI *parsedUri = NULL;
+    g_autoptr(virURI) parsedUri = NULL;
 
     if (def == NULL || *def != NULL) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("Invalid argument"));
@@ -3051,7 +3051,6 @@ virVMXParseSerial(virVMXContext *ctx, virConf *conf, int port,
     VIR_FREE(fileType);
     VIR_FREE(fileName);
     VIR_FREE(network_endPoint);
-    virURIFree(parsedUri);
 
     return result;
 }

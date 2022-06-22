@@ -3074,7 +3074,7 @@ vzDomainMigratePerformStep(virDomainObj *dom,
 {
     int ret = -1;
     struct vzDomObj *privdom = dom->privateData;
-    virURI *vzuri = NULL;
+    g_autoptr(virURI) vzuri = NULL;
     const char *miguri = NULL;
     const char *dname = NULL;
     vzMigrationCookie *mig = NULL;
@@ -3117,7 +3117,6 @@ vzDomainMigratePerformStep(virDomainObj *dom,
  cleanup:
     if (job)
         vzDomainObjEndJob(dom);
-    virURIFree(vzuri);
     vzMigrationCookieFree(mig);
 
     return ret;

@@ -2107,7 +2107,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
     int ret = -1;
     const char *listenAddress = NULL;
     virSocketAddr addr;
-    virURI *uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     int type = -1;
     int port = -1;
     int tlsPort = -1;
@@ -2192,7 +2192,6 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
     }
 
  cleanup:
-    virURIFree(uri);
     return ret;
 }
 

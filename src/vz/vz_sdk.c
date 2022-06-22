@@ -1133,7 +1133,7 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDef *chr)
     char *friendlyName = NULL;
     PRL_SERIAL_PORT_SOCKET_OPERATION_MODE socket_mode;
     char *uristr = NULL;
-    virURI *uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     int ret = -1;
 
     chr->deviceType = VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL;
@@ -1196,7 +1196,6 @@ prlsdkGetSerialInfo(PRL_HANDLE serialPort, virDomainChrDef *chr)
  cleanup:
     VIR_FREE(friendlyName);
     VIR_FREE(uristr);
-    virURIFree(uri);
 
     return ret;
 }

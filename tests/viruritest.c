@@ -46,7 +46,7 @@ struct URIParseData {
 static int testURIParse(const void *args)
 {
     int ret = -1;
-    virURI *uri = NULL;
+    g_autoptr(virURI) uri = NULL;
     const struct URIParseData *data = args;
     g_autofree char *uristr = NULL;
     size_t i;
@@ -133,7 +133,6 @@ static int testURIParse(const void *args)
 
     ret = 0;
  cleanup:
-    virURIFree(uri);
     return ret;
 }
 
