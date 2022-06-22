@@ -620,7 +620,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 395 */
               "vnc-power-control", /* QEMU_CAPS_VNC_POWER_CONTROL */
-              "audiodev", /* QEMU_CAPS_AUDIODEV */
+              "audiodev", /* X_QEMU_CAPS_AUDIODEV */
               "blockdev-backup", /* QEMU_CAPS_BLOCKDEV_BACKUP */
               "object.qapified", /* QEMU_CAPS_OBJECT_JSON */
               "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
@@ -3304,7 +3304,6 @@ static struct virQEMUCapsCommandLineProps virQEMUCapsCommandLine[] = {
     { "spice", "gl", QEMU_CAPS_SPICE_GL },
     { "spice", "rendernode", QEMU_CAPS_SPICE_RENDERNODE },
     { "vnc", "power-control", QEMU_CAPS_VNC_POWER_CONTROL },
-    { "vnc", "audiodev", QEMU_CAPS_AUDIODEV },
 };
 
 static int

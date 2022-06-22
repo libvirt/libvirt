@@ -178,7 +178,6 @@
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
   <flag name='migration-param.block-bitmap-mapping'/>
   <flag name='vnc-power-control'/>
-  <flag name='audiodev'/>
   <flag name='blockdev-backup'/>
   <flag name='object.qapified'/>
   <flag name='rotation-rate'/>
