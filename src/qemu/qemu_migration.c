@@ -3181,7 +3181,8 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
         vm->def->mem.hard_limit > 0 &&
-        qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10, NULL) < 0) {
+        qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10,
+                                &priv->preMigrationMemlock) < 0) {
         goto error;
     }
 
@@ -3945,6 +3946,7 @@ qemuMigrationSrcComplete(virQEMUDriver *driver,
                                               VIR_DOMAIN_EVENT_STOPPED_MIGRATED);
     virObjectEventStateQueue(driver->domainEventState, event);
     qemuDomainEventEmitJobCompleted(driver, vm);
+    priv->preMigrationMemlock = 0;
 }
 
 
@@ -4035,6 +4037,7 @@ qemuMigrationSrcConfirmPhase(virQEMUDriver *driver,
 
             qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                      jobPriv->migParams, priv->job.apiFlags);
+            qemuDomainSetMaxMemLock(vm, 0, &priv->preMigrationMemlock);
         }
 
         qemuDomainSaveStatus(vm);
@@ -4615,7 +4618,8 @@ qemuMigrationSrcStart(virDomainObj *vm,
     case MIGRATION_DEST_HOST:
         if (STREQ(spec->dest.host.protocol, "rdma") &&
             vm->def->mem.hard_limit > 0 &&
-            qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10, NULL) < 0) {
+            qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10,
+                                    &priv->preMigrationMemlock) < 0) {
             return -1;
         }
         return qemuMonitorMigrateToHost(priv->mon, migrateFlags,
@@ -6155,6 +6159,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
         qemuMigrationSrcRestoreDomainState(driver, vm);
         qemuMigrationParamsReset(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  jobPriv->migParams, priv->job.apiFlags);
+        qemuDomainSetMaxMemLock(vm, 0, &priv->preMigrationMemlock);
         qemuMigrationJobFinish(vm);
     } else {
         if (ret < 0)
@@ -6411,6 +6416,7 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
 
     virPortAllocatorRelease(priv->migrationPort);
     priv->migrationPort = 0;
+    qemuDomainSetMaxMemLock(vm, 0, &priv->preMigrationMemlock);
 }
 
 

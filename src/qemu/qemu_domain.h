@@ -140,6 +140,9 @@ struct _qemuDomainObjPrivate {
     int nbdPort; /* Port used for migration with NBD */
     unsigned short migrationPort;
     int preMigrationState;
+    unsigned long long preMigrationMemlock; /* Original RLIMIT_MEMLOCK in case
+                                               it was changed for the current
+                                               migration job. */
 
     virChrdevs *devs;
 

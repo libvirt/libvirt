@@ -2413,6 +2413,11 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
                           priv->originalMemlock);
     }
 
+    if (priv->preMigrationMemlock > 0) {
+        virBufferAsprintf(buf, "<preMigrationMemlock>%llu</preMigrationMemlock>\n",
+                          priv->preMigrationMemlock);
+    }
+
     return 0;
 }
 
@@ -3136,6 +3141,13 @@ qemuDomainObjPrivateXMLParse(xmlXPathContextPtr ctxt,
                           ctxt, &priv->originalMemlock) == -2) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("failed to parse original memlock size"));
+        return -1;
+    }
+
+    if (virXPathULongLong("string(./preMigrationMemlock)", ctxt,
+                          &priv->preMigrationMemlock) == -2) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("failed to parse pre-migration memlock limit"));
         return -1;
     }
 
