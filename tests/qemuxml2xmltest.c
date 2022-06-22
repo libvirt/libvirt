@@ -411,8 +411,7 @@ mymain(void)
             QEMU_CAPS_DISPLAY_DBUS);
     DO_TEST("graphics-dbus-audio",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_DISPLAY_DBUS,
-            QEMU_CAPS_AUDIODEV);
+            QEMU_CAPS_DISPLAY_DBUS);
     DO_TEST("graphics-dbus-chardev",
             QEMU_CAPS_DEVICE_CIRRUS_VGA,
             QEMU_CAPS_DISPLAY_DBUS);
@@ -1405,18 +1404,17 @@ mymain(void)
     DO_TEST_NOCAPS("audio-file-best");
 
     /* Full <audio> only compat with new QEMU -audiodev args */
-    DO_TEST("audio-none-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-alsa-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-coreaudio-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-jack-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-oss-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-pulseaudio-full", QEMU_CAPS_AUDIODEV);
-    DO_TEST("audio-sdl-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST_NOCAPS("audio-none-full");
+    DO_TEST_NOCAPS("audio-alsa-full");
+    DO_TEST_NOCAPS("audio-coreaudio-full");
+    DO_TEST_NOCAPS("audio-jack-full");
+    DO_TEST_NOCAPS("audio-oss-full");
+    DO_TEST_NOCAPS("audio-pulseaudio-full");
+    DO_TEST_NOCAPS("audio-sdl-full");
     DO_TEST("audio-spice-full",
-            QEMU_CAPS_AUDIODEV,
             QEMU_CAPS_SPICE,
             QEMU_CAPS_DEVICE_CIRRUS_VGA);
-    DO_TEST("audio-file-full", QEMU_CAPS_AUDIODEV);
+    DO_TEST_NOCAPS("audio-file-full");
 
     DO_TEST_CAPS_LATEST("audio-many-backends");
 
