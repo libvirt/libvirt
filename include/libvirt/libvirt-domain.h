@@ -1089,6 +1089,15 @@ typedef enum {
      * Since: 8.5.0
      */
     VIR_MIGRATE_POSTCOPY_RESUME = (1 << 19),
+
+    /* Use zero-copy mechanism for migrating memory pages. For QEMU/KVM this
+     * means QEMU will be temporarily allowed to lock all guest pages in host's
+     * memory, although only those that are queued for transfer will be locked
+     * at the same time.
+     *
+     * Since: 8.5.0
+     */
+    VIR_MIGRATE_ZEROCOPY = (1 << 20),
 } virDomainMigrateFlags;
 
 
