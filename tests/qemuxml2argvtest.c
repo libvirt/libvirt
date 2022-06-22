@@ -2054,8 +2054,6 @@ mymain(void)
     DO_TEST("cpu-tsc-frequency", QEMU_CAPS_KVM);
     qemuTestSetHostCPU(&driver, driver.hostarch, NULL);
 
-    DO_TEST_CAPS_VER("cpu-host-model-cmt", "4.0.0");
-    DO_TEST_CAPS_VER("cpu-tsc-frequency", "4.0.0");
     DO_TEST_CAPS_LATEST("cpu-translation");
 
     DO_TEST_NOCAPS("memtune");
