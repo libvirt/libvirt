@@ -61,6 +61,9 @@ Usage
 `Snapshots <snapshots.html>`__
     Details about snapshotting a VM
 
+`Secure Boot <secureboot.html>`__
+    Enable and disable the Secure Boot feature
+
 
 Debugging
 ---------

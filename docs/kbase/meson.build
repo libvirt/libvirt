@@ -15,6 +15,7 @@ docs_kbase_files = [
   'qemu-passthrough-security',
   'rpm-deployment',
   's390_protected_virt',
+  'secureboot',
   'secureusage',
   'snapshots',
   'systemtap',
