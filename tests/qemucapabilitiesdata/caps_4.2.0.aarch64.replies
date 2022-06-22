@@ -17,8 +17,8 @@
 {
   "return": {
     "qemu": {
-      "micro": 50,
-      "minor": 1,
+      "micro": 0,
+      "minor": 2,
       "major": 4
     },
     "package": "v4.1.0-2221-g36609b4fa3"
