@@ -10890,6 +10890,10 @@ static const vshCmdOptDef opts_migrate[] = {
      .type = VSH_OT_BOOL,
      .help = N_("resume failed post-copy migration")
     },
+    {.name = "zerocopy",
+     .type = VSH_OT_BOOL,
+     .help = N_("use zero-copy mechanism for migrating memory pages")
+    },
     {.name = "migrateuri",
      .type = VSH_OT_STRING,
      .completer = virshCompleteEmpty,
@@ -11295,6 +11299,9 @@ doMigrate(void *opaque)
 
     if (vshCommandOptBool(cmd, "postcopy-resume"))
         flags |= VIR_MIGRATE_POSTCOPY_RESUME;
+
+    if (vshCommandOptBool(cmd, "zerocopy"))
+        flags |= VIR_MIGRATE_ZEROCOPY;
 
     if (vshCommandOptBool(cmd, "tls"))
         flags |= VIR_MIGRATE_TLS;

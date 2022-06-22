@@ -3285,7 +3285,7 @@ migrate
       [--persistent] [--undefinesource] [--suspend] [--copy-storage-all]
       [--copy-storage-inc] [--change-protection] [--unsafe] [--verbose]
       [--rdma-pin-all] [--abort-on-error] [--postcopy]
-      [--postcopy-after-precopy] [--postcopy-resume]
+      [--postcopy-after-precopy] [--postcopy-resume] [--zerocopy]
       domain desturi [migrateuri] [graphicsuri] [listen-address] [dname]
       [--timeout seconds [--timeout-suspend | --timeout-postcopy]]
       [--xml file] [--migrate-disks disk-list] [--disks-port port]
@@ -3361,6 +3361,11 @@ consumed by the QEMU process itself. Beware of setting the memory limit too
 high (and thus allowing the domain to lock most of the host's memory). Doing so
 may be dangerous to both the domain and the host itself since the host's kernel
 may run out of memory.
+
+*--zerocopy* requests zero-copy mechanism to be used for migrating memory pages.
+For QEMU/KVM this means QEMU will be temporarily allowed to lock all guest
+pages in host's memory, although only those that are queued for transfer will
+be locked at the same time.
 
 ``Note``: Individual hypervisors usually do not support all possible types of
 migration. For example, QEMU does not support direct migration.
