@@ -46,7 +46,6 @@
   </qemu:commandline>
   <qemu:capabilities>
     <qemu:add capability='vnc-colon'/>
-    <qemu:add capability='blockdev'/>
     <qemu:del capability='name'/>
   </qemu:capabilities>
   <qemu:override>

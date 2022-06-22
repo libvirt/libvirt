@@ -2036,7 +2036,6 @@ mymain(void)
                  QEMU_CAPS_LAST,
                  ARG_END);
 
-    DO_TEST_CAPS_VER("qemu-ns", "4.0.0");
     DO_TEST_CAPS_LATEST("qemu-ns");
     DO_TEST_NOCAPS("qemu-ns-no-env");
     DO_TEST_NOCAPS("qemu-ns-alt");
