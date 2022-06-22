@@ -21,9 +21,9 @@ There are three mailing-lists:
 
 **libvir-list@redhat.com** (for development)
    Archives
-     https://www.redhat.com/archives/libvir-list
+     https://listman.redhat.com/archives/libvir-list
    List info
-     https://www.redhat.com/mailman/listinfo/libvir-list
+     https://listman.redhat.com/mailman/listinfo/libvir-list
 
    This is a high volume mailing list. It is a place for discussions about the
    **development** of libvirt.
@@ -37,9 +37,9 @@ There are three mailing-lists:
 
 **libvirt-users@redhat.com** (for users)
    Archives
-     https://www.redhat.com/archives/libvirt-users
+     https://listman.redhat.com/archives/libvirt-users
    List info
-     https://www.redhat.com/mailman/listinfo/libvirt-users
+     https://listman.redhat.com/mailman/listinfo/libvirt-users
 
    This is a moderate volume mailing list. It is a place for discussions
    involving libvirt **users**.
@@ -53,9 +53,9 @@ There are three mailing-lists:
 
 **libvirt-announce@redhat.com** (for release notices)
    Archives
-     https://www.redhat.com/archives/libvirt-announce
+     https://listman.redhat.com/archives/libvirt-announce
    List info
-     https://www.redhat.com/mailman/listinfo/libvirt-announce
+     https://listman.redhat.com/mailman/listinfo/libvirt-announce
 
    This is a low volume mailing list, with restricted posting, for announcements
    of new libvirt releases.

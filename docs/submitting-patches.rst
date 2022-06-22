@@ -68,7 +68,7 @@ particularly bad at this.
 
 If everything went well, your patch should show up on the
 `libvir-list
-archives <https://www.redhat.com/archives/libvir-list/>`__ in a
+archives <https://listman.redhat.com/archives/libvir-list/>`__ in a
 matter of minutes; if you still can't find it on there after an
 hour or so, you should double-check your setup. **Note that, if
 you are not already a subscriber, your very first post to the

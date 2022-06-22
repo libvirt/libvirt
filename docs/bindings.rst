@@ -57,6 +57,6 @@ For information on using libvirt on **Windows** `please see the Windows
 support page <windows.html>`__.
 
 Support, requests or help for libvirt bindings are welcome on the
-`mailing list <https://www.redhat.com/mailman/listinfo/libvir-list/>`__,
+`mailing list <https://listman.redhat.com/mailman/listinfo/libvir-list/>`__,
 as usual try to provide enough background information and make sure you
 use recent version, see the `help page <bugs.html>`__.
