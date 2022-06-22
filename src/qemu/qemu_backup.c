@@ -1035,6 +1035,7 @@ qemuBackupNotifyBlockjobEnd(virDomainObj *vm,
             case QEMU_BLOCKJOB_STATE_NEW:
             case QEMU_BLOCKJOB_STATE_RUNNING:
             case QEMU_BLOCKJOB_STATE_ABORTING:
+            case QEMU_BLOCKJOB_STATE_PENDING:
             case QEMU_BLOCKJOB_STATE_PIVOTING:
             case QEMU_BLOCKJOB_STATE_LAST:
             default:

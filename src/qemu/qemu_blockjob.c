@@ -55,6 +55,7 @@ VIR_ENUM_IMPL(qemuBlockjobState,
               "running",
               "concluded",
               "aborting",
+              "pending",
               "pivoting");
 
 VIR_ENUM_IMPL(qemuBlockjob,
@@ -531,6 +532,8 @@ qemuBlockJobRefreshJobs(virDomainObj *vm)
                 if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
                     job->state == QEMU_BLOCKJOB_STATE_RUNNING)
                     job->newstate = newstate;
+            } else if (newstate == QEMU_BLOCKJOB_STATE_PENDING) {
+                job->newstate = newstate;
             }
             /* don't update the job otherwise */
         }
@@ -1563,6 +1566,19 @@ qemuBlockJobEventProcess(virQEMUDriver *driver,
         job->newstate = -1;
         break;
 
+    case QEMU_BLOCKJOB_STATE_PENDING:
+        /* Similarly as for 'ready' state we should handle it only when
+         * previous state was 'new' or 'running' as there are other cases
+         * when it can be emitted by QEMU. Currently we need this only when
+         * deleting non-active external snapshots. */
+        if (job->state == QEMU_BLOCKJOB_STATE_NEW ||
+            job->state == QEMU_BLOCKJOB_STATE_RUNNING) {
+            job->state = job->newstate;
+            qemuDomainSaveStatus(vm);
+        }
+        job->newstate = -1;
+        break;
+
     case QEMU_BLOCKJOB_STATE_NEW:
     case QEMU_BLOCKJOB_STATE_RUNNING:
     case QEMU_BLOCKJOB_STATE_LAST:
@@ -1684,13 +1700,16 @@ qemuBlockjobConvertMonitorStatus(int monitorstatus)
         ret = QEMU_BLOCKJOB_STATE_CONCLUDED;
         break;
 
+    case QEMU_MONITOR_JOB_STATUS_PENDING:
+        ret = QEMU_BLOCKJOB_STATE_PENDING;
+        break;
+
     case QEMU_MONITOR_JOB_STATUS_UNKNOWN:
     case QEMU_MONITOR_JOB_STATUS_CREATED:
     case QEMU_MONITOR_JOB_STATUS_RUNNING:
     case QEMU_MONITOR_JOB_STATUS_PAUSED:
     case QEMU_MONITOR_JOB_STATUS_STANDBY:
     case QEMU_MONITOR_JOB_STATUS_WAITING:
-    case QEMU_MONITOR_JOB_STATUS_PENDING:
     case QEMU_MONITOR_JOB_STATUS_ABORTING:
     case QEMU_MONITOR_JOB_STATUS_UNDEFINED:
     case QEMU_MONITOR_JOB_STATUS_NULL:

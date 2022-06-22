@@ -41,6 +41,7 @@ typedef enum {
     QEMU_BLOCKJOB_STATE_CONCLUDED, /* job has finished, but it's unknown
                                       whether it has failed or not */
     QEMU_BLOCKJOB_STATE_ABORTING,
+    QEMU_BLOCKJOB_STATE_PENDING,
     QEMU_BLOCKJOB_STATE_PIVOTING,
     QEMU_BLOCKJOB_STATE_LAST
 } qemuBlockjobState;
