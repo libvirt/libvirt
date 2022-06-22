@@ -8057,8 +8057,8 @@ qemuBuildAudioCommandLineArg(virCommand *cmd,
 }
 
 static int
-qemuBuildAudioCommandLineArgs(virCommand *cmd,
-                              virDomainDef *def)
+qemuBuildAudioCommandLine(virCommand *cmd,
+                          virDomainDef *def)
 {
     size_t i;
     for (i = 0; i < def->naudios; i++) {
@@ -8066,15 +8066,6 @@ qemuBuildAudioCommandLineArgs(virCommand *cmd,
             return -1;
     }
     return 0;
-}
-
-
-static int
-qemuBuildAudioCommandLine(virCommand *cmd,
-                          virDomainDef *def,
-                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
-{
-    return qemuBuildAudioCommandLineArgs(cmd, def);
 }
 
 
@@ -10530,7 +10521,7 @@ qemuBuildCommandLine(virDomainObj *vm,
     if (qemuBuildInputCommandLine(cmd, def, qemuCaps) < 0)
         return NULL;
 
-    if (qemuBuildAudioCommandLine(cmd, def, qemuCaps) < 0)
+    if (qemuBuildAudioCommandLine(cmd, def) < 0)
         return NULL;
 
     if (qemuBuildGraphicsCommandLine(cfg, cmd, def, qemuCaps) < 0)
