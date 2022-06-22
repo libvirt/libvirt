@@ -2634,6 +2634,12 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         }
     }
 
+    if (flags & VIR_MIGRATE_ZEROCOPY && !(flags & VIR_MIGRATE_PARALLEL)) {
+        virReportError(VIR_ERR_OPERATION_INVALID, "%s",
+                       _("zero-copy is only available for parallel migration"));
+        return NULL;
+    }
+
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
         if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
             !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
@@ -4798,6 +4804,21 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                                  migParams) < 0)
         goto error;
 
+    if (flags & VIR_MIGRATE_ZEROCOPY) {
+        /* Zero-copy requires pages in transfer to be locked in host memory.
+         * Unfortunately, we have no reliable way of computing how many pages
+         * will need to be locked at the same time. Thus we set the limit to
+         * the whole guest memory and reset it back once migration is done. */
+        unsigned long long limit;
+
+        if (virMemoryLimitIsSet(vm->def->mem.hard_limit))
+            limit = vm->def->mem.hard_limit;
+        else
+            limit = virDomainDefGetMemoryTotal(vm->def);
+
+        if (qemuDomainSetMaxMemLock(vm, limit << 10, &priv->preMigrationMemlock) < 0)
+            goto error;
+    }
 
     if (storageMigration) {
         if (mig->nbd) {
