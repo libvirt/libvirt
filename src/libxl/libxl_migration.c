@@ -1183,13 +1183,13 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
     char portstr[100];
     g_autoptr(virURI) uri = NULL;
     virNetSocket *sock;
-    int sockfd = -1;
+    VIR_AUTOCLOSE sockfd = -1;
     int ret = -1;
 
     /* parse dst host:port from uri */
     uri = virURIParse(uri_str);
     if (uri == NULL || uri->server == NULL || uri->port == 0)
-        goto cleanup;
+        return -1;
 
     hostname = uri->server;
     port = uri->port;
@@ -1199,11 +1199,11 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
     if (virNetSocketNewConnectTCP(hostname, portstr,
                                   AF_UNSPEC,
                                   &sock) < 0)
-        goto cleanup;
+        return -1;
 
     if (virNetSocketSetBlocking(sock, true) < 0) {
         virObjectUnref(sock);
-        goto cleanup;
+        return -1;
     }
 
     sockfd = virNetSocketDupFD(sock, true);
@@ -1229,8 +1229,6 @@ libxlDomainMigrationSrcPerform(libxlDriverPrivate *driver,
         libxlDomainObjEndJob(driver, vm);
     }
 
- cleanup:
-    VIR_FORCE_CLOSE(sockfd);
     return ret;
 }
 
