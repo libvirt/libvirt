@@ -5,7 +5,7 @@
 QEMU/KVM/HVF hypervisor driver
 ==============================
 
-The libvirt KVM/QEMU driver can manage any QEMU emulator from version 3.1.0 or
+The libvirt KVM/QEMU driver can manage any QEMU emulator from version 4.2.0 or
 later.
 
 It supports multiple QEMU accelerators: software
