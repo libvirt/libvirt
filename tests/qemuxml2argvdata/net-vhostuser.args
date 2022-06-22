@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -35,4 +34,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-net-pci,netdev=hostnet1,id=net1,mac=52:54:00:ee:96:6c,bus=pci.0,addr=0x3 \
 -netdev socket,listen=:2015,id=hostnet2 \
 -device rtl8139,netdev=hostnet2,id=net2,mac=52:54:00:95:db:c0,bus=pci.0,addr=0x4 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

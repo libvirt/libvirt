@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=guest,debug-threads=on \
 -S \
@@ -28,4 +27,5 @@ QEMU_AUDIO_DRV=none \
 -boot strict=on \
 -device ioh3420,port=8,chassis=1,id=pci.1,bus=pcie.0,multifunction=on,addr=0x1 \
 -device ioh3420,port=9,chassis=2,id=pci.2,bus=pcie.0,addr=0x1.0x1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

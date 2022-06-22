@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest2/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest2/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest2/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest2,debug-threads=on \
 -S \
@@ -28,6 +27,7 @@ QEMU_AUDIO_DRV=none \
 -device virtio-scsi-ccw,id=scsi0,devno=fe.0.0001 \
 -drive file=/dev/HostVG/QEMUGuest2,format=raw,if=none,id=drive-virtio-disk0 \
 -device virtio-blk-ccw,devno=fe.0.0000,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device vhost-scsi-ccw,wwpn=naa.5123456789abcde0,vhostfd=3,id=hostdev0,devno=fe.0.0002 \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0003 \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-foo/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-foo/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-foo/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=foo,debug-threads=on \
 -S \
@@ -28,5 +27,6 @@ QEMU_AUDIO_DRV=none \
 -boot strict=on \
 -global i440FX-pcihost.pci-hole64-size=1048576K \
 -usb \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

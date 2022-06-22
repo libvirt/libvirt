@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-SomeDummyHugepagesGu/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=SomeDummyHugepagesGuest,debug-threads=on \
 -S \
@@ -27,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -usb \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

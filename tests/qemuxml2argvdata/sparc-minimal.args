@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-redhat62sparc/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-redhat62sparc/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-redhat62sparc/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-sparc \
 -name guest=redhat62sparc,debug-threads=on \
 -S \
@@ -30,4 +29,5 @@ QEMU_AUDIO_DRV=none \
 -device scsi-hd,bus=scsi.0,scsi-id=0,drive=drive-scsi0-0-0-0,id=scsi0-0-0-0,bootindex=1 \
 -drive file=/home/berrange/VirtualMachines/redhat-6.2-sparc.iso,format=raw,if=none,id=drive-scsi0-0-0-1,readonly=on \
 -device scsi-cd,bus=scsi.0,scsi-id=1,drive=drive-scsi0-0-0-1,id=scsi0-0-0-1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

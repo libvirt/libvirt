@@ -4684,8 +4684,7 @@ qemuBuildSoundDevCmd(virCommand *cmd,
         return -1;
     }
 
-    if (!virDomainSoundModelSupportsCodecs(sound) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
+    if (!virDomainSoundModelSupportsCodecs(sound)) {
         if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
             return -1;
     }
@@ -4719,10 +4718,8 @@ qemuBuildSoundCodecCmd(virCommand *cmd,
     g_autofree char *alias = g_strdup_printf("%s-codec%d", sound->info.alias, codec->cad);
     g_autofree char *bus = g_strdup_printf("%s.0", sound->info.alias);
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
-        if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
-            return -1;
-    }
+    if (!(audioid = qemuGetAudioIDString(def, sound->audioId)))
+        return -1;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", qemuSoundCodecTypeToString(codec->type),
@@ -8156,7 +8153,7 @@ qemuBuildAudioPulseAudioEnv(virCommand *cmd,
 }
 
 
-static int
+static int G_GNUC_UNUSED
 qemuBuildAudioCommandLineEnv(virCommand *cmd,
                              virDomainDef *def)
 {
@@ -8258,12 +8255,9 @@ qemuBuildAudioCommandLineEnv(virCommand *cmd,
 static int
 qemuBuildAudioCommandLine(virCommand *cmd,
                           virDomainDef *def,
-                          virQEMUCaps *qemuCaps)
+                          virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV))
-        return qemuBuildAudioCommandLineArgs(cmd, def);
-    else
-        return qemuBuildAudioCommandLineEnv(cmd, def);
+    return qemuBuildAudioCommandLineArgs(cmd, def);
 }
 
 
@@ -8302,9 +8296,13 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                                 virQEMUCaps *qemuCaps,
                                 virDomainGraphicsDef *graphics)
 {
+    g_autofree char *audioid = qemuGetAudioIDString(def, graphics->data.vnc.audioId);
     g_auto(virBuffer) opt = VIR_BUFFER_INITIALIZER;
     virDomainGraphicsListenDef *glisten = NULL;
     bool escapeAddr;
+
+    if (!audioid)
+        return -1;
 
     if (!(glisten = virDomainGraphicsGetListen(graphics, 0))) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -8399,12 +8397,7 @@ qemuBuildGraphicsVNCCommandLine(virQEMUDriverConfig *cfg,
                           "on" : "off");
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_AUDIODEV)) {
-        g_autofree char *audioid = qemuGetAudioIDString(def, graphics->data.vnc.audioId);
-        if (!audioid)
-            return -1;
-        virBufferAsprintf(&opt, ",audiodev=%s", audioid);
-    }
+    virBufferAsprintf(&opt, ",audiodev=%s", audioid);
 
     virCommandAddArg(cmd, "-vnc");
     virCommandAddArgBuffer(cmd, &opt);

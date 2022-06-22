@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-armtest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-armtest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-armtest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-arm \
 -name guest=armtest,debug-threads=on \
 -S \
@@ -39,6 +38,7 @@ QEMU_AUDIO_DRV=none \
 -serial chardev:charserial0 \
 -chardev pty,id=charconsole1 \
 -device virtconsole,chardev=charconsole1,id=console1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-device,id=balloon0 \
 -object rng-random,id=objrng0,filename=/dev/random \
 -device virtio-rng-device,rng=objrng0,id=rng0 \

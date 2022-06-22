@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -27,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -device qemu-xhci,p2=8,p3=8,id=usb,bus=pci.0,addr=0x2 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

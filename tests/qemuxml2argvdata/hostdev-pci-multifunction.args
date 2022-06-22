@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-delete/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-delete/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-delete/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=delete,debug-threads=on \
 -S \
@@ -27,6 +26,7 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -usb \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device vfio-pci,host=0005:90:01.0,id=hostdev0,bus=pci.0,addr=0x2 \
 -device vfio-pci,host=0001:01:00.1,id=hostdev1,bus=pci.0,addr=0x3 \
 -device vfio-pci,host=0001:01:00.0,id=hostdev2,bus=pci.0,addr=0x4 \

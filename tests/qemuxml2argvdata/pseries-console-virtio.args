@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest=guest,debug-threads=on \
 -S \
@@ -28,4 +27,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x1 \
 -chardev pty,id=charconsole0 \
 -device virtconsole,chardev=charconsole0,id=console0 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -27,5 +26,6 @@ QEMU_AUDIO_DRV=none \
 -boot strict=on \
 -netdev user,id=hostnet0 \
 -device virtio-net-ccw,netdev=hostnet0,id=net0,mac=00:11:22:33:44:54,bootindex=1,devno=fe.0.0000 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-ccw,id=balloon0,devno=fe.0.0001 \
 -msg timestamp=on

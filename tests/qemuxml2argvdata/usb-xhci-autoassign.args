@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -32,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -device usb-mouse,id=input0,bus=usb.0,port=3 \
 -device usb-mouse,id=input1,bus=usb.0,port=4 \
 -device usb-mouse,id=input2,bus=usb.0,port=5 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

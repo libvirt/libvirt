@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -32,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -device spapr-pci-host-bridge,index=1,id=pci.1,numa_node=1 \
 -device spapr-pci-host-bridge,index=2,id=pci.2 \
 -device spapr-pci-host-bridge,index=3,id=pci.3,numa_node=0 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

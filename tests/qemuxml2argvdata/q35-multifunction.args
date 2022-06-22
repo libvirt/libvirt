@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-q35-test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-q35-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=q35-test,debug-threads=on \
 -S \
@@ -45,5 +44,6 @@ QEMU_AUDIO_DRV=none \
 -device ioh3420,port=20,chassis=17,id=pci.17,bus=pcie.0,addr=0x2.0x4 \
 -device ioh3420,port=21,chassis=18,id=pci.18,bus=pcie.0,addr=0x2.0x5 \
 -device nec-usb-xhci,id=usb,bus=pci.1,addr=0x0 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x0 \
 -msg timestamp=on

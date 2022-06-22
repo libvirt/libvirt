@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -36,5 +35,6 @@ QEMU_AUDIO_DRV=none \
 -device virtserialport,bus=virtio-serial1.0,nr=4,chardev=charchannel1,id=channel1,name=org.linux-kvm.port.foo1 \
 -chardev pty,id=charchannel2 \
 -device virtserialport,bus=virtio-serial1.0,nr=5,chardev=charchannel2,id=channel2,name=org.linux-kvm.port.foo2 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

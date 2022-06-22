@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-expander-test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-expander-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-expander-test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=expander-test,debug-threads=on \
 -S \
@@ -94,5 +93,6 @@ QEMU_AUDIO_DRV=none \
 -device e1000,netdev=hostnet30,id=net30,mac=52:54:00:ec:d5:e3,bus=pci.1,addr=0x3 \
 -netdev user,id=hostnet31 \
 -device e1000,netdev=hostnet31,id=net31,mac=52:54:00:7e:6e:c8,bus=pci.1,addr=0x4 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-aarch64test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=aarch64test,debug-threads=on \
 -S \
@@ -32,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -add-fd set=0,fd=1751,opaque=serial0-log \
 -chardev pty,id=charserial0,logfile=/dev/fdset/0,logappend=on \
 -device pci-serial,chardev=charserial0,id=serial0,bus=pci.2,addr=0x1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

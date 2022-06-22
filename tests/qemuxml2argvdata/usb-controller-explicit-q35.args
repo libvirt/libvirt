@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-q35-test/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-q35-test/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=q35-test,debug-threads=on \
 -S \
@@ -27,4 +26,5 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -device nec-usb-xhci,id=usb,bus=pcie.0,addr=0x1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-ppc64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -29,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -device pc-dimm,memdev=memdimm0,id=dimm0,slot=0 \
 -object memory-backend-ram,id=memdimm1,size=536870912 \
 -device pc-dimm,memdev=memdimm1,id=dimm1,slot=1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -46,5 +45,6 @@ QEMU_AUDIO_DRV=none \
 -device usb-tablet,id=input13,bus=usb.0,port=1.1.7 \
 -device usb-tablet,id=input14,bus=usb.0,port=1.1.8 \
 -device usb-tablet,id=input15,bus=usb.0,port=2.1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

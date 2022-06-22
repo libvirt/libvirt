@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-fdr-br/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-fdr-br/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-fdr-br/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fdr-br,debug-threads=on \
 -S \
@@ -84,6 +83,7 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-pci,bus=pci.0,addr=0x1e,drive=drive-virtio-disk182,id=virtio-disk182 \
 -drive file=/var/lib/libvirt/images/disk-g-b.img,format=raw,if=none,id=drive-virtio-disk183 \
 -device virtio-blk-pci,bus=pci.0,addr=0x1f,drive=drive-virtio-disk183,id=virtio-disk183 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x6 \
 -msg timestamp=on

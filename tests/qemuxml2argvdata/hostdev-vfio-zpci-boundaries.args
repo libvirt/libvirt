@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -27,6 +26,7 @@ QEMU_AUDIO_DRV=none \
 -boot strict=on \
 -device zpci,uid=3,fid=2,target=pci.1,id=zpci3 \
 -device pci-bridge,chassis_nr=1,id=pci.1,bus=pci.0,addr=0x1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device zpci,uid=65535,fid=4294967295,target=hostdev0,id=zpci65535 \
 -device vfio-pci,host=ffff:00:00.0,id=hostdev0,bus=pci.1,addr=0x1f \
 -device zpci,uid=1,fid=0,target=hostdev1,id=zpci1 \

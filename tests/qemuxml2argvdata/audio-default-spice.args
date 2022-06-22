@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -28,6 +27,7 @@ QEMU_AUDIO_DRV=spice \
 -usb \
 -drive file=/dev/cdrom,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
 -device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
+-audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=0,seamless-migration=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-lots-of-disks/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-lots-of-disks/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-lots-of-disks/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=lots-of-disks,debug-threads=on \
 -S \
@@ -240,4 +239,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-blk-pci,bus=pci.3,addr=0xf,drive=drive-virtio-disk678,id=virtio-disk678 \
 -drive file=/var/lib/libvirt/images/disk-z-d.img,format=raw,if=none,id=drive-virtio-disk679 \
 -device virtio-blk-pci,bus=pci.3,addr=0x10,drive=drive-virtio-disk679,id=virtio-disk679 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

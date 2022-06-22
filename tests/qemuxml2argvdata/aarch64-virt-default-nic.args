@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-aarch64-virt-default/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-aarch64-virt-default/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64-virt-default/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-aarch64 \
 -name guest=aarch64-virt-default-nic,debug-threads=on \
 -S \
@@ -32,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -append console=ttyAMA0 \
 -netdev user,id=hostnet0 \
 -device virtio-net-device,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

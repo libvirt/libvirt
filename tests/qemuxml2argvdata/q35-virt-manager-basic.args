@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-virt-manager-basic/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-virt-manager-basic/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-virt-manager-basic/.config \
-QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-x86_64 \
 -name guest=virt-manager-basic,debug-threads=on \
 -S \
@@ -46,10 +45,11 @@ QEMU_AUDIO_DRV=spice \
 -chardev spicevmc,id=charchannel1,name=vdagent \
 -device virtserialport,bus=virtio-serial0.0,nr=2,chardev=charchannel1,id=channel1,name=com.redhat.spice.0 \
 -device usb-tablet,id=input0,bus=usb.0,port=1 \
+-audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=5901,tls-port=5902,addr=127.0.0.1,x509-dir=/etc/pki/libvirt-spice,image-compression=off,seamless-migration=on \
 -device qxl-vga,id=video0,max_outputs=1,ram_size=67108864,vram_size=67108864,bus=pcie.0,addr=0x1 \
 -device ich9-intel-hda,id=sound0,bus=pcie.0,addr=0x1b \
--device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0 \
+-device hda-duplex,id=sound0-codec0,bus=sound0.0,cad=0,audiodev=audio1 \
 -chardev spicevmc,id=charredir0,name=usbredir \
 -device usb-redir,chardev=charredir0,id=redir0,bus=usb.0,port=2 \
 -chardev spicevmc,id=charredir1,name=usbredir \

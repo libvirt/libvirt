@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-kvm/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-kvm/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-kvm/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=kvm,debug-threads=on \
 -S \
@@ -27,5 +26,6 @@ QEMU_AUDIO_DRV=none \
 -no-acpi \
 -boot strict=on \
 -usb \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x2 \
 -msg timestamp=on

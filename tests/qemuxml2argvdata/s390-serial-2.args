@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -29,4 +28,5 @@ QEMU_AUDIO_DRV=none \
 -device sclpconsole,chardev=charserial0,id=serial0 \
 -chardev pty,id=charserial1 \
 -device sclplmconsole,chardev=charserial1,id=serial1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

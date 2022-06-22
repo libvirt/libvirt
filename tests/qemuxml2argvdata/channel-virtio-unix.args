@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -39,4 +38,5 @@ QEMU_AUDIO_DRV=none \
 -device virtserialport,bus=virtio-serial0.0,nr=3,chardev=charchannel2,id=channel2,name=ble \
 -chardev socket,id=charchannel3,fd=1729,server=on,wait=off \
 -device virtserialport,bus=virtio-serial0.0,nr=4,chardev=charchannel3,id=channel3,name=fdsa \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

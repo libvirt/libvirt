@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-fedora/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-fedora/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-fedora/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=fedora,debug-threads=on \
 -S \
@@ -32,4 +31,5 @@ QEMU_AUDIO_DRV=none \
 -usb \
 -object memory-backend-file,id=memdimm0,mem-path=/dev/hugepages1G/libvirt/qemu/-1-fedora,size=1073741824,host-nodes=1-3,policy=bind \
 -device pc-dimm,node=0,memdev=memdimm0,id=dimm0,slot=0 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

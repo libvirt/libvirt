@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-QEMUGuest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-QEMUGuest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
-QEMU_AUDIO_DRV=spice \
 /usr/bin/qemu-system-i386 \
 -name guest=QEMUGuest1,debug-threads=on \
 -S \
@@ -29,6 +28,7 @@ QEMU_AUDIO_DRV=spice \
 -device usb-ccid,id=ccid0,bus=usb.0,port=1 \
 -chardev spicevmc,id=charsmartcard0,name=smartcard \
 -device ccid-card-passthru,chardev=charsmartcard0,id=smartcard0,bus=ccid0.0 \
+-audiodev '{"id":"audio1","driver":"spice"}' \
 -spice port=0,seamless-migration=on \
 -device cirrus-vga,id=video0,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \

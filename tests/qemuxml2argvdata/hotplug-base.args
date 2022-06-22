@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-hotplug/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-hotplug/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-hotplug/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=hotplug,debug-threads=on \
 -S \
@@ -28,4 +27,5 @@ QEMU_AUDIO_DRV=none \
 -device virtio-scsi-pci,id=scsi0,bus=pci.0,addr=0x3 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.0,addr=0x4 \
 -usb \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-q35/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-q35/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-q35/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-x86_64 \
 -name guest=q35,debug-threads=on \
 -S \
@@ -31,5 +30,6 @@ QEMU_AUDIO_DRV=none \
 -device i82801b11-bridge,id=pci.1,bus=pcie.0,addr=0x1e \
 -device pci-bridge,chassis_nr=2,id=pci.2,bus=pci.1,addr=0x0 \
 -device ioh3420,port=8,chassis=3,id=pci.3,bus=pcie.0,addr=0x1 \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -device virtio-balloon-pci,id=balloon0,bus=pci.2,addr=0x1 \
 -msg timestamp=on

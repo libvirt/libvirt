@@ -6,7 +6,6 @@ LOGNAME=test \
 XDG_DATA_HOME=/tmp/lib/domain--1-guest1/.local/share \
 XDG_CACHE_HOME=/tmp/lib/domain--1-guest1/.cache \
 XDG_CONFIG_HOME=/tmp/lib/domain--1-guest1/.config \
-QEMU_AUDIO_DRV=none \
 /usr/bin/qemu-system-s390x \
 -name guest=guest1,debug-threads=on \
 -S \
@@ -26,4 +25,5 @@ QEMU_AUDIO_DRV=none \
 -rtc base=utc \
 -no-shutdown \
 -boot strict=on \
+-audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on
