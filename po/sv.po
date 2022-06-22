@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-20 09:42+0000\n"
+"PO-Revision-Date: 2022-06-22 09:18+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -10926,160 +10926,160 @@ msgstr "Felformaterad serverdata i JSON-dokument"
 msgid "Malformed services array"
 msgstr "Felformaterad tjänstevektor"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Malformed size %s"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felformaterad storlek %s"
 
 msgid "Malformed socks array"
-msgstr ""
+msgstr "Felformaterad socks-vektor"
 
-#, fuzzy
 msgid "Malformed stream hole packet"
-msgstr "Felaktig målförskjutning för hyra %s"
+msgstr "Felaktigt strömhålspaket"
 
 #, c-format
 msgid "Malformed wwn: %s"
-msgstr ""
+msgstr "Felformaterad wwn: %s"
 
 msgid "Manage active block operations"
-msgstr ""
+msgstr "Hantera aktiva blockåtgärder"
 
 #, c-format
 msgid "Managed save image of Domain '%s' XML configuration edited.\n"
 msgstr ""
+"Hanterad sparad avbild för domänen ”%s” XML-konfigurationen redigerad.\n"
 
 #, c-format
 msgid "Managed save image of domain '%s' XML configuration not changed.\n"
 msgstr ""
+"Hanterad sparad avbild för domänen ”%s” XML-konfigurationen oförändrad.\n"
 
 #, c-format
 msgid "Managed save state file of domain '%s' updated.\n"
-msgstr ""
+msgstr "Hanterad sparad tillståndsfil för domänen ”%s” uppdaterad.\n"
 
 msgid "Managed save:"
-msgstr ""
+msgstr "Hanterat sparande:"
 
 msgid "ManagedObjectReference is missing 'type' property"
-msgstr ""
+msgstr "ManagedObjectReference saknar egenskapen ”type”"
 
 msgid "Managedsave"
-msgstr ""
+msgstr "Hanterat sparande"
 
 msgid "Mandatory option not present"
-msgstr ""
+msgstr "Obligatorisk flagga finns inte"
 
 msgid "Manipulate pages pool size"
-msgstr ""
+msgstr "Påverka sidpoolstorleken"
 
 #, c-format
 msgid "Max backup %zu must be less than or equal to %d"
-msgstr ""
+msgstr "Maximal säkerhetskopia %zu måste vara mindre än eller lika med %d"
 
 msgid "Max memory plus swap, as scaled integer (default KiB)"
-msgstr ""
+msgstr "Maximalt minne plus växling, som skalat heltal (standard KiB)"
 
 msgid "Max memory, as scaled integer (default KiB)"
-msgstr ""
+msgstr "Maximalt minne, som skalat heltal (standard KiB)"
 
 msgid "Max memory:"
 msgstr "Max minne:"
 
 #, c-format
 msgid "Maximum CPUs greater than specified machine type limit %u"
-msgstr ""
+msgstr "Maximalt antal CPU:er större än den angivna maskintypens gräns %u"
 
 #, c-format
 msgid "Maximum supported number of ISA serial ports is '%d'"
-msgstr ""
+msgstr "Maximalt antal stödda ISA-serieportar är ”%d”"
 
 msgid "Media Registry is null"
-msgstr ""
+msgstr "Mediaregistret är null"
 
 msgid "Media registry is null"
-msgstr ""
+msgstr "Mediaregistret är null"
 
 msgid "Mediated host device assignment requires VFIO support"
-msgstr ""
+msgstr "Tilldelning av medierade värdenheter kräver stöd för VFIO"
 
 msgid "Memory"
 msgstr "Minne"
 
 #, c-format
 msgid "Memory '%llu' must be less than %llu"
-msgstr ""
+msgstr "Minnet ”%llu” måste vara mindre än %llu"
 
 #, c-format
 msgid ""
 "Memory Bandwidth allocation of size %u is not divisible by granularity %u"
 msgstr ""
+"Minnesbandbreddsallokering av storleken %u är inte delbar med upplösningen %u"
 
 #, c-format
 msgid ""
 "Memory Bandwidth allocation of size %u is smaller than the minimum allowed "
 "allocation %u"
 msgstr ""
+"Minnesbandbreddsallokering av storleken %u är mindre än den minsta tillåtna "
+"allokeringen %u"
 
 #, c-format
 msgid "Memory Bandwidth already defined for node %u"
-msgstr ""
+msgstr "Minnesbandbredden är redan definierad för nod %u"
 
 msgid "Memory Bandwidth value exceeding 100 is invalid."
-msgstr ""
+msgstr "Minnesbandbreddsvärde överskridande 100 är felaktigt."
 
 #, c-format
 msgid ""
 "Memory balloon device type '%s' is not supported by this version of qemu"
-msgstr ""
+msgstr "Minnesballongsenhetstypen ”%s” stödjs inte av denna version av qemu"
 
-#, fuzzy
 msgid "Memory bandwidth:"
-msgstr "Minnesstorlek:"
+msgstr "Minnesbandbredd:"
 
 msgid "Memory cgroup is not available on this host"
-msgstr ""
+msgstr "Minnes-cgroup är inte tillgängligt på denna värd"
 
 msgid "Memory during contention, as scaled integer (default KiB)"
-msgstr ""
+msgstr "Minne under trängsel, som ett skalat heltal (standard (KiB)"
 
 msgid "Memory parameter is not supported by vz driver"
-msgstr ""
+msgstr "Minnesparametern stödjs inte av vz-drivrutinen"
 
-#, fuzzy
 msgid "Memory processed:"
-msgstr "Minnesstorlek:"
+msgstr "Minnes bearbetat:"
 
-#, fuzzy
 msgid "Memory remaining:"
-msgstr "Minnesstorlek:"
+msgstr "Minne återstående:"
 
 msgid ""
 "Memory size must be specified via <memory> or in the <numa> configuration"
-msgstr ""
+msgstr "Minnesstorleken måste anges via <memory> eller i <numa>-konfigurationen"
 
 msgid "Memory size should be multiple of 1Mb."
-msgstr ""
+msgstr "Minnesstorleken skall vara en mutipel av 1 MB."
 
 msgid "Memory size:"
 msgstr "Minnesstorlek:"
 
-#, fuzzy
 msgid "Memory total:"
-msgstr "Minnesstorlek:"
+msgstr "Minne totalt:"
 
 msgid "Memory tuning is not available in session mode"
 msgstr "Minnestrimning är inte tillgängligt i sessionsläge"
 
 msgid "Messages:"
-msgstr ""
+msgstr "Meddelanden:"
 
 msgid "Metadata modified"
-msgstr ""
+msgstr "Metadata ändrat"
 
 msgid "Metadata not changed"
-msgstr ""
+msgstr "Metadata inte ändrat"
 
 msgid "Metadata removed"
-msgstr ""
+msgstr "Metadata borttaget"
 
 msgid "Metadata:"
 msgstr "Metadata:"
