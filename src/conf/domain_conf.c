@@ -19184,7 +19184,7 @@ virDomainDefParseMemory(virDomainDef *def,
         }
     }
 
-    if ((node = virXPathNode("./memoryBacking/nosharepages", ctxt)))
+    if (virXPathBoolean("boolean(./memoryBacking/nosharepages)", ctxt))
         def->mem.nosharepages = true;
 
     if (virXPathBoolean("boolean(./memoryBacking/locked)", ctxt))
