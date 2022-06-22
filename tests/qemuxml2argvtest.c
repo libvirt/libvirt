@@ -1592,7 +1592,7 @@ mymain(void)
     DO_TEST_NOCAPS("net-vhostuser-multiq");
     DO_TEST_FAILURE_NOCAPS("net-vhostuser-fail");
     DO_TEST_NOCAPS("net-user");
-    DO_TEST_CAPS_ARCH_VER_FULL("net-user", "x86_64", "4.0.0", ARG_FLAGS, FLAG_SLIRP_HELPER);
+    DO_TEST_CAPS_ARCH_LATEST_FULL("net-user", "x86_64", ARG_FLAGS, FLAG_SLIRP_HELPER);
     DO_TEST_NOCAPS("net-user-addr");
     DO_TEST_NOCAPS("net-virtio");
     DO_TEST("net-virtio-device",
