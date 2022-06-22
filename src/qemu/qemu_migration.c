@@ -2104,7 +2104,6 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
                                  const char *graphicsuri)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    int ret = -1;
     const char *listenAddress = NULL;
     virSocketAddr addr;
     g_autoptr(virURI) uri = NULL;
@@ -2112,12 +2111,13 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
     int port = -1;
     int tlsPort = -1;
     const char *tlsSubject = NULL;
+    int rc = -1;
 
     if (!cookie || (!cookie->graphics && !graphicsuri))
         return 0;
 
     if (graphicsuri && !(uri = virURIParse(graphicsuri)))
-        goto cleanup;
+        return -1;
 
     if (cookie->graphics) {
         type = cookie->graphics->type;
@@ -2140,7 +2140,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
         if ((type = virDomainGraphicsTypeFromString(uri->scheme)) < 0) {
             virReportError(VIR_ERR_INVALID_ARG,
                            _("unknown graphics type %s"), uri->scheme);
-            goto cleanup;
+            return -1;
         }
 
         if (uri->server)
@@ -2156,7 +2156,7 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
                     virReportError(VIR_ERR_INVALID_ARG,
                                    _("invalid tlsPort number: %s"),
                                    param->value);
-                    goto cleanup;
+                    return -1;
                 }
             } else if (STRCASEEQ(param->name, "tlsSubject")) {
                 tlsSubject = param->value;
@@ -2167,32 +2167,27 @@ qemuMigrationSrcGraphicsRelocate(virQEMUDriver *driver,
     /* QEMU doesn't support VNC relocation yet, so
      * skip it to avoid generating an error
      */
-    if (type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (type != VIR_DOMAIN_GRAPHICS_TYPE_SPICE)
+        return 0;
 
     /* Older libvirt sends port == 0 for listen type='none' graphics. It's
      * safe to ignore such requests since relocation to unknown port does
      * not make sense in general.
      */
-    if (port <= 0 && tlsPort <= 0) {
-        ret = 0;
-        goto cleanup;
-    }
+    if (port <= 0 && tlsPort <= 0)
+        return 0;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
                                        VIR_ASYNC_JOB_MIGRATION_OUT) == 0) {
         qemuDomainJobPrivate *jobPriv = priv->job.privateData;
 
-        ret = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
-                                          port, tlsPort, tlsSubject);
-        jobPriv->spiceMigration = !ret;
+        rc = qemuMonitorGraphicsRelocate(priv->mon, type, listenAddress,
+                                         port, tlsPort, tlsSubject);
+        jobPriv->spiceMigration = !rc;
         qemuDomainObjExitMonitor(vm);
     }
 
- cleanup:
-    return ret;
+    return rc;
 }
 
 
