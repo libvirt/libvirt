@@ -840,6 +840,9 @@ int qemuDomainAdjustMaxMemLock(virDomainObj *vm,
                                bool forceVFIO);
 int qemuDomainAdjustMaxMemLockHostdev(virDomainObj *vm,
                                       virDomainHostdevDef *hostdev);
+int qemuDomainSetMaxMemLock(virDomainObj *vm,
+                            unsigned long long limit,
+                            unsigned long long *origPtr);
 
 int qemuDomainDefValidateMemoryHotplug(const virDomainDef *def,
                                        const virDomainMemoryDef *mem);

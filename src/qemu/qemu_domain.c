@@ -9460,6 +9460,61 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
 
 
 /**
+ * qemuDomainSetMaxMemLock:
+ * @vm: domain
+ * @limit: the desired memory locking limit
+ * @origPtr: where to store (or load from) the original value of the limit
+ *
+ * Set the memory locking limit for @vm unless it's already big enough. If
+ * @origPtr is non-NULL, the original value of the limit will be store there
+ * and can be restored by calling this function with @limit == 0.
+ *
+ * Returns: 0 on success, -1 otherwise.
+ */
+int
+qemuDomainSetMaxMemLock(virDomainObj *vm,
+                        unsigned long long limit,
+                        unsigned long long *origPtr)
+{
+    unsigned long long current = 0;
+
+    if (virProcessGetMaxMemLock(vm->pid, &current) < 0)
+        return -1;
+
+    if (limit > 0) {
+        VIR_DEBUG("Requested memory lock limit: %llu", limit);
+        /* If the limit is already high enough, we can assume
+         * that some external process is taking care of managing
+         * process limits and we shouldn't do anything ourselves:
+         * we're probably running in a containerized environment
+         * where we don't have enough privilege anyway */
+        if (current >= limit) {
+            VIR_DEBUG("Current limit %llu is big enough", current);
+            return 0;
+        }
+
+        /* If this is the first time adjusting the limit, save the current
+         * value so that we can restore it once memory locking is no longer
+         * required */
+        if (origPtr && *origPtr == 0)
+            *origPtr = current;
+    } else {
+        /* Once memory locking is no longer required, we can restore the
+         * original, usually very low, limit. But only if we actually stored
+         * the original limit before. */
+        if (!origPtr || *origPtr == 0)
+            return 0;
+
+        limit = *origPtr;
+        *origPtr = 0;
+        VIR_DEBUG("Resetting memory lock limit back to %llu", limit);
+    }
+
+    return virProcessSetMaxMemLock(vm->pid, limit);
+}
+
+
+/**
  * qemuDomainAdjustMaxMemLock:
  * @vm: domain
  * @forceVFIO: apply VFIO requirements even if vm's def doesn't require it
@@ -9480,43 +9535,9 @@ int
 qemuDomainAdjustMaxMemLock(virDomainObj *vm,
                            bool forceVFIO)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    unsigned long long currentMemLock = 0;
-    unsigned long long desiredMemLock = 0;
-
-    desiredMemLock = qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO);
-    if (virProcessGetMaxMemLock(vm->pid, &currentMemLock) < 0)
-        return -1;
-
-    if (desiredMemLock > 0) {
-        if (currentMemLock < desiredMemLock) {
-            /* If this is the first time adjusting the limit, save the current
-             * value so that we can restore it once memory locking is no longer
-             * required */
-            if (priv->originalMemlock == 0) {
-                priv->originalMemlock = currentMemLock;
-            }
-        } else {
-            /* If the limit is already high enough, we can assume
-             * that some external process is taking care of managing
-             * process limits and we shouldn't do anything ourselves:
-             * we're probably running in a containerized environment
-             * where we don't have enough privilege anyway */
-            desiredMemLock = 0;
-        }
-    } else {
-        /* Once memory locking is no longer required, we can restore the
-         * original, usually very low, limit */
-        desiredMemLock = priv->originalMemlock;
-        priv->originalMemlock = 0;
-    }
-
-    if (desiredMemLock > 0 &&
-        virProcessSetMaxMemLock(vm->pid, desiredMemLock) < 0) {
-        return -1;
-    }
-
-    return 0;
+    return qemuDomainSetMaxMemLock(vm,
+                                   qemuDomainGetMemLockLimitBytes(vm->def, forceVFIO),
+                                   &QEMU_DOMAIN_PRIVATE(vm)->originalMemlock);
 }
 
 
