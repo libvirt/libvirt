@@ -19,6 +19,11 @@ v8.6.0 (unreleased)
 
 * **Improvements**
 
+  * conf: Improved firmware autoselection
+
+    The firmware autoselection feature now behaves more intuitively, reports
+    better error messages on failure and comes with high-level documentation.
+
 * **Bug fixes**
 
 
