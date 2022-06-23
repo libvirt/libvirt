@@ -1,0 +1,66 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-q35-test \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-q35-test/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-q35-test/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=q35-test,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-q35-test/master-key.aes"}' \
+-machine q35,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel tcg \
+-cpu qemu64 \
+-m 2048 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":2147483648}' \
+-overcommit mem-lock=off \
+-smp 2,sockets=2,cores=1,threads=1 \
+-uuid 11dbdcdd-4c3b-482b-8903-9bdb8c0a2774 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-device '{"driver":"pcie-root-port","port":16,"chassis":1,"id":"pci.1","bus":"pcie.0","multifunction":true,"addr":"0x2"}' \
+-device '{"driver":"pcie-root-port","port":17,"chassis":2,"id":"pci.2","bus":"pcie.0","addr":"0x2.0x1"}' \
+-device '{"driver":"pcie-root-port","port":18,"chassis":3,"id":"pci.3","bus":"pcie.0","addr":"0x2.0x2"}' \
+-device '{"driver":"pcie-root-port","port":19,"chassis":4,"id":"pci.4","bus":"pcie.0","addr":"0x2.0x3"}' \
+-device '{"driver":"pcie-root-port","port":20,"chassis":5,"id":"pci.5","bus":"pcie.0","addr":"0x2.0x4"}' \
+-device '{"driver":"pcie-root-port","port":21,"chassis":6,"id":"pci.6","bus":"pcie.0","addr":"0x2.0x5"}' \
+-device '{"driver":"pcie-root-port","port":22,"chassis":7,"id":"pci.7","bus":"pcie.0","addr":"0x2.0x6"}' \
+-device '{"driver":"pcie-root-port","port":23,"chassis":8,"id":"pci.8","bus":"pcie.0","addr":"0x2.0x7"}' \
+-device '{"driver":"pcie-root-port","port":24,"chassis":9,"id":"pci.9","bus":"pcie.0","multifunction":true,"addr":"0x3"}' \
+-device '{"driver":"pcie-root-port","port":25,"chassis":10,"id":"pci.10","bus":"pcie.0","addr":"0x3.0x1"}' \
+-device '{"driver":"pcie-root-port","port":26,"chassis":11,"id":"pci.11","bus":"pcie.0","addr":"0x3.0x2"}' \
+-device '{"driver":"pcie-root-port","port":27,"chassis":12,"id":"pci.12","bus":"pcie.0","addr":"0x3.0x3"}' \
+-device '{"driver":"pcie-root-port","port":28,"chassis":13,"id":"pci.13","bus":"pcie.0","addr":"0x3.0x4"}' \
+-device '{"driver":"pcie-root-port","port":29,"chassis":14,"id":"pci.14","bus":"pcie.0","addr":"0x3.0x5"}' \
+-device '{"driver":"nec-usb-xhci","id":"usb","bus":"pci.6","addr":"0x0"}' \
+-device '{"driver":"virtio-scsi-pci","id":"scsi0","bus":"pci.5","addr":"0x0"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.4","addr":"0x0"}' \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.7","addr":"0x0","drive":"libvirt-1-format","id":"virtio-disk1","bootindex":1}' \
+-fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
+-device '{"driver":"virtio-9p-pci","id":"fs0","fsdev":"fsdev-fs0","mount_tag":"/import/from/host","bus":"pci.1","addr":"0x0"}' \
+-netdev user,id=hostnet0 \
+-device '{"driver":"virtio-net-pci","netdev":"hostnet0","id":"net0","mac":"00:11:22:33:44:55","bus":"pci.2","addr":"0x0"}' \
+-netdev user,id=hostnet1 \
+-device '{"driver":"e1000e","netdev":"hostnet1","id":"net1","mac":"00:11:22:33:44:66","bus":"pci.3","addr":"0x0"}' \
+-device '{"driver":"virtio-input-host-pci","id":"input0","evdev":"/dev/input/event1234","bus":"pci.10","addr":"0x0"}' \
+-device '{"driver":"virtio-mouse-pci","id":"input1","bus":"pci.11","addr":"0x0"}' \
+-device '{"driver":"virtio-keyboard-pci","id":"input2","bus":"pci.12","addr":"0x0"}' \
+-device '{"driver":"virtio-tablet-pci","id":"input3","bus":"pci.13","addr":"0x0"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"virtio-vga","id":"video0","max_outputs":1,"bus":"pcie.0","addr":"0x1"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.8","addr":"0x0"}' \
+-object '{"qom-type":"rng-random","id":"objrng0","filename":"/dev/urandom"}' \
+-device '{"driver":"virtio-rng-pci","rng":"objrng0","id":"rng0","max-bytes":123,"period":1234,"bus":"pci.9","addr":"0x0"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
