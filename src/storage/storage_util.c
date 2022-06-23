@@ -4201,8 +4201,8 @@ virStorageBackendFileSystemMountCmd(const char *cmdstr,
     virCommand *cmd = NULL;
     g_autofree char *nfsVers = NULL;
 
-    if (def->type == VIR_STORAGE_POOL_NETFS && def->source.protocolVer > 0)
-        nfsVers = g_strdup_printf("nfsvers=%u", def->source.protocolVer);
+    if (def->type == VIR_STORAGE_POOL_NETFS && def->source.protocolVer)
+        nfsVers = g_strdup_printf("nfsvers=%s", def->source.protocolVer);
 
     cmd = virCommandNew(cmdstr);
     if (netauto)

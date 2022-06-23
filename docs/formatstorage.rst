@@ -350,7 +350,7 @@ following child elements:
 ``protocol``
    For a ``netfs`` Storage Pool provide a mechanism to define which NFS protocol
    version number will be used to contact the server's NFS service. The
-   attribute ``ver`` accepts an unsigned integer as the version number to use.
+   attribute ``ver`` accepts the version number to use.
    :since:`Since 5.1.0`
 ``vendor``
    Provides optional information about the vendor of the storage device. This

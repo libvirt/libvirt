@@ -483,6 +483,7 @@ virStoragePoolSourceClear(virStoragePoolSource *source)
     virStorageAuthDefFree(source->auth);
     VIR_FREE(source->vendor);
     VIR_FREE(source->product);
+    VIR_FREE(source->protocolVer);
 }
 
 
@@ -526,7 +527,6 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     virStoragePoolOptions *options;
     int n;
     g_autoptr(virStorageAuthDef) authdef = NULL;
-    g_autofree char *ver = NULL;
     g_autofree xmlNodePtr *nodeset = NULL;
     g_autofree char *sourcedir = NULL;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
@@ -634,7 +634,7 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
     }
 
     /* Option protocol version string (NFSvN) */
-    if ((ver = virXPathString("string(./protocol/@ver)", ctxt))) {
+    if ((source->protocolVer = virXPathString("string(./protocol/@ver)", ctxt))) {
         if ((source->format != VIR_STORAGE_POOL_NETFS_NFS) &&
             (source->format != VIR_STORAGE_POOL_NETFS_AUTO)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
@@ -643,10 +643,11 @@ virStoragePoolDefParseSource(xmlXPathContextPtr ctxt,
                            virStoragePoolFormatFileSystemNetTypeToString(source->format));
             return -1;
         }
-        if (virStrToLong_uip(ver, NULL, 0, &source->protocolVer) < 0) {
-            virReportError(VIR_ERR_XML_ERROR,
-                           _("storage pool protocol ver '%s' is malformed"),
-                           ver);
+
+        if (strchr(source->protocolVer, ',')) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("storage pool protocol ver '%s' must not contain ','"),
+                           source->protocolVer);
             return -1;
         }
     }
@@ -1099,9 +1100,7 @@ virStoragePoolSourceFormat(virBuffer *buf,
     if (src->auth)
         virStorageAuthDefFormat(buf, src->auth);
 
-    if (src->protocolVer)
-        virBufferAsprintf(buf, "<protocol ver='%u'/>\n", src->protocolVer);
-
+    virBufferEscapeString(buf, "<protocol ver='%s'/>\n", src->protocolVer);
     virBufferEscapeString(buf, "<vendor name='%s'/>\n", src->vendor);
     virBufferEscapeString(buf, "<product name='%s'/>\n", src->product);
 

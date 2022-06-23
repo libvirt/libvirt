@@ -577,9 +577,7 @@
             <ref name="sourcefmtnetfs"/>
             <optional>
               <element name="protocol">
-                <attribute name="ver">
-                  <ref name="unsignedInt"/>
-                </attribute>
+                <attribute name="ver"/>
               </element>
             </optional>
             <optional>

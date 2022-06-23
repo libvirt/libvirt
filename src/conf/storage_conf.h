@@ -213,7 +213,7 @@ struct _virStoragePoolSource {
     int format;
 
     /* Protocol version value for netfs */
-    unsigned int protocolVer;
+    char *protocolVer;
 };
 
 typedef struct _virStoragePoolTarget virStoragePoolTarget;
