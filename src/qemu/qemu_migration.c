@@ -3180,7 +3180,7 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
     }
 
     if (STREQ_NULLABLE(protocol, "rdma") &&
-        vm->def->mem.hard_limit > 0 &&
+        virMemoryLimitIsSet(vm->def->mem.hard_limit) &&
         qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10,
                                 &priv->preMigrationMemlock) < 0) {
         goto error;
