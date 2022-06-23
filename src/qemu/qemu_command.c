@@ -952,9 +952,7 @@ static int
 qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
                             virQEMUCaps *qemuCaps,
                             char **devtype,
-                            virDomainVirtioOptions **virtioOptions,
-                            virTristateSwitch *disableLegacy,
-                            virTristateSwitch *disableModern)
+                            virDomainVirtioOptions **virtioOptions)
 {
     virDomainDeviceInfo *info = virDomainDeviceGetInfo(device);
     g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
@@ -963,9 +961,6 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
     bool has_tmodel = false;
     bool has_ntmodel = false;
     bool useBusSuffix = true;
-
-    *disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
-    *disableModern = VIR_TRISTATE_SWITCH_ABSENT;
 
     qemuBuildVirtioDevGetConfigDev(device, qemuCaps, &baseName,
                                    virtioOptions, &has_tmodel,
@@ -1026,9 +1021,6 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
         if (has_tmodel) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
                 virBufferAddLit(&buf, "-transitional");
-            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
-                *disableLegacy = VIR_TRISTATE_SWITCH_OFF;
-                *disableModern = VIR_TRISTATE_SWITCH_OFF;
             }
             /* No error if -transitional is not supported: our address
              * allocation will force the device into plain PCI bus, which
@@ -1037,12 +1029,6 @@ qemuBuildVirtioDevGetConfig(const virDomainDeviceDef *device,
         } else if (has_ntmodel) {
             if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
                 virBufferAddLit(&buf, "-non-transitional");
-            } else if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
-                /* Even if the QEMU binary doesn't support the non-transitional
-                 * device, we can still make it work by manually disabling legacy
-                 * VirtIO and enabling modern VirtIO */
-                *disableLegacy = VIR_TRISTATE_SWITCH_ON;
-                *disableModern = VIR_TRISTATE_SWITCH_OFF;
             } else {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                                _("virtio non-transitional model not supported for this qemu"));
@@ -1073,8 +1059,6 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
     g_autoptr(virJSONValue) props = NULL;
     const virDomainDeviceDef device = { .type = devtype };
     g_autofree char *model = NULL;
-    virTristateSwitch disableLegacy = VIR_TRISTATE_SWITCH_ABSENT;
-    virTristateSwitch disableModern = VIR_TRISTATE_SWITCH_ABSENT;
     virDomainVirtioOptions *virtioOptions = NULL;
 
     /* We temporarily cast the const away here, but that's safe to do
@@ -1083,14 +1067,11 @@ qemuBuildVirtioDevProps(virDomainDeviceType devtype,
      * not touch its contents */
     virDomainDeviceSetData((virDomainDeviceDef *) &device, (void *) devdata);
 
-    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions,
-                                    &disableLegacy, &disableModern) < 0)
+    if (qemuBuildVirtioDevGetConfig(&device, qemuCaps, &model, &virtioOptions) < 0)
         return NULL;
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", model,
-                              "S:disable-legacy", qemuOnOffAuto(disableLegacy),
-                              "T:disable-modern", disableModern,
                               NULL) < 0)
         return NULL;
 

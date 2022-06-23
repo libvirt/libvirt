@@ -1098,8 +1098,7 @@ qemuDomainFillDevicePCIConnectFlagsIterInit(virDomainDef *def,
                            VIR_PCI_CONNECT_AUTOASSIGN);
     }
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY) ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
         data->virtioFlags = data->pcieFlags;
     } else {
         data->virtioFlags = (VIR_PCI_CONNECT_TYPE_PCI_DEVICE |

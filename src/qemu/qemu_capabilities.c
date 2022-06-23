@@ -6157,8 +6157,7 @@ virQEMUCapsFillDomainDeviceDiskCaps(virQEMUCaps *qemuCaps,
 
     /* disk->model values */
     VIR_DOMAIN_CAPS_ENUM_SET(disk->model, VIR_DOMAIN_DISK_MODEL_VIRTIO);
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY) ||
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
         VIR_DOMAIN_CAPS_ENUM_SET(disk->model,
                                  VIR_DOMAIN_DISK_MODEL_VIRTIO_TRANSITIONAL);
         VIR_DOMAIN_CAPS_ENUM_SET(disk->model,
@@ -6275,8 +6274,7 @@ virQEMUCapsFillDomainDeviceRNGCaps(virQEMUCaps *qemuCaps,
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_VIRTIO_RNG)) {
         VIR_DOMAIN_CAPS_ENUM_SET(rng->model, VIR_DOMAIN_RNG_MODEL_VIRTIO);
 
-        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL) ||
-            virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_DISABLE_LEGACY)) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL)) {
             VIR_DOMAIN_CAPS_ENUM_SET(rng->model,
                                      VIR_DOMAIN_RNG_MODEL_VIRTIO_TRANSITIONAL,
                                      VIR_DOMAIN_RNG_MODEL_VIRTIO_NON_TRANSITIONAL);
