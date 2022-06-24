@@ -4623,7 +4623,7 @@ qemuMigrationSrcStart(virDomainObj *vm,
     switch (spec->destType) {
     case MIGRATION_DEST_HOST:
         if (STREQ(spec->dest.host.protocol, "rdma") &&
-            vm->def->mem.hard_limit > 0 &&
+            virMemoryLimitIsSet(vm->def->mem.hard_limit) &&
             qemuDomainSetMaxMemLock(vm, vm->def->mem.hard_limit << 10,
                                     &priv->preMigrationMemlock) < 0) {
             return -1;
