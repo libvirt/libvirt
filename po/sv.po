@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-22 09:18+0000\n"
+"PO-Revision-Date: 2022-06-25 08:18+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -11085,12 +11085,13 @@ msgid "Metadata:"
 msgstr "Metadata:"
 
 msgid "MethodFault is missing 'type' property"
-msgstr ""
+msgstr "MethodFault saknar egenskapen ”type”"
 
 msgid ""
 "Migratable attribute for host-passthrough CPU is not supported by this QEMU "
 "binary"
 msgstr ""
+"Migrerbara attribut för värdgenomgångs-CPU stödjs inte av denna QEMU-binär"
 
 msgid "Migrate domain to another host.  Add --live for live migration."
 msgstr "Migrera domän till en anna värd.  Lägg till --live för live-migrering."
@@ -11098,185 +11099,182 @@ msgstr "Migrera domän till en anna värd.  Lägg till --live för live-migrerin
 msgid "Migrated"
 msgstr "Migrerad"
 
-#, fuzzy
 msgid "Migration"
-msgstr "live-migrering"
+msgstr "Migrering"
 
 msgid ""
 "Migration APIs with extensible parameters are not supported but extended "
 "parameters were passed"
 msgstr ""
+"Migrerings-API:er med utökbara parametrar stödjs inte men utökade parametrar "
+"skickades"
 
 msgid "Migration URI has to specify resource pool and host system"
-msgstr ""
+msgstr "Migrerings-URI:n måste ange resurspool och värdsystem"
 
 msgid "Migration capabilities can only be set by a migration job"
-msgstr ""
+msgstr "Migreringsförmågor kan endast sättas av ett migreringsjobb"
 
 msgid "Migration cookie parameters are not provided."
-msgstr ""
+msgstr "Migreringskakeparametrar tillhandahålls inte."
 
 msgid "Migration cookie was not NULL terminated"
-msgstr ""
+msgstr "Migreringskakan var inte NULL-avslutad"
 
 msgid "Migration failed. Domain is not running on destination host"
-msgstr ""
+msgstr "Migreringen misslyckades. Domänen kör inte på destinationsvärden"
 
 #, c-format
 msgid "Migration failed. No domain on destination host with matching name '%s'"
 msgstr ""
+"Migreringen misslyckades. Ingen domän på destinationsvärden med ett "
+"matchande namn ”%s”"
 
 msgid "Migration graphics data already present"
-msgstr ""
+msgstr "Migrering av grafikdata finns redan"
 
-#, fuzzy
 msgid "Migration lockstate data already present"
-msgstr "Hyra %s i låsrymden %s finns redan"
+msgstr "Migrering av låstillståndsdata finns redan"
 
 msgid ""
 "Migration may lead to data corruption if disks use cache other than none or "
 "directsync"
 msgstr ""
+"Migreringen kan leda till datakorruption om diskar använder en annan cache "
+"än none eller directsync"
 
 msgid "Migration not possible without a vCenter"
-msgstr ""
+msgstr "Migrering är inte möjlig utan ett vCenter"
 
 #, c-format
 msgid "Migration option '%s' is not supported by QEMU binary"
-msgstr ""
+msgstr "Migreringsalternativet ”%s” stödjs inte av QEMU-binären"
 
 msgid "Migration persistent data already present"
-msgstr ""
+msgstr "Migrering av varaktiga data finns redan"
 
 msgid "Migration source and destination have to refer to the same vCenter"
-msgstr ""
+msgstr "Migreringskällan och -destinationen måste referera till samma vCenter"
 
 #, c-format
 msgid "Migration with lock driver %s requires cookie support"
-msgstr ""
+msgstr "Migrering med låsdrivrutinen %s kräver kakstöd"
 
 msgid "Migration without shared storage is unsafe"
-msgstr ""
+msgstr "Migrering utan delad lagring är osäkert"
 
 msgid "Min guaranteed memory, as scaled integer (default KiB)"
-msgstr ""
+msgstr "Minsta garanterade minne, som skalat heltal (standard KiB)"
 
 #, c-format
 msgid "Minimum supported %s version is %s but found version '%s'"
-msgstr ""
+msgstr "Minsta stödda %s-version är %s men den funna versionen är ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s attribute 'vcpus'"
-msgstr "Saknad CPU-arkitektur"
+msgstr "Saknat %s-attribut ”vcpus”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing %s lock state for migration cookie"
-msgstr "saknar källinformation för enhet"
+msgstr "Saknat %s-låstillstånd för migreringskaka"
 
 #, c-format
 msgid "Missing '%s' field in lock manager driver"
-msgstr ""
+msgstr "Saknat fält ”%s” i låshanteringsdrivrutinen"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing '%s' property"
-msgstr "Saknad ”name”-egenskap i %s-uppslagning"
+msgstr "Saknad egenskap ”%s”"
 
 #, c-format
 msgid "Missing '%s' property while looking for ManagedEntityStatus"
-msgstr ""
+msgstr "Saknad egenskap ”%s” vid låsning för ManagedEntityStatus"
 
 #, c-format
 msgid "Missing '/' separator in cgroup mount '%s'"
-msgstr ""
+msgstr "Saknad separator ”/” i cgroup-monteringen ”%s”"
 
 #, c-format
 msgid "Missing 'associativity' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Saknat attribut ”associativity” i cache-elementet för NUMA-nod %d"
 
-#, fuzzy
 msgid "Missing 'domname' in JSON document"
-msgstr "Saknad ”name”-egenskap i %s-uppslagning"
+msgstr "Saknat ”domainname” i JSON-dokumentet"
 
 msgid "Missing 'domuuid' in JSON document"
-msgstr ""
+msgstr "Saknat ”domuuid” i JSON-dokumentet"
 
 msgid "Missing 'driver' in JSON document"
-msgstr ""
+msgstr "Saknat ”driver” i JSON-dokumentet"
 
 #, c-format
 msgid "Missing 'end' attribute in dhcp range for network '%s'"
-msgstr ""
+msgstr "Saknat attribut ”end” i dhcp-intervallet för nätverket ”%s”"
 
 msgid "Missing 'filename' in CPU map include"
-msgstr ""
+msgstr "Saknat ”filename” i CPU-avbildningsinkluderingen"
 
 msgid "Missing 'key' element for lease"
 msgstr "Saknat ”key”-element för hyra"
 
 #, c-format
 msgid "Missing 'level' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Saknat attribut ”level” i cache-elementet för NUMA-nod %d"
 
-#, fuzzy
 msgid "Missing 'link' attribute for NIC"
-msgstr "Saknat ”sockets”-attribut i CPU-topologi"
+msgstr "Saknat attribut ”link” för NIC"
 
 #, c-format
 msgid "Missing 'name' property in %s lookup"
 msgstr "Saknad ”name”-egenskap i %s-uppslagning"
 
 msgid "Missing 'path' attribute to 'target' element for lease"
-msgstr ""
+msgstr "Saknat attribut ”path” till elementet ”target” för hyran"
 
 msgid "Missing 'path' field in JSON document"
-msgstr ""
+msgstr "Saknat fält ”path” i JSON-dokumentet"
 
 msgid "Missing 'pipefd' in JSON document"
-msgstr ""
+msgstr "Saknad ”pipefd” i JSON-dokumentet"
 
 #, c-format
 msgid "Missing 'policy' attribute in cache element for NUMA node %d"
-msgstr ""
+msgstr "Saknat attribut ”policy” i cache-elementet för NUMA-nod %d"
 
-#, fuzzy
 msgid "Missing 'runtime.powerState' property"
-msgstr "Saknad ”name”-egenskap i %s-uppslagning"
+msgstr "Saknad egenskap ”runtime.powerState”"
 
 #, c-format
 msgid "Missing 'start' attribute in dhcp range for network '%s'"
-msgstr ""
+msgstr "Saknat attribut ”start” i dhcp-intervallet för nätverket ”%s”"
 
 msgid "Missing 'target' element for lease"
 msgstr "Saknat ”target”-element för hyra"
 
-#, fuzzy
 msgid "Missing 'uuid' attribute for element <address>"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknat attribut ”uuid” för elementet <address>"
 
-#, fuzzy
 msgid "Missing <address> element"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknat element <address>"
 
 msgid "Missing <block> element in hostdev storage device"
-msgstr ""
+msgstr "Saknat element <block> i hostdev-lagringsenheten"
 
 msgid "Missing <char> element in hostdev character device"
-msgstr ""
+msgstr "Saknat element <char> i hostdev-teckenenheten"
 
 msgid "Missing <interface> element in hostdev net device"
-msgstr ""
+msgstr "Saknat element <interface> i hostdev-nätenheten"
 
-#, fuzzy
 msgid "Missing <secret> element in auth"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknat element <secret> i autenticering"
 
-#, fuzzy
 msgid "Missing <source> element in hostdev device"
-msgstr "saknar källinformation för enhet"
+msgstr "Saknat element <source> i hostdev-enheten"
 
 msgid ""
 "Missing <source> element with bridge name in interface's <actual> element"
-msgstr ""
+msgstr "Saknat element <source> med bryggnamn i gränssnittets element <actual>"
 
 msgid "Missing CPU architecture"
 msgstr "Saknad CPU-arkitektur"
@@ -11287,47 +11285,44 @@ msgstr "Saknat CPU-funktionsnamn"
 msgid "Missing CPU model name"
 msgstr "Saknat CPU-modellnamn"
 
-#, fuzzy
 msgid "Missing CPU vendor value"
-msgstr "Saknat CPU-funktionsnamn"
+msgstr "Saknat CPU-tillverkarvärde"
 
-#, fuzzy
 msgid "Missing ID parameter for domain object"
-msgstr "saknar målinformation för enhet"
+msgstr "Saknad ID-parameter till domänobjektet"
 
 #, c-format
 msgid "Missing IP address in network '%s' DNS HOST record"
-msgstr ""
+msgstr "Saknad IP-adress i nätverket ”%s” DNS HOST-post"
 
 #, c-format
 msgid "Missing IP address in static host definition for network '%s'"
-msgstr ""
+msgstr "Saknad IP-adress i statisk värddefinition för nätverket ”%s”"
 
 msgid "Missing LISTEN_FDNAMES env from systemd socket activation"
-msgstr ""
+msgstr "Saknad miljö LISTEN_FDNAMES från systemd-uttagsaktivering"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing PVR information for CPU model %s"
-msgstr "saknar källinformation för enhet %s"
+msgstr "Saknad PVR-information till CPU-modellen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing SCSI controller for index %d"
-msgstr "Kan inte tolka styrenhetsindex %s"
+msgstr "Saknad SCSI-styrenhet till index %d"
 
-#, fuzzy
 msgid "Missing TPM device path"
-msgstr "saknar enhetsinformation"
+msgstr "Saknad TPM-enhetssökväg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing URI parameter '%s'"
-msgstr "Saknad CPU-arkitektur"
+msgstr "Saknad URI-parameter ”%s”"
 
 #, c-format
 msgid "Missing USB bus %u"
-msgstr ""
+msgstr "Saknad USB-buss %u"
 
 msgid "Missing UUID parameter for domain object"
-msgstr ""
+msgstr "Saknad UUID-parameter till domänobjektet"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
 msgstr ""
