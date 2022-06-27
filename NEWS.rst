@@ -27,9 +27,39 @@ v8.5.0 (unreleased)
     A new ``VIR_MIGRATE_POSTCOPY_RESUME`` flag (``virsh migrate --postcopy-resume``)
     was introduced for recovering from a failed post-copy migration.
 
+  * Introduce thread_pool_min and thread_pool_max attributes to IOThread
+
+    New attributes ``thread_pool_min`` and ``thread_pool_max`` were introduced
+    to ``<iothread/>`` as well as new ``<defaultiothread/>`` element with the
+    same attributes. This way it's possible to instruct QEMU to spawn enough
+    worker threads for an IOThread upfront, resulting in predictable time
+    needed to process an I/O request.
+
 * **Improvements**
 
+  * Define a TFTP server without a DHCP server in network configuration
+
+    It's now possible to define a network with no DHCP server but with a TFTP
+    server. This may be useful when DHCP service is provided by other entity on
+    the network than libvirt spawned dnsmasq.
+
 * **Bug fixes**
+
+  * qemu: Restore label to temp file in qemuDomainScreenshot()
+
+    When virDomainScreenshot() is called, libvirt instructs QEMU to save the
+    screenshot into a temporary file. This file needs to be labelled correctly,
+    so that QEMU can access it. And since the file is temporary (it's deleted
+    after the screenshot was taken) the corresponding label restore was
+    missing. This proven to be problematic for profile based models, like
+    AppArmor, where the temporary files were added into the profile but never
+    removed, which resulted in longer profile recalculation times.
+
+  * qemuBuildInterfaceConnect: Initialize @tapfd array
+
+    Due to an uninitialized array, unsuccessful attempt to start a guest with
+    an ``<interface/>`` might have resulted in closing of a random FD and thus
+    sudden disconnect of a client or other random failures.
 
 
 v8.4.0 (2022-06-01)
