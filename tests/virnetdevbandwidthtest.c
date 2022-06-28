@@ -26,12 +26,6 @@
 
 #define VIR_FROM_THIS VIR_FROM_NONE
 
-struct testMinimalStruct {
-    const char *expected_result;
-    const char *band1;
-    const char *band2;
-};
-
 struct testSetStruct {
     const char *band;
     const char *exp_cmd;
