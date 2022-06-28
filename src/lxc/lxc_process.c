@@ -56,6 +56,13 @@ VIR_LOG_INIT("lxc.lxc_process");
 
 #define START_POSTFIX ": starting up\n"
 
+typedef enum {
+    VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL = (1 << 0),
+    VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL = (1 << 1),
+    VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT = (1 << 2),
+    VIR_LXC_PROCESS_CLEANUP_AUTODESTROY = (1 << 3),
+} virLXCProcessCleanupFlags;
+
 static void
 lxcProcessAutoDestroy(virDomainObj *dom,
                       virConnectPtr conn)
@@ -87,23 +94,21 @@ static int
 virLXCProcessReboot(virLXCDriver *driver,
                     virDomainObj *vm)
 {
-    g_autoptr(virConnect) autoDestroyConn = virCloseCallbacksGetConn(driver->closeCallbacks, vm);
+    /* we want to keep the autodestroy callback registered */
+    unsigned int stopFlags = ~(VIR_LXC_PROCESS_CLEANUP_AUTODESTROY);
     int reason = vm->state.reason;
     virDomainDef *savedDef;
 
     VIR_DEBUG("Faking reboot");
-
-    if (autoDestroyConn)
-        virObjectRef(autoDestroyConn);
 
     /* In a reboot scenario, we need to make sure we continue
      * to use the current 'def', and not switch to 'newDef'.
      * So temporarily hide the newDef and then reinstate it
      */
     savedDef = g_steal_pointer(&vm->newDef);
-    virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN, 0);
+    virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN, stopFlags);
     vm->newDef = savedDef;
-    if (virLXCProcessStart(driver, vm, 0, NULL, autoDestroyConn, reason) < 0) {
+    if (virLXCProcessStart(driver, vm, 0, NULL, NULL, reason) < 0) {
         VIR_WARN("Unable to handle reboot of vm %s", vm->def->name);
         return -1;
     }
@@ -125,12 +130,6 @@ lxcProcessRemoveDomainStatus(virLXCDriverConfig *cfg,
                  vm->def->name, g_strerror(errno));
 }
 
-
-typedef enum {
-    VIR_LXC_PROCESS_CLEANUP_RELEASE_SECLABEL = (1 << 0),
-    VIR_LXC_PROCESS_CLEANUP_RESTORE_SECLABEL = (1 << 1),
-    VIR_LXC_PROCESS_CLEANUP_REMOVE_TRANSIENT = (1 << 2),
-} virLXCProcessCleanupFlags;
 
 /**
  * virLXCProcessCleanup:
@@ -188,8 +187,9 @@ static void virLXCProcessCleanup(virLXCDriver *driver,
     }
 
     /* Stop autodestroy in case guest is restarted */
-    virCloseCallbacksUnset(driver->closeCallbacks, vm,
-                           lxcProcessAutoDestroy);
+    if (flags & VIR_LXC_PROCESS_CLEANUP_AUTODESTROY) {
+        virCloseCallbacksUnset(driver->closeCallbacks, vm, lxcProcessAutoDestroy);
+    }
 
     if (priv->monitor) {
         virLXCMonitorClose(priv->monitor);
