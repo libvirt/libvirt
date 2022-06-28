@@ -1538,48 +1538,43 @@ int virLXCProcessStart(virLXCDriver * driver,
     return rc;
 }
 
-struct virLXCProcessAutostartData {
-    virLXCDriver *driver;
-};
 
 static int
 virLXCProcessAutostartDomain(virDomainObj *vm,
-                             void *opaque)
+                             void *opaque G_GNUC_UNUSED)
 {
-    const struct virLXCProcessAutostartData *data = opaque;
-    int ret = 0;
+    VIR_LOCK_GUARD lock = virObjectLockGuard(vm);
+    virLXCDomainObjPrivate *priv = vm->privateData;
+    virObjectEvent *event;
+    int rc = 0;
 
-    virObjectLock(vm);
-    if (vm->autostart &&
-        !virDomainObjIsActive(vm)) {
-        ret = virLXCProcessStart(data->driver, vm, 0, NULL, NULL,
-                                 VIR_DOMAIN_RUNNING_BOOTED);
-        virDomainAuditStart(vm, "booted", ret >= 0);
-        if (ret < 0) {
-            VIR_ERROR(_("Failed to autostart VM '%s': %s"),
-                      vm->def->name,
-                      virGetLastErrorMessage());
-        } else {
-            virObjectEvent *event =
-                virDomainEventLifecycleNewFromObj(vm,
-                                         VIR_DOMAIN_EVENT_STARTED,
-                                         VIR_DOMAIN_EVENT_STARTED_BOOTED);
-            virObjectEventStateQueue(data->driver->domainEventState, event);
-        }
+    if (!vm->autostart ||
+        virDomainObjIsActive(vm))
+        return 0;
+
+    rc = virLXCProcessStart(priv->driver, vm, 0, NULL, NULL, VIR_DOMAIN_RUNNING_BOOTED);
+    virDomainAuditStart(vm, "booted", rc >= 0);
+
+    if (rc < 0) {
+        VIR_ERROR(_("Failed to autostart VM '%s': %s"),
+                  vm->def->name,
+                  virGetLastErrorMessage());
+        return -1;
     }
-    virObjectUnlock(vm);
-    return ret;
+
+    event = virDomainEventLifecycleNewFromObj(vm,
+                                              VIR_DOMAIN_EVENT_STARTED,
+                                              VIR_DOMAIN_EVENT_STARTED_BOOTED);
+    virObjectEventStateQueue(priv->driver->domainEventState, event);
+
+    return 0;
 }
 
 
 void
 virLXCProcessAutostartAll(virLXCDriver *driver)
 {
-    struct virLXCProcessAutostartData data = { driver };
-
-    virDomainObjListForEach(driver->domains, false,
-                            virLXCProcessAutostartDomain,
-                            &data);
+    virDomainObjListForEach(driver->domains, false, virLXCProcessAutostartDomain, NULL);
 }
 
 
