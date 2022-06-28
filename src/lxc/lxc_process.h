@@ -23,11 +23,10 @@
 
 #include "lxc_conf.h"
 
-int virLXCProcessStart(virConnectPtr conn,
-                       virLXCDriver * driver,
+int virLXCProcessStart(virLXCDriver * driver,
                        virDomainObj *vm,
                        unsigned int nfiles, int *files,
-                       bool autoDestroy,
+                       virConnectPtr autoDestroyConn,
                        virDomainRunningReason reason);
 int virLXCProcessStop(virLXCDriver *driver,
                       virDomainObj *vm,

@@ -964,8 +964,12 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
     virObjectEvent *event = NULL;
     int ret = -1;
     g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
+    virConnect *autoDestroyConn = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY, -1);
+
+    if (flags & VIR_DOMAIN_START_AUTODESTROY)
+        autoDestroyConn = dom->conn;
 
     if (!(vm = lxcDomObjFromDomain(dom)))
         goto cleanup;
@@ -988,9 +992,7 @@ static int lxcDomainCreateWithFiles(virDomainPtr dom,
         goto endjob;
     }
 
-    ret = virLXCProcessStart(dom->conn, driver, vm,
-                             nfiles, files,
-                             (flags & VIR_DOMAIN_START_AUTODESTROY),
+    ret = virLXCProcessStart(driver, vm, nfiles, files, autoDestroyConn,
                              VIR_DOMAIN_RUNNING_BOOTED);
 
     if (ret == 0) {
@@ -1065,10 +1067,13 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
     g_autoptr(virLXCDriverConfig) cfg = virLXCDriverGetConfig(driver);
     g_autoptr(virCaps) caps = NULL;
     unsigned int parse_flags = VIR_DOMAIN_DEF_PARSE_INACTIVE;
+    virConnect *autoDestroyConn = NULL;
 
     virCheckFlags(VIR_DOMAIN_START_AUTODESTROY |
                   VIR_DOMAIN_START_VALIDATE, NULL);
 
+    if (flags & VIR_DOMAIN_START_AUTODESTROY)
+        autoDestroyConn = conn;
 
     if (flags & VIR_DOMAIN_START_VALIDATE)
         parse_flags |= VIR_DOMAIN_DEF_PARSE_VALIDATE_SCHEMA;
@@ -1106,9 +1111,7 @@ lxcDomainCreateXMLWithFiles(virConnectPtr conn,
         goto cleanup;
     }
 
-    if (virLXCProcessStart(conn, driver, vm,
-                           nfiles, files,
-                           (flags & VIR_DOMAIN_START_AUTODESTROY),
+    if (virLXCProcessStart(driver, vm, nfiles, files, autoDestroyConn,
                            VIR_DOMAIN_RUNNING_BOOTED) < 0) {
         virDomainAuditStart(vm, "booted", false);
         virLXCDomainObjEndJob(driver, vm);
