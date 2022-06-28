@@ -117,53 +117,53 @@ mymain(void)
 
     DO_TEST_SET("<bandwidth/>", NULL);
 
-    DO_TEST_SET(("<bandwidth>"
-                 "  <inbound average='1024'/>"
-                 "</bandwidth>"),
-                (TC " qdisc del dev eth0 root\n"
-                 TC " qdisc del dev eth0 ingress\n"
-                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
-                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps quantum 87\n"
-                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
-                 TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"));
+    DO_TEST_SET("<bandwidth>"
+                "  <inbound average='1024'/>"
+                "</bandwidth>",
+                TC " qdisc del dev eth0 root\n"
+                TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc add dev eth0 root handle 1: htb default 1\n"
+                TC " class add dev eth0 parent 1: classid 1:1 htb rate 1024kbps quantum 87\n"
+                TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n");
 
-    DO_TEST_SET(("<bandwidth>"
-                 "  <outbound average='1024'/>"
-                 "</bandwidth>"),
-                (TC " qdisc del dev eth0 root\n"
-                 TC " qdisc del dev eth0 ingress\n"
-                 TC " qdisc add dev eth0 ingress\n"
-                 TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 "
-                 "police rate 1024kbps burst 1024kb mtu 64kb drop flowid :1\n"));
+    DO_TEST_SET("<bandwidth>"
+                "  <outbound average='1024'/>"
+                "</bandwidth>",
+                TC " qdisc del dev eth0 root\n"
+                TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc add dev eth0 ingress\n"
+                TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 "
+                "police rate 1024kbps burst 1024kb mtu 64kb drop flowid :1\n");
 
-    DO_TEST_SET(("<bandwidth>"
-                 "  <inbound average='1' peak='2' floor='3' burst='4'/>"
-                 "  <outbound average='5' peak='6' burst='7'/>"
-                 "</bandwidth>"),
-                (TC " qdisc del dev eth0 root\n"
-                 TC " qdisc del dev eth0 ingress\n"
-                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
-                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb quantum 1\n"
-                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
-                 TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
-                 TC " qdisc add dev eth0 ingress\n"
-                 TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 "
-                 "police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n"));
+    DO_TEST_SET("<bandwidth>"
+                "  <inbound average='1' peak='2' floor='3' burst='4'/>"
+                "  <outbound average='5' peak='6' burst='7'/>"
+                "</bandwidth>",
+                TC " qdisc del dev eth0 root\n"
+                TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc add dev eth0 root handle 1: htb default 1\n"
+                TC " class add dev eth0 parent 1: classid 1:1 htb rate 1kbps ceil 2kbps burst 4kb quantum 1\n"
+                TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
+                TC " qdisc add dev eth0 ingress\n"
+                TC " filter add dev eth0 parent ffff: protocol all u32 match u32 0 0 "
+                "police rate 5kbps burst 7kb mtu 64kb drop flowid :1\n");
 
-    DO_TEST_SET(("<bandwidth>"
-                 "  <inbound average='4294967295'/>"
-                 "  <outbound average='4294967295'/>"
-                 "</bandwidth>"),
-                (TC " qdisc del dev eth0 root\n"
-                 TC " qdisc del dev eth0 ingress\n"
-                 TC " qdisc add dev eth0 root handle 1: htb default 1\n"
-                 TC " class add dev eth0 parent 1: classid 1:1 htb rate 4294967295kbps quantum 366503875\n"
-                 TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
-                 TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
-                 TC " qdisc add dev eth0 ingress\n"
-                 TC " filter add dev eth0 parent ffff: protocol all u32 match "
-                 "u32 0 0 police rate 4294967295kbps burst 4194303kb mtu 64kb "
-                 "drop flowid :1\n"));
+    DO_TEST_SET("<bandwidth>"
+                "  <inbound average='4294967295'/>"
+                "  <outbound average='4294967295'/>"
+                "</bandwidth>",
+                TC " qdisc del dev eth0 root\n"
+                TC " qdisc del dev eth0 ingress\n"
+                TC " qdisc add dev eth0 root handle 1: htb default 1\n"
+                TC " class add dev eth0 parent 1: classid 1:1 htb rate 4294967295kbps quantum 366503875\n"
+                TC " qdisc add dev eth0 parent 1:1 handle 2: sfq perturb 10\n"
+                TC " filter add dev eth0 parent 1:0 protocol all prio 1 handle 1 fw flowid 1\n"
+                TC " qdisc add dev eth0 ingress\n"
+                TC " filter add dev eth0 parent ffff: protocol all u32 match "
+                "u32 0 0 police rate 4294967295kbps burst 4194303kb mtu 64kb "
+                "drop flowid :1\n");
 
     return ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }
