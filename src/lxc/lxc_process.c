@@ -1540,7 +1540,6 @@ int virLXCProcessStart(virLXCDriver * driver,
 
 struct virLXCProcessAutostartData {
     virLXCDriver *driver;
-    virConnectPtr conn;
 };
 
 static int
@@ -1576,21 +1575,11 @@ virLXCProcessAutostartDomain(virDomainObj *vm,
 void
 virLXCProcessAutostartAll(virLXCDriver *driver)
 {
-    /* XXX: Figure out a better way todo this. The domain
-     * startup code needs a connection handle in order
-     * to lookup the bridge associated with a virtual
-     * network
-     */
-    virConnectPtr conn = virConnectOpen("lxc:///system");
-    /* Ignoring NULL conn which is mostly harmless here */
-
-    struct virLXCProcessAutostartData data = { driver, conn };
+    struct virLXCProcessAutostartData data = { driver };
 
     virDomainObjListForEach(driver->domains, false,
                             virLXCProcessAutostartDomain,
                             &data);
-
-    virObjectUnref(conn);
 }
 
 
