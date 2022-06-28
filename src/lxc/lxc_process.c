@@ -89,7 +89,6 @@ virLXCProcessReboot(virLXCDriver *driver,
 {
     g_autoptr(virConnect) autoDestroyConn = virCloseCallbacksGetConn(driver->closeCallbacks, vm);
     int reason = vm->state.reason;
-    int ret = -1;
     virDomainDef *savedDef;
 
     VIR_DEBUG("Faking reboot");
@@ -105,15 +104,11 @@ virLXCProcessReboot(virLXCDriver *driver,
     virLXCProcessStop(driver, vm, VIR_DOMAIN_SHUTOFF_SHUTDOWN, 0);
     vm->newDef = savedDef;
     if (virLXCProcessStart(driver, vm, 0, NULL, autoDestroyConn, reason) < 0) {
-        VIR_WARN("Unable to handle reboot of vm %s",
-                 vm->def->name);
-        goto cleanup;
+        VIR_WARN("Unable to handle reboot of vm %s", vm->def->name);
+        return -1;
     }
 
-    ret = 0;
-
- cleanup:
-    return ret;
+    return 0;
 }
 
 
