@@ -2194,8 +2194,9 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 
     case VIR_DOMAIN_MEMORY_MODEL_VIRTIO_MEM:
         if (mem->requestedsize > mem->size) {
-            virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("requested size must be smaller than or equal to @size"));
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("requested size must be smaller than or equal to @size (%lluKiB)"),
+                           mem->size);
             return -1;
         }
 
