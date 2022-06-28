@@ -2541,7 +2541,12 @@ virSecuritySELinuxSetChardevLabel(virSecurityManager *mgr,
         break;
 
     case VIR_DOMAIN_CHR_TYPE_UNIX:
-        if (!dev_source->data.nix.listen) {
+        if (!dev_source->data.nix.listen ||
+            (dev_source->data.nix.path &&
+             virFileExists(dev_source->data.nix.path))) {
+            /* Also label mode='bind' sockets if they exist,
+             * e.g. because they were created by libvirt
+             * and passed via FD */
             if (virSecuritySELinuxSetFilecon(mgr,
                                              dev_source->data.nix.path,
                                              imagelabel,
@@ -2618,7 +2623,7 @@ virSecuritySELinuxRestoreChardevLabel(virSecurityManager *mgr,
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         if (!dev_source->data.nix.listen) {
             if (virSecuritySELinuxRestoreFileLabel(mgr,
-                                                   dev_source->data.file.path,
+                                                   dev_source->data.nix.path,
                                                    true) < 0)
                 goto done;
         }
