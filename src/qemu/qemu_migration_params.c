@@ -138,6 +138,11 @@ struct _qemuMigrationParamsTPMapItem {
     int party; /* bit-wise OR of qemuMigrationParty */
 };
 
+typedef struct _qemuMigrationParamInfoItem qemuMigrationParamInfoItem;
+struct _qemuMigrationParamInfoItem {
+    qemuMigrationParamType type;
+};
+
 /* Migration capabilities which should always be enabled as long as they
  * are supported by QEMU. If the capability is supposed to be enabled on both
  * sides of migration, it won't be enabled unless both sides support it.
@@ -224,22 +229,48 @@ static const qemuMigrationParamsTPMapItem qemuMigrationParamsTPMap[] = {
      .party = QEMU_MIGRATION_SOURCE},
 };
 
-static const qemuMigrationParamType qemuMigrationParamTypes[] = {
-    [QEMU_MIGRATION_PARAM_COMPRESS_LEVEL] = QEMU_MIGRATION_PARAM_TYPE_INT,
-    [QEMU_MIGRATION_PARAM_COMPRESS_THREADS] = QEMU_MIGRATION_PARAM_TYPE_INT,
-    [QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS] = QEMU_MIGRATION_PARAM_TYPE_INT,
-    [QEMU_MIGRATION_PARAM_THROTTLE_INITIAL] = QEMU_MIGRATION_PARAM_TYPE_INT,
-    [QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT] = QEMU_MIGRATION_PARAM_TYPE_INT,
-    [QEMU_MIGRATION_PARAM_TLS_CREDS] = QEMU_MIGRATION_PARAM_TYPE_STRING,
-    [QEMU_MIGRATION_PARAM_TLS_HOSTNAME] = QEMU_MIGRATION_PARAM_TYPE_STRING,
-    [QEMU_MIGRATION_PARAM_MAX_BANDWIDTH] = QEMU_MIGRATION_PARAM_TYPE_ULL,
-    [QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT] = QEMU_MIGRATION_PARAM_TYPE_ULL,
-    [QEMU_MIGRATION_PARAM_BLOCK_INCREMENTAL] = QEMU_MIGRATION_PARAM_TYPE_BOOL,
-    [QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE] = QEMU_MIGRATION_PARAM_TYPE_ULL,
-    [QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH] = QEMU_MIGRATION_PARAM_TYPE_ULL,
-    [QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS] = QEMU_MIGRATION_PARAM_TYPE_INT,
+static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
+    [QEMU_MIGRATION_PARAM_COMPRESS_LEVEL] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_COMPRESS_THREADS] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_DECOMPRESS_THREADS] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_THROTTLE_INITIAL] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_THROTTLE_INCREMENT] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
+    [QEMU_MIGRATION_PARAM_TLS_CREDS] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_STRING,
+    },
+    [QEMU_MIGRATION_PARAM_TLS_HOSTNAME] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_STRING,
+    },
+    [QEMU_MIGRATION_PARAM_MAX_BANDWIDTH] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    },
+    [QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    },
+    [QEMU_MIGRATION_PARAM_BLOCK_INCREMENTAL] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_BOOL,
+    },
+    [QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    },
+    [QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+    },
+    [QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS] = {
+        .type = QEMU_MIGRATION_PARAM_TYPE_INT,
+    },
 };
-G_STATIC_ASSERT(G_N_ELEMENTS(qemuMigrationParamTypes) == QEMU_MIGRATION_PARAM_LAST);
+G_STATIC_ASSERT(G_N_ELEMENTS(qemuMigrationParamInfo) == QEMU_MIGRATION_PARAM_LAST);
 
 
 virBitmap *
@@ -281,7 +312,7 @@ qemuMigrationParamsFree(qemuMigrationParams *migParams)
         return;
 
     for (i = 0; i < QEMU_MIGRATION_PARAM_LAST; i++) {
-        if (qemuMigrationParamTypes[i] == QEMU_MIGRATION_PARAM_TYPE_STRING)
+        if (qemuMigrationParamInfo[i].type == QEMU_MIGRATION_PARAM_TYPE_STRING)
             g_free(migParams->params[i].value.s);
     }
 
@@ -295,7 +326,7 @@ static int
 qemuMigrationParamsCheckType(qemuMigrationParam param,
                              qemuMigrationParamType type)
 {
-    if (qemuMigrationParamTypes[param] != type) {
+    if (qemuMigrationParamInfo[param].type != type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        _("Type mismatch for '%s' migration parameter"),
                        qemuMigrationParamTypeToString(param));
@@ -595,7 +626,7 @@ qemuMigrationParamsFromFlags(virTypedParameterPtr params,
         VIR_DEBUG("Setting migration parameter '%s' from '%s'",
                   qemuMigrationParamTypeToString(item->param), item->typedParam);
 
-        switch (qemuMigrationParamTypes[item->param]) {
+        switch (qemuMigrationParamInfo[item->param].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             if (qemuMigrationParamsGetTPInt(migParams, item->param, params,
                                             nparams, item->typedParam,
@@ -671,7 +702,7 @@ qemuMigrationParamsDump(qemuMigrationParams *migParams,
         if (!(item->party & QEMU_MIGRATION_DESTINATION))
             continue;
 
-        switch (qemuMigrationParamTypes[item->param]) {
+        switch (qemuMigrationParamInfo[item->param].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             if (qemuMigrationParamsSetTPInt(migParams, item->param,
                                             params, nparams, maxparams,
@@ -721,7 +752,7 @@ qemuMigrationParamsFromJSON(virJSONValue *params)
         name = qemuMigrationParamTypeToString(i);
         pv = &migParams->params[i];
 
-        switch (qemuMigrationParamTypes[i]) {
+        switch (qemuMigrationParamInfo[i].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             if (virJSONValueObjectGetNumberInt(params, name, &pv->value.i) == 0)
                 pv->set = true;
@@ -764,7 +795,7 @@ qemuMigrationParamsToJSON(qemuMigrationParams *migParams)
         if (!pv->set)
             continue;
 
-        switch (qemuMigrationParamTypes[i]) {
+        switch (qemuMigrationParamInfo[i].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             rc = virJSONValueObjectAppendNumberInt(params, name, pv->value.i);
             break;
@@ -1280,7 +1311,7 @@ qemuMigrationParamsFormat(virBuffer *buf,
         virBufferAsprintf(buf, "<param name='%s' ",
                           qemuMigrationParamTypeToString(i));
 
-        switch (qemuMigrationParamTypes[i]) {
+        switch (qemuMigrationParamInfo[i].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             virBufferAsprintf(buf, "value='%d'", pv->value.i);
             break;
@@ -1357,7 +1388,7 @@ qemuMigrationParamsParse(xmlXPathContextPtr ctxt,
         }
 
         rc = 0;
-        switch (qemuMigrationParamTypes[param]) {
+        switch (qemuMigrationParamInfo[param].type) {
         case QEMU_MIGRATION_PARAM_TYPE_INT:
             rc = virStrToLong_i(value, NULL, 10, &pv->value.i);
             break;
