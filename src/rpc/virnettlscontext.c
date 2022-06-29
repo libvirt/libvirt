@@ -54,7 +54,6 @@ struct _virNetTLSContext {
     virObjectLockable parent;
 
     gnutls_certificate_credentials_t x509cred;
-    gnutls_dh_params_t dhParams;
 
     bool isServer;
     bool requireValidCert;
@@ -709,40 +708,6 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
     if (virNetTLSContextLoadCredentials(ctxt, isServer, cacert, cacrl, cert, key) < 0)
         goto error;
 
-    /* Generate Diffie Hellman parameters - for use with DHE
-     * kx algorithms. These should be discarded and regenerated
-     * once a day, once a week or once a month. Depending on the
-     * security requirements.
-     */
-    if (isServer) {
-        unsigned int bits = 0;
-
-        bits = gnutls_sec_param_to_pk_bits(GNUTLS_PK_DH, GNUTLS_SEC_PARAM_MEDIUM);
-        if (bits == 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR, "%s",
-                           _("Unable to get key length for diffie-hellman parameters"));
-            goto error;
-        }
-
-        err = gnutls_dh_params_init(&ctxt->dhParams);
-        if (err < 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("Unable to initialize diffie-hellman parameters: %s"),
-                           gnutls_strerror(err));
-            goto error;
-        }
-        err = gnutls_dh_params_generate2(ctxt->dhParams, bits);
-        if (err < 0) {
-            virReportError(VIR_ERR_SYSTEM_ERROR,
-                           _("Unable to generate diffie-hellman parameters: %s"),
-                           gnutls_strerror(err));
-            goto error;
-        }
-
-        gnutls_certificate_set_dh_params(ctxt->x509cred,
-                                         ctxt->dhParams);
-    }
-
     ctxt->requireValidCert = requireValidCert;
     ctxt->x509dnACL = x509dnACL;
     ctxt->isServer = isServer;
@@ -754,8 +719,6 @@ static virNetTLSContext *virNetTLSContextNew(const char *cacert,
     return ctxt;
 
  error:
-    if (isServer)
-        gnutls_dh_params_deinit(ctxt->dhParams);
     virObjectUnref(ctxt);
     return NULL;
 }
@@ -949,9 +912,6 @@ int virNetTLSContextReloadForServer(virNetTLSContext *ctxt,
 
     if (virNetTLSContextLoadCredentials(ctxt, true, cacert, cacrl, cert, key))
         goto error;
-
-    gnutls_certificate_set_dh_params(ctxt->x509cred,
-                                     ctxt->dhParams);
 
     gnutls_certificate_free_credentials(x509credBak);
 
@@ -1156,7 +1116,6 @@ void virNetTLSContextDispose(void *obj)
           "ctxt=%p", ctxt);
 
     g_free(ctxt->priority);
-    gnutls_dh_params_deinit(ctxt->dhParams);
     gnutls_certificate_free_credentials(ctxt->x509cred);
 }
 
