@@ -982,7 +982,7 @@ conf.set('GLIB_VERSION_MAX_ALLOWED', glib_version_str)
 glusterfs_version = '3.4.1'
 glusterfs_dep = dependency('glusterfs-api', version: '>=' + glusterfs_version, required: get_option('glusterfs'))
 
-gnutls_version = '3.2.0'
+gnutls_version = '3.6.0'
 gnutls_dep = dependency('gnutls', version: '>=' + gnutls_version)
 
 # Check for BSD kvm (kernel memory interface)
