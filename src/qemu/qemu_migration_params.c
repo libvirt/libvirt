@@ -833,8 +833,10 @@ qemuMigrationCapsToJSON(virBitmap *caps,
  * @vm: domain object
  * @asyncJob: migration job
  * @migParams: migration parameters to send to QEMU
+ * @apiFlags: migration flags, some of them may affect which parameters are applied
  *
- * Send all parameters stored in @migParams to QEMU.
+ * Send parameters stored in @migParams to QEMU. If @apiFlags is non-zero, some
+ * parameters that do not make sense for the enabled flags will be ignored.
  *
  * Returns 0 on success, -1 on failure.
  */
@@ -842,7 +844,8 @@ int
 qemuMigrationParamsApply(virQEMUDriver *driver,
                          virDomainObj *vm,
                          int asyncJob,
-                         qemuMigrationParams *migParams)
+                         qemuMigrationParams *migParams,
+                         unsigned long apiFlags G_GNUC_UNUSED)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
@@ -1245,7 +1248,9 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
     if (!virDomainObjIsActive(vm) || !origParams)
         goto cleanup;
 
-    if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams) < 0)
+    /* Do not pass apiFlags to qemuMigrationParamsApply here to make sure all
+     * parameters and capabilities are reset. */
+    if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams, 0) < 0)
         goto cleanup;
 
     qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);

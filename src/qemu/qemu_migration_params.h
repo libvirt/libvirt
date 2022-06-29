@@ -98,7 +98,8 @@ int
 qemuMigrationParamsApply(virQEMUDriver *driver,
                          virDomainObj *vm,
                          int asyncJob,
-                         qemuMigrationParams *migParams);
+                         qemuMigrationParams *migParams,
+                         unsigned long apiFlags);
 
 int
 qemuMigrationParamsEnableTLS(virQEMUDriver *driver,

@@ -13078,7 +13078,7 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
             goto endjob;
 
         if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
-                                     migParams) < 0)
+                                     migParams, 0) < 0)
             goto endjob;
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
@@ -13260,7 +13260,7 @@ qemuDomainMigrateSetCompressionCache(virDomainPtr dom,
             goto endjob;
 
         if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
-                                     migParams) < 0)
+                                     migParams, 0) < 0)
             goto endjob;
     } else {
         qemuDomainObjEnterMonitor(driver, vm);
@@ -13347,7 +13347,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
             goto endjob;
 
         if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
-                                     migParams) < 0)
+                                     migParams, 0) < 0)
             goto endjob;
     } else {
         int rc;
