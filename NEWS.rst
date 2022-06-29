@@ -61,6 +61,24 @@ v8.5.0 (unreleased)
     an ``<interface/>`` might have resulted in closing of a random FD and thus
     sudden disconnect of a client or other random failures.
 
+  * qemu: Fix hotplug of network interfaces
+
+    A logic bug introduced in a recent refactor was fixed. The bug caused a
+    problem when hot-adding a network interface, which failed with the
+    following error::
+
+      error: internal error: unable to execute QEMU command 'netdev_add': File descriptor named '(null)' has not been found
+
+  * Fix ``startupPolicy`` validation for ``block`` disks
+
+    Setting of ``startupPolicy`` for a block disk would result in an error due
+    to a logic bug in a recent refactor.
+
+  * qemu: Fix crash when overriding device properties via ``<qemu:override>`` element
+
+    Adding an override for a device property would result in a crash of the qemu
+    driver.
+
 
 v8.4.0 (2022-06-01)
 ===================
