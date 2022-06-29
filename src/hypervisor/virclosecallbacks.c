@@ -195,30 +195,6 @@ virCloseCallbacksGet(virCloseCallbacks *closeCallbacks,
     return cb;
 }
 
-virConnectPtr
-virCloseCallbacksGetConn(virCloseCallbacks *closeCallbacks,
-                         virDomainObj *vm)
-{
-    char uuidstr[VIR_UUID_STRING_BUFLEN];
-    virDriverCloseDef *closeDef;
-    virConnectPtr conn = NULL;
-
-    virUUIDFormat(vm->def->uuid, uuidstr);
-    VIR_DEBUG("vm=%s, uuid=%s", vm->def->name, uuidstr);
-
-    virObjectLock(closeCallbacks);
-
-    closeDef = virHashLookup(closeCallbacks->list, uuidstr);
-    if (closeDef)
-        conn = closeDef->conn;
-
-    virObjectUnlock(closeCallbacks);
-
-    VIR_DEBUG("conn=%p", conn);
-    return conn;
-}
-
-
 typedef struct _virCloseCallbacksListEntry virCloseCallbacksListEntry;
 struct _virCloseCallbacksListEntry {
     unsigned char uuid[VIR_UUID_BUFLEN];

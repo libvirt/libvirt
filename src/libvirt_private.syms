@@ -1595,7 +1595,6 @@ virDomainObjInitJob;
 
 # hypervisor/virclosecallbacks.h
 virCloseCallbacksGet;
-virCloseCallbacksGetConn;
 virCloseCallbacksNew;
 virCloseCallbacksRun;
 virCloseCallbacksSet;
