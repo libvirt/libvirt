@@ -7428,6 +7428,7 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
 {
     g_autofree char *path = NULL;
     qemuMonitorJSONObjectProperty prop;
+    bool setMaxFirst = false;
 
     path = g_strdup_printf("/objects/iothread%u", iothreadInfo->iothread_id);
 
@@ -7443,8 +7444,32 @@ qemuMonitorJSONSetIOThread(qemuMonitor *mon,
     VIR_IOTHREAD_SET_PROP("poll-max-ns", poll_max_ns);
     VIR_IOTHREAD_SET_PROP("poll-grow", poll_grow);
     VIR_IOTHREAD_SET_PROP("poll-shrink", poll_shrink);
-    VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
-    VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
+
+    if (iothreadInfo->set_thread_pool_min &&
+        iothreadInfo->set_thread_pool_max) {
+        int curr_max = -1;
+
+        /* By default, the minimum is set first, followed by the maximum. But
+         * if the current maximum is below the minimum we want to set we need
+         * to set the maximum first. Otherwise would get an error because we
+         * would be attempting to shift minimum above maximum. */
+        prop.type = QEMU_MONITOR_OBJECT_PROPERTY_INT;
+        if (qemuMonitorJSONGetObjectProperty(mon, path,
+                                             "thread-pool-max", &prop) < 0)
+            return -1;
+        curr_max = prop.val.iv;
+
+        if (curr_max < iothreadInfo->thread_pool_min)
+            setMaxFirst = true;
+    }
+
+    if (setMaxFirst) {
+        VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
+        VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
+    } else {
+        VIR_IOTHREAD_SET_PROP("thread-pool-min", thread_pool_min);
+        VIR_IOTHREAD_SET_PROP("thread-pool-max", thread_pool_max);
+    }
 
 #undef VIR_IOTHREAD_SET_PROP
 
