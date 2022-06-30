@@ -18,7 +18,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2021-02-21 08:40+0000\n"
 "Last-Translator: Pany <geekpany@gmail.com>\n"
 "Language-Team: Chinese (Simplified) <https://translate.fedoraproject.org/"
@@ -1331,9 +1331,6 @@ msgstr ""
 #, fuzzy
 msgid "'ssh' protocol is not yet supported"
 msgstr "不支持 fs 格式 %s"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' 只能用于 'file' 类型卷"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4169,9 +4166,9 @@ msgstr "无法找到 MAC 地址为 '%s' 的物理 NIC"
 msgid "Could not find physical NIC with name '%s'"
 msgstr "无法找到名为 '%s' 的物理 NIC"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "无法找到变量 '%s' 值"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6836,6 +6833,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "创建处理域关闭的线程失败"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "创建处理域关闭的线程失败"
@@ -9047,6 +9047,11 @@ msgstr "主机 CPU 提供被禁止的功能"
 msgid "Host SMBIOS information is not available"
 msgstr "主机 SMBIOS 信息不可用"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "这个平台不支持主机系统信息提取"
 
@@ -9635,6 +9640,9 @@ msgstr "无效地址。"
 
 msgid "Invalid argument"
 msgstr "无效参数"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10326,6 +10334,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11596,6 +11610,9 @@ msgstr "JSON 状态文件中缺少 socks 字段"
 msgid "Missing source channel attribute for char device"
 msgstr "字符设备缺少 source channel 属性"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "缺少字符设备的源主机属性"
 
@@ -12537,6 +12554,9 @@ msgstr "不是上传数据流"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "不要分离活跃的设备 %s"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13505,6 +13525,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14396,13 +14419,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "不允许为网络类型磁盘设置磁盘 %s"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr "只能为 cdrom 或 floppy 介质设置磁盘 'requisite'"
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "这个 QEMU 不支持为 ide 磁盘设定 wwn"
@@ -15067,20 +15083,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM 设备路径 %s 无效"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20364,6 +20372,10 @@ msgstr "必须指定图形侦听类型"
 msgid "another backup job is already running"
 msgstr "接口正在运行中"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "不支持的配置"
@@ -20640,6 +20652,9 @@ msgstr "在这个平台中未采用 node set memory 参数"
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "不支持附加串口控制台"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20652,15 +20667,14 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "背景任务"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22139,6 +22153,10 @@ msgstr "无法解析 rdp 端口 %s"
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "无法解析目标 '%s'"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -23768,6 +23786,9 @@ msgstr "当前"
 msgid "current bridge device name"
 msgstr "当前桥接设备名称"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "当前 vcpu 计数必须等于最大值"
 
@@ -24399,6 +24420,13 @@ msgstr "只有当存储池为 iscsi 类型时磁盘源模式才有效"
 msgid "disk source path is missing"
 msgstr "缺少磁盘源"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "未找到磁盘 %s"
@@ -24599,8 +24627,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "域控制接口状态"
 
-msgid "domain core dump job"
-msgstr "域核转储任务"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "域显示连接 URI"
@@ -24714,8 +24742,8 @@ msgstr "域名或 uuid"
 msgid "domain name, id or uuid"
 msgstr "域名，id 或 uuid"
 
-msgid "domain save job"
-msgstr "域保存任务"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "域快照 XML"
@@ -25534,9 +25562,6 @@ msgstr "Xen系统调用失败 %s"
 msgid "failed Xen syscall %s"
 msgstr "Xen系统调用失败 %s"
 
-msgid "failed due to I/O error"
-msgstr "因为 I/O 错误失败"
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "获得性能失败"
@@ -26317,6 +26342,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "解析端口号失败"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "解析 qemu 功能 cpus 失败"
@@ -28004,6 +28032,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "仅内部使用"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -28815,9 +28846,6 @@ msgstr "ipset 名称包含无效字符"
 msgid "ipset name is too long"
 msgstr "ipset 名称太长"
 
-msgid "is not active"
-msgstr "不活跃"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -28835,8 +28863,29 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
 
-msgid "job"
-msgstr "任务"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "job type '%s' does not support pivot"
@@ -29415,6 +29464,9 @@ msgstr "不支持生成 %s 卷"
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 
+msgid "lower boundary for worker thread pool"
+msgstr ""
+
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
 
@@ -29983,9 +30035,8 @@ msgstr "迁移带宽限制，单位 MiB/s"
 msgid "migration canceled"
 msgstr "取消迁移"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "迁移"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -29995,14 +30046,21 @@ msgstr "stat 文件 '%s' 失败"
 msgid "migration of disk %s failed: %s"
 msgstr "操作失败: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "migration out job"
-msgstr "迁移"
+msgid "migration out"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30036,9 +30094,6 @@ msgstr "迁移是活跃的但缺少 RAM 'total' 数据"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "迁移是活跃的但缺少 RAM 'transferred' 数据"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "迁移是活跃的但没有设定 RAM 信息"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31071,6 +31126,9 @@ msgstr "不支持驱动器热插拔"
 
 msgid "model type"
 msgstr "模型类型"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
@@ -32466,6 +32524,10 @@ msgstr "只支持单一监视器设备"
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "只有 scsi 主机设备支持 sgio"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33051,6 +33113,9 @@ msgstr "不支持永久断开设备 '%s'"
 msgid "persistent detach of device is not supported"
 msgstr "不支持持久附分离设备"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "不支持永久更新设备 '%s'"
@@ -33200,6 +33265,10 @@ msgstr "迁移带宽限制，单位 MiB/s"
 #, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "目标主机不支持离线迁移"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34072,6 +34141,9 @@ msgstr "重置节点设备"
 msgid "reset the domain after core dump"
 msgstr "core 转储后重新设定该域"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "创新定义卷大小"
 
@@ -34108,6 +34180,9 @@ msgstr "结果太大：%llu"
 msgid "resume a domain"
 msgstr "重新恢复一个域"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "恢复操作失败"
 
@@ -34116,6 +34191,16 @@ msgstr "转储失败后恢复"
 
 msgid "resuming after snapshot failed"
 msgstr "快照失败后恢复"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr "从指定server中获取指定client的信息"
@@ -34504,7 +34589,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "挂起域时出错"
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -34755,6 +34840,12 @@ msgstr "跳过非绝对路径"
 msgid "skipped restricted file"
 msgstr "跳过限制的文件"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "快照 %s 从列表中消失"
@@ -34773,10 +34864,6 @@ msgstr "快照 '%s' 缺少域 '%s' 恢复信息"
 
 msgid "snapshot information"
 msgstr "快照信息"
-
-#, fuzzy
-msgid "snapshot job"
-msgstr "快照名称"
 
 msgid "snapshot name"
 msgstr "快照名称"
@@ -34929,6 +35016,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "这个 QEMU 二进制文件不支持 nvram 设备 "
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "开始一个（以前定义的）非活跃的域"
 
@@ -34947,10 +35037,6 @@ msgstr "启动物理主机接口。"
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "启动单元 %d 溢出（0 - %d）"
-
-#, fuzzy
-msgid "start job"
-msgstr "已启动"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -35643,6 +35729,36 @@ msgstr "磁盘设备 '%s' 不支持快照功能"
 msgid "this storage volume exists already"
 msgstr "这个网络已存在"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "卷大小，以整数计（默认为字节）"
@@ -36077,6 +36193,9 @@ msgstr "更努力地尝试有风险的转换"
 
 msgid "tty console"
 msgstr "tty 控制台"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "管道迁移"
@@ -36914,6 +37033,10 @@ msgid "unexpected message type"
 msgstr "意外信息类型 %d"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "%s 中意外的迁移状态"
 
@@ -37108,9 +37231,6 @@ msgstr "意外监视器模型 %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr "请求 %lld 的意外 0/负长度"
 
-msgid "unexpectedly failed"
-msgstr "意外失败"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37284,6 +37404,10 @@ msgstr "未知设备类型 '%s'"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "未知磁盘快照驱动程序 '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "未知磁盘类型 '%s'"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -37955,6 +38079,10 @@ msgstr "不支持的事件 ID %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "不支持的 numatune 模式 '%d'"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "不支持的 rtc 计时器跟踪 '%s'"
@@ -38062,6 +38190,9 @@ msgstr "不支持即时更新设备 '%s'"
 msgid "upload file contents to a volume"
 msgstr "将文件内容上传到卷中"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime 值 '%s' 使用意外的格式"
@@ -38123,6 +38254,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "使用 virDomainMigrateToURI3 进行点对点迁移"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "用户"
@@ -39015,6 +39149,9 @@ msgstr "使用 --wait，不要等待取消完成。"
 msgid "with redefine, set current snapshot"
 msgstr "使用 redefice 设定当前快照"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "每秒 I/O 写入操作数上限"
 
@@ -39064,6 +39201,9 @@ msgstr "要从中导出的 xml 数据文件"
 msgid "xml modification unsupported"
 msgstr "不支持 xml 修改"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime 值 '%s' 使用意外的格式"
@@ -39078,6 +39218,9 @@ msgstr "是"
 msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o 已保留"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -39085,6 +39228,60 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <字符串>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy' 只能用于 'file' 类型卷"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "无法找到变量 '%s' 值"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "不允许为网络类型磁盘设置磁盘 %s"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr "只能为 cdrom 或 floppy 介质设置磁盘 'requisite'"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "背景任务"
+
+#~ msgid "domain core dump job"
+#~ msgstr "域核转储任务"
+
+#~ msgid "domain save job"
+#~ msgstr "域保存任务"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "因为 I/O 错误失败"
+
+#~ msgid "is not active"
+#~ msgstr "不活跃"
+
+#~ msgid "job"
+#~ msgstr "任务"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "迁移"
+
+#, fuzzy
+#~ msgid "migration out job"
+#~ msgstr "迁移"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "迁移是活跃的但没有设定 RAM 信息"
+
+#, fuzzy
+#~ msgid "snapshot job"
+#~ msgstr "快照名称"
+
+#, fuzzy
+#~ msgid "start job"
+#~ msgstr "已启动"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "意外失败"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: 无法确定 fd %d 的访问模式"
@@ -39154,9 +39351,6 @@ msgstr "{[--%s] <字符串>}..."
 
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "未知磁盘快照类型 '%s'"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "未知磁盘类型 '%s'"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "未知磁盘快照驱动程序 '%s'"

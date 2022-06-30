@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2021-07-21 11:38+0000\n"
 "Last-Translator: Matej Cepl <mcepl@cepl.eu>\n"
 "Language-Team: Czech <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1347,9 +1347,6 @@ msgstr "atribut 'socket' je platný pouze pro typ očekávání spojení 'socket
 
 msgid "'ssh' protocol is not yet supported"
 msgstr "protokol „ssh“ zatím ještě není podporován"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' je platné pouze pro svazek typu 'file'"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4228,9 +4225,9 @@ msgstr "Nedaří se najít fyzické síťové rozhraní s MAC adresou „%s“"
 msgid "Could not find physical NIC with name '%s'"
 msgstr "Nedaří se najít žádné fyzické síťové rozhraní s názvem „%s“"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "Nedaří se najít hodnotu pro proměnnou „%s“"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6923,6 +6920,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Nepodařilo se vytvořit vlákno pro obsluhu vypnutí domény"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Nepodařilo se vytvořit vlákno pro obsluhu obnovování fondu"
 
@@ -9145,6 +9145,11 @@ msgstr "Procesor hostitele poskytuje zakázané funkce"
 msgid "Host SMBIOS information is not available"
 msgstr "SMBIOS informace o hostiteli nejsou k dispozici"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
 "Vytažení systémových informací o hostiteli není na této platformě podporováno"
@@ -9744,6 +9749,9 @@ msgstr "Neplatná adresa."
 
 msgid "Invalid argument"
 msgstr "Neplatný argument"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10458,6 +10466,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11713,6 +11727,9 @@ msgstr "V JSON stavovém dokumentu chybí kolonka socks"
 msgid "Missing source channel attribute for char device"
 msgstr "Chybí atribut zdrojový kanál pro znakové zařízení"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Chybí atribut zdrojového hostitele pro znakové zařízení"
 
@@ -12652,6 +12669,9 @@ msgstr "Nejedná se o nahrávací proud"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "Neodpojuje se aktivní zařízení %s"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13614,6 +13634,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr "je vyžadováno QEMU verze %d.%d.%d a novější, ale nalezeno jen %d.%d.%d"
@@ -14535,13 +14558,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr "Nastavení odlišného SELinux štítku na %s, které už je používáno"
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "Nastavení disku %s není dovoleno pro disk síťového typu"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr "Nastavení disku 'requisite' je povoleno pouze pro cdrom nebo floppy"
-
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "Nastavování velikosti bloku disku není ovladačem vz podporováno."
 
@@ -15183,20 +15199,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "Popis umístění TPM zařízení %s není platný"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20483,6 +20491,10 @@ msgstr "je třeba zadat <type> (typ) operačního systému"
 msgid "another backup job is already running"
 msgstr "rozhraní už je spuštěné"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 msgid "any configuration"
 msgstr "libovolné nastavení"
 
@@ -20760,6 +20772,9 @@ msgstr ""
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "protokol úložiště, na kterém je uloženo „%s“ zatím není podporován"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20771,15 +20786,14 @@ msgid ""
 "sense"
 msgstr "backingStore zrcadla bez VIR_DOMAIN_BLOCK_COPY_SHALLOW nedává smysl"
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "úloha na pozadí"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22272,6 +22286,10 @@ msgstr "nedaří se zpracovat rdp port %s"
 #, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "nedaří se zpracovat cíl pro lunStr „%s“"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -23902,6 +23920,9 @@ msgstr "stávající"
 msgid "current bridge device name"
 msgstr "stávající název zařízení mostu"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "je třeba, aby stávající počet virt. procesorů se rovnal maximu"
 
@@ -24538,6 +24559,13 @@ msgid "disk source path is missing"
 msgstr "zdrojový popis umístění pro disk chybí"
 
 #, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
+#, c-format
 msgid "disk target %s not found"
 msgstr "disk cíl %s nenalezen"
 
@@ -24731,8 +24759,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "stav řídícího rozhraní domény"
 
-msgid "domain core dump job"
-msgstr "úloha výpisu paměti domény"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "URI adresa připojení k displeji domény"
@@ -24845,8 +24873,8 @@ msgstr "nikde se neopakující identifikátor názvu domény"
 msgid "domain name, id or uuid"
 msgstr "jméno, id nebo uuid domény"
 
-msgid "domain save job"
-msgstr "úloha uložení domény"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "XML definice zachyceného stavu domény"
@@ -25660,9 +25688,6 @@ msgstr "systémové volání Xen se nezdařilo"
 msgid "failed Xen syscall %s"
 msgstr "nezdařilo se systémové volání Xenu %s"
 
-msgid "failed due to I/O error"
-msgstr "nezdařilo se kvůli vstup./výstupní chybě"
-
 msgid "failed probing capabilities"
 msgstr "nepodařilo se zjistit schopnosti"
 
@@ -26429,6 +26454,9 @@ msgstr ""
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "nepodařilo se zpracovat číslo portu „%s“"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "nepodařilo se vyhodnotit procesory schopností qemu"
@@ -28134,6 +28162,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "pouze pro použití v rámci vývoje"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr "přeruš.:"
 
@@ -28953,9 +28984,6 @@ msgstr "název ipset obsahuje neplatné znaky"
 msgid "ipset name is too long"
 msgstr "název ipset je příliš dlouhý"
 
-msgid "is not active"
-msgstr "není aktivní"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -28972,8 +29000,29 @@ msgstr "ivgen prvek nalezen, ale chybí šifra"
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "zařízení ivshmem není tímto sestavením QEMU podporováno"
 
-msgid "job"
-msgstr "úloha"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, c-format
 msgid "job type '%s' does not support pivot"
@@ -29528,6 +29577,9 @@ msgstr "logický svazek „%s“ je řídký, vymazání svazku není podporová
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 "ve smyčce do překročení časového limitu nebo přerušení, namísto jednorázově"
+
+msgid "lower boundary for worker thread pool"
+msgstr ""
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
@@ -30108,8 +30160,8 @@ msgstr "omezení šířky pásma pro migraci (v MiB/s)"
 msgid "migration canceled"
 msgstr "migrace zrušena"
 
-msgid "migration in job"
-msgstr "migrace v úloze"
+msgid "migration in"
+msgstr ""
 
 #, c-format
 msgid "migration of disk %s failed"
@@ -30119,13 +30171,21 @@ msgstr "migrace disku %s se nezdařila"
 msgid "migration of disk %s failed: %s"
 msgstr "migrace disku %s se nezdařila: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-msgid "migration out job"
-msgstr "úloha migrace pryč"
+msgid "migration out"
+msgstr ""
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30157,10 +30217,6 @@ msgstr "stěhování bylo aktivní, ale data RAM 'total' (celkem) chyběla"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "stěhování bylo aktivní, ale data RAM 'transfered' (přeneseno) chyběla"
-
-msgid "migration was active, but no RAM info was set"
-msgstr ""
-"migrace byla aktivní, ale nebyly nastavené žádné informace o operační paměti"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31182,6 +31238,9 @@ msgstr "překlad modelu není podporován"
 
 msgid "model type"
 msgstr "typ modelu"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 msgid "modifies an existing IOThread of the guest domain"
 msgstr "změní stávající vlákno vstupu/výstupu domény hosta"
@@ -32574,6 +32633,10 @@ msgstr ""
 "nastavení zdrojového umístění evdev je podporováno pouze pro passthrough "
 "vstupní zařízení"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33160,6 +33223,9 @@ msgstr "trvalé odpojení zařízení „%s“ není podporováno"
 msgid "persistent detach of device is not supported"
 msgstr "trvalé odpojení zařízení není podporováno"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "trvalá aktualizace zařízení „%s“ není podporována"
@@ -33304,6 +33370,10 @@ msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr ""
 "post-copy stěhování není podporováno u stěhování v pozastaveném nebo "
 "nespuštěném stavu"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34172,6 +34242,9 @@ msgstr "resetovat zařízení uzlu"
 msgid "reset the domain after core dump"
 msgstr "po vypsání obsahu paměti doménu restartovat"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "změnit velikost svazku"
 
@@ -34208,6 +34281,9 @@ msgstr "výsledek je příliš velký: %llu"
 msgid "resume a domain"
 msgstr "probudit doménu"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "operace obnovení chodu se nezdařila"
 
@@ -34216,6 +34292,16 @@ msgstr "obnovení po výpisu se nezdařilo"
 
 msgid "resuming after snapshot failed"
 msgstr "obnova po zachycení stavu se nezdařila"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr "získat informace o identitě klienta ze serveru"
@@ -34597,8 +34683,8 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "nastavit heslo uživatele v doméně"
 
-msgid "set the value for reduction of the IOThread polling time "
-msgstr "nastavit hodnotu pro snížení času dotazování IOThread"
+msgid "set the value for reduction of the IOThread polling time"
+msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
 msgstr "nastavit hodnotu pro navýšení času dotazování IOThread"
@@ -34848,6 +34934,12 @@ msgstr "přeskočen neúplný popis umístění"
 msgid "skipped restricted file"
 msgstr "přeskočen omezený soubor"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "zachycený stav %s zmizel ze seznamu"
@@ -34866,9 +34958,6 @@ msgstr "zachycený stav „%s“ postrádá informace o rolback domény „%s“
 
 msgid "snapshot information"
 msgstr "informace o zachyceném stavu"
-
-msgid "snapshot job"
-msgstr "úloha pořízení zachyceného stavu"
 
 msgid "snapshot name"
 msgstr "název zachyceného stavu"
@@ -35023,6 +35112,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "nastavení ats není touto binárkou QEMU podporováno"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "spustit (dříve definovanou) neaktivní doménu"
 
@@ -35041,9 +35133,6 @@ msgstr "spustit fyzické rozhraní hostitele"
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "počáteční buňka %d je mimo rozsah (0-%d)"
-
-msgid "start job"
-msgstr "úloha spuštění"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -35728,6 +35817,36 @@ msgstr ""
 msgid "this storage volume exists already"
 msgstr "tento svazek úložiště už existuje"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "práh jako škálované číslo (ve výchozím stavu bajty)"
 
@@ -36212,6 +36331,9 @@ msgstr "snažit se více při riskantních návratech"
 
 msgid "tty console"
 msgstr "tty konzole"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "migrace skrze tunel"
@@ -37037,6 +37159,10 @@ msgid "unexpected message type"
 msgstr "neočekávaný typ zprávy"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "neočekávaný stav migrace v %s"
 
@@ -37229,9 +37355,6 @@ msgstr "neočekávaný model resetátoru %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr "neočekávaná nulová/záporná délka požadavku %lld"
 
-msgid "unexpectedly failed"
-msgstr "neočekávaně se nezdařilo"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37406,6 +37529,10 @@ msgstr "neznámý typ zařízení „%s“"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "neznámý ovladač zachyceného stavu disku „%s“"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "neznámý typ disku '%s'"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -38073,6 +38200,10 @@ msgstr "nepodporovaný identifikátor události zařízení uzlu %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "nepodporovaný režim numatune: „%d“"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "Nepodporovaný formát svazku „%s“"
@@ -38179,6 +38310,9 @@ msgstr "aktualizace zařízení typu „%s“ není podporována"
 msgid "upload file contents to a volume"
 msgstr "nahrát obsah souboru do svazku"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime hodnota „%s“ má neočekávaný formát"
@@ -38240,6 +38374,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "použít virDomainMigrateToURI3 pro peer-to-peer přestěhování"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "uživatel"
@@ -39154,6 +39291,9 @@ msgstr "s --wait, nečekat na dokončení zrušení"
 msgid "with redefine, set current snapshot"
 msgstr "s redefine, nastavit stávající zachycený stav"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "omezení vstup./výstupních operací zápisu za sekundu"
 
@@ -39207,6 +39347,9 @@ msgstr "xml datový soubor ze kterého exportovat"
 msgid "xml modification unsupported"
 msgstr "modifikace xml nepodporována"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime hodnota „%s“ má neočekávaný formát"
@@ -39221,6 +39364,9 @@ msgstr "ano"
 msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o už je rezervováno"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
@@ -39228,6 +39374,61 @@ msgstr "zóna %s vyžadována pro sít %s, ale firewalld není aktivní"
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <řetězec>}…"
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy' je platné pouze pro svazek typu 'file'"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "Nedaří se najít hodnotu pro proměnnou „%s“"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "Nastavení disku %s není dovoleno pro disk síťového typu"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr "Nastavení disku 'requisite' je povoleno pouze pro cdrom nebo floppy"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "úloha na pozadí"
+
+#~ msgid "domain core dump job"
+#~ msgstr "úloha výpisu paměti domény"
+
+#~ msgid "domain save job"
+#~ msgstr "úloha uložení domény"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "nezdařilo se kvůli vstup./výstupní chybě"
+
+#~ msgid "is not active"
+#~ msgstr "není aktivní"
+
+#~ msgid "job"
+#~ msgstr "úloha"
+
+#~ msgid "migration in job"
+#~ msgstr "migrace v úloze"
+
+#~ msgid "migration out job"
+#~ msgstr "úloha migrace pryč"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr ""
+#~ "migrace byla aktivní, ale nebyly nastavené žádné informace o operační "
+#~ "paměti"
+
+#~ msgid "set the value for reduction of the IOThread polling time "
+#~ msgstr "nastavit hodnotu pro snížení času dotazování IOThread"
+
+#~ msgid "snapshot job"
+#~ msgstr "úloha pořízení zachyceného stavu"
+
+#~ msgid "start job"
+#~ msgstr "úloha spuštění"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "neočekávaně se nezdařilo"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: nedaří se zjistit režim přístupu popisovače souboru %d"
@@ -39306,9 +39507,6 @@ msgstr "{[--%s] <řetězec>}…"
 
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "neznámý typ zachyceného stavu disku „%s“"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "neznámý typ disku '%s'"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "neznámé nastavení zachyceného stavu paměti „%s“"

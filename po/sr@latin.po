@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2015-03-03 06:01+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Serbian (Latin) (http://www.transifex.com/projects/p/fedora/"
@@ -1164,9 +1164,6 @@ msgid "'socket' attribute is valid only for listen type 'socket'"
 msgstr ""
 
 msgid "'ssh' protocol is not yet supported"
-msgstr ""
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
 msgstr ""
 
 msgid "'target' refers to a non-existent NUMA node"
@@ -3967,7 +3964,7 @@ msgid "Could not find physical NIC with name '%s'"
 msgstr ""
 
 #, c-format
-msgid "Could not find placement for v1 controller %s at %s"
+msgid "Could not find placement for v1 controller %s"
 msgstr ""
 
 msgid "Could not find placement for v2 controller"
@@ -6610,6 +6607,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Neuspelo pravljenje domena iz %s"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Neuspelo pravljenje skladišta iz %s"
@@ -8883,6 +8883,11 @@ msgstr ""
 msgid "Host SMBIOS information is not available"
 msgstr ""
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
 
@@ -9454,6 +9459,9 @@ msgid "Invalid address."
 msgstr "neispravna MAC adresa"
 
 msgid "Invalid argument"
+msgstr ""
+
+msgid "Invalid async job start"
 msgstr ""
 
 #, c-format
@@ -10149,6 +10157,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11404,6 +11418,9 @@ msgstr ""
 msgid "Missing source channel attribute for char device"
 msgstr "Nedostaje osobina izvornog domaćina za znakovni uređaj"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Nedostaje osobina izvornog domaćina za znakovni uređaj"
 
@@ -12342,6 +12359,9 @@ msgstr ""
 msgid "Not detaching active device %s"
 msgstr "otkači uređaj diska"
 
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
+
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
 msgstr ""
@@ -13269,6 +13289,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14151,13 +14174,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr ""
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "SASL mehanizam %s nije podržan od strane servera"
@@ -14800,19 +14816,11 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
-msgstr ""
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
 msgstr ""
 
 msgid "Table row cannot be empty"
@@ -20097,6 +20105,10 @@ msgstr ""
 msgid "another backup job is already running"
 msgstr "Domen je već pokrenut"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "podaci o domenu"
@@ -20365,6 +20377,9 @@ msgstr ""
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "Vrsta mreže %d nije podržana"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20376,13 +20391,13 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
-msgstr ""
-
-msgid "backup job"
 msgstr ""
 
 msgid "backup job data missing"
@@ -21831,6 +21846,10 @@ msgstr "ne mogu da uklonim podešavanje za %s"
 
 #, c-format
 msgid "cannot parse target for lunStr '%s'"
+msgstr ""
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
 msgstr ""
 
 #, c-format
@@ -23459,6 +23478,9 @@ msgstr ""
 msgid "current bridge device name"
 msgstr ""
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr ""
 
@@ -24083,6 +24105,13 @@ msgstr ""
 msgid "disk source path is missing"
 msgstr "nedostaje putanja izvora"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "Skladište nije pronađeno"
@@ -24280,7 +24309,7 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "domen nije u stanju gašenja"
 
-msgid "domain core dump job"
+msgid "domain core dump"
 msgstr ""
 
 #, fuzzy
@@ -24402,9 +24431,8 @@ msgstr "ime domena ili uuid"
 msgid "domain name, id or uuid"
 msgstr "ime domena, id ili uuid"
 
-#, fuzzy
-msgid "domain save job"
-msgstr "stanje domena"
+msgid "domain save"
+msgstr ""
 
 #, fuzzy
 msgid "domain snapshot XML"
@@ -25224,9 +25252,6 @@ msgstr ""
 msgid "failed Xen syscall %s"
 msgstr "neuspelo dobavljanje diska „%s“"
 
-msgid "failed due to I/O error"
-msgstr ""
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "neuspelo preuzimanje mogućnosti"
@@ -26025,6 +26050,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "Neuspelo raščlanjivanje režima „%s“"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 #, fuzzy
 msgid "failed to parse qemu capabilities cpus"
@@ -27713,6 +27741,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "unutrašnja greška"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -28524,10 +28555,6 @@ msgstr "Naziv modela sadrži neispravne znake"
 msgid "ipset name is too long"
 msgstr ""
 
-#, fuzzy
-msgid "is not active"
-msgstr "neaktivno"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -28543,7 +28570,28 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr ""
 
-msgid "job"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
 msgstr ""
 
 #, fuzzy, c-format
@@ -29127,6 +29175,9 @@ msgid "logical volume '%s' is sparse, volume wipe not supported"
 msgstr ""
 
 msgid "loop until timeout or interrupt, rather than one-shot"
+msgstr ""
+
+msgid "lower boundary for worker thread pool"
 msgstr ""
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
@@ -29713,9 +29764,8 @@ msgstr ""
 msgid "migration canceled"
 msgstr "neuspela radnja"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "preseljenje uživo"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -29725,12 +29775,20 @@ msgstr "neuspela radnja"
 msgid "migration of disk %s failed: %s"
 msgstr "neuspela radnja: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-msgid "migration out job"
+msgid "migration out"
 msgstr ""
 
 #, c-format
@@ -29763,9 +29821,6 @@ msgid "migration was active, but RAM 'total' data was missing"
 msgstr ""
 
 msgid "migration was active, but RAM 'transferred' data was missing"
-msgstr ""
-
-msgid "migration was active, but no RAM info was set"
 msgstr ""
 
 msgid "migration with legacy shmem device is not supported"
@@ -30814,6 +30869,9 @@ msgid "model resolution is not supported"
 msgstr "verzija otiska nije podržana (%d > %d)"
 
 msgid "model type"
+msgstr ""
+
+msgid "modern nvram specification is not supported by this qemu"
 msgstr ""
 
 msgid "modifies an existing IOThread of the guest domain"
@@ -32184,6 +32242,10 @@ msgstr ""
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "xen magistrala ne podržava %s uređaj za unos"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -32751,6 +32813,9 @@ msgstr ""
 msgid "persistent detach of device is not supported"
 msgstr "Vrsta mreže %d nije podržana"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr ""
@@ -32894,6 +32959,10 @@ msgid "post-copy migration bandwidth limit in MiB/s"
 msgstr ""
 
 msgid "post-copy migration is not supported with non-live or paused migration"
+msgstr ""
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
 msgstr ""
 
 msgid "potentially unsafe disk format probing"
@@ -33742,6 +33811,9 @@ msgstr "cilj uređaja diska"
 msgid "reset the domain after core dump"
 msgstr ""
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 #, fuzzy
 msgid "resize a vol"
 msgstr "Pravljenje diska."
@@ -33781,6 +33853,9 @@ msgstr "nparams preveliki"
 msgid "resume a domain"
 msgstr "nastavi domen"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "neuspeo nastavak operacije"
 
@@ -33791,6 +33866,16 @@ msgstr "neuspeo nastavak operacije"
 #, fuzzy
 msgid "resuming after snapshot failed"
 msgstr "neuspeo nastavak operacije"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr ""
@@ -34173,7 +34258,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr ""
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -34424,6 +34509,12 @@ msgstr ""
 msgid "skipped restricted file"
 msgstr ""
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr ""
@@ -34443,9 +34534,6 @@ msgstr ""
 #, fuzzy
 msgid "snapshot information"
 msgstr "podaci o čvoru"
-
-msgid "snapshot job"
-msgstr ""
 
 #, fuzzy
 msgid "snapshot name"
@@ -34595,6 +34683,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr ""
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "pokreni (prethodno definisan) neaktivni domen"
 
@@ -34612,9 +34703,6 @@ msgstr ""
 
 #, c-format
 msgid "start cell %d out of range (0-%d)"
-msgstr ""
-
-msgid "start job"
 msgstr ""
 
 #, c-format
@@ -35289,6 +35377,36 @@ msgstr ""
 msgid "this storage volume exists already"
 msgstr "ova mreža već postoji"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 msgid "threshold as a scaled number (by default bytes)"
 msgstr ""
 
@@ -35709,6 +35827,9 @@ msgstr ""
 
 msgid "tty console"
 msgstr "tty konzola"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 #, fuzzy
 msgid "tunnelled migration"
@@ -36565,6 +36686,10 @@ msgstr "neočekivana vrsta domena %d"
 msgid "unexpected message type"
 msgstr "neočekivana vrsta domena %d"
 
+#, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unexpected migration status in %s"
 msgstr "neočekivana vrsta domena %d"
@@ -36759,10 +36884,6 @@ msgstr "neočekivana vrsta domena %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr ""
 
-#, fuzzy
-msgid "unexpectedly failed"
-msgstr "neočekivana vrsta domena %d"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -36938,6 +37059,10 @@ msgstr "nepoznata vrsta „%s“"
 #, fuzzy, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "nepoznat „%s“ uređaj za pokretanje"
+
+#, fuzzy, c-format
+msgid "unknown disk type '%s'"
+msgstr "nepoznata vrsta „%s“"
 
 #, fuzzy, c-format
 msgid "unknown driver format value '%s'"
@@ -37616,6 +37741,10 @@ msgstr "magistrala za unos %s nije podržana"
 msgid "unsupported numatune mode: '%d'"
 msgstr "magistrala za unos %s nije podržana"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "magistrala za unos %s nije podržana"
@@ -37725,6 +37854,9 @@ msgstr "Vrsta mreže %d nije podržana"
 msgid "upload file contents to a volume"
 msgstr ""
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "neočekivani podaci „%s“"
@@ -37784,6 +37916,9 @@ msgid "use of host cdrom passthrough"
 msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
+msgstr ""
+
+msgid "use zero-copy mechanism for migrating memory pages"
 msgstr ""
 
 msgid "user"
@@ -38658,6 +38793,9 @@ msgstr ""
 msgid "with redefine, set current snapshot"
 msgstr ""
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr ""
 
@@ -38706,6 +38844,9 @@ msgstr ""
 msgid "xml modification unsupported"
 msgstr ""
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr ""
@@ -38720,6 +38861,9 @@ msgstr ""
 msgid "zPCI %s %o is already reserved"
 msgstr ""
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -38727,6 +38871,22 @@ msgstr ""
 #, fuzzy, c-format
 msgid "{[--%s] <string>}..."
 msgstr "--%s <niska>"
+
+#, fuzzy
+#~ msgid "domain save job"
+#~ msgstr "stanje domena"
+
+#, fuzzy
+#~ msgid "is not active"
+#~ msgstr "neaktivno"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "preseljenje uživo"
+
+#, fuzzy
+#~ msgid "unexpectedly failed"
+#~ msgstr "neočekivana vrsta domena %d"
 
 #, fuzzy
 #~ msgid "Failed to release port %d"
@@ -38783,10 +38943,6 @@ msgstr "--%s <niska>"
 #, fuzzy
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "nepoznata vrsta autorizacije %s"
-
-#, fuzzy
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "nepoznata vrsta „%s“"
 
 #, fuzzy
 #~ msgid "unknown memory snapshot setting '%s'"

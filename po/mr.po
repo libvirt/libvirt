@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2015-02-27 01:03+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Marathi (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1314,9 +1314,6 @@ msgstr ""
 #, fuzzy
 msgid "'ssh' protocol is not yet supported"
 msgstr "fs रूपण %s समर्थीत नाही"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' फक्त 'file' प्रकार वॉल्युमकरिता वैध आहे"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4163,9 +4160,9 @@ msgstr "MAC पत्ता '%s' सह फिजिकल NIC शोधणे �
 msgid "Could not find physical NIC with name '%s'"
 msgstr "नाव '%s' सह फिजिकल NIC शोधणे अशक्य"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "वेरियेबल '%s' करिता मूल्य शोधणे अशक्य"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6850,6 +6847,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "डोमेन शटडाउन हाताळणीकरिता थ्रेड निर्माणकरिता अपयशी"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 msgid "Failed to create thread to handle pool refresh"
 msgstr "पूल ताजे करणे हाताळणीकरिता थ्रेड निर्माण अपयशी"
 
@@ -9061,6 +9061,11 @@ msgstr "यजमान CPU छुपे गुणविशेष पुरव�
 msgid "Host SMBIOS information is not available"
 msgstr "यजमान SMBIOS माहिती अनुपलब्ध"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "यजमान sysinfo एक्सट्रॅक्शन ह्या प्लॅटफॉर्मवर समर्थीत नाही"
 
@@ -9648,6 +9653,9 @@ msgstr "अवैध पत्ता."
 
 msgid "Invalid argument"
 msgstr "अवैध आर्ग्यूमेंट"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10344,6 +10352,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11617,6 +11631,9 @@ msgstr "JSON स्टेट दस्तऐवजात socks क्षेत�
 msgid "Missing source channel attribute for char device"
 msgstr "char साधनकरिता स्रोत channel गुणधर्म आढळले नाही"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "char साधन करिता स्त्रोत यजमान गुणविशेष आढळले नाही"
 
@@ -12568,6 +12585,9 @@ msgstr "स्ट्रिमपासून वाचणे अशक्य"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "सक्रिय साधन %s खंडीत करणे अशक्य"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13534,6 +13554,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14429,13 +14452,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "नेटवर्क प्रकारच्या डिस्ककरिता, डिस्क %s सेट करणे स्वीकार्य नाही"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr "सीडीरॉम किंवा फ्लॉपीकरिता डिस्क 'requisite' सेट करणे स्वीकार्य आहे"
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "ह्या QEMU तर्फे ide डिस्ककरिता wwn ठरवणे समर्थीत नाही"
@@ -15095,20 +15111,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM साधन मार्ग %s अवैध आहे"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20361,6 +20369,10 @@ msgstr "ग्राफिक्स् लिस्टन प्रकार न
 msgid "another backup job is already running"
 msgstr "संवाद आधिपासूनच कार्यरत आहे"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "असमर्थीत संरचना"
@@ -20635,6 +20647,9 @@ msgstr "प्रोटोकॉल %s करिता बॅकिंग स्
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "सिरिअल कंसोलची जोडणी समर्थीत नाही"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20647,15 +20662,14 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "पार्श्वभूमी जॉब"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22122,6 +22136,10 @@ msgstr "rdp पोर्ट %s वाचणे अशक्य"
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "लक्ष्य '%s' वाचणे अशक्य"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -23753,6 +23771,9 @@ msgstr "सध्याचे"
 msgid "current bridge device name"
 msgstr "सध्याचे ब्रिज साधन नाव"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "सध्याचे vcpu प्रमाण कमाल असायला हवे"
 
@@ -24390,6 +24411,13 @@ msgstr "डिस्क सोअर्स मोड स्टोरेज प�
 msgid "disk source path is missing"
 msgstr "डिस्क स्रोत मार्ग आढळले नाही"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "डिस्क %s आढळले नाही"
@@ -24586,8 +24614,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "डोमेन कंट्रोल इंटरफेस स्तर"
 
-msgid "domain core dump job"
-msgstr "डोमेन कोर डम्प जॉब"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "डोमेन डिस्पले जोडणी URI"
@@ -24700,8 +24728,8 @@ msgstr "डोमेन नाव किंवा uuid"
 msgid "domain name, id or uuid"
 msgstr "डोमेन नाव, id किंवा uuid"
 
-msgid "domain save job"
-msgstr "डोमेन सेव्ह जॉब"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "डोमेन स्नॅपशॉट XML"
@@ -25525,9 +25553,6 @@ msgstr "Xen syscall %s अपयशी"
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s अपयशी"
 
-msgid "failed due to I/O error"
-msgstr "I/O त्रुटीमुळे अपयशी"
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "क्षमता मिळवण्यास अपयशी"
@@ -26304,6 +26329,9 @@ msgstr ""
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "पोर्ट क्रमांक '%s' वाचण्यास अपयशी"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "qemu क्षमता cpus वाचण्यास अपयशी"
@@ -27984,6 +28012,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "अंतर्गत चूक "
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr "intr:"
 
@@ -28791,9 +28822,6 @@ msgstr "ipset नावात अवैध अक्षरे समाविष
 msgid "ipset name is too long"
 msgstr "ipset नाव खूपच लांब आहे"
 
-msgid "is not active"
-msgstr "सुरू नाही"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -28811,8 +28839,29 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "nvram साधन ह्या QEMU बाइनरितर्फे समर्थीत नाही"
 
-msgid "job"
-msgstr "जॉब"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "job type '%s' does not support pivot"
@@ -29378,6 +29427,9 @@ msgstr "%s खंडाचे निर्माण समर्थीत ना
 
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr "एका टप्प्याऐवजी, वेळसमाप्ति किंवा इंटरप्ट होईपर्यंत लूप करा"
+
+msgid "lower boundary for worker thread pool"
+msgstr ""
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
@@ -29948,9 +30000,8 @@ msgstr "माइग्रेशन बँडविड्थ मर्याद�
 msgid "migration canceled"
 msgstr "माइग्रेशन रद्द केले"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "माइग्रेशन"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -29960,14 +30011,21 @@ msgstr "'%s' ची आकडेवारी अपयशी"
 msgid "migration of disk %s failed: %s"
 msgstr "कार्य असफल: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "migration out job"
-msgstr "माइग्रेशन"
+msgid "migration out"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30001,9 +30059,6 @@ msgstr "स्थानांतरन सक्रिय होते, पर�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "स्थानांतरन सक्रिय होते, परंतु RAM 'transferred' डाटा आढळले नाही"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "स्थानांतरन सक्रिय होते, परंतु RAM माहिती सेट केली नव्हती"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31035,6 +31090,9 @@ msgstr "ड्राइव्ह हॉटप्लग समर्थीत न
 
 msgid "model type"
 msgstr "मॉडल प्रकार"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
@@ -32427,6 +32485,10 @@ msgstr "फक्त एकच वॉचडॉग साधण समर्थ�
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "scsi यजमान साधनकरिता फक्त sgio समर्थीत आहे"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33004,6 +33066,9 @@ msgstr "साधन '%s' चे दीर्घस्थायी डिटॅ�
 msgid "persistent detach of device is not supported"
 msgstr "साधनाचे पर्सिस्टंट जोडणी अशक्य समर्थीत नाही"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "साधन '%s' ची दीर्घस्थायी सुधारणा समर्थीत नाही"
@@ -33153,6 +33218,10 @@ msgstr "माइग्रेशन बँडविड्थ मर्याद�
 #, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "लक्ष्य यजमानतर्फे ऑफलाइन स्थानांतरन समर्थीत नाही"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34021,6 +34090,9 @@ msgstr "स्वच्छ करा नोड साधन"
 msgid "reset the domain after core dump"
 msgstr "कोर डम्पनंतर डोमेनला मूळस्थितीत आणा"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "खंडला पुनःआकार द्या"
 
@@ -34057,6 +34129,9 @@ msgstr "परिणाम खूप मोठे आहे: %llu"
 msgid "resume a domain"
 msgstr "डोमेन पुन्हा चालू करा"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "पुन्हप्रारंभ कार्यपद्धती अपयशी"
 
@@ -34065,6 +34140,16 @@ msgstr "dump अपयशी झाल्यनंतर पुनः सुर�
 
 msgid "resuming after snapshot failed"
 msgstr "स्नॅपशॉट अपयशी झाल्यास पुनःसुरू करत आहे"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr ""
@@ -34451,7 +34536,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "डोमेन सस्पेंड करतेवेळी त्रुटी"
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -34702,6 +34787,12 @@ msgstr "विना-ॲबसोल्युट मार्ग वगळले
 msgid "skipped restricted file"
 msgstr "प्रतिबंधित फाइल वगळली"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "स्नॅपशॉट %s सूचीतून बाहेर झाले"
@@ -34720,10 +34811,6 @@ msgstr "स्नॅपशॉट '%s' कडे डोमेन '%s' रोल�
 
 msgid "snapshot information"
 msgstr "स्नॅपशॉट माहिती"
-
-#, fuzzy
-msgid "snapshot job"
-msgstr "स्नॅपशॉट नाव"
 
 msgid "snapshot name"
 msgstr "स्नॅपशॉट नाव"
@@ -34876,6 +34963,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "QEMU बाइनरिमार्फत splash वेळसमाप्ति समर्थीत नाही"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "निष्क्रीय डोमेन (आधी व्याख्यीत) सुरू करा"
 
@@ -34894,10 +34984,6 @@ msgstr "वास्तविक यजमान संवाद सुरू �
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "सुरुवातीचा कप्पा %d क्षेत्र (0-%d) च्या बाहेर आहे"
-
-#, fuzzy
-msgid "start job"
-msgstr "सुरू केले"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -35589,6 +35675,36 @@ msgstr "डिस्क साधन '%s' स्नॅपशॉटकरित�
 msgid "this storage volume exists already"
 msgstr "हे स्टोरेज वॉल्युम आधिपासूनच अस्तित्वात आहे"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "खंडाचे आकार, स्केल्ड् इंटिजर स्वरूपात (पूर्वनिर्धारित बाइट्स्)"
@@ -36021,6 +36137,9 @@ msgstr "धोकादायक पूर्वस्थितीकरित�
 
 msgid "tty console"
 msgstr "tty कंसोल"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "टनल्ड् स्थानांतरन"
@@ -36861,6 +36980,10 @@ msgid "unexpected message type"
 msgstr "अनपेक्षित संदेश प्रकार %d"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "%s मधील अनपेक्षीत स्थानांतरन स्थिती"
 
@@ -37055,9 +37178,6 @@ msgstr "अनपेक्षीत वॉचडॉग मॉडेल %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr "अनपेक्षीत शून्य/नकाररात्मक लांबीकरिता विनंती %lld"
 
-msgid "unexpectedly failed"
-msgstr "अनपेक्षितरित्या अपयशी"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37231,6 +37351,10 @@ msgstr "अपरिचीत साधन प्रकार '%s'"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "अपरिचीत डिस्क स्नॅपशॉट ड्राइव्हर '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "अपरिचीत डिस्क प्रकार '%s'"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -37901,6 +38025,10 @@ msgstr "असमर्थीत घटना ID %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "असमर्थीत numatune मोड: '%d'"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "असमर्थीत rtc टाइमर ट्रॅक '%s'"
@@ -38008,6 +38136,9 @@ msgstr "साधन '%s'ची लाइव्ह सुधारणा सम�
 msgid "upload file contents to a volume"
 msgstr "वॉल्युमकरिता फाइल अंतर्भुत माहिती अपलोड करा"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime मूल्य '%s' मध्ये अनपेक्षित रूपण आढळले"
@@ -38068,6 +38199,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "पिअर-टु-पिअर माइग्रेशनकरिता virDomainMigrateToURI3चा वापर करा"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "वापरकर्ता"
@@ -38959,6 +39093,9 @@ msgstr "--wait सह, रद्द करा ते समाप्ति प�
 msgid "with redefine, set current snapshot"
 msgstr "पुनःठरवणेतेळी, सध्याचे स्नॅपशॉट ठरवा"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "राइट I/O कार्ये मर्यादा प्रत्येक सेकंद"
 
@@ -39009,6 +39146,9 @@ msgstr "स्वपरूप बदलण्याजोगी xml डेटा
 msgid "xml modification unsupported"
 msgstr "xml संपादित करणे असमर्थीत"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime मूल्य '%s' मध्ये अनपेक्षित रूपण आढळले"
@@ -39023,6 +39163,9 @@ msgstr "होय"
 msgid "zPCI %s %o is already reserved"
 msgstr "बंद कॉलबॅक आधिपासूनच नोंदणी झाली"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr "डिस्क %s करिता blockdev फ्लॅगसाठी विनंती केली, परंतु फाइल '%s' ब्लॉक साधन नाही"
@@ -39030,6 +39173,60 @@ msgstr "डिस्क %s करिता blockdev फ्लॅगसाठी 
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy' फक्त 'file' प्रकार वॉल्युमकरिता वैध आहे"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "वेरियेबल '%s' करिता मूल्य शोधणे अशक्य"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "नेटवर्क प्रकारच्या डिस्ककरिता, डिस्क %s सेट करणे स्वीकार्य नाही"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr "सीडीरॉम किंवा फ्लॉपीकरिता डिस्क 'requisite' सेट करणे स्वीकार्य आहे"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "पार्श्वभूमी जॉब"
+
+#~ msgid "domain core dump job"
+#~ msgstr "डोमेन कोर डम्प जॉब"
+
+#~ msgid "domain save job"
+#~ msgstr "डोमेन सेव्ह जॉब"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "I/O त्रुटीमुळे अपयशी"
+
+#~ msgid "is not active"
+#~ msgstr "सुरू नाही"
+
+#~ msgid "job"
+#~ msgstr "जॉब"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "माइग्रेशन"
+
+#, fuzzy
+#~ msgid "migration out job"
+#~ msgstr "माइग्रेशन"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "स्थानांतरन सक्रिय होते, परंतु RAM माहिती सेट केली नव्हती"
+
+#, fuzzy
+#~ msgid "snapshot job"
+#~ msgstr "स्नॅपशॉट नाव"
+
+#, fuzzy
+#~ msgid "start job"
+#~ msgstr "सुरू केले"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "अनपेक्षितरित्या अपयशी"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: fd %d चे प्रवेश मोड ओळखणे अशक्य"
@@ -39099,9 +39296,6 @@ msgstr "{[--%s] <string>}..."
 
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "अपरिचीत डिस्क डिस्क स्नॅपशॉट प्रकार '%s'"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "अपरिचीत डिस्क प्रकार '%s'"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "अपरिचीत मेमरी स्नॅपशॉट सेटिंग '%s'"

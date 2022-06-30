@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2015-03-04 01:18+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Tamil (http://www.transifex.com/projects/p/libvirt/language/"
@@ -1297,9 +1297,6 @@ msgstr ""
 #, fuzzy
 msgid "'ssh' protocol is not yet supported"
 msgstr "fs வடிவமைப்பு %s ஆதரிக்கப்படாது"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' ஆனது 'file' வகை பிரிவகத்திற்கு மட்டுமே செல்லும்"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4209,9 +4206,9 @@ msgstr "'%s” என்ற MAC முகவரி கொண்ட பௌதி�
 msgid "Could not find physical NIC with name '%s'"
 msgstr "'%s' என்ற பெயர் கொண்ட பௌதிக NIC ஐக் கண்டறிய முடியவில்லை"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "மாறி '%s' க்கு ஒரு மதிப்பைக் கண்டுபிடிக்க முடியவில்லை"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6952,6 +6949,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ஒரு டொமைன் ஷட்டவுனைக் கையாள ஒரு தொடரிழையை உருவாக்க முடியவில்லை"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ஒரு டொமைன் ஷட்டவுனைக் கையாள ஒரு தொடரிழையை உருவாக்க முடியவில்லை"
@@ -9182,6 +9182,11 @@ msgstr "வழங்கி CPU ஆனது தடுக்கப்பட்ட
 msgid "Host SMBIOS information is not available"
 msgstr "வழங்கி SMBIOS தகவல் கிடைக்கவில்லை"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "இந்த இயங்குதளத்தில் வழங்கி sysinfo பிரித்தெடுத்தலுக்கு ஆதரவில்லை"
 
@@ -9786,6 +9791,9 @@ msgstr "தவறான  முகவரி."
 
 msgid "Invalid argument"
 msgstr "தவறான அளவுரு"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10493,6 +10501,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11776,6 +11790,9 @@ msgstr "JSON நிலை ஆவணத்தில் socks புலம் வ�
 msgid "Missing source channel attribute for char device"
 msgstr "char சாதனத்திற்கு மூல சேனல் பண்புக்கூறு விடுபட்டுள்ளது"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "எழுத்து சாதனத்திற்கு மூல புரவலன் மதிப்பு விடுபட்டுள்ளது"
 
@@ -12734,6 +12751,9 @@ msgstr "ஸ்ட்ரீமிலிருந்து வாசிக்க �
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "செயலில் உள்ள சாதனம் %s ஐக் கண்டறியவில்லை"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13730,6 +13750,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14656,15 +14679,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "பிணைய வகை வட்டுக்கு வட்டு %s ஐ அமைக்க அனுமட்ஹியில்லை"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
-"cdrom அலல்து நெகிழ்வட்டு ஆகியவற்றுக்கு மட்டுமே வட்டு 'requisite' ஐ அமைத்தலுக்கு  "
-"அனுமதியுண்டு"
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "இந்த QEMU இல் ide வட்டுக்கு wwn ஐ அமைக்க ஆதரவில்லை"
@@ -15342,20 +15356,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM சாதன பாதை %s ஆனது செல்லாதது"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20682,6 +20688,10 @@ msgstr "கிராஃபிக்ஸ் லிசன் வகை குறி
 msgid "another backup job is already running"
 msgstr "இடைமுகம் ஏற்கனவே இயக்கத்தில் உள்ளது"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "துணைபுரியாத கட்டமைப்பு"
@@ -20962,6 +20972,9 @@ msgstr "கனு அமைப்பு நினைவக அளவுருக
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "தொடர் பணிமுனையத்தை இணைக்க ஆதரவில்லை"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20974,15 +20987,14 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "பின்புலப் பணி"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22469,6 +22481,10 @@ msgstr "rdp துறை %sஐ பகுக்க முடியவில்ல
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "இலக்கு '%s' ஐப் பாகுபடுத்த முடியவில்லை"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -24122,6 +24138,9 @@ msgstr "நடப்பு"
 msgid "current bridge device name"
 msgstr "நடப்பு பிரிட்ஜ் சாதனத்தின் பெயர்"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "நடப்பு vcpu எண்ணிக்கை அதிகபட்சம் இதற்கு சமமாக இருக்க வேண்டும்"
 
@@ -24764,6 +24783,13 @@ msgstr ""
 msgid "disk source path is missing"
 msgstr "வட்டு மூலப்பாதை விடுபட்டுள்ளது"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "வட்டு %s காணப்படவில்லை"
@@ -24965,8 +24991,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "டொமைன் கட்டுப்பாடு இடைமுக நிலை"
 
-msgid "domain core dump job"
-msgstr "டொமைன் கோர் டம்ப் பணி"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "டொமைன் காட்சி இணைப்பு URI"
@@ -25079,8 +25105,8 @@ msgstr "செயற்களப் பெயர் அல்லது uuid"
 msgid "domain name, id or uuid"
 msgstr "செயற்களத்தின் பெயர், id or uuid"
 
-msgid "domain save job"
-msgstr "டொமைன் சேமித்தல் பணி"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "டொமைன் ஸ்னாப்ஷாட் XML"
@@ -25908,9 +25934,6 @@ msgstr "செயலிழக்கப்பட்ட Xen syscall %s "
 msgid "failed Xen syscall %s"
 msgstr "செயலிழக்கப்பட்ட Xen syscall %s "
 
-msgid "failed due to I/O error"
-msgstr "I/O பிழையின் காரணமாகத் தோல்வியடைந்தது"
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "செயல்திறனை பெற முடியவில்லை"
@@ -26690,6 +26713,9 @@ msgstr ""
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "துறை எண் '%s' ஐப் பாகுபடுத்துவதில் தோல்வியடைந்தது"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "qemu திறப்பாடுகள் cpus ஐப் பாகுபடுத்துவதில் தோல்வி"
@@ -28393,6 +28419,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "உள்ளார்ந்த பிழை"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -29209,9 +29238,6 @@ msgstr "ipset பெயரில் தவறான எழுத்துக்�
 msgid "ipset name is too long"
 msgstr "ipset பெயர் மிக நீளமாக உள்ளது"
 
-msgid "is not active"
-msgstr "செயலில் இல்லை"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -29229,8 +29255,29 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "இந்த QEMU பைனரி nvram சாதனத்தை ஆதரிக்காது"
 
-msgid "job"
-msgstr "பணி"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "job type '%s' does not support pivot"
@@ -29812,6 +29859,9 @@ msgstr "%s பிரிவகங்களை உருவாக்க ஆதர�
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 
+msgid "lower boundary for worker thread pool"
+msgstr ""
+
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
 
@@ -30384,9 +30434,8 @@ msgstr "MiB/s இல் இடப்பெயர்ப்பு பட்டை�
 msgid "migration canceled"
 msgstr "இடப்பெயர்ப்பு ரத்துசெய்யப்பட்டது"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "இடப்பெயர்ப்பு"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -30396,14 +30445,21 @@ msgstr "'%s' ஐ துவக்க முடியவில்லை"
 msgid "migration of disk %s failed: %s"
 msgstr "செயற்பாடு செயலிழக்கப்பட்டது: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "migration out job"
-msgstr "இடப்பெயர்ப்பு"
+msgid "migration out"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30437,9 +30493,6 @@ msgstr "நகருதல் செயல்படுத்தப்பட்�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "நகருதல் செயல்படுத்தப்பட்டது, ஆனால் RAM 'இடமாற்றம்' தரவு விடுபட்டது"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "நகருதல் செயல்படுத்தப்பட்டது, ஆனால் RAM தகவல் அமைக்கப்படவில்லை"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31476,6 +31529,9 @@ msgstr "இயக்கி ஹாட்பிளக்குக்கு ஆத�
 
 msgid "model type"
 msgstr "மாடல் வகை"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
@@ -32887,6 +32943,10 @@ msgstr "ஒரே ஒரு watchdog சாதனம் துணைபுரி
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "scsi புரவலன் சாதனத்திற்கு மட்டுமே sgio ஆதரிக்கப்படும்"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33471,6 +33531,9 @@ msgstr "சாதனம் '%s' ஐ நிரந்தரமாக பிரி�
 msgid "persistent detach of device is not supported"
 msgstr "சாதனத்தை ஒரே நிலையாக பிரித்தலுக்கு ஆதரவில்லை"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "சாதனம் '%s' ஐ நிரந்தரமாக புதுப்பிக்க ஆதரவில்லை"
@@ -33623,6 +33686,10 @@ msgstr "MiB/s இல் இடப்பெயர்ப்பு பட்டை�
 #, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "இலக்கு வழங்கி ஆஃப்லைன் இடப்பெயர்ப்பை ஆதரிக்கவில்லை"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34509,6 +34576,9 @@ msgstr "முனை சாதனத்தை மறுஅமைக்கவு�
 msgid "reset the domain after core dump"
 msgstr "கோர் டம்பிற்கு பின் டொமைனை மீட்டமை"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "ஒரு பிரிவகத்தை மறுஅளவிடுக"
 
@@ -34545,6 +34615,9 @@ msgstr "முடிவு மிகப் பெரியது: %llu"
 msgid "resume a domain"
 msgstr "ஒரு செயற்களத்தை மீண்டும் தொடங்குகிறது"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "தொடர்ந்த செயற்பாடு செயலிழக்கப்பட்டது"
 
@@ -34553,6 +34626,16 @@ msgstr "டம்ப் தோல்வியுற்ற பின் தொட
 
 msgid "resuming after snapshot failed"
 msgstr "ஸ்னாப்ஷாட்டுக்குப் பிறகு மீண்டும் தொடங்குதல் தோல்வியுற்றது"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr ""
@@ -34943,7 +35026,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "டொமைனை இடைநிறுத்துகையில் பிழை"
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -35199,6 +35282,12 @@ msgstr "முழுமையல்லாத பாதைகளைத் தவ�
 msgid "skipped restricted file"
 msgstr "தடைசெய்யப்பட்ட கோப்பைத் தவிர்த்தது"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "பட்டியலில் இருந்து ஸ்னாப்ஷாட் %s மறைந்துவிட்டது"
@@ -35217,10 +35306,6 @@ msgstr "ஸ்னாப்ஷாட் '%s' இல் டொமைன் '%s' �
 
 msgid "snapshot information"
 msgstr "ஸ்னாப்ஷாட் தகவல்"
-
-#, fuzzy
-msgid "snapshot job"
-msgstr "ஸ்னாப்ஷாட்டின் பெயர்"
 
 msgid "snapshot name"
 msgstr "ஸ்னாப்ஷாட்டின் பெயர்"
@@ -35383,6 +35468,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "இந்த QEMU பைனரியில் ஸ்பாஷ் நேர முடிவுக்கு ஆதரவில்லை"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "ஒரு செயலற்ற செயற்களத்தை ஆரம்பிக்கவும் (முன்பு வரையறுக்கப்பட்டது)"
 
@@ -35401,10 +35489,6 @@ msgstr "ஒரு பருநிலை புரவலன் முகப்ப
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "ஆரம்ப செல் %d வரம்புக்கு வெளியே உள்ளது (0-%d)"
-
-#, fuzzy
-msgid "start job"
-msgstr "தொடங்கப்பட்டது"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -36108,6 +36192,36 @@ msgstr "வட்டு சாதனம் '%s' ஸ்னாப்ஷாட்�
 msgid "this storage volume exists already"
 msgstr "இந்த சேமிப்பக தொகுதி ஏற்கனவே உள்ளது"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "vol இன் அளவு, மறுஅளவீடு செய்யப்பட்ட முழு எண்ணாக (முன்னிருப்பு பைட்டுகள்)"
@@ -36553,6 +36667,9 @@ msgstr "ஆபத்தான நிகழ்வுகளில் கடின�
 
 msgid "tty console"
 msgstr "tty பணியகம்"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "வளைவு இடம்பெயர்வு"
@@ -37396,6 +37513,10 @@ msgid "unexpected message type"
 msgstr "எதிர்பார்க்காத செய்தி வகை %d"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "%sல் எதிர்பாராத இடப்பெயர்வு நிலை "
 
@@ -37590,9 +37711,6 @@ msgstr "எதிர்பார்க்காத watchdog மாதிரி %
 msgid "unexpected zero/negative length request %lld"
 msgstr "எதிர்பாராத பூச்சிய/எதிர்க்குறி நீளக் கோரிக்கை %lld"
 
-msgid "unexpectedly failed"
-msgstr "எதிரிபாராமல் தோல்வியடைந்தது"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37766,6 +37884,10 @@ msgstr "தெரியாத சாதன வகை '%s'"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் இயக்கி '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "தெரியாத வட்டு வகை '%s'"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -38439,6 +38561,10 @@ msgstr "ஆதரவில்லாத நிகழ்வு ஐடி %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "ஆதரிக்கப்படாத numatune பயன்முறை: '%d'"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "ஆதரிக்கப்படாத rtc டைமர் டிராக் '%s'"
@@ -38546,6 +38672,9 @@ msgstr "சாதனம் '%s' இன் நேரடி புதுப்ப�
 msgid "upload file contents to a volume"
 msgstr "கோப்பின் உள்ளடக்கத்தை ஒரு பிரிவகத்திற்குப் பதிவேற்றவும்"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime மதிப்பு '%s' ஆனது எதிர்பார்க்காத வடிவத்திலுள்ளது"
@@ -38606,6 +38735,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "பீர் - பீர் இடப்பெயர்ப்புக்கு virDomainMigrateToURI3 ஐப் பயன்படுத்தவும்"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "பயனர்"
@@ -39506,6 +39638,9 @@ msgstr "--wait ஐப் பயன்படுத்தினால், ரத�
 msgid "with redefine, set current snapshot"
 msgstr "மறுவரையறையின் போது நடப்பு ஸ்னாப்ஷாட்டை அமை"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "ஒரு வினாடிக்கான எழுதுதல் I/O செயல்பாடுகள் வரம்பு"
 
@@ -39556,6 +39691,9 @@ msgstr "ஏற்ற xml தரவு கோப்பு"
 msgid "xml modification unsupported"
 msgstr "xml மாற்றம் செய்தலுக்கு ஆதரவில்லை"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime மதிப்பு '%s' ஆனது எதிர்பார்க்காத வடிவத்திலுள்ளது"
@@ -39570,6 +39708,9 @@ msgstr "ஆம்"
 msgid "zPCI %s %o is already reserved"
 msgstr "ஏற்கனவே ஒரு குளோஸ் கால்பேக் பதிவு செய்யப்பட்டுள்ளது"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -39577,6 +39718,62 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy' ஆனது 'file' வகை பிரிவகத்திற்கு மட்டுமே செல்லும்"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "மாறி '%s' க்கு ஒரு மதிப்பைக் கண்டுபிடிக்க முடியவில்லை"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "பிணைய வகை வட்டுக்கு வட்டு %s ஐ அமைக்க அனுமட்ஹியில்லை"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr ""
+#~ "cdrom அலல்து நெகிழ்வட்டு ஆகியவற்றுக்கு மட்டுமே வட்டு 'requisite' ஐ அமைத்தலுக்கு  "
+#~ "அனுமதியுண்டு"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "பின்புலப் பணி"
+
+#~ msgid "domain core dump job"
+#~ msgstr "டொமைன் கோர் டம்ப் பணி"
+
+#~ msgid "domain save job"
+#~ msgstr "டொமைன் சேமித்தல் பணி"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "I/O பிழையின் காரணமாகத் தோல்வியடைந்தது"
+
+#~ msgid "is not active"
+#~ msgstr "செயலில் இல்லை"
+
+#~ msgid "job"
+#~ msgstr "பணி"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "இடப்பெயர்ப்பு"
+
+#, fuzzy
+#~ msgid "migration out job"
+#~ msgstr "இடப்பெயர்ப்பு"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "நகருதல் செயல்படுத்தப்பட்டது, ஆனால் RAM தகவல் அமைக்கப்படவில்லை"
+
+#, fuzzy
+#~ msgid "snapshot job"
+#~ msgstr "ஸ்னாப்ஷாட்டின் பெயர்"
+
+#, fuzzy
+#~ msgid "start job"
+#~ msgstr "தொடங்கப்பட்டது"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "எதிரிபாராமல் தோல்வியடைந்தது"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: fd %d இன் அணுகல் பயன்முறையைத் தீர்மானிக்க முடியவில்லை"
@@ -39648,9 +39845,6 @@ msgstr "{[--%s] <string>}..."
 
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "தெரியாத வட்டு ஸ்னாப்ஷாட் வகை '%s'"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "தெரியாத வட்டு வகை '%s'"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "தெரியாத நினைவக ஸ்னாப்ஷாட் அமைவு '%s'"

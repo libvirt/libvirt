@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2015-02-27 10:04+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: Malayalam (http://www.transifex.com/projects/p/libvirt/"
@@ -1252,9 +1252,6 @@ msgstr ""
 #, fuzzy
 msgid "'ssh' protocol is not yet supported"
 msgstr "fs ശൈലി %s 'name' പിന്തുണയ്ക്കുന്നില്ല"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy', 'file' തരത്തിലുള്ള വോള്യത്തില്‍ മാത്രം ശരിയാകുന്നു"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4139,9 +4136,9 @@ msgstr "'%s' എന്ന മാക് വിലാസമുള്ള ഫിസ�
 msgid "Could not find physical NIC with name '%s'"
 msgstr "'%s' പേരുള്ള ഫിസിക്കല്‍ എന്‍ഐസി കണ്ടുപിടിയ്ക്കുവാന്‍ സാധ്യമല്ല"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്‍ '%s' ലഭ്യമായില്ല"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6867,6 +6864,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "ഹോസ്റ്റ് മയങ്ങാനായി ത്രെഡ് സൃഷ്ടിയ്ക്കുന്നതില്‍ പരാജയം"
@@ -9107,6 +9107,11 @@ msgstr "ഹോസ്റ്റ് സിപിയു നിഷേധിച്ച 
 msgid "Host SMBIOS information is not available"
 msgstr "ഹോസ്റ്റ് SMBIOS വിവരങ്ങള്‍ ലഭ്യമല്ല"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "ഹോസ്റ്റിന്റെ സിസിന്‍ഫോ തപ്പിയെടുക്കുന്നതു് ഈ പ്ലാറ്റ്ഫോമില്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
@@ -9703,6 +9708,9 @@ msgstr "അസാധുവായ വിലാസം."
 
 msgid "Invalid argument"
 msgstr "അസാധുവായ ആര്‍ഗ്യുമെന്‍റ്"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10403,6 +10411,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11687,6 +11701,9 @@ msgstr "JSON  അവസ്ഥയുടെ രേഖയില്‍ സോക്�
 msgid "Missing source channel attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "ക്യാറക്ടര്‍ ഡിവൈസിനുളള ലഭ്യമല്ലാത്ത ഉറവിടത്തിന്റെ ഹോസ്റ്റ് വിശേഷത"
 
@@ -12643,6 +12660,9 @@ msgstr "സ്ട്രീമില്‍ നിന്നും ലഭ്യമ�
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "%s എന്ന സജീവോപകരണം വേര്‍പ്പെടുത്തുന്നില്ല"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13632,6 +13652,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14549,13 +14572,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "നെറ്റ്‌വര്‍ക്ക് തരത്തിലുള്ള ഡിസ്കിനു് %s ഡിസ്ക് സജ്ജമാക്കുന്നതു് അനുവദിയ്ക്കുന്നില്ല"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr "ഡിസ്ക് 'ആവശ്യം' സജ്ജമാക്കുന്നതു് സിഡിറോം അല്ലെങ്കില്‍ ഫ്ലോപ്പിയ്ക്കു് മാത്രമേ അനുവദിയ്ക്കുന്നുള്ളൂ"
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "ഒരു ഐഡിഇ ഡിസ്കിനു് wwn സജ്ജമാക്കുന്നതു് ഈ QEMU പിന്തുണയ്ക്കുന്നില്ല"
@@ -15227,20 +15243,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "ടിപിഎം ഡിവൈസ് പാഥ് %s തെറ്റാണു്"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20575,6 +20583,10 @@ msgstr "ഗ്രാഫിക്സ് listen തരം നല്‍കേണ്
 msgid "another backup job is already running"
 msgstr "ഡൊമെയിന്‍ നിലവില്‍ പ്രവര്‍ത്തിയ്ക്കുന്നു"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "പിന്തുണയില്ലാത്ത ക്രമീകരണം"
@@ -20857,6 +20869,9 @@ msgstr "നോഡ് സെറ്റ് മെമ്മറി പരാമീറ
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "സീരിയല്‍ കണ്‍സോള്‍ ചേര്‍ക്കുന്നതു് പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20869,15 +20884,14 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "പശ്ചാത്തലത്തിലുള്ള ജോലി"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22368,6 +22382,10 @@ msgstr "rdp പോര്‍ട്ട് %s പാഴ്സ് ചെയ്യു
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "ലക്ഷ്യം '%s' പാഴ്സ് ചെയ്യുവാന്‍ സാധ്യമല്ല"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -24018,6 +24036,9 @@ msgstr "ഇപ്പോഴത്തെ"
 msgid "current bridge device name"
 msgstr "ഇപ്പോഴത്തെ ബ്രിഡ്ജ് ഡിവൈസ് നാമം"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "ഇപ്പോഴത്തെ vcpu മൂല്യം  പരമാവധിമൂല്യത്തിനു ചേരണം  "
 
@@ -24657,6 +24678,13 @@ msgstr "സംഭരണ പൂള്‍ iscsi തരമാണെങ്കില�
 msgid "disk source path is missing"
 msgstr "ഡിസ്ക് ഉറവിട വഴി കാണ്മാനില്ല"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "ഡിസ്ക് %s ലഭ്യമല്ല"
@@ -24859,8 +24887,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "ഡൊമെയിന്‍ നിയന്ത്രണ ഇന്റര്‍ഫെയിസ് അവസ്ഥ"
 
-msgid "domain core dump job"
-msgstr "ഡൊമെയിന്‍ കോര്‍ ഡമ്പ് ജോലി"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "ഡിസ്പ്ളേ കണക്ഷന്‍ URI കാണിക്കുക"
@@ -24974,8 +25002,8 @@ msgstr "ഡൊമെയിന്‍ പേര് അല്ലെങ്കില�
 msgid "domain name, id or uuid"
 msgstr "ഡൊമെയിന്‍ പേര്, id അല്ലെങ്കില്‍ uuid"
 
-msgid "domain save job"
-msgstr "ഡൊമെയിന്‍ ജോലി സൂക്ഷിയ്ക്കുന്നു"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "ഡൊമൈന്‍ സ്നാപ്പ്ഷോട്ട് XML"
@@ -25794,9 +25822,6 @@ msgstr "Xen syscall %s പരാജയപ്പെട്ടു"
 msgid "failed Xen syscall %s"
 msgstr "Xen syscall %s പരാജയപ്പെട്ടു"
 
-msgid "failed due to I/O error"
-msgstr "ഐ/ഒ പിശകു് കാരണം പരാജയപ്പെട്ടു"
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "സവിശേഷതകള്‍ ലഭ്യമാക്കുവാന്‍ സാധ്യമായില്ല"
@@ -26582,6 +26607,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "പോര്‍ട്ട് നംബര്‍ പാഴ്സ് ചെയ്യുന്നതില്‍ പിശക്"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 #, fuzzy
 msgid "failed to parse qemu capabilities cpus"
@@ -28288,6 +28316,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "ആന്തരിക പിശക് "
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -29104,9 +29135,6 @@ msgstr "ipset പേരില്‍ അസാധുവായ അക്ഷരങ�
 msgid "ipset name is too long"
 msgstr "ipset നാമം വളരെ വലുതു്"
 
-msgid "is not active"
-msgstr "സജീവമല്ല"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -29124,8 +29152,29 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
-msgid "job"
-msgstr "ജോലി"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "job type '%s' does not support pivot"
@@ -29708,6 +29757,9 @@ msgstr "%s വോള്യങ്ങള്‍ തയ്യാറാക്കു�
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 
+msgid "lower boundary for worker thread pool"
+msgstr ""
+
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
 
@@ -30274,9 +30326,8 @@ msgstr "MiB/s ല്‍ ഉള്ള മെഗ്രേഷന്‍ ബാന്
 msgid "migration canceled"
 msgstr "നീക്കുന്നതു് റദ്ദാക്കപ്പെട്ടിരിക്കുന്നു"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "നീക്കുന്നതു് റദ്ദാക്കപ്പെട്ടിരിക്കുന്നു"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -30286,14 +30337,21 @@ msgstr "'%s'-ന്റെ സ്റ്റാറ്റ് പരാജയപ്�
 msgid "migration of disk %s failed: %s"
 msgstr "പ്രക്രിയ പരാജയപ്പെട്ടു: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "migration out job"
-msgstr "മറ്റൊരിടത്തേക്ക് നീക്കം ചെയ്യുന്നു"
+msgid "migration out"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30327,9 +30385,6 @@ msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പ�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പക്ഷേ നീക്കിയ RAM ഡേറ്റാ ലഭ്യമല്ല"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പക്ഷേ RAM വിവരം ലഭ്യമല്ല"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31374,6 +31429,9 @@ msgstr "ഡ്രൈവ് hotplug പിന്തുണയ്ക്കുന്
 
 msgid "model type"
 msgstr "മോഡല്‍ തരം"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
@@ -32781,6 +32839,10 @@ msgstr "ഒറ്റ വാച്ച്ഡോഗ് ഡിവൈസ് മാത
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "scsi ഹോസ്റ്റ് ഡിവൈസിനു് മാത്രമേ sgio പിന്തുണയ്ക്കുന്നുള്ളൂ"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33369,6 +33431,9 @@ msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ ഡീറ്റാച�
 msgid "persistent detach of device is not supported"
 msgstr "ഉപകരണത്തിന്റെ സ്ഥിരമായ വേര്‍പെടുത്തലിനുള്ള പിന്തുണ ലഭ്യമല്ല"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "ഡിവൈസ് '%s' സ്ഥിരമായ പരിഷ്കരണത്തിനുള്ള പിന്തുണ ലഭ്യമല്ല"
@@ -33517,6 +33582,10 @@ msgstr "MiB/s ല്‍ ഉള്ള മെഗ്രേഷന്‍ ബാന്
 #, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "ലക്ഷ്യസ്ഥാനത്തുള്ള ഹോസ്റ്റ് ഓഫ്‌ലൈന്‍ മൈഗ്രേഷന്‍ പിന്തുണയ്ക്കുന്നില്ല"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34396,6 +34465,9 @@ msgstr "നോഡ് ഡിവൈസ് വീണ്ടും സജ്ജമാ
 msgid "reset the domain after core dump"
 msgstr "കോര്‍ ഡമ്പിന് ശേഷം ഡൊമൈന്‍ വീണ്ടും തുടങ്ങുക"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "വോള്യത്തിന്റെ വലിപ്പം മാറ്റുക"
 
@@ -34432,6 +34504,9 @@ msgstr "ഫലം വളരെ വലുതു്: %llu"
 msgid "resume a domain"
 msgstr "ഒരു ഡൊമെയിന്‍ വീണ്ടും ആരംഭിക്കുക"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "പ്രക്രിയ വീണ്ടും ആരംഭിക്കുന്നതു് പരാജയപ്പെട്ടു"
 
@@ -34440,6 +34515,16 @@ msgstr "ഡംപിനു് ശേഷം വീണ്ടും ആരംഭി
 
 msgid "resuming after snapshot failed"
 msgstr "സ്നാപ്പ്ഷോട്ടുകള്‍ പരാജയപ്പെട്ട ശേഷം വീണ്ടും ആരംഭിയ്ക്കുന്നു"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr ""
@@ -34829,7 +34914,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "ഡൊമെയിന്‍ സസ്പെന്‍ഡ് ചെയ്യുമ്പോള്‍ പിശക്"
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -35081,6 +35166,12 @@ msgstr "നോണ്‍-ആബ്സ്യൂട്ട് ഉപേക്ഷി�
 msgid "skipped restricted file"
 msgstr "നിബന്ധനകളുള്ള ഫയല്‍ ഉപേക്ഷിച്ചിരിയ്ക്കുന്നു"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "പട്ടികയില്‍ നിന്നും സ്നാപ്പ്ഷോട്ട് %s കാണാനില്ല"
@@ -35099,10 +35190,6 @@ msgstr "സ്നാപ്പ്ഷോട്ട് '%s'-നു് ഡൊമെ�
 
 msgid "snapshot information"
 msgstr "സ്നാപ്ഷോട്ട് വിവരം"
-
-#, fuzzy
-msgid "snapshot job"
-msgstr "സ്നാപ്പ്ഷോട്ട് പേ‌‌ര്"
 
 msgid "snapshot name"
 msgstr "സ്നാപ്പ്ഷോട്ട് പേ‌‌ര്"
@@ -35262,6 +35349,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "ഈ ക്യൂഇഎംയു ബൈനറി nvram ഡിവൈസ് പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "സജീവമല്ലാത്ത ഒരു ഡൊമെയിന്‍ ആരംഭിക്കുക"
 
@@ -35280,10 +35370,6 @@ msgstr "ഒരു ഫിസിക്കല്‍ ഹോസ്റ്റ് ഇന
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "ആരംഭ സെല്‍ %d പരിധി (0-%d)"
-
-#, fuzzy
-msgid "start job"
-msgstr "ആരംഭിച്ചു"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -35986,6 +36072,36 @@ msgstr "ഡിസ്ക് ഡിവൈസ് '%s' സ്നാപ്പ്ഷ�
 msgid "this storage volume exists already"
 msgstr "ഈ നെറ്റ്‌വറ്‍ക്ക് നിലവിലുണ്ട്"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "വോള്യത്തിന്റെ വലിപ്പം"
@@ -36424,6 +36540,9 @@ msgstr "റിസ്ക്കുള്ള തിരിച്ച്പോക്�
 
 msgid "tty console"
 msgstr "tty കണ്‍സോള്‍"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "ടണല്‍ഡ് മൈഗ്രേഷന്‍"
@@ -37264,6 +37383,10 @@ msgid "unexpected message type"
 msgstr "അപ്രതീക്ഷിതമായ സന്ദേശ തരം %d"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "അപ്രതീക്ഷിതമായ മൈഗ്രേഷന്‍ അവസ്ഥ %s-ല്‍"
 
@@ -37459,9 +37582,6 @@ msgstr "അപ്രതീക്ഷിതമായ വാച്ച്ഡോഗ�
 msgid "unexpected zero/negative length request %lld"
 msgstr "അപ്രതീക്ഷിതമായ പൂജ്യം/നെഗറ്റീവ് വ്യാപ്തിയ്ക്കുള്ള ആവശ്യം %lld"
 
-msgid "unexpectedly failed"
-msgstr "അപ്രതീക്ഷിതമായി പരാജയപ്പെട്ടു"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37635,6 +37755,10 @@ msgstr "അപരിചിതമായ ഡിവൈസ് തരം '%s'"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -38307,6 +38431,10 @@ msgstr "പിന്തുണയില്ലാത്ത ഇവന്റ് ഐ�
 msgid "unsupported numatune mode: '%d'"
 msgstr "പിന്തുണയ്ക്കാത്ത ഫോര്‍വേഡ് മോഡ് '%s'"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "പിന്തുണയ്ക്കാത്ത rtc ടൈമര്‍ ട്രാക്ക് '%s'"
@@ -38414,6 +38542,9 @@ msgstr "'%s' ഡിവൈസിന്റെ ലൈവ് പരിഷ്കര�
 msgid "upload file contents to a volume"
 msgstr "ഫയലിലുള്ളവ വോള്യത്തിലേക്കു് അപ്‌ലോഡ് ചെയ്യുക"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime മൂല്ല്യം '%s'-ല്‍ അപ്രതീക്ഷിതമായ ശൈലി"
@@ -38475,6 +38606,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "പിയര്‍-ടു-പിയര്‍ മൈഗ്രേഷനു് virDomainMigrateToURI3 ഉപയോഗിയ്ക്കുക"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "ഉപയോക്താവു്"
@@ -39369,6 +39503,9 @@ msgstr "--wait ഉപയോഗിക്കുമ്പോള്‍, റദ്ദ
 msgid "with redefine, set current snapshot"
 msgstr "പുനര്‍നിര്‍വ്വചനത്തിന്, ഇപ്പോഴത്തെ സ്നാപ്ഷോട്ട് ക്രമീകരിക്കുക"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "എഴുത്ത് I/O പ്രവര്‍ത്തനങ്ങളുടെ ഒരു സെക്കന്റിലെ പരിധി"
 
@@ -39419,6 +39556,9 @@ msgstr "എവിടെ നിന്നും xml ഡേറ്റാ ഫയല�
 msgid "xml modification unsupported"
 msgstr "xml മാറ്റം വരുത്തല്‍ പിന്തുണയ്ക്കുന്നില്ല"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime മൂല്ല്യം '%s'-ല്‍ അപ്രതീക്ഷിതമായ ശൈലി"
@@ -39433,6 +39573,9 @@ msgstr "ഉവ്വ്"
 msgid "zPCI %s %o is already reserved"
 msgstr "അടയ്ക്കുവാനുള്ള ഒരു പിന്‍വിളി മുന്‍പേ തന്നെ രേഖപ്പെടുത്തിയിട്ടുണ്ട്"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -39440,6 +39583,61 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy', 'file' തരത്തിലുള്ള വോള്യത്തില്‍ മാത്രം ശരിയാകുന്നു"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "ഐറ്ററേറ്ററില്‍ വേരിയബിള്‍ '%s' ലഭ്യമായില്ല"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "നെറ്റ്‌വര്‍ക്ക് തരത്തിലുള്ള ഡിസ്കിനു് %s ഡിസ്ക് സജ്ജമാക്കുന്നതു് അനുവദിയ്ക്കുന്നില്ല"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr ""
+#~ "ഡിസ്ക് 'ആവശ്യം' സജ്ജമാക്കുന്നതു് സിഡിറോം അല്ലെങ്കില്‍ ഫ്ലോപ്പിയ്ക്കു് മാത്രമേ അനുവദിയ്ക്കുന്നുള്ളൂ"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "പശ്ചാത്തലത്തിലുള്ള ജോലി"
+
+#~ msgid "domain core dump job"
+#~ msgstr "ഡൊമെയിന്‍ കോര്‍ ഡമ്പ് ജോലി"
+
+#~ msgid "domain save job"
+#~ msgstr "ഡൊമെയിന്‍ ജോലി സൂക്ഷിയ്ക്കുന്നു"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "ഐ/ഒ പിശകു് കാരണം പരാജയപ്പെട്ടു"
+
+#~ msgid "is not active"
+#~ msgstr "സജീവമല്ല"
+
+#~ msgid "job"
+#~ msgstr "ജോലി"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "നീക്കുന്നതു് റദ്ദാക്കപ്പെട്ടിരിക്കുന്നു"
+
+#, fuzzy
+#~ msgid "migration out job"
+#~ msgstr "മറ്റൊരിടത്തേക്ക് നീക്കം ചെയ്യുന്നു"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "ഡിസ്ക് മൈഗ്രേഷന്‍ സജീവം, പക്ഷേ RAM വിവരം ലഭ്യമല്ല"
+
+#, fuzzy
+#~ msgid "snapshot job"
+#~ msgstr "സ്നാപ്പ്ഷോട്ട് പേ‌‌ര്"
+
+#, fuzzy
+#~ msgid "start job"
+#~ msgstr "ആരംഭിച്ചു"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "അപ്രതീക്ഷിതമായി പരാജയപ്പെട്ടു"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: %d എന്ന എഫ്ഡിയുടെ ആക്സസ് മോഡ് നിശ്ചയിയ്ക്കാന്‍ സാധിയ്ക്കുന്നില്ല"
@@ -39514,9 +39712,6 @@ msgstr "{[--%s] <string>}..."
 #, fuzzy
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "അപരിചിതമായ ഡിസ്ക് സ്നാപ്പ്ഷോട്ട് ഡ്രൈവര്‍ '%s'"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "അപരിചിതമായ ഡിസ്ക് രീതി %s"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "അപരിചിതമായ മെമ്മറി സ്നാപ്പോഷോട്ട് സജ്ജീകരണം '%s'"

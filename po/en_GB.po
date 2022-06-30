@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2015-02-24 06:05+0000\n"
 "Last-Translator: Copied by Zanata <copied-by-zanata@zanata.org>\n"
 "Language-Team: English (United Kingdom) (http://www.transifex.com/projects/p/"
@@ -1246,9 +1246,6 @@ msgstr ""
 #, fuzzy
 msgid "'ssh' protocol is not yet supported"
 msgstr "fs format %s is not supported"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "'startupPolicy' is only valid for 'file' type volume"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr ""
@@ -4133,9 +4130,9 @@ msgstr "Could not find physical NIC with MAC address '%s'"
 msgid "Could not find physical NIC with name '%s'"
 msgstr "Could not find physical NIC with name '%s'"
 
-#, fuzzy, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "Could not find value for variable '%s'"
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 #, fuzzy
 msgid "Could not find placement for v2 controller"
@@ -6841,6 +6838,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Failed to create thread to suspend the host"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 #, fuzzy
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Failed to create thread to suspend the host"
@@ -9070,6 +9070,11 @@ msgstr "Host CPU provides forbidden features"
 msgid "Host SMBIOS information is not available"
 msgstr "Host SMBIOS information is not available"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "Host sysinfo extraction not supported on this platform"
 
@@ -9667,6 +9672,9 @@ msgstr "Invalid address."
 
 msgid "Invalid argument"
 msgstr "Invalid argument"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10368,6 +10376,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11650,6 +11664,9 @@ msgstr "Missing socks field in JSON state document"
 msgid "Missing source channel attribute for char device"
 msgstr "Missing source host attribute for char device"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Missing source host attribute for char device"
 
@@ -12610,6 +12627,9 @@ msgstr "cannot read from stream"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "Not detaching active device %s"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13598,6 +13618,9 @@ msgid ""
 "QEMU reports invalid default CPU model \"host\" for non-kvm domain virt type"
 msgstr ""
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr ""
@@ -14510,13 +14533,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr ""
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "Setting disk %s is not allowed for disk of network type"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr "Setting disk 'requisite' is allowed only for cdrom or floppy"
-
 #, fuzzy
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "Setting wwn for ide disk is not supported by this QEMU"
@@ -15204,20 +15220,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr ""
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr ""
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr ""
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "TPM device path %s is invalid"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 #, fuzzy
 msgid "Table row cannot be empty"
@@ -20526,6 +20534,10 @@ msgstr "graphics listen type must be specified"
 msgid "another backup job is already running"
 msgstr "Domain is already running"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 #, fuzzy
 msgid "any configuration"
 msgstr "unsupported configuration"
@@ -20804,6 +20816,9 @@ msgstr "node set memory parameters not implemented on this platform"
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "attaching serial console is not supported"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -20816,15 +20831,14 @@ msgid ""
 "sense"
 msgstr ""
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr ""
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-#, fuzzy
-msgid "backup job"
-msgstr "background job"
 
 msgid "backup job data missing"
 msgstr ""
@@ -22310,6 +22324,10 @@ msgstr "cannot parse rdp port %s"
 #, fuzzy, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "cannot parse target '%s'"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -23955,6 +23973,9 @@ msgstr "current"
 msgid "current bridge device name"
 msgstr "current bridge device name"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "current vcpu count must equal maximum"
 
@@ -24592,6 +24613,13 @@ msgstr "disk source mode is only valid when storage pool is of iscsi type"
 msgid "disk source path is missing"
 msgstr "disk source path is missing"
 
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "disk target %s not found"
 msgstr "disk %s not found"
@@ -24793,8 +24821,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "domain control interface state"
 
-msgid "domain core dump job"
-msgstr "domain core dump job"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "domain display connection URI"
@@ -24908,8 +24936,8 @@ msgstr "domain name or uuid"
 msgid "domain name, id or uuid"
 msgstr "domain name, id or uuid"
 
-msgid "domain save job"
-msgstr "domain save job"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "domain snapshot XML"
@@ -25732,9 +25760,6 @@ msgstr "failed Xen syscall %s"
 msgid "failed Xen syscall %s"
 msgstr "failed Xen syscall %s"
 
-msgid "failed due to I/O error"
-msgstr "failed due to I/O error"
-
 #, fuzzy
 msgid "failed probing capabilities"
 msgstr "failed to get capabilities"
@@ -26515,6 +26540,9 @@ msgstr ""
 #, fuzzy, c-format
 msgid "failed to parse port number '%s'"
 msgstr "Failed to parse port number"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 #, fuzzy
 msgid "failed to parse qemu capabilities cpus"
@@ -28216,6 +28244,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "internal error"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr ""
 
@@ -29032,9 +29063,6 @@ msgstr "ipset name contains invalid characters"
 msgid "ipset name is too long"
 msgstr "ipset name is too long"
 
-msgid "is not active"
-msgstr "is not active"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -29052,8 +29080,29 @@ msgstr ""
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "nvram device is not supported by this QEMU binary"
 
-msgid "job"
-msgstr "job"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "job type '%s' does not support pivot"
@@ -29634,6 +29683,9 @@ msgstr "Creation of %s volumes is not supported"
 msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 
+msgid "lower boundary for worker thread pool"
+msgstr ""
+
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
 
@@ -30200,9 +30252,8 @@ msgstr "migration bandwidth limit in MiB/s"
 msgid "migration canceled"
 msgstr "migration cancelled"
 
-#, fuzzy
-msgid "migration in job"
-msgstr "migration cancelled"
+msgid "migration in"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration of disk %s failed"
@@ -30212,14 +30263,21 @@ msgstr "stat of '%s' failed"
 msgid "migration of disk %s failed: %s"
 msgstr "operation failed: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-#, fuzzy
-msgid "migration out job"
-msgstr "Migration"
+msgid "migration out"
+msgstr ""
 
 #, fuzzy, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30253,9 +30311,6 @@ msgstr "migration was active, but RAM 'total' data was missing"
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "migration was active, but RAM 'transferred' data was missing"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "migration was active, but no RAM info was set"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr ""
@@ -31304,6 +31359,9 @@ msgstr "drive hotplug is not supported"
 
 msgid "model type"
 msgstr "model type"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 #, fuzzy
 msgid "modifies an existing IOThread of the guest domain"
@@ -32713,6 +32771,10 @@ msgstr "only a single watchdog device is supported"
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "sgio is only supported for scsi host device"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33301,6 +33363,9 @@ msgstr "persistent detach of device '%s' is not supported"
 msgid "persistent detach of device is not supported"
 msgstr "persistent detach of device is not supported"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "persistent update of device '%s' is not supported"
@@ -33449,6 +33514,10 @@ msgstr "migration bandwidth limit in MiB/s"
 #, fuzzy
 msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr "offline migration is not supported by the destination host"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34329,6 +34398,9 @@ msgstr "reset node device"
 msgid "reset the domain after core dump"
 msgstr "reset the domain after core dump"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "resize a vol"
 
@@ -34365,6 +34437,9 @@ msgstr "result too large: %llu"
 msgid "resume a domain"
 msgstr "resume a domain"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "resume operation failed"
 
@@ -34373,6 +34448,16 @@ msgstr "resuming after dump failed"
 
 msgid "resuming after snapshot failed"
 msgstr "resuming after snapshot failed"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr ""
@@ -34762,7 +34847,7 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "error while suspending the domain"
 
-msgid "set the value for reduction of the IOThread polling time "
+msgid "set the value for reduction of the IOThread polling time"
 msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
@@ -35013,6 +35098,12 @@ msgstr "skipped non-absolute path"
 msgid "skipped restricted file"
 msgstr "skipped restricted file"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "snapshot %s disappeared from list"
@@ -35031,10 +35122,6 @@ msgstr "snapshot '%s' lacks domain '%s' rollback info"
 
 msgid "snapshot information"
 msgstr "snapshot information"
-
-#, fuzzy
-msgid "snapshot job"
-msgstr "snapshot name"
 
 msgid "snapshot name"
 msgstr "snapshot name"
@@ -35192,6 +35279,9 @@ msgstr ""
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "nvram device is not supported by this QEMU binary"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "start a (previously defined) inactive domain"
 
@@ -35210,10 +35300,6 @@ msgstr "start a physical host interface."
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "start cell %d out of range (0-%d)"
-
-#, fuzzy
-msgid "start job"
-msgstr "started"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -35922,6 +36008,36 @@ msgstr "Disk device '%s' does not support snapshotting"
 msgid "this storage volume exists already"
 msgstr "this network exists already"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 #, fuzzy
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "size of the vol, as scaled integer (default bytes)"
@@ -36359,6 +36475,9 @@ msgstr "try harder on risky reverts"
 
 msgid "tty console"
 msgstr "tty console"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "tunnelled migration"
@@ -37198,6 +37317,10 @@ msgid "unexpected message type"
 msgstr "Unexpected message type %d"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "unexpected migration status in %s"
 
@@ -37393,9 +37516,6 @@ msgstr "unexpected watchdog model %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr "unexpected zero/negative length request %lld"
 
-msgid "unexpectedly failed"
-msgstr "unexpectedly failed"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37569,6 +37689,10 @@ msgstr "unknown device type '%s'"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "unknown disk snapshot driver '%s'"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "unknown disk type '%s'"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -38241,6 +38365,10 @@ msgstr "unsupported event ID %d"
 msgid "unsupported numatune mode: '%d'"
 msgstr "Unsupported forward mode '%s'"
 
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "unsupported rtc timer track '%s'"
@@ -38348,6 +38476,9 @@ msgstr "live update of device '%s' is not supported"
 msgid "upload file contents to a volume"
 msgstr "upload file contents to a volume"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, fuzzy, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "xsd:dateTime value '%s' has unexpected format"
@@ -38409,6 +38540,9 @@ msgstr ""
 
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "use virDomainMigrateToURI3 for peer-to-peer migration"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "user"
@@ -39304,6 +39438,9 @@ msgstr "with --wait, don't wait for cancel to finish"
 msgid "with redefine, set current snapshot"
 msgstr "with redefine, set current snapshot"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "write I/O operations limit per second"
 
@@ -39354,6 +39491,9 @@ msgstr "xml data file to export from"
 msgid "xml modification unsupported"
 msgstr "xml modification unsupported"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "xsd:dateTime value '%s' has unexpected format"
@@ -39368,6 +39508,9 @@ msgstr "yes"
 msgid "zPCI %s %o is already reserved"
 msgstr "A close callback is already registered"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr ""
@@ -39375,6 +39518,60 @@ msgstr ""
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <string>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "'startupPolicy' is only valid for 'file' type volume"
+
+#, fuzzy
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "Could not find value for variable '%s'"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "Setting disk %s is not allowed for disk of network type"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr "Setting disk 'requisite' is allowed only for cdrom or floppy"
+
+#, fuzzy
+#~ msgid "backup job"
+#~ msgstr "background job"
+
+#~ msgid "domain core dump job"
+#~ msgstr "domain core dump job"
+
+#~ msgid "domain save job"
+#~ msgstr "domain save job"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "failed due to I/O error"
+
+#~ msgid "is not active"
+#~ msgstr "is not active"
+
+#~ msgid "job"
+#~ msgstr "job"
+
+#, fuzzy
+#~ msgid "migration in job"
+#~ msgstr "migration cancelled"
+
+#, fuzzy
+#~ msgid "migration out job"
+#~ msgstr "Migration"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "migration was active, but no RAM info was set"
+
+#, fuzzy
+#~ msgid "snapshot job"
+#~ msgstr "snapshot name"
+
+#, fuzzy
+#~ msgid "start job"
+#~ msgstr "started"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "unexpectedly failed"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: unable to determine access mode of fd %d"
@@ -39444,9 +39641,6 @@ msgstr "{[--%s] <string>}..."
 #, fuzzy
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "unknown disk snapshot driver '%s'"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "unknown disk type '%s'"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "unknown memory snapshot setting '%s'"

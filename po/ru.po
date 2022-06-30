@@ -16,7 +16,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
-"POT-Creation-Date: 2022-05-25 19:40+0000\n"
+"POT-Creation-Date: 2022-06-27 06:24+0000\n"
 "PO-Revision-Date: 2022-06-20 09:42+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
@@ -1404,9 +1404,6 @@ msgstr "атрибут «socket» является корректным толь
 
 msgid "'ssh' protocol is not yet supported"
 msgstr "протокол «ssh» не поддерживается"
-
-msgid "'startupPolicy' is only valid for 'file' type volume"
-msgstr "«startupPolicy» используется только для томов типа «file»"
 
 msgid "'target' refers to a non-existent NUMA node"
 msgstr "«target» ссылается на несуществующий узел NUMA"
@@ -4321,8 +4318,8 @@ msgid "Could not find physical NIC with name '%s'"
 msgstr "Сетевая карта «%s»  не найдена."
 
 #, c-format
-msgid "Could not find placement for v1 controller %s at %s"
-msgstr "Не удалось найти размещение для контроллера v1 %s в %s"
+msgid "Could not find placement for v1 controller %s"
+msgstr ""
 
 msgid "Could not find placement for v2 controller"
 msgstr "Не удалось найти размещение для контроллера v2"
@@ -7001,6 +6998,9 @@ msgstr ""
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Не удалось создать поток для управления выключением домена"
 
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+
 msgid "Failed to create thread to handle pool refresh"
 msgstr "Не удалось создать поток для управления обновлением пула"
 
@@ -9235,6 +9235,11 @@ msgstr "Процессор физической системы предоста�
 msgid "Host SMBIOS information is not available"
 msgstr "Информация о SMBIOS хоста недоступна"
 
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr ""
 "Эта платформа не поддерживает извлечение данных системной информации "
@@ -9833,6 +9838,9 @@ msgstr "Недопустимый адрес."
 
 msgid "Invalid argument"
 msgstr "Недопустимый аргумент"
+
+msgid "Invalid async job start"
+msgstr ""
 
 #, c-format
 msgid ""
@@ -10552,6 +10560,12 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative integer value"
+msgstr ""
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
 msgstr ""
 
 #, c-format
@@ -11842,6 +11856,9 @@ msgstr "Документ состояния JSON не содержит поле 
 msgid "Missing source channel attribute for char device"
 msgstr "Отсутствует атрибут исходного канала для символьного устройства"
 
+msgid "Missing source element for nvram"
+msgstr ""
+
 msgid "Missing source host attribute for char device"
 msgstr "Отсутствует атрибут узла источника для символьного устройства"
 
@@ -12770,6 +12787,9 @@ msgstr "Не является потоком отправки"
 #, c-format
 msgid "Not detaching active device %s"
 msgstr "Активное устройство %s не будет отсоединено"
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13766,6 +13786,9 @@ msgstr ""
 "QEMU сообщает о недействительной модели процессора по умолчанию «host» для "
 "типа виртуализации домена, отличного от kvm"
 
+msgid "QEMU reports migration is still running"
+msgstr ""
+
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
 msgstr "требуется версия QEMU >= %d.%d.%d, но имеется %d.%d.%d"
@@ -14699,14 +14722,6 @@ msgstr ""
 msgid "Setting different SELinux label on %s which is already in use"
 msgstr "Установка другой метки SELinux для %s, который уже используется"
 
-#, c-format
-msgid "Setting disk %s is not allowed for disk of network type"
-msgstr "Установка %s диска запрещена для диска сетевого типа"
-
-msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
-"Установка «requisite» диска допустима только для CD-привода или дисковода"
-
 msgid "Setting disk block sizes is not supported by vz driver."
 msgstr "Драйвер vz не поддерживает указание размера блоков диска."
 
@@ -15365,20 +15380,12 @@ msgid "TPM 1.2 is not supported with the SPAPR device model"
 msgstr "TPM 1.2 нельзя использовать, если используется модель устройства SPAPR"
 
 #, c-format
-msgid "TPM Proxy model %s is only available for PPC64 guests"
-msgstr "Модель прокси TPM %s доступна только для гостевых систем PPC64"
-
-#, c-format
 msgid "TPM Proxy model %s requires 'Passthrough' backend"
 msgstr "Для работы модели прокси TPM %s требуется модуль «Passthrough»"
 
 #, c-format
 msgid "TPM device path %s is invalid"
 msgstr "Недопустимый путь к устройству TPM: %s"
-
-#, c-format
-msgid "TPM model '%s' is only available for x86 and aarch64 guests"
-msgstr ""
 
 msgid "Table row cannot be empty"
 msgstr "Строка таблицы не может быть пустой"
@@ -20709,6 +20716,10 @@ msgstr "необходимо указать <type> операционной си
 msgid "another backup job is already running"
 msgstr "уже выполняется другое задание по резервному копированию"
 
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
 msgid "any configuration"
 msgstr "любая конфигурация"
 
@@ -20993,6 +21004,9 @@ msgstr "обработчик резервного хранилища не реа
 msgid "backing store protocol '%s' is not yet supported"
 msgstr "протокол резервного хранилища «%s» не поддерживается"
 
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
 msgid "backingStore is not supported with vhostuser disk"
 msgstr ""
 
@@ -21004,14 +21018,14 @@ msgid ""
 "sense"
 msgstr "backingStore зеркала не имеет смысла без VIR_DOMAIN_BLOCK_COPY_SHALLOW"
 
+msgid "backup"
+msgstr ""
+
 msgid "backup TLS directory not configured"
 msgstr "не настроен каталог резервного копирования TLS"
 
 msgid "backup is not supported with this QEMU"
 msgstr ""
-
-msgid "backup job"
-msgstr "задание резервного копирования"
 
 msgid "backup job data missing"
 msgstr "отсутствуют данные задания резервного копирования"
@@ -22541,6 +22555,10 @@ msgstr "не удалось разобрать rdp-порт %s"
 #, c-format
 msgid "cannot parse target for lunStr '%s'"
 msgstr "не удалось разобрать назначение для lunStr «%s»"
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -24175,6 +24193,9 @@ msgstr "current"
 msgid "current bridge device name"
 msgstr "текущее имя моста"
 
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
 msgid "current vcpu count must equal maximum"
 msgstr "текущее число vcpu должно быть равно максимальному значению"
 
@@ -24806,6 +24827,13 @@ msgid "disk source path is missing"
 msgstr "отсутствует путь к источнику диска"
 
 #, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
+#, c-format
 msgid "disk target %s not found"
 msgstr "дисковое назначение %s не найдено"
 
@@ -24995,8 +25023,8 @@ msgstr ""
 msgid "domain control interface state"
 msgstr "состояние интерфейса управления доменом"
 
-msgid "domain core dump job"
-msgstr "задание создания дампа домена"
+msgid "domain core dump"
+msgstr ""
 
 msgid "domain display connection URI"
 msgstr "URI подключения к дисплею домена"
@@ -25105,8 +25133,8 @@ msgstr "имя или UUID домена"
 msgid "domain name, id or uuid"
 msgstr "имя, ID или UUID домена"
 
-msgid "domain save job"
-msgstr "задача сохранения домена"
+msgid "domain save"
+msgstr ""
 
 msgid "domain snapshot XML"
 msgstr "XML снимка домена"
@@ -25910,9 +25938,6 @@ msgstr "сбой системного вызова Xen"
 msgid "failed Xen syscall %s"
 msgstr "сбой системного вызова Xen %s"
 
-msgid "failed due to I/O error"
-msgstr "сбой вследствие ошибки ввода-вывода"
-
 msgid "failed probing capabilities"
 msgstr "не удалось выполнить проверку возможностей"
 
@@ -26657,6 +26682,9 @@ msgstr ""
 #, c-format
 msgid "failed to parse port number '%s'"
 msgstr "не удалось разобрать номер порта «%s»"
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "не удалось разобрать процессоры в данных о возможностях QEMU"
@@ -28399,6 +28427,9 @@ msgstr ""
 msgid "internal use only"
 msgstr "только внутреннее использование"
 
+msgid "interrupt post-copy migration"
+msgstr ""
+
 msgid "intr:"
 msgstr "прерывание:"
 
@@ -29213,9 +29244,6 @@ msgstr "Имя ipset содержит недопустимые символы"
 msgid "ipset name is too long"
 msgstr "слишком длинное имя ipset"
 
-msgid "is not active"
-msgstr "не активно"
-
 msgid "isa-debug serial type only valid on x86 architecture"
 msgstr ""
 
@@ -29231,8 +29259,29 @@ msgstr "найден элемент ivgen, но отсутствует запи�
 msgid "ivshmem device is not supported with this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает устройство ivshmem"
 
-msgid "job"
-msgstr "задание"
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
 
 #, c-format
 msgid "job type '%s' does not support pivot"
@@ -29793,6 +29842,9 @@ msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr ""
 "повторять цикл, пока он не будет прерван или пока не истечет заданный период "
 "ожидания"
+
+msgid "lower boundary for worker thread pool"
+msgstr ""
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr ""
@@ -30384,8 +30436,8 @@ msgstr "ограничение пропускной способности в М
 msgid "migration canceled"
 msgstr "миграция отменена"
 
-msgid "migration in job"
-msgstr "задание входящей миграции"
+msgid "migration in"
+msgstr ""
 
 #, c-format
 msgid "migration of disk %s failed"
@@ -30395,13 +30447,21 @@ msgstr "сбой миграции диска %s"
 msgid "migration of disk %s failed: %s"
 msgstr "сбой миграции диска %s: %s"
 
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
 "and this QEMU"
 msgstr ""
 
-msgid "migration out job"
-msgstr "задание исходящей миграции"
+msgid "migration out"
+msgstr ""
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30433,9 +30493,6 @@ msgstr "миграция активна, но отсутствует «общи�
 
 msgid "migration was active, but RAM 'transferred' data was missing"
 msgstr "миграция активна, но отсутствуют «передаваемые» данные ОЗУ"
-
-msgid "migration was active, but no RAM info was set"
-msgstr "миграция активна, но не задана информация ОЗУ"
 
 msgid "migration with legacy shmem device is not supported"
 msgstr "миграция с устаревшим устройством shmem не поддерживается"
@@ -31451,6 +31508,9 @@ msgstr "разрешение модели не поддерживается"
 
 msgid "model type"
 msgstr "тип модели"
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
 
 msgid "modifies an existing IOThread of the guest domain"
 msgstr "изменяет существующий поток ввода-вывода гостевого домена"
@@ -32839,6 +32899,10 @@ msgstr "поддерживается только одно устройство 
 msgid "only bus 'virtio' is supported for 'passthrough' input devices"
 msgstr "для устройств ввода «passthrough» поддерживается только шина «virtio»"
 
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
 msgid "only can reboot running/paused domain"
 msgstr ""
 
@@ -33430,6 +33494,9 @@ msgstr "постоянное отключение устройства «%s» н
 msgid "persistent detach of device is not supported"
 msgstr "постоянное отключение устройств не поддерживается"
 
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
 #, c-format
 msgid "persistent update of device '%s' is not supported"
 msgstr "постоянное обновление устройства «%s» не поддерживается"
@@ -33577,6 +33644,10 @@ msgid "post-copy migration is not supported with non-live or paused migration"
 msgstr ""
 "пост-копирование не поддерживается для нединамической или приостановленной "
 "миграции"
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
 
 msgid "potentially unsafe disk format probing"
 msgstr ""
@@ -34449,6 +34520,9 @@ msgstr ""
 "сброс состояния домена после создания дампа (аналогично нажатию кнопки "
 "питания)"
 
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
 msgid "resize a vol"
 msgstr "изменить размер тома"
 
@@ -34484,6 +34558,9 @@ msgstr "слишком большой результат: %llu"
 msgid "resume a domain"
 msgstr "возобновить работу домена"
 
+msgid "resume failed post-copy migration"
+msgstr ""
+
 msgid "resume operation failed"
 msgstr "сбой операции возобновления"
 
@@ -34492,6 +34569,16 @@ msgstr "ошибка возобновления после дампа"
 
 msgid "resuming after snapshot failed"
 msgstr "возобновление работы после сбоя снимка"
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
 
 msgid "retrieve client's identity info from server"
 msgstr "извлечь информацию профиля клиента с сервера"
@@ -34876,8 +34963,8 @@ msgstr ""
 msgid "set the user password inside the domain"
 msgstr "указать пароль пользователя в домене"
 
-msgid "set the value for reduction of the IOThread polling time "
-msgstr "указать значение для уменьшения времени опроса потока ввода-вывода "
+msgid "set the value for reduction of the IOThread polling time"
+msgstr ""
 
 msgid "set the value to increase the IOThread polling time"
 msgstr "указать значение для увеличения времени опроса потока ввода-вывода"
@@ -35131,6 +35218,12 @@ msgstr "пропущен неабсолютный путь"
 msgid "skipped restricted file"
 msgstr "пропущен файл с ограничением доступа"
 
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
 #, c-format
 msgid "snapshot %s disappeared from list"
 msgstr "снимок %s исчез из списка"
@@ -35149,9 +35242,6 @@ msgstr "в снимке «%s» отсутствует информация об 
 
 msgid "snapshot information"
 msgstr "данные снимка"
-
-msgid "snapshot job"
-msgstr "задание снимка"
 
 msgid "snapshot name"
 msgstr "имя снимка"
@@ -35309,6 +35399,9 @@ msgstr "проверка SSL поддерживается только для п
 msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "этот исполняемый файл QEMU не поддерживает указание проверки SSL"
 
+msgid "start"
+msgstr ""
+
 msgid "start a (previously defined) inactive domain"
 msgstr "запустить неактивный домен (определение должно быть создано заранее)"
 
@@ -35328,9 +35421,6 @@ msgstr "запустить интерфейс физической основн�
 #, c-format
 msgid "start cell %d out of range (0-%d)"
 msgstr "начальная ячейка %d за пределами диапазона (0-%d)"
-
-msgid "start job"
-msgstr "задание запуска"
 
 #, c-format
 msgid "start of range %s - %s in network %s/%d is the network address"
@@ -36014,6 +36104,36 @@ msgstr ""
 msgid "this storage volume exists already"
 msgstr "этот том хранилища уже существует"
 
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "пороговое значение, кратное числу (по умолчанию в байтах)"
 
@@ -36510,6 +36630,9 @@ msgstr "усиленный режим при рискованном восста
 
 msgid "tty console"
 msgstr "консоль TTY"
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
 
 msgid "tunnelled migration"
 msgstr "туннельная миграция"
@@ -37338,6 +37461,10 @@ msgid "unexpected message type"
 msgstr "непредвиденный тип сообщения"
 
 #, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
 msgid "unexpected migration status in %s"
 msgstr "непредвиденное состояние миграции в %s"
 
@@ -37529,9 +37656,6 @@ msgstr "непредвиденная модель watchdog %d"
 msgid "unexpected zero/negative length request %lld"
 msgstr "непредвиденный запрос нулевой или отрицательной длины %lld"
 
-msgid "unexpectedly failed"
-msgstr "неожиданно завершилось"
-
 msgid "unfiltered sgio is no longer supported"
 msgstr ""
 
@@ -37705,6 +37829,10 @@ msgstr "неизвестный тип устройства в «%s»"
 #, c-format
 msgid "unknown disk snapshot driver '%s'"
 msgstr "неизвестный драйвер снимка диска: «%s»"
+
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "неизвестный тип диска «%s»"
 
 #, c-format
 msgid "unknown driver format value '%s'"
@@ -38378,6 +38506,10 @@ msgid "unsupported numatune mode: '%d'"
 msgstr "неподдерживаемый режим numatune: «%d»"
 
 #, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
+#, c-format
 msgid "unsupported nvram template format '%s'"
 msgstr "неподдерживаемый формат шаблона nvram «%s»"
 
@@ -38482,6 +38614,9 @@ msgstr "обновление устройства типа «%s» не подд�
 msgid "upload file contents to a volume"
 msgstr "отправить содержимое файла в том"
 
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
 #, c-format
 msgid "uptime file has unexpected format '%s'"
 msgstr "файл времени работы имеет непредвиденный формат «%s»"
@@ -38544,6 +38679,9 @@ msgstr ""
 msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr ""
 "используйте virDomainMigrateToURI3 для миграции с одного узла на другой"
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
 
 msgid "user"
 msgstr "пользователь"
@@ -39480,6 +39618,9 @@ msgstr ""
 msgid "with redefine, set current snapshot"
 msgstr "установить текущий снимок вместе с переопределением"
 
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
 msgid "write I/O operations limit per second"
 msgstr "максимальное число операций записи в секунду"
 
@@ -39530,6 +39671,9 @@ msgstr "XML-файл для экспорта"
 msgid "xml modification unsupported"
 msgstr "изменение XML не поддерживается"
 
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
 msgstr "Недопустимый формат xsd:dateTime: «%s»"
@@ -39544,6 +39688,9 @@ msgstr "yes"
 msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o уже зарезервировано"
 
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
 msgstr "поступил запрос о зоне %s для сети %s, но firewalld не задействовано"
@@ -39551,6 +39698,61 @@ msgstr "поступил запрос о зоне %s для сети %s, но fi
 #, c-format
 msgid "{[--%s] <string>}..."
 msgstr "{[--%s] <строка>}..."
+
+#~ msgid "'startupPolicy' is only valid for 'file' type volume"
+#~ msgstr "«startupPolicy» используется только для томов типа «file»"
+
+#~ msgid "Could not find placement for v1 controller %s at %s"
+#~ msgstr "Не удалось найти размещение для контроллера v1 %s в %s"
+
+#~ msgid "Setting disk %s is not allowed for disk of network type"
+#~ msgstr "Установка %s диска запрещена для диска сетевого типа"
+
+#~ msgid "Setting disk 'requisite' is allowed only for cdrom or floppy"
+#~ msgstr ""
+#~ "Установка «requisite» диска допустима только для CD-привода или дисковода"
+
+#~ msgid "TPM Proxy model %s is only available for PPC64 guests"
+#~ msgstr "Модель прокси TPM %s доступна только для гостевых систем PPC64"
+
+#~ msgid "backup job"
+#~ msgstr "задание резервного копирования"
+
+#~ msgid "domain core dump job"
+#~ msgstr "задание создания дампа домена"
+
+#~ msgid "domain save job"
+#~ msgstr "задача сохранения домена"
+
+#~ msgid "failed due to I/O error"
+#~ msgstr "сбой вследствие ошибки ввода-вывода"
+
+#~ msgid "is not active"
+#~ msgstr "не активно"
+
+#~ msgid "job"
+#~ msgstr "задание"
+
+#~ msgid "migration in job"
+#~ msgstr "задание входящей миграции"
+
+#~ msgid "migration out job"
+#~ msgstr "задание исходящей миграции"
+
+#~ msgid "migration was active, but no RAM info was set"
+#~ msgstr "миграция активна, но не задана информация ОЗУ"
+
+#~ msgid "set the value for reduction of the IOThread polling time "
+#~ msgstr "указать значение для уменьшения времени опроса потока ввода-вывода "
+
+#~ msgid "snapshot job"
+#~ msgstr "задание снимка"
+
+#~ msgid "start job"
+#~ msgstr "задание запуска"
+
+#~ msgid "unexpectedly failed"
+#~ msgstr "неожиданно завершилось"
 
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: не удалось определить режим доступа дескриптора файла %d"
@@ -39630,9 +39832,6 @@ msgstr "{[--%s] <строка>}..."
 
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "неизвестный тип снимка диска «%s»"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "неизвестный тип диска «%s»"
 
 #~ msgid "unknown memory snapshot setting '%s'"
 #~ msgstr "неизвестный параметр снимка памяти: «%s»"
