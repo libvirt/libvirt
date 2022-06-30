@@ -5051,6 +5051,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
 static int
 qemuMigrationSrcResume(virDomainObj *vm,
+                       qemuMigrationParams *migParams G_GNUC_UNUSED,
                        const char *cookiein,
                        int cookieinlen,
                        char **cookieout,
@@ -5183,7 +5184,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
     spec.fwdType = MIGRATION_FWD_DIRECT;
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
-        ret = qemuMigrationSrcResume(vm, cookiein, cookieinlen,
+        ret = qemuMigrationSrcResume(vm, migParams, cookiein, cookieinlen,
                                      cookieout, cookieoutlen, &spec);
     } else {
         ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen,
@@ -6078,6 +6079,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
                               virConnectPtr conn,
                               virDomainObj *vm,
                               const char *uri,
+                              qemuMigrationParams *migParams,
                               const char *cookiein,
                               int cookieinlen,
                               char **cookieout,
@@ -6102,7 +6104,7 @@ qemuMigrationSrcPerformResume(virQEMUDriver *driver,
     ret = qemuMigrationSrcPerformNative(driver, vm, NULL, uri,
                                         cookiein, cookieinlen,
                                         cookieout, cookieoutlen, flags,
-                                        0, NULL, NULL, 0, NULL, NULL, NULL);
+                                        0, NULL, NULL, 0, NULL, migParams, NULL);
 
     if (virCloseCallbacksSet(driver->closeCallbacks, vm, conn,
                              qemuMigrationAnyConnectionClosed) < 0)
@@ -6142,7 +6144,7 @@ qemuMigrationSrcPerformPhase(virQEMUDriver *driver,
     int ret = -1;
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
-        return qemuMigrationSrcPerformResume(driver, conn, vm, uri,
+        return qemuMigrationSrcPerformResume(driver, conn, vm, uri, migParams,
                                              cookiein, cookieinlen,
                                              cookieout, cookieoutlen, flags);
     }
