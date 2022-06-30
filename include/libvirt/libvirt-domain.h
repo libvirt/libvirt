@@ -2513,9 +2513,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  *
  * Sets the lower bound for thread pool size. A value of -1 disables this bound
  * leaving hypervisor use its default value, though this value is not accepted
- * for running domains. Due to internal implementation it's recommended to set
- * VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN and VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX
- * separately. Accepted type is VIR_TYPED_PARAM_INT.
+ * for running domains. Accepted type is VIR_TYPED_PARAM_INT.
  *
  * Since: 8.5.0
  */
@@ -2527,9 +2525,7 @@ int                  virDomainDelIOThread(virDomainPtr domain,
  * Sets the upper bound for thread pool size. A value of -1 disables this bound
  * leaving hypervisor use its default value, though this value is not accepted
  * for running domains. Since the upper band has to be equal to or greater than
- * lower bound value of 0 is not accepted. Due to internal implementation it's
- * recommended to set VIR_DOMAIN_IOTHREAD_THREAD_POOL_MIN and
- * VIR_DOMAIN_IOTHREAD_THREAD_POOL_MAX separately. Accepted type is
+ * lower bound value of 0 is not accepted. Accepted type is
  * VIR_TYPED_PARAM_INT.
  *
  * Since: 8.5.0
