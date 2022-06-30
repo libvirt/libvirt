@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-06-27 06:24+0000\n"
-"PO-Revision-Date: 2022-06-13 08:18+0000\n"
+"PO-Revision-Date: 2022-06-30 00:21+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -25,7 +25,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Weblate 4.12.2\n"
+"X-Generator: Weblate 4.13\n"
 
 msgid ""
 "\n"
@@ -4208,7 +4208,7 @@ msgstr "이름 '%s'라는 물리적 NIC를 찾을 수 없습니다"
 
 #, c-format
 msgid "Could not find placement for v1 controller %s"
-msgstr ""
+msgstr "v1 제어기 %s를 위한 배치를 찾을 수 없습니다"
 
 msgid "Could not find placement for v2 controller"
 msgstr "v2 제어기를 위핸 대체를 찾을 수 없음"
@@ -5346,7 +5346,7 @@ msgid "Device type '%s' is not an integer"
 msgstr "장치 유형 '%s'가 정수가 아닙니다"
 
 msgid "Device updated successfully\n"
-msgstr "기기가 성공적으로 업데이트되었습니다\n"
+msgstr "장치가 성공적으로 최신화 되었습니다\n"
 
 #, c-format
 msgid "Device: %s\n"
@@ -5660,7 +5660,7 @@ msgid "Domain description not changed\n"
 msgstr "도메인 설명이 변경되지 않음\n"
 
 msgid "Domain description updated successfully"
-msgstr "도메인 설명이 성공적으로 업데이트되었습니다"
+msgstr "도메인 설명이 성공적으로 최신화 되었습니다"
 
 msgid "Domain does not have suspend support"
 msgstr "도메인에 일시 중단 지원이 없습니다"
@@ -5790,7 +5790,7 @@ msgid "Domain title not changed\n"
 msgstr "도메인 이름이 변화되지 않았습니다\n"
 
 msgid "Domain title updated successfully"
-msgstr "도메인 제목이 성공적으로 업데이트되었습니다"
+msgstr "도메인 제목이 성공적으로 최신화 되었습니다"
 
 msgid "Domain-0 cannot be migrated"
 msgstr "도메인-0는 이전 할 수 없습니다"
@@ -6865,7 +6865,7 @@ msgid "Failed to create thread to handle domain shutdown"
 msgstr "도메인 종료를 처리할 스레드를 생성하지 못했습니다"
 
 msgid "Failed to create thread to handle firewall reload/restart"
-msgstr ""
+msgstr "방화벽 재적재/재시작을 다루는 쓰레드 생성에 실패함"
 
 msgid "Failed to create thread to handle pool refresh"
 msgstr "풀 새로 고침을 처리할 스레드를 생성하지 못했습니다"
@@ -8478,7 +8478,7 @@ msgstr "%s 최신화에 실패하였습니다"
 
 #, c-format
 msgid "Failed to update %s XML configuration"
-msgstr "%s XML 구성을 업데이트하지 못했습니다"
+msgstr "%s XML 구성 최신화에 실패함"
 
 #, c-format
 msgid "Failed to update '%s' of node mode for target '%s'"
@@ -8486,14 +8486,14 @@ msgstr "대상 `%s'를 위한 노드 방식의 '%s'를 최신화 하는데 실�
 
 #, c-format
 msgid "Failed to update device from %s"
-msgstr "%s에서 장치를 업데이트하는데 실패"
+msgstr "%s에서 장치 최신화에 실패함"
 
 msgid "Failed to update interface link state"
-msgstr "인터페이스 링크 상태를 업데이트하지 못했습니다"
+msgstr "인터페이스 연결 상태 최신화에 실패함"
 
 #, c-format
 msgid "Failed to update network %s"
-msgstr "네트워크 %s 업데이트 실패"
+msgstr "네트워크 %s 최신화에 실패함"
 
 msgid "Failed to verify peer's certificate"
 msgstr "피어의 인증서를 확인하지 못했습니다"
@@ -9076,6 +9076,8 @@ msgid ""
 "Host not compatible with KVM; HW virtualization CPU features not found. Only "
 "emulated CPUs are available; performance will be significantly limited"
 msgstr ""
+"호스트가 KVM과 호환되지 않음; 하드웨어 가상화 CPU 기능을 찾을 수 없음. "
+"모사된 CPU만 사용 할 수 있음; 성능은 상당히 제한적입니다"
 
 msgid "Host sysinfo extraction not supported on this platform"
 msgstr "이 플랫폼에서는 호스트 sysinfo 추출이 지원되지 않습니다"
@@ -9659,7 +9661,7 @@ msgid "Invalid argument"
 msgstr "잘못된 인수"
 
 msgid "Invalid async job start"
-msgstr ""
+msgstr "잘못된 비동기 작업 시작"
 
 #, c-format
 msgid ""
@@ -10378,7 +10380,7 @@ msgstr ""
 msgid ""
 "Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
 "negative value"
-msgstr ""
+msgstr "요소에 있는 속성 '%s'를 위한 잘못된 값 '%s': '%s'. 음수가 아닌 예상 값"
 
 #, c-format
 msgid "Invalid value for attribute '%s' in element '%s': Zero is not permitted"
@@ -10834,7 +10836,7 @@ msgstr "도메인 '%s' XML 구성의 관리되는 저장 이미지가 변경되�
 
 #, c-format
 msgid "Managed save state file of domain '%s' updated.\n"
-msgstr "도메인 '%s'의 관리되는 저장 상태 파일이 업데이트되었습니다.\n"
+msgstr "도메인 '%s'의 관리되는 저장 상태 파일이 최신화 되었습니다.\n"
 
 msgid "Managed save:"
 msgstr "관리 저장:"
@@ -11602,7 +11604,7 @@ msgid "Missing source channel attribute for char device"
 msgstr "문자 장치에 대한 소스 채널 속성이 누락되었습니다"
 
 msgid "Missing source element for nvram"
-msgstr ""
+msgstr "nvram을 위해 누락된 원천 요소"
 
 msgid "Missing source host attribute for char device"
 msgstr "캐릭터 장치에 대한 소스 호스트 특성 빠짐"
@@ -12524,7 +12526,7 @@ msgid "Not detaching active device %s"
 msgstr "활성 장치 %s을(를) 분리하지 않습니다"
 
 msgid "Not enough arguments passed, nothing to set"
-msgstr ""
+msgstr "전달된 인수가 충분치 않아서 설정 부분이 없습니다"
 
 #, c-format
 msgid "Not enough free space in pool for volume '%s'"
@@ -13476,7 +13478,7 @@ msgstr ""
 "합니다"
 
 msgid "QEMU reports migration is still running"
-msgstr ""
+msgstr "QEMU는 보고서 이전은 아직 동작 중입니다"
 
 #, c-format
 msgid "QEMU version >= %d.%d.%d is required, but %d.%d.%d found"
@@ -14712,7 +14714,7 @@ msgstr "상태 파일 %s이(가) 편집되었습니다.\n"
 
 #, c-format
 msgid "State file %s updated.\n"
-msgstr "상태 파일 %s이(가) 업데이트되었습니다.\n"
+msgstr "상태 파일 %s가 최신화 되었습니다.\n"
 
 #, c-format
 msgid ""
@@ -14882,7 +14884,7 @@ msgid "Successfully pivoted"
 msgstr "성공적으로 피벗됨"
 
 msgid "Successfully updated media."
-msgstr "미디어를 업데이트했습니다."
+msgstr "성공적으로 최신화된 미디어."
 
 #, c-format
 msgid "Sum of %srequest stat overflows"
@@ -19420,10 +19422,10 @@ msgid "Unusual value in %s/devices/%s/class: %s"
 msgstr "%s/devices/%s/class의 비정상적인 값: %s"
 
 msgid "Update device from an XML <file>."
-msgstr "XML <file>에서 장치를 업데이트합니다."
+msgstr "XML <file>에서 장치 최신화."
 
 msgid "Update the media"
-msgstr "미디어 업데이트"
+msgstr "미디어 최신화"
 
 msgid "Update values of a memory device of a domain"
 msgstr "도메인의 메모리 장치의 값을 최신화합니다"
@@ -19433,7 +19435,7 @@ msgstr "최신화됨"
 
 #, c-format
 msgid "Updated network %s live state"
-msgstr "업데이트된 네트워크 %s 라이브 상태"
+msgstr "최신화된 네트워크 %s 실시간 상태"
 
 #, c-format
 msgid "Updated network %s persistent config"
@@ -19444,8 +19446,7 @@ msgid "Updated network %s persistent config and live state"
 msgstr "최신화된 네트워크 %s 영구적 설정과 라이브 상태"
 
 msgid "Updates on a running domain need VIR_DOMAIN_AFFECT_LIVE flag"
-msgstr ""
-"실행 중인 도메인의 업데이트에는 VIR_DOMAIN_AFFECT_LIVE 플래그가 필요합니다"
+msgstr "실행 중인 도메인의 최신화는 VIR_DOMAIN_AFFECT_LIVE 플래그가 필요합니다"
 
 msgid "Upgrade to a kernel supporting namespaces"
 msgstr "이름공간을 지원하는 커널로 향상"
@@ -20218,7 +20219,7 @@ msgstr "다른 백업 작업이 이미 실행 중입니다"
 
 #, c-format
 msgid "another migration job is already running for domain '%s'"
-msgstr ""
+msgstr "다른 이전 작업은 이미 도메인 '%s'를 위해 동작 중입니다"
 
 msgid "any configuration"
 msgstr "모든 구성"
@@ -20501,7 +20502,7 @@ msgid ""
 msgstr "VIR_DOMAIN_BLOCK_COPY_SHALLOW가 없는 미러의 backingStore는 안됩니다"
 
 msgid "backup"
-msgstr ""
+msgstr "백업"
 
 msgid "backup TLS directory not configured"
 msgstr "백업 TLS 디렉토리가 구성되지 않았습니다"
@@ -38642,7 +38643,7 @@ msgid "zPCI %s %o is already reserved"
 msgstr "zPCI %s %o는 이미 예약되어 있습니다"
 
 msgid "zero-copy is only available for parallel migration"
-msgstr ""
+msgstr "제로-카피는 병렬 이전을 위해서만 사용 할 수 있다"
 
 #, c-format
 msgid "zone %s requested for network %s but firewalld is not active"
