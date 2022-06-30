@@ -5051,12 +5051,13 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
 
 static int
 qemuMigrationSrcResume(virDomainObj *vm,
-                       qemuMigrationParams *migParams G_GNUC_UNUSED,
+                       qemuMigrationParams *migParams,
                        const char *cookiein,
                        int cookieinlen,
                        char **cookieout,
                        int *cookieoutlen,
-                       qemuMigrationSpec *spec)
+                       qemuMigrationSpec *spec,
+                       unsigned long flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     virQEMUDriver *driver = priv->driver;
@@ -5071,6 +5072,10 @@ qemuMigrationSrcResume(virDomainObj *vm,
                                    cookiein, cookieinlen,
                                    QEMU_MIGRATION_COOKIE_CAPS);
     if (!mig)
+        return -1;
+
+    if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
+                                 migParams, flags) < 0)
         return -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm,
@@ -5154,6 +5159,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
 
     if (STREQ(uribits->scheme, "unix")) {
         if ((flags & VIR_MIGRATE_TLS) &&
+            !(flags & VIR_MIGRATE_POSTCOPY_RESUME) &&
             !qemuMigrationParamsTLSHostnameIsSet(migParams)) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
                            _("Explicit destination hostname is required "
@@ -5185,7 +5191,7 @@ qemuMigrationSrcPerformNative(virQEMUDriver *driver,
 
     if (flags & VIR_MIGRATE_POSTCOPY_RESUME) {
         ret = qemuMigrationSrcResume(vm, migParams, cookiein, cookieinlen,
-                                     cookieout, cookieoutlen, &spec);
+                                     cookieout, cookieoutlen, &spec, flags);
     } else {
         ret = qemuMigrationSrcRun(driver, vm, persist_xml, cookiein, cookieinlen,
                                   cookieout, cookieoutlen, flags, resource,

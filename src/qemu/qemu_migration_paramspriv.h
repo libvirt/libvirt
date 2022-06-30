@@ -26,7 +26,8 @@
 #pragma once
 
 virJSONValue *
-qemuMigrationParamsToJSON(qemuMigrationParams *migParams);
+qemuMigrationParamsToJSON(qemuMigrationParams *migParams,
+                          bool postcopyResume);
 
 qemuMigrationParams *
 qemuMigrationParamsFromJSON(virJSONValue *params);

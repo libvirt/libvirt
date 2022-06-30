@@ -155,7 +155,7 @@ qemuMigParamsTestJSON(const void *opaque)
     if (!(migParams = qemuMigrationParamsFromJSON(paramsIn)))
         return -1;
 
-    if (!(paramsOut = qemuMigrationParamsToJSON(migParams)) ||
+    if (!(paramsOut = qemuMigrationParamsToJSON(migParams, false)) ||
         !(actualJSON = virJSONValueToString(paramsOut, true)))
         return -1;
 

@@ -333,7 +333,7 @@ testQemuMigrationCookieBlockDirtyBitmaps(const void *opaque)
 
     qemuMigrationParamsSetBlockDirtyBitmapMapping(migParams, &migParamsBitmaps);
 
-    if (!(paramsOut = qemuMigrationParamsToJSON(migParams)) ||
+    if (!(paramsOut = qemuMigrationParamsToJSON(migParams, false)) ||
         !(actualJSON = virJSONValueToString(paramsOut, true)))
         return -1;
 

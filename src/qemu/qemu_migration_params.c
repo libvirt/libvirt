@@ -141,6 +141,7 @@ struct _qemuMigrationParamsTPMapItem {
 typedef struct _qemuMigrationParamInfoItem qemuMigrationParamInfoItem;
 struct _qemuMigrationParamInfoItem {
     qemuMigrationParamType type;
+    bool applyOnPostcopyResume;
 };
 
 /* Migration capabilities which should always be enabled as long as they
@@ -265,6 +266,7 @@ static const qemuMigrationParamInfoItem qemuMigrationParamInfo[] = {
     },
     [QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH] = {
         .type = QEMU_MIGRATION_PARAM_TYPE_ULL,
+        .applyOnPostcopyResume = true,
     },
     [QEMU_MIGRATION_PARAM_MULTIFD_CHANNELS] = {
         .type = QEMU_MIGRATION_PARAM_TYPE_INT,
@@ -782,7 +784,8 @@ qemuMigrationParamsFromJSON(virJSONValue *params)
 
 
 virJSONValue *
-qemuMigrationParamsToJSON(qemuMigrationParams *migParams)
+qemuMigrationParamsToJSON(qemuMigrationParams *migParams,
+                          bool postcopyResume)
 {
     g_autoptr(virJSONValue) params = virJSONValueNewObject();
     size_t i;
@@ -793,6 +796,9 @@ qemuMigrationParamsToJSON(qemuMigrationParams *migParams)
         int rc = 0;
 
         if (!pv->set)
+            continue;
+
+        if (postcopyResume && !qemuMigrationParamInfo[i].applyOnPostcopyResume)
             continue;
 
         switch (qemuMigrationParamInfo[i].type) {
@@ -868,6 +874,7 @@ qemuMigrationCapsToJSON(virBitmap *caps,
  *
  * Send parameters stored in @migParams to QEMU. If @apiFlags is non-zero, some
  * parameters that do not make sense for the enabled flags will be ignored.
+ * VIR_MIGRATE_POSTCOPY_RESUME is the only flag checked currently.
  *
  * Returns 0 on success, -1 on failure.
  */
@@ -876,32 +883,38 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
                          virDomainObj *vm,
                          int asyncJob,
                          qemuMigrationParams *migParams,
-                         unsigned long apiFlags G_GNUC_UNUSED)
+                         unsigned long apiFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     bool xbzrleCacheSize_old = false;
     g_autoptr(virJSONValue) params = NULL;
     g_autoptr(virJSONValue) caps = NULL;
     qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
+    bool postcopyResume = !!(apiFlags & VIR_MIGRATE_POSTCOPY_RESUME);
     int ret = -1;
 
     if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         return -1;
 
-    if (asyncJob == VIR_ASYNC_JOB_NONE) {
-        if (!virBitmapIsAllClear(migParams->caps)) {
-            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                           _("Migration capabilities can only be set by "
-                             "a migration job"));
-            goto cleanup;
-        }
-    } else {
-        if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
-            goto cleanup;
+    /* Changing capabilities is only allowed before migration starts, we need
+     * to skip them when resuming post-copy migration.
+     */
+    if (!postcopyResume) {
+        if (asyncJob == VIR_ASYNC_JOB_NONE) {
+            if (!virBitmapIsAllClear(migParams->caps)) {
+                virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                               _("Migration capabilities can only be set by "
+                                 "a migration job"));
+                goto cleanup;
+            }
+        } else {
+            if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
+                goto cleanup;
 
-        if (virJSONValueArraySize(caps) > 0 &&
-            qemuMonitorSetMigrationCapabilities(priv->mon, &caps) < 0)
-            goto cleanup;
+            if (virJSONValueArraySize(caps) > 0 &&
+                qemuMonitorSetMigrationCapabilities(priv->mon, &caps) < 0)
+                goto cleanup;
+        }
     }
 
     /* If QEMU is too old to support xbzrle-cache-size migration parameter,
@@ -917,7 +930,7 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
         migParams->params[xbzrle].set = false;
     }
 
-    if (!(params = qemuMigrationParamsToJSON(migParams)))
+    if (!(params = qemuMigrationParamsToJSON(migParams, postcopyResume)))
         goto cleanup;
 
     if (virJSONValueObjectKeysNumber(params) > 0 &&
