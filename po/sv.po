@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-25 08:18+0000\n"
+"PO-Revision-Date: 2022-06-28 10:35+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -10141,8 +10141,8 @@ msgstr "Felaktigt uppslagning av ”%s” från ”%s”"
 msgid ""
 "Invalid macTableManager setting '%s' in domain interface's <actual> element"
 msgstr ""
-"Felaktig macTableManager-inställning '%s' i domängränssnittets "
-"<actual>-element"
+"Felaktig macTableManager-inställning '%s' i domängränssnittets <actual>-"
+"element"
 
 #, c-format
 msgid "Invalid macTableManager setting '%s' in network '%s'"
@@ -10447,8 +10447,8 @@ msgid ""
 "'open' or none"
 msgstr ""
 "Felaktig användning av ”floor” i gränssnittet med MAC-adress %s – ”floor” "
-"stödjs endast för gränssnittstypen ”network” med vidarebefordranstypen ”nat”"
-", ”route”, ”open” eller ingen"
+"stödjs endast för gränssnittstypen ”network” med vidarebefordranstypen "
+"”nat”, ”route”, ”open” eller ingen"
 
 #, c-format
 msgid ""
@@ -10643,7 +10643,8 @@ msgstr ""
 "inloggningen"
 
 msgid "Known, but different label format present, requires build --overwrite"
-msgstr "Känt, men ett annorlunda etikettsformat finns, kräver build --overwrite"
+msgstr ""
+"Känt, men ett annorlunda etikettsformat finns, kräver build --overwrite"
 
 msgid "LUKS encrypted QCOW2 images are not supported by this QEMU"
 msgstr "LUKS-krypterade QCow2-avbilder stödjs inte av denna QEMU"
@@ -11055,7 +11056,8 @@ msgstr "Minne återstående:"
 
 msgid ""
 "Memory size must be specified via <memory> or in the <numa> configuration"
-msgstr "Minnesstorleken måste anges via <memory> eller i <numa>-konfigurationen"
+msgstr ""
+"Minnesstorleken måste anges via <memory> eller i <numa>-konfigurationen"
 
 msgid "Memory size should be multiple of 1Mb."
 msgstr "Minnesstorleken skall vara en mutipel av 1 MB."
@@ -11325,32 +11327,30 @@ msgid "Missing UUID parameter for domain object"
 msgstr "Saknad UUID-parameter till domänobjektet"
 
 msgid "Missing VIR_CRED_AUTHNAME credential type"
-msgstr ""
+msgstr "Saknad kreditivtyp VIR_CRED_AUTHNAME"
 
 msgid "Missing VIR_CRED_PASSPHRASE or VIR_CRED_NOECHOPROMPT credential type"
-msgstr ""
+msgstr "Saknad kreditivtyp VIR_CRED_PASSPHRASE eller VIR_CRED_NOECHOPROMPT"
 
-#, fuzzy
 msgid "Missing acpi table type"
-msgstr "Saknad CPU-arkitektur"
+msgstr "Saknad acpi-tabelltyp"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing actual data for interface '%s'"
-msgstr "Misslyckades med att starta gränssnittet %s"
+msgstr "Saknade aktuella data för gränssnittet ”%s”"
 
 msgid "Missing address"
-msgstr ""
+msgstr "Saknad adress"
 
 msgid "Missing address in 'phys_function' capability"
-msgstr ""
+msgstr "Saknad adress i förmågan ”phys_function”"
 
-#, fuzzy
 msgid "Missing agent reply object"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknat agentsvarsobjekt"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing ancestor's name in CPU model %s"
-msgstr "Saknat ”cores”-attribut i CPU-topologi"
+msgstr "Saknat anfadersnamn i CPU-modellen %s"
 
 #, c-format
 msgid "Missing argument for '%s'"
@@ -11358,98 +11358,92 @@ msgstr "Saknat argument för ”%s”"
 
 #, c-format
 msgid "Missing attribute '%s' in element '%s'"
-msgstr ""
+msgstr "Saknat attribut ”%s” i elementet ”%s”"
 
 msgid "Missing auth field in JSON state document"
-msgstr ""
+msgstr "Saknat fält ”auth” i JSON-tillståndsdokumentet"
 
-#, fuzzy
 msgid "Missing authentication callback"
-msgstr "autentisering misslyckades"
+msgstr "Saknat autentiseringsåteranrop"
 
-#, fuzzy
 msgid "Missing authentication credentials"
-msgstr "autentisering krävs"
+msgstr "Saknade autentiseringskreditiv"
 
 msgid "Missing auxiliary data in output definition"
-msgstr ""
+msgstr "Saknade tilläggsdata i utdatadefinitionen"
 
 #, c-format
 msgid "Missing backend %d"
-msgstr ""
+msgstr "Saknad bakände %d"
 
-#, fuzzy
 msgid "Missing bridge name"
-msgstr "Saknat CPU-modellnamn"
+msgstr "Saknat bryggnamn"
 
 msgid "Missing capability type"
-msgstr ""
+msgstr "Saknad förmågetyp"
 
 msgid "Missing client data in JSON document"
-msgstr ""
+msgstr "Saknade klientdata i JSON-dokumentet"
 
 msgid "Missing clients data in JSON document"
-msgstr ""
+msgstr "Saknade klientdata i JSON-dokumentet"
 
 msgid "Missing defaultLockspace data from JSON file"
-msgstr ""
+msgstr "Saknade defaultLockspace-data från JSON-filen"
 
-#, fuzzy
 msgid "Missing device name for container-side veth"
-msgstr "Källtjänstattribut saknas för teckenenhet"
+msgstr "Saknat enhetsnamn på behållarsidans veth"
 
 msgid "Missing disk file path in domain"
-msgstr ""
+msgstr "Saknad diskfilsökväg i domänen"
 
 msgid "Missing disk info when adding volume"
-msgstr ""
+msgstr "Saknad diskinformation när volymen lades till"
 
-#, fuzzy
 msgid "Missing disk source file path"
-msgstr "saknat namn för källskiva"
+msgstr "Saknad diskkällsökväg"
 
-#, fuzzy
 msgid "Missing domain"
-msgstr "lista domäner"
+msgstr "Saknad domän"
 
 msgid "Missing errfd data in JSON document"
-msgstr ""
+msgstr "Saknade errfd-data i JSON-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing essential config entry '%s'"
-msgstr "kan inte skapa konfigurationskatalogen ”%s”"
+msgstr "Saknad väsentlig konfigurationspost ”%s”"
 
 msgid "Missing evdev path for input device"
-msgstr ""
+msgstr "Saknad evdev-sökväg till inmatningsenheten"
 
 msgid "Missing fd data in JSON document"
-msgstr ""
+msgstr "Saknade fd-data i JSON-dokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing feature name for CPU model %s"
-msgstr "Saknat CPU-funktionsnamn"
+msgstr "Saknat funktionsnamn till CPU-modellen %s"
 
 msgid "Missing files data from JSON file"
-msgstr ""
+msgstr "Saknade fildata från JSON-filen"
 
 #, c-format
 msgid "Missing group 'credentials-%s' referenced from group '%s' in '%s'"
-msgstr ""
+msgstr "Saknade grupp-”credentials-%s” refererade från gruppen ”%s” i ”%s”"
 
 #, c-format
 msgid "Missing hostname in network '%s' DNS HOST record"
-msgstr ""
+msgstr "Saknat värdnamn i nätverket ”%s” DNS HOST-post"
 
 #, c-format
 msgid "Missing ip and hostname in network '%s' DNS HOST record"
-msgstr ""
+msgstr "Saknat ip och värdnamn i nätverket ”%s” DNS HOST-post"
 
 msgid "Missing isClient data in JSON document"
-msgstr ""
+msgstr "Saknade isClient-data i JSON-dokumentet"
 
 #, c-format
 msgid "Missing item 'credentials' in group '%s' in '%s'"
-msgstr ""
+msgstr "Saknad post ”credentials” i gruppen ”%s” i ”%s”"
 
 msgid "Missing keepaliveCount data in JSON document"
 msgstr "Saknat keepaliveCount-data i JSON-dokument"
@@ -11457,152 +11451,157 @@ msgstr "Saknat keepaliveCount-data i JSON-dokument"
 msgid "Missing keepaliveInterval data in JSON document"
 msgstr "Saknat keepaliveInterval-data i JSON-dokument"
 
-#, fuzzy
 msgid "Missing listen element"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknat lyssningselement"
 
-#, fuzzy
 msgid "Missing lock driver name in migration cookie"
-msgstr "saknar kärninformation"
+msgstr "Saknat låsdrivrutinsnamn i migrationskakan"
 
 msgid "Missing lockspaces data from JSON file"
-msgstr ""
+msgstr "Saknade lockspace-data från JSON-filen"
 
-#, fuzzy
 msgid "Missing macs"
-msgstr "saknar \""
+msgstr "Saknade mac:ar"
 
 msgid "Missing magic data in JSON document"
-msgstr ""
+msgstr "Saknade magic-data i JSON-dokumentet"
 
-#, fuzzy
 msgid "Missing mandatory average or floor attributes"
-msgstr "startordningsattribut saknas"
+msgstr "Saknade obligatoriska attribut average eller floor"
 
 msgid "Missing max_clients data in JSON document"
-msgstr ""
+msgstr "Saknade max_clients-data i JSON-dokumentet"
 
 msgid "Missing max_workers data in JSON document"
-msgstr ""
+msgstr "Saknade max_workers-data i JSON-dokumentet"
 
 msgid "Missing min_workers data in JSON document"
-msgstr ""
+msgstr "Saknade min_workers-data i JSON-dokumentet"
 
 msgid "Missing monitor reply object"
-msgstr ""
+msgstr "Saknat övervararsvarsobjekt"
 
-#, fuzzy
 msgid "Missing name parameter for domain object"
-msgstr "saknat namn för källskiva"
+msgstr "Saknad name-parameter till domänobjektet"
 
 msgid "Missing network port PCI address"
-msgstr ""
+msgstr "Saknad PCI-adress till nätverksporten"
 
-#, fuzzy
 msgid "Missing network port bridge name"
-msgstr "Saknat CPU-modellnamn"
+msgstr "Saknat bryggnamn till nätverksporten"
 
-#, fuzzy
 msgid "Missing network port driver name"
-msgstr "Saknat CPU-modellnamn"
+msgstr "Saknat drivrutinsnamn till nätverksporten"
 
 msgid "Missing network port link device name"
-msgstr ""
+msgstr "Saknat länkenhetsnamn till nätverksporten"
 
 msgid "Missing nrequests_client_max field in JSON state document"
-msgstr ""
+msgstr "Saknat fält nrequests_client_max i JSON-tillståndsdokumentet"
 
-#, fuzzy
 msgid "Missing or empty 'hostName' property"
-msgstr "Saknad ”name”-egenskap i %s-uppslagning"
+msgstr "Saknad eller tom egenskap ”hostName”"
 
 #, c-format
 msgid "Missing or inconsistent resctrl info for level '%u' type '%s'"
-msgstr ""
+msgstr "Saknad eller inkonsistent resctrl-information för nivå ”%u” typ ”%s”"
 
 msgid "Missing or inconsistent resctrl info for memory bandwidth allocation"
 msgstr ""
+"Saknad eller inkonsistent resctrl-information för "
+"minnesbandbreddsallokeringen"
 
 #, c-format
 msgid "Missing or inconsistent resctrl info for memory bandwidth node '%u'"
 msgstr ""
+"Saknad eller inkonsistent resctrl-information för minnesbandbreddsnod ”%u”"
 
 msgid "Missing or invalid 'broadcast-allowed' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”broadcast-allowed” i query-rx-filter-svaret"
 
 #, c-format
 msgid ""
 "Missing or invalid 'end' attribute in <port> in <nat> in <forward> in "
 "network %s"
 msgstr ""
+"Saknat eller felaktigt attribut ”end” i <port> i <nat> i <forward> i "
+"nätverket %s"
 
 msgid "Missing or invalid 'main-mac' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”main-mac” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'multicast' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”multicast” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'multicast-overflow' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”multicast-overflow” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'multicast-table' array in query-rx-filter response"
-msgstr ""
+msgstr "Saknad eller felaktig vektor ”multicast-table” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'promiscuous' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”promiscuous” i query-rx-filter-svaret"
 
 #, c-format
 msgid ""
 "Missing or invalid 'start' attribute in <port> in <nat> in <forward> in "
 "network %s"
 msgstr ""
+"Saknat eller felaktigt attribut ”start” i <port> i <nat> i <forward> i "
+"nätverket %s"
 
 msgid "Missing or invalid 'unicast' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”unicast” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'unicast-overflow' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”unicast-overflow” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'unicast-table' array in query-rx-filter response"
-msgstr ""
+msgstr "Saknad eller felaktig vektor ”unicast-table” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'vlan' in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt ”vlan” i query-rx-filter-svaret"
 
 msgid "Missing or invalid 'vlan-table' array in query-rx-filter response"
-msgstr ""
+msgstr "Saknad eller felaktig vektor ”vlan-table” i query-rx-filter-svaret"
 
 #, c-format
 msgid "Missing or invalid CPU frequency in %s"
-msgstr ""
+msgstr "Saknad eller felaktig CPU-frekvens i %s"
 
 #, c-format
 msgid "Missing or invalid PVR mask in CPU model %s"
-msgstr ""
+msgstr "Saknad eller felaktig PVR-mask i CPU-modellen %s"
 
 #, c-format
 msgid "Missing or invalid PVR value in CPU model %s"
-msgstr ""
+msgstr "Saknat eller felaktigt PVR-värde i CPU-modellen %s"
 
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'multicast' list in query-rx-filter "
 "response"
 msgstr ""
+"Saknat eller felaktigt element %zu i listan ”multicast” i query-rx-filter-"
+"svaret"
 
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'unicast' list in query-rx-filter response"
 msgstr ""
+"Saknat eller felaktigt element %zu i listan ”unicast” i query-rx-filter-"
+"svaret"
 
 #, c-format
 msgid ""
 "Missing or invalid element %zu of 'vlan-table' array in query-rx-filter "
 "response"
 msgstr ""
+"Saknad eller felaktig element %zu i vektorn ”vlan-table” i query-rx-filter-"
+"svaret"
 
 msgid "Missing or invalid name in query-rx-filter response"
-msgstr ""
+msgstr "Saknat eller felaktigt namn i query-rx-filter-svaret"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
 msgstr ""
@@ -38960,6 +38959,222 @@ msgstr ""
 msgid "{[--%s] <string>}..."
 msgstr "--%s <sträng>"
 
+#, c-format
+msgid "unknown disk type '%s'"
+msgstr "okänd disktyp ”%s”"
+
+#, c-format
+msgid "Could not find placement for v1 controller %s"
+msgstr "Kunde inte hitta en placering av v1-styrenheten %s"
+
+msgid "Failed to create thread to handle firewall reload/restart"
+msgstr ""
+"Misslyckades att skapa en tråd för att hantera omladdning/omstart av "
+"brandväggen"
+
+msgid ""
+"Host not compatible with KVM; HW virtualization CPU features not found. Only "
+"emulated CPUs are available; performance will be significantly limited"
+msgstr ""
+"Värden är inte kompatibel med KVM; CPU-funktioner för hårdvaruvirtualisering "
+"finns inte. Endast emulerade CPU:er är tillgängliga; prestandan kommer att "
+"vara kraftigt begränsad"
+
+msgid "Invalid async job start"
+msgstr "Felaktig async-jobbstart"
+
+#, c-format
+msgid ""
+"Invalid value for attribute '%s' in element '%s': '%s'. Expected non-"
+"negative value"
+msgstr ""
+"Felaktigt värde på attributet ”%s” i elementet ”%s”: ”%s”. Ett icke-negativt "
+"värde förväntades"
+
+msgid "Missing source element for nvram"
+msgstr ""
+
+msgid "Not enough arguments passed, nothing to set"
+msgstr ""
+
+msgid "QEMU reports migration is still running"
+msgstr ""
+
+#, c-format
+msgid "another migration job is already running for domain '%s'"
+msgstr ""
+
+msgid "backingStore is not supported with NVRAM"
+msgstr ""
+
+msgid "backup"
+msgstr ""
+
+#, c-format
+msgid "cannot parse thread pool size '%s' for virtiofs"
+msgstr ""
+
+msgid "current job is not outgoing migration in post-copy mode"
+msgstr ""
+
+#, c-format
+msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
+msgstr ""
+
+msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
+msgstr ""
+
+msgid "domain core dump"
+msgstr ""
+
+msgid "domain save"
+msgstr ""
+
+msgid "failed to parse pre-migration memlock limit"
+msgstr ""
+
+msgid "interrupt post-copy migration"
+msgstr ""
+
+#, c-format
+msgid "job '%s' canceled by client"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed due to I/O error"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed in post-copy phase"
+msgstr ""
+
+#, c-format
+msgid "job '%s' failed: %s"
+msgstr ""
+
+#, c-format
+msgid "job '%s' is not active"
+msgstr ""
+
+#, c-format
+msgid "job '%s' unexpectedly failed"
+msgstr ""
+
+msgid "lower boundary for worker thread pool"
+msgstr ""
+
+msgid "migration in"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is being actively monitored by another thread"
+msgstr ""
+
+#, c-format
+msgid "migration of domain %s is not in post-copy phase"
+msgstr ""
+
+msgid "migration out"
+msgstr ""
+
+msgid "modern nvram specification is not supported by this qemu"
+msgstr ""
+
+#, c-format
+msgid "only bus 'virtio' is supported for input model '%s'"
+msgstr ""
+
+msgid "persistent reservations are not supported with NVRAM"
+msgstr ""
+
+#, c-format
+msgid "post-copy migration of domain %s has not failed"
+msgstr ""
+
+msgid "resetting of nvram is not supported with network backed nvram"
+msgstr ""
+
+msgid "resume failed post-copy migration"
+msgstr ""
+
+#, c-format
+msgid "resuming failed post-copy migration of domain %s already in progress"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires change protection"
+msgstr ""
+
+msgid "resuming failed post-copy migration requires post-copy to be enabled"
+msgstr ""
+
+msgid "set the value for reduction of the IOThread polling time"
+msgstr ""
+
+msgid "slices are not supported with NVRAM"
+msgstr ""
+
+msgid "snapshot"
+msgstr ""
+
+msgid "start"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be a positive number or -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid "thread_pool_max must be a positive integer"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than -1"
+msgstr ""
+
+#, c-format
+msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
+msgstr ""
+
+msgid ""
+"thread_pool_min and thread_pool_max is not supported by this QEMU binary"
+msgstr ""
+
+msgid "thread_pool_min must be smaller or equal to thread_pool_max"
+msgstr ""
+
+msgid "tunnelFD argument is required for tunnelled migration"
+msgstr ""
+
+#, c-format
+msgid "unexpected migration schema: %d"
+msgstr ""
+
+#, c-format
+msgid "unsupported nvram disk type '%s'"
+msgstr ""
+
+msgid "upper boundary for worker thread pool"
+msgstr ""
+
+msgid "use zero-copy mechanism for migrating memory pages"
+msgstr ""
+
+msgid "wrap xpath results in an common root element"
+msgstr ""
+
+msgid "xpath expression to filter the XML document"
+msgstr ""
+
+msgid "zero-copy is only available for parallel migration"
+msgstr ""
+
 #~ msgid "%s: unable to determine access mode of fd %d"
 #~ msgstr "%s: kan inte avgöra åtkomsträttigheter på fb: %d"
 
@@ -39018,9 +39233,6 @@ msgstr "--%s <sträng>"
 #, fuzzy
 #~ msgid "unknown disk snapshot type '%s'"
 #~ msgstr "okänd diskbusstyp ”%s”"
-
-#~ msgid "unknown disk type '%s'"
-#~ msgstr "okänd disktyp ”%s”"
 
 #, fuzzy
 #~ msgid "unknown memory snapshot setting '%s'"
