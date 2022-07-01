@@ -9949,7 +9949,7 @@ virDomainFSDefParseXML(virDomainXMLOption *xmlopt,
             virStrToLong_i(thread_pool_size, NULL, 10, &def->thread_pool_size) < 0) {
             virReportError(VIR_ERR_XML_ERROR,
                            _("cannot parse thread pool size '%s' for virtiofs"),
-                           queue_size);
+                           thread_pool_size);
             goto error;
         }
 
