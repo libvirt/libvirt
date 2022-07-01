@@ -8,12 +8,8 @@ the changes introduced by each of them.
 For a more fine-grained view, use the `git log`_.
 
 
-v8.5.0 (unreleased)
+v8.5.0 (2022-07-01)
 ===================
-
-* **Security**
-
-* **Removed features**
 
 * **New features**
 
