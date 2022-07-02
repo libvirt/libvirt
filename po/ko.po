@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-06-27 06:24+0000\n"
-"PO-Revision-Date: 2022-06-30 00:21+0000\n"
+"PO-Revision-Date: 2022-07-02 01:18+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -2508,7 +2508,7 @@ msgid "Can't add USB hub: USB is disabled for this domain"
 msgstr "USB 허브를 추가할 수 없음: USB는 이 도메인에 비활성화되어 있음"
 
 msgid "Can't add USB input device. USB bus is disabled"
-msgstr "USB 입력 장치를 추가할 수 없습니다. USB 버스가 비활성화되어 있습니다"
+msgstr "USB 입력 장치를 추가 할 수 없습니다. USB 버스가 비활성화 되었습니다"
 
 msgid "Can't add another USB controller: USB is disabled for this domain"
 msgstr ""
@@ -20488,7 +20488,7 @@ msgid "backing store protocol '%s' is not yet supported"
 msgstr "백업 저장소 통신규약 '%s' 아직 지원하지 않습니다"
 
 msgid "backingStore is not supported with NVRAM"
-msgstr ""
+msgstr "백업저장소는 NVRAM에서 지원하지 않습니다"
 
 msgid "backingStore is not supported with vhostuser disk"
 msgstr "backingStore는 vhostuser 디스크에서 지원되지 않습니다"
@@ -21075,9 +21075,8 @@ msgid "cannot add netlink membership"
 msgstr "넷링크 멤버십을 추가할 수 없습니다"
 
 msgid "cannot add redirected USB device: USB is disabled for this domain"
-msgstr ""
-"리디렉션된 USB 장치를 추가할 수 없음: 이 도메인에 대해 USB가 비활성화되어 있"
-"습니다"
+msgstr "리디렉션된 USB 장치를 추가 할 수 없음: USB는 이 도메인에 대해 비활성화 "
+"되었습니다"
 
 #, c-format
 msgid "cannot allocate %llu bytes in file '%s'"
@@ -21968,7 +21967,7 @@ msgstr "lunStr '%s'의 대상을 구문 분석할 수 없습니다"
 
 #, c-format
 msgid "cannot parse thread pool size '%s' for virtiofs"
-msgstr ""
+msgstr "virtiofs를 위해 쓰레드 풀 크기 '%s'를 구문 분석 할 수 없습니다"
 
 #, c-format
 msgid "cannot parse usage '%s' for RAM filesystem"
@@ -23564,7 +23563,7 @@ msgid "current bridge device name"
 msgstr "현재 브리지 장치 이름"
 
 msgid "current job is not outgoing migration in post-copy mode"
-msgstr ""
+msgstr "현재 작업은 사후-복사 방식에서 외부로 이전 할 수 없습니다"
 
 msgid "current vcpu count must equal maximum"
 msgstr "현재 vcpu 수는 최대값과 같아야 합니다"
@@ -24193,10 +24192,10 @@ msgstr "디스크 원본 경로가 빠졌습니다"
 
 #, c-format
 msgid "disk startupPolicy '%s' is not allowed for disk of '%s' type"
-msgstr ""
+msgstr "디스크 시작정책 '%s'는 '%s' 유형의 디스크에 허용되지 않습니다"
 
 msgid "disk startupPolicy 'requisite' is allowed only for cdrom or floppy"
-msgstr ""
+msgstr "디스크 시작정책 '필수품'는 CD롬 또는 플로피만 허용됩니다"
 
 #, c-format
 msgid "disk target %s not found"
@@ -24389,7 +24388,7 @@ msgid "domain control interface state"
 msgstr "도메인 제어 연결장치 상태"
 
 msgid "domain core dump"
-msgstr ""
+msgstr "도메인 코어 덤프"
 
 msgid "domain display connection URI"
 msgstr "도메인 디스플레이 연결 URI"
@@ -24498,7 +24497,7 @@ msgid "domain name, id or uuid"
 msgstr "도메인명, id 또는 uuid"
 
 msgid "domain save"
-msgstr ""
+msgstr "도메인 저장"
 
 msgid "domain snapshot XML"
 msgstr "도메인 스냅샷 XML"
@@ -26053,7 +26052,7 @@ msgid "failed to parse port number '%s'"
 msgstr "포트 번호 '%s'을(를) 구문 분석하지 못했습니다"
 
 msgid "failed to parse pre-migration memlock limit"
-msgstr ""
+msgstr "사전-이전 memlock 제한을 구문 분석 할 수 없음"
 
 msgid "failed to parse qemu capabilities cpus"
 msgstr "qemu 기능 CPU를 구문 분석하지 못했습니다"
@@ -27719,7 +27718,7 @@ msgid "internal use only"
 msgstr "오직 내부 사용"
 
 msgid "interrupt post-copy migration"
-msgstr ""
+msgstr "복사-후 이전 중단"
 
 msgid "intr:"
 msgstr "소개:"
@@ -28537,27 +28536,27 @@ msgstr "ivshmem 장치는 이 QEMU 바이너리에서 지원되지 않습니다"
 
 #, c-format
 msgid "job '%s' canceled by client"
-msgstr ""
+msgstr "클라이언트가 작업 '%s'를 취소했습니다"
 
 #, c-format
 msgid "job '%s' failed due to I/O error"
-msgstr ""
+msgstr "작업 '%s'가 입/출력 오류로 실패하였습니다"
 
 #, c-format
 msgid "job '%s' failed in post-copy phase"
-msgstr ""
+msgstr "작업 '%s'가 사후-복사 단계에서 실패하였습니다"
 
 #, c-format
 msgid "job '%s' failed: %s"
-msgstr ""
+msgstr "작업'%s'가 실패함: %s"
 
 #, c-format
 msgid "job '%s' is not active"
-msgstr ""
+msgstr "작업 '%s'가 동작하지 않습니다"
 
 #, c-format
 msgid "job '%s' unexpectedly failed"
-msgstr ""
+msgstr "작업 '%s'가 예상치 않게 실패했습니다"
 
 #, c-format
 msgid "job type '%s' does not support pivot"
@@ -29102,7 +29101,7 @@ msgid "loop until timeout or interrupt, rather than one-shot"
 msgstr "원샷이 보다는, 타임아웃 또는 인터럽트까지 루프"
 
 msgid "lower boundary for worker thread pool"
-msgstr ""
+msgstr "작업자 쓰레드 풀의 최저 한계"
 
 msgid "luks2 is currently not supported by the qemu encryption engine"
 msgstr "luks2는 현재 qemu 암호화 엔진에서 지원되지 않습니다"
@@ -29654,7 +29653,7 @@ msgid "migration canceled"
 msgstr "이전 취소됨"
 
 msgid "migration in"
-msgstr ""
+msgstr "이전"
 
 #, c-format
 msgid "migration of disk %s failed"
@@ -29666,11 +29665,11 @@ msgstr "디스크 %s의 이전이 실패됨: %s"
 
 #, c-format
 msgid "migration of domain %s is being actively monitored by another thread"
-msgstr ""
+msgstr "도메인 %s의 이전이 다른 쓰레드에서 활동적으로 관리되고 있습니다"
 
 #, c-format
 msgid "migration of domain %s is not in post-copy phase"
-msgstr ""
+msgstr "도메인 %s의 이전은 복사-후 단계가 아닙니다"
 
 msgid ""
 "migration of non-shared storage is not supported with tunnelled migration "
@@ -29679,7 +29678,7 @@ msgstr ""
 "비-공유된 저장소의 이전은 터널링된 이전과 이 QEMU에서 지원되지 않습니다"
 
 msgid "migration out"
-msgstr ""
+msgstr "외부 이전"
 
 #, c-format
 msgid "migration parameter '%s' must be less than %llu"
@@ -30685,7 +30684,7 @@ msgid "model type"
 msgstr "모델 유형"
 
 msgid "modern nvram specification is not supported by this qemu"
-msgstr ""
+msgstr "최신 nvram 규격은 이와 같은 qemu에서 지원하지 않습니다"
 
 msgid "modifies an existing IOThread of the guest domain"
 msgstr "게스트 도메인의 기존 IOThread를 수정합니다"
@@ -32053,7 +32052,7 @@ msgstr "'패스스루' 입력 장치에는 'virtio' 버스만 지원됩니다"
 
 #, c-format
 msgid "only bus 'virtio' is supported for input model '%s'"
-msgstr ""
+msgstr "'virtio' 버스만만 입력 모델 '%s'를 지원합니다"
 
 msgid "only can reboot running/paused domain"
 msgstr "실행/일시 중지된 도메인만 재부팅할 수 있습니다"
@@ -32612,7 +32611,7 @@ msgid "persistent detach of device is not supported"
 msgstr "장치의 영구 분리는 지원되지 않습니다"
 
 msgid "persistent reservations are not supported with NVRAM"
-msgstr ""
+msgstr "지속적인 예약은 NVRAM을 지원하지 않습니다"
 
 #, c-format
 msgid "persistent update of device '%s' is not supported"
@@ -32757,7 +32756,7 @@ msgstr "사후-복사 이전은 비-실시간 또는 일시 중지된 이전에�
 
 #, c-format
 msgid "post-copy migration of domain %s has not failed"
-msgstr ""
+msgstr "도메인 %s의 복사-후 이전이 실패하지 않았습니다"
 
 msgid "potentially unsafe disk format probing"
 msgstr "잠재적으로 안전하지 않은 디스크 형식 검사"
@@ -33595,7 +33594,7 @@ msgid "reset the domain after core dump"
 msgstr "코어 덤프한 도메인을 재설정"
 
 msgid "resetting of nvram is not supported with network backed nvram"
-msgstr ""
+msgstr "nvram의 재설정은 네트워크 백업 nvram을 지원하지 않습니다"
 
 msgid "resize a vol"
 msgstr "볼륨 크기 조정"
@@ -33633,7 +33632,7 @@ msgid "resume a domain"
 msgstr "도메인을 다시 시작"
 
 msgid "resume failed post-copy migration"
-msgstr ""
+msgstr "실패한 복사-후 이전을 재시작"
 
 msgid "resume operation failed"
 msgstr "재개 동작이 실패했습니다"
@@ -33646,13 +33645,13 @@ msgstr "스냅샷 실패 후 재개"
 
 #, c-format
 msgid "resuming failed post-copy migration of domain %s already in progress"
-msgstr ""
+msgstr "이미 진행 중인 도메인 %s의 실패한 복사-후 이전 재시작"
 
 msgid "resuming failed post-copy migration requires change protection"
-msgstr ""
+msgstr "실패한 복사-후 이전의 재시작은 변경된 보호가 필요합니다"
 
 msgid "resuming failed post-copy migration requires post-copy to be enabled"
-msgstr ""
+msgstr "실패한 복사-후 이전의 재시작은 복사-후를 활성화하여야 합니다"
 
 msgid "retrieve client's identity info from server"
 msgstr "서버에서 클라이언트의 ID 정보 검색"
@@ -34029,7 +34028,7 @@ msgid "set the user password inside the domain"
 msgstr "도메인 내부의 사용자 비밀번호 설정"
 
 msgid "set the value for reduction of the IOThread polling time"
-msgstr ""
+msgstr "IOT 쓰레드 주기별 응답시간의 감소를 위한 값을 설정합니다"
 
 msgid "set the value to increase the IOThread polling time"
 msgstr "값을 설정하여 IOThread 폴링 시간을 늘리십시오"
@@ -34275,10 +34274,10 @@ msgid "skipped restricted file"
 msgstr "건너뛴 제한된 파일"
 
 msgid "slices are not supported with NVRAM"
-msgstr ""
+msgstr "슬라이스는 NVRAM을 지원하지 않습니다"
 
 msgid "snapshot"
-msgstr ""
+msgstr "스냅샷"
 
 #, c-format
 msgid "snapshot %s disappeared from list"
@@ -34454,7 +34453,7 @@ msgid "ssl verification setting is not supported by this QEMU binary"
 msgstr "이 QEMU 바이너리는 SSL 확인 설정을 지원하지 않습니다"
 
 msgid "start"
-msgstr ""
+msgstr "시작"
 
 msgid "start a (previously defined) inactive domain"
 msgstr "(기존에 정의된) 비활성화 도메인 시작"
@@ -35144,33 +35143,34 @@ msgstr "이 저장소 볼륨이 이미 있습니다"
 
 #, c-format
 msgid "thread_pool_max (%d) must be a positive number or -1"
-msgstr ""
+msgstr "thread_pool_max (%d)은 양수 또는 -1이어야 합니다"
 
 #, c-format
 msgid "thread_pool_max (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "thread_pool_max (%d)는 실시간 변경을 위해 0보다 같거나 커야 합니다"
 
 msgid "thread_pool_max must be a positive integer"
-msgstr ""
+msgstr "thread_pool_max는 양의 정수이어야 합니다"
 
 #, c-format
 msgid "thread_pool_min (%d) can't be greater than thread_pool_max (%d)"
-msgstr ""
+msgstr "thread_pool_min (%d)은 thread_pool_max (%d)보다 클 수 없습니다"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than -1"
-msgstr ""
+msgstr "thread_pool_min (%d)은 -1보다 같거나 커야 합니다"
 
 #, c-format
 msgid "thread_pool_min (%d) must be equal to or greater than 0 for live change"
-msgstr ""
+msgstr "hread_pool_min (%d)은 실시간 변경을 위해 0과 같거나 커야 합니다"
 
 msgid ""
 "thread_pool_min and thread_pool_max is not supported by this QEMU binary"
-msgstr ""
+msgstr "thread_pool_min and thread_pool_max 는 이와 같은 QEMU 바이너리에서 지원되지 "
+"않습니다"
 
 msgid "thread_pool_min must be smaller or equal to thread_pool_max"
-msgstr ""
+msgstr "thread_pool_min은 thread_pool_max 보다 작거나 동일해야 합니다"
 
 msgid "threshold as a scaled number (by default bytes)"
 msgstr "스케일된 숫자로서의 임계값(기본적으로 바이트)"
@@ -35653,7 +35653,7 @@ msgid "tty console"
 msgstr "tty 콘솔"
 
 msgid "tunnelFD argument is required for tunnelled migration"
-msgstr ""
+msgstr "tunnelFD 인수는 터널링된 이전을 위해 필요합니다"
 
 msgid "tunnelled migration"
 msgstr "터널링된 이전"
@@ -36477,7 +36477,7 @@ msgstr "예상치 못한 메시지 유형"
 
 #, c-format
 msgid "unexpected migration schema: %d"
-msgstr ""
+msgstr "기대하지 않은 이전 개요: %d"
 
 #, c-format
 msgid "unexpected migration status in %s"
@@ -37515,7 +37515,7 @@ msgstr "지원되지 않는 numatune 방식: '%d'"
 
 #, c-format
 msgid "unsupported nvram disk type '%s'"
-msgstr ""
+msgstr "지원되지 않는 vnram 디스크 유형 '%s'"
 
 #, c-format
 msgid "unsupported nvram template format '%s'"
@@ -37622,7 +37622,7 @@ msgid "upload file contents to a volume"
 msgstr "볼륨에 파일 컨텐츠를 업로드함"
 
 msgid "upper boundary for worker thread pool"
-msgstr ""
+msgstr "작업자 쓰레드 풀을 위한 상위 경계"
 
 #, c-format
 msgid "uptime file has unexpected format '%s'"
@@ -37685,7 +37685,7 @@ msgid "use virDomainMigrateToURI3 for peer-to-peer migration"
 msgstr "장치간 이전을 위해 virDomainMigrateToURI3를 사용합니다"
 
 msgid "use zero-copy mechanism for migrating memory pages"
-msgstr ""
+msgstr "이전하는 메모리 부분을 위한 제로-카피 원리를 사용"
 
 msgid "user"
 msgstr "사용자"
@@ -38576,7 +38576,7 @@ msgid "with redefine, set current snapshot"
 msgstr "재정의로 현재 스냅샷 설정"
 
 msgid "wrap xpath results in an common root element"
-msgstr ""
+msgstr "wrap xpath는 일반 root 요소로 나타납니다"
 
 msgid "write I/O operations limit per second"
 msgstr "초당 쓰기 I/O 작업 제한"
@@ -38626,7 +38626,7 @@ msgid "xml modification unsupported"
 msgstr "xml 수정은 지원되지 않음"
 
 msgid "xpath expression to filter the XML document"
-msgstr ""
+msgstr "XML 문서를 필터링 하는 xpath 표현식"
 
 #, c-format
 msgid "xsd:dateTime value '%s' has unexpected format"
