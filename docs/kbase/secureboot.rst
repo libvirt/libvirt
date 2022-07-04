@@ -49,7 +49,7 @@ snippet:
   </os>
 
 Versions older than 7.2.0 require manually providing all information
-about the firmware and are not covered here. Plese refer to `the
+about the firmware and are not covered here. Please refer to `the
 relevant documentation
 <../formatdomain.html#operating-system-booting>`__ for details.
 

@@ -2726,7 +2726,7 @@ qemuMigrationAnyCanResume(virDomainObj *vm,
 
     /* This should never happen since POSTCOPY_RESUME is newer than
      * CHANGE_PROTECTION, but let's check it anyway in case we're talking to
-     * a weired client.
+     * a weird client.
      */
     if (job == VIR_ASYNC_JOB_MIGRATION_OUT &&
         expectedPhase < QEMU_MIGRATION_PHASE_PERFORM_RESUME &&

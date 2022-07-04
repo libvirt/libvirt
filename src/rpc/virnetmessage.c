@@ -437,7 +437,7 @@ int virNetMessageDecodePayload(virNetMessage *msg,
  * virNetMessageEncodePayloadRaw:
  * @msg: message to encode payload into
  * @data: data to encode into @msg
- * @len: lenght of @data
+ * @len: length of @data
  *
  * Encodes message payload. If @data is NULL or @len is 0 an empty message is
  * encoded.
