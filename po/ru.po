@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-06-27 06:24+0000\n"
-"PO-Revision-Date: 2022-06-20 09:42+0000\n"
+"PO-Revision-Date: 2022-07-04 01:18+0000\n"
 "Last-Translator: Sergey A. <sw@atrus.ru>\n"
 "Language-Team: Russian <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ru/>\n"
@@ -1148,11 +1148,11 @@ msgstr "атрибуты «%s» «%s» не должны перекрывать�
 
 #, c-format
 msgid "'%s' controller cannot be hot plugged."
-msgstr "Контроллер «%s»  не может быть подключён в режиме горячей замены."
+msgstr "Контроллер «%s» не может быть подключён в режиме горячей замены."
 
 #, c-format
 msgid "'%s' controller cannot be hot unplugged."
-msgstr "Контроллер «%s»  не может быть отключён в режиме горячей замены."
+msgstr "Контроллер «%s» не может быть отключён в режиме горячей замены."
 
 #, c-format
 msgid "'%s' controller only supports up to '%u' ports"
@@ -1213,7 +1213,7 @@ msgstr "«%s» начиная с %llu имеет только %zd доступн
 msgid ""
 "'--wipe-storage' requires '--storage <string>' or '--remove-all-storage'"
 msgstr ""
-"--wipe-storage  должен использоваться вместе с параметром --storage <строка> "
+"--wipe-storage должен использоваться вместе с параметром --storage <строка> "
 "или --remove-all-storage"
 
 #, c-format
@@ -1226,7 +1226,7 @@ msgstr ""
 "«adapter»"
 
 msgid "'address' is not supported for 'ramfb' video devices"
-msgstr "«address» не поддерживается для видеоустройств «ramfb» "
+msgstr "«address» не поддерживается для видеоустройств «ramfb»"
 
 msgid "'address' must be specified for scsi hostdev source"
 msgstr ""
@@ -1437,8 +1437,7 @@ msgid "'virtio-s390' addresses are no longer supported"
 msgstr ""
 
 msgid "'wwnn' and 'wwpn' must be specified for adapter type 'fchost'"
-msgstr ""
-"для адаптера типа «fc_host» необходимо указать атрибуты «wwnn» и «wwpn» "
+msgstr "для адаптера типа «fc_host» необходимо указать атрибуты «wwnn» и «wwpn»"
 
 msgid "(<null>)"
 msgstr ""
@@ -1604,7 +1603,7 @@ msgid "--descendants requires either --from or --current"
 msgstr "--descendants требует указания --from или --current"
 
 msgid "--format only works with --memory-only"
-msgstr "--format может использоваться только вместе с  --memory-only"
+msgstr "--format может использоваться только вместе с --memory-only"
 
 msgid ""
 "--listen parameter not permitted with systemd activation sockets, see 'man "
@@ -1728,7 +1727,7 @@ msgid ""
 "<virtualport type='%s'> not supported for network '%s' which uses an SR-IOV "
 "Virtual Function via PCI passthrough"
 msgstr ""
-"<virtualport type='%s'> не поддерживается для сети «%s», так как эта сеть  "
+"<virtualport type='%s'> не поддерживается для сети «%s», так как эта сеть "
 "использует виртуальные функции SR-IOV для сквозного режима PCI"
 
 #, c-format
@@ -1740,8 +1739,8 @@ msgid ""
 "<virtualport> element unsupported for type='%s' in interface's <actual> "
 "element"
 msgstr ""
-"<virtualport>  не поддерживается, если секция интерфейса <actual> содержит "
-"«type='%s'» "
+"<virtualport> не поддерживается, если секция интерфейса <actual> содержит "
+"«type='%s'»"
 
 #, c-format
 msgid ""
@@ -1794,7 +1793,7 @@ msgid ""
 "A single <secret type='passphrase'...> element is expected in encryption "
 "description"
 msgstr ""
-"В описании шифрования ожидается один элемент <secret type='passphrase'...> "
+"В описании шифрования ожидается один элемент <secret type='passphrase'...>"
 
 msgid "A storage driver is already registered"
 msgstr "Драйвер управления доступом к данным уже зарегистрирован"
@@ -6950,7 +6949,7 @@ msgid "Failed to create pool from %s"
 msgstr "Не удалось создать пул из %s"
 
 msgid "Failed to create reboot thread, killing domain"
-msgstr "Не удалось создать поток перезагрузки. Домен будет остановлен."
+msgstr "Не удалось создать поток перезагрузки, прекращение работы домена."
 
 #, c-format
 msgid "Failed to create save dir %s"
@@ -6993,7 +6992,7 @@ msgid "Failed to create thread to handle daemon restart"
 msgstr "Не удалось создать поток для управления перезапуском фоновой службы"
 
 msgid "Failed to create thread to handle domain death"
-msgstr ""
+msgstr "Не удалось создать поток для управления прекращением работы домена"
 
 msgid "Failed to create thread to handle domain shutdown"
 msgstr "Не удалось создать поток для управления выключением домена"
@@ -7058,7 +7057,7 @@ msgstr "Не удалось создать определение интерфе
 
 #, c-format
 msgid "Failed to define node device from '%s'"
-msgstr ""
+msgstr "Не удалось определить узловое устройство из «%s»"
 
 #, c-format
 msgid "Failed to define pool %s"
@@ -9952,7 +9951,7 @@ msgid ""
 "Invalid chain name '%s'. Please use a chain name called '%s' or any of the "
 "following prefixes: "
 msgstr ""
-"Недопустимое имя цепочки «%s». Используйте «%s» или имена с префиксами:"
+"Недопустимое имя цепочки «%s». Используйте «%s» или имена с префиксами: "
 
 #, c-format
 msgid "Invalid character '%c' in id '%s' of network '%s'"
@@ -10841,7 +10840,7 @@ msgid ""
 msgstr ""
 
 msgid "Logging filters: "
-msgstr "Фильтры журналирования:"
+msgstr "Фильтры журналирования: "
 
 msgid "Logging outputs: "
 msgstr "Выводы в журнал: "
@@ -13646,12 +13645,13 @@ msgid ""
 "Prints global help, command specific help, or help for a\n"
 "    group of related commands"
 msgstr ""
-"Вывод общей справки, справки по отдельным командам или группам команд. "
+"Вывод общей справки, справки по отдельным командам\n"
+"    или группам команд"
 
 msgid ""
 "Prints global help, command specific help, or help for a group of related "
 "commands"
-msgstr "Вывод общей справки, справки по отдельной команде или группе команд. "
+msgstr "Вывод общей справки, справки по отдельной команде или группе команд"
 
 msgid "Prints memory stats of the node."
 msgstr "Возвращает статистику памяти узла."
@@ -14265,7 +14265,7 @@ msgstr "Запущено вместе с фоновой службой: %d.%d.%d
 
 #, sh-format
 msgid "Running guests on $uri URI: "
-msgstr "Активные гости на $uri:"
+msgstr "Активные гости на $uri: "
 
 #, c-format
 msgid "Running hypervisor: %s %d.%d.%d\n"
@@ -15315,7 +15315,7 @@ msgstr "Приостановлен"
 
 #, sh-format
 msgid "Suspending $name: "
-msgstr "Приостановка $name:"
+msgstr "Приостановка $name: "
 
 #, sh-format
 msgid "Suspending guests on $uri URI..."
@@ -20060,7 +20060,7 @@ msgstr ""
 "Контроллер V1 «%s» не является желательным, но вместе с ним монтируется «%s»"
 
 msgid "VCPU"
-msgstr "Виртуальный процессор:"
+msgstr "VCPU"
 
 msgid "VCPU:"
 msgstr "Виртуальный процессор::"
