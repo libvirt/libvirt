@@ -2583,6 +2583,27 @@ virDomainGraphicsDefValidate(const virDomainDef *def,
 }
 
 static int
+virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
+{
+    switch (iommu->model) {
+    case VIR_DOMAIN_IOMMU_MODEL_INTEL:
+    case VIR_DOMAIN_IOMMU_MODEL_SMMUV3:
+        if (iommu->info.type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_NONE) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("iommu model '%s' can't have address"),
+                           virDomainIOMMUModelTypeToString(iommu->model));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
+    case VIR_DOMAIN_IOMMU_MODEL_LAST:
+    }
+
+    return 0;
+}
+
+static int
 virDomainDeviceInfoValidate(const virDomainDeviceDef *dev)
 {
     virDomainDeviceInfo *info;
@@ -2683,6 +2704,9 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_GRAPHICS:
         return virDomainGraphicsDefValidate(def, dev->data.graphics);
 
+    case VIR_DOMAIN_DEVICE_IOMMU:
+        return virDomainIOMMUDefValidate(dev->data.iommu);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_HUB:
@@ -2690,7 +2714,6 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_NVRAM:
     case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
-    case VIR_DOMAIN_DEVICE_IOMMU:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
         break;
