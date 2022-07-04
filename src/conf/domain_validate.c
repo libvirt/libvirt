@@ -2598,6 +2598,7 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
 
     case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
     case VIR_DOMAIN_IOMMU_MODEL_LAST:
+        break;
     }
 
     return 0;
