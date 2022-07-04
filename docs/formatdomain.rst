@@ -8083,6 +8083,9 @@ Example:
       mapping larger iova addresses in the guest. :since:`Since 6.5.0` (QEMU/KVM
       only)
 
+The ``virtio`` IOMMU devices can further have ``address`` element as described
+in `Device addresses`_ (address has to by type of ``pci``).
+
 
 Vsock
 ~~~~~
