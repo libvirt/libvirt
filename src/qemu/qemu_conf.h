@@ -377,3 +377,5 @@ int qemuGetMemoryBackingPath(virQEMUDriver *driver,
 
 int qemuHugepageMakeBasedir(virQEMUDriver *driver,
                             virHugeTLBFS *hugepage);
+
+qemuNbdkitCaps* qemuGetNbdkitCaps(virQEMUDriver *driver);

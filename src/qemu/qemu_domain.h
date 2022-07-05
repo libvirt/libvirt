@@ -33,6 +33,7 @@
 #include "qemu_conf.h"
 #include "qemu_capabilities.h"
 #include "qemu_migration_params.h"
+#include "qemu_nbdkit.h"
 #include "qemu_slirp.h"
 #include "qemu_fd.h"
 #include "virchrdev.h"
@@ -308,6 +309,9 @@ struct _qemuDomainStorageSourcePrivate {
 
     /* file descriptors if user asks for FDs to be passed */
     qemuFDPass *fdpass;
+
+    /* an nbdkit process for serving network storage sources */
+    qemuNbdkitProcess *nbdkitProcess;
 };
 
 virObject *qemuDomainStorageSourcePrivateNew(void);

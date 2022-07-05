@@ -1655,3 +1655,25 @@ qemuHugepageMakeBasedir(virQEMUDriver *driver,
 
     return 0;
 }
+
+
+/*
+ * qemuGetNbdkitCaps:
+ * @driver: the qemu driver
+ *
+ * Gets the capabilities for Nbdkit for the specified driver. These can be used
+ * to determine whether a particular disk source can be served by nbdkit or
+ * not.
+ *
+ * Returns: a reference to qemuNbdkitCaps or NULL
+ */
+qemuNbdkitCaps*
+qemuGetNbdkitCaps(virQEMUDriver *driver)
+{
+    g_autofree char *nbdkitBinary = virFindFileInPath("nbdkit");
+
+    if (!nbdkitBinary)
+        return NULL;
+
+    return virFileCacheLookup(driver->nbdkitCapsCache, nbdkitBinary);
+}

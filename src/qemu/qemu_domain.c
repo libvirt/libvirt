@@ -882,6 +882,7 @@ qemuDomainStorageSourcePrivateDispose(void *obj)
     g_clear_pointer(&priv->httpcookie, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->tlsKeySecret, qemuDomainSecretInfoFree);
     g_clear_pointer(&priv->fdpass, qemuFDPassFree);
+    g_clear_pointer(&priv->nbdkitProcess, qemuNbdkitProcessFree);
 }
 
 
@@ -10459,6 +10460,34 @@ qemuDomainPrepareStorageSourceNFS(virStorageSource *src)
 }
 
 
+/* qemuPrepareStorageSourceNbdkit:
+ * @src: source for a disk
+ *
+ * If src is an network source that is managed by nbdkit, prepare data so that
+ * nbdkit can be launched before the domain is started
+ *
+ * Returns true if nbdkit will be used for this source,
+ */
+static bool
+qemuDomainPrepareStorageSourceNbdkit(virStorageSource *src,
+                                     virQEMUDriverConfig *cfg,
+                                     const char *alias,
+                                     qemuDomainObjPrivate *priv)
+{
+    g_autoptr(qemuNbdkitCaps) nbdkit = NULL;
+
+    if (virStorageSourceGetActualType(src) != VIR_STORAGE_TYPE_NETWORK)
+        return false;
+
+    nbdkit = qemuGetNbdkitCaps(priv->driver);
+    if (!nbdkit)
+        return false;
+
+    return qemuNbdkitInitStorageSource(nbdkit, src, priv->libDir,
+                                       alias, cfg->user, cfg->group);
+}
+
+
 /* qemuProcessPrepareStorageSourceTLS:
  * @source: source for a disk
  * @cfg: driver configuration
@@ -11287,6 +11316,8 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
 
     if (qemuDomainPrepareStorageSourceFDs(src, priv) < 0)
         return -1;
+
+    qemuDomainPrepareStorageSourceNbdkit(src, cfg, src->nodestorage, priv);
 
     return 0;
 }

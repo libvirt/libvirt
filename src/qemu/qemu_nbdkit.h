@@ -20,10 +20,12 @@
 #pragma once
 
 #include "internal.h"
+#include "storage_source_conf.h"
 #include "virenum.h"
 #include "virfilecache.h"
 
 typedef struct _qemuNbdkitCaps qemuNbdkitCaps;
+typedef struct _qemuNbdkitProcess qemuNbdkitProcess;
 
 typedef enum {
     /* 0 */
@@ -43,6 +45,14 @@ virFileCache *
 qemuNbdkitCapsCacheNew(const char *cachedir);
 
 bool
+qemuNbdkitInitStorageSource(qemuNbdkitCaps *nbdkitCaps,
+                            virStorageSource *source,
+                            char *statedir,
+                            const char *alias,
+                            uid_t user,
+                            gid_t group);
+
+bool
 qemuNbdkitCapsGet(qemuNbdkitCaps *nbdkitCaps,
                   qemuNbdkitCapsFlags flag);
 
@@ -52,3 +62,19 @@ qemuNbdkitCapsSet(qemuNbdkitCaps *nbdkitCaps,
 
 #define QEMU_TYPE_NBDKIT_CAPS qemu_nbdkit_caps_get_type()
 G_DECLARE_FINAL_TYPE(qemuNbdkitCaps, qemu_nbdkit_caps, QEMU, NBDKIT_CAPS, GObject);
+
+struct _qemuNbdkitProcess {
+    qemuNbdkitCaps *caps;
+    virStorageSource *source;
+
+    char *pidfile;
+    char *socketfile;
+    uid_t user;
+    gid_t group;
+    pid_t pid;
+};
+
+void
+qemuNbdkitProcessFree(qemuNbdkitProcess *proc);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuNbdkitProcess, qemuNbdkitProcessFree);

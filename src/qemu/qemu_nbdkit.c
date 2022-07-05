@@ -549,3 +549,85 @@ qemuNbdkitCapsCacheNew(const char *cachedir)
     g_autofree char *dir = g_build_filename(cachedir, "nbdkitcapabilities", NULL);
     return virFileCacheNew(dir, "xml", &nbdkitCapsCacheHandlers);
 }
+
+
+static qemuNbdkitProcess *
+qemuNbdkitProcessNew(virStorageSource *source,
+                     const char *pidfile,
+                     const char *socketfile)
+{
+    qemuNbdkitProcess *nbdkit = g_new0(qemuNbdkitProcess, 1);
+    /* weak reference -- source owns this object, so it will always outlive us */
+    nbdkit->source = source;
+    nbdkit->user = -1;
+    nbdkit->group = -1;
+    nbdkit->pid = -1;
+    nbdkit->pidfile = g_strdup(pidfile);
+    nbdkit->socketfile = g_strdup(socketfile);
+
+    return nbdkit;
+}
+
+
+bool
+qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
+                            virStorageSource *source,
+                            char *statedir,
+                            const char *alias,
+                            uid_t user,
+                            gid_t group)
+{
+    qemuDomainStorageSourcePrivate *srcPriv = qemuDomainStorageSourcePrivateFetch(source);
+    g_autofree char *pidname = g_strdup_printf("nbdkit-%s.pid", alias);
+    g_autofree char *socketname = g_strdup_printf("nbdkit-%s.socket", alias);
+    g_autofree char *pidfile = g_build_filename(statedir, pidname, NULL);
+    g_autofree char *socketfile = g_build_filename(statedir, socketname, NULL);
+    qemuNbdkitProcess *proc;
+
+    if (srcPriv->nbdkitProcess)
+        return false;
+
+    switch (source->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            if (!virBitmapIsBitSet(caps->flags, QEMU_NBDKIT_CAPS_PLUGIN_CURL))
+                return false;
+            break;
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            if (!virBitmapIsBitSet(caps->flags, QEMU_NBDKIT_CAPS_PLUGIN_SSH))
+                return false;
+            break;
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            return false;
+    }
+
+    proc = qemuNbdkitProcessNew(source, pidfile, socketfile);
+    proc->caps = g_object_ref(caps);
+    proc->user = user;
+    proc->group = group;
+
+    srcPriv->nbdkitProcess = proc;
+
+    return true;
+}
+
+
+void
+qemuNbdkitProcessFree(qemuNbdkitProcess *proc)
+{
+    g_clear_pointer(&proc->pidfile, g_free);
+    g_clear_pointer(&proc->socketfile, g_free);
+    g_clear_object(&proc->caps);
+    g_free(proc);
+}
