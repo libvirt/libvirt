@@ -36,6 +36,7 @@
 #include "virthreadpool.h"
 #include "locking/lock_manager.h"
 #include "qemu_capabilities.h"
+#include "qemu_nbdkit.h"
 #include "virclosecallbacks.h"
 #include "virhostdev.h"
 #include "virfile.h"
