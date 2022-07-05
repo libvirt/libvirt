@@ -1398,38 +1398,70 @@ qemuDomainSecretStorageSourcePrepareCookies(qemuDomainObjPrivate *priv,
 
 
 /**
- * qemuDomainSecretStorageSourcePrepare:
+ * qemuDomainSecretStorageSourcePrepareEncryption:
  * @priv: domain private object
  * @src: storage source struct to setup
- * @authalias: prefix of the alias for secret holding authentication data
- * @encalias: prefix of the alias for secret holding encryption password
+ * @alias: prefix of the alias for secret holding encryption password
  *
- * Prepares data necessary for encryption and authentication of @src. The two
- * alias prefixes are provided since in the backing chain authentication belongs
- * to the storage protocol data whereas encryption is relevant to the format
- * driver in qemu. The two will have different node names.
+ * Prepares data necessary for encryption of @src.
  *
  * Returns 0 on success; -1 on error while reporting an libvirt error.
  */
 static int
-qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
-                                     virStorageSource *src,
-                                     const char *aliasprotocol,
-                                     const char *aliasformat)
+qemuDomainSecretStorageSourcePrepareEncryption(qemuDomainObjPrivate *priv,
+                                               virStorageSource *src,
+                                               const char *alias)
 {
     qemuDomainStorageSourcePrivate *srcPriv;
-    bool hasEnc = src->encryption && src->encryption->nsecrets > 0;
+    size_t nsecrets = 0;
+    size_t i;
+
+    if (!(src->encryption && src->encryption->nsecrets > 0))
+        return 0;
 
     if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (!src->auth && !hasEnc && src->ncookies == 0)
+    nsecrets = src->encryption->nsecrets;
+
+    srcPriv = qemuDomainStorageSourcePrivateFetch(src);
+
+    srcPriv->enccount = nsecrets;
+    srcPriv->encinfo = g_new0(qemuDomainSecretInfo *, nsecrets);
+    for (i = 0; i < nsecrets; ++i) {
+        if (!(srcPriv->encinfo[i] = qemuDomainSecretInfoSetupFromSecret(priv, alias,
+                                                                        "encryption", i,
+                                                                        VIR_SECRET_USAGE_TYPE_VOLUME,
+                                                                        NULL,
+                                                                        &src->encryption->secrets[i]->seclookupdef)))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+/**
+ * qemuDomainSecretStorageSourcePrepareAuth:
+ * @priv: domain private object
+ * @src: storage source struct to setup
+ * @alias: prefix of the alias for secret holding authentication data
+ *
+ * Prepares data necessary for authentication of @src.
+ *
+ * Returns 0 on success; -1 on error while reporting an libvirt error.
+ */
+static int
+qemuDomainSecretStorageSourcePrepareAuth(qemuDomainObjPrivate *priv,
+                                         virStorageSource *src,
+                                         const char *alias)
+{
+    qemuDomainStorageSourcePrivate *srcPriv;
+
+    if (virStorageSourceIsEmpty(src))
         return 0;
 
-    if (!(src->privateData = qemuDomainStorageSourcePrivateNew()))
-        return -1;
-
-    srcPriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    srcPriv = qemuDomainStorageSourcePrivateFetch(src);
 
     if (src->auth) {
         virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;
@@ -1437,7 +1469,7 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
         if (src->protocol == VIR_STORAGE_NET_PROTOCOL_RBD)
             usageType = VIR_SECRET_USAGE_TYPE_CEPH;
 
-        if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv, aliasprotocol,
+        if (!(srcPriv->secinfo = qemuDomainSecretInfoSetupFromSecret(priv, alias,
                                                                      "auth", 0,
                                                                      usageType,
                                                                      src->auth->username,
@@ -1445,26 +1477,10 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
             return -1;
     }
 
-    if (hasEnc) {
-        size_t nsecrets = src->encryption->nsecrets;
-        size_t i;
-
-        srcPriv->enccount = nsecrets;
-        srcPriv->encinfo = g_new0(qemuDomainSecretInfo *, nsecrets);
-        for (i = 0; i < nsecrets; ++i) {
-            if (!(srcPriv->encinfo[i] = qemuDomainSecretInfoSetupFromSecret(priv, aliasformat,
-                                                                            "encryption", i,
-                                                                            VIR_SECRET_USAGE_TYPE_VOLUME,
-                                                                            NULL,
-                                                                            &src->encryption->secrets[i]->seclookupdef)))
-                return -1;
-        }
-    }
-
     if (src->ncookies &&
         !(srcPriv->httpcookie = qemuDomainSecretStorageSourcePrepareCookies(priv,
                                                                             src,
-                                                                            aliasprotocol)))
+                                                                            alias)))
         return -1;
 
     return 0;
@@ -10988,9 +11004,12 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDef *disk,
     qemuDomainPrepareStorageSourceConfig(disk->src, cfg);
     qemuDomainPrepareDiskSourceData(disk, disk->src);
 
-    if (qemuDomainSecretStorageSourcePrepare(priv, disk->src,
-                                             disk->info.alias,
-                                             disk->info.alias) < 0)
+    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, disk->src,
+                                                       disk->info.alias) < 0)
+        return -1;
+
+    if (qemuDomainSecretStorageSourcePrepareAuth(priv, disk->src,
+                                                 disk->info.alias) < 0)
         return -1;
 
     if (qemuDomainPrepareStorageSourcePR(disk->src, priv, disk->info.alias) < 0)
@@ -11081,9 +11100,11 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     qemuDomainPrepareStorageSourceConfig(src, cfg);
     qemuDomainPrepareDiskSourceData(disk, src);
 
-    if (qemuDomainSecretStorageSourcePrepare(priv, src,
-                                             src->nodestorage,
-                                             src->nodeformat) < 0)
+    if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src,
+                                                       src->nodeformat) < 0)
+        return -1;
+    if (qemuDomainSecretStorageSourcePrepareAuth(priv, src,
+                                                 src->nodestorage) < 0)
         return -1;
 
     if (qemuDomainPrepareStorageSourcePR(src, priv, src->nodestorage) < 0)
