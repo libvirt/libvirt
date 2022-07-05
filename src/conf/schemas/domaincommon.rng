@@ -2180,6 +2180,7 @@
           <choice>
             <value>sheepdog</value>
             <value>tftp</value>
+            <value>ssh</value>
           </choice>
         </attribute>
         <attribute name="name"/>

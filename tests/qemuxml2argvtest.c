@@ -1156,6 +1156,7 @@ mymain(void)
     VIR_FREE(driver.config->nbdTLSx509secretUUID);
     VIR_FREE(driver.config->vxhsTLSx509secretUUID);
     driver.config->vxhsTLS = 0;
+    DO_TEST_CAPS_LATEST("disk-network-ssh");
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");
