@@ -86,7 +86,7 @@ if [ -z "$TYPE" ]; then
      *domainbackup*)
         TYPE="domainbackup"
         ;;
-     *domaincaps*)
+     *domainCap*)
         TYPE="domaincaps"
         ;;
      *domain*)
@@ -98,7 +98,7 @@ if [ -z "$TYPE" ]; then
      *network*)
         TYPE="network"
         ;;
-     *storagepoolcaps*)
+     *storagepoolCap*)
         TYPE="storagepoolcaps"
         ;;
      *pool*)
