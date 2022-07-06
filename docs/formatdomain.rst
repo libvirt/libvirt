@@ -715,7 +715,7 @@ host/guest with many LUNs. :since:`Since 1.2.8 (QEMU only)`
        <iothread id="6"/>
        <iothread id="8" thread_pool_min="2" thread_pool_max="32"/>
      </iothreadids>
-     <defaultiothread thread_pool_min="8" thread_pool_max="16">
+     <defaultiothread thread_pool_min="8" thread_pool_max="16"/>
      ...
    </domain>
 
