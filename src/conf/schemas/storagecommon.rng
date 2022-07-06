@@ -24,17 +24,19 @@
           </choice>
         </attribute>
       </optional>
-      <interleave>
-        <ref name="secret"/>
-        <optional>
-          <element name="cipher">
-            <ref name="keycipher"/>
-          </element>
-          <element name="ivgen">
-            <ref name="keyivgen"/>
-          </element>
-        </optional>
-      </interleave>
+      <optional>
+        <interleave>
+          <ref name="secret"/>
+          <optional>
+            <element name="cipher">
+              <ref name="keycipher"/>
+            </element>
+            <element name="ivgen">
+              <ref name="keyivgen"/>
+            </element>
+          </optional>
+        </interleave>
+      </optional>
     </element>
   </define>
 
