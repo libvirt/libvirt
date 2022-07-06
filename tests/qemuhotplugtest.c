@@ -860,6 +860,24 @@ mymain(void)
     DO_TEST_DETACH("base-live", "guestfwd", false, false,
                    "netdev_del", QMP_OK);
 
+    DO_TEST_ATTACH("base-live", "cdrom-usb", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "cdrom-usb", true, true,
+                   "device_del", QMP_OK);
+    DO_TEST_DETACH("base-live", "cdrom-usb", false, false,
+                   "device_del", QMP_DEVICE_DELETED("usb-disk4") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
+    DO_TEST_ATTACH("base-live", "cdrom-scsi", false, true,
+                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "device_add", QMP_OK);
+    DO_TEST_DETACH("base-live", "cdrom-scsi", true, true,
+                   "device_del", QMP_OK);
+    DO_TEST_DETACH("base-live", "cdrom-scsi", false, false,
+                   "device_del", QMP_DEVICE_DELETED("scsi0-0-0-4") QMP_OK,
+                   "human-monitor-command", HMP(""));
+
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail) \
     do { \
         cpudata.test = prefix; \

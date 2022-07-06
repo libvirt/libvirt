@@ -992,10 +992,9 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
     bool releaseSeclabel = false;
     int ret = -1;
 
-    if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM ||
-        disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
+    if (disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("cdrom/floppy device hotplug isn't supported"));
+                       _("floppy device hotplug isn't supported"));
         return -1;
     }
 
@@ -1025,6 +1024,10 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
         break;
 
     case VIR_DOMAIN_DISK_BUS_VIRTIO:
+        if (disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) {
+            virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                           _("cdrom device with virtio bus isn't supported"));
+        }
         if (qemuDomainEnsureVirtioAddress(&releaseVirtio, vm, dev) < 0)
             goto cleanup;
         break;
@@ -5413,6 +5416,12 @@ qemuDomainDetachPrepDisk(virDomainObj *vm,
         break;
 
     case VIR_DOMAIN_DISK_DEVICE_CDROM:
+        if (disk->bus == VIR_DOMAIN_DISK_BUS_USB ||
+            disk->bus == VIR_DOMAIN_DISK_BUS_SCSI) {
+            break;
+        }
+        G_GNUC_FALLTHROUGH;
+
     case VIR_DOMAIN_DISK_DEVICE_FLOPPY:
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("disk device type '%s' cannot be detached"),

@@ -1,0 +1,6 @@
+<disk type='file' device='cdrom'>
+  <driver name='qemu' type='raw' cache='none'/>
+  <source file='/dev/null'/>
+  <target dev='sde' bus='scsi'/>
+  <readonly/>
+</disk>
