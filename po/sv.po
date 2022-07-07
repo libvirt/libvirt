@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-06-28 10:35+0000\n"
+"PO-Revision-Date: 2022-07-07 10:33+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -9187,7 +9187,7 @@ msgid "Host SMBIOS information is not available"
 msgstr "Värd-SMBIOS-information är inte tillgänglig"
 
 msgid "Host sysinfo extraction not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Extrahering av värdens sysinfo stödjs inte på denna plattform"
 
 #, c-format
 msgid "HostCpuIdInfo register '%s' has an unexpected format"
@@ -11604,135 +11604,129 @@ msgid "Missing or invalid name in query-rx-filter response"
 msgstr "Saknat eller felaktigt namn i query-rx-filter-svaret"
 
 msgid "Missing or invalid scsi adapter 'unique_id' value"
-msgstr ""
+msgstr "Saknat eller felaktigt värde på scsi-adaptern:s ”unique_id”"
 
 msgid "Missing ownerId data in JSON document"
-msgstr ""
+msgstr "Saknade ownerid-data i JSON-dokumentet"
 
 msgid "Missing ownerName data in JSON document"
-msgstr ""
+msgstr "Saknade ownerName-data i JSON-dokumentet"
 
 msgid "Missing ownerPid data in JSON document"
-msgstr ""
+msgstr "Saknade ownerPid-data i JSON-dokumentet"
 
 msgid "Missing ownerUUID data in JSON document"
-msgstr ""
+msgstr "Saknade ownerUUID-data i JSON-dokumentet"
 
-#, fuzzy
 msgid "Missing path or lockspace for lease resource"
-msgstr "saknat namn för källskiva"
+msgstr "Saknad sökväg eller låsrymd får hyresresursen"
 
 msgid "Missing pid data in JSON document"
-msgstr ""
+msgstr "Saknade pid-data i JSON-dokumentet"
 
 msgid "Missing plugin initialization symbol 'virLockDriverImpl'"
-msgstr ""
+msgstr "Saknad initieringssymbol ”virLockDriverImpl” i insticksmodulen"
 
 msgid "Missing priority_workers data in JSON document"
-msgstr ""
+msgstr "Saknade priority_workers-data i JSON-dokumentet"
 
 msgid "Missing privateData field in JSON state document"
-msgstr ""
+msgstr "Saknat privateData-fält i JSON-tillståndsdokumentet"
 
 #, c-format
 msgid "Missing property '%s' in answer"
-msgstr ""
+msgstr "Saknad egenskap ”%s” i svaret"
 
 msgid "Missing readonly field in JSON state document"
-msgstr ""
+msgstr "Saknat readonly-fält i JSON-tillståndsdokumentet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing required 'service' attribute in SRV record of network '%s'"
-msgstr "Källtjänstattribut saknas för teckenenhet"
+msgstr "Saknat nödvändigt attribut ”service” i SRV-post för nätverket ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing required address attribute in network '%s'"
-msgstr "Saknat ”threads”-attribut i CPU-topologi"
+msgstr "Saknat nödvändigt adressattribut i nätverket ”%s”"
 
 msgid "Missing required address in <ip>"
-msgstr ""
+msgstr "Saknad nödvändig adress i <ip>"
 
 #, c-format
 msgid "Missing required attribute '%s' in element '%s'"
-msgstr ""
+msgstr "Saknat nödvändigt attribut ”%s” i elementet ”%s”"
 
 #, c-format
 msgid ""
 "Missing required dev attribute in <forward> <interface> element of network %s"
 msgstr ""
+"Saknat nödvändigt dev-attribut i elementet <forward> <interface> i nätverket "
+"%s"
 
 #, c-format
 msgid "Missing required dev attribute in <pf> element of network '%s'"
-msgstr ""
+msgstr "Saknat nödvändigt dev-attribut i elementet <pf> i nätverket ”%s”"
 
-#, fuzzy
 msgid "Missing required name attribute in portgroup"
-msgstr "Saknat ”threads”-attribut i CPU-topologi"
+msgstr "Saknat nödvändigt namnattribut i portgroup"
 
 #, c-format
 msgid "Missing required name or value in DNS TXT record of network %s"
-msgstr ""
+msgstr "Saknat nödvändigt namn eller värde i DNS TXT-posten för nätverket %s"
 
-#, fuzzy
 msgid "Missing required nodeset attribute in memnode element"
-msgstr "Källvärdsattribut saknas för teckenenhet"
+msgstr "Saknat nödvändigt attribut nodeset i elementet memnode"
 
-#, fuzzy
 msgid "Missing resctrl monitor alloc"
-msgstr "Saknat ”target”-element för hyra"
+msgstr "Saknad resctrl-övervakningsallokering"
 
-#, fuzzy
 msgid "Missing resource fd in JSON document"
-msgstr "saknar källinformation för enhet"
+msgstr "Saknad resurs i JSON-dokumentet"
 
-#, fuzzy
 msgid "Missing resource flags in JSON document"
-msgstr "saknar källinformation för enhet"
+msgstr "Saknade resursflaggor i JSON-dokumentet"
 
 msgid "Missing resource lockHeld in JSON document"
-msgstr ""
+msgstr "Saknad resurs lockHeld i JSON-dokumentet"
 
-#, fuzzy
 msgid "Missing resource name in JSON document"
-msgstr "saknar källinformation för enhet"
+msgstr "Saknat resursnamn i JSON-dokumentet"
 
 msgid "Missing resource owners in JSON document"
-msgstr ""
+msgstr "Saknade resursägare i JSON-dokumentet"
 
-#, fuzzy
 msgid "Missing resource path in JSON document"
-msgstr "Källsökvägsattribut saknas för teckenenhet"
+msgstr "Saknad resurssökväg i JSON-dokumentet"
 
 msgid "Missing resources value in JSON document"
-msgstr ""
+msgstr "Saknat resursvärde i JSON-dokumentet"
 
 msgid "Missing restricted data in JSON document"
-msgstr ""
+msgstr "Saknade restricted-data i JSON-dokumentet"
 
 msgid "Missing scsi_host PCI address element"
-msgstr ""
+msgstr "Saknad PCI-adresselement till scsi_host"
 
 msgid "Missing scsi_host subsystem protocol"
-msgstr ""
+msgstr "Saknat subsystemprotokoll till scsi_host"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing separator in sched info '%s'"
-msgstr "saknar operativsysteminformation för %s"
+msgstr "Saknad separator i schemaläggningsinformationen ”%s”"
 
 msgid "Missing server data from JSON file"
-msgstr ""
+msgstr "Saknade serverdata från JSON-filen"
 
 msgid "Missing service data in JSON document"
-msgstr ""
+msgstr "Saknade tjänstedata i JSON-dokumentet"
 
 msgid "Missing services data in JSON document"
-msgstr ""
+msgstr "Saknade tjänstedata i JSON-dokumentet"
 
 msgid "Missing sock field in JSON state document"
-msgstr ""
+msgstr "Saknat sock-fält i JSON-tillståndsdokumentet"
 
 msgid "Missing socks field in JSON state document"
-msgstr ""
+msgstr "Saknat socks-fält i JSON-tillståndsdokumentet"
 
 msgid "Missing source channel attribute for char device"
 msgstr "Saknat källkanalsattribut för teckenenhet"
@@ -11747,22 +11741,22 @@ msgid "Missing source service attribute for char device"
 msgstr "Källtjänstattribut saknas för teckenenhet"
 
 msgid "Missing storage block path"
-msgstr ""
+msgstr "Saknad lagringsblockssökväg"
 
 msgid "Missing storage host block path"
-msgstr ""
+msgstr "Saknad lagringsvärdblockssökväg"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing storage volume name for disk '%s'"
-msgstr "saknat namn för källskiva"
+msgstr "Saknat namn på lagringsvolymen för disken ”%s”"
 
 #, c-format
 msgid "Missing udev property '%s' on '%s'"
-msgstr ""
+msgstr "Saknad udev-egenskap ”%s” på ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Missing vendor string for CPU vendor %s"
-msgstr "saknar källinformation för enhet %s"
+msgstr "Saknad tillverkarsträng för CPU-tillverkaren %s"
 
 msgid "Model"
 msgstr "Modell"
@@ -11775,129 +11769,135 @@ msgid "Model name contains invalid characters"
 msgstr "Modellnamnet innehåller ogiltiga tecken"
 
 msgid "Modifies an existing IOThread of the guest domain."
-msgstr ""
+msgstr "Ändrar en befintlig IOThread för gästdomänen."
 
 #, c-format
 msgid "Monitor path %s too big for destination"
-msgstr ""
+msgstr "Övervakningssökvägen %s är för stor för målet"
 
 msgid "Monitor vcpus conflicts with allocation"
-msgstr ""
+msgstr "Övervakning av vcpus står i konflikt med allokeringen"
 
 msgid "Mount namespace support is required"
-msgstr ""
+msgstr "Stöd för monteringsnamnrymder krävs"
 
 msgid "Mountpoint"
 msgstr "Monteringspunkt"
 
 msgid "Multi-head video devices are unsupported"
-msgstr ""
+msgstr "Flerhuvudsvideoenheter stödjs inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Multiple '%s' controllers with index '%d'"
-msgstr "Kan inte tolka styrenhetsindex %s"
+msgstr "Flera ”%s”-styrenheter med index ”%d”"
 
 msgid "Multiple <model> elements in controller definition not allowed"
-msgstr ""
+msgstr "Flera <model>-element i styrenhetsdefinitionen är inte tillåtna"
 
 msgid "Multiple <target> elements in controller definition not allowed"
-msgstr ""
+msgstr "Flera <target>-element i styrenhetsdefinitionen är inte tillåtna"
 
 msgid ""
 "Multiple IPv4 dhcp sections found -- dhcp is supported only for a single "
 "IPv4 address on each network"
 msgstr ""
+"Flera IPv4 dhcp-avsnitt funna — dhcp stödjs endast för en enda IPv4-adress "
+"på varje nätverk"
 
 msgid ""
 "Multiple IPv6 dhcp sections found -- dhcp is supported only for a single "
 "IPv6 address on each network"
 msgstr ""
+"Flera IPv6 dhcp-avsnitt funna — dhcp stödjs endast för en enda IPv6-adress "
+"på varje nätverk"
 
 #, c-format
 msgid ""
 "Multiple USB devices for %x:%x were found, but none of them is at bus:%u "
 "device:%u"
 msgstr ""
+"Flera USB-enheter för %x:%x hittades, men ingen av dem är på buss:%u enhet:%u"
 
 #, c-format
 msgid "Multiple USB devices for %x:%x, use <address> to specify one"
-msgstr ""
+msgstr "Flera USB-enheter för %x:%x, använd <address> för att ange en"
 
 #, c-format
 msgid "Multiple definitions of CPU model '%s'"
-msgstr ""
+msgstr "Flera definitioner av CPU-modellen ”%s”"
 
 #, c-format
 msgid ""
 "Multiple domains exist with the name '%s': repeat the request using a UUID"
 msgstr ""
+"Flera domäner finns med namnet ”%s”: upprepa begäran och använd ett UUID"
 
 msgid "Multiple graphics devices are not supported"
-msgstr ""
+msgstr "Flera grafiska enheter stödjs inte"
 
 msgid "Multiple interfaces attached to bridge"
-msgstr ""
+msgstr "Flera gränssnitt anslutna till bryggan"
 
 msgid "Multiple legacy USB controllers are not supported"
-msgstr ""
+msgstr "Flera äldre USB-styrenheter stödjs inte"
 
 #, c-format
 msgid "Multiple memnode elements with cellid %u"
-msgstr ""
+msgstr "Flera memnode-element med cellid %u"
 
 #, c-format
 msgid "Multiple panic devices with model '%s'"
-msgstr ""
+msgstr "Flera panikenheter med modellen ”%s”"
 
 msgid "Multiple serial devices are not supported by xen-xm"
-msgstr ""
+msgstr "Flera serieenheter stödjs inte av xen-xm"
 
-#, fuzzy
 msgid "Multiqueue devices are not supported on this system"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "Multiqueue-enheter stödjs inte på detta system"
 
 #, c-format
 msgid "Must use --rename or --clone to change %s to %s"
-msgstr ""
+msgstr "Man måste använda --rename eller --clone för att ändra %s till %s"
 
 msgid "N/A"
 msgstr "E/T"
 
 msgid "NBD URI must be supplied when migration URI uses UNIX transport method"
 msgstr ""
+"NBD URI:n måste anges när migrerings-URI:n använder UNIX-transportmetoden"
 
 msgid "NBD migration with TLS is not supported"
-msgstr ""
+msgstr "NBD-migrering med TLS stödjs inte"
 
 msgid "NBD migration with TLS is not supported over UNIX socket"
-msgstr ""
+msgstr "NBD-migrering med TLS stödjs inte över UNIX-uttag"
 
 msgid "NIC model 'e1000' is not supported by given bhyve binary"
-msgstr ""
+msgstr "NIC-modellen ”e1000” stödjs inte av den angivna bhyve-binären"
 
 msgid "NIC model is not supported"
-msgstr ""
+msgstr "NIC-modellen stödjs inte"
 
 msgid "NOTE"
 msgstr "OBS"
 
 msgid "NULL JSON type can't be converted to commandline"
-msgstr ""
+msgstr "NULL JSON-typen kan inte konverteras till en kommandorad"
 
 msgid "NULL NetworkDef"
-msgstr ""
+msgstr "NULL NetworkDef"
 
 #, c-format
 msgid "NULL argument - %p %p"
-msgstr ""
+msgstr "NULL-argument – %p %p"
 
 #, c-format
 msgid "NULL string parameter '%s'"
-msgstr ""
+msgstr "NULL-strängparameter ”%s”"
 
 #, c-format
 msgid "NULL value for field '%s'"
-msgstr ""
+msgstr "NULL-värde för fältet ”%s”"
 
 msgid "NUMA cell number"
 msgstr "NUMA-cellnummer"
@@ -11907,89 +11907,89 @@ msgstr "NUMA-cell(er):"
 
 #, c-format
 msgid "NUMA cells %u and %zu have overlapping vCPU ids"
-msgstr ""
+msgstr "NUMA-celler %u och %zu har överlappande vCPU-id:n"
 
 msgid "NUMA distances defined without siblings"
-msgstr ""
+msgstr "NUMA-avstånd definierade utan syskon"
 
 msgid "NUMA free memory"
 msgstr "NUMA oanvänt minne"
 
-#, fuzzy
 msgid "NUMA free pages"
-msgstr "NUMA oanvänt minne"
+msgstr "NUMA fria sidor"
 
 msgid "NUMA isn't available on this host"
-msgstr ""
+msgstr "NUMA är inte tillgängligt på denna värd"
 
 msgid "NUMA memory tuning in 'preferred' mode only supports single node"
-msgstr ""
+msgstr "NUMA-minnestrimning i läget ”preferred” stödjer endast en ensam nod"
 
 msgid ""
 "NUMA mode, one of strict, preferred and interleave \n"
 "or a number from the virDomainNumatuneMemMode enum"
 msgstr ""
+"NUMA-läge, någon av strict, preferred eller interleave\n"
+"eller ett tal från uppräkningstypen virDomainNumatuneMemMode"
 
 #, c-format
 msgid "NUMA node %d is not available"
-msgstr ""
+msgstr "NUMA-nod %d är inte tillgänglig"
 
 #, c-format
 msgid "NUMA node %d is out of range"
-msgstr ""
+msgstr "NUMA-nod %d är utanför intervallet"
 
 #, c-format
 msgid "NUMA node %zd is unavailable"
-msgstr ""
+msgstr "NUMA-nod %zd är inte tillgänglig"
 
 #, c-format
 msgid "NUMA node %zu is not available"
-msgstr ""
+msgstr "NUMA-nod %zd är inte tillgänglig"
 
 msgid "NUMA node selections to set"
-msgstr ""
+msgstr "NUMA-nodsval att sätta"
 
 msgid "NUMA nodes without CPUs can't be initiator"
-msgstr ""
+msgstr "NUMA-noder utan CPU:er kan inte vara initierare"
 
 msgid "NUMA topology defined without NUMA cells"
-msgstr ""
+msgstr "NUMA-topologin definierad utan NUMA-celler"
 
 msgid "NUMA tuning is not available in session mode"
 msgstr "NUMA-trimning är inte tillgängligt i sessionsläge"
 
 msgid ""
 "NUMA without specified memory backing is not supported with this QEMU binary"
-msgstr ""
+msgstr "NUMA utan angivet minnesstöd stödjs inte med denna QEMU-binär"
 
 #, c-format
 msgid "NVMe device %s already in use by driver %s domain %s"
-msgstr ""
+msgstr "NVMe-enhet %s används redan av drivrutinen %s i domänen %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "NVMe device %s namespace %u is already on the list"
-msgstr "Hyra %s i låsrymden %s finns redan"
+msgstr "NVMe-enhet %s i namnrymden %u finns redan på listan"
 
 #, c-format
 msgid "NVMe device %s namespace %u not found"
-msgstr ""
+msgstr "NVMe-enhet %s i namnrymden %u finns inte"
 
 msgid "NVMe disk source is missing address"
-msgstr ""
+msgstr "NVMe-diskkällan saknar adress"
 
-#, fuzzy
 msgid "NVMe disks are not supported with this QEMU binary"
-msgstr "UNIX-uttag stödjs inte på denna plattform"
+msgstr "NVMe-diskar stödjs inte med denna QEMU-binär"
 
 msgid "NVMe namespace can't be zero"
-msgstr ""
+msgstr "NVMe-namnrymden kan inte vara noll"
 
 msgid "Name"
 msgstr "Namn"
 
 #, c-format
 msgid "Name of chain is longer than %u characters"
-msgstr ""
+msgstr "Namnet på kedjan är längre än %u tecken"
 
 msgid "Name:"
 msgstr "Namn:"
@@ -12001,7 +12001,7 @@ msgid "Namespaces are not supported on this platform."
 msgstr "Namnrymder stödjs inte på denna plattform."
 
 msgid "Nested HV configuration is not supported by this QEMU binary"
-msgstr ""
+msgstr "Nästad HV-konfiguration stödjs inte av denna QEMU-binär"
 
 #, c-format
 msgid "Network %s XML configuration edited.\n"
@@ -12041,47 +12041,44 @@ msgstr "Nätverk %s avmarkerat som autostartat\n"
 
 #, c-format
 msgid "Network '%s' IP address cannot have both a prefix and a netmask"
-msgstr ""
+msgstr "Nätverket ”%s” IP-adress får inte ha både ett prefix och en nätmask"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network '%s' is already running"
-msgstr "Domänen kör redan"
+msgstr "Nätverket ”%s” kör redan"
 
 #, c-format
 msgid "Network '%s' is still running"
 msgstr "Nätverk ”%s” kör fortfarande"
 
-#, fuzzy
 msgid "Network Events"
-msgstr "Nätverk hittades inte"
+msgstr "Nätverkshändelser"
 
 msgid "Network bandwidth tuning is not available in session mode"
-msgstr ""
+msgstr "Nätverksbandbreddstrimning är inte tillgängligt i sessionsläge"
 
 msgid "Network config change transaction committed\n"
-msgstr ""
+msgstr "Ändringstransaktionen för nätverkskonfigurationen fastställd\n"
 
 msgid "Network config change transaction rolled back\n"
-msgstr ""
+msgstr "Ändringstransaktionen för nätverkskonfigurationen tillbakarullad\n"
 
-#, fuzzy
 msgid "Network config change transaction started\n"
-msgstr "Nätverk %s markerat som autostartat\n"
+msgstr "Ändringstransaktionen för nätverkskonfigurationen startad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network config filename '%s' does not match network name '%s'"
-msgstr "nätverkfiltrets konfigurationsfilnamn ”%s” matchar inte namnet ”%s”"
+msgstr "Nätverkskonfigurationsfilnamnet ”%s” matchar inte nätverksnamnet ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network device %s already exists"
-msgstr "lagringsvolymen finns redan"
+msgstr "Nätverksenheten %s finns redan"
 
-#, fuzzy
 msgid "Network device configuration is not supported on this platform"
-msgstr "Extrahering av värdend stödjs inte på denna plattform"
+msgstr "Nätverksenhetskonfiguration stödjs inte på denna plattform"
 
 msgid "Network device type is not supported"
-msgstr ""
+msgstr "Nätverksenhetstypen stödjs inte"
 
 #, c-format
 msgid "Network filter %s XML configuration edited.\n"
@@ -12091,51 +12088,49 @@ msgstr "Nätverksfiltret %s XML-konfiguration redigerad.\n"
 msgid "Network filter %s XML configuration not changed.\n"
 msgstr "Nätverksfiltret %s XML-konfiguration inte ändrad.\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter %s defined from %s\n"
-msgstr "Nätverk %s definierad från %s\n"
+msgstr "Nätverkfiltret %s definierat från %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter %s undefined\n"
-msgstr "Nätverk %s har avdefinierats\n"
+msgstr "Nätverksfiltret %s är odefinierat\n"
 
-#, fuzzy
 msgid "Network filter binding not found"
-msgstr "Nätverk hittades inte"
+msgstr "Nätverkfiltersbindningen finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter binding not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Nätverkfiltersbindningen finns inte: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter binding on %s created from %s\n"
-msgstr "Nätverk %s skapat från %s\n"
+msgstr "Nätverkfiltersbindning av %s skapad från %s\n"
 
 #, c-format
 msgid "Network filter binding on %s deleted\n"
-msgstr ""
+msgstr "Nätverksfilterbindning av %s raderad\n"
 
-#, fuzzy
 msgid "Network filter not found"
-msgstr "Nätverk hittades inte"
+msgstr "Nätverkfiltret finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network filter not found: %s"
-msgstr "Nätverk hittades inte: %s"
+msgstr "Nätverksfiltret hittades inte: %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network interface name '%s' is too long"
-msgstr "hämta nätverksgränssnitt-statistik för en domän"
+msgstr "Nätverksgränssnittsnamnet ”%s” är för långt"
 
 #, c-format
 msgid "Network is already in use by interface %s"
-msgstr ""
+msgstr "Nätverket används redan av gränssnittet %s"
 
 msgid "Network migration data already present"
-msgstr ""
+msgstr "Nätverksmigrationsdata finns redan"
 
 msgid "Network namespace support is recommended"
-msgstr ""
+msgstr "Stöd för nätverksnamnrymder rekommenderas"
 
 msgid "Network not found"
 msgstr "Nätverk hittades inte"
@@ -12148,33 +12143,33 @@ msgstr "Nätverk hittades inte: %s"
 msgid "Network port %s created from %s\n"
 msgstr "Nätverksporten %s skapad från %s\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network port %s deleted\n"
-msgstr "Nätverk %s förstört\n"
+msgstr "Nätverksport %s raderad\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network port with UUID %s already exists"
-msgstr "oväntad domän %s finns redan"
+msgstr "Nätverksporten med UUID %s finns redan"
 
 #, c-format
 msgid "Network port with UUID %s does not exist"
-msgstr ""
+msgstr "Nätverksporten med UUID %s finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Network type %d is not supported"
-msgstr "nätverket %s är inte aktivt"
+msgstr "Nätverkstyp %d stödjs inte"
 
 msgid "New disk media source was not specified"
-msgstr ""
+msgstr "Ny diskmediakälla angavs inte"
 
 msgid "New resctrl 'id' cannot be NULL"
-msgstr ""
+msgstr "Nytt resctrl ”id” får inte vara NULL"
 
 msgid "New size of the block device, as scaled integer (default KiB)"
-msgstr ""
+msgstr "Ny storlek på blockenheten, som ett skalat heltal (standard KiB)"
 
 msgid "Nicdev support unavailable"
-msgstr ""
+msgstr "Nicdev-stöd är inte tillgängligt"
 
 msgid "No <local> 'address' attribute specified with socket interface"
 msgstr "Inget <local> ”adress”-attribut angivet med uttagsgränssnitt"
@@ -12224,110 +12219,106 @@ msgstr ""
 "Inget <source> ”type”-attribut angivet för <interface type='vhostuser'/>"
 
 msgid "No CA certificate path set to match server key/cert"
-msgstr ""
+msgstr "Ingen CA-certifikatsväg angiven till att matcha servernyckel/-cert"
 
 msgid "No DRM render nodes available"
-msgstr ""
+msgstr "Inga DRM-renderingsnoder tillgängliga"
 
 #, c-format
 msgid "No FD available at slot %zu"
-msgstr ""
+msgstr "Ingen FD tillgänglig i fack %zu"
 
 msgid "No IOThreads found for the domain"
-msgstr ""
+msgstr "Ingen IOThreads hittad för domänen"
 
 #, c-format
 msgid "No IP address for host '%s' found: %s"
-msgstr ""
+msgstr "Ingen IP-adress för värden ”%s” funnen: %s"
 
 msgid "No JSON parser implementation is available"
-msgstr ""
+msgstr "Ingen JSON-parserimplementation är tillgänglig"
 
 msgid "No PCI buses available"
-msgstr ""
+msgstr "Inga PCI-bussar tillgängliga"
 
 msgid "No UNIX caller UID available"
-msgstr ""
+msgstr "Inget UNIX anrops-AID tillgängligt"
 
 msgid "No URI scheme specified"
-msgstr ""
+msgstr "Inget URI-schema angivet"
 
 #, c-format
 msgid "No URI scheme specified: %s"
-msgstr ""
+msgstr "Inget URI-schema angivet: %s"
 
-#, fuzzy
 msgid "No access manager registered"
-msgstr "för många drivrutiner registrerade"
+msgstr "Ingen åtkomsthanterare registrerad"
 
 #, c-format
 msgid "No active block job '%s'"
-msgstr ""
+msgstr "Inget aktivt blockjobb ”%s”"
 
 msgid "No addresses to bind to"
-msgstr ""
+msgstr "Inga adresser att binda till"
 
-#, fuzzy
 msgid "No authentication callback available"
-msgstr "autentisering misslyckades"
+msgstr "Inget autentiseringåteranrop tillgängligt"
 
 msgid "No authentication methods and credentials provided"
-msgstr ""
+msgstr "Inga autentiseringsmetoder och kreditiv angivna"
 
-#, fuzzy
 msgid "No authentication methods supplied"
-msgstr "autentisering krävs"
+msgstr "Inga autentiseringsmetoder angivna"
 
 msgid "No available USB controller and port, and failed to attach a new one"
 msgstr ""
+"Ingen tillgänglig USB-styrenhet och -port, och misslyckades att ansluta en ny"
 
 msgid "No bhyve command-line argument specified"
-msgstr ""
+msgstr "Inget kommandoradsargument till bhyve angivet"
 
 msgid "No bridge name specified"
-msgstr ""
+msgstr "Inget bryggnamn angivet"
 
 msgid "No bridge node in xml document"
-msgstr ""
+msgstr "Ingen bryggnod i xml-dokumentet"
 
 msgid "No category range available"
-msgstr ""
+msgstr "Inget kategoriintervall tillgängligt"
 
-#, fuzzy
 msgid "No channel command provided"
-msgstr "Inget felmeddelande gavs"
+msgstr "Inget kanalkommando gavs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No client with matching ID '%llu'"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "Ingen klient med matchande ID ”%llu”"
 
 #, c-format
 msgid "No complete agent response found in %d bytes"
-msgstr ""
+msgstr "Inget fullständigt agentsvar fanns i %d byte"
 
 #, c-format
 msgid "No current block job for %s"
-msgstr ""
+msgstr "Inget aktuellt blockjobb för %s"
 
 msgid "No current identity"
-msgstr ""
+msgstr "Ingen aktuell identitet"
 
 msgid "No current identity to elevate"
-msgstr ""
+msgstr "Ingen aktuell identitet att höja"
 
 msgid "No data supplied for <initarg> element"
-msgstr ""
+msgstr "Inga data angivna för elementet <initarg>"
 
-#, fuzzy
 msgid "No default server names provided"
-msgstr "Inget felmeddelande gavs"
+msgstr "Inget standardservernam gavs"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No description for domain: %s"
-msgstr "operation misslyckades: %s"
+msgstr "Ingen beskrivning för domänen: %s"
 
 msgid "No device model command-line argument specified"
-msgstr ""
+msgstr "Inget kommandoradsargument till enhetsmodellen angivet"
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
