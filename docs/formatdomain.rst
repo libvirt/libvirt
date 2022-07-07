@@ -4051,7 +4051,7 @@ for PCI (KVM only) and 1.0.6 for SCSI (KVM only)` :
    ...
    <devices>
      <hostdev mode='subsystem' type='usb'>
-       <source startupPolicy='optional'>
+       <source startupPolicy='optional' guestReset='off'>
          <vendor id='0x1234'/>
          <product id='0xbeef'/>
        </source>
@@ -4230,6 +4230,19 @@ or:
       requisite fail if missing on boot up, drop if missing on migrate/restore/revert
       optional  drop if missing at any start attempt
       ========= =====================================================================
+
+      :since:`Since 8.6.0`, the ``source`` element can contain ``guestReset``
+      attribute with the following value:
+
+      ============= =====================================================
+      off           all guest initiated device reset requests are ignored
+      uninitialized device request is ignored if device is initialized,
+                    otherwise reset is performed
+      on            device is reset on every guest initiated request
+      ============= =====================================================
+
+      This attribute can be helpful when assigning an USB device with a
+      firmware that crashes on reset.
 
    ``pci``
       PCI devices can only be described by their ``address``.

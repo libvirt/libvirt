@@ -1042,6 +1042,14 @@ VIR_ENUM_IMPL(virDomainHostdevSubsysSCSIProtocol,
               "iscsi",
 );
 
+VIR_ENUM_IMPL(virDomainHostdevSubsysUSBGuestReset,
+              VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_LAST,
+              "default",
+              "off",
+              "uninitialized",
+              "on",
+);
+
 VIR_ENUM_IMPL(virDomainHostdevSubsysSCSIHostProtocol,
               VIR_DOMAIN_HOSTDEV_SUBSYS_SCSI_HOST_PROTOCOL_TYPE_LAST,
               "none",
@@ -5488,6 +5496,11 @@ virDomainHostdevSubsysUSBDefParseXML(xmlNodePtr node,
                                &autoAddress) < 0)
         return -1;
     virTristateBoolToBool(autoAddress, &usbsrc->autoAddress);
+
+    if (virXMLPropEnum(node, "guestReset",
+                       virDomainHostdevSubsysUSBGuestResetTypeFromString,
+                       VIR_XML_PROP_NONZERO, &usbsrc->guestReset) < 0)
+        return -1;
 
     /* Product can validly be 0, so we need some extra help to determine
      * if it is uninitialized */
@@ -22988,6 +23001,11 @@ virDomainHostdevDefFormatSubsysUSB(virBuffer *buf,
 
     if (def->missing && !(flags & VIR_DOMAIN_DEF_FORMAT_INACTIVE))
         virBufferAddLit(&sourceAttrBuf, " missing='yes'");
+
+    if (usbsrc->guestReset) {
+        virBufferAsprintf(&sourceAttrBuf, " guestReset='%s'",
+                          virDomainHostdevSubsysUSBGuestResetTypeToString(usbsrc->guestReset));
+    }
 
     if (usbsrc->vendor) {
         virBufferAsprintf(&sourceChildBuf, "<vendor id='0x%.4x'/>\n", usbsrc->vendor);

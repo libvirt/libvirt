@@ -5936,6 +5936,15 @@
       <optional>
         <ref name="startupPolicy"/>
       </optional>
+      <optional>
+        <attribute name="guestReset">
+          <choice>
+            <value>off</value>
+            <value>uninitialized</value>
+            <value>on</value>
+          </choice>
+        </attribute>
+      </optional>
       <choice>
         <group>
           <ref name="usbproduct"/>

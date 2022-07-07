@@ -233,6 +233,17 @@ typedef enum {
 
 VIR_ENUM_DECL(virDomainHostdevSubsysSCSIProtocol);
 
+typedef enum {
+    VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_DEFAULT = 0,
+    VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_OFF,           /* reset forbidden */
+    VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_UNINITIALIZED, /* reset iff uninitialized */
+    VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_ON,            /* reset allowed */
+
+    VIR_DOMAIN_HOSTDEV_USB_GUEST_RESET_LAST
+} virDomainHostdevSubsysUSBGuestReset;
+
+VIR_ENUM_DECL(virDomainHostdevSubsysUSBGuestReset);
+
 struct _virDomainHostdevSubsysUSB {
     bool autoAddress; /* bus/device were filled automatically based
                          on vendor/product */
@@ -241,6 +252,8 @@ struct _virDomainHostdevSubsysUSB {
 
     unsigned vendor;
     unsigned product;
+
+    virDomainHostdevSubsysUSBGuestReset guestReset;
 };
 
 struct _virDomainHostdevSubsysPCI {
