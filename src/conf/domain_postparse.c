@@ -57,16 +57,14 @@ virDomainDefPostParseMemory(virDomainDef *def,
          * properly. */
         if (hotplugMemory > def->mem.total_memory) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("Total size of memory devices exceeds the total "
-                             "memory size"));
+                           _("Total size of memory devices exceeds the total memory size"));
             return -1;
         }
     }
 
     if (virDomainDefGetMemoryInitial(def) == 0) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("Memory size must be specified via <memory> or in the "
-                         "<numa> configuration"));
+                       _("Memory size must be specified via <memory> or in the <numa> configuration"));
         return -1;
     }
 
@@ -77,16 +75,14 @@ virDomainDefPostParseMemory(virDomainDef *def,
     if ((def->mem.max_memory || def->mem.memory_slots) &&
         !(def->mem.max_memory && def->mem.memory_slots)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("both maximum memory size and "
-                         "memory slot count must be specified"));
+                       _("both maximum memory size and memory slot count must be specified"));
         return -1;
     }
 
     if (def->mem.max_memory &&
         def->mem.max_memory < virDomainDefGetMemoryTotal(def)) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("maximum memory size must be equal or greater than "
-                         "the actual memory size"));
+                       _("maximum memory size must be equal or greater than the actual memory size"));
         return -1;
     }
 
@@ -102,8 +98,7 @@ virDomainDefPostParseOs(virDomainDef *def)
 
         if (def->os.firmwareFeatures[VIR_DOMAIN_OS_DEF_FIRMWARE_FEATURE_SECURE_BOOT] == VIR_TRISTATE_BOOL_NO) {
             virReportError(VIR_ERR_XML_DETAIL, "%s",
-                           _("firmware feature 'enrolled-keys' cannot be enabled when "
-                             "firmware feature 'secure-boot' is disabled"));
+                           _("firmware feature 'enrolled-keys' cannot be enabled when firmware feature 'secure-boot' is disabled"));
             return -1;
         }
 
@@ -165,8 +160,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
             timer->name == VIR_DOMAIN_TIMER_NAME_HYPERVCLOCK) {
             if (timer->tickpolicy) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of "
-                                 "timer tickpolicy"),
+                               _("timer %s doesn't support setting of timer tickpolicy"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
             }
@@ -177,24 +171,21 @@ virDomainDefPostParseTimer(virDomainDef *def)
              timer->catchup.limit != 0 ||
              timer->catchup.slew != 0)) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
-                           _("setting of timer catchup policies is only "
-                             "supported with tickpolicy='catchup'"));
+                           _("setting of timer catchup policies is only supported with tickpolicy='catchup'"));
             return -1;
         }
 
         if (timer->name != VIR_DOMAIN_TIMER_NAME_TSC) {
             if (timer->frequency != 0) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of "
-                                 "timer frequency"),
+                               _("timer %s doesn't support setting of timer frequency"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
              }
 
             if (timer->mode) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of "
-                                 "timer mode"),
+                               _("timer %s doesn't support setting of timer mode"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
              }
@@ -204,8 +195,7 @@ virDomainDefPostParseTimer(virDomainDef *def)
             timer->name != VIR_DOMAIN_TIMER_NAME_RTC) {
             if (timer->track != VIR_DOMAIN_TIMER_TRACK_NONE) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("timer %s doesn't support setting of "
-                                 "timer track"),
+                               _("timer %s doesn't support setting of timer track"),
                                virDomainTimerNameTypeToString(timer->name));
                 return -1;
             }
@@ -351,9 +341,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDef *dev,
                                               VIR_DOMAIN_DISK_BUS_SCSI,
                                               addr)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("SCSI host address controller='%u' "
-                             "bus='%u' target='%u' unit='%u' in "
-                             "use by a SCSI disk"),
+                           _("SCSI host address controller='%u' bus='%u' target='%u' unit='%u' in use by a SCSI disk"),
                            addr->controller, addr->bus,
                            addr->target, addr->unit);
             return -1;
@@ -370,8 +358,7 @@ virDomainHostdevDefPostParse(virDomainHostdevDef *dev,
             (model == VIR_MDEV_MODEL_TYPE_VFIO_CCW &&
              dev->info->type != VIR_DOMAIN_DEVICE_ADDRESS_TYPE_CCW)) {
             virReportError(VIR_ERR_XML_ERROR,
-                           _("Unsupported address type '%s' with mediated "
-                             "device model '%s'"),
+                           _("Unsupported address type '%s' with mediated device model '%s'"),
                            virDomainDeviceAddressTypeToString(dev->info->type),
                            virMediatedDeviceModelTypeToString(model));
             return -1;
@@ -611,8 +598,7 @@ virDomainControllerDefPostParse(virDomainControllerDef *cdev)
         cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_TRANSITIONAL &&
         cdev->model != VIR_DOMAIN_CONTROLLER_MODEL_SCSI_VIRTIO_NON_TRANSITIONAL) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("'iothread' attribute only supported for "
-                         "virtio scsi controllers"));
+                       _("'iothread' attribute only supported for virtio scsi controllers"));
         return -1;
     }
 
@@ -774,8 +760,7 @@ virDomainDefCheckUnsupportedMemoryHotplug(virDomainDef *def)
     /* memory hotplug tunables are not supported by this driver */
     if (virDomainDefHasMemoryHotplug(def)) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("memory hotplug tunables <maxMemory> are not "
-                         "supported by this hypervisor driver"));
+                       _("memory hotplug tunables <maxMemory> are not supported by this hypervisor driver"));
         return -1;
     }
 
@@ -1003,8 +988,7 @@ virDomainVcpuDefPostParse(virDomainDef *def)
         case VIR_TRISTATE_BOOL_NO:
             if (!vcpu->online) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                               _("vcpu '%zu' is both offline and not "
-                                 "hotpluggable"), i);
+                               _("vcpu '%zu' is both offline and not hotpluggable"), i);
                 return -1;
             }
             break;
@@ -1083,8 +1067,7 @@ virDomainDefBootOrderPostParse(virDomainDef *def)
 
     if (def->os.nBootDevs > 0 && virHashSize(bootHash) > 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("per-device boot elements cannot be used"
-                         " together with os/boot elements"));
+                       _("per-device boot elements cannot be used together with os/boot elements"));
         return -1;
     }
 
