@@ -7831,6 +7831,7 @@ static const vshCmdOptDef opts_iothreadset[] = {
      .type = VSH_OT_INT,
      .help = N_("upper boundary for worker thread pool")
     },
+    VIRSH_COMMON_OPT_DOMAIN_CONFIG,
     VIRSH_COMMON_OPT_DOMAIN_LIVE,
     VIRSH_COMMON_OPT_DOMAIN_CURRENT,
     {.name = NULL}
@@ -7842,6 +7843,8 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     g_autoptr(virshDomain) dom = NULL;
     int id = 0;
     bool ret = false;
+    bool current = vshCommandOptBool(cmd, "current");
+    bool config = vshCommandOptBool(cmd, "config");
     bool live = vshCommandOptBool(cmd, "live");
     unsigned int flags = VIR_DOMAIN_AFFECT_CURRENT;
     virTypedParameterPtr params = NULL;
@@ -7852,8 +7855,13 @@ cmdIOThreadSet(vshControl *ctl, const vshCmd *cmd)
     int thread_val;
     int rc;
 
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, live);
+    VSH_EXCLUSIVE_OPTIONS_VAR(current, config);
+
     if (live)
         flags |= VIR_DOMAIN_AFFECT_LIVE;
+    if (config)
+        flags |= VIR_DOMAIN_AFFECT_CONFIG;
 
     if (!(dom = virshCommandOptDomain(ctl, cmd, NULL)))
         return false;
