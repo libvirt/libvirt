@@ -528,11 +528,10 @@ struct _virConnect {
     virSecretDriver *secretDriver;
     virNWFilterDriver *nwfilterDriver;
 
-    /* Private data pointer which can be used by domain driver as
-     * it pleases.
+    /* Private data pointer which can be used by domain driver as it pleases.
      * NB: 'private' is a reserved word in C++.
      */
-    void *            privateData;
+    void *privateData;
 
     /*
      * Object lock must be acquired before accessing/changing any of
