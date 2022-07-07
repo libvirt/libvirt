@@ -26349,39 +26349,37 @@ static void
 virDomainDefIOThreadsFormat(virBuffer *buf,
                             const virDomainDef *def)
 {
-    g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
-    size_t i;
-
-    if (def->niothreadids == 0)
-        return;
-
-    virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
-                      def->niothreadids);
-
-    if (!virDomainDefIothreadShouldFormat(def))
-        return;
-
-    for (i = 0; i < def->niothreadids; i++) {
-        virDomainIOThreadIDDef *iothread = def->iothreadids[i];
-        g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
-
-        virBufferAsprintf(&attrBuf, " id='%u'",
-                          iothread->iothread_id);
-
-        if (iothread->thread_pool_min >= 0) {
-            virBufferAsprintf(&attrBuf, " thread_pool_min='%d'",
-                              iothread->thread_pool_min);
-        }
-
-        if (iothread->thread_pool_max >= 0) {
-            virBufferAsprintf(&attrBuf, " thread_pool_max='%d'",
-                              iothread->thread_pool_max);
-        }
-
-        virXMLFormatElement(&childrenBuf, "iothread", &attrBuf, NULL);
+    if (def->niothreadids > 0) {
+        virBufferAsprintf(buf, "<iothreads>%zu</iothreads>\n",
+                          def->niothreadids);
     }
 
-    virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);
+    if (virDomainDefIothreadShouldFormat(def)) {
+        g_auto(virBuffer) childrenBuf = VIR_BUFFER_INIT_CHILD(buf);
+        size_t i;
+
+        for (i = 0; i < def->niothreadids; i++) {
+            virDomainIOThreadIDDef *iothread = def->iothreadids[i];
+            g_auto(virBuffer) attrBuf = VIR_BUFFER_INITIALIZER;
+
+            virBufferAsprintf(&attrBuf, " id='%u'",
+                              iothread->iothread_id);
+
+            if (iothread->thread_pool_min >= 0) {
+                virBufferAsprintf(&attrBuf, " thread_pool_min='%d'",
+                                  iothread->thread_pool_min);
+            }
+
+            if (iothread->thread_pool_max >= 0) {
+                virBufferAsprintf(&attrBuf, " thread_pool_max='%d'",
+                                  iothread->thread_pool_max);
+            }
+
+            virXMLFormatElement(&childrenBuf, "iothread", &attrBuf, NULL);
+        }
+
+        virXMLFormatElement(buf, "iothreadids", NULL, &childrenBuf);
+    }
 
     virDomainDefaultIOThreadDefFormat(buf, def);
 }
