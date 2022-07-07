@@ -3306,10 +3306,6 @@ bool
 virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
                                 const virDomainDeviceDriveAddress *addr);
 
-int virDomainDefPostParse(virDomainDef *def,
-                          unsigned int parseFlags,
-                          virDomainXMLOption *xmlopt,
-                          void *parseOpaque);
 bool virDomainDefHasUSB(const virDomainDef *def);
 
 bool virDomainDeviceAliasIsUserAlias(const char *aliasStr);

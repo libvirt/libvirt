@@ -29,6 +29,7 @@
 #include "util/virstring.h"
 #include "util/virconf.h"
 #include "conf/domain_conf.h"
+#include "conf/domain_postparse.h"
 #include "virutil.h"
 
 #define VIR_FROM_THIS VIR_FROM_LXC

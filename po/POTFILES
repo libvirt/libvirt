@@ -32,6 +32,7 @@ src/conf/domain_addr.c
 src/conf/domain_capabilities.c
 src/conf/domain_conf.c
 src/conf/domain_event.c
+src/conf/domain_postparse.c
 src/conf/domain_validate.c
 src/conf/interface_conf.c
 src/conf/netdev_bandwidth_conf.c

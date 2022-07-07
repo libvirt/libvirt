@@ -27,6 +27,7 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "domain_conf.h"
+#include "domain_postparse.h"
 #include "viralloc.h"
 #include "virstring.h"
 #include "storage_source_backingstore.h"

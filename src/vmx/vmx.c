@@ -31,6 +31,7 @@
 #include "viruri.h"
 #include "virstring.h"
 #include "virutil.h"
+#include "domain_postparse.h"
 
 VIR_LOG_INIT("vmx.vmx");
 

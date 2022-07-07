@@ -75,6 +75,7 @@
 #include "domain_audit.h"
 #include "domain_cgroup.h"
 #include "domain_nwfilter.h"
+#include "domain_postparse.h"
 #include "domain_validate.h"
 #include "locking/domain_lock.h"
 #include "viruuid.h"

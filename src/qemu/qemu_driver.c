@@ -67,6 +67,7 @@
 #include "domain_audit.h"
 #include "domain_cgroup.h"
 #include "domain_driver.h"
+#include "domain_postparse.h"
 #include "domain_validate.h"
 #include "virpci.h"
 #include "virpidfile.h"
