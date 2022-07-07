@@ -26314,7 +26314,9 @@ virDomainDefIothreadShouldFormat(const virDomainDef *def)
     size_t i;
 
     for (i = 0; i < def->niothreadids; i++) {
-        if (!def->iothreadids[i]->autofill)
+        if (!def->iothreadids[i]->autofill ||
+            def->iothreadids[i]->thread_pool_min >= 0 ||
+            def->iothreadids[i]->thread_pool_max >= 0)
             return true;
     }
 
