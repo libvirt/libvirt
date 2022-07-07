@@ -5595,6 +5595,7 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
 {
     g_autoptr(virQEMUDriverConfig) cfg = NULL;
     qemuDomainObjPrivate *priv;
+    g_autoptr(virDomainDef) defcopy = NULL;
     virDomainDef *def;
     virDomainDef *persistentDef;
     virDomainIOThreadIDDef *iothreaddef = NULL;
@@ -5609,6 +5610,55 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
 
     if (virDomainObjGetDefs(vm, flags, &def, &persistentDef) < 0)
         goto endjob;
+
+    if (persistentDef) {
+        /* Make a copy of persistent definition and do all the changes there.
+         * Swap the definitions only after changes to live definition
+         * succeeded. */
+        if (!(defcopy = virDomainObjCopyPersistentDef(vm, driver->xmlopt,
+                                                      priv->qemuCaps)))
+            return -1;
+
+        switch (action) {
+        case VIR_DOMAIN_IOTHREAD_ACTION_ADD:
+            if (virDomainDriverAddIOThreadCheck(defcopy, iothread.iothread_id) < 0)
+                goto endjob;
+
+            if (!virDomainIOThreadIDAdd(defcopy, iothread.iothread_id))
+                goto endjob;
+
+            break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_DEL:
+            if (virDomainDriverDelIOThreadCheck(defcopy, iothread.iothread_id) < 0)
+                goto endjob;
+
+            virDomainIOThreadIDDel(defcopy, iothread.iothread_id);
+
+            break;
+
+        case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
+            iothreaddef = virDomainIOThreadIDFind(defcopy, iothread.iothread_id);
+
+            if (!iothreaddef) {
+                virReportError(VIR_ERR_INVALID_ARG,
+                               _("cannot find IOThread '%u' in iothreadids"),
+                               iothread.iothread_id);
+                goto endjob;
+            }
+
+            if (qemuDomainIOThreadValidate(iothreaddef, iothread, false) < 0)
+                goto endjob;
+
+            if (qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread) < 0) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
+                               _("configuring persistent polling values is not supported"));
+                goto endjob;
+            }
+
+            break;
+        }
+    }
 
     if (def) {
         if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_OBJECT_IOTHREAD)) {
@@ -5660,50 +5710,12 @@ qemuDomainChgIOThread(virQEMUDriver *driver,
         qemuDomainSaveStatus(vm);
     }
 
-    if (persistentDef) {
-        switch (action) {
-        case VIR_DOMAIN_IOTHREAD_ACTION_ADD:
-            if (virDomainDriverAddIOThreadCheck(persistentDef, iothread.iothread_id) < 0)
-                goto endjob;
-
-            if (!virDomainIOThreadIDAdd(persistentDef, iothread.iothread_id))
-                goto endjob;
-
-            break;
-
-        case VIR_DOMAIN_IOTHREAD_ACTION_DEL:
-            if (virDomainDriverDelIOThreadCheck(persistentDef, iothread.iothread_id) < 0)
-                goto endjob;
-
-            virDomainIOThreadIDDel(persistentDef, iothread.iothread_id);
-
-            break;
-
-        case VIR_DOMAIN_IOTHREAD_ACTION_MOD:
-            iothreaddef = virDomainIOThreadIDFind(persistentDef, iothread.iothread_id);
-
-            if (!iothreaddef) {
-                virReportError(VIR_ERR_INVALID_ARG,
-                               _("cannot find IOThread '%u' in iothreadids"),
-                               iothread.iothread_id);
-                goto endjob;
-            }
-
-            if (qemuDomainIOThreadValidate(iothreaddef, iothread, false) < 0)
-                goto endjob;
-
-            if (qemuDomainHotplugModIOThreadIDDef(iothreaddef, iothread) < 0) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("configuring persistent polling values is not supported"));
-                goto endjob;
-            }
-
-            break;
-        }
-
-        if (virDomainDefSave(persistentDef, driver->xmlopt,
-                             cfg->configDir) < 0)
+    /* Finally, if no error until here, we can save config. */
+    if (defcopy) {
+        if (virDomainDefSave(defcopy, driver->xmlopt, cfg->configDir) < 0)
             goto endjob;
+
+        virDomainObjAssignDef(vm, &defcopy, false, NULL);
     }
 
     ret = 0;
