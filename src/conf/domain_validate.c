@@ -1889,13 +1889,20 @@ virDomainDefValidateInternal(const virDomainDef *def,
 }
 
 
+struct virDomainDefValidateDeviceIteratorData {
+    virDomainXMLOption *xmlopt;
+    void *parseOpaque;
+    unsigned int parseFlags;
+};
+
+
 static int
 virDomainDefValidateDeviceIterator(virDomainDef *def,
                                    virDomainDeviceDef *dev,
                                    virDomainDeviceInfo *info G_GNUC_UNUSED,
                                    void *opaque)
 {
-    struct virDomainDefPostParseDeviceIteratorData *data = opaque;
+    struct virDomainDefValidateDeviceIteratorData *data = opaque;
     return virDomainDeviceDefValidate(dev, def,
                                       data->parseFlags, data->xmlopt,
                                       data->parseOpaque);
@@ -1924,7 +1931,7 @@ virDomainDefValidate(virDomainDef *def,
                      virDomainXMLOption *xmlopt,
                      void *parseOpaque)
 {
-    struct virDomainDefPostParseDeviceIteratorData data = {
+    struct virDomainDefValidateDeviceIteratorData data = {
         .xmlopt = xmlopt,
         .parseFlags = parseFlags,
         .parseOpaque = parseOpaque,

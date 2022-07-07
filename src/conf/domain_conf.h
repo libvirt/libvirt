@@ -3302,12 +3302,6 @@ struct _virDomainXMLOption {
 };
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainXMLOption, virObjectUnref);
 
-struct virDomainDefPostParseDeviceIteratorData {
-    virDomainXMLOption *xmlopt;
-    void *parseOpaque;
-    unsigned int parseFlags;
-};
-
 bool
 virDomainSCSIDriveAddressIsUsed(const virDomainDef *def,
                                 const virDomainDeviceDriveAddress *addr);

@@ -6031,6 +6031,13 @@ virDomainDeviceDefPostParseOne(virDomainDeviceDef *dev,
 }
 
 
+struct virDomainDefPostParseDeviceIteratorData {
+    virDomainXMLOption *xmlopt;
+    void *parseOpaque;
+    unsigned int parseFlags;
+};
+
+
 static int
 virDomainDefPostParseDeviceIterator(virDomainDef *def,
                                     virDomainDeviceDef *dev,
