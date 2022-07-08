@@ -5819,7 +5819,8 @@ qemuDomainSetIOThreadParams(virDomainPtr dom,
     qemuMonitorIOThreadInfo iothread = {0};
     int ret = -1;
 
-    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE, -1);
+    virCheckFlags(VIR_DOMAIN_AFFECT_LIVE |
+                  VIR_DOMAIN_AFFECT_CONFIG, -1);
 
     if (iothread_id == 0) {
         virReportError(VIR_ERR_INVALID_ARG, "%s",
