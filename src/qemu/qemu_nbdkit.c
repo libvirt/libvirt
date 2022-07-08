@@ -752,6 +752,40 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
 }
 
 
+int
+qemuNbdkitStartStorageSource(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virStorageSource *src)
+{
+    virStorageSource *backing;
+
+    for (backing = src; backing != NULL; backing = backing->backingStore) {
+        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+        if (priv && priv->nbdkitProcess &&
+            qemuNbdkitProcessStart(priv->nbdkitProcess, vm, driver) < 0)
+            return -1;
+    }
+
+    return 0;
+}
+
+
+void
+qemuNbdkitStopStorageSource(virStorageSource *src)
+{
+    virStorageSource *backing;
+
+    for (backing = src; backing != NULL; backing = backing->backingStore) {
+        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+        if (priv && priv->nbdkitProcess &&
+            qemuNbdkitProcessStop(priv->nbdkitProcess) < 0)
+            VIR_WARN("Unable to stop nbdkit for storage source '%s'", src->nodestorage);
+    }
+}
+
+
 static int
 qemuNbdkitCommandPassDataByPipe(virCommand *cmd,
                                 const char *argName,
@@ -936,6 +970,14 @@ qemuNbdkitProcessFree(qemuNbdkitProcess *proc)
     g_clear_pointer(&proc->socketfile, g_free);
     g_clear_object(&proc->caps);
     g_free(proc);
+}
+
+
+int
+qemuNbdkitProcessSetupCgroup(qemuNbdkitProcess *proc,
+                             virCgroup *cgroup)
+{
+    return virCgroupAddProcess(cgroup, proc->pid);
 }
 
 

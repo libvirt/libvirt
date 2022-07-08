@@ -11155,9 +11155,14 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     if (qemuDomainSecretStorageSourcePrepareEncryption(priv, src,
                                                        src->nodeformat) < 0)
         return -1;
-    if (qemuDomainSecretStorageSourcePrepareAuth(priv, src,
-                                                 src->nodestorage) < 0)
-        return -1;
+
+    if (!qemuDomainPrepareStorageSourceNbdkit(src, cfg, src->nodestorage, priv)) {
+        /* If we're using nbdkit to serve the storage source, we don't pass
+         * authentication secrets to qemu, but will pass them to nbdkit instead */
+        if (qemuDomainSecretStorageSourcePrepareAuth(priv, src,
+                                                     src->nodestorage) < 0)
+            return -1;
+    }
 
     if (qemuDomainPrepareStorageSourcePR(src, priv, src->nodestorage) < 0)
         return -1;
@@ -11171,8 +11176,6 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
 
     if (qemuDomainPrepareStorageSourceFDs(src, priv) < 0)
         return -1;
-
-    qemuDomainPrepareStorageSourceNbdkit(src, cfg, src->nodestorage, priv);
 
     return 0;
 }

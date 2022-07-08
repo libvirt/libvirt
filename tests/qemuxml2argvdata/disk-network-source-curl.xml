@@ -1,0 +1,71 @@
+<domain type='qemu'>
+  <name>QEMUGuest1</name>
+  <uuid>c7a5fdbd-edaf-9455-926a-d65c16db1809</uuid>
+  <memory unit='KiB'>219136</memory>
+  <currentMemory unit='KiB'>219136</currentMemory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc'>hvm</type>
+    <boot dev='hd'/>
+  </os>
+  <clock offset='utc'/>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>destroy</on_crash>
+  <devices>
+    <emulator>/usr/bin/qemu-system-x86_64</emulator>
+    <disk type='network' device='disk'>
+      <source protocol='https' name='path/to/disk1.iso'>
+        <host name='https.example.org' port='8443'/>
+        <cookies>
+            <cookie name='cookie1'>cookievalue1</cookie>
+            <cookie name='cookie2'>cookievalue2</cookie>
+        </cookies>
+      </source>
+      <target dev='vda' bus='virtio'/>
+      <readonly/>
+    </disk>
+    <disk type='network' device='cdrom'>
+        <source protocol='http' name='path/to/disk2.iso'>
+        <host name='http.example.org' port='8080'/>
+        <cookies>
+            <cookie name='cookie1'>cookievalue1</cookie>
+            <cookie name='cookie2'>cookievalue2</cookie>
+            <cookie name='cookie3'>cookievalue3</cookie>
+        </cookies>
+      </source>
+      <target dev='hdb' bus='sata'/>
+    </disk>
+    <disk type='network' device='cdrom'>
+        <source protocol='ftp' name='path/to/disk3.iso'>
+        <host name='ftp.example.org' port='20'/>
+      </source>
+      <target dev='hdc' bus='sata'/>
+    </disk>
+    <disk type='network' device='cdrom'>
+        <source protocol='ftps' name='path/to/disk4.iso'>
+        <host name='ftps.example.org' port='22'/>
+      </source>
+      <target dev='hdd' bus='sata'/>
+    </disk>
+    <disk type='network' device='disk'>
+      <source protocol='https' name='path/to/disk5.iso' query='foo=bar'>
+        <host name='https.example.org' port='8443'/>
+        <ssl verify='no'/>
+        <cookies>
+            <cookie name='cookie1'>cookievalue1</cookie>
+            <cookie name='cookie2'>cookievalue2</cookie>
+        </cookies>
+        <encryption format='luks'>
+          <secret type='passphrase' uuid='1148b693-0843-4cef-9f97-8feb4e1ae365'/>
+        </encryption>
+      </source>
+      <target dev='vde' bus='virtio'/>
+    </disk>
+    <controller type='usb' index='0'/>
+    <controller type='pci' index='0' model='pci-root'/>
+    <input type='mouse' bus='ps2'/>
+    <input type='keyboard' bus='ps2'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

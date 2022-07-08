@@ -1110,6 +1110,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-cdrom-empty-network-invalid");
     DO_TEST_CAPS_LATEST("disk-cdrom-bus-other");
     DO_TEST_CAPS_LATEST("disk-cdrom-network");
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-cdrom-network-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     DO_TEST_CAPS_LATEST("disk-cdrom-tray");
     DO_TEST_CAPS_LATEST("disk-floppy");
     DO_TEST_CAPS_LATEST("disk-floppy-q35");
@@ -1154,6 +1155,9 @@ mymain(void)
     /* qemu-6.0 is the last qemu version supporting sheepdog */
     DO_TEST_CAPS_VER("disk-network-sheepdog", "6.0.0");
     DO_TEST_CAPS_LATEST("disk-network-source-auth");
+    DO_TEST_CAPS_LATEST("disk-network-source-curl");
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-source-curl-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-source-curl-nbdkit-backing", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     DO_TEST_CAPS_LATEST("disk-network-nfs");
     driver.config->vxhsTLS = 1;
     driver.config->nbdTLSx509secretUUID = g_strdup("6fd3f62d-9fe7-4a4e-a869-7acd6376d8ea");
@@ -1164,10 +1168,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
     DO_TEST_CAPS_VER("disk-network-tlsx509-vxhs", "5.0.0");
     DO_TEST_CAPS_LATEST("disk-network-http");
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-http-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_CURL);
     VIR_FREE(driver.config->nbdTLSx509secretUUID);
     VIR_FREE(driver.config->vxhsTLSx509secretUUID);
     driver.config->vxhsTLS = 0;
     DO_TEST_CAPS_LATEST("disk-network-ssh");
+    DO_TEST_CAPS_LATEST_NBDKIT("disk-network-ssh-nbdkit", QEMU_NBDKIT_CAPS_PLUGIN_SSH);
     DO_TEST_CAPS_LATEST("disk-no-boot");
     DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_VER("disk-vhostuser-numa", "4.2.0");

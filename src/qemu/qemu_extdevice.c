@@ -232,6 +232,17 @@ qemuExtDevicesStart(virQEMUDriver *driver,
             return -1;
     }
 
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        if (qemuNbdkitStartStorageSource(driver, vm, disk->src) < 0)
+            return -1;
+    }
+
+    if (def->os.loader && def->os.loader->nvram) {
+        if (qemuNbdkitStartStorageSource(driver, vm, def->os.loader->nvram) < 0)
+            return -1;
+    }
+
     return 0;
 }
 
@@ -283,6 +294,14 @@ qemuExtDevicesStop(virQEMUDriver *driver,
             fs->fsdriver == VIR_DOMAIN_FS_DRIVER_TYPE_VIRTIOFS)
             qemuVirtioFSStop(driver, vm, fs);
     }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        qemuNbdkitStopStorageSource(disk->src);
+    }
+
+    if (def->os.loader && def->os.loader->nvram)
+        qemuNbdkitStopStorageSource(def->os.loader->nvram);
 }
 
 
@@ -319,7 +338,39 @@ qemuExtDevicesHasDevice(virDomainDef *def)
             return true;
     }
 
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        virStorageSource *backing;
+
+        for (backing = disk->src; backing; backing = backing->backingStore) {
+            qemuDomainStorageSourcePrivate* priv =
+                QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(backing);
+            if (priv && priv->nbdkitProcess)
+                return true;
+        }
+    }
+
+
     return false;
+}
+
+
+/* recursively setup nbdkit cgroups for backing chain of src */
+static int
+qemuExtDevicesSetupCgroupNbdkit(virStorageSource *src,
+                                virCgroup *cgroup)
+{
+    virStorageSource *backing;
+
+    for (backing = src; backing; backing = backing->backingStore) {
+        qemuDomainStorageSourcePrivate *priv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+
+        if (priv && priv->nbdkitProcess &&
+            qemuNbdkitProcessSetupCgroup(priv->nbdkitProcess, cgroup) < 0)
+            return -1;
+    }
+
+    return 0;
 }
 
 
@@ -362,6 +413,17 @@ qemuExtDevicesSetupCgroup(virQEMUDriver *driver,
     for (i = 0; i < def->ntpms; i++) {
         if (def->tpms[i]->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
             qemuExtTPMSetupCgroup(driver, def, cgroup) < 0)
+            return -1;
+    }
+
+    for (i = 0; i < def->ndisks; i++) {
+        virDomainDiskDef *disk = def->disks[i];
+        if (qemuExtDevicesSetupCgroupNbdkit(disk->src, cgroup) < 0)
+            return -1;
+    }
+
+    if (def->os.loader && def->os.loader->nvram) {
+        if (qemuExtDevicesSetupCgroupNbdkit(def->os.loader->nvram, cgroup) < 0)
             return -1;
     }
 

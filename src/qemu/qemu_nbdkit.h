@@ -21,6 +21,7 @@
 
 #include "internal.h"
 #include "storage_source_conf.h"
+#include "vircgroup.h"
 #include "virenum.h"
 #include "virfilecache.h"
 
@@ -59,6 +60,14 @@ qemuNbdkitReconnectStorageSource(virStorageSource *source,
                                  const char *pidfile,
                                  const char *socketfile);
 
+int
+qemuNbdkitStartStorageSource(virQEMUDriver *driver,
+                             virDomainObj *vm,
+                             virStorageSource *src);
+
+void
+qemuNbdkitStopStorageSource(virStorageSource *src);
+
 void
 qemuNbdkitStorageSourceManageProcess(virStorageSource *src);
 
@@ -94,5 +103,9 @@ qemuNbdkitProcessStop(qemuNbdkitProcess *proc);
 
 void
 qemuNbdkitProcessFree(qemuNbdkitProcess *proc);
+
+int
+qemuNbdkitProcessSetupCgroup(qemuNbdkitProcess *proc,
+                             virCgroup *cgroup);
 
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuNbdkitProcess, qemuNbdkitProcessFree);
