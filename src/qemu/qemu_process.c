@@ -9054,6 +9054,12 @@ qemuProcessReconnect(void *opaque)
         }
     }
 
+    for (i = 0; i < obj->def->ndisks; i++)
+        qemuNbdkitStorageSourceManageProcess(obj->def->disks[i]->src);
+
+    if (obj->def->os.loader && obj->def->os.loader->nvram)
+        qemuNbdkitStorageSourceManageProcess(obj->def->os.loader->nvram);
+
     /* update domain state XML with possibly updated state in virDomainObj */
     if (virDomainObjSave(obj, driver->xmlopt, cfg->stateDir) < 0)
         goto error;

@@ -345,6 +345,10 @@
                 <fdset type='storage' id='1337'/>
               </fdsets>
               <thresholdEvent indexUsed='yes'/>
+              <nbdkit>
+                <pidfile>/path/to/nbdkit.pid</pidfile>
+                <socketfile>/path/to/nbdkit.socket</socketfile>
+              </nbdkit>
             </privateData>
           </source>
           <backingStore/>

@@ -54,6 +54,14 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *nbdkitCaps,
                             uid_t user,
                             gid_t group);
 
+void
+qemuNbdkitReconnectStorageSource(virStorageSource *source,
+                                 const char *pidfile,
+                                 const char *socketfile);
+
+void
+qemuNbdkitStorageSourceManageProcess(virStorageSource *src);
+
 bool
 qemuNbdkitCapsGet(qemuNbdkitCaps *nbdkitCaps,
                   qemuNbdkitCapsFlags flag);

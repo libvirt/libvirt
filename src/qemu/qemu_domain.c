@@ -1959,6 +1959,33 @@ qemuStorageSourcePrivateDataAssignSecinfo(qemuDomainSecretInfo **secinfo,
 
 
 static int
+qemuStorageSourcePrivateDataParseNbdkit(xmlNodePtr node,
+                                        xmlXPathContextPtr ctxt,
+                                        virStorageSource *src)
+{
+    g_autofree char *pidfile = NULL;
+    g_autofree char *socketfile = NULL;
+    VIR_XPATH_NODE_AUTORESTORE(ctxt);
+
+    ctxt->node = node;
+
+    if (!(pidfile = virXPathString("string(./pidfile)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("missing nbdkit pidfile"));
+        return -1;
+    }
+
+    if (!(socketfile = virXPathString("string(./socketfile)", ctxt))) {
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s", _("missing nbdkit socketfile"));
+        return -1;
+    }
+
+    qemuNbdkitReconnectStorageSource(src, pidfile, socketfile);
+
+    return 0;
+}
+
+
+static int
 qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
                                   virStorageSource *src)
 {
@@ -1971,6 +1998,7 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
     bool fdsetPresent = false;
     unsigned int fdSetID;
     int enccount;
+    xmlNodePtr nbdkitnode = NULL;
 
     src->nodestorage = virXPathString("string(./nodenames/nodename[@type='storage']/@name)", ctxt);
     src->nodeformat = virXPathString("string(./nodenames/nodename[@type='format']/@name)", ctxt);
@@ -2036,6 +2064,10 @@ qemuStorageSourcePrivateDataParse(xmlXPathContextPtr ctxt,
         virTristateBoolTypeFromString(thresholdEventWithIndex) == VIR_TRISTATE_BOOL_YES)
         src->thresholdEventWithIndex = true;
 
+    if ((nbdkitnode = virXPathNode("nbdkit", ctxt))) {
+        if (qemuStorageSourcePrivateDataParseNbdkit(nbdkitnode, ctxt, src) < 0)
+            return -1;
+    }
     return 0;
 }
 
@@ -2050,6 +2082,23 @@ qemuStorageSourcePrivateDataFormatSecinfo(virBuffer *buf,
 
     virBufferAsprintf(buf, "<secret type='%s' alias='%s'/>\n",
                       type, secinfo->alias);
+}
+
+
+static void
+qemuStorageSourcePrivateDataFormatNbdkit(qemuNbdkitProcess *nbdkit,
+                                         virBuffer *buf)
+{
+    g_auto(virBuffer) childBuf = VIR_BUFFER_INIT_CHILD(buf);
+
+    if (!nbdkit)
+        return;
+
+    virBufferEscapeString(&childBuf, "<pidfile>%s</pidfile>\n",
+                          nbdkit->pidfile);
+    virBufferEscapeString(&childBuf, "<socketfile>%s</socketfile>\n",
+                          nbdkit->socketfile);
+    virXMLFormatElement(buf, "nbdkit", NULL, &childBuf);
 }
 
 
@@ -2101,6 +2150,9 @@ qemuStorageSourcePrivateDataFormat(virStorageSource *src,
 
     if (src->thresholdEventWithIndex)
         virBufferAddLit(buf, "<thresholdEvent indexUsed='yes'/>\n");
+
+    if (srcPriv)
+        qemuStorageSourcePrivateDataFormatNbdkit(srcPriv->nbdkitProcess, buf);
 
     return 0;
 }

@@ -627,6 +627,77 @@ qemuNbdkitProcessNew(virStorageSource *source,
     return nbdkit;
 }
 
+/**
+ * qemuNbdkitReconnectStorageSource:
+ * @source: a storage source
+ * @pidfile: a pidfile for an nbdkit process
+ * @socketfile: the socket file associated with the nbdkit process
+ *
+ * This function constructs a new qemuNbdkitProcess object with the given values for @pidfile and
+ * @socketfile and stores it in @source. This is intended to be called when the libvirt daemon is
+ * restarted and tries to reconnect to all currently-running domains. Since this function is called
+ * from the code that parses the current daemon state, it should not perform any filesystem
+ * operations, or anything else that might fail. Additional initialization will be done later by
+ * calling qemuNbdkitStorageSourceManageProcess().
+ */
+void
+qemuNbdkitReconnectStorageSource(virStorageSource *source,
+                                 const char *pidfile,
+                                 const char *socketfile)
+{
+    qemuDomainStorageSourcePrivate *srcpriv = qemuDomainStorageSourcePrivateFetch(source);
+
+    if (srcpriv->nbdkitProcess) {
+        VIR_WARN("source already has an nbdkit process");
+        return;
+    }
+
+    srcpriv->nbdkitProcess = qemuNbdkitProcessNew(source, pidfile, socketfile);
+}
+
+
+static void
+qemuNbdkitStorageSourceManageProcessOne(virStorageSource *source)
+{
+    qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(source);
+    qemuNbdkitProcess *proc;
+
+    if (!srcpriv)
+        return;
+
+    proc = srcpriv->nbdkitProcess;
+
+    if (!proc)
+        return;
+
+    if (proc->pid <= 0) {
+        if (virPidFileReadPath(proc->pidfile, &proc->pid) < 0) {
+            VIR_WARN("Unable to read pidfile '%s'", proc->pidfile);
+            return;
+        }
+    }
+
+    if (virProcessKill(proc->pid, 0) < 0)
+        VIR_WARN("nbdkit process %i is not alive", proc->pid);
+}
+
+/**
+ * qemuNbdkitStorageSourceManageProcess:
+ * @source: a storage source
+ * @vm: the vm that owns this storage source
+ *
+ * This function re-enables monitoring of any nbdkit processes associated with the backing chain of
+ * @source. It is intended to be called after libvirt restarts and has loaded its current state from
+ * disk and is attempting to re-connect to active domains.
+ */
+void
+qemuNbdkitStorageSourceManageProcess(virStorageSource *source)
+{
+    virStorageSource *backing;
+    for (backing = source; backing != NULL; backing = backing->backingStore)
+        qemuNbdkitStorageSourceManageProcessOne(backing);
+}
+
 
 bool
 qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
