@@ -117,6 +117,7 @@ static const vshCmdOptDef opts_backup_dumpxml[] = {
     VIRSH_COMMON_OPT_DOMAIN_FULL(VIR_CONNECT_LIST_DOMAINS_ACTIVE),
     {.name = "xpath",
      .type = VSH_OT_STRING,
+     .flags = VSH_OFLAG_REQ_OPT,
      .completer = virshCompleteEmpty,
      .help = N_("xpath expression to filter the XML document")
     },
