@@ -38,6 +38,8 @@ typedef enum {
 
 VIR_ENUM_DECL(qemuNbdkitCaps);
 
+typedef struct _virQEMUDriver virQEMUDriver;
+
 qemuNbdkitCaps *
 qemuNbdkitCapsNew(const char *path);
 
@@ -73,6 +75,14 @@ struct _qemuNbdkitProcess {
     gid_t group;
     pid_t pid;
 };
+
+int
+qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
+                       virDomainObj *vm,
+                       virQEMUDriver *driver);
+
+int
+qemuNbdkitProcessStop(qemuNbdkitProcess *proc);
 
 void
 qemuNbdkitProcessFree(qemuNbdkitProcess *proc);

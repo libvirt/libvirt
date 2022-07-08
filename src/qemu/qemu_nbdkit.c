@@ -24,6 +24,8 @@
 #include "virerror.h"
 #include "virlog.h"
 #include "virpidfile.h"
+#include "virsecureerase.h"
+#include "virtime.h"
 #include "virutil.h"
 #include "qemu_block.h"
 #include "qemu_conf.h"
@@ -666,6 +668,168 @@ qemuNbdkitInitStorageSource(qemuNbdkitCaps *caps,
 }
 
 
+static int
+qemuNbdkitProcessBuildCommandCurl(qemuNbdkitProcess *proc,
+                                  virCommand *cmd)
+{
+    g_autoptr(virURI) uri = qemuBlockStorageSourceGetURI(proc->source);
+    g_autofree char *uristring = virURIFormat(uri);
+
+    /* nbdkit plugin name */
+    virCommandAddArg(cmd, "curl");
+    if (proc->source->protocol == VIR_STORAGE_NET_PROTOCOL_HTTP) {
+        /* allow http to be upgraded to https via e.g. redirect */
+        virCommandAddArgPair(cmd, "protocols", "http,https");
+    } else {
+        virCommandAddArgPair(cmd, "protocols",
+                             virStorageNetProtocolTypeToString(proc->source->protocol));
+    }
+    virCommandAddArgPair(cmd, "url", uristring);
+
+    if (proc->source->auth) {
+        g_autoptr(virConnect) conn = virGetConnectSecret();
+        g_autofree uint8_t *secret = NULL;
+        size_t secretlen = 0;
+        g_autofree char *password = NULL;
+        int secrettype;
+        virStorageAuthDef *authdef = proc->source->auth;
+
+        virCommandAddArgPair(cmd, "user",
+                             proc->source->auth->username);
+
+        if ((secrettype = virSecretUsageTypeFromString(proc->source->auth->secrettype)) < 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("invalid secret type %1$s"),
+                           proc->source->auth->secrettype);
+            return -1;
+        }
+
+        if (virSecretGetSecretString(conn,
+                                     &authdef->seclookupdef,
+                                     secrettype,
+                                     &secret,
+                                     &secretlen) < 0) {
+            virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                           _("failed to get auth secret for storage"));
+            return -1;
+        }
+
+        /* ensure that the secret is a NULL-terminated string */
+        password = g_strndup((char*)secret, secretlen);
+        virSecureErase(secret, secretlen);
+
+        /* for now, just report an error rather than passing the password in
+         * cleartext on the commandline */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Password not yet supported for nbdkit sources"));
+
+        virSecureEraseString(password);
+
+        return -1;
+    }
+
+    if (proc->source->ncookies > 0) {
+        /* for now, just report an error rather than passing cookies in
+         * cleartext on the commandline */
+        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
+                       _("Cookies not yet supported for nbdkit sources"));
+        return -1;
+    }
+
+    if (proc->source->sslverify == VIR_TRISTATE_BOOL_NO) {
+        virCommandAddArgPair(cmd, "sslverify", "false");
+    }
+
+    if (proc->source->timeout > 0) {
+        g_autofree char *timeout = g_strdup_printf("%llu", proc->source->timeout);
+        virCommandAddArgPair(cmd, "timeout", timeout);
+    }
+
+    return 0;
+}
+
+
+static int
+qemuNbdkitProcessBuildCommandSSH(qemuNbdkitProcess *proc,
+                                 virCommand *cmd)
+{
+    const char *user = NULL;
+    virStorageNetHostDef *host = &proc->source->hosts[0];
+    g_autofree char *portstr = g_strdup_printf("%u", host->port);
+
+    /* nbdkit plugin name */
+    virCommandAddArg(cmd, "ssh");
+
+    virCommandAddArgPair(cmd, "host", host->name);
+    virCommandAddArgPair(cmd, "port", portstr);
+    virCommandAddArgPair(cmd, "path", proc->source->path);
+
+    if (proc->source->auth)
+        user = proc->source->auth->username;
+    else if (proc->source->ssh_user)
+        user = proc->source->ssh_user;
+
+    if (user)
+        virCommandAddArgPair(cmd, "user", user);
+
+    if (proc->source->ssh_host_key_check_disabled)
+        virCommandAddArgPair(cmd, "verify-remote-host", "false");
+
+    return 0;
+}
+
+
+static virCommand *
+qemuNbdkitProcessBuildCommand(qemuNbdkitProcess *proc)
+{
+    g_autoptr(virCommand) cmd = virCommandNewArgList(proc->caps->path,
+                                                     "--unix",
+                                                     proc->socketfile,
+                                                     "--foreground",
+                                                     NULL);
+
+    if (proc->source->readonly)
+        virCommandAddArg(cmd, "--readonly");
+
+    if (qemuNbdkitCapsGet(proc->caps, QEMU_NBDKIT_CAPS_FILTER_READAHEAD) &&
+        proc->source->readahead > 0)
+        virCommandAddArgPair(cmd, "--filter", "readahead");
+
+    switch (proc->source->protocol) {
+        case VIR_STORAGE_NET_PROTOCOL_HTTP:
+        case VIR_STORAGE_NET_PROTOCOL_HTTPS:
+        case VIR_STORAGE_NET_PROTOCOL_FTP:
+        case VIR_STORAGE_NET_PROTOCOL_FTPS:
+        case VIR_STORAGE_NET_PROTOCOL_TFTP:
+            if (qemuNbdkitProcessBuildCommandCurl(proc, cmd) < 0)
+                return NULL;
+            break;
+        case VIR_STORAGE_NET_PROTOCOL_SSH:
+            if (qemuNbdkitProcessBuildCommandSSH(proc, cmd) < 0)
+                return NULL;
+            break;
+
+        case VIR_STORAGE_NET_PROTOCOL_NONE:
+        case VIR_STORAGE_NET_PROTOCOL_NBD:
+        case VIR_STORAGE_NET_PROTOCOL_RBD:
+        case VIR_STORAGE_NET_PROTOCOL_SHEEPDOG:
+        case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
+        case VIR_STORAGE_NET_PROTOCOL_ISCSI:
+        case VIR_STORAGE_NET_PROTOCOL_VXHS:
+        case VIR_STORAGE_NET_PROTOCOL_NFS:
+        case VIR_STORAGE_NET_PROTOCOL_LAST:
+            virReportError(VIR_ERR_NO_SUPPORT,
+                           _("protocol '%1$s' is not supported by nbdkit"),
+                           virStorageNetProtocolTypeToString(proc->source->protocol));
+            return NULL;
+    }
+
+    virCommandDaemonize(cmd);
+
+    return g_steal_pointer(&cmd);
+}
+
+
 void
 qemuNbdkitProcessFree(qemuNbdkitProcess *proc)
 {
@@ -673,4 +837,90 @@ qemuNbdkitProcessFree(qemuNbdkitProcess *proc)
     g_clear_pointer(&proc->socketfile, g_free);
     g_clear_object(&proc->caps);
     g_free(proc);
+}
+
+
+int
+qemuNbdkitProcessStart(qemuNbdkitProcess *proc,
+                       virDomainObj *vm,
+                       virQEMUDriver *driver)
+{
+    g_autoptr(virCommand) cmd = NULL;
+    int rc;
+    int exitstatus = 0;
+    g_autofree char *errbuf = NULL;
+    virTimeBackOffVar timebackoff;
+    g_autoptr(virURI) uri = NULL;
+    g_autofree char *uristring = NULL;
+
+    if (!(cmd = qemuNbdkitProcessBuildCommand(proc)))
+        return -1;
+
+    VIR_DEBUG("starting nbdkit process for %s", proc->source->nodestorage);
+    virCommandSetErrorBuffer(cmd, &errbuf);
+    virCommandSetPidFile(cmd, proc->pidfile);
+
+    if (qemuExtDeviceLogCommand(driver, vm, cmd, "nbdkit") < 0)
+        goto error;
+
+    if (qemuSecurityCommandRun(driver, vm, cmd, proc->user, proc->group, true, &exitstatus) < 0)
+        goto error;
+
+    if (exitstatus != 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Could not start 'nbdkit'. exitstatus: %1$d"), exitstatus);
+        goto error;
+    }
+
+    if ((rc = virPidFileReadPath(proc->pidfile, &proc->pid)) < 0) {
+        virReportSystemError(-rc,
+                             _("Failed to read pidfile %1$s"),
+                             proc->pidfile);
+        goto error;
+    }
+
+    if (virTimeBackOffStart(&timebackoff, 1, 1000) < 0)
+        goto error;
+
+    while (virTimeBackOffWait(&timebackoff)) {
+        if (virFileExists(proc->socketfile))
+            return 0;
+
+        if (virProcessKill(proc->pid, 0) == 0)
+            continue;
+
+        VIR_WARN("nbdkit died unexpectedly");
+        goto errorlog;
+    }
+
+    VIR_WARN("nbdkit socket did not show up");
+
+ errorlog:
+    if ((uri = qemuBlockStorageSourceGetURI(proc->source)))
+        uristring = virURIFormat(uri);
+
+    virReportError(VIR_ERR_OPERATION_FAILED,
+                   _("Failed to connect to nbdkit for '%1$s': %2$s"),
+                   NULLSTR(uristring), NULLSTR(errbuf));
+
+ error:
+    qemuNbdkitProcessStop(proc);
+    return -1;
+}
+
+
+int
+qemuNbdkitProcessStop(qemuNbdkitProcess *proc)
+{
+    if (proc->pid < 0)
+        return 0;
+
+    VIR_DEBUG("Stopping nbdkit process %i", proc->pid);
+    virProcessKill(proc->pid, SIGTERM);
+
+    unlink(proc->pidfile);
+    unlink(proc->socketfile);
+    proc->pid = -1;
+
+    return 0;
 }
