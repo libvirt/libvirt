@@ -547,6 +547,14 @@ testCompareXMLToArgv(const void *data)
     if (qemuTestCapsCacheInsert(driver.qemuCapsCache, info->qemuCaps) < 0)
         goto cleanup;
 
+    if (info->nbdkitCaps) {
+        if (virFileCacheInsertData(driver.nbdkitCapsCache, TEST_NBDKIT_PATH,
+                                   g_object_ref(info->nbdkitCaps)) < 0) {
+            g_object_unref(info->nbdkitCaps);
+            goto cleanup;
+        }
+    }
+
     if (info->migrateFrom &&
         !(migrateURI = qemuMigrationDstGetURI(info->migrateFrom,
                                               info->migrateFd)))
@@ -769,6 +777,9 @@ mymain(void)
 
 # define DO_TEST_CAPS_ARCH_VER(name, arch, ver) \
     DO_TEST_CAPS_ARCH_VER_FULL(name, arch, ver, ARG_END)
+
+# define DO_TEST_CAPS_LATEST_NBDKIT(name, ...) \
+    DO_TEST_CAPS_ARCH_LATEST_FULL(name, "x86_64", ARG_NBDKIT_CAPS, __VA_ARGS__, QEMU_NBDKIT_CAPS_LAST, ARG_END)
 
 # define DO_TEST_CAPS_LATEST(name) \
     DO_TEST_CAPS_ARCH_LATEST(name, "x86_64")

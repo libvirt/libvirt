@@ -33,6 +33,10 @@ virFindFileInPath(const char *file)
         return g_strdup_printf("/usr/bin/%s", file);
     }
 
+    if (g_str_equal(file, "nbdkit")) {
+        return g_strdup(TEST_NBDKIT_PATH);
+    }
+
     /* Nothing in tests should be relying on real files
      * in host OS, so we return NULL to try to force
      * an error in such a case
@@ -232,6 +236,7 @@ void qemuTestDriverFree(virQEMUDriver *driver)
     virObjectUnref(driver->caps);
     virObjectUnref(driver->config);
     virObjectUnref(driver->securityManager);
+    g_clear_object(&driver->nbdkitCapsCache);
 
     virCPUDefFree(cpuDefault);
     virCPUDefFree(cpuHaswell);
@@ -347,6 +352,12 @@ int qemuTestDriverInit(virQEMUDriver *driver)
     driver->qemuCapsCache = virQEMUCapsCacheNew("/dev/null", "/dev/null", 0, 0);
     if (!driver->qemuCapsCache)
         goto error;
+
+    driver->nbdkitCapsCache = qemuNbdkitCapsCacheNew("/dev/null");
+    /* the nbdkitCapsCache just interprets the presence of a non-null private
+     * data pointer as a signal to skip cache validation. This prevents the
+     * cache from trying to validate the plugindir mtime, etc during test */
+    virFileCacheSetPriv(driver->nbdkitCapsCache, GUINT_TO_POINTER(1));
 
     driver->xmlopt = virQEMUDriverCreateXMLConf(driver, "none");
     if (!driver->xmlopt)
@@ -641,6 +652,14 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
                 ignore_value(virBitmapSetBit(info->args.fakeCapsDel, flag));
             break;
 
+        case ARG_NBDKIT_CAPS:
+            if (!(info->args.fakeNbdkitCaps))
+                info->args.fakeNbdkitCaps = virBitmapNew(QEMU_NBDKIT_CAPS_LAST);
+
+            while ((flag = va_arg(argptr, int)) < QEMU_NBDKIT_CAPS_LAST)
+                ignore_value(virBitmapSetBit(info->args.fakeNbdkitCaps, flag));
+            break;
+
         case ARG_GIC:
             info->args.gic = va_arg(argptr, int);
             break;
@@ -926,6 +945,11 @@ testQemuInfoInitArgs(struct testQemuInfo *info)
     for (cap = -1; (cap = virBitmapNextSetBit(info->args.fakeCapsDel, cap)) >= 0;)
         virQEMUCapsClear(info->qemuCaps, cap);
 
+    info->nbdkitCaps = qemuNbdkitCapsNew(TEST_NBDKIT_PATH);
+
+    for (cap = -1; (cap = virBitmapNextSetBit(info->args.fakeNbdkitCaps, cap)) >= 0;)
+        qemuNbdkitCapsSet(info->nbdkitCaps, cap);
+
     if (info->args.gic != GIC_NONE &&
         testQemuCapsSetGIC(info->qemuCaps, info->args.gic) < 0)
         return -1;
@@ -944,6 +968,8 @@ testQemuInfoClear(struct testQemuInfo *info)
     g_clear_pointer(&info->args.fakeCapsAdd, virBitmapFree);
     g_clear_pointer(&info->args.fakeCapsDel, virBitmapFree);
     g_clear_pointer(&info->args.fds, g_hash_table_unref);
+    g_clear_object(&info->nbdkitCaps);
+    g_clear_pointer(&info->args.fakeNbdkitCaps, virBitmapFree);
 }
 
 

@@ -28,6 +28,7 @@
 # define TEST_TPM_ENV_VAR "VIR_TEST_MOCK_FAKE_TPM_VERSION"
 # define TPM_VER_1_2 "1.2"
 # define TPM_VER_2_0 "2.0"
+# define TEST_NBDKIT_PATH "/fakebindir/nbdkit"
 
 enum {
     GIC_NONE = 0,
@@ -50,6 +51,7 @@ typedef enum {
     ARG_CAPS_HOST_CPU_MODEL,
     ARG_FD_GROUP, /* name, nfds, fd[0], ... fd[n-1] */
     ARG_VDPA_FD, /* vdpadev, fd */
+    ARG_NBDKIT_CAPS,
     ARG_END,
 } testQemuInfoArgName;
 
@@ -80,6 +82,7 @@ struct testQemuArgs {
     bool newargs;
     virBitmap *fakeCapsAdd;
     virBitmap *fakeCapsDel;
+    virBitmap *fakeNbdkitCaps;
     char *capsver;
     char *capsarch;
     const char *capsvariant;
@@ -96,6 +99,7 @@ struct testQemuInfo {
     char *outfile;
     char *errfile;
     virQEMUCaps *qemuCaps;
+    qemuNbdkitCaps *nbdkitCaps;
     const char *migrateFrom;
     int migrateFd;
     unsigned int flags;

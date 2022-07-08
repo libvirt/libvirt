@@ -290,10 +290,16 @@ virNbkditCapsCheckModdir(const char *moddir,
 
 static bool
 virNbdkitCapsIsValid(void *data,
-                     void *privData G_GNUC_UNUSED)
+                     void *privData)
 {
     qemuNbdkitCaps *nbdkitCaps = data;
     struct stat st;
+    /* when run under test, we will use privData as a signal to indicate that
+     * we shouldn't touch the filesystem */
+    bool skipValidation = (privData != NULL);
+
+    if (skipValidation)
+        return true;
 
     if (!nbdkitCaps->path)
         return true;
@@ -334,9 +340,17 @@ virNbdkitCapsIsValid(void *data,
 
 static void*
 virNbdkitCapsNewData(const char *binary,
-                     void *privData G_GNUC_UNUSED)
+                     void *privData)
 {
-    qemuNbdkitCaps *caps = qemuNbdkitCapsNew(binary);
+    /* when run under test, we will use privData as a signal to indicate that
+     * we shouldn't touch the filesystem */
+    bool skipNewData = (privData != NULL);
+    qemuNbdkitCaps *caps = NULL;
+
+    if (skipNewData)
+        return NULL;
+
+    caps = qemuNbdkitCapsNew(binary);
     qemuNbdkitCapsQuery(caps);
 
     return caps;
