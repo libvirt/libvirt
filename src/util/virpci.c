@@ -45,7 +45,7 @@ VIR_LOG_INIT("util.pci");
 
 VIR_ENUM_IMPL(virPCIELinkSpeed,
               VIR_PCIE_LINK_SPEED_LAST,
-              "", "2.5", "5", "8", "16",
+              "", "2.5", "5", "8", "16", "32", "64"
 );
 
 VIR_ENUM_IMPL(virPCIStubDriver,
