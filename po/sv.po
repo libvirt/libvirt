@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-07-07 10:33+0000\n"
+"PO-Revision-Date: 2022-07-10 09:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -12322,57 +12322,56 @@ msgstr "Inget kommandoradsargument till enhetsmodellen angivet"
 
 #, c-format
 msgid "No device with bus '%s' and target '%s'"
-msgstr ""
+msgstr "Ingen enhet med bussen ”%s” och målet ”%s”"
 
 #, c-format
 msgid "No disk found whose source path or target is %s"
-msgstr ""
+msgstr "Ingen disk finns vars källsökväg eller mål är %s"
 
 #, c-format
 msgid "No disk with bus '%s' and target '%s'"
-msgstr ""
+msgstr "Ingen disk med bussen ”%s” och målet ”%s”"
 
 msgid "No dnsmasq options value specified"
-msgstr ""
+msgstr "Inga värde till dnsmasq-alternativ angivet"
 
 #, c-format
 msgid "No domain with ID %d"
-msgstr ""
+msgstr "Ingen domän med ID %d"
 
 #, c-format
 msgid "No domain with UUID %s"
-msgstr ""
+msgstr "Ingen domän med UUID %s"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No domain with matching ID '%d'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "ingen domän med matchande ID ”%d”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No domain with matching id %d"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "Ingen domän med matchande id %d"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No domain with matching name '%s'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "Ingen domän med matchande namn ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No domain with matching uuid '%s'"
-msgstr "det finns ingen klient som matchar id ”%llu”"
+msgstr "Ingen domän med matchande uuid ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No domain with name %s"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "Ingen domän med namnet %s"
 
 #, c-format
 msgid "No emulator found for arch '%s'"
-msgstr ""
+msgstr "Ingen emulator funnen för arkitekturen ”%s”"
 
 msgid "No emulator found for cloud-hypervisor"
-msgstr ""
+msgstr "Ingen emulator hittad för moln-hypervisorn"
 
-#, fuzzy
 msgid "No error message from child failure"
-msgstr "Inget felmeddelande gavs"
+msgstr "Inget felmeddelande barn som misslyckades"
 
 msgid "No error message provided"
 msgstr "Inget felmeddelande gavs"
@@ -12382,93 +12381,96 @@ msgstr "Inga fel hittades\n"
 
 #, c-format
 msgid "No event expected with procedure 0x%x"
-msgstr ""
+msgstr "Ingen händelse förväntades med proceduren 0x%x"
 
 msgid "No filesystems are mounted in the domain"
-msgstr ""
+msgstr "Inga filsystem monterade i domänen"
 
 msgid "No free NBD devices"
-msgstr ""
+msgstr "Inga fria NBD-enheter"
 
 msgid "No free USB ports"
-msgstr ""
+msgstr "Inga fria USB-portar"
 
 #, c-format
 msgid ""
 "No free busNr lower than current lowest busNr is available to auto-assign to "
 "bus %d. Must be manually assigned"
 msgstr ""
+"Inget fritt busNr lägre än det just nu lägsta busNr är tillgängligt att "
+"automattilldela till buss %d. Måste tilldelas manuellt"
 
 msgid "No graphical display found"
-msgstr ""
+msgstr "Ingen grafisk display finns"
 
 #, c-format
 msgid "No graphical display with type '%s' found"
-msgstr ""
+msgstr "Ingen grafisk display med typen ”%s” finns"
 
 #, c-format
 msgid "No graphics backend with index %d"
-msgstr ""
+msgstr "Ingen grafisk bakände med index %d"
 
 msgid "No identity information available for client"
-msgstr ""
+msgstr "Ingen identitetsinformation tillgänglig för klienten"
 
 msgid "No interface attached to bridge"
-msgstr ""
+msgstr "Inget gränssnitt anslutet till bryggan"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No interface found whose type is %s"
-msgstr "okän gränssnittstyp ”%s”"
+msgstr "Inget gränssnitt hittat var typ är %s"
 
 #, c-format
 msgid "No interface with MAC address %s was found"
-msgstr ""
+msgstr "Inget gränssnitt med MAC-adress %s finns"
 
 msgid "No lxc environment type specified"
-msgstr ""
+msgstr "Ingen lxc-miljötyp angiven"
 
 msgid "No master USB controller specified"
-msgstr ""
+msgstr "Ingen huvud-USB-styrenhet angiven"
 
 #, c-format
 msgid "No matches for socket service '%s': %s"
-msgstr ""
+msgstr "Inga matchingar för uttagstjänsten ”%s”:%s"
 
 msgid "No memory balloon device configured, can not set the collection period"
 msgstr ""
+"Ingen minnesballongenhet konfigurerad, kan inte sätta insamlingsperioden"
 
 msgid "No message in the queue"
-msgstr ""
+msgstr "Inget meddelande i kön"
 
 msgid "No more available PCI slots"
-msgstr ""
+msgstr "Inga fler tillgängliga PCI-fack"
 
 msgid "No name supplied for <initenv> element"
-msgstr ""
+msgstr "Inget namn angivnet för elementet <initenv>"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No net with mac '%s'"
-msgstr "Kunde inte hitta %s med namnet ”%s”"
+msgstr "Inget nät med mac ”%s”"
 
 #, c-format
 msgid "No network found with property '%s' = '%s'"
-msgstr ""
+msgstr "Inget nätverk finns med egenskapen ”%s” = ”%s”"
 
 msgid "No network socket associated with client"
-msgstr ""
+msgstr "Inget nätverksuttag associerat med klienten"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No open log file %s"
-msgstr "Misslyckades att öppna filen ”%s”"
+msgstr "Ingen öppen loggfil %s"
 
 msgid "No per-CPU stats available"
-msgstr ""
+msgstr "Ingen per-CPU-statistik tillgänglig"
 
 msgid "No process ID available"
-msgstr ""
+msgstr "Inget process-ID tillgängligt"
 
 msgid "No process start time available"
-msgstr ""
+msgstr "Ingen processtarttid tillgänglig"
 
 msgid "No qemu command-line argument specified"
 msgstr ""
