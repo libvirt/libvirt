@@ -14,7 +14,7 @@ x86_64-almalinux-8:
       optional: true
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: almalinux-8
     RPM: skip
 
@@ -48,7 +48,7 @@ x86_64-alpine-315:
       optional: true
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: alpine-315
 
 
@@ -107,7 +107,7 @@ x86_64-debian-11:
       optional: true
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -223,7 +223,7 @@ x86_64-ubuntu-2204:
       optional: true
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: ubuntu-2204
 
 
@@ -251,7 +251,7 @@ aarch64-debian-10:
   allow_failure: true
   variables:
     CROSS: aarch64
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -263,7 +263,7 @@ armv6l-debian-10:
   allow_failure: true
   variables:
     CROSS: armv6l
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -286,7 +286,7 @@ i686-debian-10:
   allow_failure: true
   variables:
     CROSS: i686
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -298,7 +298,7 @@ mips-debian-10:
   allow_failure: true
   variables:
     CROSS: mips
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -310,7 +310,7 @@ mips64el-debian-10:
   allow_failure: true
   variables:
     CROSS: mips64el
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -322,7 +322,7 @@ mipsel-debian-10:
   allow_failure: true
   variables:
     CROSS: mipsel
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -334,7 +334,7 @@ ppc64le-debian-10:
   allow_failure: true
   variables:
     CROSS: ppc64le
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -346,7 +346,7 @@ s390x-debian-10:
   allow_failure: true
   variables:
     CROSS: s390x
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -358,7 +358,7 @@ aarch64-debian-11:
   allow_failure: false
   variables:
     CROSS: aarch64
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -370,7 +370,7 @@ armv6l-debian-11:
   allow_failure: false
   variables:
     CROSS: armv6l
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -382,7 +382,7 @@ armv7l-debian-11:
   allow_failure: false
   variables:
     CROSS: armv7l
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -394,7 +394,7 @@ i686-debian-11:
   allow_failure: false
   variables:
     CROSS: i686
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -406,7 +406,7 @@ mips64el-debian-11:
   allow_failure: false
   variables:
     CROSS: mips64el
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -418,7 +418,7 @@ mipsel-debian-11:
   allow_failure: false
   variables:
     CROSS: mipsel
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -430,7 +430,7 @@ ppc64le-debian-11:
   allow_failure: false
   variables:
     CROSS: ppc64le
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -442,7 +442,7 @@ s390x-debian-11:
   allow_failure: false
   variables:
     CROSS: s390x
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -454,7 +454,7 @@ aarch64-debian-sid:
   allow_failure: false
   variables:
     CROSS: aarch64
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -466,7 +466,7 @@ armv6l-debian-sid:
   allow_failure: false
   variables:
     CROSS: armv6l
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -478,7 +478,7 @@ armv7l-debian-sid:
   allow_failure: false
   variables:
     CROSS: armv7l
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -490,7 +490,7 @@ i686-debian-sid:
   allow_failure: false
   variables:
     CROSS: i686
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -502,7 +502,7 @@ mips64el-debian-sid:
   allow_failure: false
   variables:
     CROSS: mips64el
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -514,7 +514,7 @@ mipsel-debian-sid:
   allow_failure: false
   variables:
     CROSS: mipsel
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -526,7 +526,7 @@ ppc64le-debian-sid:
   allow_failure: false
   variables:
     CROSS: ppc64le
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -538,7 +538,7 @@ s390x-debian-sid:
   allow_failure: false
   variables:
     CROSS: s390x
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid
 
 
@@ -550,7 +550,7 @@ mingw32-fedora-36:
   allow_failure: false
   variables:
     CROSS: mingw32
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: fedora-36
 
 
@@ -584,7 +584,7 @@ mingw64-fedora-rawhide:
   allow_failure: true
   variables:
     CROSS: mingw64
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: fedora-rawhide
 
 

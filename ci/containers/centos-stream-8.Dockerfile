@@ -11,6 +11,7 @@ RUN dnf distro-sync -y && \
     dnf config-manager --set-enabled -y powertools && \
     dnf install -y centos-release-advanced-virtualization && \
     dnf install -y epel-release && \
+    dnf install -y epel-next-release && \
     dnf install -y \
         audit-libs-devel \
         augeas \

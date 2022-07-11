@@ -25,6 +25,7 @@ x86_64-alpine-315-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: alpine-315
 
 
@@ -126,6 +127,7 @@ aarch64-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-aarch64
 
 
@@ -133,6 +135,7 @@ armv6l-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-armv6l
 
 
@@ -147,6 +150,7 @@ i686-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-i686
 
 
@@ -154,6 +158,7 @@ mips-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-mips
 
 
@@ -161,6 +166,7 @@ mips64el-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-mips64el
 
 
@@ -168,6 +174,7 @@ mipsel-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-mipsel
 
 
@@ -175,6 +182,7 @@ ppc64le-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-ppc64le
 
 
@@ -182,6 +190,7 @@ s390x-debian-10-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-s390x
 
 
@@ -189,7 +198,7 @@ aarch64-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-aarch64
 
 
@@ -197,7 +206,7 @@ armv6l-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-armv6l
 
 
@@ -205,7 +214,7 @@ armv7l-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-armv7l
 
 
@@ -213,7 +222,7 @@ i686-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-i686
 
 
@@ -221,7 +230,7 @@ mips64el-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-mips64el
 
 
@@ -229,7 +238,7 @@ mipsel-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-mipsel
 
 
@@ -237,7 +246,7 @@ ppc64le-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-ppc64le
 
 
@@ -245,7 +254,7 @@ s390x-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-11-cross-s390x
 
 
@@ -253,7 +262,7 @@ aarch64-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-aarch64
 
 
@@ -261,7 +270,7 @@ armv6l-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-armv6l
 
 
@@ -269,7 +278,7 @@ armv7l-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-armv7l
 
 
@@ -277,7 +286,7 @@ i686-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-i686
 
 
@@ -285,7 +294,7 @@ mips64el-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-mips64el
 
 
@@ -293,7 +302,7 @@ mipsel-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-mipsel
 
 
@@ -301,7 +310,7 @@ ppc64le-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-ppc64le
 
 
@@ -309,7 +318,7 @@ s390x-debian-sid-container:
   extends: .container_job
   allow_failure: false
   variables:
-    LIBVIRT_JOB_OPTIONAL: 1
+    JOB_OPTIONAL: 1
     NAME: debian-sid-cross-s390x
 
 
@@ -317,6 +326,7 @@ mingw32-fedora-36-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: fedora-36-cross-mingw32
 
 
@@ -338,4 +348,5 @@ mingw64-fedora-rawhide-container:
   extends: .container_job
   allow_failure: true
   variables:
+    JOB_OPTIONAL: 1
     NAME: fedora-rawhide-cross-mingw64

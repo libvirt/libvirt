@@ -10,7 +10,7 @@
 #   - Push to default branch:
 #       -> rebuild if dockerfile changed, no cache
 #   - Otherwise
-#       -> rebuild if LIBVIRT_CI_CONTAINERS=1, no cache,
+#       -> rebuild if RUN_ALL_CONTAINERS=1, no cache,
 #          to pick up new published distro packages or
 #          recover from deleted tag
 #
@@ -40,16 +40,18 @@
   after_script:
     - docker logout
   rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
     - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
       when: on_success
       changes:
        - ci/gitlab/container-templates.yml
        - ci/containers/$NAME.Dockerfile
-    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $LIBVIRT_CI_CONTAINERS == "1"'
+    - if: '$CI_PROJECT_NAMESPACE == "libvirt" && $RUN_ALL_CONTAINERS == "1"'
       when: on_success
     - if: '$CI_PROJECT_NAMESPACE == "libvirt"'
       when: never
-    - if: '$LIBVIRT_JOB_OPTIONAL'
+    - if: '$JOB_OPTIONAL'
       when: manual
       allow_failure: true
     - when: on_success

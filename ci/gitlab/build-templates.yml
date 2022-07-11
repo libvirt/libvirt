@@ -9,7 +9,9 @@
   image: $CI_REGISTRY_IMAGE/ci-$NAME:latest
   stage: builds
   rules:
-    - if: '$LIBVIRT_JOB_OPTIONAL'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$JOB_OPTIONAL'
       when: manual
       allow_failure: true
     - when: on_success
@@ -19,7 +21,9 @@
   image: $CI_REGISTRY_IMAGE/ci-$NAME-cross-$CROSS:latest
   stage: builds
   rules:
-    - if: '$LIBVIRT_JOB_OPTIONAL'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - if: '$JOB_OPTIONAL'
       when: manual
       allow_failure: true
     - when: on_success
@@ -52,9 +56,9 @@
     - cat ci/cirrus/$NAME.yml
     - cirrus-run -v --show-build-log always ci/cirrus/$NAME.yml
   rules:
-    - if: "$CIRRUS_GITHUB_REPO == null || $CIRRUS_API_TOKEN == null"
+    - if: '$CIRRUS_GITHUB_REPO == null || $CIRRUS_API_TOKEN == null'
       when: never
-    - if: '$LIBVIRT_JOB_OPTIONAL'
+    - if: '$JOB_OPTIONAL'
       when: manual
       allow_failure: true
     - when: on_success
