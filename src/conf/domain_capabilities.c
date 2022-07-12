@@ -539,6 +539,7 @@ virDomainCapsDeviceTPMFormat(virBuffer *buf,
 
     ENUM_PROCESS(tpm, model, virDomainTPMModelTypeToString);
     ENUM_PROCESS(tpm, backendModel, virDomainTPMBackendTypeToString);
+    ENUM_PROCESS(tpm, backendVersion, virDomainTPMVersionTypeToString);
 
     FORMAT_EPILOGUE(tpm);
 }

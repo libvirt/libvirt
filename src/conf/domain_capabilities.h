@@ -127,6 +127,7 @@ struct _virDomainCapsDeviceTPM {
     virTristateBool supported;
     virDomainCapsEnum model;   /* virDomainTPMModel */
     virDomainCapsEnum backendModel;   /* virDomainTPMBackendType */
+    virDomainCapsEnum backendVersion; /* virDomainTPMVersion */
 };
 
 STATIC_ASSERT_ENUM(VIR_DOMAIN_FS_DRIVER_TYPE_LAST);
