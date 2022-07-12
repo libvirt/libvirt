@@ -136,8 +136,8 @@ Project development
 `Project strategy <strategy.html>`__
    Sets a vision for future direction & technical choices
 
-`CI Testing <ci.html>`__
-   Details of the Continuous Integration testing strategy
+`CI <ci.html>`__
+   Details on our Continuous Integration
 
 `Bug reports <bugs.html>`__
    How and where to report bugs and request features
