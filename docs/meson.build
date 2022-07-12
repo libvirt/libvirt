@@ -105,6 +105,7 @@ docs_rst_files = [
   'submitting-patches',
   'support',
   'testapi',
+  'testing',
   'testsuites',
   'testtck',
   'uri',
