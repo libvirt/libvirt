@@ -49,3 +49,10 @@ provided by the `libvirt-ci <https://gitlab.com/libvirt/libvirt-ci.git>`__ proje
 most relevant changes will need to be introduced to ``lcitool`` first. Please
 follow the instructions outlined
 `here <https://gitlab.com/libvirt/libvirt-ci/-/blob/master/docs/platforms_and_mappings.rst>`__
+
+
+Running CI workloads locally
+============================
+
+If you're interested in running the CI test workloads locally, please read
+our `testing <testing.html>`__ guide.
