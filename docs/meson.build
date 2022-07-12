@@ -106,7 +106,6 @@ docs_rst_files = [
   'support',
   'testapi',
   'testing',
-  'testsuites',
   'testtck',
   'uri',
   'windows',
