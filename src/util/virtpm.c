@@ -47,6 +47,8 @@ VIR_ENUM_IMPL(virTPMSwtpmSetupFeature,
               "cmdarg-create-config-files",
               "tpm12-not-need-root",
               "cmdarg-reconfigure-pcr-banks",
+              "tpm-1.2",
+              "tpm-2.0",
 );
 
 /**
