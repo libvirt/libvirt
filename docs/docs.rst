@@ -154,10 +154,8 @@ Project development
 `API extensions <api_extension.html>`__
    Adding new public libvirt APIs
 
-`Functional testing <testsuites.html>`__
-   Testing libvirt with
-   `TCK test suite <testtck.html>`__ and
-   `Libvirt-test-API <testapi.html>`__
+`Testing <testing.html>`__
+   Details various types of testing available for libvirt
 
 `New repo setup <newreposetup.html>`__
    Procedure for configuring new git repositories for libvirt
