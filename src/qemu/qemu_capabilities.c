@@ -6368,9 +6368,18 @@ virQEMUCapsFillDomainDeviceTPMCaps(virQEMUCaps *qemuCaps,
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_PASSTHROUGH))
         VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendModel, VIR_DOMAIN_TPM_TYPE_PASSTHROUGH);
-    if (virTPMHasSwtpm() &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
-        VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendModel, VIR_DOMAIN_TPM_TYPE_EMULATOR);
+    if (virTPMHasSwtpm()) {
+        if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_DEVICE_TPM_EMULATOR))
+            VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendModel, VIR_DOMAIN_TPM_TYPE_EMULATOR);
+        if (virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_TPM_1_2)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendVersion, VIR_DOMAIN_TPM_VERSION_1_2);
+            tpm->backendVersion.report = true;
+        }
+        if (virTPMSwtpmSetupCapsGet(VIR_TPM_SWTPM_SETUP_FEATURE_TPM_2_0)) {
+            VIR_DOMAIN_CAPS_ENUM_SET(tpm->backendVersion, VIR_DOMAIN_TPM_VERSION_2_0);
+            tpm->backendVersion.report = true;
+        }
+    }
 
     /*
      * Need at least one frontend if it is to be usable by applications
