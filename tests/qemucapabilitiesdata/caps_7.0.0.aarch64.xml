@@ -209,6 +209,7 @@
   <flag name='virtio-iommu.boot-bypass'/>
   <flag name='virtio-net.rss'/>
   <flag name='chardev.qemu-vdagent'/>
+  <flag name='usb-host.guest-resets-all'/>
   <version>6002092</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>61700243</microcodeVersion>

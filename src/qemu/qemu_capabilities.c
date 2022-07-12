@@ -671,6 +671,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "chardev.qemu-vdagent", /* QEMU_CAPS_CHARDEV_QEMU_VDAGENT */
               "display-dbus", /* QEMU_CAPS_DISPLAY_DBUS */
               "iothread.thread-pool-max", /* QEMU_CAPS_IOTHREAD_THREAD_POOL_MAX */
+              "usb-host.guest-resets-all", /* QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL */
     );
 
 
@@ -1459,6 +1460,7 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsPCIeRootPort[] =
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsUSBHost[] = {
     { "hostdevice", QEMU_CAPS_USB_HOST_HOSTDEVICE, NULL },
+    { "guest-resets-all", QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL, NULL },
 };
 
 static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSpaprPCIHostBridge[] = {

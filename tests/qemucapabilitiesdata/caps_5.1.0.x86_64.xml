@@ -218,6 +218,7 @@
   <flag name='memory-backend-file.prealloc-threads'/>
   <flag name='virtio-iommu-pci'/>
   <flag name='virtio-net.rss'/>
+  <flag name='usb-host.guest-resets-all'/>
   <version>5001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100242</microcodeVersion>
