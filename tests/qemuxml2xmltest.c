@@ -526,8 +526,8 @@ mymain(void)
 
     DO_TEST_NOCAPS("channel-unix-source-path");
 
-    DO_TEST_NOCAPS("hostdev-usb-address");
-    DO_TEST_NOCAPS("hostdev-pci-address");
+    DO_TEST_CAPS_LATEST("hostdev-usb-address");
+    DO_TEST_CAPS_LATEST("hostdev-pci-address");
     DO_TEST("hostdev-pci-address-unassigned", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-pci-multifunction", QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio", QEMU_CAPS_DEVICE_VFIO_PCI);

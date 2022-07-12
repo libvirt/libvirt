@@ -1914,12 +1914,12 @@ mymain(void)
     DO_TEST_CAPS_LATEST("fs9p");
     DO_TEST_CAPS_ARCH_LATEST("fs9p-ccw", "s390x");
 
-    DO_TEST_NOCAPS("hostdev-usb-address");
-    DO_TEST_NOCAPS("hostdev-usb-address-device");
-    DO_TEST_NOCAPS("hostdev-usb-address-device-boot");
+    DO_TEST_CAPS_LATEST("hostdev-usb-address");
+    DO_TEST_CAPS_LATEST("hostdev-usb-address-device");
+    DO_TEST_CAPS_LATEST("hostdev-usb-address-device-boot");
     DO_TEST_PARSE_ERROR_NOCAPS("hostdev-usb-duplicate");
-    DO_TEST("hostdev-pci-address", QEMU_CAPS_DEVICE_VFIO_PCI);
-    DO_TEST("hostdev-pci-address-device", QEMU_CAPS_DEVICE_VFIO_PCI);
+    DO_TEST_CAPS_LATEST("hostdev-pci-address");
+    DO_TEST_CAPS_LATEST("hostdev-pci-address-device");
     DO_TEST_PARSE_ERROR("hostdev-pci-duplicate",
                         QEMU_CAPS_DEVICE_VFIO_PCI);
     DO_TEST("hostdev-vfio",
