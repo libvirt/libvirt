@@ -8,8 +8,10 @@
 #
 
 # Flag listening for secure TLS connections on the public TCP/IP port.
-# NB, must pass the --listen flag to the @DAEMON_NAME@ process for this to
-# have any effect.
+#
+# To enable listening sockets with the 'libvirtd' daemon it's also required to
+# pass the '--listen' flag on the commandline of the daemon.
+# This is not needed with 'virtproxyd'.
 #
 # This setting is not required or honoured if using systemd socket
 # activation.
@@ -21,8 +23,10 @@
 #listen_tls = 0
 
 # Listen for unencrypted TCP connections on the public TCP/IP port.
-# NB, must pass the --listen flag to the @DAEMON_NAME@ process for this to
-# have any effect.
+#
+# To enable listening sockets with the 'libvirtd' daemon it's also required to
+# pass the '--listen' flag on the commandline of the daemon.
+# This is not needed with 'virtproxyd'.
 #
 # This setting is not required or honoured if using systemd socket
 # activation.
