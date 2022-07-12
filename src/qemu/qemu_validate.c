@@ -2543,6 +2543,14 @@ qemuValidateDomainDeviceDefHostdev(const virDomainHostdevDef *hostdev,
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS) {
         switch ((virDomainHostdevSubsysType) hostdev->source.subsys.type) {
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_USB:
+            if (hostdev->source.subsys.u.usb.guestReset &&
+                !virQEMUCapsGet(qemuCaps, QEMU_CAPS_USB_HOST_GUESTS_RESETS_ALL)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("guestReset is not supported with this version of QEMU"));
+                return -1;
+            }
+            break;
+
         case VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI:
             break;
 
