@@ -470,9 +470,9 @@ option in libvirt, and thus should never be used in production.
    options for the mount command via the "-o" option for the ``fs`` or ``netfs``
    type storage pools. In order to designate that the Storage Pool will be using
    the mechanism, the ``pool`` element must be modified to provide the XML
-   namespace attribute syntax as follows:
+   namespace attribute syntax as follows::
 
-   xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'
+      xmlns:fs='http://libvirt.org/schemas/storagepool/fs/1.0'
 
    The ``fs:mount_opts`` defines the mount options by specifying multiple
    ``fs:option`` subelements with the attribute ``name`` specifying the mount
