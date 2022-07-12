@@ -34,6 +34,7 @@ docs_rst_files = [
   'bugs',
   'cgroups',
   'ci',
+  'ci-dashboard',
   'coding-style',
   'committer-guidelines',
   'compiling',
