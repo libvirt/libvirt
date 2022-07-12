@@ -416,6 +416,89 @@ following command should be run as root, prior to starting libvirtd
 libvirt will then place each virtual machine in a cgroup at
 ``/dev/cgroup/libvirt/qemu/$VMNAME/``
 
+
+Live migration compatibility
+----------------------------
+
+Many factors can affect the ability to live migrate a guest between a pair
+of hosts. It is critical that when QEMU is started on the destination host,
+the exposed guest machine ABI matches what was exposed by the existing QEMU
+process on the source host. To facilitate this, when libvirt receives a
+guest configuration document, it will attempt to expand any features that
+were not specified, to ensure a stable guest machine ABI. Mostly this involves
+adding address information to all devices, and adding controllers to attach
+the devices to.
+
+Certain features that affect the guest ABI, however, may only be known at the
+time the guest is started and can be influenced by features of the host OS
+and its hardware. This means that even if the guest XML configuration is the
+same, it may still be impossible to migrate the guest between two hosts.
+
+Migration CPU model compatibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The most common problems with migration compatibility surround the use of
+the guest CPU ``host-model`` or ``host-passthrough`` modes. Both of these
+modes attempt to expose the full host CPU featureset to the guest. The
+``host-model`` mode attempts to expose as many features as possible while
+retaining the ability to accurately check compatibility between hosts prior
+to migration running. The ``host-passthrough`` mode attempts to expose the
+host CPU as precisely as possible, but with the cost that it is not possible
+for libvirt to check compatibility prior to migration.
+
+If using ``host-model`` the target host hardware and software deployment
+must expose a superset of the features of the source host CPU. If using
+``host-passthrough`` the target host CPU and software deployment must
+always expose a superset of the fetures, however, it is further strongly
+recommended that the source and destination hosts be identical in every
+way.
+
+In both cases, there are a number of factors that will influence the CPU
+features available to the guest
+
+* **Physical CPU model** - the core constraint on what features are available.
+  Check ``/proc/cpuinfo`` for CPU model name.
+* **Firmware revision (BIOS/UEFI/etc)** - firmware updates may bundle microcode
+  updates which arbitrarily add or remove CPU features, typically in response
+  to new hardware vulnerabilities. Check ``dmidecode`` for details on ``x86``
+  and ``aarch64`` platforms for firmware version, and ``/proc/cpuinfo`` for
+  associated microcode version (if not updated by the OS).
+* **Firmware settings** - certain firmware settings can affect accessibility of
+  features. For example, turning on/off SMT/HT not only affects the number
+  of logical CPUs available to the OS, but can indirectly influence other
+  factors such as the number of performance counters available for use. Check
+  the firmware specific configuration interface.
+* **Host kernel version** - the host kernel software version may have a
+  need to block certain physical CPU features from use in the guest. It can
+  also emulate certain features that may not exist in the silicon, for example,
+  x2apic. Check ``uname -r`` output for kernel version.
+* **Host kernel settings** - the kernel command line options can be used to
+  block certain physical CPU features from use in the guest, for example,
+  ``tsx=off``, ``l1tf=...`` or ``nosmt``. Check ``/proc/cmdline`` and
+  ``/etc/modprobe.d/*.conf``.
+* **microcode update version** - while the firmware will load the initial
+  microcode in to the CPU, the OS may ship packages providing newer microcode
+  updates since these can be deployed on a more timely manner than firmware
+  updates. These updates can arbitrarily load add or remove CPU features.
+  Check ``/proc/cpuinfo`` for microcode version.
+* **QEMU version** - even when the kernel supports exposing a CPU feature to
+  the guest, an update in the QEMU emulator version will be required to unlock
+  its usage with a guest, except with ``host-passthrough``. Check the output
+  of ``$QEMU -version``.
+* **libvirt version** - even when the kernel and QEMU support exposing a CPU
+  feature to the guest, an update in the libvirt version will be required to
+  unlock its usage with a guest, except with ``host-passthrough``. Check
+  ``virsh version``.
+* **Nested virtualization** - due to the limitations of nested virtualization,
+  a L1 nested host may not be able to expose the same featureset as a bare
+  metal host, even if everything else is the same.
+
+The ``virsh capabilities`` output will provide information on the high level
+CPU model, its features, microcode version. Most of the time this will provide
+enough information to know whether the CPUs of two hosts will be compatible.
+If there are unexpected differences though, checking the above list of
+influencing factors can reveal where the difference arises from.
+
 Import and export of libvirt domain XML configs
 -----------------------------------------------
 
