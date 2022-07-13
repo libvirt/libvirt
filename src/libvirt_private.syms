@@ -699,6 +699,7 @@ virDomainXenPassthroughModeTypeToString;
 virDomainXMLOptionGetNamespace;
 virDomainXMLOptionGetSaveCookie;
 virDomainXMLOptionNew;
+virDomainXMLOptionSetCloseCallbackAlloc;
 virDomainXMLOptionSetMomentPostParse;
 
 

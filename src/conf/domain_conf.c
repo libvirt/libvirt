@@ -1723,6 +1723,14 @@ virDomainXMLOptionGetSaveCookie(virDomainXMLOption *xmlopt)
 
 
 void
+virDomainXMLOptionSetCloseCallbackAlloc(virDomainXMLOption *xmlopt,
+                                        virDomainCloseCallbackDataAlloc cb)
+{
+    xmlopt->closecallbackAlloc = cb;
+}
+
+
+void
 virDomainXMLOptionSetMomentPostParse(virDomainXMLOption *xmlopt,
                                      virDomainMomentPostParseCallback cb)
 {
@@ -3906,6 +3914,7 @@ static void virDomainObjDispose(void *obj)
     virDomainSnapshotObjListFree(dom->snapshots);
     virDomainCheckpointObjListFree(dom->checkpoints);
     virDomainJobObjFree(dom->job);
+    virObjectUnref(dom->closecallbacks);
 }
 
 virDomainObj *
@@ -3930,6 +3939,10 @@ virDomainObjNew(virDomainXMLOption *xmlopt)
         if (!domain->privateData)
             goto error;
         domain->privateDataFreeFunc = xmlopt->privateData.free;
+    }
+
+    if (xmlopt->closecallbackAlloc) {
+        domain->closecallbacks = (xmlopt->closecallbackAlloc)();
     }
 
     if (!(domain->snapshots = virDomainSnapshotObjListNew()))

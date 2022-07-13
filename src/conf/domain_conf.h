@@ -3126,6 +3126,23 @@ struct _virDomainObj {
     void *privateData;
     void (*privateDataFreeFunc)(void *);
 
+    /* Connection close callbacks helper data
+     *
+     * Immutable pointer sharing lifetime of the virDomainObj. May be NULL, if
+     * the hypervisor driver doesn't use close callbacks.
+     *
+     * The closecallbacks helper data may be accessed without holding the
+     * virDomainObj lock to check whether a connection being closed has a
+     * registered close callback.
+     *
+     * Otherwise virDomainObj must be held and acquired before the lock on the
+     * closecallbacks data.
+     *
+     * The above rules ensure minimal lock contention when closing the
+     * connection while also allowing correct handling.
+    */
+    virObject *closecallbacks;
+
     int taint;
     size_t ndeprecations;
     char **deprecations;
@@ -3304,6 +3321,11 @@ struct _virDomainJobObjConfig {
     unsigned int maxQueuedJobs;
 };
 
+
+typedef virObject *(*virDomainCloseCallbackDataAlloc)(void);
+void virDomainXMLOptionSetCloseCallbackAlloc(virDomainXMLOption *xmlopt,
+                                             virDomainCloseCallbackDataAlloc cb);
+
 virDomainXMLOption *virDomainXMLOptionNew(virDomainDefParserConfig *config,
                                           virDomainXMLPrivateDataCallbacks *priv,
                                           virXMLNamespace *xmlns,
@@ -3352,6 +3374,9 @@ struct _virDomainXMLOption {
 
     /* virDomainJobObj callbacks, private data callbacks and defaults */
     virDomainJobObjConfig jobObjConfig;
+
+    /* closecallback allocation callback */
+    virDomainCloseCallbackDataAlloc closecallbackAlloc;
 };
 G_DEFINE_AUTOPTR_CLEANUP_FUNC(virDomainXMLOption, virObjectUnref);
 
