@@ -16996,11 +16996,6 @@
       "type": "uint32"
     },
     {
-      "default-value": true,
-      "name": "suppress-remote-wake",
-      "type": "bool"
-    },
-    {
       "default-value": 2,
       "name": "loglevel",
       "type": "uint32"

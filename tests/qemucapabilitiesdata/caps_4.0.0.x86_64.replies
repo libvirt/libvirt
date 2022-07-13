@@ -17673,11 +17673,6 @@
       "type": "uint32"
     },
     {
-      "default-value": true,
-      "name": "suppress-remote-wake",
-      "type": "bool"
-    },
-    {
       "default-value": 2,
       "name": "loglevel",
       "type": "uint32"
@@ -17686,11 +17681,6 @@
       "default-value": 32,
       "name": "isobsize",
       "type": "uint32"
-    },
-    {
-      "default-value": false,
-      "name": "guest-resets-all",
-      "type": "bool"
     },
     {
       "default-value": true,
