@@ -145,6 +145,10 @@ virDomainObjListForEach(virDomainObjList *doms,
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_SNAPSHOT    | \
                  VIR_CONNECT_LIST_DOMAINS_FILTERS_CHECKPOINT)
 
+void
+virDomainObjListCollectAll(virDomainObjList *domlist,
+                           virDomainObj ***vms,
+                           size_t *nvms);
 int
 virDomainObjListCollect(virDomainObjList *doms,
                         virConnectPtr conn,

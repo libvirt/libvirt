@@ -1209,6 +1209,7 @@ virDomainMomentObjNew;
 # conf/virdomainobjlist.h
 virDomainObjListAdd;
 virDomainObjListCollect;
+virDomainObjListCollectAll;
 virDomainObjListConvert;
 virDomainObjListExport;
 virDomainObjListFindByID;

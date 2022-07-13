@@ -913,6 +913,24 @@ virDomainObjListCollectIterator(void *payload,
 }
 
 
+void
+virDomainObjListCollectAll(virDomainObjList *domlist,
+                           virDomainObj ***vms,
+                           size_t *nvms)
+{
+    struct virDomainListData data = { NULL, 0 };
+
+    virObjectRWLockRead(domlist);
+    data.vms = g_new0(virDomainObj *, virHashSize(domlist->objs));
+
+    virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
+    virObjectRWUnlock(domlist);
+
+    *nvms = data.nvms;
+    *vms = data.vms;
+}
+
+
 static void
 virDomainObjListFilter(virDomainObj ***list,
                        size_t *nvms,
@@ -954,18 +972,8 @@ virDomainObjListCollect(virDomainObjList *domlist,
                         virDomainObjListACLFilter filter,
                         unsigned int flags)
 {
-    struct virDomainListData data = { NULL, 0 };
-
-    virObjectRWLockRead(domlist);
-    data.vms = g_new0(virDomainObj *, virHashSize(domlist->objs));
-
-    virHashForEach(domlist->objs, virDomainObjListCollectIterator, &data);
-    virObjectRWUnlock(domlist);
-
-    virDomainObjListFilter(&data.vms, &data.nvms, conn, filter, flags);
-
-    *nvms = data.nvms;
-    *vms = data.vms;
+    virDomainObjListCollectAll(domlist, vms, nvms);
+    virDomainObjListFilter(vms, nvms, conn, filter, flags);
 
     return 0;
 }
