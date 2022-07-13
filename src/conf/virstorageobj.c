@@ -151,9 +151,9 @@ virStorageVolObjListNew(void)
     if (!(vols = virObjectRWLockableNew(virStorageVolObjListClass)))
         return NULL;
 
-    vols->objsKey = virHashNew(virObjectFreeHashData);
-    vols->objsName = virHashNew(virObjectFreeHashData);
-    vols->objsPath = virHashNew(virObjectFreeHashData);
+    vols->objsKey = virHashNew(virObjectUnref);
+    vols->objsName = virHashNew(virObjectUnref);
+    vols->objsPath = virHashNew(virObjectUnref);
 
     return vols;
 }
@@ -378,8 +378,8 @@ virStoragePoolObjListNew(void)
     if (!(pools = virObjectRWLockableNew(virStoragePoolObjListClass)))
         return NULL;
 
-    pools->objs = virHashNew(virObjectFreeHashData);
-    pools->objsName = virHashNew(virObjectFreeHashData);
+    pools->objs = virHashNew(virObjectUnref);
+    pools->objsName = virHashNew(virObjectUnref);
 
     return pools;
 }

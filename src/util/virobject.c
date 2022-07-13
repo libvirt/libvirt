@@ -599,36 +599,6 @@ virClassName(virClass *klass)
 
 
 /**
- * virObjectFreeCallback:
- * @opaque: a pointer to a virObject instance
- *
- * Provides identical functionality to virObjectUnref,
- * but with the signature matching the virFreeCallback
- * typedef.
- */
-void virObjectFreeCallback(void *opaque)
-{
-    virObjectUnref(opaque);
-}
-
-
-/**
- * virObjectFreeHashData:
- * @opaque: a pointer to a virObject instance
- * @name: ignored, name of the hash key being deleted
- *
- * Provides identical functionality to virObjectUnref,
- * but with the signature matching the GDestroyNotify
- * typedef used with hash tables.
- */
-void
-virObjectFreeHashData(void *opaque)
-{
-    virObjectUnref(opaque);
-}
-
-
-/**
  * virObjectListFree:
  * @list: A pointer to a NULL-terminated list of object pointers to free
  *

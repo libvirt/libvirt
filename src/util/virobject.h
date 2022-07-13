@@ -104,12 +104,6 @@ virObjectIsClass(void *obj,
                  virClass *klass)
     ATTRIBUTE_NONNULL(2);
 
-void
-virObjectFreeCallback(void *opaque);
-
-void
-virObjectFreeHashData(void *opaque);
-
 void *
 virObjectLockableNew(virClass *klass)
     ATTRIBUTE_NONNULL(1);

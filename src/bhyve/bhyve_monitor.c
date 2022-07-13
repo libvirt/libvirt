@@ -82,7 +82,7 @@ bhyveMonitorRegister(bhyveMonitor *mon)
                                    VIR_EVENT_HANDLE_HANGUP,
                                    bhyveMonitorIO,
                                    mon,
-                                   virObjectFreeCallback);
+                                   virObjectUnref);
     if (mon->watch < 0) {
         VIR_DEBUG("failed to add event handle for mon %p", mon);
         virObjectUnref(mon);

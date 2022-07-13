@@ -1096,7 +1096,7 @@ doRemoteOpen(virConnectPtr conn,
     virObjectRef(priv->closeCallback);
     virNetClientSetCloseCallback(priv->client,
                                  remoteClientCloseFunc,
-                                 priv->closeCallback, virObjectFreeCallback);
+                                 priv->closeCallback, virObjectUnref);
 
     if (!(priv->remoteProgram = virNetClientProgramNew(REMOTE_PROGRAM,
                                                        REMOTE_PROTOCOL_VERSION,
@@ -1301,7 +1301,7 @@ doRemoteClose(virConnectPtr conn, struct private_data *priv)
 
     virNetClientSetCloseCallback(priv->client,
                                  NULL,
-                                 priv->closeCallback, virObjectFreeCallback);
+                                 priv->closeCallback, virObjectUnref);
 
     virNetClientClose(priv->client);
     g_clear_pointer(&priv->client, virObjectUnref);
@@ -6142,7 +6142,7 @@ remoteDomainMigratePrepareTunnel3(virConnectPtr dconn,
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;
-    st->ff = virObjectFreeCallback;
+    st->ff = virObjectUnref;
 
     args.cookie_in.cookie_in_val = (char *)cookiein;
     args.cookie_in.cookie_in_len = cookieinlen;
@@ -7082,7 +7082,7 @@ remoteDomainMigratePrepareTunnel3Params(virConnectPtr dconn,
 
     st->driver = &remoteStreamDrv;
     st->privateData = netst;
-    st->ff = virObjectFreeCallback;
+    st->ff = virObjectUnref;
 
     if (call(dconn, priv, 0, REMOTE_PROC_DOMAIN_MIGRATE_PREPARE_TUNNEL3_PARAMS,
              (xdrproc_t) xdr_remote_domain_migrate_prepare_tunnel3_params_args,

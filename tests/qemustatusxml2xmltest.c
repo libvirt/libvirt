@@ -78,7 +78,7 @@ mymain(void)
     int ret = 0;
     g_autofree char *fakerootdir = NULL;
     g_autoptr(GHashTable) capslatest = testQemuGetLatestCaps();
-    g_autoptr(GHashTable) capscache = virHashNew(virObjectFreeHashData);
+    g_autoptr(GHashTable) capscache = virHashNew(virObjectUnref);
     g_autoptr(virConnect) conn = NULL;
     struct testQemuConf testConf = { .capslatest = capslatest,
                                      .capscache = capscache,

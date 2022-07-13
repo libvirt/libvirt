@@ -118,7 +118,7 @@ virSecretObjListNew(void)
     if (!(secrets = virObjectRWLockableNew(virSecretObjListClass)))
         return NULL;
 
-    if (!(secrets->objs = virHashNew(virObjectFreeHashData))) {
+    if (!(secrets->objs = virHashNew(virObjectUnref))) {
         virObjectUnref(secrets);
         return NULL;
     }

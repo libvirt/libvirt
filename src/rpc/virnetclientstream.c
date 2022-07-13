@@ -727,7 +727,7 @@ int virNetClientStreamEventAddCallback(virNetClientStream *st,
          virEventAddTimeout(-1,
                             virNetClientStreamEventTimer,
                             st,
-                            virObjectFreeCallback)) < 0) {
+                            virObjectUnref)) < 0) {
         virObjectUnref(st);
         goto cleanup;
     }

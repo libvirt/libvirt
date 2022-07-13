@@ -275,7 +275,7 @@ virKeepAliveStart(virKeepAlive *ka,
         timeout = ka->interval - delay;
     ka->intervalStart = now - (ka->interval - timeout);
     ka->timer = virEventAddTimeout(timeout * 1000, virKeepAliveTimer,
-                                   ka, virObjectFreeCallback);
+                                   ka, virObjectUnref);
     if (ka->timer < 0)
         goto cleanup;
 

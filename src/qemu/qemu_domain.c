@@ -1764,7 +1764,7 @@ qemuDomainObjPrivateAlloc(void *opaque)
     if (!(priv->devs = virChrdevAlloc()))
         return NULL;
 
-    priv->blockjobs = virHashNew(virObjectFreeHashData);
+    priv->blockjobs = virHashNew(virObjectUnref);
 
     /* agent commands block by default, user can choose different behavior */
     priv->agentTimeout = VIR_DOMAIN_AGENT_RESPONSE_TIMEOUT_BLOCK;

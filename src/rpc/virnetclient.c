@@ -658,7 +658,7 @@ int virNetClientRegisterAsyncIO(virNetClient *client)
                                   VIR_EVENT_HANDLE_READABLE,
                                   virNetClientIncomingEvent,
                                   client,
-                                  virObjectFreeCallback) < 0) {
+                                  virObjectUnref) < 0) {
         virObjectUnref(client);
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                        _("Unable to register async IO callback"));
@@ -688,7 +688,7 @@ int virNetClientRegisterKeepAlive(virNetClient *client)
     if (!(ka = virKeepAliveNew(-1, 0, client,
                                virNetClientKeepAliveSendCB,
                                virNetClientKeepAliveDeadCB,
-                               virObjectFreeCallback)))
+                               virObjectUnref)))
         return -1;
 
     /* keepalive object has a reference to client */

@@ -140,7 +140,7 @@ virInterfaceObjListNew(void)
     if (!(interfaces = virObjectRWLockableNew(virInterfaceObjListClass)))
         return NULL;
 
-    interfaces->objsName = virHashNew(virObjectFreeHashData);
+    interfaces->objsName = virHashNew(virObjectUnref);
 
     return interfaces;
 }

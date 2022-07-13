@@ -202,7 +202,7 @@ static int virNetServerClientRegisterEvent(virNetServerClient *client)
                                   mode,
                                   virNetServerClientDispatchEvent,
                                   client,
-                                  virObjectFreeCallback) < 0) {
+                                  virObjectUnref) < 0) {
         virObjectUnref(client);
         return -1;
     }
@@ -1521,7 +1521,7 @@ virNetServerClientInitKeepAlive(virNetServerClient *client,
     if (!(ka = virKeepAliveNew(interval, count, client,
                                virNetServerClientKeepAliveSendCB,
                                virNetServerClientKeepAliveDeadCB,
-                               virObjectFreeCallback)))
+                               virObjectUnref)))
         return -1;
 
     /* keepalive object has a reference to client */

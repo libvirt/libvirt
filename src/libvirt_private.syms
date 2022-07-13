@@ -2978,8 +2978,6 @@ virClassForObjectRWLockable;
 virClassIsDerivedFrom;
 virClassName;
 virClassNew;
-virObjectFreeCallback;
-virObjectFreeHashData;
 virObjectIsClass;
 virObjectListFree;
 virObjectListFreeCount;

@@ -165,7 +165,7 @@ remoteAdminConnectOpen(virAdmConnectPtr conn, unsigned int flags)
     virObjectRef(conn->closeCallback);
     virNetClientSetCloseCallback(priv->client, remoteAdminClientCloseFunc,
                                  conn->closeCallback,
-                                 virObjectFreeCallback);
+                                 virObjectUnref);
 
     if (call(conn, 0, ADMIN_PROC_CONNECT_OPEN,
              (xdrproc_t)xdr_admin_connect_open_args, (char *)&args,
@@ -195,7 +195,7 @@ remoteAdminConnectClose(virAdmConnectPtr conn)
     }
 
     virNetClientSetCloseCallback(priv->client, NULL, conn->closeCallback,
-                                 virObjectFreeCallback);
+                                 virObjectUnref);
     virNetClientClose(priv->client);
 
     rv = 0;

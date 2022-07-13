@@ -152,7 +152,7 @@ virNetServerServiceNewSocket(virNetSocket **socks,
 
     virObjectRef(svc);
     svc->timer = virEventAddTimeout(-1, virNetServerServiceTimerFunc,
-                                    svc, virObjectFreeCallback);
+                                    svc, virObjectUnref);
     if (svc->timer < 0) {
         virObjectUnref(svc);
         goto error;
@@ -169,7 +169,7 @@ virNetServerServiceNewSocket(virNetSocket **socks,
                                       0,
                                       virNetServerServiceAccept,
                                       svc,
-                                      virObjectFreeCallback) < 0) {
+                                      virObjectUnref) < 0) {
             virObjectUnref(svc);
             goto error;
         }
@@ -361,7 +361,7 @@ virNetServerService *virNetServerServiceNewPostExecRestart(virJSONValue *object)
                                       0,
                                       virNetServerServiceAccept,
                                       svc,
-                                      virObjectFreeCallback) < 0) {
+                                      virObjectUnref) < 0) {
             virObjectUnref(svc);
             goto error;
         }

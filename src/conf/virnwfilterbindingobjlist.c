@@ -66,7 +66,7 @@ virNWFilterBindingObjListNew(void)
     if (!(bindings = virObjectRWLockableNew(virNWFilterBindingObjListClass)))
         return NULL;
 
-    bindings->objs = virHashNew(virObjectFreeHashData);
+    bindings->objs = virHashNew(virObjectUnref);
 
     return bindings;
 }
@@ -131,7 +131,7 @@ virNWFilterBindingObjListFindByPortDev(virNWFilterBindingObjList *bindings,
  * tables. Once successfully added into a table, increase the
  * reference count since upon removal in virHashRemoveEntry
  * the virObjectUnref will be called since the hash tables were
- * configured to call virObjectFreeHashData when the object is
+ * configured to call virObjectUnref when the object is
  * removed from the hash table.
  *
  * Returns 0 on success with 2 references and locked

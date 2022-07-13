@@ -1837,7 +1837,7 @@ elsif ($mode eq "client") {
             print "\n";
             print "    st->driver = &remoteStreamDrv;\n";
             print "    st->privateData = netst;\n";
-            print "    st->ff = virObjectFreeCallback;\n";
+            print "    st->ff = virObjectUnref;\n";
         }
 
         if ($call->{ProcName} eq "SupportsFeature") {

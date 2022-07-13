@@ -440,7 +440,7 @@ int daemonAddClientStream(virNetServerClient *client,
 
     if (virStreamEventAddCallback(stream->st, 0,
                                   daemonStreamEvent, client,
-                                  virObjectFreeCallback) < 0)
+                                  virObjectUnref) < 0)
         return -1;
 
     virObjectRef(client);

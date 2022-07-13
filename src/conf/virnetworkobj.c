@@ -326,7 +326,7 @@ virNetworkObjListNew(void)
     if (!(nets = virObjectRWLockableNew(virNetworkObjListClass)))
         return NULL;
 
-    nets->objs = virHashNew(virObjectFreeHashData);
+    nets->objs = virHashNew(virObjectUnref);
 
     return nets;
 }

@@ -876,7 +876,7 @@ virObjectEventStateRegisterID(virConnectPtr conn,
         if ((state->timer = virEventAddTimeout(-1,
                                                virObjectEventTimer,
                                                state,
-                                               virObjectFreeCallback)) < 0) {
+                                               virObjectUnref)) < 0) {
             virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
                            _("could not initialize domain event timer"));
             goto cleanup;

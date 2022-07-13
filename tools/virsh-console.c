@@ -451,7 +451,7 @@ virshRunConsole(vshControl *ctl,
                                              VIR_EVENT_HANDLE_READABLE,
                                              virConsoleEventOnStdin,
                                              con,
-                                             virObjectFreeCallback)) < 0) {
+                                             virObjectUnref)) < 0) {
         virObjectUnref(con);
         goto cleanup;
     }
@@ -461,7 +461,7 @@ virshRunConsole(vshControl *ctl,
                                               0,
                                               virConsoleEventOnStdout,
                                               con,
-                                              virObjectFreeCallback)) < 0) {
+                                              virObjectUnref)) < 0) {
         virObjectUnref(con);
         goto cleanup;
     }
@@ -471,7 +471,7 @@ virshRunConsole(vshControl *ctl,
                                   VIR_STREAM_EVENT_READABLE,
                                   virConsoleEventOnStream,
                                   con,
-                                  virObjectFreeCallback) < 0) {
+                                  virObjectUnref) < 0) {
         virObjectUnref(con);
         goto cleanup;
     }
