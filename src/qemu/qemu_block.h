@@ -293,3 +293,8 @@ qemuBlockPivot(virDomainObj *vm,
                qemuBlockJobData *job,
                virDomainAsyncJob asyncJob,
                virDomainDiskDef *disk);
+
+int
+qemuBlockFinalize(virDomainObj *vm,
+                  qemuBlockJobData *job,
+                  virDomainAsyncJob asyncJob);

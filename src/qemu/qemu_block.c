@@ -3525,3 +3525,35 @@ qemuBlockPivot(virDomainObj *vm,
 
     return ret;
 }
+
+
+/**
+ * qemuBlockFinalize:
+ * @vm: domain object
+ * @job: qemu block job data object
+ * @asyncJob: qemu async job type
+ *
+ * When qemu job is started with autofinalize disabled it will wait in pending
+ * state for block job finalize to be called manually in order to finish the
+ * job. This is useful when we are running jobs on multiple disks to make
+ * a synchronization point before we finish.
+ *
+ * Return -1 on error, 0 on success.
+ */
+int
+qemuBlockFinalize(virDomainObj *vm,
+                  qemuBlockJobData *job,
+                  virDomainAsyncJob asyncJob)
+{
+    int ret;
+    qemuDomainObjPrivate *priv = vm->privateData;
+
+    if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
+        return -1;
+
+    ret = qemuMonitorJobFinalize(priv->mon, job->name);
+
+    qemuDomainObjExitMonitor(vm);
+
+    return ret;
+}
