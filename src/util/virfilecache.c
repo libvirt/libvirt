@@ -170,7 +170,7 @@ virFileCacheLoad(virFileCache *cache,
     *data = g_steal_pointer(&loadData);
 
  cleanup:
-    virObjectUnref(loadData);
+    g_clear_pointer(&loadData, g_object_unref);
     return ret;
 }
 
@@ -207,7 +207,7 @@ virFileCacheNewData(virFileCache *cache,
             return NULL;
 
         if (virFileCacheSave(cache, name, data) < 0) {
-            g_clear_pointer(&data, virObjectUnref);
+            g_clear_object(&data);
         }
     }
 
@@ -239,7 +239,7 @@ virFileCacheNew(const char *dir,
     if (!(cache = virObjectNew(virFileCacheClass)))
         return NULL;
 
-    cache->table = virHashNew(virObjectUnref);
+    cache->table = virHashNew(g_object_unref);
 
     cache->dir = g_strdup(dir);
 
@@ -270,7 +270,7 @@ virFileCacheValidate(virFileCache *cache,
         if (*data) {
             VIR_DEBUG("Caching data '%p' for '%s'", *data, name);
             if (virHashAddEntry(cache->table, name, *data) < 0) {
-                g_clear_pointer(data, virObjectUnref);
+                g_clear_pointer(data, g_object_unref);
             }
         }
     }
@@ -300,7 +300,8 @@ virFileCacheLookup(virFileCache *cache,
     data = virHashLookup(cache->table, name);
     virFileCacheValidate(cache, name, &data);
 
-    virObjectRef(data);
+    if (data)
+        g_object_ref(data);
     virObjectUnlock(cache);
 
     return data;
@@ -331,7 +332,8 @@ virFileCacheLookupByFunc(virFileCache *cache,
     data = virHashSearch(cache->table, iter, iterData, &name);
     virFileCacheValidate(cache, name, &data);
 
-    virObjectRef(data);
+    if (data)
+        g_object_ref(data);
     virObjectUnlock(cache);
 
     return data;

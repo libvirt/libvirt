@@ -48,7 +48,7 @@ typedef bool
  * @priv: private data created together with cache
  *
  * Creates a new data based on the @name.  The returned data must be
- * an instance of virObject.
+ * an instance of GObject.
  *
  * Returns data object or NULL on error.
  */
