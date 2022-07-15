@@ -15578,11 +15578,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
         goto endjob;
 
     if (topSource == disk->src) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_ACTIVE_COMMIT)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("active commit not supported with this QEMU binary"));
-            goto endjob;
-        }
         /* XXX Should we auto-pivot when COMMIT_ACTIVE is not specified? */
         if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_ACTIVE)) {
             virReportError(VIR_ERR_INVALID_ARG,
