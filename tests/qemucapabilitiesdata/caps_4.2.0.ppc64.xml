@@ -82,7 +82,6 @@
   <flag name='virtio-vga'/>
   <flag name='ivshmem-plain'/>
   <flag name='ivshmem-doorbell'/>
-  <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
   <flag name='virtio-net.host_mtu'/>
   <flag name='pcie-root-port'/>

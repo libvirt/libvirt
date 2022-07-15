@@ -402,7 +402,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "query-qmp-schema", /* X_QEMU_CAPS_QUERY_QMP_SCHEMA */
 
               /* 240 */
-              "gluster.debug_level", /* QEMU_CAPS_GLUSTER_DEBUG_LEVEL */
+              "gluster.debug_level", /* X_QEMU_CAPS_GLUSTER_DEBUG_LEVEL */
               "vhost-scsi", /* QEMU_CAPS_DEVICE_VHOST_SCSI */
               "drive-iotune-group", /* X_QEMU_CAPS_DRIVE_IOTUNE_GROUP */
               "query-cpu-model-expansion", /* QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION */
@@ -1583,8 +1583,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
-    { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
-    { "blockdev-add/arg-type/+gluster/debug", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
     { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},
     { "blockdev-add/arg-type/+qcow2/encrypt/+luks/key-secret", QEMU_CAPS_QCOW2_LUKS },
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },

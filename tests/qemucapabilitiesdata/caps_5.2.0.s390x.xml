@@ -49,7 +49,6 @@
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>
-  <flag name='gluster.debug_level'/>
   <flag name='vhost-scsi'/>
   <flag name='query-cpu-model-expansion'/>
   <flag name='virtio-net.host_mtu'/>

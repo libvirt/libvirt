@@ -29,7 +29,6 @@
   <flag name='chardev-logfile'/>
   <flag name='drive-detect-zeroes'/>
   <flag name='query-hotpluggable-cpus'/>
-  <flag name='gluster.debug_level'/>
   <flag name='spice-rendernode'/>
   <flag name='block-write-threshold'/>
   <flag name='query-named-block-nodes'/>
