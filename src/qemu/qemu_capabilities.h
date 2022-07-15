@@ -444,7 +444,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW, /* -device virtio-tablet-ccw */
 
     /* 285 */
-    QEMU_CAPS_QCOW2_LUKS, /* qcow2 format support LUKS encryption */
+    X_QEMU_CAPS_QCOW2_LUKS, /* qcow2 format support LUKS encryption */
     QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE, /* -device pcie-pci-bridge */
     X_QEMU_CAPS_SECCOMP_BLACKLIST, /* -sandbox.elevateprivileges */
     X_QEMU_CAPS_QUERY_CPUS_FAST, /* query-cpus-fast command */

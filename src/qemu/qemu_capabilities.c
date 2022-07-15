@@ -465,7 +465,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "virtio-tablet-ccw", /* QEMU_CAPS_DEVICE_VIRTIO_TABLET_CCW */
 
               /* 285 */
-              "qcow2-luks", /* QEMU_CAPS_QCOW2_LUKS */
+              "qcow2-luks", /* X_QEMU_CAPS_QCOW2_LUKS */
               "pcie-pci-bridge", /* QEMU_CAPS_DEVICE_PCIE_PCI_BRIDGE */
               "seccomp-blacklist", /* X_QEMU_CAPS_SECCOMP_BLACKLIST */
               "query-cpus-fast", /* X_QEMU_CAPS_QUERY_CPUS_FAST */
@@ -1584,7 +1584,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},
-    { "blockdev-add/arg-type/+qcow2/encrypt/+luks/key-secret", QEMU_CAPS_QCOW2_LUKS },
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
     { "blockdev-add/arg-type/+file/$dynamic-auto-read-only", QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC },
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },

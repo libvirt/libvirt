@@ -128,7 +128,6 @@
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>
   <flag name='dump-completed'/>
-  <flag name='qcow2-luks'/>
   <flag name='pcie-pci-bridge'/>
   <flag name='disk-write-cache'/>
   <flag name='nbd-tls'/>
