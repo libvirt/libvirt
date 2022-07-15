@@ -772,6 +772,10 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                                                 data->ap_matrix.nmdev_types);
             break;
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            virNodeDeviceCapMdevTypesFormat(&buf,
+                                            data->mdev_parent.mdev_types,
+                                            data->mdev_parent.nmdev_types);
+            break;
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_VPD:
@@ -2674,6 +2678,11 @@ virNodeDevCapsDefFree(virNodeDevCapsDef *caps)
         g_free(data->ap_matrix.mdev_types);
         break;
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
+        for (i = 0; i < data->mdev_parent.nmdev_types; i++)
+            virMediatedDeviceTypeFree(data->mdev_parent.mdev_types[i]);
+        g_free(data->mdev_parent.mdev_types);
+        g_free(data->mdev_parent.address);
+        break;
     case VIR_NODE_DEV_CAP_DRM:
     case VIR_NODE_DEV_CAP_FC_HOST:
     case VIR_NODE_DEV_CAP_VPORTS:
@@ -2729,6 +2738,11 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def)
                                                     &cap->data.ap_matrix) < 0)
                 return -1;
             break;
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            if (virNodeDeviceGetMdevParentDynamicCaps(def->sysfs_path,
+                                                      &cap->data.mdev_parent) < 0)
+                return -1;
+            break;
 
             /* all types that (supposedly) don't require any updates
              * relative to what's in the cache.
@@ -2742,7 +2756,6 @@ virNodeDeviceUpdateCaps(virNodeDeviceDef *def)
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
-        case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
         case VIR_NODE_DEV_CAP_VDPA:
@@ -3193,6 +3206,24 @@ virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath,
     return 0;
 }
 
+/* virNodeDeviceGetMdevParentDynamicCaps() get info that is stored in sysfs
+ * about devices related to this device, i.e. things that can change
+ * without this device itself changing. These must be refreshed
+ * anytime full XML of the device is requested, because they can
+ * change with no corresponding notification from the kernel/udev.
+ */
+int
+virNodeDeviceGetMdevParentDynamicCaps(const char *sysfsPath,
+                                      virNodeDevCapMdevParent *mdev_parent)
+{
+    if (virNodeDeviceGetMdevTypesCaps(sysfsPath,
+                                      &mdev_parent->mdev_types,
+                                      &mdev_parent->nmdev_types) < 0)
+        return -1;
+    return 0;
+}
+
+
 #else
 
 int
@@ -3228,5 +3259,13 @@ virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
 {
     return -1;
 }
+
+int
+virNodeDeviceGetMdevParentDynamicCaps(const char *sysfsPath G_GNUC_UNUSED,
+                                      virNodeDevCapMdevParent *mdev_parent G_GNUC_UNUSED)
+{
+    return -1;
+}
+
 
 #endif /* __linux__ */

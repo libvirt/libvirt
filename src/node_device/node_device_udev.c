@@ -458,6 +458,28 @@ udevProcessPCI(struct udev_device *device,
 
 
 static int
+udevProcessMdevParent(struct udev_device *device,
+                      virNodeDeviceDef *def)
+{
+    virNodeDevCapMdevParent *mdev_parent = &def->caps->data.mdev_parent;
+
+    udevGenerateDeviceName(device, def, NULL);
+
+    if (virMediatedDeviceParentGetAddress(def->sysfs_path, &mdev_parent->address) < 0) {
+        virReportError(VIR_ERR_INTERNAL_ERROR,
+                       _("Unable to find address for mdev parent device '%s'"),
+                       def->name);
+        return -1;
+    }
+
+    if (virNodeDeviceGetMdevParentDynamicCaps(def->sysfs_path, mdev_parent) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
 drmGetMinorType(int minor)
 {
     int type = minor >> 6;
@@ -1349,6 +1371,8 @@ udevGetDeviceType(struct udev_device *device,
             *type = VIR_NODE_DEV_CAP_VDPA;
         else if (STREQ_NULLABLE(subsystem, "matrix"))
             *type = VIR_NODE_DEV_CAP_AP_MATRIX;
+        else if (STREQ_NULLABLE(subsystem, "mtty"))
+            *type = VIR_NODE_DEV_CAP_MDEV_TYPES;
 
         VIR_FREE(subsystem);
     }
@@ -1404,6 +1428,7 @@ udevGetDeviceDetails(struct udev_device *device,
     case VIR_NODE_DEV_CAP_AP_MATRIX:
         return udevProcessAPMatrix(device, def);
     case VIR_NODE_DEV_CAP_MDEV_TYPES:
+        return udevProcessMdevParent(device, def);
     case VIR_NODE_DEV_CAP_VPD:
     case VIR_NODE_DEV_CAP_SYSTEM:
     case VIR_NODE_DEV_CAP_FC_HOST:

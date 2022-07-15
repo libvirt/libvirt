@@ -520,6 +520,34 @@ void virMediatedDeviceAttrFree(virMediatedDeviceAttr *attr)
 }
 
 
+#define MDEV_BUS_DIR "/sys/class/mdev_bus"
+
+
+int
+virMediatedDeviceParentGetAddress(const char *sysfspath,
+                                  char **address)
+{
+    g_autoptr(DIR) dir = NULL;
+    struct dirent *entry;
+    if (virDirOpen(&dir, MDEV_BUS_DIR) < 0)
+        return -1;
+
+    /* check if one of the links in /sys/class/mdev_bus/ points at the sysfs
+     * path for this device. If so, the link name is treated as the 'address'
+     * for the mdev parent */
+    while (virDirRead(dir, &entry, MDEV_BUS_DIR) > 0) {
+        g_autofree char *tmppath = g_strdup_printf("%s/%s", MDEV_BUS_DIR,
+                                                   entry->d_name);
+
+        if (virFileLinkPointsTo(tmppath, sysfspath)) {
+            *address = g_strdup(entry->d_name);
+            return 0;
+        }
+    }
+
+    return -1;
+}
+
 #ifdef __linux__
 
 ssize_t

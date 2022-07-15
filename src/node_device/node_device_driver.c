@@ -672,6 +672,10 @@ nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
             addr = g_strdup(caps->data.ap_matrix.addr);
             break;
 
+        case VIR_NODE_DEV_CAP_MDEV_TYPES:
+            addr = g_strdup(caps->data.mdev_parent.address);
+            break;
+
         case VIR_NODE_DEV_CAP_SYSTEM:
         case VIR_NODE_DEV_CAP_USB_DEV:
         case VIR_NODE_DEV_CAP_USB_INTERFACE:
@@ -684,7 +688,6 @@ nodeDeviceObjFormatAddress(virNodeDeviceObj *obj)
         case VIR_NODE_DEV_CAP_VPORTS:
         case VIR_NODE_DEV_CAP_SCSI_GENERIC:
         case VIR_NODE_DEV_CAP_DRM:
-        case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_MDEV:
         case VIR_NODE_DEV_CAP_CCW_DEV:
         case VIR_NODE_DEV_CAP_VDPA:

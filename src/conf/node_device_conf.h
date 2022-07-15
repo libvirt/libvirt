@@ -306,6 +306,14 @@ struct _virNodeDevCapAPMatrix {
     size_t nmdev_types;
 };
 
+
+typedef struct _virNodeDevCapMdevParent virNodeDevCapMdevParent;
+struct _virNodeDevCapMdevParent {
+    virMediatedDeviceType **mdev_types;
+    size_t nmdev_types;
+    char *address;
+};
+
 typedef struct _virNodeDevCapData virNodeDevCapData;
 struct _virNodeDevCapData {
     virNodeDevCapType type;
@@ -327,6 +335,7 @@ struct _virNodeDevCapData {
         virNodeDevCapAPCard ap_card;
         virNodeDevCapAPQueue ap_queue;
         virNodeDevCapAPMatrix ap_matrix;
+        virNodeDevCapMdevParent mdev_parent;
     };
 };
 
@@ -452,6 +461,10 @@ virNodeDeviceGetCSSDynamicCaps(const char *sysfsPath,
 int
 virNodeDeviceGetAPMatrixDynamicCaps(const char *sysfsPath,
                                     virNodeDevCapAPMatrix *ap_matrix);
+
+int
+virNodeDeviceGetMdevParentDynamicCaps(const char *sysfsPath,
+                                      virNodeDevCapMdevParent *mdev_parent);
 
 int
 virNodeDeviceUpdateCaps(virNodeDeviceDef *def);
