@@ -298,7 +298,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 165 */
               "msg-timestamp", /* X_QEMU_CAPS_MSG_TIMESTAMP */
-              "active-commit", /* QEMU_CAPS_ACTIVE_COMMIT */
+              "active-commit", /* X_QEMU_CAPS_ACTIVE_COMMIT */
               "change-backing-file", /* X_QEMU_CAPS_CHANGE_BACKING_FILE */
               "memory-backend-ram", /* QEMU_CAPS_OBJECT_MEMORY_RAM */
               "numa", /* QEMU_CAPS_NUMA */
@@ -1583,7 +1583,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
 
 /* see documentation for virQEMUQAPISchemaPathGet for the query format */
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
-    { "block-commit/arg-type/*top",  QEMU_CAPS_ACTIVE_COMMIT },
     { "blockdev-add/arg-type/options/+gluster/debug-level", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
     { "blockdev-add/arg-type/+gluster/debug", QEMU_CAPS_GLUSTER_DEBUG_LEVEL},
     { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},

@@ -26,7 +26,6 @@
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
   <flag name='drive-discard'/>
-  <flag name='active-commit'/>
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>

@@ -62,7 +62,6 @@
   <flag name='kvm-pit-lost-tick-policy'/>
   <flag name='pvpanic'/>
   <flag name='usb-kbd'/>
-  <flag name='active-commit'/>
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
