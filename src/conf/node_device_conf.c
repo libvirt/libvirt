@@ -770,7 +770,7 @@ virNodeDeviceDefFormat(const virNodeDeviceDef *def)
                 virNodeDeviceCapMdevTypesFormat(&buf,
                                                 data->ap_matrix.mdev_types,
                                                 data->ap_matrix.nmdev_types);
-
+            break;
         case VIR_NODE_DEV_CAP_MDEV_TYPES:
         case VIR_NODE_DEV_CAP_FC_HOST:
         case VIR_NODE_DEV_CAP_VPORTS:
