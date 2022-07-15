@@ -13304,7 +13304,7 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
     qemuDomainObjPrivate *priv;
     bool postcopy = !!(flags & VIR_DOMAIN_MIGRATE_MAX_SPEED_POSTCOPY);
     g_autoptr(qemuMigrationParams) migParams = NULL;
-    bool bwParam;
+    qemuMigrationParam param;
     unsigned long long max;
     int ret = -1;
 
@@ -13343,35 +13343,22 @@ qemuDomainMigrateSetMaxSpeed(virDomainPtr dom,
 
     VIR_DEBUG("Setting migration bandwidth to %luMbs", bandwidth);
 
-    bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
 
-    if (postcopy || bwParam) {
-        qemuMigrationParam param;
+    if (!(migParams = qemuMigrationParamsNew()))
+        goto endjob;
 
-        if (!(migParams = qemuMigrationParamsNew()))
-            goto endjob;
+    if (postcopy)
+        param = QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH;
+    else
+        param = QEMU_MIGRATION_PARAM_MAX_BANDWIDTH;
 
-        if (postcopy)
-            param = QEMU_MIGRATION_PARAM_MAX_POSTCOPY_BANDWIDTH;
-        else
-            param = QEMU_MIGRATION_PARAM_MAX_BANDWIDTH;
+    if (qemuMigrationParamsSetULL(migParams, param,
+                                  bandwidth * 1024 * 1024) < 0)
+        goto endjob;
 
-        if (qemuMigrationParamsSetULL(migParams, param,
-                                      bandwidth * 1024 * 1024) < 0)
-            goto endjob;
-
-        if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
-                                     migParams, 0) < 0)
-            goto endjob;
-    } else {
-        int rc;
-
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorSetMigrationSpeed(priv->mon, bandwidth);
-        qemuDomainObjExitMonitor(vm);
-        if (rc < 0)
-            goto endjob;
-    }
+    if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
+                                 migParams, 0) < 0)
+        goto endjob;
 
     if (!postcopy)
         priv->migMaxBandwidth = bandwidth;

@@ -4697,7 +4697,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     virErrorPtr orig_err = NULL;
     unsigned int cookieFlags = 0;
     bool abort_on_error = !!(flags & VIR_MIGRATE_ABORT_ON_ERROR);
-    bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
     bool storageMigration = flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC);
     bool cancel = false;
     unsigned int waitFlags;
@@ -4795,8 +4794,7 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
             goto error;
     }
 
-    if (bwParam &&
-        qemuMigrationParamsSetULL(migParams, QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
+    if (qemuMigrationParamsSetULL(migParams, QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
                                   priv->migMaxBandwidth * 1024 * 1024) < 0)
         goto error;
 
@@ -4886,10 +4884,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                        _("canceled by client"));
         goto exit_monitor;
     }
-
-    if (!bwParam &&
-        qemuMonitorSetMigrationSpeed(priv->mon, priv->migMaxBandwidth) < 0)
-        goto exit_monitor;
 
     rc = qemuMigrationSrcStart(vm, spec, migrate_flags, &fd);
 
@@ -6880,7 +6874,6 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
                        virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool bwParam = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH);
     int rc;
     int ret = -1;
     int pipeFD[2] = { -1, -1 };
@@ -6894,27 +6887,18 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     /* Increase migration bandwidth to unlimited since target is a file.
      * Failure to change migration speed is not fatal. */
-    if (bwParam) {
-        if (!(migParams = qemuMigrationParamsNew()))
-            return -1;
+    if (!(migParams = qemuMigrationParamsNew()))
+        return -1;
 
-        if (qemuMigrationParamsSetULL(migParams,
-                                      QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
-                                      QEMU_DOMAIN_MIG_BANDWIDTH_MAX * 1024 * 1024) < 0)
-            return -1;
+    if (qemuMigrationParamsSetULL(migParams,
+                                  QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
+                                  QEMU_DOMAIN_MIG_BANDWIDTH_MAX * 1024 * 1024) < 0)
+        return -1;
 
-        if (qemuMigrationParamsApply(driver, vm, asyncJob, migParams, 0) < 0)
-            return -1;
+    if (qemuMigrationParamsApply(driver, vm, asyncJob, migParams, 0) < 0)
+        return -1;
 
-        priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-    } else {
-        if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
-            qemuMonitorSetMigrationSpeed(priv->mon,
-                                         QEMU_DOMAIN_MIG_BANDWIDTH_MAX);
-            priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
-            qemuDomainObjExitMonitor(vm);
-        }
-    }
+    priv->migMaxBandwidth = QEMU_DOMAIN_MIG_BANDWIDTH_MAX;
 
     if (!virDomainObjIsActive(vm)) {
         virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
@@ -6994,18 +6978,11 @@ qemuMigrationSrcToFile(virQEMUDriver *driver, virDomainObj *vm,
 
     /* Restore max migration bandwidth */
     if (virDomainObjIsActive(vm)) {
-        if (bwParam) {
-            if (qemuMigrationParamsSetULL(migParams,
-                                          QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
-                                          saveMigBandwidth * 1024 * 1024) == 0)
-                ignore_value(qemuMigrationParamsApply(driver, vm, asyncJob,
-                                                      migParams, 0));
-        } else {
-            if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) == 0) {
-                qemuMonitorSetMigrationSpeed(priv->mon, saveMigBandwidth);
-                qemuDomainObjExitMonitor(vm);
-            }
-        }
+        if (qemuMigrationParamsSetULL(migParams,
+                                      QEMU_MIGRATION_PARAM_MAX_BANDWIDTH,
+                                      saveMigBandwidth * 1024 * 1024) == 0)
+            ignore_value(qemuMigrationParamsApply(driver, vm, asyncJob,
+                                                  migParams, 0));
         priv->migMaxBandwidth = saveMigBandwidth;
     }
 
