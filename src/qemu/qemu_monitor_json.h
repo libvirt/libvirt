@@ -153,21 +153,6 @@ qemuMonitorJSONSavePhysicalMemory(qemuMonitor *mon,
                                   const char *path);
 
 int
-qemuMonitorJSONSetMigrationSpeed(qemuMonitor *mon,
-                                 unsigned long bandwidth);
-
-int
-qemuMonitorJSONSetMigrationDowntime(qemuMonitor *mon,
-                                    unsigned long long downtime);
-
-int
-qemuMonitorJSONGetMigrationCacheSize(qemuMonitor *mon,
-                                     unsigned long long *cacheSize);
-int
-qemuMonitorJSONSetMigrationCacheSize(qemuMonitor *mon,
-                                     unsigned long long cacheSize);
-
-int
 qemuMonitorJSONGetMigrationParams(qemuMonitor *mon,
                                   virJSONValue **params);
 int

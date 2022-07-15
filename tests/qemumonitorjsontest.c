@@ -1203,8 +1203,6 @@ GEN_TEST_FUNC(qemuMonitorJSONEjectMedia, "hdc", true)
 GEN_TEST_FUNC(qemuMonitorJSONChangeMedia, "hdc", "/foo/bar", "formatstr")
 GEN_TEST_FUNC(qemuMonitorJSONSaveVirtualMemory, 0, 1024, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONSavePhysicalMemory, 0, 1024, "/foo/bar")
-GEN_TEST_FUNC(qemuMonitorJSONSetMigrationSpeed, 1024)
-GEN_TEST_FUNC(qemuMonitorJSONSetMigrationDowntime, 1)
 GEN_TEST_FUNC(qemuMonitorJSONMigrate, QEMU_MONITOR_MIGRATE_BACKGROUND |
               QEMU_MONITOR_MIGRATE_NON_SHARED_DISK |
               QEMU_MONITOR_MIGRATE_NON_SHARED_INC, "tcp:localhost:12345")
@@ -1713,40 +1711,6 @@ testQemuMonitorJSONqemuMonitorJSONGetAllBlockStatsInfo(const void *opaque)
 
 }
 
-
-static int
-testQemuMonitorJSONqemuMonitorJSONGetMigrationCacheSize(const void *opaque)
-{
-    const testGenericData *data = opaque;
-    virDomainXMLOption *xmlopt = data->xmlopt;
-    unsigned long long cacheSize;
-    g_autoptr(qemuMonitorTest) test = NULL;
-
-    if (!(test = qemuMonitorTestNewSchema(xmlopt, data->schema)))
-        return -1;
-
-    qemuMonitorTestSkipDeprecatedValidation(test, true);
-
-    if (qemuMonitorTestAddItem(test, "query-migrate-cache-size",
-                               "{"
-                               "    \"return\": 67108864,"
-                               "    \"id\": \"libvirt-12\""
-                               "}") < 0)
-        return -1;
-
-    if (qemuMonitorJSONGetMigrationCacheSize(qemuMonitorTestGetMonitor(test),
-                                             &cacheSize) < 0)
-        return -1;
-
-    if (cacheSize != 67108864) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       "Invalid cacheSize: %llu, expected 67108864",
-                       cacheSize);
-        return -1;
-    }
-
-    return 0;
-}
 
 static int
 testQemuMonitorJSONqemuMonitorJSONGetMigrationStats(const void *opaque)
@@ -3105,8 +3069,6 @@ mymain(void)
     DO_TEST_GEN_DEPRECATED(qemuMonitorJSONChangeMedia, true);
     DO_TEST_GEN(qemuMonitorJSONSaveVirtualMemory);
     DO_TEST_GEN(qemuMonitorJSONSavePhysicalMemory);
-    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationSpeed, true);
-    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONSetMigrationDowntime, true);
     DO_TEST_GEN(qemuMonitorJSONMigrate);
     DO_TEST_GEN(qemuMonitorJSONMigrateRecover);
     DO_TEST_SIMPLE("migrate-pause", qemuMonitorJSONMigratePause);
@@ -3136,7 +3098,6 @@ mymain(void)
     DO_TEST(qemuMonitorJSONGetBalloonInfo);
     DO_TEST(qemuMonitorJSONGetBlockInfo);
     DO_TEST(qemuMonitorJSONGetAllBlockStatsInfo);
-    DO_TEST(qemuMonitorJSONGetMigrationCacheSize);
     DO_TEST(qemuMonitorJSONGetMigrationStats);
     DO_TEST(qemuMonitorJSONGetChardevInfo);
     DO_TEST(qemuMonitorJSONSetBlockIoThrottle);

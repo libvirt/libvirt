@@ -2245,61 +2245,6 @@ qemuMonitorSetDBusVMStateIdList(qemuMonitor *mon,
 }
 
 
-int
-qemuMonitorSetMigrationSpeed(qemuMonitor *mon,
-                             unsigned long bandwidth)
-{
-    VIR_DEBUG("bandwidth=%lu", bandwidth);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    if (bandwidth > QEMU_DOMAIN_MIG_BANDWIDTH_MAX) {
-        virReportError(VIR_ERR_OVERFLOW,
-                       _("bandwidth must be less than %llu"),
-                       QEMU_DOMAIN_MIG_BANDWIDTH_MAX + 1ULL);
-        return -1;
-    }
-
-    return qemuMonitorJSONSetMigrationSpeed(mon, bandwidth);
-}
-
-
-int
-qemuMonitorSetMigrationDowntime(qemuMonitor *mon,
-                                unsigned long long downtime)
-{
-    VIR_DEBUG("downtime=%llu", downtime);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONSetMigrationDowntime(mon, downtime);
-}
-
-
-int
-qemuMonitorGetMigrationCacheSize(qemuMonitor *mon,
-                                 unsigned long long *cacheSize)
-{
-    VIR_DEBUG("cacheSize=%p", cacheSize);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONGetMigrationCacheSize(mon, cacheSize);
-}
-
-
-int
-qemuMonitorSetMigrationCacheSize(qemuMonitor *mon,
-                                 unsigned long long cacheSize)
-{
-    VIR_DEBUG("cacheSize=%llu", cacheSize);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONSetMigrationCacheSize(mon, cacheSize);
-}
-
-
 /**
  * qemuMonitorGetMigrationParams:
  * @mon: Pointer to the monitor object.

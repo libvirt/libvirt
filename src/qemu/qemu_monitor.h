@@ -770,17 +770,6 @@ int qemuMonitorSavePhysicalMemory(qemuMonitor *mon,
 int qemuMonitorSetDBusVMStateIdList(qemuMonitor *mon,
                                     GSList *list);
 
-int qemuMonitorSetMigrationSpeed(qemuMonitor *mon,
-                                 unsigned long bandwidth);
-
-int qemuMonitorSetMigrationDowntime(qemuMonitor *mon,
-                                    unsigned long long downtime);
-
-int qemuMonitorGetMigrationCacheSize(qemuMonitor *mon,
-                                     unsigned long long *cacheSize);
-int qemuMonitorSetMigrationCacheSize(qemuMonitor *mon,
-                                     unsigned long long cacheSize);
-
 int qemuMonitorGetMigrationParams(qemuMonitor *mon,
                                   virJSONValue **params);
 int qemuMonitorSetMigrationParams(qemuMonitor *mon,
