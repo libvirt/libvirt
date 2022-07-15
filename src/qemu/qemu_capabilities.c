@@ -591,7 +591,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "migration-param.downtime", /* X_QEMU_CAPS_MIGRATION_PARAM_DOWNTIME */
 
               /* 375 */
-              "migration-param.xbzrle-cache-size", /* QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE */
+              "migration-param.xbzrle-cache-size", /* X_QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE */
               "intel-iommu.aw-bits", /* QEMU_CAPS_INTEL_IOMMU_AW_BITS */
               "spapr-tpm-proxy", /* QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY */
               "numa.hmat", /* QEMU_CAPS_NUMA_HMAT */
@@ -1604,7 +1604,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+file/data/logappend", QEMU_CAPS_CHARDEV_FILE_APPEND },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "human-monitor-command/$savevm-monitor-nodes", QEMU_CAPS_SAVEVM_MONITOR_NODES },
-    { "migrate-set-parameters/arg-type/xbzrle-cache-size", QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },

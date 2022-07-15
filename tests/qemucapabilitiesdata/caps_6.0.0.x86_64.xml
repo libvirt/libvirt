@@ -193,7 +193,6 @@
   <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='pvscsi'/>
   <flag name='cpu.migratable'/>
-  <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='intel-iommu.aw-bits'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>

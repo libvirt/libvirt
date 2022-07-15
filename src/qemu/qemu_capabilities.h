@@ -570,7 +570,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_MIGRATION_PARAM_DOWNTIME, /* downtime-limit field in migrate-set-parameters */
 
     /* 375 */
-    QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE, /* xbzrle-cache-size field in migrate-set-parameters */
+    X_QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE, /* xbzrle-cache-size field in migrate-set-parameters */
     QEMU_CAPS_INTEL_IOMMU_AW_BITS, /* intel-iommu.aw-bits */
     QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY, /* -device spapr-tpm-proxy */
     QEMU_CAPS_NUMA_HMAT, /* -numa hmat */

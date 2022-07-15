@@ -72,7 +72,6 @@
   <flag name='fsdev.multidevs'/>
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
-  <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='numa.hmat'/>
   <flag name='blockdev-hostdev-scsi'/>
   <flag name='netdev.vhost-vdpa'/>

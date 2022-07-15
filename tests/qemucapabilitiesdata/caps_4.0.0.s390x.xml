@@ -104,7 +104,6 @@
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>
   <flag name='tcg'/>
-  <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
