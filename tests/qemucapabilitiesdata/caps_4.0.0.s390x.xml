@@ -104,7 +104,6 @@
   <flag name='query-cpu-model-comparison'/>
   <flag name='drive-nvme'/>
   <flag name='tcg'/>
-  <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='vhost-user-blk'/>

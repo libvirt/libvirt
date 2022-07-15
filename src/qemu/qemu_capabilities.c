@@ -587,7 +587,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "cpu.migratable", /* QEMU_CAPS_CPU_MIGRATABLE */
               "query-cpu-model-expansion.migratable", /* X_QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION_MIGRATABLE */
               "fw_cfg", /* X_QEMU_CAPS_FW_CFG */
-              "migration-param.bandwidth", /* QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH */
+              "migration-param.bandwidth", /* X_QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH */
               "migration-param.downtime", /* QEMU_CAPS_MIGRATION_PARAM_DOWNTIME */
 
               /* 375 */
@@ -1604,7 +1604,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+file/data/logappend", QEMU_CAPS_CHARDEV_FILE_APPEND },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
     { "human-monitor-command/$savevm-monitor-nodes", QEMU_CAPS_SAVEVM_MONITOR_NODES },
-    { "migrate-set-parameters/arg-type/max-bandwidth", QEMU_CAPS_MIGRATION_PARAM_BANDWIDTH },
     { "migrate-set-parameters/arg-type/downtime-limit", QEMU_CAPS_MIGRATION_PARAM_DOWNTIME },
     { "migrate-set-parameters/arg-type/xbzrle-cache-size", QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },

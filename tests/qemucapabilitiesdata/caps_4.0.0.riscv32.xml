@@ -133,7 +133,6 @@
   <flag name='drive-nvme'/>
   <flag name='tcg'/>
   <flag name='pvscsi'/>
-  <flag name='migration-param.bandwidth'/>
   <flag name='migration-param.downtime'/>
   <flag name='migration-param.xbzrle-cache-size'/>
   <flag name='dc390'/>
