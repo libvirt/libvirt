@@ -4988,14 +4988,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                                         src->encryption->engine);
                 return -1;
         }
-
-        if (src->format == VIR_STORAGE_FILE_QCOW2 &&
-            src->encryption->format == VIR_STORAGE_ENCRYPTION_FORMAT_LUKS &&
-            !virQEMUCapsGet(qemuCaps, QEMU_CAPS_QCOW2_LUKS)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("LUKS encrypted QCOW2 images are not supported by this QEMU"));
-            return -1;
-        }
     }
 
     if (src->tlsHostname) {
