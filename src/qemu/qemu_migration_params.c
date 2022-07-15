@@ -886,10 +886,8 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
                          unsigned long apiFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool xbzrleCacheSize_old = false;
     g_autoptr(virJSONValue) params = NULL;
     g_autoptr(virJSONValue) caps = NULL;
-    qemuMigrationParam xbzrle = QEMU_MIGRATION_PARAM_XBZRLE_CACHE_SIZE;
     bool postcopyResume = !!(apiFlags & VIR_MIGRATE_POSTCOPY_RESUME);
     int ret = -1;
 
@@ -917,19 +915,6 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
         }
     }
 
-    /* If QEMU is too old to support xbzrle-cache-size migration parameter,
-     * we need to set it via migrate-set-cache-size and tell
-     * qemuMonitorSetMigrationParams to ignore this parameter.
-     */
-    if (migParams->params[xbzrle].set &&
-        !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_XBZRLE_CACHE_SIZE)) {
-        if (qemuMonitorSetMigrationCacheSize(priv->mon,
-                                             migParams->params[xbzrle].value.ull) < 0)
-            goto cleanup;
-        xbzrleCacheSize_old = true;
-        migParams->params[xbzrle].set = false;
-    }
-
     if (!(params = qemuMigrationParamsToJSON(migParams, postcopyResume)))
         goto cleanup;
 
@@ -941,9 +926,6 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
 
  cleanup:
     qemuDomainObjExitMonitor(vm);
-
-    if (xbzrleCacheSize_old)
-        migParams->params[xbzrle].set = true;
 
     return ret;
 }
