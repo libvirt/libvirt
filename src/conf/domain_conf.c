@@ -10439,18 +10439,17 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
         }
-        if (def->data.emulator.version == VIR_DOMAIN_TPM_VERSION_2_0) {
-            if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
-                break;
-            for (i = 0; i < nnodes; i++) {
-                if ((bank = virDomainTPMPcrBankTypeFromString((const char *)nodes[i]->name)) < 0) {
-                    virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                                   _("Unsupported PCR banks '%s'"),
-                                   nodes[i]->name);
-                    goto error;
-                }
-                def->data.emulator.activePcrBanks |= (1 << bank);
+
+        if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
+            break;
+        for (i = 0; i < nnodes; i++) {
+            if ((bank = virDomainTPMPcrBankTypeFromString((const char *)nodes[i]->name)) < 0) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported PCR banks '%s'"),
+                               nodes[i]->name);
+                goto error;
             }
+            def->data.emulator.activePcrBanks |= (1 << bank);
         }
         break;
     case VIR_DOMAIN_TPM_TYPE_LAST:

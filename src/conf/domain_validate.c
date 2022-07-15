@@ -2650,6 +2650,30 @@ virDomainIOMMUDefValidate(const virDomainIOMMUDef *iommu)
     return 0;
 }
 
+
+static int
+virDomainTPMDevValidate(const virDomainTPMDef *tpm)
+{
+    switch (tpm->type) {
+    case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (tpm->data.emulator.activePcrBanks &&
+            tpm->data.emulator.version != VIR_DOMAIN_TPM_VERSION_2_0) {
+            virReportError(VIR_ERR_XML_ERROR,
+                           _("<active_pcr_banks/> requires TPM version '%s'"),
+                           virDomainTPMVersionTypeToString(VIR_DOMAIN_TPM_VERSION_2_0));
+            return -1;
+        }
+        break;
+
+    case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
+    case VIR_DOMAIN_TPM_TYPE_LAST:
+        break;
+    }
+
+    return 0;
+}
+
+
 static int
 virDomainDeviceInfoValidate(const virDomainDeviceDef *dev)
 {
@@ -2754,12 +2778,14 @@ virDomainDeviceDefValidateInternal(const virDomainDeviceDef *dev,
     case VIR_DOMAIN_DEVICE_IOMMU:
         return virDomainIOMMUDefValidate(dev->data.iommu);
 
+    case VIR_DOMAIN_DEVICE_TPM:
+        return virDomainTPMDevValidate(dev->data.tpm);
+
     case VIR_DOMAIN_DEVICE_LEASE:
     case VIR_DOMAIN_DEVICE_WATCHDOG:
     case VIR_DOMAIN_DEVICE_HUB:
     case VIR_DOMAIN_DEVICE_MEMBALLOON:
     case VIR_DOMAIN_DEVICE_NVRAM:
-    case VIR_DOMAIN_DEVICE_TPM:
     case VIR_DOMAIN_DEVICE_PANIC:
     case VIR_DOMAIN_DEVICE_NONE:
     case VIR_DOMAIN_DEVICE_LAST:
