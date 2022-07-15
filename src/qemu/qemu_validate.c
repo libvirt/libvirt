@@ -3202,20 +3202,6 @@ qemuValidateDomainDeviceDefDiskFrontend(const virDomainDiskDef *disk,
         return -1;
     }
 
-    if (disk->discard &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DISCARD)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("discard is not supported by this QEMU binary"));
-        return -1;
-    }
-
-    if (disk->detect_zeroes &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_DRIVE_DETECT_ZEROES)) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("detect_zeroes is not supported by this QEMU binary"));
-        return -1;
-    }
-
     if (disk->serial &&
         qemuValidateDomainDeviceDefDiskSerial(disk->serial) < 0)
         return -1;
