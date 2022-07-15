@@ -5227,6 +5227,11 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 {
+    /* While the removal of pre-blockdev code is in progress we always hard-code
+     * the support for QEMU_CAPS_BLOCKDEV */
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
+    virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
+
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance
      * automatically / implicitly
@@ -5246,16 +5251,10 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 void
 virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 {
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
-        virQEMUCapsClear(qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP);
-
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
-
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
 
     /* The -compat qemu command line argument is implemented using a newer
      * method which doesn't show up in query-command-line-options. As we'll use
@@ -5300,13 +5299,6 @@ virQEMUCapsInitProcessCaps(virQEMUCaps *qemuCaps)
 
     if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_CPU_UNAVAILABLE_FEATURES))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_CANONICAL_CPU_FEATURES);
-
-    /* To avoid guest ABI regression, blockdev shall be enabled only when
-     * we are able to pass the custom 'device_id' for SCSI disks and cdroms. */
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_SAVEVM_MONITOR_NODES))
-        virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     /* We can't probe "esp" as a type via virQEMUCapsObjectTypes
      * array as it is only usable when builtin to the machine type

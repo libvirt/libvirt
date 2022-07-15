@@ -111,6 +111,7 @@
   <flag name='machine.pseries.cap-htm'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
+  <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
@@ -139,11 +140,13 @@
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='spapr-tpm-proxy'/>
+  <flag name='blockdev-hostdev-scsi'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>
+  <flag name='blockdev-backup'/>
   <flag name='rotation-rate'/>
   <flag name='input-linux'/>
   <flag name='query-display-options'/>
