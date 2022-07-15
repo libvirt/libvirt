@@ -13059,10 +13059,8 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
 {
     virQEMUDriver *driver = dom->conn->privateData;
     virDomainObj *vm;
-    qemuDomainObjPrivate *priv;
     g_autoptr(qemuMigrationParams) migParams = NULL;
     int ret = -1;
-    int rc;
 
     virCheckFlags(0, -1);
 
@@ -13078,29 +13076,19 @@ qemuDomainMigrateSetMaxDowntime(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    priv = vm->privateData;
-
     VIR_DEBUG("Setting migration downtime to %llums", downtime);
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_PARAM_DOWNTIME)) {
-        if (!(migParams = qemuMigrationParamsNew()))
-            goto endjob;
+    if (!(migParams = qemuMigrationParamsNew()))
+        goto endjob;
 
-        if (qemuMigrationParamsSetULL(migParams,
-                                      QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT,
-                                      downtime) < 0)
-            goto endjob;
+    if (qemuMigrationParamsSetULL(migParams,
+                                  QEMU_MIGRATION_PARAM_DOWNTIME_LIMIT,
+                                  downtime) < 0)
+        goto endjob;
 
-        if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
-                                     migParams, 0) < 0)
-            goto endjob;
-    } else {
-        qemuDomainObjEnterMonitor(driver, vm);
-        rc = qemuMonitorSetMigrationDowntime(priv->mon, downtime);
-        qemuDomainObjExitMonitor(vm);
-        if (rc < 0)
-            goto endjob;
-    }
+    if (qemuMigrationParamsApply(driver, vm, VIR_ASYNC_JOB_NONE,
+                                 migParams, 0) < 0)
+        goto endjob;
 
     ret = 0;
 
