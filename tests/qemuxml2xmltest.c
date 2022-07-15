@@ -349,7 +349,7 @@ mymain(void)
     DO_TEST_NOCAPS("disk-network-tlsx509-nbd");
     DO_TEST_CAPS_LATEST("disk-network-tlsx509-nbd-hostname");
     DO_TEST_NOCAPS("disk-network-tlsx509-vxhs");
-    DO_TEST("disk-nvme", QEMU_CAPS_VIRTIO_SCSI, QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_CAPS_LATEST("disk-nvme");
     DO_TEST_CAPS_LATEST("disk-vhostuser");
     DO_TEST_CAPS_LATEST("disk-scsi");
     DO_TEST("disk-virtio-scsi-reservations",
@@ -570,8 +570,8 @@ mymain(void)
     DO_TEST_CAPS_LATEST("disk-slices");
     DO_TEST_CAPS_LATEST("disk-rotation");
 
-    DO_TEST("encrypted-disk", QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST("encrypted-disk-usage", QEMU_CAPS_QCOW2_LUKS);
+    DO_TEST_CAPS_LATEST("encrypted-disk");
+    DO_TEST_CAPS_LATEST("encrypted-disk-usage");
     DO_TEST_CAPS_LATEST("luks-disks");
     DO_TEST_CAPS_LATEST("luks-disks-source");
     DO_TEST_CAPS_LATEST("luks-disks-source-qcow2");
@@ -1297,14 +1297,7 @@ mymain(void)
     DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-compat", "ppc64");
     DO_TEST_CAPS_ARCH_LATEST("pseries-cpu-exact", "ppc64");
 
-    DO_TEST("user-aliases",
-            QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_QCOW2_LUKS,
-            QEMU_CAPS_OBJECT_MEMORY_FILE,
-            QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_VNC,
-            QEMU_CAPS_CCID_EMULATED);
+    DO_TEST_CAPS_LATEST("user-aliases");
     DO_TEST("input-virtio-ccw",
             QEMU_CAPS_CCW,
             QEMU_CAPS_VIRTIO_KEYBOARD,
