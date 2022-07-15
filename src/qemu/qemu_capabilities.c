@@ -299,7 +299,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 165 */
               "msg-timestamp", /* X_QEMU_CAPS_MSG_TIMESTAMP */
               "active-commit", /* QEMU_CAPS_ACTIVE_COMMIT */
-              "change-backing-file", /* QEMU_CAPS_CHANGE_BACKING_FILE */
+              "change-backing-file", /* X_QEMU_CAPS_CHANGE_BACKING_FILE */
               "memory-backend-ram", /* QEMU_CAPS_OBJECT_MEMORY_RAM */
               "numa", /* QEMU_CAPS_NUMA */
 
@@ -1206,7 +1206,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-spice", QEMU_CAPS_SPICE },
     { "query-vnc", QEMU_CAPS_VNC },
     { "nbd-server-start", QEMU_CAPS_NBD_SERVER },
-    { "change-backing-file", QEMU_CAPS_CHANGE_BACKING_FILE },
     { "rtc-reset-reinjection", QEMU_CAPS_RTC_RESET_REINJECTION },
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },

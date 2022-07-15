@@ -64,7 +64,6 @@
   <flag name='enable-fips'/>
   <flag name='usb-kbd'/>
   <flag name='active-commit'/>
-  <flag name='change-backing-file'/>
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
   <flag name='memory-backend-file'/>
