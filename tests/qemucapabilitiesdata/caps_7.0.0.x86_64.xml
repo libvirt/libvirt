@@ -50,7 +50,6 @@
   <flag name='tpm-tis'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='drive-discard'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='i440fx-pci-hole64-size'/>
   <flag name='q35-pci-hole64-size'/>
@@ -99,7 +98,6 @@
   <flag name='pxb-pcie'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='drive-detect-zeroes'/>
   <flag name='intel-iommu'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>

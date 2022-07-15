@@ -25,7 +25,6 @@
   <flag name='virtio-ccw'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='drive-discard'/>
   <flag name='enable-fips'/>
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
@@ -46,7 +45,6 @@
   <flag name='virtio-balloon-pci.deflate-on-oom'/>
   <flag name='chardev-logfile'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='drive-detect-zeroes'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>

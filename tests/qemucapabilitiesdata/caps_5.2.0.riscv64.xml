@@ -43,7 +43,6 @@
   <flag name='megasas'/>
   <flag name='pci-bridge'/>
   <flag name='vfio-pci'/>
-  <flag name='drive-discard'/>
   <flag name='dmi-to-pci-bridge'/>
   <flag name='usb-storage'/>
   <flag name='usb-storage.removable'/>
@@ -80,7 +79,6 @@
   <flag name='chardev-logfile'/>
   <flag name='nec-usb-xhci-ports'/>
   <flag name='virtio-scsi-pci.iothread'/>
-  <flag name='drive-detect-zeroes'/>
   <flag name='virtio-pci-disable-legacy'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='virtio-net.rx_queue_size'/>

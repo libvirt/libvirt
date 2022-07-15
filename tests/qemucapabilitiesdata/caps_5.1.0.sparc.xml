@@ -16,7 +16,6 @@
   <flag name='nbd-server'/>
   <flag name='rng-random'/>
   <flag name='rng-egd'/>
-  <flag name='drive-discard'/>
   <flag name='enable-fips'/>
   <flag name='memory-backend-ram'/>
   <flag name='numa'/>
@@ -27,7 +26,6 @@
   <flag name='vserport-change-event'/>
   <flag name='spice-gl'/>
   <flag name='chardev-logfile'/>
-  <flag name='drive-detect-zeroes'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='spice-rendernode'/>
   <flag name='block-write-threshold'/>

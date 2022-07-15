@@ -270,7 +270,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 145 */
               "vnc-websocket", /* X_QEMU_CAPS_VNC_WEBSOCKET */
-              "drive-discard", /* QEMU_CAPS_DRIVE_DISCARD */
+              "drive-discard", /* X_QEMU_CAPS_DRIVE_DISCARD */
               "mlock", /* X_QEMU_CAPS_REALTIME_MLOCK */
               "vnc-share-policy", /* X_QEMU_CAPS_VNC_SHARE_POLICY */
               "device-del-event", /* X_QEMU_CAPS_DEVICE_DEL_EVENT */
@@ -382,7 +382,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 225 */
               "spice-unix", /* X_QEMU_CAPS_SPICE_UNIX */
-              "drive-detect-zeroes", /* QEMU_CAPS_DRIVE_DETECT_ZEROES */
+              "drive-detect-zeroes", /* X_QEMU_CAPS_DRIVE_DETECT_ZEROES */
               "tls-creds-x509", /* X_QEMU_CAPS_OBJECT_TLS_CREDS_X509 */
               "display", /* X_QEMU_CAPS_DISPLAY */
               "intel-iommu", /* QEMU_CAPS_DEVICE_INTEL_IOMMU */
@@ -1590,8 +1590,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
     { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
-    { "blockdev-add/arg-type/discard", QEMU_CAPS_DRIVE_DISCARD },
-    { "blockdev-add/arg-type/detect-zeroes", QEMU_CAPS_DRIVE_DETECT_ZEROES },
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
     { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },

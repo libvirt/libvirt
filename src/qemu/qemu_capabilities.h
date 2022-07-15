@@ -248,7 +248,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 145 */
     X_QEMU_CAPS_VNC_WEBSOCKET, /* -vnc x:y,websocket */
-    QEMU_CAPS_DRIVE_DISCARD, /* -drive discard=off(ignore)|on(unmap) */
+    X_QEMU_CAPS_DRIVE_DISCARD, /* -drive discard=off(ignore)|on(unmap) */
     X_QEMU_CAPS_REALTIME_MLOCK, /* -realtime mlock=on|off */
     X_QEMU_CAPS_VNC_SHARE_POLICY, /* set display sharing policy */
     X_QEMU_CAPS_DEVICE_DEL_EVENT, /* DEVICE_DELETED event */
@@ -361,7 +361,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 225 */
     X_QEMU_CAPS_SPICE_UNIX, /* -spice unix */
-    QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
+    X_QEMU_CAPS_DRIVE_DETECT_ZEROES, /* -drive detect-zeroes= */
     X_QEMU_CAPS_OBJECT_TLS_CREDS_X509, /* -object tls-creds-x509 */
     X_QEMU_CAPS_DISPLAY, /* -display */
     QEMU_CAPS_DEVICE_INTEL_IOMMU, /* -device intel-iommu */
