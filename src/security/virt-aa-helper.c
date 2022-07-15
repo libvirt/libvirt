@@ -1212,7 +1212,7 @@ get_files(vahControl * ctl)
 
             shortName = virDomainDefGetShortName(ctl->def);
 
-            switch (ctl->def->tpms[i]->version) {
+            switch (ctl->def->tpms[i]->data.emulator.version) {
             case VIR_DOMAIN_TPM_VERSION_1_2:
                 tpmpath = "tpm1.2";
                 break;

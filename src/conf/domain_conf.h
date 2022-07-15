@@ -1439,12 +1439,12 @@ struct _virDomainTPMDef {
     int type; /* virDomainTPMBackendType */
     virDomainDeviceInfo info;
     int model; /* virDomainTPMModel */
-    int version; /* virDomainTPMVersion */
     union {
         struct {
             virDomainChrSourceDef *source;
         } passthrough;
         struct {
+            int version; /* virDomainTPMVersion */
             virDomainChrSourceDef *source;
             char *storagepath;
             char *logfile;

@@ -10413,15 +10413,6 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    version = virXMLPropString(backends[0], "version");
-    if (version &&
-        (def->version = virDomainTPMVersionTypeFromString(version)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unsupported TPM version '%s'"),
-                       version);
-        goto error;
-    }
-
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
         if (!(def->data.passthrough.source = virDomainChrSourceDefNew(xmlopt)))
@@ -10433,6 +10424,15 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
         def->data.passthrough.source->data.file.path = g_steal_pointer(&path);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        version = virXMLPropString(backends[0], "version");
+        if (version &&
+            (def->data.emulator.version = virDomainTPMVersionTypeFromString(version)) <= 0) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                           _("Unsupported TPM version '%s'"),
+                           version);
+            goto error;
+        }
+
         if (!(def->data.emulator.source = virDomainChrSourceDefNew(xmlopt)))
             goto error;
         secretuuid = virXPathString("string(./backend/encryption/@secret)", ctxt);
@@ -10454,7 +10454,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
                 goto error;
             }
         }
-        if (def->version == VIR_DOMAIN_TPM_VERSION_2_0) {
+        if (def->data.emulator.version == VIR_DOMAIN_TPM_VERSION_2_0) {
             if ((nnodes = virXPathNodeSet("./backend/active_pcr_banks/*", ctxt, &nodes)) < 0)
                 break;
             for (i = 0; i < nnodes; i++) {
@@ -20679,14 +20679,14 @@ virDomainTPMDefCheckABIStability(virDomainTPMDef *src,
         return false;
     }
 
-    if (src->version != dst->version) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       _("Target TPM version doesn't match source"));
-        return false;
-    }
-
     switch (src->type) {
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
+        if (src->data.emulator.version != dst->data.emulator.version) {
+            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                           _("Target TPM version doesn't match source"));
+            return false;
+        }
+
         if (src->data.emulator.activePcrBanks != dst->data.emulator.activePcrBanks) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("Target active PCR banks doesn't match source"));
@@ -24241,9 +24241,9 @@ virDomainTPMDefFormat(virBuffer *buf,
                               def->data.passthrough.source->data.file.path);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        if (def->version != VIR_DOMAIN_TPM_VERSION_DEFAULT) {
+        if (def->data.emulator.version != VIR_DOMAIN_TPM_VERSION_DEFAULT) {
             virBufferAsprintf(&backendAttrBuf, " version='%s'",
-                              virDomainTPMVersionTypeToString(def->version));
+                              virDomainTPMVersionTypeToString(def->data.emulator.version));
         }
         if (def->data.emulator.persistent_state)
             virBufferAddLit(&backendAttrBuf, " persistent_state='yes'");

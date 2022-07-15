@@ -575,7 +575,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     if (created &&
         qemuTPMEmulatorRunSetup(tpm->data.emulator.storagepath, vmname, vmuuid,
                                 privileged, swtpm_user, swtpm_group,
-                                tpm->data.emulator.logfile, tpm->version,
+                                tpm->data.emulator.logfile,
+                                tpm->data.emulator.version,
                                 secretuuid, incomingMigration) < 0)
         goto error;
 
@@ -583,7 +584,8 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
         qemuTPMEmulatorReconfigure(tpm->data.emulator.storagepath,
                                    swtpm_user, swtpm_group,
                                    tpm->data.emulator.activePcrBanks,
-                                   tpm->data.emulator.logfile, tpm->version,
+                                   tpm->data.emulator.logfile,
+                                   tpm->data.emulator.version,
                                    secretuuid) < 0)
         goto error;
 
@@ -611,7 +613,7 @@ qemuTPMEmulatorBuildCommand(virDomainTPMDef *tpm,
     virCommandSetUID(cmd, swtpm_user);
     virCommandSetGID(cmd, swtpm_group);
 
-    switch (tpm->version) {
+    switch (tpm->data.emulator.version) {
     case VIR_DOMAIN_TPM_VERSION_1_2:
         break;
     case VIR_DOMAIN_TPM_VERSION_2_0:
@@ -684,7 +686,7 @@ qemuTPMEmulatorInitPaths(virDomainTPMDef *tpm,
     if (!tpm->data.emulator.storagepath &&
         !(tpm->data.emulator.storagepath =
             qemuTPMEmulatorStorageBuildPath(swtpmStorageDir, uuidstr,
-                                            tpm->version)))
+                                            tpm->data.emulator.version)))
         return -1;
 
     if (!tpm->data.emulator.logfile) {

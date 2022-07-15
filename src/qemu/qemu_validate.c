@@ -4760,33 +4760,34 @@ qemuValidateDomainDeviceDefTPM(virDomainTPMDef *tpm,
 {
     virDomainCapsDeviceTPM tpmCaps = { 0 };
 
-    switch (tpm->version) {
-    case VIR_DOMAIN_TPM_VERSION_1_2:
-        /* TPM 1.2 + CRB do not work */
-        if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
-            tpm->model == VIR_DOMAIN_TPM_MODEL_CRB) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported interface %s for TPM 1.2"),
-                           virDomainTPMModelTypeToString(tpm->model));
-            return -1;
+    if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR) {
+        switch (tpm->data.emulator.version) {
+        case VIR_DOMAIN_TPM_VERSION_1_2:
+            /* TPM 1.2 + CRB do not work */
+            if (tpm->model == VIR_DOMAIN_TPM_MODEL_CRB) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                               _("Unsupported interface '%s' for TPM 1.2"),
+                               virDomainTPMModelTypeToString(tpm->model));
+                return -1;
+            }
+            /* TPM 1.2 + SPAPR do not work with any 'type' (backend) */
+            if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("TPM 1.2 is not supported with the SPAPR device model"));
+                return -1;
+            }
+            /* TPM 1.2 + ARM does not work */
+            if (qemuDomainIsARMVirt(def)) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("TPM 1.2 is not supported on ARM"));
+                return -1;
+            }
+            break;
+        case VIR_DOMAIN_TPM_VERSION_2_0:
+        case VIR_DOMAIN_TPM_VERSION_DEFAULT:
+        case VIR_DOMAIN_TPM_VERSION_LAST:
+            break;
         }
-        /* TPM 1.2 + SPAPR do not work with any 'type' (backend) */
-        if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("TPM 1.2 is not supported with the SPAPR device model"));
-            return -1;
-        }
-        /* TPM 1.2 + ARM does not work */
-        if (qemuDomainIsARMVirt(def)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("TPM 1.2 is not supported on ARM"));
-            return -1;
-        }
-        break;
-    case VIR_DOMAIN_TPM_VERSION_2_0:
-    case VIR_DOMAIN_TPM_VERSION_DEFAULT:
-    case VIR_DOMAIN_TPM_VERSION_LAST:
-        break;
     }
 
     virQEMUCapsFillDomainDeviceTPMCaps(qemuCaps, &tpmCaps);
