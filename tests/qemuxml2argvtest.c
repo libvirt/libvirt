@@ -3265,17 +3265,9 @@ mymain(void)
     DO_TEST_PARSE_ERROR("cpu-cache-passthrough-l3", QEMU_CAPS_KVM);
     DO_TEST("vmcoreinfo", QEMU_CAPS_DEVICE_VMCOREINFO);
 
-    DO_TEST("user-aliases", QEMU_CAPS_KVM, QEMU_CAPS_DEVICE_CIRRUS_VGA,
-            QEMU_CAPS_OBJECT_MEMORY_FILE, QEMU_CAPS_PIIX_DISABLE_S3,
-            QEMU_CAPS_PIIX_DISABLE_S4, QEMU_CAPS_VNC,
-            QEMU_CAPS_DEVICE_ISA_SERIAL,
-            QEMU_CAPS_HDA_DUPLEX,
-            QEMU_CAPS_CCID_EMULATED,
-            QEMU_CAPS_QCOW2_LUKS);
-    DO_TEST("user-aliases2", QEMU_CAPS_DEVICE_IOH3420, QEMU_CAPS_ICH9_AHCI);
-    DO_TEST("user-aliases-usb", QEMU_CAPS_KVM,
-            QEMU_CAPS_PIIX_DISABLE_S3, QEMU_CAPS_PIIX_DISABLE_S4,
-            QEMU_CAPS_ICH9_USB_EHCI1);
+    DO_TEST_CAPS_LATEST("user-aliases");
+    DO_TEST_CAPS_LATEST("user-aliases2");
+    DO_TEST_CAPS_LATEST("user-aliases-usb");
 
     DO_TEST_CAPS_LATEST("tseg-explicit-size");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("tseg-i440fx");

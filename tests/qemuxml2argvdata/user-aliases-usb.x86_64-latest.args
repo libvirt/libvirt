@@ -1,0 +1,44 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-gentoo \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-gentoo/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-gentoo/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-gentoo/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=gentoo,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-gentoo/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off,memory-backend=pc.ram \
+-accel kvm \
+-cpu qemu64 \
+-m 4096 \
+-object '{"qom-type":"memory-backend-ram","id":"pc.ram","size":4294967296}' \
+-overcommit mem-lock=off \
+-smp 4,sockets=4,cores=1,threads=1 \
+-uuid a75aca4b-a02f-2bcb-4a91-c93cd848c34b \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-global PIIX4_PM.disable_s3=0 \
+-global PIIX4_PM.disable_s4=0 \
+-boot strict=on \
+-device '{"driver":"ich9-usb-ehci1","id":"ua-myUSB1","bus":"pci.0","addr":"0x4.0x7"}' \
+-device '{"driver":"ich9-usb-uhci1","masterbus":"ua-myUSB1.0","firstport":0,"bus":"pci.0","multifunction":true,"addr":"0x4"}' \
+-device '{"driver":"ich9-usb-uhci2","masterbus":"ua-myUSB1.0","firstport":2,"bus":"pci.0","addr":"0x4.0x1"}' \
+-device '{"driver":"ich9-usb-uhci3","masterbus":"ua-myUSB1.0","firstport":4,"bus":"pci.0","addr":"0x4.0x2"}' \
+-device '{"driver":"ich9-usb-ehci1","id":"ua-myUSB5","bus":"pci.0","addr":"0x5.0x7"}' \
+-device '{"driver":"ich9-usb-uhci1","masterbus":"ua-myUSB5.0","firstport":0,"bus":"pci.0","multifunction":true,"addr":"0x5"}' \
+-device '{"driver":"ich9-usb-uhci2","masterbus":"ua-myUSB5.0","firstport":2,"bus":"pci.0","addr":"0x5.0x1"}' \
+-device '{"driver":"ich9-usb-uhci3","masterbus":"ua-myUSB5.0","firstport":4,"bus":"pci.0","addr":"0x5.0x2"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-device '{"driver":"usb-host","hostdevice":"/dev/bus/usb/014/006","id":"hostdev0","bus":"ua-myUSB1.0","port":"3"}' \
+-device '{"driver":"usb-host","hostdevice":"/dev/bus/usb/015/006","id":"hostdev1","bus":"ua-myUSB5.0","port":"3"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x2"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on

@@ -1,0 +1,74 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-gentoo \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-gentoo/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-gentoo/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-gentoo/.config \
+/usr/bin/qemu-system-x86_64 \
+-name guest=gentoo,debug-threads=on \
+-S \
+-object '{"qom-type":"secret","id":"masterKey0","format":"raw","file":"/tmp/lib/domain--1-gentoo/master-key.aes"}' \
+-machine pc,usb=off,dump-guest-core=off \
+-accel kvm \
+-cpu qemu64 \
+-m 4096 \
+-overcommit mem-lock=off \
+-smp 4,sockets=4,cores=1,threads=1 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node0","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-gentoo","prealloc":true,"size":1073741824}' \
+-numa node,nodeid=0,cpus=0,memdev=ram-node0 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node1","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-gentoo","prealloc":true,"size":1073741824}' \
+-numa node,nodeid=1,cpus=1,memdev=ram-node1 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node2","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-gentoo","prealloc":true,"size":1073741824}' \
+-numa node,nodeid=2,cpus=2,memdev=ram-node2 \
+-object '{"qom-type":"memory-backend-file","id":"ram-node3","mem-path":"/dev/hugepages1G/libvirt/qemu/-1-gentoo","prealloc":true,"size":1073741824}' \
+-numa node,nodeid=3,cpus=3,memdev=ram-node3 \
+-uuid a75aca4b-a02f-2bcb-4a91-c93cd848c34b \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-global PIIX4_PM.disable_s3=0 \
+-global PIIX4_PM.disable_s4=0 \
+-boot strict=on \
+-device '{"driver":"piix3-usb-uhci","id":"ua-SomeWeirdController","bus":"pci.0","addr":"0x1.0x2"}' \
+-device '{"driver":"virtio-serial-pci","id":"virtio-serial0","bus":"pci.0","addr":"0x8"}' \
+-device '{"driver":"usb-ccid","id":"ua-myCCID","bus":"ua-SomeWeirdController.0","port":"1"}' \
+-device '{"driver":"usb-ccid","id":"ua-myCCID2","bus":"ua-SomeWeirdController.0","port":"2"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/fd.img","node-name":"libvirt-4-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-4-storage"}' \
+-device '{"driver":"floppy","unit":0,"drive":"libvirt-4-format","id":"ua-myDisk1","write-cache":"on"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/gentoo.qcow2","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":false,"driver":"qcow2","file":"libvirt-3-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x5","drive":"libvirt-3-format","id":"ua-myDisk2","bootindex":1}' \
+-object '{"qom-type":"secret","id":"libvirt-2-format-encryption-secret0","data":"9eao5F8qtkGt+seB1HYivWIxbtwUu6MQtg1zpj/oDtUsPr1q8wBYM91uEHCn6j/1","keyid":"masterKey0","iv":"AAECAwQFBgcICQoLDA0ODw==","format":"base64"}' \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/OtherDemo.img","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"qcow2","encrypt":{"format":"luks","key-secret":"libvirt-2-format-encryption-secret0"},"file":"libvirt-2-storage"}' \
+-device '{"driver":"virtio-blk-pci","bus":"pci.0","addr":"0x7","drive":"libvirt-2-format","id":"ua-myEncryptedDisk1"}' \
+-blockdev '{"driver":"file","filename":"/home/zippy/tmp/install-amd64-minimal-20140619.iso","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":true,"cache":{"direct":true,"no-flush":false},"driver":"raw","file":"libvirt-1-storage"}' \
+-device '{"driver":"ide-cd","bus":"ide.1","unit":0,"share-rw":true,"drive":"libvirt-1-format","id":"ua-WhatAnAwesomeCDROM","bootindex":2,"write-cache":"on"}' \
+-netdev tap,fd=3,vhost=on,vhostfd=44,id=hostua-CheckoutThisNIC \
+-device '{"driver":"virtio-net-pci","netdev":"hostua-CheckoutThisNIC","id":"ua-CheckoutThisNIC","mac":"52:54:00:d6:c0:0b","bus":"pci.0","addr":"0x3"}' \
+-netdev socket,listen=127.0.0.1:1234,id=hostua-WeCanAlsoDoServerMode \
+-device '{"driver":"rtl8139","netdev":"hostua-WeCanAlsoDoServerMode","id":"ua-WeCanAlsoDoServerMode","mac":"52:54:00:22:c9:42","bus":"pci.0","addr":"0x9"}' \
+-netdev socket,connect=127.0.0.1:1234,id=hostua-AndAlsoClientMode \
+-device '{"driver":"rtl8139","netdev":"hostua-AndAlsoClientMode","id":"ua-AndAlsoClientMode","mac":"52:54:00:8c:b1:f8","bus":"pci.0","addr":"0xa"}' \
+-device '{"driver":"ccid-card-emulated","backend":"nss-emulated","id":"smartcard0","bus":"ua-myCCID.0"}' \
+-chardev pty,id=charserial0 \
+-device '{"driver":"isa-serial","chardev":"charserial0","id":"serial0","index":0}' \
+-chardev pty,id=charserial1 \
+-device '{"driver":"isa-serial","chardev":"charserial1","id":"serial1","index":1}' \
+-chardev socket,id=charchannel0,fd=1729,server=on,wait=off \
+-device '{"driver":"virtserialport","bus":"virtio-serial0.0","nr":1,"chardev":"charchannel0","id":"channel0","name":"org.qemu.guest_agent.0"}' \
+-audiodev '{"id":"audio1","driver":"none"}' \
+-vnc 127.0.0.1:0,audiodev=audio1 \
+-device '{"driver":"cirrus-vga","id":"video0","bus":"pci.0","addr":"0x2"}' \
+-device '{"driver":"intel-hda","id":"sound0","bus":"pci.0","addr":"0x4"}' \
+-device '{"driver":"hda-duplex","id":"sound0-codec0","bus":"sound0.0","cad":0,"audiodev":"audio1"}' \
+-device '{"driver":"virtio-balloon-pci","id":"balloon0","bus":"pci.0","addr":"0x6"}' \
+-sandbox on,obsolete=deny,elevateprivileges=deny,spawn=deny,resourcecontrol=deny \
+-msg timestamp=on
