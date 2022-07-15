@@ -14501,13 +14501,6 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
 
     if (baseSource) {
         if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE) {
-            if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("this QEMU binary doesn't support relative "
-                                 "block pull/rebase"));
-                goto endjob;
-            }
-
             if (blockdev &&
                 qemuBlockUpdateRelativeBacking(vm, disk->src, disk->src) < 0)
                 goto endjob;
@@ -15638,12 +15631,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
         topSource != disk->src) {
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_CHANGE_BACKING_FILE)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("this qemu doesn't support relative block commit"));
-            goto endjob;
-        }
-
         if (blockdev && top_parent &&
             qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
             goto endjob;
