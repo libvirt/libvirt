@@ -7582,22 +7582,19 @@ qemuDomainStorageSourceValidateDepth(virStorageSource *src,
  * qemuDomainPrepareStorageSourceConfig:
  * @src: storage source to configure
  * @cfg: qemu driver config object
- * @qemuCaps: capabilities of qemu
  *
  * Set properties of @src based on the qemu driver config @cfg.
  *
  */
 static void
 qemuDomainPrepareStorageSourceConfig(virStorageSource *src,
-                                     virQEMUDriverConfig *cfg,
-                                     virQEMUCaps *qemuCaps)
+                                     virQEMUDriverConfig *cfg)
 {
     if (!cfg)
         return;
 
     if (src->type == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_GLUSTER_DEBUG_LEVEL)) {
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER) {
         src->debug = true;
         src->debugLevel = cfg->glusterDebugLevel;
     }
@@ -7717,7 +7714,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         if (qemuDomainValidateStorageSource(n, priv->qemuCaps, isSD) < 0)
             return -1;
 
-        qemuDomainPrepareStorageSourceConfig(n, cfg, priv->qemuCaps);
+        qemuDomainPrepareStorageSourceConfig(n, cfg);
         qemuDomainPrepareDiskSourceData(disk, n);
 
         if (blockdev && !isSD &&
@@ -10767,7 +10764,7 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDef *disk,
     if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps, true) < 0)
         return -1;
 
-    qemuDomainPrepareStorageSourceConfig(disk->src, cfg, priv->qemuCaps);
+    qemuDomainPrepareStorageSourceConfig(disk->src, cfg);
     qemuDomainPrepareDiskSourceData(disk, disk->src);
 
     if (qemuDomainSecretStorageSourcePrepare(priv, disk->src,
@@ -10805,7 +10802,7 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     if (qemuDomainValidateStorageSource(src, priv->qemuCaps, false) < 0)
         return -1;
 
-    qemuDomainPrepareStorageSourceConfig(src, cfg, priv->qemuCaps);
+    qemuDomainPrepareStorageSourceConfig(src, cfg);
     qemuDomainPrepareDiskSourceData(disk, src);
 
     if (qemuDomainSecretStorageSourcePrepare(priv, src,
