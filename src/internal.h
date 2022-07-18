@@ -110,18 +110,6 @@
 #endif
 
 /**
- * G_GNUC_NO_INLINE:
- *
- * Force compiler not to inline a method. Should be used if
- * the method need to be overridable by test mocks.
- *
- * TODO: Remove after upgrading to GLib >= 2.58
- */
-#ifndef G_GNUC_NO_INLINE
-# define G_GNUC_NO_INLINE __attribute__((__noinline__))
-#endif
-
-/**
  * ATTRIBUTE_PACKED
  *
  * force a structure to be packed, i.e. not following architecture and
