@@ -2132,17 +2132,6 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuProcessPrepareHostBackendChardevHotplug(vm, dev) < 0)
         goto cleanup;
 
-    if (charpriv->sourcefd || charpriv->logfd || charpriv->directfd) {
-        qemuDomainObjEnterMonitor(driver, vm);
-
-        if (qemuFDPassTransferMonitor(charpriv->sourcefd, priv->mon) < 0 ||
-            qemuFDPassTransferMonitor(charpriv->logfd, priv->mon) < 0 ||
-            qemuFDPassDirectTransferMonitor(charpriv->directfd, priv->mon) < 0)
-            goto exit_monitor;
-
-        qemuDomainObjExitMonitor(vm);
-    }
-
     if (guestfwd) {
         if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
             goto cleanup;
@@ -2163,6 +2152,11 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
         goto audit;
 
     qemuDomainObjEnterMonitor(driver, vm);
+
+    if (qemuFDPassTransferMonitor(charpriv->sourcefd, priv->mon) < 0 ||
+        qemuFDPassTransferMonitor(charpriv->logfd, priv->mon) < 0 ||
+        qemuFDPassDirectTransferMonitor(charpriv->directfd, priv->mon) < 0)
+        goto exit_monitor;
 
     if (qemuHotplugChardevAttach(priv->mon, charAlias, chr->source) < 0)
         goto exit_monitor;
@@ -2209,6 +2203,7 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
         qemuMonitorDetachCharDev(priv->mon, charAlias);
     qemuFDPassTransferMonitorRollback(charpriv->sourcefd, priv->mon);
     qemuFDPassTransferMonitorRollback(charpriv->logfd, priv->mon);
+    qemuFDPassDirectTransferMonitorRollback(charpriv->directfd, priv->mon);
     qemuDomainObjExitMonitor(vm);
     virErrorRestore(&orig_err);
 
