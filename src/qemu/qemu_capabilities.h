@@ -500,7 +500,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_NVDIMM_UNARMED, /* -device nvdimm,unarmed= */
 
     /* 325 */
-    QEMU_CAPS_SCSI_DISK_DEVICE_ID, /* 'device_id' property of scsi disk */
+    X_QEMU_CAPS_SCSI_DISK_DEVICE_ID, /* 'device_id' property of scsi disk */
     QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL, /* virtio *-pci-{non-}transitional devices */
     X_QEMU_CAPS_OVERCOMMIT, /* -overcommit */
     QEMU_CAPS_QUERY_CURRENT_MACHINE, /* query-current-machine command */
@@ -529,8 +529,8 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
 
     /* 345 */
     QEMU_CAPS_ARM_MAX_CPU, /* max-arm-cpu type exists */
-    QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC, /* the auto-read-only property of block backends for files is dynamic */
-    QEMU_CAPS_SAVEVM_MONITOR_NODES, /* 'savevm' handles monitor-owned nodes properly */
+    X_QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC, /* the auto-read-only property of block backends for files is dynamic */
+    X_QEMU_CAPS_SAVEVM_MONITOR_NODES, /* 'savevm' handles monitor-owned nodes properly */
     QEMU_CAPS_DRIVE_NVME, /* -drive file.driver=nvme */
     QEMU_CAPS_SMP_DIES, /*  -smp dies= */
 

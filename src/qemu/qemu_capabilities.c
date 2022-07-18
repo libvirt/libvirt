@@ -521,7 +521,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "nvdimm.unarmed", /* QEMU_CAPS_DEVICE_NVDIMM_UNARMED */
 
               /* 325 */
-              "scsi-disk.device_id", /* QEMU_CAPS_SCSI_DISK_DEVICE_ID */
+              "scsi-disk.device_id", /* X_QEMU_CAPS_SCSI_DISK_DEVICE_ID */
               "virtio-pci-non-transitional", /* QEMU_CAPS_VIRTIO_PCI_TRANSITIONAL */
               "overcommit", /* X_QEMU_CAPS_OVERCOMMIT */
               "query-current-machine", /* QEMU_CAPS_QUERY_CURRENT_MACHINE */
@@ -550,8 +550,8 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 345 */
               "arm-max-cpu", /* QEMU_CAPS_ARM_MAX_CPU */
-              "blockdev-file-dynamic-auto-read-only", /* QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC */
-              "savevm-monitor-nodes", /* QEMU_CAPS_SAVEVM_MONITOR_NODES */
+              "blockdev-file-dynamic-auto-read-only", /* X_QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC */
+              "savevm-monitor-nodes", /* X_QEMU_CAPS_SAVEVM_MONITOR_NODES */
               "drive-nvme", /* QEMU_CAPS_DRIVE_NVME */
               "smp-dies", /* QEMU_CAPS_SMP_DIES */
 
@@ -1482,7 +1482,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsSCSIDisk[] = {
     { "wwn", QEMU_CAPS_SCSI_DISK_WWN, NULL },
     { "share-rw", QEMU_CAPS_DISK_SHARE_RW, NULL },
     { "write-cache", QEMU_CAPS_DISK_WRITE_CACHE, NULL },
-    { "device_id", QEMU_CAPS_SCSI_DISK_DEVICE_ID, NULL },
     { "rotation_rate", QEMU_CAPS_ROTATION_RATE, NULL },
 };
 
@@ -1585,7 +1584,6 @@ static struct virQEMUCapsDevicePropsFlags virQEMUCapsDevicePropsVirtioIOMMU[] = 
 static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+vxhs", QEMU_CAPS_VXHS},
     { "blockdev-add/arg-type/+file/drop-cache", QEMU_CAPS_MIGRATION_FILE_DROP_CACHE },
-    { "blockdev-add/arg-type/+file/$dynamic-auto-read-only", QEMU_CAPS_BLOCK_FILE_AUTO_READONLY_DYNAMIC },
     { "blockdev-add/arg-type/+nvme", QEMU_CAPS_DRIVE_NVME },
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
     { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
@@ -1596,7 +1594,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "chardev-add/arg-type/backend/+file/data/logfile", QEMU_CAPS_CHARDEV_LOGFILE },
     { "chardev-add/arg-type/backend/+file/data/logappend", QEMU_CAPS_CHARDEV_FILE_APPEND },
     { "device_add/$json-cli-hotplug", QEMU_CAPS_DEVICE_JSON },
-    { "human-monitor-command/$savevm-monitor-nodes", QEMU_CAPS_SAVEVM_MONITOR_NODES },
     { "migrate-set-parameters/arg-type/block-bitmap-mapping/bitmaps/transform", QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING },
     { "nbd-server-start/arg-type/tls-creds", QEMU_CAPS_NBD_TLS },
     { "nbd-server-add/arg-type/bitmap", QEMU_CAPS_NBD_BITMAP },

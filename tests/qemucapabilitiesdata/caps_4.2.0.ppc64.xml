@@ -119,7 +119,6 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
-  <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
@@ -129,7 +128,6 @@
   <flag name='vhost-user-gpu'/>
   <flag name='vhost-user-vga'/>
   <flag name='machine.pseries.cap-ccf-assist'/>
-  <flag name='blockdev-file-dynamic-auto-read-only'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='i8042'/>

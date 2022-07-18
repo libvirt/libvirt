@@ -117,7 +117,6 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='memory-backend-file.pmem'/>
-  <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='query-current-machine'/>
   <flag name='bitmap-merge'/>
@@ -126,8 +125,6 @@
   <flag name='migration-file-drop-cache'/>
   <flag name='dbus-vmstate'/>
   <flag name='vhost-user-gpu'/>
-  <flag name='blockdev-file-dynamic-auto-read-only'/>
-  <flag name='savevm-monitor-nodes'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>

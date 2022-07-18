@@ -121,7 +121,6 @@
   <flag name='egl-headless.rendernode'/>
   <flag name='memory-backend-file.align'/>
   <flag name='nvdimm.unarmed'/>
-  <flag name='scsi-disk.device_id'/>
   <flag name='virtio-pci-non-transitional'/>
   <flag name='query-current-machine'/>
   <flag name='machine.virt.iommu'/>
@@ -133,8 +132,6 @@
   <flag name='vhost-user-gpu'/>
   <flag name='ramfb'/>
   <flag name='arm-max-cpu'/>
-  <flag name='blockdev-file-dynamic-auto-read-only'/>
-  <flag name='savevm-monitor-nodes'/>
   <flag name='drive-nvme'/>
   <flag name='smp-dies'/>
   <flag name='rng-builtin'/>
