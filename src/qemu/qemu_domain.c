@@ -4593,17 +4593,6 @@ qemuDomainDefTPMsPostParse(virDomainDef *def)
     for (i = 0; i < def->ntpms; i++) {
         virDomainTPMDef *tpm = def->tpms[i];
 
-        /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
-        if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
-            tpm->data.emulator.version == VIR_DOMAIN_TPM_VERSION_DEFAULT) {
-            if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR ||
-                tpm->model == VIR_DOMAIN_TPM_MODEL_CRB ||
-                qemuDomainIsARMVirt(def))
-                tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
-            else
-                tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_1_2;
-        }
-
         if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
             if (proxyTPM) {
                 virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -5807,13 +5796,24 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDef *hostdev,
 
 static int
 qemuDomainTPMDefPostParse(virDomainTPMDef *tpm,
-                          virArch arch)
+                          const virDomainDef *def)
 {
     if (tpm->model == VIR_DOMAIN_TPM_MODEL_DEFAULT) {
-        if (ARCH_IS_PPC64(arch))
+        if (ARCH_IS_PPC64(def->os.arch))
             tpm->model = VIR_DOMAIN_TPM_MODEL_SPAPR;
         else
             tpm->model = VIR_DOMAIN_TPM_MODEL_TIS;
+    }
+
+    /* TPM 1.2 and 2 are not compatible, so we choose a specific version here */
+    if (tpm->type == VIR_DOMAIN_TPM_TYPE_EMULATOR &&
+        tpm->data.emulator.version == VIR_DOMAIN_TPM_VERSION_DEFAULT) {
+        if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR ||
+            tpm->model == VIR_DOMAIN_TPM_MODEL_CRB ||
+            qemuDomainIsARMVirt(def))
+            tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_2_0;
+        else
+            tpm->data.emulator.version = VIR_DOMAIN_TPM_VERSION_1_2;
     }
 
     return 0;
@@ -5942,7 +5942,7 @@ qemuDomainDeviceDefPostParse(virDomainDeviceDef *dev,
         break;
 
     case VIR_DOMAIN_DEVICE_TPM:
-        ret = qemuDomainTPMDefPostParse(dev->data.tpm, def->os.arch);
+        ret = qemuDomainTPMDefPostParse(dev->data.tpm, def);
         break;
 
     case VIR_DOMAIN_DEVICE_MEMORY:
