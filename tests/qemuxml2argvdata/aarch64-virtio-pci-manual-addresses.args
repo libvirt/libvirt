@@ -36,7 +36,7 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-aarch64test/.config \
 -device virtio-scsi-pci,id=scsi0,bus=pci.3,addr=0x1 \
 -blockdev '{"driver":"file","filename":"/aarch64.raw","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
 -blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
--device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,drive=libvirt-1-format,id=scsi0-0-0-0,bootindex=1 \
+-device scsi-hd,bus=scsi0.0,channel=0,scsi-id=0,lun=0,device_id=drive-scsi0-0-0-0,drive=libvirt-1-format,id=scsi0-0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:09:a4:37,bus=pci.3,addr=0x2 \
 -netdev user,id=hostnet1 \

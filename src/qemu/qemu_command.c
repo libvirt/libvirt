@@ -2141,13 +2141,11 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
              * disk serial was not set and the disk serial otherwise.
              * To avoid a guest-visible regression we need to provide it
              * ourselves especially for cases when -blockdev will be used */
-            if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_SCSI_DISK_DEVICE_ID)) {
-                if (disk->serial) {
-                    scsiVPDDeviceId = g_strdup(disk->serial);
-                } else {
-                    if (!(scsiVPDDeviceId = qemuAliasDiskDriveFromDisk(disk)))
-                        return NULL;
-                }
+            if (disk->serial) {
+                scsiVPDDeviceId = g_strdup(disk->serial);
+            } else {
+                if (!(scsiVPDDeviceId = qemuAliasDiskDriveFromDisk(disk)))
+                    return NULL;
             }
         }
 
