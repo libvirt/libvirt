@@ -10414,15 +10414,12 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     }
 
     version = virXMLPropString(backends[0], "version");
-    if (!version) {
-        def->version = VIR_DOMAIN_TPM_VERSION_DEFAULT;
-    } else {
-        if ((def->version = virDomainTPMVersionTypeFromString(version)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported TPM version '%s'"),
-                           version);
-            goto error;
-        }
+    if (version &&
+        (def->version = virDomainTPMVersionTypeFromString(version)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("Unsupported TPM version '%s'"),
+                       version);
+        goto error;
     }
 
     switch (def->type) {
