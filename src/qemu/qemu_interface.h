@@ -51,9 +51,9 @@ int qemuInterfaceBridgeConnect(virDomainDef *def,
     ATTRIBUTE_NONNULL(2);
 
 int qemuInterfaceOpenVhostNet(virDomainObj *def,
-                              virDomainNetDef *net) G_GNUC_NO_INLINE;
+                              virDomainNetDef *net) G_NO_INLINE;
 
 int qemuInterfacePrepareSlirp(virQEMUDriver *driver,
                               virDomainNetDef *net);
 
-int qemuInterfaceVDPAConnect(virDomainNetDef *net) G_GNUC_NO_INLINE;
+int qemuInterfaceVDPAConnect(virDomainNetDef *net) G_NO_INLINE;

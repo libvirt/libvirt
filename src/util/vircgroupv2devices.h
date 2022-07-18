@@ -26,7 +26,7 @@
 
 bool
 virCgroupV2DevicesAvailable(virCgroup *group)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;
 
 int
 virCgroupV2DevicesDetectProg(virCgroup *group);

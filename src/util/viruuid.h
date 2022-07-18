@@ -41,11 +41,11 @@
 
 
 int virSetHostUUIDStr(const char *host_uuid);
-int virGetHostUUID(unsigned char *host_uuid) ATTRIBUTE_NONNULL(1) G_GNUC_NO_INLINE;
+int virGetHostUUID(unsigned char *host_uuid) ATTRIBUTE_NONNULL(1) G_NO_INLINE;
 
 bool virUUIDIsValid(const unsigned char *uuid);
 
-int virUUIDGenerate(unsigned char *uuid) G_GNUC_NO_INLINE;
+int virUUIDGenerate(unsigned char *uuid) G_NO_INLINE;
 
 int virUUIDParse(const char *uuidstr,
                  unsigned char *uuid)

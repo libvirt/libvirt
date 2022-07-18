@@ -159,7 +159,7 @@ int qemuDomainSetVcpuInternal(virQEMUDriver *driver,
                               virBitmap *vcpus,
                               bool state);
 
-unsigned long long qemuDomainGetUnplugTimeout(virDomainObj *vm) G_GNUC_NO_INLINE;
+unsigned long long qemuDomainGetUnplugTimeout(virDomainObj *vm) G_NO_INLINE;
 
 int qemuHotplugAttachDBusVMState(virQEMUDriver *driver,
                                  virDomainObj *vm,

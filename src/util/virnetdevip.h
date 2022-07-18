@@ -59,7 +59,7 @@ int virNetDevIPAddrAdd(const char *ifname,
                        virSocketAddr *addr,
                        virSocketAddr *peer,
                        unsigned int prefix)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 int virNetDevIPRouteAdd(const char *ifname,
                         virSocketAddr *addr,
                         unsigned int prefix,

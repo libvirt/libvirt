@@ -117,7 +117,7 @@ int qemuProcessPrepareHostHostdev(virDomainHostdevDef *hostdev);
 
 int qemuProcessPrepareHostBackendChardevHotplug(virDomainObj *vm,
                                                 virDomainDeviceDef *dev)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;
 
 
 int qemuProcessPrepareHost(virQEMUDriver *driver,
@@ -205,9 +205,9 @@ int qemuProcessRefreshDisks(virQEMUDriver *driver,
                             virDomainObj *vm,
                             virDomainAsyncJob asyncJob);
 
-int qemuProcessStartManagedPRDaemon(virDomainObj *vm) G_GNUC_NO_INLINE;
+int qemuProcessStartManagedPRDaemon(virDomainObj *vm) G_NO_INLINE;
 
-void qemuProcessKillManagedPRDaemon(virDomainObj *vm) G_GNUC_NO_INLINE;
+void qemuProcessKillManagedPRDaemon(virDomainObj *vm) G_NO_INLINE;
 
 typedef struct _qemuProcessQMP qemuProcessQMP;
 struct _qemuProcessQMP {

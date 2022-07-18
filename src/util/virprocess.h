@@ -77,12 +77,12 @@ int virProcessGetNamespaces(pid_t pid,
 int virProcessSetNamespaces(size_t nfdlist,
                             int *fdlist);
 
-int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes) G_GNUC_NO_INLINE;
+int virProcessSetMaxMemLock(pid_t pid, unsigned long long bytes) G_NO_INLINE;
 int virProcessSetMaxProcesses(pid_t pid, unsigned int procs);
 int virProcessSetMaxFiles(pid_t pid, unsigned int files);
 int virProcessSetMaxCoreSize(pid_t pid, unsigned long long bytes);
 
-int virProcessGetMaxMemLock(pid_t pid, unsigned long long *bytes) G_GNUC_NO_INLINE;
+int virProcessGetMaxMemLock(pid_t pid, unsigned long long *bytes) G_NO_INLINE;
 
 /* Callback to run code within the mount namespace tied to the given
  * pid.  This function must use only async-signal-safe functions, as
@@ -110,7 +110,7 @@ typedef int (*virProcessForkCallback)(pid_t ppid,
 
 int virProcessRunInFork(virProcessForkCallback cb,
                         void *opaque)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;
 
 int virProcessSetupPrivateMountNS(void);
 

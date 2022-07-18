@@ -77,4 +77,4 @@ int virNetDevBandwidthUpdateFilter(const char *ifname,
 
 int virNetDevBandwidthSetRootQDisc(const char *ifname,
                                    const char *qdisc)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;

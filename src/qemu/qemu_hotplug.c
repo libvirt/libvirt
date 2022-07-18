@@ -5281,7 +5281,7 @@ qemuDomainResetDeviceRemoval(virDomainObj *vm)
 }
 
 
-unsigned long long G_GNUC_NO_INLINE
+unsigned long long G_NO_INLINE
 qemuDomainGetUnplugTimeout(virDomainObj *vm)
 {
     if (qemuDomainIsPSeries(vm->def))

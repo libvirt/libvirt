@@ -435,7 +435,7 @@ int qemuMonitorSetLink(qemuMonitor *mon,
 /* These APIs are for use by the internal Text/JSON monitor impl code only */
 char *qemuMonitorNextCommandID(qemuMonitor *mon);
 int qemuMonitorSend(qemuMonitor *mon,
-                    qemuMonitorMessage *msg) G_GNUC_NO_INLINE;
+                    qemuMonitorMessage *msg) G_NO_INLINE;
 int qemuMonitorUpdateVideoMemorySize(qemuMonitor *mon,
                                      virDomainVideoDef *video,
                                      const char *videoName)

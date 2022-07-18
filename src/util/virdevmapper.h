@@ -24,7 +24,7 @@
 
 int
 virDevMapperGetTargets(const char *path,
-                       GSList **devPaths) G_GNUC_NO_INLINE;
+                       GSList **devPaths) G_NO_INLINE;
 
 bool
 virIsDevMapperDevice(const char *dev_name) ATTRIBUTE_NONNULL(1);

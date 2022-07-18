@@ -57,4 +57,4 @@ int virHostMemAllocPages(unsigned int npages,
                          bool add);
 
 int virHostMemGetTHPSize(unsigned long long *size)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;

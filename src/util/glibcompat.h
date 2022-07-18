@@ -95,11 +95,23 @@ char *vir_g_strdup_vprintf(const char *msg, va_list args)
 
 void vir_g_source_unref(GSource *src, GMainContext *ctx);
 
-/* Intentionally redefine macro so that it's not marked as available in 2.58
- * and newer. Drop when bumping to 2.58 or newer. */
-#undef G_GNUC_NO_INLINE
-#if g_macro__has_attribute(__noinline__)
-# define G_GNUC_NO_INLINE __attribute__ ((__noinline__))
-#else
-# define G_GNUC_NO_INLINE
-#endif
+#if !GLIB_CHECK_VERSION(2, 73, 2)
+# if (defined(__has_attribute) && __has_attribute(__noinline__)) || G_GNUC_CHECK_VERSION (2, 96)
+#  if defined (__cplusplus) && __cplusplus >= 201103L
+    /* Use ISO C++11 syntax when the compiler supports it. */
+#   define G_NO_INLINE [[gnu::noinline]]
+#  else
+#   define G_NO_INLINE __attribute__ ((__noinline__))
+#  endif
+# elif defined (_MSC_VER) && (1200 <= _MSC_VER)
+   /* Use MSVC specific syntax.  */
+#  if defined (__cplusplus) && __cplusplus >= 201103L
+    /* Use ISO C++11 syntax when the compiler supports it. */
+#   define G_NO_INLINE [[msvc::noinline]]
+#  else
+#   define G_NO_INLINE __declspec (noinline)
+#  endif
+# else
+#  define G_NO_INLINE /* empty */
+# endif
+#endif /* GLIB_CHECK_VERSION(2, 73, 0) */

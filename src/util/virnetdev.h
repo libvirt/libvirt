@@ -168,11 +168,11 @@ int virNetDevSetupControl(const char *ifname,
     G_GNUC_WARN_UNUSED_RESULT;
 
 int virNetDevExists(const char *brname)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 
 int virNetDevSetOnline(const char *ifname,
                        bool online)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 int virNetDevGetOnline(const char *ifname,
                       bool *online)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
@@ -180,7 +180,7 @@ int virNetDevGetOnline(const char *ifname,
 
 int virNetDevSetMAC(const char *ifname,
                     const virMacAddr *macaddr)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 int virNetDevGetMAC(const char *ifname,
                     virMacAddr *macaddr)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) G_GNUC_WARN_UNUSED_RESULT;
@@ -324,10 +324,10 @@ int virNetDevSysfsFile(char **pf_sysfs_device_link,
                        const char *ifname,
                        const char *file)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3)
-    G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 
 int virNetDevRunEthernetScript(const char *ifname, const char *script)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;
 
 int virNetDevVFInterfaceStats(virPCIDeviceAddress *vfAddr,
                               virDomainInterfaceStatsPtr stats)

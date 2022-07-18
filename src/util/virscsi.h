@@ -34,7 +34,7 @@ char *virSCSIDeviceGetSgName(const char *sysfs_prefix,
                              const char *adapter,
                              unsigned int bus,
                              unsigned int target,
-                             unsigned long long unit) G_GNUC_NO_INLINE;
+                             unsigned long long unit) G_NO_INLINE;
 char *virSCSIDeviceGetDevName(const char *sysfs_prefix,
                               const char *adapter,
                               unsigned int bus,

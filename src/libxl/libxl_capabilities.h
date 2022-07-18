@@ -47,4 +47,4 @@ libxlMakeDomainCapabilities(virDomainCaps *domCaps,
 
 int
 libxlDomainGetEmulatorType(const virDomainDef *def)
-    G_GNUC_NO_INLINE;
+    G_NO_INLINE;

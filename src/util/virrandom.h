@@ -20,10 +20,10 @@
 
 #include "internal.h"
 
-uint64_t virRandomBits(int nbits) G_GNUC_NO_INLINE;
+uint64_t virRandomBits(int nbits) G_NO_INLINE;
 double virRandom(void);
 uint32_t virRandomInt(uint32_t max);
 int virRandomBytes(unsigned char *buf, size_t buflen)
-    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
-int virRandomGenerateWWN(char **wwn, const char *virt_type) G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(1) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
+int virRandomGenerateWWN(char **wwn, const char *virt_type) G_NO_INLINE;
 char *virRandomToken(size_t len);

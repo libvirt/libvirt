@@ -27,4 +27,4 @@
 #include "viridentity.h"
 
 char *
-virIdentityEnsureSystemToken(void) G_GNUC_NO_INLINE;
+virIdentityEnsureSystemToken(void) G_NO_INLINE;

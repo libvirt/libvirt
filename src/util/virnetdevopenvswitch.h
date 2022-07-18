@@ -65,7 +65,7 @@ virNetDevOpenvswitchMaybeUnescapeReply(char *reply)
 int virNetDevOpenvswitchGetVhostuserIfname(const char *path,
                                            bool server,
                                            char **ifname)
-    ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT G_GNUC_NO_INLINE;
+    ATTRIBUTE_NONNULL(3) G_GNUC_WARN_UNUSED_RESULT G_NO_INLINE;
 
 int virNetDevOpenvswitchUpdateVlan(const char *ifname,
                                    const virNetDevVlan *virtVlan)
