@@ -4584,37 +4584,6 @@ qemuDomainDefNumaCPUsPostParse(virDomainDef *def,
 
 
 static int
-qemuDomainDefTPMsPostParse(virDomainDef *def)
-{
-    virDomainTPMDef *proxyTPM = NULL;
-    virDomainTPMDef *regularTPM = NULL;
-    size_t i;
-
-    for (i = 0; i < def->ntpms; i++) {
-        virDomainTPMDef *tpm = def->tpms[i];
-
-        if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
-            if (proxyTPM) {
-                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                               _("only a single TPM Proxy device is supported"));
-                return -1;
-            } else {
-                proxyTPM = tpm;
-            }
-        } else if (regularTPM) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("only a single TPM non-proxy device is supported"));
-            return -1;
-        } else {
-            regularTPM = tpm;
-        }
-    }
-
-    return 0;
-}
-
-
-static int
 qemuDomainDefPostParseBasic(virDomainDef *def,
                             void *opaque G_GNUC_UNUSED)
 {
@@ -4708,9 +4677,6 @@ qemuDomainDefPostParse(virDomainDef *def,
         return -1;
 
     if (qemuDomainDefNumaCPUsPostParse(def, qemuCaps) < 0)
-        return -1;
-
-    if (qemuDomainDefTPMsPostParse(def) < 0)
         return -1;
 
     return 0;

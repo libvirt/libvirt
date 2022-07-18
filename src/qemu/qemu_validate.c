@@ -1113,6 +1113,37 @@ qemuValidateDomainDefPanic(const virDomainDef *def,
 }
 
 
+static int
+qemuValidateDomainDefTPMs(const virDomainDef *def)
+{
+    const virDomainTPMDef *proxyTPM = NULL;
+    const virDomainTPMDef *regularTPM = NULL;
+    size_t i;
+
+    for (i = 0; i < def->ntpms; i++) {
+        virDomainTPMDef *tpm = def->tpms[i];
+
+        if (tpm->model == VIR_DOMAIN_TPM_MODEL_SPAPR_PROXY) {
+            if (proxyTPM) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only a single TPM Proxy device is supported"));
+                return -1;
+            }
+            proxyTPM = tpm;
+        } else {
+            if (regularTPM) {
+                virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
+                               _("only a single TPM non-proxy device is supported"));
+                return -1;
+            }
+            regularTPM = tpm;
+        }
+    }
+
+    return 0;
+}
+
+
 int
 qemuValidateLifecycleAction(virDomainLifecycleAction onPoweroff,
                             virDomainLifecycleAction onReboot,
@@ -1308,6 +1339,9 @@ qemuValidateDomainDef(const virDomainDef *def,
     }
 
     if (qemuValidateDomainDefPanic(def, qemuCaps) < 0)
+        return -1;
+
+    if (qemuValidateDomainDefTPMs(def) < 0)
         return -1;
 
     if (def->sec) {
