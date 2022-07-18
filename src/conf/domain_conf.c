@@ -10364,9 +10364,6 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     int nnodes;
     size_t i;
     g_autofree char *path = NULL;
-    g_autofree char *model = NULL;
-    g_autofree char *backend = NULL;
-    g_autofree char *version = NULL;
     g_autofree char *secretuuid = NULL;
     g_autofree char *persistent_state = NULL;
     g_autofree xmlNodePtr *backends = NULL;
@@ -10375,13 +10372,11 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
     def = g_new0(virDomainTPMDef, 1);
 
-    model = virXMLPropString(node, "model");
-    if (model != NULL &&
-        (def->model = virDomainTPMModelTypeFromString(model)) <= 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown TPM frontend model '%s'"), model);
+    if (virXMLPropEnum(node, "model",
+                       virDomainTPMModelTypeFromString,
+                       VIR_XML_PROP_NONZERO,
+                       &def->model) < 0)
         goto error;
-    }
 
     ctxt->node = node;
 
@@ -10400,18 +10395,11 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
         goto error;
     }
 
-    if (!(backend = virXMLPropString(backends[0], "type"))) {
-        virReportError(VIR_ERR_XML_ERROR, "%s",
-                       _("missing TPM device backend type"));
+    if (virXMLPropEnum(backends[0], "type",
+                       virDomainTPMBackendTypeFromString,
+                       VIR_XML_PROP_REQUIRED,
+                       &def->type) < 0)
         goto error;
-    }
-
-    if ((def->type = virDomainTPMBackendTypeFromString(backend)) < 0) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                       _("Unknown TPM backend type '%s'"),
-                       backend);
-        goto error;
-    }
 
     switch (def->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
@@ -10424,14 +10412,11 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
         def->data.passthrough.source->data.file.path = g_steal_pointer(&path);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        version = virXMLPropString(backends[0], "version");
-        if (version &&
-            (def->data.emulator.version = virDomainTPMVersionTypeFromString(version)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("Unsupported TPM version '%s'"),
-                           version);
+        if (virXMLPropEnum(backends[0], "version",
+                           virDomainTPMVersionTypeFromString,
+                           VIR_XML_PROP_NONZERO,
+                           &def->data.emulator.version) < 0)
             goto error;
-        }
 
         if (!(def->data.emulator.source = virDomainChrSourceDefNew(xmlopt)))
             goto error;

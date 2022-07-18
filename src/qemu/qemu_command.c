@@ -9860,7 +9860,7 @@ qemuBuildTPMCommandLine(virCommand *cmd,
     g_autoptr(qemuFDPass) passtpm = NULL;
     g_autoptr(qemuFDPass) passcancel = NULL;
 
-    switch ((virDomainTPMBackendType) tpm->type) {
+    switch (tpm->type) {
     case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH: {
         VIR_AUTOCLOSE fdtpm = -1;
         VIR_AUTOCLOSE fdcancel = -1;

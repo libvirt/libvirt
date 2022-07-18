@@ -11753,7 +11753,7 @@ qemuDomainDeviceBackendChardevForeachOne(virDomainDeviceDef *dev,
         return cb(dev, dev->data.rng->source.chardev, opaque);
 
     case VIR_DOMAIN_DEVICE_TPM:
-        switch ((virDomainTPMBackendType) dev->data.tpm->type) {
+        switch (dev->data.tpm->type) {
         case VIR_DOMAIN_TPM_TYPE_PASSTHROUGH:
             return cb(dev, dev->data.tpm->data.passthrough.source, opaque);
 
