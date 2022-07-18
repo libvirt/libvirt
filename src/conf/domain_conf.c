@@ -10377,7 +10377,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
 
     model = virXMLPropString(node, "model");
     if (model != NULL &&
-        (def->model = virDomainTPMModelTypeFromString(model)) < 0) {
+        (def->model = virDomainTPMModelTypeFromString(model)) <= 0) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                        _("Unknown TPM frontend model '%s'"), model);
         goto error;
@@ -24230,8 +24230,10 @@ virDomainTPMDefFormat(virBuffer *buf,
     g_auto(virBuffer) backendAttrBuf = VIR_BUFFER_INITIALIZER;
     g_auto(virBuffer) backendChildBuf = VIR_BUFFER_INIT_CHILD(&childBuf);
 
-    virBufferAsprintf(&attrBuf, " model='%s'",
-                      virDomainTPMModelTypeToString(def->model));
+    if (def->model != VIR_DOMAIN_TPM_MODEL_DEFAULT) {
+        virBufferAsprintf(&attrBuf, " model='%s'",
+                          virDomainTPMModelTypeToString(def->model));
+    }
 
     virBufferAsprintf(&backendAttrBuf, " type='%s'",
                       virDomainTPMBackendTypeToString(def->type));
