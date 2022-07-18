@@ -2118,6 +2118,9 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuDomainAttachChrDeviceAssignAddr(vm, chr, &need_release) < 0)
         goto cleanup;
 
+    if (qemuProcessPrepareHostBackendChardevHotplug(vm, dev) < 0)
+        goto cleanup;
+
     if (qemuDomainNamespaceSetupChardev(vm, chr, &teardowndevice) < 0)
         goto cleanup;
 
@@ -2128,9 +2131,6 @@ qemuDomainAttachChrDevice(virQEMUDriver *driver,
     if (qemuSetupChardevCgroup(vm, chr) < 0)
         goto cleanup;
     teardowncgroup = true;
-
-    if (qemuProcessPrepareHostBackendChardevHotplug(vm, dev) < 0)
-        goto cleanup;
 
     if (guestfwd) {
         if (!(netdevprops = qemuBuildChannelGuestfwdNetdevProps(chr)))
