@@ -33,7 +33,7 @@ happens.
 Using TCK
 ---------
 
-TCK can be used independently of the enviroment, i.e. both on your local host
+TCK can be used independently of the environment, i.e. both on your local host
 or in a VM. We strongly recommend using a VM for the tests as TCK might affect
 your current host setup, see `Running TCK`_.
 

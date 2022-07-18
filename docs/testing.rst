@@ -30,7 +30,7 @@ valuable marker when accepting upstream contributions. Therefore, it is
 recommended to run libvirt builds against your changes in various containers to
 either locally or by using GitLab's shared CI runners to make sure everything
 runs cleanly before submitting your patches. The images themselves come from
-libvirt's GitLab container registry, but this can be overriden if needed, see
+libvirt's GitLab container registry, but this can be overridden if needed, see
 below.
 
 Registry

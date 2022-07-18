@@ -449,7 +449,7 @@ for libvirt to check compatibility prior to migration.
 If using ``host-model`` the target host hardware and software deployment
 must expose a superset of the features of the source host CPU. If using
 ``host-passthrough`` the target host CPU and software deployment must
-always expose a superset of the fetures, however, it is further strongly
+always expose a superset of the features, however, it is further strongly
 recommended that the source and destination hosts be identical in every
 way.
 
