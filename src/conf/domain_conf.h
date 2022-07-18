@@ -1417,7 +1417,7 @@ typedef enum {
 } virDomainTPMBackendType;
 
 typedef enum {
-    VIR_DOMAIN_TPM_VERSION_DEFAULT,
+    VIR_DOMAIN_TPM_VERSION_DEFAULT = 0,
     VIR_DOMAIN_TPM_VERSION_1_2,
     VIR_DOMAIN_TPM_VERSION_2_0,
 

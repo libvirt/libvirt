@@ -10417,7 +10417,7 @@ virDomainTPMDefParseXML(virDomainXMLOption *xmlopt,
     if (!version) {
         def->version = VIR_DOMAIN_TPM_VERSION_DEFAULT;
     } else {
-        if ((def->version = virDomainTPMVersionTypeFromString(version)) < 0) {
+        if ((def->version = virDomainTPMVersionTypeFromString(version)) <= 0) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
                            _("Unsupported TPM version '%s'"),
                            version);
@@ -24244,8 +24244,10 @@ virDomainTPMDefFormat(virBuffer *buf,
                               def->data.passthrough.source->data.file.path);
         break;
     case VIR_DOMAIN_TPM_TYPE_EMULATOR:
-        virBufferAsprintf(&backendAttrBuf, " version='%s'",
-                          virDomainTPMVersionTypeToString(def->version));
+        if (def->version != VIR_DOMAIN_TPM_VERSION_DEFAULT) {
+            virBufferAsprintf(&backendAttrBuf, " version='%s'",
+                              virDomainTPMVersionTypeToString(def->version));
+        }
         if (def->data.emulator.persistent_state)
             virBufferAddLit(&backendAttrBuf, " persistent_state='yes'");
         if (def->data.emulator.hassecretuuid) {
