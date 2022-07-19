@@ -2397,80 +2397,6 @@ testQemuMonitorCPUInfo(const void *opaque)
 }
 
 
-static int
-testBlockNodeNameDetectFormat(void *payload,
-                              const char *name,
-                              void *opaque)
-{
-    qemuBlockNodeNameBackingChainData *entry = payload;
-    const char *diskalias = name;
-    virBuffer *buf = opaque;
-
-    virBufferSetIndent(buf, 0);
-
-    virBufferAdd(buf, diskalias, -1);
-    virBufferAddLit(buf, "\n");
-
-    while (entry) {
-        virBufferAsprintf(buf, "filename    : '%s'\n", entry->qemufilename);
-        virBufferAsprintf(buf, "format node : '%s'\n",
-                          NULLSTR(entry->nodeformat));
-        virBufferAsprintf(buf, "format drv  : '%s'\n", NULLSTR(entry->drvformat));
-        virBufferAsprintf(buf, "storage node: '%s'\n",
-                          NULLSTR(entry->nodestorage));
-        virBufferAsprintf(buf, "storage drv : '%s'\n", NULLSTR(entry->drvstorage));
-
-        virBufferAdjustIndent(buf, 2);
-
-        entry = entry->backing;
-    }
-
-    virBufferSetIndent(buf, 0);
-    virBufferAddLit(buf, "\n");
-    return 0;
-}
-
-
-static int
-testBlockNodeNameDetect(const void *opaque)
-{
-    const char *testname = opaque;
-    const char *pathprefix = "qemumonitorjsondata/qemumonitorjson-nodename-";
-    g_autofree char *resultFile = NULL;
-    g_autofree char *actual = NULL;
-    g_autoptr(virJSONValue) namedNodesJson = NULL;
-    g_autoptr(virJSONValue) blockstatsJson = NULL;
-    g_autoptr(GHashTable) nodedata = NULL;
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-
-    resultFile = g_strdup_printf("%s/%s%s.result", abs_srcdir, pathprefix,
-                                 testname);
-
-    if (!(namedNodesJson = virTestLoadFileJSON(pathprefix, testname,
-                                               "-named-nodes.json", NULL)))
-        return -1;
-
-    if (!(blockstatsJson = virTestLoadFileJSON(pathprefix, testname,
-                                               "-blockstats.json", NULL)))
-        return -1;
-
-    if (!(nodedata = qemuBlockNodeNameGetBackingChain(namedNodesJson,
-                                                      blockstatsJson)))
-        return -1;
-
-    virHashForEachSorted(nodedata, testBlockNodeNameDetectFormat, &buf);
-
-    virBufferTrim(&buf, "\n");
-
-    actual = virBufferContentAndReset(&buf);
-
-    if (virTestCompareToFile(actual, resultFile) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 struct testQAPISchemaData {
     GHashTable *schema;
     const char *name;
@@ -3039,24 +2965,6 @@ mymain(void)
 
     DO_TEST_CPU_INFO("s390", 2);
 
-#define DO_TEST_BLOCK_NODE_DETECT(testname) \
-    do { \
-        if (virTestRun("node-name-detect(" testname ")", \
-                       testBlockNodeNameDetect, testname) < 0) \
-            ret = -1; \
-    } while (0)
-
-    DO_TEST_BLOCK_NODE_DETECT("basic");
-    DO_TEST_BLOCK_NODE_DETECT("same-backing");
-    DO_TEST_BLOCK_NODE_DETECT("relative");
-    DO_TEST_BLOCK_NODE_DETECT("gluster");
-    DO_TEST_BLOCK_NODE_DETECT("blockjob");
-    DO_TEST_BLOCK_NODE_DETECT("luks");
-    DO_TEST_BLOCK_NODE_DETECT("iscsi");
-    DO_TEST_BLOCK_NODE_DETECT("old");
-    DO_TEST_BLOCK_NODE_DETECT("empty");
-
-#undef DO_TEST_BLOCK_NODE_DETECT
 
 #define DO_TEST_QAPI_QUERY(nme, qry, scc, rplobj) \
     do { \

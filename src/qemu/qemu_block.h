@@ -40,14 +40,6 @@ struct qemuBlockNodeNameBackingChainData {
 };
 
 GHashTable *
-qemuBlockNodeNameGetBackingChain(virJSONValue *namednodesdata,
-                                 virJSONValue *blockstats);
-
-int
-qemuBlockNodeNamesDetect(virDomainObj *vm,
-                         virDomainAsyncJob asyncJob);
-
-GHashTable *
 qemuBlockGetNodeData(virJSONValue *data);
 
 bool
