@@ -1365,18 +1365,12 @@ then
         # own the sockets again when it comes back up. Thus we must
         # do this particular ordering, so that we get libvirtd
         # running with socket activation in use
-        /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1
-        if test $? = 0
-        then
-            /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
-
-            /bin/systemctl try-restart \
-                    libvirtd.socket \
-                    libvirtd-ro.socket \
-                    libvirtd-admin.socket >/dev/null 2>&1 || :
-
-            /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
-        fi
+        /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
+        /bin/systemctl try-restart \
+                libvirtd.socket \
+                libvirtd-ro.socket \
+                libvirtd-admin.socket >/dev/null 2>&1 || :
+        /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
     fi
 fi
 
