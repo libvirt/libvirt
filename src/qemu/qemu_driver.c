@@ -19727,18 +19727,6 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
         goto endjob;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        !src->nodestorage &&
-        qemuBlockNodeNamesDetect(vm, VIR_ASYNC_JOB_NONE) < 0)
-        goto endjob;
-
-    if (!src->nodestorage) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                       _("threshold currently can't be set for block device '%s'"),
-                       dev);
-        goto endjob;
-    }
-
     nodename = g_strdup(src->nodestorage);
 
     qemuDomainObjEnterMonitor(vm);
