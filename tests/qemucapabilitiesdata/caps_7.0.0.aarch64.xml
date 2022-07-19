@@ -157,7 +157,6 @@
   <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='pvscsi'/>
   <flag name='numa.hmat'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>

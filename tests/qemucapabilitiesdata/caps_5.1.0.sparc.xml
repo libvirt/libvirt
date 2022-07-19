@@ -63,7 +63,6 @@
   <flag name='aio.io_uring'/>
   <flag name='tcg'/>
   <flag name='numa.hmat'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='netdev.vhost-vdpa'/>
   <flag name='ncr53c90'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>

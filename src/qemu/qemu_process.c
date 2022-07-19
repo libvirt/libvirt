@@ -5625,8 +5625,7 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
 
             /* The code is being cleaned up to always assume the support for
              * -blockdev thus we must no longer allow users to clear it */
-            if (tmp == QEMU_CAPS_BLOCKDEV ||
-                tmp == QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)
+            if (tmp == QEMU_CAPS_BLOCKDEV)
                 continue;
 
             virQEMUCapsClear(priv->qemuCaps, tmp);
@@ -5655,8 +5654,7 @@ qemuProcessStartUpdateCustomCaps(virDomainObj *vm)
 
             /* The code is being cleaned up to always assume the support for
              * -blockdev thus we must no longer allow users to clear it */
-            if (tmp == QEMU_CAPS_BLOCKDEV ||
-                tmp == QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)
+            if (tmp == QEMU_CAPS_BLOCKDEV)
                 continue;
 
             virQEMUCapsClear(priv->qemuCaps, tmp);

@@ -104,7 +104,6 @@
   <flag name='fsdev.multidevs'/>
   <flag name='virtio.packed'/>
   <flag name='tcg'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='vhost-user-blk'/>
   <flag name='cpu-max'/>
   <flag name='memory-backend-file.x-use-canonical-path-for-ramblock-id'/>

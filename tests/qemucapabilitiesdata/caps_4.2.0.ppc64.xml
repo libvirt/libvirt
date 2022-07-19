@@ -138,7 +138,6 @@
   <flag name='tcg'/>
   <flag name='pvscsi'/>
   <flag name='spapr-tpm-proxy'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='dc390'/>
   <flag name='am53c974'/>
   <flag name='vhost-user-blk'/>

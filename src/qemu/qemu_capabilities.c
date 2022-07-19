@@ -595,7 +595,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "intel-iommu.aw-bits", /* QEMU_CAPS_INTEL_IOMMU_AW_BITS */
               "spapr-tpm-proxy", /* QEMU_CAPS_DEVICE_SPAPR_TPM_PROXY */
               "numa.hmat", /* QEMU_CAPS_NUMA_HMAT */
-              "blockdev-hostdev-scsi", /* QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI */
+              "blockdev-hostdev-scsi", /* X_QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI */
 
               /* 380 */
               "usb-host.hostdevice", /* QEMU_CAPS_USB_HOST_HOSTDEVICE */
@@ -5227,7 +5227,6 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
     /* While the removal of pre-blockdev code is in progress we always hard-code
      * the support for QEMU_CAPS_BLOCKDEV */
     virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI);
 
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance

@@ -151,7 +151,6 @@
   <flag name='pvscsi'/>
   <flag name='spapr-tpm-proxy'/>
   <flag name='numa.hmat'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>

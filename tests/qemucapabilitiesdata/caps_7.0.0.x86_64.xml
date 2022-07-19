@@ -185,7 +185,6 @@
   <flag name='cpu.migratable'/>
   <flag name='intel-iommu.aw-bits'/>
   <flag name='numa.hmat'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='usb-host.hostdevice'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>

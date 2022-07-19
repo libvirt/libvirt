@@ -107,7 +107,6 @@
   <flag name='tcg'/>
   <flag name='virtio-blk-pci.scsi.default.disabled'/>
   <flag name='numa.hmat'/>
-  <flag name='blockdev-hostdev-scsi'/>
   <flag name='virtio-balloon.free-page-reporting'/>
   <flag name='block-export-add'/>
   <flag name='netdev.vhost-vdpa'/>
