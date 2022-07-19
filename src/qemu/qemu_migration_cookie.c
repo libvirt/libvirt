@@ -478,7 +478,6 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(GHashTable) stats = virHashNew(g_free);
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     size_t i;
     int rc;
 
@@ -498,11 +497,11 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
 
     if (qemuDomainObjEnterMonitorAsync(vm, priv->job.asyncJob) < 0)
         return -1;
-    if (blockdev)
-        rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
-    else
-        rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats);
+
+    rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
+
     qemuDomainObjExitMonitor(vm);
+
     if (rc < 0)
         return -1;
 
@@ -510,14 +509,8 @@ qemuMigrationCookieAddNBD(qemuMigrationCookie *mig,
         virDomainDiskDef *disk = vm->def->disks[i];
         qemuBlockStats *entry;
 
-        if (blockdev) {
-            if (!(entry = virHashLookup(stats, disk->src->nodeformat)))
-                continue;
-        } else {
-            if (!disk->info.alias ||
-                !(entry = virHashLookup(stats, disk->info.alias)))
-                continue;
-        }
+        if (!(entry = virHashLookup(stats, disk->src->nodeformat)))
+            continue;
 
         mig->nbd->disks[mig->nbd->ndisks].target = g_strdup(disk->dst);
         mig->nbd->disks[mig->nbd->ndisks].capacity = entry->capacity;
