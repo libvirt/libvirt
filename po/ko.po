@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-06-27 06:24+0000\n"
-"PO-Revision-Date: 2022-07-02 01:18+0000\n"
+"PO-Revision-Date: 2022-07-18 15:19+0000\n"
 "Last-Translator: 김인수 <simmon@nplob.com>\n"
 "Language-Team: Korean <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/ko/>\n"
@@ -2762,7 +2762,7 @@ msgstr "vboxSnapshotXmlSnapshotPtr를 생성할 수 없습니다"
 
 #, c-format
 msgid "Cannot create autostart directory %s"
-msgstr "autostart 디렉터리 %s를 생성할 수 없음"
+msgstr "자동시작 디렉토리 %s를 생성 할 수 없음"
 
 #, c-format
 msgid "Cannot create daemon common directory '%s'"
@@ -2770,18 +2770,18 @@ msgstr "데몬의 공용 디렉토리 '%s'를 생성할 수 없습니다"
 
 #, c-format
 msgid "Cannot create directory '%s'"
-msgstr "디렉터리 '%s'를 생성 할 수 없습니다"
+msgstr "디렉토리 '%s'를 생성 할 수 없음"
 
 #, c-format
 msgid "Cannot create log directory '%s'"
-msgstr "로그 디렉터리 '%s'를 생성할 수 없음"
+msgstr "로그 디렉토리 '%s'를 생성 할 수 없음"
 
 msgid "Cannot create macvlan devices on this platform"
 msgstr "이 플랫폼에서 macvlan 장치를 생성할 수 없음"
 
 #, c-format
 msgid "Cannot create resctrl directory '%s'"
-msgstr "resctrl 디렉터리 '%s'를 생성 할 수 없습니다"
+msgstr "resctrl 디렉토리 '%s'를 생성 할 수 없음"
 
 #, c-format
 msgid "Cannot create socket '%s'"
@@ -3994,7 +3994,7 @@ msgstr "CDATA 요소를 생성 할 수 없습니다"
 
 #, c-format
 msgid "Could not create TPM directory %s"
-msgstr "TPM디렉터리 %s를 생성할 수 없음"
+msgstr "TPM 디렉토리 %s를 생성 할 수 없음"
 
 msgid "Could not create WQL filter"
 msgstr "WQL 필터를 생성 할 수 없습니다"
@@ -4888,7 +4888,7 @@ msgstr ""
 "음)이 예상됩니다"
 
 msgid "Could not set the source dir for the filesystem"
-msgstr "파일시스템에 대해 소스 디렉터리를 설정할 수 없음"
+msgstr "파일시스템을 위해 원천 디렉토리를 설정 할 수 없음"
 
 msgid "Could not set wsman namespace address for xmlNodeParam"
 msgstr ""
@@ -6875,9 +6875,7 @@ msgstr "호스트를 일시 중단할 스레드를 생성하지 못했습니다"
 
 #, c-format
 msgid "Failed to create unique directory with template '%s' for probing QEMU"
-msgstr ""
-"QEMU 검색을 위해 템플릿 '%s'을(를) 사용하여 고유한 디렉터리를 생성하지 못했습"
-"니다"
+msgstr "QEMU 검색을 위해 템플릿 '%s'을 사용하여 고유한 디렉토리를 생성하지 못했습니다"
 
 #, c-format
 msgid "Failed to create v1 controller %s for group"
@@ -7710,7 +7708,7 @@ msgstr "%s 설정을 구문 분석하는데 실패"
 
 #, c-format
 msgid "Failed to parse dir name '%s'"
-msgstr "디렉터리 이름 '%s'를 구문분숙 하는 데 실패"
+msgstr "디렉토리 이름 '%s'를 구문분석 하는 데 실패"
 
 msgid "Failed to parse domain description xml"
 msgstr "도메인 설명 xml을 구문 분석하는데 실패"
@@ -13330,7 +13328,7 @@ msgid "Print lease info for a given network"
 msgstr "주어진 네트워크에 대한 임대 정보를 출력합니다"
 
 msgid "Print the current directory."
-msgstr "현재 디렉터리를 출력."
+msgstr "현재 디렉토리를 출력합니다."
 
 msgid "Prints cpu stats of the node."
 msgstr "노드의 CPU 통계를 인쇄합니다."
@@ -16703,7 +16701,7 @@ msgid "Unable to change to %s"
 msgstr "%s로 변경 할 수 없습니다"
 
 msgid "Unable to change to root dir"
-msgstr "루트 디렉터리로 cd하기 실패"
+msgstr "루트 디렉토리로 변경 할 수 없음"
 
 #, c-format
 msgid "Unable to chdir(%s)"
@@ -21168,11 +21166,11 @@ msgid "cannot change to '%u' group"
 msgstr "'%u' 그룹으로 변경 할 수 없음"
 
 msgid "cannot change to root directory"
-msgstr "root 디렉터리로 변경 할 수 없습니다"
+msgstr "root 디렉토리로 변경 할 수 없습니다"
 
 #, c-format
 msgid "cannot change to root directory: %s"
-msgstr "루트 디렉터리로 cd하기 실패: %s"
+msgstr "루트 디렉토리로 변경 할 수 없음: %s"
 
 #, c-format
 msgid "cannot change to uid to '%u'"
@@ -21238,7 +21236,7 @@ msgid "cannot convert disk '%s' to bus/device index"
 msgstr "디스크 '%s'를 버스/장치 인덱스로 변환할 수 없음"
 
 msgid "cannot copy from volume to a directory volume"
-msgstr "볼륨을 디렉터리 볼륨으로 복사할 수 없습니다"
+msgstr "볼륨에서 디렉토리 볼륨으로 복사 할 수 없습니다"
 
 #, c-format
 msgid "cannot create %s"
@@ -21255,18 +21253,18 @@ msgstr "vboxSnapshotXmlPtr을 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create autostart directory %s"
-msgstr "autostart 디렉터리 %s를 생성할 수 없음"
+msgstr "자동시작 디렉토리 %s를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot create autostart directory '%s'"
-msgstr "autostart 디렉터리 '%s'를 생성할 수 없음"
+msgstr "자동시작 디렉토리 '%s'를 생성 할 수 없음"
 
 msgid "cannot create capabilities for libxenlight"
 msgstr "libxenlight에 대한 기능을 만들 수 없습니다"
 
 #, c-format
 msgid "cannot create checkpoint directory '%s'"
-msgstr "검사점 디렉터리 '%s'을(를) 만들 수 없습니다"
+msgstr "점검부분 디렉토리 '%s'를 생성 할 수 없습니다"
 
 msgid "cannot create checkpoint for inactive domain"
 msgstr "비활성 도메인에 대한 체크포인트를 생성할 수 없습니다"
@@ -21276,15 +21274,15 @@ msgstr "스냅샷이 있는 동안에는 체크포인트를 생성할 수 없습
 
 #, c-format
 msgid "cannot create config directory %s"
-msgstr "설정 디렉터리 %s를 만들 수 없음"
+msgstr "구성 디렉토리 %s를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot create config directory '%s'"
-msgstr "설정 디렉터리 '%s'를 만들 수 없음"
+msgstr "구성 디렉토리 '%s'를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot create directory %s"
-msgstr "디렉터리 %s를 생성할 수 없음"
+msgstr "디렉토리 %s를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot create file %s"
@@ -21296,7 +21294,7 @@ msgstr "파일 '%s'를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot create log directory %s"
-msgstr "로그 디렉터리 %s를 생성할 수 없음"
+msgstr "로그 디렉토리 %s를 생성 할 수 없음"
 
 msgid "cannot create logger for libxenlight, disabling driver"
 msgstr "libxenlight용 로거를 생성할 수 없습니다; 드라이버를 비활성화 합니다"
@@ -21310,14 +21308,14 @@ msgstr "터널링된 이전을 위한 파이프를 생성 할 수 없습니다"
 
 #, c-format
 msgid "cannot create snapshot directory '%s'"
-msgstr "스냅샷 디렉터리 '%s'을(를) 만들 수 없습니다"
+msgstr "스냅샷 디렉토리 '%s'를 생성 할 수 없음"
 
 msgid "cannot create snapshot while checkpoint exists"
 msgstr "체크포인트가 존재하는 동안 스냅샷을 생성할 수 없습니다"
 
 #, c-format
 msgid "cannot create state directory '%s'"
-msgstr "상태 디렉터리 '%s'를 생성 할 수 없음"
+msgstr "상태 디렉토리 '%s'를 생성 할 수 없음"
 
 #, c-format
 msgid "cannot decode CPU data for %s architecture"
@@ -22089,7 +22087,7 @@ msgstr "도메인 %d에 대한 cputime을 읽을 수 없음"
 
 #, c-format
 msgid "cannot read dir '%s'"
-msgstr "'%s' 디렉터리를 읽을 수 없음"
+msgstr "디렉토리 '%s'를 읽을 수 없음"
 
 #, c-format
 msgid "cannot read domain image '%s'"
@@ -22153,7 +22151,7 @@ msgstr "디렉토리 '%s'를 제거 할 수 없습니다"
 
 #, c-format
 msgid "cannot remove gluster volume dir '%s'"
-msgstr "Gluster 볼륨 디렉터리 '%s'를 제거 할 수 없습니다"
+msgstr "Gluster 볼륨 디렉토리 '%s'를 제거 할 수 없음"
 
 #, c-format
 msgid "cannot remove gluster volume file '%s'"
@@ -22548,7 +22546,7 @@ msgstr ""
 "실행 중인 도메인에 대한 노드 집합을 변경하려면 엄격한 numa 모드가 필요합니다"
 
 msgid "change the current directory"
-msgstr "현재 디렉터리를 변경함"
+msgstr "현재 디렉토리를 변경합니다"
 
 msgid "changed"
 msgstr "변경"
@@ -22676,7 +22674,7 @@ msgstr "자식이 오류를 쓰지 않았습니다(상태=%d)"
 
 #, c-format
 msgid "child failed to create directory '%s'"
-msgstr "자식이 디렉터리 '%s'를 만드는 데 실패"
+msgstr "자식이 디렉토리 '%s'를 생성하는 데 실패했습니다"
 
 #, c-format
 msgid "child process failed to create file '%s'"
@@ -23945,7 +23943,7 @@ msgstr ""
 "니다"
 
 msgid "directory to switch to (default: home or else root)"
-msgstr "변경하려는 디렉터리(디폴트: 홈 또는 다른 루트)"
+msgstr "변경하려는 디렉토리(기본값: home 또는 아니면 root)"
 
 msgid ""
 "dirty page rate calculation mode, either of these 3 options 'page-sampling, "
@@ -25378,7 +25376,7 @@ msgstr "ssh 호스트키 해시를 계산하는데 실패"
 
 #, c-format
 msgid "failed to change to directory '%s' in '%s'"
-msgstr "'%s'의 '%s' 디렉터리로 변경하지 못했습니다"
+msgstr "'%s'의 '%s' 디렉토리로 변경하는 데 실패함"
 
 msgid "failed to chown secret file"
 msgstr "비밀 파일을 찾아내지 못했습니다"
@@ -25476,7 +25474,7 @@ msgstr "복사 대상을 만들지 못했습니다"
 
 #, c-format
 msgid "failed to create directory '%s'"
-msgstr "디렉터리 '%s' 생성 실패"
+msgstr "디렉토리 '%s'를 생성하는 데 실패함"
 
 #, c-format
 msgid "failed to create dump dir '%s'"
@@ -26167,7 +26165,7 @@ msgstr "쿠키를 읽지 못했습니다"
 
 #, c-format
 msgid "failed to read directory '%s' in '%s'"
-msgstr "'%s'의 디렉터리 '%s'을(를) 읽지 못했습니다"
+msgstr "'%s'의 디렉토리 '%s'를 읽는 데 실패함"
 
 msgid "failed to read domain XML"
 msgstr "도메인 XML을 읽지 못했습니다"
@@ -32877,7 +32875,7 @@ msgid "print the admin server URI"
 msgstr "관리 서버 URI 인쇄"
 
 msgid "print the current directory"
-msgstr "현재 디렉터리를 출력"
+msgstr "현재 디렉토리를 출력합니다"
 
 msgid "print the domain's hostname"
 msgstr "도메인의 호스트 이름 인쇄"
@@ -34992,7 +34990,7 @@ msgstr "사용자 이름"
 
 #, c-format
 msgid "the virtiofs export directory '%s' does not exist"
-msgstr "virtiofs 내보내기 디렉터리 '%s'가 존재하지 않습니다"
+msgstr "virtiofs 내보내기 디렉토리 '%s'가 존재하지 않습니다"
 
 #, c-format
 msgid "the wwnn/wwpn for '%s' are assigned to an HBA"
