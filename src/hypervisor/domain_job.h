@@ -1,4 +1,6 @@
 /*
+ * domain_job.h: job functions shared between hypervisor drivers
+ *
  * Copyright (C) 2022 Red Hat, Inc.
  * SPDX-License-Identifier: LGPL-2.1-or-later
  */
@@ -122,7 +124,8 @@ struct _virDomainJobData {
     char *errmsg; /* optional error message for failed completed jobs */
 
     void *privateData; /* private data of hypervisors */
-    virDomainJobDataPrivateDataCallbacks *privateDataCb; /* callbacks of private data, hypervisor based */
+    virDomainJobDataPrivateDataCallbacks *privateDataCb; /* callbacks of private data,
+                                                            hypervisor based */
 };
 
 
