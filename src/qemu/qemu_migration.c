@@ -1017,9 +1017,6 @@ qemuMigrationSrcNBDStorageCopyBlockdevPrepareSource(virDomainDiskDef *disk,
 static int
 qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
                                        virDomainDiskDef *disk,
-                                       const char *jobname,
-                                       const char *sourcename,
-                                       bool persistjob,
                                        const char *host,
                                        int port,
                                        const char *socket,
@@ -1033,6 +1030,10 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     int mon_ret = 0;
     g_autoptr(virStorageSource) copysrc = NULL;
+    g_autofree char *diskAlias = qemuAliasDiskDriveFromDisk(disk);
+
+    if (!diskAlias)
+        return -1;
 
     VIR_DEBUG("starting blockdev mirror for disk=%s to host=%s", disk->dst, host);
 
@@ -1053,8 +1054,9 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
     mon_ret = qemuBlockStorageSourceAttachApply(qemuDomainGetMonitor(vm), data);
 
     if (mon_ret == 0)
-        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), jobname, persistjob,
-                                            sourcename, copysrc->nodeformat,
+        mon_ret = qemuMonitorBlockdevMirror(qemuDomainGetMonitor(vm), diskAlias, true,
+                                            qemuDomainDiskGetTopNodename(disk),
+                                            copysrc->nodeformat,
                                             mirror_speed, 0, 0, mirror_shallow,
                                             syncWrites);
 
@@ -1099,9 +1101,7 @@ qemuMigrationSrcNBDStorageCopyOne(virDomainObj *vm,
     qemuBlockJobSyncBegin(job);
 
     rc = qemuMigrationSrcNBDStorageCopyBlockdev(vm,
-                                                disk, diskAlias,
-                                                qemuDomainDiskGetTopNodename(disk),
-                                                true,
+                                                disk,
                                                 host, port, socket,
                                                 mirror_speed,
                                                 mirror_shallow,
