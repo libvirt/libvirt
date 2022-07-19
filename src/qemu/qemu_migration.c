@@ -4777,14 +4777,6 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
                 host = spec->dest.host.name;
             }
 
-            /* Allow migration with TLS only when we also support TLS for the NBD connection */
-            if (flags & VIR_MIGRATE_TLS &&
-                !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_DEL)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("NBD migration with TLS is not supported"));
-                goto error;
-            }
-
             if (qemuMigrationSrcNBDStorageCopy(driver, vm, mig,
                                                host,
                                                priv->migMaxBandwidth,
