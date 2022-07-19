@@ -3245,6 +3245,9 @@ qemuMigrationDstPrepareActive(virQEMUDriver *driver,
                                  migParams, mig->caps->automatic) < 0)
         goto error;
 
+    /* Save original migration parameters */
+    qemuDomainSaveStatus(vm);
+
     /* Migrations using TLS need to add the "tls-creds-x509" object and
      * set the migration TLS parameters */
     if (flags & VIR_MIGRATE_TLS) {
@@ -4820,6 +4823,9 @@ qemuMigrationSrcRun(virQEMUDriver *driver,
     if (qemuMigrationParamsCheck(driver, vm, VIR_ASYNC_JOB_MIGRATION_OUT,
                                  migParams, mig->caps->automatic) < 0)
         goto error;
+
+    /* Save original migration parameters */
+    qemuDomainSaveStatus(vm);
 
     if (flags & VIR_MIGRATE_TLS) {
         const char *hostname = NULL;
