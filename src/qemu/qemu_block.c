@@ -431,36 +431,24 @@ qemuBlockStorageSourceGetURI(virStorageSource *src)
 /**
  * qemuBlockStorageSourceBuildJSONSocketAddress
  * @host: the virStorageNetHostDef * definition to build
- * @legacy: use old field names/values
  *
  * Formats @hosts into a json object conforming to the 'SocketAddress' type
  * in qemu.
  *
- * For compatibility with old approach used in the gluster driver of old qemus
- * use the old spelling for TCP transport and, the path field of the unix socket.
- *
  * Returns a virJSONValue * for a single server.
  */
 static virJSONValue *
-qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host,
-                                             bool legacy)
+qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host)
 {
     g_autoptr(virJSONValue) server = NULL;
-    const char *transport;
-    const char *field;
     g_autofree char *port = NULL;
 
     switch ((virStorageNetHostTransport) host->transport) {
     case VIR_STORAGE_NET_HOST_TRANS_TCP:
-        if (legacy)
-            transport = "tcp";
-        else
-            transport = "inet";
-
         port = g_strdup_printf("%u", host->port);
 
         if (virJSONValueObjectAdd(&server,
-                                  "s:type", transport,
+                                  "s:type", "inet",
                                   "s:host", host->name,
                                   "s:port", port,
                                   NULL) < 0)
@@ -468,14 +456,9 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host,
         break;
 
     case VIR_STORAGE_NET_HOST_TRANS_UNIX:
-        if (legacy)
-            field = "s:socket";
-        else
-            field = "s:path";
-
         if (virJSONValueObjectAdd(&server,
                                   "s:type", "unix",
-                                  field, host->socket,
+                                  "s:path", host->socket,
                                   NULL) < 0)
             return NULL;
         break;
@@ -495,14 +478,12 @@ qemuBlockStorageSourceBuildJSONSocketAddress(virStorageNetHostDef *host,
 /**
  * qemuBlockStorageSourceBuildHostsJSONSocketAddress:
  * @src: disk storage source
- * @legacy: use 'tcp' instead of 'inet' for compatibility reasons
  *
  * Formats src->hosts into a json object conforming to the 'SocketAddress' type
  * in qemu.
  */
 static virJSONValue *
-qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSource *src,
-                                                  bool legacy)
+qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSource *src)
 {
     g_autoptr(virJSONValue) servers = NULL;
     g_autoptr(virJSONValue) server = NULL;
@@ -514,7 +495,7 @@ qemuBlockStorageSourceBuildHostsJSONSocketAddress(virStorageSource *src,
     for (i = 0; i < src->nhosts; i++) {
         host = src->hosts + i;
 
-        if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(host, legacy)))
+        if (!(server = qemuBlockStorageSourceBuildJSONSocketAddress(host)))
               return NULL;
 
         if (virJSONValueArrayAppend(servers, &server) < 0)
@@ -613,13 +594,12 @@ qemuBlockStorageSourceBuildHostsJSONInetSocketAddress(virStorageSource *src)
 
 static virJSONValue *
 qemuBlockStorageSourceGetGlusterProps(virStorageSource *src,
-                                      bool legacy,
                                       bool onlytarget)
 {
     g_autoptr(virJSONValue) servers = NULL;
     g_autoptr(virJSONValue) props = NULL;
 
-    if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src, legacy)))
+    if (!(servers = qemuBlockStorageSourceBuildHostsJSONSocketAddress(src)))
         return NULL;
 
      /* { driver:"gluster",
@@ -850,9 +830,7 @@ qemuBlockStorageSourceGetNBDProps(virStorageSource *src,
         return NULL;
     }
 
-    serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0],
-                                                               false);
-    if (!serverprops)
+    if (!(serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0])))
         return NULL;
 
     if (onlytarget) {
@@ -951,9 +929,7 @@ qemuBlockStorageSourceGetSheepdogProps(virStorageSource *src)
         return NULL;
     }
 
-    serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0],
-                                                               false);
-    if (!serverprops)
+    if (!(serverprops = qemuBlockStorageSourceBuildJSONSocketAddress(&src->hosts[0])))
         return NULL;
 
     /* libvirt does not support the 'snap-id' and 'tag' properties */
@@ -1191,7 +1167,7 @@ qemuBlockStorageSourceGetBackendProps(virStorageSource *src,
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             driver = "gluster";
-            if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src, legacy, onlytarget)))
+            if (!(fileprops = qemuBlockStorageSourceGetGlusterProps(src, onlytarget)))
                 return NULL;
             break;
 
@@ -2611,7 +2587,7 @@ qemuBlockStorageSourceCreateGetStorageProps(virStorageSource *src,
         switch ((virStorageNetProtocol) src->protocol) {
         case VIR_STORAGE_NET_PROTOCOL_GLUSTER:
             driver = "gluster";
-            if (!(location = qemuBlockStorageSourceGetGlusterProps(src, false, false)))
+            if (!(location = qemuBlockStorageSourceGetGlusterProps(src, false)))
                 return -1;
             break;
 
