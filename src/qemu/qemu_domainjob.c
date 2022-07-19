@@ -875,7 +875,6 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     unsigned long long now;
     unsigned long long then;
     bool nested = job == VIR_JOB_ASYNC_NESTED;
-    bool async = job == VIR_JOB_ASYNC;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     const char *blocker = NULL;
     const char *agentBlocker = NULL;
@@ -903,7 +902,8 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     then = now + QEMU_JOB_WAIT_TIME;
 
  retry:
-    if ((!async && job != VIR_JOB_DESTROY) &&
+    if (job != VIR_JOB_ASYNC &&
+        job != VIR_JOB_DESTROY &&
         cfg->maxQueuedJobs &&
         priv->job.jobsQueued > cfg->maxQueuedJobs) {
         goto error;
