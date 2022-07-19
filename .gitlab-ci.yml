@@ -67,9 +67,9 @@ website:
   before_script:
     - *script_variables
   script:
-    - meson setup build --werror --prefix=$(pwd)/vroot || (cat build/meson-logs/meson-log.txt && exit 1)
-    - ninja -C build install-web
-    - mv vroot/share/doc/libvirt/html/ website
+    - meson setup build --werror -Dsystem=true || (cat build/meson-logs/meson-log.txt && exit 1)
+    - DESTDIR=$(pwd)/install ninja -C build install-web
+    - mv install/usr/share/doc/libvirt/html/ website
   artifacts:
     expose_as: 'Website'
     name: 'website'
