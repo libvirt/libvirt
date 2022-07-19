@@ -873,50 +873,6 @@ qemuProcessHandleIOError(qemuMonitor *mon G_GNUC_UNUSED,
     virObjectEventStateQueue(driver->domainEventState, lifecycleEvent);
 }
 
-static void
-qemuProcessHandleBlockJob(qemuMonitor *mon G_GNUC_UNUSED,
-                          virDomainObj *vm,
-                          const char *diskAlias,
-                          int type,
-                          int status,
-                          const char *error)
-{
-    qemuDomainObjPrivate *priv;
-    virDomainDiskDef *disk;
-    g_autoptr(qemuBlockJobData) job = NULL;
-
-    virObjectLock(vm);
-
-    priv = vm->privateData;
-
-    /* with QEMU_CAPS_BLOCKDEV we handle block job events via JOB_STATUS_CHANGE */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        goto cleanup;
-
-    VIR_DEBUG("Block job for device %s (domain: %p,%s) type %d status %d",
-              diskAlias, vm, vm->def->name, type, status);
-
-    if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, diskAlias, NULL)))
-        goto cleanup;
-
-    job = qemuBlockJobDiskGetJob(disk);
-
-    if (job && job->synchronous) {
-        /* We have a SYNC API waiting for this event, dispatch it back */
-        job->newstate = status;
-        VIR_FREE(job->errmsg);
-        job->errmsg = g_strdup(error);
-        virDomainObjBroadcast(vm);
-    } else {
-        /* there is no waiting SYNC API, dispatch the update to a thread */
-        qemuProcessEventSubmit(vm, QEMU_PROCESS_EVENT_BLOCK_JOB,
-                               type, status, g_strdup(diskAlias));
-    }
-
- cleanup:
-    virObjectUnlock(vm);
-}
-
 
 static void
 qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
@@ -934,11 +890,6 @@ qemuProcessHandleJobStatusChange(qemuMonitor *mon G_GNUC_UNUSED,
     VIR_DEBUG("job '%s'(domain: %p,%s) state changed to '%s'(%d)",
               jobname, vm, vm->def->name,
               qemuMonitorJobStatusTypeToString(status), status);
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        VIR_DEBUG("job '%s' handled by old blockjob handler", jobname);
-        goto cleanup;
-    }
 
     if ((jobnewstate = qemuBlockjobConvertMonitorStatus(status)) == QEMU_BLOCKJOB_STATE_LAST)
         goto cleanup;
@@ -1822,7 +1773,6 @@ static qemuMonitorCallbacks monitorCallbacks = {
     .domainWatchdog = qemuProcessHandleWatchdog,
     .domainIOError = qemuProcessHandleIOError,
     .domainGraphics = qemuProcessHandleGraphics,
-    .domainBlockJob = qemuProcessHandleBlockJob,
     .jobStatusChange = qemuProcessHandleJobStatusChange,
     .domainTrayChange = qemuProcessHandleTrayChange,
     .domainPMWakeup = qemuProcessHandlePMWakeup,
@@ -6812,10 +6762,8 @@ qemuProcessPrepareHostStorage(virQEMUDriver *driver,
                               virDomainObj *vm,
                               unsigned int flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     bool cold_boot = flags & VIR_QEMU_PROCESS_START_COLD;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     for (i = vm->def->ndisks; i > 0; i--) {
         size_t idx = i - 1;
@@ -6825,7 +6773,7 @@ qemuProcessPrepareHostStorage(virQEMUDriver *driver,
             continue;
 
         /* backing chain needs to be redetected if we aren't using blockdev */
-        if (!blockdev || qemuDiskBusIsSD(disk->bus))
+        if (qemuDiskBusIsSD(disk->bus))
             virStorageSourceBackingStoreClear(disk->src);
 
         /*
@@ -7271,12 +7219,8 @@ static int
 qemuProcessSetupDiskThrottlingBlockdev(virDomainObj *vm,
                                        virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     size_t i;
     int ret = -1;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        return 0;
 
     VIR_DEBUG("Setting up disk throttling for -blockdev via block_set_io_throttle");
 
@@ -7439,11 +7383,6 @@ static int
 qemuProcessSetupDisksTransient(virDomainObj *vm,
                                virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!(virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)))
-        return 0;
-
     if (qemuProcessSetupDisksTransientSnapshot(vm, asyncJob) < 0)
         return -1;
 
@@ -7863,8 +7802,6 @@ qemuProcessRefreshState(virQEMUDriver *driver,
                         virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-
     VIR_DEBUG("Fetching list of active devices");
     if (qemuDomainUpdateDeviceList(vm, asyncJob) < 0)
         return -1;
@@ -7879,9 +7816,6 @@ qemuProcessRefreshState(virQEMUDriver *driver,
 
     VIR_DEBUG("Updating disk data");
     if (qemuProcessRefreshDisks(vm, asyncJob) < 0)
-        return -1;
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        qemuBlockNodeNamesDetect(vm, asyncJob) < 0)
         return -1;
 
     return 0;
@@ -8729,99 +8663,6 @@ qemuProcessRefreshCPU(virQEMUDriver *driver,
 }
 
 
-static int
-qemuProcessRefreshLegacyBlockjob(void *payload,
-                                 const char *name,
-                                 void *opaque)
-{
-    const char *jobname = name;
-    virDomainObj *vm = opaque;
-    qemuMonitorBlockJobInfo *info = payload;
-    virDomainDiskDef *disk;
-    qemuBlockJobData *job;
-    qemuBlockJobType jobtype = info->type;
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (!(disk = qemuProcessFindDomainDiskByAliasOrQOM(vm, jobname, jobname))) {
-        VIR_DEBUG("could not find disk for block job '%s'", jobname);
-        return 0;
-    }
-
-    if (jobtype == QEMU_BLOCKJOB_TYPE_COMMIT &&
-        disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_ACTIVE_COMMIT)
-        jobtype = disk->mirrorJob;
-
-    if (!(job = qemuBlockJobDiskNew(vm, disk, jobtype, jobname)))
-        return -1;
-
-    if (disk->mirror) {
-        if ((!info->ready_present && info->end == info->cur) ||
-            info->ready) {
-            disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-            job->state = VIR_DOMAIN_BLOCK_JOB_READY;
-        }
-
-        /* Pre-blockdev block copy labelled the chain of the mirrored device
-         * just before pivoting. At that point it was no longer known whether
-         * it's even necessary (e.g. disk is being reused). This code fixes
-         * the labelling in case the job was started in a libvirt version
-         * which did not label the chain when the block copy is being started.
-         * Note that we can't do much on failure. */
-        if (disk->mirrorJob == VIR_DOMAIN_BLOCK_JOB_TYPE_COPY) {
-            if (qemuDomainDetermineDiskChain(priv->driver, vm, disk,
-                                             disk->mirror, true) < 0)
-                goto cleanup;
-
-            if (disk->mirror->format &&
-                disk->mirror->format != VIR_STORAGE_FILE_RAW &&
-                (qemuDomainNamespaceSetupDisk(vm, disk->mirror, NULL) < 0 ||
-                 qemuSetupImageChainCgroup(vm, disk->mirror) < 0 ||
-                 qemuSecuritySetImageLabel(priv->driver, vm, disk->mirror,
-                                           true, true) < 0))
-                goto cleanup;
-        }
-    }
-
-    qemuBlockJobStarted(job, vm);
-
- cleanup:
-    qemuBlockJobStartupFinalize(vm, job);
-
-    return 0;
-}
-
-
-static int
-qemuProcessRefreshLegacyBlockjobs(virDomainObj *vm)
-{
-    g_autoptr(GHashTable) blockJobs = NULL;
-
-    qemuDomainObjEnterMonitor(vm);
-    blockJobs = qemuMonitorGetAllBlockJobInfo(qemuDomainGetMonitor(vm), true);
-    qemuDomainObjExitMonitor(vm);
-
-    if (!blockJobs)
-        return -1;
-
-    if (virHashForEach(blockJobs, qemuProcessRefreshLegacyBlockjob, vm) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
-qemuProcessRefreshBlockjobs(virDomainObj *vm)
-{
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        return qemuBlockJobRefreshJobs(vm);
-
-    return qemuProcessRefreshLegacyBlockjobs(vm);
-}
-
-
 struct qemuProcessReconnectData {
     virQEMUDriver *driver;
     virDomainObj *obj;
@@ -8927,19 +8768,6 @@ qemuProcessReconnect(void *opaque)
 
         if (virDomainDiskTranslateSourcePool(disk) < 0)
             goto error;
-
-        /* backing chains need to be refreshed only if they could change */
-        if (priv->reconnectBlockjobs != VIR_TRISTATE_BOOL_NO &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-            /* This should be the only place that calls
-             * qemuDomainDetermineDiskChain with @report_broken == false
-             * to guarantee best-effort domain reconnect */
-            virStorageSourceBackingStoreClear(disk->src);
-            if (qemuDomainDetermineDiskChain(driver, obj, disk, NULL, false) < 0)
-                goto error;
-        } else {
-            VIR_DEBUG("skipping backing chain detection for '%s'", disk->dst);
-        }
     }
 
     for (i = 0; i < obj->def->ngraphics; i++) {
@@ -9029,10 +8857,6 @@ qemuProcessReconnect(void *opaque)
             QEMU_DOMAIN_DISK_PRIVATE(disk)->transientOverlayCreated = true;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        qemuBlockNodeNamesDetect(obj, VIR_ASYNC_JOB_NONE) < 0)
-        goto error;
-
     if (qemuRefreshVirtioChannelState(driver, obj, VIR_ASYNC_JOB_NONE) < 0)
         goto error;
 
@@ -9045,7 +8869,7 @@ qemuProcessReconnect(void *opaque)
     if (qemuProcessRecoverJob(driver, obj, &oldjob, &stopFlags) < 0)
         goto error;
 
-    if (qemuProcessRefreshBlockjobs(obj) < 0)
+    if (qemuBlockJobRefreshJobs(obj) < 0)
         goto error;
 
     if (qemuProcessUpdateDevices(driver, obj) < 0)
