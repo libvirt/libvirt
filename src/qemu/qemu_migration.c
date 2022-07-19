@@ -6385,7 +6385,7 @@ qemuMigrationDstComplete(virQEMUDriver *driver,
                          virDomainObj *vm,
                          bool inPostCopy,
                          virDomainAsyncJob asyncJob,
-                         qemuDomainJobObj *job)
+                         virDomainJobObj *job)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = job->privateData;

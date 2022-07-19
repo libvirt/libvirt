@@ -151,8 +151,8 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
 
 
 int
-qemuDomainObjInitJob(qemuDomainJobObj *job,
-                     qemuDomainObjPrivateJobCallbacks *cb)
+qemuDomainObjInitJob(virDomainJobObj *job,
+                     virDomainObjPrivateJobCallbacks *cb)
 {
     memset(job, 0, sizeof(*job));
     job->cb = cb;
@@ -177,7 +177,7 @@ qemuDomainObjInitJob(qemuDomainJobObj *job,
 
 
 static void
-qemuDomainObjResetJob(qemuDomainJobObj *job)
+qemuDomainObjResetJob(virDomainJobObj *job)
 {
     job->active = VIR_JOB_NONE;
     job->owner = 0;
@@ -187,7 +187,7 @@ qemuDomainObjResetJob(qemuDomainJobObj *job)
 
 
 static void
-qemuDomainObjResetAgentJob(qemuDomainJobObj *job)
+qemuDomainObjResetAgentJob(virDomainJobObj *job)
 {
     job->agentActive = VIR_AGENT_JOB_NONE;
     job->agentOwner = 0;
@@ -197,7 +197,7 @@ qemuDomainObjResetAgentJob(qemuDomainJobObj *job)
 
 
 static void
-qemuDomainObjResetAsyncJob(qemuDomainJobObj *job)
+qemuDomainObjResetAsyncJob(virDomainJobObj *job)
 {
     job->asyncJob = VIR_ASYNC_JOB_NONE;
     job->asyncOwner = 0;
@@ -226,7 +226,7 @@ qemuDomainObjResetAsyncJob(qemuDomainJobObj *job)
  */
 int
 qemuDomainObjPreserveJob(virDomainObj *obj,
-                         qemuDomainJobObj *job)
+                         virDomainJobObj *job)
 {
     qemuDomainObjPrivate *priv = obj->privateData;
 
@@ -262,7 +262,7 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
                              unsigned long long allowedJobs)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobObj *job = &priv->job;
+    virDomainJobObj *job = &priv->job;
 
     VIR_DEBUG("Restoring %s async job for domain %s",
               virDomainAsyncJobTypeToString(asyncJob), vm->def->name);
@@ -287,7 +287,7 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
 
 
 void
-qemuDomainObjClearJob(qemuDomainJobObj *job)
+qemuDomainObjClearJob(virDomainJobObj *job)
 {
     qemuDomainObjResetJob(job);
     qemuDomainObjResetAsyncJob(job);
@@ -820,7 +820,7 @@ qemuDomainObjReleaseAsyncJob(virDomainObj *obj)
 }
 
 static bool
-qemuDomainNestedJobAllowed(qemuDomainJobObj *jobs, virDomainJob newJob)
+qemuDomainNestedJobAllowed(virDomainJobObj *jobs, virDomainJob newJob)
 {
     return !jobs->asyncJob ||
            newJob == VIR_JOB_NONE ||
@@ -828,7 +828,7 @@ qemuDomainNestedJobAllowed(qemuDomainJobObj *jobs, virDomainJob newJob)
 }
 
 static bool
-qemuDomainObjCanSetJob(qemuDomainJobObj *job,
+qemuDomainObjCanSetJob(virDomainJobObj *job,
                        virDomainJob newJob,
                        virDomainAgentJob newAgentJob)
 {
@@ -1308,7 +1308,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
                                 xmlXPathContextPtr ctxt)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainJobObj *job = &priv->job;
+    virDomainJobObj *job = &priv->job;
     VIR_XPATH_NODE_AUTORESTORE(ctxt)
     g_autofree char *tmp = NULL;
 

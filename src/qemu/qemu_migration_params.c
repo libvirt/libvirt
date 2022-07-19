@@ -1181,7 +1181,7 @@ qemuMigrationParamsGetULL(qemuMigrationParams *migParams,
  * qemuMigrationParamsCheck:
  *
  * Check supported migration parameters and keep their original values in
- * qemuDomainJobObj so that we can properly reset them at the end of migration.
+ * virDomainJobObj so that we can properly reset them at the end of migration.
  * Reports an error if any of the currently used capabilities in @migParams
  * are unsupported by QEMU.
  */

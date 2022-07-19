@@ -9,6 +9,9 @@
 
 #include "internal.h"
 #include "virenum.h"
+#include "virthread.h"
+#include "virbuffer.h"
+#include "domain_conf.h"
 
 #define JOB_MASK(job)                  (job == 0 ? 0 : 1 << (job - 1))
 #define VIR_JOB_DEFAULT_MASK \
@@ -101,6 +104,7 @@ struct _virDomainJobDataPrivateDataCallbacks {
     virDomainJobDataPrivateDataFree freePrivateData;
 };
 
+
 typedef struct _virDomainJobData virDomainJobData;
 struct _virDomainJobData {
     virDomainJobType jobType;
@@ -142,3 +146,61 @@ virDomainJobDataCopy(virDomainJobData *data);
 
 virDomainJobType
 virDomainJobStatusToType(virDomainJobStatus status);
+
+
+typedef struct _virDomainObjPrivateJobCallbacks virDomainObjPrivateJobCallbacks;
+
+typedef struct _virDomainJobObj virDomainJobObj;
+struct _virDomainJobObj {
+    virCond cond;               /* Use to coordinate jobs */
+
+    int jobsQueued;
+
+    /* The following members are for VIR_JOB_* */
+    virDomainJob active;        /* currently running job */
+    unsigned long long owner;           /* Thread id which set current job */
+    char *ownerAPI;                     /* The API which owns the job */
+    unsigned long long started;         /* When the current job started */
+
+    /* The following members are for VIR_AGENT_JOB_* */
+    virDomainAgentJob agentActive;     /* Currently running agent job */
+    unsigned long long agentOwner;      /* Thread id which set current agent job */
+    char *agentOwnerAPI;                /* The API which owns the agent job */
+    unsigned long long agentStarted;    /* When the current agent job started */
+
+    /* The following members are for VIR_ASYNC_JOB_* */
+    virCond asyncCond;                  /* Use to coordinate with async jobs */
+    virDomainAsyncJob asyncJob;        /* Currently active async job */
+    unsigned long long asyncOwner;      /* Thread which set current async job */
+    char *asyncOwnerAPI;                /* The API which owns the async job */
+    unsigned long long asyncStarted;    /* When the current async job started */
+    int phase;                          /* Job phase (mainly for migrations) */
+    unsigned long long mask;            /* Jobs allowed during async job */
+    virDomainJobData *current;       /* async job progress data */
+    virDomainJobData *completed;     /* statistics data of a recently completed job */
+    bool abortJob;                      /* abort of the job requested */
+    char *error;                        /* job event completion error */
+    unsigned long apiFlags; /* flags passed to the API which started the async job */
+
+    void *privateData;                  /* job specific collection of data */
+    virDomainObjPrivateJobCallbacks *cb;
+};
+
+
+typedef void *(*virDomainObjPrivateJobAlloc)(void);
+typedef void (*virDomainObjPrivateJobFree)(void *);
+typedef void (*virDomainObjPrivateJobReset)(void *);
+typedef int (*virDomainObjPrivateJobFormat)(virBuffer *,
+                                            virDomainJobObj *,
+                                            virDomainObj *);
+typedef int (*virDomainObjPrivateJobParse)(xmlXPathContextPtr,
+                                           virDomainJobObj *,
+                                           virDomainObj *);
+
+struct _virDomainObjPrivateJobCallbacks {
+   virDomainObjPrivateJobAlloc allocJobPrivate;
+   virDomainObjPrivateJobFree freeJobPrivate;
+   virDomainObjPrivateJobReset resetJobPrivate;
+   virDomainObjPrivateJobFormat formatJob;
+   virDomainObjPrivateJobParse parseJob;
+};

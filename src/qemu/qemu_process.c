@@ -3457,7 +3457,7 @@ qemuProcessCleanupMigrationJob(virQEMUDriver *driver,
 
 static void
 qemuProcessRestoreMigrationJob(virDomainObj *vm,
-                               qemuDomainJobObj *job)
+                               virDomainJobObj *job)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainJobPrivate *jobPriv = job->privateData;
@@ -3496,7 +3496,7 @@ qemuProcessRestoreMigrationJob(virDomainObj *vm,
 static int
 qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
                               virDomainObj *vm,
-                              qemuDomainJobObj *job,
+                              virDomainJobObj *job,
                               virDomainState state)
 {
     VIR_DEBUG("Active incoming migration in phase %s",
@@ -3567,7 +3567,7 @@ qemuProcessRecoverMigrationIn(virQEMUDriver *driver,
 static int
 qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
                                virDomainObj *vm,
-                               qemuDomainJobObj *job,
+                               virDomainJobObj *job,
                                virDomainJobStatus migStatus,
                                virDomainState state,
                                int reason,
@@ -3673,7 +3673,7 @@ qemuProcessRecoverMigrationOut(virQEMUDriver *driver,
 static int
 qemuProcessRecoverMigration(virQEMUDriver *driver,
                             virDomainObj *vm,
-                            qemuDomainJobObj *job,
+                            virDomainJobObj *job,
                             unsigned int *stopFlags)
 {
     virDomainJobStatus migStatus = VIR_DOMAIN_JOB_STATUS_NONE;
@@ -3735,7 +3735,7 @@ qemuProcessRecoverMigration(virQEMUDriver *driver,
 static int
 qemuProcessRecoverJob(virQEMUDriver *driver,
                       virDomainObj *vm,
-                      qemuDomainJobObj *job,
+                      virDomainJobObj *job,
                       unsigned int *stopFlags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -8866,7 +8866,7 @@ qemuProcessReconnect(void *opaque)
     virQEMUDriver *driver = data->driver;
     virDomainObj *obj = data->obj;
     qemuDomainObjPrivate *priv;
-    g_auto(qemuDomainJobObj) oldjob = {
+    g_auto(virDomainJobObj) oldjob = {
       .cb = NULL,
     };
     int state;

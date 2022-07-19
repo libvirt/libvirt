@@ -99,7 +99,7 @@ typedef struct _qemuDomainObjPrivate qemuDomainObjPrivate;
 struct _qemuDomainObjPrivate {
     virQEMUDriver *driver;
 
-    qemuDomainJobObj job;
+    virDomainJobObj job;
 
     virBitmap *namespaces;
 

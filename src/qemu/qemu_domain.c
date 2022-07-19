@@ -199,7 +199,7 @@ qemuDomainObjPrivateXMLFormatMigrateTempBitmap(virBuffer *buf,
 
 static int
 qemuDomainFormatJobPrivate(virBuffer *buf,
-                           qemuDomainJobObj *job,
+                           virDomainJobObj *job,
                            virDomainObj *vm)
 {
     qemuDomainJobPrivate *priv = job->privateData;
@@ -342,7 +342,7 @@ qemuDomainObjPrivateXMLParseMigrateTempBitmap(qemuDomainJobPrivate *jobPriv,
 
 static int
 qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
-                          qemuDomainJobObj *job,
+                          virDomainJobObj *job,
                           virDomainObj *vm)
 {
     qemuDomainJobPrivate *priv = job->privateData;
@@ -360,7 +360,7 @@ qemuDomainParseJobPrivate(xmlXPathContextPtr ctxt,
 }
 
 
-static qemuDomainObjPrivateJobCallbacks qemuPrivateJobCallbacks = {
+static virDomainObjPrivateJobCallbacks qemuPrivateJobCallbacks = {
     .allocJobPrivate = qemuJobAllocPrivate,
     .freeJobPrivate = qemuJobFreePrivate,
     .resetJobPrivate = qemuJobResetPrivate,

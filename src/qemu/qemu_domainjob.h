@@ -60,62 +60,6 @@ struct _qemuDomainJobDataPrivate {
 
 extern virDomainJobDataPrivateDataCallbacks qemuJobDataPrivateDataCallbacks;
 
-typedef struct _qemuDomainJobObj qemuDomainJobObj;
-
-typedef void *(*qemuDomainObjPrivateJobAlloc)(void);
-typedef void (*qemuDomainObjPrivateJobFree)(void *);
-typedef void (*qemuDomainObjPrivateJobReset)(void *);
-typedef int (*qemuDomainObjPrivateJobFormat)(virBuffer *,
-                                             qemuDomainJobObj *,
-                                             virDomainObj *);
-typedef int (*qemuDomainObjPrivateJobParse)(xmlXPathContextPtr,
-                                            qemuDomainJobObj *,
-                                            virDomainObj *);
-
-typedef struct _qemuDomainObjPrivateJobCallbacks qemuDomainObjPrivateJobCallbacks;
-struct _qemuDomainObjPrivateJobCallbacks {
-   qemuDomainObjPrivateJobAlloc allocJobPrivate;
-   qemuDomainObjPrivateJobFree freeJobPrivate;
-   qemuDomainObjPrivateJobReset resetJobPrivate;
-   qemuDomainObjPrivateJobFormat formatJob;
-   qemuDomainObjPrivateJobParse parseJob;
-};
-
-struct _qemuDomainJobObj {
-    virCond cond;                       /* Use to coordinate jobs */
-
-    int jobsQueued;
-
-    /* The following members are for VIR_JOB_* */
-    virDomainJob active;               /* Currently running job */
-    unsigned long long owner;           /* Thread id which set current job */
-    char *ownerAPI;                     /* The API which owns the job */
-    unsigned long long started;         /* When the current job started */
-
-    /* The following members are for VIR_AGENT_JOB_* */
-    virDomainAgentJob agentActive;     /* Currently running agent job */
-    unsigned long long agentOwner;      /* Thread id which set current agent job */
-    char *agentOwnerAPI;                /* The API which owns the agent job */
-    unsigned long long agentStarted;    /* When the current agent job started */
-
-    /* The following members are for VIR_ASYNC_JOB_* */
-    virCond asyncCond;                  /* Use to coordinate with async jobs */
-    virDomainAsyncJob asyncJob;        /* Currently active async job */
-    unsigned long long asyncOwner;      /* Thread which set current async job */
-    char *asyncOwnerAPI;                /* The API which owns the async job */
-    unsigned long long asyncStarted;    /* When the current async job started */
-    int phase;                          /* Job phase (mainly for migrations) */
-    unsigned long long mask;            /* Jobs allowed during async job */
-    virDomainJobData *current;       /* async job progress data */
-    virDomainJobData *completed;     /* statistics data of a recently completed job */
-    bool abortJob;                      /* abort of the job requested */
-    char *error;                        /* job event completion error */
-    unsigned long apiFlags; /* flags passed to the API which started the async job */
-
-    void *privateData;                  /* job specific collection of data */
-    qemuDomainObjPrivateJobCallbacks *cb;
-};
-
 void qemuDomainJobSetStatsType(virDomainJobData *jobData,
                                qemuDomainJobStatsType type);
 
@@ -162,7 +106,7 @@ qemuDomainObjStartJobPhase(virDomainObj *obj,
 void qemuDomainObjSetAsyncJobMask(virDomainObj *obj,
                                   unsigned long long allowedJobs);
 int qemuDomainObjPreserveJob(virDomainObj *obj,
-                             qemuDomainJobObj *job);
+                             virDomainJobObj *job);
 void
 qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
                              virDomainAsyncJob asyncJob,
@@ -191,12 +135,12 @@ int qemuDomainJobDataToParams(virDomainJobData *jobData,
 
 bool qemuDomainTrackJob(virDomainJob job);
 
-void qemuDomainObjClearJob(qemuDomainJobObj *job);
-G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(qemuDomainJobObj, qemuDomainObjClearJob);
+void qemuDomainObjClearJob(virDomainJobObj *job);
+G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virDomainJobObj, qemuDomainObjClearJob);
 
 int
-qemuDomainObjInitJob(qemuDomainJobObj *job,
-                     qemuDomainObjPrivateJobCallbacks *cb);
+qemuDomainObjInitJob(virDomainJobObj *job,
+                     virDomainObjPrivateJobCallbacks *cb);
 
 int
 qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
