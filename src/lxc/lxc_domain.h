@@ -54,13 +54,6 @@ struct _lxcDomainDef {
 };
 
 
-struct virLXCDomainJobObj {
-    virCond cond;                       /* Use to coordinate jobs */
-    virDomainJob active;                /* Currently running job */
-    int owner;                          /* Thread which set current job */
-};
-
-
 typedef struct _virLXCDomainObjPrivate virLXCDomainObjPrivate;
 struct _virLXCDomainObjPrivate {
     virLXCDriver *driver;
@@ -74,7 +67,7 @@ struct _virLXCDomainObjPrivate {
     virCgroup *cgroup;
     char *machineName;
 
-    struct virLXCDomainJobObj job;
+    virDomainJobObj job;
 };
 
 extern virXMLNamespace virLXCDriverDomainXMLNamespace;
