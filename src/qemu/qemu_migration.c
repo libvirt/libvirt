@@ -612,7 +612,7 @@ qemuMigrationDstStartNBDServer(virQEMUDriver *driver,
             server_started = true;
         }
 
-        if (qemuBlockExportAddNBD(vm, diskAlias, disk->src, diskAlias, true, NULL) < 0)
+        if (qemuBlockExportAddNBD(vm, disk->src, diskAlias, true, NULL) < 0)
             goto exit_monitor;
         qemuDomainObjExitMonitor(vm);
     }

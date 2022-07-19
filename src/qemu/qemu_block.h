@@ -289,7 +289,6 @@ qemuBlockExportGetNBDProps(const char *nodename,
 
 int
 qemuBlockExportAddNBD(virDomainObj *vm,
-                      const char *drivealias,
                       virStorageSource *src,
                       const char *exportname,
                       bool writable,

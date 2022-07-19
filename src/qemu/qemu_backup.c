@@ -536,7 +536,7 @@ qemuBackupBeginPullExportDisks(virDomainObj *vm,
         if (!dd->backupdisk->exportname)
             dd->backupdisk->exportname = g_strdup(dd->domdisk->dst);
 
-        if (qemuBlockExportAddNBD(vm, NULL,
+        if (qemuBlockExportAddNBD(vm,
                                   dd->store,
                                   dd->backupdisk->exportname,
                                   false,
