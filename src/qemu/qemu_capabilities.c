@@ -487,7 +487,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
 
               /* 300 */
               "hda-output", /* QEMU_CAPS_HDA_OUTPUT */
-              "blockdev-del", /* QEMU_CAPS_BLOCKDEV_DEL */
+              "blockdev-del", /* X_QEMU_CAPS_BLOCKDEV_DEL */
               "vmgenid", /* QEMU_CAPS_DEVICE_VMGENID */
               "vhost-vsock", /* QEMU_CAPS_DEVICE_VHOST_VSOCK */
               "chardev-fd-pass", /* X_QEMU_CAPS_CHARDEV_FD_PASS_COMMANDLINE */
@@ -1212,7 +1212,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
     { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
     { "qom-list-properties", QEMU_CAPS_QOM_LIST_PROPERTIES },
-    { "blockdev-del", QEMU_CAPS_BLOCKDEV_DEL },
     { "query-current-machine", QEMU_CAPS_QUERY_CURRENT_MACHINE },
     { "block-dirty-bitmap-merge", QEMU_CAPS_BITMAP_MERGE },
     { "query-cpu-model-baseline", QEMU_CAPS_QUERY_CPU_MODEL_BASELINE },

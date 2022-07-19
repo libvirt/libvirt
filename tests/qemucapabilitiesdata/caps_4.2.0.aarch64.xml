@@ -107,7 +107,6 @@
   <flag name='memory-backend-file.discard-data'/>
   <flag name='screendump_device'/>
   <flag name='hda-output'/>
-  <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>

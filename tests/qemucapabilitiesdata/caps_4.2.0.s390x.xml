@@ -75,7 +75,6 @@
   <flag name='virtual-css-bridge.cssid-unrestricted'/>
   <flag name='vfio-ccw'/>
   <flag name='screendump_device'/>
-  <flag name='blockdev-del'/>
   <flag name='vhost-vsock'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
