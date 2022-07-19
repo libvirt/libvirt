@@ -1072,44 +1072,6 @@ qemuMigrationSrcNBDStorageCopyBlockdev(virDomainObj *vm,
 
 
 static int
-qemuMigrationSrcNBDStorageCopyDriveMirror(virDomainObj *vm,
-                                          const char *diskAlias,
-                                          const char *host,
-                                          int port,
-                                          const char *socket,
-                                          unsigned long long mirror_speed,
-                                          bool mirror_shallow)
-{
-    g_autofree char *nbd_dest = NULL;
-    int mon_ret;
-
-    if (socket) {
-        nbd_dest = g_strdup_printf("nbd+unix:///%s?socket=%s",
-                                   diskAlias, socket);
-    } else if (strchr(host, ':')) {
-        nbd_dest = g_strdup_printf("nbd:[%s]:%d:exportname=%s", host, port,
-                                   diskAlias);
-    } else {
-        nbd_dest = g_strdup_printf("nbd:%s:%d:exportname=%s", host, port,
-                                   diskAlias);
-    }
-
-    if (qemuDomainObjEnterMonitorAsync(vm, VIR_ASYNC_JOB_MIGRATION_OUT) < 0)
-        return -1;
-
-    mon_ret = qemuMonitorDriveMirror(qemuDomainGetMonitor(vm),
-                                     diskAlias, nbd_dest, "raw",
-                                     mirror_speed, 0, 0, mirror_shallow, true);
-
-    qemuDomainObjExitMonitor(vm);
-    if (mon_ret < 0)
-        return -1;
-
-    return 0;
-}
-
-
-static int
 qemuMigrationSrcNBDStorageCopyOne(virDomainObj *vm,
                                   virDomainDiskDef *disk,
                                   const char *host,
@@ -1121,13 +1083,9 @@ qemuMigrationSrcNBDStorageCopyOne(virDomainObj *vm,
                                   const char *tlsHostname,
                                   unsigned int flags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
     qemuBlockJobData *job = NULL;
     g_autofree char *diskAlias = NULL;
-    const char *jobname = NULL;
-    const char *sourcename = NULL;
-    bool persistjob = false;
     bool syncWrites = !!(flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES);
     int rc;
     int ret = -1;
@@ -1138,34 +1096,18 @@ qemuMigrationSrcNBDStorageCopyOne(virDomainObj *vm,
     if (!(job = qemuBlockJobDiskNew(vm, disk, QEMU_BLOCKJOB_TYPE_COPY, diskAlias)))
         return -1;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        jobname = diskAlias;
-        sourcename = qemuDomainDiskGetTopNodename(disk);
-        persistjob = true;
-    } else {
-        jobname = NULL;
-        sourcename = diskAlias;
-        persistjob = false;
-    }
-
     qemuBlockJobSyncBegin(job);
 
-    if (flags & VIR_MIGRATE_TLS ||
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        rc = qemuMigrationSrcNBDStorageCopyBlockdev(vm, disk, jobname,
-                                                    sourcename, persistjob,
-                                                    host, port, socket,
-                                                    mirror_speed,
-                                                    mirror_shallow,
-                                                    tlsAlias,
-                                                    tlsHostname,
-                                                    syncWrites);
-    } else {
-        rc = qemuMigrationSrcNBDStorageCopyDriveMirror(vm, diskAlias,
-                                                       host, port, socket,
-                                                       mirror_speed,
-                                                       mirror_shallow);
-    }
+    rc = qemuMigrationSrcNBDStorageCopyBlockdev(vm,
+                                                disk, diskAlias,
+                                                qemuDomainDiskGetTopNodename(disk),
+                                                true,
+                                                host, port, socket,
+                                                mirror_speed,
+                                                mirror_shallow,
+                                                tlsAlias,
+                                                tlsHostname,
+                                                syncWrites);
 
     if (rc == 0) {
         diskPriv->migrating = true;
@@ -2660,41 +2602,25 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
     }
 
     if (flags & (VIR_MIGRATE_NON_SHARED_DISK | VIR_MIGRATE_NON_SHARED_INC)) {
-        if (flags & VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES &&
-            !virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
+        if (flags & VIR_MIGRATE_TUNNELLED) {
             virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                           _("VIR_MIGRATE_NON_SHARED_SYNCHRONOUS_WRITES is not supported by this QEMU"));
-            return NULL;
+                           _("migration of non-shared storage is not supported with tunnelled migration and this QEMU"));
         }
 
-        if (flags & VIR_MIGRATE_TUNNELLED) {
-            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("migration of non-shared storage is not supported with tunnelled migration and this QEMU"));
-                return NULL;
-            }
+        if (nmigrate_disks) {
+            size_t i, j;
+            /* Check user requested only known disk targets. */
+            for (i = 0; i < nmigrate_disks; i++) {
+                for (j = 0; j < vm->def->ndisks; j++) {
+                    if (STREQ(vm->def->disks[j]->dst, migrate_disks[i]))
+                        break;
+                }
 
-            if (nmigrate_disks) {
-                virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                               _("Selecting disks to migrate is not implemented for tunnelled migration"));
-                return NULL;
-            }
-        } else {
-            if (nmigrate_disks) {
-                size_t i, j;
-                /* Check user requested only known disk targets. */
-                for (i = 0; i < nmigrate_disks; i++) {
-                    for (j = 0; j < vm->def->ndisks; j++) {
-                        if (STREQ(vm->def->disks[j]->dst, migrate_disks[i]))
-                            break;
-                    }
-
-                    if (j == vm->def->ndisks) {
-                        virReportError(VIR_ERR_INVALID_ARG,
-                                       _("disk target %s not found"),
-                                       migrate_disks[i]);
-                        return NULL;
-                    }
+                if (j == vm->def->ndisks) {
+                    virReportError(VIR_ERR_INVALID_ARG,
+                                   _("disk target %s not found"),
+                                   migrate_disks[i]);
+                    return NULL;
                 }
             }
 
