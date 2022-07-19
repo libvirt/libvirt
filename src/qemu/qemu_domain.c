@@ -5627,18 +5627,12 @@ qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(virDomainHostdevDef *hostdev,
  */
 static int
 qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(virDomainHostdevDef *hostdev,
-                                                       virQEMUCaps *qemuCaps,
                                                        unsigned int parseFlags)
 {
     virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
     virStorageSource *src;
 
     if (!(parseFlags & VIR_DOMAIN_DEF_PARSE_STATUS))
-        return 0;
-
-    if (hostdev->mode != VIR_DOMAIN_HOSTDEV_MODE_SUBSYS ||
-        hostdev->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI ||
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI))
         return 0;
 
     switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
@@ -5691,8 +5685,7 @@ qemuDomainHostdevDefPostParse(virDomainHostdevDef *hostdev,
     if (qemuDomainDeviceHostdevDefPostParseRestoreSecAlias(hostdev, parseFlags) < 0)
         return -1;
 
-    if (qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(hostdev, qemuCaps,
-                                                               parseFlags) < 0)
+    if (qemuDomainDeviceHostdevDefPostParseRestoreBackendAlias(hostdev, parseFlags) < 0)
         return -1;
 
     if (hostdev->mode == VIR_DOMAIN_HOSTDEV_MODE_SUBSYS &&
@@ -10921,12 +10914,9 @@ qemuDomainPrepareHostdev(virDomainHostdevDef *hostdev,
             const char *backendalias = hostdev->info->alias;
 
             src->readonly = hostdev->readonly;
-
-            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-                src->id = qemuDomainStorageIDNew(priv);
-                src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
-                backendalias = src->nodestorage;
-            }
+            src->id = qemuDomainStorageIDNew(priv);
+            src->nodestorage = g_strdup_printf("libvirt-%d-backend", src->id);
+            backendalias = src->nodestorage;
 
             if (src->auth) {
                 virSecretUsageType usageType = VIR_SECRET_USAGE_TYPE_ISCSI;

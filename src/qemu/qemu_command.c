@@ -5083,27 +5083,6 @@ qemuBuildHubCommandLine(virCommand *cmd,
 }
 
 
-static char *
-qemuBuildSCSIiSCSIHostdevDrvStr(virDomainHostdevDef *dev)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autoptr(virJSONValue) srcprops = NULL;
-    virDomainHostdevSubsysSCSI *scsisrc = &dev->source.subsys.u.scsi;
-    virDomainHostdevSubsysSCSIiSCSI *iscsisrc = &scsisrc->u.iscsi;
-
-    if (!(srcprops = qemuDiskSourceGetProps(iscsisrc->src)))
-        return NULL;
-
-    if (virQEMUBuildCommandLineJSON(srcprops, &buf, NULL,
-                                    virQEMUBuildCommandLineJSONArrayNumbered) < 0)
-        return NULL;
-
-    virBufferAddLit(&buf, ",if=none,format=raw");
-
-    return virBufferContentAndReset(&buf);
-}
-
-
 virJSONValue *
 qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
                                   virDomainHostdevDef *dev,
@@ -5129,32 +5108,6 @@ qemuBuildSCSIVHostHostdevDevProps(const virDomainDef *def,
     return g_steal_pointer(&props);
 }
 
-
-static char *
-qemuBuildSCSIHostdevDrvStr(virDomainHostdevDef *dev)
-{
-    g_auto(virBuffer) buf = VIR_BUFFER_INITIALIZER;
-    g_autofree char *source = NULL;
-    g_autofree char *drivealias = NULL;
-    virDomainHostdevSubsysSCSI *scsisrc = &dev->source.subsys.u.scsi;
-
-    if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI) {
-        if (!(source = qemuBuildSCSIiSCSIHostdevDrvStr(dev)))
-            return NULL;
-        virBufferAdd(&buf, source, -1);
-    } else {
-        virBufferAsprintf(&buf, "file=%s,if=none,format=raw", scsisrc->u.host.src->path);
-    }
-
-    if (!(drivealias = qemuAliasFromHostdev(dev)))
-        return NULL;
-    virBufferAsprintf(&buf, ",id=%s", drivealias);
-
-    if (dev->readonly)
-        virBufferAddLit(&buf, ",readonly=on");
-
-    return virBufferContentAndReset(&buf);
-}
 
 virJSONValue *
 qemuBuildSCSIHostdevDevProps(const virDomainDef *def,
@@ -5278,41 +5231,34 @@ qemuBuildHostdevMediatedDevProps(const virDomainDef *def,
 
 qemuBlockStorageSourceAttachData *
 qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
-                                  virQEMUCaps *qemuCaps)
+                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
     g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
+    virStorageSource *src;
+    qemuDomainStorageSourcePrivate *srcpriv;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-        virStorageSource *src;
-        qemuDomainStorageSourcePrivate *srcpriv;
+    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+        src = scsisrc->u.host.src;
+        break;
 
-        switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-            src = scsisrc->u.host.src;
-            break;
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+        src = scsisrc->u.iscsi.src;
+        break;
 
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
-            src = scsisrc->u.iscsi.src;
-            break;
-
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
-            return NULL;
-        }
-
-        srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
-        ret->storageNodeName = src->nodestorage;
-        ret->storageAttached = true;
-
-        if (srcpriv && srcpriv->secinfo)
-            ret->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
-
-    } else {
-        ret->driveAlias = qemuAliasFromHostdev(hostdev);
-        ret->driveAdded = true;
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+        return NULL;
     }
+
+    srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
+    ret->storageNodeName = src->nodestorage;
+    ret->storageAttached = true;
+
+    if (srcpriv && srcpriv->secinfo)
+        ret->authsecretAlias = g_strdup(srcpriv->secinfo->alias);
 
     return g_steal_pointer(&ret);
 }
@@ -5321,45 +5267,35 @@ qemuBuildHostdevSCSIDetachPrepare(virDomainHostdevDef *hostdev,
 qemuBlockStorageSourceAttachData *
 qemuBuildHostdevSCSIAttachPrepare(virDomainHostdevDef *hostdev,
                                   const char **backendAlias,
-                                  virQEMUCaps *qemuCaps)
+                                  virQEMUCaps *qemuCaps G_GNUC_UNUSED)
 {
     virDomainHostdevSubsysSCSI *scsisrc = &hostdev->source.subsys.u.scsi;
     g_autoptr(qemuBlockStorageSourceAttachData) ret = g_new0(qemuBlockStorageSourceAttachData, 1);
     virStorageSource *src = NULL;
 
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_HOSTDEV_SCSI)) {
-        switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
-            src = scsisrc->u.host.src;
-            break;
+    switch ((virDomainHostdevSCSIProtocolType) scsisrc->protocol) {
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_NONE:
+        src = scsisrc->u.host.src;
+        break;
 
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
-            src = scsisrc->u.iscsi.src;
-            break;
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI:
+        src = scsisrc->u.iscsi.src;
+        break;
 
-        case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
-        default:
-            virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
-            return NULL;
-        }
-
-        ret->storageNodeName = src->nodestorage;
-        *backendAlias = src->nodestorage;
-
-        if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
-                                                                        QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
-            return NULL;
-
-    } else {
-        if (scsisrc->protocol == VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_ISCSI)
-            src = scsisrc->u.iscsi.src;
-        ret->driveCmd = qemuBuildSCSIHostdevDrvStr(hostdev);
-        ret->driveAlias = qemuAliasFromHostdev(hostdev);
-        *backendAlias = ret->driveAlias;
+    case VIR_DOMAIN_HOSTDEV_SCSI_PROTOCOL_TYPE_LAST:
+    default:
+        virReportEnumRangeError(virDomainHostdevSCSIProtocolType, scsisrc->protocol);
+        return NULL;
     }
 
-    if (src &&
-        qemuBuildStorageSourceAttachPrepareCommon(src, ret) < 0)
+    ret->storageNodeName = src->nodestorage;
+    *backendAlias = src->nodestorage;
+
+    if (!(ret->storageProps = qemuBlockStorageSourceGetBackendProps(src,
+                                                                    QEMU_BLOCK_STORAGE_SOURCE_BACKEND_PROPS_SKIP_UNMAP)))
+        return NULL;
+
+    if (qemuBuildStorageSourceAttachPrepareCommon(src, ret) < 0)
         return NULL;
 
     return g_steal_pointer(&ret);
