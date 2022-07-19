@@ -4348,18 +4348,6 @@ qemuMonitorTransactionBitmapMergeSourceAddBitmap(virJSONValue *sources,
 
 
 int
-qemuMonitorTransactionSnapshotLegacy(virJSONValue *actions,
-                                     const char *device,
-                                     const char *path,
-                                     const char *format,
-                                     bool existing)
-{
-    return qemuMonitorJSONTransactionSnapshotLegacy(actions, device, path,
-                                                    format, existing);
-}
-
-
-int
 qemuMonitorTransactionSnapshotBlockdev(virJSONValue *actions,
                                        const char *node,
                                        const char *overlay)

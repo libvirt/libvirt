@@ -2107,26 +2107,6 @@ qemuBlockStorageSourceDetachOneBlockdev(virDomainObj *vm,
 
 
 int
-qemuBlockSnapshotAddLegacy(virJSONValue *actions,
-                           virDomainDiskDef *disk,
-                           virStorageSource *newsrc,
-                           bool reuse)
-{
-    const char *format = virStorageFileFormatTypeToString(newsrc->format);
-    g_autofree char *device = NULL;
-    g_autofree char *source = NULL;
-
-    if (!(device = qemuAliasDiskDriveFromDisk(disk)))
-        return -1;
-
-    if (qemuGetDriveSourceString(newsrc, NULL, &source) < 0)
-        return -1;
-
-    return qemuMonitorTransactionSnapshotLegacy(actions, device, source, format, reuse);
-}
-
-
-int
 qemuBlockSnapshotAddBlockdev(virJSONValue *actions,
                              virDomainDiskDef *disk,
                              virStorageSource *newsrc)

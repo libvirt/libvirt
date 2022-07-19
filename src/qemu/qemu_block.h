@@ -178,12 +178,6 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(qemuBlockStorageSourceChainData,
                         qemuBlockStorageSourceChainDataFree);
 
 int
-qemuBlockSnapshotAddLegacy(virJSONValue *actions,
-                           virDomainDiskDef *disk,
-                           virStorageSource *newsrc,
-                           bool reuse);
-
-int
 qemuBlockSnapshotAddBlockdev(virJSONValue *actions,
                              virDomainDiskDef *disk,
                              virStorageSource *newsrc);

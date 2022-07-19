@@ -8521,28 +8521,6 @@ qemuMonitorJSONTransactionBitmapMergeSourceAddBitmap(virJSONValue *sources,
 
 
 int
-qemuMonitorJSONTransactionSnapshotLegacy(virJSONValue *actions,
-                                         const char *device,
-                                         const char *path,
-                                         const char *format,
-                                         bool existing)
-{
-    const char *mode = NULL;
-
-    if (existing)
-        mode = "existing";
-
-    return qemuMonitorJSONTransactionAdd(actions,
-                                         "blockdev-snapshot-sync",
-                                         "s:device", device,
-                                         "s:snapshot-file", path,
-                                         "s:format", format,
-                                         "S:mode", mode,
-                                         NULL);
-}
-
-
-int
 qemuMonitorJSONTransactionSnapshotBlockdev(virJSONValue *actions,
                                            const char *node,
                                            const char *overlay)
