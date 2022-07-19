@@ -4756,7 +4756,7 @@ virQEMUCapsFormatCache(virQEMUCaps *qemuCaps)
 
     if (qemuCaps->cpuData) {
         g_autofree char * cpudata = virCPUDataFormat(qemuCaps->cpuData);
-        virBufferAsprintf(&buf, "%s", cpudata);
+        virBufferAddStr(&buf, cpudata);
     }
 
     virBufferAsprintf(&buf, "<arch>%s</arch>\n",
