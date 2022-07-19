@@ -30,16 +30,9 @@
 #define CH_JOB_WAIT_TIME (1000ull * 30)
 
 
-struct virCHDomainJobObj {
-    virCond cond;                       /* Use to coordinate jobs */
-    virDomainJob active;                /* Currently running job */
-    int owner;                          /* Thread which set current job */
-};
-
-
 typedef struct _virCHDomainObjPrivate virCHDomainObjPrivate;
 struct _virCHDomainObjPrivate {
-    struct virCHDomainJobObj job;
+    virDomainJobObj job;
 
     virChrdevs *chrdevs;
     virCHDriver *driver;

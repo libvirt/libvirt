@@ -46,7 +46,7 @@ virCHDomainObjInitJob(virCHDomainObjPrivate *priv)
 static void
 virCHDomainObjResetJob(virCHDomainObjPrivate *priv)
 {
-    struct virCHDomainJobObj *job = &priv->job;
+    virDomainJobObj *job = &priv->job;
 
     job->active = VIR_JOB_NONE;
     job->owner = 0;
@@ -83,7 +83,7 @@ virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
                   virDomainJobTypeToString(job));
         if (virCondWaitUntil(&priv->job.cond, &obj->parent.lock, then) < 0) {
             VIR_WARN("Cannot start job (%s) for domain %s;"
-                     " current job is (%s) owned by (%d)",
+                     " current job is (%s) owned by (%llu)",
                      virDomainJobTypeToString(job),
                      obj->def->name,
                      virDomainJobTypeToString(priv->job.active),
