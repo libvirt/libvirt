@@ -25376,7 +25376,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_NONE:
             if (flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE)
-                virBufferAddStr(buf, " autoport='no'");
+                virBufferAddLit(buf, " autoport='no'");
             break;
 
         case VIR_DOMAIN_GRAPHICS_LISTEN_TYPE_SOCKET:
@@ -25388,7 +25388,7 @@ virDomainGraphicsDefFormat(virBuffer *buf,
              * parsed as listen type "none". */
             if ((flags & VIR_DOMAIN_DEF_FORMAT_MIGRATABLE) &&
                 glisten->fromConfig) {
-                virBufferAddStr(buf, " autoport='yes'");
+                virBufferAddLit(buf, " autoport='yes'");
             }
             break;
 
