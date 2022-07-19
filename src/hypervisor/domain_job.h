@@ -201,6 +201,6 @@ struct _virDomainObjPrivateJobCallbacks {
    virDomainObjPrivateJobAlloc allocJobPrivate;
    virDomainObjPrivateJobFree freeJobPrivate;
    virDomainObjPrivateJobReset resetJobPrivate;
-   virDomainObjPrivateJobFormat formatJob;
-   virDomainObjPrivateJobParse parseJob;
+   virDomainObjPrivateJobFormat formatJobPrivate;
+   virDomainObjPrivateJobParse parseJobPrivate;
 };

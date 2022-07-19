@@ -1294,7 +1294,7 @@ qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
     }
 
     if (priv->job.cb &&
-        priv->job.cb->formatJob(&childBuf, &priv->job, vm) < 0)
+        priv->job.cb->formatJobPrivate(&childBuf, &priv->job, vm) < 0)
         return -1;
 
     virXMLFormatElement(buf, "job", &attrBuf, &childBuf);
@@ -1362,7 +1362,7 @@ qemuDomainObjPrivateXMLParseJob(virDomainObj *vm,
     }
 
     if (priv->job.cb &&
-        priv->job.cb->parseJob(ctxt, job, vm) < 0)
+        priv->job.cb->parseJobPrivate(ctxt, job, vm) < 0)
         return -1;
 
     return 0;
