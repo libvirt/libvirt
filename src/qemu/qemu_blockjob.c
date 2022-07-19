@@ -703,137 +703,6 @@ qemuBlockJobRewriteConfigDiskSource(virDomainObj *vm,
 
 
 static void
-qemuBlockJobEventProcessLegacyCompleted(virQEMUDriver *driver,
-                                        virDomainObj *vm,
-                                        qemuBlockJobData *job,
-                                        int asyncJob)
-{
-    virDomainDiskDef *disk = job->disk;
-
-    if (!disk)
-        return;
-
-    if (disk->mirrorState == VIR_DOMAIN_DISK_MIRROR_STATE_PIVOT) {
-        qemuBlockJobRewriteConfigDiskSource(vm, disk, disk->mirror);
-        /* XXX We want to revoke security labels as well as audit that
-         * revocation, before dropping the original source.  But it gets
-         * tricky if both source and mirror share common backing files (we
-         * want to only revoke the non-shared portion of the chain); so for
-         * now, we leak the access to the original.  */
-        virDomainLockImageDetach(driver->lockManager, vm, disk->src);
-
-        /* Move secret driver metadata */
-        if (qemuSecurityMoveImageMetadata(driver, vm, disk->src, disk->mirror) < 0) {
-            VIR_WARN("Unable to move disk metadata on "
-                     "vm %s from %s to %s (disk target %s)",
-                     vm->def->name,
-                     NULLSTR(disk->src->path),
-                     NULLSTR(disk->mirror->path),
-                     disk->dst);
-        }
-
-        virObjectUnref(disk->src);
-        disk->src = disk->mirror;
-    } else {
-        if (disk->mirror) {
-            virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
-
-            /* Ideally, we would restore seclabels on the backing chain here
-             * but we don't know if somebody else is not using parts of it.
-             * Remove security driver metadata so that they are not leaked. */
-            qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
-
-            virObjectUnref(disk->mirror);
-        }
-
-        qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->src);
-    }
-
-    /* Recompute the cached backing chain to match our
-     * updates.  Better would be storing the chain ourselves
-     * rather than reprobing, but we haven't quite completed
-     * that conversion to use our XML tracking. */
-    disk->mirror = NULL;
-    disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-    disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-    disk->src->id = 0;
-    virStorageSourceBackingStoreClear(disk->src);
-    ignore_value(qemuDomainDetermineDiskChain(driver, vm, disk, NULL, true));
-    ignore_value(qemuBlockNodeNamesDetect(vm, asyncJob));
-    qemuBlockJobUnregister(job, vm);
-    qemuDomainSaveConfig(vm);
-}
-
-
-/**
- * qemuBlockJobEventProcessLegacy:
- * @driver: qemu driver
- * @vm: domain
- * @job: job to process events for
- *
- * Update disk's mirror state in response to a block job event
- * from QEMU. For mirror state's that must survive libvirt
- * restart, also update the domain's status XML.
- */
-static void
-qemuBlockJobEventProcessLegacy(virQEMUDriver *driver,
-                               virDomainObj *vm,
-                               qemuBlockJobData *job,
-                               int asyncJob)
-{
-    virDomainDiskDef *disk = job->disk;
-
-    VIR_DEBUG("disk=%s, mirrorState=%s, type=%d, state=%d, newstate=%d",
-              disk->dst,
-              NULLSTR(virDomainDiskMirrorStateTypeToString(disk->mirrorState)),
-              job->type,
-              job->state,
-              job->newstate);
-
-    if (job->newstate == -1)
-        return;
-
-    qemuBlockJobEmitEvents(driver, vm, disk, job->type, job->newstate);
-
-    job->state = job->newstate;
-    job->newstate = -1;
-
-    /* If we completed a block pull or commit, then update the XML
-     * to match.  */
-    switch ((virConnectDomainEventBlockJobStatus) job->state) {
-    case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-        qemuBlockJobEventProcessLegacyCompleted(driver, vm, job, asyncJob);
-        break;
-
-    case VIR_DOMAIN_BLOCK_JOB_READY:
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_READY;
-        qemuDomainSaveStatus(vm);
-        break;
-
-    case VIR_DOMAIN_BLOCK_JOB_FAILED:
-    case VIR_DOMAIN_BLOCK_JOB_CANCELED:
-        if (disk->mirror) {
-            virDomainLockImageDetach(driver->lockManager, vm, disk->mirror);
-
-            /* Ideally, we would restore seclabels on the backing chain here
-             * but we don't know if somebody else is not using parts of it.
-             * Remove security driver metadata so that they are not leaked. */
-            qemuBlockRemoveImageMetadata(driver, vm, disk->dst, disk->mirror);
-
-            g_clear_pointer(&disk->mirror, virObjectUnref);
-        }
-        disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
-        disk->mirrorJob = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-        qemuBlockJobUnregister(job, vm);
-        break;
-
-    case VIR_DOMAIN_BLOCK_JOB_LAST:
-        break;
-    }
-}
-
-
-static void
 qemuBlockJobEventProcessConcludedRemoveChain(virQEMUDriver *driver,
                                              virDomainObj *vm,
                                              virDomainAsyncJob asyncJob,
@@ -1749,10 +1618,7 @@ qemuBlockJobUpdate(virDomainObj *vm,
     if (job->newstate == -1)
         return;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        qemuBlockJobEventProcess(priv->driver, vm, job, asyncJob);
-    else
-        qemuBlockJobEventProcessLegacy(priv->driver, vm, job, asyncJob);
+    qemuBlockJobEventProcess(priv->driver, vm, job, asyncJob);
 }
 
 
