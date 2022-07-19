@@ -60,7 +60,7 @@ libxlDomainObjInitJob(libxlDomainObjPrivate *priv)
 static void
 libxlDomainObjResetJob(libxlDomainObjPrivate *priv)
 {
-    struct libxlDomainJobObj *job = &priv->job;
+    virDomainJobObj *job = &priv->job;
 
     job->active = VIR_JOB_NONE;
     job->owner = 0;
@@ -117,7 +117,7 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
 
  error:
     VIR_WARN("Cannot start job (%s) for domain %s;"
-             " current job is (%s) owned by (%d)",
+             " current job is (%s) owned by (%llu)",
              virDomainJobTypeToString(job),
              obj->def->name,
              virDomainJobTypeToString(priv->job.active),
@@ -158,7 +158,7 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
 }
 
 int
-libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
+libxlDomainJobUpdateTime(virDomainJobObj *job)
 {
     virDomainJobData *jobData = job->current;
     unsigned long long now;

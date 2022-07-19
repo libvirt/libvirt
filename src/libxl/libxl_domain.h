@@ -27,13 +27,6 @@
 #include "domain_job.h"
 
 
-struct libxlDomainJobObj {
-    virCond cond;                       /* Use to coordinate jobs */
-    virDomainJob active;                /* Currently running job */
-    int owner;                          /* Thread which set current job */
-    virDomainJobData *current;        /* Statistics for the current job */
-};
-
 typedef struct _libxlDomainObjPrivate libxlDomainObjPrivate;
 struct _libxlDomainObjPrivate {
     /* console */
@@ -44,7 +37,7 @@ struct _libxlDomainObjPrivate {
     char *lockState;
     bool lockProcessRunning;
 
-    struct libxlDomainJobObj job;
+    virDomainJobObj job;
 
     bool hookRun;  /* true if there was a hook run over this domain */
 };
@@ -69,7 +62,7 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver,
                      virDomainObj *obj);
 
 int
-libxlDomainJobUpdateTime(struct libxlDomainJobObj *job)
+libxlDomainJobUpdateTime(virDomainJobObj *job)
     G_GNUC_WARN_UNUSED_RESULT;
 
 char *
