@@ -4068,47 +4068,6 @@ qemuMonitorJSONDelObject(qemuMonitor *mon,
 }
 
 
-/* speed is in bytes/sec */
-int
-qemuMonitorJSONDriveMirror(qemuMonitor *mon,
-                           const char *device, const char *file,
-                           const char *format, unsigned long long speed,
-                           unsigned int granularity,
-                           unsigned long long buf_size,
-                           bool shallow,
-                           bool reuse)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-    const char *syncmode = "full";
-    const char *mode = "absolute-paths";
-
-    if (shallow)
-        syncmode = "top";
-
-    if (reuse)
-        mode = "existing";
-
-    cmd = qemuMonitorJSONMakeCommand("drive-mirror",
-                                     "s:device", device,
-                                     "s:target", file,
-                                     "Y:speed", speed,
-                                     "z:granularity", granularity,
-                                     "P:buf-size", buf_size,
-                                     "s:sync", syncmode,
-                                     "s:mode", mode,
-                                     "S:format", format,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    return qemuMonitorJSONCheckError(cmd, reply);
-}
-
-
 int
 qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
                               const char *jobname,

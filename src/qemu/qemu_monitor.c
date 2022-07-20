@@ -2821,27 +2821,6 @@ qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name)
 }
 
 
-/* Start a drive-mirror block job.  bandwidth is in bytes/sec.  */
-int
-qemuMonitorDriveMirror(qemuMonitor *mon,
-                       const char *device, const char *file,
-                       const char *format, unsigned long long bandwidth,
-                       unsigned int granularity, unsigned long long buf_size,
-                       bool shallow,
-                       bool reuse)
-{
-    VIR_DEBUG("device=%s, file=%s, format=%s, bandwidth=%lld, "
-              "granularity=%#x, buf_size=%lld, shallow=%d, reuse=%d",
-              device, file, NULLSTR(format), bandwidth, granularity,
-              buf_size, shallow, reuse);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONDriveMirror(mon, device, file, format, bandwidth,
-                                      granularity, buf_size, shallow, reuse);
-}
-
-
 int
 qemuMonitorBlockdevMirror(qemuMonitor *mon,
                           const char *jobname,

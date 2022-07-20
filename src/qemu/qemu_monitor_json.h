@@ -304,17 +304,6 @@ int
 qemuMonitorJSONTransaction(qemuMonitor *mon,
                            virJSONValue **actions)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-int
-qemuMonitorJSONDriveMirror(qemuMonitor *mon,
-                           const char *device,
-                           const char *file,
-                           const char *format,
-                           unsigned long long speed,
-                           unsigned int granularity,
-                           unsigned long long buf_size,
-                           bool shallow,
-                           bool reuse)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 
 int
 qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,

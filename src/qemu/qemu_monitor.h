@@ -975,16 +975,6 @@ int qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name);
 
 int qemuMonitorTransaction(qemuMonitor *mon, virJSONValue **actions)
     ATTRIBUTE_NONNULL(2);
-int qemuMonitorDriveMirror(qemuMonitor *mon,
-                           const char *device,
-                           const char *file,
-                           const char *format,
-                           unsigned long long bandwidth,
-                           unsigned int granularity,
-                           unsigned long long buf_size,
-                           bool shallow,
-                           bool reuse)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3);
 int qemuMonitorBlockdevMirror(qemuMonitor *mon,
                               const char *jobname,
                               bool persistjob,
