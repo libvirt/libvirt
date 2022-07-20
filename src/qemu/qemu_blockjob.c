@@ -250,16 +250,8 @@ qemuBlockJobDiskNewPull(virDomainObj *vm,
                         virStorageSource *base,
                         unsigned int jobflags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = NULL;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        jobname = g_strdup_printf("pull-%s-%s", disk->dst, disk->src->nodeformat);
-    } else {
-        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
-            return NULL;
-    }
+    g_autofree char *jobname = g_strdup_printf("pull-%s-%s", disk->dst, disk->src->nodeformat);
 
     if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_PULL, jobname)))
         return NULL;
@@ -283,20 +275,12 @@ qemuBlockJobDiskNewCommit(virDomainObj *vm,
                           bool delete_imgs,
                           unsigned int jobflags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = NULL;
+    g_autofree char *jobname = g_strdup_printf("commit-%s-%s", disk->dst, top->nodeformat);
     qemuBlockJobType jobtype = QEMU_BLOCKJOB_TYPE_COMMIT;
 
     if (topparent == NULL)
         jobtype = QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        jobname = g_strdup_printf("commit-%s-%s", disk->dst, top->nodeformat);
-    } else {
-        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
-            return NULL;
-    }
 
     if (!(job = qemuBlockJobDataNew(jobtype, jobname)))
         return NULL;
@@ -352,16 +336,8 @@ qemuBlockJobDiskNewCopy(virDomainObj *vm,
                         bool reuse,
                         unsigned int jobflags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(qemuBlockJobData) job = NULL;
-    g_autofree char *jobname = NULL;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        jobname = g_strdup_printf("copy-%s-%s", disk->dst, disk->src->nodeformat);
-    } else {
-        if (!(jobname = qemuAliasDiskDriveFromDisk(disk)))
-            return NULL;
-    }
+    g_autofree char *jobname = g_strdup_printf("copy-%s-%s", disk->dst, disk->src->nodeformat);
 
     if (!(job = qemuBlockJobDataNew(QEMU_BLOCKJOB_TYPE_COPY, jobname)))
         return NULL;
