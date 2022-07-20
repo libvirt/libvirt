@@ -998,11 +998,6 @@ int qemuMonitorBlockCommit(qemuMonitor *mon,
                            const char *backingName,
                            unsigned long long bandwidth)
     ATTRIBUTE_NONNULL(2);
-char *qemuMonitorDiskNameLookup(qemuMonitor *mon,
-                                const char *device,
-                                virStorageSource *top,
-                                virStorageSource *target)
-    ATTRIBUTE_NONNULL(2) ATTRIBUTE_NONNULL(3) ATTRIBUTE_NONNULL(4);
 
 int qemuMonitorArbitraryCommand(qemuMonitor *mon,
                                 const char *cmd,

@@ -2879,20 +2879,6 @@ qemuMonitorBlockCommit(qemuMonitor *mon,
 }
 
 
-/* Determine the name that qemu is using for tracking the backing
- * element TARGET within the chain starting at TOP.  */
-char *
-qemuMonitorDiskNameLookup(qemuMonitor *mon,
-                          const char *device,
-                          virStorageSource *top,
-                          virStorageSource *target)
-{
-    QEMU_CHECK_MONITOR_NULL(mon);
-
-    return qemuMonitorJSONDiskNameLookup(mon, device, top, target);
-}
-
-
 /* Use the block-job-complete monitor command to pivot a block copy job.  */
 int
 qemuMonitorDrivePivot(qemuMonitor *mon,
