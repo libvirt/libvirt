@@ -8573,7 +8573,6 @@ qemuProcessRefreshDisks(virDomainObj *vm,
                         virDomainAsyncJob asyncJob)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     g_autoptr(GHashTable) table = NULL;
     size_t i;
 
@@ -8591,7 +8590,7 @@ qemuProcessRefreshDisks(virDomainObj *vm,
         struct qemuDomainDiskInfo *info;
         const char *entryname = disk->info.alias;
 
-        if (blockdev && diskpriv->qomName)
+        if (diskpriv->qomName)
             entryname = diskpriv->qomName;
 
         if (!(info = virHashLookup(table, entryname)))
