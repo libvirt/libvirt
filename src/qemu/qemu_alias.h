@@ -33,8 +33,7 @@ void qemuAssignDeviceControllerAlias(virDomainDef *domainDef,
                                      virDomainControllerDef *controller);
 
 int qemuAssignDeviceDiskAlias(virDomainDef *def,
-                              virDomainDiskDef *disk,
-                              virQEMUCaps *qemuCaps);
+                              virDomainDiskDef *disk);
 
 void qemuAssignDeviceHostdevAlias(virDomainDef *def,
                                   char **alias,
@@ -71,7 +70,7 @@ void qemuAssignDeviceInputAlias(virDomainDef *def,
 
 void qemuAssignDeviceVsockAlias(virDomainVsockDef *vsock);
 
-int qemuAssignDeviceAliases(virDomainDef *def, virQEMUCaps *qemuCaps);
+int qemuAssignDeviceAliases(virDomainDef *def);
 
 int qemuDomainDeviceAliasIndex(const virDomainDeviceInfo *info,
                                const char *prefix);

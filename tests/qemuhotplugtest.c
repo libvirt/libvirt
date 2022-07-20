@@ -107,7 +107,7 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
         return -1;
     }
 
-    if (qemuAssignDeviceAliases((*vm)->def, priv->qemuCaps) < 0)
+    if (qemuAssignDeviceAliases((*vm)->def) < 0)
         return -1;
 
     (*vm)->def->id = QEMU_HOTPLUG_TEST_DOMAIN_ID;

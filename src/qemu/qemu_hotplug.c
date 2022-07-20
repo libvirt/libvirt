@@ -1072,7 +1072,7 @@ qemuDomainAttachDeviceDiskLiveInternal(virQEMUDriver *driver,
 
     releaseSeclabel = true;
 
-    if (qemuAssignDeviceDiskAlias(vm->def, disk, priv->qemuCaps) < 0)
+    if (qemuAssignDeviceDiskAlias(vm->def, disk) < 0)
         goto cleanup;
 
     if (qemuDomainPrepareDiskSource(disk, priv, cfg) < 0)

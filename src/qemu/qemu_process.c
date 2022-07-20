@@ -6607,7 +6607,7 @@ qemuProcessPrepareDomain(virQEMUDriver *driver,
         return -1;
     }
 
-    if (qemuAssignDeviceAliases(vm->def, priv->qemuCaps) < 0)
+    if (qemuAssignDeviceAliases(vm->def) < 0)
         return -1;
 
     qemuProcessPrepareDeviceBootorder(vm->def);
