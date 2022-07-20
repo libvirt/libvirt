@@ -2361,23 +2361,11 @@ qemuCommandAddExtDevice(virCommand *cmd,
 static void
 qemuBuildFloppyCommandLineControllerOptionsImplicit(virCommand *cmd,
                                                     unsigned int bootindexA,
-                                                    unsigned int bootindexB,
-                                                    const char *backendA,
-                                                    const char *backendB)
+                                                    unsigned int bootindexB)
 {
-    if (backendA) {
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "isa-fdc.driveA=%s", backendA);
-    }
-
     if (bootindexA > 0) {
         virCommandAddArg(cmd, "-global");
         virCommandAddArgFormat(cmd, "isa-fdc.bootindexA=%u", bootindexA);
-    }
-
-    if (backendB) {
-        virCommandAddArg(cmd, "-global");
-        virCommandAddArgFormat(cmd, "isa-fdc.driveB=%s", backendB);
     }
 
     if (bootindexB > 0) {
@@ -2391,8 +2379,6 @@ static int
 qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
                                                     unsigned int bootindexA,
                                                     unsigned int bootindexB,
-                                                    const char *backendA,
-                                                    const char *backendB,
                                                     const virDomainDef *def,
                                                     virQEMUCaps *qemuCaps)
 {
@@ -2400,9 +2386,7 @@ qemuBuildFloppyCommandLineControllerOptionsExplicit(virCommand *cmd,
 
     if (virJSONValueObjectAdd(&props,
                               "s:driver", "isa-fdc",
-                              "S:driveA", backendA,
                               "p:bootindexA", bootindexA,
-                              "S:driveB", backendB,
                               "p:bootindexB", bootindexB,
                               NULL) < 0)
         return -1;
@@ -2421,13 +2405,10 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
 {
     unsigned int bootindexA = 0;
     unsigned int bootindexB = 0;
-    g_autofree char *backendA = NULL;
-    g_autofree char *backendB = NULL;
     bool hasfloppy = false;
     size_t i;
 
     for (i = 0; i < def->ndisks; i++) {
-        g_autofree char *backendAlias = NULL;
         virDomainDiskDef *disk = def->disks[i];
 
         if (disk->bus != VIR_DOMAIN_DISK_BUS_FDC)
@@ -2435,17 +2416,10 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
 
         hasfloppy = true;
 
-        /* with -blockdev we setup the floppy device and it's backend with -device */
-        if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-            qemuDomainDiskGetBackendAlias(disk, qemuCaps, &backendAlias) < 0)
-            return -1;
-
         if (disk->info.addr.drive.unit) {
             bootindexB = disk->info.effectiveBootIndex;
-            backendB = g_steal_pointer(&backendAlias);
         } else {
             bootindexA = disk->info.effectiveBootIndex;
-            backendA = g_steal_pointer(&backendAlias);
         }
     }
 
@@ -2456,17 +2430,13 @@ qemuBuildFloppyCommandLineControllerOptions(virCommand *cmd,
         if (qemuBuildFloppyCommandLineControllerOptionsExplicit(cmd,
                                                                 bootindexA,
                                                                 bootindexB,
-                                                                backendA,
-                                                                backendB,
                                                                 def,
                                                                 qemuCaps) < 0)
             return -1;
     } else {
         qemuBuildFloppyCommandLineControllerOptionsImplicit(cmd,
                                                             bootindexA,
-                                                            bootindexB,
-                                                            backendA,
-                                                            backendB);
+                                                            bootindexB);
     }
 
     return 0;
@@ -2602,12 +2572,6 @@ qemuBuildDiskCommandLine(virCommand *cmd,
     if (qemuDiskBusIsSD(disk->bus))
         return 0;
 
-    /* floppy devices are instantiated via -drive ...,if=none and bound to the
-     * controller via -global isa-fdc.driveA/B options in the pre-blockdev era */
-    if (disk->bus == VIR_DOMAIN_DISK_BUS_FDC &&
-        !virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV))
-        return 0;
-
     if (qemuCommandAddExtDevice(cmd, &disk->info, def, qemuCaps) < 0)
         return -1;
 
@@ -2627,12 +2591,8 @@ qemuBuildDisksCommandLine(virCommand *cmd,
                           virQEMUCaps *qemuCaps)
 {
     size_t i;
-    bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
 
-    /* If we want to express the floppy drives via -device, the controller needs
-     * to be instantiated prior to that */
-    if (blockdev &&
-        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps) < 0)
+    if (qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps) < 0)
         return -1;
 
     for (i = 0; i < def->ndisks; i++) {
@@ -2647,10 +2607,6 @@ qemuBuildDisksCommandLine(virCommand *cmd,
         if (qemuBuildDiskCommandLine(cmd, def, disk, qemuCaps) < 0)
             return -1;
     }
-
-    if (!blockdev &&
-        qemuBuildFloppyCommandLineControllerOptions(cmd, def, qemuCaps) < 0)
-        return -1;
 
     return 0;
 }
