@@ -11208,7 +11208,7 @@ qemuDomainSupportsCheckpointsBlockjobs(virDomainObj *vm)
  * qemuDomainInitializePflashStorageSource:
  *
  * This helper converts the specification of the source of the 'loader' in case
- * PFLASH is required to virStorageSources in case QEMU_CAPS_BLOCKDEV is present.
+ * PFLASH is required to virStorageSources.
  *
  * This helper is used in the intermediate state when we don't support full
  * backing chains for pflash drives in the XML.
@@ -11225,9 +11225,6 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
     qemuDomainObjPrivate *priv = vm->privateData;
     virDomainDef *def = vm->def;
     g_autoptr(virStorageSource) pflash0 = NULL;
-
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        return 0;
 
     if (!virDomainDefHasOldStyleUEFI(def))
         return 0;
