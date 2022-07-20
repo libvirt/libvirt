@@ -2863,24 +2863,19 @@ int
 qemuMonitorBlockCommit(qemuMonitor *mon,
                        const char *device,
                        const char *jobname,
-                       bool persistjob,
-                       const char *top,
                        const char *topNode,
-                       const char *base,
                        const char *baseNode,
                        const char *backingName,
                        unsigned long long bandwidth)
 {
-    VIR_DEBUG("device=%s, jobname=%s, persistjob=%d, top=%s, topNode=%s, "
-              "base=%s, baseNode=%s, backingName=%s, bandwidth=%llu",
-              device, NULLSTR(jobname), persistjob, NULLSTR(top), NULLSTR(topNode),
-              NULLSTR(base), NULLSTR(baseNode), NULLSTR(backingName), bandwidth);
+    VIR_DEBUG("device=%s, jobname=%s, topNode=%s, baseNode=%s, backingName=%s, bandwidth=%llu",
+              device, NULLSTR(jobname), NULLSTR(topNode),
+              NULLSTR(baseNode), NULLSTR(backingName), bandwidth);
 
     QEMU_CHECK_MONITOR(mon);
 
-    return qemuMonitorJSONBlockCommit(mon, device, jobname, persistjob, top,
-                                      topNode, base, baseNode, backingName,
-                                      bandwidth);
+    return qemuMonitorJSONBlockCommit(mon, device, jobname, topNode, baseNode,
+                                      backingName, bandwidth);
 }
 
 

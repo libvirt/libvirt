@@ -4148,31 +4148,21 @@ int
 qemuMonitorJSONBlockCommit(qemuMonitor *mon,
                            const char *device,
                            const char *jobname,
-                           bool persistjob,
-                           const char *top,
                            const char *topNode,
-                           const char *base,
                            const char *baseNode,
                            const char *backingName,
                            unsigned long long speed)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
-    virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
-
-    if (persistjob) {
-        autofinalize = VIR_TRISTATE_BOOL_YES;
-        autodismiss = VIR_TRISTATE_BOOL_NO;
-    }
+    virTristateBool autofinalize = VIR_TRISTATE_BOOL_YES;
+    virTristateBool autodismiss = VIR_TRISTATE_BOOL_NO;
 
     cmd = qemuMonitorJSONMakeCommand("block-commit",
                                      "s:device", device,
                                      "S:job-id", jobname,
                                      "Y:speed", speed,
-                                     "S:top", top,
                                      "S:top-node", topNode,
-                                     "S:base", base,
                                      "S:base-node", baseNode,
                                      "S:backing-file", backingName,
                                      "T:auto-finalize", autofinalize,

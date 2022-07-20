@@ -15580,10 +15580,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     ret = qemuMonitorBlockCommit(priv->mon,
                                  qemuDomainDiskGetTopNodename(disk),
                                  job->name,
-                                 true,
-                                 NULL,
                                  topSource->nodeformat,
-                                 NULL,
                                  baseSource->nodeformat,
                                  backingPath, speed);
 
