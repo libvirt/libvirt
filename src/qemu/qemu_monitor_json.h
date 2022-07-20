@@ -319,11 +319,6 @@ qemuMonitorJSONBlockdevMirror(qemuMonitor *mon,
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
 
 int
-qemuMonitorJSONDrivePivot(qemuMonitor *mon,
-                          const char *jobname)
-    ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
-
-int
 qemuMonitorJSONBlockCommit(qemuMonitor *mon,
                            const char *device,
                            const char *jobname,

@@ -2879,19 +2879,6 @@ qemuMonitorBlockCommit(qemuMonitor *mon,
 }
 
 
-/* Use the block-job-complete monitor command to pivot a block copy job.  */
-int
-qemuMonitorDrivePivot(qemuMonitor *mon,
-                      const char *jobname)
-{
-    VIR_DEBUG("jobname=%s", jobname);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONDrivePivot(mon, jobname);
-}
-
-
 int
 qemuMonitorArbitraryCommand(qemuMonitor *mon,
                             const char *cmd,

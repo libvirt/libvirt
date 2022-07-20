@@ -986,9 +986,6 @@ int qemuMonitorBlockdevMirror(qemuMonitor *mon,
                               bool shallow,
                               bool syncWrite)
     ATTRIBUTE_NONNULL(4) ATTRIBUTE_NONNULL(5);
-int qemuMonitorDrivePivot(qemuMonitor *mon,
-                          const char *jobname)
-    ATTRIBUTE_NONNULL(2);
 
 int qemuMonitorBlockCommit(qemuMonitor *mon,
                            const char *device,

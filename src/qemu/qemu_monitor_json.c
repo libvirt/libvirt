@@ -4505,29 +4505,6 @@ qemuMonitorJSONBlockJobSetSpeed(qemuMonitor *mon,
 
 
 int
-qemuMonitorJSONDrivePivot(qemuMonitor *mon,
-                          const char *jobname)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("block-job-complete",
-                                     "s:device", jobname,
-                                     NULL);
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONBlockJobError(cmd, reply, jobname) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-int
 qemuMonitorJSONJobDismiss(qemuMonitor *mon,
                           const char *jobname)
 {
