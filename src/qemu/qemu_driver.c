@@ -14286,9 +14286,9 @@ qemuDomainBlockPivot(virDomainObj *vm,
     g_autoptr(qemuBlockStorageSourceChainData) chainattachdata = NULL;
     int ret = -1;
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     g_autoptr(virJSONValue) bitmapactions = NULL;
     g_autoptr(virJSONValue) reopenactions = NULL;
+    int rc = 0;
 
     if (job->state != QEMU_BLOCKJOB_STATE_READY) {
         virReportError(VIR_ERR_BLOCK_COPY_ACTIVE,
@@ -14316,7 +14316,7 @@ qemuDomainBlockPivot(virDomainObj *vm,
         return -1;
 
     case QEMU_BLOCKJOB_TYPE_COPY:
-        if (blockdev && !job->jobflagsmissing) {
+        if (!job->jobflagsmissing) {
             bool shallow = job->jobflags & VIR_DOMAIN_BLOCK_COPY_SHALLOW;
             bool reuse = job->jobflags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT;
 
@@ -14353,41 +14353,35 @@ qemuDomainBlockPivot(virDomainObj *vm,
         break;
 
     case QEMU_BLOCKJOB_TYPE_ACTIVE_COMMIT:
-        if (blockdev) {
-            bitmapactions = virJSONValueNewArray();
+        bitmapactions = virJSONValueNewArray();
 
-            if (qemuMonitorTransactionBitmapAdd(bitmapactions,
-                                                job->data.commit.base->nodeformat,
-                                                "libvirt-tmp-activewrite",
-                                                false,
-                                                false,
-                                                0) < 0)
-                return -1;
-        }
+        if (qemuMonitorTransactionBitmapAdd(bitmapactions,
+                                            job->data.commit.base->nodeformat,
+                                            "libvirt-tmp-activewrite",
+                                            false,
+                                            false,
+                                            0) < 0)
+            return -1;
 
         break;
     }
 
     qemuDomainObjEnterMonitor(vm);
-    if (blockdev) {
-        int rc = 0;
 
-        if (chainattachdata) {
-            if ((rc = qemuBlockStorageSourceChainAttach(priv->mon, chainattachdata)) == 0) {
-                /* install backing images on success, or unplug them on failure */
-                if ((rc = qemuMonitorTransaction(priv->mon, &reopenactions)) != 0)
-                    qemuBlockStorageSourceChainDetach(priv->mon, chainattachdata);
-            }
+    if (chainattachdata) {
+        if ((rc = qemuBlockStorageSourceChainAttach(priv->mon, chainattachdata)) == 0) {
+            /* install backing images on success, or unplug them on failure */
+            if ((rc = qemuMonitorTransaction(priv->mon, &reopenactions)) != 0)
+                qemuBlockStorageSourceChainDetach(priv->mon, chainattachdata);
         }
-
-        if (bitmapactions && rc == 0)
-            ignore_value(qemuMonitorTransaction(priv->mon, &bitmapactions));
-
-        if (rc == 0)
-            ret = qemuMonitorJobComplete(priv->mon, job->name);
-    } else {
-        ret = qemuMonitorDrivePivot(priv->mon, job->name);
     }
+
+    if (bitmapactions && rc == 0)
+        ignore_value(qemuMonitorTransaction(priv->mon, &bitmapactions));
+
+    if (rc == 0)
+        ret = qemuMonitorJobComplete(priv->mon, job->name);
+
     qemuDomainObjExitMonitor(vm);
 
     /* The pivot failed. The block job in QEMU remains in the synchronised state */
