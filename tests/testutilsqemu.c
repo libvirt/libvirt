@@ -146,6 +146,24 @@ bool virTPMHasSwtpm(void)
 }
 
 
+bool
+virTPMSwtpmSetupCapsGet(virTPMSwtpmSetupFeature cap)
+{
+    switch (cap) {
+    case VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_PWDFILE_FD:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_CREATE_CONFIG_FILES:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_TPM12_NOT_NEED_ROOT:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_CMDARG_RECONFIGURE_PCR_BANKS:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_TPM_1_2:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_TPM_2_0:
+    case VIR_TPM_SWTPM_SETUP_FEATURE_LAST:
+        break;
+    }
+
+    return false;
+}
+
+
 virCapsHostNUMA *
 virCapabilitiesHostNUMANewHost(void)
 {
