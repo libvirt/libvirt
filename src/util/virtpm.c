@@ -345,13 +345,13 @@ virTPMBinaryGetCaps(virTPMBinary binary,
 }
 
 bool
-virTPMSwtpmCapsGet(unsigned int cap)
+virTPMSwtpmCapsGet(virTPMSwtpmFeature cap)
 {
     return virTPMBinaryGetCaps(VIR_TPM_BINARY_SWTPM, cap);
 }
 
 bool
-virTPMSwtpmSetupCapsGet(unsigned int cap)
+virTPMSwtpmSetupCapsGet(virTPMSwtpmSetupFeature cap)
 {
     return virTPMBinaryGetCaps(VIR_TPM_BINARY_SWTPM_SETUP, cap);
 }
