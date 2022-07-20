@@ -234,6 +234,7 @@
   <flag name='virtio-net.rss'/>
   <flag name='chardev.qemu-vdagent'/>
   <flag name='usb-host.guest-resets-all'/>
+  <flag name='migration.blocked-reasons'/>
   <version>6001000</version>
   <kvmVersion>0</kvmVersion>
   <microcodeVersion>43100243</microcodeVersion>
