@@ -5309,15 +5309,15 @@ virDomainDeviceAddressParseXML(xmlNodePtr address,
 {
     g_autofree char *type = virXMLPropString(address, "type");
 
-    if (type) {
-        if ((info->type = virDomainDeviceAddressTypeFromString(type)) <= 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown address type '%s'"), type);
-            return -1;
-        }
-    } else {
+    if (!type) {
         virReportError(VIR_ERR_INTERNAL_ERROR,
                        "%s", _("No type specified for device address"));
+        return -1;
+    }
+
+    if ((info->type = virDomainDeviceAddressTypeFromString(type)) <= 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown address type '%s'"), type);
         return -1;
     }
 
@@ -5996,17 +5996,16 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
      * <hostdev>.  (the functions we're going to call expect address
      * type to already be known).
      */
-    if (type) {
-        if ((def->source.subsys.type
-             = virDomainHostdevSubsysTypeFromString(type)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown host device source address type '%s'"),
-                           type);
-            return -1;
-        }
-    } else {
+    if (!type) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("missing source address type"));
+        return -1;
+    }
+
+    if ((def->source.subsys.type = virDomainHostdevSubsysTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown host device source address type '%s'"),
+                       type);
         return -1;
     }
 
@@ -6304,17 +6303,16 @@ virDomainHostdevDefParseXMLCaps(xmlNodePtr node G_GNUC_UNUSED,
      * <hostdev>.  (the functions we're going to call expect address
      * type to already be known).
      */
-    if (type) {
-        if ((def->source.caps.type
-             = virDomainHostdevCapsTypeFromString(type)) < 0) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("unknown host device source address type '%s'"),
-                           type);
-            return -1;
-        }
-    } else {
+    if (!type) {
         virReportError(VIR_ERR_XML_ERROR,
                        "%s", _("missing source address type"));
+        return -1;
+    }
+
+    if ((def->source.caps.type = virDomainHostdevCapsTypeFromString(type)) < 0) {
+        virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
+                       _("unknown host device source address type '%s'"),
+                       type);
         return -1;
     }
 
