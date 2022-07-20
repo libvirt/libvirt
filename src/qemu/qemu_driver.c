@@ -14886,8 +14886,7 @@ qemuDomainBlockCopyValidateMirror(virStorageSource *mirror,
  */
 static int
 qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSource *mirror,
-                                                        bool shallow,
-                                                        bool blockdev)
+                                                        bool shallow)
 {
     if (!virStorageSourceHasBacking(mirror)) {
         /* for deep copy there won't be backing chain so we can terminate it */
@@ -14903,12 +14902,6 @@ qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(virStorageSource *mirror
          * For a copy when we are not reusing external image requesting shallow
          * is okay and will inherit the original backing chain */
     } else {
-        if (!blockdev) {
-            virReportError(VIR_ERR_INVALID_ARG, "%s",
-                           _("backingStore of mirror target is not supported by this qemu"));
-            return -1;
-        }
-
         if (!shallow) {
             virReportError(VIR_ERR_INVALID_ARG, "%s",
                            _("backingStore of mirror without VIR_DOMAIN_BLOCK_COPY_SHALLOW doesn't make sense"));
@@ -14943,13 +14936,11 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     bool need_unlink = false;
     bool need_revoke = false;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    const char *format = NULL;
     bool mirror_reuse = !!(flags & VIR_DOMAIN_BLOCK_COPY_REUSE_EXT);
     bool mirror_shallow = !!(flags & VIR_DOMAIN_BLOCK_COPY_SHALLOW);
     bool existing = mirror_reuse;
     qemuBlockJobData *job = NULL;
     g_autoptr(virStorageSource) mirror = mirrorsrc;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool supports_create = false;
     bool supports_access = false;
     bool supports_detect = false;
@@ -15003,12 +14994,6 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         virDomainDiskDefSourceLUNValidate(mirror) < 0)
         goto endjob;
 
-    if (syncWrites && !blockdev) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("VIR_DOMAIN_BLOCK_COPY_SYNCHRONOUS_WRITES is not supported by this VM"));
-        goto endjob;
-    }
-
     if (!(flags & VIR_DOMAIN_BLOCK_COPY_TRANSIENT_JOB) &&
         vm->persistent) {
         /* XXX if qemu ever lets us start a new domain with mirroring
@@ -15027,8 +15012,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     }
 
     if (qemuDomainBlockCopyCommonValidateUserMirrorBackingStore(mirror,
-                                                                mirror_shallow,
-                                                                blockdev) < 0)
+                                                                mirror_shallow) < 0)
         goto endjob;
 
     /* unless the user provides a pre-created file, shallow copy into a raw
@@ -15038,14 +15022,6 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
                        _("shallow copy of disk '%s' into a raw file "
                          "is not possible"),
                        disk->dst);
-        goto endjob;
-    }
-
-    /* Prepare the destination file.  */
-    if (!blockdev &&
-        !virStorageSourceIsLocalStorage(mirror)) {
-        virReportError(VIR_ERR_ARGUMENT_UNSUPPORTED, "%s",
-                       _("non-file destination not supported yet"));
         goto endjob;
     }
 
@@ -15091,8 +15067,8 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         goto endjob;
     }
 
-    /* pre-create the image file. In case when 'blockdev' is used this is
-     * required so that libvirt can properly label the image for access by qemu */
+    /* pre-create the image file. This is required so that libvirt can properly
+     * label the image for access by qemu */
     if (!existing) {
         if (supports_create) {
             if (virStorageSourceCreate(mirror) < 0) {
@@ -15103,9 +15079,6 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
             need_unlink = true;
         }
     }
-
-    if (mirror->format > 0)
-        format = virStorageFileFormatTypeToString(mirror->format);
 
     if (virStorageSourceInitChainElement(mirror, disk->src,
                                          keepParentLabel) < 0)
@@ -15122,20 +15095,18 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
 
     /* we must initialize XML-provided chain prior to detecting to keep semantics
      * with VM startup */
-    if (blockdev) {
-        for (n = mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
-            if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
-                goto endjob;
-        }
-
-        /* 'qemuDomainPrepareStorageSourceBlockdev' calls
-         * 'qemuDomainPrepareDiskSourceData' which propagates 'detect_zeroes'
-         * into the topmost virStorage source of the disk chain.
-         * Since 'mirror' has the ambition to replace it we need to propagate
-         * it into the mirror too. We do it directly as otherwise we'd need
-         * to modify all callers of 'qemuDomainPrepareStorageSourceBlockdev' */
-        mirror->detect_zeroes = disk->detect_zeroes;
+    for (n = mirror; virStorageSourceIsBacking(n); n = n->backingStore) {
+        if (qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
+            goto endjob;
     }
+
+    /* 'qemuDomainPrepareStorageSourceBlockdev' calls
+     * 'qemuDomainPrepareDiskSourceData' which propagates 'detect_zeroes'
+     * into the topmost virStorage source of the disk chain.
+     * Since 'mirror' has the ambition to replace it we need to propagate
+     * it into the mirror too. We do it directly as otherwise we'd need
+     * to modify all callers of 'qemuDomainPrepareStorageSourceBlockdev' */
+    mirror->detect_zeroes = disk->detect_zeroes;
 
     /* If reusing an external image that includes a backing file but the user
      * did not enumerate the chain in the XML we need to detect the chain */
@@ -15149,66 +15120,64 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
         goto endjob;
     need_revoke = true;
 
-    if (blockdev) {
-        if (mirror_reuse) {
-            /* oVirt depended on late-backing-chain-opening semantics the old
-             * qemu command had to copy the backing chain data while the top
-             * level is being copied. To restore this semantics if
-             * blockdev-reopen is supported defer opening of the backing chain
-             * of 'mirror' to the pivot step */
-            if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
-                g_autoptr(virStorageSource) terminator = virStorageSourceNew();
+    if (mirror_reuse) {
+        /* oVirt depended on late-backing-chain-opening semantics the old
+         * qemu command had to copy the backing chain data while the top
+         * level is being copied. To restore this semantics if
+         * blockdev-reopen is supported defer opening of the backing chain
+         * of 'mirror' to the pivot step */
+        if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY)) {
+            g_autoptr(virStorageSource) terminator = virStorageSourceNew();
 
-                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                                 terminator)))
+            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
+                                                                             terminator)))
+                goto endjob;
+        } else {
+            if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror)))
+                goto endjob;
+        }
+    } else {
+        if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
+            goto endjob;
+
+        if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
+                                                   mirror, disk->src))
+            goto endjob;
+
+        if (mirror_shallow) {
+            /* if external backing store is populated we'll need to open it */
+            if (virStorageSourceHasBacking(mirror)) {
+                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore)))
                     goto endjob;
+
+                mirrorBacking = mirror->backingStore;
             } else {
-                if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror)))
-                    goto endjob;
+                /* backing store of original image will be reused, but the
+                 * new image must refer to it in the metadata */
+                mirrorBacking = disk->src->backingStore;
             }
         } else {
-            if (!(blockNamedNodeData = qemuBlockGetNamedNodeData(vm, VIR_ASYNC_JOB_NONE)))
-                goto endjob;
-
-            if (qemuBlockStorageSourceCreateDetectSize(blockNamedNodeData,
-                                                       mirror, disk->src))
-                goto endjob;
-
-            if (mirror_shallow) {
-                /* if external backing store is populated we'll need to open it */
-                if (virStorageSourceHasBacking(mirror)) {
-                    if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(mirror->backingStore)))
-                        goto endjob;
-
-                    mirrorBacking = mirror->backingStore;
-                } else {
-                    /* backing store of original image will be reused, but the
-                     * new image must refer to it in the metadata */
-                    mirrorBacking = disk->src->backingStore;
-                }
-            } else {
-                mirrorBacking = mirror->backingStore;
-            }
-
-            if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
-                                                                               mirrorBacking)))
-                goto endjob;
+            mirrorBacking = mirror->backingStore;
         }
 
-        if (data) {
-            qemuDomainObjEnterMonitor(vm);
-            rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
-            qemuDomainObjExitMonitor(vm);
-
-            if (rc < 0)
-                goto endjob;
-        }
-
-        if (crdata &&
-            qemuBlockStorageSourceCreate(vm, mirror, mirrorBacking, mirror->backingStore,
-                                         crdata->srcdata[0], VIR_ASYNC_JOB_NONE) < 0)
+        if (!(crdata = qemuBuildStorageSourceChainAttachPrepareBlockdevTop(mirror,
+                                                                           mirrorBacking)))
             goto endjob;
     }
+
+    if (data) {
+        qemuDomainObjEnterMonitor(vm);
+        rc = qemuBlockStorageSourceChainAttach(priv->mon, data);
+        qemuDomainObjExitMonitor(vm);
+
+        if (rc < 0)
+            goto endjob;
+    }
+
+    if (crdata &&
+        qemuBlockStorageSourceCreate(vm, mirror, mirrorBacking, mirror->backingStore,
+                                     crdata->srcdata[0], VIR_ASYNC_JOB_NONE) < 0)
+        goto endjob;
 
     if (!(job = qemuBlockJobDiskNewCopy(vm, disk, mirror, mirror_shallow, mirror_reuse, flags)))
         goto endjob;
@@ -15218,19 +15187,11 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     /* Actually start the mirroring */
     qemuDomainObjEnterMonitor(vm);
 
-    if (blockdev) {
-        ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
-                                        qemuDomainDiskGetTopNodename(disk),
-                                        mirror->nodeformat, bandwidth,
-                                        granularity, buf_size, mirror_shallow,
-                                        syncWrites);
-    } else {
-        /* qemuMonitorDriveMirror needs to honor the REUSE_EXT flag as specified
-         * by the user */
-        ret = qemuMonitorDriveMirror(priv->mon, job->name, mirror->path, format,
-                                     bandwidth, granularity, buf_size,
-                                     mirror_shallow, mirror_reuse);
-    }
+    ret = qemuMonitorBlockdevMirror(priv->mon, job->name, true,
+                                    qemuDomainDiskGetTopNodename(disk),
+                                    mirror->nodeformat, bandwidth,
+                                    granularity, buf_size, mirror_shallow,
+                                    syncWrites);
 
     virDomainAuditDisk(vm, NULL, mirror, "mirror", ret >= 0);
     qemuDomainObjExitMonitor(vm);
