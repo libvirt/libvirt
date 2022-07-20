@@ -1415,6 +1415,22 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
 }
 
 
+static int
+qemuDomainGetMigrationBlockers(virQEMUDriver *driver,
+                               virDomainObj *vm,
+                               char ***blockers)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    int rc;
+
+    qemuDomainObjEnterMonitor(driver, vm);
+    rc = qemuMonitorGetMigrationBlockers(priv->mon, blockers);
+    qemuDomainObjExitMonitor(vm);
+
+    return rc;
+}
+
+
 /**
  * qemuMigrationSrcIsAllowed:
  * @driver: qemu driver struct
@@ -1439,6 +1455,20 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
     int nsnapshots;
     int pauseReason;
     size_t i;
+
+    /* Ask qemu if it has a migration blocker */
+    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_BLOCKED_REASONS)) {
+        g_auto(GStrv) blockers = NULL;
+        if (qemuDomainGetMigrationBlockers(driver, vm, &blockers) < 0)
+            return false;
+
+        if (blockers && blockers[0]) {
+            g_autofree char *reasons = g_strjoinv("; ", blockers);
+            virReportError(VIR_ERR_OPERATION_INVALID,
+                           _("cannot migrate domain: %s"), reasons);
+            return false;
+        }
+    }
 
     /* perform these checks only when migrating to remote hosts */
     if (remote) {
