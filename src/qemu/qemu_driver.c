@@ -15412,24 +15412,16 @@ qemuDomainBlockCommit(virDomainPtr dom,
     virQEMUDriver *driver = dom->conn->privateData;
     qemuDomainObjPrivate *priv;
     virDomainObj *vm = NULL;
-    const char *device = NULL;
-    const char *jobname = NULL;
     int ret = -1;
     virDomainDiskDef *disk = NULL;
     virStorageSource *topSource;
     virStorageSource *baseSource = NULL;
     virStorageSource *top_parent = NULL;
     bool clean_access = false;
-    g_autofree char *topPath = NULL;
-    g_autofree char *basePath = NULL;
     g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobData *job = NULL;
     g_autoptr(virStorageSource) mirror = NULL;
-    const char *nodetop = NULL;
-    const char *nodebase = NULL;
-    bool persistjob = false;
-    bool blockdev = false;
 
     virCheckFlags(VIR_DOMAIN_BLOCK_COMMIT_SHALLOW |
                   VIR_DOMAIN_BLOCK_COMMIT_ACTIVE |
@@ -15449,8 +15441,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
-
-    blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
 
     /* Convert bandwidth MiB to bytes, if necessary */
     if (!(flags & VIR_DOMAIN_BLOCK_COMMIT_BANDWIDTH_BYTES)) {
@@ -15481,12 +15471,6 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (qemuDomainSupportsCheckpointsBlockjobs(vm) < 0)
         goto endjob;
-
-    if (!blockdev && (flags & VIR_DOMAIN_BLOCK_COMMIT_DELETE)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("deleting committed images is not supported by this VM"));
-        goto endjob;
-    }
 
     if (!top || STREQ(top, disk->dst))
         topSource = disk->src;
@@ -15543,7 +15527,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     if (flags & VIR_DOMAIN_BLOCK_COMMIT_RELATIVE &&
         topSource != disk->src) {
-        if (blockdev && top_parent &&
+        if (top_parent &&
             qemuBlockUpdateRelativeBacking(vm, top_parent, disk->src) < 0)
             goto endjob;
 
@@ -15587,39 +15571,21 @@ qemuDomainBlockCommit(virDomainPtr dom,
 
     disk->mirrorState = VIR_DOMAIN_DISK_MIRROR_STATE_NONE;
 
-    /* Start the commit operation.  Pass the user's original spelling,
-     * if any, through to qemu, since qemu may behave differently
-     * depending on whether the input was specified as relative or
-     * absolute (that is, our absolute top_canon may do the wrong
-     * thing if the user specified a relative name).  */
-
-    if (blockdev) {
-        persistjob = true;
-        jobname = job->name;
-        nodetop = topSource->nodeformat;
-        nodebase = baseSource->nodeformat;
-        device = qemuDomainDiskGetTopNodename(disk);
-        if (!backingPath && top_parent &&
-            !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
-            goto endjob;
-
-    } else {
-        device = job->name;
-    }
+    if (!backingPath && top_parent &&
+        !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
+        goto endjob;
 
     qemuDomainObjEnterMonitor(vm);
 
-    if (!blockdev) {
-        basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
-                                             baseSource);
-        topPath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
-                                            topSource);
-    }
-
-    if (blockdev || (basePath && topPath))
-        ret = qemuMonitorBlockCommit(priv->mon, device, jobname, persistjob,
-                                     topPath, nodetop, basePath, nodebase,
-                                     backingPath, speed);
+    ret = qemuMonitorBlockCommit(priv->mon,
+                                 qemuDomainDiskGetTopNodename(disk),
+                                 job->name,
+                                 true,
+                                 NULL,
+                                 topSource->nodeformat,
+                                 NULL,
+                                 baseSource->nodeformat,
+                                 backingPath, speed);
 
     qemuDomainObjExitMonitor(vm);
 
