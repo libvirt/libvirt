@@ -9233,6 +9233,40 @@ getPPC64MemLockLimitBytes(virDomainDef *def,
 }
 
 
+static int
+qemuDomainGetNumVFIODevices(const virDomainDef *def)
+{
+    size_t i;
+    int n = 0;
+
+    for (i = 0; i < def->nhostdevs; i++) {
+        if (virHostdevIsVFIODevice(def->hostdevs[i]) ||
+            virHostdevIsMdevDevice(def->hostdevs[i]))
+            n++;
+    }
+    for (i = 0; i < def->ndisks; i++) {
+        if (virStorageSourceChainHasNVMe(def->disks[i]->src))
+            n++;
+    }
+    return n;
+}
+
+
+static int
+qemuDomainGetNumVDPANetDevices(const virDomainDef *def)
+{
+    size_t i;
+    int n = 0;
+
+    for (i = 0; i < def->nnets; i++) {
+        if (virDomainNetGetActualType(def->nets[i]) == VIR_DOMAIN_NET_TYPE_VDPA)
+            n++;
+    }
+
+    return n;
+}
+
+
 /**
  * qemuDomainGetMemLockLimitBytes:
  * @def: domain definition
@@ -9252,6 +9286,8 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
                                bool forceVFIO)
 {
     unsigned long long memKB = 0;
+    int nvfio;
+    int nvdpa;
 
     /* prefer the hard limit */
     if (virMemoryLimitIsSet(def->mem.hard_limit)) {
@@ -9270,6 +9306,8 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
     if (ARCH_IS_PPC64(def->os.arch) && def->virtType == VIR_DOMAIN_VIRT_KVM)
         return getPPC64MemLockLimitBytes(def, forceVFIO);
 
+    nvfio = qemuDomainGetNumVFIODevices(def);
+    nvdpa = qemuDomainGetNumVDPANetDevices(def);
     /* For device passthrough using VFIO the guest memory and MMIO memory
      * regions need to be locked persistent in order to allow DMA.
      *
@@ -9288,8 +9326,22 @@ qemuDomainGetMemLockLimitBytes(virDomainDef *def,
      *
      * Note that this may not be valid for all platforms.
      */
-    if (forceVFIO || qemuDomainNeedsVFIO(def) || virDomainDefHasVDPANet(def))
-        memKB = virDomainDefGetMemoryTotal(def) + 1024 * 1024;
+    if (forceVFIO || nvfio || nvdpa) {
+        /* At present, the full memory needs to be locked for each VFIO / VDPA
+         * device. For VFIO devices, this only applies when there is a vIOMMU
+         * present. Yes, this may result in a memory limit that is greater than
+         * the host physical memory, which is not ideal. The long-term solution
+         * is a new userspace iommu interface (iommufd) which should eliminate
+         * this duplicate memory accounting. But for now this is the only way
+         * to enable configurations with e.g. multiple vdpa devices.
+         */
+        int factor = nvdpa;
+
+        if (def->iommu)
+            factor += nvfio;
+
+        memKB = MAX(factor, 1) * virDomainDefGetMemoryTotal(def) + 1024 * 1024;
+    }
 
     return memKB << 10;
 }
