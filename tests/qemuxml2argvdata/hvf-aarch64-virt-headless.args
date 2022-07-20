@@ -10,10 +10,12 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -name guest=test,debug-threads=on \
 -S \
 -object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test/master-key.aes \
--machine virt,usb=off,gic-version=2,dump-guest-core=off \
+-blockdev '{"driver":"file","filename":"/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw","node-name":"libvirt-pflash0-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash0-format","read-only":true,"driver":"raw","file":"libvirt-pflash0-storage"}' \
+-blockdev '{"driver":"file","filename":"/some/user/nvram/path/guest_VARS.fd","node-name":"libvirt-pflash1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-pflash1-format","read-only":false,"driver":"raw","file":"libvirt-pflash1-storage"}' \
+-machine virt,usb=off,gic-version=2,dump-guest-core=off,pflash0=libvirt-pflash0-format,pflash1=libvirt-pflash1-format \
 -accel hvf \
--drive file=/usr/share/edk2/aarch64/QEMU_EFI-silent-pflash.raw,if=pflash,format=raw,unit=0,readonly=on \
--drive file=/some/user/nvram/path/guest_VARS.fd,if=pflash,format=raw,unit=1 \
 -m 4096 \
 -overcommit mem-lock=off \
 -smp 2,sockets=2,cores=1,threads=1 \
@@ -33,8 +35,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-test/.config \
 -device pcie-root-port,port=12,chassis=5,id=pci.5,bus=pcie.0,addr=0x1.0x4 \
 -device pcie-root-port,port=13,chassis=6,id=pci.6,bus=pcie.0,addr=0x1.0x5 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.2,addr=0x0 \
--drive file=/var/lib/libvirt/images/test.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pci.3,addr=0x0,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/test.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,bus=pci.3,addr=0x0,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=52:54:00:9a:e6:c6,bus=pci.1,addr=0x0 \
 -chardev pty,id=charserial0 \

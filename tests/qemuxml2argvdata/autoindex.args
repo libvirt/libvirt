@@ -54,7 +54,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -device ich9-usb-uhci2,masterbus=usb4.0,firstport=2,bus=pci.2,addr=0x2.0x1 \
 -device ich9-usb-uhci3,masterbus=usb4.0,firstport=4,bus=pci.2,addr=0x2.0x2 \
 -device ich9-usb-ehci1,id=usb4,bus=pci.2,addr=0x2.0x7 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
--device ide-hd,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device ide-hd,bus=ide.0,drive=libvirt-1-format,id=sata0-0-0,bootindex=1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

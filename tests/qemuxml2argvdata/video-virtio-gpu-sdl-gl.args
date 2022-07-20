@@ -25,8 +25,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -usb \
--drive file=/var/lib/libvirt/images/QEMUGuest1,format=qcow2,if=none,id=drive-ide0-0-0,cache=none \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/QEMUGuest1","node-name":"libvirt-1-storage","cache":{"direct":true,"no-flush":false},"auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"cache":{"direct":true,"no-flush":false},"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-1-format,id=ide0-0-0,bootindex=1 \
 -display sdl,gl=on \
 -device virtio-gpu-pci,id=video0,virgl=on,max_outputs=1,bus=pci.0,addr=0x2 \
 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x3 \

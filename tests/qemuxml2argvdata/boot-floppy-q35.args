@@ -25,7 +25,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-shutdown \
 -no-acpi \
 -boot strict=on \
--drive file=/tmp/firmware.img,format=raw,if=none,id=drive-fdc0-0-0 \
--device isa-fdc,driveA=drive-fdc0-0-0,bootindexA=1 \
+-device isa-fdc,bootindexA=1 \
+-blockdev '{"driver":"file","filename":"/tmp/firmware.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device floppy,unit=0,drive=libvirt-1-format,id=fdc0-0-0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

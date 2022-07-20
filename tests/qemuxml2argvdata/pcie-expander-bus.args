@@ -62,8 +62,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-pcie-expander-bus-te/.config \
 -device xio3130-downstream,port=29,chassis=33,id=pci.33,bus=pci.3,addr=0x1d \
 -device xio3130-downstream,port=30,chassis=34,id=pci.34,bus=pci.3,addr=0x1e \
 -device xio3130-downstream,port=31,chassis=35,id=pci.35,bus=pci.3,addr=0x1f \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-sata0-0-0 \
--device ide-hd,bus=ide.0,drive=drive-sata0-0-0,id=sata0-0-0,bootindex=1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device ide-hd,bus=ide.0,drive=libvirt-1-format,id=sata0-0-0,bootindex=1 \
 -netdev user,id=hostnet0 \
 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:f1:95:51,bus=pci.4,addr=0x0 \
 -netdev user,id=hostnet1 \

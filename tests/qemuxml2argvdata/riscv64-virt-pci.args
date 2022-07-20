@@ -26,7 +26,8 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-riscv64/.config \
 -boot strict=on \
 -kernel /var/lib/libvirt/images/riscv64.bbl \
 -append root=/dev/vda \
--drive file=/var/lib/libvirt/images/riscv64.qcow2,format=qcow2,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,bus=pcie.0,addr=0x1,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/riscv64.qcow2","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"qcow2","file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,bus=pcie.0,addr=0x1,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -audiodev '{"id":"audio1","driver":"none"}' \
 -msg timestamp=on

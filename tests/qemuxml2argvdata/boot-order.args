@@ -26,15 +26,19 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-QEMUGuest1/.config \
 -no-acpi \
 -boot strict=on \
 -usb \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-ide0-0-0 \
--device ide-hd,bus=ide.0,unit=0,drive=drive-ide0-0-0,id=ide0-0-0 \
--drive file=/root/boot.iso,format=raw,if=none,id=drive-ide0-1-0,readonly=on \
--device ide-cd,bus=ide.1,unit=0,drive=drive-ide0-1-0,id=ide0-1-0,bootindex=1 \
--drive file=sheepdog:example.org:6000:image,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=3 \
--drive file=/dev/null,format=raw,if=none,id=drive-fdc0-0-1 \
--global isa-fdc.driveB=drive-fdc0-0-1 \
 -global isa-fdc.bootindexB=4 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-4-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-4-format","read-only":false,"driver":"raw","file":"libvirt-4-storage"}' \
+-device ide-hd,bus=ide.0,unit=0,drive=libvirt-4-format,id=ide0-0-0 \
+-blockdev '{"driver":"file","filename":"/root/boot.iso","node-name":"libvirt-3-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-3-format","read-only":true,"driver":"raw","file":"libvirt-3-storage"}' \
+-device ide-cd,bus=ide.1,unit=0,drive=libvirt-3-format,id=ide0-1-0,bootindex=1 \
+-blockdev '{"driver":"sheepdog","server":{"type":"inet","host":"example.org","port":"6000"},"vdi":"image","node-name":"libvirt-2-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-2-format","read-only":false,"driver":"raw","file":"libvirt-2-storage"}' \
+-device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=libvirt-2-format,id=virtio-disk0,bootindex=3 \
+-blockdev '{"driver":"file","filename":"/dev/null","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device floppy,unit=1,drive=libvirt-1-format,id=fdc0-0-1 \
 -netdev user,id=hostnet0 \
 -device virtio-net-pci,netdev=hostnet0,id=net0,mac=00:11:22:33:44:55,bootindex=2,bus=pci.0,addr=0x2 \
 -audiodev '{"id":"audio1","driver":"none"}' \

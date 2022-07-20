@@ -43,8 +43,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-q35-test/.config \
 -device nec-usb-xhci,id=usb,bus=pci.8,addr=0x0 \
 -device virtio-scsi-pci,id=scsi0,bus=pci.7,addr=0x0 \
 -device virtio-serial-pci,id=virtio-serial0,bus=pci.6,addr=0x0 \
--drive file=/dev/HostVG/QEMUGuest1,format=raw,if=none,id=drive-virtio-disk1 \
--device virtio-blk-pci,bus=pci.9,addr=0x0,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 \
+-blockdev '{"driver":"host_device","filename":"/dev/HostVG/QEMUGuest1","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device virtio-blk-pci,bus=pci.9,addr=0x0,drive=libvirt-1-format,id=virtio-disk1,bootindex=1 \
 -fsdev local,security_model=passthrough,id=fsdev-fs0,path=/export/to/guest \
 -device virtio-9p-pci,id=fs0,fsdev=fsdev-fs0,mount_tag=/import/from/host,bus=pci.3,addr=0x0 \
 -netdev user,id=hostnet0 \

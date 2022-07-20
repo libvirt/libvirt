@@ -26,8 +26,9 @@ XDG_CONFIG_HOME=/tmp/lib/domain--1-riscv64/.config \
 -boot strict=on \
 -kernel /var/lib/libvirt/images/bbl \
 -append 'console=ttyS0 ro root=/dev/vda' \
--drive file=/var/lib/libvirt/images/stage4-disk.img,format=raw,if=none,id=drive-virtio-disk0 \
--device virtio-blk-device,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 \
+-blockdev '{"driver":"file","filename":"/var/lib/libvirt/images/stage4-disk.img","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}' \
+-blockdev '{"node-name":"libvirt-1-format","read-only":false,"driver":"raw","file":"libvirt-1-storage"}' \
+-device virtio-blk-device,drive=libvirt-1-format,id=virtio-disk0,bootindex=1 \
 -chardev pty,id=charserial0 \
 -serial chardev:charserial0 \
 -audiodev '{"id":"audio1","driver":"none"}' \
