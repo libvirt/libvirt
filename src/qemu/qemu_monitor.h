@@ -222,12 +222,6 @@ typedef void (*qemuMonitorDomainGraphicsCallback)(qemuMonitor *mon,
                                                   const char *authScheme,
                                                   const char *x509dname,
                                                   const char *saslUsername);
-typedef void (*qemuMonitorDomainBlockJobCallback)(qemuMonitor *mon,
-                                                  virDomainObj *vm,
-                                                  const char *diskAlias,
-                                                  int type,
-                                                  int status,
-                                                  const char *error);
 typedef void (*qemuMonitorDomainJobStatusChangeCallback)(qemuMonitor *mon,
                                                          virDomainObj *vm,
                                                          const char *jobname,
@@ -381,7 +375,6 @@ struct _qemuMonitorCallbacks {
     qemuMonitorDomainWatchdogCallback domainWatchdog;
     qemuMonitorDomainIOErrorCallback domainIOError;
     qemuMonitorDomainGraphicsCallback domainGraphics;
-    qemuMonitorDomainBlockJobCallback domainBlockJob;
     qemuMonitorDomainJobStatusChangeCallback jobStatusChange;
     qemuMonitorDomainTrayChangeCallback domainTrayChange;
     qemuMonitorDomainPMWakeupCallback domainPMWakeup;
@@ -474,11 +467,6 @@ void qemuMonitorEmitTrayChange(qemuMonitor *mon,
                                int reason);
 void qemuMonitorEmitPMWakeup(qemuMonitor *mon);
 void qemuMonitorEmitPMSuspend(qemuMonitor *mon);
-void qemuMonitorEmitBlockJob(qemuMonitor *mon,
-                             const char *diskAlias,
-                             int type,
-                             int status,
-                             const char *error);
 void qemuMonitorEmitJobStatusChange(qemuMonitor *mon,
                                     const char *jobname,
                                     qemuMonitorJobStatus status);

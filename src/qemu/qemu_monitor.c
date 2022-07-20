@@ -1211,20 +1211,6 @@ qemuMonitorEmitPMSuspendDisk(qemuMonitor *mon)
 
 
 void
-qemuMonitorEmitBlockJob(qemuMonitor *mon,
-                        const char *diskAlias,
-                        int type,
-                        int status,
-                        const char *error)
-{
-    VIR_DEBUG("mon=%p", mon);
-
-    QEMU_MONITOR_CALLBACK(mon, domainBlockJob, mon->vm,
-                          diskAlias, type, status, error);
-}
-
-
-void
 qemuMonitorEmitJobStatusChange(qemuMonitor *mon,
                                const char *jobname,
                                qemuMonitorJobStatus status)

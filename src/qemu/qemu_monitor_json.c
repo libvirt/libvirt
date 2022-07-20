@@ -65,9 +65,6 @@ static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitor *mon, virJSONValue 
 static void qemuMonitorJSONHandleTrayChange(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandlePMWakeup(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandlePMSuspend(qemuMonitor *mon, virJSONValue *data);
-static void qemuMonitorJSONHandleBlockJobCompleted(qemuMonitor *mon, virJSONValue *data);
-static void qemuMonitorJSONHandleBlockJobCanceled(qemuMonitor *mon, virJSONValue *data);
-static void qemuMonitorJSONHandleBlockJobReady(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleJobStatusChange(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandleBalloonChange(qemuMonitor *mon, virJSONValue *data);
 static void qemuMonitorJSONHandlePMSuspendDisk(qemuMonitor *mon, virJSONValue *data);
@@ -97,9 +94,6 @@ static qemuEventHandler eventHandlers[] = {
     { "ACPI_DEVICE_OST", qemuMonitorJSONHandleAcpiOstInfo, },
     { "BALLOON_CHANGE", qemuMonitorJSONHandleBalloonChange, },
     { "BLOCK_IO_ERROR", qemuMonitorJSONHandleIOError, },
-    { "BLOCK_JOB_CANCELLED", qemuMonitorJSONHandleBlockJobCanceled, },
-    { "BLOCK_JOB_COMPLETED", qemuMonitorJSONHandleBlockJobCompleted, },
-    { "BLOCK_JOB_READY", qemuMonitorJSONHandleBlockJobReady, },
     { "BLOCK_WRITE_THRESHOLD", qemuMonitorJSONHandleBlockThreshold, },
     { "DEVICE_DELETED", qemuMonitorJSONHandleDeviceDeleted, },
     { "DEVICE_TRAY_MOVED", qemuMonitorJSONHandleTrayChange, },
@@ -896,67 +890,6 @@ static void qemuMonitorJSONHandleSPICEDisconnect(qemuMonitor *mon, virJSONValue 
 }
 
 static void
-qemuMonitorJSONHandleBlockJobImpl(qemuMonitor *mon,
-                                  virJSONValue *data,
-                                  int event)
-{
-    const char *device;
-    const char *type_str;
-    const char *error = NULL;
-    int type = VIR_DOMAIN_BLOCK_JOB_TYPE_UNKNOWN;
-    unsigned long long offset, len;
-
-    if ((device = virJSONValueObjectGetString(data, "device")) == NULL) {
-        VIR_WARN("missing device in block job event");
-        goto out;
-    }
-
-    if (virJSONValueObjectGetNumberUlong(data, "offset", &offset) < 0) {
-        VIR_WARN("missing offset in block job event");
-        goto out;
-    }
-
-    if (virJSONValueObjectGetNumberUlong(data, "len", &len) < 0) {
-        VIR_WARN("missing len in block job event");
-        goto out;
-    }
-
-    if ((type_str = virJSONValueObjectGetString(data, "type")) == NULL) {
-        VIR_WARN("missing type in block job event");
-        goto out;
-    }
-
-    if (STREQ(type_str, "stream"))
-        type = VIR_DOMAIN_BLOCK_JOB_TYPE_PULL;
-    else if (STREQ(type_str, "commit"))
-        type = VIR_DOMAIN_BLOCK_JOB_TYPE_COMMIT;
-    else if (STREQ(type_str, "mirror"))
-        type = VIR_DOMAIN_BLOCK_JOB_TYPE_COPY;
-    else if (STREQ(type_str, "backup"))
-        type = VIR_DOMAIN_BLOCK_JOB_TYPE_BACKUP;
-
-    switch ((virConnectDomainEventBlockJobStatus) event) {
-    case VIR_DOMAIN_BLOCK_JOB_COMPLETED:
-        error = virJSONValueObjectGetString(data, "error");
-        /* Make sure the whole device has been processed */
-        if (offset != len || error)
-            event = VIR_DOMAIN_BLOCK_JOB_FAILED;
-        break;
-    case VIR_DOMAIN_BLOCK_JOB_CANCELED:
-    case VIR_DOMAIN_BLOCK_JOB_READY:
-        break;
-    case VIR_DOMAIN_BLOCK_JOB_FAILED:
-    case VIR_DOMAIN_BLOCK_JOB_LAST:
-        VIR_DEBUG("should not get here");
-        break;
-    }
-
- out:
-    qemuMonitorEmitBlockJob(mon, device, type, event, error);
-}
-
-
-static void
 qemuMonitorJSONHandleJobStatusChange(qemuMonitor *mon,
                                      virJSONValue *data)
 {
@@ -1024,29 +957,6 @@ qemuMonitorJSONHandlePMSuspend(qemuMonitor *mon,
     qemuMonitorEmitPMSuspend(mon);
 }
 
-static void
-qemuMonitorJSONHandleBlockJobCompleted(qemuMonitor *mon,
-                                       virJSONValue *data)
-{
-    qemuMonitorJSONHandleBlockJobImpl(mon, data,
-                                      VIR_DOMAIN_BLOCK_JOB_COMPLETED);
-}
-
-static void
-qemuMonitorJSONHandleBlockJobCanceled(qemuMonitor *mon,
-                                       virJSONValue *data)
-{
-    qemuMonitorJSONHandleBlockJobImpl(mon, data,
-                                      VIR_DOMAIN_BLOCK_JOB_CANCELED);
-}
-
-static void
-qemuMonitorJSONHandleBlockJobReady(qemuMonitor *mon,
-                                   virJSONValue *data)
-{
-    qemuMonitorJSONHandleBlockJobImpl(mon, data,
-                                      VIR_DOMAIN_BLOCK_JOB_READY);
-}
 
 static void
 qemuMonitorJSONHandleBalloonChange(qemuMonitor *mon,
