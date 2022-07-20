@@ -39,9 +39,6 @@ struct qemuBlockNodeNameBackingChainData {
     char *drvstorage;
 };
 
-GHashTable *
-qemuBlockGetNodeData(virJSONValue *data);
-
 bool
 qemuBlockStorageSourceSupportsConcurrentAccess(virStorageSource *src);
 

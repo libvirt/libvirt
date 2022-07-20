@@ -52,46 +52,6 @@ qemuBlockNodeNameValidate(const char *nn)
 }
 
 
-static int
-qemuBlockNamedNodesArrayToHash(size_t pos G_GNUC_UNUSED,
-                               virJSONValue *item,
-                               void *opaque)
-{
-    GHashTable *table = opaque;
-    const char *name;
-
-    if (!(name = virJSONValueObjectGetString(item, "node-name")))
-        return 1;
-
-    if (virHashAddEntry(table, name, item) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-/**
- * qemuBlockGetNodeData:
- * @data: JSON object returned from query-named-block-nodes
- *
- * Returns a hash table organized by the node name of the JSON value objects of
- * data for given qemu block nodes.
- *
- * Returns a filled GHashTable *on success NULL on error.
- */
-GHashTable *
-qemuBlockGetNodeData(virJSONValue *data)
-{
-    g_autoptr(GHashTable) nodedata = virHashNew(virJSONValueHashFree);
-
-    if (virJSONValueArrayForeachSteal(data,
-                                      qemuBlockNamedNodesArrayToHash, nodedata) < 0)
-        return NULL;
-
-    return g_steal_pointer(&nodedata);
-}
-
-
 /**
  * qemuBlockStorageSourceSupportsConcurrentAccess:
  * @src: disk storage source
