@@ -1455,9 +1455,11 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
     int nsnapshots;
     int pauseReason;
     size_t i;
+    bool blockedReasonsCap = virQEMUCapsGet(priv->qemuCaps,
+                                            QEMU_CAPS_MIGRATION_BLOCKED_REASONS);
 
-    /* Ask qemu if it has a migration blocker */
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_MIGRATION_BLOCKED_REASONS)) {
+    /* Ask qemu if it have a migration blocker */
+    if (blockedReasonsCap) {
         g_auto(GStrv) blockers = NULL;
         if (qemuDomainGetMigrationBlockers(driver, vm, &blockers) < 0)
             return false;
@@ -1576,7 +1578,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
             virDomainNetDef *net = vm->def->nets[i];
             qemuSlirp *slirp;
 
-            if (net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
+            if (!blockedReasonsCap && net->type == VIR_DOMAIN_NET_TYPE_VDPA) {
                 virReportError(VIR_ERR_OPERATION_INVALID, "%s",
                                _("vDPA devices cannot be migrated"));
                 return false;
