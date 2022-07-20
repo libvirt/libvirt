@@ -1543,3 +1543,7 @@ qemuMonitorChangeMemoryRequestedSize(qemuMonitor *mon,
 int
 qemuMonitorMigrateRecover(qemuMonitor *mon,
                           const char *uri);
+
+int
+qemuMonitorGetMigrationBlockers(qemuMonitor *mon,
+                                char ***blockers);

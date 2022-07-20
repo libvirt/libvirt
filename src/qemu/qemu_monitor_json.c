@@ -3338,6 +3338,52 @@ int qemuMonitorJSONMigrate(qemuMonitor *mon,
     return 0;
 }
 
+
+/*
+ * Get the exposed migration blockers.
+ *
+ * This function assume qemu has the capability of request them.
+ *
+ * It returns a NULL terminated array on blockers if there are any, or it set
+ * it to NULL otherwise.
+ */
+int
+qemuMonitorJSONGetMigrationBlockers(qemuMonitor *mon,
+                                    char ***blockers)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+    virJSONValue *data;
+    virJSONValue *jblockers;
+    size_t i;
+
+    *blockers = NULL;
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-migrate", NULL)))
+        return -1;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return -1;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_OBJECT) < 0)
+        return -1;
+
+    data = virJSONValueObjectGetObject(reply, "return");
+
+    if (!(jblockers = virJSONValueObjectGetArray(data, "blocked-reasons")))
+        return 0;
+
+    *blockers = g_new0(char *, virJSONValueArraySize(jblockers) + 1);
+    for (i = 0; i < virJSONValueArraySize(jblockers); i++) {
+        virJSONValue *jblocker = virJSONValueArrayGet(jblockers, i);
+        const char *blocker = virJSONValueGetString(jblocker);
+
+        (*blockers)[i] = g_strdup(blocker);
+    }
+
+    return 0;
+}
+
+
 int qemuMonitorJSONMigrateCancel(qemuMonitor *mon)
 {
     g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("migrate_cancel", NULL);

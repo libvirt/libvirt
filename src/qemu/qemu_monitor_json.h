@@ -184,6 +184,9 @@ qemuMonitorJSONMigrate(qemuMonitor *mon,
                        unsigned int flags,
                        const char *uri);
 int
+qemuMonitorJSONGetMigrationBlockers(qemuMonitor *mon,
+                                    char ***blockers);
+int
 qemuMonitorJSONGetSpiceMigrationStatus(qemuMonitor *mon,
                                        bool *spice_migrated);
 

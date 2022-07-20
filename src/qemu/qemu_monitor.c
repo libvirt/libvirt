@@ -4486,3 +4486,15 @@ qemuMonitorMigrateRecover(qemuMonitor *mon,
 
     return qemuMonitorJSONMigrateRecover(mon, uri);
 }
+
+
+int
+qemuMonitorGetMigrationBlockers(qemuMonitor *mon,
+                                char ***blockers)
+{
+    VIR_DEBUG("blockers=%p", blockers);
+
+    QEMU_CHECK_MONITOR(mon);
+
+    return qemuMonitorJSONGetMigrationBlockers(mon, blockers);
+}
