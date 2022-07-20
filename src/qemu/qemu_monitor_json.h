@@ -712,11 +712,6 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitor *mon,
                                  unsigned long long threshold)
     ATTRIBUTE_NONNULL(1) ATTRIBUTE_NONNULL(2);
 
-virJSONValue *
-qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon,
-                                    bool flat)
-    ATTRIBUTE_NONNULL(1);
-
 int
 qemuMonitorJSONSetWatchdogAction(qemuMonitor *mon,
                                  const char *action)

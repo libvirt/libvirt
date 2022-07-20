@@ -1331,8 +1331,6 @@ int qemuMonitorSetBlockThreshold(qemuMonitor *mon,
                                  const char *nodename,
                                  unsigned long long threshold);
 
-virJSONValue *qemuMonitorQueryNamedBlockNodes(qemuMonitor *mon);
-
 int qemuMonitorSetWatchdogAction(qemuMonitor *mon,
                                  const char *action);
 

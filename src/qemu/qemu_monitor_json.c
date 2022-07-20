@@ -2028,6 +2028,36 @@ qemuMonitorJSONSetDBusVMStateIdList(qemuMonitor *mon,
 }
 
 
+/* qemuMonitorJSONQueryNamedBlockNodes:
+ * @mon: Monitor pointer
+ *
+ * This helper will attempt to make a "query-named-block-nodes" call and check for
+ * errors before returning with the reply.
+ *
+ * Returns: NULL on error, reply on success
+ */
+static virJSONValue *
+qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon,
+                                    bool flat)
+{
+    g_autoptr(virJSONValue) cmd = NULL;
+    g_autoptr(virJSONValue) reply = NULL;
+
+    if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes",
+                                           "B:flat", flat,
+                                           NULL)))
+        return NULL;
+
+    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
+        return NULL;
+
+    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
+        return NULL;
+
+    return virJSONValueObjectStealArray(reply, "return");
+}
+
+
 /* qemuMonitorJSONQueryBlock:
  * @mon: Monitor pointer
  *
@@ -7851,28 +7881,6 @@ qemuMonitorJSONSetBlockThreshold(qemuMonitor *mon,
         return -1;
 
     return 0;
-}
-
-
-virJSONValue *
-qemuMonitorJSONQueryNamedBlockNodes(qemuMonitor *mon,
-                                    bool flat)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    if (!(cmd = qemuMonitorJSONMakeCommand("query-named-block-nodes",
-                                           "B:flat", flat,
-                                           NULL)))
-        return NULL;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return NULL;
-
-    if (qemuMonitorJSONCheckReply(cmd, reply, VIR_JSON_TYPE_ARRAY) < 0)
-        return NULL;
-
-    return virJSONValueObjectStealArray(reply, "return");
 }
 
 
