@@ -14412,17 +14412,12 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
                           unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    const char *device = NULL;
-    const char *jobname = NULL;
     virDomainDiskDef *disk;
     virStorageSource *baseSource = NULL;
-    g_autofree char *basePath = NULL;
     g_autofree char *backingPath = NULL;
     unsigned long long speed = bandwidth;
     qemuBlockJobData *job = NULL;
-    bool persistjob = false;
     const char *nodebase = NULL;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     int ret = -1;
 
     if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE && !base) {
@@ -14457,8 +14452,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
 
     if (baseSource) {
         if (flags & VIR_DOMAIN_BLOCK_REBASE_RELATIVE) {
-            if (blockdev &&
-                qemuBlockUpdateRelativeBacking(vm, disk->src, disk->src) < 0)
+            if (qemuBlockUpdateRelativeBacking(vm, disk->src, disk->src) < 0)
                 goto endjob;
 
             if (virStorageSourceGetRelativeBackingPath(disk->src->backingStore,
@@ -14488,29 +14482,22 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
     if (!(job = qemuBlockJobDiskNewPull(vm, disk, baseSource, flags)))
         goto endjob;
 
-    if (blockdev) {
-        jobname = job->name;
-        persistjob = true;
-        if (baseSource) {
-            nodebase = baseSource->nodeformat;
-            if (!backingPath &&
-                !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
-                goto endjob;
-        }
-        device = disk->src->nodeformat;
-    } else {
-        device = job->name;
+    if (baseSource) {
+        nodebase = baseSource->nodeformat;
+        if (!backingPath &&
+            !(backingPath = qemuBlockGetBackingStoreString(baseSource, false)))
+            goto endjob;
     }
 
     qemuDomainObjEnterMonitor(vm);
-    if (!blockdev && baseSource)
-        basePath = qemuMonitorDiskNameLookup(priv->mon, device, disk->src,
-                                             baseSource);
-
-    if (blockdev ||
-        (!baseSource || basePath))
-        ret = qemuMonitorBlockStream(priv->mon, device, jobname, persistjob, basePath,
-                                     nodebase, backingPath, speed);
+    ret = qemuMonitorBlockStream(priv->mon,
+                                 disk->src->nodeformat,
+                                 job->name,
+                                 true,
+                                 NULL,
+                                 nodebase,
+                                 backingPath,
+                                 speed);
     qemuDomainObjExitMonitor(vm);
 
     if (ret < 0)
