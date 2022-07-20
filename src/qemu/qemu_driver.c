@@ -18172,42 +18172,6 @@ qemuDomainGetStatsOneBlockFallback(virQEMUDriver *driver,
 }
 
 
-/**
- * qemuDomainGetStatsOneBlockRefreshNamed:
- * @src: disk source structure
- * @alias: disk alias
- * @stats: hash table containing stats for all disks
- * @nodedata: reply containing 'query-named-block-nodes' data
- *
- * Refresh disk block stats data (qemuBlockStats *) which are present only
- * in the reply of 'query-named-block-nodes' in cases when the data was gathered
- * by using query-block originally.
- */
-static void
-qemuDomainGetStatsOneBlockRefreshNamed(virStorageSource *src,
-                                       const char *alias,
-                                       GHashTable *stats,
-                                       GHashTable *nodedata)
-{
-    qemuBlockStats *entry;
-
-    virJSONValue *data;
-    unsigned long long tmp;
-
-    if (!nodedata || !src->nodestorage)
-        return;
-
-    if (!(entry = virHashLookup(stats, alias)))
-        return;
-
-    if (!(data = virHashLookup(nodedata, src->nodestorage)))
-        return;
-
-    if (virJSONValueObjectGetNumberUlong(data, "write_threshold", &tmp) == 0)
-        entry->write_threshold = tmp;
-}
-
-
 static int
 qemuDomainGetStatsOneBlock(virQEMUDriver *driver,
                            virQEMUDriverConfig *cfg,
@@ -18330,20 +18294,15 @@ qemuDomainGetStatsBlockExportHeader(virDomainDiskDef *disk,
 static int
 qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                                   GHashTable *stats,
-                                  GHashTable *nodestats,
                                   virTypedParamList *params,
                                   size_t *recordnr,
                                   bool visitBacking,
                                   virQEMUDriver *driver,
                                   virQEMUDriverConfig *cfg,
-                                  virDomainObj *dom,
-                                  bool blockdev)
+                                  virDomainObj *dom)
 
 {
     virStorageSource *n;
-    const char *frontendalias;
-    const char *backendalias;
-    const char *backendstoragealias;
 
     /*
      * This helps to keep logs clean from error messages on getting stats
@@ -18379,9 +18338,10 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
 
     for (n = disk->src; virStorageSourceIsBacking(n); n = n->backingStore) {
         g_autofree char *alias = NULL;
+        const char *frontendalias;
+        const char *backendalias;
+        const char *backendstoragealias;
 
-        /* for 'sd' disks we won't be displaying stats for the backing chain
-         * as we don't update the stats correctly */
         if (QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
             frontendalias = QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName;
             backendalias = n->nodeformat;
@@ -18392,7 +18352,8 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
                 !(alias = qemuDomainStorageAlias(disk->info.alias, n->id)))
                 return -1;
 
-            qemuDomainGetStatsOneBlockRefreshNamed(n, alias, stats, nodestats);
+            /* for 'sd' disks we won't be displaying stats for the backing chain
+             * as we don't update the stats correctly */
 
             frontendalias = alias;
             backendalias = alias;
@@ -18428,7 +18389,7 @@ qemuDomainGetStatsBlockExportDisk(virDomainDiskDef *disk,
     /* in blockdev mode where we can properly and uniquely identify images we
      * can also report stats for the mirror target or the scratch image or target
      * of a backup operation */
-    if (visitBacking && blockdev) {
+    if (visitBacking) {
         qemuDomainObjPrivate *priv = dom->privateData;
 
         if (disk->mirror &&
@@ -18498,13 +18459,8 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
     size_t i;
     int rc;
     g_autoptr(GHashTable) stats = NULL;
-    g_autoptr(GHashTable) nodestats = NULL;
-    g_autoptr(virJSONValue) nodedata = NULL;
     qemuDomainObjPrivate *priv = dom->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    bool fetchnodedata = virQEMUCapsGet(priv->qemuCaps,
-                                        QEMU_CAPS_QUERY_NAMED_BLOCK_NODES) && !blockdev;
     int count_index = -1;
     size_t visited = 0;
     bool visitBacking = !!(privflags & QEMU_DOMAIN_STATS_BACKING);
@@ -18514,26 +18470,15 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
 
         rc = qemuMonitorGetAllBlockStatsInfo(priv->mon, &stats);
 
-        if (rc >= 0) {
-            if (blockdev)
-                rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
-            else
-                ignore_value(qemuMonitorBlockStatsUpdateCapacity(priv->mon, stats));
-        }
-
-        if (fetchnodedata)
-            nodedata = qemuMonitorQueryNamedBlockNodes(priv->mon);
+        if (rc >= 0)
+            rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, stats);
 
         qemuDomainObjExitMonitor(dom);
 
         /* failure to retrieve stats is fine at this point */
-        if (rc < 0 || (fetchnodedata && !nodedata))
+        if (rc < 0)
             virResetLastError();
     }
-
-    if (nodedata &&
-        !(nodestats = qemuBlockGetNodeData(nodedata)))
-        return -1;
 
     /* When listing backing chains, it's easier to fix up the count
      * after the iteration than it is to iterate twice; but we still
@@ -18543,10 +18488,9 @@ qemuDomainGetStatsBlock(virQEMUDriver *driver,
         return -1;
 
     for (i = 0; i < dom->def->ndisks; i++) {
-        if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats, nodestats,
+        if (qemuDomainGetStatsBlockExportDisk(dom->def->disks[i], stats,
                                               params, &visited,
-                                              visitBacking, driver, cfg, dom,
-                                              blockdev) < 0)
+                                              visitBacking, driver, cfg, dom) < 0)
             return -1;
     }
 
