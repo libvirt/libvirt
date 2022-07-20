@@ -1214,7 +1214,7 @@ GEN_TEST_FUNC(qemuMonitorJSONGraphicsRelocate, VIR_DOMAIN_GRAPHICS_TYPE_SPICE,
 GEN_TEST_FUNC(qemuMonitorJSONRemoveNetdev, "net0")
 GEN_TEST_FUNC(qemuMonitorJSONDelDevice, "ide0")
 GEN_TEST_FUNC(qemuMonitorJSONBlockdevMirror, "jobname", true, "vdb", "targetnode", 1024, 1234, 31234, true, true)
-GEN_TEST_FUNC(qemuMonitorJSONBlockStream, "vdb", "jobname", true, "/foo/bar1", "backingnode", "backingfilename", 1024)
+GEN_TEST_FUNC(qemuMonitorJSONBlockStream, "vdb", "jobname", "backingnode", "backingfilename", 1024)
 GEN_TEST_FUNC(qemuMonitorJSONBlockCommit, "vdb", "jobname", "topnode", "basenode", "backingfilename", 1024)
 GEN_TEST_FUNC(qemuMonitorJSONDrivePivot, "vdb")
 GEN_TEST_FUNC(qemuMonitorJSONScreendump, "devicename", 1, "/foo/bar")

@@ -4503,27 +4503,19 @@ int
 qemuMonitorJSONBlockStream(qemuMonitor *mon,
                            const char *device,
                            const char *jobname,
-                           bool persistjob,
-                           const char *base,
                            const char *baseNode,
                            const char *backingName,
                            unsigned long long speed)
 {
     g_autoptr(virJSONValue) cmd = NULL;
     g_autoptr(virJSONValue) reply = NULL;
-    virTristateBool autofinalize = VIR_TRISTATE_BOOL_ABSENT;
-    virTristateBool autodismiss = VIR_TRISTATE_BOOL_ABSENT;
-
-    if (persistjob) {
-        autofinalize = VIR_TRISTATE_BOOL_YES;
-        autodismiss = VIR_TRISTATE_BOOL_NO;
-    }
+    virTristateBool autofinalize = VIR_TRISTATE_BOOL_YES;
+    virTristateBool autodismiss = VIR_TRISTATE_BOOL_NO;
 
     if (!(cmd = qemuMonitorJSONMakeCommand("block-stream",
                                            "s:device", device,
                                            "S:job-id", jobname,
                                            "Y:speed", speed,
-                                           "S:base", base,
                                            "S:base-node", baseNode,
                                            "S:backing-file", backingName,
                                            "T:auto-finalize", autofinalize,

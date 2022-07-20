@@ -366,8 +366,6 @@ int
 qemuMonitorJSONBlockStream(qemuMonitor *mon,
                            const char *device,
                            const char *jobname,
-                           bool persistjob,
-                           const char *base,
                            const char *baseNode,
                            const char *backingName,
                            unsigned long long speed)

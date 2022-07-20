@@ -2966,26 +2966,17 @@ int
 qemuMonitorBlockStream(qemuMonitor *mon,
                        const char *device,
                        const char *jobname,
-                       bool persistjob,
-                       const char *base,
                        const char *baseNode,
                        const char *backingName,
                        unsigned long long bandwidth)
 {
-    VIR_DEBUG("device=%s, jobname=%s, persistjob=%d, base=%s, baseNode=%s, "
-              "backingName=%s, bandwidth=%lluB",
-              device, NULLSTR(jobname), persistjob, NULLSTR(base),
+    VIR_DEBUG("device=%s, jobname=%s, baseNode=%s, backingName=%s, bandwidth=%lluB",
+              device, NULLSTR(jobname),
               NULLSTR(baseNode), NULLSTR(backingName), bandwidth);
 
     QEMU_CHECK_MONITOR(mon);
 
-    if (base && baseNode) {
-        virReportError(VIR_ERR_INTERNAL_ERROR, "%s",
-                       _("'base' and 'baseNode' can't be used together"));
-        return -1;
-    }
-
-    return qemuMonitorJSONBlockStream(mon, device, jobname, persistjob, base,
+    return qemuMonitorJSONBlockStream(mon, device, jobname,
                                       baseNode, backingName, bandwidth);
 }
 

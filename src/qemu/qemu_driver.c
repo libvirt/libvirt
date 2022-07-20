@@ -14493,8 +14493,6 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
     ret = qemuMonitorBlockStream(priv->mon,
                                  disk->src->nodeformat,
                                  job->name,
-                                 true,
-                                 NULL,
                                  nodebase,
                                  backingPath,
                                  speed);
