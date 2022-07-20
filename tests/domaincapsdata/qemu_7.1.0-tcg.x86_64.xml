@@ -231,6 +231,9 @@
         <value>passthrough</value>
         <value>emulator</value>
       </enum>
+      <enum name='backendVersion'>
+        <value>2.0</value>
+      </enum>
     </tpm>
   </devices>
   <features>

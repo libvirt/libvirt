@@ -132,6 +132,9 @@
         <value>spapr-tpm-proxy</value>
       </enum>
       <enum name='backendModel'/>
+      <enum name='backendVersion'>
+        <value>1.2</value>
+      </enum>
     </tpm>
   </devices>
   <features>

@@ -25,6 +25,9 @@
 # include "qemu/qemu_conf.h"
 
 # define TEST_QEMU_CAPS_PATH abs_srcdir "/qemucapabilitiesdata"
+# define TEST_TPM_ENV_VAR "VIR_TEST_MOCK_FAKE_TPM_VERSION"
+# define TPM_VER_1_2 "1.2"
+# define TPM_VER_2_0 "2.0"
 
 enum {
     GIC_NONE = 0,
