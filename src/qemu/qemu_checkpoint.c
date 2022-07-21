@@ -372,7 +372,7 @@ qemuCheckpointPrepare(virQEMUDriver *driver,
             return -1;
         }
 
-        if (!qemuDomainDiskBlockJobIsSupported(vm, vm->def->disks[i]))
+        if (!qemuDomainDiskBlockJobIsSupported(vm->def->disks[i]))
             return -1;
     }
 

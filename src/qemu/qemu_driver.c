@@ -14428,7 +14428,7 @@ qemuDomainBlockPullCommon(virDomainObj *vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
+    if (!qemuDomainDiskBlockJobIsSupported(disk))
         goto endjob;
 
     if (base &&
@@ -14958,7 +14958,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (qemuDomainDiskBlockJobIsActive(disk))
         goto endjob;
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
+    if (!qemuDomainDiskBlockJobIsSupported(disk))
         goto endjob;
 
     if (disk->device == VIR_DOMAIN_DISK_DEVICE_LUN &&
@@ -15427,7 +15427,7 @@ qemuDomainBlockCommit(virDomainPtr dom,
     if (!(disk = qemuDomainDiskByName(vm->def, path)))
         goto endjob;
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, disk))
+    if (!qemuDomainDiskBlockJobIsSupported(disk))
         goto endjob;
 
     if (virStorageSourceIsEmpty(disk->src)) {

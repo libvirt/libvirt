@@ -11252,19 +11252,15 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
 /**
  * qemuDomainDiskBlockJobIsSupported:
  *
- * Returns true if block jobs are supported on @disk by @vm or false and reports
+ * Returns true if block jobs are supported on @disk or false and reports
  * an error otherwise.
  *
  * Note that this does not verify whether other block jobs are running etc.
  */
 bool
-qemuDomainDiskBlockJobIsSupported(virDomainObj *vm,
-                                  virDomainDiskDef *disk)
+qemuDomainDiskBlockJobIsSupported(virDomainDiskDef *disk)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        qemuDiskBusIsSD(disk->bus)) {
+    if (qemuDiskBusIsSD(disk->bus)) {
         virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
                        _("block jobs are not supported on disk '%s' using bus 'sd'"),
                        disk->dst);

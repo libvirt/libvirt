@@ -1047,8 +1047,7 @@ qemuDomainInitializePflashStorageSource(virDomainObj *vm,
                                         virQEMUDriverConfig *cfg);
 
 bool
-qemuDomainDiskBlockJobIsSupported(virDomainObj *vm,
-                                  virDomainDiskDef *disk);
+qemuDomainDiskBlockJobIsSupported(virDomainDiskDef *disk);
 
 int
 qemuDomainDefNumaCPUsRectify(virDomainDef *def,

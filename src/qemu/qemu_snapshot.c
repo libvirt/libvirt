@@ -446,8 +446,7 @@ qemuSnapshotPrepareDiskExternalInactive(virDomainSnapshotDiskDef *snapdisk,
 
 
 static int
-qemuSnapshotPrepareDiskExternalActive(virDomainObj *vm,
-                                      virDomainSnapshotDiskDef *snapdisk,
+qemuSnapshotPrepareDiskExternalActive(virDomainSnapshotDiskDef *snapdisk,
                                       virDomainDiskDef *domdisk)
 {
     virStorageType actualType = virStorageSourceGetActualType(snapdisk->src);
@@ -462,7 +461,7 @@ qemuSnapshotPrepareDiskExternalActive(virDomainObj *vm,
         return -1;
     }
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, domdisk))
+    if (!qemuDomainDiskBlockJobIsSupported(domdisk))
         return -1;
 
     switch (actualType) {
@@ -491,8 +490,7 @@ qemuSnapshotPrepareDiskExternalActive(virDomainObj *vm,
 
 
 static int
-qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
-                                virDomainDiskDef *disk,
+qemuSnapshotPrepareDiskExternal(virDomainDiskDef *disk,
                                 virDomainSnapshotDiskDef *snapdisk,
                                 bool active,
                                 bool reuse)
@@ -507,7 +505,7 @@ qemuSnapshotPrepareDiskExternal(virDomainObj *vm,
         if (qemuSnapshotPrepareDiskExternalInactive(snapdisk, disk) < 0)
             return -1;
     } else {
-        if (qemuSnapshotPrepareDiskExternalActive(vm, snapdisk, disk) < 0)
+        if (qemuSnapshotPrepareDiskExternalActive(snapdisk, disk) < 0)
             return -1;
     }
 
@@ -700,8 +698,7 @@ qemuSnapshotPrepare(virDomainObj *vm,
                 }
             }
 
-            if (qemuSnapshotPrepareDiskExternal(vm, dom_disk, disk,
-                                                active, reuse) < 0)
+            if (qemuSnapshotPrepareDiskExternal(dom_disk, disk, active, reuse) < 0)
                 return -1;
 
             external++;

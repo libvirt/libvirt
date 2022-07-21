@@ -260,7 +260,7 @@ qemuBackupDiskPrepareDataOne(virDomainObj *vm,
         return -1;
     }
 
-    if (!qemuDomainDiskBlockJobIsSupported(vm, dd->domdisk))
+    if (!qemuDomainDiskBlockJobIsSupported(dd->domdisk))
         return -1;
 
     if (dd->store->format == VIR_STORAGE_FILE_NONE) {
