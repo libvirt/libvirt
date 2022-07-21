@@ -4216,12 +4216,8 @@ virDomainObjGetOneDefState(virDomainObj *vm,
     if (virDomainObjUpdateModificationImpact(vm, &flags) < 0)
         return NULL;
 
-    if (live) {
-        if (flags & VIR_DOMAIN_AFFECT_LIVE)
-            *live = true;
-        else
-            *live = false;
-    }
+    if (live)
+        *live = flags & VIR_DOMAIN_AFFECT_LIVE;
 
     if (virDomainObjIsActive(vm) && flags & VIR_DOMAIN_AFFECT_CONFIG)
         return vm->newDef;
