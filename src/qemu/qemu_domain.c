@@ -1323,7 +1323,6 @@ qemuDomainSecretStorageSourcePrepare(qemuDomainObjPrivate *priv,
     }
 
     if (src->ncookies &&
-        virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         !(srcPriv->httpcookie = qemuDomainSecretStorageSourcePrepareCookies(priv,
                                                                             src,
                                                                             aliasprotocol)))
