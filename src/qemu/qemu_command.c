@@ -1790,44 +1790,6 @@ qemuDiskBusIsSD(int bus)
 
 
 /**
- * qemuDiskSourceNeedsProps:
- * @src: disk source
- *
- * Returns true, if the disk source needs to be generated from the JSON
- * representation. Otherwise, the disk source should be represented using
- * the legacy representation.
- */
-static bool
-qemuDiskSourceNeedsProps(virStorageSource *src)
-{
-    virStorageType actualType = virStorageSourceGetActualType(src);
-
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_GLUSTER &&
-        src->nhosts > 1)
-        return true;
-
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_VXHS)
-        return true;
-
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_ISCSI)
-        return true;
-
-    if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_NBD &&
-        src->haveTLS == VIR_TRISTATE_BOOL_YES)
-        return true;
-
-    if (actualType == VIR_STORAGE_TYPE_NVME)
-        return true;
-
-    return false;
-}
-
-
-/**
  * qemuDiskSourceGetProps:
  * @src: disk source struct
  *
@@ -1852,72 +1814,23 @@ qemuDiskSourceGetProps(virStorageSource *src)
 
 
 static int
-qemuBuildDriveSourcePR(virBuffer *buf,
-                       virDomainDiskDef *disk)
-{
-    g_autofree char *alias = NULL;
-    const char *defaultAlias = NULL;
-
-    if (!disk->src->pr)
-        return 0;
-
-    if (virStoragePRDefIsManaged(disk->src->pr))
-        defaultAlias = qemuDomainGetManagedPRAlias();
-    else if (!(alias = qemuDomainGetUnmanagedPRAlias(disk->info.alias)))
-        return -1;
-
-
-    virBufferAsprintf(buf, ",file.pr-manager=%s", alias ? alias : defaultAlias);
-    return 0;
-}
-
-
-static int
 qemuBuildDriveSourceStr(virDomainDiskDef *disk,
                         virBuffer *buf)
 {
     virStorageType actualType = virStorageSourceGetActualType(disk->src);
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(disk->src);
-    qemuDomainSecretInfo *secinfo = NULL;
     qemuDomainSecretInfo *encinfo = NULL;
     g_autoptr(virJSONValue) srcprops = NULL;
-    g_autofree char *source = NULL;
     bool rawluks = false;
 
-    if (srcpriv) {
-        secinfo = srcpriv->secinfo;
+    if (srcpriv)
         encinfo = srcpriv->encinfo;
-    }
 
-    if (qemuDiskSourceNeedsProps(disk->src) &&
-        !(srcprops = qemuDiskSourceGetProps(disk->src)))
-        return -1;
-
-    if (!srcprops &&
-        qemuGetDriveSourceString(disk->src, secinfo, &source) < 0)
-        return -1;
-
-    /* nothing to format if the drive is empty */
-    if (!(source || srcprops) ||
-        ((disk->device == VIR_DOMAIN_DISK_DEVICE_FLOPPY ||
-          disk->device == VIR_DOMAIN_DISK_DEVICE_CDROM) &&
-         disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN)) {
-        return 0;
-    }
-
-    if (actualType == VIR_STORAGE_TYPE_BLOCK &&
-        disk->tray_status == VIR_DOMAIN_DISK_TRAY_OPEN) {
-        virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                       disk->src->type == VIR_STORAGE_TYPE_VOLUME ?
-                       _("tray status 'open' is invalid for block type volume") :
-                       _("tray status 'open' is invalid for block type disk"));
-        return -1;
-    }
-
-    if (source) {
+    switch (actualType) {
+    case VIR_STORAGE_TYPE_BLOCK:
+    case VIR_STORAGE_TYPE_FILE:
+    case VIR_STORAGE_TYPE_DIR:
         virBufferAddLit(buf, "file=");
-
-        /* for now the DIR based storage is handled by the magic FAT format */
         if (actualType == VIR_STORAGE_TYPE_DIR) {
             virBufferAddLit(buf, "fat:");
 
@@ -1925,21 +1838,27 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
                 virBufferAddLit(buf, "floppy:");
         }
 
-        virQEMUBuildBufferEscapeComma(buf, source);
+        virQEMUBuildBufferEscapeComma(buf, disk->src->path);
+        break;
 
-        if (secinfo)
-            virBufferAsprintf(buf, ",file.password-secret=%s", secinfo->alias);
-
-        if (disk->src->debug)
-            virBufferAsprintf(buf, ",file.debug=%d", disk->src->debugLevel);
-
-        if (qemuBuildDriveSourcePR(buf, disk) < 0)
+    case VIR_STORAGE_TYPE_NETWORK:
+        if (!(srcprops = qemuDiskSourceGetProps(disk->src)))
             return -1;
-    } else {
+
         if (virQEMUBuildCommandLineJSON(srcprops, buf, NULL,
                                         virQEMUBuildCommandLineJSONArrayNumbered) < 0)
             return -1;
+        break;
+
+    case VIR_STORAGE_TYPE_VOLUME:
+    case VIR_STORAGE_TYPE_NVME:
+    case VIR_STORAGE_TYPE_VHOST_USER:
+    case VIR_STORAGE_TYPE_NONE:
+    case VIR_STORAGE_TYPE_LAST:
+        break;
     }
+
+
     virBufferAddLit(buf, ",");
 
     if (encinfo) {
