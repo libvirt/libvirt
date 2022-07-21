@@ -32,17 +32,6 @@
 
 VIR_LOG_INIT("ch.ch_domain");
 
-static int
-virCHDomainObjInitJob(virCHDomainObjPrivate *priv)
-{
-    memset(&priv->job, 0, sizeof(priv->job));
-
-    if (virCondInit(&priv->job.cond) < 0)
-        return -1;
-
-    return 0;
-}
-
 static void
 virCHDomainObjResetJob(virCHDomainObjPrivate *priv)
 {
@@ -143,7 +132,7 @@ virCHDomainObjPrivateAlloc(void *opaque)
 
     priv = g_new0(virCHDomainObjPrivate, 1);
 
-    if (virCHDomainObjInitJob(priv) < 0) {
+    if (virDomainObjInitJob(&priv->job, NULL) < 0) {
         g_free(priv);
         return NULL;
     }
