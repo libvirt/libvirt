@@ -9961,9 +9961,7 @@ qemuDomainBlockResize(virDomainPtr dom,
         goto endjob;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        !qemuDiskBusIsSD(disk->bus)) {
-
+    if (!qemuDiskBusIsSD(disk->bus)) {
         nodename = disk->src->nodeformat;
     } else {
         if (!(device = qemuAliasDiskDriveFromDisk(disk)))
@@ -16161,8 +16159,7 @@ qemuDomainSetBlockIoTune(virDomainPtr dom,
         /* blockdev-based qemu doesn't want to set the throttling when a cdrom
          * is empty. Skip the monitor call here since we will set the throttling
          * once new media is inserted */
-        if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) ||
-            !virStorageSourceIsEmpty(disk->src)) {
+        if (!virStorageSourceIsEmpty(disk->src)) {
             int rc = 0;
 
             qemuDomainObjEnterMonitor(vm);
