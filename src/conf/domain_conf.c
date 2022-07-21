@@ -4086,8 +4086,8 @@ virDomainObjGetPersistentDef(virDomainXMLOption *xmlopt,
 
     if (domain->newDef)
         return domain->newDef;
-    else
-        return domain->def;
+
+    return domain->def;
 }
 
 
@@ -4221,8 +4221,8 @@ virDomainObjGetOneDefState(virDomainObj *vm,
 
     if (virDomainObjIsActive(vm) && flags & VIR_DOMAIN_AFFECT_CONFIG)
         return vm->newDef;
-    else
-        return vm->def;
+
+    return vm->def;
 }
 
 
@@ -6026,7 +6026,9 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                              VIR_XML_PROP_NONZERO,
                              &scsisrc->sgio)) < 0) {
         return -1;
-    } else if (rv > 0) {
+    }
+
+    if (rv > 0) {
         if (def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("sgio is only supported for scsi host device"));
@@ -6038,8 +6040,9 @@ virDomainHostdevDefParseXMLSubsys(xmlNodePtr node,
                                      VIR_XML_PROP_NONE,
                                      &scsisrc->rawio)) < 0) {
         return -1;
-    } else if (rv > 0 &&
-               def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
+    }
+
+    if (rv > 0 && def->source.subsys.type != VIR_DOMAIN_HOSTDEV_SUBSYS_TYPE_SCSI) {
         virReportError(VIR_ERR_XML_ERROR, "%s",
                        _("rawio is only supported for scsi host device"));
         return -1;
@@ -9911,9 +9914,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
 
     ctxt->node = cur;
 
-    if ((nsources = virXPathNodeSet("./source", ctxt, &sources)) < 0) {
+    if ((nsources = virXPathNodeSet("./source", ctxt, &sources)) < 0)
         goto error;
-    } else if (nsources > 0) {
+
+    if (nsources > 0) {
         /* Parse only the first source element since only one is used
          * for chardev devices, the only exception is UDP type, where
          * user can specify two source elements. */
@@ -9922,7 +9926,8 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
                            _("only one source element is allowed for "
                              "character device"));
             goto error;
-        } else if (nsources > 2) {
+        }
+        if (nsources > 2) {
             virReportError(VIR_ERR_XML_ERROR, "%s",
                            _("only two source elements are allowed for "
                              "character device"));
@@ -10002,9 +10007,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
         }
     }
 
-    if ((nlogs = virXPathNodeSet("./log", ctxt, &logs)) < 0) {
+    if ((nlogs = virXPathNodeSet("./log", ctxt, &logs)) < 0)
         goto error;
-    } else if (nlogs == 1) {
+
+    if (nlogs == 1) {
         if (virDomainChrSourceDefParseLog(def, logs[0]) < 0)
             goto error;
     } else if (nlogs > 1) {
@@ -10014,9 +10020,10 @@ virDomainChrSourceDefParseXML(virDomainChrSourceDef *def,
         goto error;
     }
 
-    if ((nprotocols = virXPathNodeSet("./protocol", ctxt, &protocols)) < 0) {
+    if ((nprotocols = virXPathNodeSet("./protocol", ctxt, &protocols)) < 0)
         goto error;
-    } else if (nprotocols == 1) {
+
+    if (nprotocols == 1) {
         if (virDomainChrSourceDefParseProtocol(def, protocols[0]) < 0)
             goto error;
     } else if (nprotocols > 1) {
