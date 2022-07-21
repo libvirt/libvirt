@@ -652,7 +652,7 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(priv->driver);
-    const char *const *deviceACL = NULL;
+    const char *const *deviceACL = (const char *const *) cfg->cgroupDeviceACL;
     int rv = -1;
     size_t i;
 
@@ -686,9 +686,8 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
     if (rv < 0)
         return -1;
 
-    deviceACL = cfg->cgroupDeviceACL ?
-                (const char *const *)cfg->cgroupDeviceACL :
-                defaultDeviceACL;
+    if (!deviceACL)
+        deviceACL = defaultDeviceACL;
 
     if (vm->def->nsounds &&
         ((!vm->def->ngraphics && cfg->nogfxAllowHostAudio) ||
