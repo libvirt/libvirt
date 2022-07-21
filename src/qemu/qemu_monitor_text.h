@@ -25,11 +25,5 @@
 
 #include "qemu_monitor.h"
 
-int qemuMonitorTextAddDrive(qemuMonitor *mon,
-                             const char *drivestr);
-
-int qemuMonitorTextDriveDel(qemuMonitor *mon,
-                             const char *drivestr);
-
 int qemuMonitorTextCreateSnapshot(qemuMonitor *mon, const char *name);
 int qemuMonitorTextDeleteSnapshot(qemuMonitor *mon, const char *name);

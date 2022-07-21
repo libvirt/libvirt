@@ -2556,26 +2556,6 @@ qemuMonitorGetChardevInfo(qemuMonitor *mon,
 
 
 /**
- * qemuMonitorDriveDel:
- * @mon: monitor object
- * @drivestr: identifier of drive to delete.
- *
- * Attempts to remove a host drive.
- * Returns 1 if unsupported, 0 if ok, and -1 on other failure */
-int
-qemuMonitorDriveDel(qemuMonitor *mon,
-                    const char *drivestr)
-{
-    VIR_DEBUG("drivestr=%s", drivestr);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* there won't be a direct replacement for drive_del in QMP */
-    return qemuMonitorTextDriveDel(mon, drivestr);
-}
-
-
-/**
  * @mon: monitor object
  * @devalias: alias of the device to detach
  *
@@ -2743,19 +2723,6 @@ qemuMonitorDelObject(qemuMonitor *mon,
     QEMU_CHECK_MONITOR(mon);
 
     return qemuMonitorJSONDelObject(mon, objalias, report_error);
-}
-
-
-int
-qemuMonitorAddDrive(qemuMonitor *mon,
-                    const char *drivestr)
-{
-    VIR_DEBUG("drive=%s", drivestr);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    /* there won't ever be a direct QMP replacement for this function */
-    return qemuMonitorTextAddDrive(mon, drivestr);
 }
 
 

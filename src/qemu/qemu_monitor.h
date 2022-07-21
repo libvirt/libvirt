@@ -951,12 +951,6 @@ int qemuMonitorDelObject(qemuMonitor *mon,
                          const char *objalias,
                          bool report_error);
 
-int qemuMonitorAddDrive(qemuMonitor *mon,
-                        const char *drivestr);
-
-int qemuMonitorDriveDel(qemuMonitor *mon,
-                        const char *drivestr);
-
 int qemuMonitorCreateSnapshot(qemuMonitor *mon, const char *name);
 int qemuMonitorDeleteSnapshot(qemuMonitor *mon, const char *name);
 
