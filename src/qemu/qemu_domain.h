@@ -990,8 +990,7 @@ qemuDomainPrepareDiskSourceData(virDomainDiskDef *disk,
 
 int
 qemuDomainValidateStorageSource(virStorageSource *src,
-                                virQEMUCaps *qemuCaps,
-                                bool maskBlockdev);
+                                virQEMUCaps *qemuCaps);
 
 
 int

@@ -4719,8 +4719,7 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
 
 int
 qemuDomainValidateStorageSource(virStorageSource *src,
-                                virQEMUCaps *qemuCaps,
-                                bool maskBlockdev G_GNUC_UNUSED)
+                                virQEMUCaps *qemuCaps)
 {
     virStorageType actualType = virStorageSourceGetActualType(src);
 
@@ -7636,8 +7635,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         if (n->format == VIR_STORAGE_FILE_ISO)
             n->format = VIR_STORAGE_FILE_RAW;
 
-        /* mask-out blockdev for 'sd' disks */
-        if (qemuDomainValidateStorageSource(n, priv->qemuCaps, isSD) < 0)
+        if (qemuDomainValidateStorageSource(n, priv->qemuCaps) < 0)
             return -1;
 
         qemuDomainPrepareStorageSourceConfig(n, cfg);
@@ -10685,7 +10683,7 @@ qemuDomainPrepareDiskSourceLegacy(virDomainDiskDef *disk,
                                   qemuDomainObjPrivate *priv,
                                   virQEMUDriverConfig *cfg)
 {
-    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps, true) < 0)
+    if (qemuDomainValidateStorageSource(disk->src, priv->qemuCaps) < 0)
         return -1;
 
     qemuDomainPrepareStorageSourceConfig(disk->src, cfg);
@@ -10723,7 +10721,7 @@ qemuDomainPrepareStorageSourceBlockdevNodename(virDomainDiskDef *disk,
     if (src->encryption && src->encryption->engine == VIR_STORAGE_ENCRYPTION_ENGINE_DEFAULT)
         src->encryption->engine = VIR_STORAGE_ENCRYPTION_ENGINE_QEMU;
 
-    if (qemuDomainValidateStorageSource(src, priv->qemuCaps, false) < 0)
+    if (qemuDomainValidateStorageSource(src, priv->qemuCaps) < 0)
         return -1;
 
     qemuDomainPrepareStorageSourceConfig(src, cfg);

@@ -294,7 +294,7 @@ testQemuDiskXMLToProps(const void *opaque)
         if (testQemuDiskXMLToJSONFakeSecrets(n) < 0)
             return -1;
 
-        if (qemuDomainValidateStorageSource(n, data->qemuCaps, false) < 0)
+        if (qemuDomainValidateStorageSource(n, data->qemuCaps) < 0)
             return -1;
 
         qemuDomainPrepareDiskSourceData(disk, n);
@@ -519,7 +519,7 @@ testQemuImageCreate(const void *opaque)
     src->capacity = UINT_MAX * 2ULL;
     src->physical = UINT_MAX + 1ULL;
 
-    if (qemuDomainValidateStorageSource(src, data->qemuCaps, false) < 0)
+    if (qemuDomainValidateStorageSource(src, data->qemuCaps) < 0)
         return -1;
 
     if (qemuBlockStorageSourceCreateGetStorageProps(src, &protocolprops) < 0)
