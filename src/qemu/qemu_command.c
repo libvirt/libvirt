@@ -6441,6 +6441,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
     case VIR_DOMAIN_IOMMU_MODEL_INTEL:
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", "intel-iommu",
+                                  "s:id", iommu->info.alias,
                                   "S:intremap", qemuOnOffAuto(iommu->intremap),
                                   "T:caching-mode", iommu->caching_mode,
                                   "S:eim", qemuOnOffAuto(iommu->eim),
@@ -6457,6 +6458,7 @@ qemuBuildIOMMUCommandLine(virCommand *cmd,
     case VIR_DOMAIN_IOMMU_MODEL_VIRTIO:
         if (virJSONValueObjectAdd(&props,
                                   "s:driver", "virtio-iommu",
+                                  "s:id", iommu->info.alias,
                                   NULL) < 0) {
             return -1;
         }
