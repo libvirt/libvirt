@@ -864,6 +864,43 @@ qemuMigrationCapsToJSON(virBitmap *caps,
 }
 
 
+static int
+qemuMigrationParamsApplyCaps(virDomainObj *vm,
+                             virBitmap *states)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) json = NULL;
+
+    if (!(json = qemuMigrationCapsToJSON(priv->migrationCaps, states)))
+        return -1;
+
+    if (virJSONValueArraySize(json) > 0 &&
+        qemuMonitorSetMigrationCapabilities(priv->mon, &json) < 0)
+        return -1;
+
+    return 0;
+}
+
+
+static int
+qemuMigrationParamsApplyValues(virDomainObj *vm,
+                               qemuMigrationParams *params,
+                               bool postcopyResume)
+{
+    qemuDomainObjPrivate *priv = vm->privateData;
+    g_autoptr(virJSONValue) json = NULL;
+
+    if (!(json = qemuMigrationParamsToJSON(params, postcopyResume)))
+        return -1;
+
+    if (virJSONValueObjectKeysNumber(json) > 0 &&
+        qemuMonitorSetMigrationParams(priv->mon, &json) < 0)
+        return -1;
+
+    return 0;
+}
+
+
 /**
  * qemuMigrationParamsApply
  * @driver: qemu driver
@@ -885,9 +922,6 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
                          qemuMigrationParams *migParams,
                          unsigned long apiFlags)
 {
-    qemuDomainObjPrivate *priv = vm->privateData;
-    g_autoptr(virJSONValue) params = NULL;
-    g_autoptr(virJSONValue) caps = NULL;
     bool postcopyResume = !!(apiFlags & VIR_MIGRATE_POSTCOPY_RESUME);
     int ret = -1;
 
@@ -905,21 +939,12 @@ qemuMigrationParamsApply(virQEMUDriver *driver,
                                  "a migration job"));
                 goto cleanup;
             }
-        } else {
-            if (!(caps = qemuMigrationCapsToJSON(priv->migrationCaps, migParams->caps)))
-                goto cleanup;
-
-            if (virJSONValueArraySize(caps) > 0 &&
-                qemuMonitorSetMigrationCapabilities(priv->mon, &caps) < 0)
-                goto cleanup;
+        } else if (qemuMigrationParamsApplyCaps(vm, migParams->caps) < 0) {
+            goto cleanup;
         }
     }
 
-    if (!(params = qemuMigrationParamsToJSON(migParams, postcopyResume)))
-        goto cleanup;
-
-    if (virJSONValueObjectKeysNumber(params) > 0 &&
-        qemuMonitorSetMigrationParams(priv->mon, &params) < 0)
+    if (qemuMigrationParamsApplyValues(vm, migParams, postcopyResume) < 0)
         goto cleanup;
 
     ret = 0;
