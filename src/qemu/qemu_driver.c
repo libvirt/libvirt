@@ -9954,14 +9954,15 @@ qemuDomainBlockResize(virDomainPtr dom,
         disk->src->format == VIR_STORAGE_FILE_QED)
         size = VIR_ROUND_UP(size, 512);
 
+    if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
+        virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                       _("can't resize empty or readonly disk '%s'"),
+                       disk->dst);
+        goto endjob;
+    }
+
     if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
         !qemuDiskBusIsSD(disk->bus)) {
-        if (virStorageSourceIsEmpty(disk->src) || disk->src->readonly) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("can't resize empty or readonly disk '%s'"),
-                           disk->dst);
-            goto endjob;
-        }
 
         nodename = disk->src->nodeformat;
     } else {
