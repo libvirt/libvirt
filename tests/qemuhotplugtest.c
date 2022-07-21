@@ -73,6 +73,7 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 
     virQEMUCapsInitQMPBasicArch(priv->qemuCaps);
 
+    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_CCW);
@@ -668,7 +669,6 @@ mymain(void)
 
 
 #define QMP_OK      "{\"return\": {}}"
-#define HMP(msg)    "{\"return\": \"" msg "\"}"
 
 #define QMP_DEVICE_DELETED(dev) \
     "{" \
@@ -705,31 +705,37 @@ mymain(void)
                    "chardev-remove", QMP_OK, "query-fdsets", "{\"return\": []}");
 
     DO_TEST_ATTACH("base-live", "disk-virtio", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-virtio", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "disk-usb", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-usb", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk16") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "disk-scsi", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-5") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-without-scsi-controller-live", "disk-scsi-2", false, true,
                    /* Four controllers added */
@@ -737,24 +743,27 @@ mymain(void)
                    "device_add", QMP_OK,
                    "device_add", QMP_OK,
                    "device_add", QMP_OK,
-                   "human-monitor-command", HMP("OK\\r\\n"),
-                   /* Disk added */
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-with-scsi-controller-live", "disk-scsi-2", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi3-0-5-6") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "disk-scsi-multipath", false, true,
                    "object-add", QMP_OK,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi-multipath", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "disk-scsi-multipath", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-0") QMP_OK,
-                   "human-monitor-command", HMP(""),
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK,
                    "object-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "qemu-agent", false, true,
@@ -766,39 +775,46 @@ mymain(void)
                    "chardev-remove", QMP_OK, "query-fdsets", "{\"return\": []}");
 
     DO_TEST_ATTACH("base-ccw-live", "ccw-virtio", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-ccw-live", "ccw-virtio", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
 
     DO_TEST_DETACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk0") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
 
     DO_TEST_DETACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, false,
                    "device_del", QMP_DEVICE_DELETED("virtio-disk0") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     /* Attach a second device, then detach the first one. Then attach the first one again. */
     DO_TEST_ATTACH("base-ccw-live-with-ccw-virtio", "ccw-virtio-2-explicit", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
 
     DO_TEST_DETACH("base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-explicit", false, true,
-                   "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "device_del", QMP_DEVICE_DELETED("virtio-disk4") QMP_OK);
 
     DO_TEST_ATTACH("base-ccw-live-with-2-ccw-virtio", "ccw-virtio-1-reverse", false, false,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "ivshmem-plain", false, true,
@@ -815,7 +831,8 @@ mymain(void)
                    "object-del", QMP_OK);
     DO_TEST_ATTACH("base-live+disk-scsi-wwn",
                    "disk-scsi-duplicate-wwn", false, false,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "hostdev-pci", false, true,
@@ -859,22 +876,26 @@ mymain(void)
                    "netdev_del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "cdrom-usb", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "cdrom-usb", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "cdrom-usb", false, false,
                    "device_del", QMP_DEVICE_DELETED("usb-disk4") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
     DO_TEST_ATTACH("base-live", "cdrom-scsi", false, true,
-                   "human-monitor-command", HMP("OK\\r\\n"),
+                   "blockdev-add", QMP_OK,
+                   "blockdev-add", QMP_OK,
                    "device_add", QMP_OK);
     DO_TEST_DETACH("base-live", "cdrom-scsi", true, true,
                    "device_del", QMP_OK);
     DO_TEST_DETACH("base-live", "cdrom-scsi", false, false,
                    "device_del", QMP_DEVICE_DELETED("scsi0-0-0-4") QMP_OK,
-                   "human-monitor-command", HMP(""));
+                   "blockdev-del", QMP_OK,
+                   "blockdev-del", QMP_OK);
 
 #define DO_TEST_CPU_GROUP(prefix, vcpus, modernhp, expectfail) \
     do { \

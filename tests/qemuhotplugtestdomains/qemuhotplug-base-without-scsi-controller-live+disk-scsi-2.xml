@@ -21,7 +21,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
-      <source file='/dev/null'/>
+      <source file='/dev/null' index='1'/>
       <backingStore/>
       <target dev='sdf' bus='scsi'/>
       <readonly/>

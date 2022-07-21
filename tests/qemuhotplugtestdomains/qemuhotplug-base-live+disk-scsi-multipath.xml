@@ -21,7 +21,7 @@
     <emulator>/usr/bin/qemu-system-x86_64</emulator>
     <disk type='block' device='lun'>
       <driver name='qemu' type='raw'/>
-      <source dev='/dev/mapper/virt'>
+      <source dev='/dev/mapper/virt' index='1'>
         <reservations managed='yes'>
           <source type='unix' path='/tmp/lib/domain-7-hotplug/pr-helper0.sock' mode='client'/>
         </reservations>

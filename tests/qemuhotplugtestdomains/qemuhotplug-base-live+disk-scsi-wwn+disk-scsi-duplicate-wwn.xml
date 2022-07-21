@@ -32,7 +32,7 @@
     </disk>
     <disk type='file' device='disk'>
       <driver name='qemu' type='raw' cache='none'/>
-      <source file='/dev/null'/>
+      <source file='/dev/null' index='1'/>
       <backingStore/>
       <target dev='sdg' bus='scsi'/>
       <readonly/>
