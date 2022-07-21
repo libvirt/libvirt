@@ -73,7 +73,6 @@ qemuHotplugCreateObjects(virDomainXMLOption *xmlopt,
 
     virQEMUCapsInitQMPBasicArch(priv->qemuCaps);
 
-    virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_VIRTIO_SCSI);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_DEVICE_USB_STORAGE);
     virQEMUCapsSet(priv->qemuCaps, QEMU_CAPS_CCW);

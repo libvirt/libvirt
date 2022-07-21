@@ -504,7 +504,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "usb-storage.werror", /* X_QEMU_CAPS_USB_STORAGE_WERROR */
               "egl-headless", /* QEMU_CAPS_EGL_HEADLESS */
               "vfio-pci.display", /* QEMU_CAPS_VFIO_PCI_DISPLAY */
-              "blockdev", /* QEMU_CAPS_BLOCKDEV */
+              "blockdev", /* X_QEMU_CAPS_BLOCKDEV */
 
               /* 315 */
               "vfio-ap", /* QEMU_CAPS_DEVICE_VFIO_AP */
@@ -5223,10 +5223,6 @@ virQEMUCapsInitQMPBasicArch(virQEMUCaps *qemuCaps)
 static void
 virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 {
-    /* While the removal of pre-blockdev code is in progress we always hard-code
-     * the support for QEMU_CAPS_BLOCKDEV */
-    virQEMUCapsSet(qemuCaps, QEMU_CAPS_BLOCKDEV);
-
     /* -enable-fips is deprecated in QEMU 5.2.0, and QEMU
      * should be built with gcrypt to achieve FIPS compliance
      * automatically / implicitly
@@ -6092,13 +6088,13 @@ struct virQEMUCapsDomainFeatureCapabilityTuple {
 
 /**
  * This maps the qemu features to the entries in <features> of the domain
- * capability XML.
+ * capability XML. Use QEMU_CAPS_LAST to always enable a domain feature.
  * */
 static const struct virQEMUCapsDomainFeatureCapabilityTuple domCapsTuples[] = {
     { VIR_DOMAIN_CAPS_FEATURE_IOTHREADS, QEMU_CAPS_OBJECT_IOTHREAD },
     { VIR_DOMAIN_CAPS_FEATURE_VMCOREINFO, QEMU_CAPS_DEVICE_VMCOREINFO },
     { VIR_DOMAIN_CAPS_FEATURE_GENID, QEMU_CAPS_DEVICE_VMGENID },
-    { VIR_DOMAIN_CAPS_FEATURE_BACKING_STORE_INPUT, QEMU_CAPS_BLOCKDEV },
+    { VIR_DOMAIN_CAPS_FEATURE_BACKING_STORE_INPUT, QEMU_CAPS_LAST },
     { VIR_DOMAIN_CAPS_FEATURE_BACKUP, QEMU_CAPS_INCREMENTAL_BACKUP },
 };
 
@@ -6110,7 +6106,8 @@ virQEMUCapsFillDomainFeaturesFromQEMUCaps(virQEMUCaps *qemuCaps,
     size_t i;
 
     for (i = 0; i < G_N_ELEMENTS(domCapsTuples); i++) {
-        if (virQEMUCapsGet(qemuCaps, domCapsTuples[i].qemucap))
+        if (virQEMUCapsGet(qemuCaps, domCapsTuples[i].qemucap) ||
+            domCapsTuples[i].qemucap == QEMU_CAPS_LAST)
             domCaps->features[domCapsTuples[i].domcap] = VIR_TRISTATE_BOOL_YES;
         else
             domCaps->features[domCapsTuples[i].domcap] = VIR_TRISTATE_BOOL_NO;

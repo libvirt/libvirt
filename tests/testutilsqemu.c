@@ -883,9 +883,6 @@ testQemuInfoSetArgs(struct testQemuInfo *info,
     if (!(info->args.fakeCaps = virQEMUCapsNew()))
         abort();
 
-    /* until removal of the flags is completed we force them also in tests */
-    virQEMUCapsSet(info->args.fakeCaps, QEMU_CAPS_BLOCKDEV);
-
     info->conf = conf;
     info->args.newargs = true;
 

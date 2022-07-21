@@ -483,7 +483,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     X_QEMU_CAPS_USB_STORAGE_WERROR, /* -device usb-storage,werror=..,rerror=.. */
     QEMU_CAPS_EGL_HEADLESS, /* -display egl-headless */
     QEMU_CAPS_VFIO_PCI_DISPLAY, /* -device vfio-pci.display */
-    QEMU_CAPS_BLOCKDEV, /* -blockdev and blockdev-add are supported */
+    X_QEMU_CAPS_BLOCKDEV, /* -blockdev and blockdev-add are supported */
 
     /* 315 */
     QEMU_CAPS_DEVICE_VFIO_AP, /* -device vfio-ap */

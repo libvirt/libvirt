@@ -112,7 +112,6 @@
   <flag name='tpm-emulator'/>
   <flag name='egl-headless'/>
   <flag name='vfio-pci.display'/>
-  <flag name='blockdev'/>
   <flag name='memory-backend-memfd'/>
   <flag name='memory-backend-memfd.hugetlb'/>
   <flag name='iothread.poll-max-ns'/>
