@@ -81,8 +81,6 @@ struct qemuBlockStorageSourceAttachData {
     bool formatAttached;
 
     char *driveCmd;
-    char *driveAlias;
-    bool driveAdded;
 
     virDomainChrSourceDef *chardevDef;
     char *chardevAlias;

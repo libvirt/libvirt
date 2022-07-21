@@ -10663,8 +10663,7 @@ qemuBuildStorageSourceAttachPrepareDrive(virDomainDiskDef *disk)
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    if (!(data->driveCmd = qemuBuildDriveStr(disk)) ||
-        !(data->driveAlias = qemuAliasDiskDriveFromDisk(disk)))
+    if (!(data->driveCmd = qemuBuildDriveStr(disk)))
         return NULL;
 
     return g_steal_pointer(&data);
