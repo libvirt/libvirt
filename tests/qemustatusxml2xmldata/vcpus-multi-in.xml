@@ -308,6 +308,7 @@
   <libDir path='/tmp'/>
   <channelTargetDir path='/tmp/channel'/>
   <allowReboot value='yes'/>
+  <nodename index='0'/>
   <fdset index='0'/>
   <blockjobs active='no'/>
   <agentTimeout>-2</agentTimeout>

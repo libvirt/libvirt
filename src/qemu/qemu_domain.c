@@ -2175,8 +2175,7 @@ qemuDomainObjPrivateXMLFormatBlockjobs(virBuffer *buf,
     virBufferAsprintf(&attrBuf, " active='%s'",
                       virTristateBoolTypeToString(virTristateBoolFromBool(bj)));
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        virHashForEachSorted(priv->blockjobs,
+    if (virHashForEachSorted(priv->blockjobs,
                              qemuDomainObjPrivateXMLFormatBlockjobIterator,
                              &iterdata) < 0)
         return -1;
@@ -2396,8 +2395,7 @@ qemuDomainObjPrivateXMLFormat(virBuffer *buf,
 
     qemuDomainObjPrivateXMLFormatPR(buf, priv);
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        virBufferAsprintf(buf, "<nodename index='%llu'/>\n", priv->nodenameindex);
+    virBufferAsprintf(buf, "<nodename index='%llu'/>\n", priv->nodenameindex);
 
     virBufferAsprintf(buf, "<fdset index='%u'/>\n", priv->fdsetindex);
 
@@ -2825,15 +2823,13 @@ qemuDomainObjPrivateXMLParseBlockjobs(virDomainObj *vm,
         (tmp = virTristateBoolTypeFromString(active)) > 0)
         priv->reconnectBlockjobs = tmp;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV)) {
-        if ((nnodes = virXPathNodeSet("./blockjobs/blockjob", ctxt, &nodes)) < 0)
-            return -1;
+    if ((nnodes = virXPathNodeSet("./blockjobs/blockjob", ctxt, &nodes)) < 0)
+        return -1;
 
-        for (i = 0; i < nnodes; i++) {
-            if (qemuDomainObjPrivateXMLParseBlockjobData(vm, nodes[i], ctxt,
-                                                         priv->driver->xmlopt) < 0)
-                return -1;
-        }
+    for (i = 0; i < nnodes; i++) {
+        if (qemuDomainObjPrivateXMLParseBlockjobData(vm, nodes[i], ctxt,
+                                                     priv->driver->xmlopt) < 0)
+            return -1;
     }
 
     return 0;
