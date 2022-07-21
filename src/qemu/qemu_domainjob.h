@@ -139,10 +139,6 @@ void qemuDomainObjClearJob(virDomainJobObj *job);
 G_DEFINE_AUTO_CLEANUP_CLEAR_FUNC(virDomainJobObj, qemuDomainObjClearJob);
 
 int
-qemuDomainObjInitJob(virDomainJobObj *job,
-                     virDomainObjPrivateJobCallbacks *cb);
-
-int
 qemuDomainObjPrivateXMLFormatJob(virBuffer *buf,
                                  virDomainObj *vm);
 

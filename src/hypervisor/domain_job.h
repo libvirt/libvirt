@@ -204,3 +204,7 @@ struct _virDomainObjPrivateJobCallbacks {
    virDomainObjPrivateJobFormat formatJobPrivate;
    virDomainObjPrivateJobParse parseJobPrivate;
 };
+
+
+int virDomainObjInitJob(virDomainJobObj *job,
+                        virDomainObjPrivateJobCallbacks *cb);
