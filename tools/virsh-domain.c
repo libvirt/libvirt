@@ -4530,6 +4530,14 @@ static const vshCmdOptDef opts_save[] = {
      .type = VSH_OT_BOOL,
      .help = N_("avoid file system cache when saving")
     },
+    {.name = "parallel",
+     .type = VSH_OT_BOOL,
+     .help = N_("enable parallel save")
+    },
+    {.name = "parallel-channels",
+     .type = VSH_OT_INT,
+     .help = N_("number of extra IO channels to use for parallel save")
+    },
     {.name = "xml",
      .type = VSH_OT_STRING,
      .unwanted_positional = true,
@@ -4560,6 +4568,11 @@ doSave(void *opaque)
     g_autoptr(virshDomain) dom = NULL;
     const char *name = NULL;
     const char *to = NULL;
+    virTypedParameterPtr params = NULL;
+    int nparams = 0;
+    int maxparams = 0;
+    int nchannels = 1;
+    int rv = -1;
     unsigned int flags = 0;
     const char *xmlfile = NULL;
     g_autofree char *xml = NULL;
@@ -4573,15 +4586,30 @@ doSave(void *opaque)
         goto out_sig;
 #endif /* !WIN32 */
 
-    if (vshCommandOptString(ctl, cmd, "file", &to) < 0)
-        goto out;
-
     if (vshCommandOptBool(cmd, "bypass-cache"))
         flags |= VIR_DOMAIN_SAVE_BYPASS_CACHE;
     if (vshCommandOptBool(cmd, "running"))
         flags |= VIR_DOMAIN_SAVE_RUNNING;
     if (vshCommandOptBool(cmd, "paused"))
         flags |= VIR_DOMAIN_SAVE_PAUSED;
+    if (vshCommandOptBool(cmd, "parallel"))
+        flags |= VIR_DOMAIN_SAVE_PARALLEL;
+
+    if (vshCommandOptString(ctl, cmd, "file", &to) < 0)
+        goto out;
+    if (to &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_SAVE_PARAM_FILE, to) < 0)
+        goto out;
+
+    if (flags & VIR_DOMAIN_SAVE_PARALLEL) {
+        if ((rv = vshCommandOptInt(ctl, cmd, "parallel-channels", &nchannels)) < 0)
+            goto out;
+
+        if (virTypedParamsAddInt(&params, &nparams, &maxparams,
+                                 VIR_DOMAIN_SAVE_PARAM_PARALLEL_CHANNELS, nchannels) < 0)
+            goto out;
+    }
 
     if (vshCommandOptString(ctl, cmd, "xml", &xmlfile) < 0)
         goto out;
@@ -4594,9 +4622,13 @@ doSave(void *opaque)
         vshReportError(ctl);
         goto out;
     }
+    if (xml &&
+        virTypedParamsAddString(&params, &nparams, &maxparams,
+                                VIR_DOMAIN_SAVE_PARAM_DXML, xml) < 0)
+        goto out;
 
     if (flags || xml) {
-        rc = virDomainSaveFlags(dom, to, xml, flags);
+        rc = virDomainSaveParams(dom, params, nparams, flags);
     } else {
         rc = virDomainSave(dom, to);
     }
@@ -4609,6 +4641,8 @@ doSave(void *opaque)
     data->ret = 0;
 
  out:
+    virTypedParamsFree(params, nparams);
+
 #ifndef WIN32
     pthread_sigmask(SIG_SETMASK, &oldsigmask, NULL);
  out_sig:

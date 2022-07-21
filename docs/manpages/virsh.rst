@@ -4174,6 +4174,7 @@ save
 ::
 
    save domain state-file [--bypass-cache] [--xml file]
+      [--parallel] [--parallel-channels channels]
       [{--running | --paused}] [--verbose]
 
 Saves a running domain (RAM, but not disk state) to a state file so that
@@ -4181,8 +4182,11 @@ it can be restored
 later.  Once saved, the domain will no longer be running on the
 system, thus the memory allocated for the domain will be free for
 other domains to use.  ``virsh restore`` restores from this state file.
+
 If *--bypass-cache* is specified, the save will avoid the file system
-cache, although this may slow down the operation.
+cache. Depending on the specific scenario this may slow down or speed up
+the operation.
+
 
 The progress may be monitored using ``domjobinfo`` virsh command and canceled
 with ``domjobabort`` command (sent by another virsh instance). Another option
@@ -4203,6 +4207,12 @@ Normally, restoring a saved image will decide between running or paused
 based on the state the domain was in when the save was done; passing
 either the *--running* or *--paused* flag will allow overriding which
 state the ``restore`` should use.
+
+*--parallel* option will cause the save data to be written to file
+over multiple parallel IO channels. The number of channels can be
+specified using *--parallel-channels*. Using parallel IO channels
+requires the use of ``sparse`` image save format. Parallel save may
+significantly reduce the time required to save large memory domains.
 
 Domain saved state files assume that disk images will be unchanged
 between the creation and restore point.  For a more complete system
