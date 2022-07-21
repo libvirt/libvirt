@@ -2904,7 +2904,7 @@ void virDomainChrDefFree(virDomainChrDef *def)
     if (!def)
         return;
 
-    switch (def->deviceType) {
+    switch ((virDomainChrDeviceType)def->deviceType) {
     case VIR_DOMAIN_CHR_DEVICE_TYPE_CHANNEL:
         switch (def->targetType) {
         case VIR_DOMAIN_CHR_CHANNEL_TARGET_TYPE_GUESTFWD:
@@ -2918,7 +2918,10 @@ void virDomainChrDefFree(virDomainChrDef *def)
         }
         break;
 
-    default:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_PARALLEL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_SERIAL:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_CONSOLE:
+    case VIR_DOMAIN_CHR_DEVICE_TYPE_LAST:
         break;
     }
 
