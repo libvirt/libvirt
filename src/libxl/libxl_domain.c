@@ -44,19 +44,6 @@
 VIR_LOG_INIT("libxl.libxl_domain");
 
 
-static int
-libxlDomainObjInitJob(libxlDomainObjPrivate *priv)
-{
-    memset(&priv->job, 0, sizeof(priv->job));
-
-    if (virCondInit(&priv->job.cond) < 0)
-        return -1;
-
-    priv->job.current = virDomainJobDataInit(NULL);
-
-    return 0;
-}
-
 static void
 libxlDomainObjResetJob(libxlDomainObjPrivate *priv)
 {
@@ -190,11 +177,13 @@ libxlDomainObjPrivateAlloc(void *opaque G_GNUC_UNUSED)
         return NULL;
     }
 
-    if (libxlDomainObjInitJob(priv) < 0) {
+    if (virDomainObjInitJob(&priv->job, NULL) < 0) {
         virChrdevFree(priv->devs);
         g_free(priv);
         return NULL;
     }
+
+    priv->job.current = virDomainJobDataInit(NULL);
 
     return priv;
 }
