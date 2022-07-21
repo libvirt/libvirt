@@ -20,6 +20,7 @@
 #include <config.h>
 #include <glib.h>
 
+#include "configmake.h"
 #include "vircommand.h"
 #include "virerror.h"
 #include "virlog.h"
@@ -38,6 +39,10 @@
 
 VIR_LOG_INIT("qemu.nbdkit");
 
+#define NBDKIT_MODDIR LIBDIR "/nbdkit"
+#define NBDKIT_PLUGINDIR NBDKIT_MODDIR "/plugins"
+#define NBDKIT_FILTERDIR NBDKIT_MODDIR "/filters"
+
 VIR_ENUM_IMPL(qemuNbdkitCaps,
     QEMU_NBDKIT_CAPS_LAST,
     /* 0 */
@@ -51,6 +56,11 @@ struct _qemuNbdkitCaps {
 
     char *path;
     char *version;
+    time_t ctime;
+    time_t libvirtCtime;
+    time_t pluginDirMtime;
+    time_t filterDirMtime;
+    unsigned int libvirtVersion;
 
     virBitmap *flags;
 };
@@ -175,9 +185,41 @@ qemuNbdkitCapsNew(const char *path)
 }
 
 
+static time_t
+qemuNbdkitGetDirMtime(const char *moddir)
+{
+    struct stat st;
+
+    if (stat(moddir, &st) < 0) {
+        VIR_DEBUG("Failed to stat nbdkit module directory '%s': %s",
+                  moddir,
+                  g_strerror(errno));
+        return 0;
+    }
+
+    return st.st_mtime;
+}
+
+
 G_GNUC_UNUSED static void
 qemuNbdkitCapsQuery(qemuNbdkitCaps *caps)
 {
+    struct stat st;
+
+    if (stat(caps->path, &st) < 0) {
+        VIR_DEBUG("Failed to stat nbdkit binary '%s': %s",
+                  caps->path,
+                  g_strerror(errno));
+        caps->ctime  = 0;
+        return;
+    }
+
+    caps->ctime = st.st_ctime;
+    caps->filterDirMtime = qemuNbdkitGetDirMtime(NBDKIT_FILTERDIR);
+    caps->pluginDirMtime = qemuNbdkitGetDirMtime(NBDKIT_PLUGINDIR);
+    caps->libvirtCtime = virGetSelfLastChanged();
+    caps->libvirtVersion = LIBVIR_VERSION_NUMBER;
+
     qemuNbdkitCapsQueryPlugins(caps);
     qemuNbdkitCapsQueryFilters(caps);
     qemuNbdkitCapsQueryVersion(caps);
