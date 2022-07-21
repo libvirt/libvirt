@@ -68,6 +68,32 @@ qemuCgroupAllowDevicePath(virDomainObj *vm,
 
 
 static int
+qemuCgroupAllowDevicesPaths(virDomainObj *vm,
+                            const char *const *deviceACL,
+                            int perms,
+                            bool ignoreEacces)
+{
+    size_t i;
+
+    for (i = 0; deviceACL[i] != NULL; i++) {
+        int rv;
+
+        if (!virFileExists(deviceACL[i])) {
+            VIR_DEBUG("Ignoring non-existent device %s", deviceACL[i]);
+            continue;
+        }
+
+        rv = qemuCgroupAllowDevicePath(vm, deviceACL[i], perms, ignoreEacces);
+        if (rv < 0 &&
+            !virLastErrorIsSystemErrno(ENOENT))
+            return -1;
+    }
+
+    return 0;
+}
+
+
+static int
 qemuCgroupDenyDevicePath(virDomainObj *vm,
                          const char *path,
                          int perms,
@@ -671,6 +697,12 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
         return -1;
     }
 
+    if (!deviceACL)
+        deviceACL = defaultDeviceACL;
+
+    if (qemuCgroupAllowDevicesPaths(vm, deviceACL, VIR_CGROUP_DEVICE_RW, false) < 0)
+        return -1;
+
     if (qemuSetupFirmwareCgroup(vm) < 0)
         return -1;
 
@@ -686,9 +718,6 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
     if (rv < 0)
         return -1;
 
-    if (!deviceACL)
-        deviceACL = defaultDeviceACL;
-
     if (vm->def->nsounds &&
         ((!vm->def->ngraphics && cfg->nogfxAllowHostAudio) ||
          (vm->def->graphics &&
@@ -700,18 +729,6 @@ qemuSetupDevicesCgroup(virDomainObj *vm)
         virDomainAuditCgroupMajor(vm, priv->cgroup, "allow", DEVICE_SND_MAJOR,
                                   "sound", "rw", rv == 0);
         if (rv < 0)
-            return -1;
-    }
-
-    for (i = 0; deviceACL[i] != NULL; i++) {
-        if (!virFileExists(deviceACL[i])) {
-            VIR_DEBUG("Ignoring non-existent device %s", deviceACL[i]);
-            continue;
-        }
-
-        rv = qemuCgroupAllowDevicePath(vm, deviceACL[i], VIR_CGROUP_DEVICE_RW, false);
-        if (rv < 0 &&
-            !virLastErrorIsSystemErrno(ENOENT))
             return -1;
     }
 
