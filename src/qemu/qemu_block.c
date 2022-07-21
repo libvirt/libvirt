@@ -1658,32 +1658,6 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSource *src)
 
 
 /**
- * qemuBlockStorageSourceChainDetachPrepareLegacy
- * @src: storage source chain to remove
- * @driveAlias: Alias of the 'drive' backend (always consumed)
- *
- * Prepares qemuBlockStorageSourceChainData *for detaching @src and its
- * backingStore if -drive was used.
- */
-qemuBlockStorageSourceChainData *
-qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSource *src,
-                                              char *driveAlias)
-{
-    g_autoptr(qemuBlockStorageSourceAttachData) backend = NULL;
-    g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
-
-    data = g_new0(qemuBlockStorageSourceChainData, 1);
-
-    if (!(backend = qemuBlockStorageSourceDetachPrepare(src, driveAlias)))
-        return NULL;
-
-    VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);
-
-    return g_steal_pointer(&data);
-}
-
-
-/**
  * qemuBlockStorageSourceChainDetachPrepareChardev
  * @src: storage source chain to remove
  *

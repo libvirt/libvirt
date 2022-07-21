@@ -149,9 +149,6 @@ qemuBlockStorageSourceChainDataFree(qemuBlockStorageSourceChainData *data);
 qemuBlockStorageSourceChainData *
 qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSource *src);
 qemuBlockStorageSourceChainData *
-qemuBlockStorageSourceChainDetachPrepareDrive(virStorageSource *src,
-                                              char *driveAlias);
-qemuBlockStorageSourceChainData *
 qemuBlockStorageSourceChainDetachPrepareChardev(char *chardevAlias);
 
 int
