@@ -376,12 +376,14 @@ virDomainCapsCPUCustomFormat(virBuffer *buf,
 
     for (i = 0; i < custom->nmodels; i++) {
         virDomainCapsCPUModel *model = custom->models + i;
+
         virBufferAsprintf(buf, "<model usable='%s'",
                           virDomainCapsCPUUsableTypeToString(model->usable));
+
         if (model->deprecated)
             virBufferAddLit(buf, " deprecated='yes'");
-        virBufferAsprintf(buf, ">%s</model>\n",
-                          model->name);
+
+        virBufferAsprintf(buf, ">%s</model>\n", model->name);
     }
 
     virBufferAdjustIndent(buf, -2);
