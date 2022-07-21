@@ -4720,13 +4720,9 @@ qemuDomainValidateActualNetDef(const virDomainNetDef *net,
 int
 qemuDomainValidateStorageSource(virStorageSource *src,
                                 virQEMUCaps *qemuCaps,
-                                bool maskBlockdev)
+                                bool maskBlockdev G_GNUC_UNUSED)
 {
     virStorageType actualType = virStorageSourceGetActualType(src);
-    bool blockdev = virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV);
-
-    if (maskBlockdev)
-        blockdev = false;
 
     if (src->format == VIR_STORAGE_FILE_COW) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4779,29 +4775,12 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         return -1;
     }
 
-    if (src->sliceStorage) {
-        /* In pre-blockdev era we can't configure the slice so we can allow them
-         * only for detected backing store entries as they are populated
-         * from a place that qemu would be able to read */
-        if (!src->detected && !blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("storage slice is not supported by this QEMU binary"));
-            return -1;
-        }
-    }
-
     if (src->sslverify != VIR_TRISTATE_BOOL_ABSENT) {
         if (actualType != VIR_STORAGE_TYPE_NETWORK ||
             (src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTPS &&
              src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("ssl verification is supported only with HTTPS/FTPS protocol"));
-            return -1;
-        }
-
-        if (!src->detected && !blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("ssl verification setting is not supported by this QEMU binary"));
             return -1;
         }
     }
@@ -4812,12 +4791,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
              src->protocol != VIR_STORAGE_NET_PROTOCOL_HTTP)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("http cookies are supported only with HTTP(S) protocol"));
-            return -1;
-        }
-
-        if (!src->detected && !blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("http cookies are not supported by this QEMU binary"));
             return -1;
         }
 
@@ -4835,12 +4808,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
                            _("readahead is supported only with HTTP(S)/FTP(s) protocols"));
             return -1;
         }
-
-        if (!src->detected && !blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("readahead setting is not supported with this QEMU binary"));
-            return -1;
-        }
     }
 
     if (src->timeout > 0) {
@@ -4851,12 +4818,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
              src->protocol != VIR_STORAGE_NET_PROTOCOL_FTPS)) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("timeout is supported only with HTTP(S)/FTP(s) protocols"));
-            return -1;
-        }
-
-        if (!src->detected && !blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("timeout setting is not supported with this QEMU binary"));
             return -1;
         }
     }
@@ -4870,11 +4831,9 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         return -1;
     }
 
-    /* TFTP protocol was not supported for some time, lock it out at least with
-     * -blockdev */
+    /* TFTP protocol is not supported since QEMU 2.8.0 */
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
-        src->protocol == VIR_STORAGE_NET_PROTOCOL_TFTP &&
-        blockdev) {
+        src->protocol == VIR_STORAGE_NET_PROTOCOL_TFTP) {
         virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                        _("'tftp' protocol is not supported with this QEMU binary"));
         return -1;
@@ -4882,13 +4841,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
 
     if (actualType == VIR_STORAGE_TYPE_NETWORK &&
         src->protocol == VIR_STORAGE_NET_PROTOCOL_NFS) {
-        /* NFS protocol may only be used if current QEMU supports blockdev */
-        if (!blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("'nfs' protocol is not supported with this QEMU binary"));
-            return -1;
-        }
-
         /* NFS protocol must have exactly one host */
         if (src->nhosts != 1) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
@@ -4916,12 +4868,6 @@ qemuDomainValidateStorageSource(virStorageSource *src,
         if (src->format != VIR_STORAGE_FILE_QCOW2) {
             virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
                            _("metadata cache max size control is supported only with qcow2 images"));
-            return -1;
-        }
-
-        if (!blockdev) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED, "%s",
-                           _("metadata cache max size control is not supported with this QEMU binary"));
             return -1;
         }
     }
