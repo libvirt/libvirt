@@ -3928,22 +3928,24 @@ void virDomainObjAssignDef(virDomainObj *domain,
         else
             virDomainDefFree(domain->newDef);
         domain->newDef = g_steal_pointer(def);
-    } else {
-        if (live) {
-            /* save current configuration to be restored on domain shutdown */
-            if (!domain->newDef)
-                domain->newDef = domain->def;
-            else
-                virDomainDefFree(domain->def);
-            domain->def = g_steal_pointer(def);
-        } else {
-            if (oldDef)
-                *oldDef = domain->def;
-            else
-                virDomainDefFree(domain->def);
-            domain->def = g_steal_pointer(def);
-        }
+        return;
     }
+
+    if (live) {
+        /* save current configuration to be restored on domain shutdown */
+        if (!domain->newDef)
+            domain->newDef = domain->def;
+        else
+            virDomainDefFree(domain->def);
+        domain->def = g_steal_pointer(def);
+        return;
+    }
+
+    if (oldDef)
+        *oldDef = domain->def;
+    else
+        virDomainDefFree(domain->def);
+    domain->def = g_steal_pointer(def);
 }
 
 
