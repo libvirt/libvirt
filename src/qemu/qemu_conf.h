@@ -318,6 +318,9 @@ struct _virQEMUDriver {
 
     /* Immutable pointer, self-locking APIs */
     virHashAtomic *migrationErrors;
+
+    /* Immutable pointer, self-locking APIs */
+    virFileCache *nbdkitCapsCache;
 };
 
 virQEMUDriverConfig *virQEMUDriverConfigNew(bool privileged,

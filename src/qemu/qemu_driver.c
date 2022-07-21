@@ -845,6 +845,8 @@ qemuStateInitialize(bool privileged,
                                                            defsecmodel)))
         goto error;
 
+    qemu_driver->nbdkitCapsCache = qemuNbdkitCapsCacheNew(cfg->cacheDir);
+
     /* If hugetlbfs is present, then we need to create a sub-directory within
      * it, since we can't assume the root mount point has permissions that
      * will let our spawned QEMU instances use it. */
@@ -1078,6 +1080,7 @@ qemuStateCleanup(void)
     ebtablesContextFree(qemu_driver->ebtables);
     VIR_FREE(qemu_driver->qemuImgBinary);
     virObjectUnref(qemu_driver->domains);
+    virObjectUnref(qemu_driver->nbdkitCapsCache);
 
     if (qemu_driver->lockFD != -1)
         virPidFileRelease(qemu_driver->config->stateDir, "driver", qemu_driver->lockFD);
