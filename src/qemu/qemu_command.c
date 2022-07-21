@@ -1935,7 +1935,7 @@ qemuBuildDiskDeviceProps(const virDomainDef *def,
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         chardev = qemuDomainGetVhostUserChrAlias(disk->info.alias);
     } else {
-        if (qemuDomainDiskGetBackendAlias(disk, qemuCaps, &drive) < 0)
+        if (qemuDomainDiskGetBackendAlias(disk, &drive) < 0)
             return NULL;
     }
 

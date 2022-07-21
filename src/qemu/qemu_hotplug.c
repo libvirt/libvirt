@@ -475,7 +475,7 @@ qemuDomainChangeMediaBlockdev(virDomainObj *vm,
         if (!(newbackend = qemuBuildStorageSourceChainAttachPrepareBlockdev(newsrc)))
             return -1;
 
-        if (qemuDomainDiskGetBackendAlias(disk, priv->qemuCaps, &nodename) < 0)
+        if (qemuDomainDiskGetBackendAlias(disk, &nodename) < 0)
             return -1;
     }
 

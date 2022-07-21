@@ -7717,7 +7717,8 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
  * Returns the pointer to the node-name of the topmost layer used by @disk as
  * backend. Currently returns the nodename of the copy-on-read filter if enabled
  * or the nodename of the top image's format driver. Empty disks return NULL.
- * This must be used only when VIR_QEMU_CAPS_BLOCKDEV is enabled.
+ * This must be used only with disks instantiated via -blockdev (thus not
+ * for SD cards).
  */
 const char *
 qemuDomainDiskGetTopNodename(virDomainDiskDef *disk)
@@ -7737,7 +7738,6 @@ qemuDomainDiskGetTopNodename(virDomainDiskDef *disk)
 /**
  * qemuDomainDiskGetBackendAlias:
  * @disk: disk definition
- * @qemuCaps: emulator capabilities
  * @backendAlias: filled with the alias of the disk storage backend
  *
  * Returns the correct alias for the disk backend. This may be the alias of
@@ -7750,13 +7750,11 @@ qemuDomainDiskGetTopNodename(virDomainDiskDef *disk)
  */
 int
 qemuDomainDiskGetBackendAlias(virDomainDiskDef *disk,
-                              virQEMUCaps *qemuCaps,
                               char **backendAlias)
 {
     *backendAlias = NULL;
 
-    if (!virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV) ||
-        qemuDiskBusIsSD(disk->bus)) {
+    if (qemuDiskBusIsSD(disk->bus)) {
         if (!(*backendAlias = qemuAliasDiskDriveFromDisk(disk)))
             return -1;
 
@@ -10864,8 +10862,7 @@ qemuDomainPrepareDiskSource(virDomainDiskDef *disk,
             disk->src->format = VIR_STORAGE_FILE_RAW;
     }
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV) &&
-        !qemuDiskBusIsSD(disk->bus)) {
+    if (!qemuDiskBusIsSD(disk->bus)) {
         if (qemuDomainPrepareDiskSourceBlockdev(disk, priv, cfg) < 0)
             return -1;
     } else {
