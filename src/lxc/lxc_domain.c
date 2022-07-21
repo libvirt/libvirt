@@ -35,17 +35,6 @@
 
 VIR_LOG_INIT("lxc.lxc_domain");
 
-static int
-virLXCDomainObjInitJob(virLXCDomainObjPrivate *priv)
-{
-    memset(&priv->job, 0, sizeof(priv->job));
-
-    if (virCondInit(&priv->job.cond) < 0)
-        return -1;
-
-    return 0;
-}
-
 static void
 virLXCDomainObjResetJob(virLXCDomainObjPrivate *priv)
 {
@@ -145,7 +134,7 @@ virLXCDomainObjPrivateAlloc(void *opaque)
 {
     virLXCDomainObjPrivate *priv = g_new0(virLXCDomainObjPrivate, 1);
 
-    if (virLXCDomainObjInitJob(priv) < 0) {
+    if (virDomainObjInitJob(&priv->job, NULL) < 0) {
         g_free(priv);
         return NULL;
     }
