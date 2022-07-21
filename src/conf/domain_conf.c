@@ -4009,15 +4009,15 @@ int
 virDomainObjWaitUntil(virDomainObj *vm,
                       unsigned long long whenms)
 {
-    if (virCondWaitUntil(&vm->cond, &vm->parent.lock, whenms) < 0) {
-        if (errno != ETIMEDOUT) {
-            virReportSystemError(errno, "%s",
-                                 _("failed to wait for domain condition"));
-            return -1;
-        }
+    if (virCondWaitUntil(&vm->cond, &vm->parent.lock, whenms) >= 0)
+        return 0;
+
+    if (errno == ETIMEDOUT)
         return 1;
-    }
-    return 0;
+
+    virReportSystemError(errno, "%s",
+                         _("failed to wait for domain condition"));
+    return -1;
 }
 
 
