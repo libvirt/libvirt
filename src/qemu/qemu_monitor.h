@@ -677,10 +677,6 @@ int qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
                                     GHashTable **ret_stats)
     ATTRIBUTE_NONNULL(2);
 
-int qemuMonitorBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                        GHashTable *stats)
-    ATTRIBUTE_NONNULL(2);
-
 int qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
                                                 GHashTable *stats)
     ATTRIBUTE_NONNULL(2);

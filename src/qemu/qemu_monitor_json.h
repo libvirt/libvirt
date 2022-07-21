@@ -98,9 +98,6 @@ int
 qemuMonitorJSONGetAllBlockStatsInfo(qemuMonitor *mon,
                                     GHashTable *hash);
 int
-qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                        GHashTable *stats);
-int
 qemuMonitorJSONBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
                                                 GHashTable *stats);
 

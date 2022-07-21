@@ -1972,17 +1972,6 @@ qemuMonitorGetAllBlockStatsInfo(qemuMonitor *mon,
 }
 
 
-/* Updates "stats" to fill virtual and physical size of the image */
-int
-qemuMonitorBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                    GHashTable *stats)
-{
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONBlockStatsUpdateCapacity(mon, stats);
-}
-
-
 int
 qemuMonitorBlockStatsUpdateCapacityBlockdev(qemuMonitor *mon,
                                             GHashTable *stats)

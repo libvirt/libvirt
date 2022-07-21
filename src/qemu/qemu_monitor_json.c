@@ -2470,65 +2470,6 @@ qemuMonitorJSONBlockStatsUpdateCapacityData(virJSONValue *image,
 
 
 static int
-qemuMonitorJSONBlockStatsUpdateCapacityOne(virJSONValue *image,
-                                           const char *dev_name,
-                                           int depth,
-                                           GHashTable *stats)
-{
-    g_autofree char *entry_name = qemuDomainStorageAlias(dev_name, depth);
-    virJSONValue *backing;
-
-    if (qemuMonitorJSONBlockStatsUpdateCapacityData(image, entry_name,
-                                                    stats, NULL) < 0)
-        return -1;
-
-    if ((backing = virJSONValueObjectGetObject(image, "backing-image")) &&
-        qemuMonitorJSONBlockStatsUpdateCapacityOne(backing,
-                                                   dev_name,
-                                                   depth + 1,
-                                                   stats) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-int
-qemuMonitorJSONBlockStatsUpdateCapacity(qemuMonitor *mon,
-                                        GHashTable *stats)
-{
-    size_t i;
-    g_autoptr(virJSONValue) devices = NULL;
-
-    if (!(devices = qemuMonitorJSONQueryBlock(mon)))
-        return -1;
-
-    for (i = 0; i < virJSONValueArraySize(devices); i++) {
-        virJSONValue *dev;
-        virJSONValue *inserted;
-        virJSONValue *image;
-        const char *dev_name;
-
-        if (!(dev = qemuMonitorJSONGetBlockDev(devices, i)))
-            return -1;
-
-        if (!(dev_name = qemuMonitorJSONGetBlockDevDevice(dev)))
-            return -1;
-
-        /* drive may be empty */
-        if (!(inserted = virJSONValueObjectGetObject(dev, "inserted")) ||
-            !(image = virJSONValueObjectGetObject(inserted, "image")))
-            continue;
-
-        if (qemuMonitorJSONBlockStatsUpdateCapacityOne(image, dev_name, 0, stats) < 0)
-            return -1;
-    }
-
-    return 0;
-}
-
-
-static int
 qemuMonitorJSONBlockStatsUpdateCapacityBlockdevWorker(size_t pos G_GNUC_UNUSED,
                                                       virJSONValue *val,
                                                       void *opaque)
