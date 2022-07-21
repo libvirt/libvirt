@@ -1458,24 +1458,6 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
     int nsnapshots;
     int pauseReason;
     size_t i;
-    bool blockedReasonsCap = virQEMUCapsGet(priv->qemuCaps,
-                                            QEMU_CAPS_MIGRATION_BLOCKED_REASONS);
-
-    /* Ask qemu if it has a migration blocker */
-    if (blockedReasonsCap) {
-        g_auto(GStrv) blockers = NULL;
-        if (qemuDomainGetMigrationBlockers(driver, vm,
-                                           VIR_ASYNC_JOB_MIGRATION_OUT,
-                                           &blockers) < 0)
-            return false;
-
-        if (blockers && blockers[0]) {
-            g_autofree char *reasons = g_strjoinv("; ", blockers);
-            virReportError(VIR_ERR_OPERATION_INVALID,
-                           _("cannot migrate domain: %s"), reasons);
-            return false;
-        }
-    }
 
     /* perform these checks only when migrating to remote hosts */
     if (remote) {
@@ -1493,6 +1475,27 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
 
     /* following checks don't make sense for offline migration */
     if (!(flags & VIR_MIGRATE_OFFLINE)) {
+        bool blockedReasonsCap = virQEMUCapsGet(priv->qemuCaps,
+                                                QEMU_CAPS_MIGRATION_BLOCKED_REASONS);
+
+        /* Ask qemu if it has a migration blocker */
+        if (blockedReasonsCap) {
+            g_auto(GStrv) blockers = NULL;
+
+            if (qemuDomainGetMigrationBlockers(driver, vm,
+                                               VIR_ASYNC_JOB_MIGRATION_OUT,
+                                               &blockers) < 0) {
+                return false;
+            }
+
+            if (blockers && blockers[0]) {
+                g_autofree char *reasons = g_strjoinv("; ", blockers);
+                virReportError(VIR_ERR_OPERATION_INVALID,
+                               _("cannot migrate domain: %s"), reasons);
+                return false;
+            }
+        }
+
         if (remote) {
             /* cancel migration if disk I/O error is emitted while migrating */
             if (flags & VIR_MIGRATE_ABORT_ON_ERROR &&
