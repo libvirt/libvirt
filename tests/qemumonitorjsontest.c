@@ -1199,8 +1199,6 @@ GEN_TEST_FUNC(qemuMonitorJSONBlockResize, "vda", "asdf", 123456)
 GEN_TEST_FUNC(qemuMonitorJSONSetPassword, "spice", "secret_password", "disconnect")
 GEN_TEST_FUNC(qemuMonitorJSONExpirePassword, "spice", "123456")
 GEN_TEST_FUNC(qemuMonitorJSONSetBalloon, 1024)
-GEN_TEST_FUNC(qemuMonitorJSONEjectMedia, "hdc", true)
-GEN_TEST_FUNC(qemuMonitorJSONChangeMedia, "hdc", "/foo/bar", "formatstr")
 GEN_TEST_FUNC(qemuMonitorJSONSaveVirtualMemory, 0, 1024, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONSavePhysicalMemory, 0, 1024, "/foo/bar")
 GEN_TEST_FUNC(qemuMonitorJSONMigrate, QEMU_MONITOR_MIGRATE_BACKGROUND |
@@ -2902,8 +2900,6 @@ mymain(void)
     DO_TEST_GEN(qemuMonitorJSONSetPassword);
     DO_TEST_GEN(qemuMonitorJSONExpirePassword);
     DO_TEST_GEN(qemuMonitorJSONSetBalloon);
-    DO_TEST_GEN(qemuMonitorJSONEjectMedia);
-    DO_TEST_GEN_DEPRECATED(qemuMonitorJSONChangeMedia, true);
     DO_TEST_GEN(qemuMonitorJSONSaveVirtualMemory);
     DO_TEST_GEN(qemuMonitorJSONSavePhysicalMemory);
     DO_TEST_GEN(qemuMonitorJSONMigrate);

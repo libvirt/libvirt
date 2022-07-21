@@ -2784,63 +2784,6 @@ qemuMonitorJSONSetBalloon(qemuMonitor *mon,
 }
 
 
-/**
- * Run QMP command to eject a media from ejectable device.
- *
- * Returns:
- *      -1 on error
- *      0 on success
- */
-int qemuMonitorJSONEjectMedia(qemuMonitor *mon,
-                              const char *dev_name,
-                              bool force)
-{
-    g_autoptr(virJSONValue) cmd = qemuMonitorJSONMakeCommand("eject",
-                                                             "s:device", dev_name,
-                                                             "b:force", force,
-                                                             NULL);
-    g_autoptr(virJSONValue) reply = NULL;
-
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        return -1;
-
-    return 0;
-}
-
-
-int qemuMonitorJSONChangeMedia(qemuMonitor *mon,
-                               const char *dev_name,
-                               const char *newmedia,
-                               const char *format)
-{
-    g_autoptr(virJSONValue) cmd = NULL;
-    g_autoptr(virJSONValue) reply = NULL;
-
-    cmd = qemuMonitorJSONMakeCommand("change",
-                                     "s:device", dev_name,
-                                     "s:target", newmedia,
-                                     "S:arg", format,
-                                     NULL);
-
-    if (!cmd)
-        return -1;
-
-    if (qemuMonitorJSONCommand(mon, cmd, &reply) < 0)
-        return -1;
-
-    if (qemuMonitorJSONCheckError(cmd, reply) < 0)
-        return -1;
-
-    return 0;
-}
-
-
 static int qemuMonitorJSONSaveMemory(qemuMonitor *mon,
                                      const char *cmdtype,
                                      unsigned long long offset,

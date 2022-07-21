@@ -128,16 +128,6 @@ qemuMonitorJSONSetBalloon(qemuMonitor *mon,
                           unsigned long long newmem);
 
 int
-qemuMonitorJSONEjectMedia(qemuMonitor *mon,
-                          const char *dev_name,
-                          bool force);
-int
-qemuMonitorJSONChangeMedia(qemuMonitor *mon,
-                           const char *dev_name,
-                           const char *newmedia,
-                           const char *format);
-
-int
 qemuMonitorJSONSaveVirtualMemory(qemuMonitor *mon,
                                  unsigned long long offset,
                                  unsigned long long length,

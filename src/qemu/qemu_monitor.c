@@ -2106,33 +2106,6 @@ qemuMonitorSetBalloon(qemuMonitor *mon,
 
 
 int
-qemuMonitorEjectMedia(qemuMonitor *mon,
-                      const char *dev_name,
-                      bool force)
-{
-    VIR_DEBUG("dev_name=%s force=%d", dev_name, force);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONEjectMedia(mon, dev_name, force);
-}
-
-
-int
-qemuMonitorChangeMedia(qemuMonitor *mon,
-                       const char *dev_name,
-                       const char *newmedia,
-                       const char *format)
-{
-    VIR_DEBUG("dev_name=%s newmedia=%s format=%s", dev_name, newmedia, format);
-
-    QEMU_CHECK_MONITOR(mon);
-
-    return qemuMonitorJSONChangeMedia(mon, dev_name, newmedia, format);
-}
-
-
-int
 qemuMonitorSaveVirtualMemory(qemuMonitor *mon,
                              unsigned long long offset,
                              unsigned long long length,

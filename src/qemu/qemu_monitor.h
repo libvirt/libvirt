@@ -729,15 +729,6 @@ int qemuMonitorExpirePassword(qemuMonitor *mon,
 int qemuMonitorSetBalloon(qemuMonitor *mon,
                           unsigned long long newmem);
 
-int qemuMonitorEjectMedia(qemuMonitor *mon,
-                          const char *dev_name,
-                          bool force);
-int qemuMonitorChangeMedia(qemuMonitor *mon,
-                           const char *dev_name,
-                           const char *newmedia,
-                           const char *format);
-
-
 int qemuMonitorSaveVirtualMemory(qemuMonitor *mon,
                                  unsigned long long offset,
                                  unsigned long long length,
