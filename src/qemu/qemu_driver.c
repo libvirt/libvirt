@@ -10022,7 +10022,6 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
                             qemuBlockStats **retstats)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     virDomainDiskDef *disk = NULL;
     g_autoptr(GHashTable) blockstats = NULL;
     qemuBlockStats *stats;
@@ -10058,12 +10057,8 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
     qemuDomainObjEnterMonitor(vm);
     nstats = qemuMonitorGetAllBlockStatsInfo(priv->mon, &blockstats);
 
-    if (capacity && nstats >= 0) {
-        if (blockdev)
-            rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, blockstats);
-        else
-            rc = qemuMonitorBlockStatsUpdateCapacity(priv->mon, blockstats);
-    }
+    if (capacity && nstats >= 0)
+        rc = qemuMonitorBlockStatsUpdateCapacityBlockdev(priv->mon, blockstats);
 
     qemuDomainObjExitMonitor(vm);
 
@@ -10073,6 +10068,8 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
     *retstats = g_new0(qemuBlockStats, 1);
 
     if (entryname) {
+        qemuBlockStats *capstats;
+
         if (!(stats = virHashLookup(blockstats, entryname))) {
             virReportError(VIR_ERR_INTERNAL_ERROR,
                            _("cannot find statistics for device '%s'"), entryname);
@@ -10081,18 +10078,14 @@ qemuDomainBlocksStatsGather(virDomainObj *vm,
 
         **retstats = *stats;
 
-        if (blockdev) {
-            /* capacity are reported only per node-name so we need to transfer them */
-            qemuBlockStats *capstats;
-
-            if (disk && disk->src &&
-                (capstats = virHashLookup(blockstats, disk->src->nodeformat))) {
-                (*retstats)->capacity = capstats->capacity;
-                (*retstats)->physical = capstats->physical;
-                (*retstats)->wr_highest_offset = capstats->wr_highest_offset;
-                (*retstats)->wr_highest_offset_valid = capstats->wr_highest_offset_valid;
-                (*retstats)->write_threshold = capstats->write_threshold;
-            }
+        /* capacity are reported only per node-name so we need to transfer them */
+        if (disk && disk->src &&
+            (capstats = virHashLookup(blockstats, disk->src->nodeformat))) {
+            (*retstats)->capacity = capstats->capacity;
+            (*retstats)->physical = capstats->physical;
+            (*retstats)->wr_highest_offset = capstats->wr_highest_offset;
+            (*retstats)->wr_highest_offset_valid = capstats->wr_highest_offset_valid;
+            (*retstats)->write_threshold = capstats->write_threshold;
         }
     } else {
         for (i = 0; i < vm->def->ndisks; i++) {
