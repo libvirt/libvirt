@@ -1290,6 +1290,7 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
                          unsigned long apiFlags)
 {
     virErrorPtr err;
+    g_autoptr(virBitmap) clearCaps = NULL;
 
     virErrorPreserveLast(&err);
 
@@ -1299,13 +1300,16 @@ qemuMigrationParamsReset(virQEMUDriver *driver,
     if (!virDomainObjIsActive(vm) || !origParams)
         goto cleanup;
 
-    /* Do not pass apiFlags to qemuMigrationParamsApply here to make sure all
-     * parameters and capabilities are reset. */
-    if (qemuMigrationParamsApply(driver, vm, asyncJob, origParams, 0) < 0)
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
         goto cleanup;
 
-    qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
-    /* We don't reset 'block-bitmap-mapping' as it can't be unset */
+    clearCaps = virBitmapNew(0);
+
+    if (qemuMigrationParamsApplyCaps(vm, clearCaps) == 0 &&
+        qemuMigrationParamsApplyValues(vm, origParams, false) == 0)
+        qemuMigrationParamsResetTLS(driver, vm, asyncJob, origParams, apiFlags);
+
+    qemuDomainObjExitMonitor(vm);
 
  cleanup:
     virErrorRestore(&err);
