@@ -197,10 +197,6 @@ qemuBuildZPCIDevProps(virDomainDeviceInfo *dev);
 
 int qemuNetworkPrepareDevices(virDomainDef *def);
 
-int qemuGetDriveSourceString(virStorageSource *src,
-                             qemuDomainSecretInfo *secinfo,
-                             char **source);
-
 bool
 qemuDiskConfigBlkdeviotuneEnabled(virDomainDiskDef *disk);
 
