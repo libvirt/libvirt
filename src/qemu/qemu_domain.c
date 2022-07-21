@@ -7550,8 +7550,6 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
     virStorageSource *src; /* iterator for the backing chain declared in XML */
     virStorageSource *n; /* iterator for the backing chain detected from disk */
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
-    bool isSD = qemuDiskBusIsSD(disk->bus);
     uid_t uid;
     gid_t gid;
 
@@ -7641,7 +7639,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         qemuDomainPrepareStorageSourceConfig(n, cfg);
         qemuDomainPrepareDiskSourceData(disk, n);
 
-        if (blockdev && !isSD &&
+        if (!qemuDiskBusIsSD(disk->bus) &&
             qemuDomainPrepareStorageSourceBlockdev(disk, n, priv, cfg) < 0)
             return -1;
     }
