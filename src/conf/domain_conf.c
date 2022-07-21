@@ -8053,19 +8053,26 @@ static int
 virDomainControllerModelTypeFromString(const virDomainControllerDef *def,
                                        const char *model)
 {
-    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+    switch ((virDomainControllerType)def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         return virDomainControllerModelSCSITypeFromString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         return virDomainControllerModelUSBTypeFromString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         return virDomainControllerModelPCITypeFromString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE)
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
         return virDomainControllerModelIDETypeFromString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         return virDomainControllerModelVirtioSerialTypeFromString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
         return virDomainControllerModelISATypeFromString(model);
-
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
+        return -1;
+    }
     return -1;
 }
 
@@ -8074,19 +8081,26 @@ static const char *
 virDomainControllerModelTypeToString(virDomainControllerDef *def,
                                      int model)
 {
-    if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_SCSI)
+    switch ((virDomainControllerType)def->type) {
+    case VIR_DOMAIN_CONTROLLER_TYPE_SCSI:
         return virDomainControllerModelSCSITypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_USB)
+    case VIR_DOMAIN_CONTROLLER_TYPE_USB:
         return virDomainControllerModelUSBTypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_PCI)
+    case VIR_DOMAIN_CONTROLLER_TYPE_PCI:
         return virDomainControllerModelPCITypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_IDE)
+    case VIR_DOMAIN_CONTROLLER_TYPE_IDE:
         return virDomainControllerModelIDETypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL)
+    case VIR_DOMAIN_CONTROLLER_TYPE_VIRTIO_SERIAL:
         return virDomainControllerModelVirtioSerialTypeToString(model);
-    else if (def->type == VIR_DOMAIN_CONTROLLER_TYPE_ISA)
+    case VIR_DOMAIN_CONTROLLER_TYPE_ISA:
         return virDomainControllerModelISATypeToString(model);
-
+    case VIR_DOMAIN_CONTROLLER_TYPE_FDC:
+    case VIR_DOMAIN_CONTROLLER_TYPE_SATA:
+    case VIR_DOMAIN_CONTROLLER_TYPE_CCID:
+    case VIR_DOMAIN_CONTROLLER_TYPE_XENBUS:
+    case VIR_DOMAIN_CONTROLLER_TYPE_LAST:
+        return NULL;
+    }
     return NULL;
 }
 
