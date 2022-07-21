@@ -650,7 +650,6 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
     g_autoptr(qemuBlockStorageSourceChainData) data = NULL;
     qemuDomainObjPrivate *priv = vm->privateData;
     g_autoptr(virJSONValue) devprops = NULL;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     bool extensionDeviceAttached = false;
     int rc;
     g_autoptr(qemuSnapshotDiskContext) transientDiskSnapshotCtxt = NULL;
@@ -662,7 +661,7 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
     if (virStorageSourceGetActualType(disk->src) == VIR_STORAGE_TYPE_VHOST_USER) {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareChardev(disk)))
             return -1;
-    } else if (blockdev) {
+    } else {
         if (!(data = qemuBuildStorageSourceChainAttachPrepareBlockdev(disk->src)))
             return -1;
 
@@ -672,10 +671,6 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
 
             data->copyOnReadNodename = g_strdup(QEMU_DOMAIN_DISK_PRIVATE(disk)->nodeCopyOnRead);
         }
-
-    } else {
-        if (!(data = qemuBuildStorageSourceChainAttachPrepareDrive(disk)))
-            return -1;
     }
 
     disk->src->readonly = origReadonly;
@@ -727,7 +722,7 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
      * As there isn't anything sane to do if this fails, let's just return
      * success.
      */
-    if (blockdev && rc == 0 &&
+    if (rc == 0 &&
         qemuDiskConfigBlkdeviotuneEnabled(disk)) {
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
         if (qemuMonitorSetBlockIoThrottle(priv->mon, NULL, diskPriv->qomName,
@@ -4270,7 +4265,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
     g_autoptr(qemuBlockStorageSourceChainData) diskBackend = NULL;
     size_t i;
     qemuDomainObjPrivate *priv = vm->privateData;
-    bool blockdev = virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV);
     int ret = -1;
 
     VIR_DEBUG("Removing disk %s from domain %p %s",
@@ -4282,7 +4276,7 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
 
         if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareChardev(chardevAlias)))
             goto cleanup;
-    } else if (blockdev) {
+    } else {
         if (diskPriv->blockjob) {
             /* the block job keeps reference to the disk chain */
             diskPriv->blockjob->disk = NULL;
@@ -4298,14 +4292,6 @@ qemuDomainRemoveDiskDevice(virQEMUDriver *driver,
             diskBackend->copyOnReadNodename = g_strdup(diskPriv->nodeCopyOnRead);
             diskBackend->copyOnReadAttached = true;
         }
-    } else {
-        char *driveAlias;
-
-        if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
-            goto cleanup;
-
-        if (!(diskBackend = qemuBlockStorageSourceChainDetachPrepareDrive(disk->src, driveAlias)))
-            goto cleanup;
     }
 
     for (i = 0; i < vm->def->ndisks; i++) {
