@@ -201,7 +201,7 @@ qemuNbdkitGetDirMtime(const char *moddir)
 }
 
 
-G_GNUC_UNUSED static void
+static void
 qemuNbdkitCapsQuery(qemuNbdkitCaps *caps)
 {
     struct stat st;
@@ -239,4 +239,91 @@ qemuNbdkitCapsSet(qemuNbdkitCaps *nbdkitCaps,
                   qemuNbdkitCapsFlags flag)
 {
     ignore_value(virBitmapSetBit(nbdkitCaps->flags, flag));
+}
+
+
+static bool
+virNbkditCapsCheckModdir(const char *moddir,
+                         time_t expectedMtime)
+{
+    time_t mtime = qemuNbdkitGetDirMtime(moddir);
+
+    if (mtime != expectedMtime) {
+        VIR_DEBUG("Outdated capabilities for nbdkit: module directory '%s' changed (%lld vs %lld)",
+                  moddir, (long long)mtime, (long long)expectedMtime);
+        return false;
+    }
+    return true;
+}
+
+
+static bool
+virNbdkitCapsIsValid(void *data,
+                     void *privData G_GNUC_UNUSED)
+{
+    qemuNbdkitCaps *nbdkitCaps = data;
+    struct stat st;
+
+    if (!nbdkitCaps->path)
+        return true;
+
+    if (!virNbkditCapsCheckModdir(NBDKIT_PLUGINDIR, nbdkitCaps->pluginDirMtime))
+        return false;
+    if (!virNbkditCapsCheckModdir(NBDKIT_FILTERDIR, nbdkitCaps->filterDirMtime))
+        return false;
+
+    if (nbdkitCaps->libvirtCtime != virGetSelfLastChanged() ||
+        nbdkitCaps->libvirtVersion != LIBVIR_VERSION_NUMBER) {
+        VIR_DEBUG("Outdated capabilities for '%s': libvirt changed (%lld vs %lld, %lu vs %lu)",
+                  nbdkitCaps->path,
+                  (long long)nbdkitCaps->libvirtCtime,
+                  (long long)virGetSelfLastChanged(),
+                  (unsigned long)nbdkitCaps->libvirtVersion,
+                  (unsigned long)LIBVIR_VERSION_NUMBER);
+        return false;
+    }
+
+    if (stat(nbdkitCaps->path, &st) < 0) {
+        VIR_DEBUG("Failed to stat nbdkit binary '%s': %s",
+                  nbdkitCaps->path,
+                  g_strerror(errno));
+        return false;
+    }
+
+    if (st.st_ctime != nbdkitCaps->ctime) {
+        VIR_DEBUG("Outdated capabilities for '%s': nbdkit binary changed (%lld vs %lld)",
+                  nbdkitCaps->path,
+                  (long long)st.st_ctime, (long long)nbdkitCaps->ctime);
+        return false;
+    }
+
+    return true;
+}
+
+
+static void*
+virNbdkitCapsNewData(const char *binary,
+                     void *privData G_GNUC_UNUSED)
+{
+    qemuNbdkitCaps *caps = qemuNbdkitCapsNew(binary);
+    qemuNbdkitCapsQuery(caps);
+
+    return caps;
+}
+
+
+virFileCacheHandlers nbdkitCapsCacheHandlers = {
+    .isValid = virNbdkitCapsIsValid,
+    .newData = virNbdkitCapsNewData,
+    .loadFile = NULL,
+    .saveFile = NULL,
+    .privFree = NULL,
+};
+
+
+virFileCache*
+qemuNbdkitCapsCacheNew(const char *cachedir)
+{
+    g_autofree char *dir = g_build_filename(cachedir, "nbdkitcapabilities", NULL);
+    return virFileCacheNew(dir, "xml", &nbdkitCapsCacheHandlers);
 }

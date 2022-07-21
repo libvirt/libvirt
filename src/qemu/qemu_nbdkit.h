@@ -21,6 +21,7 @@
 
 #include "internal.h"
 #include "virenum.h"
+#include "virfilecache.h"
 
 typedef struct _qemuNbdkitCaps qemuNbdkitCaps;
 
@@ -37,6 +38,9 @@ VIR_ENUM_DECL(qemuNbdkitCaps);
 
 qemuNbdkitCaps *
 qemuNbdkitCapsNew(const char *path);
+
+virFileCache *
+qemuNbdkitCapsCacheNew(const char *cachedir);
 
 bool
 qemuNbdkitCapsGet(qemuNbdkitCaps *nbdkitCaps,
