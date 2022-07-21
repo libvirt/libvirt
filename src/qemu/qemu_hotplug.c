@@ -269,88 +269,6 @@ qemuHotplugWaitForTrayEject(virDomainObj *vm,
 
 
 /**
- * qemuDomainChangeMediaLegacy:
- * @driver: qemu driver structure
- * @vm: domain definition
- * @disk: disk definition to change the source of
- * @newsrc: new disk source to change to
- * @force: force the change of media
- *
- * Change the media in an ejectable device to the one described by
- * @newsrc. This function also removes the old source from the
- * shared device table if appropriate. Note that newsrc is consumed
- * on success and the old source is freed on success.
- *
- * Returns 0 on success, -1 on error and reports libvirt error
- */
-static int
-qemuDomainChangeMediaLegacy(virDomainObj *vm,
-                            virDomainDiskDef *disk,
-                            virStorageSource *newsrc,
-                            bool force)
-{
-    int rc;
-    g_autofree char *driveAlias = NULL;
-    qemuDomainObjPrivate *priv = vm->privateData;
-    qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
-    const char *format = NULL;
-    g_autofree char *sourcestr = NULL;
-
-    if (!disk->info.alias) {
-        virReportError(VIR_ERR_INTERNAL_ERROR,
-                       _("missing disk device alias name for %s"), disk->dst);
-        return -1;
-    }
-
-    if (!(driveAlias = qemuAliasDiskDriveFromDisk(disk)))
-        return -1;
-
-    qemuDomainObjEnterMonitor(vm);
-    rc = qemuMonitorEjectMedia(priv->mon, driveAlias, force);
-    qemuDomainObjExitMonitor(vm);
-
-    /* If the tray is present wait for it to open. */
-    if (!force && diskPriv->tray) {
-        rc = qemuHotplugWaitForTrayEject(vm, disk);
-        if (rc < 0)
-            return -1;
-
-        /* re-issue ejection command to pop out the media */
-        qemuDomainObjEnterMonitor(vm);
-        rc = qemuMonitorEjectMedia(priv->mon, driveAlias, false);
-        qemuDomainObjExitMonitor(vm);
-        if (rc < 0)
-            return -1;
-
-    } else  {
-        /* otherwise report possible errors from the attempt to eject the media */
-        if (rc < 0)
-            return -1;
-    }
-
-    if (!virStorageSourceIsEmpty(newsrc)) {
-        if (qemuGetDriveSourceString(newsrc, NULL, &sourcestr) < 0)
-            return -1;
-
-        if (virStorageSourceGetActualType(newsrc) != VIR_STORAGE_TYPE_DIR)
-            format = virStorageFileFormatTypeToString(newsrc->format);
-
-        qemuDomainObjEnterMonitor(vm);
-        rc = qemuMonitorChangeMedia(priv->mon,
-                                    driveAlias,
-                                    sourcestr,
-                                    format);
-        qemuDomainObjExitMonitor(vm);
-    }
-
-    if (rc < 0)
-        return -1;
-
-    return 0;
-}
-
-
-/**
  * qemuHotplugAttachDBusVMState:
  * @driver: QEMU driver object
  * @vm: domain object
@@ -665,10 +583,7 @@ qemuDomainChangeEjectableMedia(virQEMUDriver *driver,
     if (qemuHotplugAttachManagedPR(vm, newsrc, VIR_ASYNC_JOB_NONE) < 0)
         goto cleanup;
 
-    if (virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV))
-        rc = qemuDomainChangeMediaBlockdev(vm, disk, oldsrc, newsrc, force);
-    else
-        rc = qemuDomainChangeMediaLegacy(vm, disk, newsrc, force);
+    rc = qemuDomainChangeMediaBlockdev(vm, disk, oldsrc, newsrc, force);
 
     virDomainAuditDisk(vm, oldsrc, newsrc, "update", rc >= 0);
 
