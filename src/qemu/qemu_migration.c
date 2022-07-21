@@ -1418,12 +1418,15 @@ qemuMigrationSrcIsAllowedHostdev(const virDomainDef *def)
 static int
 qemuDomainGetMigrationBlockers(virQEMUDriver *driver,
                                virDomainObj *vm,
+                               int asyncJob,
                                char ***blockers)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
     int rc;
 
-    qemuDomainObjEnterMonitor(driver, vm);
+    if (qemuDomainObjEnterMonitorAsync(driver, vm, asyncJob) < 0)
+        return -1;
+
     rc = qemuMonitorGetMigrationBlockers(priv->mon, blockers);
     qemuDomainObjExitMonitor(vm);
 
@@ -1458,10 +1461,12 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
     bool blockedReasonsCap = virQEMUCapsGet(priv->qemuCaps,
                                             QEMU_CAPS_MIGRATION_BLOCKED_REASONS);
 
-    /* Ask qemu if it have a migration blocker */
+    /* Ask qemu if it has a migration blocker */
     if (blockedReasonsCap) {
         g_auto(GStrv) blockers = NULL;
-        if (qemuDomainGetMigrationBlockers(driver, vm, &blockers) < 0)
+        if (qemuDomainGetMigrationBlockers(driver, vm,
+                                           VIR_ASYNC_JOB_MIGRATION_OUT,
+                                           &blockers) < 0)
             return false;
 
         if (blockers && blockers[0]) {
