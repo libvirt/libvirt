@@ -1555,36 +1555,29 @@ qemuBlockStorageSourceAttachRollback(qemuMonitor *mon,
 /**
  * qemuBlockStorageSourceDetachPrepare:
  * @src: disk source structure
- * @driveAlias: Alias of the -drive backend, the pointer is always consumed
  *
  * Prepare qemuBlockStorageSourceAttachData *for detaching a single source
- * from a VM. If @driveAlias is NULL -blockdev is assumed.
+ * from a VM.
  */
 qemuBlockStorageSourceAttachData *
-qemuBlockStorageSourceDetachPrepare(virStorageSource *src,
-                                    char *driveAlias)
+qemuBlockStorageSourceDetachPrepare(virStorageSource *src)
 {
     qemuDomainStorageSourcePrivate *srcpriv = QEMU_DOMAIN_STORAGE_SOURCE_PRIVATE(src);
     g_autoptr(qemuBlockStorageSourceAttachData) data = NULL;
 
     data = g_new0(qemuBlockStorageSourceAttachData, 1);
 
-    if (driveAlias) {
-        data->driveAlias = g_steal_pointer(&driveAlias);
-        data->driveAdded = true;
-    } else {
-        data->formatNodeName = src->nodeformat;
-        data->formatAttached = true;
-        data->storageNodeName = src->nodestorage;
-        data->storageAttached = true;
+    data->formatNodeName = src->nodeformat;
+    data->formatAttached = true;
+    data->storageNodeName = src->nodestorage;
+    data->storageAttached = true;
 
-        /* 'raw' format doesn't need the extra 'raw' layer when slicing, thus
-         * the nodename is NULL */
-        if (src->sliceStorage &&
-            src->sliceStorage->nodename) {
-            data->storageSliceNodeName = src->sliceStorage->nodename;
-            data->storageSliceAttached = true;
-        }
+    /* 'raw' format doesn't need the extra 'raw' layer when slicing, thus
+     * the nodename is NULL */
+    if (src->sliceStorage &&
+        src->sliceStorage->nodename) {
+        data->storageSliceNodeName = src->sliceStorage->nodename;
+        data->storageSliceAttached = true;
     }
 
     if (src->pr &&
@@ -1647,7 +1640,7 @@ qemuBlockStorageSourceChainDetachPrepareBlockdev(virStorageSource *src)
     data = g_new0(qemuBlockStorageSourceChainData, 1);
 
     for (n = src; virStorageSourceIsBacking(n); n = n->backingStore) {
-        if (!(backend = qemuBlockStorageSourceDetachPrepare(n, NULL)))
+        if (!(backend = qemuBlockStorageSourceDetachPrepare(n)))
             return NULL;
 
         VIR_APPEND_ELEMENT(data->srcdata, data->nsrcdata, backend);

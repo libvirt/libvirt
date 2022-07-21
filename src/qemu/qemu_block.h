@@ -116,8 +116,7 @@ qemuBlockStorageSourceAttachPrepareBlockdev(virStorageSource *src,
                                             bool autoreadonly);
 
 qemuBlockStorageSourceAttachData *
-qemuBlockStorageSourceDetachPrepare(virStorageSource *src,
-                                    char *driveAlias);
+qemuBlockStorageSourceDetachPrepare(virStorageSource *src);
 
 int
 qemuBlockStorageSourceAttachApply(qemuMonitor *mon,

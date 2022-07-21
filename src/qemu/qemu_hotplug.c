@@ -700,7 +700,7 @@ qemuDomainAttachDiskGeneric(virDomainObj *vm,
             goto rollback;
 
         QEMU_DOMAIN_DISK_PRIVATE(disk)->transientOverlayCreated = true;
-        backend = qemuBlockStorageSourceDetachPrepare(disk->src, NULL);
+        backend = qemuBlockStorageSourceDetachPrepare(disk->src);
         ignore_value(VIR_INSERT_ELEMENT(data->srcdata, 0, data->nsrcdata, backend));
     }
 

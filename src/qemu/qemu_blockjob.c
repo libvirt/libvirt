@@ -1327,7 +1327,7 @@ qemuBlockJobProcessEventConcludedCreate(virQEMUDriver *driver,
     if (!job->data.create.src)
         return;
 
-    if (!(backend = qemuBlockStorageSourceDetachPrepare(job->data.create.src, NULL)))
+    if (!(backend = qemuBlockStorageSourceDetachPrepare(job->data.create.src)))
         return;
 
     /* the format node part was not attached yet, so we don't need to detach it */
@@ -1364,7 +1364,7 @@ qemuBlockJobProcessEventConcludedBackup(virQEMUDriver *driver,
                                 progressCurrent, progressTotal, asyncJob);
 
     if (job->data.backup.store &&
-        !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store, NULL)))
+        !(backend = qemuBlockStorageSourceDetachPrepare(job->data.backup.store)))
         return;
 
     if (qemuDomainObjEnterMonitorAsync(vm, asyncJob) < 0)
