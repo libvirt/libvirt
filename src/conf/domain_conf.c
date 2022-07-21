@@ -2844,21 +2844,22 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_FILE:
         return src->data.file.append == tgt->data.file.append &&
             STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
-        break;
+
     case VIR_DOMAIN_CHR_TYPE_PTY:
     case VIR_DOMAIN_CHR_TYPE_DEV:
     case VIR_DOMAIN_CHR_TYPE_PIPE:
         return STREQ_NULLABLE(src->data.file.path, tgt->data.file.path);
+
     case VIR_DOMAIN_CHR_TYPE_NMDM:
         return STREQ_NULLABLE(src->data.nmdm.master, tgt->data.nmdm.master) &&
             STREQ_NULLABLE(src->data.nmdm.slave, tgt->data.nmdm.slave);
-        break;
+
     case VIR_DOMAIN_CHR_TYPE_UDP:
         return STREQ_NULLABLE(src->data.udp.bindHost, tgt->data.udp.bindHost) &&
             STREQ_NULLABLE(src->data.udp.bindService, tgt->data.udp.bindService) &&
             STREQ_NULLABLE(src->data.udp.connectHost, tgt->data.udp.connectHost) &&
             STREQ_NULLABLE(src->data.udp.connectService, tgt->data.udp.connectService);
-        break;
+
     case VIR_DOMAIN_CHR_TYPE_TCP:
         return src->data.tcp.listen == tgt->data.tcp.listen &&
             src->data.tcp.protocol == tgt->data.tcp.protocol &&
@@ -2866,18 +2867,16 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
             STREQ_NULLABLE(src->data.tcp.service, tgt->data.tcp.service) &&
             src->data.tcp.reconnect.enabled == tgt->data.tcp.reconnect.enabled &&
             src->data.tcp.reconnect.timeout == tgt->data.tcp.reconnect.timeout;
-        break;
+
     case VIR_DOMAIN_CHR_TYPE_UNIX:
         return src->data.nix.listen == tgt->data.nix.listen &&
             STREQ_NULLABLE(src->data.nix.path, tgt->data.nix.path) &&
             src->data.nix.reconnect.enabled == tgt->data.nix.reconnect.enabled &&
             src->data.nix.reconnect.timeout == tgt->data.nix.reconnect.timeout;
-        break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEPORT:
         return STREQ_NULLABLE(src->data.spiceport.channel,
                               tgt->data.spiceport.channel);
-        break;
 
     case VIR_DOMAIN_CHR_TYPE_SPICEVMC:
         return src->data.spicevmc == tgt->data.spicevmc;
@@ -2885,12 +2884,10 @@ virDomainChrSourceDefIsEqual(const virDomainChrSourceDef *src,
     case VIR_DOMAIN_CHR_TYPE_QEMU_VDAGENT:
         return src->data.qemuVdagent.clipboard == tgt->data.qemuVdagent.clipboard &&
             src->data.qemuVdagent.mouse == tgt->data.qemuVdagent.mouse;
-        break;
 
     case VIR_DOMAIN_CHR_TYPE_DBUS:
         return STREQ_NULLABLE(src->data.dbus.channel,
                               tgt->data.dbus.channel);
-        break;
 
     case VIR_DOMAIN_CHR_TYPE_NULL:
     case VIR_DOMAIN_CHR_TYPE_VC:
