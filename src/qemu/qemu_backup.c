@@ -802,12 +802,6 @@ qemuBackupBegin(virDomainObj *vm,
         goto endjob;
     }
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("backup is not supported with this QEMU"));
-        goto endjob;
-    }
-
     if (virDomainBackupAlignDisks(def, vm->def, suffix) < 0)
         goto endjob;
 

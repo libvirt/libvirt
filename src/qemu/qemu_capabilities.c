@@ -621,7 +621,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               /* 395 */
               "vnc-power-control", /* QEMU_CAPS_VNC_POWER_CONTROL */
               "audiodev", /* X_QEMU_CAPS_AUDIODEV */
-              "blockdev-backup", /* QEMU_CAPS_BLOCKDEV_BACKUP */
+              "blockdev-backup", /* X_QEMU_CAPS_BLOCKDEV_BACKUP */
               "object.qapified", /* QEMU_CAPS_OBJECT_JSON */
               "rotation-rate", /* QEMU_CAPS_ROTATION_RATE */
 
@@ -1585,7 +1585,6 @@ static struct virQEMUCapsStringFlags virQEMUCapsQMPSchemaQueries[] = {
     { "blockdev-add/arg-type/+file/aio/^io_uring", QEMU_CAPS_AIO_IO_URING },
     { "blockdev-add/arg-type/+rbd/encrypt", QEMU_CAPS_RBD_ENCRYPTION },
     { "blockdev-add/arg-type/+nbd/tls-hostname", QEMU_CAPS_BLOCKDEV_NBD_TLS_HOSTNAME },
-    { "blockdev-backup", QEMU_CAPS_BLOCKDEV_BACKUP },
     { "blockdev-snapshot/$allow-write-only-overlay", QEMU_CAPS_BLOCKDEV_SNAPSHOT_ALLOW_WRITE_ONLY },
     { "chardev-add/arg-type/backend/+socket/data/reconnect", QEMU_CAPS_CHARDEV_RECONNECT },
     { "chardev-add/arg-type/backend/+file/data/logfile", QEMU_CAPS_CHARDEV_LOGFILE },
@@ -5240,8 +5239,7 @@ virQEMUCapsInitQMPVersionCaps(virQEMUCaps *qemuCaps)
 void
 virQEMUCapsInitProcessCapsInterlock(virQEMUCaps *qemuCaps)
 {
-    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_BACKUP) &&
-        virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
+    if (virQEMUCapsGet(qemuCaps, QEMU_CAPS_BLOCKDEV_REOPEN) &&
         virQEMUCapsGet(qemuCaps, QEMU_CAPS_MIGRATION_PARAM_BLOCK_BITMAP_MAPPING))
         virQEMUCapsSet(qemuCaps, QEMU_CAPS_INCREMENTAL_BACKUP);
 
