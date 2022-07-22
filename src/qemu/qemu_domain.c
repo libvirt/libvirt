@@ -4683,7 +4683,8 @@ qemuDomainDefPostParse(virDomainDef *def,
     }
 
     if (virDomainDefHasOldStyleROUEFI(def) &&
-        !def->os.loader->nvram) {
+        !def->os.loader->nvram &&
+        def->os.loader->stateless != VIR_TRISTATE_BOOL_YES) {
         def->os.loader->nvram = virStorageSourceNew();
         def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
         def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;

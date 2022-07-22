@@ -1205,6 +1205,7 @@ mymain(void)
             QEMU_CAPS_DEVICE_IOH3420,
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_VIRTIO_SCSI);
+    DO_TEST_CAPS_LATEST("firmware-manual-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-template-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
@@ -1228,6 +1229,7 @@ mymain(void)
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
+    DO_TEST_CAPS_LATEST("firmware-auto-efi-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-efi-loader-insecure");

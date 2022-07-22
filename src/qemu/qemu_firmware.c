@@ -1110,10 +1110,18 @@ qemuFirmwareMatchDomain(const virDomainDef *def,
         return false;
     }
 
-    if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH &&
-        fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
-        VIR_DEBUG("Discarding loader without split flash");
-        return false;
+    if (fw->mapping.device == QEMU_FIRMWARE_DEVICE_FLASH) {
+        if (def->os.loader && def->os.loader->stateless == VIR_TRISTATE_BOOL_YES) {
+            if (fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_STATELESS) {
+                VIR_DEBUG("Discarding loader without stateless flash");
+                return false;
+            }
+        } else {
+            if (fw->mapping.data.flash.mode != QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+                VIR_DEBUG("Discarding loader without split flash");
+                return false;
+            }
+        }
     }
 
     if (def->sec) {
@@ -1175,27 +1183,29 @@ qemuFirmwareEnableFeatures(virQEMUDriver *driver,
         VIR_FREE(def->os.loader->path);
         def->os.loader->path = g_strdup(flash->executable.filename);
 
-        if (STRNEQ(flash->nvram_template.format, "raw")) {
-            virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
-                           _("unsupported nvram template format '%s'"),
-                           flash->nvram_template.format);
-            return -1;
-        }
+        if (flash->mode == QEMU_FIRMWARE_FLASH_MODE_SPLIT) {
+            if (STRNEQ(flash->nvram_template.format, "raw")) {
+                virReportError(VIR_ERR_OPERATION_UNSUPPORTED,
+                               _("unsupported nvram template format '%s'"),
+                               flash->nvram_template.format);
+                return -1;
+            }
 
-        VIR_FREE(def->os.loader->nvramTemplate);
-        def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
+            VIR_FREE(def->os.loader->nvramTemplate);
+            def->os.loader->nvramTemplate = g_strdup(flash->nvram_template.filename);
 
-        if (!def->os.loader->nvram) {
-            def->os.loader->nvram = virStorageSourceNew();
-            def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
-            def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
-            qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+            if (!def->os.loader->nvram) {
+                def->os.loader->nvram = virStorageSourceNew();
+                def->os.loader->nvram->type = VIR_STORAGE_TYPE_FILE;
+                def->os.loader->nvram->format = VIR_STORAGE_FILE_RAW;
+                qemuDomainNVRAMPathFormat(cfg, def, &def->os.loader->nvram->path);
+            }
         }
 
         VIR_DEBUG("decided on firmware '%s' template '%s' NVRAM '%s'",
                   def->os.loader->path,
-                  def->os.loader->nvramTemplate,
-                  def->os.loader->nvram->path);
+                  NULLSTR(def->os.loader->nvramTemplate),
+                  NULLSTR(def->os.loader->nvram ? def->os.loader->nvram->path : NULL));
         break;
 
     case QEMU_FIRMWARE_DEVICE_KERNEL:
