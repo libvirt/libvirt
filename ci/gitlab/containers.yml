@@ -42,14 +42,6 @@ x86_64-centos-stream-9-container:
     NAME: centos-stream-9
 
 
-x86_64-debian-10-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10
-
-
 x86_64-debian-11-container:
   extends: .container_job
   allow_failure: false
@@ -115,78 +107,6 @@ x86_64-ubuntu-2204-container:
 
 
 # Cross container jobs
-
-aarch64-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-aarch64
-
-
-armv6l-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-armv6l
-
-
-armv7l-debian-10-container:
-  extends: .container_job
-  allow_failure: false
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-armv7l
-
-
-i686-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-i686
-
-
-mips-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-mips
-
-
-mips64el-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-mips64el
-
-
-mipsel-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-mipsel
-
-
-ppc64le-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-ppc64le
-
-
-s390x-debian-10-container:
-  extends: .container_job
-  allow_failure: true
-  variables:
-    JOB_OPTIONAL: 1
-    NAME: debian-10-cross-s390x
-
 
 aarch64-debian-11-container:
   extends: .container_job

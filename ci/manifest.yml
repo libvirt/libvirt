@@ -42,46 +42,6 @@ targets:
           paths:
             - libvirt-rpms
 
-  debian-10:
-    jobs:
-      - arch: x86_64
-        builds: false
-
-      - arch: aarch64
-        allow-failure: true
-        builds: false
-
-      - arch: armv6l
-        allow-failure: true
-        builds: false
-
-      - arch: armv7l
-        builds: false
-
-      - arch: i686
-        allow-failure: true
-        builds: false
-
-      - arch: mips
-        allow-failure: true
-        builds: false
-
-      - arch: mips64el
-        allow-failure: true
-        builds: false
-
-      - arch: mipsel
-        allow-failure: true
-        builds: false
-
-      - arch: ppc64le
-        allow-failure: true
-        builds: false
-
-      - arch: s390x
-        allow-failure: true
-        builds: false
-
   debian-11:
     jobs:
       - arch: x86_64
