@@ -395,7 +395,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_BLOCK_WRITE_THRESHOLD, /* BLOCK_WRITE_THRESHOLD event */
 
     /* 250 */
-    QEMU_CAPS_QUERY_NAMED_BLOCK_NODES, /* qmp query-named-block-nodes */
+    X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES, /* qmp query-named-block-nodes */
     QEMU_CAPS_CPU_CACHE, /* -cpu supports host-cache-info and l3-cache properties */
     QEMU_CAPS_DEVICE_QEMU_XHCI, /* -device qemu-xhci */
     X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP, /* -machine kernel_irqchip */

@@ -416,7 +416,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "block-write-threshold", /* QEMU_CAPS_BLOCK_WRITE_THRESHOLD */
 
               /* 250 */
-              "query-named-block-nodes", /* QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
+              "query-named-block-nodes", /* X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
               "cpu-cache", /* QEMU_CAPS_CPU_CACHE */
               "qemu-xhci", /* QEMU_CAPS_DEVICE_QEMU_XHCI */
               "kernel-irqchip", /* X_QEMU_CAPS_MACHINE_KERNEL_IRQCHIP */
@@ -1210,7 +1210,6 @@ struct virQEMUCapsStringFlags virQEMUCapsCommands[] = {
     { "query-hotpluggable-cpus", QEMU_CAPS_QUERY_HOTPLUGGABLE_CPUS },
     { "query-cpu-model-expansion", QEMU_CAPS_QUERY_CPU_MODEL_EXPANSION },
     { "query-cpu-definitions", QEMU_CAPS_QUERY_CPU_DEFINITIONS },
-    { "query-named-block-nodes", QEMU_CAPS_QUERY_NAMED_BLOCK_NODES },
     { "qom-list-properties", QEMU_CAPS_QOM_LIST_PROPERTIES },
     { "query-current-machine", QEMU_CAPS_QUERY_CURRENT_MACHINE },
     { "block-dirty-bitmap-merge", QEMU_CAPS_BITMAP_MERGE },
