@@ -708,8 +708,7 @@ int qemuDomainStorageSourceValidateDepth(virStorageSource *src,
 int qemuDomainDetermineDiskChain(virQEMUDriver *driver,
                                  virDomainObj *vm,
                                  virDomainDiskDef *disk,
-                                 virStorageSource *disksrc,
-                                 bool report_broken);
+                                 virStorageSource *disksrc);
 
 bool qemuDomainDiskChangeSupported(virDomainDiskDef *disk,
                                    virDomainDiskDef *orig_disk);

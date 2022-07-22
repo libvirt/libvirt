@@ -7532,19 +7532,16 @@ qemuDomainPrepareStorageSourceConfig(virStorageSource *src,
  * @vm: domain object
  * @disk: disk definition
  * @disksrc: source to determine the chain for, may be NULL
- * @report_broken: report broken chain verbosely
  *
  * Prepares and initializes the backing chain of disk @disk. In cases where
  * a new source is to be associated with @disk the @disksrc parameter can be
- * used to override the source. If @report_broken is true missing images
- * in the backing chain are reported.
+ * used to override the source.
  */
 int
 qemuDomainDetermineDiskChain(virQEMUDriver *driver,
                              virDomainObj *vm,
                              virDomainDiskDef *disk,
-                             virStorageSource *disksrc,
-                             bool report_broken)
+                             virStorageSource *disksrc)
 {
     g_autoptr(virQEMUDriverConfig) cfg = virQEMUDriverGetConfig(driver);
     virStorageSource *src; /* iterator for the backing chain declared in XML */
@@ -7566,8 +7563,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
         disksrc->format < VIR_STORAGE_FILE_BACKING) {
 
         if (!virFileExists(disksrc->path)) {
-            if (report_broken)
-                virStorageSourceReportBrokenChain(errno, disksrc, disksrc);
+            virStorageSourceReportBrokenChain(errno, disksrc, disksrc);
 
             return -1;
         }
@@ -7590,24 +7586,22 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
     src = disksrc;
     /* skip to the end of the chain if there is any */
     while (virStorageSourceHasBacking(src)) {
-        if (report_broken) {
-            int rv = virStorageSourceSupportsAccess(src);
+        int rv = virStorageSourceSupportsAccess(src);
 
-            if (rv < 0)
+        if (rv < 0)
+            return -1;
+
+        if (rv > 0) {
+            if (qemuDomainStorageFileInit(driver, vm, src, disksrc) < 0)
                 return -1;
 
-            if (rv > 0) {
-                if (qemuDomainStorageFileInit(driver, vm, src, disksrc) < 0)
-                    return -1;
-
-                if (virStorageSourceAccess(src, F_OK) < 0) {
-                    virStorageSourceReportBrokenChain(errno, src, disksrc);
-                    virStorageSourceDeinit(src);
-                    return -1;
-                }
-
+            if (virStorageSourceAccess(src, F_OK) < 0) {
+                virStorageSourceReportBrokenChain(errno, src, disksrc);
                 virStorageSourceDeinit(src);
+                return -1;
             }
+
+            virStorageSourceDeinit(src);
         }
         src = src->backingStore;
     }
@@ -7625,7 +7619,7 @@ qemuDomainDetermineDiskChain(virQEMUDriver *driver,
 
     if (virStorageSourceGetMetadata(src, uid, gid,
                                     QEMU_DOMAIN_STORAGE_SOURCE_CHAIN_MAX_DEPTH,
-                                    report_broken) < 0)
+                                    true) < 0)
         return -1;
 
     for (n = src->backingStore; virStorageSourceIsBacking(n); n = n->backingStore) {

@@ -15084,7 +15084,7 @@ qemuDomainBlockCopyCommon(virDomainObj *vm,
     if (mirror_reuse &&
         mirror->format >= VIR_STORAGE_FILE_BACKING &&
         mirror->backingStore == NULL &&
-        qemuDomainDetermineDiskChain(driver, vm, disk, mirror, true) < 0)
+        qemuDomainDetermineDiskChain(driver, vm, disk, mirror) < 0)
         goto endjob;
 
     if (qemuDomainStorageSourceChainAccessAllow(driver, vm, mirror) < 0)
