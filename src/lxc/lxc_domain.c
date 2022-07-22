@@ -36,15 +36,6 @@
 VIR_LOG_INIT("lxc.lxc_domain");
 
 static void
-virLXCDomainObjResetJob(virLXCDomainObjPrivate *priv)
-{
-    virDomainJobObj *job = &priv->job;
-
-    job->active = VIR_JOB_NONE;
-    job->owner = 0;
-}
-
-static void
 virLXCDomainObjFreeJob(virLXCDomainObjPrivate *priv)
 {
     ignore_value(virCondDestroy(&priv->job.cond));
@@ -82,7 +73,7 @@ virLXCDomainObjBeginJob(virLXCDriver *driver G_GNUC_UNUSED,
             goto error;
     }
 
-    virLXCDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
     priv->job.active = job;
@@ -124,7 +115,7 @@ virLXCDomainObjEndJob(virLXCDriver *driver G_GNUC_UNUSED,
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    virLXCDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
     virCondSignal(&priv->job.cond);
 }
 
