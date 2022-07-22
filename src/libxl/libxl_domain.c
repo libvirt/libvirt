@@ -45,15 +45,6 @@ VIR_LOG_INIT("libxl.libxl_domain");
 
 
 static void
-libxlDomainObjResetJob(libxlDomainObjPrivate *priv)
-{
-    virDomainJobObj *job = &priv->job;
-
-    job->active = VIR_JOB_NONE;
-    job->owner = 0;
-}
-
-static void
 libxlDomainObjFreeJob(libxlDomainObjPrivate *priv)
 {
     ignore_value(virCondDestroy(&priv->job.cond));
@@ -92,7 +83,7 @@ libxlDomainObjBeginJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
             goto error;
     }
 
-    libxlDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
     priv->job.active = job;
@@ -140,7 +131,7 @@ libxlDomainObjEndJob(libxlDriverPrivate *driver G_GNUC_UNUSED,
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    libxlDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
     virCondSignal(&priv->job.cond);
 }
 
