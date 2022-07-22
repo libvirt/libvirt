@@ -86,6 +86,7 @@ x86_64-debian-10:
       optional: true
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -96,7 +97,6 @@ x86_64-debian-11:
       optional: true
   allow_failure: false
   variables:
-    JOB_OPTIONAL: 1
     NAME: debian-11
 
 
@@ -264,6 +264,7 @@ armv7l-debian-10:
   allow_failure: false
   variables:
     CROSS: armv7l
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -371,7 +372,6 @@ armv7l-debian-11:
   allow_failure: false
   variables:
     CROSS: armv7l
-    JOB_OPTIONAL: 1
     NAME: debian-11
 
 

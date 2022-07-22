@@ -45,6 +45,7 @@ targets:
   debian-10:
     jobs:
       - arch: x86_64
+        builds: false
 
       - arch: aarch64
         allow-failure: true
@@ -55,6 +56,7 @@ targets:
         builds: false
 
       - arch: armv7l
+        builds: false
 
       - arch: i686
         allow-failure: true
@@ -83,7 +85,6 @@ targets:
   debian-11:
     jobs:
       - arch: x86_64
-        builds: false
 
       - arch: x86_64
         suffix: -clang
@@ -97,8 +98,6 @@ targets:
         builds: false
 
       - arch: armv7l
-        containers: false
-        builds: false
 
       - arch: i686
         containers: false

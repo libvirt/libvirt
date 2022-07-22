@@ -46,6 +46,7 @@ x86_64-debian-10-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10
 
 
@@ -135,6 +136,7 @@ armv7l-debian-10-container:
   extends: .container_job
   allow_failure: false
   variables:
+    JOB_OPTIONAL: 1
     NAME: debian-10-cross-armv7l
 
 
@@ -206,7 +208,6 @@ armv7l-debian-11-container:
   extends: .container_job
   allow_failure: false
   variables:
-    JOB_OPTIONAL: 1
     NAME: debian-11-cross-armv7l
 
 
