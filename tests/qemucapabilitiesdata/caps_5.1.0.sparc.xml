@@ -28,7 +28,6 @@
   <flag name='chardev-logfile'/>
   <flag name='query-hotpluggable-cpus'/>
   <flag name='spice-rendernode'/>
-  <flag name='block-write-threshold'/>
   <flag name='chardev-reconnect'/>
   <flag name='disk-share-rw'/>
   <flag name='isa-serial'/>

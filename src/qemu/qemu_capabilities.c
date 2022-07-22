@@ -413,7 +413,7 @@ VIR_ENUM_IMPL(virQEMUCaps,
               "nvdimm", /* QEMU_CAPS_DEVICE_NVDIMM */
               "pcie-root-port", /* QEMU_CAPS_DEVICE_PCIE_ROOT_PORT */
               "query-cpu-definitions", /* QEMU_CAPS_QUERY_CPU_DEFINITIONS */
-              "block-write-threshold", /* QEMU_CAPS_BLOCK_WRITE_THRESHOLD */
+              "block-write-threshold", /* X_QEMU_CAPS_BLOCK_WRITE_THRESHOLD */
 
               /* 250 */
               "query-named-block-nodes", /* X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES */
@@ -1232,7 +1232,6 @@ struct virQEMUCapsStringFlags virQEMUCapsMigration[] = {
 /* Use virQEMUCapsQMPSchemaQueries for querying parameters of events */
 struct virQEMUCapsStringFlags virQEMUCapsEvents[] = {
     { "VSERPORT_CHANGE", QEMU_CAPS_VSERPORT_CHANGE },
-    { "BLOCK_WRITE_THRESHOLD", QEMU_CAPS_BLOCK_WRITE_THRESHOLD },
     { "DUMP_COMPLETED", QEMU_CAPS_DUMP_COMPLETED },
 };
 

@@ -392,7 +392,7 @@ typedef enum { /* virQEMUCapsFlags grouping marker for syntax-check */
     QEMU_CAPS_DEVICE_NVDIMM, /* -device nvdimm */
     QEMU_CAPS_DEVICE_PCIE_ROOT_PORT, /* -device pcie-root-port */
     QEMU_CAPS_QUERY_CPU_DEFINITIONS, /* qmp query-cpu-definitions */
-    QEMU_CAPS_BLOCK_WRITE_THRESHOLD, /* BLOCK_WRITE_THRESHOLD event */
+    X_QEMU_CAPS_BLOCK_WRITE_THRESHOLD, /* BLOCK_WRITE_THRESHOLD event */
 
     /* 250 */
     X_QEMU_CAPS_QUERY_NAMED_BLOCK_NODES, /* qmp query-named-block-nodes */

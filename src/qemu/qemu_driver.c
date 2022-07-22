@@ -19550,12 +19550,6 @@ qemuDomainSetBlockThreshold(virDomainPtr dom,
     if (virDomainObjCheckActive(vm) < 0)
         goto endjob;
 
-    if (!virQEMUCapsGet(priv->qemuCaps, QEMU_CAPS_BLOCK_WRITE_THRESHOLD)) {
-        virReportError(VIR_ERR_OPERATION_UNSUPPORTED, "%s",
-                       _("this qemu does not support setting device threshold"));
-        goto endjob;
-    }
-
     if (!(src = qemuDomainGetStorageSourceByDevstr(dev, vm->def, priv->backup)))
         goto endjob;
 

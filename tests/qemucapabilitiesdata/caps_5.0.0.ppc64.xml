@@ -86,7 +86,6 @@
   <flag name='nvdimm'/>
   <flag name='pcie-root-port'/>
   <flag name='query-cpu-definitions'/>
-  <flag name='block-write-threshold'/>
   <flag name='qemu-xhci'/>
   <flag name='spapr-pci-host-bridge'/>
   <flag name='spapr-pci-host-bridge.numa_node'/>
