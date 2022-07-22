@@ -33,15 +33,6 @@
 VIR_LOG_INIT("ch.ch_domain");
 
 static void
-virCHDomainObjResetJob(virCHDomainObjPrivate *priv)
-{
-    virDomainJobObj *job = &priv->job;
-
-    job->active = VIR_JOB_NONE;
-    job->owner = 0;
-}
-
-static void
 virCHDomainObjFreeJob(virCHDomainObjPrivate *priv)
 {
     ignore_value(virCondDestroy(&priv->job.cond));
@@ -88,7 +79,7 @@ virCHDomainObjBeginJob(virDomainObj *obj, virDomainJob job)
         }
     }
 
-    virCHDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
 
     VIR_DEBUG("Starting job: %s", virDomainJobTypeToString(job));
     priv->job.active = job;
@@ -112,7 +103,7 @@ virCHDomainObjEndJob(virDomainObj *obj)
     VIR_DEBUG("Stopping job: %s",
               virDomainJobTypeToString(job));
 
-    virCHDomainObjResetJob(priv);
+    virDomainObjResetJob(&priv->job);
     virCondSignal(&priv->job.cond);
 }
 
