@@ -7198,7 +7198,7 @@ qemuProcessGenID(virDomainObj *vm,
 
 
 /**
- * qemuProcessSetupDiskThrottlingBlockdev:
+ * qemuProcessSetupDiskThrottling:
  *
  * Sets up disk trottling for -blockdev via block_set_io_throttle monitor
  * command. This hack should be replaced by proper use of the 'throttle'
@@ -7206,8 +7206,8 @@ qemuProcessGenID(virDomainObj *vm,
  * Same hack is done in qemuDomainAttachDiskGeneric.
  */
 static int
-qemuProcessSetupDiskThrottlingBlockdev(virDomainObj *vm,
-                                       virDomainAsyncJob asyncJob)
+qemuProcessSetupDiskThrottling(virDomainObj *vm,
+                               virDomainAsyncJob asyncJob)
 {
     size_t i;
     int ret = -1;
@@ -7220,10 +7220,12 @@ qemuProcessSetupDiskThrottlingBlockdev(virDomainObj *vm,
     for (i = 0; i < vm->def->ndisks; i++) {
         virDomainDiskDef *disk = vm->def->disks[i];
         qemuDomainDiskPrivate *diskPriv = QEMU_DOMAIN_DISK_PRIVATE(disk);
+        g_autofree char *drivealias = NULL;
 
-        /* sd-cards are instantiated via -drive */
-        if (qemuDiskBusIsSD(disk->bus))
-            continue;
+        if (!QEMU_DOMAIN_DISK_PRIVATE(disk)->qomName) {
+            if (!(drivealias = qemuAliasDiskDriveFromDisk(disk)))
+                goto cleanup;
+        }
 
         /* Setting throttling for empty drives fails */
         if (virStorageSourceIsEmpty(disk->src))
@@ -7232,7 +7234,7 @@ qemuProcessSetupDiskThrottlingBlockdev(virDomainObj *vm,
         if (!qemuDiskConfigBlkdeviotuneEnabled(disk))
             continue;
 
-        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm), NULL,
+        if (qemuMonitorSetBlockIoThrottle(qemuDomainGetMonitor(vm), drivealias,
                                           diskPriv->qomName, &disk->blkdeviotune) < 0)
             goto cleanup;
     }
@@ -7745,7 +7747,7 @@ qemuProcessLaunch(virConnectPtr conn,
     if (qemuProcessSetupBalloon(vm, asyncJob) < 0)
         goto cleanup;
 
-    if (qemuProcessSetupDiskThrottlingBlockdev(vm, asyncJob) < 0)
+    if (qemuProcessSetupDiskThrottling(vm, asyncJob) < 0)
         goto cleanup;
 
     /* Since CPUs were not started yet, the balloon could not return the memory

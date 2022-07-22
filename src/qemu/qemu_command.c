@@ -1677,46 +1677,6 @@ qemuBuildDriveSourceStr(virDomainDiskDef *disk,
 
 
 static void
-qemuBuildDiskThrottling(virDomainDiskDef *disk,
-                        virBuffer *buf)
-{
-#define IOTUNE_ADD(_field, _label) \
-    if (disk->blkdeviotune._field) { \
-        virBufferAsprintf(buf, ",throttling." _label "=%llu", \
-                          disk->blkdeviotune._field); \
-    }
-
-    IOTUNE_ADD(total_bytes_sec, "bps-total");
-    IOTUNE_ADD(read_bytes_sec, "bps-read");
-    IOTUNE_ADD(write_bytes_sec, "bps-write");
-    IOTUNE_ADD(total_iops_sec, "iops-total");
-    IOTUNE_ADD(read_iops_sec, "iops-read");
-    IOTUNE_ADD(write_iops_sec, "iops-write");
-
-    IOTUNE_ADD(total_bytes_sec_max, "bps-total-max");
-    IOTUNE_ADD(read_bytes_sec_max, "bps-read-max");
-    IOTUNE_ADD(write_bytes_sec_max, "bps-write-max");
-    IOTUNE_ADD(total_iops_sec_max, "iops-total-max");
-    IOTUNE_ADD(read_iops_sec_max, "iops-read-max");
-    IOTUNE_ADD(write_iops_sec_max, "iops-write-max");
-
-    IOTUNE_ADD(size_iops_sec, "iops-size");
-    if (disk->blkdeviotune.group_name) {
-        virBufferAddLit(buf, ",throttling.group=");
-        virQEMUBuildBufferEscapeComma(buf, disk->blkdeviotune.group_name);
-    }
-
-    IOTUNE_ADD(total_bytes_sec_max_length, "bps-total-max-length");
-    IOTUNE_ADD(read_bytes_sec_max_length, "bps-read-max-length");
-    IOTUNE_ADD(write_bytes_sec_max_length, "bps-write-max-length");
-    IOTUNE_ADD(total_iops_sec_max_length, "iops-total-max-length");
-    IOTUNE_ADD(read_iops_sec_max_length, "iops-read-max-length");
-    IOTUNE_ADD(write_iops_sec_max_length, "iops-write-max-length");
-#undef IOTUNE_ADD
-}
-
-
-static void
 qemuBuildDiskGetErrorPolicy(virDomainDiskDef *disk,
                             const char **wpolicy,
                             const char **rpolicy)
@@ -1789,8 +1749,6 @@ qemuBuildDriveStr(virDomainDiskDef *disk)
                               virDomainDiskIoTypeToString(disk->iomode));
         }
     }
-
-    qemuBuildDiskThrottling(disk, &opt);
 
     return virBufferContentAndReset(&opt);
 }
