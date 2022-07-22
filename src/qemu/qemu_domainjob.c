@@ -151,16 +151,6 @@ qemuDomainEventEmitJobCompleted(virQEMUDriver *driver,
 
 
 static void
-qemuDomainObjResetJob(virDomainJobObj *job)
-{
-    job->active = VIR_JOB_NONE;
-    job->owner = 0;
-    g_clear_pointer(&job->ownerAPI, g_free);
-    job->started = 0;
-}
-
-
-static void
 qemuDomainObjResetAgentJob(virDomainJobObj *job)
 {
     job->agentActive = VIR_AGENT_JOB_NONE;
@@ -219,7 +209,7 @@ qemuDomainObjPreserveJob(virDomainObj *obj,
         return -1;
     job->cb = priv->job.cb;
 
-    qemuDomainObjResetJob(&priv->job);
+    virDomainObjResetJob(&priv->job);
     qemuDomainObjResetAsyncJob(&priv->job);
     return 0;
 }
@@ -263,7 +253,7 @@ qemuDomainObjRestoreAsyncJob(virDomainObj *vm,
 void
 qemuDomainObjClearJob(virDomainJobObj *job)
 {
-    qemuDomainObjResetJob(job);
+    virDomainObjResetJob(job);
     qemuDomainObjResetAsyncJob(job);
     g_clear_pointer(&job->current, virDomainJobDataFree);
     g_clear_pointer(&job->completed, virDomainJobDataFree);
@@ -772,7 +762,7 @@ qemuDomainObjDiscardAsyncJob(virDomainObj *obj)
     qemuDomainObjPrivate *priv = obj->privateData;
 
     if (priv->job.active == VIR_JOB_ASYNC_NESTED)
-        qemuDomainObjResetJob(&priv->job);
+        virDomainObjResetJob(&priv->job);
     qemuDomainObjResetAsyncJob(&priv->job);
     qemuDomainSaveStatus(obj);
 }
@@ -919,7 +909,7 @@ qemuDomainObjBeginJobInternal(virQEMUDriver *driver,
     ignore_value(virTimeMillisNow(&now));
 
     if (job) {
-        qemuDomainObjResetJob(&priv->job);
+        virDomainObjResetJob(&priv->job);
 
         if (job != VIR_JOB_ASYNC) {
             VIR_DEBUG("Started job: %s (async=%s vm=%p name=%s)",
@@ -1180,7 +1170,7 @@ qemuDomainObjEndJob(virDomainObj *obj)
               virDomainAsyncJobTypeToString(priv->job.asyncJob),
               obj, obj->def->name);
 
-    qemuDomainObjResetJob(&priv->job);
+    virDomainObjResetJob(&priv->job);
     if (qemuDomainTrackJob(job))
         qemuDomainSaveStatus(obj);
     /* We indeed need to wake up ALL threads waiting because

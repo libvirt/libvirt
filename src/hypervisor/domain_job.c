@@ -137,3 +137,12 @@ virDomainObjInitJob(virDomainJobObj *job,
 
     return 0;
 }
+
+void
+virDomainObjResetJob(virDomainJobObj *job)
+{
+    job->active = VIR_JOB_NONE;
+    job->owner = 0;
+    g_clear_pointer(&job->ownerAPI, g_free);
+    job->started = 0;
+}

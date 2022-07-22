@@ -208,3 +208,5 @@ struct _virDomainObjPrivateJobCallbacks {
 
 int virDomainObjInitJob(virDomainJobObj *job,
                         virDomainObjPrivateJobCallbacks *cb);
+
+void virDomainObjResetJob(virDomainJobObj *job);

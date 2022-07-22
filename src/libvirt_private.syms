@@ -1591,6 +1591,7 @@ virDomainJobStatusToType;
 virDomainJobTypeFromString;
 virDomainJobTypeToString;
 virDomainObjInitJob;
+virDomainObjResetJob;
 
 
 # hypervisor/virclosecallbacks.h
