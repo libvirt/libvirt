@@ -1,0 +1,15 @@
+<domain type='qemu'>
+  <name>test-bios</name>
+  <uuid>362d1fc1-df7d-193e-5c18-49a71bd1da66</uuid>
+  <memory unit='KiB'>1048576</memory>
+  <vcpu placement='static'>1</vcpu>
+  <os>
+    <type arch='i686' machine='pc'>hvm</type>
+    <loader stateless='no'>/usr/share/seabios/bios.bin</loader>
+  </os>
+  <devices>
+   <emulator>/usr/bin/qemu-system-i386</emulator>
+    <controller type='usb' model='none'/>
+    <memballoon model='none'/>
+  </devices>
+</domain>

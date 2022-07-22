@@ -2266,6 +2266,7 @@ struct _virDomainLoaderDef {
     virTristateBool readonly;
     virDomainLoader type;
     virTristateBool secure;
+    virTristateBool stateless;
     virStorageSource *nvram;
     bool newStyleNVRAM;
     char *nvramTemplate;   /* user override of path to master nvram */

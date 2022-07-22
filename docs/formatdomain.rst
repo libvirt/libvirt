@@ -173,6 +173,15 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    </os>
    ...
 
+   <!-- QEMU with automatic UEFI stateless firmware for AMD SEV -->
+   ...
+   <os firmware='efi'>
+     <type>hvm</type>
+     <loader stateless='yes'/>
+     <boot dev='hd'/>
+   </os>
+   ...
+
 ``firmware``
    The ``firmware`` attribute allows management applications to automatically
    fill ``<loader/>`` and ``<nvram/>`` elements and possibly enable some
@@ -242,7 +251,12 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
    firmwares may implement the Secure boot feature. Attribute ``secure`` can be
    used to tell the hypervisor that the firmware is capable of Secure Boot feature.
    It cannot be used to enable or disable the feature itself in the firmware.
-   :since:`Since 2.1.0`
+   :since:`Since 2.1.0`. If the loader is marked as read-only, then with UEFI it
+   is assumed that there will be a writable NVRAM available. In some cases,
+   however, it may be desirable for the loader to run without any NVRAM, discarding
+   any config changes on shutdown. The ``stateless`` flag (:since:`Since 8.6.0`)
+   can be used to control this behaviour, when set to ``no`` NVRAM will never
+   be created.
 ``nvram``
    Some UEFI firmwares may want to use a non-volatile memory to store some
    variables. In the host, this is represented as a file and the absolute path
@@ -261,6 +275,9 @@ harddisk, cdrom, network) determining where to obtain/find the boot image.
 
    **Note:** ``network`` backed NVRAM the variables are not instantiated from
    the ``template`` and it's user's responsibility to provide a valid NVRAM image.
+
+   It is not valid to provide this element if the loader is marked as
+   stateless.
 
 ``boot``
    The ``dev`` attribute takes one of the values "fd", "hd", "cdrom" or

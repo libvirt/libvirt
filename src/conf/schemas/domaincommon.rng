@@ -321,6 +321,11 @@
               </attribute>
             </optional>
             <optional>
+              <attribute name="stateless">
+                <ref name="virYesNo"/>
+              </attribute>
+            </optional>
+            <optional>
               <ref name="absFilePath"/>
             </optional>
           </element>

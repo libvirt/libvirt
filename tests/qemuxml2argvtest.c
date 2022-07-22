@@ -1190,6 +1190,10 @@ mymain(void)
 
     DO_TEST("firmware-manual-bios",
             QEMU_CAPS_DEVICE_ISA_SERIAL);
+    DO_TEST("firmware-manual-bios-stateless",
+            QEMU_CAPS_DEVICE_ISA_SERIAL);
+    DO_TEST_PARSE_ERROR("firmware-manual-bios-not-stateless",
+                        QEMU_CAPS_DEVICE_ISA_SERIAL);
     DO_TEST_NOCAPS("firmware-manual-efi");
     DO_TEST_PARSE_ERROR_NOCAPS("firmware-manual-efi-no-path");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-features");
@@ -1202,10 +1206,12 @@ mymain(void)
             QEMU_CAPS_ICH9_AHCI,
             QEMU_CAPS_VIRTIO_SCSI);
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-template");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-template-stateless");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_VER_PARSE_ERROR("firmware-manual-efi-nvram-network-iscsi", "4.1.0");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-manual-efi-nvram-stateless");
 
     /* Make sure all combinations of ACPI and UEFI behave as expected */
     DO_TEST_NOCAPS("firmware-manual-efi-acpi-aarch64");
@@ -1218,6 +1224,8 @@ mymain(void)
     DO_TEST_NOCAPS("firmware-manual-noefi-noacpi-q35");
 
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
+    DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
+    DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-not-stateless");
     DO_TEST_CAPS_LATEST_PARSE_ERROR("firmware-auto-bios-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");

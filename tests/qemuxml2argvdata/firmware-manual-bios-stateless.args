@@ -1,0 +1,30 @@
+LC_ALL=C \
+PATH=/bin \
+HOME=/tmp/lib/domain--1-test-bios \
+USER=test \
+LOGNAME=test \
+XDG_DATA_HOME=/tmp/lib/domain--1-test-bios/.local/share \
+XDG_CACHE_HOME=/tmp/lib/domain--1-test-bios/.cache \
+XDG_CONFIG_HOME=/tmp/lib/domain--1-test-bios/.config \
+QEMU_AUDIO_DRV=none \
+/usr/bin/qemu-system-i386 \
+-name guest=test-bios,debug-threads=on \
+-S \
+-object secret,id=masterKey0,format=raw,file=/tmp/lib/domain--1-test-bios/master-key.aes \
+-machine pc,usb=off,dump-guest-core=off \
+-accel tcg \
+-bios /usr/share/seabios/bios.bin \
+-m 1024 \
+-overcommit mem-lock=off \
+-smp 1,sockets=1,cores=1,threads=1 \
+-uuid 362d1fc1-df7d-193e-5c18-49a71bd1da66 \
+-display none \
+-no-user-config \
+-nodefaults \
+-chardev socket,id=charmonitor,fd=1729,server=on,wait=off \
+-mon chardev=charmonitor,id=monitor,mode=control \
+-rtc base=utc \
+-no-shutdown \
+-no-acpi \
+-boot strict=on \
+-msg timestamp=on

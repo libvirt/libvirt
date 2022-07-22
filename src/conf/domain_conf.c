@@ -16682,6 +16682,10 @@ virDomainLoaderDefParseXML(virDomainLoaderDef *loader,
                                &loader->secure) < 0)
         return -1;
 
+    if (virXMLPropTristateBool(loaderNode, "stateless", VIR_XML_PROP_NONE,
+                               &loader->stateless) < 0)
+        return -1;
+
     return 0;
 }
 
@@ -25887,6 +25891,11 @@ virDomainLoaderDefFormat(virBuffer *buf,
     if (loader->type != VIR_DOMAIN_LOADER_TYPE_NONE)
         virBufferAsprintf(&loaderAttrBuf, " type='%s'",
                           virDomainLoaderTypeToString(loader->type));
+
+    if (loader->stateless != VIR_TRISTATE_BOOL_ABSENT) {
+        virBufferAsprintf(&loaderAttrBuf, " stateless='%s'",
+                          virTristateBoolTypeToString(loader->stateless));
+    }
 
     virBufferEscapeString(&loaderChildBuf, "%s", loader->path);
 

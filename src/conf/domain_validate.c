@@ -1672,6 +1672,32 @@ virDomainDefOSValidate(const virDomainDef *def,
         }
     }
 
+    if (loader->stateless == VIR_TRISTATE_BOOL_YES) {
+        if (loader->nvramTemplate) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("NVRAM template is not permitted when loader is stateless"));
+            return -1;
+        }
+
+        if (loader->nvram) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("NVRAM is not permitted when loader is stateless"));
+            return -1;
+        }
+    } else if (loader->stateless == VIR_TRISTATE_BOOL_NO) {
+        if (def->os.firmware == VIR_DOMAIN_OS_DEF_FIRMWARE_NONE) {
+            if (def->os.loader->type != VIR_DOMAIN_LOADER_TYPE_PFLASH) {
+                virReportError(VIR_ERR_XML_DETAIL, "%s",
+                               _("Only pflash loader type permits NVRAM"));
+                return -1;
+            }
+        } else if (def->os.firmware != VIR_DOMAIN_OS_DEF_FIRMWARE_EFI) {
+            virReportError(VIR_ERR_XML_DETAIL, "%s",
+                           _("Only EFI firmware permits NVRAM"));
+            return -1;
+        }
+    }
+
     return 0;
 }
 

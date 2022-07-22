@@ -1067,12 +1067,15 @@ mymain(void)
     DO_TEST("numatune-hmat", QEMU_CAPS_NUMA_HMAT, QEMU_CAPS_OBJECT_MEMORY_RAM);
     DO_TEST_CAPS_LATEST("numatune-memnode-restrictive-mode");
 
+    DO_TEST_NOCAPS("firmware-manual-bios");
+    DO_TEST_NOCAPS("firmware-manual-bios-stateless");
     DO_TEST_NOCAPS("firmware-manual-efi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-iscsi");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-network-nbd");
     DO_TEST_CAPS_LATEST("firmware-manual-efi-nvram-file");
 
     DO_TEST_CAPS_LATEST("firmware-auto-bios");
+    DO_TEST_CAPS_LATEST("firmware-auto-bios-stateless");
     DO_TEST_CAPS_LATEST("firmware-auto-efi");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-nvram");
     DO_TEST_CAPS_LATEST("firmware-auto-efi-loader-secure");
