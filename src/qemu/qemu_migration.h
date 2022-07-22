@@ -229,6 +229,7 @@ bool
 qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
                           virDomainObj *vm,
                           bool remote,
+                          int asyncJob,
                           unsigned int flags);
 
 int

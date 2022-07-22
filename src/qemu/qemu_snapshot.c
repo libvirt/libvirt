@@ -291,7 +291,7 @@ qemuSnapshotCreateActiveInternal(virQEMUDriver *driver,
     virDomainSnapshotDef *snapdef = virDomainSnapshotObjGetDef(snap);
     int ret = -1;
 
-    if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
+    if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
         goto cleanup;
 
     if (virDomainObjGetState(vm, NULL) == VIR_DOMAIN_RUNNING) {
@@ -1422,7 +1422,7 @@ qemuSnapshotCreateActiveExternal(virQEMUDriver *driver,
     /* do the memory snapshot if necessary */
     if (memory) {
         /* check if migration is possible */
-        if (!qemuMigrationSrcIsAllowed(driver, vm, false, 0))
+        if (!qemuMigrationSrcIsAllowed(driver, vm, false, VIR_ASYNC_JOB_SNAPSHOT, 0))
             goto cleanup;
 
         qemuDomainJobSetStatsType(priv->job.current,

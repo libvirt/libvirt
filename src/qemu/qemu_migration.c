@@ -1452,6 +1452,7 @@ bool
 qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
                           virDomainObj *vm,
                           bool remote,
+                          int asyncJob,
                           unsigned int flags)
 {
     qemuDomainObjPrivate *priv = vm->privateData;
@@ -1483,7 +1484,7 @@ qemuMigrationSrcIsAllowed(virQEMUDriver *driver,
             g_auto(GStrv) blockers = NULL;
 
             if (qemuDomainGetMigrationBlockers(driver, vm,
-                                               VIR_ASYNC_JOB_MIGRATION_OUT,
+                                               asyncJob,
                                                &blockers) < 0) {
                 return false;
             }
@@ -2637,7 +2638,7 @@ qemuMigrationSrcBeginPhase(virQEMUDriver *driver,
         qemuMigrationJobStartPhase(vm, QEMU_MIGRATION_PHASE_BEGIN3) < 0)
         return NULL;
 
-    if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
+    if (!qemuMigrationSrcIsAllowed(driver, vm, true, priv->job.asyncJob, flags))
         return NULL;
 
     if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
@@ -6039,7 +6040,7 @@ qemuMigrationSrcPerformJob(virQEMUDriver *driver,
         if (!(flags & VIR_MIGRATE_OFFLINE) && virDomainObjCheckActive(vm) < 0)
             goto endjob;
 
-        if (!qemuMigrationSrcIsAllowed(driver, vm, true, flags))
+        if (!qemuMigrationSrcIsAllowed(driver, vm, true, VIR_ASYNC_JOB_MIGRATION_OUT, flags))
             goto endjob;
 
         if (!(flags & (VIR_MIGRATE_UNSAFE | VIR_MIGRATE_OFFLINE)) &&
