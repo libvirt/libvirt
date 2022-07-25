@@ -4267,11 +4267,11 @@ static void qemuMigrationSrcIOFunc(void *arg)
                 goto abrt;
             }
 
-            VIR_DEBUG("Migration tunnel was asked to %s",
-                      stop ? "abort" : "finish");
             if (stop) {
+                VIR_DEBUG("Migration tunnel was asked to abort");
                 goto abrt;
             } else {
+                VIR_DEBUG("Migration tunnel was asked to finish");
                 timeout = 0;
             }
         }
