@@ -5422,7 +5422,8 @@ qemuMigrationSrcPerformPeer2Peer2(virQEMUDriver *driver,
      * status code from the sender to the destination host,
      * so it can do any cleanup if the migration failed.
      */
-    dname = dname ? dname : vm->def->name;
+    if (!dname)
+        dname = vm->def->name;
     VIR_DEBUG("Finish2 %p ret=%d", dconn, ret);
     qemuDomainObjEnterRemote(vm);
     ddomain = dconn->driver->domainMigrateFinish2
@@ -5707,7 +5708,8 @@ qemuMigrationSrcPerformPeer2Peer3(virQEMUDriver *driver,
                 goto cleanup;
         }
     } else {
-        dname = dname ? dname : vm->def->name;
+        if (!dname)
+            dname = vm->def->name;
         qemuDomainObjEnterRemote(vm);
         ddomain = dconn->driver->domainMigrateFinish3
             (dconn, dname, cookiein, cookieinlen, &cookieout, &cookieoutlen,
