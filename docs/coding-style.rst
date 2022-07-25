@@ -470,7 +470,9 @@ Pointer comparisons may be shortened. All long forms are okay.
     if (!foo)                # or: if (foo == NULL)
 
 New code should avoid the ternary operator as much as possible.
-Specifically it must never span more than one line or nest:
+Its usage in basic cases is warranted (e.g. when deciding between
+two constant strings), however, it must never span more than one
+line or nest.
 
 ::
 
@@ -480,6 +482,9 @@ Specifically it must never span more than one line or nest:
                 NULL;
 
     char *foo = bar ? bar->baz ? bar->baz->foo : "nobaz" : "nobar";
+
+  GOOD:
+    virBufferAsprintf(buf, "<element>%s</element>\n", boolVar ? "yes" : "no");
 
 Preprocessor
 ------------
