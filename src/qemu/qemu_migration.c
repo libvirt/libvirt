@@ -6393,6 +6393,7 @@ qemuMigrationDstPersist(virQEMUDriver *driver,
     g_autoptr(virDomainDef) oldDef = NULL;
     unsigned int oldPersist = vm->persistent;
     virObjectEvent *event;
+    virDomainEventDefinedDetailType eventDetail = VIR_DOMAIN_EVENT_DEFINED_UPDATED;
 
     vm->persistent = 1;
     oldDef = vm->newDef;
@@ -6402,18 +6403,19 @@ qemuMigrationDstPersist(virQEMUDriver *driver,
                                                priv->qemuCaps)))
         goto error;
 
-    if (!oldPersist && qemuDomainNamePathsCleanup(cfg, vmdef->name, false) < 0)
-        goto error;
+    if (!oldPersist) {
+        eventDetail = VIR_DOMAIN_EVENT_DEFINED_ADDED;
+
+        if (qemuDomainNamePathsCleanup(cfg, vmdef->name, false) < 0)
+            goto error;
+    }
 
     if (virDomainDefSave(vmdef, driver->xmlopt, cfg->configDir) < 0 &&
         !ignoreSaveError)
         goto error;
 
-    event = virDomainEventLifecycleNewFromObj(vm,
-                                              VIR_DOMAIN_EVENT_DEFINED,
-                                              oldPersist ?
-                                              VIR_DOMAIN_EVENT_DEFINED_UPDATED :
-                                              VIR_DOMAIN_EVENT_DEFINED_ADDED);
+    event = virDomainEventLifecycleNewFromObj(vm, VIR_DOMAIN_EVENT_DEFINED,
+                                              eventDetail);
     virObjectEventStateQueue(driver->domainEventState, event);
 
     return 0;
