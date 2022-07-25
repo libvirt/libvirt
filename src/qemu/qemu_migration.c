@@ -6601,9 +6601,12 @@ qemuMigrationDstFinishFresh(virQEMUDriver *driver,
         *inPostCopy = true;
 
     if (!(flags & VIR_MIGRATE_PAUSED)) {
-        if (qemuProcessStartCPUs(driver, vm,
-                                 *inPostCopy ? VIR_DOMAIN_RUNNING_POSTCOPY
-                                             : VIR_DOMAIN_RUNNING_MIGRATED,
+        virDomainRunningReason runningReason = VIR_DOMAIN_RUNNING_MIGRATED;
+
+        if (*inPostCopy)
+            runningReason = VIR_DOMAIN_RUNNING_POSTCOPY;
+
+        if (qemuProcessStartCPUs(driver, vm, runningReason,
                                  VIR_ASYNC_JOB_MIGRATION_IN) < 0) {
             if (virGetLastErrorCode() == VIR_ERR_OK)
                 virReportError(VIR_ERR_INTERNAL_ERROR,
