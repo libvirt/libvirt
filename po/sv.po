@@ -13,7 +13,7 @@ msgstr ""
 "Project-Id-Version: libvirt 6.0.0\n"
 "Report-Msgid-Bugs-To: https://libvirt.org/bugs.html\n"
 "POT-Creation-Date: 2022-05-25 19:40+0000\n"
-"PO-Revision-Date: 2022-07-10 09:19+0000\n"
+"PO-Revision-Date: 2022-07-23 07:19+0000\n"
 "Last-Translator: Göran Uddeborg <goeran@uddeborg.se>\n"
 "Language-Team: Swedish <https://translate.fedoraproject.org/projects/libvirt/"
 "libvirt/sv/>\n"
@@ -12473,145 +12473,149 @@ msgid "No process start time available"
 msgstr "Ingen processtarttid tillgänglig"
 
 msgid "No qemu command-line argument specified"
-msgstr ""
+msgstr "Inget kommandoradsargument till qemu angivet"
 
 msgid "No qemu environment name specified"
-msgstr ""
+msgstr "Inget miljönamn till qemu angivet"
 
 msgid "No runstatedir specified"
-msgstr ""
+msgstr "Inget runstatedir angivet"
 
 msgid "No server certificate path set to match server key"
-msgstr ""
+msgstr "Ingen servercertifikatsökväg angiven till att matcha servernyckeln"
 
 msgid "No server key path set to match server cert"
-msgstr ""
+msgstr "Ingen servernyckelsökväg angiven till att matcha servercertifikatet"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No server named '%s'"
-msgstr "det finns ingen server med namn som matchar ”%s”"
+msgstr "Ingen server med namnet ”%s”"
 
-#, fuzzy
 msgid "No socket address provided"
-msgstr "Inget felmeddelande gavs"
+msgstr "Inget uttagsadress gavs"
 
 #, c-format
 msgid "No socket addresses found for '%s'"
-msgstr ""
+msgstr "Ingen uttagsadress hittad för ”%s”"
 
 #, c-format
 msgid "No source device specified when formatting pool '%s'"
-msgstr ""
+msgstr "Ingen källenhet angiven vid formateringen av poolen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No storage volume with key or path '%s'"
-msgstr "ingen lagringsvolym med matchande namn ”%s”"
+msgstr "ingen lagringsvolym nyckeln eller sökvägen ”%s”"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No stub driver configured for PCI device %s"
-msgstr "Ingen typ angiven för enhetsadress"
+msgstr "Ingen stubbdrivrutin konfigurerad för PCI-enheten %s"
 
 #, c-format
 msgid "No such disk in media registry %s"
-msgstr ""
+msgstr "Ingen sådan disk i mediaregistret %s"
 
 #, c-format
 msgid "No support for %s in command 'attach-disk'"
-msgstr ""
+msgstr "Inget stöd för %s i kommandot ”attach-disk”"
 
 #, c-format
 msgid "No support for %s in command 'attach-interface'"
-msgstr ""
+msgstr "Inget stöd för %s i kommandot ”attach-interface”"
 
 msgid "No support for domain XML entry 'vcpu' attribute 'current'"
-msgstr ""
+msgstr "Inget stöd för domän-XML-posten ”vcpu” attributet ”current”"
 
 msgid "No support for multiple video devices"
 msgstr "Inget stöd för flera videoenheter"
 
-#, fuzzy, c-format
+#, c-format
 msgid "No title for domain: %s"
-msgstr "Misslyckades att starta domän %s"
+msgstr "Ingen titel på domänen: %s"
 
 msgid "No total stats available"
-msgstr ""
+msgstr "Ingen total statistik tillgänglig"
 
 msgid "No transaction is set"
-msgstr ""
+msgstr "Ingen transaktion angiven"
 
 msgid "No type specified for device address"
 msgstr "Ingen typ angiven för enhetsadress"
 
 #, c-format
 msgid "No usable Vf's present on SRIOV PF %s"
-msgstr ""
+msgstr "Inga användbara Vf:er finns på SRIOV PF %s"
 
 #, c-format
 msgid "No usable target index found for %d"
-msgstr ""
+msgstr "Inget användbart målindex funnet för %d"
 
 msgid ""
 "No user interaction callback provided: Can't get input from keyboard "
 "interactive authentication"
 msgstr ""
+"Inget återanrop för användarinteraktion angivet: det går inte att få indata "
+"från interaktiv tangentbordsautentisering"
 
 msgid ""
 "No user interaction callback provided: Can't retrieve private key passphrase"
 msgstr ""
+"Inget återanrop för användarinteraktion angivet: det går inte att hämta den "
+"privata nyckelns lösenfras"
 
 msgid ""
 "No user interaction callback provided: Can't verify the session host key"
 msgstr ""
+"Inget återanrop för användarinteraktion angivet: det går inte att verifiera "
+"sessionens värdnyckel"
 
 #, c-format
 msgid "No valid cgroup for machine %s"
-msgstr ""
+msgstr "Ingen giltig cgroup för maskinen %s"
 
 #, c-format
 msgid "No value supplied for <initenv name='%s'> element"
-msgstr ""
+msgstr "Inget värde givet till elementet <initenv name='%s'>"
 
 #, c-format
 msgid "No yet handled value '%s' for VMX entry '%s'"
-msgstr ""
+msgstr "Inget ännu hanterat värde ”%s” till VMX-posten ”%s”"
 
 #, c-format
 msgid "No zPCI %s to reserve"
-msgstr ""
+msgstr "Ingen zPCI %s att reservera"
 
 #, c-format
 msgid "Node %d:\n"
-msgstr ""
+msgstr "Nod %d:\n"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Node %zu out of range"
-msgstr "värde på typeid är utanför intervallet"
+msgstr "Nod %zu är utanför intervallet"
 
 msgid "Node Device Events"
-msgstr ""
+msgstr "Nodenhetshändelser"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Node device %s created from %s\n"
-msgstr "Domän %s skapad från %s\n"
+msgstr "Nodenheten %s skapad från %s\n"
 
 #, c-format
 msgid "Node device '%s' defined from '%s'\n"
-msgstr ""
+msgstr "Nodenheten ”%s” definierad från ”%s”\n"
 
 #, c-format
 msgid "Node device '%s' is not defined"
-msgstr ""
+msgstr "Nodenheten ”%s” är inte definierad"
 
-#, fuzzy
 msgid "Node device not found"
-msgstr "Domän hittades inte"
+msgstr "Nodenheten finns inte"
 
-#, fuzzy, c-format
+#, c-format
 msgid "Node device not found: %s"
-msgstr "Domän hittades inte: %s"
+msgstr "Nodenheten finns inte: %s"
 
 msgid "Non-blocking streams are not supported yet"
-msgstr ""
+msgstr "Ej blockerande strömmar stödjs inte ännu"
 
 msgid "Non-cancelable task is blocked by an unanswered question"
 msgstr "Icke annullerbar uppgift blockeras av en obesvarad fråga"
@@ -12620,20 +12624,20 @@ msgid "Non-empty feature list specified without CPU model"
 msgstr "Icke-tom lista över funktioner angiven utan CPU-modell"
 
 msgid "Non-endpoint PCI devices cannot be assigned to guests"
-msgstr ""
+msgstr "Ändpunktslösa PCI-enheter får inte tilltelas till gäster"
 
 msgid "None"
 msgstr "Inget"
 
 msgid ""
 "None of the requested authentication methods are supported by the server"
-msgstr ""
+msgstr "Ingen av de begärda autentiseringsmetoderna stödjs av servern"
 
 msgid "Normal data:"
-msgstr ""
+msgstr "Normala data:"
 
 msgid "Normal pages:"
-msgstr ""
+msgstr "Normala sidor:"
 
 msgid "Not a download stream"
 msgstr ""
