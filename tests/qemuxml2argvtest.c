@@ -3079,6 +3079,7 @@ mymain(void)
 
     DO_TEST_FAILURE_NOCAPS("memory-align-fail");
     DO_TEST_PARSE_ERROR("memory-hotplug-nonuma", QEMU_CAPS_DEVICE_PC_DIMM);
+    DO_TEST_PARSE_ERROR_NOCAPS("memory-hotplug-invalid-targetnode");
     DO_TEST_NOCAPS("memory-hotplug");
     DO_TEST("memory-hotplug", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA);
     DO_TEST("memory-hotplug-dimm", QEMU_CAPS_DEVICE_PC_DIMM, QEMU_CAPS_NUMA,

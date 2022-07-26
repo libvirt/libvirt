@@ -3695,15 +3695,6 @@ qemuBuildMemoryBackendProps(virJSONValue **backendProps,
     *backendProps = NULL;
 
     if (mem->targetNode >= 0) {
-        /* memory devices could provide a invalid guest node */
-        if (mem->targetNode >= virDomainNumaGetNodeCount(def->numa)) {
-            virReportError(VIR_ERR_CONFIG_UNSUPPORTED,
-                           _("can't add memory backend for guest node '%d' as "
-                             "the guest has only '%zu' NUMA nodes configured"),
-                           mem->targetNode, virDomainNumaGetNodeCount(def->numa));
-            return -1;
-        }
-
         if (memAccess == VIR_DOMAIN_MEMORY_ACCESS_DEFAULT)
             memAccess = virDomainNumaGetNodeMemoryAccessMode(def->numa, mem->targetNode);
 

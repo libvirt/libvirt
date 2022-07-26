@@ -2227,6 +2227,19 @@ virDomainMemoryDefValidate(const virDomainMemoryDef *mem,
 {
     unsigned long long thpSize;
 
+    /* Guest NUMA nodes are continuous and indexed from zero. */
+    if (mem->targetNode != -1) {
+        const size_t nodeCount = virDomainNumaGetNodeCount(def->numa);
+
+        if (mem->targetNode >= nodeCount) {
+            virReportError(VIR_ERR_XML_DETAIL,
+                           _("can't add memory backend for guest node '%d' as the guest has only '%zu' NUMA nodes configured"),
+                           mem->targetNode, nodeCount);
+            return -1;
+        }
+    }
+
+
     switch (mem->model) {
     case VIR_DOMAIN_MEMORY_MODEL_NVDIMM:
         if (!mem->nvdimmPath) {
